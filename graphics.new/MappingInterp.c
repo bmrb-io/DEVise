@@ -14,8 +14,12 @@
 
 /*
   $Id$
+  $Id$
 
   $Log$
+  Revision 1.67  1997/12/04 18:31:38  wenger
+  Merged new expression evaluation code thru the expression_br_2 tag.
+
   Revision 1.66  1997/11/24 23:15:09  weaver
   Changes for the new ColorManager.
 
@@ -26,6 +30,9 @@
   Revision 1.64  1997/11/12 15:46:36  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
+
+  Revision 1.63.4.2  1997/12/15 23:44:32  ssl
+  Fixed the bug where a recId in a complex expression was not handled properly.
 
   Revision 1.63.4.1  1997/11/04 18:48:30  wenger
   Fixed bug 238 (core dump in search engine demo).
@@ -940,7 +947,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	}
       }
     }
-    
+
+#ifdef DEBUG
+  printf("!!!!!!!!!!!!!!!!!!!!!!!!!COMPLEX CMD!!!!!!!!!!!!!!!!!!!\n");
+#endif
     /* evaluate commands */
     int code;
     static char cmdbuf[255];
@@ -948,7 +958,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
     if (_offsets->xOffset >= 0) {
       if (_tclCmd->xCmd == NULL) {
-	_interpResult = GetDefaultX();
+	      _interpResult = GetDefaultX();
       } else {
 	//_interpResult = 0.0;
 	//sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->xCmd);
@@ -1372,7 +1382,6 @@ AttrList *MappingInterp::InitCmd(char *name)
       offset += sizeof(double);
     }
   }
-
   if (_cmdFlag & MappingCmd_Y) {
     if (IsConstCmd(_cmd->yCmd, constVal, attrType)) {
       SetDefaultY((Coord)constVal);
@@ -1621,8 +1630,8 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd,
     }
 #if defined(DEBUG)
     printf("Undefined variable name: %s\n", cmd + 1);
-    printf("Attribute list:\n");
-    _attrList->Print();
+    //printf("Attribute list:\n");
+    //_attrList->Print();
 #endif
     return false;
   }
@@ -1680,54 +1689,54 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	     (*ptr >= 'A' && *ptr <= 'Z') ||
 	     (*ptr >= '0' && *ptr <= '9') ||
 	     (*ptr == '_')) {
-	ptr++;
+	      ptr++;
       }
       if (ptr == cmd+1) {
-	/* did not get a variable name */
-	InsertChar(*cmd);
+	    /* did not get a variable name */
+	      InsertChar(*cmd);
       } else {
-	/* from cmd+1 to ptr-1 is a variable name */
-	char buf[80];
-	int len = ptr - 1 - (cmd + 1) + 1;
-	DOASSERT(len < (int)sizeof buf, "Variable name too long");
-	memcpy(buf, cmd + 1, len);
-	buf[len] = 0;
-	
-	AttrInfo *info = _attrList->Find(buf);
-	if (!info) {
-	  /* can't find variable name */
-	  if (strcmp(buf, "recId")) {
-	    char errBuf[256];
-	    sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
-	      buf);
-            reportErrNosys(errBuf);
-	  }
-	} else {
-	  /* found the attribute */
-	  if (info->isSorted)
-	    isSorted = true;
-	  if (info->type == DateAttr) {
-	    attrType = DateAttr;
-	  } else if (info->type == StringAttr) {
-	    attrType = StringAttr;
-	  }
-	  
-	  if (info->attrNum > _maxTDataAttrNum)
-	    _maxTDataAttrNum = info->attrNum;
-	  _tdataFlag->SetBit(info->attrNum);
-	  
-          sprintf(buf, "$interpAttr_%d", info->attrNum);
-	  InsertString(buf);
-	}
-	cmd = ptr - 1;
+		    /* from cmd+1 to ptr-1 is a variable name */
+			  char buf[80];
+			  int len = ptr - 1 - (cmd + 1) + 1;
+			  DOASSERT(len < (int)sizeof buf, "Variable name too long");
+			  memcpy(buf, cmd + 1, len);
+			  buf[len] = 0;
+			
+	      if (strcmp(buf, "recId") == 0) {
+          InsertString("$recId");
+	      } else {
+			    AttrInfo *info = _attrList->Find(buf);
+			    if (!info) {
+			      /* can't find variable name */
+			      char errBuf[256];
+			      sprintf(errBuf, "Can't find attribute '%s' requested by mapping",
+			              buf);
+		        reportErrNosys(errBuf);
+			    } else {
+			      /* found the attribute */
+			      if (info->isSorted)
+			        isSorted = true;
+			      if (info->type == DateAttr) {
+			        attrType = DateAttr;
+			      } else if (info->type == StringAttr) {
+			        attrType = StringAttr;
+			      }
+			  
+			      if (info->attrNum > _maxTDataAttrNum)
+			        _maxTDataAttrNum = info->attrNum;
+			      _tdataFlag->SetBit(info->attrNum);
+			  
+		         sprintf(buf, "$interpAttr_%d", info->attrNum);
+			       InsertString(buf);
+			    }
+		    }
+			  cmd = ptr - 1;
       }
     } else {
       InsertChar(*cmd);
     }
-    
     cmd++;
   }
-
   return CopyString(GetString());
 }
 

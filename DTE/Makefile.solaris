@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.74  1997/12/23 23:33:19  liping
+# Added new file RangeInfo.c
+#
 # Revision 1.73  1997/12/22 17:53:56  donjerko
 # Initial version of Saeed's sequence similarity search.
 #
@@ -548,35 +551,35 @@ DeleteParse.o: /s/gcc/lib/g++-include/deque.h
 DevRead.o: /s/gcc/lib/g++-include/strstream.h
 DevRead.o: /s/gcc/lib/g++-include/iostream.h
 DevRead.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
-DevRead.o: /s/gcc/lib/g++-include/strfile.h ../../unidata/UniData.h
-DevRead.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
-DevRead.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-DevRead.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-DevRead.o: /usr/include/sys/time.h /usr/include/time.h
-DevRead.o: /usr/include/sys/unistd.h ../../unidata/RecId.h
-DevRead.o: ../../unidata/SlideBuf.h ../../unidata/Schema.h
-DevRead.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
-DevRead.o: /usr/include/sys/ieeefp.h ../../unidata/Attr.h
-DevRead.o: /usr/include/stdlib.h ../../unidata/IntStack.h
-DevRead.o: ../../unidata/Traits.h /usr/include/string.h
-DevRead.o: ../../unidata/bitmap.h /usr/include/limits.h
-DevRead.o: ../../unidata/PerlFrag.h ../../unidata/Lexer.h
-DevRead.o: ../../unidata/Enum.h ../../unidata/Comment.h
-DevRead.o: ../../unidata/Config.h ../../unidata/udParam.h types.h
+DevRead.o: /s/gcc/lib/g++-include/strfile.h types.h
 DevRead.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 DevRead.o: /s/gcc/lib/g++-include/std/bastring.h
 DevRead.o: /s/gcc/lib/g++-include/std/stddef.h
 DevRead.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 DevRead.o: /s/gcc/lib/g++-include/std/straits.h
 DevRead.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
-DevRead.o: /s/gcc/lib/g++-include/std/cstring.h
+DevRead.o: /usr/include/sys/feature_tests.h
+DevRead.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
 DevRead.o: /s/gcc/lib/g++-include/cassert
 DevRead.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
 DevRead.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
 DevRead.o: /s/gcc/lib/g++-include/std/new.h exception.h
-DevRead.o: ../../unidata/sysdep.h /usr/include/varargs.h Utility.h queue.h
-DevRead.o: Array.h SeqSimVec.h DevRead.h Iterator.h
+DevRead.o: ../../unidata/sysdep.h /usr/include/varargs.h
+DevRead.o: /usr/include/sys/va_list.h Utility.h queue.h Array.h SeqSimVec.h
+DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
+DevRead.o: /usr/include/sys/ieeefp.h ../../unidata/UniData.h
+DevRead.o: /usr/include/unistd.h /usr/include/sys/types.h
+DevRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DevRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DevRead.o: /usr/include/time.h /usr/include/sys/unistd.h
+DevRead.o: ../../unidata/RecId.h ../../unidata/SlideBuf.h
+DevRead.o: ../../unidata/Schema.h /usr/include/stdio.h ../../unidata/Attr.h
+DevRead.o: /usr/include/stdlib.h ../../unidata/IntStack.h
+DevRead.o: ../../unidata/Traits.h ../../unidata/bitmap.h
+DevRead.o: /usr/include/limits.h ../../unidata/PerlFrag.h
+DevRead.o: ../../unidata/Lexer.h ../../unidata/Enum.h ../../unidata/Comment.h
+DevRead.o: ../../unidata/Config.h ../../unidata/udParam.h DevRead.h
+DevRead.o: Iterator.h
 DevRead.dummy.o: ../../unidata/sysdep.h /usr/include/varargs.h
 DevRead.dummy.o: /usr/include/sys/va_list.h /usr/include/assert.h types.h
 DevRead.dummy.o: /s/gcc/lib/g++-include/string
@@ -1496,7 +1499,7 @@ lex.yy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
 lex.yy.o: SockStream.h listop.h ParseTree.h TypeCheck.h
 lex.yy.o: /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
 lex.yy.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
-lex.yy.o: StringLess.h my.yacc.tab.h
+lex.yy.o: StringLess.h
 listop.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 listop.o: /s/gcc/lib/g++-include/std/bastring.h
 listop.o: /s/gcc/lib/g++-include/std/stddef.h
@@ -1522,39 +1525,6 @@ listop.o: exception.h Utility.h Array.h SeqSimVec.h url.h SockStream.h
 listop.o: listop.h site.h Iterator.h /s/gcc/lib/g++-include/set
 listop.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
 listop.o: /s/gcc/lib/g++-include/projectn.h catalog.h ExecExpr.h
-my.yacc.tab.o: myopt.h /s/gcc/lib/g++-include/string
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/string.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/bastring.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/stddef.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/straits.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
-my.yacc.tab.o: /usr/include/sys/feature_tests.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/cassert
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/sinst.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/function.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/bool.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/algobase.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/pair.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/iterator.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/iostream.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/streambuf.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/libio.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/defalloc.h /s/gcc/lib/g++-include/new.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/std/new.h /usr/include/stdlib.h
-my.yacc.tab.o: /usr/include/limits.h /usr/include/sys/isa_defs.h queue.h
-my.yacc.tab.o: ../../unidata/sysdep.h /usr/include/varargs.h
-my.yacc.tab.o: /usr/include/sys/va_list.h types.h exception.h Utility.h
-my.yacc.tab.o: Array.h SeqSimVec.h /usr/include/math.h
-my.yacc.tab.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
-my.yacc.tab.o: SockStream.h listop.h ParseTree.h TypeCheck.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/tree.h
-my.yacc.tab.o: /s/gcc/lib/g++-include/projectn.h StringLess.h
-my.yacc.tab.o: /usr/include/stdio.h
 resolve.o: types.h /s/gcc/lib/g++-include/string
 resolve.o: /s/gcc/lib/g++-include/std/string.h
 resolve.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1795,27 +1765,6 @@ scriptServer.o: ../Core/url.h ../Core/SockStream.h ../Core/listop.h
 scriptServer.o: ../Core/Iterator.h /s/gcc/lib/g++-include/set
 scriptServer.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
 scriptServer.o: /s/gcc/lib/g++-include/projectn.h ncsa.h
-trash.o: /usr/include/memory.h /s/gcc/lib/g++-include/iostream.h
-trash.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
-trash.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-trash.o: /usr/include/unistd.h /usr/include/sys/types.h
-trash.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-trash.o: /usr/include/sys/select.h /usr/include/sys/time.h
-trash.o: /usr/include/time.h /usr/include/sys/unistd.h
-trash.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-trash.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-trash.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-trash.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-trash.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-trash.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-trash.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-trash.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-trash.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-trash.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-trash.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-trash.o: /usr/include/sys/byteorder.h /usr/include/ctype.h
-trash.o: /usr/include/netdb.h /usr/include/string.h /usr/include/arpa/inet.h
-trash.o: common.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
 

@@ -16,8 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/12/16 17:53:43  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.40  1997/11/05 00:22:06  donjerko
   Added initialization of Streaming Buffer Mgr, used by RTree.
+
+  Revision 1.39.4.1  1998/01/07 15:59:23  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
 
   Revision 1.39  1997/08/20 22:10:36  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
@@ -196,6 +207,7 @@
 #include "Version.h"
 #include "ETkIfc.h"
 #include "InitShut.h"
+#include "ClientAPI.h"
 
 static char uniqueFileName[100];
 
@@ -276,6 +288,8 @@ Boolean Init::_useOpenGL = false;
 
 float Init::_drawTimeout = 10.0;
 
+int Init::_port = DefaultNetworkPort;
+
 /**************************************************************
 Remove positions from index to index+len-1 from argv
 Update argc.
@@ -334,6 +348,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-forceBinarySearch: force binary search on tape files\n");
   fprintf(stderr, "\t-forceTapeSearch: force searching on tape files\n");
   fprintf(stderr, "\t-drawTO <value>: symbol drawing timeout\n");
+  fprintf(stderr, "\t-gl: use OpenGL to draw\n");
+  fprintf(stderr, "\t-port <value>: port for server to listen on\n");
 
   Exit::DoExit(1);
 }
@@ -712,6 +728,16 @@ void Init::DoInit(int &argc, char **argv)
 	printf("Use OpenGL graphics\n");
 	MoveArg(argc,argv,i,1);
       }
+
+      else if (strcmp(&argv[i][1], "port") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_port = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
       else {
         fprintf(stderr, "Unrecognized argument '%s'\n", argv[i]);
 	Usage(argv[0]);

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/11/12 15:44:23  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.1.2.1  1997/10/30 20:14:56  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -68,16 +72,14 @@ ClientServer.o: dbase.h /usr/include/ndbm.h /usr/include/fcntl.h
 ClientServer.o: /usr/include/sys/fcntl.h ../graphics/Display.h
 ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
-ClientServer.o: /usr/include/math.h ../graphics/Color.h
-ClientServer.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ClientServer.o: ../graphics/Exit.h ../graphics/Journal.h
+ClientServer.o: /usr/include/math.h ../graphics/Dispatcher.h
+ClientServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 ClientServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/DualWindowRep.h
-ClientServer.o: ../graphics/ColorMgr.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 client.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 client.o: /usr/include/stdlib.h /usr/include/string.h ClientServer.h
 client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -92,15 +94,14 @@ client.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 client.o: /usr/include/ndbm.h /usr/include/fcntl.h /usr/include/sys/fcntl.h
 client.o: ../graphics/Display.h ../graphics/DeviseTypes.h
 client.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
-client.o: /usr/include/math.h ../graphics/Color.h ../graphics/Dispatcher.h
-client.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-client.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/ViewWin.h
-client.o: ../graphics/WindowRep.h ../graphics/Transform.h
-client.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-client.o: ../graphics/DevError.h /usr/include/errno.h
+client.o: /usr/include/math.h ../graphics/Dispatcher.h ../graphics/DList.h
+client.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+client.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
-client.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h
+client.o: ../graphics/GraphicsDebug.h
 server.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 server.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/assert.h
 server.o: ClientServer.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
@@ -116,11 +117,11 @@ server.o: /usr/include/sys/cdefs.h /usr/include/ndbm.h /usr/include/fcntl.h
 server.o: /usr/include/sys/fcntl.h ../graphics/Display.h
 server.o: ../graphics/DeviseTypes.h /usr/include/values.h
 server.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
-server.o: ../graphics/Color.h ../graphics/Dispatcher.h ../graphics/DList.h
-server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-server.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
-server.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h
+server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h

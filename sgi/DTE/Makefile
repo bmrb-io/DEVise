@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3.4.1  1997/12/29 22:12:52  wenger
+#  Got DEVise 1.4.7 to compile, link, and run on SGI.
+#
+#  Revision 1.3  1997/08/12 18:48:01  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.2  1997/03/25 18:01:09  wenger
 #  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 #
@@ -24,7 +31,7 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
 	-I/usr/include

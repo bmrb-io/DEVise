@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1997/11/12 15:51:43  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.9.2.1  1997/10/30 20:18:41  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -47,21 +51,21 @@ Templates.o: /usr/include/asm/types.h /usr/include/linux/time.h
 Templates.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
 Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
 Templates.o: /usr/include/values.h ../graphics/DevStatus.h
-Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
-Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
-Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
-Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
-Templates.o: ../graphics/BufPolicy.h ../graphics.new/BufferPolicy.h
-Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
-Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-Templates.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
-Templates.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-Templates.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-Templates.o: /usr/include/asm/shmparam.h /usr/include/errno.h
-Templates.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-Templates.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/libio.h
+Templates.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
+Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
+Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
+Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
+Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+Templates.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+Templates.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+Templates.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+Templates.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+Templates.o: /usr/include/errno.h /usr/include/linux/errno.h
+Templates.o: /usr/include/asm/errno.h /usr/include/assert.h
+Templates.o: /usr/include/stdio.h /usr/include/libio.h
 Templates.o: /usr/include/_G_config.h /usr/include/limits.h
 Templates.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
 Templates.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
@@ -82,6 +86,7 @@ Templates.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 Templates.o: /usr/include/netinet/in.h /usr/include/linux/in.h
 Templates.o: /usr/include/asm/byteorder.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: ../graphics/AttrList.h ../graphics/Init.h
 Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/features.h
 devtype.o: /usr/include/sys/cdefs.h

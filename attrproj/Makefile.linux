@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  1997/11/12 15:43:54  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.8.2.1  1997/10/30 20:14:30  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -56,10 +60,10 @@ ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
 ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
 ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
 ApInit.o: /usr/include/linux/time.h /usr/include/time.h ../graphics/Journal.h
-ApInit.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/ctype.h
-ApInit.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/math.h
-ApInit.o: /usr/include/huge_val.h /usr/include/nan.h
+ApInit.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/Timer.h
+ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/endian.h
+ApInit.o: /usr/include/bytesex.h /usr/include/math.h /usr/include/huge_val.h
+ApInit.o: /usr/include/nan.h
 ApInit.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 ApInit.o: /usr/include/ieee754.h /usr/include/ieee854.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/libio.h
@@ -104,11 +108,10 @@ ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 ApParseCat.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
-ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
-ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
-ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
+ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
+ApParseCat.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/huge_val.h /usr/include/nan.h
@@ -156,8 +159,8 @@ ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat2.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 ApParseCat2.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat2.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
-ApParseCat2.o: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
+ApParseCat2.o: ../graphics/Pattern.h ../graphics/Parse.h ApInit.h
+ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
@@ -175,7 +178,7 @@ AttrProj.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 AttrProj.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 AttrProj.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 AttrProj.o: /usr/include/sys/bitypes.h ../graphics.new/RecId.h VectorArray.h
-AttrProj.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
+AttrProj.o: Vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
 AttrProj.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
@@ -219,7 +222,7 @@ AttrProj2.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 AttrProj2.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 AttrProj2.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 AttrProj2.o: /usr/include/sys/bitypes.h ../graphics.new/RecId.h VectorArray.h
-AttrProj2.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
+AttrProj2.o: Vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
 AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj2.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
@@ -262,13 +265,31 @@ ProjectionList.o: /usr/include/sys/types.h /usr/include/linux/types.h
 ProjectionList.o: /usr/include/linux/posix_types.h
 ProjectionList.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 ProjectionList.o: /usr/include/sys/bitypes.h
+Vector.o: global.h /usr/include/stdio.h /usr/include/libio.h
+Vector.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+Vector.o: /usr/include/stdlib.h /usr/include/features.h
+Vector.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+Vector.o: /usr/include/errno.h /usr/include/linux/errno.h
+Vector.o: /usr/include/asm/errno.h /usr/include/alloca.h
+Vector.o: /usr/include/string.h /usr/include/math.h /usr/include/huge_val.h
+Vector.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+Vector.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+Vector.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+Vector.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/posix_opt.h
+Vector.o: /usr/include/gnu/types.h /usr/include/confname.h
+Vector.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Vector.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Vector.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+Vector.o: /usr/include/time.h /usr/include/sys/time.h
+Vector.o: /usr/include/linux/time.h /usr/include/sys/times.h
+Vector.o: /usr/include/linux/times.h Vector.h
 VectorArray.o: /usr/include/stdio.h /usr/include/libio.h
 VectorArray.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 VectorArray.o: VectorArray.h ../graphics/DeviseTypes.h /usr/include/values.h
 VectorArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 VectorArray.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 VectorArray.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-VectorArray.o: /usr/include/sys/bitypes.h vector.h ../graphics/Util.h
+VectorArray.o: /usr/include/sys/bitypes.h Vector.h ../graphics/Util.h
 VectorArray.o: /usr/include/stdlib.h /usr/include/features.h
 VectorArray.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 VectorArray.o: /usr/include/errno.h /usr/include/linux/errno.h
@@ -287,7 +308,7 @@ aptest.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 aptest.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 aptest.o: /usr/include/sys/bitypes.h AttrProj.h ../graphics/DeviseTypes.h
 aptest.o: /usr/include/values.h ../graphics/DevStatus.h
-aptest.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
 aptest.o: ApInit.h ../graphics/BufPolicy.h
 aptest2.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 aptest2.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
@@ -295,7 +316,7 @@ aptest2.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 aptest2.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 aptest2.o: /usr/include/sys/bitypes.h AttrProj.h ../graphics/DeviseTypes.h
 aptest2.o: /usr/include/values.h ../graphics/DevStatus.h
-aptest2.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest2.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
 aptest2.o: ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 show.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
@@ -307,23 +328,5 @@ show.o: /usr/include/gnu/types.h
 show.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 show.o: /usr/include/confname.h AttrProj.h ../graphics/DeviseTypes.h
 show.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics.new/RecId.h
-show.o: VectorArray.h vector.h ProjectionList.h ApInit.h
+show.o: VectorArray.h Vector.h ProjectionList.h ApInit.h
 show.o: ../graphics/BufPolicy.h
-vector.o: global.h /usr/include/stdio.h /usr/include/libio.h
-vector.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-vector.o: /usr/include/stdlib.h /usr/include/features.h
-vector.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-vector.o: /usr/include/errno.h /usr/include/linux/errno.h
-vector.o: /usr/include/asm/errno.h /usr/include/alloca.h
-vector.o: /usr/include/string.h /usr/include/math.h /usr/include/huge_val.h
-vector.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-vector.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-vector.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
-vector.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/posix_opt.h
-vector.o: /usr/include/gnu/types.h /usr/include/confname.h
-vector.o: /usr/include/sys/types.h /usr/include/linux/types.h
-vector.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-vector.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-vector.o: /usr/include/time.h /usr/include/sys/time.h
-vector.o: /usr/include/linux/time.h /usr/include/sys/times.h
-vector.o: /usr/include/linux/times.h vector.h

@@ -15,13 +15,23 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1.16.2  1997/12/09 19:03:27  wenger
+  deviseb now uses client/server library.
+
+  Revision 1.1.16.1  1997/12/09 16:03:56  wenger
+  Devise client now uses client/server library.
+
+  Revision 1.1  1996/10/17 20:42:17  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "ClientServer.h"
+#include "TkClient.h"
+#include "ClientAPI.h"
 
 static char *_progName = 0;
 
@@ -60,7 +70,7 @@ int main(int argc, char **argv)
     }
   }
 
-  TclClient client("Client", hostname, portnum, "client.tcl");
+  TkClient client("Client", hostname, portnum, "client.tcl");
   client.MainLoop();
 
   return 1;

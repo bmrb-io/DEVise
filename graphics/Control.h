@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.20.2.1  1998/01/07 15:59:20  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
+  Revision 1.20  1997/09/23 19:57:27  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.19  1997/02/03 19:39:54  ssl
   1) Added a new Layout interface which handles user defined layouts
   2) Added functions to set geometry and remap views as changes in the
@@ -212,12 +224,6 @@ public:
   
   /* Get MapInterpClassInfo info */
   virtual MapInterpClassInfo *GetInterpProto() = 0;
-
-  /* Add replica server */
-  virtual int AddReplica(char *hostName, int port) = 0;
-
-  /* Remove replica server */
-  virtual int RemoveReplica(char *hostName, int port) = 0;
 
   virtual void OpenDataChannel(int port) = 0;
   virtual int getFd() = 0;

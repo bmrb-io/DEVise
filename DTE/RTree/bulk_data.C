@@ -16,8 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/24 23:13:24  weaver
+  Changes for the new ColorManager.
+
   Revision 1.6  1997/11/07 16:52:31  donjerko
   Moved RTree to the top level.
+
+  Revision 1.5.4.3  1997/12/29 22:12:24  wenger
+  Got DEVise 1.4.7 to compile, link, and run on SGI.
+
+  Revision 1.5.4.2  1997/11/06 17:46:45  wenger
+  Got DEVise 1.4.7 to link and run on hp.
+
+  Revision 1.5.4.1  1997/10/30 20:13:48  wenger
+  Got DEVise to compile, link, and run on sun and linux; compiles but
+  doesn't link on hp (can't find memory mapping functions).  This includes
+  moving the unidata config.h files to separate copies in the unidata
+  directory for each architecture, since the config.h's are architecture-
+  dependent.
 
   Revision 1.5  1997/08/15 00:18:10  donjerko
   Added memcpy to a place but it did not help avoid bus error.
@@ -131,7 +147,7 @@ void bulk_data_t::init(int       infile,
 #if defined(HPUX)
   file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FILE|MAP_VARIABLE, infile, 0);
-#elif defined(LINUX)
+#elif defined(LINUX) || defined(SGI)
   file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED, infile, 0);
 #else

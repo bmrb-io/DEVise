@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39  1997/12/04 04:06:51  donjerko
+#  New View interface.
+#
 #  Revision 1.38  1997/12/01 21:22:05  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
 #  into the trunk.
@@ -24,6 +27,9 @@
 #
 #  Revision 1.36  1997/11/05 00:23:59  donjerko
 #  Added some error checking for DTE calls.
+#
+#  Revision 1.35.2.3  1998/01/06 17:06:33  wenger
+#  Improved 'Cannot read catalog file' error message.
 #
 #  Revision 1.35.2.2  1997/12/01 18:35:01  wenger
 #  Fixed bug 246 (GUI no longer allows data source names containing dots
@@ -174,7 +180,7 @@
 
 set catalogFile $schemadir/catalog.tcl
 if {![file exists $catalogFile]} {
-    puts "Cannot read catalog file for physical to logical associations"
+    puts "Cannot read catalog file for physical to logical associations ($catalogFile)"
     exit 1
 }
 source $catalogFile

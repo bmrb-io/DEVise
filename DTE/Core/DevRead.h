@@ -39,6 +39,7 @@ TypeID translateUDType(Attr* at);
 
 class DevReadExec : public Iterator {
 	char* buff;	// this has to be aligned!
+	int buffSize;
 	UniData* ud;
 	UnmarshalPtr* unmarshalPtrs;
 	DestroyPtr* destroyPtrs;
@@ -50,15 +51,7 @@ class DevReadExec : public Iterator {
 public:
 	DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
 		DestroyPtr* destroyPtrs,
-		Tuple* tuple, int* offsets, int numFlds) :
-		ud(ud), unmarshalPtrs(unmarshalPtrs),
-		destroyPtrs(destroyPtrs), tuple(tuple),
-		offsets(offsets), numFlds(numFlds) {
-
-		buff = (char*) new double[BUFSZE / sizeof(double)];
-		buff[BUFSZE - 1] = '\0';
-		recId = 0;
-	}
+		Tuple* tuple, int* offsets, int numFlds);
 
 	virtual ~DevReadExec();
 

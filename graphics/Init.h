@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/12/16 17:53:43  zhenhai
+  Added OpenGL features to graphics.
+
+  Revision 1.18.4.1  1998/01/07 15:59:24  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
   Revision 1.18  1997/08/20 22:10:37  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -166,7 +177,9 @@ class Init {
 
     static float DrawTimeout() { return _drawTimeout; }
 
-    static Boolean UseOpenGL() {return _useOpenGL;}
+    static Boolean UseOpenGL() { return _useOpenGL; }
+
+    static int Port() { return _port; }
 
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
@@ -221,7 +234,10 @@ protected:
     static Boolean _forceTapeSearch;   /* force search for tape sources */
 
     static float _drawTimeout;     /* timeout for drawing a "chunk" of data */
+
     static Boolean _useOpenGL;     /* whether we use opengl */
+
+    static int _port;              /* port for server to listen on */
 };
 
 #endif

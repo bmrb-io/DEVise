@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1997/11/12 15:43:28  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+#  into the trunk.
+#
 #  Revision 1.2.2.1  1997/10/30 20:14:08  wenger
 #  Got DEVise to compile, link, and run on sun and linux; compiles but
 #  doesn't link on hp (can't find memory mapping functions).  This includes
@@ -49,8 +53,7 @@ LMAPI.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
 LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
 LMAPI.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMAPI.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMAPI.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-LMAPI.o: LMError.h
+LMAPI.o: ../graphics/VisualArg.h ../graphics/Pattern.h LMError.h
 LMControl.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 LMControl.o: /usr/include/string.h LMControl.h /s/tcl/include/tcl.h
 LMControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -61,7 +64,7 @@ LMControl.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
 LMControl.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
 LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
-LMControl.o: ../graphics/Color.h ../graphics/Pattern.h LMAPI.h
+LMControl.o: ../graphics/Pattern.h LMAPI.h
 LMHashTable.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 LMHashTable.o: LMHashTable.h
 LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/math.h
@@ -75,7 +78,7 @@ LMMain.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h LMWindow.h
 LMMain.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
 LMMain.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 LMMain.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Journal.h
-LMMain.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+LMMain.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
 LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
 LMWindow.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -85,6 +88,6 @@ LMWindow.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 LMWindow.o: /usr/include/stddef.h ../graphics/Dispatcher.h
 LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMWindow.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+LMWindow.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.78  1997/12/11 04:25:46  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
+  Revision 1.77.12.1  1998/01/07 16:00:22  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
   Revision 1.77  1997/02/03 19:45:36  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -514,6 +526,15 @@ void TkControlPanel::DoAbort(char *reason)
 int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[])
 {
+#if defined(DEBUG)
+  printf("Receiving command from client: ");
+  int argnum;
+  for (argnum = 0; argnum < argc; argnum++) {
+    printf("{%s} ", argv[argnum]);
+  }
+  printf("\n");
+#endif
+
   // don't pass DEVise command verb (argv[0])
   if (ParseAPI(argc - 1, &argv[1], (ControlPanel *)clientData) < 0)
     return TCL_ERROR;

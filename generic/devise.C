@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/12/16 18:02:04  zhenhai
+  Added OpenGL features.
+
+  Revision 1.14.16.3  1998/01/07 15:59:10  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
+  Revision 1.14.16.2  1997/12/09 19:03:37  wenger
+  deviseb now uses client/server library.
+
+  Revision 1.14.16.1  1997/12/09 16:03:38  wenger
+  Devise client now uses client/server library.
+
   Revision 1.14  1996/09/05 21:33:11  jussi
   Devise command 'connectData' was renamed getDisplayImage.
   Minor other improvements.
@@ -90,6 +107,7 @@
 #include <tk.h>
 
 #include "ClientAPI.h"
+#include "DeviseClient.h"
 #include "Version.h"
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
@@ -98,16 +116,13 @@
 static char *_progName = 0;
 static char *_hostName = "localhost";
 static int _portNum = DefaultNetworkPort;
-static int _deviseFd = -1;
+static DeviseClient *_client;
 static int _dataFd = -1;
 static int _dataNewFd = -1;
 static int _quiet = 0;
 
 static char *_idleScript = 0;
-static int   _syncDone = 0;
 
-static Tcl_Interp *_interp = 0;
-static Tk_Window _mainWindow = 0;
 static char *_restoreFile = 0;
 
 int _useopengl = 0;
@@ -117,28 +132,9 @@ static void DoAbort(char *reason)
     fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
     char cmd[256];
     sprintf(cmd, "AbortProgram {%s}", reason);
-    (void)Tcl_Eval(_interp, cmd);
-    (void)NetworkClose(_deviseFd);
+    (void) _client->EvalCmd(cmd);
+    delete _client;
     exit(1);
-}
-
-static void ControlCmd(int argc, char **argv)
-{
-    if (argc == 1 && !strcmp(argv[0], "SyncDone")) {
-#ifdef DEBUG
-        printf("Server synchronized.\n");
-#endif
-        _syncDone = 1;
-        return;
-    }
-    
-    char *cmd = NetworkPaste(argc, argv);
-    DOASSERT(cmd, "Out of memory");
-#ifdef DEBUG
-    printf("Executing control command: \"%s\"\n", cmd);
-#endif
-    (void)Tcl_Eval(_interp, cmd);
-    delete cmd;
 }
 
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
@@ -149,35 +145,7 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
     // do not send the DEVise command verb
-    if (NetworkSend(_deviseFd, API_CMD, 0, argc - 1, &argv[1]) < 0) {
-        fprintf(stderr, "Server has terminated. Client exits.\n");
-        exit(1);
-    }
-    
-    u_short flag;
-    int rargc;
-    char **rargv;
-    do {
-        if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
-            fprintf(stderr, "Server has terminated. Client exits.\n");
-            exit(1);
-        }
-        if (flag == API_CTL)
-            ControlCmd(rargc, rargv);
-    } while (flag != API_ACK && flag != API_NAK);
-    
-    char *result = NetworkPaste(rargc, rargv);
-    DOASSERT(result, "Out of memory");
-#ifdef DEBUG
-    printf("Received reply: \"%s\"\n", result);
-#endif
-    Tcl_SetResult(_interp, result, TCL_VOLATILE);
-    delete result;
-    
-    if (flag == API_NAK)
-        return TCL_ERROR;
-    
-    return TCL_OK;
+    return _client->ServerCmd(argc - 1, &argv[1]);
 }
 
 int SetGetImage(ClientData clientData, Tcl_Interp *interp,
@@ -219,7 +187,8 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
 #endif
 
    char *mArgv[3] = { "getDisplayImage", "0", argv[1] };
-   if (NetworkSend(_deviseFd, API_CMD, 0, 3, mArgv) < 0) {
+   // Note: this bypasses the client/server library.  RKW Jan. 6, 1998.
+   if (NetworkSend(_client->ServerFd(), API_CMD, 0, 3, mArgv) < 0) {
        fprintf(stderr, "Server has terminated. Client exits.\n");
        close(_dataFd);
        exit(1);
@@ -253,18 +222,23 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
    else if(!strcmp(argv[2],"stdout"))
        file = 1; 
    else
-       file = open(argv[2], O_WRONLY);
+       file = open(argv[2], O_WRONLY | O_CREAT, 0644);
 
-   char buf[BUF_SIZE];
+   if (file < 0) {
+     perror("Can't open image file");
+   } else {
+     char buf[BUF_SIZE];
 
-   do {
-      result = read(_dataNewFd, buf, BUF_SIZE);
+     do {
+        result = read(_dataNewFd, buf, BUF_SIZE);
 #ifdef DEBUG
-      printf("Client got data %s\n", buf);
+        printf("Client got data %s\n", buf);
 #endif
-      if (result > 0) write(file, buf, result);
-   } while (result > 0);
+        if (result > 0) write(file, buf, result);
+     } while (result > 0);
 
+     close(file);
+   }
    close(_dataNewFd);
 
    if (result < 0) {
@@ -279,12 +253,13 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
    int rargc;
    char **rargv;
    do {
-     if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
+     // Note: this bypasses the client/server library.  RKW Jan. 6, 1998.
+     if (NetworkReceive(_client->ServerFd(), 1, flag, rargc, rargv) <= 0) {
          fprintf(stderr, "Server has terminated. Client exits.\n");
          exit(1);
      }
      if (flag == API_CTL)
-         ControlCmd(rargc, rargv);
+         _client->ControlCmd(rargc, rargv);
    } while (flag != API_ACK && flag != API_NAK);
     
    char *res = NetworkPaste(rargc, rargv);
@@ -292,35 +267,23 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
 #ifdef DEBUG
    printf("Received reply: \"%s\"\n", res);
 #endif
-   Tcl_SetResult(_interp, res, TCL_VOLATILE);
+   Tcl_SetResult(_client->Interp(), res, TCL_VOLATILE);
    delete res;
     
    if (flag == API_NAK)
      return TCL_ERROR;
    
    return TCL_OK;
-}    
+}
 
-void ReadServer(ClientData cd, int mask)
+void
+ReadServer(ClientData cd, int mask)
 {
 #ifdef DEBUG
     printf("Receiving command from server\n");
 #endif
     
-    u_short flag;
-    int argc;
-    char **argv;
-    if (NetworkReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
-        fprintf(stderr, "Server has terminated. Client exits.\n");
-        exit(1);
-    }
-    
-    if (flag != API_CTL) {
-        fprintf(stderr, "Ignoring unexpected message type: %u\n", flag);
-        return;
-    }
-
-    ControlCmd(argc, argv);
+  _client->ReadServer();
 }
 
 void SetupConnection()
@@ -330,35 +293,13 @@ void SetupConnection()
       printf("\n");
     }
 
-    _interp = Tcl_CreateInterp();
-    if (Tcl_Init(_interp) == TCL_ERROR) {
-        fprintf(stderr, "Cannot initialize Tcl.\n");
-        exit(1);
-    }
+    _client = new DeviseClient("DEVise", _hostName, _portNum, !_idleScript);
 
-    if (!_idleScript) {
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
-        _mainWindow = Tk_CreateMainWindow(_interp, NULL, "DEVise", "DEVise");
-        if (!_mainWindow) {
-            fprintf(stderr, "%s\n", _interp->result);
-            exit(1);
-        }
-        Tk_MoveWindow(_mainWindow, 0, 0);
-        Tk_GeometryRequest(_mainWindow, 100, 200);
-#endif
-        if (Tk_Init(_interp) == TCL_ERROR) {
-            fprintf(stderr, "Cannot initialize Tk.\n");
-            exit(1);
-        }
-#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION > 0
-        _mainWindow = Tk_MainWindow(_interp);
-#endif
-    }
-    
-    Tcl_LinkVar(_interp, "argv0", (char *)&_progName, TCL_LINK_STRING);
-    Tcl_LinkVar(_interp, "quiet", (char *)&_quiet, TCL_LINK_INT);
-    Tcl_CreateCommand(_interp, "DEVise", DEViseCmd, 0, 0);
-    Tcl_CreateCommand(_interp, "DEViseGetImage", SetGetImage, 0, 0);
+    Tcl_LinkVar(_client->Interp(), "argv0", (char *)&_progName,
+	TCL_LINK_STRING);
+    Tcl_LinkVar(_client->Interp(), "quiet", (char *)&_quiet, TCL_LINK_INT);
+    Tcl_CreateCommand(_client->Interp(), "DEVise", DEViseCmd, 0, 0);
+    Tcl_CreateCommand(_client->Interp(), "DEViseGetImage", SetGetImage, 0, 0);
     
     if(!_quiet) {
 	 printf("Client running.\n");
@@ -367,16 +308,12 @@ void SetupConnection()
     
     if(!_quiet) printf("Connecting to server %s:%d.\n", _hostName, _portNum);
     
-    _deviseFd = NetworkOpen(_hostName, _portNum);
-    if (_deviseFd < 0)
-        exit(1);
-    
     if (!_idleScript) {
 #if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
-        Tk_CreateFileHandler(_deviseFd, TK_READABLE, ReadServer, 0);
+        Tk_CreateFileHandler(_client->ServerFd(), TK_READABLE, ReadServer, 0);
 #else
-        Tcl_CreateFileHandler(Tcl_GetFile((void *)_deviseFd, TCL_UNIX_FD),
-                              TCL_READABLE, ReadServer, 0);
+        Tcl_CreateFileHandler(Tcl_GetFile((void *)_client->ServerFd(),
+	    TCL_UNIX_FD), TCL_READABLE, ReadServer, 0);
 #endif
     }
     
@@ -385,7 +322,7 @@ void SetupConnection()
     char *controlFile = "control.tk";
     if (_idleScript) {
         controlFile = "batch.tcl";
-        (void)Tcl_Eval(_interp, "DEVise setBatchMode 1");
+        (void) _client->EvalCmd("DEVise setBatchMode 1");
     }
     
     char *envPath = getenv("DEVISE_LIB");
@@ -394,29 +331,30 @@ void SetupConnection()
     if (envPath) {
         sprintf(buf, "%s/%s", envPath, controlFile);
         control = buf;
-    } else
+    } else {
         control = controlFile;
+    }
     
     if(!_quiet) printf("Control panel file is: %s\n", control);
     
-    int code = Tcl_EvalFile(_interp, control);
+    int code = Tcl_EvalFile(_client->Interp(), control);
     if (code != TCL_OK) {
         fprintf(stderr, "Cannot start up control panel.\n");
-        fprintf(stderr, "%s\n", _interp->result);
+        fprintf(stderr, "%s\n", _client->Interp()->result);
         exit(1);
     }
     
     if (_restoreFile) {
         if(!_quiet) printf("Restoring session file %s\n", _restoreFile);
-        Tcl_SetVar(_interp, "restoring", "1", 0);
-        Tcl_SetVar(_interp, "file", _restoreFile, 0);
-        int code = Tcl_EvalFile(_interp, _restoreFile);
-        Tcl_SetVar(_interp, "restoring", "0", 0);
+        Tcl_SetVar(_client->Interp(), "restoring", "1", 0);
+        Tcl_SetVar(_client->Interp(), "file", _restoreFile, 0);
+        int code = Tcl_EvalFile(_client->Interp(), _restoreFile);
+        Tcl_SetVar(_client->Interp(), "restoring", "0", 0);
         if (code != TCL_OK) {
             fprintf(stderr, "Cannot restore session file %s\n", _restoreFile);
-            fprintf(stderr, "%s\n", _interp->result);
+            fprintf(stderr, "%s\n", _client->Interp()->result);
         } else {
-            Tcl_SetVar(_interp, "sessionName", _restoreFile, 0);
+            Tcl_SetVar(_client->Interp(), "sessionName", _restoreFile, 0);
         }
     }
 }
@@ -470,43 +408,34 @@ int main(int argc, char **argv)
 
     if (_idleScript) {
         if (!_quiet) printf("Waiting for server synchronization.\n");
-        _syncDone = 0;
-        (void)Tcl_Eval(_interp, "DEVise sync");
-        while(!_syncDone) {
-            u_short flag;
-            int argc;
-            char **argv;
-            if (NetworkReceive(_deviseFd, 1, flag, argc, argv) <= 0) {
-                fprintf(stderr, "Server has terminated. Client exits.\n");
-                exit(1);
-            }
-            if (flag == API_CTL)
-                ControlCmd(argc, argv);
+        (void) _client->EvalCmd("DEVise sync");
+        while(!_client->SyncDone()) {
+	    _client->ReadServer();
         }
         if (!_quiet) printf("Executing script file %s\n", _idleScript);
-        int code = Tcl_EvalFile(_interp, _idleScript);
+        int code = Tcl_EvalFile(_client->Interp(), _idleScript);
         if (code != TCL_OK) {
             fprintf(stderr, "Cannot execute script file %s\n", _idleScript);
-            fprintf(stderr, "%s\n", _interp->result);
-            (void)NetworkClose(_deviseFd);
+            fprintf(stderr, "%s\n", _client->Interp()->result);
+	    delete _client;
+	    _client = NULL;
             return 2;
         }
     } else {
-        Tk_MainLoop();
-#ifdef DEBUG
-        printf("Returned from Tk loop\n");
-#endif
+	_client->MainLoop();
     }
     
     if (!_idleScript) {
 #if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
-        Tk_DeleteFileHandler(_deviseFd);
+        Tk_DeleteFileHandler(_client->ServerFd());
 #else
-        Tcl_DeleteFileHandler(Tcl_GetFile((void *)_deviseFd, TCL_UNIX_FD));
+        Tcl_DeleteFileHandler(Tcl_GetFile((void *)_client->ServerFd(),
+	    TCL_UNIX_FD));
 #endif
     }
 
-    (void)NetworkClose(_deviseFd);
+    delete _client;
+    _client = NULL;
     
     return 1;
 }

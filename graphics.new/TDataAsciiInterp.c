@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.34.2.1  1997/12/29 21:23:22  wenger
+  A given TDataAscii no longer reports more than 10 decode errors.
+
+  Revision 1.34  1997/09/23 20:05:26  wenger
+  Re-enabled parsing error messages.
+
   Revision 1.33  1997/07/15 14:29:58  wenger
   Moved hashing of strings from TData*Interp classes to MappingInterp
   class; cleaned up a few extra includes of StringStorage.h.
@@ -381,6 +387,8 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, char *type,
   }
   _attrList.DoneIterator();
 
+  _decodeErrCount = 0;
+
   Initialize();
 }
 
@@ -471,6 +479,14 @@ Boolean TDataAsciiInterp::ReadIndex(int fd)
   return true;
 }
 
+#define MAX_ERRS_REPORTED 10
+
+#define MaxErrWarn(errCount, name) \
+  if ((errCount) == MAX_ERRS_REPORTED) printf("\nMaximum number of " \
+    "Decode error reports has been reached --\n" \
+    "subsequent Decode errors for this TData (%s)\n" \
+    "will not be reported.\n", (name));
+
 Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 {
   /* set buffer for interpreted record */
@@ -501,8 +517,11 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
   }
 
   if (isBlank || isComment || isError) {
+    _decodeErrCount++;
+
     /* Print info if there is an error or DEBUG is defined. */
     Boolean doPrint = isError;
+    if (_decodeErrCount > MAX_ERRS_REPORTED) doPrint = false;
 #ifdef DEBUG
     doPrint = true;
 #endif
@@ -511,6 +530,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
       printf("Too few arguments (%d < %d) or commented line\n",
 	     numArgs, _numPhysAttrs);
       PrintRec(numArgs, args);
+      MaxErrWarn(_decodeErrCount, GetName());
     }
     return false;
   }
@@ -520,21 +540,25 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
     AttrInfo *info = _attrList.Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
       if (!isdigit(args[i][0]) && args[i][0] != '-' && args[i][0] != '+') {
-//#ifdef DEBUG
-	printf("Invalid integer/date value: <%s>\n", args[i]);
-	printf("  Record parsed as: ");
-        PrintRec(numArgs, args);
-//#endif
+        _decodeErrCount++;
+        if (_decodeErrCount <= MAX_ERRS_REPORTED) {
+	  printf("Invalid integer/date value: <%s>\n", args[i]);
+	  printf("  Record parsed as: ");
+          PrintRec(numArgs, args);
+          MaxErrWarn(_decodeErrCount, GetName());
+        }
 	return false;
       }
     } else if (info->type == FloatAttr || info->type == DoubleAttr) {
       if (!isdigit(args[i][0]) && args[i][0] != '.'
 	  && args[i][0] != '-' && args[i][0] != '+') {
-//#ifdef DEBUG
-	printf("Invalid float/double value: <%s>\n", args[i]);
-	printf("  Record parsed as: ");
-        PrintRec(numArgs, args);
-//#endif
+        _decodeErrCount++;
+        if (_decodeErrCount <= MAX_ERRS_REPORTED) {
+	  printf("Invalid float/double value: <%s>\n", args[i]);
+	  printf("  Record parsed as: ");
+          PrintRec(numArgs, args);
+          MaxErrWarn(_decodeErrCount, GetName());
+        }
 	return false;
       }
     }
@@ -566,12 +590,16 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 
     case StringAttr:
       if ((int) strlen(args[i]) > info->length - 1) {
-	reportErrNosys("String is too long for available space"
-	  " (truncated to fit)");
-	printf("  String: <%s>\n", args[i]);
-	printf("  Length: %d (includes terminating NULL)\n", info->length);
-	printf("  Record:");
-        PrintRec(numArgs, args);
+        _decodeErrCount++;
+        if (_decodeErrCount <= MAX_ERRS_REPORTED) {
+	  reportErrNosys("String is too long for available space"
+	    " (truncated to fit)");
+	  printf("  String: <%s>\n", args[i]);
+	  printf("  Length: %d (includes terminating NULL)\n", info->length);
+	  printf("  Record:");
+          PrintRec(numArgs, args);
+          MaxErrWarn(_decodeErrCount, GetName());
+        }
       }
       strncpy(ptr, args[i], info->length);
       ptr[info->length - 1] = '\0';

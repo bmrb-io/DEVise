@@ -17,12 +17,29 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1997/12/11 04:47:47  beyer
+#  .o files that are placed into libraries (.a) are now removed.
+#
 #  Revision 1.10  1997/12/08 18:17:57  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_4 tag
 #  into the trunk (split of libcs into libdevcs and libdevwin).
 #
 #  Revision 1.9  1997/11/24 23:13:58  weaver
 #  Changes for the new ColorManager.
+#
+#  Revision 1.8.6.4  1998/01/07 15:58:57  wenger
+#  Removed replica cababilities (since this will be replaced by collaboration
+#  library); integrated cslib into DEVise server; commented out references to
+#  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+#  to be registered and unregistered for different file descriptors (needed
+#  for multiple clients); added command line argument to specify port that
+#  server listens on.
+#
+#  Revision 1.8.6.3  1997/12/09 19:03:22  wenger
+#  deviseb now uses client/server library.
+#
+#  Revision 1.8.6.2  1997/12/09 16:03:55  wenger
+#  Devise client now uses client/server library.
 #
 #  Revision 1.8.6.1  1997/12/06 17:42:59  wenger
 #  Split libcs.a into libdevcs.a and libdevwin.a in preparation for
@@ -73,13 +90,14 @@ include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -I../../cslib -I../../src/color -I../../src/utils \
+	-I/s/mesa-2.4/include \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS
 
-TESTSRC = client.C server.C
+TESTSRC = client.C server.C TestClient.C
 TESTOBJ = $(TESTSRC:.C=.o)
 
-LOCALCSSRC = ClientServer.C WinServer.C
+LOCALCSSRC = Client.C TclClient.C TkClient.C Server.C WinServer.C
 
 CSSRCC = $(filter %.C,$(LOCALCSSRC))
 
@@ -124,20 +142,21 @@ LIBWINOBJ = \
 LIBCS = libdevcs.a
 LIBWIN = libdevwin.a
 
-all: client server
-
-lib: $(LIBCS) $(LIBWIN)
+#Temporarily only making client/server library because the window lib
+#doesn't link correctly with the example server.  RKW Jan. 7, 1998.
+lib: $(LIBCS)
+all: client server TestClient
 
 pure: client.pure server.pure
 
 CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) client.o -L. -ldevcs $(ARCH_SYSLIBS)
-SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) server.o -L. -ldevcs -ldevwin \
+SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) server.o -L. -ldevwin -ldevcs \
 	 $(ARCH_SYSLIBS)
 
-client: client.o $(LIBCS) $(LIBWIN)
+client: client.o $(LIBCS)
 	$(CLIENT) $(ARCH_LDPOST)
 
-client.pure: client.o $(LIBCS) $(LIBWIN)
+client.pure: client.o $(LIBCS)
 	$(PURIFY) $(PURE_OPT) $(CLIENT) $(ARCH_LDPOST)
 
 server: server.o $(LIBCS) $(LIBWIN)
@@ -146,9 +165,17 @@ server: server.o $(LIBCS) $(LIBWIN)
 server.pure: server.o $(LIBCS) $(LIBWIN)
 	$(PURIFY) $(PURE_OPT) $(SERVER) $(ARCH_LDPOST)
 
-$(LIBCS): $(LIBCS)($(LIBCSOBJ))
+TestClient: TestClient.o $(LIBCS)
+	$(CC) -o $@ $(ARCH_LDFLAGS) TestClient.o -L. -ldevcs $(ARCH_SYSLIBS) \
+	$(ARCH_LDPOST)
 
-$(LIBWIN): $(LIBWIN)($(LIBWINOBJ))
+$(LIBCS): $(LIBCSOBJ)
+	$(AR) cr $@ $(LIBCSOBJ)
+	$(RANLIB) $@
+
+$(LIBWIN): $(LIBWINOBJ)
+	$(AR) cr $@ $(LIBWINOBJ)
+	$(RANLIB) $@
 
 Exit.o: ../../graphics/Exit.c
 	$(CC) -c $(CFLAGS) ../../graphics/Exit.c
@@ -180,7 +207,7 @@ DualWindowRep.o: ../../graphics/DualWindowRep.c
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm -f client client.pure server server.pure
+	-rm -f client client.pure server server.pure TestClient
 
 mostlyclean:
-	-rm -f $(TESTOBJ) $(LOCALOBJ) $(LIBCS) $(LIBWIN)
+	-rm -f $(TESTOBJ) $(LOCALCSOBJ) $(LOCALWINOBJ) $(LIBCS) $(LIBWIN)

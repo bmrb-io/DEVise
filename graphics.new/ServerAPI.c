@@ -16,12 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/12/11 04:25:44  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
   Revision 1.31  1997/12/01 21:21:36  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
   into the trunk.
 
   Revision 1.30  1997/11/19 17:02:11  wenger
   Fixed error in OpenDataChannel().
+
+  Revision 1.29.12.2  1998/01/07 16:00:18  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
 
   Revision 1.29.12.1  1997/11/14 17:31:19  wenger
   More error messages for sending images to socket.
@@ -190,6 +202,10 @@ ControlPanel *GetNewControl()
 
 ServerAPI::ServerAPI()
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::ServerAPI()\n", this);
+#endif
+
   Version::PrintInfo();
 
   ControlPanel::_controlPanel = (ControlPanel *)this;
@@ -198,136 +214,49 @@ ServerAPI::ServerAPI()
   View::InsertViewCallback(this);
 	
   _busy = false;
-  _listenFd = _socketFd = _dataFd = -1;
-
-  _replicate = 0;
-  clientAddr.sin_family = clientAddr.sin_port = clientAddr.sin_addr.s_addr = 0;
-
-  // see if any replicas are defined
-  FILE *fp = fopen("devise.rep", "r");
-  if (fp) {
-    char hostName[64];
-    int port;
-    while(fscanf(fp, "%s%d", hostName, &port) == 2)
-      (void)AddReplica(hostName, port);
-    fclose(fp);
-  }
+  _dataFd = -1;
 
   if (!Init::UseSharedMem()) {
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
   }
 
-  RestartSession();
+  _server = new DeviseServer("DEVise",
+#ifdef SERV_ANYPORT
+    0,
+#else
+    Init::Port(),
+#endif
+    this);
+}
+
+ServerAPI::~ServerAPI()
+{
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::~ServerAPI()\n", this);
+#endif
+
+  DestroySessionData();
+  delete _server;
 }
 
 void ServerAPI::DoAbort(char *reason)
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::DoAbort()\n", this);
+#endif
+
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
   char *args[] = { "AbortProgram", reason };
   SendControl(2, args);
   fprintf(stderr, "Server aborts.\n");
+  delete _server;
   exit(0);
-}
-
-int ServerAPI::AddReplica(char *hostName, int port)
-{
-  if (_replicate >= _maxReplicas) {
-    fprintf(stderr, "Replica limit exceeded. Cannot add %s:%d.\n",
-	    hostName, port);
-    return -1;
-  }
-  
-  int i;
-  for(i = 0; i < _replicate; i++) {
-    if (!strcmp(_replicas[i].host, hostName) && 
-	_replicas[i].port == port)
-      break;
-  }
-
-  if (i < _replicate) {
-    fprintf(stderr, "Replica already defined.\n");
-    return -1;
-  }
-
-  int fd = NetworkOpen(hostName, port);
-  if (fd < 0) {
-    fprintf(stderr, "Cannot connect to replica server %s:%d.\n",
-	    hostName, port);
-    return -1;
-  }
-  
-  _replicas[_replicate].host = CopyString(hostName);
-  _replicas[_replicate].port = port;
-  _replicas[_replicate].fd = fd;
- 
-  _replicate++;
-
-  printf("Added %s:%d as a replica server.\n", hostName, port);
-
-  return 1;
-}
-
-int ServerAPI::RemoveReplica(char *hostName, int port)
-{
-  int i;
-  for(i = 0; i < _replicate; i++) {
-    if (!strcmp(_replicas[i].host, hostName) && 
-	_replicas[i].port == port)
-      break;
-  }
-
-  if (i >= _replicate) {
-    fprintf(stderr, "No such replica server.\n");
-    return -1;
-  }
-
-  NetworkClose(_replicas[i].fd);
-
-  for(int j = i + 1; j < _replicate; j++) {
-    _replicas[j - 1].host = _replicas[j].host;
-    _replicas[j - 1].port = _replicas[j].port;
-    _replicas[j - 1].fd = _replicas[j].fd;
-  }
-
-  _replicate--;
-
-  printf("Removed %s:%d as a replica server.\n", hostName, port);
-
-  return 1;
-}
-
-void ServerAPI::Replicate(int argc, char **argv)
-{
-  if (!_replicate)
-    return;
-
-  if (argc > 0 &&
-      (!strcmp(argv[0], "addReplicaServer")
-       || !strcmp(argv[0], "removeReplicaServer")))
-    return;
-
-#ifdef DEBUG
-  printf("Replicating command to other servers\n");
-#endif
-
-  for(int i = 0; i < _replicate; i++) {
-    if (NetworkSend(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
-      fprintf(stderr,
-	      "Failed to replicate command to %s:%d. Disconnecting.\n",
-	      _replicas[i].host, _replicas[i].port);
-      RemoveReplica(_replicas[i].host, _replicas[i].port);
-    }
-  }
-
-#ifdef DEBUG
-  printf("Done replicating command\n");
-#endif
 }
 
 void ServerAPI::DestroySessionData()
 {
-#ifdef DEBUG
-  printf("Destroying session data\n");
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::DestroySessionData()\n", this);
 #endif
 
   ClassDir *classDir = GetClassDir();
@@ -351,201 +280,48 @@ void ServerAPI::DestroySessionData()
   ControlPanel::DestroySessionData();
 }
 
-void ServerAPI::Run()
-{
-#ifdef DEBUG
-  printf("In ServerAPI::Run\n");
-#endif
-
-  DOASSERT(_socketFd >= 0 && _listenFd < 0, "Invalid sockets");
-
-  int result = ReadCommand();
-  if (!result)
-    return;
-  if (result < 0) {
-    fprintf(stderr,
-	    "Cannot communicate with client. Closing connection.\n");
-    RestartSession();
-  }
-}
-
-int ServerAPI::ReadCommand()
-{
-  DOASSERT(_socketFd >= 0, "Invalid socket");
-
-  u_short flag;
-  int argc;
-  char **argv;
-  int result = NetworkReceive(_socketFd, 1, flag, argc, argv);
-#ifdef DEBUG
-  printf("ServerAPI::ReadCommand: result %d, errno %d, argc %d command %s \n",
-         result, errno, argc,argv[0]);
-  printf("Command: command %s \n", argv[0]);
-  for(int i = 0;i<argc;i++)
-		printf("Arg %d - %s \n",i,argv[i]);
-	printf("--- \n");
-#endif
-
-  if (result < 0) {
-    perror("recv");
-    return -1;
-  }
-
-  if (!result) {
-#ifdef DEBUG
-    printf("End of client data.\n");
-#endif
-    return -1;
-  }
-
-  if (flag != API_CMD) {
-    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
-    goto error;
-  }
-
-  // a command must first be replicated before executing it locally
-  // because the local execution may result in further API_CTL type
-  // commands being sent to the replicas before ParseAPI completes
-
-  // for example, a "create view" command causes a "setFilter" control
-  // command to be sent to the replicas, and we want the replicas to
-  // have already executed the "create view" command before the
-  // "setFilter" command is sent
-
-  Replicate(argc, argv);
-
-#ifdef DEBUG
-  printf("Executing command\n");
-#endif
-
-  if (ParseAPI(argc, argv, this) < 0)
-    fprintf(stderr, "Devise API command error\n");
-
-#ifdef DEBUG
-  printf("Done executing command\n");
-#endif
-
-  return 1;
-
- error:
-  return -1;
-}
-
 void ServerAPI::RestartSession()
 {
-    if (_socketFd >= 0) {
-	printf("Closing client connection.\n");
-	Dispatcher::Current()->Unregister(this);
-	NetworkClose(_socketFd);
-	_socketFd = -1;
-    }
-    
-    DestroySessionData();
-    
-    for(int i = 0; i < _replicate; i++) {
-	printf("Closing replica connection to %s:%d\n", _replicas[i].host,
-	       _replicas[i].port);
-	NetworkClose(_replicas[i].fd);
-    }
-    _replicate = 0;
-    
-    DOASSERT(_listenFd < 0, "Invalid socket");
-    _listenFd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_listenFd < 0)
-	perror("socket");
-    DOASSERT(_listenFd >= 0, "Cannot create socket");
-    
-    // allow listening port number to be reused
-    int enable = 1;
-    int result = setsockopt(_listenFd, SOL_SOCKET, SO_REUSEADDR,
-			    (char *)&enable, sizeof enable);
-    if (result < 0)
-	perror("setsockopt");
-    DOASSERT(result >= 0, "Cannot set socket options");
-    
-    // Now bind these to the address..
-    
-    struct sockaddr_in servAddr;
-    memset(&servAddr, 0, sizeof servAddr);
-    servAddr.sin_family = AF_INET;
-#ifdef SERV_ANYPORT
-    servAddr.sin_port = htons(0);
-#else
-    servAddr.sin_port = htons(DefaultNetworkPort);
-#ifdef DEBUG
-    printf("Server listening at port %u.\n", DefaultNetworkPort);
-#endif
-#endif
-    servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    
-    result = bind(_listenFd, (struct sockaddr *)&servAddr,
-		  sizeof(struct sockaddr));
-    if (result < 0)
-	perror("bind");
-    DOASSERT(result >= 0, "Cannot bind to address");
-
-    int len;
-    
-#ifdef SERV_ANYPORT	
-    struct sockaddr_in tempAddr;
-    memset(&tempAddr, 0, sizeof(struct sockaddr));
-    len = sizeof(struct sockaddr);
-    
-    result = getsockname(_listenFd, (sockaddr *)&tempAddr, &len);
-    if (result < 0)
-	perror("getsockname");
-    DOASSERT(result >= 0, "Cannot get sockname");
-    printf("Server listening at port %u.\n", ntohs(tempAddr.sin_port));
-#endif	
-    
-    result = listen(_listenFd, 5);
-    if (result < 0)
-	perror("listen");
-    DOASSERT(result >= 0, "Cannot listen");
-    
-    printf("\n");
-    printf("DEVise server waiting for client connection on port %d.\n",
-	   ntohs(servAddr.sin_port));
-    
-    len = sizeof(clientAddr);
-    
-    do {
-	// hack: jpm 12/12/96
-	// if we're waiting for a client connection and the server
-	// receives an interrupt from the user (Control-C), we don't
-	// really know about it here because it's handled in the
-	// Dispatcher. The handler just sets a flag which is later inspected
-	// in the Run1() routine. Since we're not going to call Run1() anytime
-	// soon, let's have the flag inspected here just in case.
-	Dispatcher::CheckUserInterrupt();
-	_socketFd = accept(_listenFd, (struct sockaddr *)&clientAddr, &len);
-    } while (_socketFd < 0 && errno == EINTR);
-    
-    if (_socketFd < 0) {
-	perror("accept");
-	DOASSERT(0, "Error in network interface");
-    }
-    
-    close(_listenFd);
-    _listenFd = -1;
-    
-    printf("Client connection established.\n");
-    
-    Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
+  // Note: we don't want to destroy the session data here, because there
+  // may be another client connected.  The DeviseServer class will
+  // destroy the session data when the last client disconnects.
+  // RKW Jan. 7, 1998.
 }
 
-void ServerAPI::OpenDataChannel(int port){
+void ServerAPI::OpenDataChannel(int port)
+{
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::OpenDataChannel(%d)\n", this, port);
+#endif
+
   _dataFd = socket(AF_INET, SOCK_STREAM, 0);
   if (_dataFd < 0) {
       reportErrSys("Cannot create socket in OpenDataChannel");
       return;
   }
+
+  sockaddr_in clientAddr;
+  clientAddr.sin_family = clientAddr.sin_port = clientAddr.sin_addr.s_addr = 0;
   
-  if (port == 0) clientAddr.sin_port = htons(DefaultDataPort); 
-  else clientAddr.sin_port = htons(port);
+  if (port == 0) {
+    clientAddr.sin_port = htons(DefaultDataPort); 
+  } else {
+    clientAddr.sin_port = htons(port);
+  }
   clientAddr.sin_family = AF_INET;
 
   int ind;
+
+  // Get address of the current client.
+  struct sockaddr_in tmpaddr;
+  int addrlen = sizeof(tmpaddr);
+  if (getpeername(_server->CurrentClientFd(), (struct sockaddr *) &tmpaddr,
+      &addrlen) < 0) {
+    reportErrSys("Error in getpeername()");
+  } else {
+    clientAddr.sin_addr.s_addr = tmpaddr.sin_addr.s_addr;
+  }
+
   if(clientAddr.sin_addr.s_addr > 0) {
       ind = connect(_dataFd, (struct sockaddr *)&clientAddr,
 			 sizeof(struct sockaddr));
@@ -559,12 +335,16 @@ void ServerAPI::OpenDataChannel(int port){
       printf("Data channel established\n");
 #endif
   } else {
-      printf("Must establish the initial connection first.");
+      printf("Must establish the initial connection first.\n");
   }
 }
 
 void ServerAPI::SetBusy()
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::SetBusy()\n", this);
+#endif
+
   if (++_busy == 1) {
     char *args[] = { "ChangeStatus", "1" };
     SendControl(2, args);
@@ -573,6 +353,10 @@ void ServerAPI::SetBusy()
 
 void ServerAPI::SetIdle()
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::SetIdle()\n", this);
+#endif
+
   DOASSERT(_busy > 0, "Control panel unexpectedly busy");
 
   if (--_busy == 0) {
@@ -589,6 +373,10 @@ Boolean ServerAPI::IsBusy()
 void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
 				   int flushed)
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::FilterChanged(%s)\n", this, view->GetName());
+#endif
+
   char xLowBuf[80], yLowBuf[80], xHighBuf[80], yHighBuf[80];
   if (view->GetXAxisAttrType() == DateAttr) {
     sprintf(xLowBuf, "%s", DateString(filter.xLow));
@@ -613,17 +401,24 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
 
   char *rep[] = { "setFilter", view->GetName(), xLowBuf,
 		  yLowBuf, xHighBuf, yHighBuf };
-  Replicate(6, rep);
 }
 
 void ServerAPI::SelectView(View *view)
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::SelectView(%s)\n", this, view->GetName());
+#endif
+
   char *args[] = { "ProcessViewSelected", view->GetName() };
   SendControl(2, args);
 }
 
 void ServerAPI::SyncNotify()
 {
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::SyncNotify()\n", this);
+#endif
+
   SendControl(API_CTL, "SyncDone");
   ClearSyncNotify();
 }

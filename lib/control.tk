@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.149  1997/12/19 00:06:11  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.148  1997/12/05 16:51:46  wenger
 #	Removed some unused Tcl code; removed 'Remove' selection from window
 #	menu (duplicated 'Destroy'); removed Layout Manager menu selection.
@@ -32,6 +35,18 @@
 #
 #	Revision 1.144  1997/11/05 00:23:56  donjerko
 #	Added some error checking for DTE calls.
+#
+#	Revision 1.143.2.2  1998/01/07 16:00:49  wenger
+#	Removed replica cababilities (since this will be replaced by collaboration
+#	library); integrated cslib into DEVise server; commented out references to
+#	Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+#	to be registered and unregistered for different file descriptors (needed
+#	for multiple clients); added command line argument to specify port that
+#	server listens on.
+#
+#	Revision 1.143.2.1  1997/12/23 21:43:21  wenger
+#	Disabled layout manager GUI and removed (old) layout manager code
+#	from DEVise link.
 #
 #	Revision 1.143  1997/10/03 16:01:45  wenger
 #	Enabled session opening and saving from back end; incremented version; a
@@ -688,18 +703,18 @@ if { [info exists env(DEVISE_TMP)] } {
 }
 
 #####ENV variables for LM
-set libdirLM "."
-if { [info exists env(LM_LIB)] } {
-    set libdirLM $env(LM_LIB)
-}
-set datdirLM "."
-if { [info exists env(LM_DAT)] } {
-    set datdirLM $env(LM_DAT)
-}
-set tmpdirLM "."
-if { [info exist env(LM_TMP)] } {
-    set tmpdirLM $env(LM_TMP) 
-}
+#set libdirLM "."
+#if { [info exists env(LM_LIB)] } {
+#    set libdirLM $env(LM_LIB)
+#}
+#set datdirLM "."
+#if { [info exists env(LM_DAT)] } {
+#    set datdirLM $env(LM_DAT)
+#}
+#set tmpdirLM "."
+#if { [info exist env(LM_TMP)] } {
+#    set tmpdirLM $env(LM_TMP) 
+#}
 
 set filterdir $schemadir/query
 
@@ -745,8 +760,8 @@ source $libdir/layout.tk
 source $libdir/lens.tcl
 source $libdir/lensgui.tk
 source $libdir/win_print_config.tcl
-source $libdirLM/DEViseLMComm.tk
-source $libdirLM/DEViseIfc.tk
+#source $libdirLM/DEViseLMComm.tk
+#source $libdirLM/DEViseIfc.tk
 source $libdir/view_config.tcl
 source $libdir/cursor_grid.tcl
 source $libdir/GDataSock.tcl
@@ -866,10 +881,10 @@ menu .mbar.session.menu -tearoff 0
 #TEMP	-command {ViewDescription}
 # ... >>>
 
-.mbar.session.menu add separator
-.mbar.session.menu add command -label "Add Replica" -command { AddReplica }
-.mbar.session.menu add command -label "Remove Replica" \
-	-command { NotImplemented }
+# For testing only...
+#.mbar.session.menu add command -label "DEViseGetImage" \
+#	-command {DEViseGetImage gif /tmp/devise.gif}
+
 .mbar.session.menu add separator
 
 .mbar.session.menu add cascade -label "Print" \
@@ -1372,6 +1387,7 @@ menu .mbar.window.menu -tearoff 0
 #	{ SendCommandToLM "LM printWindow Display" }
 #.mbar.window.menu add command -label "Layout Manager" -command \
 #	{ LayoutManager } 
+=======
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
 
@@ -1999,54 +2015,6 @@ proc GetTDataTemplate {type total num} {
 
 ############################################################
 
-proc AddReplica {} {
-    global replicaHost replicaPort
-
-    if {[WindowVisible .replica]} {
-	return
-    }
-
-    toplevel .replica
-    wm title .replica "Add Replica Server"
-    wm geometry .replica +50+50
-
-    frame .replica.top
-    frame .replica.bot
-    pack .replica.top -side top -pady 3m -fill both -expand 1
-    pack .replica.bot -side top -pady 5m -fill x
-
-    frame .replica.bot.but
-    pack .replica.bot.but -side top
-
-    label .replica.top.l1 -text "Hostname:"
-    entry .replica.top.e1 -relief sunken -width 10 -textvariable replicaHost
-    label .replica.top.l2 -text "Port:"
-    entry .replica.top.e2 -relief sunken -width 6 -textvariable replicaPort
-    pack .replica.top.l1 .replica.top.e1 .replica.top.l2 .replica.top.e2 \
-	 -side left -padx 3m -fill x -expand 1
-
-    set replicaHost ""
-    set replicaPort 6100
-
-    button .replica.bot.but.ok -text OK -width 10 -command {
-	if {$replicaHost == "" || $replicaPort == ""} {
-	    dialog .missingParms "Missing Parameters" \
-	    "Please specify replica server name and port." \
-	    "" 0 OK
-	    return
-	}
-	DEVise addReplicaServer $replicaHost $replicaPort
-	destroy .replica
-    }
-    button .replica.bot.but.cancel -text Cancel -width 10 -command {
-	destroy .replica
-    }
-    pack .replica.bot.but.ok .replica.bot.but.cancel \
-	    -side left -padx 3m
-}
-
-############################################################
-
 proc NotImplemented {} {
     dialog .notImplemented "Not Implemented" \
 	    "This feature not implemented yet." \
@@ -2178,14 +2146,14 @@ proc ShowKGraph {} {
     eval $cmd
 }
 
-global layoutManagerUp
-set layoutManagerUp 0
-proc LayoutManager { } {
-    global layoutManagerUp 
-    if { !$layoutManagerUp } {
-	puts "starting LM ......please wait"
-	DEVise startLayoutManager
-	puts "...................................done"
-	set layoutManagerUp 1
-    } 
-}
+#global layoutManagerUp
+#set layoutManagerUp 0
+#proc LayoutManager { } {
+#    global layoutManagerUp 
+#    if { !$layoutManagerUp } {
+#	puts "starting LM ......please wait"
+#	DEVise startLayoutManager
+#	puts "...................................done"
+#	set layoutManagerUp 1
+#    } 
+#}

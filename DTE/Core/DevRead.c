@@ -1,6 +1,45 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1997
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Implementation of DevRead and related classes (used by the DTE to read
+  data via Shaun's UniData classes).
+ */
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.22.2.2  1997/12/29 22:12:13  wenger
+  Got DEVise 1.4.7 to compile, link, and run on SGI.
+
+  Revision 1.22.2.1  1997/12/17 17:29:18  wenger
+  Fixed bugs 235 and 258 (core dump on Tables with long strings -- caused
+  by insufficient buffer size in DTE); added headers to some DTE files
+  and fixed some compile warnings.
+
+ */
+
 #include <strstream.h>
-#include "UniData.h"
 #include "types.h"
+#include "UniData.h"
+
+#if !defined(SGI)
+#undef assert
+#endif
+#include <assert.h>
+
 #include "DevRead.h"
 
 
@@ -83,6 +122,19 @@ Iterator* DevRead::createExec(){
 		ud, unmarshalPtrs, destroyPtrs, tuple, offsets, numFlds);
 	ud = NULL;	// not the owner any more
 	return retVal;
+}
+
+DevReadExec::DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
+	DestroyPtr* destroyPtrs,
+	Tuple* tuple, int* offsets, int numFlds) :
+	ud(ud), unmarshalPtrs(unmarshalPtrs),
+	destroyPtrs(destroyPtrs), tuple(tuple),
+	offsets(offsets), numFlds(numFlds) {
+
+	buffSize = ud->recSze();
+	buff = (char*) new double[(buffSize / sizeof(double)) + 1];
+	buff[buffSize - 1] = '\0';
+	recId = 0;
 }
 
 DevReadExec::~DevReadExec(){

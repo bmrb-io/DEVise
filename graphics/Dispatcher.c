@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.38.4.1  1998/01/07 15:59:22  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
+  Revision 1.38  1997/09/05 22:35:56  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.37  1997/08/28 18:21:39  wenger
   Eliminated unnecessary include dependencies in Dispatcher.h.
 
@@ -327,6 +339,41 @@ void Dispatcher::Unregister(DispatcherCallback *c)
   }
   _callbacks.DoneIterator(index);
   printf("Could not find registrant %s: 0x%p\n", c->DispatchedName(), c);
+  DOASSERT(0, "attempt to unregister unknown callback");
+}
+
+
+// Allow unregistering by DispatcherID so the same object can be registered
+// and unregistered independently with several different file descriptors.
+
+void Dispatcher::Unregister(DispatcherID id)
+{
+#if defined(DEBUG)
+  printf("Dispatcher(0x%p)::Unregister: %s: 0x%p\n",
+	 this, id->callBack->DispatchedName(), id);
+#endif
+
+  int index;
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    DispatcherInfo *info = _callbacks.Next(index);
+#if defined(DEBUG)
+    printf("local: looking for callback 0x%p, found 0x%p\n", 
+	   id, info);
+#endif
+    if (info == id) {
+      info->flag = 0;                   // prevent callback from being called
+					// and mark for deletion
+      CancelCallback(info);		// cancel any user-requested calls
+      if (info->fd >= 0) {
+	FD_CLR(info->fd, &fdset);
+      }
+      _callbacks.DoneIterator(index);
+      return;
+    }
+  }
+  _callbacks.DoneIterator(index);
+  printf("Could not find registrant %s: 0x%p\n",
+      id->callBack->DispatchedName(), id);
   DOASSERT(0, "attempt to unregister unknown callback");
 }
 

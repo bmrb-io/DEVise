@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/12/22 17:54:12  donjerko
+  Initial version of Saeed's sequence similarity search.
+
   Revision 1.40  1997/11/24 06:01:28  donjerko
   Added more odbc files.
 
@@ -576,6 +579,7 @@ public:
 
 	friend ostream& operator<<(ostream& out, const ISeqSimVec& s){
 		s.display(out);
+		return out;
 	}
 
 	void display(ostream& out) const{

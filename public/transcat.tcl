@@ -16,6 +16,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.2.12.1  1997/12/29 21:23:58  wenger
+# Removed (obsolete) 'catentry' line.
+#
+# Revision 1.2  1997/03/28 16:12:10  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -37,8 +44,6 @@ proc addQuotes {s} {
 	append retVal "\""
 	return $retVal
 }
-
-puts "1 catentry entry ;\n"
 
 foreach entry [array names sourceList] {
 	# 0th, 4th, 7th and 8th entries are quoted 

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.19  1997/11/12 15:42:42  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.18.2.1  1997/10/30 20:13:28  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -94,11 +98,9 @@ CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
-CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/strfile.h CatalogComm.h
-CatalogComm.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-CatalogComm.o: ../../graphics/DevStatus.h /usr/include/sys/types.h
-CatalogComm.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-CatalogComm.o: ../Core/types.h /s/gcc-2.7.2/lib/g++-include/string
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/strfile.h /usr/include/stdlib.h
+CatalogComm.o: /usr/include/sys/stdtypes.h CatalogComm.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/string
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
@@ -111,18 +113,31 @@ CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/cassert
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 CatalogComm.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+CatalogComm.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+CatalogComm.o: ../../graphics/DevStatus.h /usr/include/sys/types.h
+CatalogComm.o: /usr/include/sys/sysmacros.h ../Core/types.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/new.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
 CatalogComm.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
-CatalogComm.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h ../Core/url.h
-CatalogComm.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
-CatalogComm.o: ../Core/DevRead.h ../Core/catalog.h
+CatalogComm.o: ../Core/SeqSimVec.h /usr/include/math.h
+CatalogComm.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+CatalogComm.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/vector
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/function.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/limits.h
+CatalogComm.o: ../Core/url.h ../Core/SockStream.h ../Core/listop.h
+CatalogComm.o: ../Core/Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/set.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/projectn.h ../Core/DevRead.h
+CatalogComm.o: ../Core/catalog.h ../Core/Interface.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/string.h CatalogComm.h
-CatalogComm2.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-CatalogComm2.o: ../../graphics/DevStatus.h /usr/include/sys/types.h
-CatalogComm2.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
-CatalogComm2.o: TDataDQLInterp.h ../../graphics/ClassDir.h TDataDQL.h
-CatalogComm2.o: /usr/include/stdio.h /s/gcc-2.7.2/lib/g++-include/string
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/string
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
@@ -136,35 +151,40 @@ CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/cassert
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 CatalogComm2.o: /usr/include/assert.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
-CatalogComm2.o: ../../graphics/Dispatcher.h ../../graphics/DList.h
-CatalogComm2.o: ../../graphics/Exit.h ../../graphics/Journal.h
-CatalogComm2.o: ../../graphics/VisualArg.h ../../graphics/Color.h
+CatalogComm2.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+CatalogComm2.o: ../../graphics/DevStatus.h /usr/include/sys/types.h
+CatalogComm2.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+CatalogComm2.o: TDataDQLInterp.h ../../graphics/ClassDir.h TDataDQL.h
+CatalogComm2.o: /usr/include/stdio.h ../../graphics/Dispatcher.h
+CatalogComm2.o: ../../graphics/DList.h ../../graphics/Exit.h
+CatalogComm2.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
 CatalogComm2.o: ../../graphics/Pattern.h ../Core/queue.h ../Core/types.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/new.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
-CatalogComm2.o: ../Core/Utility.h ../Core/Array.h ../../graphics.new/TData.h
+CatalogComm2.o: ../Core/Utility.h ../Core/Array.h ../Core/SeqSimVec.h
+CatalogComm2.o: /usr/include/math.h /usr/include/floatingpoint.h
+CatalogComm2.o: /usr/include/sys/ieeefp.h ../../graphics.new/TData.h
 CatalogComm2.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
 CatalogComm2.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
 CatalogComm2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 CatalogComm2.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-CatalogComm2.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-CatalogComm2.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-CatalogComm2.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-CatalogComm2.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-CatalogComm2.o: /usr/include/errno.h /usr/include/sys/errno.h
-CatalogComm2.o: /usr/include/limits.h /usr/include/sys/stat.h
-CatalogComm2.o: ../../graphics.new/machdep.h /usr/include/sys/time.h
-CatalogComm2.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-CatalogComm2.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-CatalogComm2.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-CatalogComm2.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-CatalogComm2.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-CatalogComm2.o: /usr/include/netdb.h /usr/include/sys/socket.h
-CatalogComm2.o: /usr/include/netinet/in.h ../../graphics.new/FileIndex.h
-CatalogComm2.o: ../../graphics/AttrList.h ../../graphics/Init.h
-CatalogComm2.o: ../../graphics/BufPolicy.h ../../graphics.new/GroupDir.h
-CatalogComm2.o: ../../graphics.new/ItemList.h ../../graphics.new/Group.h
-CatalogComm2.o: /usr/include/stdlib.h ../../graphics.new/MapInterpClassInfo.h
+CatalogComm2.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+CatalogComm2.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+CatalogComm2.o: /usr/include/machine/mmu.h /usr/include/errno.h
+CatalogComm2.o: /usr/include/sys/errno.h /usr/include/limits.h
+CatalogComm2.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
+CatalogComm2.o: /usr/include/sys/time.h /usr/include/sys/time.h
+CatalogComm2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+CatalogComm2.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+CatalogComm2.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+CatalogComm2.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+CatalogComm2.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+CatalogComm2.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+CatalogComm2.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
+CatalogComm2.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
+CatalogComm2.o: ../../graphics.new/GroupDir.h ../../graphics.new/ItemList.h
+CatalogComm2.o: ../../graphics.new/Group.h /usr/include/stdlib.h
+CatalogComm2.o: ../../graphics.new/MapInterpClassInfo.h
 CatalogComm2.o: ../../graphics/Control.h
 Dql.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 Dql.o: /s/gcc-2.7.2/lib/g++-include/std/string.h /usr/include/unistd.h
@@ -175,21 +195,19 @@ Dql.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 Dql.o: /s/gcc-2.7.2/lib/g++-include/fstream.h /usr/include/ctype.h
 Dql.o: ../../graphics.new/machdep.h /usr/include/limits.h
 Dql.o: /usr/include/sys/param.h /usr/include/machine/param.h
-Dql.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-Dql.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Dql.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Dql.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-Dql.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-Dql.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-Dql.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-Dql.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-Dql.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-Dql.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-Dql.o: /usr/include/netdb.h /usr/include/sys/socket.h
-Dql.o: /usr/include/netinet/in.h ../../graphics/Util.h /usr/include/math.h
-Dql.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-Dql.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-Dql.o: ../../graphics/DevStatus.h ../../graphics/Exit.h
+Dql.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Dql.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Dql.o: /usr/include/sys/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Dql.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Dql.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Dql.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Dql.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Dql.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Dql.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Dql.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Dql.o: ../../graphics/Util.h /usr/include/math.h /usr/include/floatingpoint.h
+Dql.o: /usr/include/sys/ieeefp.h ../../graphics/DeviseTypes.h
+Dql.o: /usr/include/values.h ../../graphics/DevStatus.h ../../graphics/Exit.h
 Dql.o: ../../graphics/Parse.h ../../graphics/Timer.h
 DqlInclude.o: /usr/include/stdio.h /usr/include/stdlib.h
 DqlInclude.o: /usr/include/sys/stdtypes.h
@@ -216,18 +234,39 @@ DqlInclude.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/new.h
 DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
 DqlInclude.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
-DqlInclude.o: ../Core/site.h ../Core/myopt.h ../Core/url.h
-DqlInclude.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
+DqlInclude.o: ../Core/SeqSimVec.h /usr/include/math.h
+DqlInclude.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DqlInclude.o: ../Core/site.h ../Core/myopt.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/vector
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/function.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/limits.h
+DqlInclude.o: ../Core/url.h ../Core/SockStream.h ../Core/listop.h
+DqlInclude.o: ../Core/Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/set.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/projectn.h
 ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
-ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/String.h
-ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
-ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/Regex.h ParseAPIDTE.h
-ParseAPIDTE.o: CatalogComm.h ../../graphics/DeviseTypes.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/string
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/straits.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/cctype.h /usr/include/ctype.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/cassert
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
+ParseAPIDTE.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+ParseAPIDTE.o: ParseAPIDTE.h CatalogComm.h ../../graphics/DeviseTypes.h
 ParseAPIDTE.o: /usr/include/values.h ../../graphics/DevStatus.h
 ParseAPIDTE.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-ParseAPIDTE.o: /usr/include/sys/sysmacros.h
+ParseAPIDTE.o: /usr/include/sys/sysmacros.h ../Core/exception.h
 TDataDQL.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdio.h
@@ -257,35 +296,46 @@ TDataDQL.o: ../../graphics/DList.h ../../graphics/Exit.h
 TDataDQL.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
 TDataDQL.o: ../../graphics/Timer.h ../../graphics/Parse.h TDataDQL.h
 TDataDQL.o: ../../graphics/Dispatcher.h ../../graphics/Journal.h
-TDataDQL.o: ../../graphics/VisualArg.h ../../graphics/Color.h
-TDataDQL.o: ../../graphics/Pattern.h ../Core/queue.h ../Core/types.h
+TDataDQL.o: ../../graphics/VisualArg.h ../../graphics/Pattern.h
+TDataDQL.o: ../Core/queue.h ../Core/types.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/new.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
-TDataDQL.o: ../Core/Utility.h ../Core/Array.h ../../graphics.new/TData.h
+TDataDQL.o: ../Core/Utility.h ../Core/Array.h ../Core/SeqSimVec.h
+TDataDQL.o: /usr/include/math.h /usr/include/floatingpoint.h
+TDataDQL.o: /usr/include/sys/ieeefp.h ../../graphics.new/TData.h
 TDataDQL.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
 TDataDQL.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
 TDataDQL.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 TDataDQL.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataDQL.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-TDataDQL.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
-TDataDQL.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
-TDataDQL.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
-TDataDQL.o: ../../graphics.new/machdep.h /usr/include/sys/wait.h
-TDataDQL.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataDQL.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataDQL.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataDQL.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataDQL.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataDQL.o: /usr/include/netinet/in.h ../../graphics.new/FileIndex.h
-TDataDQL.o: ../../graphics/Util.h /usr/include/math.h
-TDataDQL.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataDQL.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+TDataDQL.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TDataDQL.o: /usr/include/machine/mmu.h ../../graphics.new/machdep.h
+TDataDQL.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+TDataDQL.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataDQL.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataDQL.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataDQL.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataDQL.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataDQL.o: ../../graphics.new/FileIndex.h ../../graphics/Util.h
 TDataDQL.o: ../../graphics.new/DataSourceFileStream.h
 TDataDQL.o: ../../graphics.new/DataSourceSegment.h
 TDataDQL.o: ../../graphics.new/DataSourceBuf.h ../../graphics/DevError.h
 TDataDQL.o: ../../graphics.new/DataSeg.h ../../graphics.new/QueryProc.h
-TDataDQL.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h ../Core/url.h
+TDataDQL.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/vector
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/function.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h ../Core/url.h
 TDataDQL.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
-TDataDQL.o: CatalogComm.h ../../graphics.new/DataSourceWeb.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/set
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/set.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/projectn.h CatalogComm.h
+TDataDQL.o: ../../graphics.new/DataSourceWeb.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -295,20 +345,19 @@ TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/strfile.h
 TDataDQLInterp.o: ../../graphics.new/machdep.h /usr/include/limits.h
 TDataDQLInterp.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 TDataDQLInterp.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-TDataDQLInterp.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-TDataDQLInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
-TDataDQLInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataDQLInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TDataDQLInterp.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
-TDataDQLInterp.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
-TDataDQLInterp.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
-TDataDQLInterp.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-TDataDQLInterp.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-TDataDQLInterp.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-TDataDQLInterp.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-TDataDQLInterp.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TDataDQLInterp.o: /usr/include/netinet/in.h /usr/include/ctype.h
-TDataDQLInterp.o: /usr/include/unistd.h ../../graphics.new/DataSeg.h
+TDataDQLInterp.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+TDataDQLInterp.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+TDataDQLInterp.o: /usr/include/sys/time.h /usr/include/sys/time.h
+TDataDQLInterp.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+TDataDQLInterp.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+TDataDQLInterp.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+TDataDQLInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataDQLInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataDQLInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataDQLInterp.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+TDataDQLInterp.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+TDataDQLInterp.o: /usr/include/ctype.h /usr/include/unistd.h
+TDataDQLInterp.o: ../../graphics.new/DataSeg.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/string
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -327,23 +376,22 @@ TDataDQLInterp.o: ../../graphics/DevStatus.h ../../graphics/ClassDir.h
 TDataDQLInterp.o: TDataDQL.h /usr/include/stdio.h ../../graphics/Dispatcher.h
 TDataDQLInterp.o: ../../graphics/DList.h ../../graphics/Exit.h
 TDataDQLInterp.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
-TDataDQLInterp.o: ../../graphics/Color.h ../../graphics/Pattern.h
-TDataDQLInterp.o: ../Core/queue.h ../Core/types.h
+TDataDQLInterp.o: ../../graphics/Pattern.h ../Core/queue.h ../Core/types.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/new.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
-TDataDQLInterp.o: ../Core/Utility.h ../Core/Array.h
-TDataDQLInterp.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
-TDataDQLInterp.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
-TDataDQLInterp.o: ../../graphics.new/DCE.h /usr/include/errno.h
-TDataDQLInterp.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
-TDataDQLInterp.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
-TDataDQLInterp.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-TDataDQLInterp.o: ../../graphics.new/RecInterp.h
+TDataDQLInterp.o: ../Core/Utility.h ../Core/Array.h ../Core/SeqSimVec.h
+TDataDQLInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
+TDataDQLInterp.o: /usr/include/sys/ieeefp.h ../../graphics.new/TData.h
+TDataDQLInterp.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
+TDataDQLInterp.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
+TDataDQLInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataDQLInterp.o: /usr/include/sys/stat.h ../../graphics.new/FileIndex.h
+TDataDQLInterp.o: ../../graphics/AttrList.h ../../graphics/Init.h
+TDataDQLInterp.o: ../../graphics/BufPolicy.h ../../graphics.new/RecInterp.h
 TDataDQLInterp.o: ../../graphics.new/CompositeParser.h ../../graphics/Parse.h
 TDataDQLInterp.o: ../../graphics/Control.h ../../graphics/Util.h
-TDataDQLInterp.o: /usr/include/stdlib.h /usr/include/math.h
-TDataDQLInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-TDataDQLInterp.o: ../../graphics/DevError.h ../../graphics.new/ParseCat.h
+TDataDQLInterp.o: /usr/include/stdlib.h ../../graphics/DevError.h
+TDataDQLInterp.o: ../../graphics.new/ParseCat.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/String.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
 TDataDQLInterp.o: ../../graphics.new/DataSourceBuf.h
@@ -363,9 +411,10 @@ Aggregates.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 Aggregates.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/new.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-Aggregates.o: queue.h Array.h myopt.h url.h SockStream.h listop.h site.h
-Aggregates.o: Iterator.h MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
-Aggregates.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+Aggregates.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+Aggregates.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h myopt.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/vector
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/function.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -375,7 +424,17 @@ Aggregates.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-Aggregates.o: /usr/include/sys/stdtypes.h /usr/include/limits.h
+Aggregates.o: /usr/include/sys/stdtypes.h /usr/include/limits.h url.h
+Aggregates.o: SockStream.h listop.h site.h Iterator.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/set
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/set.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/projectn.h MemoryMgr.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/deque
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/deque.h TypeCheck.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/map
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h
+Aggregates.o: SeqSimVecAggregate.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/string
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -390,13 +449,9 @@ DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/cassert
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 DeleteParse.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 DeleteParse.o: /usr/include/math.h /usr/include/floatingpoint.h
-DeleteParse.o: /usr/include/sys/ieeefp.h queue.h myopt.h types.h
-DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
-DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-DeleteParse.o: Array.h url.h SockStream.h listop.h site.h Iterator.h
-DeleteParse.o: catalog.h ParseTree.h ExecExpr.h MemoryMgr.h
-DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/deque
-DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+DeleteParse.o: /usr/include/sys/ieeefp.h queue.h myopt.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/vector
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -405,8 +460,19 @@ DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-DeleteParse.o: /usr/include/sys/stdtypes.h /usr/include/limits.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+DeleteParse.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+DeleteParse.o: exception.h Utility.h Array.h SeqSimVec.h url.h SockStream.h
+DeleteParse.o: listop.h site.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/set.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h catalog.h ParseTree.h
+DeleteParse.o: TypeCheck.h /s/gcc-2.7.2/lib/g++-include/map
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h ExecExpr.h
+DeleteParse.o: MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -427,7 +493,9 @@ DevRead.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-DevRead.o: queue.h Array.h DevRead.h Iterator.h
+DevRead.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h DevRead.h
+DevRead.o: Iterator.h
 DevRead.dummy.o: /usr/include/assert.h types.h
 DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/string
 DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -445,7 +513,9 @@ DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
 DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-DevRead.dummy.o: queue.h Array.h DevRead.h Iterator.h
+DevRead.dummy.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+DevRead.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DevRead.dummy.o: DevRead.h Iterator.h
 DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/string
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -460,11 +530,31 @@ DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/cassert
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
-DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h types.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/vector
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
-DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h
-DropIndexParse.o: Utility.h Array.h url.h SockStream.h listop.h Engine.h
-DropIndexParse.o: site.h Iterator.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+DropIndexParse.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+DropIndexParse.o: /usr/include/limits.h types.h exception.h Utility.h Array.h
+DropIndexParse.o: SeqSimVec.h /usr/include/math.h
+DropIndexParse.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DropIndexParse.o: url.h SockStream.h listop.h TypeCheck.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/map
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/map.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StringLess.h
+DropIndexParse.o: Engine.h site.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/set.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/string
 Engine.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -479,10 +569,27 @@ Engine.o: /s/gcc-2.7.2/lib/g++-include/cassert
 Engine.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h /usr/include/math.h
 Engine.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h queue.h
-Engine.o: myopt.h types.h /s/gcc-2.7.2/lib/g++-include/new.h
-Engine.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-Engine.o: Array.h url.h SockStream.h listop.h Engine.h site.h Iterator.h
-Engine.o: ParseTree.h joins.h ExecOp.h ExecExpr.h
+Engine.o: myopt.h /s/gcc-2.7.2/lib/g++-include/vector
+Engine.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/function.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/new.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+Engine.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+Engine.o: exception.h Utility.h Array.h SeqSimVec.h url.h SockStream.h
+Engine.o: listop.h Engine.h site.h Iterator.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/set /s/gcc-2.7.2/lib/g++-include/set.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/projectn.h ParseTree.h TypeCheck.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/map /s/gcc-2.7.2/lib/g++-include/map.h
+Engine.o: StringLess.h ExecOp.h ExecExpr.h
 ExecOp.o: ExecOp.h queue.h /usr/include/assert.h Array.h ExecExpr.h types.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/string
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -499,9 +606,10 @@ ExecOp.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/new.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-ExecOp.o: Iterator.h listop.h RTreeRead.h myopt.h url.h SockStream.h
-ExecOp.o: StandardRead.h MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
-ExecOp.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+ExecOp.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+ExecOp.o: /usr/include/sys/ieeefp.h Iterator.h listop.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/vector
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/function.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -511,7 +619,10 @@ ExecOp.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-ExecOp.o: /usr/include/sys/stdtypes.h /usr/include/limits.h
+ExecOp.o: /usr/include/sys/stdtypes.h /usr/include/limits.h RTreeRead.h
+ExecOp.o: myopt.h url.h SockStream.h StandardRead.h MemoryMgr.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/deque
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -534,7 +645,9 @@ FunctionRead.o: /usr/include/assert.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h FunctionRead.h
 FunctionRead.o: Iterator.h types.h /s/gcc-2.7.2/lib/g++-include/new.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-FunctionRead.o: queue.h Array.h url.h SockStream.h
+FunctionRead.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+FunctionRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+FunctionRead.o: SockStream.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -555,30 +668,27 @@ IndexParse.o: /usr/include/math.h /usr/include/floatingpoint.h
 IndexParse.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h
 IndexParse.o: /usr/include/sys/stdtypes.h /usr/include/stdio.h
 IndexParse.o: /usr/include/errno.h /usr/include/sys/errno.h queue.h myopt.h
-IndexParse.o: types.h /s/gcc-2.7.2/lib/g++-include/new.h
-IndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-IndexParse.o: Array.h url.h SockStream.h listop.h site.h Iterator.h catalog.h
-IndexParse.o: ParseTree.h Aggregates.h MemoryMgr.h
-IndexParse.o: /s/gcc-2.7.2/lib/g++-include/deque
-IndexParse.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/vector
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/pair.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
-IndexParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/limits.h
-IndexParse.o: Inserter.h MinMax.h StandardRead.h Interface.h ../RTree/RTree.h
-IndexParse.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
-IndexParse.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
-IndexParse.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
-IndexParse.o: ../RTree/tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
-IndexParse.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
-IndexParse.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h
-IndexParse.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-IndexParse.o: /usr/include/netinet/in.h ../RTree/bulk_data.h
-IndexParse.o: ../RTree/hfpage.h /usr/include/sys/mman.h /usr/include/unistd.h
-IndexParse.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-IndexParse.o: /usr/include/sys/fcntlcom.h ../RTree/RTreeCommon.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/limits.h
+IndexParse.o: types.h exception.h Utility.h Array.h SeqSimVec.h url.h
+IndexParse.o: SockStream.h listop.h site.h Iterator.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/set
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/set.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h catalog.h ParseTree.h
+IndexParse.o: TypeCheck.h /s/gcc-2.7.2/lib/g++-include/map
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h Aggregates.h
+IndexParse.o: MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/deque.h Inserter.h MinMax.h
+IndexParse.o: StandardRead.h Interface.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/string
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -595,13 +705,9 @@ IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 IndexParse.dummy.o: /usr/include/assert.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 IndexParse.dummy.o: /usr/include/math.h /usr/include/floatingpoint.h
-IndexParse.dummy.o: /usr/include/sys/ieeefp.h queue.h myopt.h types.h
-IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
-IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h
-IndexParse.dummy.o: Utility.h Array.h url.h SockStream.h listop.h site.h
-IndexParse.dummy.o: Iterator.h catalog.h ParseTree.h Aggregates.h MemoryMgr.h
-IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/deque
-IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+IndexParse.dummy.o: /usr/include/sys/ieeefp.h queue.h myopt.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/vector
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/function.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -611,8 +717,20 @@ IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
 IndexParse.dummy.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-IndexParse.dummy.o: /usr/include/limits.h
+IndexParse.dummy.o: /usr/include/limits.h types.h exception.h Utility.h
+IndexParse.dummy.o: Array.h SeqSimVec.h url.h SockStream.h listop.h site.h
+IndexParse.dummy.o: Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/set.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/projectn.h catalog.h
+IndexParse.dummy.o: ParseTree.h TypeCheck.h /s/gcc-2.7.2/lib/g++-include/map
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h
+IndexParse.dummy.o: Aggregates.h MemoryMgr.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/deque
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/string
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -627,11 +745,28 @@ InsertParse.o: /s/gcc-2.7.2/lib/g++-include/cassert
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 InsertParse.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 InsertParse.o: /usr/include/math.h /usr/include/floatingpoint.h
-InsertParse.o: /usr/include/sys/ieeefp.h queue.h myopt.h types.h
+InsertParse.o: /usr/include/sys/ieeefp.h queue.h myopt.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/vector
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
-InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-InsertParse.o: Array.h url.h SockStream.h listop.h site.h Iterator.h
-InsertParse.o: catalog.h ParseTree.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+InsertParse.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+InsertParse.o: exception.h Utility.h Array.h SeqSimVec.h url.h SockStream.h
+InsertParse.o: listop.h site.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/set.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h catalog.h ParseTree.h
+InsertParse.o: TypeCheck.h /s/gcc-2.7.2/lib/g++-include/map
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h
 Inserter.o: url.h /s/gcc-2.7.2/lib/g++-include/string
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -647,7 +782,8 @@ Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h SockStream.h exception.h
 Inserter.o: Inserter.h types.h /s/gcc-2.7.2/lib/g++-include/new.h
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/new.h Utility.h queue.h Array.h
-Inserter.o: StandardRead.h Iterator.h MemoryMgr.h
+Inserter.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+Inserter.o: /usr/include/sys/ieeefp.h StandardRead.h Iterator.h MemoryMgr.h
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/deque
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 Inserter.o: /s/gcc-2.7.2/lib/g++-include/function.h
@@ -675,9 +811,28 @@ Interface.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 Interface.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 Interface.o: /s/gcc-2.7.2/lib/g++-include/new.h
 Interface.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-Interface.o: queue.h Array.h Interface.h site.h myopt.h url.h SockStream.h
-Interface.o: listop.h Iterator.h DevRead.h StandardRead.h Inserter.h Engine.h
-Interface.o: catalog.h
+Interface.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+Interface.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+Interface.o: Interface.h site.h myopt.h /s/gcc-2.7.2/lib/g++-include/vector
+Interface.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/function.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
+Interface.o: /usr/include/sys/stdtypes.h /usr/include/limits.h url.h
+Interface.o: SockStream.h listop.h Iterator.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/set
+Interface.o: /s/gcc-2.7.2/lib/g++-include/set.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/projectn.h DevRead.h StandardRead.h
+Interface.o: Inserter.h Engine.h catalog.h ParseTree.h TypeCheck.h
+Interface.o: /s/gcc-2.7.2/lib/g++-include/map
+Interface.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h
 MaterializeParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h
 MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/string
 MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -692,11 +847,32 @@ MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/cassert
 MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
-MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h types.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/vector
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
-MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h
-MaterializeParse.o: Utility.h Array.h url.h SockStream.h listop.h site.h
-MaterializeParse.o: Iterator.h catalog.h Engine.h Interface.h Inserter.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+MaterializeParse.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+MaterializeParse.o: /usr/include/limits.h types.h exception.h Utility.h
+MaterializeParse.o: Array.h SeqSimVec.h /usr/include/math.h
+MaterializeParse.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+MaterializeParse.o: url.h SockStream.h listop.h TypeCheck.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/map
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/map.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StringLess.h
+MaterializeParse.o: site.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+MaterializeParse.o: /s/gcc-2.7.2/lib/g++-include/set.h catalog.h Engine.h
+MaterializeParse.o: Interface.h Inserter.h
 MemoryMgr.o: types.h /s/gcc-2.7.2/lib/g++-include/string
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -712,8 +888,9 @@ MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/new.h
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-MemoryMgr.o: queue.h Array.h Interface.h MemoryMgr.h
-MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/deque
+MemoryMgr.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+MemoryMgr.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+MemoryMgr.o: Interface.h MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/function.h
 MemoryMgr.o: /s/gcc-2.7.2/lib/g++-include/bool.h
@@ -737,11 +914,62 @@ MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 MinMax.o: /s/gcc-2.7.2/lib/g++-include/cassert
 MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
-MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h queue.h types.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/vector
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/function.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 MinMax.o: /s/gcc-2.7.2/lib/g++-include/new.h
-MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-MinMax.o: Array.h url.h SockStream.h listop.h StandardRead.h Iterator.h
-MinMax.o: catalog.h
+MinMax.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+MinMax.o: /usr/include/sys/stdtypes.h /usr/include/limits.h queue.h types.h
+MinMax.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+MinMax.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+MinMax.o: SockStream.h listop.h StandardRead.h Iterator.h catalog.h
+ODBCInterface.dummy.o: types.h /s/gcc-2.7.2/lib/g++-include/string
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/straits.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cctype.h
+ODBCInterface.dummy.o: /usr/include/ctype.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/cassert
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
+ODBCInterface.dummy.o: /usr/include/assert.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h
+ODBCInterface.dummy.o: Utility.h queue.h Array.h SeqSimVec.h
+ODBCInterface.dummy.o: /usr/include/math.h /usr/include/floatingpoint.h
+ODBCInterface.dummy.o: /usr/include/sys/ieeefp.h Interface.h site.h myopt.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/vector
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/function.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+ODBCInterface.dummy.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+ODBCInterface.dummy.o: /usr/include/limits.h url.h SockStream.h listop.h
+ODBCInterface.dummy.o: Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/set.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+ODBCInterface.dummy.o: /s/gcc-2.7.2/lib/g++-include/projectn.h DevRead.h
+ODBCInterface.dummy.o: StandardRead.h Inserter.h Engine.h catalog.h
 PQueue.o: PQueue.h types.h /s/gcc-2.7.2/lib/g++-include/string
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -757,7 +985,8 @@ PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/new.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-PQueue.o: queue.h Array.h
+PQueue.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+PQueue.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 QueryTree.o: queue.h /usr/include/assert.h myopt.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/string
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -771,13 +1000,9 @@ QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/cassert
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h types.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/new.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-QueryTree.o: Array.h url.h SockStream.h listop.h site.h Iterator.h catalog.h
-QueryTree.o: DevRead.h Aggregates.h MemoryMgr.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/deque
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/vector
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/function.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -786,16 +1011,22 @@ QueryTree.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-QueryTree.o: /usr/include/sys/stdtypes.h /usr/include/limits.h ParseTree.h
-QueryTree.o: joins.h Sort.h StandardRead.h PQueue.h TypeCheck.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/vector
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/vector.h SymbolTable.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/map.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/new.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+QueryTree.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+QueryTree.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+QueryTree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+QueryTree.o: SockStream.h listop.h site.h Iterator.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/set
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/set.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/tree.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/projectn.h MinMax.h Interface.h
-QueryTree.o: /usr/include/math.h /usr/include/floatingpoint.h
-QueryTree.o: /usr/include/sys/ieeefp.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/projectn.h catalog.h DevRead.h
+QueryTree.o: Aggregates.h MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/deque.h TypeCheck.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/map
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h ParseTree.h
+QueryTree.o: Sort.h StandardRead.h PQueue.h MinMax.h Interface.h
 RTreeRead.o: RTreeRead.h myopt.h /s/gcc-2.7.2/lib/g++-include/string
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -808,27 +1039,25 @@ RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/cassert
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h queue.h types.h
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-RTreeRead.o: Array.h url.h SockStream.h listop.h Iterator.h StandardRead.h
-RTreeRead.o: ../RTree/RTree.h /usr/include/stdio.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/vector
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/function.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/libio.h ../RTree/genrtree.h
-RTreeRead.o: ../RTree/port_genrtree.h ../RTree/type_compat.h
-RTreeRead.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
-RTreeRead.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/stream.h ../RTree/tools/pqueue.h
-RTreeRead.o: ../RTree/tools/key.h /usr/include/stdlib.h
-RTreeRead.o: /usr/include/sys/stdtypes.h ../RTree/tools/box.h
-RTreeRead.o: ../RTree/tools/bit_vec.h /usr/include/sys/types.h
-RTreeRead.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h
-RTreeRead.o: ../RTree/bulk_data.h ../RTree/hfpage.h /usr/include/math.h
-RTreeRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-RTreeRead.o: /usr/include/sys/mman.h /usr/include/unistd.h
-RTreeRead.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-RTreeRead.o: /usr/include/sys/fcntlcom.h ../RTree/RTreeCommon.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+RTreeRead.o: /usr/include/sys/stdtypes.h /usr/include/limits.h queue.h
+RTreeRead.o: types.h exception.h Utility.h Array.h SeqSimVec.h
+RTreeRead.o: /usr/include/math.h /usr/include/floatingpoint.h
+RTreeRead.o: /usr/include/sys/ieeefp.h url.h SockStream.h listop.h Iterator.h
+RTreeRead.o: StandardRead.h
 RTreeRead.dummy.o: RTreeRead.h myopt.h /s/gcc-2.7.2/lib/g++-include/string
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -843,11 +1072,25 @@ RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/cassert
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 RTreeRead.dummy.o: /usr/include/assert.h
-RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h queue.h types.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/vector
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/function.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
-RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h
-RTreeRead.dummy.o: Utility.h Array.h url.h SockStream.h listop.h Iterator.h
-RTreeRead.dummy.o: StandardRead.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+RTreeRead.dummy.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+RTreeRead.dummy.o: /usr/include/limits.h queue.h types.h exception.h
+RTreeRead.dummy.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+RTreeRead.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+RTreeRead.dummy.o: url.h SockStream.h listop.h Iterator.h StandardRead.h
 SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/string
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -861,11 +1104,72 @@ SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/cassert
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
-SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h types.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/vector
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
-SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-SchemaParse.o: Array.h url.h SockStream.h listop.h site.h Iterator.h
-SchemaParse.o: catalog.h Interface.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+SchemaParse.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+SchemaParse.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+SchemaParse.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+SchemaParse.o: SockStream.h listop.h TypeCheck.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/map
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/map.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StringLess.h site.h
+SchemaParse.o: Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/set.h catalog.h Interface.h
+SeqSimVecAggregate.o: SeqSimVecAggregate.h Aggregates.h types.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/string
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/straits.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/cctype.h
+SeqSimVecAggregate.o: /usr/include/ctype.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/cassert
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
+SeqSimVecAggregate.o: /usr/include/assert.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/new.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h
+SeqSimVecAggregate.o: Utility.h queue.h Array.h SeqSimVec.h
+SeqSimVecAggregate.o: /usr/include/math.h /usr/include/floatingpoint.h
+SeqSimVecAggregate.o: /usr/include/sys/ieeefp.h myopt.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/vector
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/function.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+SeqSimVecAggregate.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+SeqSimVecAggregate.o: /usr/include/limits.h url.h SockStream.h listop.h
+SeqSimVecAggregate.o: site.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/set.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/projectn.h MemoryMgr.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/deque
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/deque.h TypeCheck.h
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/map
+SeqSimVecAggregate.o: /s/gcc-2.7.2/lib/g++-include/map.h StringLess.h
 Sort.o: /usr/include/assert.h Sort.h site.h queue.h types.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/string
 Sort.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -882,9 +1186,9 @@ Sort.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/new.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h Array.h
-Sort.o: myopt.h url.h SockStream.h listop.h Iterator.h StandardRead.h
-Sort.o: PQueue.h Inserter.h MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
-Sort.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+Sort.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+Sort.o: /usr/include/sys/ieeefp.h myopt.h /s/gcc-2.7.2/lib/g++-include/vector
+Sort.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/function.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -894,7 +1198,13 @@ Sort.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-Sort.o: /usr/include/sys/stdtypes.h /usr/include/limits.h
+Sort.o: /usr/include/sys/stdtypes.h /usr/include/limits.h url.h SockStream.h
+Sort.o: listop.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+Sort.o: /s/gcc-2.7.2/lib/g++-include/set.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StandardRead.h PQueue.h
+Sort.o: Inserter.h MemoryMgr.h /s/gcc-2.7.2/lib/g++-include/deque
+Sort.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/string
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -912,8 +1222,61 @@ StandardRead.o: /usr/include/assert.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h StandardRead.h
 StandardRead.o: types.h /s/gcc-2.7.2/lib/g++-include/new.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-StandardRead.o: queue.h Array.h Iterator.h url.h SockStream.h ExecOp.h
-StandardRead.o: ExecExpr.h
+StandardRead.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+StandardRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+StandardRead.o: Iterator.h url.h SockStream.h ExecOp.h ExecExpr.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/string
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/straits.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/cctype.h /usr/include/ctype.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/cassert
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/vector
+Templates.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/function.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/new.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+Templates.o: /usr/include/sys/stdtypes.h /usr/include/limits.h queue.h
+Templates.o: Array.h types.h exception.h Utility.h SeqSimVec.h
+Templates.o: /usr/include/math.h /usr/include/floatingpoint.h
+Templates.o: /usr/include/sys/ieeefp.h ExecExpr.h MemoryMgr.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/deque
+Templates.o: /s/gcc-2.7.2/lib/g++-include/deque.h listop.h myopt.h url.h
+Templates.o: SockStream.h /s/gcc-2.7.2/lib/g++-include/stl.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/algorithm
+Templates.o: /s/gcc-2.7.2/lib/g++-include/algo.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/heap.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/tempbuf.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/functional
+Templates.o: /s/gcc-2.7.2/lib/g++-include/iterator
+Templates.o: /s/gcc-2.7.2/lib/g++-include/list
+Templates.o: /s/gcc-2.7.2/lib/g++-include/list.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/map
+Templates.o: /s/gcc-2.7.2/lib/g++-include/map.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/projectn.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/memory
+Templates.o: /s/gcc-2.7.2/lib/g++-include/numeric
+Templates.o: /s/gcc-2.7.2/lib/g++-include/set
+Templates.o: /s/gcc-2.7.2/lib/g++-include/set.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/stack
+Templates.o: /s/gcc-2.7.2/lib/g++-include/stack.h
+Templates.o: /s/gcc-2.7.2/lib/g++-include/utility
 TypeCheck.o: myopt.h /s/gcc-2.7.2/lib/g++-include/string
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -926,10 +1289,7 @@ TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/cassert
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h queue.h types.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/new.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-TypeCheck.o: Array.h url.h SockStream.h listop.h TypeCheck.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/vector
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/function.h
@@ -940,11 +1300,18 @@ TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-TypeCheck.o: /usr/include/sys/stdtypes.h /usr/include/limits.h SymbolTable.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/new.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+TypeCheck.o: /usr/include/sys/stdtypes.h /usr/include/limits.h queue.h
+TypeCheck.o: types.h exception.h Utility.h Array.h SeqSimVec.h
+TypeCheck.o: /usr/include/math.h /usr/include/floatingpoint.h
+TypeCheck.o: /usr/include/sys/ieeefp.h url.h SockStream.h listop.h
+TypeCheck.o: TypeCheck.h /s/gcc-2.7.2/lib/g++-include/map
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/map.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/tree.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/projectn.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StringLess.h catalog.h
+TypeCheck.o: Interface.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/string
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -958,10 +1325,29 @@ UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/cassert
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 UnionParse.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
-UnionParse.o: ParseTree.h queue.h myopt.h types.h
+UnionParse.o: ParseTree.h queue.h myopt.h /s/gcc-2.7.2/lib/g++-include/vector
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/function.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
-UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-UnionParse.o: Array.h url.h SockStream.h listop.h site.h Iterator.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+UnionParse.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+UnionParse.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+UnionParse.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+UnionParse.o: SockStream.h listop.h TypeCheck.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/map
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/map.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StringLess.h site.h
+UnionParse.o: Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/set.h
 Util.o: types.h /s/gcc-2.7.2/lib/g++-include/string
 Util.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 Util.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -977,7 +1363,8 @@ Util.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 Util.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 Util.o: /s/gcc-2.7.2/lib/g++-include/new.h
 Util.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h queue.h
-Util.o: Array.h Inserter.h
+Util.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+Util.o: /usr/include/sys/ieeefp.h Inserter.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/string
 catalog.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -993,8 +1380,25 @@ catalog.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h StandardRead.h types.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/new.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-catalog.o: queue.h Array.h Iterator.h catalog.h url.h SockStream.h site.h
-catalog.o: myopt.h listop.h Inserter.h Interface.h
+catalog.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+catalog.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Iterator.h
+catalog.o: catalog.h url.h SockStream.h site.h myopt.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/vector
+catalog.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/function.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
+catalog.o: /usr/include/sys/stdtypes.h /usr/include/limits.h listop.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/set
+catalog.o: /s/gcc-2.7.2/lib/g++-include/set.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/projectn.h Inserter.h Interface.h
 joins.o: joins.h site.h queue.h /usr/include/assert.h types.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/string
 joins.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -1011,7 +1415,24 @@ joins.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/new.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h Array.h
-joins.o: myopt.h url.h SockStream.h listop.h Iterator.h
+joins.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+joins.o: /usr/include/sys/ieeefp.h myopt.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/vector
+joins.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/function.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
+joins.o: /usr/include/sys/stdtypes.h /usr/include/limits.h url.h SockStream.h
+joins.o: listop.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+joins.o: /s/gcc-2.7.2/lib/g++-include/set.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/projectn.h
 lex.yy.o: /usr/include/stdio.h /s/gcc-2.7.2/lib/g++-include/string
 lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -1024,10 +1445,27 @@ lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
 lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 lex.yy.o: /s/gcc-2.7.2/lib/g++-include/cassert
 lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
-lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h myopt.h queue.h types.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h myopt.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/vector
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/function.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
 lex.yy.o: /s/gcc-2.7.2/lib/g++-include/new.h
-lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-lex.yy.o: Array.h url.h SockStream.h listop.h ParseTree.h my.yacc.tab.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+lex.yy.o: /usr/include/sys/stdtypes.h /usr/include/limits.h queue.h types.h
+lex.yy.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+lex.yy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h url.h
+lex.yy.o: SockStream.h listop.h ParseTree.h TypeCheck.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/map /s/gcc-2.7.2/lib/g++-include/map.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/projectn.h StringLess.h
 listop.o: /s/gcc-2.7.2/lib/g++-include/string
 listop.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 listop.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -1042,30 +1480,25 @@ listop.o: /s/gcc-2.7.2/lib/g++-include/cassert
 listop.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 listop.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h /usr/include/math.h
 listop.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h queue.h
-listop.o: myopt.h types.h /s/gcc-2.7.2/lib/g++-include/new.h
-listop.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-listop.o: Array.h url.h SockStream.h listop.h site.h Iterator.h catalog.h
-listop.o: ExecExpr.h
-my.yacc.tab.o: myopt.h /s/gcc-2.7.2/lib/g++-include/string
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/straits.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/cctype.h /usr/include/ctype.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/cassert
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
-my.yacc.tab.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/std/sinst.h
-my.yacc.tab.o: queue.h types.h /s/gcc-2.7.2/lib/g++-include/new.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-my.yacc.tab.o: Array.h url.h SockStream.h listop.h ParseTree.h joins.h site.h
-my.yacc.tab.o: Iterator.h /s/gcc-2.7.2/lib/g++-include/iostream.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdio.h
-my.yacc.tab.o: /usr/include/alloca.h
+listop.o: myopt.h /s/gcc-2.7.2/lib/g++-include/vector
+listop.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/function.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/new.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/std/new.h /usr/include/stdlib.h
+listop.o: /usr/include/sys/stdtypes.h /usr/include/limits.h types.h
+listop.o: exception.h Utility.h Array.h SeqSimVec.h url.h SockStream.h
+listop.o: listop.h site.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+listop.o: /s/gcc-2.7.2/lib/g++-include/set.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/projectn.h catalog.h ExecExpr.h
 resolve.o: types.h /s/gcc-2.7.2/lib/g++-include/string
 resolve.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -1081,8 +1514,26 @@ resolve.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/new.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h
-resolve.o: queue.h Array.h myopt.h url.h SockStream.h listop.h site.h
-resolve.o: Iterator.h ExecExpr.h catalog.h Interface.h
+resolve.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+resolve.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h myopt.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/vector
+resolve.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/function.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
+resolve.o: /usr/include/sys/stdtypes.h /usr/include/limits.h url.h
+resolve.o: SockStream.h listop.h site.h Iterator.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/set
+resolve.o: /s/gcc-2.7.2/lib/g++-include/set.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/projectn.h ExecExpr.h catalog.h
+resolve.o: Interface.h
 site.o: site.h queue.h /usr/include/assert.h types.h
 site.o: /s/gcc-2.7.2/lib/g++-include/string
 site.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
@@ -1099,10 +1550,9 @@ site.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 site.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 site.o: /s/gcc-2.7.2/lib/g++-include/new.h
 site.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h Array.h
-site.o: myopt.h url.h SockStream.h listop.h Iterator.h Interface.h ExecOp.h
-site.o: ExecExpr.h RTreeRead.h StandardRead.h MemoryMgr.h
-site.o: /s/gcc-2.7.2/lib/g++-include/deque
-site.o: /s/gcc-2.7.2/lib/g++-include/deque.h
+site.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+site.o: /usr/include/sys/ieeefp.h myopt.h /s/gcc-2.7.2/lib/g++-include/vector
+site.o: /s/gcc-2.7.2/lib/g++-include/vector.h
 site.o: /s/gcc-2.7.2/lib/g++-include/function.h
 site.o: /s/gcc-2.7.2/lib/g++-include/bool.h
 site.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
@@ -1112,10 +1562,14 @@ site.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 site.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 site.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 site.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
-site.o: /usr/include/sys/stdtypes.h /usr/include/limits.h
-site.o: /s/gcc-2.7.2/lib/g++-include/set /s/gcc-2.7.2/lib/g++-include/set.h
+site.o: /usr/include/sys/stdtypes.h /usr/include/limits.h url.h SockStream.h
+site.o: listop.h Iterator.h /s/gcc-2.7.2/lib/g++-include/set
+site.o: /s/gcc-2.7.2/lib/g++-include/set.h
 site.o: /s/gcc-2.7.2/lib/g++-include/tree.h
-site.o: /s/gcc-2.7.2/lib/g++-include/projectn.h
+site.o: /s/gcc-2.7.2/lib/g++-include/projectn.h Interface.h ExecOp.h
+site.o: ExecExpr.h RTreeRead.h StandardRead.h MemoryMgr.h
+site.o: /s/gcc-2.7.2/lib/g++-include/deque
+site.o: /s/gcc-2.7.2/lib/g++-include/deque.h
 site.o: /s/gcc-2.7.2/lib/g++-include/algorithm
 site.o: /s/gcc-2.7.2/lib/g++-include/algo.h
 site.o: /s/gcc-2.7.2/lib/g++-include/heap.h
@@ -1135,7 +1589,8 @@ types.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 types.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 types.o: /s/gcc-2.7.2/lib/g++-include/new.h
 types.o: /s/gcc-2.7.2/lib/g++-include/std/new.h exception.h Utility.h queue.h
-types.o: Array.h Interface.h catalog.h
+types.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+types.o: /usr/include/sys/ieeefp.h Interface.h catalog.h
 url.o: url.h /s/gcc-2.7.2/lib/g++-include/string
 url.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 url.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -1150,26 +1605,28 @@ url.o: /s/gcc-2.7.2/lib/g++-include/cassert
 url.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h /usr/include/assert.h
 url.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h SockStream.h exception.h
 
-main.o: /usr/include/assert.h /usr/include/math.h
-main.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-main.o: ../Core/types.h /s/gcc-2.7.2/lib/g++-include/string
-main.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/straits.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/cctype.h /usr/include/ctype.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
-main.o: /s/gcc-2.7.2/lib/g++-include/cassert
-main.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
-main.o: /s/gcc-2.7.2/lib/g++-include/new.h
-main.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
-main.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h ../Core/Engine.h
-main.o: ../Core/site.h ../Core/myopt.h ../Core/url.h ../Core/SockStream.h
-main.o: ../Core/listop.h ../Core/Iterator.h ../RTree/RTreeCommon.h
+SBMInit.o: SBMInit.h ../../graphics.new/SBufMgr.h /usr/include/sys/types.h
+SBMInit.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+SBMInit.o: /usr/include/sys/uio.h /usr/include/unistd.h
+SBMInit.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+SBMInit.o: ../../graphics/DevStatus.h ../../graphics.new/MemMgr.h
+SBMInit.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
+SBMInit.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+SBMInit.o: /usr/include/sys/param.h /usr/include/machine/param.h
+SBMInit.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+SBMInit.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+SBMInit.o: /usr/include/errno.h /usr/include/sys/errno.h
+SBMInit.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/limits.h
+SBMInit.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
+SBMInit.o: /usr/include/sys/time.h /usr/include/sys/time.h
+SBMInit.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+SBMInit.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+SBMInit.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+SBMInit.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+SBMInit.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+SBMInit.o: /usr/include/sys/socket.h /usr/include/netinet/in.h InitShut.h
+SBMInit.dummy.o: InitShut.h
+main.o: InitShut.h Common.h
 
 post-query.o: /usr/include/stdio.h /usr/include/stdlib.h
 post-query.o: /usr/include/sys/stdtypes.h
@@ -1193,13 +1650,24 @@ script.o: /s/gcc-2.7.2/lib/g++-include/std/cassert.h
 script.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 script.o: /s/gcc-2.7.2/lib/g++-include/new.h
 script.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
-script.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h ../Core/Engine.h
-script.o: ../Core/site.h ../Core/myopt.h ../Core/url.h ../Core/SockStream.h
-script.o: ../Core/listop.h ../Core/Iterator.h ../../attrproj/ApInit.h
+script.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
+script.o: ../Core/SeqSimVec.h ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+script.o: /s/gcc-2.7.2/lib/g++-include/vector
+script.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+script.o: /s/gcc-2.7.2/lib/g++-include/function.h
+script.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+script.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+script.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+script.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+script.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
+script.o: /usr/include/limits.h ../Core/url.h ../Core/SockStream.h
+script.o: ../Core/listop.h ../Core/Iterator.h
+script.o: /s/gcc-2.7.2/lib/g++-include/set /s/gcc-2.7.2/lib/g++-include/set.h
+script.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+script.o: /s/gcc-2.7.2/lib/g++-include/projectn.h ../../attrproj/ApInit.h
 script.o: ../../graphics/DeviseTypes.h /usr/include/values.h
 script.o: ../../graphics/DevStatus.h /usr/include/sys/types.h
-script.o: /usr/include/sys/sysmacros.h ../../graphics/BufPolicy.h
-script.o: ../RTree/RTreeCommon.h ncsa.h
+script.o: /usr/include/sys/sysmacros.h ../../graphics/BufPolicy.h ncsa.h
 scriptClient.o: /usr/include/memory.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 scriptClient.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 scriptClient.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdlib.h
@@ -1215,7 +1683,7 @@ scriptServer.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
 scriptServer.o: /usr/include/assert.h /usr/include/math.h
 scriptServer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-scriptServer.o: ../RTree/RTreeCommon.h ../Core/Engine.h ../Core/types.h
+scriptServer.o: ../Core/Engine.h ../Core/types.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/string
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/std/string.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/std/bastring.h
@@ -1232,9 +1700,21 @@ scriptServer.o: /s/gcc-2.7.2/lib/g++-include/std/sinst.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/new.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
 scriptServer.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
-scriptServer.o: ../Core/site.h ../Core/myopt.h ../Core/url.h
-scriptServer.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
-scriptServer.o: ncsa.h
+scriptServer.o: ../Core/SeqSimVec.h ../Core/site.h ../Core/myopt.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/vector
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/vector.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/function.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/bool.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/algobase.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/pair.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/iterator.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/defalloc.h /usr/include/stdlib.h
+scriptServer.o: /usr/include/limits.h ../Core/url.h ../Core/SockStream.h
+scriptServer.o: ../Core/listop.h ../Core/Iterator.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/set
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/set.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/tree.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/projectn.h ncsa.h
 util.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 util.o: /usr/include/stdio.h /usr/include/memory.h
 
@@ -1244,59 +1724,19 @@ DTEControl.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 DTEControl.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdlib.h
 DTEControl.o: /usr/include/sys/stdtypes.h
 
-FormatVolume.o: /usr/include/stdio.h RTreeCommon.h
-RTree.o: RTree.h /usr/include/stdio.h /s/gcc-2.7.2/lib/g++-include/iostream.h
-RTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-RTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h genrtree.h port_genrtree.h
-RTree.o: type_compat.h tools/stack_t2.h tools/ptr_stack.h tools/pqueue.h
-RTree.o: tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
-RTree.o: /usr/include/assert.h tools/pqueue.h tools/key.h
-RTree.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h tools/box.h
-RTree.o: tools/bit_vec.h /usr/include/sys/types.h
-RTree.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h bulk_data.h
-RTree.o: hfpage.h /usr/include/math.h /usr/include/floatingpoint.h
-RTree.o: /usr/include/sys/ieeefp.h /usr/include/sys/mman.h
-RTree.o: /usr/include/unistd.h /usr/include/sys/stat.h /usr/include/fcntl.h
-RTree.o: /usr/include/sys/fcntlcom.h RTreeCommon.h
 bulk_data.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 bulk_data.o: /usr/include/stdio.h /usr/include/unistd.h
 bulk_data.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 bulk_data.o: /usr/include/errno.h /usr/include/sys/errno.h
-bulk_data.o: /usr/include/sys/mman.h bulk_data.h hfpage.h type_compat.h
-bulk_data.o: globals.h
-convert_bulk.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-convert_bulk.o: /usr/include/stdio.h /usr/include/strings.h
-convert_bulk.o: tools/correct_math.C /usr/include/math.h
-convert_bulk.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-convert_bulk.o: tools/heap.h
-genrtree.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-genrtree.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h genrtree.h
-genrtree.o: port_genrtree.h /usr/include/stdio.h type_compat.h
-genrtree.o: tools/stack_t2.h tools/ptr_stack.h tools/pqueue.h tools/pqueue.C
-genrtree.o: /s/gcc-2.7.2/lib/g++-include/stream.h
-genrtree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
-genrtree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-genrtree.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
-genrtree.o: tools/pqueue.h tools/key.h /usr/include/stdlib.h tools/box.h
-genrtree.o: tools/bit_vec.h /usr/include/netinet/in.h bulk_data.h hfpage.h
-genrtree.o: globals.h
-hfpage.o: /usr/include/stdio.h /usr/include/strings.h /usr/include/memory.h
-hfpage.o: hfpage.h
-port_genrtree.o: port_genrtree.h /usr/include/stdio.h type_compat.h
-port_genrtree.o: tools/stack_t2.h tools/ptr_stack.h tools/pqueue.h
-port_genrtree.o: tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
-port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
-port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-port_genrtree.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
-port_genrtree.o: tools/pqueue.h tools/key.h /usr/include/stdlib.h
-port_genrtree.o: /usr/include/sys/stdtypes.h tools/box.h tools/bit_vec.h
-port_genrtree.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-port_genrtree.o: /usr/include/netinet/in.h bulk_data.h /usr/include/math.h
-port_genrtree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-port_genrtree.o: tools/bitmap.h tools/bit_vec.h /usr/include/sys/mman.h
+bulk_data.o: /usr/include/sys/mman.h
+port_genrtree.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+port_genrtree.o: /usr/include/math.h /usr/include/floatingpoint.h
+port_genrtree.o: /usr/include/sys/ieeefp.h /usr/include/assert.h
+port_genrtree.o: /usr/include/stdio.h /usr/include/sys/types.h
+port_genrtree.o: /usr/include/sys/sysmacros.h /usr/include/sys/mman.h
 port_genrtree.o: /usr/include/unistd.h /usr/include/sys/stat.h
 port_genrtree.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
-port_genrtree.o: /usr/include/string.h globals.h
+port_genrtree.o: /usr/include/string.h
 solaris_stats.o: /usr/include/stddef.h /usr/include/sys/stdtypes.h
 solaris_stats.o: /usr/include/stdlib.h /s/gcc-2.7.2/lib/g++-include/osfcn.h
 solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/std.h
@@ -1327,35 +1767,3 @@ solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 solaris_stats.o: /s/gcc-2.7.2/lib/g++-include/strfile.h solaris_stats.h
 solaris_stats.o: /usr/include/sys/time.h
-type_compat.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
-type_compat.o: /usr/include/sys/sysmacros.h /usr/include/unistd.h
-type_compat.o: /usr/include/stdlib.h type_compat.h hfpage.h globals.h
-
-bitmap.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-bitmap.o: /s/gcc-2.7.2/lib/g++-include/stream.h
-bitmap.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
-bitmap.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-bitmap.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/sys/types.h
-bitmap.o: /usr/include/sys/sysmacros.h bitmap.h /usr/include/assert.h
-box.o: /usr/include/stdio.h box.h key.h /usr/include/stdlib.h
-box.o: /usr/include/sys/stdtypes.h bit_vec.h /usr/include/sys/types.h
-box.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h
-box.o: /usr/include/assert.h correct_math.h
-correct_math.o: /usr/include/stdio.h /usr/include/math.h
-correct_math.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h heap.h
-heap.o: /usr/include/stdio.h heap.h
-key.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-key.o: key.h box.h bit_vec.h /usr/include/sys/types.h
-key.o: /usr/include/sys/sysmacros.h /usr/include/netinet/in.h
-key.o: /usr/include/assert.h /usr/include/math.h /usr/include/floatingpoint.h
-key.o: /usr/include/sys/ieeefp.h /s/gcc-2.7.2/lib/g++-include/strstream.h
-key.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
-key.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-key.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-key.o: /s/gcc-2.7.2/lib/g++-include/strfile.h
-key.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h correct_math.C heap.h
-key.o: /usr/include/string.h
-pqueue.o: /s/gcc-2.7.2/lib/g++-include/stream.h
-pqueue.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
-pqueue.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-pqueue.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h pqueue.h

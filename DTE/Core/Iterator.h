@@ -18,6 +18,8 @@
 #ifndef DTE_ITERATOR_H
 #define DTE_ITERATOR_H
 
+#include <assert.h>
+
 #include "types.h"
 
 #ifndef __GNUG__

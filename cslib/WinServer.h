@@ -20,6 +20,19 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/12/08 18:17:58  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_4 tag
+  into the trunk (split of libcs into libdevcs and libdevwin).
+
+  Revision 1.1.2.4  1997/12/30 16:47:56  wenger
+  Removed single-client compile option to simplify the code.
+
+  Revision 1.1.2.3  1997/12/09 19:03:27  wenger
+  deviseb now uses client/server library.
+
+  Revision 1.1.2.2  1997/12/09 16:03:56  wenger
+  Devise client now uses client/server library.
+
   Revision 1.1.2.1  1997/12/06 17:43:01  wenger
   Split libcs.a into libdevcs.a and libdevwin.a in preparation for
   incorporating client/server part into DEVise.
@@ -29,17 +42,13 @@
 #ifndef _WinServer_h_
 #define _WinServer_h_
 
-#include "ClientServer.h"
+#include "Server.h"
+#include "Display.h"
+#include "WindowRep.h"
 
 class WinServer : public Server, public WindowRepCallback {
-
   public:
-
-#if defined(SINGLE_CLIENT)
-    WinServer(char *name, int port);
-#else
     WinServer(char *name, int port, int maxClients = 10);
-#endif
     virtual ~WinServer();
     virtual void SingleStep();            // once throught the body of MainLoop
 
@@ -84,7 +93,6 @@ class WinServer : public Server, public WindowRepCallback {
     
     DeviseDisplay *_screenDisp;            // display to draw to screen
     DeviseDisplay *_fileDisp;              // display to draw to file
-
 };
 
 #endif /* _WinServer_h_ */

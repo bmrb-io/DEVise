@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.26  1997/12/23 21:00:19  wenger
+# Got the latest version of DEVise to compile and link on SPARC/Solaris;
+# removed (old) layout manager code from DEVise link.
+#
 # Revision 1.25  1997/12/12 16:37:53  wenger
 # Added 'strip' target.
 #
@@ -27,6 +31,10 @@
 #
 # Revision 1.22  1997/11/05 00:24:09  donjerko
 # *** empty log message ***
+#
+# Revision 1.21.6.1  1997/12/23 21:43:31  wenger
+# Disabled layout manager GUI and removed (old) layout manager code
+# from DEVise link.
 #
 # Revision 1.21  1997/06/16 16:06:10  donjerko
 # New memory management in exec phase. Unidata included.
@@ -60,7 +68,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree xvertext color utils
+	unidata DTE RTree xvertext color utils cslib
 
 #devread is obsolete
 #attrproj is broken
@@ -75,7 +83,6 @@ all: date
 
 clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
-	cd cslib; make $@
 
 date:
 	cd generic; make CompDate.o
@@ -107,11 +114,6 @@ multi.pure: libs
 	
 static: libs
 	cd generic; make static; cd ..
-
-cslib:
-	cd graphics; make lib; cd ..
-	cd graphics.new; make ClientAPI.o Version.o MapIntToInt.o; cd ..
-	cd cslib; make lib; cd ..
 
 strip:
 	strip generic/generic

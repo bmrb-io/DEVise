@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/11/19 17:02:12  wenger
+  Fixed error in OpenDataChannel().
+
   Revision 1.20  1997/11/18 23:27:04  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -23,6 +26,14 @@
   Revision 1.19  1997/11/12 15:46:41  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
+
+  Revision 1.18.12.2  1998/01/07 16:00:24  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
 
   Revision 1.18.12.1  1997/11/11 19:14:01  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
@@ -152,12 +163,6 @@ public:
 
   /* Get MapInterpClassInfo info */
   virtual MapInterpClassInfo *GetInterpProto() { return _interpProto; }
-
-  /* Add replica server */
-  virtual int AddReplica(char *hostName, int port) { return 1; }
-
-  /* Remove replica server */
-  virtual int RemoveReplica(char *hostName, int port) { return 1; }
 
 #if OPEN_TEST_FILE
   int _fd;

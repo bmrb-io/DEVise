@@ -52,4 +52,4 @@ void show_token(ostream *os, int tok, union UniLexType *ult);
 
 // *************************************************************************
 
-#endif _Lexer_H_
+#endif // _Lexer_H_

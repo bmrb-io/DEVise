@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.12.1  1997/12/29 21:23:23  wenger
+  A given TDataAscii no longer reports more than 10 decode errors.
+
+  Revision 1.13  1997/03/25 17:59:28  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.12  1997/03/23 23:46:15  donjerko
   *** empty log message ***
 
@@ -166,6 +172,7 @@ private:
   int       _numAttrs;             /* # attributes (including composite) */
   int       _numPhysAttrs;         /* number of physical attributes */
   RecInterp *_recInterp;
+  int       _decodeErrCount;
 };
 
 #endif

@@ -1,0 +1,39 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+############################################################
+
+depend:
+	makedepend -fMakefile.sgi -I../graphics.new \
+		-I/usr/include/X11 *.c
+
+# DO NOT DELETE
+
+example.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+example.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+example.o: /usr/include/sys/select.h /usr/include/X11/X.h
+example.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+example.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+example.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/math.h
+example.o: rotated.h
+rotated.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+rotated.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+rotated.o: /usr/include/sys/select.h /usr/include/X11/X.h
+rotated.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+rotated.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+rotated.o: /usr/include/X11/Xatom.h /usr/include/stdio.h
+rotated.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/math.h
+rotated.o: rotated.h

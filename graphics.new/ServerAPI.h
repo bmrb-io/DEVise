@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.11.16.1  1998/01/07 16:00:19  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
+  Revision 1.11  1996/08/29 22:21:41  guangshu
+  Added functions Open Data Channel and getFd and several members.
+
   Revision 1.10  1996/07/13 17:28:00  jussi
   Removed unnecessary virtual function prototypes.
 
@@ -61,22 +72,22 @@
 #ifndef ServerAPI_h
 #define ServerAPI_h
 
-#include "Dispatcher.h"
 #include "Control.h"
 #include "ViewCallback.h"
 #include "GroupDir.h"
 #include "ClientAPI.h"
+#include "DeviseServer.h"
 
 class View;
 class MapInterpClassInfo;
 
 extern GroupDir *gdir;
 
-class ServerAPI: public ControlPanel, public DispatcherCallback,
-                 private ViewCallback
+class ServerAPI: public ControlPanel, private ViewCallback
 {
 public:
   ServerAPI();
+  virtual ~ServerAPI();
 
   virtual void SelectView(View *view);
 
@@ -102,18 +113,10 @@ public:
   /* Get MapInterpClassInfo info */
   virtual MapInterpClassInfo *GetInterpProto() { return _interpProto; }
 
-  /* Add replica server */
-  virtual int AddReplica(char *hostName, int port);
-
-  /* Remove replica server */
-  virtual int RemoveReplica(char *hostName, int port);
   virtual void OpenDataChannel(int port);
   virtual int getFd() { return _dataFd; }
 
 protected:
-  /* replicate API command to replica servers */
-  virtual void Replicate(int argc, char **argv);
-
   virtual void SubclassInsertDisplay(DeviseDisplay *disp,
 				     Coord x, Coord y,
 				     Coord w, Coord h) {}
@@ -127,39 +130,25 @@ protected:
 private:
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
 
-  char *DispatchedName() { return "ServerAPI"; }
-  virtual void Run();
-
   int _busy;
   static MapInterpClassInfo *_interpProto;
 
-  int ReadCommand();
-
   virtual int ReturnVal(u_short flag, char *result) {
-    return NetworkSend(_socketFd, flag, 0, 1, &result);
+    return _server->ReturnVal(flag, result);
   }
   virtual int ReturnVal(int argc, char **argv) {
-    return NetworkSend(_socketFd, API_ACK, 1, argc, argv);
+    return _server->ReturnVal(argc, argv);
   }
   virtual int SendControl(u_short flag, char *result) {
-    return NetworkSend(_socketFd, flag, 0, 1, &result);
+    return _server->SendControl(flag, result);
   }
   virtual int SendControl(int argc, char **argv) {
-    return NetworkSend(_socketFd, API_CTL, 1, argc, argv);
+    return _server->SendControl(API_CTL, argc, argv);
   }
 
-  int _listenFd;                        // socket for listening for clients
-  int _socketFd;                        // socket for client connection
   int _dataFd;				// socket for transfering large data, eg.gif
-  struct sockaddr_in clientAddr;        // Address of client
 
-  int _replicate;                       // number of servers to replicate to
-  const int _maxReplicas = 10;
-  struct ReplicaServer {
-    char *host;
-    int port;
-    int fd;
-  } _replicas[_maxReplicas];
+  DeviseServer *_server;
 };
 
 #endif

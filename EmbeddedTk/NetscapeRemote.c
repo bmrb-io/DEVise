@@ -40,7 +40,9 @@
 #include <X11/Xatom.h>
 #include <X11/Xmu/WinUtil.h>	/* for XmuClientWindow() */
 
+#if !defined(LINUX)
 extern "C" gethostname(char *, int);
+#endif
 
 
 /* vroot.h is a header file which lets a client get along with `virtual root'

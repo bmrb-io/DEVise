@@ -18,12 +18,25 @@
 
 /*
   $Id$
+  $Id$
 
   $Log$
+  Revision 1.12  1997/12/19 21:44:51  wenger
+  Removed (now obsolete) view override color reference so saving
+  sessions works.
+
   Revision 1.11  1997/11/24 16:22:20  wenger
   Added GUI for saving GData; turning on GData to socket now forces
   redraw of view; GData to socket params now saved in session files;
   improvement to waitForQueries command.
+
+  Revision 1.10.2.1  1998/01/07 15:59:31  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
 
   Revision 1.10  1997/10/28 15:46:19  wenger
   Fixed bug 236.
@@ -138,11 +151,6 @@ public:
 
   virtual MapInterpClassInfo *GetInterpProto() {
       return ControlPanel::Instance()->GetInterpProto(); }
-
-  virtual int AddReplica(char *hostName, int port) {
-      return ControlPanel::Instance()->AddReplica(hostName, port); }
-  virtual int RemoveReplica(char *hostName, int port) {
-      return ControlPanel::Instance()->RemoveReplica(hostName, port); }
 
   virtual void OpenDataChannel(int port) {
       ControlPanel::Instance()->OpenDataChannel(port); }

@@ -26,4 +26,4 @@
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
-#endif  _BITMAP_H
+#endif // _BITMAP_H

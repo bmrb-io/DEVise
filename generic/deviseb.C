@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11.16.1  1997/12/09 19:03:38  wenger
+  deviseb now uses client/server library.
+
+  Revision 1.11  1996/08/04 23:08:10  jussi
+  Added line numbering.
+
   Revision 1.10  1996/07/16 23:34:36  jussi
   Improved parsing and added handling of comment lines, blank
   lines, and lines prefixed with the DEVise keyword.
@@ -58,6 +64,7 @@
 #include <ctype.h>
 
 #include "ClientAPI.h"
+#include "DeviseBatchClient.h"
 #include "Version.h"
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
@@ -69,31 +76,15 @@ static char _commentChar = '#';
 static char *_progName = 0;
 static char *_hostName = "localhost";
 static int   _portNum = DefaultNetworkPort;
-static int   _deviseFd = -1;
+static DeviseBatchClient *_client;
 
 static char *_scriptFile = 0;
-static int   _syncDone = 0;
 
 void DoAbort(char *reason)
 {
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
-  (void)NetworkClose(_deviseFd);
+  delete _client;
   exit(2);
-}
-
-void ControlCmd(int argc, char **argv)
-{
-  if (argc == 1 && !strcmp(argv[0], "SyncDone")) {
-#ifdef DEBUG
-    printf("Server synchronized.\n");
-#endif
-    _syncDone = 1;
-    return;
-  }
-
-#ifdef DEBUG
-  printf("Ignoring control command: \"%s\"\n", argv[0]);
-#endif
 }
 
 int DEViseCmd(int argc, char **argv)
@@ -102,29 +93,7 @@ int DEViseCmd(int argc, char **argv)
   printf("Function %s, %d args\n", argv[0], argc);
 #endif
 
-  if (NetworkSend(_deviseFd, API_CMD, 0, argc, argv) < 0) {
-    fprintf(stderr, "Server has terminated. Client exits.\n");
-    exit(3);
-  }
-
-  u_short flag;
-  do {
-    int rargc;
-    char **rargv;
-    if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
-      fprintf(stderr, "Server has terminated. Client exits.\n");
-      exit(3);
-    }
-    if (flag == API_CTL)
-      ControlCmd(rargc, rargv);
-    if (flag == API_NAK)
-      printf("Received error message: %s\n", rargv[0]);
-  } while (flag != API_ACK && flag != API_NAK);
-
-  if (flag == API_NAK)
-    return -1;
-
-  return 1;
+  return _client->ServerCmd(argc, argv);
 }
 
 int ExecuteCommands()
@@ -238,8 +207,7 @@ int ExecuteCommands()
       ++argc;
     }
 
-    if (argc == 1 && !strcmp(argv[0], "sync"))
-      _syncDone = 0;
+    if (argc == 1 && !strcmp(argv[0], "sync")) _client->SetSyncDone(false);
 
 #ifdef DEBUG
     printf("Sending %d elements\n", argc);
@@ -251,19 +219,10 @@ int ExecuteCommands()
 
     if (argc == 1 && !strcmp(argv[0], "sync")) {
       printf("Waiting for server synchronization.\n");
-      while(!_syncDone) {
-	u_short flag;
-	int rargc;
-	char **rargv;
-	if (NetworkReceive(_deviseFd, 1, flag, rargc, rargv) <= 0) {
-	  fprintf(stderr, "Server has terminated. Client exits.\n");
-	  exit(3);
-	}
-	if (flag == API_CTL)
-	  ControlCmd(rargc, rargv);
+      while(!_client->SyncDone()) {
+	_client->ReadServer();
       }
       printf("Continuing.\n");
-      _syncDone = 0;
     }
   }
 
@@ -311,20 +270,14 @@ int main(int argc, char **argv)
   printf("Batch client running.\n");
   printf("\n");
 
-  printf("Connecting to server %s:%d.\n", _hostName, _portNum);
-
-  _deviseFd = NetworkOpen(_hostName, _portNum);
-  if (_deviseFd < 0)
-    exit(2);
-	
-  printf("Connection established.\n\n");
+  _client = new DeviseBatchClient("DEVise", _hostName, _portNum);
 
   if (ExecuteCommands() < 0)
     exit(5);
 
   printf("Closing connection.\n");
 
-  (void)NetworkClose(_deviseFd);
+  delete _client;
 
   return 1;
 }

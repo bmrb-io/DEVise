@@ -41,23 +41,23 @@ class Schema {
 
     enum Type {
         TEXT,         // the default
-        BINARY,
+        BINARY
     };
     
     
     enum CharSet {
-        ASCII,        // the default, :^)
+        ASCII        // the default, :^)
     };
     
     
     enum BinOrder {
         NATIVE,       // the default
-        NETWORK,
+        NETWORK
     };
 
     enum RecLenInd {
         VAR_LEN,      // the default
-        FIXED_LEN,
+        FIXED_LEN
     };
 
   private:

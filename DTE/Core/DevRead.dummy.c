@@ -1,3 +1,32 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1997
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Dummy implementation of DevRead and related classes.
+ */
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.2.4.1  1997/12/17 17:29:18  wenger
+  Fixed bugs 235 and 258 (core dump on Tables with long strings -- caused
+  by insufficient buffer size in DTE); added headers to some DTE files
+  and fixed some compile warnings.
+
+ */
+
 #include "sysdep.h"
 //#include <strstream.h>   erased for sysdep.h
 

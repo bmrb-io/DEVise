@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/12/16 17:53:38  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.19  1997/11/24 23:14:17  weaver
   Changes for the new ColorManager.
 
@@ -125,11 +128,15 @@ Get the default display
 DeviseDisplay *DeviseDisplay::DefaultDisplay()
 {
   if (!_defaultDisplay) {
+#ifndef LIBCS
     // changed for testing GLDisplay
     if (Init::UseOpenGL())
       _defaultDisplay = new GLDisplay();
     else
       _defaultDisplay = new XDisplay();
+#else
+    _defaultDisplay = new XDisplay();
+#endif
   }
   return _defaultDisplay;
 }

@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.27.4.1  1998/01/07 15:59:22  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
+  Revision 1.27  1997/09/05 22:35:57  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.26  1997/08/28 18:21:40  wenger
   Eliminated unnecessary include dependencies in Dispatcher.h.
 
@@ -206,6 +218,7 @@ public:
   
   /* Unregister callback */
   void Unregister(DispatcherCallback *c);
+  void Unregister(DispatcherID id);
 
   /* Change the state of the dispatcher */
   void ChangeState(StateFlag flag) { _stateFlag = flag; }

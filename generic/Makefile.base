@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39  1997/12/23 21:00:26  wenger
+#  Got the latest version of DEVise to compile and link on SPARC/Solaris;
+#  removed (old) layout manager code from DEVise link.
+#
 #  Revision 1.38  1997/12/02 17:35:22  wenger
 #  Set up src/color and src/utils to compile "normally" for solaris and
 #  solsparc.
@@ -26,6 +30,24 @@
 #
 #  Revision 1.36  1997/11/05 00:21:18  donjerko
 #  Added RTree library.
+#
+#  Revision 1.35.4.4  1998/01/07 15:59:09  wenger
+#  Removed replica cababilities (since this will be replaced by collaboration
+#  library); integrated cslib into DEVise server; commented out references to
+#  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+#  to be registered and unregistered for different file descriptors (needed
+#  for multiple clients); added command line argument to specify port that
+#  server listens on.
+#
+#  Revision 1.35.4.3  1997/12/23 21:43:01  wenger
+#  Disabled layout manager GUI and removed (old) layout manager code
+#  from DEVise link.
+#
+#  Revision 1.35.4.2  1997/12/09 19:03:37  wenger
+#  deviseb now uses client/server library.
+#
+#  Revision 1.35.4.1  1997/12/09 16:03:46  wenger
+#  Devise client now uses client/server library.
 #
 #  Revision 1.35  1997/08/12 18:46:42  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
@@ -94,7 +116,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../src/color -I../../src/utils -I../../tape \
+	-I../../src/color -I../../src/utils -I../../tape -I../../cslib \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
@@ -118,7 +140,8 @@ ifneq ($(DEV_PROFILE),)
 endif
 
 
-SRC = generic.c devise.C deviseb.C CompDate.c StateMap.C
+SRC = generic.c devise.C deviseb.C CompDate.c StateMap.C DeviseClient.c \
+	DeviseBatchClient.c
 
 SRCc = $(filter %.c,$(SRC))
 SRCC = $(filter %.C,$(SRC))
@@ -134,7 +157,7 @@ ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../crsp/libcrsp.a ../xvertext/libXrot.a
 
 CLIENTLIB = ../graphics.new/libclient.a
-SERVERLIB = ../graphics.new/libserver.a
+SERVERLIB = ../graphics.new/libserver.a ../cslib/libdevcs.a
 MONOLITHLIB = ../graphics.new/libmonolith.a
 
 all: generic devise devised deviseb
@@ -162,8 +185,8 @@ generic.static: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB)
 	$(GENERIC) $(ARCH_STATIC_LDPOST)
 
 DEVISED = $(CC) -o $@ generic.o StateMap.o CompDate.o \
-		$(ARCH_LDFLAGS) -L../graphics.new \
-		-lserver $(LDFLAGS) $(ARCH_LDPOST)
+		$(ARCH_LDFLAGS) -L../graphics.new -L../cslib \
+		-lserver -ldevcs $(LDFLAGS) $(ARCH_LDPOST)
 
 devised: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 	$(FORCE_DATE)
@@ -174,10 +197,11 @@ devised.pure: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 	$(PURIFY) $(PURE_OPT) $(DEVISED)
 
 
-DEVISE = $(CC) -o $@ devise.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
-	-lclient $(LDFLAGS) $(ARCH_LDPOST)
+DEVISE = $(CC) -o $@ devise.o DeviseClient.o ../graphics.new/Version.o \
+	$(ARCH_LDFLAGS) -L../cslib -L../graphics.new -ldevcs \
+	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-devise: devise.o $(CLIENTLIB)
+devise: devise.o $(CLIENTLIB) DeviseClient.o
 	$(FORCE_DATE)
 	$(DEVISE)
 
@@ -186,14 +210,14 @@ devise.pure: devise.o $(CLIENTLIB)
 	$(PURIFY) $(PURE_OPT) $(DEVISE)
 
 
-DEVISEB = $(CC) -o $@ deviseb.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
-	-lclient $(ARCH_LDPOST)
+DEVISEB = $(CC) -o $@ deviseb.o DeviseBatchClient.o ../graphics.new/Version.o \
+	$(ARCH_LDFLAGS) -L../cslib -L../graphics.new -ldevcs $(ARCH_LDPOST)
 
-deviseb: deviseb.o $(CLIENTLIB)
+deviseb: deviseb.o DeviseBatchClient.o $(CLIENTLIB)
 	$(FORCE_DATE)
 	$(DEVISEB)
 
-deviseb.pure: deviseb.o $(CLIENTLIB)
+deviseb.pure: deviseb.o DeviseBatchClient.o $(CLIENTLIB)
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(DEVISEB)
 

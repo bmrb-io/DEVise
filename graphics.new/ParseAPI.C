@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.85  1997/12/23 21:00:11  wenger
+  Got the latest version of DEVise to compile and link on SPARC/Solaris;
+  removed (old) layout manager code from DEVise link.
+
   Revision 1.84  1997/12/12 05:50:42  weaver
   *** empty log message ***
 
@@ -48,6 +52,21 @@
   Revision 1.78  1997/11/12 15:46:38  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
+
+  Revision 1.77.2.5  1998/01/07 16:00:16  wenger
+  Removed replica cababilities (since this will be replaced by collaboration
+  library); integrated cslib into DEVise server; commented out references to
+  Layout Manager in Tcl/Tk code; changed Dispatcher to allow the same object
+  to be registered and unregistered for different file descriptors (needed
+  for multiple clients); added command line argument to specify port that
+  server listens on.
+
+  Revision 1.77.2.4  1998/01/06 17:04:14  wenger
+  Added 'testDataSock' command (used by TestClient).
+
+  Revision 1.77.2.3  1997/12/23 21:43:09  wenger
+  Disabled layout manager GUI and removed (old) layout manager code
+  from DEVise link.
 
   Revision 1.77.2.2  1997/11/14 17:31:17  wenger
   More error messages for sending images to socket.
@@ -1790,6 +1809,35 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
       control->ReturnVal(API_ACK, buf);
       return 1;
     }
+
+    if (!strcmp(argv[0], "testDataSock")) {
+      // Arguments: <port number>
+      // Returns: "done"
+#if defined(DEBUG)
+      printf("testDataSock <%s>\n", argv[1]);
+#endif
+      int port = atoi(argv[1]);
+      control->OpenDataChannel(port);
+      int fd = control->getFd();
+      if (fd < 0) {
+        reportErrSys("Cannot open data channel");
+        control->ReturnVal(API_NAK, "Invalid socket to write");
+        return -1;
+      }
+
+      char *testStr = "abcd0123456789";
+      int numBytes = strlen(testStr) + 1;
+      if (write(fd, testStr, numBytes) != numBytes) {
+        reportErrSys("write error");
+        control->ReturnVal(API_NAK, "write error");
+        (void) close(fd);
+        return -1;
+      }
+
+      close(fd);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
 
   if (argc == 3) {
@@ -1824,20 +1872,6 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     if (!strcmp(argv[0], "setScreenSize")) {
       DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(argv[1]);
       DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = atoi(argv[2]);
-      control->ReturnVal(API_ACK, "done");
-      return 1;
-    }
-    if (!strcmp(argv[0], "addReplicaServer")) {
-      if (control->AddReplica(argv[1], atoi(argv[2])) < 0)
-	fprintf(stderr, "Could not add %s:%d as a replica.\n", argv[1],
-		atoi(argv[2]));
-      control->ReturnVal(API_ACK, "done");
-      return 1;
-    }
-    if (!strcmp(argv[0], "removeReplicaServer")) {
-      if (control->RemoveReplica(argv[1], atoi(argv[2])) < 0)
-	fprintf(stderr, "Could not remove replica %s:%d.\n", argv[1],
-		atoi(argv[2]));
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

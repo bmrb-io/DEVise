@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.18  1997/11/12 15:43:53  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.17.12.1  1997/10/30 20:14:29  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -43,9 +47,9 @@ ApInit.o: /usr/include/sys/signal.h /usr/include/sys/types.h
 ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
 ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
 ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h /usr/include/sys/time.h
-ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
-ApInit.o: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
-ApInit.o: /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
+ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/time.h
+ApInit.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ApParseCat.h
 ApParseCat.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ApParseCat.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -67,12 +71,11 @@ ApParseCat.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
 ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
-ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
-ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
-ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+ApParseCat.o: ../graphics/Parse.h /usr/include/time.h ApInit.h
+ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
+ApParseCat.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
 ApParseCat2.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ApParseCat.h
@@ -96,9 +99,9 @@ ApParseCat2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 ApParseCat2.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
 ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
 ApParseCat2.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat2.o: ../graphics/VisualArg.h ../graphics/Color.h
-ApParseCat2.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
-ApParseCat2.o: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
+ApParseCat2.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+ApParseCat2.o: ../graphics/Parse.h /usr/include/time.h ApInit.h
+ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
@@ -108,7 +111,7 @@ AttrProj.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: /usr/include/values.h ../graphics/DevStatus.h
 AttrProj.o: /usr/include/sys/types.h ../graphics.new/RecId.h VectorArray.h
-AttrProj.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
+AttrProj.o: Vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
 AttrProj.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
@@ -130,7 +133,7 @@ AttrProj2.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 AttrProj2.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj2.o: /usr/include/values.h ../graphics/DevStatus.h
 AttrProj2.o: /usr/include/sys/types.h ../graphics.new/RecId.h VectorArray.h
-AttrProj2.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
+AttrProj2.o: Vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
 AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 AttrProj2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
@@ -152,30 +155,30 @@ ProjectionList.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ProjectionList.o: ProjectionList.h ../graphics/DeviseTypes.h
 ProjectionList.o: /usr/include/values.h ../graphics/DevStatus.h
 ProjectionList.o: /usr/include/sys/types.h
+Vector.o: global.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
+Vector.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/math.h
+Vector.o: /usr/include/ctype.h /usr/include/unistd.h
+Vector.o: /usr/include/sys/unistd.h /usr/include/time.h
+Vector.o: /usr/include/sys/time.h /usr/include/sys/times.h Vector.h
 VectorArray.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h VectorArray.h
 VectorArray.o: ../graphics/DeviseTypes.h /usr/include/values.h
-VectorArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h vector.h
+VectorArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h Vector.h
 VectorArray.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
 VectorArray.o: /usr/include/sys/time.h /usr/include/string.h
 VectorArray.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 aptest.o: /usr/include/sys/types.h AttrProj.h ../graphics/DeviseTypes.h
 aptest.o: /usr/include/values.h ../graphics/DevStatus.h
-aptest.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
 aptest.o: ApInit.h ../graphics/BufPolicy.h
 aptest2.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 aptest2.o: /usr/include/sys/types.h AttrProj.h ../graphics/DeviseTypes.h
 aptest2.o: /usr/include/values.h ../graphics/DevStatus.h
-aptest2.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest2.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
 aptest2.o: ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 show.o: /usr/include/sys/types.h /usr/include/unistd.h
 show.o: /usr/include/sys/unistd.h AttrProj.h ../graphics/DeviseTypes.h
 show.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics.new/RecId.h
-show.o: VectorArray.h vector.h ProjectionList.h ApInit.h
+show.o: VectorArray.h Vector.h ProjectionList.h ApInit.h
 show.o: ../graphics/BufPolicy.h
-vector.o: global.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
-vector.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/math.h
-vector.o: /usr/include/ctype.h /usr/include/unistd.h
-vector.o: /usr/include/sys/unistd.h /usr/include/time.h
-vector.o: /usr/include/sys/time.h /usr/include/sys/times.h vector.h

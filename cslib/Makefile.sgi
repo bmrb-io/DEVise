@@ -15,6 +15,13 @@
 # $Id$
 
 # $Log$
+# Revision 1.3.12.1  1997/12/29 22:12:40  wenger
+# Got DEVise 1.4.7 to compile, link, and run on SGI.
+#
+# Revision 1.3  1997/03/28 16:08:47  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -24,56 +31,69 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-ClientServer.o: /usr/include/stdio.h /usr/include/stdlib.h
-ClientServer.o: /usr/include/sgidefs.h /usr/include/string.h
-ClientServer.o: /usr/include/errno.h /usr/include/sys/errno.h
-ClientServer.o: /usr/include/unistd.h /usr/include/sys/types.h
-ClientServer.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-ClientServer.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ClientServer.o: /usr/include/sys/endian.h /usr/local/include/tcl.h
-ClientServer.o: /usr/local/include/tk.h /usr/include/X11/Xlib.h
-ClientServer.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-ClientServer.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-ClientServer.o: ClientServer.h ../graphics/Display.h
-ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
-ClientServer.o: /usr/include/math.h ../graphics/Color.h
-ClientServer.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ClientServer.o: ../graphics/Exit.h ../graphics/Journal.h
-ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
+Client.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
+Client.o: /usr/include/string.h /usr/include/unistd.h
+Client.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
+Client.o: /usr/include/sys/select.h /usr/include/sys/socket.h
+Client.o: /usr/include/netinet/in.h /usr/include/sys/endian.h Client.h
+Server.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
+Server.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
+Server.o: /usr/include/unistd.h /usr/include/sys/types.h
+Server.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+Server.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Server.o: /usr/include/sys/endian.h Server.h
+TclClient.o: /usr/include/stdio.h /usr/include/stdlib.h
+TclClient.o: /usr/include/sgidefs.h /usr/include/sys/types.h
+TclClient.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+TclClient.o: TclClient.h /usr/local/include/tcl.h Client.h
+TkClient.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
+TkClient.o: /usr/include/string.h /usr/include/errno.h
+TkClient.o: /usr/include/sys/errno.h /usr/include/unistd.h
+TkClient.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
+TkClient.o: /usr/include/sys/select.h /usr/include/sys/socket.h
+TkClient.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+TkClient.o: /usr/local/include/tcl.h /usr/local/include/tk.h
+TkClient.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+TkClient.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+TkClient.o: /usr/include/stddef.h TkClient.h TclClient.h Client.h
+WinServer.o: WinServer.h Server.h ../graphics/Display.h
+WinServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+WinServer.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+WinServer.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
+WinServer.o: /usr/include/sys/select.h ../graphics/Geom.h
+WinServer.o: /usr/include/stdio.h /usr/include/math.h ../graphics/Color.h
+WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/Pattern.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+WinServer.o: ../graphics/DevError.h /usr/include/errno.h
+WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+WinServer.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
+WinServer.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+WinServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+WinServer.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+WinServer.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h
 client.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
-client.o: /usr/include/string.h ClientServer.h /usr/local/include/tcl.h
-client.o: /usr/local/include/tk.h /usr/include/X11/Xlib.h
-client.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-client.o: /usr/include/sys/select.h /usr/include/X11/X.h
-client.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-client.o: /usr/include/stddef.h ../graphics/Display.h
-client.o: ../graphics/DeviseTypes.h /usr/include/values.h
-client.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
-client.o: ../graphics/Color.h ../graphics/Dispatcher.h /usr/include/unistd.h
-client.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-client.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
-client.o: /usr/include/sys/errno.h
+client.o: /usr/include/string.h TkClient.h /usr/local/include/tk.h
+client.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+client.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+client.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+client.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h TclClient.h
+client.o: /usr/local/include/tcl.h Client.h
 server.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
-server.o: /usr/include/string.h /usr/include/assert.h ClientServer.h
-server.o: /usr/local/include/tcl.h /usr/local/include/tk.h
-server.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-server.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-server.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-server.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+server.o: /usr/include/string.h /usr/include/assert.h WinServer.h Server.h
 server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
-server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
-server.o: /usr/include/math.h ../graphics/Color.h ../graphics/Dispatcher.h
-server.o: /usr/include/unistd.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
-server.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+server.o: /usr/include/values.h ../graphics/DevStatus.h
+server.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
+server.o: /usr/include/sys/select.h ../graphics/Geom.h /usr/include/math.h
+server.o: ../graphics/Color.h ../graphics/Dispatcher.h ../graphics/DList.h
+server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+server.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
 server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
-server.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
-server.o: ../graphics/PSDisplay.h
+server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+server.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+server.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+server.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+server.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h

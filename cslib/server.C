@@ -16,9 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/12/12 05:49:46  weaver
+  *** empty log message ***
+
   Revision 1.18  1997/12/08 18:17:59  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_4 tag
   into the trunk (split of libcs into libdevcs and libdevwin).
+
+  Revision 1.17.4.5  1997/12/30 16:47:57  wenger
+  Removed single-client compile option to simplify the code.
+
+  Revision 1.17.4.4  1997/12/29 22:12:41  wenger
+  Got DEVise 1.4.7 to compile, link, and run on SGI.
+
+  Revision 1.17.4.3  1997/12/17 17:30:12  wenger
+  Got cslib to compile for Linux.
+
+  Revision 1.17.4.2  1997/12/09 16:03:57  wenger
+  Devise client now uses client/server library.
 
   Revision 1.17.4.1  1997/12/06 17:43:02  wenger
   Split libcs.a into libdevcs.a and libdevwin.a in preparation for
@@ -117,25 +132,22 @@
 #if defined(HPUX) || defined(SUN)
 #include <sys/unistd.h>	// for getcwd()
 #endif
+#if defined(LINUX)
+#include <unistd.h>	// for getcwd()
+#endif
 
 #include "WinServer.h"
+#include "ClientAPI.h"
 #include "DualWindowRep.h"
 
 static char *_progName = 0;
 
 
 class SampleWinServer : public WinServer {
-
   public:  
-    
-#if defined(SINGLE_CLIENT)
-    SampleWinServer(char *name, int port) : WinServer(name, port)
-    {}
-#else
     SampleWinServer(char *name, int port, int maxClients = 10)
 	: WinServer(name, port, maxClients)
 	{}
-#endif
     
     ~SampleWinServer()
     {
@@ -143,25 +155,14 @@ class SampleWinServer : public WinServer {
     }
     
   protected:
-
-#if defined(SINGLE_CLIENT)
-    virtual void ProcessCmd(int argc, char **argv);
-#else
     virtual void ProcessCmd(ClientID clientID, int argc, char **argv);
-#endif
     
-#if defined(SINGLE_CLIENT)
-    virtual void BeginConnection()
-#else
     virtual void BeginConnection(ClientID clientID)
-#endif
     {
-#if !defined(SINGLE_CLIENT)
 	if (_numClients > 1)
 	{
 	    return;
 	}
-#endif
 	WindowRep *win;
 	assert(_screenDisp);
 	
@@ -181,14 +182,14 @@ class SampleWinServer : public WinServer {
 	    Boolean winBoundary = true;
 	    
 	    win = _screenDisp->CreateWindowRep(_name, x, y, width, height,
-										   fgid, bgid, parent, minWidth,
+										   parent, minWidth,
 										   minHeight, relative, winBoundary);
 	    assert(win);
 	    win->RegisterCallback(this);
 	    _winReps.SetScreenWinRep(win);
 	    
 	    win = _fileDisp->CreateWindowRep(_name, x, y, width, height,
-										 fgid, bgid, parent, minWidth,
+										 parent, minWidth,
 										 minHeight, relative, winBoundary);
 	    _winReps.SetFileWinRep(win); 
 	    _winReps.SetScreenOutput();
@@ -228,6 +229,7 @@ class SampleWinServer : public WinServer {
 	    exit(1);
 	}
 
+#if !defined(SGI)
 	/* create Embedded Tk window */
 	if (_winReps.GetWindowRep()->ETk_WindowCount() == 0)
 	{
@@ -266,6 +268,7 @@ class SampleWinServer : public WinServer {
 					       w/4.0 - 4.0, h/4.0 - 4.0,
 					       image_name,
 					       0, NULL);
+#endif
 	
 	/* draw rubberband line */
 	_winReps.GetWindowRep()->DrawRubberband(10, 10, 100, 100);
@@ -375,18 +378,12 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->Flush();
     }
     
-#if defined(SINGLE_CLIENT)
-    virtual void EndConnection()
-#else
     virtual void EndConnection(ClientID clientID)
-#endif
     {
-#if !defined(SINGLE_CLIENT)
 	if (_numClients > 1)
 	{
 	    return;
 	}
-#endif
 	assert(_winReps.GetWindowRep() && _screenDisp);
 	_screenDisp->DestroyWindowRep(_winReps.GetScreenWinRep());
 	_fileDisp->DestroyWindowRep(_winReps.GetFileWinRep());
@@ -404,6 +401,7 @@ class SampleWinServer : public WinServer {
 			      int ylow, unsigned width,
 			      unsigned height) {
 	Redraw();
+        SendControl(API_CTL, "puts \"Handling resize.\"");
     }
     
     DualWindowRep _winReps;	// note: _not_ a pointer to a DualWindowRep
@@ -413,39 +411,32 @@ class SampleWinServer : public WinServer {
 
 };
 
-#if defined(SINGLE_CLIENT)
-void SampleWinServer::ProcessCmd(int argc, char **argv)
-#else
 void SampleWinServer::ProcessCmd(ClientID clientID, int argc, char **argv)
-#endif
 {
     // This function should act upon a client command (stored in argv)
     // and then return a positive acknowledgement by calling
-    // NetworkSend() with API_ACK or a negative acknowledgement by
-    // calling NetworkSend() with API_NAK.
+    // ReturnVal() with API_ACK or a negative acknowledgement by
+    // calling ReturnVal() with API_NAK.
     
     // This sample server recognizes only commands that begin with
     // the "file" or "edit" keywords, and the "print" and "exit" commands.
     
-    char *cmd = NetworkPaste(argc, argv);
-    assert(cmd);
+    GetCmd(argc, argv);
     
     int error = 0;
     char *errMsg = 0;
     
-    if (argc >= 1)
-    {
+    if (argc >= 1) {
 	if (!strcmp(argv[0], "file"))
-	    printf("Received file command from client: \"%s\"\n", cmd);
+	    printf("Received file command from client: \"%s\"\n", _cmd);
 	else if (!strcmp(argv[0], "edit"))
-	    printf("Received edit command from client: \"%s\"\n", cmd);
+	    printf("Received edit command from client: \"%s\"\n", _cmd);
 	else if (!strcmp(argv[0], "exit"))
 	    printf("Received exit command from client\n");
 	else if (!strcmp(argv[0], "print"))
 	    Print();
-	else
-	{
-	    printf("Received unrecognized command from client: \"%s\"\n", cmd);
+	else {
+	    printf("Received unrecognized command from client: \"%s\"\n", _cmd);
 	    errMsg = "Unrecognized command";
 	    error = 1;
 	}
@@ -457,50 +448,29 @@ void SampleWinServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 	error = 1;
     }
     
-    delete cmd;
+    delete _cmd;
     
     int result;
-    char *args[1];
+    char *arg;
     bool doClose = false;
     
-    if (error)
-    {
-	args[0] = errMsg;
-    }
-    else
-    {
-	args[0] = "done";
+    if (error) {
+	arg = errMsg;
+    } else {
+	arg = "done";
     }
     
-#if defined(SINGLE_CLIENT)
-    result = NetworkSend(_clientFd,
-			 error ? API_NAK : API_ACK,
-			 0, 1, args);
-#else
-    result = NetworkSend(_clients[clientID].fd,
-			 error ? API_NAK : API_ACK,
-			 0, 1, args);
-#endif
+    result = ReturnVal(clientID, error ? API_NAK : API_ACK, arg);
 
-    if (result < 0)
-    {
-	fprintf(stderr, "Client error.\n");
+    if (result < 0) {
 	doClose = true;
-    }
-    else if (argc == 1 && !strcmp(argv[0], "exit"))
-    {
+    } else if (argc == 1 && !strcmp(argv[0], "exit")) {
 	doClose = true;
     }
     
-    if (doClose)
-    {
-#if defined(SINGLE_CLIENT)
-	CloseClient();
-#else
+    if (doClose) {
 	CloseClient(clientID);
-#endif
     }
-
 }
 
 void SampleWinServer::Print()

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1997/11/12 15:45:01  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.10.2.1  1997/10/30 20:15:22  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -45,6 +49,29 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 CompDate.o: CompDate.h
+DeviseBatchClient.o: /usr/include/stdio.h /usr/include/libio.h
+DeviseBatchClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+DeviseBatchClient.o: /usr/include/stdlib.h /usr/include/features.h
+DeviseBatchClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+DeviseBatchClient.o: /usr/include/errno.h /usr/include/linux/errno.h
+DeviseBatchClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
+DeviseBatchClient.o: DeviseBatchClient.h ../graphics/DeviseTypes.h
+DeviseBatchClient.o: /usr/include/values.h ../graphics/DevStatus.h
+DeviseBatchClient.o: /usr/include/sys/types.h /usr/include/linux/types.h
+DeviseBatchClient.o: /usr/include/linux/posix_types.h
+DeviseBatchClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+DeviseBatchClient.o: /usr/include/sys/bitypes.h
+DeviseClient.o: /usr/include/stdio.h /usr/include/libio.h
+DeviseClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+DeviseClient.o: /usr/include/stdlib.h /usr/include/features.h
+DeviseClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+DeviseClient.o: /usr/include/errno.h /usr/include/linux/errno.h
+DeviseClient.o: /usr/include/asm/errno.h /usr/include/alloca.h DeviseClient.h
+DeviseClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DeviseClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+DeviseClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+DeviseClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+DeviseClient.o: /usr/include/sys/bitypes.h
 generic.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 generic.o: /usr/include/sys/cdefs.h /usr/include/errno.h
 generic.o: /usr/include/features.h /usr/include/linux/errno.h
@@ -62,26 +89,27 @@ generic.o: /usr/include/values.h /usr/include/ieee754.h
 generic.o: /usr/include/ieee854.h ../graphics/DeviseTypes.h
 generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+generic.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
 generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
 generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
 generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-generic.o: /usr/include/X11/Xutil.h ../graphics/DualWindowRep.h
-generic.o: ../graphics/ColorMgr.h ../graphics/Control.h
-generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-generic.o: ../graphics/Cursor.h ../graphics/DevFont.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-generic.o: /usr/include/stdlib.h /usr/include/alloca.h ../tape/HashTable.h
-generic.o: ../graphics.new/DataSourceFixedBuf.h
-generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+generic.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
+generic.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
+generic.o: ../tape/HashTable.h ../graphics.new/TDataViewX.h
+generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
+generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic.o: ../graphics/AttrList.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
+generic.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
 generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 generic.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 generic.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
@@ -104,19 +132,12 @@ generic.o: /usr/include/netdb.h /usr/include/paths.h
 generic.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
 generic.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 generic.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-generic.o: /usr/include/asm/byteorder.h ../graphics.new/UpdateLink.h
-generic.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
-generic.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-generic.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-generic.o: ../graphics.new/TDataViewX.h ../graphics.new/TDataCMap.h
-generic.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataBin.h
-generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
+generic.o: /usr/include/asm/byteorder.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/ParseCat.h ../graphics.new/DataSourceBuf.h
+generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
+generic.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+generic.o: ../graphics/XDisplay.h ../graphics/XWindowRep.h
+generic.o: ../graphics/XBitmap.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/libio.h
 testWindowSpeed.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 testWindowSpeed.o: /usr/include/time.h /usr/include/features.h
@@ -127,13 +148,12 @@ testWindowSpeed.o: /usr/include/linux/time.h /usr/include/sys/types.h
 testWindowSpeed.o: /usr/include/sys/bitypes.h ../graphics/TestControl.h
 testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
 testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Color.h
-testWindowSpeed.o: ../graphics/Pattern.h ../graphics/DList.h
-testWindowSpeed.o: ../graphics/Exit.h ../graphics/ClassDir.h
-testWindowSpeed.o: ../graphics/Display.h ../graphics/Geom.h
-testWindowSpeed.o: /usr/include/math.h /usr/include/huge_val.h
-testWindowSpeed.o: /usr/include/endian.h /usr/include/bytesex.h
-testWindowSpeed.o: /usr/include/nan.h
+testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
+testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
+testWindowSpeed.o: /usr/include/huge_val.h /usr/include/endian.h
+testWindowSpeed.o: /usr/include/bytesex.h /usr/include/nan.h
 testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 testWindowSpeed.o: /usr/include/ieee754.h /usr/include/ieee854.h
 testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
@@ -147,5 +167,4 @@ testWindowSpeed.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-testWindowSpeed.o: /usr/include/X11/Xutil.h ../graphics/DualWindowRep.h
-testWindowSpeed.o: ../graphics/ColorMgr.h
+testWindowSpeed.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h

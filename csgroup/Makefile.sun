@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/11/12 15:44:24  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
 # Revision 1.2.2.1  1997/10/30 20:14:57  wenger
 # Got DEVise to compile, link, and run on sun and linux; compiles but
 # doesn't link on hp (can't find memory mapping functions).  This includes
@@ -63,23 +67,22 @@ ClientServer.o: /usr/include/netdb.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 ClientServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 ClientServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 ClientServer.o: /usr/include/stddef.h /usr/include/sys/param.h
-ClientServer.o: /usr/include/machine/param.h /usr/include/sys/signal.h
-ClientServer.o: /usr/include/vm/faultcode.h ClientServer.h serverInterface.h
-ClientServer.o: dbase.h /usr/include/ndbm.h /usr/include/fcntl.h
-ClientServer.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
-ClientServer.o: ../graphics/Display.h ../graphics/DeviseTypes.h
-ClientServer.o: /usr/include/values.h ../graphics/DevStatus.h
-ClientServer.o: ../graphics/Geom.h /usr/include/math.h
-ClientServer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ClientServer.o: ../graphics/Color.h ../graphics/Dispatcher.h
+ClientServer.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+ClientServer.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+ClientServer.o: ClientServer.h serverInterface.h dbase.h /usr/include/ndbm.h
+ClientServer.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
+ClientServer.o: /usr/include/sys/stat.h ../graphics/Display.h
+ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
+ClientServer.o: /usr/include/math.h /usr/include/floatingpoint.h
+ClientServer.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
 ClientServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 ClientServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/DualWindowRep.h
-ClientServer.o: ../graphics/ColorMgr.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 client.o: /usr/include/stdio.h /usr/include/stdlib.h
 client.o: /usr/include/sys/stdtypes.h /usr/include/string.h ClientServer.h
 client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -93,15 +96,15 @@ client.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
 client.o: ../graphics/Display.h ../graphics/DeviseTypes.h
 client.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
 client.o: /usr/include/math.h /usr/include/floatingpoint.h
-client.o: /usr/include/sys/ieeefp.h ../graphics/Color.h
-client.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-client.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
-client.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+client.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
+client.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+client.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/ViewWin.h
+client.o: ../graphics/WindowRep.h ../graphics/Transform.h
+client.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+client.o: ../graphics/DevError.h /usr/include/errno.h
 client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
-client.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h
+client.o: ../graphics/GraphicsDebug.h
 server.o: /usr/include/stdio.h /usr/include/stdlib.h
 server.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 server.o: /usr/include/assert.h ClientServer.h /s/tcl/include/tcl.h
@@ -116,12 +119,12 @@ server.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
 server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
 server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
 server.o: /usr/include/math.h /usr/include/floatingpoint.h
-server.o: /usr/include/sys/ieeefp.h ../graphics/Color.h
-server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
-server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+server.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
+server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+server.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/ViewWin.h
+server.o: ../graphics/WindowRep.h ../graphics/Transform.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
-server.o: ../graphics/DualWindowRep.h ../graphics/ColorMgr.h
+server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h
