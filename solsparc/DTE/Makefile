@@ -13,6 +13,10 @@
 ############################################################
 
 #  $Log$
+#  Revision 1.9  1997/08/12 18:48:51  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.8  1997/03/20 19:56:41  wenger
 #  Minor mods to get latest version to compile on HP and SunOS; cleaned
 #  up DTE makefiles (moved all targets from architecture-specific makefiles
@@ -59,8 +63,9 @@ ARCH_ENDIAN = -DBYTE_BIG_ENDIAN -DWORD_BIG_ENDIAN
 
 
 DTE_DIR = ../../DTE
+
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/ $(DTE_DIR)/GUI
+     $(DTE_DIR)/Script $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris

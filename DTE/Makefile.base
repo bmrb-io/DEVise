@@ -25,25 +25,32 @@ DTE_DIR = ../../DTE
 
 PERL_INCL = -I$(PERL_CORE)
 
-READ_FLAGS = -L../unidata -lunidata -L$(PERL_CORE) -lperl
-
 DTE_INCLUDES = \
 	-I$(DTE_DIR)/Core \
 	-I$(DTE_DIR)/DeviseSpecific \
 	-I$(DTE_DIR)/StandAlone \
-	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 	-I$(DTE_DIR)/Script \
+	-I$(DTE_DIR)/GUI \
+     -I../../RTree/ \
+     -I../../RTree/src \
+     -I../../RTree/src/DBJussi \
+     -I../../RTree/src/PageClasses \
+     -I../../RTree/src/TypeSupport \
+     -I../../RTree/src/Common \
+     -I../../RTree/src/RTree \
+	-I../../tape \
 	-I../../graphics \
 	-I../../graphics.new \
-	-I$(DTE_DIR)/GUI \
 	-I../../unidata \
 	$(PERL_INCL)
+#	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 
 #no-comment is for the perl files
 
 CFLAGS = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
-	-pedantic $(OPTFLAG) \
+	$(OPTFLAG) \
 	-DUNIX -DLIBCS -DHAVE_CONFIG_H
+#	-pedantic
 #	-Wall -Wno-unused -Wno-comment \
 #	-fexternal-templates \
 
@@ -61,16 +68,13 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 
-ifdef NO_RTREE
-	CORE_SRC += RTreeRead.dummy.c IndexParse.dummy.c
-else
-	CORE_SRC += RTreeRead.c IndexParse.c
-endif
+STAND_ALONE_LIBS =
 
 ifdef NO_UNIDATA
 	CORE_SRC += DevRead.dummy.c
 else
 	CORE_SRC += DevRead.c
+	STAND_ALONE_LIBS += -L../unidata -lunidata -L$(PERL_CORE) -lperl
 endif
 
 # Set up for profiling.
@@ -84,66 +88,26 @@ DEVISE_SPECIFIC_SRC = \
 	
 GUI_SRC = CatalogComm.c DTEControl.c 
 
-GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_OBJ) \
+GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) \
 	ParseAPIDTE_SA.o
 
-DEVREAD_OBJ = \
-	../attrproj/ApInit.o \
-	../attrproj/ApParseCat.o \
-	../attrproj/Exit.o \
-	../attrproj/TData.o \
-	../attrproj/TDataAscii.o \
-	../attrproj/TDataAsciiInterp.o \
-	../attrproj/TDataBinary.o \
-	../attrproj/TDataBinaryInterp.o \
-	../attrproj/DataSourceSegment.o \
-	../graphics/Parse.o \
-	../graphics/AttrList.o \
-	../graphics/Time.o \
-	../graphics/Util.o \
-	../graphics/DevError.o \
-	../graphics/DevStatus.o \
-	../graphics.new/RecInterp.o \
-	../graphics.new/CompositeParser.o \
-	../graphics.new/FileIndex.o \
-	../graphics.new/Group.o \
-	../graphics.new/GroupDir.o \
-	../graphics.new/ItemList.o \
-	../graphics.new/DataSeg.o \
-	../graphics.new/DataSource.o \
-	../graphics.new/DataSourceFileStream.o \
-	../graphics.new/DataSourceTape.o \
-	../graphics.new/DataSourceBuf.o \
-	../graphics.new/DataSourceDQL.o \
-	../graphics.new/DevFileHeader.o \
-	../graphics.new/Version.o \
-	../graphics.new/MemMgr.o \
-	../graphics.new/DCE.o \
-	../tape/tapedrive.o \
-	../generic/CompDate.o 
-
-RTREE_SRC = \
-	bulk_data.C hfpage.C \
-	RTree.C genrtree.C port_genrtree.C type_compat.C \
-	bitmap.C key.C box.C heap.C
-
-RTREE_OBJ = $(RTREE_SRC:.C=.o)
-
 ifdef NO_RTREE
-	RTREE_SRC = RTreeInit.dummy.c
-	RTREE_OBJ = $(RTREE_SRC:.c=.o)
+	CORE_SRC += RTreeRead.dummy.c IndexParse.dummy.c SBMInit.dummy.c
+	STAND_ALONE_SRC =
+else
+	CORE_SRC += RTreeRead.c IndexParse.c SBMInit.c
+	STAND_ALONE_SRC = 
+	STAND_ALONE_LIBS += -L../RTree -lrtree -lsbm
 endif
-
-RTREE_UTIL = FormatVolume.c
-
-STAND_ALONE_SRC = main.c 
 
 SCRIPT_SRC = post-query.c util.c
 
-SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(RTREE_OBJ) $(SCRIPT_SRC:.c=.o) \
+CORE_OBJ = $(CORE_SRC:.c=.o)
+
+SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(SCRIPT_SRC:.c=.o) \
 	scriptServer.o
 
-SCRIPTSERVER_OBJ = $(CORE_SRC:.c=.o) $(RTREE_OBJ) $(SCRIPT_SRC:.c=.o) \
+SCRIPTSERVER_OBJ = $(CORE_SRC:.c=.o) $(SCRIPT_SRC:.c=.o) \
 	scriptServer_CS.o
 
 SCRIPTCLIENT_SRC = scriptClient.c
@@ -152,40 +116,43 @@ SCRIPTCLIENT_OBJ = $(SCRIPTCLIENT_SRC:.c=.o)
 
 LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
-LIBOBJ = $(LIBSRC:.c=.o) $(RTREE_OBJ)
+LIBOBJ = $(LIBSRC:.c=.o)
 
-STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
-	$(RTREE_OBJ)
+STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.c=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) unidata dte FormatVolume convert_bulk
+all: $(LIBNAME) unidata dte
 lib: $(LIBNAME)
 
 .PHONY: unidata 
 
 unidata:
-	cd ../unidata/; make libunidata.a; cd ../DTE
+	cd ../unidata/ && make libunidata.a && cd ../DTE
 
-dte: $(STAND_ALONE_OBJ) unidata
-	$(CC) -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+rtree:
+	cd ../RTree/ && make lib && make librarysbm && cd ../DTE
 
-pure: $(STAND_ALONE_OBJ) unidata
-	purify $(CC) -o dte.pure $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
+	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+pure: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
+	purify $(CC) -o dte.pure $< $(STAND_ALONE_OBJ) \
+	$(CORE_OBJ) $(STAND_ALONE_LIBS) $(ARCH_LDFLAGS) \
+	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 quant: $(STAND_ALONE_OBJ) unidata
 	quantify $(CC) -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
-	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 script: $(SCRIPT_OBJ) unidata
 	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) \
-	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 scriptServer:	$(SCRIPTSERVER_OBJ) unidata
 	$(CC) -o scriptServer $(SCRIPTSERVER_OBJ) $(ARCH_LDFLAGS) \
-	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
+	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
 
 scriptClient:	$(SCRIPTCLIENT_OBJ)
 	$(CC) -o scriptClient $(SCRIPTCLIENT_OBJ) $(ARCH_LDFLAGS) \
@@ -193,13 +160,7 @@ scriptClient:	$(SCRIPTCLIENT_OBJ)
 
 gui: $(GUI_OBJ)
 	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) \
-	$(READ_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
-
-FormatVolume: FormatVolume.C
-	$(CC) $(ARCH_ENDIAN) $< -o $@
-
-convert_bulk: convert_bulk.C correct_math.C heap.o
-	$(CC) $(ARCH_ENDIAN) heap.o $< -o $@
+	$(RTREE_FLAGS) $(UNIDATA_FLAGS) $(ARCH_GUISYSLIBS) $(ARCH_LDPOST)
 
 $(LIBNAME): $(LIBOBJ)
 	ar cr $@ $(LIBOBJ)
@@ -223,7 +184,7 @@ scriptServer_CS.o : scriptServer.c scriptServer.o common.h
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte FormatVolume convert_bulk gui core script
+	-rm $(LIBNAME) dte gui core script
 
 mostlyclean:
 	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ)

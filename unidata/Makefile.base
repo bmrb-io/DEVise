@@ -70,6 +70,8 @@ OBJFILES = \
 
 default: all
 
+lib: libunidata.a
+
 all: libunidata.a umain
 
 libunidata.a: $(LIB_OBJS)

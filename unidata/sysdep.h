@@ -65,8 +65,8 @@
   Henrik                 Changed to support autoconf for Unix
                          
  */
-#ifndef SYSDEP_H
-#define SYSDEP_H
+#ifndef DTE_SYSDEP_H
+#define DTE_SYSDEP_H
 
 #define NVOID
 

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.21  1997/06/16 16:06:10  donjerko
+# New memory management in exec phase. Unidata included.
+#
 # Revision 1.20  1997/06/11 18:34:48  wenger
 # Got xvertext set up to compile on hp, linux, solaris, solsparc, and sun.
 #
@@ -44,7 +47,10 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	attrproj devread unidata DTE LM xvertext
+	unidata DTE RTree LM xvertext
+
+#devread is obsolete
+#attrproj is broken
 
 MODULES = $(LIBMODULES) parser generic multi
 
@@ -61,8 +67,9 @@ clean mostlyclean:
 date:
 	cd generic; make CompDate.o
 
+#	for i in $(LIBMODULES); do echo -- $$i; cd $$i; make all; cd ..; done
 libs: date
-	for i in $(LIBMODULES); do echo -- $$i; cd $$i; make all; cd ..; done
+	$(foreach i, $(LIBMODULES), make -C $i lib &&) echo 
 
 generic: libs
 	cd generic; make generic; cd ..
