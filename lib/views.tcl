@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/06/15 14:26:28  jussi
+#  Added DoSetFgColor procedure.
+#
 #  Revision 1.9  1996/06/13 20:15:26  jussi
 #  Fixed bug in DoViewRemove.
 #
@@ -63,7 +66,7 @@ proc RefreshAllViews {} {
 
 proc ProcessViewSelected { view } {
     global curView lastView historyWinOpened queryWinOpened
-    global stackWinOpened
+    global stackWinOpened query3DWinOpened
 
     if {$view == $curView} {
 	return
@@ -79,6 +82,10 @@ proc ProcessViewSelected { view } {
     ClearHistory
 
     set curView $view
+
+    if {$query3DWinOpened} {
+	Update3DLocation
+    }
 
     if {$curView == ""} {
 	if {$queryWinOpened} {
@@ -123,10 +130,14 @@ proc ProcessViewSelected { view } {
 ############################################################
 
 proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked } {
-    global curView historyWinOpened queryWinOpened
+    global curView historyWinOpened queryWinOpened query3DWinOpened
 
     if {$view != $curView} {
 	return
+    }
+
+    if {$query3DWinOpened} {
+	Update3DLocation
     }
 
     if {$queryWinOpened} {
