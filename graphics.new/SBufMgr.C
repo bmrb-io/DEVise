@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/01 20:11:58  jussi
+  MemPool object now forks a separate memory pool process. Got rid
+  of the option of having processes sharing data via pipes. (Pipes
+  still used for sharing control information.) SBufMgr object now
+  compatible with process/shared memory environment.
+
   Revision 1.4  1996/10/02 21:52:36  jussi
   Switching from HTTP writing to reading is now done in
   UnixWebIOTask::DeviceIO().
@@ -498,7 +504,7 @@ void *UnixIOTask::ProcessReq()
         DeviceIO(req, reply);
 
         if (req.type == WriteReq) {
-            DOASSERT(req.addr == reply.addr, "Invalid page address");
+            DOASSERT(req.addr == reply.addr, "Invalid page address 1");
             // Deallocate page since it was not buffered
             if (BufferDealloc(MemPool::Cache, req.addr) < 0)
                 break;
@@ -1875,7 +1881,7 @@ int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
         PageFrame &frame = _frames[index];
         if (!frame.valid)
             printf("frame valid %d\n", frame.valid);
-        DOASSERT(frame.valid, "Invalid page frame");
+        DOASSERT(frame.valid, "Invalid page frame 1");
         frame.pinCnt++;
         if (!frame.page)
             newPage = true;
@@ -1897,7 +1903,7 @@ int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     }
 
     PageFrame &frame = _frames[index];
-    DOASSERT(frame.valid, "Invalid page frame");
+    DOASSERT(frame.valid, "Invalid page frame 2");
     frame.refbit = true;
 
     // When data is piped from I/O devices, the I/O tasks will not allocate
@@ -1916,26 +1922,21 @@ int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     }
 
     if (read && newPage) {
-        // Cannot allow IOTask->Read() to modify frame.page
-        // when there is no mutex protection
-        char *page = frame.page;
-        // Release mutex so we don't block others while performing
-        // the I/O
+        frame.iopending = true;
         ReleaseMutex();
         if ((status = stream->Read(((unsigned long long)pageNo) *
                                    ((unsigned long long)_pageSize),
-                                   _pageSize, page)) < 0) {
+                                   _pageSize, frame.page)) < 0) {
             printf("Cannot read page\n");
             return status;
         }
-        // Re-acquire mutex
         AcquireMutex();
-        frame.page = page;
+        frame.iopending = false;
         frame.size = status;
     }
 
     page = frame.page;
-    DOASSERT(page, "Invalid page address");
+    DOASSERT(page, "Invalid page address 2");
 
     if (!read && newPage)
         memset(page, 0, _pageSize);
@@ -1974,7 +1975,7 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
     }
 
     PageFrame &frame = _frames[index];
-    DOASSERT(frame.valid, "Invalid page frame");
+    DOASSERT(frame.valid, "Invalid page frame 3");
 
     if (!frame.pinCnt) {
         printf("Page pin count zero\n");
@@ -1990,7 +1991,7 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
     // See if this is the last pin of this page
 
     if (frame.pinCnt == 1) {
-        DOASSERT(frame.page, "Invalid page address");
+        DOASSERT(frame.page, "Invalid page address 3");
         if (!frame.dirty) {
             // Release unpinned non-dirty pages back to memory pool
 #if DEBUGLVL >= 5
@@ -2001,16 +2002,13 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
 #if DEBUGLVL >= 5
             printf("Forcibly writing page %ld to device\n", frame.addr.pageNo);
 #endif
-            // Cannot allow IOTask->Write() to modify frame.page
-            // when there is no mutex protection
-            char *page = frame.page;
-            // Release mutex so we don't block others while performing
-            // the I/O
+            frame.iopending = true;
             ReleaseMutex();
             // Write dirty pages if forced
             int status = frame.addr.stream->Write(
                             ((unsigned long long)frame.addr.pageNo) *
-                            ((unsigned long long)_pageSize), frame.size, page);
+                            ((unsigned long long)_pageSize),
+                                                  frame.size, frame.page);
             if (status < 0)
                 return status;
             if (status < _pageSize) {
@@ -2018,9 +2016,8 @@ int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
                         status, _pageSize);
                 return -1;
             }
-            // Re-acquire mutex
             AcquireMutex();
-            frame.page = page;
+            frame.iopending = false;
             if (frame.page)
                 _pool.Release(MemPool::Cache, frame.page);
 #ifndef SHARED_MEMORY
@@ -2061,16 +2058,13 @@ int SBufMgr::_UnPin(IOTask *stream, Boolean dirty)
 #if DEBUGLVL >= 5
                 printf("Flushing page %ld to device\n", frame.addr.pageNo);
 #endif
-                DOASSERT(frame.page, "Invalid page address");
-                // Cannot allow IOTask->Write() to modify frame.page
-                // when there is no mutex protection
-                char *page = frame.page;
-                // Release mutex so we don't block others while performing
-                // the I/O
+                DOASSERT(frame.page, "Invalid page address 4");
+                frame.iopending = true;
                 ReleaseMutex();
                 status = frame.addr.stream->Write(
                             ((unsigned long long)frame.addr.pageNo) *
-                            ((unsigned long long)_pageSize), frame.size, page);
+                            ((unsigned long long)_pageSize),
+                                                  frame.size, frame.page);
                 if (status < 0)
                     return status;
                 if (status < _pageSize) {
@@ -2078,9 +2072,8 @@ int SBufMgr::_UnPin(IOTask *stream, Boolean dirty)
                             status, _pageSize);
                     return -1;
                 }
-                // Re-acquire mutex
                 AcquireMutex();
-                frame.page = page;
+                frame.iopending = false;
             }
             if (frame.page)
                 _pool.Release(MemPool::Cache, frame.page);
@@ -2124,7 +2117,9 @@ int SBufMgr::AllocFrame()
     }
 
     PageFrame &frame = _frames[i];
-    DOASSERT(!frame.valid, "Invalid page frame");
+    if (frame.valid)
+        Dump();
+    DOASSERT(!frame.valid, "Invalid page frame 4");
 
     return i;
 }
@@ -2141,7 +2136,8 @@ void SBufMgr::Dump()
         PageFrame &frame = _frames[i];
         printf("%d:", i);
         if (frame.valid)
-            printf(" valid, pinCnt is %d\n", frame.pinCnt);
+            printf(" valid, I/O task 0x%p, page %ld, pinCnt is %d\n",
+                   frame.addr.stream, frame.addr.pageNo, frame.pinCnt);
         else
             printf(" invalid\n");
     }
@@ -2168,11 +2164,15 @@ int SBufMgrLRU::PickVictim()
             printf("Clock hand now at %d\n", _clockHand);
 #endif
             PageFrame &frame = _frames[_clockHand];
+            // If no pages available in memory pool, reuse pages
+            // in frames that are not pinned; otherwise find an
+            // unused frame and allocate page from memory pool.
             if (!freePool) {
-                if (frame.valid && !frame.pinCnt && frame.page)
+                if (frame.valid && !frame.pinCnt && frame.page
+                    && !frame.iopending)
                     break;
             } else {
-                if (!frame.valid || !frame.pinCnt)
+                if (!frame.valid || (!frame.pinCnt && !frame.iopending))
                     break;
 #if DEBUGLVL >= 9
                 printf("Frame %d pinned with pinCnt %d\n", i, frame.pinCnt);
@@ -2183,10 +2183,12 @@ int SBufMgrLRU::PickVictim()
         if (i >= _numFrames)            // all pages pinned down?
             return -1;
 
-        PageFrame &frame = _frames[_clockHand];
+        int selectedFrame = _clockHand;
+
+        PageFrame &frame = _frames[selectedFrame];
 
         if (!frame.valid)
-            return _clockHand;
+            return selectedFrame;
 
         if (frame.refbit) {             // page recently referenced?
             frame.refbit = false;
@@ -2202,11 +2204,13 @@ int SBufMgrLRU::PickVictim()
 #endif
 
         if (frame.dirty) {              // page has unwritten data on it
-            DOASSERT(frame.page, "Invalid page address");
+            DOASSERT(frame.page, "Invalid page address 5");
 #if DEBUGLVL >= 5
             printf("Flushing page %ld from frame %d\n", frame.addr.pageNo,
-                   _clockHand);
+                   selectedFrame);
 #endif
+            frame.iopending = true;
+            ReleaseMutex();
             int status = frame.addr.stream->Write(
                             ((unsigned long long)frame.addr.pageNo) *
                             ((unsigned long long)_pageSize),
@@ -2218,12 +2222,19 @@ int SBufMgrLRU::PickVictim()
                         status, _pageSize);
                 return -1;
             }
+            AcquireMutex();
+            frame.iopending = false;
+#if DEBUGLVL >= 5
+            printf("Flushed page %ld from frame %d\n", frame.addr.pageNo,
+                   selectedFrame);
+#endif
         }
 
         if (frame.page)
             _pool.Release(MemPool::Cache, frame.page);
+
         frame.Clear();
 
-        return _clockHand;
+        return selectedFrame;
     }
 }

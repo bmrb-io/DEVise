@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/01 20:11:59  jussi
+  MemPool object now forks a separate memory pool process. Got rid
+  of the option of having processes sharing data via pipes. (Pipes
+  still used for sharing control information.) SBufMgr object now
+  compatible with process/shared memory environment.
+
   Revision 1.3  1996/10/02 19:48:33  jussi
   Added support for writing data through an HTTP connection.
   Also made it possible to use simple POST/GET transactions
@@ -491,6 +497,7 @@ class PageFrame {
     unsigned valid: 1;                  // true if frame information is valid
     unsigned dirty: 1;                  // true if page is dirty
     unsigned refbit: 1;                 // true if page referenced recently
+    unsigned iopending: 1;              // true if I/O pending for page
 
   // Initialize frame for page
 
@@ -498,7 +505,7 @@ class PageFrame {
       pinCnt = 0;
       addr.stream = 0;
       addr.pageNo = -1;
-      valid = dirty = refbit = false;
+      valid = dirty = refbit = iopending = false;
   }
 
   // Set frame fields
