@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/27 15:44:58  jussi
+  Added checking of exceptions to select(). A client is called
+  when there is a read or exception event.
+
   Revision 1.18  1996/06/24 20:37:21  jussi
   Removed an ifdef condition left from previous editing sessions.
 
@@ -559,6 +563,8 @@ void Dispatcher::DoCleanup()
       callback->callBack->Cleanup();
   }
   _allCallbacks.DoneIterator(index);
+
+  ControlPanel::Instance()->DestroySessionData();
 }
 
 void Dispatcher::ActivateDispatcher()
