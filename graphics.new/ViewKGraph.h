@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/31 15:42:49  jussi
+  Stores a list of views, not a list of statistics objects.
+
   Revision 1.2  1995/12/08 23:44:05  ravim
   Callbacks added.
 
@@ -29,13 +32,14 @@
 #include "DeviseTypes.h"
 #include "ViewGraph.h"
 #include "BasicStats.h"
+#include "ViewCallback.h"
 #include "KGraph.h"
 
-class ViewKGraph
+class ViewKGraph : public ViewCallback
 {
 public:
   ViewKGraph();
-  ~ViewKGraph();
+  virtual ~ViewKGraph();
 
   void Init();
   
@@ -53,11 +57,10 @@ public:
   // Call which displays the graph corr. to the specified statistic
   Boolean Display(int statnum);
 
-  // CallBack from a statistic class object which means that some of the
-  // data to be displayed has changed.
-  void Callback(BasicStats *bs);
-
 private:
+  virtual void ViewRecomputed(View *view);
+  virtual void ViewDestroyed(View *view);
+
   // Number of views displayed
   int _numviews;
   ViewGraph **_view_list;
