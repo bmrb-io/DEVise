@@ -12,13 +12,12 @@ ApInit.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
 ApInit.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h /usr/include/stdlib.h
 ApInit.o: /usr/include/string.h /usr/include/signal.h
 ApInit.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-ApInit.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
-ApInit.o: ../graphics/BufPolicy.h ../graphics/Time.h ../graphics/Journal.h
-ApInit.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/ctype.h
-ApInit.o: /usr/include/math.h /usr/include/floatingpoint.h
-ApInit.o: /usr/include/sys/ieeefp.h
+ApInit.o: /usr/include/sys/machsig.h ../graphics/Exit.h ApInit.h
+ApInit.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h
+ApInit.o: ../graphics/Time.h ../graphics/Journal.h ../graphics/VisualArg.h
+ApInit.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Timer.h
+ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+ApInit.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApParseCat.o: ApParseCat.h ../graphics/DeviseTypes.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
