@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/14 17:44:06  jussi
+  Added checking of the return value from the new operator.
+
   Revision 1.6  1996/01/15 21:57:10  jussi
   Minor fixes.
 
@@ -1197,9 +1200,9 @@ void BufMgrFull::Clear()
   _rangeAlloc->Clear();
 }
 
-/* Clear buffers occupied by GData */
+/* Clear buffers occupied by TData/GData */
 
-void BufMgrFull::ClearGData(GData *gdata)
+void BufMgrFull::ClearData(TData *data)
 {
   int numArrays = _rangeArrays->NumArrays();
   for(int i = 0; i < numArrays; i++) {
@@ -1207,10 +1210,10 @@ void BufMgrFull::ClearGData(GData *gdata)
     int j = 0;
     while ( j < size) {
       RangeInfo *info = _rangeArrays->GetRange(i,j);
-      if (info->GetTData() == gdata) {
+      if (info->GetTData() == data) {
 	/* clear this one */
-	UnlinkRange(info,i,j);
-	ReportDeleted(info->GetTData(),info->low, info->high);
+	UnlinkRange(info, i, j);
+	ReportDeleted(data, info->low, info->high);
 	_rangeAlloc->FreeRange(info);
 	size--;
       } else

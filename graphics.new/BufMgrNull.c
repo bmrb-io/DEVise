@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/14 17:41:15  jussi
+  Added checking of return values from the new operator.
+
   Revision 1.3  1996/01/15 16:53:16  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -183,8 +186,8 @@ void BufMgrNull::Clear()
 {
 }
 
-/* Clear buffers occupied by GData */
+/* Clear buffers occupied by TData/GData */
 
-void BufMgrNull::ClearGData(GData *)
+void BufMgrNull::ClearData(TData *data)
 {
 }

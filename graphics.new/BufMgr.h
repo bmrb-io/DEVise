@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 16:53:48  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:12  jussi
   Added CVS header.
 */
@@ -50,8 +53,8 @@ public:
   /* Reinitilalize Free all buffers */
   virtual void Clear() = 0;
 
-  /* Clear buffers occupied by GData */
-  virtual void ClearGData(GData *gdata) = 0;
+  /* Clear buffers occupied by TData/GData */
+  virtual void ClearData(TData *data) = 0;
 
   /***** Retrieving/Freeing records *****/
 
