@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/12/18 22:12:13  beyer
+  Query abort (especially for statistical views) bug fixed.
+
   Revision 1.46  1996/11/26 16:51:39  ssl
   Added support for piled viws
 
@@ -561,13 +564,8 @@ void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
   WindowRep *win = GetWindowRep();
 
   if (IsInPileMode()) {
-    ViewWin *parent = GetParent();
-    DOASSERT(parent, "View has no parent");
-    int index = parent->InitIterator();
-    DOASSERT(parent->More(index), "Parent view has no children");
-    ViewWin *vw = parent->Next(index);
+    ViewWin *vw = GetFirstSibling();
     win = vw->GetWindowRep();
-    parent->DoneIterator(index);
 #ifdef DEBUG
     printf("Drawing view %s in view %s, window 0x%p\n",
            GetName(), vw->GetName(), win);
