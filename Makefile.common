@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1997/08/12 18:45:25  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.15  1997/06/16 16:04:18  donjerko
 #  New memory management in exec phase. Unidata included.
 #
@@ -111,7 +115,7 @@ else
     ifeq ($(DEV_DEBUG),-1)
 	OPTFLAG = -O
     else
- 	OPTFLAG = -g
+ 	OPTFLAG = -gstabs
     endif
 endif
 
