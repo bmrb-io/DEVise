@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1996/06/27 17:21:13  jussi
+#  Fixed minor bug in saving 3D location.
+#
 #  Revision 1.13  1996/06/27 00:00:35  jussi
 #  Coordinates of 3D focal point are now saved and displayed.
 #
@@ -525,7 +528,7 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
 	foreach class [DEVise get tdata] {
 	    foreach inst [DEVise get tdata $class] {
 		set params [DEVise getCreateParam tdata $class $inst]
-		set fileAlias [lindex $params 1]
+		set fileAlias [lindex $params 0]
 		set sourcedef $sourceList($fileAlias)
 
 		if {$withData} {
@@ -567,9 +570,10 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
     foreach class [DEVise get tdata] {
 	foreach inst [DEVise get tdata $class] {
 	    set params [DEVise getCreateParam tdata $class $inst]
-	    set filePath [lindex $params 0]
-	    set fileAlias [lindex $params 1]
-	    set fileDict [DictInsert $fileDict $fileAlias tdata_$fileNum]
+	    set sname [lindex $params 0]
+	    set stype [lindex $params 1]
+	    set param [lindex $params 2]
+	    set fileDict [DictInsert $fileDict $sname tdata_$fileNum]
 	    set tdataVar tdata_$fileNum
 	    if {$asTemplate} {
 		puts $fileId "set $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
@@ -585,17 +589,18 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
 		puts $fileId "\t\treturn 0"
 		puts $fileId "\t\}"
 		puts $fileId "\} else \{"
-		puts $fileId "\tset $tdataVar \{$fileAlias\}"
+		puts $fileId "\tset $tdataVar \{$sname\}"
 		puts $fileId "\tset source \[OpenDataSource $$tdataVar]"
 		puts $fileId "\tif \{\$source == \"\"\} \{"
 		puts $fileId "\t\treturn 0"
 		puts $fileId "\t\}"
-		puts $fileId "\tset dispname \[lindex \$source 0\]"
-		puts $fileId "\tset filePath \[lindex \$source 1\]"
-		puts $fileId "\tDEVise create tdata $class \$filePath \$dispname"
-		puts $fileId "\tif \{\$dispname != \$$tdataVar\} \{"
+		puts $fileId "\tset sname \[lindex \$source 0\]"
+		puts $fileId "\tset param \[lindex \$source 1\]"
+		puts $fileId "\tset stype \[lindex \$source 2\]"
+		puts $fileId "\tDEVise create tdata $class \$sname \$stype \$param"
+		puts $fileId "\tif \{\$sname != \$$tdataVar\} \{"
 		puts $fileId "\t\tset loadPixmap 0"
-		puts $fileId "\t\tset $tdataVar \$dispname"
+		puts $fileId "\t\tset $tdataVar \$sname"
 		puts $fileId "\t\}"
 		puts $fileId "\}"
 	    }
