@@ -1,0 +1,22 @@
+depend:
+	makedepend -fMakefile.sun \
+		-I../crsp -I../tape -I/s/tcl/include \
+		*.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+cal.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+cal.o: cal.h /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+cal.o: /usr/include/sys/uio.h /usr/include/unistd.h
+crsp_index.o: /usr/include/stdio.h /usr/include/sys/types.h
+crsp_index.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
+crsp_index.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+crsp_index.o: /usr/include/sys/fcntlcom.h sec.h /usr/include/sys/uio.h
+crsp_index.o: /usr/include/unistd.h
+main.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+main.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
+main.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h sec.h
+main.o: /usr/include/sys/uio.h /usr/include/unistd.h
+sec.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+sec.o: sec.h /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+sec.o: /usr/include/sys/uio.h /usr/include/unistd.h

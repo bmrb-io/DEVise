@@ -1,0 +1,32 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../crsp -I../tape -I/usr/X11R6/include \
+		-I/s/tcl/include *.C
+
+# DO NOT DELETE
+
+cal.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+cal.o: /usr/include/stdlib.h cal.h /usr/include/sys/types.h
+cal.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+cal.o: /usr/include/sys/select.h /usr/include/sys/time.h
+cal.o: /usr/include/sys/time.h /usr/include/sys/uio.h /usr/include/unistd.h
+cal.o: /usr/include/sys/unistd.h
+crsp_index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+crsp_index.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+crsp_index.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/sys/time.h
+crsp_index.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+crsp_index.o: /usr/include/sys/fcntl.h sec.h /usr/include/sys/uio.h
+crsp_index.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+main.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+main.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+main.o: /usr/include/sys/select.h /usr/include/sys/time.h
+main.o: /usr/include/sys/time.h /usr/include/sys/stat.h /usr/include/fcntl.h
+main.o: /usr/include/sys/fcntl.h sec.h /usr/include/sys/uio.h
+main.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+sec.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+sec.o: /usr/include/stdlib.h sec.h /usr/include/sys/types.h
+sec.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+sec.o: /usr/include/sys/select.h /usr/include/sys/time.h
+sec.o: /usr/include/sys/time.h /usr/include/sys/uio.h /usr/include/unistd.h
+sec.o: /usr/include/sys/unistd.h
