@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/01/10 19:02:36  jussi
+  Reorganized code so that fewer function prototypes are needed.
+  Removed bug which occurred when date hi/lo fields were defined
+  in string form; Parse() uses static argument vectors which
+  would overlay the attribute name when attrList->InsertAttr
+  is called.
+
   Revision 1.11  1996/01/10 00:39:40  jussi
   Added support for storing date values as hi/lo values.
 
@@ -65,7 +72,7 @@
 #include "Group.h"
 #include "GroupDir.h"
 
-#define DEBUG
+//#define DEBUG
 
 GroupDir *gdir = new GroupDir();
 
@@ -1105,13 +1112,12 @@ char *ParseCatLogical(char *catFile, char *sname)
       if (numArgs == 0)
 	continue;
      
-      /*
-	 printf("parse: ");
-	 for (ind=0; ind < numArgs; ind++){
-	 printf("'%s' ", args[ind]);
-	 }
-	 printf("\n");
-	 */
+#ifdef DEBUG
+      printf("parse: ");
+      for(int ind = 0; ind < numArgs; ind++)
+	printf("'%s' ", args[ind]);
+      printf("\n");
+#endif
 
       if (strcmp(args[0], "group") == 0)
       {
