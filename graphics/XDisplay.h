@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/23 15:34:43  jussi
+  Added mechanism for bypassing the Devise internal color map.
+
   Revision 1.15  1996/07/18 01:20:14  jussi
   Added ExportImage() and ConvertAndWriteGIF() methods.
 
@@ -144,7 +147,7 @@ protected:
     /* Convert drawable to GIF and write to file */
     void ConvertAndWriteGIF(Drawable drawable, 
                             XWindowAttributes xwa,
-                            char *filename);
+                            FILE *fp);
 
     Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
 			 float &error);
