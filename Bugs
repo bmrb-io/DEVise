@@ -887,8 +887,22 @@ Num Date        Status  Description
 219 09/11/97    OPEN    Group by's are not working.  Seems related to new
                         schema file format. (ksb)
 
-220 09/11/97    OPEN    '5' doesn't go to 0 on bar graphs. (ksb)
+220 09/11/97    OPEN    '5' doesn't go to 0 for Y min on bar graphs. (ksb)
 
+221 09/12/97	OPEN	Point query doesn't seem to work right in "Number of
+			Occurences for Each Word" view of WordCount demo (too
+			many records are shown). (rkw)
+
+222 09/12/97	OPEN	Wrong line in comment file is highlighed in Maps_Tk
+			demo. (rkw)
+
+223 09/15/97	OPEN	In bank1 BankOneChecks demo -- try to view mapping
+			in 'Weekly Histo' or 'Yearly Histo' view -> DTE fails
+			an assertion. (rkw)
+
+224 09/15/97	OPEN	In bank1 BankOneChecks demo -- if you make View 4 a
+			slave of AccountLink the histogram in the 'Weekly
+			Histo' view gets goofed up for some reason. (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
