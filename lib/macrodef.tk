@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.36  1996/02/01 18:31:13  jussi
+#	Improved handling of errors in extracting from data from
+#	external source.
+#
 #	Revision 1.35  1996/01/30 00:06:13  jussi
 #	Minor improvements in visual appearance.
 #
@@ -2148,9 +2152,8 @@ proc MacroImport {mode} {
 
 proc MacroDefAutoNew {tdata} {
     global x yvar viewselname bgcolor layoutsel linksel winnamesel titlesel
-    global xaxissel yaxissel
+    global xaxissel yaxissel cancel
     global sourceList macroSelectColor macroMenuSelectColor
-    global cancel DEViseColors
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
@@ -2163,11 +2166,11 @@ proc MacroDefAutoNew {tdata} {
     set topgrp [SelectTopGroup $schemaname]
 
     toplevel .auto
-    wm title .auto "Automatic Views"
-    wm geometry .auto +100+100
+    wm title .auto "Define Visualization"
+    wm geometry .auto +50+50
     selection clear .auto
 
-    label .auto.label -text "Select Auto Parameters"
+    label .auto.label -text "Define Visualization Parameters"
     frame .auto.top
     frame .auto.mid
     frame .auto.bot
@@ -2249,17 +2252,9 @@ proc MacroDefAutoNew {tdata} {
     set layoutsel Vertical
 
     label .auto.colorsel.label -text "Background:"
-    menubutton .auto.colorsel.color -relief raised \
-	    -textvariable bgcolor -menu .auto.colorsel.color.menu \
-	    -width 15
+    button .auto.colorsel.color -width 15 -textvariable bgcolor \
+	-command "getColor bgcolor"
     pack .auto.colorsel.label .auto.colorsel.color -side left -padx 1m
-
-    menu .auto.colorsel.color.menu -tearoff 0
-    foreach color $DEViseColors {
-	set name [lindex $color 1]
-	.auto.colorsel.color.menu add radiobutton -label $name \
-		-variable bgcolor -value $name
-    }
     set bgcolor AntiqueWhite
 
     checkbutton .auto.titlesel.title -text Title -variable titlesel
