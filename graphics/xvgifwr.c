@@ -1,12 +1,18 @@
 /*
+  ========================================================================
   This file taken from xv source distribution and modified locally.
   See attached copyright notice.
+  ========================================================================
 */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/21 19:13:48  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.3  1996/08/29 22:14:49  guangshu
   Minor change.
 

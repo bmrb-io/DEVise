@@ -1,12 +1,19 @@
 /*
+  ========================================================================
   This file taken from xv source distribution and modified locally.
   See attached copyright notice.
+  ========================================================================
 */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.3  1997/01/14 20:05:33  wenger
+  Fixed some compile warnings; fixed relative positions of OK/Cancel
+  buttons in link GUI; removed some debug code I accidentally left
+  in place.
+
   Revision 1.2  1996/11/21 19:13:47  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.

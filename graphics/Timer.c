@@ -14,9 +14,12 @@
 
 /*
   $Id$
-  $Id$
 
   $Log$
+  Revision 1.15  1998/03/10 19:52:36  wenger
+  Merged cleanup_1_4_7_br_10 through cleanup_1_4_7_br_11 (fixes callback
+  list problems on SGIs).
+
   Revision 1.14  1998/02/09 17:28:44  wenger
   Added more diagnostic/debug output.
 

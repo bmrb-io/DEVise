@@ -1,12 +1,18 @@
 /*
+  ========================================================================
   This file taken from xv source distribution and modified locally.
   See attached copyright notice.
+  ========================================================================
 */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/21 19:13:49  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.2  1996/04/20 19:52:33  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead

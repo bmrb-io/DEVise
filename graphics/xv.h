@@ -1,12 +1,17 @@
 /*
+  ========================================================================
   This file taken from xv source distribution and modified locally.
   See attached copyright notice.
+  ========================================================================
 */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/26 00:19:11  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.1  1996/04/17 20:32:35  jussi
   Initial revision.
 */
