@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.7  1995/11/10 21:56:18  jussi
+#	Minor fix.
+#
 #	Revision 1.6  1995/11/10 21:45:09  jussi
 #	Changed interface to be through sources.tcl.
 #
@@ -48,7 +51,7 @@ proc issm_unique_name {symbol} {
 
 ############################################################
 
-proc issm_extract_data {tapedrive filenum blocksize key file} {
+proc issm_extract_data {tapedrive filenum offset blocksize key file} {
     global sourceTypes issm_status
 
     set indexFile [lindex $sourceTypes(ISSM) 2]
@@ -60,23 +63,24 @@ proc issm_extract_data {tapedrive filenum blocksize key file} {
 	return -1
     }
 
-    set offset -1
+    set tapepos -1
 
     while {[gets $firms line] >= 0} {
 	set line [split $line ,]
 	set symbol [lindex $line 0]
 	if {$symbol == $key} {
-	    set offset [lindex $line 1]
+	    set tapepos [lindex $line 1]
 	    break
 	}
     }
 
     close $firms
 
-    if {$offset >= 0} {
+    if {$tapepos >= 0} {
+	incr tapepos $offset
 	set issm_status "Extracting ISSM data..."
 	issm_setupStatus .issmstatus
-	issm_extractStocks $tapedrive $filenum $blocksize $key $offset $file
+	issm_extractStocks $tapedrive $filenum $blocksize $key $tapepos $file
 	catch {destroy .issmstatus}
     } else {
 	dialog .notFound "Symbol Not Found" \

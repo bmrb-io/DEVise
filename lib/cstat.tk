@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.8  1995/11/17 04:41:23  ravim
+#	Changed size of window.
+#
 #	Revision 1.7  1995/11/17 03:58:24  ravim
 #	New form of index file. Also displays cusip number for uniformity with CRSP.
 #
@@ -51,13 +54,13 @@ proc cstat_unique_name {symbol} {
 
 ############################################################
 
-proc cstat_extract_data {tapedrive filenum blocksize key file} {
+proc cstat_extract_data {tapedrive filenum offset blocksize key file} {
     global sourceTypes cstat_status
 
     set indexFile [lindex $sourceTypes(COMPUSTAT) 2]
     set cstat_status "Extracting COMPUSTAT data..."
     cstat_setupStatus .cstatstatus
-    cstat_extract $tapedrive $filenum $blocksize $indexFile $key $file
+    cstat_extract $tapedrive $filenum $offset $blocksize $indexFile $key $file
     catch {destroy .cstatstatus}
 }
 
@@ -134,13 +137,6 @@ proc cstat_scanFirmList {listb msg} {
     cstat_setupStatus .cstatstatus
 
     while {[gets $firms line] >= 0} {
-#	set name [lindex $line 4]
-#	set symbol  [lindex $line 5]
-#	set industry [lindex $line 1]
-#	set year [lindex $line 6]
-#	set line [format "%-6.6s  %-30.30s  %4d  19%2d" $symbol $name \
-#		$industry $year]
-	
 	lappend cstat_firmlst [split $line ,]
 	incr cstat_numfirms
 	if {$cstat_numfirms % 500 == 0} {
@@ -210,8 +206,8 @@ proc cstatMain {} {
     set cstat_selection ""
 
     toplevel .cstat
-    wm minsize .cstat 495 400
-    wm maxsize .cstat 495 1000
+    wm minsize .cstat 530 400
+    wm maxsize .cstat 530 1000
     wm title .cstat "Select Name from Compustat Database"
     wm geometry .cstat =530x650+50+50
     selection clear .cstat
