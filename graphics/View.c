@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.65  1996/08/05 16:35:16  beyer
+  Made the _viewList statically allocated.  Sometimes the _viewList can
+  be queried before any views (and, as was the case, the _viewList) are
+  created.
+
   Revision 1.64  1996/08/04 21:03:35  beyer
   Added view-locks and changed key handling.
 
@@ -290,6 +295,7 @@ ViewList *View::_viewList = &theViewList;   /* list of all views */
 int View::_nextPos = 0;
 ViewCallbackList *View::_viewCallbackList = 0;
 
+
 View::View(char *name, VisualFilter &initFilter, 
 	   Color fg, Color bg, AxisLabel *xAxisLabel, AxisLabel *yAxisLabel,
 	   int weight, Boolean boundary) :
@@ -484,6 +490,7 @@ void View::SubClassUnmapped()
   }
 }
 
+
 void View::SetVisualFilter(VisualFilter &filter)
 {
 #ifdef DEBUG
@@ -493,40 +500,48 @@ void View::SetVisualFilter(VisualFilter &filter)
 	 _filter.xHigh, _filter.yHigh);
 #endif
 
-  if (filter.xLow > _filter.xHigh || filter.xHigh < _filter.xLow)
-    _jump++;
-  else if (filter.xLow < _filter.xLow && filter.xHigh > _filter.xHigh)
-    _zoomOut++;
-  else if (filter.xLow > _filter.xLow && filter.xHigh < _filter.xHigh)
-    _zoomIn++;
-  else if (filter.xLow < _filter.xLow && filter.xHigh < _filter.xHigh)
-    _scrollLeft++;
-  else if (filter.xLow > _filter.xLow && filter.xHigh > _filter.xHigh)
-    _scrollRight++;
-  else
-    _unknown++;
-  
-  ReportFilterAboutToChange();
+  // check the new filter for safety & sanity
+  if (is_safe(filter.xLow) && is_safe(filter.xHigh) &&
+      is_safe(filter.yLow) && is_safe(filter.yHigh) &&
+      filter.xLow < filter.xHigh && filter.yLow < filter.yHigh) {
 
-  /* ignore new filter if same as current one */
-  if (_filter.xLow != filter.xLow || _filter.xHigh != filter.xHigh
-      || _filter.yLow != filter.yLow || _filter.yHigh != filter.yHigh) {
+    /* ignore new filter if same as current one */
+    if (_filter.xLow != filter.xLow || _filter.xHigh != filter.xHigh
+	|| _filter.yLow != filter.yLow || _filter.yHigh != filter.yHigh) {
+
 #ifdef DEBUG
-    printf("filter changed\n");
+      printf("filter changed\n");
 #endif
-    _filterChanged = true;
-    if (!_hasTimestamp) {
-      _timeStamp = TimeStamp::NextTimeStamp();
-      _hasTimestamp = true;
+
+      if (filter.xLow > _filter.xHigh || filter.xHigh < _filter.xLow)
+	_jump++;
+      else if (filter.xLow < _filter.xLow && filter.xHigh > _filter.xHigh)
+	_zoomOut++;
+      else if (filter.xLow > _filter.xLow && filter.xHigh < _filter.xHigh)
+	_zoomIn++;
+      else if (filter.xLow < _filter.xLow && filter.xHigh < _filter.xHigh)
+	_scrollLeft++;
+      else if (filter.xLow > _filter.xLow && filter.xHigh > _filter.xHigh)
+	_scrollRight++;
+      else
+	_unknown++;
+      
+      ReportFilterAboutToChange();
+
+      _filterChanged = true;
+      if (!_hasTimestamp) {
+	_timeStamp = TimeStamp::NextTimeStamp();
+	_hasTimestamp = true;
+      }
+      _updateTransform = true;
+      _filter = filter;
+
+      int flushed = _filterQueue->Enqueue(filter);
+      ReportFilterChanged(filter, flushed);
+      
+      Dispatcher::Current()->RequestCallback(_dispatcherID);
     }
-    _updateTransform = true;
-    _filter = filter;
   }
-
-  int flushed = _filterQueue->Enqueue(filter);
-  ReportFilterChanged(filter, flushed);
-
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 void View::GetVisualFilter(VisualFilter &filter)

@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/08/04 23:33:16  beyer
+  Added #define for NULL
+
   Revision 1.7  1996/07/31 19:34:30  wenger
   Added AttrProj member functions for reading entire records (no projection).
 
@@ -26,6 +29,9 @@
 
 #ifndef DeviseTypes_h
 #define DeviseTypes_h
+
+#include <values.h>
+
 
 typedef double Coord;
 typedef char Boolean;
@@ -89,5 +95,12 @@ inline Boolean StatIsCancel(DevStatus status)
 #ifndef NULL
 #define NULL 0
 #endif
+
+
+inline bool is_safe(double x)
+{
+  return x < MAXDOUBLE && x > -MAXDOUBLE;
+}
+
 
 #endif
