@@ -30,6 +30,7 @@
 #endif
 class Serializable
 {
+	static	const char* intMarker;
 	public:
 		enum{
 			UNDEFINED = 0,
@@ -61,5 +62,7 @@ class Serializable
 		virtual string serialize(string);
 		virtual string serialize(int, char**);
 		virtual void deserialize(string& str, int& typeId, string& value);
+	private:
+		void check(int);
 };
 #endif

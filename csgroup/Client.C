@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/11 18:25:05  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.4  1998/02/26 20:35:08  taodb
   Removed ParaseAPI() interface, and added CommandObject interface
 
@@ -99,6 +105,7 @@ Client::Client(char *name, char *hostname, int port, char* initStr)
 	 panelMajorCmd = NULL;
 	 panelSubCmd = NULL;
 	 panelInfo = NULL;
+	_serverSlot = -1;
 
 #ifdef DEBUG
 	printf("Connecting to server %s:%d.\n", _hostname, _port);
@@ -134,6 +141,27 @@ Client::~Client()
   delete _cmd;
   delete csk;
 }
+
+int
+Client::readInteger(int fd, int&num)
+{
+	char buf[SLOTNUMSIZE+1];
+	int retval;
+
+	num = -1;
+	int nbytes = read(fd, buf, SLOTNUMSIZE);
+	if (nbytes == SLOTNUMSIZE)
+	{
+		buf[SLOTNUMSIZE] = 0;
+		num = atoi(buf);
+		retval = 1;
+	}
+	else
+		retval = -1;
+
+	return retval;
+}
+
 
 void
 Client::SendPanelErr(char* err)
@@ -441,6 +469,12 @@ Client::SendServerCmd(int args, ...)
 	u_short flag;
 	int rargc;
 	char **rargv;
+
+	// retrieve the slotno from the server
+	if (!strcmp(argv[1], CS_Init_Req))
+	{
+		readInteger(_serverFd, _serverSlot);
+	}
 
 	// the client will potentially hangs, if he does not receive 
 	// any acknowledgement information from the server

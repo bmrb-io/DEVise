@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/04/01 05:21:47  taodb
+  Replaced types.h with CollabTypes.h, related source files were updated.
+
   Revision 1.5  1998/03/30 22:32:52  wenger
   Merged fixes from collab_debug_br through collab_debug_br2 (not all
   changes from branch were merged -- some were for debug only)
@@ -51,6 +54,7 @@
 #include "ClientAPI.h"
 #include "CollabTypes.h"
 #include "Dispatcher.h"
+#include "CmdDescriptor.h"
 
 class CSgroupKey;
 
@@ -64,8 +68,13 @@ class CommandObj;
 class ClientInfo
 {
   public:
+	typedef enum
+	{
+		NOT_DEFINED=-1, TCL_CLIENT, JAVA_SCREEN
+	}ClientType;
+
     ClientInfo()
-    : fd(-1), valid(false),active(false),gname(NULL), cname(NULL),dispID(NULL)
+    : ctype(NOT_DEFINED), fd(-1),imagefd(-1), valid(false),active(false),gname(NULL), cname(NULL),dispID(NULL)
     {}
 	int GetFd(char * grpname)
 	{
@@ -76,7 +85,10 @@ class ClientInfo
 		}
 		return -1;
 	}
-    int 		fd;
+
+	ClientType 	ctype;			// client type
+    int 		fd;				// command fd
+	int			imagefd;		// image fd, this is a write-only fd.
     bool 		valid;
 	bool		active;
 	GroupKey	*gname;
@@ -100,8 +112,10 @@ class ControlChannel {
 class Server:public DispatcherCallback{
 friend class ControlChannel;
 friend class CommandObj;
+friend class CmdContainer;
 public:
-    Server(char *name, int swt_port, int clnt_port, char* switchname, 
+    Server(char *name,int image_port, 
+		int swt_port, int clnt_port, char* switchname, 
 		int maxClients = 10);
     virtual ~Server();
     virtual void MainLoop();      // main loop of server
@@ -125,29 +139,43 @@ public:
 
     virtual int SendControl(		  // send command to all clients
 		u_short flag, int argc, char **argv, int addBraces = true);
+	virtual void RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
+		{ cerr <<"***base class shouldnot be reached"<<endl;};
+	virtual ClientInfo* getClientInfo(ClientID cid)
+	{
+		return &_clients[cid];
+	}
+
 
 protected:
     virtual void DoAbort(char *reason);   // print error message and abort
     virtual void WaitForConnection();     // wait for client connection
+    virtual void WaitForImageportConnection();     
+									    	// wait for client connection
+    virtual void CloseImageConnection(ClientID cid);     
     virtual void ReadCmd();               // read client command
 
     virtual void GetCmd(int argc,	  // get command from client into _cmd
 		char **argv);
+	virtual void setCurrentClient(ClientID){}
 
   	enum { STANDALONE = 0, CONNECTED }	serverstate;
     char *_name;                        // name of server
 	char *switchname;					// name of the collaborator
 	ConnectInfo	switchaddr;				// listen address for the client
     int _port;                          // port number of server
+	int	_imageport;						// port number for the image server
     int _listenFd;                      // fd of listening socket
 	int _listenSwtFd;					// fd for the switch
+	int	_listenImageFd;					// fd for image server
     char *_cmd;							// command from client
 	ControlChannel	*_channel;          // chanel for communicating with the
 										// switch
 
 private:
 	int GetClientFd(char* grpname);		// get the client's fd for a group
-    void InitializeListenFd();          // initialize fd for listening
+    void InitializeListenFd(int port, 
+						int& listenFd); // initialize fd for listening
     int FindIdleClientSlot();           // search for slot in client array
 	void ProcessGroupControl(ClientID clientID, int argc, char** argv);
 										// process group control
@@ -161,6 +189,7 @@ protected:
     ClientInfo *_clients;                  // array of ClientInfo structs
     int _numClients;                       // current number of clients
     int _maxClients;                       // maximum number of clients
+	ClientID	collabCid;
 
 // group control functions
 protected:
@@ -210,6 +239,8 @@ public:
 										// propagate commands from active
 										// server to the passive server and
 										// then to the client
+	int writeInteger(int fd, int slotno);
+	int readInteger(int fd, int& slotno);
 	int	GetControlChannelFd();
 };
 

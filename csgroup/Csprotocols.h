@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/11 18:25:07  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.4  1998/02/27 20:47:46  wenger
   More SGI compile fixes.
 
@@ -55,6 +61,9 @@ extern "C" {
 };
 #endif
 
+#define SLOTNUMSIZE			6			// size of the maximum slot number
+#define IMG_OOB				1			// size of pseudo out-of-band msg
+										// for stopping sending image
 // Client->Server group control
 #define CS_Creat_Req       "creat_req"  // blocking & timeout to fail
 #define CS_Join_Req        "join_req"   // blocking & timeout to fail

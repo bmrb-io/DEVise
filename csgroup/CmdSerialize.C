@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/04/14 19:36:11  taodb
+  Fixed-size header version of CmdSerialize and Logging
+
   Revision 1.2  1998/04/12 00:22:20  taodb
   Added command logging facility
 
@@ -41,11 +44,12 @@
 
 // format:
 // +-----------+----------+------.........----------------------------------+
-// | 16 bytes  | 16 bytes | 16 bytes+ specified by 2nd field*               |
+// | varsize  #| varsize #| 16 bytes+ specified by 2nd field*               |
 // +-----------+----------+------.........----------------------------------+
 // * iff it is a composite type, the 3rd field will be 16 types more
 // Serializable::INT_SIZE =16
 
+const char* Serializable::intMarker ="#";
 Serializable::Serializable()
 {
 }
@@ -55,10 +59,7 @@ Serializable::raw_serialize(int arg)
 {
 	string	tempStr;
 	char buf[Serializable::INT_SIZE+1];
-	char format[20];
-	sprintf(format, "%%-%dd", Serializable::INT_SIZE);
-	sprintf(buf, format, arg);
-	//cout << "raw_:"<<buf<<endl;
+	sprintf(buf, "%-d%s", arg, intMarker);
 	tempStr = string(buf);
 	return tempStr;
 }
@@ -159,33 +160,53 @@ Serializable::composite_serialize(int argc, string body)
 	return typeStr + lenStr + argsStr + body;
 }
 
+void
+Serializable::check(int posend)
+{
+	if (posend <0)
+		cerr << "Error in parsing serialized object "<<endl;
+}
+
 int 
 Serializable::composite_deserialize(string body, vector<string>& vec)
 {
 	int pos = 0;
+	int	pos_end= 0;
 
 	// extract # of arguments
-	int	args = atoi(body.substr(pos, Serializable::INT_SIZE).c_str());
-	pos += Serializable::INT_SIZE;
+	pos_end = body.find(string(intMarker), pos);
+	check(pos_end);
+	int	args = atoi(body.substr(pos, pos_end - pos).c_str());
+
+	pos = pos_end + strlen(intMarker);
 	int	i;
 
 	for (i=0; i< args ; ++i) 
 	{
 		string	str;
+		int		headPos;
+		int		typeIdLen;
+		int		lengthLen;
 
 		// move pos to the length field, skip the typeId field
-		pos += Serializable::INT_SIZE;
-		int	length = atoi(body.substr(pos, Serializable::INT_SIZE).c_str());
-
-		// retreat to the begining
-		pos -= Serializable::INT_SIZE;
+		headPos = pos;
+		pos_end = body.find(string(intMarker), pos);
+		check(pos_end);
+		typeIdLen = pos_end - pos + strlen(intMarker);
+		pos = pos_end + strlen(intMarker);
+			
+		// get the length of this item
+		pos_end = body.find(string(intMarker), pos);
+		check(pos_end);
+		int length = atoi(body.substr(pos, pos_end - pos).c_str());
+		lengthLen = pos_end - pos + strlen(intMarker);
 
 		// store the current whole item including its header
-		int	itemLen = length + 2* Serializable::INT_SIZE;
-		vec.push_back(body.substr(pos, itemLen));
+		int	itemLen = length + typeIdLen + lengthLen;
+		vec.push_back(body.substr(headPos, itemLen));
 
 		// skip to the next item
-		pos += itemLen;
+		pos = headPos + itemLen;
 	}
 	return args;
 }
@@ -208,16 +229,26 @@ Serializable::deserialize(string& str, int& typeId, string& value)
 {
 	string	emptyStr;
 	const char* pt;
+	int		lengthLen;
+	int		typeIdLen;
 
 	int	pos = 0;
-	typeId = atoi(str.substr(pos, Serializable::INT_SIZE).c_str());
+	int pos_end = 0;
 
-	pos += Serializable::INT_SIZE;
-	pt = str.substr(pos, Serializable::INT_SIZE).c_str();
+	pos_end =str.find(string(intMarker), pos);
+	check(pos_end);
+	typeId = atoi(str.substr(pos, pos_end - pos).c_str());
+	typeIdLen = pos_end - pos + strlen(intMarker);
+	pos = pos_end + strlen(intMarker);
+
+	pos_end = str.find(string(intMarker), pos);
+	check(pos_end);
+	pt = str.substr(pos, pos_end - pos).c_str();
 	int	length = atoi(pt);
-	pos += Serializable::INT_SIZE;
+	lengthLen = pos_end - pos + strlen(intMarker);
+	pos = pos_end + strlen(intMarker);
 
-	if ((unsigned)length != (str.length() - 2* Serializable::INT_SIZE))
+	if ((unsigned)length != (str.length() - typeIdLen - lengthLen))
 	{
 		cout <<str.length() <<" "<<length<<endl;
 		cerr << "The serialized message is illegal"<<endl;
@@ -239,7 +270,7 @@ Serializable::deserialize(string& str, int& typeId, string& value)
 		case Serializable::TYP_BOOL:
 		case Serializable::TYP_FLOAT:
 		case Serializable::TYP_STRING:
-			value = str.substr(pos, Serializable::INT_SIZE);
+			value = str.substr(pos, length);
 			break;
 		default:
 			cerr << "Illegal type specified"<<endl;

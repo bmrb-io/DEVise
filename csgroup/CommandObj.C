@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/12 02:09:05  wenger
+  Fixed dynamic memory errors in collaboration code that caused core dump
+  on Linux; collaboration code now tolerates interruption of accept() and
+  select() in some cases; fixed excessive CPU usage by collaborator
+  (select timeout now non-zero); fixed some other collaboration bugs.
+
   Revision 1.3  1998/03/11 18:25:06  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -29,6 +35,7 @@
  */
 
 #include "CommandObj.h"
+#include "CmdDescriptor.h"
 #include "Csprotocols.h"
 #include "codec.h"
 #if !defined(SGI) && !defined(LINUX)
@@ -64,8 +71,10 @@ CommandObj::~CommandObj()
 bool
 CommandObj::filterCmd(int cid, int ac, char**av, char*& errmsg)
 {
-	    bool        success;
+	    bool        success = true;
 
+		cerr << "****should not come here"<<endl;
+/*
 		// argv[0], holds the NULL groupkey, reserved for future use
 		if ((_server->_clients[cid].gname != NULL)&&
 			(_server->_clients[cid].active))
@@ -88,26 +97,37 @@ CommandObj::filterCmd(int cid, int ac, char**av, char*& errmsg)
 			// process the command locally
 			_server->ProcessCmd(cid,ac -1, &av[1]);
 		}
+*/
 		return success;
 }
 
 bool
 CommandObj::SetVisualFilter(View* view, VisualFilter * filterp)
 {
-	char*	errmsg = NULL;
-
 	// implement serilization
-	Serialize(7,
-		TYP_STRING, "NULL",
+	bool	success;
+	Serialize(6,
 		TYP_STRING, "setFilter",
 		TYP_STRING, view->GetName(),
 		TYP_DOUBLE, &filterp->xLow,
 		TYP_DOUBLE, &filterp->yLow,
 		TYP_DOUBLE, &filterp->xHigh,
 		TYP_DOUBLE, &filterp->yHigh);
+	success = Run(argc, argv);
+	return success;
+}
 
+
+bool
+CommandObj::Run(int ac, char** av)
+{
 	// propagate the serilized results
-	return filterCmd(0, argc, argv, errmsg);
+	// route the command to the Command Container object
+	CmdSource cmdSrc(CmdSource::USER, CLIENT_INVALID);
+	CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_SERVER);
+
+	_server->RunCmd(ac, av, cmdDes);
+	return cmdDes.isSuccess();
 }
 
 int

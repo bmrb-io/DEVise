@@ -2,13 +2,15 @@
 #include <vector>
 #include <stdio.h>
 #include <ctype.h>
-#include "CmdLog.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
-//#define DEBUG
+#include "CmdLog.h"
+#include "CmdContainer.h"
+#include "Scheduler.h"
+#define DEBUG
 
 TimeStamp::TimeStamp()
 {
@@ -82,6 +84,11 @@ LogMarker::Deserialize(int fd)
 	nbytes = read(fd, buf, recLeftB.length());
 	if (nbytes == 0)
 		return -1;
+	if (nbytes <0)
+	{
+		perror("Read error:");
+		return -1;
+	}
 
 	if ((unsigned)nbytes != recLeftB.length())
 	{
@@ -118,7 +125,6 @@ CmdLogRecord::Serialize()
 
 	for (i=0; i <args; ++i)
 	{
-		//cout << "Cmd="<<cmd[i]<<endl;
 		string	temp = cmd[i];
 		tempStr += serialize(temp);
 	}
@@ -154,9 +160,6 @@ CmdLogRecord::Deserialize(string buf)
 	}
 
 	// deserialize the logId
-#ifdef DEBUG
-	cout <<"vectors:"<< vec[0]<<"|"<<vec[1]<<"|"<<vec[2]<<endl;
-#endif
 	deserialize(vec[0], typeId, value);
 	if (typeId != Serializable::TYP_LONG)
 	{
@@ -204,6 +207,15 @@ CmdLogRecord::~CmdLogRecord()
 
 CmdLogRecord::CmdLogRecord(char* filename)
 {
+	enabled = true;
+	currentBy = CmdLogRecord::LOG_IDLE;
+	_dispID = NULL;
+	currentPause = 0;
+	currentStart = LOG_BEGIN;
+	currentEnd = LOG_END;
+	currentLogId = LOG_BEGIN;
+	currentSaveLogId = LOG_BEGIN;
+
 	maxlogId = -1;
 	fd = open(filename, O_RDWR|O_CREAT);
 	if (fd <0)
@@ -212,14 +224,27 @@ CmdLogRecord::CmdLogRecord(char* filename)
 		exit(-1);
 	}
 	seekLog(LOG_END);
+	 _dispID = Dispatcher::Current()->Register(this);
 }
 
 long
 CmdLogRecord::logCommand(int argc, char** argv)
 {
-	// move curlogId to the end of the log, if no log
-	// curlogId = -1;
-	if ((maxlogId != curlogId)||(curlogId == -1))
+	if (!enabled)
+	{
+		return -1;
+	}
+
+	// move currentLogId to the end of the log, if no log
+	// currentLogId = -1;
+	char	**nargv = new (char*)[argc](NULL);
+	int	i;
+	for (i=0; i< argc; ++i)
+	{
+		nargv[i] = strdup(argv[i]);
+	}
+
+	if ((maxlogId != currentLogId)||(currentLogId ==LOG_BEGIN ))
 		seekLog(LOG_END);
 
 	curlogId ++;
@@ -230,18 +255,15 @@ CmdLogRecord::logCommand(int argc, char** argv)
 
 	// make in-memory version
 	cmd.erase(cmd.begin(), cmd.end());
-	int	i;
 	for (i=0; i< argc; ++i)
 	{
-		string	temp = string(argv[i]);
+		string	temp = string(nargv[i]);
 		cmd.push_back(temp);
 	}
+	delete []nargv;
 
 	// push to disk
 	string	tempStr = Serialize();
-#ifdef DEBUG
-	cout <<"Debug String:"<<tempStr<<endl;
-#endif
 	write(fd, tempStr.c_str(), tempStr.length());
 	return curlogId;
 }
@@ -344,29 +366,182 @@ ostream& operator << (ostream& os, const CmdLogRecord& cmdLog)
 void 
 CmdLogRecord::viewLog()
 {
-	long	savelogId = -1;
+	long	currentSaveLogId = -1;
 	long	logId = -1;
 
 	logId = seekLog(CmdLogRecord::LOG_BEGIN);
 	do 
 	{
 		cout << *this;
-		savelogId = logId;
+		currentSaveLogId = logId;
 		logId = seekLog(CmdLogRecord::LOG_NEXT);
-	} while (savelogId != logId);
+	} while (currentSaveLogId != logId);
 }
-/*
+
+void 
+CmdLogRecord::runLogRecord()
+{
+	int args = cmd.size();
+
+	// deserialize the same command descriptor
+	CmdDescriptor   cmdDes(cmd[args-1]);
+
+	// add fromLog flag
+	CmdSource*  cmdSrcp;
+	cmdSrcp = cmdDes.getCmdsource();
+	cmdSrcp->setFromLog();
+
+	// play one command from the log
+	char** argv = new (char*)[args-1];
+	int	i;
+	for (i=0; i< args -1 ; ++i)
+	{
+		argv[i] =(char*) cmd[i].c_str();
+#ifdef DEBUG
+		cout << argv[i]<<" ";
+#endif
+	}
+
+	cmdContainerp->Run(args-1, argv, 
+		DeviseCommand::getDefaultControl(), cmdDes);
+
+	delete []argv;
+
+	/* run waitForQueries to get everything done
+	char	*cmd = "waitForQueries";
+	cmdContainerp->Run(1, &cmd, 
+		DeviseCommand::getDefaultControl(), cmdDes);
+	*/
+}
+
+
+bool
+CmdLogRecord::playLog(int by, int pause, long start, long end, char*& errmsg)
+{
+	long	logId = -1;
+	static	char*	errmsgs[3] =
+		{
+			"Wrong by-type for play log",
+			"by_timestamp not implmented yet",
+			"Log cannot be played, since it is busy"
+		};
+					
+	// prevent repeated calling from the clients
+	// have to be serialized at the cmd container level for playLog commands
+	if (currentBy != LOG_IDLE)
+	{
+		errmsg = errmsgs[2];
+		cerr <<errmsg<<endl;
+		return false;
+	}
+
+	currentBy =(CmdLogRecord::ByMeans) by;
+	currentPause = pause;
+	currentStart = start;
+	currentEnd = end;
+
+	if (currentBy != CmdLogRecord::BY_STEP)
+	{
+		currentLogId = LOG_BEGIN;
+		currentSaveLogId = LOG_BEGIN;
+	}
+
+	// request to be activated after pause seconds
+	Scheduler::Current()->RequestTimedCallback(_dispID, pause);
+
+	return true;
+}
+
+// get scheduled to run
+// side-effect, it is requierd a new CmdLogRecord object will schedule the Run
+// each time. When run is done, the object will be automatically deleted within
+// this program!!!!
+void
+CmdLogRecord::Run()
+{
+	switch (currentBy) 
+	{
+		case CmdLogRecord::BY_LOGID:
+			// pull pointer to the begining iff it is the Run
+			// issued within playLog()
+
+			currentSaveLogId = currentLogId;
+			if (currentLogId == LOG_BEGIN)
+				currentLogId = seekLog(currentStart);
+			else
+				currentLogId = seekLog(CmdLogRecord::LOG_NEXT);
+
+			// schedule next events if we can
+			if ((currentSaveLogId != currentLogId)&&
+				((currentEnd>0)?(currentSaveLogId <currentEnd):true))
+				Scheduler::Current()->RequestTimedCallback(_dispID, 
+					currentPause);
+			else
+			{
+				currentBy = LOG_IDLE;
+				delete this;
+			}
+
+			if (currentLogId != currentSaveLogId)
+			{
+#ifdef DEBUG
+				cout << "LogId= "<<currentLogId<<" Command= "<<endl;
+#endif
+				runLogRecord();
+#ifdef DEBUG
+				cout << endl;
+#endif
+			}
+			break;
+
+		case CmdLogRecord::BY_TIMESTAMP:
+			cerr << "Time stamp-based log play is not supported yet"<<endl;
+			currentBy = LOG_IDLE;
+			delete this;
+			return;
+			break;
+
+		case CmdLogRecord::BY_STEP:
+			currentSaveLogId = currentLogId;
+			if (currentLogId == LOG_BEGIN)
+				currentLogId = seekLog(currentStart);
+			else
+				currentLogId = seekLog(CmdLogRecord::LOG_NEXT);
+			if (currentLogId != currentSaveLogId)
+				runLogRecord();
+			currentBy = LOG_IDLE;
+			delete this;
+			break;
+
+		default:
+			currentBy = LOG_IDLE;
+			delete this;
+			cerr << "Wrong by-type for playing log\n";
+			return;
+	}
+}
+
 //
 // Sample log-viewer for the command logging facility and testing routines
 //
-main(int argc, char** argv)
+/*
+main(int argc, char** av)
 {
 	if (argc != 2)
 	{
 		cerr << "logfilename expected"<<endl;
 		exit(-1);
 	}
-	CmdLogRecord 	*cmdLog = new CmdLogRecord(argv[1]);
-	cmdLog->viewLog();
+	char* argv[4] = {"one","two","/p/devise/world/haha/in2/three","four"};
+	CmdLogRecord 	*cmdLog = new CmdLogRecord(av[1]);
+
+	cmdLog->logCommand(4, &argv[0]);
+	cmdLog->logCommand(3, &argv[1]);
+	cmdLog->logCommand(2, &argv[2]);
+	cmdLog->logCommand(1, &argv[3]);
+	delete cmdLog;
+
+	CmdLogRecord 	*cmdLog1 = new CmdLogRecord(av[1]);
+	cmdLog1->viewLog();
 }
 */

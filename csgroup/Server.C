@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/03/30 22:32:51  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.8.2.2  1998/03/25 23:04:56  wenger
   Removed all stuff setting internet address to INADDR_ANY (not needed).
 
@@ -75,6 +80,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <math.h>
+#include <signal.h>
 #if defined(SGI)
 #include <stdarg.h>
 #endif
@@ -90,6 +96,7 @@
 #include <sys/time.h>
 #endif
 
+#include "JavaScreenCmd.h"
 #include "ClientAPI.h"
 #include "Server.h"
 #include "Control.h"
@@ -97,6 +104,7 @@
 #include "callBks.h"
 #include "rcvMsg.h"
 #include "CommandObj.h"
+#include "CmdDescriptor.h"
 #include "serverInterface.h"
 #include "keys.h"
 #include "Csprotocols.h"
@@ -123,11 +131,14 @@ int ExecCheckpoint(char *fname, ConnectInfo *cinfo)
 #undef DEBUG
 char *NoError = "NONE";
 #define DO_ASSERT(c,r) {if (!(c)) DoAbort(r); }
-Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
+Server::Server(char *name,int image_port, 
+	int swt_port, int clnt_port, char* swtname,
 	int maxClients)
 {
     char hostname[MAXNAMELEN];
 	struct hostent *hst;
+
+	signal(SIGPIPE, SIG_IGN);
 
 	// initialize object variables
 	serverstate = STANDALONE;
@@ -136,7 +147,9 @@ Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
 	_name = strdup(name);
 	DO_ASSERT(_name, "Out of memory");
 								 
-								  
+	// record the last client who try to create/join a group
+	collabCid = CLIENT_INVALID;
+
 	switchname = strdup(swtname);
 									   
 	bzero((char *) &switchaddr, sizeof(switchaddr));
@@ -168,6 +181,7 @@ Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
 	switchaddr.sin_port = htons(swt_port);
 				  
 	_port = clnt_port;                   // port for switch, _port for clients
+	_imageport = image_port;             // port for switch, _port for clients
 								   
 	CBakInstall((int)ceil(log(CTRL_RELINQUISH)/log(2)),
 		(CallBackHandler)&RequestRelinquish);
@@ -182,6 +196,7 @@ Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
 	_maxClients = maxClients;
     _clients = new ClientInfo[_maxClients];
 	_listenFd = -1;
+	_listenImageFd = -1;
 	_numClients = 0;
     _cmd = NULL;
 	_listenSwtFd = RPCInit(switchname, switchaddr);
@@ -307,53 +322,53 @@ void Server::SingleStep()
     ReadCmd();
 }
 
-void Server::InitializeListenFd()
+void Server::InitializeListenFd(int port, int& listenFd)
 {
-    DO_ASSERT(_listenFd < 0, "Invalid socket");
-    _listenFd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_listenFd < 0)
+    DO_ASSERT(listenFd < 0, "Invalid socket");
+    listenFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (listenFd < 0)
     {
-	perror("socket() failed");
+		perror("socket() failed");
     }
-    DO_ASSERT(_listenFd >= 0, "Cannot create socket");
+    DO_ASSERT(listenFd >= 0, "Cannot create socket");
     
     // allow listening port number to be reused
     int enable = 1;
-    int result = setsockopt(_listenFd, SOL_SOCKET, SO_REUSEADDR,
+    int result = setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR,
 			    (char *)&enable, sizeof enable);
     if (result < 0)
     {
-	perror("setsockopt() failed");
+		perror("setsockopt() failed");
     }
     DO_ASSERT(result >= 0, "Cannot set socket options");
     
     // Now bind these to the address..
-    
     struct sockaddr_in servAddr;
     memset(&servAddr, 0, sizeof servAddr);
     servAddr.sin_family = AF_INET;
-    servAddr.sin_port = htons(_port);
+    servAddr.sin_port = htons(port);
+
 #if defined(DEBUG)
-    printf("Server listening at port %u.\n", _port);
+    printf("Server listening at port %u....\n", port);
 #endif
     servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     
-    result = bind(_listenFd, (struct sockaddr *)&servAddr,
+    result = bind(listenFd, (struct sockaddr *)&servAddr,
 		  sizeof(struct sockaddr));
     if (result < 0)
     {
-	perror("bind() failed");
+		perror("bind() failed");
     }
     DO_ASSERT(result >= 0, "Cannot bind to address");
     
-    result = listen(_listenFd, 5);
+    result = listen(listenFd, 5);
     if (result < 0)
     {
-	perror("listen() failed");
+		perror("listen() failed");
     }
     DO_ASSERT(result >= 0, "Cannot listen");
     
-    printf("Listening fd has been initialized\n");
+    printf("Listening fd = %d has been initialized\n", listenFd);
 }
 
 int Server::FindIdleClientSlot()
@@ -373,8 +388,13 @@ void Server::WaitForConnection()
     int clientfd;
     if (_listenFd < 0)
     {
-		InitializeListenFd();
+		InitializeListenFd(_port, _listenFd);
     }
+	if (_listenImageFd <0)
+	{
+		InitializeListenFd(_imageport, _listenImageFd);
+	}
+
     printf("%s server waiting for client connection on port %d\n",
       _name, _port);
     struct sockaddr_in tempaddr;
@@ -387,23 +407,157 @@ void Server::WaitForConnection()
 		return;
     }
     int slot = FindIdleClientSlot();
+	if (slot >=0)
+	{
+    	_clients[slot].valid = true;
+    	_clients[slot].fd = clientfd;
+    	_numClients++;
+	}
+
+	// echo back the "slot" number as a handle for the client
+	// a JAVA client will later use this handle to identify a connection
+	int nbytes = writeInteger(clientfd, slot);
     if (slot < 0)
     {
 		fprintf(stderr, "WARNING: Too many clients. Connection denied\n");
 		close(clientfd);
+    }
+	if (nbytes <0)
+	{
+		printf("Failed to send back slot number to the client\n");
+		if (slot >=0)
+			CloseClient(slot);
+	}
+	if ((nbytes>0)&&(slot >=0))
+	{
+    	printf("Connection established to client %d\n", slot);
+    	BeginConnection(slot);
+	}
+}
+
+int
+Server::readInteger(int fd, int&num)
+{
+	char buf[SLOTNUMSIZE+1];
+	int	retval;
+
+	num = -1;
+	int nbytes = read(fd, buf, SLOTNUMSIZE);
+	if (nbytes == SLOTNUMSIZE)
+	{
+		buf[SLOTNUMSIZE] = 0;
+		num = atoi(buf);
+		retval = 1;
+	}
+	else
+		retval = -1;
+
+	return retval;
+}
+
+int
+Server::writeInteger(int fd, int num)
+{
+	char buf[SLOTNUMSIZE+1];
+	char format[128];
+	int	retval;
+
+	sprintf(format, "%%-%dd",SLOTNUMSIZE);
+
+	sprintf(buf,format,num);
+	int nbytes = write(fd, buf, SLOTNUMSIZE);
+	if (nbytes == SLOTNUMSIZE)
+		retval = 1;
+	else
+		retval = -1;
+
+	return retval;
+}
+
+void
+Server::CloseImageConnection(ClientID cid)
+{
+	if (_clients[cid].imagefd >0)
+	{
+		close(_clients[cid].imagefd);
+	}
+	else
+	{
+		fprintf(stderr, "Invalid image socket for client:%d\n", cid);
+	}
+}
+
+void 
+Server::WaitForImageportConnection()
+{
+	int		imagefd;
+    struct 	sockaddr_in tempaddr;
+    int 	len = sizeof(tempaddr);
+	int	 	slotno = -1;
+
+    imagefd = accept(_listenImageFd, (struct sockaddr *)&tempaddr, &len);
+    if (imagefd < 0)
+    {
+        fprintf(stderr, "Warning: ");
+		perror("accept() failed");
 		return;
     }
-    _clients[slot].valid = true;
-    _clients[slot].fd = clientfd;
-    _numClients++;
-    printf("Connection established to client %d\n", slot);
-    BeginConnection(slot);
+	/*
+	if (NetworkNonBlockMode(imagefd) <0)
+	{
+		fprintf(stderr, "Fail to set non-blocking mode for image fd\n");
+		return;
+	}
+	*/
+
+	//
+	// this blocking read should be moved to scheduler later
+	// because we cannot have the server blocking for a malicious client
+	char buf[SLOTNUMSIZE +1];
+
+	if (readInteger(imagefd, slotno) <0)
+	{
+		fprintf(stderr, "Invalid image connection, slot no expected\n");
+		writeInteger(imagefd, -1);
+		close(imagefd);
+	}
+	else
+	{
+		if ((slotno <0)||(slotno >= _maxClients))
+		{
+			fprintf(stderr, "Invalid slot no\n");
+			writeInteger(imagefd, -1);
+			close(imagefd);
+		}
+		else
+		if ((!_clients[slotno].valid)||(!_clients[slotno].fd <0))
+		{
+			fprintf(stderr, "Client for slot:%d is down\n", slotno);
+			writeInteger(imagefd, -1);
+			CloseClient(slotno);
+		}
+		else
+		{
+			// setup the imagefd
+			_clients[slotno].imagefd = imagefd;
+			char*	retval=
+				JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::DONE);
+
+			// send confirmation to client's image port
+			writeInteger(imagefd, slotno);
+
+			//send confirmation to JAVA Client
+			char buf[128];
+			char* argv[1]={buf};
+			sprintf(buf, "%s", retval);
+			ReturnVal(slotno, API_JAVACMD, 1, &argv[0], false);
+		}
+	}
 }
 
 void Server::ProcessCmd(ClientID clientID, int argc, char **argv)
 {
 }
-
 void Server::CloseClient(ClientID clientID)
 {
     if (!_clients[clientID].valid)
@@ -416,6 +570,11 @@ void Server::CloseClient(ClientID clientID)
 		printf("Closing client connection.\n");
 		(void)NetworkClose(_clients[clientID].fd);
     }
+	if (_clients[clientID].imagefd >=0)
+	{
+		close(_clients[clientID].imagefd);
+	}
+	_clients[clientID].imagefd = -1;
     _clients[clientID].fd = -1;
     _clients[clientID].valid = false;
 	delete _clients[clientID].cname;
@@ -460,13 +619,14 @@ void Server::ReadCmd()
     memset(&fdset, 0, sizeof fdset);
 	maxFdCheck = 0;
 
-	/*
-		commented out for Miron's purpose
 	if (_listenFd >0) {
     	FD_SET(_listenFd, &fdset);
 		if (_listenFd > maxFdCheck) maxFdCheck = _listenFd;
 	}
-	*/
+	if (_listenImageFd >0) {
+    	FD_SET(_listenImageFd, &fdset);
+		if (_listenImageFd > maxFdCheck) maxFdCheck = _listenImageFd;
+	}
 
 	if (_listenSwtFd >0) {
     	FD_SET(_listenSwtFd, &fdset);
@@ -505,6 +665,10 @@ void Server::ReadCmd()
     if (FD_ISSET(_listenFd, &fdset))
     {
 		WaitForConnection();
+    }
+    if (FD_ISSET(_listenImageFd, &fdset))
+    {
+		WaitForImageportConnection();
     }
 	else
 	if ((_listenSwtFd >0)&&FD_ISSET(_listenSwtFd, &fdset))
@@ -547,16 +711,22 @@ bool Server::ExecSwitchCmds(fd_set *fdsetp)
 #endif
 			controlvalue = prot->getControl();
 
-			// process the remote commands locally
+			// Route this command to the command container object
 			if (controlvalue == ServerServerProt::SSC_CMD)
 			{
 				// a command from the switch for the clients
-				Server::SendControl(API_CTL, argc, argv, true);
+				//Server::SendControl(API_CTL, argc, argv, true);
+				CmdSource cmdSrc(CmdSource::NETWORK, collabCid);
+				CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_CLIENT);
+				RunCmd(argc, argv, cmdDes);
 			}
 			else if (controlvalue == ServerServerProt::CSS_CMD)
 			{
 				// a command from the switch for the server
-				ProcessCmd(CLIENT_INVALID, argc, argv);
+				//ProcessCmd(CLIENT_INVALID, argc, argv);
+				CmdSource cmdSrc(CmdSource::NETWORK, collabCid); 
+				CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_SERVER);
+				RunCmd(argc, argv, cmdDes);
 			}
 			else
 				DO_ASSERT(0, "control value invalid");
@@ -626,6 +796,7 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 		if (!strcmp(argv[1], CS_Creat_Req)||
 			!strcmp(argv[1], CS_Join_Req))
 		{
+			collabCid = cid;
 			if (!strcmp(argv[1], CS_Creat_Req))
 			{
 				mode = (CRM_LEADER|CRM_CREATE);
@@ -823,22 +994,53 @@ void Server::ExecClientCmds(fd_set *fdset)
 			// process group control messages from the client
 			ProcessGroupControl(i, argc, argv);
 		}
-		else if (flag != API_CMD)
+		else if (flag == API_JAVACMD)
 		{
-	    	fprintf(stderr, "Received unexpected type of message: %u\n", flag);
-	    	CloseClient(i);
+			// specify a client
+			if (_clients[i].ctype == ClientInfo::NOT_DEFINED)
+			{
+				_clients[i].ctype = ClientInfo::JAVA_SCREEN;
+			}
+			setCurrentClient(i);
+			CmdSource cmdSrc(CmdSource::JAVACLIENT, i);
+			CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_CLIENT);
+			RunCmd(argc, &argv[0], cmdDes);
+
+			bool success;
+			success = cmdDes.isSuccess();
+			// set server free
+			setCurrentClient(CLIENT_INVALID);
+#if defined(DEBUG)
+	    	printf("Done executing JAVA command\n");
+#endif
 		}
-		else
+		else if (flag == API_CMD)
 		{
+			// API_CMD or API_JAVACMD
 			char*	errmsg = NoError;
 			bool	success;
 #if defined(DEBUG)
 	    	printf("Executing command\n");
 #endif
-			success = cmdObj->filterCmd(i,argc,argv,errmsg);
+			if (_clients[i].ctype == ClientInfo::NOT_DEFINED)
+			{
+				_clients[i].ctype = ClientInfo::TCL_CLIENT;
+			}
+			setCurrentClient(i);
+        	// route the command to the Command Container object
+			CmdSource cmdSrc(CmdSource::CLIENT, i);
+			CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::FOR_CLIENT);
+			RunCmd(argc-1, &argv[1], cmdDes);
+			success = cmdDes.isSuccess();
+			setCurrentClient(CLIENT_INVALID);
 #if defined(DEBUG)
 	    	printf("Done executing command\n");
 #endif
+		}
+		else 
+		{
+	    	fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+	    	CloseClient(i);
 		}
     }
 }
@@ -901,7 +1103,7 @@ Server::ReturnVal(ClientID clientID, u_short flag, int argc, char **argv,
 	if (clientID == CLIENT_INVALID)
 		return -1;
 
-    if (flag != API_ACK && flag != API_NAK) {
+    if (flag != API_ACK && flag != API_NAK&& flag != API_JAVACMD) {
         fprintf(stderr, "Is this really a return value?\n");
     }
 
@@ -956,7 +1158,8 @@ Server::SendControl(u_short flag, int argc, char **argv, int addBraces)
 
     ClientID clientID;
     for (clientID = 0; clientID < _maxClients; clientID++) {
-		if (_clients[clientID].valid) {
+		if ((_clients[clientID].valid)&&
+			(_clients[clientID].ctype == ClientInfo::TCL_CLIENT)) {
 
 #if defined(DEBUG)
             printf("  sending control command to client %d\n", clientID);

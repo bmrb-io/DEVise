@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/04/16 16:42:58  donjerko
+# *** empty log message ***
+#
 # Revision 1.10  1998/04/06 18:45:03  wenger
 # Updated solaris dependencies.
 #
@@ -288,7 +291,8 @@ server_locfns.o: ../graphics/Init.h ../graphics/DeviseTypes.h
 server_locfns.o: /usr/include/values.h ../graphics/DevStatus.h
 server_locfns.o: ../graphics/BufPolicy.h Server.h ../graphics/Dispatcher.h
 server_locfns.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ckptfile.h
+server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+server_locfns.o: CmdDescriptor.h CmdSerialize.h ckptfile.h
 server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/sys/types.h
 server_rmtfns.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 server_rmtfns.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
@@ -388,6 +392,20 @@ Client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Client.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 Client.o: /usr/include/netdb.h /usr/include/sys/varargs.h Client.h
 Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
+CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h /usr/include/sys/varargs.h
+CmdDescriptor.o: /usr/include/sys/va_list.h
+CmdLog.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+CmdLog.o: /usr/include/sys/va_list.h /usr/include/ctype.h CmdLog.h
+CmdLog.o: CmdSerialize.h /usr/include/sys/varargs.h /usr/include/sys/types.h
+CmdLog.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+CmdLog.o: /usr/include/sys/select.h /usr/include/sys/time.h
+CmdLog.o: /usr/include/time.h /usr/include/unistd.h /usr/include/sys/unistd.h
+CmdLog.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+CmdLog.o: /usr/include/sys/stat.h
+CmdSerialize.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+CmdSerialize.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+CmdSerialize.o: CmdSerialize.h /usr/include/sys/varargs.h
+Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
 CmdLog.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 CmdLog.o: /usr/include/sys/va_list.h /usr/include/ctype.h CmdLog.h
 CmdLog.o: CmdSerialize.h /usr/include/sys/varargs.h /usr/include/sys/types.h
@@ -400,25 +418,25 @@ CmdSerialize.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 CmdSerialize.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 CmdSerialize.o: CmdSerialize.h /usr/include/sys/varargs.h
 CommandObj.o: CommandObj.h /usr/include/sys/varargs.h
-CommandObj.o: /usr/include/sys/va_list.h Csprotocols.h
-CommandObj.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-CommandObj.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-CommandObj.o: /usr/include/sys/select.h /usr/include/sys/time.h
-CommandObj.o: /usr/include/time.h /usr/include/sys/socket.h
-CommandObj.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-CommandObj.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-CommandObj.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-CommandObj.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-CommandObj.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-CommandObj.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-CommandObj.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-CommandObj.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-CommandObj.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-CommandObj.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-CommandObj.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-CommandObj.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
-CommandObj.o: /usr/include/netdb.h codec.h /usr/include/stdio.h
-CommandObj.o: ../graphics/View.h
+CommandObj.o: /usr/include/sys/va_list.h CmdDescriptor.h CmdSerialize.h
+CommandObj.o: Csprotocols.h /usr/include/sys/types.h
+CommandObj.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+CommandObj.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+CommandObj.o: /usr/include/sys/time.h /usr/include/time.h
+CommandObj.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+CommandObj.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+CommandObj.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+CommandObj.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+CommandObj.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+CommandObj.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+CommandObj.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+CommandObj.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+CommandObj.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+CommandObj.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+CommandObj.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+CommandObj.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+CommandObj.o: /usr/include/arpa/inet.h /usr/include/netdb.h codec.h
+CommandObj.o: /usr/include/stdio.h ../graphics/View.h
 Keys.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Keys.o: /usr/include/sys/va_list.h /usr/include/string.h keys.h CollabTypes.h
 Keys.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -459,8 +477,9 @@ Server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Server.h
 Server.o: CollabTypes.h ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 Server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
 Server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-Server.o: ../graphics/ViewDir.h ../graphics/Control.h ../graphics/ClassDir.h
-Server.o: callBks.h error.h /usr/include/sys/varargs.h ctrlMsg.h rcvMsg.h
+Server.o: ../graphics/ViewDir.h CmdDescriptor.h CmdSerialize.h
+Server.o: /usr/include/sys/varargs.h ../graphics/Control.h
+Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
 Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
 Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
 Server.o: keys.h Csprotocols.h /usr/include/netdb.h
