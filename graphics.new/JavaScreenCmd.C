@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  2000/02/23 15:58:35  wenger
+  Added view name to JAVAC_ShowViewHelp command args; protocol version
+  is 4.1.
+
   Revision 1.90  2000/02/08 22:12:00  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -1830,6 +1834,7 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 {
 #if defined (DEBUG_LOG)
     sprintf(logBuf, "JavaScreenCmd::SendWindowData(%s)\n", fileName);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
 #if defined(JS_TIMER)
