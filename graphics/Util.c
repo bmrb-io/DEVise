@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/10/18 20:34:08  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.15  1996/10/09 14:33:45  wenger
   Had to make changes to get my new code to compile on HP and Sun.
 
@@ -66,6 +72,12 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#if defined (SGI)
+  #define STAT_BAVAIL f_bfree
+#else
+  #define STAT_BAVAIL f_bavail
+#endif
+
 #if defined(SOLARIS)
   #include <sys/statvfs.h>
   #define STAT_STRUCT statvfs
@@ -79,6 +91,8 @@
 
   #if defined(SUN)
     extern "C" int statfs(const char *, struct statfs *);
+  #else if defined(SGI)
+    #include <sys/statfs.h>
   #endif
 #endif
 
@@ -254,13 +268,17 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
 {
   struct STAT_STRUCT stats;
 
-  if (STAT_FUNC(dirname, &stats) != 0)
+  if (STAT_FUNC(dirname, &stats
+#if defined(SGI)
+    , sizeof(stats), 0
+#endif
+    ) != 0)
   {
     reportErrSys("Can't get status of file system");
   }
   else
   {
-    int bytesFree = stats.f_bavail * stats.STAT_FRSIZE;
+    int bytesFree = stats.STAT_BAVAIL * stats.STAT_FRSIZE;
     if (bytesFree < exitSize)
     {
       char errBuf[1024];

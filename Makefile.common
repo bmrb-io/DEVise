@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/10/15 17:48:28  wenger
+#  Changed '-g' to '-gstabs' to debugging works on Pentiums.
+#
 #  Revision 1.6  1996/09/25 18:35:57  wenger
 #  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
 #
@@ -42,16 +45,26 @@
 ############################################################
 
 # Define our linker and compiler.
+SPECIFIC_PATH = TRUE
+
 ifneq (, $(findstring LINUX, $(ARCH_FLAGS)))
-  LD = ld
-  CC = g++
-  C  = gcc
-  AR = ar
-else
+  SPECIFIC_PATH = FALSE
+endif
+
+ifneq (, $(findstring SGI, $(ARCH_FLAGS)))
+  SPECIFIC_PATH = FALSE
+endif
+
+ifeq ($(SPECIFIC_PATH),TRUE)
   LD = ld
   CC = /s/gcc-2.7.2/bin/g++
   C  = /s/gcc-2.7.2/bin/gcc
   AR = /s/binutils/bin/ar
+else
+  LD = ld
+  CC = g++
+  C  = gcc
+  AR = ar
 endif
 RANLIB = ranlib
 
