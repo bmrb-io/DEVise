@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1998/02/16 15:41:27  wenger
+  Fixed (I believe) bug 287.
+
   Revision 1.63  1998/02/09 17:29:08  wenger
   Conditionaled out some debug output.
 
@@ -643,6 +646,14 @@ public:
 #ifdef LIBCS
   virtual void SetDashes(int dashCount, int dashes[], int startOffset) {}
 #endif
+  virtual void SetNumDim(int numDim) {
+    _numDim=numDim;
+  }
+
+  virtual int GetNumDim() {
+    return _numDim;
+  }
+
   // Use FillRect is inefficient for openGL
   virtual void ClearBackground(Coord xlow, Coord ylow,
 			Coord width, Coord height) {
@@ -708,6 +719,11 @@ public:
 			    SymbolAlignment alignment = AlignCenter, 
 			    Boolean skipLeadingSpaces = false, 
 			    Coord orientation = 0.0) = 0;
+
+  virtual void FillTriangle3D
+	(Point3D p1, Point3D p2, Point3D p3) {};
+
+  virtual void FillSphere(Coord x, Coord y, Coord z, Coord r){};
 
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode() = 0;
@@ -860,7 +876,8 @@ public:
     DEBUGE(_transforms3[_current3].PostMultiply(t));
   }
 
-#if 0 // Not used -- RKW 10/12/96.
+#if 0
+// Not used -- RKW 10/12/96.
   virtual void Transform3(Coord x, Coord y, Coord z,
                   Coord &newX, Coord &newY, Coord &newZ) {
     _transforms3[_current3].Transform(x, y, z, newX, newY, newZ);
@@ -996,6 +1013,7 @@ protected:
 
   static Boolean _destroyPending; /* true if window destroy is pending */
 
+  int _numDim;
 };
 
 //******************************************************************************

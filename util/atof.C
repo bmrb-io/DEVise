@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/06/19 19:57:24  wenger
+  Improved UtilAtof() to increase speed; updated code for testing it.
+
   Revision 1.2  1996/05/16 18:18:22  jussi
   Replaced calls to ftime() with calls to gettimeofday().
 
@@ -38,6 +41,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <math.h>
+
 #include <sys/time.h>
 
 #include "Util.h"

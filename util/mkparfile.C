@@ -16,12 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/01/09 18:46:37  jussi
+  First field is now used as a counter.
+
   Revision 1.1  1996/12/18 15:40:23  jussi
   Initial revision.
 */
 
 #include <iostream.h>
 #include <math.h>
+
 #include <time.h>
 #include <stdlib.h>
 

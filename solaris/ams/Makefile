@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1997/01/18 18:58:29  jussi
+#  Removed inclusion of Xaw and related libraries.
+#
 #  Revision 1.13  1996/11/23 20:54:02  jussi
 #  Added ARCH_SYSLIBS.
 #
@@ -39,11 +42,11 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS   = -DSGI -I/s/X11/include -I/usr/freeware/include -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../ams
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include $(VPATH)/Makefile.sgi

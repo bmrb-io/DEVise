@@ -15,7 +15,7 @@
 
 #include  <iostream.h>
 #include  <stdio.h>
-#include  <math.h>
+#include <math.h>
 #include  <unistd.h>
 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/02/09 17:26:54  wenger
+  Got some of the multi code to compile again.
+
   Revision 1.6  1997/10/28 19:48:51  wenger
   More updates for changes to TData GetRecs interface.
 
@@ -36,6 +39,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
+
 
 #include "MultiRec.h"
 #include "TData.h"

@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.10  1998/02/20 08:45:59  beyer
+   resurected histograms
+
    Revision 1.9  1998/02/20 06:16:56  beyer
    resurected histograms
 
@@ -175,7 +178,8 @@ DataSourceBuf::Fgets(char *buffer, int bufSize)
     if (_currentLoc == NULL ) {
 	reportError("DataSourceBuf: not open", devNoSyserr);
     } else if( _currentLoc > _end_data || *_currentLoc == '\0' ) {
-#if 0 // This happens normally when building an index.
+#if 0
+// This happens normally when building an index.
 	if (_currentLoc > _end_data) {
 	  reportErrNosys( "Reading past end of data");
 	}

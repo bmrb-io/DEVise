@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/02/24 22:55:24  beyer
+  Fixed histogram session restore bug.
+
   Revision 1.32  1998/02/20 08:45:57  beyer
   resurected histograms
 
@@ -127,7 +130,10 @@
 //#define DEBUG
 
 #include <stdio.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 
 #include "BasicStats.h"
 #include "ViewGraph.h"

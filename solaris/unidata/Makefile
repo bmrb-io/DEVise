@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/08/12 18:48:44  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.1  1997/04/09 19:10:49  wenger
 #  Got unidata to compile -- but not run -- on solaris, solsparc, sun.
 #
@@ -23,10 +27,10 @@
 
 PERL_CORE = /s/perl/lib/CORE
 
-ARCH_FLAGS   = -DSOLARIS
+ARCH_FLAGS   = -DSGI -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS =
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../unidata
 include ../../unidata/Makefile.base
-include ../../unidata/Makefile.solaris
+include ../../unidata/Makefile.sgi

@@ -10,7 +10,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-ARCH_FLAGS = -DSOLARIS
+ARCH_FLAGS = -DSGI -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS =
 ARCH_SYSLIBS = -lm
 ARCH_LDPOST  = -lsocket -lnsl
@@ -22,4 +22,4 @@ VPATH = $(DTE_DIR) $(DTE_DIR)/src $(DTE_DIR)/src/Common \
 	$(DTE_DIR)/src/Progs $(DTE_DIR)/src/RTree $(DTE_DIR)/src/TypeSupport
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.solaris
+include $(DTE_DIR)/Makefile.sgi

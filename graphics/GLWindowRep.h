@@ -215,6 +215,9 @@ public:
   /* operations on current transformation matrix */
   virtual void PushTop();
   virtual void PopTransform();
+
+  virtual void SetNumDim(int numDim);
+
   virtual void Scale(Coord sx, Coord sy);
   virtual void Translate(Coord dx, Coord dy);
   virtual void MakeIdentity();
@@ -229,12 +232,17 @@ public:
      matrix as top of the stack */
   void ClearTransformStack();
   /* Drawing primitives */
-  /*virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
+  virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
                         Coord height)
   {
-	// will be inefficient to call FillRect
-	// not implemented currently
-  }*/
+    if (_numDim==2)
+      FillRect(xlow, ylow, width, height);
+    else {
+      glClearIndex(_xbgid);
+      //      glClearDepth(1.0);
+      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    }
+  }
   virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			Coord height);
   virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
@@ -270,6 +278,8 @@ public:
 		   Coord vertDiam, Coord startAngle, Coord endAngle);
 
   virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
+  virtual void Line3D(Coord x1, Coord y1, Coord z1,
+                      Coord x2, Coord y2, Coord y3, Coord width);
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
   virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
@@ -282,6 +292,11 @@ public:
 			    SymbolAlignment alignment = AlignCenter,
 			    Boolean skipLeadingSpaces = false,
 			    Coord orientation = 0.0);
+
+  virtual void FillTriangle3D
+         (Point3D p1, Point3D p2, Point3D p3);
+
+  virtual void FillSphere(Coord x, Coord y, Coord z, Coord r);
 
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode();
@@ -472,6 +487,7 @@ private:
   GLuint _normalfont;
   XFontStruct *_currentfontstruct;
   GLuint _currentfont;
+  XColorID _xbgid;
   friend class RubberbandBuffer {
   public:
     RubberbandBuffer(int xx1, int yy1, int xx2, int yy2);

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.66  1998/02/19 23:24:53  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.65  1998/02/09 17:28:45  wenger
   Added more diagnostic/debug output.
 
@@ -296,6 +304,7 @@
 */
 
 #include <math.h>
+
 #ifdef SUN
 #include <strings.h>
 #endif

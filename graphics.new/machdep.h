@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/03/20 19:56:12  wenger
+  Minor mods to get latest version to compile on HP and SunOS; cleaned
+  up DTE makefiles (moved all targets from architecture-specific makefiles
+  to DTE/Makefile.base).
+
   Revision 1.18  1996/12/30 17:51:13  wenger
   Got latest sources to compile on Linux; updated Linux dependencies;
   changes devise.dali to devise.tasvir in release script.
@@ -180,12 +185,14 @@
 #include <sys/types.h>
 #include <sys/param.h>
 
+#ifndef SGI
 #ifndef MIN
   #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
   
 #ifndef MAX
   #define MAX(a,b) ((a) > (b) ? (a) : (b))
+#endif
 #endif
 
 #ifdef __cplusplus

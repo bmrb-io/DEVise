@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/12/03 20:59:23  jussi
+#  Corrected architecture flag.
+#
 #  Revision 1.4  1996/11/19 15:28:58  wenger
 #  Removed -lpthread -- not currently needed.
 #
@@ -44,10 +47,10 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
+ARCH_FLAGS   = -DSGI -I/usr/freeware/include -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 
 VPATH = ../../devread:../../graphics:../../graphics.new
 include ../../devread/Makefile.base
-include ../../devread/Makefile.solaris
+include ../../devread/Makefile.sgi

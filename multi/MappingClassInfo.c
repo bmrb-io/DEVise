@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/02/09 17:26:53  wenger
+  Got some of the multi code to compile again.
+
   Revision 1.9  1997/10/03 14:37:21  wenger
   Various fixes to get session opening/saving to work with client/server
   version; reading old-style (Tcl) session files now works in back end;
@@ -54,6 +57,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
+
 
 #include "tcl.h"
 #include "DeviseTypes.h"

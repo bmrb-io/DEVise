@@ -1,6 +1,9 @@
 #include "LMLayout.h"
 #include <stdio.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 #include "LMWindow.h"
 
 int LMLayout::_frameWidth = 3;

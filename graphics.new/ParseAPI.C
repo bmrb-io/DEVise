@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.93  1998/02/20 08:46:02  beyer
+  resurected histograms
+
   Revision 1.92  1998/02/20 06:17:12  beyer
   resurected histograms
 
@@ -567,7 +570,8 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 		return 1;
 	}
 
-#if 0 // Why the hell do we have two *different* versions of the same
+#if 0
+// Why the hell do we have two *different* versions of the same
 	  // command?!?  RKW Feb. 3, 1998.
 	if (!strcmp(argv[0], "getAllViews"))
 	{

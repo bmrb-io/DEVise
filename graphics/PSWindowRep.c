@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/02/16 15:41:20  wenger
+  Fixed (I believe) bug 287.
+
   Revision 1.34  1998/02/03 18:31:24  zhenhai
   Fully implemented functionalities of XWindowRep with GLWindowRep. Fixed bugs in
   postscript printing.
@@ -200,6 +203,7 @@
 
 #include <stdio.h>
 #include <math.h>
+
 #ifdef SUN
 #include <strings.h>
 #endif

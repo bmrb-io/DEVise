@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.57  1998/02/20 20:43:14  wenger
+#  Changed color and utils libraries to new export directory scheme for
+#  dealing with include files (email with complete explanation forthcoming).
+#
 #  Revision 1.56  1998/02/20 06:16:40  beyer
 #  resurected histograms
 #
@@ -165,7 +169,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \
-	-I/s/mesa-2.4/include \
+	$(GLINCLUDE) \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DGRAPHICS \
 	-DNEW_LAYOUT
 

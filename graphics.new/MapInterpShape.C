@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/01/08 19:46:06  wenger
+  Added a little more debug code for text symbols.
+
   Revision 1.47  1997/12/19 19:43:19  wenger
   Fixed bug 250 (problems with colors.ds session) (actually three
   separate bugs).
@@ -304,8 +307,10 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord pixelWidth = 1 / fabs(x1 - x0);
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0) &&
 				(offset->shapeAttrOffset[1] < 0);
+
 
 	if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
@@ -336,6 +341,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		return;
 	}
 	}
+#endif
 
 	ComputeDataLabelFrame(view);
 
@@ -500,6 +506,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 ? true : false);
 
@@ -525,6 +532,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		return;
 	}
 	}
+#endif
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0.0, 0.0, x0, y0);
@@ -685,6 +693,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 ? true : false);
 
@@ -717,6 +726,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 		return;
 	}
 	}
+#endif
 
 	ComputeDataLabelFrame(view);
 
@@ -779,6 +789,7 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 ? true : false);
 
@@ -806,6 +817,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		return;
 	}
 	}
+
+#endif
 
 	ComputeDataLabelFrame(view);
 
@@ -838,6 +851,7 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 					   ViewGraph *view, int pixelSize,
 					   int &recordsProcessed)
 {
+#if 0
   GDataAttrOffset *offset = map->GetGDataOffset();
   
   // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
@@ -848,7 +862,7 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 	char *gdata = (char *)gdataArray[i];
 	
 	Coord size = GetSize(gdata, map, offset);
-	
+       	
 	_object3D[i].pt.x_ = GetX(gdata, map, offset);
 	_object3D[i].pt.y_ = GetY(gdata, map, offset);
 	_object3D[i].pt.z_ = GetZ(gdata, map, offset);
@@ -858,7 +872,7 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 	_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
 	_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
 	_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
-
+	
 	Map3D::AssignOvalVertices(_object3D[i]);
 	if (wireframe)
 	  Map3D::AssignOvalEdges(_object3D[i]);
@@ -898,6 +912,26 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 			  view->GetCamera(), w, h);
 	Map3D::DrawPlanes(win, solidFrame);
   }
+#endif
+
+  GDataAttrOffset *offset = map->GetGDataOffset();
+  Coord x, y, z, r;
+  // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
+  Boolean wireframe = (view->GetSolid3D() == 0);
+  Boolean solidFrame = (view->GetSolid3D() == 2);
+  
+  for(int i = 0; i < numSyms; i++) {
+    char *gdata = (char *)gdataArray[i];
+    
+    Coord size = GetSize(gdata, map, offset);
+    
+    x=GetX(gdata, map, offset);
+    y=GetY(gdata, map, offset);
+    z=GetZ(gdata, map, offset);
+    r=size * GetShapeAttr0(gdata, map, offset)/2.0;
+    win->SetForeground(GetPColorID(gdata, map, offset));
+    win->FillSphere(x, y, z, r);
+  }
   recordsProcessed = numSyms;
 }
 // -----------------------------------------------------------------
@@ -930,6 +964,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord pixelWidth = 1 / fabs(x1 - x0);
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 ? true : false);
 
@@ -951,6 +986,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		return;
 	}
 	}
+#endif
 
 	ComputeDataLabelFrame(view);
 
@@ -1124,6 +1160,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord pixelWidth = 1 / fabs(x1 - x0);
 	Coord pixelHeight = 1 / fabs(y1 - y0);
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 ? true : false);
 
@@ -1145,6 +1182,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		return;
 	}
 	}
+#endif
 
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
@@ -1169,12 +1207,13 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 }
 
 
-void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
-												void **gdataArray,
-												int numSyms, TDataMap *map,
-												ViewGraph *view, int pixelSize,
-												int &recordsProcessed)
+void FullMapping_SegmentShape::
+Draw3DGDataArray(WindowRep *win, void **gdataArray,
+		 int numSyms, TDataMap *map,
+		 ViewGraph *view, int pixelSize,
+		 int &recordsProcessed)
 {
+#if 0
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
 	for(int i = 0; i < numSyms; i++) {
@@ -1209,6 +1248,28 @@ void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
 	Map3D::MapLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
 	Map3D::DrawSegments(win);
 
+	recordsProcessed = numSyms;
+#endif
+	GDataAttrOffset *offset = map->GetGDataOffset();
+	
+	for(int i = 0; i < numSyms; i++) {
+	  char *gdata = (char *)gdataArray[i];
+	  
+	  Coord size = GetSize(gdata, map, offset);
+	  
+	  Coord x = GetX(gdata, map, offset);
+	  Coord y = GetY(gdata, map, offset);
+	  Coord z = GetZ(gdata, map, offset);
+	  Coord w = size * GetShapeAttr0(gdata, map, offset);
+	  Coord h = size * GetShapeAttr1(gdata, map, offset);
+	  Coord d = size * GetShapeAttr2(gdata, map, offset);
+	  Coord width = fabs(GetShapeAttr3(gdata, map, offset));
+	  width = MAX(width, 1);
+	  win->SetForeground(GetPColorID(gdata, map, offset));
+	  win->Line3D(x-w/2.0,y-h/2.0,z-d/2.0,
+		      x+w/2.0,y+h/2.0,z+d/2.0,
+		      width);
+	}
 	recordsProcessed = numSyms;
 }
 
@@ -1262,7 +1323,8 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	ComputeDataLabelFrame(view);
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
-
+	
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 &&
 				offset->shapeAttrOffset[2] < 0 ? true : false);
@@ -1291,6 +1353,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		return;
 	}
 	}
+#endif
 
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
@@ -1386,6 +1449,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
 
+#if defined(PIXELOPTIMIZE)
 	Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
 				offset->shapeAttrOffset[1] < 0 &&
 				offset->shapeAttrOffset[2] < 0 ? true : false);
@@ -1414,6 +1478,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 		return;
 	}
 	}
+#endif
 
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
@@ -2207,6 +2272,36 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	}
 
 	recordsProcessed = numSyms;
+}
+
+void FullMapping_LineShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
+					   int numSyms, TDataMap *map,
+					   ViewGraph *view, int pixelSize,
+					   int &recordsProcessed)
+{
+  	GDataAttrOffset *offset = map->GetGDataOffset();
+
+	char*	gdata = (char *)gdataArray[0];
+	Coord	x0 = GetX(gdata, map, offset);
+	Coord	y0 = GetY(gdata, map, offset);
+	Coord	z0 = GetZ(gdata, map, offset);
+	Coord	width = GetLineWidth(gdata, map, offset);
+    	PColorID color = GetPColorID(gdata, map, offset);
+
+	for(int i = 1; i < numSyms; i++) {
+		gdata = (char *)gdataArray[i];
+		Coord	x = GetX(gdata, map, offset);
+		Coord	y = GetY(gdata, map, offset);
+		Coord	z = GetZ(gdata, map, offset);
+    		win->SetForeground(color);
+    		win->Line3D(x0, y0, z0, x, y, z, width);
+		x0=x;
+		y0=x;
+		z0=x;
+		color=GetPColorID(gdata, map, offset);
+		width = GetLineWidth(gdata, map, offset);
+	}
+	recordsProcessed=numSyms;
 }
 
 

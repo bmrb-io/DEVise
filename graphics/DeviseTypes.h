@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/12/23 23:34:54  liping
+  The class Range was replaced by Interval
+
   Revision 1.15  1997/10/10 21:11:51  liping
   Adding the definition of "Range" which is used by TData and BufMgr, etc.
 
@@ -76,6 +79,9 @@
 #define DeviseTypes_h
 
 #include <values.h>
+#ifdef SGI
+#include <sys/param.h>
+#endif
 
 
 typedef double Coord;
@@ -108,16 +114,20 @@ inline int trunc(double num) {
 }
 #endif
 
+#ifndef SGI
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
 #endif
 
 #ifndef MIN3
 #define MIN3(a,b,c) ((a) < (b) ? MIN(a,c) : MIN(b,c))
 #endif
 
+#ifndef SGI
 #ifndef MAX
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
+#endif
 #endif
 
 #ifndef MAX3

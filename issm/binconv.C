@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/16 20:56:37  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.4  1995/12/28 18:31:51  jussi
   Small fixes to remove compiler warnings.
 
@@ -29,7 +32,10 @@
   Initial revision of archive.
 */
 
+#ifndef SGI
 #include <math.h>
+#endif
+
 
 #include "binconv.h"
 #include "Exit.h"

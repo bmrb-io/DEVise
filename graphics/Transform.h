@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/12/16 17:53:49  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.12 1997/10/19 21:39:10 zhenhai
   Change all transformations to use OpenGL convention
   Current matrix=old matrix * transformation matrix
@@ -65,6 +68,7 @@
 
 #include <stdio.h>
 #include <math.h>
+
 
 #include "DeviseTypes.h"
 #include "VisualArg.h"
@@ -342,7 +346,8 @@ public:
   void Rotate(Coord theta) {
   }
 
-#if 0 // These are never used(!).  RKW 10/15/96.
+#if 0
+  // These are never used(!).  RKW 10/15/96.
   /* Return the transformed X,Y,Z coordinates */
   void Transform(Coord x, Coord y, Coord z, 
 		 Coord &newX, Coord &newY, Coord &newZ) {

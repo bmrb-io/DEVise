@@ -15,13 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/06/12 17:59:45  wenger
+#  Jeez -- forgot to add the solaris one earlier!
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include
+ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS = 
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../xvertext
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include $(VPATH)/Makefile.sgi

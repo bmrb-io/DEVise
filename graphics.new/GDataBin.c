@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/12/16 17:57:48  zhenhai
+  Added OpenGL features.
+
 
   Revision 1.18 1997/10/17 00:51:53 zhenhai
   Removed _transform. It was used to optimize drawing on the same pixel.
@@ -113,7 +116,10 @@
 */
 
 #include <stdio.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 
 #include "Exit.h"
 #include "GDataBin.h"

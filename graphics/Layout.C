@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/11/24 23:14:22  weaver
+  Changes for the new ColorManager.
+
   Revision 1.3  1997/05/30 20:41:05  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -29,7 +32,8 @@
 
 //******************************************************************************
 
-#include "math.h"
+#include <math.h>
+
 #include "Layout.h"
 #include "Display.h"
 #include "Control.h"

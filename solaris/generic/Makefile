@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1997/12/16 18:02:45  zhenhai
+#  Added OpenGL features.
+#
 #  Revision 1.17  1997/12/04 18:31:57  wenger
 #  Merged new expression evaluation code thru the expression_br_2 tag.
 #
@@ -70,7 +73,7 @@
 
 PERL_CORE = /s/perl/lib/CORE
 
-ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS   = -DSGI -I/s/X11/include -I/usr/freeware/include -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
                -L/s/X11/lib -L /s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
@@ -82,4 +85,4 @@ ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include $(VPATH)/Makefile.sgi

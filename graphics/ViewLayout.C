@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/11/24 23:14:35  weaver
+  Changes for the new ColorManager.
+
   Revision 1.8  1997/01/08 19:01:44  wenger
   Fixed bug 064 and various other problems with drawing piled views;
   added related debug code.
@@ -47,6 +50,7 @@
 //******************************************************************************
 
 #include <math.h>
+
 
 #include "ViewLayout.h"
 

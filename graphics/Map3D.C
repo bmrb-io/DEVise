@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/12/16 17:53:48  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.11  1997/11/24 23:14:26  weaver
   Changes for the new ColorManager.
 
@@ -802,15 +805,15 @@ void Map3D::DrawRefAxis(WindowRep *win, Camera camera)
   axisPt[0].x_ = 0.0;
   axisPt[0].y_ = 0.0;
   axisPt[0].z_ = 0.0;
-  axisPt[1].x_ = axisPt[0].x_ + 1.0;
+  axisPt[1].x_ = axisPt[0].x_ + 3.0;
   axisPt[1].y_ = axisPt[0].y_;
   axisPt[1].z_ = axisPt[0].z_;
   axisPt[2].x_ = axisPt[0].x_;
-  axisPt[2].y_ = axisPt[0].y_ + 1.0;
+  axisPt[2].y_ = axisPt[0].y_ + 3.0;
   axisPt[2].z_ = axisPt[0].z_;
   axisPt[3].x_ = axisPt[0].x_;
   axisPt[3].y_ = axisPt[0].y_;
-  axisPt[3].z_ = axisPt[0].z_ + 1.0;
+  axisPt[3].z_ = axisPt[0].z_ + 3.0;
   axis[0].p = 0;  axis[0].q = 1;  // x axis
   axis[1].p = 0;  axis[1].q = 2;  // y axis
   axis[2].p = 0;  axis[2].q = 3;  // z axis
@@ -843,7 +846,7 @@ void Map3D::DrawAxis(WindowRep *win, Point3D axisPt[4],
 #ifdef DEBUG
   printf("Begin DrawAxis\n");
 #endif
-
+#if 0
   Point pt[4];
   for(int j = 0; j < 4; j++) {
     Point3D sa_pts = CompLocationOnViewingSpace(win, axisPt[j]);
@@ -863,6 +866,13 @@ void Map3D::DrawAxis(WindowRep *win, Point3D axisPt[4],
 		      fakeSize, fakeSize, WindowRep::AlignCenter,
 		      false);
   }
+#endif
+  for (int i=0; i<3; i++)
+    win->Line3D(axisPt[axis[i].p].x_, axisPt[axis[i].p].y_,
+		axisPt[axis[i].p].z_,
+		axisPt[axis[i].q].x_, axisPt[axis[i].q].y_,
+		axisPt[axis[i].q].z_,
+		1.0);
 
 #ifdef DEBUG
   printf("End DrawAxis\n");

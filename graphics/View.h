@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.59  1998/02/05 23:45:55  wenger
+  Added view-level specification of symbol alignment, API commands, simple
+  GUI for Sanjay.
+
   Revision 1.58  1998/01/27 23:04:37  wenger
   Broke the server's view selection dependency on the client (except when
   running in collaboration mode).
@@ -642,7 +646,8 @@ protected:
 	void DoDrawCursors();
 
 	/* Calculate the transformation for this view */
-	void CalcTransform(WindowRep* winrep);
+	void CalcTransform2(WindowRep* winrep);
+	void CalcTransform3(WindowRep* winrep);
 
 	/* Find World coord given screen coord */
 	/* void FindWorld(int sx1, int sy1, int sx2, int sy2,

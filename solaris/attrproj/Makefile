@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/12/15 07:02:13  donjerko
+#  Added RTree to the VPATH
+#
 #  Revision 1.8  1996/11/23 20:53:13  jussi
 #  Removed -lpthread.
 #
@@ -47,10 +50,10 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
+ARCH_FLAGS   = -DSGI -I/usr/freeware/include -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = 
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new:../../DTE/RTree
 include ../../attrproj/Makefile.base
-include ../../attrproj/Makefile.solaris
+include ../../attrproj/Makefile.sgi

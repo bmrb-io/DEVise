@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/05/05 16:53:42  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.10  1997/04/11 18:48:49  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -194,7 +198,8 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
     int numColors;
     sscanf(replyBuf, "%*s %d %d", &handle, &numColors);
 
-#if 0 // We can't free images immediately becaues they'll be erased.
+#if 0
+// We can't free images immediately becaues they'll be erased.
     sprintf(commandBuf, "free %d\n", handle);
     result += ConnectAndSend(daliServer, commandBuf, 0, (char *) NULL,
       replyBuf);

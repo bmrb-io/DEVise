@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/05/20 18:38:00  jussi
+#  Replaced PENTIUM flag with SOLARIS.
+#
 #  Revision 1.8  1996/02/13 16:44:20  jussi
 #  Replaced /usr/X11R6/include with /s/X11/include.
 #
@@ -24,8 +27,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/include -I/usr/freeware/src/perl5.002
 
 VPATH = ../../issm
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include $(VPATH)/Makefile.sgi

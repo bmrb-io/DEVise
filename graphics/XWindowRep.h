@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/01/23 20:37:58  zhenhai
+  Fixed a bug on transformation which was caused by inconsistency between origins
+  or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
+  incorrect labelling of axis.
+
   Revision 1.49  1998/01/14 16:39:00  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -229,6 +234,7 @@
 
 #include <string.h>
 #include <math.h>
+
 
 #include "WindowRep.h"
 #include "Xdef.h"

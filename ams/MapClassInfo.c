@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/02/09 18:09:46  wenger
+  Removed ViewScatter class (totally replaced by ViewData, which is a
+  renamed version of TDataViewX); removed ViewRanges class (not used);
+  re-made Solaris dependencies.
+
   Revision 1.9  1996/12/03 20:58:26  jussi
   Removed reference to unneeded file Snapshot.h.
 
@@ -43,7 +48,10 @@
 
 #include <sys/time.h>
 #include <time.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 #include "tcl.h"
 #include "DeviseTypes.h"
 #include "Display.h"

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/01/30 21:53:18  wenger
+  Did some cleaning up of the MappingInterp and NativeExpr code
+  (NativeExpr still needs a lot more); NativeExpr code can now
+  parse expressions containing constant strings (they are treated
+  as numerical zero for now) (this fixes bug 275).
+
   Revision 1.4  1998/01/26 23:19:27  wenger
   Fixed a bug in expression evaluation code (didn't allow underscores in
   attribute names) and added better error messages.
@@ -42,7 +48,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 #include "MappingInterp.h"
 #include "NativeExpr.h"
 

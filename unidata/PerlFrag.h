@@ -17,8 +17,15 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <math.h>             // We need to get to it before perl does
+#include <math.h>
+
 #include <iostream.h>
+
+#ifdef SGI
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/endian.h>
+#endif
 
 extern "C" {
 #    define  explicit explic      // A C++ keyword?

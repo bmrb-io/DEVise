@@ -305,9 +305,6 @@ void GLWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
     XMoveResizeWindow(_display, _win, x, y, w, h);
     MAKECURRENT();
     glViewport(0, 0, (GLsizei)_width, (GLsizei)_height);
-    GLMATRIXMODE(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0.0, (GLsizei)_width, 0.0, (GLsizei)_height);
   }
   else {
     /* Resizing a pixmap involves deleting it and creating a new one */
@@ -344,6 +341,8 @@ void GLWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   GLdouble model[16];
   GLdouble proj[16];
   GLint view[4];
+  if (this->_numDim==3)
+    return; // Disable clipping for 3D
   MAKECURRENT();
   glGetDoublev(GL_MODELVIEW_MATRIX, model);
   glGetDoublev(GL_PROJECTION_MATRIX, proj);
@@ -392,6 +391,9 @@ void GLWindowRep::PopClip()
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::PopClip\n",this);
 #endif
+  if (this->_numDim==3)
+    return; // Disable clipping for 3D
+
   WindowRep::_PopClip();
   Coord x, y, w, h;
 
@@ -1081,7 +1083,7 @@ void GLWindowRep::SetLineWidth(int w)
   WindowRep::SetLineWidth(w);
   GLCHECKERROR();
   MAKECURRENT();
-  if (w>1)
+  if (w>1.0)
   	glLineWidth(GLfloat(w));
   else
   	glLineWidth(GLfloat(1.0));
@@ -1104,7 +1106,7 @@ void GLWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
   if (filled) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     GLCHECKERROR();
-    GLBEGIN(GL_POLYGON);
+    GLBEGIN(GL_QUADS);
     glVertex2f(xlow, ylow);
     glVertex2f(xlow+width, ylow);
     glVertex2f(xlow+width, ylow+height);
@@ -1114,7 +1116,7 @@ void GLWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
   if( GetLineWidth() >= 0 || !filled) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     GLCHECKERROR();
-    GLBEGIN(GL_POLYGON);
+    GLBEGIN(GL_QUADS);
     glVertex2f(xlow, ylow);
     glVertex2f(xlow+width, ylow);
     glVertex2f(xlow+width, ylow+height);
@@ -1146,7 +1148,7 @@ void GLWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
   bool filled=(GetPattern() != -Pattern1);
   if (filled) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    GLBEGIN(GL_POLYGON);
+    GLBEGIN(GL_QUADS);
     glVertex2f(point_x[0], point_y[0]);
     glVertex2f(point_x[1], point_y[1]);
     glVertex2f(point_x[2], point_y[2]);
@@ -1156,7 +1158,7 @@ void GLWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
   
   if( GetLineWidth() >= 0 || !filled) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    GLBEGIN(GL_POLYGON);
+    GLBEGIN(GL_QUADS);
       glVertex2f(point_x[0], point_y[0]);
       glVertex2f(point_x[1], point_y[1]);
       glVertex2f(point_x[2], point_y[2]);
@@ -1326,14 +1328,14 @@ void GLWindowRep::FillPoly(Point *points, int n)
   GLCHECKERROR();
 
 #if defined(DEBUG)
-	PrintTransform();
+  PrintTransform();
 #endif
   GLCHECKERROR();
       if( GetLineWidth() >= 0 || !fill ) {
   GLCHECKERROR();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   GLCHECKERROR();
-	GLBEGIN(GL_POLYGON);
+  GLBEGIN(GL_POLYGON);
   GLCHECKERROR();
 	for (int i=0; i<n; i++) {
 	  glVertex2d(points[i].x, points[i].y);
@@ -1350,7 +1352,91 @@ void GLWindowRep::FillPoly(Point *points, int n)
   GLCHECKERROR();
 }
 
-void GLWindowRep::FillPixelPoly(Point *, int n)
+void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
+{
+#ifdef GRAPHICS
+  MAKECURRENT();
+  if (_dispGraphics) {
+    // special-case the no-fill rectangle
+    bool fill = (GetPattern() != -Pattern1);
+    if( fill ) {
+      
+      GLCHECKERROR();
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      GLCHECKERROR();
+#if defined(DEBUG)
+      PrintTransform();
+#endif
+      
+      GLCHECKERROR();
+      GLBEGIN(GL_POLYGON);
+      GLCHECKERROR();
+      glVertex3d(p1.x_, p1.y_, p1.z_);
+      glVertex3d(p2.x_, p2.y_, p2.z_);
+      glVertex3d(p3.x_, p3.y_, p3.z_);
+      GLCHECKERROR();
+#if defined(DEBUG)
+      printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
+	     p1.x_, p1.y_, p1.z_);
+      printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
+	     p2.x_, p2.y_, p2.z_);
+      printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
+	     p3.x_, p3.y_, p3.z_);
+#endif
+      
+      GLCHECKERROR();
+      GLEND();
+      GLCHECKERROR();
+    }
+    GLCHECKERROR();
+    
+    
+#if defined(DEBUG)
+    PrintTransform();
+#endif
+    GLCHECKERROR();
+    if( GetLineWidth() >= 0 || !fill ) {
+      GLCHECKERROR();
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      GLCHECKERROR();
+      GLBEGIN(GL_POLYGON);
+      GLCHECKERROR();
+      glVertex3d(p1.x_, p1.y_, p1.z_);
+      glVertex3d(p2.x_, p2.y_, p2.z_);
+      glVertex3d(p3.x_, p3.y_, p3.z_);
+      GLCHECKERROR();
+#if defined(DEBUG)
+      printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
+	     p1.x, p1.y, p1.z);
+      printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
+	     p2.x, p2.y, p2.z);
+      printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
+	     p3.x, p3.y, p3.z);
+#endif
+      GLEND();
+      GLCHECKERROR();
+    }
+  }
+#endif
+}
+
+void GLWindowRep::FillSphere(Coord x, Coord y, Coord z, Coord r)
+{
+  MAKECURRENT();
+  GLMATRIXMODE(GL_MODELVIEW);
+  glPushMatrix();
+  glTranslatef(x, y, z);
+
+  GLUquadricObj* qObj;
+  qObj=gluNewQuadric();
+  gluQuadricDrawStyle(qObj, GLU_FILL);
+  gluQuadricNormals(qObj, GLU_SMOOTH);
+  gluSphere(qObj, r, 36, 36);
+
+  glPopMatrix();
+}
+
+void GLWindowRep::FillPixelPoly(Point *p, int n)
 {
   GLCHECKERROR();
 #ifdef DEBUG
@@ -1365,6 +1451,7 @@ void GLWindowRep::FillPixelPoly(Point *, int n)
   printf("\n");
 #endif
 #endif
+  FillPoly(p, n);
   GLCHECKERROR();
 }
 
@@ -1395,6 +1482,19 @@ void GLWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width)
   glVertex2d(x2,y2);
   glEnd();
   GLCHECKERROR();
+}
+
+void GLWindowRep::Line3D(Coord x1, Coord y1, Coord z1,
+	Coord x2, Coord y2, Coord z2, Coord width)
+{
+#if defined(DEBUG)
+  printf("GLWindowRep(0x%p)::Line %.2f,%.2f,%.2f,%.2f\n",this, x1, y1, x2, y2);
+#endif
+  MAKECURRENT();
+  GLBEGIN(GL_LINES);
+  glVertex3d(x1,y1,z1);
+  glVertex3d(x2,y2,z2);
+  GLEND();
 }
 
 void GLWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
@@ -1460,12 +1560,18 @@ void GLWindowRep::SetXorMode()
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::SetXorMode\n",this);
 #endif
+  MAKECURRENT();
+  glLogicOp(GL_XOR);
+
 }
+
 void GLWindowRep::SetCopyMode()
 {
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::SetCopyMode\n",this);
 #endif
+  MAKECURRENT();
+  glLogicOp(GL_COPY);
 }
 
 void GLWindowRep::SetOrMode()
@@ -1473,6 +1579,8 @@ void GLWindowRep::SetOrMode()
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::SetOrMode\n",this);
 #endif
+  MAKECURRENT();
+  glLogicOp(GL_OR);
 }
 
 /* Set font or return to normal */
@@ -1534,7 +1642,7 @@ void GLWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   GLCHECKERROR();
-  GLBEGIN(GL_POLYGON);
+  GLBEGIN(GL_QUADS);
   glVertex2f(x1, y1);
   glVertex2f(x1, y2);
   glVertex2f(x2, y2);
@@ -1725,6 +1833,7 @@ void GLWindowRep::Init()
 			 /* No sharing of display lists */ NULL,
 			 /* Direct rendering if possible */ True);
   GLCHECKERROR();
+  glEnable(GL_INDEX_LOGIC_OP);
   SetCopyMode();
   GLCHECKERROR();
   SetLineWidth(0);
@@ -1794,13 +1903,13 @@ void    GLWindowRep::SetForeground(PColorID fgid)
 
 void    GLWindowRep::SetBackground(PColorID bgid)
 {
-        XColorID        xbgid = AP_GetXColorID(bgid);
+        _xbgid = AP_GetXColorID(bgid);
 
         WindowRep::SetBackground(bgid);
 
 #ifdef GRAPHICS
         if (_dispGraphics) {
-	  	glClearIndex(xbgid);
+	  	glClearIndex(_xbgid);
   		glClear(GL_COLOR_BUFFER_BIT);
 	}
 #endif
@@ -2309,6 +2418,35 @@ void GLWindowRep::UpdateWinDimensions()
   }
 }
 
+void GLWindowRep::SetNumDim(int numDim) {
+  GLfloat w, h;
+  _numDim=numDim;
+  w=_width;
+  h=_height;
+  if (numDim==2) {
+    MAKECURRENT();
+    glDisable(GL_DEPTH_TEST);
+    GLMATRIXMODE(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, w, 0.0, h, -10.0, 10.0);
+  }
+  if (numDim==3) {
+    w=_width;
+    h=_height;
+    MAKECURRENT();
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (w<h)
+      glOrtho(-2.5, 2.5, -2.5*h/w, 2.5*h/w, -10.0, 10.0);
+    else
+      glOrtho(-2.5*w/h, 2.5*w/h, -2.5, 2.5, -10.0, 10.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+  }    
+}
+
 #ifndef RAWMOUSEEVENTS
 static long buttonMasks[3] = {
   Button1MotionMask, Button2MotionMask, Button3MotionMask
@@ -2339,7 +2477,6 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
   GLMATRIXMODE(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
-  glEnable(GL_INDEX_LOGIC_OP);
   glLogicOp(GL_INVERT);
 
   DrawRubberband(x1, y1, x2, y2);
@@ -2375,7 +2512,6 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
       break;
     }
   }
-  glDisable(GL_INDEX_LOGIC_OP);
   glPopMatrix();
 
   xlow = MIN(x1, x2);

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/02/19 23:24:36  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.51  1997/12/12 05:50:15  weaver
   *** empty log message ***
 
@@ -217,7 +225,10 @@
 #include <errno.h>
 #include <time.h>
 #include <string.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 #include <sys/time.h>
 #include <sys/types.h>
 #include <String.h>

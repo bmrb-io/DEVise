@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:09:29  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 21:13:48  jussi
   Added/update CVS header.
 */
@@ -33,6 +37,7 @@
 */
 
 #include <math.h>
+
 #include "Journal.h"
 
 void Usage(char *name){

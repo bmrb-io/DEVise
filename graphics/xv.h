@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/04/17 20:32:35  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
 
@@ -118,6 +121,7 @@
 /* include files */
 #include <stdio.h>
 #include <math.h>
+
 #include <ctype.h>
 
 #ifdef __STDC__

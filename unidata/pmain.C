@@ -2,7 +2,14 @@
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 
 #include <stdio.h>
-#include <math.h>             // We need to get to it before perl does
+#include <math.h>
+
+#ifdef SGI
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/endian.h>
+#endif
+
 
 #define  explicit explic      // A C++ keyword?
 extern "C" {

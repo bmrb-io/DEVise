@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.125  1998/02/16 15:41:24  wenger
+  Fixed (I believe) bug 287.
+
   Revision 1.124  1998/02/09 18:10:22  wenger
   Removed ViewScatter class (totally replaced by ViewData, which is a
   renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -1654,8 +1657,9 @@ void View::FindWorld(int sx1,int sy1, int sx2, int sy2,
 /* Calculate the transformation matrix used to translate from
    world to screen coordinates */
 
-void View::CalcTransform(WindowRep *winRep)
+void View::CalcTransform2(WindowRep *winRep)
 {
+  winRep->SetNumDim(2);
   winRep->MakeIdentity();
 
   int dataX, dataY, dataWidth, dataHeight;
@@ -1670,12 +1674,6 @@ void View::CalcTransform(WindowRep *winRep)
 
   /* Translate to beginning of data area. */
   winRep->Translate(dataX, dataY);
-  
-  /* Translate to fit to of screen */
-//  winRep->Translate(0.0, dataHeight);
-
-  /* invert the Y coord*/
-//  winRep->Scale(1.0, -1.0);
 
   /* scale to size of the screen */
   winRep->Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
@@ -1683,6 +1681,35 @@ void View::CalcTransform(WindowRep *winRep)
 
   /* translate to 0, 0 */
   winRep->Translate(-_filter.xLow, -_filter.yLow);
+
+}
+
+void View::CalcTransform3(WindowRep *winRep)
+{
+  winRep->SetNumDim(3);
+  winRep->MakeIdentity();
+
+  int dataX, dataY, dataWidth, dataHeight;
+  GetDataArea(dataX, dataY, dataWidth, dataHeight);
+
+#if defined(DEBUG)
+  printf("transform data: %d,%d,%d,%d\n", dataX, dataY,
+	 dataWidth, dataHeight);
+#endif
+  // need to figure out the correct positioning of camera later...
+
+  /* Translate to beginning of data area. */
+  // winRep->Translate(dataX, dataY);
+
+  /* scale to size of the screen */
+  //winRep->Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
+  //	  (Coord)(dataHeight) / (_filter.yHigh - _filter.yLow));
+
+  /* translate to 0, 0 */
+  //winRep->Translate(-_filter.xLow, -_filter.yLow);
+
+  
+  SetViewDir(dataWidth / 2, dataHeight / 2);
 }
 
 /* Calculate the transformation matrix used to translate from
@@ -1806,10 +1833,10 @@ void View::UpdateTransform(WindowRep *winRep)
   winRep->ClearTransformStack();
 
   if (_numDimensions == 2) {
-     CalcTransform(winRep);
+     CalcTransform2(winRep);
   } else {
-     CalcTransform(winRep);
-     winRep->MakeIdentity();
+     CalcTransform3(winRep);
+     //winRep->MakeIdentity();
   }
 }
 

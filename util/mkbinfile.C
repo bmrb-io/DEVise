@@ -15,10 +15,14 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/04/30 15:53:18  jussi
+  Initial revision.
+*/
 
 #include <iostream.h>
 #include <math.h>
+
 #include <time.h>
 #include <stdlib.h>
 

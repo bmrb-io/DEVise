@@ -19,6 +19,10 @@ Comments and additions may be sent the author at zhang@cs.wisc.edu.
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:08:23  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef GLOBAL_H
@@ -27,7 +31,10 @@ Comments and additions may be sent the author at zhang@cs.wisc.edu.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 #include <ctype.h>
 #include <unistd.h>
 #include <time.h>

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:38:54  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:32  jussi
   Added CVS header.
 */
@@ -36,7 +39,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef SGI
 #include <math.h>
+#endif
+
 
 #include "Parse.h"
 

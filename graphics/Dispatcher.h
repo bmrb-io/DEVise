@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/01/07 19:28:28  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.27.4.1  1998/01/07 15:59:22  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -302,7 +307,8 @@ private:
   int maxFdCheck;
 };
 
-#if 0 // This isn't currently used anywhere.  RKW Aug. 27, 1997.
+#if 0
+// This isn't currently used anywhere.  RKW Aug. 27, 1997.
 /*********************************************************
 A class that automatically registers with the dispatcher
 *********************************************************/

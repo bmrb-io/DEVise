@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/05/30 20:41:26  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.6  1996/11/07 22:40:12  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -41,6 +46,7 @@
 */
 
 #include <math.h>
+
 
 #include "TileLayout.h"
 #include "Display.h"

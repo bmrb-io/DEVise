@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1997/11/05 00:24:15  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.12  1997/08/12 18:48:24  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -58,7 +61,7 @@
 
 PERL_CORE = /s/perl/lib/CORE
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/include -I/usr/freeware/src/perl5.002
 ARCH_LDFLAGS =
 ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -lm
@@ -71,6 +74,6 @@ VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
 	$(DTE_DIR)/Script $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.solaris
+include $(DTE_DIR)/Makefile.sgi
 
 # DO NOT DELETE

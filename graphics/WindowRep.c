@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/12/18 18:40:17  wenger
+  Turned off debug output, cleaned things up a little bit in OpenGL code.
+
   Revision 1.27  1997/12/16 17:53:54  zhenhai
   Added OpenGL features to graphics.
 
@@ -155,7 +158,7 @@ Boolean WindowRep::_destroyPending = false;
 //******************************************************************************
 
 WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
-	:	_display(disp)
+	:	_display(disp), _numDim(2)
 {
   _callbackList = new WindowRepCallbackList;
   DOASSERT(_callbackList, "Out of memory");

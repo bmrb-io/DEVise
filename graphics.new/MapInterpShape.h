@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/12/16 17:57:52  zhenhai
+  Added OpenGL features.
+
   Revision 1.40  1997/11/24 23:15:08  weaver
   Changes for the new ColorManager.
 
@@ -462,6 +465,12 @@ class FullMapping_LineShape
 				    Pattern pattern, int line_width,
 				    Coord x0, Coord y0, PColorID c0,
 				    Coord x1, Coord y1, PColorID c1);
+
+  protected:
+    virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
+				  int numSyms, TDataMap *map,
+				  ViewGraph *view, int pixelSize,
+				  int &recordsProcessed);
 };
 
 // -----------------------------------------------------------------

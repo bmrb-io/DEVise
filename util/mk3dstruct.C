@@ -16,10 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/21 15:38:12  jussi
+  Initial revision.
+
 */
 
 #include <iostream.h>
 #include <math.h>
+
 #include <time.h>
 #include <stdlib.h>
 
