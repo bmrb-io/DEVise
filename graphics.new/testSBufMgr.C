@@ -18,11 +18,18 @@ int main()
     const int buffSize = (int)(buffRatio * poolSize / numFiles);
     const int bufPages = poolSize - buffSize * numFiles;
 
-    int i,j,f;
+    int i,j,f,iter;
+    unsigned long int len;
+
+    char *page, *url;
+    char cmp[pageSize];
 
     struct timeval start;
     struct timeval stop;
     double secs;
+
+    MemMgr *memMgr;
+    CacheMgr *cacheMgr;
 
     // destroy all shared memory segments
 
@@ -34,33 +41,67 @@ int main()
     int status = SemaphoreV::create(16);
     assert(status >= 0);
 
-    // create buffer pool and buffer manager
+    time_t now = time(0);
+    printf("Random number seed = %ld\n", now);
+    srand(now);
 
-    MemMgr *memMgr = new MemMgr(poolSize, pageSize, status);
+    // create buffer manager
+
+    memMgr = new MemMgr(poolSize, pageSize, status);
     assert(memMgr);
     if (status < 0) {
         fprintf(stderr, "Cannot create memory manager\n");
         exit(1);
     }
 
-    CacheMgr *cacheMgr = new CacheMgrLRU(*memMgr, memMgr->NumPages());
+    printf("\nTesting memory manager...\n");
+    char *ptrs[poolSize];
+    // Allocate every page in memory
+    for(i = 0; i < poolSize; i++)
+        CALL(memMgr->Allocate(MemMgr::Cache, ptrs[i]));
+    // Release every other page
+    for(i = 0; i < poolSize; i += 2)
+        CALL(memMgr->Deallocate(MemMgr::Cache, ptrs[i]));
+    // Should not be able to allocate 2 contiguous pages
+    j = 2;
+    CALL(memMgr->Allocate(MemMgr::Cache, page, j));
+    if (j != 1) {
+        printf("Allocation returned %d pages, not 1\n", j);
+        goto error;
+    }
+    CALL(memMgr->Deallocate(MemMgr::Cache, page, j));
+    // Release page between two previously released pages
+    CALL(memMgr->Deallocate(MemMgr::Cache, ptrs[1]));
+    // Should now be able to allocate 3 contiguous pages
+    j = 3;
+    CALL(memMgr->Allocate(MemMgr::Cache, page, j));
+    if (j != 3) {
+        printf("Allocation returned %d pages, not 3\n", j);
+        goto error;
+    }
+    CALL(memMgr->Deallocate(MemMgr::Cache, page, j));
+    // Release all remaining pages
+    for(i = 3; i < poolSize; i += 2)
+        CALL(memMgr->Deallocate(MemMgr::Cache, ptrs[i]));
+    // Should now be able to allocate all pages in one chunk
+    j = poolSize;
+    CALL(memMgr->Allocate(MemMgr::Cache, page, j));
+    if (j != poolSize) {
+        printf("Allocation returned %d pages, not %d\n", j, poolSize);
+        goto error;
+    }
+    CALL(memMgr->Deallocate(MemMgr::Cache, page, j));
+
+    cacheMgr = new CacheMgrLRU(*memMgr, memMgr->NumPages());
     assert(cacheMgr);
 
     // test buffer manager
-
-    char* page;
-    char cmp[pageSize];
-    int iter;
-
-    time_t now = time(0);
-    printf("Random number seed = %ld\n", now);
-    srand(now);
 
     IOTask *task[numFiles];
 
     printf("\nTesting Web read data access...\n");
 
-    char *url = "http://www.cs.wisc.edu/~devise/devise/spie96.ps.gz";
+    url = "http://www.cs.wisc.edu/~devise/devise/spie96.ps.gz";
     task[0] = new WebIOTask(url, true);
     assert(task[0]);
     if (status < 0) {
@@ -69,7 +110,7 @@ int main()
     }
         
     gettimeofday(&start, 0);
-    unsigned long int len = 0;
+    len = 0;
 
     int pageNum;
     for(pageNum = 0;; pageNum++) {
@@ -360,8 +401,6 @@ int main()
     printf("\nThe tests failed.\n");
 
     for(i = 0; i < numFiles; i++) {
-        delete task[i];
-        fclose(fp[i]);
         char buf[64];
         sprintf(buf, "tmp/cacheMgr.%d", i);
         (void)unlink(buf);
