@@ -31,7 +31,8 @@ QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
 QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
 QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 QueryProcTape.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
-QueryProcTape.o: ../graphics.new/Action.h ../graphics.new/GDataBin.h
+QueryProcTape.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+QueryProcTape.o: HashTable.h ../graphics.new/GDataBin.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h ../graphics.new/Bitmap.h
 QueryProcTape.o: ../graphics/Display.h ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h

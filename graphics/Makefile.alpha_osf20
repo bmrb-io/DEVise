@@ -1,5 +1,6 @@
 depend:
-	makedepend -fMakefile.alpha_osf20  -I/s/X11/include *.c *.C
+	makedepend -fMakefile.alpha_osf20 -I../graphics.new \
+		-I/s/X11/include *.c *.C
 
 # DO NOT DELETE
 

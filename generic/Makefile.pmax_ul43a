@@ -24,6 +24,7 @@ generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
 generic.o: ../graphics.new/ViewStats.h ../graphics.new/DerivedDataSource.h
 generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
 generic.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
 generic.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
 generic.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h

@@ -1,5 +1,6 @@
 depend:
-	makedepend -fMakefile.pmax_ul43a -I/s/X11/include *.c *.C
+	makedepend -fMakefile.pmax_ul43a -I../graphics.new \
+		-I/s/X11/include *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -106,6 +107,7 @@ Init.o: /usr/include/string.h /usr/include/signal.h /usr/include/sys/types.h
 Init.o: Dispatcher.h DeviseTypes.h DList.h Exit.h Journal.h VisualArg.h
 Init.o: Color.h Pattern.h Init.h BufPolicy.h Time.h /usr/include/sys/time.h
 Init.o: Util.h /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
+Init.o: ../graphics.new/Version.h
 Journal.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 Journal.o: /usr/include/sys/types.h /usr/include/unistd.h
 Journal.o: /usr/include/sys/stat.h /usr/include/fcntl.h

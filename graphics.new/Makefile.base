@@ -1,8 +1,8 @@
 LD = ld
 CC = g++
 
-OPTFLAG = -O
-#OPTFLAG = -g
+#OPTFLAG = -O
+OPTFLAG = -g
 
 CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused $(OPTFLAG) -DUNIX -I../../graphics \
 	-I../../graphics.new -I../../tape -I../../generic -fexternal-templates
@@ -35,7 +35,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
-        DerivedDataSource.C StringStorage.C
+        DerivedDataSource.C StringStorage.C PointStorage.C
 	
 QPSrc1 = $(filter %.c,$(QPSrc))
 QPSrc2 = $(filter %.C,$(QPSrc))

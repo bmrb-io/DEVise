@@ -1,5 +1,6 @@
 depend:
-	makedepend -fMakefile.linux -I/usr/X11/include *.c *.C
+	makedepend -fMakefile.linux -I../graphics.new \
+		-I/usr/X11/include *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
