@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  2002/01/28 23:52:10  wenger
+  Updated the DEVised to support drawing axis labels on the JS side:
+  changed JAVAC_ViewDataArea command; leaves blank areas for axis
+  labels (temporarily disabled until the JS end is done); protocol
+  version is now 10.0 -- JS code accepts but ignores new arguments.
+
   Revision 1.10  2001/11/30 21:20:30  wenger
   Fixed bug 737 (zero-size visual filter crashes DEVise) and related
   bugs.
@@ -237,9 +243,7 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
 	DrawLine(win, info);
   }
 
-  //TEMP -- uncomment this after the JS end of drawing axis labels is
-  // implemented.
-  //TEMP if (!Session::GetIsJsSession()) {
+  if (!Session::GetIsJsSession()) {
     if (info._drawTicks) {
       if (_attrType == DateAttr) {
         DrawDateTicks(win, info);
@@ -249,7 +253,7 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
     if (info._drawTicks) {
 	  DrawFloatTicks(win, info);
     }
-  //TEMP }
+  }
 
   win->PopTransform();
 }
@@ -385,20 +389,17 @@ DevAxis::DrawLine(WindowRep *win, AxisInfo &info)
 void
 DevAxis::DrawDateTicks(WindowRep *win, AxisInfo &info)
 {
-  if (!Session::GetIsJsSession() || 1/*TEMP*/) {
+  // Draw the labels (date values).
 
-    // Draw the labels (date values).
-
-    *info._labelPixVar = info._varLoc1;
-    const char *label = DateString((time_t)info._lowValue, _dateFormat);
-    win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
+  *info._labelPixVar = info._varLoc1;
+  const char *label = DateString((time_t)info._lowValue, _dateFormat);
+  win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
 	    info._dateHeight, _dateAlignment1, true, _dateOrientation);
 
-    *info._labelPixVar = info._varLoc1 + (info._axisLength / 2);
-    label = DateString((time_t)info._highValue, _dateFormat);
-    win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
+  *info._labelPixVar = info._varLoc1 + (info._axisLength / 2);
+  label = DateString((time_t)info._highValue, _dateFormat);
+  win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
 	   info._dateHeight, _dateAlignment2, true, _dateOrientation);
-  }
 
   // Draw ticks.
   win->Line(info._x1, info._y1, info._x1 + _tickdrawX,
@@ -474,31 +475,29 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
       pastRightOrTop = false;
     }
 
-	if (!Session::GetIsJsSession() || 1/*TEMP*/) {
-	  WindowRep::SymbolAlignment align;
-	  Boolean drawLabel = true;
-      if (!pastLeftOrBottom && !pastRightOrTop) {
-	    // We're fine where we are.
-		align = WindowRep::AlignCenter;
-      } else if (pastLeftOrBottom && !pastRightOrTop) {
-		*info._labelPixVar = info._varLoc1;
-		align = info._bottomOrLeftAlign;
-      } else if (!pastLeftOrBottom && pastRightOrTop) {
-		*info._labelPixVar = info._varLoc2 - _labelWidth;
-		align = info._topOrRightAlign;
-      } else {
-        // Don't draw the label.
-		drawLabel = false;
-      }
+	WindowRep::SymbolAlignment align;
+	Boolean drawLabel = true;
+    if (!pastLeftOrBottom && !pastRightOrTop) {
+	  // We're fine where we are.
+	  align = WindowRep::AlignCenter;
+    } else if (pastLeftOrBottom && !pastRightOrTop) {
+	  *info._labelPixVar = info._varLoc1;
+	  align = info._bottomOrLeftAlign;
+    } else if (!pastLeftOrBottom && pastRightOrTop) {
+	  *info._labelPixVar = info._varLoc2 - _labelWidth;
+	  align = info._topOrRightAlign;
+    } else {
+      // Don't draw the label.
+	  drawLabel = false;
+    }
 
-	  if (drawLabel) {
-        win->AbsoluteText(buf, info._labelX, info._labelY, info._labelHorSize, info._labelVerSize,
-			  align, true);
+    if (drawLabel) {
+      win->AbsoluteText(buf, info._labelX, info._labelY, info._labelHorSize,
+	      info._labelVerSize, align, true);
 #if defined(DEBUG)
-          printf("  Label <%s> at %g, %g\n", buf, info._labelX, info._labelY);
+      printf("  Label <%s> at %g, %g\n", buf, info._labelX, info._labelY);
 #endif
-	  }
-	}
+    }
 
     tickMark += tickInc;
   }

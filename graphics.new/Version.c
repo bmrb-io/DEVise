@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  2001/12/17 18:36:59  wenger
+  Changed version to 1.7.5.
+
   Revision 1.62  2001/08/20 18:20:33  wenger
   Fixes to various font problems: XDisplay calculates point sizes correctly
   and uses screen resolution in specifying font; JS passes *its* screen
@@ -345,13 +348,13 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.5";
+static const char *	version = "1.7.6";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2001";
+static const char *	copyright = "Copyright (c) 1992-2002";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2001";
+static const char *	winLogo = "Visualization by DEVise (tm) 2002";
 
 
 #if !defined(lint) && defined(RCSID)
