@@ -15,6 +15,9 @@
 %  $Id$
 
 %  $Log$
+%  Revision 1.7  1996/06/14 20:17:29  jussi
+%  Added commands setMappingLegend and get3DLocation.
+%
 %  Revision 1.6  1996/05/31 15:47:58  jussi
 %  Added setLinkMaster, resetLinkMaster, and getLinkMaster commands.
 %
@@ -1335,10 +1338,24 @@ Output       & {\tt done} \\
 \begin{tabular}{l|p{5in}}
 \hline
 Command name & {\tt get3DLocation} \\
-Description  & Returns the position of the 3D camera \\
+Description  & Returns the 3D position of the camera and focal point \\
 Input \#     & 0 \\
 Input Types  & None \\
-Output       & X, Y, Z (floats) \\
+Output       & 1/0 indicating radial or rectangular coordinates (int),
+	       X, Y, Z, FX, FY, FZ, Theta, Phi, Rho (floats) \\
+\hline
+\end{tabular}
+
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name & {\tt set3DLocation} \\
+Description  & Sets the 3D position of the camera \\
+Input \#     & 3 \\
+Input Types  & X, Y, Z (floats) \\
+Output       & {\tt done} \\
 \hline
 \end{tabular}
 
