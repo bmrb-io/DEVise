@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2000/04/24 20:21:59  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.51  2000/04/05 15:42:22  wenger
 // Changed JavaScreen version to 3.3 because of memory fixes; other minor
 // improvements in code; conditionaled out some debug code.
@@ -116,6 +119,7 @@ public class DEViseCmdDispatcher implements Runnable
     // isOnline = false, connection to server is not established
     private boolean isOnline = false;
 
+    // ADD COMMENT -- what does this mean?
     private boolean isAbort = false;
 
     private static final boolean _debug = false;
@@ -161,6 +165,9 @@ public class DEViseCmdDispatcher implements Runnable
     // it is assumed that status = 0 while method start() is called
     // it is also assumed that while status = 0, dispatcher thread is not running
 
+    // Initiate a command from the JavaScreen to the jspop or devised.
+    // Note that cmd may actually contain more than one command (separated
+    // by newlines).
     public void start(String cmd)
     {
         if (getStatus() != 0) {
@@ -173,6 +180,7 @@ public class DEViseCmdDispatcher implements Runnable
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
 
+	// If we don't have a socket to the jspop, attempt to create one.
         if (commSocket == null) {
             boolean isEnd = false;
             while (!isEnd) {
@@ -191,6 +199,8 @@ public class DEViseCmdDispatcher implements Runnable
             }
         }
 
+	// If we don't have a connection yet, prepend a connection request
+	// command to whatever was passed in.
         String command = cmd;
         if (!getOnlineStatus()) {
             command = "JAVAC_Connect {" + DEViseGlobals.username + "} {"
@@ -208,6 +218,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         jsc.jscreen.setLastAction(command);
 
+	// Note: command(s) will actually be sent by the run() method
+	// of this class.
         dispatcherThread = new Thread(this);
         dispatcherThread.start();
     }
@@ -217,6 +229,7 @@ public class DEViseCmdDispatcher implements Runnable
         stop(false, false);
     }
 
+    // ADD COMMENT -- what do isDisconnect and isExit mean?
     public void stop(boolean isDisconnect, boolean isExit)
     {
         if (isDisconnect) {
@@ -324,7 +337,7 @@ public class DEViseCmdDispatcher implements Runnable
                         jsc.showMsg(e1.getMsg());
                         disconnect();
                     }
-                } else if (commands[i].startsWith("JAVAC_OpenSessoin")) {
+                } else if (commands[i].startsWith("JAVAC_OpenSession")) {
                     jsc.jscreen.updateScreen(false);
                     processCmd(commands[i]);
                 } else {
@@ -332,6 +345,8 @@ public class DEViseCmdDispatcher implements Runnable
                 }
             }
 
+	    // Note: this is the "standard" place where the GUI gets
+	    // changed to indicate that the command is finished.
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseUIGlobals.bg);
 
