@@ -1,0 +1,50 @@
+#DEVise Session 
+#Version : Layout Manager 1.0
+#Date : Thu Dec 04 01:24:05 CST 1997
+Session0
+#CategoryName NumberofInstances
+DEViseSchema
+1
+#Instance List
+/u/s/s/ssl/Work/LM/Schemas/Schema1
+DEViseTData
+1
+#Instance List
+Test1
+Schema1 /u/s/s/ssl/Work/LM/dat/Test1
+DEViseMapping
+1
+#Instance List
+Mapping1
+Schema1
+0 1 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+# Defaults in mapping
+0.0 0.0 0.0 black 0.0 Rect Pattern0 0.0
+DEViseView
+5
+#Instance List
+Display
+0.0 0.0 1078.0 768.0 0 0 0  255 255 255 null null null 
+DEViseView1
+0.0 0.0 0.5 0.5 255 0 0  0 0 0 Display Test1 Mapping1 
+DEViseView2
+539.0 0.0 0.5 0.5 255 0 0  0 0 0 Display Test1 null 
+DEViseView3
+0.0 384.0 0.5 0.5 255 0 0  0 0 0 Display null Mapping1 
+DEViseView4
+539.0 384.0 0.5 0.5 255 0 0  0 0 0 Display null null 
+DEViseVisualLink
+0
+#Instance List
+DEViseRecordLink
+0
+#Instance List
+DEViseCursor
+0
+#Instance List
+EndOfDEViseObjects
+Display LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView1 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView2 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView3 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView4 LayoutMgr.Application.DEViseGridLayout -1 -1

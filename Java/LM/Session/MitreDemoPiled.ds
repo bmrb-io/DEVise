@@ -1,0 +1,112 @@
+#DEVise Session 
+#Version : Layout Manager 1.0
+#Date : Thu Dec 18 14:02:20 CST 1997
+Session0
+#CategoryName NumberofInstances
+DEViseSchema
+0
+#Instance List
+DEViseTData
+0
+#Instance List
+DEViseMapping
+0
+#Instance List
+DEViseView
+21
+#Instance List
+Display
+0.0 0.0 1078.0 768.0 0 0 0  255 255 255 null null null 
+DEViseView1
+329.0 27.0 0.22912801484230053 0.15234375 255 0 0  0 0 140 Display null null 
+DEViseView2
+192.0 144.0 0.6743970315398887 0.19140625 255 0 0  230 210 195 Display null null 
+DEViseView20
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView2 null null 
+DEViseView19
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView2 null null 
+DEViseView3
+192.0 292.0 0.6743970315398887 0.2005208333333333 255 0 0  0 0 140 Display null null 
+DEViseView4
+192.0 447.0 0.6743970315398887 0.17838541666666666 255 0 0  230 210 195 Display null null 
+DEViseView9
+0.0 0.0 0.3333333333333333 1.0 255 0 0  0 0 140 DEViseView4 null null 
+DEViseView10
+242.33333333333334 0.0 0.3333333333333333 1.0 255 0 0  0 0 140 DEViseView4 null null 
+DEViseView11
+484.6666666666667 0.0 0.3333333333333333 1.0 255 0 0  0 0 140 DEViseView4 null null 
+DEViseView5
+194.0 582.0 0.1873840445269017 0.19401041666666663 255 0 0  230 210 195 Display null null 
+DEViseView15
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView5 null null 
+DEViseView14
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView5 null null 
+DEViseView6
+397.0 582.0 0.2059369202226345 0.19401041666666663 255 0 0  230 210 195 Display null null 
+DEViseView18
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView6 null null 
+DEViseView16
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView6 null null 
+DEViseView17
+0.0 0.0 1.0 1.0 255 0 0  0 0 0 DEViseView6 null null 
+DEViseView7
+619.0 582.0 0.28014842300556586 0.19401041666666663 255 0 0  230 210 195 Display null null 
+DEViseView12
+0.0 0.0 1.0 0.5 255 0 0  0 0 140 DEViseView7 null null 
+DEViseView13
+0.0 74.49999999999999 1.0 0.5 255 0 0  0 0 140 DEViseView7 null null 
+DEViseView8
+577.0 27.0 0.21057513914656767 0.15234375 255 0 0  230 210 195 Display null null 
+DEViseVisualLink
+1
+#Instance List
+RankLink
+1 2
+DEViseView12 2
+DEViseView13 2
+DEViseRecordLink
+2
+#Instance List
+CatYearRecordLink
+recId DEViseView1 2
+DEViseView18
+DEViseView20
+DocumentLink
+recId DEViseView8 6
+DEViseView3
+DEViseView9
+DEViseView10
+DEViseView11
+DEViseView14
+DEViseView16
+
+DEViseCursor
+2
+#Instance List
+DocumentCursor
+2 DEViseView8 DEViseView19
+CategoryYearCursor
+2 DEViseView1 DEViseView14
+
+EndOfDEViseObjects
+Display LayoutMgr.Application.DEViseCustomLayout 
+DEViseView1 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView2 LayoutMgr.Application.DEVisePileLayout 
+DEViseView19 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView20 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView3 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView4 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView9 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView10 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView11 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView5 LayoutMgr.Application.DEVisePileLayout 
+DEViseView14 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView15 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView6 LayoutMgr.Application.DEVisePileLayout 
+DEViseView16 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView17 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView18 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView7 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView12 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView13 LayoutMgr.Application.DEViseGridLayout -1 -1
+DEViseView8 LayoutMgr.Application.DEViseGridLayout -1 -1
