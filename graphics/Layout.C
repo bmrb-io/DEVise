@@ -1,0 +1,417 @@
+#include "math.h"
+#include "Layout.h"
+#include "Display.h"
+#include "Control.h"
+#include "View.h"
+
+Layout::Layout(char *name, Coord x, Coord y, Coord w, Coord h) :
+       ViewLayout(name)
+{
+  Coord rootWidth, rootHeight;
+  DeviseDisplay::DefaultDisplay()->Dimensions(rootWidth, rootHeight);
+  Map((int) ( x * rootWidth), (int) (y * rootHeight),
+      (unsigned) (w * rootWidth), (unsigned) (h * rootHeight));
+  _mode = AUTOMATIC;
+}
+
+/* for backward compatibility - to set STACKED, HOR and VERT layouts */
+void Layout::SetPreferredLayout(int v, int h, Boolean stacked)
+{
+  _mode = AUTOMATIC;
+  _stacked = stacked;       /* backward compatibility */
+
+  if (stacked) {
+    _mode = STACKED;
+  } else { 
+    if ((h == 0) && (v == 0)) {
+      _mode = CUSTOM;
+      horRequested = verRequested = 0;
+    }
+    horRequested = (h < 0 ? -1 : h);
+    if (horRequested >= 1)  {
+      verRequested = -1;
+      _mode = VERTICAL;
+    } else {
+      verRequested = (v < 0 ? -1 : v);
+      if (verRequested >= 1) {
+	_mode = HORIZONTAL;
+	horRequested = -1;
+      }
+    }
+  }
+  if (Mapped())  {
+    if ( _mode != CUSTOM) {
+      MapChildren(0, true);
+    }
+  }
+}
+
+void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
+{
+  _mode = mode;
+  if (_mode == HORIZONTAL) {
+    verRequested = (rows < 1) ? 1 : columns;
+  }
+  if (_mode == VERTICAL) {
+    horRequested = (columns < 1) ? 1 : rows;
+  }
+  if (Mapped())  {
+    if ( mode != CUSTOM) {
+      MapChildren(0, true);
+    }
+  }
+}
+
+
+void Layout::Append(ViewWin *child)
+{
+  /* Geometries of the children would have been set from the Layout
+   * editor for CUSTOM MODE 
+   * add the child to the list
+   */
+  if (_mode != CUSTOM) { 
+     /* Resize existing children, compute left-over space for new child */
+    if (Mapped()) {
+      int x, y;
+      unsigned int w, h;
+      
+      MapChildren(0, true, child->GetWeight(), &x, &y, &w, &h);
+      child->Map(x, y, w, h);
+    }
+  }
+  ViewWin::Append(child);
+}
+  
+
+
+void Layout::Delete(ViewWin *child)
+{
+  ViewWin::Delete(child);
+  if (_mode != CUSTOM) { 
+    /* Geometries of the children would have been set from the Layout
+     * editor 
+     * add the child to the list
+     */
+    /* Inform layout editor of change */
+    if (Mapped()) {
+      child->Unmap();
+      /* map other children */
+      MapChildren(0, true);
+    }
+  }
+}
+
+void Layout::HandleWindowMappedInfo(WindowRep *win, Boolean mapped)
+{
+  ViewWin::HandleWindowMappedInfo(win, mapped);
+  char buf[100];
+  sprintf(buf,"DEViseWindowMapped {%s}", GetName());
+#ifdef DEBUG
+  printf("%s\n", buf);
+#endif
+  ControlPanel::Instance()->NotifyFrontEnd(buf);
+}
+
+Boolean Layout::HandleWindowDestroy(WindowRep *win)
+{
+  ViewWin::HandleWindowDestroy(win);
+  char buf[100];
+  sprintf(buf,"DEViseWindowDestroy {%s}", GetName());
+#ifdef DEBUG
+  printf("%s\n", buf);
+#endif
+  ControlPanel::Instance()->NotifyFrontEnd(buf);
+  return true;
+}
+
+void Layout::HandleResize(WindowRep *win, int x, int y,
+                              unsigned w, unsigned h)
+{
+#ifdef DEBUG
+  printf("Layout::HandleResize 0x%x at %d,%d, size %u,%u\n",
+         this, x, y, w, h);
+#endif
+  int oldX, oldY, oldX0, oldY0;
+  unsigned oldH, oldW;
+  Geometry(oldX,oldY, oldW, oldH);
+  AbsoluteOrigin(oldX0,oldY0);
+
+  ViewWin::HandleResize(win, x, y, w, h);
+  if ( Mapped() ) {
+    if (_mode == CUSTOM) {
+      ScaleChildren(oldX, oldY, oldW, oldH, oldX0, oldY0);
+    } else {
+      MapChildren(0, true);
+    }
+    char buf[100];
+    sprintf(buf,"DEViseWindowResize {%s}", GetName());
+#ifdef DEBUG
+    printf("%s\n", buf);
+#endif
+    ControlPanel::Instance()->NotifyFrontEnd(buf);
+  }
+}
+
+void Layout::MapChildren(ViewWin *single, Boolean resize, 
+			 int extraWeight, int *x, int *y, 
+			 unsigned int *w, unsigned int *h)
+{
+#if defined(DEBUG)
+  printf("Layout: MapChildren 0x%p mapping children\n", this);
+#endif
+  
+  if ( _mode == CUSTOM) {
+    return;
+  }
+  int totalWeight = TotalWeight() + extraWeight; 
+  int _x, _y;
+  unsigned int _w, _h;
+  Geometry(_x, _y, _w, _h);
+  
+  if (_mode == STACKED) {
+    // in a stacked view, all children get the total screen space;
+    // only the top view is visible, and it's up to someone else
+    // to decide which view is on top
+#if defined(DEBUG)
+    printf("Layout::MapChildren: stacking views\n");
+#endif
+    int index;
+    for(index = InitIterator(); More(index);) {
+      ViewWin *vw = Next(index);
+      if (resize)
+	vw->MoveResize(_x, _y, _w, _h);
+      else
+	vw->Map(_x, _y, _w, _h);
+    }
+    DoneIterator(index);
+    if (x) {
+      *x = _x;
+      *y = _y;
+      *w = _w;
+      *h = _h;
+    }
+    return;
+  }
+  
+  /******** VER or HOR views *********/
+  const unsigned int numViews = NumChildren() + ( x ? 1 : 0);
+  int horViews, verViews;
+  ComputeLayout(_w, _h, numViews, horViews, verViews);
+#ifdef DEBUG
+  printf("TileLayout::MapChildren: using %dx%d layout for %d views\n",
+	 verViews, horViews, numViews);
+#endif
+  DOASSERT((unsigned int) (verViews * horViews) >= numViews, "Incorrect number of views");
+    // compute default, unweighted width and height of views
+  unsigned int height = (int)(1.0 * _h / verViews);
+  unsigned int width = (int)(1.0 * _w / horViews);
+
+  unsigned int xoff = 0, yoff = 0;
+
+  int index;
+  for(index = InitIterator(); More(index);) {
+    ViewWin *vw = Next(index);
+
+    // if vertical stack of views, compute height based on weight
+    if (horViews == 1)
+      height = (int)(1.0 * vw->GetWeight() / totalWeight * _h);
+
+    // if horizontal arrangement, compute width based on weight
+    if (verViews == 1)
+      width = (int)(1.0 * vw->GetWeight() / totalWeight * _w);
+
+    // see if we're instructed to ignore all but one child
+    if (!single || single == vw) {
+      // see which method to call, resize or map
+      if (resize)
+	vw->MoveResize(_x + xoff, _y + yoff, width, height);
+      else
+	vw->Map(_x + xoff, _y + yoff, width, height);
+    }
+
+    // compute position of next view
+    if (horViews == 1)
+      yoff += height;
+    else if (verViews == 1)
+      xoff += width;
+    else {
+      xoff += width;
+      // no more views fit in horizontally?
+      if (_x + xoff + width > _x + _w) {
+	xoff = 0;
+	yoff += height;
+      }
+    }
+  }
+
+  DoneIterator(index);
+
+  // see if we need to report back any unused space (for one more child)
+  if (x) {
+    DOASSERT(x && y && w && h, "Invalid window position or size");
+    *x = _x + xoff;
+    *y = _y + yoff;
+    if (horViews == 1)
+      *h = _h - yoff;
+    else
+      *h = height;
+    if (verViews == 1)
+      *w = _w - xoff;
+    else
+      *w = width;
+  }
+}
+
+
+void Layout::ComputeLayout(unsigned int w, unsigned int h,
+			   unsigned int numViews,
+			   int &horViews, int &verViews)
+{
+  if (numViews <= 1) {
+    horViews = verViews = 1;
+    return;
+  }
+  
+  if (_mode == VERTICAL) {
+    horViews = ((unsigned)horRequested < numViews) ? horRequested : numViews;
+    verViews = numViews / horViews;
+    if (numViews % horViews) {
+      verViews++;
+    }
+    return;
+  }
+
+  if (_mode == HORIZONTAL) {
+    verViews = ((unsigned)verRequested < numViews) ? verRequested : numViews;
+    horViews = numViews / verViews;
+    if (numViews % verViews)  {
+      horViews++;
+    }
+    return;
+  }
+  
+  /*****************AUTO LAYOUT *********************/
+  
+  // otherwise, we have total control over the layout, so...
+  
+  // if window is much taller than wide, stack views vertically
+  // in a single column
+
+  if (h >= 1.5 * w) {
+    horViews = 1;
+    verViews = numViews;
+    return;
+  }
+
+    // if window is much wider than tall, arrange views horizontally
+  // in a single row -- because we typically display timeseries
+  // data requiring more horizontal than vertical space, we have
+  // a little more tendency to stack views vertically (see above)
+  // than horizontally
+
+  if (w >= 3 * h) {
+    horViews = numViews;
+    verViews = 1;
+    return;
+  }
+
+    // otherwise, arrange views so that there's roughly an equal number of
+  // rows and columns; also try to make sure whole window is used
+  // efficiently (no unused blocks)
+
+  for(horViews = (int)sqrt(numViews); horViews >= 1; horViews--) {
+    if (numViews % horViews == 0)
+      break;
+  }
+
+  verViews = numViews / horViews;
+}
+
+
+void Layout::ScaleChildren(int oldX, int oldY, unsigned oldW, unsigned oldH,
+			   int oldX0, int oldY0)
+{
+  int newX, newY, newX0, newY0;
+  unsigned newW, newH;
+#ifdef DEBUG
+  printf("ScaleChildren :: Old : (%d, %d) %u %u, abs(%d, %d) \n",
+	 oldX, oldY, oldW, oldH, oldX0, oldY0);
+#endif
+  Geometry(newX,newY, newW, newH);
+  AbsoluteOrigin(newX0,newY0);
+#ifdef DEBUG
+  printf("ScaleChildren :: New : (%d, %d) %u %u, abs(%d, %d) \n",
+	 newX, newY, newW, newH, newX0, newY0);
+#endif
+  Boolean move, resize;
+  
+  move = resize = false;
+
+  if ((oldW != newW) || (oldH != newH)) {
+    resize = true;
+  }
+  if ((oldX0 != newX0) || (oldY0 != newY0)) {
+    move = true;
+  }
+  if ( !move && !resize) {
+    return;
+  }
+  char buf[100];
+  if (!resize) {
+    sprintf(buf,"DEViseWindowMoved {%s}", GetName());
+    ControlPanel::Instance()->NotifyFrontEnd(buf);
+    return;
+  }
+  /* window actually resized */
+  
+  double xscale = newW * 1.0 / oldW;
+  double yscale = newH * 1.0 / oldH;
+#ifdef DEBUG  
+  printf("ScaleChildren : xscal = %f, yscale %f\n", xscale, yscale);
+#endif
+  int index;
+  /* check this */
+  for (index = InitIterator(); More(index);) {
+    ViewWin *vw = Next(index);
+    int oldviewX, oldviewY, oldviewX0, oldviewY0;
+    unsigned oldviewH, oldviewW;
+    int newviewX, newviewY, newviewX0, newviewY0;
+    unsigned newviewH, newviewW;
+
+    vw->Geometry(oldviewX, oldviewY, oldviewW, oldviewH);
+    vw->AbsoluteOrigin(oldviewX0, oldviewY0);
+#ifdef DEBUG
+    printf("ScaleChildren: View (%s) : (%d, %d) %u %u, abs %d, %d\n", 
+	   GetName(), oldviewX, oldviewY, oldviewW, oldviewH, 
+	   oldviewX0, oldviewY0);
+    printf("ScaleChildren :: Old : (%d, %d) %u %u, abs(%d, %d) \n",
+	 oldX, oldY, oldW, oldH, oldX0, oldY0);
+#endif
+    newviewW = (unsigned) (oldviewW * xscale);
+    newviewH = (unsigned) (oldviewH * yscale);
+    newviewX = (int) (newX + xscale * (oldviewX0 - oldX - oldX0));
+    newviewY = (int) (newY + yscale * (oldviewY0 - oldY - oldY0));
+#ifdef DEBUG
+    printf("ScaleChildren: View (%s) SetGeometry(%d, %d, %u %u). \n",
+	   vw->GetName(), newviewX, newviewY,  newviewW, newviewH );
+#endif
+    /* Note that SetGeometry takes parameters like MoveResize and 
+     * these do not correspond to the GetGeometry parameters 
+     */
+    ((View *)vw)->SetGeometry(newviewX, newviewY, newviewW, newviewH);
+    /* To check get the geometry again and see the values */
+    
+  }
+  DoneIterator(index);
+  return;
+}
+
+
+
+
+
+
+
+
+
+
