@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.56  1996/06/24 19:47:05  jussi
+  TkControl now passes the fd of the open X connection to the
+  Dispatcher. Added a call to Run() to a few places which are
+  output-only because Tcl/Tk doesn't otherwise have a chance
+  to flush the output to the screen.
+
   Revision 1.55  1996/06/12 14:56:37  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -240,8 +246,6 @@ extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
-extern int www_extract(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
@@ -317,9 +321,6 @@ void TkControlPanel::StartSession()
 
   /* Create a new tcl command for SEQ data */
   Tcl_CreateCommand(_interp, "seq_extract", seq_extract, 0, 0);
-
-  /* Create a new tcl command for WWW data */
-  Tcl_CreateCommand(_interp, "www_extract", www_extract, 0, 0);
 
   char *controlFile = "control.tk";
   if (Init::BatchFile()) {
