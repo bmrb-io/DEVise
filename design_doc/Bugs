@@ -1646,6 +1646,13 @@ Num Date        Status  Description
 			/p/devise/dat/dbworld/message.table,
 			/p/devise/schema/schema/physical/dbworld1.ddr. (rkw)
 
+431 11/03/98	OPEN	Plusses for embedded Tk objects are drawn in the
+			wrong place. (rkw)
+
+432 11/03/98	OPEN	Doing the '5' (home) key on a view with a mapping
+			with expressions does not work and may cause a crash.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
