@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/10/12 21:24:18  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.14  1998/10/06 20:06:32  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -744,6 +749,22 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 //          every extractor function
 // myAttr : Attribute object assigned to current field
 
+  int fieldLen = fieldLens[myAttr->whichAttr];
+  char buf[1024];
+  assert( fieldLen <= (int)sizeof(buf) );
+  for(int i = 0 ; i < fieldLen ; i++) {
+    if( (_curChar = getChar()) == 0 ) {
+      return FOUNDEOF;
+    }
+    buf[i] = _curChar;
+  }
+  buf[fieldLen] = 0;
+  _iRetVal = atoi(buf);
+  return FOUNDSEPARATOR;
+
+#if defined(OLDVERSION)
+//kb: this version does not handle leading spaces
+
 	int count = 0;
 	
 // if a non-digit value find before the separator, we ignore the rest
@@ -804,6 +825,7 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 	}
 	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
 	return FAIL;
+#endif
 }
 
 Status Buffer::getDoubleLen(Attribute* myAttr, char* target = NULL) {
