@@ -131,6 +131,7 @@ public:
 		time = 0 ;
 		nanosec  = 0 ;
 	}
+	 ~EncodedDTF() {}
 	EncodedDTF(int d, int t, int n) {
 		date = d ;
 		time = t ;

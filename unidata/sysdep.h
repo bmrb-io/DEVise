@@ -112,10 +112,15 @@ MICROSOFT WINDOWS WIN32 API
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+
 #include <fcntl.h>
 #include <sys\types.h>
 #include <sys\stat.h>
 #include <float.h>
+#include <malloc.h>
+
+
+typedef SOCKET SOCKET_TP;
 
 #define NETREAD(s,b,l)  recv((s),(b),(l),0)
 #define NETWRITE(s,b,l) send((s),(b),(l),0)
@@ -146,7 +151,6 @@ MICROSOFT WINDOWS WIN32 API
 /* #define HAVE_TEMPNAM */
 
 #include <stdlib.h>
-#include <winsock.h>
 
 #ifndef _CONSOLE
 #define NO_STDIO
@@ -753,9 +757,11 @@ INCLUDE FILES
 /* socket.h */
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+typedef int SOCKET_TP;
 #else
 #ifdef HAVE_SOCKET_H
 #include <socket.h>
+typedef int SOCKET_TP;
 #endif
 #endif
 
