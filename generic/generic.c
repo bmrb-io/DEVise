@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/04/17 15:05:11  wenger
+  Added ISODate2Composite parser for data with _two_ ISO 8601 dates per
+  record (geez, these composite parsers are a pain!).
+
   Revision 1.46  1997/04/16 16:22:37  wenger
   Added composite parser for ISO 8601 date format (YYYY-MM-DD hh:mm:ss).
 
@@ -683,7 +687,6 @@ void ISODateDecode(char *recBuf, int dateOffset, int timeOffset,
 
   time_t *datePtr = (time_t *)(recBuf + timestampOffset);
   *datePtr = GetTime(now);
-/*TEMPTEMP*/printf("  Date: %s\n", DateString(*datePtr));
 }
 
 /*
