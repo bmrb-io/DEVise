@@ -68,8 +68,8 @@ struct CycleOccMapping_GData {
 
 class CycleOccMapping_RectShape  : public RectShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
+                          Coord &width, Coord &height) {
 
     width = 0.0;
 
@@ -83,7 +83,7 @@ public:
 
 
     for(int i = 0; i < numSyms; i++) {
-      CycleOccMapping_GData  *gdata = (CycleOccMapping_GData  *)gdataArray[i];
+      CycleOccMapping_GData  *gdata = &((CycleOccMapping_GData  *)gdataPtr)[i];
       Coord temp;
 
       temp = (gdata->shapeAttr_0) ;
@@ -100,8 +100,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
+    if (view->GetNumDimensions() == 3)
+      return;
+
+    Coord maxWidth, maxHeight, maxDepth;
+    map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
@@ -266,11 +269,12 @@ public:
 		}
 	}
 
-	virtual void UpdateBoundingBox(int pageNum, void **syms, int numSyms) {
-		if (TDataMap::TestAndSetPage(pageNum)) return;
-		Coord width, height;
-		_shapes[0]->BoundingBoxGData(this, syms, numSyms, width, height);
-		TDataMap::UpdateBoundingBox(width, height);
+	virtual void UpdateMaxSymSize(void *gdata, int numSyms) {
+		_maxSymWidth = 0;
+		_maxSymHeight = 0;
+		_maxSymDepth = 0;
+		_shapes[0]->MaxSymSize(this, gdata, numSyms,
+		                       _maxSymWidth, _maxSymHeight);
 	}
 
 	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
