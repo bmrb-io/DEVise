@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  2001/01/08 20:32:52  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.22.2.2  2000/11/22 18:18:07  wenger
   Made changes for DEVise server and client to read/write JS ID and CGI
   flag in every command (currently disabled until the Java side is ready).
@@ -139,6 +143,28 @@
 #define reportErr(message) \
   fprintf(stderr, "Error at %s, %d: %s\n", __FILE__, __LINE__, message);
 
+// Convert a NetworkHeader to the corresponding buffer.
+static void Header2Buf(const NetworkHeader &hdr, NetworkHeaderBuf &buf);
+
+// Convert a buffer to the corresponding NetworkHeader.
+static void Buf2Header(const NetworkHeaderBuf &buf, NetworkHeader &hdr);
+
+// Read a buffer from the file descriptor, retrying if specified.
+// Returns 1 on success, -1 on failure.
+static int ReadWithRetries(int fd, char *buf, int bufSize, int block,
+    int maxRetries);
+
+// Copy bytes to a pointer and increment the pointer by the number of
+// bytes copied.
+inline void
+CopyIncPtr(char *&to, const void *from, int size)
+{
+  memcpy(to, from, size);
+  to += size;
+}
+
+// -----------------------------------------------------------------------
+
 int NetworkNonBlockMode(int fd)
 {
 #ifdef SUN
@@ -146,8 +172,11 @@ int NetworkNonBlockMode(int fd)
 #else
   int result = fcntl(fd, F_SETFL, O_NDELAY);
 #endif
-  if (result < 0)
+  if (result < 0) {
+	reportErr("Error setting non-blocking mode");
+	perror("fcntl()");
     return -1;
+  }
 
   return 1;
 }
@@ -155,21 +184,26 @@ int NetworkNonBlockMode(int fd)
 int NetworkBlockMode(int fd)
 {
   int result = fcntl(fd, F_SETFL, 0);
-  if (result < 0)
+  if (result < 0) {
+	reportErr("Error setting blocking mode");
+	perror("fcntl()");
     return -1;
+  }
 
   return 1;
 }
 
 char *NetworkPaste(int argc, char **argv)
 {
-  if (argc < 1)
+  if (argc < 1) {
     return strdup("");
+  }
 
   int size = 0;
   int i;
-  for(i = 0; i < argc; i++)
+  for(i = 0; i < argc; i++) {
     size += strlen(argv[i]);
+  }
 
   // an extra char for space between each argument
   size += argc - 1;
@@ -178,13 +212,15 @@ char *NetworkPaste(int argc, char **argv)
   size++;
 
   char *cmd = new char [size];
-  if (!cmd)
-    return 0;
+  if (!cmd) {
+    reportErr("Out of memory\n");
+    return NULL;
+  }
 
   char *ptr = cmd;
   *ptr = 0;
   for(i = 0; i < argc; i++) {
-    if (!i) {
+    if (i == 0) {
       sprintf(ptr, "%s", argv[i]);
       ptr += strlen(argv[i]);
     } else {
@@ -195,7 +231,7 @@ char *NetworkPaste(int argc, char **argv)
 
   if (ptr - cmd != size - 1) {
     reportErr("Internal error.");
-    return 0;
+    return NULL;
   }
 
   return cmd;
@@ -209,19 +245,20 @@ int NetworkOpen(char *servName, int portNum)
 int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (fd < 0){
+  if (fd < 0) {
 	reportErr("Cannot create socket");
-    perror("socket()");
+	perror("socket()");
     return -1;
   }
 
   struct hostent *servEnt = gethostbyname(servName);
   if (!servEnt) {
     reportErr("Cannot translate server name");
-    perror("gethostbyname()");
+	perror("gethostbyname()");
     close(fd);
     return -1;
   }
+
   if (servEnt->h_addrtype != AF_INET) {
     reportErr("Unsupported address type");
     close(fd);
@@ -248,47 +285,45 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 		if (mode == CONNECT_ONCE)
 		{
     		reportErr("Cannot connect to server");
-    		perror("connect()");
+			perror("connect()");
     		close(fd);
     		return -1;
 		}
-		else
-		if  (mode == CONNECT_ALWAYS)
+		else if  (mode == CONNECT_ALWAYS)
 		{
 			sleep(seconds);
 			printf("Connecting ...\n");
 		}
+
 		close(fd);
   		fd = socket(AF_INET, SOCK_STREAM, 0);
   		if (fd < 0){
     		reportErr("Cannot create socket");
-    		perror("socket()");
+			perror("socket()");
     		return -1;
   		}
   	}
-  }while (result <0);
+  } while (result <0);
   
   return fd;
 }
 
 //
 //extract header information from a header
-void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int& tsize)
+void NetworkAnalyzeHeader(const char *headerbuf, int& numElements, int& tsize)
 {
-  NetworkHeader *hdr;
-
   assert(headerbuf!=NULL);
-  hdr = (NetworkHeader *)headerbuf;
-  numElements = ntohs(hdr->nelem);
-  tsize = ntohs(hdr->size);
+
+  NetworkHeaderBuf *buf = (NetworkHeaderBuf *)headerbuf;
+  NetworkHeader hdr;
+  Buf2Header(*buf, hdr);
+
+  numElements = hdr.nelem;
+  tsize = hdr.size;
+
   return;
 }
 
-//
-
-// maxRetries is how many times to retry header if we get no data.
-// -1 to keep retrying indefinitely.
-// Returns -1 if error, 1 if okay, 0 if ?.
 int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
 	int maxRetries)
 {
@@ -310,84 +345,38 @@ int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
   //
   // Get the message header.
   //
-
 #if defined(DEBUG)
   if (block) {
     printf("Getting header\n");
   }
 #endif
 
-  NetworkHeader hdr;
-  int tries = 0;
-  while (true) {
-	errno = 0;
-	int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
-	
-#if 0
-	// Warning: turning this on may generate an awful lot of output.
-	printf(" Received %d bytes\n", res);
-	printf(" errno  = %d\n", errno);
-#endif
-    
-	if (res == (int)sizeof hdr) {
-	  // We got the header.
-      break;
-	}
-
-	if (res == 0) {
-	  // Got nothing.
-	  if (maxRetries >= 0 && tries >= maxRetries) {
-		// Note: if select() reported the fd is ready for reading, but there
-		// is no data, that probably means that the process on the other
-		// end of the socket died without closing the socket.  RKW 2000-09-01.
-	    reportErr("No data available on socket");
-	    return -1;
-	  } else {
-		tries++;
-	    // Sleep here so we don't suck up loads of CPU.
-	    sleep(1);
-	    continue;
-	  }
-	}
-
-    if (res < 0 && errno == EINTR) {
-#if defined(DEBUG)
-      printf("Call to recv interrupted, continuing\n");
-#endif
-      continue;
-    }
-
-	// An error other than EINTR, or got part of the header.
-    if (block) {
-	  printf("Error at %s: %d: ", __FILE__, __LINE__);
-	  reportErr("Error receiving message header from socket");
-      perror("recv()");
-#if defined(DEBUG)
-      printf("errno = %d\n", errno);
-      printf("res = %d\n", res);
-      printf("sizeof(hdr) = %d\n", sizeof(hdr));
-#endif
-	}
+  NetworkHeaderBuf hdrBuf;
+  if (ReadWithRetries(fd, (char *)&hdrBuf, NetworkHeaderSize, block,
+      maxRetries) < 0) {
     return -1;
   }
-  msgType = ntohs(hdr.msgType);
 
-  int    numElements; 
-  int    tsize;
-  NetworkAnalyseHeader((char*)&hdr, numElements, tsize);
+  NetworkHeader hdr;
+  Buf2Header(hdrBuf, hdr);
+  msgType = hdr.msgType;
+
+  int numElements = hdr.nelem;
+  int tsize = hdr.size;
 
 #if defined(DEBUG)
-  printf("Got msgType %u, numElements = %u, size = %u\n", msgType,
+  printf("  Got msgType %u, numElements = %u, size = %u\n", msgType,
       numElements, tsize);
+  cout << "  jsId = " << hdr.jsId << endl;
 #endif
 
   //
   // We've gotten the header, now get the body of the message.
   //
-
-  static int recBuffSize = 0;
   static char *recBuff = NULL;
+  static int recBuffSize = 0;
 
+  // Enlarge the record buffer if necessary.
   if (!recBuff || tsize >= recBuffSize) {
     delete recBuff;
     recBuffSize = tsize + 1;
@@ -443,8 +432,9 @@ int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
     reportErr("Invalid protocol message.");
     return -1;
   }
+
   ac = numElements;
-  int result = NetworkParse((const char*)recBuff, ac,av);
+  int result = NetworkParse((const char*)recBuff, ac, av);
 
 #if defined(DEBUG)
   printf("  Message is: ");
@@ -471,9 +461,11 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
   static int argc = 0;
   const char *ptr;
 
+  // Add more argument buffers if necessary.
   if (numElements > argc) {
-    if (argv != 0)
+    if (argv != 0) {
       delete argv;
+	}
     argc = numElements;
 #if defined(DEBUG)
     printf("Increasing size of argv to %d elements\n", argc);
@@ -484,21 +476,26 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
       return -1;
     }
   }
+
   av = argv;
   ptr = recBuff;
 
   for(int i = 0; i < numElements; i++) {
     u_short size;
-    memcpy(&size, ptr, sizeof size);
-    size = ntohs(size);
+
+    memcpy(&size, ptr, sizeof(size));
     ptr += sizeof size;
+
+    size = ntohs(size);
+
 #if defined(DEBUG)
     printf("Element %d is %u bytes\n", i, size);
 #endif
 
     if (ptr[size - 1]) {
       // argument must be terminated with NULL
-	  printf(" proper vales = %c %c %c \n",ptr[size -2],ptr[size-1],ptr[size ]);
+	  printf(" proper values = %c %c %c \n", ptr[size-2], ptr[size-1],
+	      ptr[size]);
       reportErr("Invalid procotol argument");
       return -1;
     }
@@ -538,19 +535,19 @@ int NetworkSend(int fd, u_short msgType, u_short bracket, int argc,
   char *recBuffer = 0;
 
   msgsize = NetworkPrepareMsg(msgType, bracket, argc, argv, &recBuffer);
-  if (msgsize == -1)
+  if (msgsize == -1) {
     return -1;
+  }
 
-  if (recBuffer != 0)
+  if (recBuffer != NULL)
   {
     int result = send(fd, recBuffer, msgsize, 0);
-    if (result < (int)sizeof (NetworkHeader)) {
+    if (result != msgsize) {
 	  reportErr("Error sending message");
-      perror("send()");
+	  perror("send()");
       return -1;
     }
   }
-  recBuffer = 0;
 
 #if defined(DEBUG)
   printf("Complete message sent\n\n");
@@ -565,10 +562,18 @@ int NetworkPrepareMsg(u_short msgType,
   static int recBuffSize = 0;
   static char *recBuff = 0;
 
+  //
+  // Set up the header.
+  //
   NetworkHeader hdr;
-  hdr.msgType = htons(msgType);
-  hdr.nelem = htons(argc);
+  hdr.msgType = msgType;
+  hdr.jsId = 0;
+  hdr.useCgi = 0;
+  hdr.nelem = argc;
 
+  //
+  // Calculate the size of the arguments, and put that into the header.
+  //
   u_short tsize = 0;
   int i;
   for(i = 0; i < argc; i++) {
@@ -579,9 +584,22 @@ int NetworkPrepareMsg(u_short msgType,
       tsize += 2;
     }
   }
-  hdr.size = htons(tsize);
+  hdr.size = tsize;
 
-  u_short msgsize = sizeof hdr + tsize;
+  //
+  // "Bufferize" the header.
+  //
+  NetworkHeaderBuf hdrBuf;
+  Header2Buf(hdr, hdrBuf);
+
+  //
+  // Calculate the overall message size (header plus arguments).
+  //
+  u_short msgsize = NetworkHeaderSize + tsize;
+
+  //
+  // Enlarge the record buffer if necessary.
+  //
   if (!recBuff || msgsize >= recBuffSize) {
     delete recBuff;
     recBuffSize = msgsize + 1;
@@ -595,10 +613,12 @@ int NetworkPrepareMsg(u_short msgType,
     }
   }
 
-  char *buff = recBuff;
+  //
+  // Copy the header and arguments into the record buffer.
+  //
+  char *ptr = recBuff;
 
-  memcpy(recBuff, &hdr, sizeof hdr);
-  buff += sizeof hdr;
+  CopyIncPtr(ptr, &hdrBuf, NetworkHeaderSize);
 
   for(i = 0; i < argc; i++) {
     // must send terminating NULL too
@@ -610,8 +630,7 @@ int NetworkPrepareMsg(u_short msgType,
     printf("Sending size of element %d: %u\n", i, size);
 #endif
     u_short nsize = htons(size);
-    memcpy(buff, &nsize, sizeof nsize);
-    buff += sizeof nsize;
+    CopyIncPtr(ptr, &nsize, sizeof(nsize));
     if (bracket) {
       size -= 2;
     }
@@ -620,22 +639,21 @@ int NetworkPrepareMsg(u_short msgType,
 #if defined(DEBUG)
       printf("Sending element %d: \"{%s}\"\n", i, argv[i]);
 #endif
-      *buff++ = '{';
+      *ptr++ = '{';
       // don't send null of argument, instead send null after closing brace
-      memcpy(buff, argv[i], size - 1);
-      buff += size - 1;
-      *buff++ = '}';
-      *buff++ = 0;
+      CopyIncPtr(ptr, argv[i], size - 1);
+      *ptr++ = '}';
+      *ptr++ = 0;
     } else {
 #if defined(DEBUG)
       printf("Sending element %d: \"%s\"\n", i, argv[i]);
 #endif
-      memcpy(buff, argv[i], size);
-      buff += size;
+      CopyIncPtr(ptr, argv[i], size);
     }
   }
 
-  assert(buff - recBuff == msgsize);
+  assert(ptr - recBuff == msgsize);
+
 #if defined(DEBUG)
   printf("Sending message: msgType %u, nelem %u, size %u\n", msgType,
       argc, tsize);
@@ -651,12 +669,123 @@ int NetworkPrepareMsg(u_short msgType,
 #endif
 
   *recBufferp = recBuff;
+
   return msgsize;
 }
 
 int NetworkClose(int fd)
 { 
   close(fd);
+
+  return 1;
+}
+
+// -----------------------------------------------------------------------
+// Static utility functions.
+
+static void
+Header2Buf(const NetworkHeader &hdr, NetworkHeaderBuf &buf)
+{
+  NetworkHeader myHdr;
+
+  myHdr.msgType = htons(hdr.msgType);
+
+  //TEMP -- we should convert jsId to network order here, but I'm not
+  // sure how to do that for a long long; it's not critical because
+  // the devised doesn't pay any attention to the jsId right now.
+  // RKW 2001-10-12.
+  myHdr.jsId = hdr.jsId;
+
+  myHdr.useCgi = htons(hdr.useCgi);
+  myHdr.nelem = htons(hdr.nelem);
+  myHdr.size = htons(hdr.size);
+
+  memcpy(&buf.msgType, &myHdr.msgType, sizeof(buf.msgType));
+  memcpy(&buf.jsId, &myHdr.jsId, sizeof(buf.jsId));
+  memcpy(&buf.useCgi, &myHdr.useCgi, sizeof(buf.useCgi));
+  memcpy(&buf.nelem, &myHdr.nelem, sizeof(buf.nelem));
+  memcpy(&buf.size, &myHdr.size, sizeof(buf.size));
+}
+
+static void
+Buf2Header(const NetworkHeaderBuf &buf, NetworkHeader &hdr)
+{
+  NetworkHeader myHdr;
+
+  memcpy(&myHdr.msgType, &buf.msgType, sizeof(buf.msgType));
+  memcpy(&myHdr.jsId, &buf.jsId, sizeof(buf.jsId));
+  memcpy(&myHdr.useCgi, &buf.useCgi, sizeof(buf.useCgi));
+  memcpy(&myHdr.nelem, &buf.nelem, sizeof(buf.nelem));
+  memcpy(&myHdr.size, &buf.size, sizeof(buf.size));
+
+  hdr.msgType = ntohs(myHdr.msgType);
+
+  //TEMP -- we should convert jsId to host order here, but I'm not
+  // sure how to do that for a long long; it's not critical because
+  // the devised doesn't pay any attention to the jsId right now.
+  // RKW 2001-10-12.
+  hdr.jsId = myHdr.jsId;
+
+  hdr.useCgi = ntohs(myHdr.useCgi);
+  hdr.nelem = ntohs(myHdr.nelem);
+  hdr.size = ntohs(myHdr.size);
+}
+
+static int
+ReadWithRetries(int fd, char *buf, int bufSize, int block, int maxRetries)
+{
+  int tries = 0;
+  while (true) {
+	errno = 0;
+	int res = recv(fd, buf, bufSize, 0);
+	
+#if 0
+	// Warning: turning this on may generate an awful lot of output.
+	printf(" Received %d bytes\n", res);
+	printf(" errno  = %d\n", errno);
+#endif
+    
+	if (res == bufSize) {
+	  // We got the whole buffer.
+      break;
+	}
+
+	if (res == 0) {
+	  // Got nothing.
+	  if (maxRetries >= 0 && tries >= maxRetries) {
+		// Note: if select() reported the fd is ready for reading, but there
+		// is no data, that probably means that the process on the other
+		// end of the socket died without closing the socket.  RKW 2000-09-01.
+	    reportErr("No data available on socket");
+	    return -1;
+	  } else {
+		tries++;
+	    // Sleep here so we don't suck up loads of CPU.
+	    sleep(1);
+	    continue;
+	  }
+	}
+
+    if (res < 0 && errno == EINTR) {
+#if defined(DEBUG)
+      printf("Call to recv interrupted, continuing\n");
+#endif
+      continue;
+    }
+
+	// An error other than EINTR, or got part of the buffer.
+    if (block) {
+	  printf("Error at %s: %d: ", __FILE__, __LINE__);
+	  reportErr("Error receiving message from socket");
+      perror("recv()");
+#if defined(DEBUG)
+      printf("errno = %d\n", errno);
+      printf("res = %d\n", res);
+      printf("bufSize = %d\n", bufSize);
+#endif
+	}
+    return -1;
+  }
 
   return 1;
 }

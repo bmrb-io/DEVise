@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/11 18:25:19  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.2  1998/02/12 17:15:07  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -252,8 +258,8 @@ groupsend_1_svc(GroupKey *arg1, ConnectInfo arg2, Msg arg3)
 	int i;
 	int hLength = ServerServerProt::getHeaderLength();
 
-	NetworkAnalyseHeader((const char *)arg3.msg, argc, tsize);
-	NetworkParse((const char *)(arg3.msg + sizeof(NetworkHeader)), argc, argv);
+	NetworkAnalyzeHeader((const char *)arg3.msg, argc, tsize);
+	NetworkParse((const char *)(arg3.msg + NetworkHeaderSize), argc, argv);
 
 	for (i=0; (i<argc-hLength) && (i< 3); ++i)
 	{

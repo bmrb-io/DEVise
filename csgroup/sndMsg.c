@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/07/29 14:19:44  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.4  1998/03/11 18:25:21  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -71,6 +75,7 @@
 #include <arpa/inet.h>
 #include "devise_varargs.h"
 #include <unistd.h>
+#include <assert.h>
 
 #include "sndMsg.h"
 #include "codec.h"
@@ -199,9 +204,8 @@ SendDataMsg(DbEntry *Address, char *buf, int size) {
 	int	i;
 	int	hLength = ServerServerProt::getHeaderLength();
 
-	NetworkAnalyseHeader((const char *)buf, argc, tsize);
-	NetworkParse((const char *)(buf +
-							 sizeof(NetworkHeader)), argc, argv);
+	NetworkAnalyzeHeader((const char *)buf, argc, tsize);
+	NetworkParse((const char *)(buf + NetworkHeaderSize), argc, argv);
 	for (i=0; (i<argc-hLength) && (i< 3); ++i)
 	{
 		prnBuf(PRN_BDG, "\t Msg = %s\n", argv[i+hLength]);

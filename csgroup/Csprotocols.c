@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/01/18 18:11:13  beyer
+  fixed compile errors and warnings for egcs version 1.1.1
+
   Revision 1.6  1998/07/29 14:19:40  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -90,9 +93,8 @@ ServerServerProt::ServerServerProt(int msize, char* msg)
 	msgsize = msize;
 	recBuffer = msg;
 
-	NetworkAnalyseHeader((const char *)msg, newargc, tsize);
-	NetworkParse((const char *)(msg +
-				 sizeof(NetworkHeader)), newargc, newargv);
+	NetworkAnalyzeHeader((const char *)msg, newargc, tsize);
+	NetworkParse((const char *)(msg + NetworkHeaderSize), newargc, newargv);
 }
 int
 ServerServerProt::setServerName(char* sname)
