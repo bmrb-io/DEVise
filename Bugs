@@ -960,7 +960,7 @@ Num Date        Status  Description
 241 11/25/97	FIXED	Mapping dialog doesn't update shape attribute names
 			when symbol type is changed. (ml/rkw)
 
-242 11/26/97	OPEN	UniData schema editor GUI doesn't let you choose
+242 11/26/97	FIXED	UniData schema editor GUI doesn't let you choose
 			between separator and whitespace. (rkw)
 
 243 11/26/97	OPEN	UniData schema editor GUI is taller than screen
