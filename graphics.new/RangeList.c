@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/18 15:31:04  jussi
+  Changed syntax of SearchExact().
+
   Revision 1.5  1996/11/23 21:18:47  jussi
   Simplified code.
 
@@ -33,6 +36,7 @@
 #include <errno.h>
 #include "Exit.h"
 #include "RangeList.h"
+#include "DevError.h"
 
 int RangeList::_numSearch = 0;
 int RangeList::_searchSteps = 0;
@@ -209,10 +213,14 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
     } else {
         /* current not NULL */
         if ( !(low > current->high)){
-            printf("RangeList::Insert() recId %ld,%ld already processed\n", low,high);
-            printf("current: %ld %ld, to be inserted:low %ld %ld\n", 
-                   current->low, current->high, rangeInfo->low, rangeInfo->high);
-            Print();
+	  char errBuf[1024];
+          sprintf(errBuf,
+	    "RangeList::Insert() recId %ld, %ld already processed", low, high);
+	  reportErrNosys(errBuf);
+          printf("current: %ld %ld, to be inserted:low %ld %ld\n", 
+                   current->low, current->high, rangeInfo->low,
+		   rangeInfo->high);
+          Print();
           Exit::DoExit(1);
         }
         
