@@ -8,7 +8,7 @@ Num Date        Status  Description
 002 05/14/96	FIXED	DEVise hogs an awful lot of CPU cycles even when
 			you are not doing anything. (rkw/kb) (jpm)
 
-003 05/14/96	OPEN	Numeric keypad keys don't always work correctly
+003 05/14/96	FIXED	Numeric keypad keys don't always work correctly
 			on Suns running SunOS 4.x. (rkw)
 
 004 05/16/96	OPEN	Physical schema editor does not support the length
@@ -27,7 +27,7 @@ Num Date        Status  Description
 008 05/16/96	FIXED	View window cannot be destroyed through the
 			window manager causes Devise to crash. (jpm)
 
-009 05/22/96	OPEN	OBJ in generic/Makefile.base doesn't get the
+009 05/22/96	FIXED	OBJ in generic/Makefile.base doesn't get the
 			right list; causes 'make clean' to try to delete
 			source files. (rkw)
 
@@ -53,14 +53,14 @@ Num Date        Status  Description
 
 016 07/31/96	OPEN	Catalog system is type unsafe. (kb/rkw)
 
-017 08/05/96	OPEN	Numeric keypad keys now work only if num lock is
+017 08/05/96	FIXED	Numeric keypad keys now work only if num lock is
 			off. (rkw)
 
 018 08/05/96	FIXED	Data segment stuff is broken. (rkw)
 
-019 08/05/96	OPEN	demo/COD1.tk core dumps (at least on HPs). (rkw)
+019 08/05/96	CD	demo/COD1.tk core dumps (at least on HPs). (rkw)
 
-020 08/05/96	OPEN	Numeric keypad keys only work in solaris version? (rkw)
+020 08/05/96	FIXED	Numeric keypad keys only work in solaris version? (rkw)
 
 021 08/05/96	FIXED	'5' key doesn't work. (rkw)
 
@@ -73,7 +73,13 @@ Num Date        Status  Description
 024 08/06/96	OPEN	Zooming as far as you can in or out can cause 
 			DEVise to fail an assertion. (kb)
 
+025 08/07/96	OPEN	Keypad '5' doesn't work when num lock is off. (rkw)
+
+026 08/07/96	OPEN	On HP and SPARC/SunOS, keypad keys only work when
+			num lock is on. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
+CD = can't duplicate (reproduce).
 DUP = duplicate

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.57  1996/08/05 19:51:41  wenger
+  Fixed compile errors caused by some of Kevin's recent changes; changed
+  the attrproj stuff to make a .a file instead of a .o; added some more
+  TData file writing stuff; misc. cleanup.
+
   Revision 1.56  1996/08/05 02:03:03  beyer
   The query record popup wasn't display anything.
 
@@ -240,7 +245,8 @@ extern "C" {
 
 
 // key translations
-static const int AltMask = Mod1Mask | Mod2Mask | Mod3Mask | Mod4Mask | Mod5Mask;
+// Removed 'num lock' from AltMask (rkw 8/7/96).
+static const int AltMask = Mod1Mask | Mod2Mask | Mod3Mask | Mod5Mask;
 static MapIntToInt devise_keymap(103);
 
 /**********************************************************************
@@ -1440,6 +1446,7 @@ void XWindowRep::HandleEvent(XEvent &event)
   case KeyPress:
 
     d_modifier = 0;
+#if 1
     if( event.xkey.state & ControlMask ) {
 	d_modifier |= DeviseKey::CONTROL;
 	event.xkey.state &= ~ControlMask; // avoid conversion by XLookupString
@@ -1450,6 +1457,7 @@ void XWindowRep::HandleEvent(XEvent &event)
     if( event.xkey.state & AltMask ) {
 	d_modifier |= DeviseKey::ALT;
     }
+#endif
 
     count = XLookupString((XKeyEvent *)&event, buf, sizeof(buf),
                           &keysym, &compose);

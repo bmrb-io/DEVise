@@ -71,7 +71,7 @@ Session groups - The ability to open two or more sessions, which get
 merged together, except that there is a namespace (maybe) for each one
 and they can be closed individually. (ml/kb 8/2/96)
 
-Catalogs - The current catalog is not type safe - objects are cast two
+Catalogs - The current catalog is not type safe - objects are cast to
 and from void*, without any checks to make sure that it is the right
 type of object.  If the user sends a window name as a view name, it
 will crash the backend.  If the catalogs were kept on a per type

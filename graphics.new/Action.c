@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/08/04 21:12:41  beyer
+  Added support for devise keys.
+  Added 'h' key that changes histogram width.
+
   Revision 1.13  1996/08/03 15:37:25  jussi
   Flag _solid3D now has three values.
 
@@ -117,8 +121,15 @@ void Action::AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 {
 #if defined(DEBUG)
-  printf("Action::KeySelected(%s, '%c' %d, %g, %g)\n", 
-	 view->GetName(), isgraph(key) ? key : ' ', (int)key, x, y);
+  if (view->GetName() == NULL)
+  {
+  printf("Action::KeySelected(%s, 0x%x, %g, %g)\n", 
+	 view->GetName(), (int)key, x, y);
+  }
+  else
+  {
+    printf("Action::KeySelected(0x%x, %g, %g)\n", (int)key, x, y);
+  }
 #endif
   VisualFilter filter;
   Boolean symbolsOn = view->DisplaySymbols();
@@ -159,12 +170,12 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	incr_ = fabs(camera.x_ / STEP_SIZE);
 	if (incr_ < 0.1)
 	  incr_ = 0.1;
-	camera.x_ += incr_;
+	camera.x_ -= incr_;
 	if (!camera.fix_focus)
-	  camera.fx += incr_;
+	  camera.fx -= incr_;
       } else {
 	incr_ = M_PI / STEP_SIZE;
-	camera._theta += incr_;
+	camera._theta -= incr_;
       }
       view->SetCamera(camera);
     }
@@ -192,12 +203,12 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	incr_ = fabs(camera.x_ / STEP_SIZE);
 	if (incr_ < 0.1)
 	  incr_ = 0.1;
-	camera.x_ -= incr_;
+	camera.x_ += incr_;
 	if (!camera.fix_focus)
-	  camera.fx -= incr_;
+	  camera.fx += incr_;
       } else {
 	incr_ = M_PI / STEP_SIZE;
-	camera._theta -= incr_;
+	camera._theta += incr_;
       }
       view->SetCamera(camera);
     }
@@ -222,12 +233,12 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	incr_ = fabs(camera.y_ / STEP_SIZE);
 	if (incr_ < 0.1)
 	  incr_ = 0.1;
-	camera.y_ += incr_;
+	camera.y_ -= incr_;
 	if (!camera.fix_focus)
-	  camera.fy += incr_;
+	  camera.fy -= incr_;
       } else {
 	incr_ = M_PI / STEP_SIZE;
-	camera._phi -= incr_;
+	camera._phi += incr_;
       }
       view->SetCamera(camera);
     }
@@ -252,12 +263,12 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	incr_ = fabs(camera.y_ / STEP_SIZE);
 	if (incr_ < 0.1)
 	  incr_ = 0.1;
-	camera.y_ -= incr_;
+	camera.y_ += incr_;
 	if (!camera.fix_focus)
-	  camera.fy -= incr_;
+	  camera.fy += incr_;
       } else {
 	incr_ = M_PI / STEP_SIZE;
-	camera._phi += incr_;
+	camera._phi -= incr_;
       }
       view->SetCamera(camera);
     }

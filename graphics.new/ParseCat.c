@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/08/04 21:31:40  beyer
+  Changed to use new DataSourceBuf constructor.
+
   Revision 1.28  1996/07/23 20:13:03  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -232,14 +235,6 @@ CatFiles(int &numFiles, char **&fileNames)
 {
   numFiles = _numCatFiles;
   fileNames = _catFiles;
-//TEMPTEMP>>>
-  printf("Catalog (schema) files:\n");
-  int count;
-  for (count = 0; count < _numCatFiles; count++)
-  {
-    printf("  %s\n", _catFiles[count]);
-  }
-//<<<
 }
 
 /*------------------------------------------------------------------------------

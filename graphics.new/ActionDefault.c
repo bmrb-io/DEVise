@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/08/04 21:12:57  beyer
+  Added support for devise keys
+
   Revision 1.21  1996/07/21 02:17:35  jussi
   Added testing of xyZoom flag to determine zoom mode (XY or X/Y).
 
@@ -118,15 +121,18 @@ ActionDefault::ActionDefault(char *name, Coord leftEdge,
 void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 {
 #if defined(DEBUG)
-    printf("ActionDefault::KeySelected(%s, '%c' %d, %g, %g)\n", 
-	   view->GetName(), isgraph(key) ? key : ' ', (int)key, x, y);
+  if (view->GetName() == NULL)
+  {
+    printf("ActionDefault::KeySelected(%s, 0x%x, %g, %g)\n",
+         view->GetName(), (int)key, x, y);
+  }
+  else
+  {
+    printf("ActionDefault::KeySelected(0x%x, %g, %g)\n", (int)key, x, y);
+  }
 #endif
     ControlPanel::Instance()->SelectView(view);
     VisualFilter filter;
-
-    Boolean isScatterPlot = view->IsScatterPlot();
-    isScatterPlot |= (view->GetNumDimensions() != 2);
-    isScatterPlot &= (view->IsXYZoom());
 
     switch(key) {
       case '+': {
@@ -161,56 +167,13 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	    view->Refresh();
 	  break;
       }
+      case '5':
       case DeviseKey::KP_5:
       case DeviseKey::BEGIN:
       case DeviseKey::KP_BEGIN: {
 	  view->UpdateAutoScale();
 	  break;
       }
-
-#if 0
-	// this is defined almost identically in Action.c
-	// Why does action & actiondefault exist?
-      case '<':
-      case ',':
-      case DeviseKey::KP_4:
-      case DeviseKey::RIGHT: {
-	  /* scroll data left */
-	  view->GetVisualFilter(filter);
-	  Coord width = filter.xHigh - filter.xLow;
-	  Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-	  filter.xLow += halfWidth;
-	  filter.xHigh = filter.xLow + width;
-	  if (useRight && filter.xHigh > right) {
-	      filter.xHigh = right;
-	      filter.xLow = filter.xHigh - width;
-	  }
-	  view->SetVisualFilter(filter);
-	  break;
-      }
-      case DeviseKey::KP_9:
-      case DeviseKey::PAGE_UP: {
-	  /* zoom out */
-	  view->GetVisualFilter(filter);
-	  Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-	  if (halfWidth == 0.0)
-	    halfWidth = 1.0;
-	  filter.xLow -= halfWidth;
-	  filter.xHigh += halfWidth;
-	  Coord xMin;
-	  if (view->GetXMin(xMin) && filter.xLow < xMin)
-	    filter.xLow = xMin;
-	  /*
-	     if (useLeft && filter.xLow < left)
-	     filter.xLow = left;
-	     */
-	  if (useRight && filter.xHigh > right)
-	    filter.xHigh = right;
-	  view->SetVisualFilter(filter);
-	  break;
-      }
-#endif
-
       default: {
 	  Action::KeySelected(view, key, x, y);
       }
