@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/03 23:13:51  jussi
+  Added call to _data->Close() in destructor. Renamed
+  _fileOkay to _fileOpen which is more accurate.
+
   Revision 1.13  1996/07/01 19:28:06  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -130,10 +134,10 @@ public:
 	// A -1 is returned for none-existing attrNum
 	virtual int UserAttr(int attrNum) { return -1; }
 
-	// Get name of file
-	virtual char *GetName() { return _file; }
+        // Get name
+        virtual char *GetName() { return _name; }
 
-	/* convert RecId into index */
+	/* Convert RecId into index */
 	virtual void GetIndex(RecId id, int *&indices);
 
 	/**** Getting record Id's ****/
@@ -237,7 +241,6 @@ private:
 	char *_name;                    // name of data stream
         char *_type;                    // type of data stream
         char *_param;                   // parameters of data stream
-	char *_file;                    // name of (cache) file
         char *_indexFileName;           // name of index file
 	int _recSize;                   // size of record
 	DataSource *_data;              // Source of data (disk file or tape)
