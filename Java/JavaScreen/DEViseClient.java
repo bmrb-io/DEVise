@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2001/11/07 22:31:28  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.55  2001/11/07 19:29:07  xuk
 // Garbage collection for temporary session files.
 // In DEViseClient(), get savedSessionName from jspop.sessionDir.
@@ -699,6 +706,11 @@ public class DEViseClient
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
+			// TEMP: for String[] format.
+			/*
+			  sendCmd(state);
+			  sendCmd(DEViseCommands.DONE);
+			*/
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
 			String cmd = DEViseCommands.COLLAB_STATE;
@@ -708,6 +720,11 @@ public class DEViseClient
 			}
 			cmd = cmd.trim();
 			sendCmd(new String[] {cmd, DEViseCommands.DONE});
+			// TEMP: for String[] format.
+			/*
+			  sendCmd(cmd);
+			  sendCmd(DEViseCommands.DONE);
+			*/
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
 			isAbleCollab = true;
@@ -787,10 +804,58 @@ public class DEViseClient
     // Send a series of commands to the client.
     public synchronized void sendCmd(String[] cmds) throws YException
     {
-        for (int i = 0; i < cmds.length; i++) {
-            sendCmd(cmds[i]);
+	for (int i = 0; i < cmds.length; i++) {
+	    sendCmd(cmds[i]);
+	}
+    }
+
+
+    // TEMP: send a single command in String[] formats
+    /*
+    public synchronized void sendCmd(String[] cmds) throws YException
+    {
+        if (status != CLOSE) {
+	    if (cmds != null && cmds.length != 0) {
+
+		if (!collabClients.isEmpty()) { // also send to collab JS
+		    if (collabInit) {
+			//
+			// Send command only to the most-recently-connected
+			// collaboration client.
+			//
+			DEViseClient client =
+			  (DEViseClient)collabClients.lastElement();
+
+			pop.pn("Sending command to collabration client: " + cmds);
+			client.sendCmd(cmds);
+		    } else {
+			//
+			// Send commands to all collaboration clients.
+			//
+			for (int i = 0; i < collabClients.size(); i++) {
+			    DEViseClient client =
+			      (DEViseClient)collabClients.elementAt(i);		
+
+			    pop.pn("Sending command to collabration client" + " " + i);
+			    client.sendCmd(cmds);
+			}
+		    }
+                }
+
+		if (!collabInit) {
+		    //
+		    // Send command to "normal" client.
+		    //
+		    pop.pn("Sending command to client(" + ID + " " + hostname +
+		       ") :  \"" + cmds + "\"");
+		    clientSock.sendCommand(cmds);
+		}
+	    }
+        } else {
+            throw new YException("Invalid client");
         }
     }
+    */
 
     // Send a single command to the client.
     public synchronized void sendCmd(String cmd) throws YException

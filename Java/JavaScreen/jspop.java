@@ -25,6 +25,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2001/11/07 22:31:30  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.71  2001/11/07 19:27:21  xuk
 // Garbage collection for temporary session files.
 // In jspop(), create a subdir for each jspop. Delete temporary session files.
@@ -1603,6 +1610,11 @@ public class jspop implements Runnable
 			pn("Incorrect password.");
 			client.sendCmd(DEViseCommands.ERROR +
 				       " {Incorrect password. Please try again.}");
+			// TEMP: send this command in String[] format
+			/*
+			  client.sendCmd(new String[] {DEViseCommands.ERROR, 
+			  "Incorrect password. Please try again."}); 
+			*/
 		    }
 		} else { // disable collaboration
 		    pn("Disabled to collaborate with client.");

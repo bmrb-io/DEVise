@@ -27,6 +27,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2001/11/07 22:31:29  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.70  2001/10/30 17:31:14  xuk
 // reated DEViseClient object for collaborating clients in jspop.
 //
@@ -695,7 +702,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		//
                 try {
                     client.sendCmd(serverCmds);
-                    client.sendData(serverDatas);
+		    
+		    // TEMP: send commands one by one. For String[] formats.
+		    /*
+		      for (int i=0; i<serverCmds.length; i++)
+		        client.sendCmd(serverCmds[i]);
+		    */
+
+		    client.sendData(serverDatas);
 		    pop.pn("Done sending all data to client(s)");
 		    
 		    if (client.useCgi()) {

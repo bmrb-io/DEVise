@@ -23,6 +23,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.109  2001/11/07 22:31:28  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.108  2001/11/06 16:27:19  xuk
 // Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
 //
@@ -586,9 +593,6 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
             return;
         }
-
-	jsc.pn("Screen Width = " + jsc.jsValues.uiglobals.screenSize.width);
-	jsc.pn("Screen Height = " + jsc.jsValues.uiglobals.screenSize.height);
 
         setStatus(1);
         jsc.animPanel.start();

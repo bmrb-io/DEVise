@@ -28,6 +28,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/11/07 22:31:28  wenger
+// Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+// js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+// accidentally merged onto the bmrb_dist_br branch previously).
+// (These changes include JS heartbeat improvements and the fix to get
+// CGI mode working again.)
+//
 // Revision 1.1.2.2  2001/11/07 17:22:35  wenger
 // Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
 // handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -193,6 +200,27 @@ public class DEViseClientSocket implements Runnable
 
         _socket.sendCmd(cmd, msgType, id);
     }
+
+    // ------------------------------------------------------------------
+    // TEMP: send the given command in String[] format to the client.
+    /*
+    public synchronized void sendCommand(String[] cmds) throws YException
+    {
+        sendCommand(cmds, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
+    }
+
+    // ------------------------------------------------------------------
+    public synchronized void sendCommand(String[] cmds, short msgType, int id)
+      throws YException
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseClientCommand.sendCommand(<" + cmds +
+	      ">, " + msgType + ", " + id + ")");
+	}
+
+        _socket.sendCmd(cmds, msgType, id);
+    }
+    */
 
     // ------------------------------------------------------------------
     // Send the given data to the client.
