@@ -1,6 +1,7 @@
 setBatchMode 1
 importFileType /p/devise/schema/schema/logical/VN
 changeMode 0
+dataSegment testcolors /p/devise/dat/testcolors.dat 0 0
 create tdata Visible-Infrared-Schema /p/devise/dat/testcolors.dat testcolors
 createMappingClass Y_vs_X
 create mapping {Y_vs_X} testcolors {testcolors#Y_vs_X} {} {$X} {$Y} {} {$Color} 1 0 0 0 1 1 {}
