@@ -386,6 +386,7 @@ class ODBCInterface : public Interface {
 	string dataSourceName;
 	string userName;
 	string passwd;
+	string tableName;
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
 	HENV ODBC_Handle;
@@ -401,6 +402,8 @@ public:
 	int ODBC_Connect();
 	void ODBC_disConnect();
 	int ODBC_Stmt_Handle();
+	int ODBC_Error(SQLRETURN err_Stat,string err_msg);
+	void ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, short col_Num);
 	virtual ~ODBCInterface(){
 	}
 	virtual string getTypeNm(){
