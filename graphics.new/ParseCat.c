@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/28 00:00:08  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.2  1995/09/05 22:15:09  jussi
   Added CVS header.
 */
@@ -171,6 +174,7 @@ char *ParseCat(char *catFile){
 	Boolean hasComment = false;
 	Boolean mergeSeparator = true; /* true if separators should be merged */
 	Boolean isAscii = false;
+	Boolean GLoad = true;
 	char *fileType;
 	int numArgs;
 	char **args;
@@ -257,6 +261,17 @@ char *ParseCat(char *catFile){
 			}
 			fileType = CopyString(args[1]);
 			hasFileType = true;
+			/* Let's add the schema name to the directory now */
+			/* First check if the schema is already loaded, in
+			   which case we do nothing more */
+			if (gdir->find_entry(fileType))
+			  GLoad = false;
+			else
+			{
+			  printf("Adding schema %s to directory \n", fileType);
+			  gdir->add_entry(fileType);
+			  GLoad = true;
+			}
 		} else if (strcmp(args[0],"attr") == 0 ||
 			strcmp(args[0],"compattr") == 0 || strcmp(args[0],"sorted") == 0){
 			/* an attribute */
@@ -396,28 +411,32 @@ char *ParseCat(char *catFile){
 		      }
 		else if (strcmp(args[0], "group") == 0)
 		{
-		  printf("Begin group %s\n", args[1]);
-		  if (!currgrp)		/* Top level */
-		    currgrp = new Group(args[1], NULL, TOPGRP);
-		  else
-		    currgrp = currgrp->insert_group(args[1]);
-		  /* Insert into group directory */
-		  gdir->add_entry(currgrp);
+		  if (GLoad) {
+		      if (!currgrp)		/* Top level */
+		      {
+			currgrp = new Group(args[1], NULL, TOPGRP);
+			gdir->add_topgrp(fileType, currgrp);
+		      }
+		      else
+			currgrp = currgrp->insert_group(args[1]);
+		    }
 		}
 		else if (strcmp(args[0], "item") == 0)
 		{
-		  printf("Item %s\n", args[1]);
-		  currgrp->insert_item(args[1]);
+		  if (GLoad) {
+		      currgrp->insert_item(args[1]);
+		    }
 		}
 		else if (strcmp(args[0], "endgroup") == 0)
 		{
-		  printf("End of group\n");
-		  if (!currgrp)
-		  {
-		    fprintf(stderr, "Group begins and ends not matched\n");
-		    goto error;
-		  }
-		  currgrp = currgrp->parent_group();
+		  if (GLoad) {
+		      if (!currgrp)
+		      {
+			fprintf(stderr, "Group begins and ends not matched\n");
+			goto error;
+		      }
+		      currgrp = currgrp->parent_group();
+		    }
 		}
 		else {
 			fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
@@ -442,8 +461,21 @@ char *ParseCat(char *catFile){
 		goto error;
 	}
 
-	/* test attribute names */
 	int i,j;
+
+	/* If no group has been defined, create a default group */
+	if (GLoad && (gdir->num_topgrp(fileType) == 0))
+	{
+	  Group *newgrp = new Group("__default", NULL, TOPGRP);
+	  gdir->add_topgrp(fileType, newgrp);
+	  for (i=0; i < numAttrs; i++)
+	  {
+	    AttrInfo *iInfo = attrs->Get(i);
+	    newgrp->insert_item(iInfo->name);
+	  }
+	}
+
+	/* test attribute names */
 	for (i=0 ; i < numAttrs-1;i++) {
 		AttrInfo *iInfo = attrs->Get(i);
 		if (strcmp(iInfo->name,"recId") == 0){
