@@ -11,4 +11,4 @@
 
 set path = ( /usr/ucb /bin /p/devise/run $path )
 
-runauth ./check_jspop
+/s/std/bin/runauth ./check_jspop
