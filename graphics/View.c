@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.222  2000/05/10 16:19:42  wenger
+  Cursors now drawn as frames rather than filled rectangles.
+
   Revision 1.221  2000/03/21 17:12:23  wenger
   Removed various unused methods from the View class.
 
@@ -1445,7 +1448,7 @@ Boolean View::CheckCursorOp(int x, int y)
   printf("View(%s)::CheckCursorOp()\n", GetName());
 #endif
 
-  // view has no cursors, so we cant move them either
+  // view has no cursors, so we can't move them either
   if (!_cursors->Size()) {
 #if defined(DEBUG)
     printf("  view has no cursors\n");
