@@ -14,9 +14,7 @@ public:
   virtual void initialize(const Type* input) = 0;
   virtual void update(const Type* input) = 0;
   virtual Type* getValue() = 0;
-  // The following two are used only by moving aggreagtes
-  virtual void dequeue(int n){assert(0);}   
-  virtual bool isDifferent(const Type* input){assert(0);}
+  virtual void dequeue(int n){assert(!"Used only by moving aggregates");}
 };
 
 // Standard aggregate execs
@@ -182,11 +180,6 @@ public:
   virtual void update(const Type* input){}
   virtual Type* getValue(){return NULL;}
   virtual void dequeue(int n){}
-	bool isDifferent(const Type* newVal){
-		Type* cmp;
-		eqPtr(prevTuple, newVal, cmp);
-		return !(cmp ? true : false);
-	}
 };
 
 class ExecMovCount : public ExecAggregate {
@@ -202,11 +195,6 @@ public:
   virtual void update(const Type* input){}
   virtual Type* getValue(){return NULL;}
   virtual void dequeue(int n){}
-	bool isDifferent(const Type* newVal){
-		Type* cmp;
-		eqPtr(prevTuple, newVal, cmp);
-		return !(cmp ? true : false);
-	}
 };
 
 class ExecMovSum : public ExecAggregate {
@@ -225,11 +213,6 @@ public:
   virtual void update(const Type* input){}
   virtual Type* getValue(){return NULL;}
   virtual void dequeue(int n){}
-	bool isDifferent(const Type* newVal){
-		Type* cmp;
-		eqPtr(prevTuple, newVal, cmp);
-		return !(cmp ? true : false);
-	}
 };
 
 class ExecMovAverage : public ExecAggregate {
@@ -259,11 +242,6 @@ public:
   virtual void update(const Type* input){}
   virtual Type* getValue(){return NULL;}
   virtual void dequeue(int n){}
-	bool isDifferent(const Type* newVal){
-		Type* cmp;
-		eqPtr(prevTuple, newVal, cmp);
-		return !(cmp ? true : false);
-	}
 };
 
 class ExecGroupAttr : public ExecAggregate {
@@ -544,6 +522,9 @@ public:
 
 };
 
+typedef GroupAttribute SequenceAttribute; 
+// for the moment SequenceAttribute and GroupAttribute have same functionality
+ 
 class StandAggsExec : public Iterator {
 	Iterator* inputIter;
 	ExecAggregate** aggExecs;
@@ -576,6 +557,7 @@ public:
 };
 
 class StandGroupByExec : public Iterator {
+protected:
   Iterator* inputIter; // Assumes is sorted on grouping attributes by optimizer
   ExecAggregate** aggExecs;
   int numFlds;
@@ -594,7 +576,7 @@ public:
 		int* aggPos, int numAggs) :
 
 		inputIter(inputIter), aggExecs(aggExecs),
-		numFlds(numFlds),  grpByPos(grpByPos), grpByPosLen(grpByPosLen),
+		numFlds(numFlds),  grpByPos(grpByPos),grpByPosLen(grpByPosLen),
 		aggPos(aggPos), numAggs(numAggs) {
 
 		retTuple = new Tuple[numFlds];
@@ -624,7 +606,7 @@ public:
     TRY(inputIter->reset(lowRid, highRid), NVOID );
   }
 
-private:
+protected:
 	bool isNewGroup(const Tuple* tup){
 		for (int i = 0; i < grpByPosLen; i++){
 			ExecGroupAttr* curr = (ExecGroupAttr*) aggExecs[grpByPos[i]];
@@ -636,38 +618,30 @@ private:
 	}
 };
 
-class MovAggsExec : public Iterator {
-  Iterator* inputIter; // Assumes is sorted on sequenceby attrs by optimizer
-  ExecAggregate** aggExecs;
-  int numFlds;
-  Tuple* retTuple;
-  int* seqByPos;		// positions of sequence by attributes
-  int seqByPosLen;
-  int* aggPos;
-  int numAggs;
+class MovAggsExec : public StandGroupByExec {
   int windowLow, windowHigh, windowHeight; // window measurements
   int *numTuplesToBeDropped; // array of size windowHeight 
   int nextDrop; // pointer to element in array numTuplesToBeDropped
-  int numUniqueTuples; // unique tuples read so far
+  int numUniqueTuples;
   const Tuple* currInTup;
-  
+  bool isFirstTime; // flag to check if the window has been slided down so far
+
 public:
   
 	MovAggsExec(Iterator* inputIter, ExecAggregate** aggExecs,
 		int numFlds, int* seqByPos, 
 		int seqByPosLen,
 		int* aggPos, int numAggs,
-		int windowLow, int windowHigh) :
-
-		inputIter(inputIter), aggExecs(aggExecs),
-		numFlds(numFlds), seqByPos(seqByPos), seqByPosLen(seqByPosLen),
-		aggPos(aggPos), numAggs(numAggs), 
+		int windowLow, int windowHigh) : 
+	  StandGroupByExec (inputIter, aggExecs, numFlds, seqByPos, 
+			    seqByPosLen, aggPos, numAggs), 
 		windowLow(windowLow), windowHigh(windowHigh) {
 
 		retTuple = new Tuple[numFlds];
 		currInTup = NULL;
 		assert(numAggs + seqByPosLen == numFlds);
 		windowHeight = windowHigh - windowLow;
+		assert (windowHeight >= 0); // =0? 
 		numTuplesToBeDropped = NULL;
 		if (windowHeight !=0) {
 		        numTuplesToBeDropped = new int[windowHeight];
@@ -675,50 +649,37 @@ public:
 			  numTuplesToBeDropped[i] = 0;   
 			}
 		}
-		numUniqueTuples = 0;
+		nextDrop = numUniqueTuples = 0;
 	}
 
-	virtual ~MovAggsExec(){
-		if(aggExecs){
-			for(int i = 0; i < numFlds; i++){
-				delete aggExecs[i];
-			}
-		}
-		delete [] aggExecs;
-		delete [] seqByPos;
-		delete [] aggPos;
-		delete [] retTuple;
+	virtual ~MovAggsExec() {
 		delete [] numTuplesToBeDropped;
-		delete inputIter;
 	}
 
   virtual void initialize();
   virtual const Tuple* getNext();
-  
-  // Need to check this..
-  virtual void reset(int lowRid, int highRid){
-    TRY(inputIter->reset(lowRid, highRid), NVOID );
+  bool checkAndUpdateWindow(const Tuple* tup){
+    // First check if tup is different from prev tuple 
+    // If so:
+    //   verify if the window has been filled 
+    //   Change nextDrop and numUniqueTuples if end of group
+
+    bool isEnd = isNewGroup(tup);
+    if (isEnd) {
+      if (isFirstTime) {
+	isEnd = numUniqueTuples > windowHeight;
+      }
+      numUniqueTuples++;
+
+      if (windowHeight) { 
+	nextDrop = (nextDrop +1) % windowHeight; 
+      }
+    }
+    
+    numTuplesToBeDropped[nextDrop]++; 
+
+    return isEnd;
   }
-
-private:
-	bool isEndWindow(const Tuple* tup){
-	  bool isEnd = false;
-	for (int i = 0; i < seqByPosLen; i++){
-			ExecAggregate* curr = aggExecs[seqByPos[i]];
-			if(curr->isDifferent(tup[seqByPos[i]])){
-			   isEnd = true;
-			   break;
-			}
-		}
-
-	// check to be sure number of unique tuples read == windowHeight
-	if (isEnd) {
-	  isEnd = (numUniqueTuples == windowHeight);
-	  numUniqueTuples++;
-	}
-
-	return isEnd;
-	}
 
 };
 

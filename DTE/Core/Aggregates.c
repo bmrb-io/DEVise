@@ -35,91 +35,42 @@ bool Aggregates::isApplicable(){
 			int numArgs = args->cardinality();
 			const string* name = function->getName();
 			args->rewind();
-			if(*name == "min"){
-				if(numArgs == 1){
-					assert(!hasMoving);
-					isApplicableValue = true;
-					curr = args->get();
-					aggFuncs[i] = new MinAggregate();
-				}
-				else if(numArgs == 3){
-					isApplicableValue = true;
-					curr = args->get();
-					windowLow = *(int *) args->get();
-					windowHigh = *(int *) args->get();
-					assert(windowHigh >= windowLow);
-					aggFuncs[i] = new MovMinAggregate();
-					hasMoving = true;
-				}
+			if (numArgs == 1){
+			  // simple aggregation
+			  assert(!hasMoving);
+			  isApplicableValue = true;
+			  curr = args->get();
+			  if (*name == "min")
+			    aggFuncs[i] = new MinAggregate();
+			  else if (*name == "max")
+			    aggFuncs[i] = new MaxAggregate();
+			  else if (*name == "avg")
+			    aggFuncs[i] = new AvgAggregate();
+			  else if (*name == "sum")
+			    aggFuncs[i] = new SumAggregate();
+			  else if (*name == "count")
+			    aggFuncs[i] = new CountAggregate();
 			}
-			else if(*name == "max"){
-				if(numArgs == 1){
-					assert(!hasMoving);
-					isApplicableValue = true;
-					curr = args->get();
-					aggFuncs[i] = new MaxAggregate();
-				}
-				else if(numArgs == 3){
-					isApplicableValue = true;
-					curr = args->get();
-					windowLow = *(int *) args->get();
-					windowHigh = *(int *) args->get();
-					assert(windowHigh >= windowLow);
-					aggFuncs[i] = new MovMaxAggregate();
-					hasMoving = true;
-				}
+			else if (numArgs == 3) {
+			  // moving aggregates
+			  isApplicableValue = true;
+			  curr = args->get();
+			  windowLow = *(int *) args->get();
+			  windowHigh = *(int *) args->get();
+			  assert(windowHigh >= windowLow);
+			  hasMoving = true;			  
+			  if (*name == "min")
+			    aggFuncs[i] = new MovMinAggregate();
+			  else if (*name == "max")
+			    aggFuncs[i] = new MovMaxAggregate();
+			  else if (*name == "avg")
+			    aggFuncs[i] = new MovAvgAggregate();
+			  else if (*name == "sum")
+			    aggFuncs[i] = new MovSumAggregate();
+			  else if (*name == "count")
+			    aggFuncs[i] = new MovCountAggregate();
 			}
-			else if(*name == "count"){
-				if(numArgs == 1){
-					assert(!hasMoving);
-					isApplicableValue = true;
-					curr = args->get();
-					aggFuncs[i] = new CountAggregate();
-				}
-				else if(numArgs == 3){
-					isApplicableValue = true;
-					curr = args->get();
-					windowLow = *(int *) args->get();
-					windowHigh = *(int *) args->get();
-					assert(windowHigh >= windowLow);
-					aggFuncs[i] = new MovCountAggregate();
-					hasMoving = true;
-				}
-			}
-			else if(*name == "sum"){
-				if(numArgs == 1){
-					assert(!hasMoving);
-					isApplicableValue = true;
-					curr = args->get();
-					aggFuncs[i] = new SumAggregate();
-				}
-				else if(numArgs == 3){
-					isApplicableValue = true;
-					curr = args->get();
-					windowLow = *(int *) args->get();
-					windowHigh = *(int *) args->get();
-					assert(windowHigh >= windowLow);
-					aggFuncs[i] = new MovSumAggregate();
-					hasMoving = true;
-				}
-			}
-			else if(*name == "avg"){
-				if(numArgs == 1){
-					assert(!hasMoving);
-					isApplicableValue = true;
-					curr = args->get();
-					aggFuncs[i] = new AvgAggregate();
-				}
-				else if(numArgs == 3){
-					isApplicableValue = true;
-					curr = args->get();
-					windowLow = *(int *) args->get();
-					windowHigh = *(int *) args->get();
-					assert(windowHigh >= windowLow);
-					aggFuncs[i] = new MovAvgAggregate();
-					hasMoving = true;
-				}
-			}
+			// else error?? 
 		}
 		else if(groupBy && !groupBy->isEmpty()){
 
@@ -134,6 +85,7 @@ bool Aggregates::isApplicable(){
 		  // must be sequence vy attribute
 		  // since groupby and sequence by cannot be together
 		  seqByPos[numSeqByFlds++] = i; 
+		  aggFuncs[i] = new SequenceAttribute();
 		}
 		filteredSelList->append(curr);
 		selList->step();
@@ -262,43 +214,51 @@ void MovAggsExec::initialize(){
 	assert(inputIter);
 	inputIter->initialize();
 	currInTup = inputIter->getNext();
+	nextDrop = 0;
+	numTuplesToBeDropped[nextDrop] = 1;
 	numUniqueTuples = 1;
+	isFirstTime = true;
 }
 
 const Tuple* MovAggsExec::getNext(){
 
-  
-	int i;
-	
 	if(!currInTup){
 		return NULL;
 	}
 
-	int toDeque = (windowHeight) ? 0 : numTuplesToBeDropped[nextDrop];
+	int toDeque = windowHeight ? numTuplesToBeDropped[nextDrop] : 0;
 
-	for(i = 0; i < numFlds; i++){
-		aggExecs[i]->dequeue(toDeque);
-		aggExecs[i]->initialize(currInTup[i]);
+	if (isFirstTime){ // window has not been slided yet - simply initialize
+	  for(int i = 0; i < numFlds; i++){
+	    aggExecs[i]->initialize(currInTup[i]);
+	  }
+	}
+	else { // window has been slid down 
+	  for(int i = 0; i < numAggs; i++){
+	    aggExecs[aggPos[i]]->dequeue(toDeque);  
+	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]); // update aggs
+	  }
+	    // initialize seqby fields for new value
+	  for (int i = 0; i < grpByPosLen; i++){
+	    aggExecs[grpByPos[i]]->initialize(currInTup[grpByPos[i]]); 
+	  }    
 	}
 
-	int numTuples = 1; // currInTup has a tuple already
+	// checkAndUpdateWindow updates numTuplesToBeDropped,nextDrop, and
+	// numUniqueTuples and returns true if window has been filled
 	currInTup = inputIter->getNext();
-	//	while(currInTup && !isNewGroup(currInTup) ){
-	while(currInTup && !isEndWindow(currInTup)){
-		for(i = 0; i < numAggs; i++){
+	while(currInTup && checkAndUpdateWindow(currInTup)) { 
+		for(int i = 0; i < numAggs; i++){
 			aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
 		}
 		currInTup = inputIter->getNext();
-		numTuples++;
 	}
 
-	if (windowHeight) {
-	  numTuplesToBeDropped[nextDrop] =  numTuples;
-	  nextDrop = (nextDrop +1) % windowHeight; 
-	}
+	isFirstTime = false;
 
-	for(i = 0; i < numFlds; i++){
+	for(int i = 0; i < numFlds; i++){
 		retTuple[i] = aggExecs[i]->getValue();
 	}
 	return retTuple;
 }
+
