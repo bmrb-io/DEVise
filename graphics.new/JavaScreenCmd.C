@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -13,13 +13,19 @@
 */
 
 /*
-  Description of module.
+  Implementation of JavaScreenCmd and related classes (handle commands from
+  JavaScreen client).
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.30  1998/09/10 23:21:29  wenger
+  Fixed bug 388 (missing window in JavaScreen) (caused by '/' in window
+  name, which was then used as part of temp file name); default for
+  JavaScreen is to save selected view when saving a session.
+
   Revision 1.29  1998/09/08 20:52:18  wenger
   Oops!  Forgot to change SaveSession usage message.
 
@@ -161,10 +167,27 @@
 
 Boolean JavaScreenCmd::_postponeCursorCmds = false;
 
+// be very careful that this order agree with the ControlCmdType definition
+char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
+{
+	"JAVAC_UpdateSessionList",
+	"JAVAC_CreateWindow",
+	"JAVAC_UpdateRecordValue",
+	"JAVAC_UpdateGData",
+	"JAVAC_UpdateWindow",
+	"JAVAC_DrawCursor",
+	"JAVAC_EraseCursor",
+	"JAVAC_Done",
+	"JAVAC_Error",
+	"JAVAC_Fail",
+	"JAVAC_UpdateImage"
+};
+
 static char *_sessionDir = NULL;
 
-off_t getFileSize(const char* filename);
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+//====================================================================
 // Determine whether the given point is within the given rectangle.
 static Boolean
 PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
@@ -194,6 +217,7 @@ PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
 	}
 }
 
+//====================================================================
 static Boolean IsSessionFile(const char *filename)
 {
 	Boolean isSession = false;
@@ -208,6 +232,199 @@ static Boolean IsSessionFile(const char *filename)
 	return isSession;
 }
 
+//====================================================================
+off_t
+getFileSize(const char* filename)
+{
+	off_t filesize;
+	int	fd = open(filename, O_RDONLY);
+	filesize = lseek(fd, 0, SEEK_END);
+	if (filesize <0)
+	{
+		perror("Error in getting file size:");
+	}
+	return filesize;
+}
+
+//====================================================================
+void
+FillInt(char** argv, int& pos, const int x)
+{
+	char buf[128];
+	sprintf(buf, "%d", x);
+	argv[pos++] = strdup(buf);
+}
+
+//====================================================================
+void
+FillArgv(char** argv, int& pos, const JavaRectangle& jr)
+{
+	char	buf[128];
+	sprintf(buf,"%.0f", jr._x0);
+	argv[pos ++] = strdup(buf);
+	sprintf(buf,"%.0f", jr._y0);
+	argv[pos ++] = strdup(buf);
+	sprintf(buf,"%.0f", jr._width);
+	argv[pos ++] = strdup(buf);
+	sprintf(buf,"%.0f", jr._height);
+	argv[pos ++] = strdup(buf);
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+//====================================================================
+JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
+	string& imageName, int viewCount, JavaViewInfo **views)
+{
+	_winRec = winRec;
+	_winName = winName;
+	_imageName = imageName;
+	_views 	= viewCount;
+	_viewList = new JavaViewInfo[viewCount];
+
+	int i;
+	for (i=0; i< viewCount; ++i)
+	{
+		_viewList[i] = *views[i];
+	}
+}
+
+//====================================================================
+JavaWindowInfo::~JavaWindowInfo()
+{
+	delete []_viewList;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+//====================================================================
+JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
+	ServiceCmdType ctype, int argc, char** argv)
+{
+#if defined(DEBUG)
+    printf("\nJavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this, (int)ctype);
+#endif
+
+	int	i;
+	static	char	leftBrace ='{';
+	static  char	rightBrace ='}';
+
+	_control  = control;
+	_ctype = ctype;
+	_argc = argc;
+	_argv = new (char*)[argc](NULL);
+	errmsg = NULL;
+
+    for (i=0; i< _argc; ++i)
+    {
+        int j = 0;
+        int arglen = strlen(argv[i]);
+        int startPos, endPos;
+ 
+        startPos = -1;
+        endPos = arglen;
+        _argv[i] = new (char)[arglen+1](0);
+        while (argv[i][j]&&(
+            (argv[i][j]==' ')||
+            (argv[i][j]=='\t')&&
+            (argv[i][j]!= leftBrace)))
+            ++j;
+        if (argv[i][j]==leftBrace)
+        {
+            startPos = j;
+            j = arglen -1;
+            while ((j>0)&&(
+                (argv[i][j]==' ')||
+                (argv[i][j]=='\t')&&
+                (argv[i][j]!= rightBrace))
+            )
+                --j;
+            if (j > startPos)
+            {
+                endPos = j;
+            }
+            else
+            {
+                fprintf(stderr, " { expected\n");
+                startPos = -1;
+            }
+        }
+        strncpy(_argv[i], argv[i]+startPos +1, endPos - startPos -1);
+    }
+}
+
+//====================================================================
+JavaScreenCmd::~JavaScreenCmd()
+{
+#if defined(DEBUG)
+    printf("\nJavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
+#endif
+
+	int	i;
+	for (i=0; i< _argc; ++i)
+		delete []_argv[i];
+	delete []_argv;
+}
+
+//====================================================================
+int
+JavaScreenCmd::Run()
+{
+#if defined(DEBUG)
+    printf("\nJavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
+#endif
+
+	_status = DONE;
+	if (_ctype == JAVAEXIT)
+	{
+		CloseJavaConnection();
+		return _status;
+	}
+	switch (_ctype)
+	{
+		case CLOSECURRENTSESSION:
+			CloseCurrentSession();
+			break;
+		case GETSESSIONLIST:
+			GetSessionList();
+			break;
+		case OPENSESSION:
+			OpenSession();
+			break;
+		case MOUSEACTION_CLICK:
+			MouseAction_Click();
+			break;
+		case MOUSEACTION_DOUBLECLICK:
+			MouseAction_DoubleClick();
+			break;
+		case MOUSEACTION_RUBBERBAND:
+			MouseAction_RubberBand();
+			break;
+		case SETDISPLAYSIZE:
+			SetDisplaySize();
+			break;
+		case KEYACTION:
+			KeyAction();
+			break;
+		case SAVESESSION:
+			SaveSession();
+			break;
+		case SERVEREXIT:
+			ServerExit();
+			break;
+		case SERVERCLOSESOCKET:
+			ServerCloseSocket();
+			break;
+		case IMAGECHANNEL:
+			ImageChannel();
+			break;
+		default:
+			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
+	}
+	return ControlCmd(_status);
+}
+
+//====================================================================
 void
 JavaScreenCmd::GetSessionList()
 {
@@ -231,6 +448,7 @@ JavaScreenCmd::GetSessionList()
 	return;
 }
 
+//====================================================================
 void
 JavaScreenCmd::OpenSession()
 {
@@ -291,7 +509,7 @@ JavaScreenCmd::OpenSession()
 	View::SetDrawCursors(false);
 	View::SetJSCursors(true);
 
-	// Turn of collaboration; otherwise the collaboration stuff
+	// Turn off collaboration; otherwise the collaboration stuff
 	// interferes with some commands from the JavaScreen.
 	cmdContainerp->setMake(CmdContainer::MONOLITHIC);
 
@@ -423,6 +641,7 @@ JavaScreenCmd::OpenSession()
 #endif
 }
 
+//====================================================================
 void
 JavaScreenCmd::MouseAction_Click()
 {
@@ -460,6 +679,7 @@ JavaScreenCmd::MouseAction_Click()
 	_status = SendChangedWindows();
 }
 
+//====================================================================
 void
 JavaScreenCmd::MouseAction_DoubleClick()
 {
@@ -508,6 +728,7 @@ JavaScreenCmd::MouseAction_DoubleClick()
 	_status = RequestUpdateRecordValue(msgCount, msgs);
 }
 
+//====================================================================
 void
 JavaScreenCmd::MouseAction_RubberBand()
 {
@@ -621,7 +842,11 @@ JavaScreenCmd::CloseCurrentSession()
     printf(")\n");
 #endif
 
-//TEMP -- check _argc
+	if (_argc != 0) {
+		errmsg = "Usage: CloseCurrentSession";
+		_status = ERROR;
+		return;
+	}
 
 	DoCloseSession();
 
@@ -783,31 +1008,6 @@ JavaScreenCmd::ImageChannel()
 
 //====================================================================
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::RequestUpdateGData(GDataVal gval)
-{
-#if defined (DEBUG)
-    printf("\nJavaScreenCmd::RequestUpdateGData()\n");
-#endif
-
-	// Add---begin
-	char* argv[7] =
-	{
-		_controlCmdName[UPDATEGDATA],
-		"{name 1}",
-		"http://www.test1.edu",
-		"{name 2}",
-		"http://www.test2.edu",
-		"{name 3}",
-		"http://www.test3.edu",
-	};
-	ReturnVal(7, argv);
-
-	// Add---end
-	return DONE;
-}
-
-//====================================================================
-JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
 #if defined (DEBUG)
@@ -824,193 +1024,12 @@ JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 	return DONE;
 }
 
-//====================================================================
-off_t
-getFileSize(const char* filename)
-{
-	off_t filesize;
-	int	fd = open(filename, O_RDONLY);
-	filesize = lseek(fd, 0, SEEK_END);
-	if (filesize <0)
-	{
-		perror("Error in getting file size:");
-	}
-	return filesize;
-}
-
-//====================================================================
-JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
-	string& imageName, int viewCount, JavaViewInfo **views)
-{
-	_winRec = winRec;
-	_winName = winName;
-	_imageName = imageName;
-	_views 	= viewCount;
-	_viewList = new JavaViewInfo[viewCount];
-
-	int i;
-	for (i=0; i< viewCount; ++i)
-	{
-		_viewList[i] = *views[i];
-	}
-}
-
-//====================================================================
-JavaWindowInfo::~JavaWindowInfo()
-{
-	delete []_viewList;
-}
-
-
-//
-// be very careful that this order agree with the ControlCmdType definition
-char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
-{
-	"JAVAC_UpdateSessionList",
-	"JAVAC_CreateWindow",
-	"JAVAC_UpdateRecordValue",
-	"JAVAC_UpdateGData",
-	"JAVAC_UpdateWindow",
-	"JAVAC_DrawCursor",
-	"JAVAC_EraseCursor",
-	"JAVAC_Done",
-	"JAVAC_Error",
-	"JAVAC_Fail",
-	"JAVAC_UpdateImage"
-};
-
-//====================================================================
-JavaScreenCmd::~JavaScreenCmd()
-{
-#if defined(DEBUG)
-    printf("\nJavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
-#endif
-
-	int	i;
-	for (i=0; i< _argc; ++i)
-		delete []_argv[i];
-	delete []_argv;
-}
 
 //====================================================================
 char* 
 JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 {
 	return JavaScreenCmd::_controlCmdName[(int)ctype];
-}
-
-//====================================================================
-JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
-	ServiceCmdType ctype, int argc, char** argv)
-{
-#if defined(DEBUG)
-    printf("\nJavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this, (int)ctype);
-#endif
-
-	int	i;
-	static	char	leftBrace ='{';
-	static  char	rightBrace ='}';
-
-	_control  = control;
-	_ctype = ctype;
-	_argc = argc;
-	_argv = new (char*)[argc](NULL);
-	errmsg = NULL;
-
-    for (i=0; i< _argc; ++i)
-    {
-        int j = 0;
-        int arglen = strlen(argv[i]);
-        int startPos, endPos;
- 
-        startPos = -1;
-        endPos = arglen;
-        _argv[i] = new (char)[arglen+1](0);
-        while (argv[i][j]&&(
-            (argv[i][j]==' ')||
-            (argv[i][j]=='\t')&&
-            (argv[i][j]!= leftBrace)))
-            ++j;
-        if (argv[i][j]==leftBrace)
-        {
-            startPos = j;
-            j = arglen -1;
-            while ((j>0)&&(
-                (argv[i][j]==' ')||
-                (argv[i][j]=='\t')&&
-                (argv[i][j]!= rightBrace))
-            )
-                --j;
-            if (j > startPos)
-            {
-                endPos = j;
-            }
-            else
-            {
-                fprintf(stderr, " { expected\n");
-                startPos = -1;
-            }
-        }
-        strncpy(_argv[i], argv[i]+startPos +1, endPos - startPos -1);
-    }
-}
-
-//====================================================================
-int
-JavaScreenCmd::Run()
-{
-#if defined(DEBUG)
-    printf("\nJavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
-#endif
-
-	_status = DONE;
-	if (_ctype == JAVAEXIT)
-	{
-		CloseJavaConnection();
-		return _status;
-	}
-	switch (_ctype)
-	{
-		case CLOSECURRENTSESSION:
-			CloseCurrentSession();
-			break;
-		case GETSESSIONLIST:
-			GetSessionList();
-			break;
-		case OPENSESSION:
-			OpenSession();
-			break;
-		case MOUSEACTION_CLICK:
-			MouseAction_Click();
-			break;
-		case MOUSEACTION_DOUBLECLICK:
-			MouseAction_DoubleClick();
-			break;
-		case MOUSEACTION_RUBBERBAND:
-			MouseAction_RubberBand();
-			break;
-		case SETDISPLAYSIZE:
-			SetDisplaySize();
-			break;
-		case KEYACTION:
-			KeyAction();
-			break;
-		case SAVESESSION:
-			SaveSession();
-			break;
-		case SERVEREXIT:
-			ServerExit();
-			break;
-		case SERVERCLOSESOCKET:
-			ServerCloseSocket();
-			break;
-		case IMAGECHANNEL:
-			ImageChannel();
-			break;
-		default:
-			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
-	}
-	return ControlCmd(_status);
 }
 
 //====================================================================
@@ -1052,32 +1071,8 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 }
 
 //====================================================================
-void
-JavaScreenCmd::FillInt(char** argv, int& pos, const int x)
-{
-	char buf[128];
-	sprintf(buf, "%d", x);
-	argv[pos++] = strdup(buf);
-}
-
-//====================================================================
-void
-JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectangle& jr)
-{
-	char	buf[128];
-	sprintf(buf,"%.0f", jr._x0);
-	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%.0f", jr._y0);
-	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%.0f", jr._width);
-	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%.0f", jr._height);
-	argv[pos ++] = strdup(buf);
-}
-
-//====================================================================
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
+JavaScreenCmd::SendWindowImage(const char* fileName)
 {
 #if defined (DEBUG)
     printf("\nJavaScreenCmd::SendWindowImage(%s)\n", fileName);
@@ -1087,6 +1082,8 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 #if 0 // Enable this for JavaScreenCmd debugging in monolithic executable.
 	return status;
 #endif
+
+	int filesize = 0;
 
 	// send the dumped image file to the JAVA_SCREEN client
 	int	fd = open(fileName, O_RDONLY);
@@ -1098,21 +1095,30 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 	}
 	else
 	{
-		filesize = 0;
 		char buf[2048];
-		int	nbytes;
+		int	bytesRead;
 		
-		while ((nbytes = read(fd, buf, sizeof(buf)))>0)
+		while ((bytesRead = read(fd, buf, sizeof(buf))) > 0)
 		{
 			DeviseServer*	server;
 			server = cmdContainerp->getDeviseServer();
-			if (server->WriteImagePort(buf, nbytes) <0)
-			{
+			int bytesWritten = server->WriteImagePort(buf, bytesRead);
+			if (bytesWritten < 0) {
 				reportErrSys("write image port");
 				status = FAIL;
 				break;
+			} else if (bytesWritten != bytesRead) {
+				// Note: we may want to re-try the write here.  RKW 1998-09-14.
+				char errBuf[2048];
+				sprintf(errBuf, "Expected to write %d bytes; wrote %d",
+				  bytesRead, bytesWritten);
+				reportErrSys(errBuf);
+				break;
 			}
-			filesize += nbytes;
+			filesize += bytesRead;
+		}
+		if (bytesRead < 0) {
+			reportErrSys("Reading image file");
 		}
 		close(fd);
 #if defined(DEBUG)
@@ -1165,7 +1171,7 @@ JavaScreenCmd::SendChangedWindows()
 				    result = RequestUpdateWindow(window->GetName(), filesize);
 				}
 				if (result == DONE) {
-				    result = SendWindowImage(fileName, filesize);
+				    result = SendWindowImage(fileName);
 				}
 			}
 			(void) unlink(fileName);
@@ -1261,7 +1267,7 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 		ReturnVal(argc, argv);
 
 		// Send back the window image.
-		status = SendWindowImage(fileName, filesize);
+		status = SendWindowImage(fileName);
 		(void) unlink(fileName);
 
 		// free all ..

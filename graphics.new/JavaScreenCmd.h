@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -13,13 +13,18 @@
 */
 
 /*
-  Description of module.
+  Declaration of JavaScreenCmd and related classes (handle commands from
+  JavaScreen client).
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.14  1998/09/08 16:55:14  wenger
+  Improved how JavaScreenCmd handles closing sessions -- fixes some problems
+  with client switching.
+
   Revision 1.13  1998/09/01 20:13:19  wenger
   Fixed problems with sometimes sending incorrect cursor coordinates to
   JavaScreen and sending DrawCursor commands before windows are created;
@@ -174,9 +179,10 @@ class JavaScreenCmd
 		}ControlCmdType;
 
 		// argv does not contain the command name!
-		~JavaScreenCmd();
 		JavaScreenCmd(ControlPanel* server,
 			ServiceCmdType ctype, int argc, char** argv);
+		~JavaScreenCmd();
+
 		int Run();
 		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
 
@@ -210,15 +216,12 @@ class JavaScreenCmd
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
 		ControlCmdType RequestCreateWindow(JavaWindowInfo& winInfo);
 		ControlCmdType RequestUpdateRecordValue(int argc, char** argv);
-		ControlCmdType RequestUpdateGData(GDataVal gval);
 		ControlCmdType RequestUpdateWindow(char* winName, int imageSize);
 
 		// Convenience functions
 		void CloseJavaConnection();
-		ControlCmdType SendWindowImage(const char* fileName, int& filesize);
+		ControlCmdType SendWindowImage(const char* fileName);
 		ControlCmdType SendChangedWindows();
-		static void FillArgv(char** argv, int& pos, const JavaRectangle& jr);
-		static void FillInt(char** argv, int& pos, int i);
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
 		void UpdateSessionList(char *dirName);
@@ -231,4 +234,5 @@ class JavaScreenCmd
 		static void DrawCursor(View *view, DeviseCursor *cursor);
 		static void EraseCursor(View *view, DeviseCursor *cursor);
 };
+
 #endif
