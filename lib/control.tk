@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.59  1996/02/25 23:03:45  jussi
+#	Default tmpdir is "tmp", not ".". See Init.c.
+#
 #	Revision 1.58  1996/02/02 21:27:35  jussi
 #	Interface to DoSetBgColor changed.
 #
@@ -256,7 +259,7 @@ set DEViseColors \
 
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector} \
-	{6 Block}}
+	{6 Block} {7 3DVector}}
 
 # global to control.tk: curView: current view selected.
 # lastView: last view selected.
