@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/03/10 19:11:05  wenger
+  Implemented DataReader schema GUI; made other improvements to schema
+  editing GUI, such as sorting the schema lists.
+
  */
 
 #include <stdio.h>
@@ -135,7 +139,7 @@ DRSchema2TclList(const char *schemaFile)
 	if (fldSep) {
 	    TranslateChars(fldSep->data, listStr);
 	    listStr << "]";
-	    if (recSep->repeating) {
+	    if (fldSep->repeating) {
 	        listStr << "+";
 	    }
 	}
