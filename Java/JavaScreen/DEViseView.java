@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2001/12/13 21:35:33  wenger
+// Added flexibility to enable/disable mouse location display individually
+// for X and Y axes (needed for peptide-cgi session improvements requested
+// by John Markley).
+//
 // Revision 1.61  2001/11/28 21:56:20  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -170,8 +175,8 @@ public class DEViseView
     // viewDataLoc is the location relative to this view
     public Rectangle viewDataLoc = null;
 
-    private float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
-    private float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
+    public float viewDataXMin = 0.0f, viewDataXMax = 0.0f;
+    public float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
 
     // data type could be "real" or "date" or "none"
     public String viewDataXType = null, viewDataYType = null;
@@ -206,7 +211,7 @@ public class DEViseView
     // data units per pixel in the X and Y dimensions
     public float dataXStep, dataYStep;
 
-    //public float gridx, gridy; // mouse movement grid -- not used
+    // public float gridx, gridy; // mouse movement grid -- not used
 
     public boolean isFirstTime = true;
 
@@ -215,6 +220,20 @@ public class DEViseView
     // mouse position multiply factors
     float factorX = 1; 
     float factorY = 1;
+
+    // label drawing info.
+    int labelXDraw = 0;
+    int labelYDraw = 0;
+    int fontTypeX = 0;
+    int fontTypeY = 0;
+    int fontSizeX = 0;
+    int fontSizeY = 0;
+    int fontBoldX = 0;
+    int fontBoldY = 0;
+    int fontItalicX = 0;
+    int fontItalicY = 0;
+    float labelFactorX = 1;
+    float labelFactorY = 1;
 
     public DEViseView(jsdevisec panel, String pn, String name,
       String piledname, String title, Rectangle loc, float Z, int dim,
@@ -516,11 +535,15 @@ public class DEViseView
     }
 
     // Update the data range of the given axis.
-     void updateDataRange(String axis, float min, float max, String format, float factor)
+     void updateDataRange(String axis, float min, float max, 
+			  String format, float factor, int label, 
+			  int type, int size, int bold, int italic)
       throws YError
     {
-      
-        if (axis.equals("X")) {
+	float gap = 0;
+	int log = 0;
+        
+	if (axis.equals("X")) {
             viewDataXMin = min;
             viewDataXMax = max;
             viewInfoFormatX = format;
@@ -530,6 +553,15 @@ public class DEViseView
             if (viewDataLoc.width > 0)
                 dataXStep = (viewDataXMax - viewDataXMin) / viewDataLoc.width;
 	    factorX = factor;
+	    labelXDraw = label;
+	    fontTypeX = type;
+	    fontSizeX = size;
+	    fontBoldX = bold;
+	    fontItalicX = italic;
+
+	    gap = viewDataXMax - viewDataXMin;
+	    log = (int)(Math.log(gap)/Math.log(10));
+	    labelFactorX = (float)Math.pow(10, log-1);
 	    
         } else if (axis.equals("Y")) {
             viewDataYMin = min;
@@ -541,6 +573,16 @@ public class DEViseView
             if (viewDataLoc.height > 0)
                 dataYStep = (viewDataYMax - viewDataYMin) / viewDataLoc.height;
 	    factorY = factor;
+	    labelYDraw = label;
+	    fontTypeY = type;
+	    fontSizeY = size;
+	    fontBoldY = bold;
+	    fontItalicY = italic;
+
+	    gap = viewDataYMax - viewDataYMin;
+	    log = (int)(Math.log(gap)/Math.log(10));
+	    labelFactorY = (float)Math.pow(10, log-1);
+
         } else {
 	    throw new YError("Illegal axis type (" + axis + ")");
 	}
@@ -813,5 +855,108 @@ public class DEViseView
         }
 
         return null;
+    }
+
+    // get the label for Y axis
+    public String getYLabel(float y)
+    {
+	int length = 0;
+
+	if ((viewDataYType.toLowerCase()).equals("date")) {
+	    y *= 1000.0f; 
+	    Date date = new Date((long)y);
+	    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);
+	    String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
+		+ cal.get(Calendar.MINUTE) + ":"
+		+ cal.get(Calendar.SECOND);
+	    return (format.format(date) + time);
+	} else {
+	    String labelY = new Float(y).toString();
+	    length = (labelY.length() >= 4) ? 4 : labelY.length();
+	    labelY = labelY.substring(0, length);
+	    
+	    if (labelY.charAt(length-1) == '.')
+		labelY = labelY.substring(0, length-1);
+	    if (labelY.charAt(length-2) == '.' && labelY.charAt(length-1) == '0')
+		labelY = labelY.substring(0, length-2);
+	    
+	    // right alignment
+	    int space = 4 - labelY.length();
+	    for (int i = 0; i < space; i++)
+		labelY = "  ".concat(labelY);
+
+	    return labelY;
+	}
+    }
+
+    // get the label for X axis
+    public String getXLabel(float x)
+    {
+	int length = 0;
+
+	if ((viewDataXType.toLowerCase()).equals("date")) {
+	    x *= 1000.0f; 
+	    Date date = new Date((long)x);
+	    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);
+	    String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
+		+ cal.get(Calendar.MINUTE) + ":"
+		+ cal.get(Calendar.SECOND);
+	    return (format.format(date) + time);
+	} else {
+	    String labelX = new Float(x).toString();
+	    length = (labelX.length() >= 4) ? 4 : labelX.length();
+	    labelX = labelX.substring(0, length);
+
+	    if (labelX.charAt(length-1) == '.')
+		labelX = labelX.substring(0, length-1);
+	    if (labelX.charAt(length-2) == '.' && labelX.charAt(length-1) == '0')
+		labelX = labelX.substring(0, length-2);
+
+	    return labelX;
+	}
+    }
+
+    // round up the steps on axises
+    public float roundUp(float f)
+    {
+	float factor = 0;
+	float log = 0;
+	float temp = 0;
+
+	// get the factor
+	if (f > 1) {
+	    log = (int)(Math.log(f)/Math.log(10));
+	    factor = (float)Math.pow(10, log);
+	}
+	
+	// for step >= 10, round up to 0.5*factor
+	if (factor > 1) {
+	    temp = (int)((f + factor * 0.5) / factor);
+	    temp = temp * factor;
+	    if (temp >= f) {
+		if ((temp - f) > (f - temp + 0.5 * factor))
+		    temp -= (float)(0.5 * factor);
+	    } else {
+		if ((f - temp) > (temp + 0.5 * factor - f))
+		    temp += (float)(0.5 * factor);
+	    }
+	    f = (int)temp;		    
+	}
+	
+	// for step [1, 10)
+	if (factor == 1 && f >= 1) {
+	    if (f > 7.5) 
+		f = 10.0f;
+	    else if (f > 3)
+		f = 5.0f;
+	    else 
+		f = (int)f;
+	}	
+	
+	return f;
     }
 }
