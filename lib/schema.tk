@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1995/11/20 22:18:35  jussi
+#  Changed from datadir to schemadir.
+#
 #  Revision 1.6  1995/11/19 06:03:24  ravim
 #  Initial version of user/superuser modes and handling of logical/physical
 #  schemas.
@@ -63,7 +66,7 @@ proc SchemaUser {} {
     # Show a list of currently defined physical schemas and buttons to either
     # create a Open one of these
 
-    toplevel .psch -bg DarkRed
+    toplevel .psch -bg red4
     wm title .psch "Current Schemas"
     wm iconname .psch "Schemas"
 
@@ -73,7 +76,7 @@ proc SchemaUser {} {
     pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
 
     # Label on top
-    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red
+    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red4
     pack .psch.top.label
 
     # Listbox with scrollbar in the middle
@@ -118,7 +121,7 @@ proc SchemaSuperuser {} {
     # Show a list of currently defined schemas and buttons to either
     # create a New one or Open an existing one
 
-    toplevel .psch -bg DarkRed
+    toplevel .psch -bg red4
     wm title .psch "Physical Schemas"
     wm iconname .psch "Schemas"
 
@@ -128,7 +131,7 @@ proc SchemaSuperuser {} {
     pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
 
     # Label on top
-    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red
+    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red4
     pack .psch.top.label
 
     # Listbox with scrollbar in the middle
@@ -181,7 +184,7 @@ global sname ftype comm separ attrlist aname atype asort attrnum \
 # Count number of attributes
 set attrnum 0
 
-toplevel .newschema -bg DarkRed
+toplevel .newschema -bg red4
 wm title .newschema "Schema Description"
 wm iconname .newschema "Schema"
 
@@ -196,17 +199,17 @@ pack .newschema.firstrow  .newschema.commseprow .newschema.attr \
 #-----------------------------------------------------------
 # Within first row - name and type
 frame .newschema.fname -relief raised -bd 1 -bg honeydew2
-frame .newschema.ftype -relief raised -bd 1 -bg DarkRed
+frame .newschema.ftype -relief raised -bd 1 -bg red4
 pack .newschema.fname .newschema.ftype -in .newschema.firstrow \
 	-side left -fill x -padx 3m -pady 1m
 
-label .newschema.fname.label -text "Schema Name " -bg honeydew2 -fg red
+label .newschema.fname.label -text "Schema Name " -bg honeydew2 -fg red4
 entry .newschema.fname.entry -width 25 -relief sunken -bd 2 \
 	-textvariable sname -bg bisque
 pack .newschema.fname.label .newschema.fname.entry -side left -padx 1m \
 	-pady 1m
 
-label .newschema.ftype.label -text "File Type"  -bg honeydew2 -fg red
+label .newschema.ftype.label -text "File Type"  -bg honeydew2 -fg red4
 radiobutton .newschema.ftype.ascii -text Ascii -variable ftype \
 	-value ascii -anchor nw -bg honeydew2
 radiobutton .newschema.ftype.binary -text Binary -variable ftype \
@@ -223,13 +226,13 @@ pack .newschema.comm -side left  -in .newschema.commseprow \
 pack .newschema.separ -side right  -in .newschema.commseprow \
 	-padx 3m -pady 1m
 
-label .newschema.comm.label -text "Comment characters"  -bg honeydew2 -fg red
+label .newschema.comm.label -text "Comment characters"  -bg honeydew2 -fg red4
 entry .newschema.comm.entry -width 5 -relief sunken -bd 2 \
 	-textvariable comm -bg bisque
 pack .newschema.comm.label .newschema.comm.entry -side left \
 	-padx 1m -pady 1m
 
-label .newschema.separ.label -text "Separator characters"  -bg honeydew2 -fg red
+label .newschema.separ.label -text "Separator characters"  -bg honeydew2 -fg red4
 entry .newschema.separ.entry -width 5 -relief sunken -bd 2 \
 	-textvariable separ -bg bisque
 pack .newschema.separ.label .newschema.separ.entry -side left \
@@ -244,8 +247,8 @@ pack .newschema.attrlist -in .newschema.attr \
 pack .newschema.attradd -in .newschema.attr \
 	-side bottom -padx 3m -pady 1m -fill x
 
-label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red
-label .newschema.attrlist.spec -text "Type      Order     Name" -bg honeydew2 -fg red -font 9x15
+label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red4
+label .newschema.attrlist.spec -text "Type      Order     Name" -bg honeydew2 -fg red4 -font 9x15
 pack .newschema.attrlist.label -side top -fill x
 pack .newschema.attrlist.spec -side top -anchor nw
 listbox .newschema.attrlist.list -relief raised -bd 1 \
@@ -282,14 +285,14 @@ frame .newschema.asort -relief raised -bd 1 -bg honeydew2
 pack .newschema.attrname .newschema.atype .newschema.asort \
 	-in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
 
-label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red
+label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red4
 entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
 	-textvariable aname -bg bisque
 pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 3m \
 	-pady 1m
 
 
-label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red
+label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red4
 radiobutton .newschema.atype.double -text double -variable atype \
 	-value "double" -anchor nw -bg honeydew2
 radiobutton .newschema.atype.int -text int -variable atype \
@@ -303,7 +306,7 @@ radiobutton .newschema.atype.date -text date -variable atype \
 pack .newschema.atype.label .newschema.atype.double .newschema.atype.int \
 	.newschema.atype.string .newschema.atype.float \
 	.newschema.atype.date  -side left -fill x -padx 1m 
-label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red
+label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red4
 radiobutton .newschema.asort.yes -text Yes -variable asort \
 	-value "sorted" -anchor nw -bg honeydew2
 radiobutton .newschema.asort.no -text No -variable asort \
@@ -365,15 +368,15 @@ button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
 		without a name."
     } else {
 	# Print out everthing onto screen
-	puts "Schema Name : $sname "
-	puts "Type of file : $ftype"
-	puts "Comment chars : $comm "
-	puts "Separator chars : $separ"
-	puts "List of attrs"
+#	puts "Schema Name : $sname "
+#	puts "Type of file : $ftype"
+#	puts "Comment chars : $comm "
+#	puts "Separator chars : $separ"
+#	puts "List of attrs"
 	set attrlist {}
 	while {$attrnum > 0} {
 	    set attr [.newschema.attrlist.list get [expr $attrnum-1]]
-	    puts "Attr : $attr"
+#	    puts "Attr : $attr"
 	    set attrnum [expr $attrnum-1]
 
 	    # Append to attrlist
@@ -447,18 +450,18 @@ proc openschema {filename} {
 #-----------------------------------------------------------
 # General function to display a message
 proc showmesg {str} {
-    toplevel .msg -bg red
+    toplevel .msg -bg red4
     wm title .msg Message
     wm iconname .msg Message
     
-    frame .msg.str -relief raised -bd 1 -bg red
-    frame .msg.ok -relief raised -bg red
+    frame .msg.str -relief raised -bd 1 -bg red4
+    frame .msg.ok -relief raised -bg red4
     pack .msg.str .msg.ok -side top -fill x -padx 3m -pady 3m
 
-    message .msg.str.msg -width 3i -text $str -bg red -fg white
+    message .msg.str.msg -width 3i -text $str -bg red4 -fg white
     pack .msg.str.msg -side right -expand 1 -fill both -padx 3m -pady 3m
 
-    button .msg.ok.but -text OK -bg white -fg red \
+    button .msg.ok.but -text OK -bg white -fg red4 \
 	    -command {destroy .msg}
     pack .msg.ok.but -side top -expand 1 -padx 3m -pady 1m
 
@@ -563,7 +566,7 @@ proc readphysical {filename} {
 	    set attr [list $attrtype sorted $attrname]
 	}
 
-	puts "Inserting .. $attr"
+#	puts "Inserting .. $attr"
 	set attrlist [linsert $attrlist $num $attr]
 	set len [gets $f line]
 	set num [expr $num+1]
@@ -576,7 +579,7 @@ proc readphysical {filename} {
 proc gbrowse {} {
     global tgrps glist resgrp logschema physchema Logical
 
-    toplevel .gbrowse -bg DarkRed
+    toplevel .gbrowse -bg red4
     wm title .gbrowse "Group Browser"
     wm iconname .gbrowse "Groups"
 
@@ -588,7 +591,7 @@ proc gbrowse {} {
     #-----------------------------------------------------------
     # Create a listbox displaying list of groups
     #    CreateTextBitmap .gbrowse.list.label group.gif Groups
-    label .gbrowse.list.label -text "List of Groups" -bg honeydew2 -fg red
+    label .gbrowse.list.label -text "List of Groups" -bg honeydew2 -fg red4
     pack .gbrowse.list.label -side top -fill x
 
     listbox .gbrowse.list.list -relief raised -bd 1 \
@@ -617,7 +620,7 @@ proc gbrowse {} {
     pack .gbrowse.ops.name .gbrowse.ops.op -side top -fill x \
 	    -padx 3m -pady 1m
 
-    label .gbrowse.ops.name.label -text "Group Name " -bg honeydew2 -fg red
+    label .gbrowse.ops.name.label -text "Group Name " -bg honeydew2 -fg red4
     entry .gbrowse.ops.name.entry -width 15 -relief sunken -bd 2 \
 	    -textvariable gname -bg bisque
     pack .gbrowse.ops.name.label .gbrowse.ops.name.entry -side left \
@@ -676,7 +679,7 @@ proc gbrowse {} {
     }
     button .gbrowse.ops.op.quit -text "Quit" \
 	    -bg gray75 -fg IndianRed4	-command {
-	printgrps 
+#	printgrps 
 	writelogical $logschema
 	# Update catalog if needed
 	if {[lsearch $Logical($physchema) $logschema] == -1} {
@@ -705,7 +708,7 @@ proc dispgrp {gname } {
 
     set currgrp $gname 
 
-    toplevel .grp -bg DarkRed
+    toplevel .grp -bg red4
     wm title .grp Group 
     wm iconname .grp Group
 
@@ -715,7 +718,7 @@ proc dispgrp {gname } {
     pack .grp.list .grp.ops .grp.bot -side top -fill x -padx 3m -pady 1m
 
     # List showing current group structure
-    label .grp.list.label -text "Display for Group : $gname" -bg honeydew2 -fg Red
+    label .grp.list.label -text "Display for Group : $gname" -bg honeydew2 -fg Red4
     pack .grp.list.label -side top -fill x
 
     listbox .grp.list.list -relief raised -bd 1 \
@@ -733,7 +736,7 @@ proc dispgrp {gname } {
     # Frame containing item and nested grp info
     frame .grp.curr -relief raised -bg honeydew2 
     pack .grp.curr -in .grp.ops -side top -fill x -padx 2m -pady 1m
-    label .grp.curr.label -text "Current group " -bg honeydew2 -fg Red
+    label .grp.curr.label -text "Current group " -bg honeydew2 -fg Red4
     entry .grp.curr.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable currgrp -bg bisque
     pack .grp.curr.label .grp.curr.entry -side left -padx 2m -expand 1
@@ -749,10 +752,10 @@ proc dispgrp {gname } {
     pack .grp.item.top .grp.item.mid .grp.item.bot -side top -fill x \
 	    -padx 1m -pady 1m
 
-    label .grp.item.top.label -text "Item" -bg honeydew2 -fg Red
+    label .grp.item.top.label -text "Item" -bg honeydew2 -fg Red4
     pack .grp.item.top.label 
     
-    label .grp.item.mid.label -text "Name " -bg honeydew2 -fg Red
+    label .grp.item.mid.label -text "Name " -bg honeydew2 -fg Red4
     entry .grp.item.mid.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable iname -bg bisque
     pack .grp.item.mid.label .grp.item.mid.entry -side left -fill x \
@@ -814,10 +817,10 @@ proc dispgrp {gname } {
     pack .grp.ngrp.top .grp.ngrp.mid .grp.ngrp.bot -side top -fill x \
 	    -padx 1m -pady 1m
 
-    label .grp.ngrp.top.label -text "Sub Group" -bg honeydew2 -fg Red
+    label .grp.ngrp.top.label -text "Sub Group" -bg honeydew2 -fg Red4
     pack .grp.ngrp.top.label 
     
-    label .grp.ngrp.mid.label -text "Name " -bg honeydew2 -fg Red
+    label .grp.ngrp.mid.label -text "Name " -bg honeydew2 -fg Red4
     entry .grp.ngrp.mid.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable ngname -bg bisque
     pack .grp.ngrp.mid.label .grp.ngrp.mid.entry -side left -fill x \
@@ -1120,7 +1123,7 @@ proc displogical {pname} {
     global schemadir tgrps logschema Logical
     
     # Display the logical schema corr. to the passed physical schema
-    toplevel .lsch -bg DarkRed
+    toplevel .lsch -bg red4
     wm title .lsch "Current Views"
     wm iconname .lsch "Schemas"
 
@@ -1132,13 +1135,13 @@ proc displogical {pname} {
 	    -side top -fill x -padx 1m -pady 1m
 
     # Entry for schema name
-    label .lsch.ent.label -text "Schema name : " -bg honeydew2 -fg red
+    label .lsch.ent.label -text "Schema name : " -bg honeydew2 -fg red4
     entry .lsch.ent.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable logschema -bg bisque
     pack .lsch.ent.label .lsch.ent.entry -side left -padx 1m 
 
     # Label on top
-    label .lsch.top.label -text "$pname   Schemas" -bg honeydew2 -fg red
+    label .lsch.top.label -text "$pname   Schemas" -bg honeydew2 -fg red4
     pack .lsch.top.label
 
     # Listbox with scrollbar in the middle
