@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1996/04/10 02:58:31  jussi
+#  Added WindowVisible and made getColor and PrintView use it.
+#
 #  Revision 1.13  1996/03/26 21:27:08  jussi
 #  Commented out extraneous debugging statement.
 #
@@ -600,4 +603,29 @@ proc WindowVisible {w} {
     }
 
     return 1
+}
+
+############################################################
+
+proc AbortProgram {reason} {
+    if {[WindowVisible .abort]} {
+	return
+    }
+
+    toplevel .abort
+    wm title .abort "Help"
+    wm geometry .abort +100+100
+    message .abort.msg -justify center -width 10c \
+	    -text "An internal error has occurred. The error message is\
+	           printed in the text window.\n\n\
+		   If the error is reproducible, please send the error\
+		   message along with a description of how the error\
+		   can be produced to jussi@cs.wisc.edu.\n\n\
+		   The program will now exit."
+    button .abort.exit -text Exit -width 10 -command "destroy .abort"
+    pack .abort.msg .abort.exit -side top -padx 5m -pady 3m
+
+    tkwait visibility .abort
+    grab set .abort
+    tkwait window .abort
 }
