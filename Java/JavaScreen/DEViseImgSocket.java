@@ -263,9 +263,8 @@ public class DEViseImgSocket
             for (int i = numRead; i < imageSize; i++) {
                 b = is.read();
                 if (b < 0) {
-                    YGlobals.Ydebugpn("End of stream reached at " + numRead + " out of " + imageSize + " at DEViseImgSocket:receiveImg!");
-                    clearSocket();
-                    return null;
+                    closeSocket();
+                    throw new YException("End of stream reached at " + numRead + " out of " + imageSize + " at DEViseImgSocket:receiveImg!", 2);
                 }
 
                 rspRead[numRead] = (byte)b;

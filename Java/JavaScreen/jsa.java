@@ -63,7 +63,6 @@ public class jsa extends Applet
     {
         YGlobals.YISAPPLET = true;
         YGlobals.YISGUI = true;
-        YGlobals.YISLOG = false;
 
         //baseURL = getDocumentBase();
         baseURL = getCodeBase();
@@ -235,12 +234,11 @@ public class jsa extends Applet
         }
 
         String debug = getParameter("debug");
-        if (debug.equals("true")) {
-            YGlobals.YISDEBUG = true;
-            startInfo.append("Debug Enabled!\n");
-        } else {
-            YGlobals.YISDEBUG = false;
-            startInfo.append("Debug Disabled!\n");
+        if (debug != null) {
+            try {
+                YGlobals.YDEBUG = Integer.parseInt(debug);
+            } catch (NumberFormatException e) {
+            }
         }
     }
 
@@ -249,7 +247,7 @@ public class jsa extends Applet
         String [][] info = {
                // Parameter Name   Type of Value      Description
                //   {"debug",           "int",        "whether or not display debug information"},
-                  {"port",            "int",        "jspop command port"},
+               //   {"port",            "int",        "jspop command port"},
                   {"session",        "String",      "session file name"},
                };
 

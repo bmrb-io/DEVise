@@ -4,216 +4,265 @@ import java.util.*;
 
 public class DEViseClient
 {
-    private long totalOnlineTime = 0, totalSuspendTime = 0, lastActiveTime = 0, lastSuspendTime = 0;
-    private String[] serverCmds = null;
-    private Vector images = null;
     private DEViseUser user = null;
-    private int connectID = -5;
-    private int stage = 0;
-    public DEViseCmdSocket cmdSocket = null;
-    public DEViseImgSocket imgSocket = null;
+    private Integer connectID = null;
     private String hostname = null;
-    private String session = null; 
-    private boolean isSessionOpened = false;
-    
-    public DEViseClient(DEViseCmdSocket s1, DEViseImgSocket s2, String h)
-    {                
-        cmdSocket = s1;
-        imgSocket = s2;
+    private DEViseCmdSocket cmdSocket = null;
+    private DEViseImgSocket imgSocket = null;
+
+    public String savedSessionName = null;
+    public boolean isSessionSaved = false;
+    public boolean isSessionOpened = false;
+
+    private Vector cmdBuffer = new Vector();
+
+    private long tot = 0; // total online time
+    private long tst = 0; // total suspend time
+    private long lot = 0; // last active time
+    private long lst = 0; // last suspend time
+
+    // status = -1, not connected
+    // status = 0, not active
+    // status = 1, active
+    private int status = 0;
+
+    public DEViseClient(DEViseUser u, DEViseCmdSocket cmd, DEViseImgSocket img, String h, int id)
+    {
+        user = u;
+        cmdSocket = cmd;
+        imgSocket = img;
         hostname = h;
+        connectID = new Integer(id);
+        savedSessionName = user.getName() + "_" + id;
+
+        lst = YGlobals.getTime();
+        lot = lst;
+        status = 0;
     }
-    
-    public synchronized String getLastSavedSession()
+
+    public synchronized int getStatus()
     {
-        return session;
+        return status;
     }
-    
-    public synchronized void setLastSavedSession(String s)
+
+    private synchronized void setStatus(int s)
     {
-        session = s;
+        status = s;
     }
-    
-    public synchronized void setSessionFlag(boolean flag)
+
+    public DEViseUser getUser()
     {
-        isSessionOpened = flag;
+        return user;
     }
-    
-    public synchronized boolean getSessionFlag()
+
+    public Integer getID()
     {
-        return isSessionOpened;
+        return connectID;
     }
-    
-    public synchronized long getTotalOnlineTime(long time)
-    {
-        if (lastSuspendTime == 0 && lastActiveTime == 0)
-            return totalOnlineTime;
-            
-        if (lastSuspendTime > lastActiveTime)
-            return totalOnlineTime;
-        else 
-            return totalOnlineTime + (time - lastActiveTime);
-    }
-    
-    public synchronized void setTotalOnlineTime(long time)
-    {
-        totalOnlineTime = time;
-    }
-    
-    public synchronized long getTotalSuspendTime(long time)
-    {
-        if (lastSuspendTime == 0 && lastActiveTime == 0)
-            return totalSuspendTime;
-        
-        if (lastSuspendTime > lastActiveTime)
-            return totalSuspendTime + (time - lastSuspendTime);
-        else
-            return totalSuspendTime;
-    }
-    
-    public synchronized void setTotalSuspendTime(long time)
-    {
-        totalSuspendTime = time;
-    }
-    
-    public synchronized long getActiveTime(long time)
-    {
-        if (lastSuspendTime < lastActiveTime)
-            return (time - lastActiveTime);
-        else
-            return 0;            
-    }
-    
-    public synchronized long getSuspendTime(long time)
-    {
-        if (lastSuspendTime > lastActiveTime)
-            return (time - lastSuspendTime);
-        else
-            return 0;
-    }
-    
-    public synchronized void setLastActiveTime(long time)
-    {
-        if (lastSuspendTime != 0) {
-            totalSuspendTime += (time - lastSuspendTime);
-        }
-        
-        lastActiveTime = time;                    
-    } 
-    
-    public synchronized long getLastActiveTime()
-    {
-        return lastActiveTime;
-    }
-    
-    public synchronized void setLastSuspendTime(long time)
-    {
-        if (lastActiveTime != 0) {
-            totalOnlineTime += (time - lastActiveTime);
-        }
-        
-        lastSuspendTime = time;
-    }
-    
-    public synchronized long getLastSuspendTime()
-    {
-        return lastSuspendTime;
-    }
-    
-    public synchronized void setStage(int s)
-    {
-        stage = s;
-    }
-    
-    public synchronized int getStage()
-    {
-        return stage;
-    }
-    
+
     public String getHost()
     {
         return hostname;
     }
-    
-    public synchronized String[] getCmds()
+
+    public void setSockets(DEViseCmdSocket cmd, DEViseImgSocket img)
     {
-        return serverCmds;
+        cmdSocket = cmd;
+        imgSocket = img;
     }
-    
-    public synchronized void setCmds(String[] s)
+
+    public synchronized void insertCmd(String cmd, int pos)
     {
-        serverCmds = s;
-    }
-    
-    public synchronized Vector getImages()
-    {
-        return images;
-    }
-    
-    public synchronized void setImages(Vector i)
-    {
-        images = i;
-    }
-    
-    public synchronized DEViseUser getUser()
-    {
-        return user;
-    }
-    
-    public synchronized void setUser(DEViseUser u)
-    {
-        user = u;
-    }
-    
-    public synchronized int getID()
-    {
-        return connectID;
-    }
-    
-    public synchronized void setID(int id)
-    {
-        connectID = id;
-    }
-    
-    public synchronized boolean isRequest()
-    {
-        if (cmdSocket == null || imgSocket == null)
-            return false;
-        
-        try {
-            if (cmdSocket.isEmpty()) 
-                return false;
-            else 
-                return true;
-        } catch (YException e) {
-            YGlobals.Ydebugpn(e.getMessage());
-            close(false);
-            return false;
+        if (cmd == null)
+            return;
+
+        if (pos < 0 || pos > cmdBuffer.size())
+            pos = cmdBuffer.size();
+
+        if (cmd.startsWith("JAVAC_Abort")) {
+            cmdBuffer.removeAllElements();
+        } else {
+            cmdBuffer.insertElementAt(cmd, pos);
         }
     }
-        
-    public synchronized void close(boolean flag)
-    {            
-        if (flag) {
-            //totalOnlineTime = getTotalOnlineTime(time);
-            //totalSuspendTime = getTotalSuspendTime(time);        
-            ; // do something, such as update user information
+
+    public synchronized void insertCmd(String cmd)
+    {
+        insertCmd(cmd, -1);
+    }
+
+    public synchronized String getCmd()
+    {
+        if (cmdBuffer.size() > 0)
+            return (String)cmdBuffer.firstElement();
+        else
+            return null;
+    }
+
+    public synchronized void removeCmd()
+    {
+        if (cmdBuffer.size() > 0)
+            cmdBuffer.removeElementAt(0);
+    }
+
+    public synchronized void removeAllCmds()
+    {
+        cmdBuffer.removeAllElements();
+    }
+
+    public void receiveCmd(boolean isWait) throws YException, InterruptedIOException
+    {
+        if (cmdSocket != null) {
+            if (isWait) {
+                String cmd = cmdSocket.receiveRsp();
+                insertCmd(cmd);
+                while (!cmdSocket.isEmpty()) {
+                    cmd = cmdSocket.receiveRsp();
+                    insertCmd(cmd);
+                }
+            } else {
+                if (!cmdSocket.isEmpty()) {
+                    String cmd = cmdSocket.receiveRsp();
+                    insertCmd(cmd);
+                    while (!cmdSocket.isEmpty()) {
+                        cmd = cmdSocket.receiveRsp();
+                        insertCmd(cmd);
+                    }
+                }
+            }
+        } else {
+            throw new YException("Null cmd socket of client " + hostname + "!", 2);
         }
-        
+    }
+
+    public void sendCmd(String[] cmds) throws YException
+    {
+        if (cmds == null)
+            return;
+
+        if (cmdSocket == null)
+            throw new YException("Null cmd socket of client " + hostname + "!", 2);
+
+        for (int i = 0; i < cmds.length; i++) {
+            if (cmds[i] != null) {
+                cmdSocket.sendCmd(cmds[i]);
+            }
+        }
+    }
+
+    public void sendImg(Vector images) throws YException
+    {
+        if (images == null)
+            return;
+
+        if (imgSocket == null)
+            throw new YException("Null img socket of client " + hostname + "!", 4);
+
+        for (int i = 0; i < images.size(); i++) {
+            byte[] image = (byte[])images.elementAt(i);
+            if (image != null && image.length > 0) {
+                imgSocket.sendImg(image);
+            }
+        }
+    }
+
+    public synchronized void setSuspend()
+    {
+        if (status == 1) {
+            long time = YGlobals.getTime();
+            tot += time - lot;
+            lst = time;
+
+            status = 0;
+        }
+    }
+
+    public synchronized void setActive()
+    {
+        if (status == 0) {
+            long time = YGlobals.getTime();
+            tst += time - lst;
+            lot = time;
+
+            status = 1;
+        }
+    }
+
+    public synchronized void closeSocket()
+    {
+        if (status < 0)
+            return;
+
         if (cmdSocket != null) {
             cmdSocket.closeSocket();
             cmdSocket = null;
         }
-        
+
         if (imgSocket != null) {
             imgSocket.closeSocket();
             imgSocket = null;
         }
-        
-        // client will retain connectID, user, totalOnlineTime and totalSuspendTime
-        // and lastSuspendTime and lastActiveTime
-        stage = 0;
+
+        long time = YGlobals.getTime();
+        if (status == 1) {
+            tot += time - lot;
+        } else {
+            tst += time - lst;
+        }
+
+        lst = time;
+
+        status = -1;
         isSessionOpened = false;
-        serverCmds = null;
-        images = null;
+        removeAllCmds();
+    }
+
+    public synchronized void close()
+    {
+        if (cmdSocket != null) {
+            cmdSocket.closeSocket();
+            cmdSocket = null;
+        }
+
+        if (imgSocket != null) {
+            imgSocket.closeSocket();
+            imgSocket = null;
+        }
+
+        if (status == 1) {
+            long time = YGlobals.getTime();
+            tot += time - lot;
+        }
+
+        if (user != null && connectID != null) {
+            user.addTOT(tot);
+            user.removeClient(connectID);
+        }
+
+        isSessionSaved = false;
+        isSessionOpened = false;
+        savedSessionName = null;
+        removeAllCmds();
+        status = -1;
+    }
+
+    public synchronized boolean isRequest()
+    {
+        if (cmdSocket == null)
+            return false;
+
+        if (cmdBuffer.size() > 0)
+            return true;
+
+        try {
+            if (!cmdSocket.isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (YException e) {
+            closeSocket();
+            return false;
+        }
     }
 }

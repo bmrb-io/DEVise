@@ -36,7 +36,7 @@ public class js
 {
     private static String usage = new String("usage: java js -host[hostname]"
         + " -port[port] -user[username] -pass[password] -session[filename]"
-        + " -debug");
+        + " -debug[number]");
     // -HOST[hostname]:
     //      hostname: The IP address of the machine where jspop or Devise Server
     //                is running, if bland, use the defaults
@@ -58,8 +58,8 @@ public class js
     //      Determine whether or not the js is automatically connect to jspop,
     //      if filename is supplied, this option is automatically set to defaults
     //      default: AUTO
-    // -DEBUG:
-    //      Determine whether or not print out debug information
+    // -DEBUG[number]:
+    //      number: The debug level, no debug information is written if less than or equals to 0
     //      default: No Debug information is written
     //
     private static String hostname = null;
@@ -82,12 +82,12 @@ public class js
         //System.runFinalizersOnExit(true);
 
         checkArguments(args);
-        
+
         YGlobals.YISAPPLET = false;
-        YGlobals.YISLOG = false;
         YGlobals.YISGUI = true;
+
         YGlobals.start();
-        
+
         if (hostname == null)
             hostname = DEViseGlobals.DEFAULTHOST;
         if (port == 0)
@@ -99,12 +99,12 @@ public class js
 
         if (sessionName != null)
             isAutoConnect = true;
-        
+
         jsdevisec newClient = new jsdevisec(hostname, username, password, port, sessionName, null, isAutoConnect);
     }
 
     private static void checkArguments(String[] args)
-    {        
+    {
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("-host")) {
                 if (!args[i].substring(5).equals("")) {
@@ -138,7 +138,17 @@ public class js
                     sessionName = args[i].substring(8);
                 }
             } else if (args[i].startsWith("-debug")) {
-                YGlobals.YISDEBUG = true;
+                if (!args[i].substring(6).equals("")) {
+                    try {
+                        YGlobals.YDEBUG = Integer.parseInt(args[i].substring(6));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid debug level " + args[i].substring(6) + " specified in arguments!\n");
+                        System.out.println(usage);
+                        System.exit(1);
+                    }
+                } else {
+                    YGlobals.YDEBUG = 1;
+                }
             } else {
                 System.out.println("Invalid js option " + args[i] + " is given!\n");
                 System.out.println(usage);

@@ -269,9 +269,8 @@ public class DEViseCmdSocket
                 for (int i = numRead; i < 6; i++) {
                     b = is.read();
                     if (b < 0) {
-                        YGlobals.Ydebugpn("End of stream reached at " + numRead + " out of 6 at DEViseCmdSocket.receiveRsp!");
-                        clearSocket();
-                        return null;
+                        closeSocket();
+                        throw new YException("End of stream reached at " + numRead + " out of 6 at DEViseCmdSocket.receiveRsp!", 2);
                     }
 
                     rspRead[numRead] = (byte)b;
@@ -300,9 +299,8 @@ public class DEViseCmdSocket
             for (int i = numRead; i < rspSize; i++) {
                 b = is.read();
                 if (b < 0) {
-                    YGlobals.Ydebugpn("End of stream reached at " + numRead + " out of " + rspSize + " at DEViseCmdSocket.receiveRsp!");
-                    clearSocket();
-                    return null;
+                    closeSocket();
+                    throw new YException("End of stream reached at " + numRead + " out of " + rspSize + " at DEViseCmdSocket.receiveRsp!", 2);
                 }
 
                 rspRead[numRead] = (byte)b;

@@ -38,13 +38,14 @@ public class DEViseCmdDispatcher implements Runnable
 {
     private jsdevisec jsc = null;
     private DEViseScreen jscreen = null;
+
     public String username = DEViseGlobals.DEFAULTUSER;
     public String password = DEViseGlobals.DEFAULTPASS;
     public String hostname = DEViseGlobals.DEFAULTHOST;
     public int cmdPort = DEViseGlobals.DEFAULTCMDPORT;
     public int imgPort = DEViseGlobals.DEFAULTIMGPORT;
-    public int imgSocketTimeout = 2000;
-    public int cmdSocketTimeout = 1000;
+    private int cmdSocketTimeout = 1000;
+    private int imgSocketTimeout = 1000;
 
     private Thread dispatcherThread = null;
     // status = 0, dispatcher running, mostly processing command
@@ -776,6 +777,29 @@ class RecordDlg extends Dialog
 
         pack();
 
+        Dimension panesize = panel.getPreferredSize();
+        if (panesize.width > (DEViseGlobals.SCREENSIZE.width - 100) || panesize.height > (DEViseGlobals.SCREENSIZE.height - 100)) {
+            if (panesize.width > (DEViseGlobals.SCREENSIZE.width - 100)) {
+                panesize.width = DEViseGlobals.SCREENSIZE.width - 100;
+            }
+
+            if (panesize.height > (DEViseGlobals.SCREENSIZE.height - 100)) {
+                panesize.height = DEViseGlobals.SCREENSIZE.height - 100;
+            }
+
+            ScrollPane pane = new ScrollPane();
+            pane.setSize(panesize);
+            pane.add(panel);
+
+            removeAll();
+            gridbag.setConstraints(pane, c);
+            add(pane);
+            gridbag.setConstraints(okButton, c);
+            add(okButton);
+
+            pack();
+        }
+
         // reposition the dialog
         Point parentLoc = jsc.getLocation();
         Dimension mysize = getSize();
@@ -786,6 +810,8 @@ class RecordDlg extends Dialog
         parentLoc.x -= mysize.width / 2;
         setLocation(parentLoc);
 
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
         okButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
@@ -793,6 +819,15 @@ class RecordDlg extends Dialog
                         dispose();
                     }
                 });
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            dispose();
+        }
+
+        super.processEvent(event);
     }
 }
 

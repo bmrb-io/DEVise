@@ -4,7 +4,7 @@ import  java.util.*;
 
 public class jspop implements Runnable
 {
-    private String usage = new String("usage: java jspop -port[port] -server[number] -timeout[time] -logfile[filename] -tmpdir[dir] -debug");
+    private String usage = new String("usage: java jspop -port[port] -server[number] -timeout[time] -userfile[filename] -logfile[filename] -debug[number]");
     // -PORT[port]:
     //      port: The command port, if blank, use the defaults
     //      default: 6666
@@ -15,29 +15,40 @@ public class jspop implements Runnable
     //      time: The timeout value(in seconds) for DEVise Server to start up before abort
     //      default: 60
     // -LOGFILE[filename]:
-    //      filename: The name of the file that contain user log information
+    //      filename: The name of the file that contain client log information
+    //      default: clients.log
+    // -USERFILE[filename]:
+    //      filename: The name of the file that contain users information
     //      default: users.cfg
-    // -TMPDIR[dir]:
-    //      dir: The directory for store temporary files
-    //      default: current Directory
-    // -DEBUG:
-    //      Write debug information to console
+    // -DEBUG[number]:
+    //      number: The debug level for writing debug information to console
     //      default: No Debug information is written
     //
     private int cmdPort = DEViseGlobals.DEFAULTCMDPORT;
     private int imgPort = DEViseGlobals.DEFAULTIMGPORT;
-    private String tmpDir = new String(".");
-    private String userFile = new String("users.cfg");
-    private Vector users = new Vector();
-    private Vector servers = new Vector();
-
-    public int maxServer = 1;
-    public long serverTimeout = 60;
-
     private ServerSocket cmdServerSocket = null;
     private ServerSocket imgServerSocket = null;
 
+    public String userFile = new String("users.cfg");
+    public String logFile = new String("clients.log");
+
+    public Hashtable users = new Hashtable();
+    public Hashtable clients = new Hashtable();
+    public Vector servers = new Vector();
+    public int maxServer = 1;
+
+    public int serverStartTimeout = 60 * 1000; // wait for DEVise server to start up for 1 minutes before abort
+    public int serverWaitTimeout = 60 * 1000; // wait for DEVise server response for 1 minutes before abort
+    public int jspopWaitTimeout = 5000; // wait client connection for 5 seconds before disconnect
+    public int dispatcherTimestep = 1000; // do scheduling every 1 seconds
+    public int cmdSocketTimeout = 1000; // interrupt cmdSocket every 1 seconds
+    public int imgSocketTimeout = 1000; // interrupt imgSocket every 1 seconds
+    public int logThreadTimestep = 30 * 60 * 1000; // write logfile every 30 minutes
+
     public DEViseClientDispatcher dispatcher = null;
+    public DEViseLogWriter logwriter = null;
+
+    private int IDCount = 0;
 
     public static void main(String[] args)
     {
@@ -50,7 +61,6 @@ public class jspop implements Runnable
 
         YGlobals.YISAPPLET = false;
         YGlobals.YISGUI = false;
-        YGlobals.YISLOG = false;
 
         // force java VM to run every object's finalizer on normal or abnormal exit
         //System.runFinalizersOnExit(true);
@@ -67,17 +77,21 @@ public class jspop implements Runnable
 
         YGlobals.start();
 
-        System.out.println("Loading user configuration file ...\n");
+        System.out.println("Loading user configuration file and client log file ...\n");
         checkFiles();
 
-        System.out.println("Starting DEVise server ...\n");
-        startServers();
+        System.out.println("Starting log writer ...\n");
+        logwriter = new DEViseLogWriter(this);
+        logwriter.startWriter();
 
-        System.out.println("Start client dispatcher ...\n");
-        dispatcher = new DEViseClientDispatcher(this, users, servers);
+        System.out.println("Starting client dispatcher ...\n");
+        dispatcher = new DEViseClientDispatcher(this);
         dispatcher.startDispatcher();
 
-        System.out.println("\nStarting server socket ...\n");
+        System.out.println("Starting DEVise servers ...\n");
+        startServers();
+
+        System.out.println("\nStarting jspop server sockets ...\n");
         try {
             cmdServerSocket = new ServerSocket(cmdPort);
         } catch (IOException e) {
@@ -87,7 +101,7 @@ public class jspop implements Runnable
 
         try {
             imgServerSocket = new ServerSocket(imgPort);
-            imgServerSocket.setSoTimeout(6000);
+            imgServerSocket.setSoTimeout(jspopWaitTimeout);
         } catch (IOException e) {
             System.out.println("Can not start server socket at port " + imgPort);
             try {
@@ -99,60 +113,76 @@ public class jspop implements Runnable
         }
     }
 
+    private void startServers()
+    {
+        DEViseServer newserver = null;
+
+        for (int i = 0; i < maxServer; i++) {
+            try {
+                newserver = new DEViseServer(this);
+                newserver.startServer();
+                servers.addElement(newserver);
+                System.out.println("Successfully start server " + (i + 1) + " out of " + maxServer + "\n");
+            } catch (YException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
+            }
+        }
+    }
+
     public void run()
     {
-        System.out.println("DEVise JSPOP Server started ...\n");
+        System.out.println("\nJSPOP Server started ...\n");
 
         boolean isListen = true;
         boolean isTimeout = false;
+        Socket socket1 = null;
+        Socket socket2 = null;
+        DEViseCmdSocket cmd = null;
+        DEViseImgSocket img = null;
+        String hostname = null;
+
         while (isListen) {
-            Socket socket1 = null;
-            Socket socket2 = null;
-            DEViseCmdSocket cmd = null;
-            DEViseImgSocket img = null;
-            DEViseClient client = null;
-            
             try {
                 socket1 = cmdServerSocket.accept();
-                
+                hostname = socket1.getInetAddress().getHostName();
+                System.out.println("Client connection request from " + hostname + " is received ...");
+
                 try {
                     socket2 = imgServerSocket.accept();
                     isTimeout = false;
                 } catch (IOException e) {
                     isTimeout = true;
-                }    
-                
+                }
+
                 if (isTimeout) {
+                    System.out.println("Can not received image port connection request within timeout!\nClose socket connection to client " + hostname + "!");
                     try {
                         socket1.close();
                     } catch (IOException e) {
                     }
                 } else {
                     try {
-                        String name = socket1.getInetAddress().getHostName();
-                        System.out.println("Client connection request from " + name + " is received ...");
-                    
                         cmd = new DEViseCmdSocket(socket1, 1000);
                         img = new DEViseImgSocket(socket2, 1000);
-                        client = new DEViseClient(cmd, img, name);
+                        addClient(cmd, img, hostname);
                     } catch (YException e) {
                         YGlobals.Ydebugpn(e.getMessage());
-                        
+                        System.out.println("Can not create data channel to new socket connection from " + hostname + "!\nClose socket connection to client " + hostname + "!");
+
                         if (cmd != null) {
                             cmd.closeSocket();
                             cmd = null;
                         }
-                    
+
                         if (img != null) {
                             img.closeSocket();
                             img = null;
-                        }                                                                 
-                    } 
-                                        
-                    dispatcher.addClient(client);
+                        }
+                    }
                 }
             } catch (IOException e) {
-                System.out.println("DEVise POP Server can not listen on port: " + cmdPort + " or " + imgPort + "\nDEVise JSPOP Server is aborted!");
+                System.out.println("JSPOP Server can not listen on port: " + cmdPort + "!\nJSPOP Server is aborted!");
                 isListen = false;
             }
         }
@@ -164,6 +194,125 @@ public class jspop implements Runnable
     {
         System.out.println("\nDEVise POP Server stopped ...\n");
         System.exit(0);
+    }
+
+    private synchronized void addClient(DEViseCmdSocket cmd, DEViseImgSocket img, String hostname)
+    {
+        if (cmd == null || img == null || hostname == null)
+            return;
+
+        boolean isEnd = false;
+        int time = 0;
+
+        while (!isEnd) {
+            try {
+                String command = cmd.receiveRsp();
+                if (command != null && command.startsWith("JAVAC_Connect")) {
+                    String[] commands = DEViseGlobals.parseString(command);
+                    if (commands != null && commands.length == 4) {
+                        try {
+                            int id = Integer.parseInt(commands[3]);
+                            if (users.containsKey(commands[1])) {
+                                DEViseUser u = (DEViseUser)users.get(commands[1]);
+                                if (u != null) {
+                                    if (commands[2].equals(u.getPassword())) {
+                                        if (id != DEViseGlobals.DEFAULTID) {
+                                            if (!clients.containsKey(new Integer(id))) {
+                                                throw new YException("Invalid connection ID: " + id + "!");
+                                            } else {
+                                                DEViseClient c = (DEViseClient)clients.get(new Integer(id));
+                                                if (!u.equals(c.getUser()) || !hostname.equals(c.getHost())) {
+                                                    throw new YException("Invalid connection ID: " + id + "!");
+                                                } else {
+                                                    c.setSockets(cmd, img);
+                                                    isEnd = true;
+                                                }
+                                            }
+                                        } else {
+                                            if (!u.checkLogin()) {
+                                                throw new YException("Maximum number of logins has been reached for user " + commands[1] + "!");
+                                            }
+
+                                            id = getNewID();
+                                            DEViseClient newClient = new DEViseClient(u, cmd, img, hostname, id);
+                                            clients.put(newClient.getID(), newClient);
+                                            u.addClient(newClient);
+                                            dispatcher.addClient(newClient);
+                                        }
+
+                                        cmd.sendCmd("JAVAC_User " + id);
+                                        cmd.sendCmd("JAVAC_Done");
+                                        isEnd = true;
+                                    } else {
+                                        throw new YException("Invalid password: " + commands[2] + "!");
+                                    }
+                                } else {
+                                    throw new YException("Invalid user: " + commands[1] + "!");
+                                }
+                            } else {
+                                throw new YException("Invalid user: " + commands[1] + "!");
+                            }
+                        } catch (NumberFormatException e) {
+                            throw new YException("Invalid connection request: " + command + "!");
+                        }
+                    } else {
+                        throw new YException("Invalid connection request: " + command + "!");
+                    }
+                } else {
+                    throw new YException("Invalid connection request!");
+                }
+            } catch (YException e) {
+                YGlobals.Ydebugpn(e.getMessage());
+
+                int id = e.getID();
+                if (id == 0) { // Invalid connection request or client check failed
+                    try {
+                        cmd.sendCmd("JAVAC_Exit {" + e.getMessage() + "}");
+                    } catch (YException e1) {
+                    }
+                } else if (id == 2) { // communication error
+                } else { // should not happen
+                }
+
+                System.out.println("Connection error: " + e.getMessage() + "!\nClose socket connection to client " + hostname + "!");
+                cmd.closeSocket();
+                img.closeSocket();
+                isEnd = true;
+            } catch (InterruptedIOException e) {
+                time += cmdSocketTimeout;
+                if (time > jspopWaitTimeout) {
+                    System.out.println("Can not receive connection request from " + hostname + " within timeout!\nClose socket connection to client " + hostname + "!");
+                    cmd.closeSocket();
+                    img.closeSocket();
+                    isEnd = true;
+                }
+            }
+        }
+    }
+
+    public synchronized void removeClient(DEViseClient client)
+    {
+        if (client != null) {
+            client.close();
+            clients.remove(client.getID());
+        }
+    }
+
+    private int getNewID()
+    {
+        if (IDCount == Integer.MAX_VALUE) {
+            IDCount = 0;
+        }
+
+        Integer id = new Integer(IDCount);
+        while (clients.containsKey(id)) {
+            IDCount++;
+            if (IDCount == Integer.MAX_VALUE)
+                IDCount = 0;
+            id = new Integer(IDCount);
+        }
+
+        return IDCount;
     }
 
     private void checkArguments(String[] args)
@@ -185,11 +334,11 @@ public class jspop implements Runnable
             } else if (args[i].startsWith("-server")) {
                 if (!args[i].substring(7).equals("")) {
                     try {
-                        maxServer = Integer.parseInt(args[i].substring(10));
+                        maxServer = Integer.parseInt(args[i].substring(7));
                         if (maxServer < 1 || maxServer > 10)
                             throw new NumberFormatException();
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid number of server " + args[i].substring(10) + " specified in arguments!\n");
+                        System.out.println("Invalid number of server " + args[i].substring(7) + " specified in arguments!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }
@@ -197,23 +346,33 @@ public class jspop implements Runnable
             } else if (args[i].startsWith("-timeout")) {
                 if (!args[i].substring(8).equals("")) {
                     try {
-                        serverTimeout = Long.parseLong(args[i].substring(8));
-                        if (serverTimeout < 0)
+                        serverStartTimeout = Integer.parseInt(args[i].substring(8));
+                        if (serverStartTimeout < 0)
                             throw new NumberFormatException();
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid timeout value of server " + args[i].substring(10) + " specified in arguments!\n");
+                        System.out.println("Invalid timeout value of server " + args[i].substring(8) + " specified in arguments!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }
                 }
             } else if (args[i].startsWith("-debug")) {
-                YGlobals.YISDEBUG = true;
+                if (!args[i].substring(6).equals("")) {
+                    try {
+                        YGlobals.YDEBUG = Integer.parseInt(args[i].substring(6));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid debug level " + args[i].substring(6) + " specified in arguments!\n");
+                        System.out.println(usage);
+                        System.exit(1);
+                    }
+                } else {
+                    YGlobals.YDEBUG = 1;
+                }
             } else if (args[i].startsWith("-logfile")) {
                 if (!args[i].substring(8).equals(""))
-                     userFile = args[i].substring(5);
-            } else if (args[i].startsWith("-tmpdir")) {
-                if (!args[i].substring(7).equals(""))
-                     tmpDir = args[i].substring(7);
+                     logFile = args[i].substring(8);
+            } else if (args[i].startsWith("-userfile")) {
+                if (!args[i].substring(9).equals(""))
+                     userFile = args[i].substring(9);
             } else {
                 System.out.println("Invalid jspop option " + args[i] + " is given!\n");
                 System.out.println(usage);
@@ -221,6 +380,7 @@ public class jspop implements Runnable
             }
         }
 
+        /*
         File dir = new File(tmpDir);
         if (!dir.exists()) {
             System.out.println("Specified temporary directory " + tmpDir + " is not exist!");
@@ -234,6 +394,7 @@ public class jspop implements Runnable
             System.out.println("Specified temporary directory " + tmpDir + " is not readable or writable!");
             System.exit(1);
         }
+        */
 
         File file = new File(userFile);
         if (!file.exists()) {
@@ -252,91 +413,70 @@ public class jspop implements Runnable
 
     private void checkFiles()
     {
-        RandomAccessFile file = null;
-        RandomAccessFile bakfile = null;
-
+        RandomAccessFile uf = null;
         try {
-            file = new RandomAccessFile(userFile, "rw");
+            uf = new RandomAccessFile(userFile, "r");
         } catch (IOException e) {
-            System.out.println("Can not open file " + userFile);
+            System.out.println("Can not open user configuration file " + userFile);
             System.exit(1);
         }
 
         try {
-            bakfile = new RandomAccessFile(userFile + ".bak", "rw");
-        } catch (IOException e) {
-            System.out.println("Can not open file " + userFile + ".bak");
-            System.exit(1);
-        }
-
-        try {
-            String str = file.readLine();
+            String str = uf.readLine();
             while (str != null) {
                 str = str.trim();
-                bakfile.writeBytes(str + "\n");
                 // skip comment line
-                if (!str.startsWith("#")) {
-                    if (!str.equals("")) {
-                        String[] line = YGlobals.Yparsestr(str, ":");
-                        //YGlobals.Ydebugpn("length is " + line.length);
-                        if (line.length != 8)
-                            throw new YException("Incorrect format of user information: " + str);
+                if (!str.startsWith("#") && !str.equals("")) {
+                    String[] line = YGlobals.Yparsestr(str, ":");
+                    if (line.length != 5)
+                        throw new YException("Invalid line read from user configuration file: " + str);
 
-                        try {
-                            DEViseUser user = new DEViseUser(line[0], line[1], Integer.parseInt(line[2]),
-                                              Integer.parseInt(line[3]), Long.parseLong(line[4]), Long.parseLong(line[5]),
-                                              line[6], Long.parseLong(line[7]));
-                            users.addElement(user);
-                        } catch (NumberFormatException e) {
-                            throw new YException("Incorrect value of user information: " + str);
-                        }
+                    try {
+                        DEViseUser user = new DEViseUser(line[0], line[1], Integer.parseInt(line[2]),
+                                          Integer.parseInt(line[3]), Long.parseLong(line[4]));
+                        users.put(user.getName(), user);
+                    } catch (NumberFormatException e) {
+                        throw new YException("Invalid user information read from user configuration file: " + str);
                     }
                 }
 
-                str = file.readLine();
+                str = uf.readLine();
             }
         } catch (IOException e) {
-            System.out.println("Can read from file " + userFile + " or write to file " + userFile + ".bak");
-            System.exit(1);
-        } catch (YException e) {
             try {
-                file.close();
+                uf.close();
             } catch (IOException e1) {
             }
 
+            System.out.println("Can not read from user configuration file " + userFile);
+            System.exit(1);
+        } catch (YException e) {
             try {
-                bakfile.close();
+                uf.close();
             } catch (IOException e1) {
             }
 
             System.out.println(e.getMessage());
-
             System.exit(1);
         }
 
         try {
-            file.close();
-        } catch (IOException e1) {
+            uf.close();
+        } catch (IOException e) {
         }
 
+        RandomAccessFile lf = null;
         try {
-            bakfile.close();
-        } catch (IOException e1) {
+            lf = new RandomAccessFile(logFile, "rw");
+        } catch (IOException e) {
+            lf = null;
         }
-    }
 
-    private void startServers()
-    {
-        DEViseServer newserver = null;
+        if (lf != null) {
 
-        for (int i = 0; i < maxServer; i++) {
             try {
-                newserver = new DEViseServer(this, serverTimeout);
-                servers.addElement(newserver);
-                System.out.println("Successfully start server " + (i + 1) + " out of " + maxServer + "\n");
-            } catch (YException e) {
-                System.out.println(e.getMessage());
-                System.exit(1);
+                lf.close();
+            } catch (IOException e) {
             }
         }
     }

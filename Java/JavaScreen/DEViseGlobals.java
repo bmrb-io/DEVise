@@ -4,16 +4,17 @@ import java.awt.*;
 public final class DEViseGlobals
 {
     // global constants
-    public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
-        API_CTL = 3, API_JAVA = 5;
-    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6688; 
-    public static final int DEFAULTID = -1;
+    public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2, API_CTL = 3, API_JAVA = 5;
+    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6688;
+    public static final int DEFAULTID = -1; // default connection ID
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("");
     public static final String DEFAULTHOST = new String("localhost");
 
     // global variables
-    public static Dimension SCREENSIZE = new Dimension(640, 480);
+    public static int DEBUGLEVEL = -1; // no debug information is written
+    // GUI parameter used by js and jsa
+    public static Dimension SCREENSIZE = new Dimension(640, 480); // physical screen size
     public static Color uibgcolor = new Color(64, 96, 0);
     public static Color uifgcolor = Color.white;
     public static Color dialogbgcolor = new Color(64, 96, 0);
@@ -41,6 +42,48 @@ public final class DEViseGlobals
     public static String[] parseStr(String inputStr)
     {
         return YGlobals.Yparsestr(inputStr, "\n");
+    }
+
+    public static void Ydebugpn(String s, int level, int id)
+    {
+        if (level > DEBUGLEVEL)
+            return;
+        else
+            YGlobals.Ydebugpn(s, id);
+    }
+
+    public static void Ydebugpn(String s, int level)
+    {
+        if (level > DEBUGLEVEL)
+            return;
+        else
+            YGlobals.Ydebugpn(s);
+    }
+
+    public static void Ydebugpn(String s)
+    {
+        Ydebugpn(s, 0);
+    }
+
+    public static void Ydebugp(String s, int level, int id)
+    {
+        if (level > DEBUGLEVEL)
+            return;
+        else
+            YGlobals.Ydebugp(s, id);
+    }
+
+    public static void Ydebugp(String s, int level)
+    {
+        if (level > DEBUGLEVEL)
+            return;
+        else
+            YGlobals.Ydebugp(s);
+    }
+
+    public static void Ydebugp(String s)
+    {
+        Ydebugp(s, 0);
     }
 }
 

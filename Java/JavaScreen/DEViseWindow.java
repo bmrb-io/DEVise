@@ -218,13 +218,13 @@ public class DEViseWindow extends Canvas
         cropP.x = loc.x;
         cropP.y = loc.y;
 
-        userAction = 1;
         repaint();
     }
 
     public void eraseCursor()
     {
         croppedImage = null;
+        repaint();
     }
 
     // Enable double-buffering
@@ -244,16 +244,16 @@ public class DEViseWindow extends Canvas
         if (winImage != null)  {
             g.drawImage(winImage, 0, 0, this);
 
+            if (croppedImage != null) {
+                g.drawImage(croppedImage, cropP.x, cropP.y, this);
+            }
+
             if (isCurrent) {
                 requestFocus();
 
                 if (currentView != null) {
                     // It is guranteed in other place that cropP, ep and sp
                     // will within the rectangle of currentView
-                    if (croppedImage != null) {
-                        g.drawImage(croppedImage, cropP.x, cropP.y, this);
-                    }
-
                     if (userAction == 2) {
                         int x0, y0, w, h;
                         if (sp.x > ep.x)  {
@@ -280,20 +280,21 @@ public class DEViseWindow extends Canvas
                     Color oldColor = g.getColor();
                     g.setColor(Color.red);
                     Rectangle rect = currentView.getLoc();
+                    int w = rect.width, h = rect.height, x0 = rect.x, y0 = rect.y;
 
-                    if ((rect.width + rect.x) < windowDim.width) {
-                        rect.width += 1;
+                    if ((w + x0) < windowDim.width) {
+                        w += 1;
                     } else {
-                        rect.width = windowDim.width - rect.x;
+                        w = windowDim.width - x0;
                     }
 
-                    if ((rect.height + rect.y) < windowDim.height) {
-                        rect.height += 1;
+                    if ((h + y0) < windowDim.height) {
+                        h += 1;
                     } else {
-                        rect.height = windowDim.height - rect.y;
+                        h = windowDim.height - y0;
                     }
 
-                    g.drawRect(rect.x, rect.y, rect.width - 1, rect.height - 1);
+                    g.drawRect(x0, y0, w - 1, h - 1);
                     g.setColor(oldColor);
                 }  else {
                     Color oldColor = g.getColor();
@@ -388,7 +389,7 @@ public class DEViseWindow extends Canvas
             sp = event.getPoint();
             ep = sp;
 
-            //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount());
+            YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount());
 
             if (!isCurrent) {
                 isFirstTime = true;

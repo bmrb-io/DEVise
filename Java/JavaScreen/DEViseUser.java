@@ -2,52 +2,39 @@ import java.util.*;
 
 public class DEViseUser
 {
-    private String username = DEViseGlobals.DEFAULTUSER;
-    private String password = DEViseGlobals.DEFAULTPASS;
+    private String username = null;
+    private String password = null;
     private int priority;
     private int maxLogin;
     // In milliseconds, 50 years would be 1.5768 * 10^12 milliseconds
     private long totalOnlineTime; // In milliseconds, user's total online time
-    private long lastOnlineTime; // In milliseconds, user's last online time
-    private long lastLoginTime; // In milliseconds since 01/01/1970 midnight GMT
-    private String lastLoginAddress; // Internet IP address
 
-    private Vector currentClients = new Vector();
+    private Hashtable currentClients = new Hashtable();
 
-    public DEViseUser(String name, String pass, int pr, int max, long tot, long llt, String lla, long lot) throws YException
+    public DEViseUser(String name, String pass, int pr, int max, long tot) throws YException
     {
-        if (name == null || pass == null || lla == null)
-            throw new YException("DEViseUser::constructor: Null User name or password or hostname!");
+        if (name == null || pass == null)
+            throw new YException("Null User name or password!", "DEViseUser:constructor");
 
-        if (pr < 0 || pr > 10 || max < 1 || max > 100 || tot < 0
-            || lot < 0 || llt < 0)
-            throw new YException("DEViseUser::constructor: Invalid arguments!\n"
-                     +"Priority: " + pr + " MaxLogin: " + max + " TotalOnlineTime: " + tot
-                     + " lastOnlineTime: " + lot + " lastLoginTime: " + llt);
-        
+        if (pr < 0 || max < 1 || tot < 0)
+            throw new YException("Invalid arguments: priority " + pr + " or maxlogin " + max + " or total online time " + tot + "!",
+                                 "DEViseUser:constructor");
+
         StringTokenizer stk = new StringTokenizer(name);
         if (stk.countTokens() == 0)
-            throw new YException("DEViseUser::constructor: User name can not be empty!");
-        else 
+            throw new YException("User name must contain at least one non-whitespace character!", "DEViseUser:constructor");
+        else
             username = name;
-        
+
         stk = new StringTokenizer(pass);
         if (stk.countTokens() == 0)
             password = new String("");
         else
             password = pass;
-            
-        stk = new StringTokenizer(lla);
-        if (stk.countTokens() == 0)
-            lastLoginAddress = new String("");
-        else 
-            lastLoginAddress = lla;
-                
+
         priority = pr;
         maxLogin = max;
         totalOnlineTime = tot;
-        lastOnlineTime = lot;
-        lastLoginTime = llt;
     }
 
     public String getName()
@@ -55,7 +42,7 @@ public class DEViseUser
         return username;
     }
 
-    public String getPass()
+    public String getPassword()
     {
         return password;
     }
@@ -70,14 +57,23 @@ public class DEViseUser
         return maxLogin;
     }
 
+    public synchronized int getLogin()
+    {
+        return currentClients.size();
+    }
+
+    public synchronized boolean checkLogin()
+    {
+        if (currentClients.size() < maxLogin) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public synchronized long getTOT()
     {
         return totalOnlineTime;
-    }
-
-    public synchronized String getTOTS()
-    {
-        return null;
     }
 
     public synchronized void setTOT(long tot)
@@ -90,77 +86,57 @@ public class DEViseUser
         totalOnlineTime += t;
     }
 
-    public synchronized long getLOT()
-    {
-        return lastOnlineTime;
-    }
-
-    public synchronized String getLOTS()    
-    {
-        return null;
-    }
-
-    public synchronized void setLOT(long lot)
-    {
-        lastOnlineTime = lot;
-    }
-
-    public synchronized String getLLT()
-    {
-        return null;
-    }
-
-    public synchronized void setLLT()
-    {
-    }
-
-    public synchronized String getLLH()
-    {
-        return lastLoginAddress;
-    }
-
-    public synchronized void setLLH(String lla)
-    {
-        lastLoginAddress = lla;
-    }
-
     public synchronized void addClient(DEViseClient client)
     {
-        currentClients.addElement(client);
+        if (client == null)
+            return;
+
+        currentClients.put(client.getID(), client);
     }
-    
+
     public synchronized void removeClient(DEViseClient client)
     {
-        currentClients.removeElement(client);
+        if (client == null)
+            return;
+
+        currentClients.remove(client.getID());
     }
-    
-    public synchronized Vector getAllClients()
+
+    public synchronized void removeClient(Integer id)
+    {
+        if (id == null)
+            return;
+
+        currentClients.remove(id);
+    }
+
+    public synchronized boolean containsClient(DEViseClient client)
+    {
+        if (client == null)
+            return false;
+
+        return currentClients.contains(client);
+    }
+
+    public synchronized boolean containsClient(Integer id)
+    {
+        if (id == null)
+            return false;
+
+        return currentClients.containsKey(id);
+    }
+
+    public synchronized Hashtable getAllClients()
     {
         return currentClients;
     }
-    
-    public synchronized String getInfo()
-    {
-        return null;
-    }
 
     public boolean equals(DEViseUser user)
-    {   
+    {
         if (user == null)
             return false;
-            
-        if (username.equals(user.username) && password.equals(user.password))
-            return true;
-        else
-            return false;
-    }
-    
-    public boolean equals(String name, String pass)
-    {
-        if (name == null || pass == null)
-            return false;
-        
-        if (username.equals(name) && password.equals(pass))
+
+        if (username.equals(user.getName()) && password.equals(user.getPassword()))
             return true;
         else
             return false;
