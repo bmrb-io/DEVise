@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.9  1995/11/29 16:07:36  jussi
+#	Removed constant window size definitions because they will produce
+#	unexpected results on some window managers.
+#
 #	Revision 1.8  1995/11/20 22:37:48  jussi
 #	Tape offset received from calling program.
 #
@@ -224,9 +228,9 @@ proc issm_setupStatus {stat} {
 proc issmMain {} {
     global issm_firmlst issm_numfirms issm_selection
 
-    # see if .issm window already exists; if so, just return
-    set err [catch {set exists [wm state .issm]}]
-    if {!$err} { wm deiconify .issm; return }
+    if {[WindowVisible .issm]} {
+	return
+    }
 
     set issm_selection ""
 

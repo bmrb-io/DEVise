@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.9  1996/02/02 21:26:39  jussi
+#	User is given a color palette to choose from rather than
+#	a list of names of colors.
+#
 #	Revision 1.8  1996/01/23 20:52:30  jussi
 #	Added support for hierarchical schemas.
 #
@@ -178,9 +182,9 @@ proc editExpression {varname} {
     set winname ".edit$varname"
     set edit$varname [deref mappingValue$varname]
 
-    # see if $winname window already exists; if so, just return
-    set err [catch {wm state $winname}]
-    if {!$err} { wm deiconify $winname; return }
+    if {[WindowVisible $winname]} {
+	return
+    }
 
     toplevel $winname
     wm title $winname "Edit Expression"

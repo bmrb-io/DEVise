@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/22 17:33:49  jussi
+#	Added copyright message.
+#
 #	Revision 1.3  1995/09/21 15:36:01  jussi
 #	Minor changes.
 #
@@ -40,9 +43,9 @@ if {[info exists env(SEQ_DISKPATH)]} {
 proc seqMain {} {
     global seq_host seq_port seq_path seq_query
 
-    # see if .seq window already exists; if so, just return
-    set err [catch {set exists [wm state .seq]}]
-    if {!$err} { wm deiconify .seq; return }
+    if {[WindowVisible .seq]} {
+	return
+    }
 
     toplevel .seq
     wm maxsize .seq 1000 1000

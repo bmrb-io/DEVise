@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.7  1995/11/29 16:02:49  jussi
+#	Removed constant window size definitions because they will produce
+#	unexpected results on some window managers.
+#
 #	Revision 1.6  1995/11/20 22:40:16  jussi
 #	Base tape offset now received from calling program.
 #
@@ -192,9 +196,9 @@ proc crsp_setupStatus {stat} {
 proc crspMain {} {
     global crsp_seclst crsp_numsec crsp_selection
 
-    # see if .crsp window already exists; if so, just return
-    set err [catch {set exists [wm state .crsp]}]
-    if {!$err} { wm deiconify .crsp; return }
+    if {[WindowVisible .crsp]} {
+	return
+    }
 
     set crsp_selection ""
 

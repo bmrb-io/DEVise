@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.4  1995/09/26 23:13:56  jussi
+#	Added import tape option.
+#
 #	Revision 1.3  1995/09/22 17:33:45  jussi
 #	Added copyright message.
 #
@@ -52,9 +55,9 @@ proc importTapeFile {} {
 proc importSocket {} {
     global import_host import_port import_file
 
-    # see if .sck window already exists; if so, just return
-    set err [catch {set exists [wm state .sck]}]
-    if {!$err} { wm deiconify .sck; return }
+    if {[WindowVisible .sck]} {
+	return
+    }
 
     toplevel .sck
     wm maxsize .sck 1000 1000
@@ -114,9 +117,9 @@ proc importSocketActual {host port file} {
 proc importAwkOutput {} {
     global import_file import_cmd
 
-    # see if .awk window already exists; if so, just return
-    set err [catch {set exists [wm state .awk]}]
-    if {!$err} { wm deiconify .awk; return }
+    if {[WindowVisible .awk]} {
+	return
+    }
 
     toplevel .awk
     wm maxsize .awk 1000 1000

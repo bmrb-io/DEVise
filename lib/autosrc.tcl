@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/11/29 15:57:57  jussi
+#	Removed constant window size definitions because they will produce
+#	unexpected results on some window managers.
+#
 #	Revision 1.1  1995/11/15 22:12:09  jussi
 #	Initial revision.
 #
@@ -29,9 +33,9 @@ proc autoSourceAdd {source} {
 	return
     }
 
-    # see if .autosrc window already exists; if so, just return
-    set err [catch {wm state .autosrc}]
-    if {!$err} { wm deiconify .autosrc; return }
+    if {[WindowVisible .autosrc]} {
+	return
+    }
 
     toplevel .autosrc
     wm title .autosrc "Add Data Streams"

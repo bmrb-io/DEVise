@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.10  1995/11/29 16:05:15  jussi
+#	Removed constant window size definitions because they will produce
+#	unexpected results on some window managers.
+#
 #	Revision 1.9  1995/11/20 22:38:49  jussi
 #	Tape offset received from calling program.
 #
@@ -203,9 +207,9 @@ proc cstat_setupStatus {stat} {
 proc cstatMain {} {
     global cstat_firmlst cstat_numfirms cstat_selection
 
-    # see if .cstat window already exists; if so, just return
-    set err [catch {set exists [wm state .cstat]}]
-    if {!$err} { wm deiconify .cstat; return }
+    if {[WindowVisible .cstat]} {
+	return
+    }
 
     set cstat_selection ""
 
