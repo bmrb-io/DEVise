@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.37  1996/07/08 17:24:41  jussi
+#	Replaced STAT source type with UNIXFILE.
+#
 #	Revision 1.36  1996/07/01 19:37:43  jussi
 #	Made changes to reflect new TData constructor interface. Web
 #	data caching is now handled in the server, not in the client.
@@ -1151,7 +1154,7 @@ proc scanDerivedSources {} {
 	set schemafile $schemadir/physical/COLORSTAT
 	set evaluation 100
 	set priority 50
-	set command ""
+	set command $workdir
 
 	if {![file readable $schemafile]} {
 	    puts "Schema file $schemafile does not exist."
