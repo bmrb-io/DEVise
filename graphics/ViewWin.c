@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/12/03 17:02:11  jussi
+  Replaced SetSmallFont() with SetFont().
+
   Revision 1.26  1996/11/26 16:47:47  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -213,7 +216,12 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
     }
     else
     {
-      psDispP->PrintPSHeader("DEVise Visualization");
+      int x, y;
+      unsigned width, height;
+      RealGeometry(x, y, width, height);
+
+      psDispP->PrintPSHeader("DEVise Visualization", (Coord) width,
+	(Coord) height);
       result += printWinP->PrintPS();
     }
   }

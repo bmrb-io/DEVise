@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/11/26 15:44:05  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.19  1996/11/13 16:56:05  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -165,7 +171,8 @@ public:
   virtual DevStatus ClosePrintFile() { return StatusFailed; }
   virtual FILE *GetPrintFile() { return NULL; }
 
-  virtual void PrintPSHeader(char *title) {}
+  virtual void PrintPSHeader(char *title, Coord winWidth = -1.0,
+    Coord winHeight = -1.0, Boolean maintainAspect = true) {}
   virtual void PrintPSTrailer() {}
 
   /* Set page geometry in inches. */

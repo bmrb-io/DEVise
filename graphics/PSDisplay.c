@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/02 18:39:38  wenger
+  Removed limits on maximum PostScript page size.
+
   Revision 1.10  1996/11/26 15:44:05  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -203,24 +206,65 @@ PSDisplay::ClosePrintFile()
 Print PostScript header.
 **************************************************************/
 
-void PSDisplay::PrintPSHeader(char *title)
+void PSDisplay::PrintPSHeader(char *title, Coord winWidth,
+    Coord winHeight, Boolean maintainAspect)
 {
   DOASSERT(_printFile != NULL, "No print file");
 
   /* Print header info. */
   fprintf(_printFile, "%%!PS-Adobe-1.0\n");
 
-  /* Note: bounding box should really be smaller than this, but this will
-   * do for a start. RKW 11/21/96. */
+
+  /* Print the bounding box, based on the dimensions of the top-level window
+   * we're printing. */
   Coord width, height, xMargin, yMargin;
   GetPageGeom(width, height, xMargin, yMargin);
+  width -= 2 * xMargin;
+  height -= 2 * yMargin;
+
   Coord bbX1, bbY1, bbX2, bbY2;
-  bbX1 = xMargin;
-  bbY1 = yMargin;
-  bbX2 = xMargin + width;
-  bbY2 = yMargin + height;
+
+  if ((winWidth < 0.0) || (winHeight < 0.0)) {
+    /* We have to go with default dimensions -- the whole page within the
+     * margins. */
+    bbX1 = xMargin;
+    bbY1 = yMargin;
+    bbX2 = xMargin + width;
+    bbY2 = yMargin + height;
+  } else {
+    if (maintainAspect) {
+      double winAspect = winHeight / winWidth;
+      double pageAspect = height / width;
+
+      if (winAspect > pageAspect) {
+        bbX1 = xMargin;
+        bbY1 = yMargin;
+        bbX2 = xMargin + height / winAspect;
+        bbY2 = yMargin + height;
+      } else {
+        bbX1 = xMargin;
+        bbY1 = yMargin;
+        bbX2 = xMargin + width;
+        bbY2 = yMargin + width * winAspect;
+      }
+
+      /* Give ourselves a little margin for error. */
+      bbX1 -= 2.0;
+      bbY1 -= 2.0;
+      bbX2 += 2.0;
+      bbY2 += 2.0;
+    } else {
+      /* Go with default dimensions. */
+      bbX1 = xMargin;
+      bbY1 = yMargin;
+      bbX2 = width - xMargin;
+      bbY2 = height - xMargin;
+    }
+  }
+
   fprintf(_printFile, "%%%%BoundingBox: %f %f %f %f\n", bbX1, bbY1, bbX2,
     bbY2);
+
 
   char *userName = getenv("USER");
   if (userName == NULL) userName = "user unknown";
@@ -277,6 +321,10 @@ void PSDisplay::PrintPSHeader(char *title)
   fprintf(_printFile, "x2 x1 sub\n");
   fprintf(_printFile, "y2 y1 sub\n");
   fprintf(_printFile, "} def\n");
+
+#if 0
+  fprintf(_printFile, "%f %f %f %f DevFillRect\n", bbX1, bbY1, bbX2, bbY2);
+#endif
 }
 
 /**************************************************************

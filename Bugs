@@ -301,6 +301,12 @@ Num Date        Status  Description
 			being drawn, the XOR'ing of the selection box gets
 			goofed up. (ssl/rkw)
 
+089 12/03/96	FIXED	PostScript bounding box does not fit tightly around
+			the image. (ml/rkw)
+
+090 12/03/96	OPEN	Load session test/MM1System.tk, print to PostScript;
+			'Pwi' text comes out at wrong place. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
