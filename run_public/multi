@@ -16,6 +16,10 @@ setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    $DEVISE_ROOT/public/bin/multi
 
+setenv LM_LIB         $DEVISE_LIB/LM
+setenv LM_DAT         /tmp/LM/dat
+setenv LM_TMP         /tmp/LM/dat
+
 if (! -f $DEVISE_EXEC) then
   echo "Cannot find Devise executable ($DEVISE_EXEC)."
   echo "Perhaps you haven't compiled for this platform?"
