@@ -19,6 +19,12 @@
 // ------------------------------------------------------------------------
 
 // $Log$
+// Revision 1.27  2000/03/31 19:29:16  wenger
+// Changed code so that views and GData objects get garbage collected when
+// a session is closed; added debug code for tracking construction and
+// finalization of DEViseView and DEViseGData objects; other minor GData-
+// related improvements.
+//
 // Revision 1.26  2000/03/23 16:26:14  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -80,13 +86,14 @@ public class DEViseGData
 {
     public static Font defaultFont = null;
 
-    public jsdevisec jsc = null;
-    public DEViseView parentView = null;
-    public String viewname = null;
+    public jsdevisec jsc = null; //TEMP -- do we really need this for *every* GData record???
+    public DEViseView parentView = null; //TEMP -- do we really need this for *every* GData record???
+    public String viewname = null; //TEMP -- do we really need this for *every* GData record???
 
     public Rectangle GDataLoc = null;
     public Rectangle GDataLocInScreen = null;
 
+    //TEMP -- why do we need x, y, etc, *and* GDataLoc
     public int x = 0, y = 0, z = 0, width = 0, height = 0;
     public double x0, y0, z0, x1, y1, z1;
 
@@ -94,6 +101,13 @@ public class DEViseGData
     public Component symbol = null;
     public boolean isJavaSymbol = false;
     public int symbolType = 0;
+
+    // Values for symbolType.
+    public static final int _symOval = 4;
+    public static final int _symSegment = 7;
+    public static final int _symText = 12;
+    public static final int _symEmbeddedTk = 15;
+    public static final int _symFixedText = 16;
 
     public String string = null;
     public Color color = null;
@@ -143,25 +157,23 @@ public class DEViseGData
             throw new YException("Invalid GData!");
         }
 
-        if (symbolType == 15) { // check symbol type
-	    // 15 is Embedded Tk window
+	//TEMP -- perhaps this should be done when the symbol is
+	// drawn, instead of now
+        if (symbolType == _symEmbeddedTk) { // check symbol type
 	    EmbeddedTk(size, xm, ym);
 
-	} else if (symbolType == 12) {
-	    // 12 is Text Label
+	} else if (symbolType == _symText) {
 	    TextLabel(size, xm, ym);
 
-        } else if (symbolType == 16) {
-	    // 16 is Fixed Text Label
+        } else if (symbolType == _symFixedText) {
 	    FixedTextLabel(size);
 
-        } else if (symbolType == 4) {
-	    // 4 is Oval
+        } else if (symbolType == _symOval) {
 	    Oval(size, xm, ym);
 
-	    } else if (symbolType == 7) {
+	} else if (symbolType == _symSegment) {
+            Segment(size, xm, ym);
 
-            stick(size, xm, ym);
         } else {
 	    DefaultSymbol(size, xm, ym);
         }
@@ -417,10 +429,11 @@ public class DEViseGData
 
         color = DEViseGlobals.convertColor(data[3]);
 
+	// ADD COMMENT -- is this the name of the element??
         string = data[10];
     }
 
-    protected void stick(double size, double xm, double ym)
+    protected void Segment(double size, double xm, double ym)
     {
         isJavaSymbol = false;
 
@@ -432,7 +445,6 @@ public class DEViseGData
             height = -height;
 
         color = DEViseGlobals.convertColor(data[3]);
-        string = "bond";
 
         x1 = x0 + size * (Double.valueOf(data[8])).doubleValue();
         y1 = y0 + size * (Double.valueOf(data[9])).doubleValue();

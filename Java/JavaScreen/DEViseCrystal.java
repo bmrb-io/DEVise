@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2000/03/23 16:26:13  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.10  2000/02/04 15:51:53  hongyu
 // *** empty log message ***
 //
@@ -60,6 +63,8 @@ public class DEViseCrystal
     int zSortMapSizeIncrement = 64, zSortMapSize, deletedAtomNumber;
     int[] zSortMap = new int[64];
 
+    // ADD COMMENT: what is AtomTable for?  Why do we have to know anything
+    // about the atoms to draw a ball?
     public static Hashtable AtomTable = new Hashtable();
     static {
         AtomTable.put("se", new DEViseAtomType("Se", 1.25, 200, 200, 0));

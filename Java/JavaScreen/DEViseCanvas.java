@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2000/03/23 16:26:12  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.35  2000/02/23 21:12:11  hongyu
 // *** empty log message ***
 //
@@ -42,6 +45,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.36  2000/03/23 16:26:12  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.35  2000/02/23 21:12:11  hongyu
 // *** empty log message ***
 //
@@ -576,7 +582,8 @@ public class DEViseCanvas extends Container
         for (int i = 0; i < v.viewGDatas.size(); i++) {
             gdata = (DEViseGData)v.viewGDatas.elementAt(i);
 
-            if (gdata.string != null && (gdata.symbolType == 12 || gdata.symbolType == 16)) {
+            if (gdata.string != null && (gdata.symbolType == gdata._symText ||
+	      gdata.symbolType == gdata._symFixedText)) {
                 gc.setColor(gdata.color);
                 gc.setFont(gdata.font);
                 gc.drawString(gdata.string, gdata.x, gdata.y);
@@ -1277,36 +1284,6 @@ public class DEViseCanvas extends Container
         }
 
         if (crystal == null) {
-            /*
-            StringWriter writer = new StringWriter();
-            writer.write("\"Scale Factor\" 1.0 1.0 1.0\n");
-            writer.write("\"Base Vector\" 1 0 0 0 1 0 0 0 1\n");
-            writer.write("Atoms " + view.viewGDatas.size() + "\n");
-
-            for (int i = 0; i < view.viewGDatas.size(); i++) {
-                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                writer.write(gdata.string + " " + gdata.x0 + " " + gdata.y0 + " " + gdata.z0 + "\n");
-            }
-
-            writer.write("\"Bond Limit\" 2.3 2.7\n");
-
-            //writer.close();
-
-            String string = writer.toString();
-
-            try {
-                createCrystalFromData(new StringReader(string));
-                for (int i = 0; i < view.viewGDatas.size(); i++) {
-                    DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                    DEViseAtomInCrystal atom = crystal.getAtom(i);
-                    atom.type.setColor(gdata.color);
-                }
-            } catch (YException e) {
-                jsc.pn(e.getMessage());
-                crystal = null;
-		        return;
-            }
-            */
             int size = view.viewGDatas.size();
             //double[][] atomPos = new double[size][3];
             //double[][][] bondPos = new double[size][
@@ -1314,7 +1291,7 @@ public class DEViseCanvas extends Container
             Vector aPos = new Vector(size), aName = new Vector(size), aColor = new Vector(size), bPos = new Vector(size), bColor = new Vector(size);
             for (int i = 0; i < size; i++) {
                 DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                if (gdata.string.equals("bond")) {
+				if (gdata.symbolType == gdata._symSegment) {
                     double[][] pos = new double[2][3];
                     pos[0][0] = gdata.x0;
                     pos[0][1] = gdata.y0;
@@ -1392,7 +1369,7 @@ public class DEViseCanvas extends Container
 		        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
 		        for (int j = 0; j < v.viewGDatas.size(); j++) {
                     DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
-                    if (gdata.string.equals("bond")) {
+				    if (gdata.symbolType == gdata._symSegment) {
                         crystal.setSelect(gdata.x0, gdata.y0, gdata.z0, gdata.color, true);
                         crystal.setSelect(gdata.x1, gdata.y1, gdata.z1, gdata.color, true);
                     } else {
