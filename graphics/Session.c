@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.101  2001/12/12 21:05:05  wenger
+  Fixed bug 740 (DEVise now inserts appropriate environment variables when
+  saving per-session data source definitions).
+
   Revision 1.100  2001/10/04 19:03:36  wenger
   JavaScreen support allows session files without .ds extension; various
   improvements to session file processing.
@@ -528,6 +532,7 @@ char *Session::_description = NULL;
 PaletteID Session::_defaultPalette = nullPaletteID;
 PaletteID Session::_sessionPalette = nullPaletteID;
 Boolean Session::_dirty = false;
+SessionPostscript *Session::_postscript = NULL;
 
 static const char *_sessionPaletteName = "session";
 static const char *_defaultPaletteName = "def";
@@ -564,6 +569,11 @@ Session::Open(const char *filename)
       FreeString(_description);
     }
     _description = NULL;
+
+	if (_postscript != NULL) {
+	  delete _postscript;
+	}
+	_postscript = new SessionPostscript;
 
     _openingSession = true;
 
@@ -655,6 +665,9 @@ Session::Close()
     FreeString(_description);
   }
   _description = NULL;
+
+  delete _postscript;
+  _postscript = NULL;
 
   DeviseHistory::GetDefaultHistory()->ClearAll();
 
@@ -826,9 +839,12 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
       fprintf(saveData.fp, "\n# Select view\n");
       View *view = View::FindSelectedView();
       if (view != NULL) {
-	fprintf(saveData.fp, "DEVise selectView {%s}\n", view->GetName());
+	    fprintf(saveData.fp, "DEVise selectView {%s}\n", view->GetName());
       }
     }
+
+    fprintf(saveData.fp, "\n# Session postscript\n");
+	_postscript->Print(saveData.fp);
   }
 
   if (saveData.fp != NULL) {
@@ -1765,6 +1781,14 @@ Session::DEViseCmd(ControlPanel *control, int argc, const char * const *argv)
   } else if (!strcmp(argv[1], "dataSegment")) {
     // No op.
 	control->ReturnVal(0, "");
+  } else if (!strcmp(argv[1], "sessionPost")) {
+	_postscript->AddCommand(argc, argv);
+
+    // don't pass DEVise command verb (argv[0]) or "sessionPost" (argv[1]).
+    if (CmdContainer::GetCmdContainer()->RunOneCommand(argc-2, &argv[2],
+	    control) <= 0) {
+      status = StatusFailed;
+    }
   } else {
     // don't pass DEVise command verb (argv[0])
     if (CmdContainer::GetCmdContainer()->RunOneCommand(argc-1, &argv[1],

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  2001/10/04 19:03:41  wenger
+  JavaScreen support allows session files without .ds extension; various
+  improvements to session file processing.
+
   Revision 1.27  2001/09/24 15:29:03  wenger
   Added warning if you close or quit with unsaved session changes (note
   that visual filter changes are not considered "changes").
@@ -167,6 +171,7 @@
 
 #include "DevStatus.h"
 #include "Color.h" // for PaletteID
+#include "SessionPostscript.h"
 
 class ControlPanel;
 class ControlPanelSimple;
@@ -323,6 +328,8 @@ private:
   static PaletteID _sessionPalette;
 
   static Boolean _dirty;
+
+  static SessionPostscript *_postscript;
 };
 
 #endif /* _Session_h_ */

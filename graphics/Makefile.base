@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.83  2001/08/03 18:13:03  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.82  2001/02/20 20:02:43  wenger
 #  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 #  to the trunk.
@@ -303,6 +306,7 @@ LIBSRC = AttrList.c \
 	Map3D.C PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
+	SessionPostscript.c \
 	GDataSock.c RangeDesc.c PileStack.c \
 	ViewGeom.c HangCheck.c DevAxis.c MetaVisDesc.c DeviseHistory.c
 
