@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1995/12/29 18:27:52  jussi
+  Added new cursor mechanism; cursors are drawn as inverted rectangles
+  which are easier to see than the old cursor lines.
+
   Revision 1.15  1995/12/14 21:11:05  jussi
   Replaced 0x%x with 0x%p.
 
@@ -85,7 +89,7 @@
 #include "Jpeg.h"
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 int View::_nextPos = 0;
 
