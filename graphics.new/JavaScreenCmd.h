@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/06/10 19:59:22  wenger
+  Devised sends axis type info to JS even if axes aren't drawn (so JS can
+  display cursor position properly); added code to send cursor grid info
+  and action disabling info (conditionaled out until the JS is ready for it);
+  fixed bug with cursor Y grid value in cursor creation.
+
   Revision 1.20  1999/05/04 17:17:08  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -159,7 +165,6 @@ class JavaScreenCmd
 			DELETECHILDVIEWS,
 			VIEWDATAAREA,
 			UPDATEVIEWIMAGE,
-			DISABLEACTIONS,
 
 			DONE,
 			ERROR,

@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/06/11 14:47:05  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.60  1999/06/10 19:59:21  wenger
   Devised sends axis type info to JS even if axes aren't drawn (so JS can
   display cursor position properly); added code to send cursor grid info
@@ -365,7 +371,6 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_DeleteChildViews",
 	"JAVAC_ViewDataArea",
 	"JAVAC_UpdateViewImage",
-	"JAVAC_DisableActions",
 
 	"JAVAC_Done",
 	"JAVAC_Error",
@@ -606,16 +611,21 @@ CreateViewLists()
 	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex))
 	{
-	  // For now, we don't include any info about which windows are on top
-	  // of others.  RKW 1999-03-17.
-	  viewZ = 0.0;
-
 	  ClassInfo *info = DevWindow::Next(winIndex);
 	  ViewWin *window = (ViewWin *)info->GetInstance();
 	  if (window != NULL && !window->GetPrintExclude())
 	  {
+
+	    // For now, we don't include any info about which windows are on top
+	    // of others.  RKW 1999-03-17.
+		if (window->GetMyPileStack()->IsPiled()) {
+	      viewZ = (window->NumChildren() - 1) * viewZInc;
+		} else {
+		  viewZ = 0.0;
+		}
+
 		Boolean isPiled = false;
-		int viewIndex = window->InitIterator(true); // backwards
+		int viewIndex = window->InitIterator();
 		while (window->More(viewIndex)) {
 		  // A top-level view.
 		  ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
@@ -627,10 +637,11 @@ CreateViewLists()
 		  // how the data is drawn, that view is actually the view on the
 		  // *bottom* of the pile...  RKW 1999-03-17.
 		  view->SetZ(viewZ);
-		  if (view->IsInPileMode()) viewZ += viewZInc;
+		  if (view->IsInPileMode()) viewZ -= viewZInc;
 
 		  _topLevelViews.Append(view);
 
+          //TEMP maybe check whether first view of window is first view of pile
 		  // Only send GIF for the first view of a pile.
 		  if (!isPiled) {
 		    _gifViews.Append(view);
@@ -1385,14 +1396,22 @@ JavaScreenCmd::CursorChanged()
 	// DEVise window, but now it's the view.
 	if (_argc != 5)
 	{
-		errmsg = "Usage: CursorChanged <view name> <x> <y> <width> <height>";
+		errmsg = "Usage: CursorChanged <cursor name> <x> <y> <width> <height>";
 		_status = ERROR;
 		return;
 	}
 
-	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	// Find the cursor object and the view that it's drawn in.
+    DeviseCursor *cursor = (DeviseCursor *)ControlPanel::FindInstance(_argv[0]);
+	if (cursor == NULL) {
+		errmsg = "Can't find specified cursor";
+		_status = ERROR;
+		return;
+	}
+
+    ViewGraph *view = (ViewGraph *)cursor->GetDst();
 	if (view == NULL) {
-		errmsg = "Can't find specified view";
+		errmsg = "Cursor has no destination view";
 		_status = ERROR;
 		return;
 	}
@@ -1404,20 +1423,6 @@ JavaScreenCmd::CursorChanged()
 #if defined(DEBUG)
 	printf("x, y = %d, %d; width, height = %d, %d\n", pixX, pixY, pixWidth,
 	  pixHeight);
-#endif
-
-	if (view->_cursors->Size() < 1) {
-		errmsg = "View has no cursor";
-		_status = ERROR;
-		return;
-	} else if (view->_cursors->Size() > 1) {
-		fprintf(stderr, "Warning: view <%s> has multiple cursors; "
-		  "using the first one\n", view->GetName());
-	}
-
-	DeviseCursor *cursor = view->_cursors->GetFirst();
-#if defined(DEBUG)
-	printf("  cursor is <%s>\n", cursor->GetName());
 #endif
 
 	if (view->GetCursorMoveDisabled()) {
@@ -1623,11 +1628,13 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
 			SendViewDataArea(view);
 
+            //TEMP -- should probably create subviews of *all* views here --
+			// in case there are cursors in view symbols
 			// Create any subviews of this view.
 			int subViewIndex = view->InitIterator();
 			while (view->More(subViewIndex)) {
 				View *subView = (View *)view->Next(subViewIndex);
-				subView->SetZ(view->GetZ() + viewZInc);
+				subView->SetZ(view->GetZ() + 1.0);
 				CreateView(subView, view);
 				SendViewDataArea(subView);
 			}
@@ -1987,39 +1994,26 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	Coord gridX, gridY;
 	cursor->GetGrid(useGrid, gridX, gridY);
 	if (!useGrid) {
-	  gridX = gridY = -1.0;
+	  gridX = gridY = 0.0;
 	}
 
 	//
     // Generate the command to send.
 	//
-#if 0 //TEMPTEMP
 	const int argCount = 11;
-#else //TEMPTEMP
-	const int argCount = 9;
-#endif //TEMPTEMP
 	char *argv[argCount];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[DRAWCURSOR];
 	argv[pos++] = (char *)cursor->GetName();
 	argv[pos++] = view->GetName();
-#if 1 //TEMPTEMP
-    // This is a kludgey fix for bug 488 -- always say that we're drawing
-	// the cursor in the last (top) view of the pile.  RKW 1999-05-17.
-    if (view->IsInPileMode()) {
-	  argv[pos-1] = view->GetParentPileStack()->GetLastView()->GetName();
-	}
-#endif
 	FillInt(argv, pos, xLoc);
 	FillInt(argv, pos, yLoc);
 	FillInt(argv, pos, width);
 	FillInt(argv, pos, height);
 	argv[pos++] = movement;
 	argv[pos++] = fixedSize;
-#if 0 //TEMPTEMP
 	FillDouble(argv, pos, gridX);
 	FillDouble(argv, pos, gridY);
-#endif //TEMPTEMP
 	DOASSERT(pos == argCount, "Incorrect argCount");
 
 	//
@@ -2032,6 +2026,8 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	delete [] argv[4];
 	delete [] argv[5];
 	delete [] argv[6];
+	delete [] argv[9];
+	delete [] argv[10];
 }
 
 //====================================================================
@@ -2434,13 +2430,36 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		viewTitle = view->_label.name;
 	}
 
+	//
+	// View mouse movement grid (not yet implemented on this end).
+	//
+	Coord gridX = 0.0;
+	Coord gridY = 0.0;
+
+    //
+	// Get information about which (if any) actions are disabled in this
+	// view.
+	//
+	Boolean rubberbandDisabled, cursorMoveDisabled, drillDownDisabled,
+	  keysDisabled;
+	view->GetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
+	  drillDownDisabled, keysDisabled);
+
+	// Change values from disabled to enabled (Hongyu wanted this).
+	Boolean rubberbandEnabled = !rubberbandDisabled;
+	Boolean cursorMoveEnabled = !cursorMoveDisabled;
+	Boolean drillDownEnabled = !drillDownDisabled;
+	Boolean keysEnabled = !keysDisabled;
+
 	{ // limit variable scopes
-	  const int argCount = 17;
+	  const int argCount = 24;
 	  char *argv[argCount];
 	  int	pos = 0;
 	  argv[pos++] = _controlCmdName[CREATEVIEW];
 	  argv[pos++] = view->GetName();
 	  argv[pos++] = parent ? parent->GetName() : "";
+	  argv[pos++] = view->IsInPileMode() ?
+	    view->GetParentPileStack()->GetFirstView()->GetName() : "";
 	  FillInt(argv, pos, viewX);
 	  FillInt(argv, pos, viewY);
 	  FillInt(argv, pos, viewWidth);
@@ -2455,11 +2474,16 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	  argv[pos++] = xAxisType;
 	  argv[pos++] = yAxisType;
 	  argv[pos++] = viewTitle;
+	  FillDouble(argv, pos, gridX);
+	  FillDouble(argv, pos, gridY);
+	  FillInt(argv, pos, rubberbandEnabled);
+	  FillInt(argv, pos, cursorMoveEnabled);
+	  FillInt(argv, pos, drillDownEnabled);
+	  FillInt(argv, pos, keysEnabled);
 	  DOASSERT(pos == argCount, "Incorrect argCount");
 
 	  ReturnVal(argCount, argv);
 
-	  delete [] argv[3];
 	  delete [] argv[4];
 	  delete [] argv[5];
 	  delete [] argv[6];
@@ -2467,33 +2491,15 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	  delete [] argv[8];
 	  delete [] argv[9];
 	  delete [] argv[10];
+	  delete [] argv[11];
+	  delete [] argv[12];
+	  delete [] argv[18];
+	  delete [] argv[19];
+	  delete [] argv[20];
+	  delete [] argv[21];
+	  delete [] argv[22];
+	  delete [] argv[23];
 	}
-
-#if 0 //TEMPTEMP
-	{ // limit variable scopes
-	  Boolean rubberbandDisabled, cursorMoveDisabled, drillDownDisabled,
-	    keysDisabled;
-	  view->GetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
-	    drillDownDisabled, keysDisabled);
-
-	  const int argCount = 6;
-	  char *argv[argCount];
-	  int	pos = 0;
-	  argv[pos++] = _controlCmdName[DISABLEACTIONS];
-	  argv[pos++] = view->GetName();
-	  FillInt(argv, pos, rubberbandDisabled);
-	  FillInt(argv, pos, cursorMoveDisabled);
-	  FillInt(argv, pos, drillDownDisabled);
-	  FillInt(argv, pos, keysDisabled);
-
-	  ReturnVal(argCount, argv);
-
-	  delete [] argv[2];
-	  delete [] argv[3];
-	  delete [] argv[4];
-	  delete [] argv[5];
-	}
-#endif //TEMPTEMP
 }
 
 //====================================================================
