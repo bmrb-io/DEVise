@@ -53,13 +53,15 @@ KEY ACTIONS, SYMBOL DISPLAY
 
 
 KEY ACTIONS, MISCELLANEOUS
+<c> or <C>: expand or contract cursor(s) to exactly fill view.
+
 <f> or <F>: flip pile or stack.
 
 <h> or <H>: set histogram width to filter.
 
-<Escape> or <menu>: (raise control panel).
+<Escape> or <menu>: raise control panel.
 
 <Ctl C>: terminate DEVise.
 
 
-Last updated 2000-03-21.
+Last updated 2000-03-28.

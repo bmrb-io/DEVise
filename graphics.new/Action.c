@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  2000/03/21 16:24:55  wenger
+  'f' or 'F' key in a view now flips the appropriate pile or stack, if
+  there is one.
+
   Revision 1.38  2000/02/24 18:50:21  wenger
   F/f ("full" cursor) in a view does home on the source views of any cursors
   for which the selected view is the destination view.
@@ -385,7 +389,11 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     if (connectorsOn && !symbolsOn)
       (void)view->DisplaySymbols(true);
 #else
+  #if 0
     printf("Connectors currently disabled\n");
+  #else
+    view->CursorHome();
+  #endif
 #endif
     break;
   }
@@ -485,8 +493,6 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       camera.near+=dist;
       camera.far+=dist;
       view->SetCamera(camera);
-    } else {
-      view->CursorHome();
     }
 #else
     PileStack *ps = view->GetParentPileStack();

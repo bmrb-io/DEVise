@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.140  2000/03/14 21:51:49  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.139  2000/03/14 17:05:35  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -1591,6 +1595,8 @@ ViewGraph::CursorHome()
   printf("ViewGraph(%s)::GoHome()\n", GetName());
 #endif
 
+  VisualFilter filter;
+  GetVisualFilter(filter);
   int index = _cursors->InitIterator();
   while (_cursors->More(index)) {
     DeviseCursor *cursor = _cursors->Next(index);
@@ -1599,7 +1605,7 @@ ViewGraph::CursorHome()
 #if defined(DEBUG)
       printf("  Doing home on cursor <%s>\n", cursor->GetName());
 #endif
-      srcView->GoHome(true);
+      srcView->SetVisualFilterCommand(filter);
     }
   }
   _cursors->DoneIterator(index);
