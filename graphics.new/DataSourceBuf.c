@@ -20,6 +20,10 @@
    $Id$
 
    $Log$
+   Revision 1.7  1996/10/08 21:49:07  wenger
+   ClassDir now checks for duplicate instance names; fixed bug 047
+   (problem with FileIndex class); fixed various other bugs.
+
    Revision 1.6  1996/10/07 22:53:57  wenger
    Added more error checking and better error messages in response to
    some of the problems uncovered by CS 737 students.
@@ -96,6 +100,7 @@ DataSourceBuf::DataSourceBuf(char *buffer, int buffer_size,
     _end_data = _sourceBuf + data_size -1;
     DOASSERT(_end_data <= _end_buffer, "more data than buffer space");
     _currentLoc = NULL;
+    written = false;
 }
 
 /*------------------------------------------------------------------------------
@@ -275,6 +280,7 @@ DataSourceBuf::Write(const char *buf, size_t byteCount)
 	    result = byteCount;
 	}
     }
+    if(!written) written = true;
     
     return result;
 }
