@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/02/06 19:24:25  jussi
+  Restore line attributes (line width and join style).
+
   Revision 1.21  1996/02/05 23:55:20  jussi
   Added support for small fonts.
 
@@ -85,6 +88,8 @@
 */
 
 #include <assert.h>
+#include <unistd.h>
+#include <errno.h>
 
 #include "Init.h"
 #include "XWindowRep.h"
@@ -329,9 +334,21 @@ rm /tmp/devise.xwd /tmp/devise.rgb",
   int errorcode = -1;
 #endif
 
-  if (system(cmd) == errorcode) {
-    fprintf(stderr, "Can't execute command: %s\n", cmd);
-    perror("system");
+  for(int attempt = 0; attempt < 10; attempt++) {
+    int status = system(cmd);
+    if (status != errorcode)
+      break;
+    if (errno == EAGAIN && attempt < 10 - 1) {
+      perror("system");
+      fprintf(stderr, "Retrying to execute command in 1.0 seconds...\n");
+      sleep(1);
+    } else {
+      fprintf(stderr, "Could not execute command (%d attempts):\n",
+	      attempt + 1);
+      fprintf(stderr, "  %s\n", cmd);
+      perror("The reason is");
+      break;
+    }
   }
 }
 
