@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  1996/11/18 18:10:57  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.67  1996/11/07 00:10:27  jussi
   Tk main window is not created when monolithic Devise is run
   in batch mode.
@@ -274,6 +277,7 @@
 #include "Init.h"
 #include "Version.h"
 #include "StringStorage.h"
+#include "DCE.h"
 
 //#define DEBUG
 
@@ -354,6 +358,14 @@ TkControlPanel::TkControlPanel()
 #ifdef TK_WINDOW
   ControlPanelMainWindow = _mainWindow;
 #endif
+
+  // destroy all semaphores and shared memory segments
+  Semaphore::destroyAll();
+  SharedMemory::destroyAll();
+
+  // create space for 16 virtual semaphores
+  int status = SemaphoreV::create(16);
+  DOASSERT(status >= 0, "Cannot create virtual semaphores");
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));
   Dispatcher::Current()->Register(this, 10, GoState, true, fd);

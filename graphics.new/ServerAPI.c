@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/11/01 19:28:22  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.21  1996/08/29 22:19:01  guangshu
   Added function OpendataChannel.
 
@@ -128,6 +133,7 @@
 #include "Util.h"
 #include "Version.h"
 #include "StringStorage.h"
+#include "DCE.h"
 
 #ifdef SUN
 #include "missing.h"
@@ -159,7 +165,6 @@ ServerAPI::ServerAPI()
   clientAddr.sin_family = clientAddr.sin_port = clientAddr.sin_addr.s_addr = 0;
 
   // see if any replicas are defined
-
   FILE *fp = fopen("devise.rep", "r");
   if (fp) {
     char hostName[64];
@@ -168,6 +173,14 @@ ServerAPI::ServerAPI()
       (void)AddReplica(hostName, port);
     fclose(fp);
   }
+
+  // destroy all semaphores and shared memory segments
+  Semaphore::destroyAll();
+  SharedMemory::destroyAll();
+
+  // create space for 16 virtual semaphores
+  int status = SemaphoreV::create(16);
+  DOASSERT(status >= 0, "Cannot create virtual semaphores");
 
   RestartSession();
 }
