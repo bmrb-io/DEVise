@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/24 19:49:33  jussi
+  Improved the interaction between query processors and the dispatcher.
+
   Revision 1.4  1996/04/10 01:46:09  jussi
   Added call to Flush() when query processor becomes idle.
 
@@ -131,7 +134,10 @@ public:
   // Clear all queries from query processor
   virtual void ClearQueries();
 
-  // Clear info about GData from qp
+  // Clear info about TData from qp and bufmgr
+  virtual void ClearTData(TData *tdata);
+
+  // Clear info about GData from qp and bufmgr
   virtual void ClearGData(GData *gdata);
   virtual void ResetGData(TData *tdata, GData *gdata);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/24 19:49:32  jussi
+  Improved the interaction between query processors and the dispatcher.
+
   Revision 1.7  1996/04/16 20:56:23  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -336,7 +339,27 @@ void QueryProcTape::ClearQueries()
   _mgr->Clear();
 }
 
-// Clear info about GData from qp
+/* Clear info about TData from qp and bufmgr */
+void QueryProcTape::ClearTData(TData *tdata)
+{
+  /* abort existing queries that use this TData and re-execute them */
+
+  RefreshTData(tdata);
+
+  /* clear GData in all mappings that use this tdata */
+
+  for(int i = 0; i < _numMappings; i++) {
+    TDataMap *map = _mappings[i];
+    if (map->GetTData() == tdata)
+      _mgr->ClearData(map->GetGData());
+  }
+
+  /* clear TData from bufmgr */
+
+  _mgr->ClearData(tdata);
+}
+
+/* Clear info about GData from qp and bufmgr */
 void QueryProcTape::ClearGData(GData *gdata)
 {
   int index;
@@ -350,7 +373,7 @@ void QueryProcTape::ClearGData(GData *gdata)
     }
   }
   _queries->DoneIterator(index);
-  _mgr->ClearGData(gdata);
+  _mgr->ClearData(gdata);
 }
 
 void QueryProcTape::ResetGData(TData *tdata, GData *gdata)
@@ -501,10 +524,16 @@ void QueryProcTape::ProcessScan(QPTapeData *qData)
 
 void QueryProcTape::ProcessQPTapeX(QPTapeData *qData)
 {
-  ProcessScan(qData);
-  if (qData->state == QPTape_EndState)
-    EndQPTapeX(qData);
+  if (qData->state == QPTape_EndState) {
+      EndQPTapeX(qData);
+  } else {
+      ProcessScan(qData);
+      if (qData->state == QPTape_EndState) {
+          EndQPTapeX(qData);
+      }
+  }
 }
+
 void QueryProcTape::ProcessQPTapeYX(QPTapeData *qData)
 {
   DOASSERT(0, "2D image query not yet implemented");
@@ -512,9 +541,13 @@ void QueryProcTape::ProcessQPTapeYX(QPTapeData *qData)
 
 void QueryProcTape::ProcessQPTapeScatter(QPTapeData *qData)
 {
-  ProcessScan(qData);
   if (qData->state == QPTape_EndState) {
-    EndQPTapeScatter(qData);
+      EndQPTapeScatter(qData);
+  } else {
+      ProcessScan(qData);
+      if (qData->state == QPTape_EndState) {
+          EndQPTapeScatter(qData);
+      }
   }
 }
 
@@ -547,12 +580,6 @@ void QueryProcTape::ProcessQuery()
   printf("ProcessQuery for %s %s\n", first->tdata->GetName(),
 	 first->map->GetName());
 #endif
-
-  if (first->state == QPTape_EndState) {
-    // InitQueries could have finished this query
-    DeleteFirstQuery();
-    return;
-  }
 
   switch(first->qType) {
   case QPTape_X:
