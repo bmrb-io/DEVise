@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/12/15 14:55:09  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.23  1998/11/11 14:30:55  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -200,6 +206,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_ServerExit)
 	REGISTER_COMMAND(JAVAC_ServerCloseSocket)
 	REGISTER_COMMAND(JAVAC_ImageChannel)
+	REGISTER_COMMAND(JAVAC_CursorChanged)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -339,7 +346,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setCursorSrc)
 	REGISTER_COMMAND(setCursorDst)
 	REGISTER_COMMAND(setPixelWidth)
-	REGISTER_COMMAND(getAxis)
 	REGISTER_COMMAND(setAction)
 	REGISTER_COMMAND(setLinkFlag)
 	REGISTER_COMMAND(highlightView)
@@ -361,7 +367,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(checkTDataForRecLink)
 	REGISTER_COMMAND(setMappingLegend)
 	REGISTER_COMMAND(markViewFilter)
-	REGISTER_COMMAND(setAxis)
 	REGISTER_COMMAND(getWindowImage)
 	REGISTER_COMMAND(getWindowImageAndSize)
 	REGISTER_COMMAND(swapView)

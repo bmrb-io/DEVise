@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.71  1998/12/15 14:54:54  wenger
+#  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+#  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+#  simplified Map3D; removed ViewLens class (unused); got rid of large static
+#  buffers in a number of other source files.
+#
 #  Revision 1.70  1998/12/07 19:44:29  wenger
 #  Removed "old" layout manager code.
 #
@@ -234,7 +240,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 
 # -fexternal-templates 
 
-LIBSRC = AttrList.c AxisLabelClassInfo.c \
+LIBSRC = AttrList.c \
 	ClassDir.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \

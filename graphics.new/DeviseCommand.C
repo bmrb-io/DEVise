@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/12/15 14:55:11  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.39  1998/12/10 21:53:25  wenger
   Devised now sends GIFs to JavaScreen on a per-view rather than per-window
   basis; GIF "dirty" flags are now also referenced by view rather than by
@@ -449,6 +455,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_ImageChannel)
 	JavaScreenCmd jc(control,JavaScreenCmd::IMAGECHANNEL,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_CursorChanged)
+	JavaScreenCmd jc(control,JavaScreenCmd::CURSORCHANGED,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
@@ -3448,31 +3460,6 @@ DeviseCommand_setPixelWidth::Run(int argc, char** argv)
     return true;
 }
 int
-DeviseCommand_getAxis::Run(int argc, char** argv)
-{
-    {
-        {
-          View *view = (View *)classDir->FindInstance(argv[1]);
-          if (!view) {
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          AxisLabel *label;
-          if (!strcmp(argv[2], "x"))
-    	label = view->GetXAxisLabel();
-          else
-    	label = view->GetYAxisLabel();
-          
-          if (!label)
-    	ReturnVal(API_ACK, "");
-          else
-    	ReturnVal(API_ACK, label->GetName());
-          return 1;
-        }
-    }
-    return true;
-}
-int
 DeviseCommand_setAction::Run(int argc, char** argv)
 {
     {
@@ -3947,31 +3934,6 @@ DeviseCommand_markViewFilter::Run(int argc, char** argv)
           int index = atoi(argv[2]);
           Boolean mark = atoi(argv[3]);
           view->Mark(index, mark);
-          ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
-    return true;
-}
-int
-DeviseCommand_setAxis::Run(int argc, char** argv)
-{
-    {
-        {
-          View *view = (View *)classDir->FindInstance(argv[1]);
-          if (!view) {
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          AxisLabel *label = (AxisLabel *)classDir->FindInstance(argv[2]);
-          if (!label) {
-    	ReturnVal(API_NAK, "Cannot find label");
-    	return -1;
-          }
-          if (!strcmp(argv[3], "x"))
-    	view->SetXAxisLabel(label);
-          else
-    	view->SetYAxisLabel(label);
           ReturnVal(API_ACK, "done");
           return 1;
         }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.148  1998/11/11 14:30:45  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.147  1998/10/20 19:46:03  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -718,8 +724,8 @@ Boolean View::_showNames = false;
 //******************************************************************************
 
 View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
-		   AxisLabel* xAxisLabel, AxisLabel* yAxisLabel,
-		   AxisLabel *zAxisLabel, int weight, Boolean boundary)
+		   AxisLabel*, AxisLabel*,
+		   AxisLabel *, int weight, Boolean boundary)
 	: ViewWin(name, fgid, bgid, weight, boundary)
 {
 	DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
@@ -732,16 +738,23 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	// Init default filter
 	_filter = initFilter;
+	if (_filter.xLow > _filter.xHigh) {
+	  Coord tmp = _filter.xLow;
+	  _filter.xLow = _filter.xHigh;
+	  _filter.xHigh = tmp;
+	}
+	if (_filter.yLow > _filter.yHigh) {
+	  Coord tmp = _filter.yLow;
+	  _filter.yLow = _filter.yHigh;
+	  _filter.yHigh = tmp;
+	}
+
 	_filterChanged = true;
 	_hasTimestamp = true;
 	_timeStamp = TimeStamp::NextTimeStamp();
 
 	_hasExposure = false;	// No exposure rectangle yet
 	_querySent = false;		// TRUE if query has been sent
-
-	_xAxisLabel = xAxisLabel;
-	_yAxisLabel = yAxisLabel;
-	_zAxisLabel = zAxisLabel;
 
 	xAxis.inUse = false;
 	xAxis.width = 15;
@@ -1490,17 +1503,6 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   Coord drawWidth = axisWidth - (startX - axisX);
   int numTicks = (int)(drawWidth / xAxis.labelWidth);
 
-  /* if custom labels requested, draw them and return */
-  if (_xAxisLabel) {
-    char *label = _xAxisLabel->GenerateLabel( _filter.xLow);
-    win->AbsoluteText(label, startX, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
-		      axisHeight - 1, WindowRep::AlignWest, true);
-    label = _xAxisLabel->GenerateLabel(_filter.xHigh);
-    win->AbsoluteText(label, startX + drawWidth / 2, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
-		      axisHeight - 1, WindowRep::AlignEast, true);
-    return;
-  }
-
   /* if axis is date, draw values and return */
   if (_xAxisAttrType == DateAttr) {
     char *label = DateString((time_t)_filter.xLow);
@@ -1607,17 +1609,6 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 
   Coord drawHeight = axisHeight - (startY - axisY);
   int numTicks = (int)(drawHeight / yAxis.labelWidth);
-
-  /* if custom labels requested, draw them and return */
-  if (_yAxisLabel) {
-    char *label = _yAxisLabel->GenerateLabel( _filter.yLow);
-    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
-    label = _yAxisLabel->GenerateLabel(_filter.yHigh);
-    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
-    return;
-  }
 
   /* if axis is date, draw values and return */
   if (_yAxisAttrType == DateAttr) {

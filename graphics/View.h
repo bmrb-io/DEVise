@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.69  1998/11/11 14:30:46  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.68  1998/10/20 19:46:05  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -330,24 +336,9 @@ struct ViewRect {
   int xLow, yLow, xHigh, yHigh;
 };
 
-/* Use to generate the label for an axis */
-class AxisLabel {
- public:
-  AxisLabel(char *name) {_name = name; }
-  char *GetName() { return _name; }
-  virtual char *GenerateLabel(Coord val) = 0;
-  virtual char *SetFormat(char *format) { return ""; }
-  virtual char *GetFormat() { return ""; }
-
- private:
-  char *_name;
-};
-
-/* function that generates an axis label */
-class GenAxisLabel {
- public:
-  virtual AxisLabel *MakeAxisLabel(char *name) = 0;
-};
+// AxisLabels aren't actually used or fully implemented -- using the
+// typedef here to simplify cleaning up.
+typedef void * AxisLabel;
 
 struct AxisInfo {
   Boolean inUse;          /* TRUE if this axis is in use */
@@ -473,13 +464,6 @@ class View : public ViewWin
 	AttrType GetYAxisAttrType() { return _yAxisAttrType; }
 	void SetZAxisAttrType(AttrType type);
 	AttrType GetZAxisAttrType() { return _zAxisAttrType; }
-
-	void SetXAxisLabel(AxisLabel *callback){ _xAxisLabel = callback; }
-	AxisLabel *GetXAxisLabel() { return _xAxisLabel; }
-	void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback; }
-	AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
-	void SetZAxisLabel(AxisLabel *callback){ _zAxisLabel = callback; }
-	AxisLabel *GetZAxisLabel() { return _zAxisLabel; }
 
 	void XAxisDisplayOnOff(Boolean stat);
 	void YAxisDisplayOnOff(Boolean stat);
@@ -718,10 +702,6 @@ protected:
 
 	Boolean  _displaySymbol; /* true if to be displayed */
 	AxisInfo xAxis, yAxis, zAxis;   /* X, y and z axis info */
-
-	AxisLabel *_xAxisLabel;
-	AxisLabel *_yAxisLabel;
-	AxisLabel *_zAxisLabel;
 
 	DispatcherID _dispatcherID;
 

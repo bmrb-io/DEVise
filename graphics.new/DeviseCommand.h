@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/12/15 14:55:13  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.20  1998/11/11 14:30:57  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -254,6 +260,12 @@ DECLARE_CLASS_END
 //Class definition: DeviseCommand_JAVAC_ImageChannel
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_ImageChannel)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_CursorChanged
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_CursorChanged)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -1082,12 +1094,6 @@ DECLARE_CLASS_END
 //
 //Class definition
 //
-DECLARE_CLASS_DeviseCommand_(getAxis) 
-DECLARE_CLASS_END
-
-//
-//Class definition
-//
 DECLARE_CLASS_DeviseCommand_(setAction) 
 DECLARE_CLASS_END
 
@@ -1212,12 +1218,6 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(markViewFilter) 
-DECLARE_CLASS_END
-
-//
-//Class definition
-//
-DECLARE_CLASS_DeviseCommand_(setAxis) 
 DECLARE_CLASS_END
 
 //
