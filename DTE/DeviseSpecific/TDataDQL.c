@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/04/14 17:04:02  donjerko
+  Removed command "schema", using typecheck "select * from ..." instead.
+
   Revision 1.30  1998/04/10 16:25:53  donjerko
   *** empty log message ***
 
@@ -279,10 +282,12 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	_attributeNames(NULL),
 	engine(NULL),
 	tuple(0),
-	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {
+	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) 
+{
 	_tableName = strdup(tableName);
 	_marshalPtrs = NULL;
-	char* attNames = dteListAttributes(_tableName);
+	EXIT(char* attNames = dteListAttributes(_tableName));
+	assert(attNames);
 	char* attName = strtok(attNames, " ");
 	string minmaxQ("select ");
 	queryHeader += "select ";
