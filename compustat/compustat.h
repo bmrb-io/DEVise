@@ -1,6 +1,7 @@
 /*
    $Id$
 
+   $Log$
    Revision 1.2  1995/09/18 18:32:36  jussi
    Dummy change. Ignore.
 

@@ -1,6 +1,7 @@
 /*
    $Id$
 
+   $Log$
    Revision 1.1  1995/09/18 18:30:35  jussi
    Initial revision of archive.
 */
