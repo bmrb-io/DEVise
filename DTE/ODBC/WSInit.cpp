@@ -9,6 +9,7 @@ class WSInitSocket {
 public:
 	WSInitSocket() {
 	
+		cerr << "Yukledi" << endl ;
 		WORD wVersionRequested;
 		WSADATA wsaData;
 		int err;
@@ -17,7 +18,6 @@ public:
 	 
 		err = WSAStartup( wVersionRequested, &wsaData );
 		if ( err != 0 ) {
-			cerr << "Cannot find a usable Winsock.dll, Needs Winsock2";
 			exit(1);
 		}
 	 
@@ -32,3 +32,5 @@ public:
 		WSACleanup();
 	}
 };
+
+WSInitSocket MyWSocket;
