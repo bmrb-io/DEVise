@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/23 20:47:42  jussi
+  Removed references to DispQueryProc.
+
   Revision 1.5  1996/11/18 23:40:44  wenger
   Got 'multi' to compile with latest Color stuff.
 
@@ -50,7 +53,6 @@
 #include "TDataMap.h"
 #include "TDataHost.h"
 #include "Temp.h"
-#include "Snapshot.h"
 #include "ViewScatter.h"
 #include "HostMappingClassInfo.h"
 #include "HostRec.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/23 20:47:41  jussi
+  Removed references to DispQueryProc.
+
   Revision 1.4  1996/07/10 00:01:23  jussi
   TDataMapDispatch replaced with TDataMap.
 
@@ -47,7 +50,6 @@
 #include "TDataMap.h"
 #include "TDataCycle.h"
 #include "Temp.h"
-#include "Snapshot.h"
 #include "ViewScatter.h"
 #include "CycleCpuTimeMappingClassInfo.h"
 #include "CycleRec.h"

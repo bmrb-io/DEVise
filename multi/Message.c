@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1996/11/23 21:31:47  jussi
+  Removed failing support for variable-sized records.
+*/
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -31,7 +34,7 @@ int binarySearch = false;
 /* Get a record from TData */
 void GetRec(TData *tdata, RecId id, MultiRec &rec)
 {
-    tdata->InitGetRecs(id,id,AnyOrder);
+    tdata->InitGetRecs(id,id);
     RecId startRid; int numRecs, dataSize;
     if(!tdata->GetRecs(&rec,sizeof(MultiRec),startRid,numRecs,dataSize)) {
         fprintf(stderr,"GetRec: no record\n");

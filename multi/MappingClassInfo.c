@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/23 20:47:42  jussi
+  Removed references to DispQueryProc.
+
   Revision 1.6  1996/11/13 16:57:28  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -60,7 +63,6 @@
 #include "TDataMap.h"
 #include "TDataMulti.h"
 #include "Temp.h"
-#include "Snapshot.h"
 #include "ViewScatter.h"
 #include "MappingClassInfo.h"
 #include "MultiRec.h"
