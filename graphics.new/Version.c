@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/08/20 22:11:13  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.34.2.1  1997/08/14 16:16:06  wenger
   Statistics, etc., now work correctly for timed-out draw in ViewScatter-
   type views; bumped up version because of improved stop capability.
@@ -205,7 +209,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.6";
+static const char *	version = "1.4.7";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";

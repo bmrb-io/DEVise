@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/10/03 14:36:57  wenger
+  Various fixes to get session opening/saving to work with client/server
+  version; reading old-style (Tcl) session files now works in back end;
+  got back-end session file stuff working for multi.
+
   Revision 1.6  1997/10/02 18:46:31  wenger
   Opening and saving batch-style sessions in back end now fully working;
   added tk2ds.tcl script for conversion.
@@ -469,12 +474,16 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
   // "DEVise dteImportFileType", and "DEVise dataSegment" commands.
   if (!strcmp(argv[1], "create") && !strcmp(argv[2], "tdata")) {
     // No op.
+    Tcl_SetResult(interp, "", TCL_VOLATILE);
   } else if (!strcmp(argv[1], "importFileType")) {
     // No op.
+    Tcl_SetResult(interp, "", TCL_VOLATILE);
   } else if (!strcmp(argv[1], "dteImportFileType")) {
     // No op.
+    Tcl_SetResult(interp, "", TCL_VOLATILE);
   } else if (!strcmp(argv[1], "dataSegment")) {
     // No op.
+    Tcl_SetResult(interp, "", TCL_VOLATILE);
   } else {
     // don't pass DEVise command verb (argv[0])
     if (ParseAPI(argc - 1, &argv[1], (ControlPanel *) clientData) < 0) {
@@ -485,8 +494,9 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
   }
 
 #if defined(DEBUG)
-  printf("  finished command %s; result = %s\n", argv[1], status == TCL_OK ?
+  printf("  finished command %s; status = %s\n", argv[1], status == TCL_OK ?
       "TCL_OK" : "TCL_ERROR");
+  printf("    result = {%s}\n", interp->result);
 #endif
 
   return status;
