@@ -31,6 +31,7 @@ Help()
     cout << "  status" << endl;
     cout << "  quit (kills server)" << endl;
     cout << "  exit" << endl;
+    cout << "  help (or \"?\")" << endl;
 }
 
 void
@@ -45,6 +46,23 @@ Demo(char *server, int port)
     int delay = 3;
     int windowID;
 
+    //
+    // Test the status message
+    //
+    if ((fd = ETkPatron(server, port, errbuf)) < 0)
+    {
+	cout << "Could not connect to port " << port << " on "
+	    << server << endl;
+	return;
+    }
+    sprintf(cmd, "status");
+    cout << "\nSending command: " << cmd << endl;
+    MyWrite(fd, cmd, strlen(cmd));
+    MyWrite(fd, "\n", 1);
+    newlinefd(reply, fd, ETK_MAX_STRLEN);
+    cout << "Reply: " << reply << endl;
+    sleep(delay);
+    
     //
     // Create a window
     //
@@ -400,8 +418,14 @@ main()
     int argc;
     int i;
     
-    cout << "Sample client for the EmbeddedTk server" << endl;
-    cout << "Compile date: " << CompDate::Get() << endl;
+    cout << "-----------------------------------------------------" << endl;
+    cout << " Sample client for the EmbeddedTk server" << endl;
+    cout << " Compile date: " << CompDate::Get() << endl;
+    cout << "-----------------------------------------------------" << endl;
+    cout << endl;
+    cout << "    Type \"?\" for help" << endl;
+    cout << "    Type \"demo\" to see a demo" << endl;
+    cout << endl;
     
     while (cin)
     {
