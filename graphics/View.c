@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.211  1999/12/14 20:33:52  wenger
+  Rubberband lines aren't allowed to go outside of data area; rubberband
+  lines are not drawn in views in which zooming is disabled.
+
   Revision 1.210  1999/12/14 17:57:09  wenger
   Added enableDrawing command (totally enables or disables drawing) to
   allow Omer to avoid "flashing" when he inserts views into windows.
@@ -1301,13 +1305,13 @@ void View::SetVisualFilterCommand(VisualFilter &filter, Boolean registerEvent)
     args.AddArg(GetName());
 
     char tmpBuf[128];
-    sprintf(tmpBuf, "%g", filter.xLow);
+    sprintf(tmpBuf, "%.20g", filter.xLow);
     args.AddArg(tmpBuf);
-    sprintf(tmpBuf, "%g", filter.yLow);
+    sprintf(tmpBuf, "%.20g", filter.yLow);
     args.AddArg(tmpBuf);
-    sprintf(tmpBuf, "%g", filter.xHigh);
+    sprintf(tmpBuf, "%.20g", filter.xHigh);
     args.AddArg(tmpBuf);
-    sprintf(tmpBuf, "%g", filter.yHigh);
+    sprintf(tmpBuf, "%.20g", filter.yHigh);
     args.AddArg(tmpBuf);
 
     CmdSource cmdSrc(CmdSource::USER, CLIENT_INVALID);
@@ -4293,8 +4297,8 @@ View::MouseDrag(int x1, int y1, int x2, int y2)
 
   CursorHit::HitType hitType = WindowRep::GetCursorHit()._hitType;
   if (hitType == CursorHit::CursorNone) {
-    ForceIntoDataArea(x1, y1);
-    ForceIntoDataArea(x2, y2);
+    (void) ForceIntoDataArea(x1, y1);
+    (void) ForceIntoDataArea(x2, y2);
     if (x1 != x2 && y1 != y2 && !GetRubberbandDisabled()) {
       winRep->DrawRubberband(x1, y1, x2, y2);
     }
@@ -4525,9 +4529,11 @@ View::EnableDrawing(Boolean enable)
   }
 }
 
-void
+Boolean
 View::ForceIntoDataArea(int &x, int &y)
 {
+  Boolean result = false;
+
   int dataX, dataY, dataWidth, dataHeight;
   GetDataArea(dataX, dataY, dataWidth, dataHeight);
 
@@ -4537,10 +4543,23 @@ View::ForceIntoDataArea(int &x, int &y)
   Geometry(viewX, viewY, viewWidth, viewHeight);
   int dataY2 = viewHeight - (dataY + dataHeight);
 
-  x = MAX(dataX, x);
-  x = MIN(dataX + dataWidth - 1, x);
-  y = MAX(dataY2 - 1, y);
-  y = MIN(dataY2 + dataHeight - 1, y);
+  if (x < dataX) {
+    x = dataX;
+    result = true;
+  } else if (x > dataX + dataWidth - 1) {
+    x = dataX + dataWidth - 1;
+    result = true;
+  }
+
+  if (y < dataY2 - 1) {
+    y = dataY2 - 1;
+    result = true;
+  } else if (y > dataY2 + dataHeight - 1) {
+    y = dataY2 + dataHeight - 1;
+    result = true;
+  }
+
+  return result;
 }
 
 //******************************************************************************

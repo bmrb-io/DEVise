@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.100  1999/12/14 17:57:19  wenger
+  Added enableDrawing command (totally enables or disables drawing) to
+  allow Omer to avoid "flashing" when he inserts views into windows.
+
   Revision 1.99  1999/11/19 17:17:31  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -875,6 +879,10 @@ protected:
 	void GetXAxisArea(int &x, int &y, int &width, int &height,
 			  int &startX);
 	void GetYAxisArea(int &x, int &y, int &width, int &height);
+
+	// Force the given point to be within the view's data area.  Returns
+	// true iff original point was outside data area.
+	Boolean ForceIntoDataArea(int &x, int &y);
 
 private:
     void CleanUpViewSyms();

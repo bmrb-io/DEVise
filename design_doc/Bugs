@@ -2118,13 +2118,15 @@ Num Date        Status  Description
 542 12/03/99	OPEN	JavaScreen totally fails if font family specified
 			in GData is illegal. (rkw)
 
-543 12/10/99	OPEN	If a view has axes and a cursor, clicking in the
+543 12/10/99	FIXED	If a view has axes and a cursor, clicking in the
 			axis area (outside the data area) moves the cursor.
 			(rkw)
+			(Fixed by rkw, 12/14/99.)
 
-544 12/10/99	OPEN	Clicking (not dragging) in a view with a cursor
+544 12/10/99	FIXED	Clicking (not dragging) in a view with a cursor
 			changes the cursor size (see
 			Bmrb/4096_pep1_highlight1.ds) (rkw)
+			(Fixed by rkw, 12/15/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

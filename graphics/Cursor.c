@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1999/11/19 17:17:26  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.31  1999/10/01 21:08:34  wenger
   Fixed problem in DeviseCursor::IsOnCursor() that caused crash if cursor
   has no source view.
@@ -392,8 +396,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
 
   MatchGrid(x, y, width, height, filter);
 
-  if (filter.xLow != oldFilter.xLow || filter.xHigh != oldFilter.xHigh ||
-    filter.yLow != oldFilter.yLow || filter.yHigh != oldFilter.yHigh) {
+  if (!(filter == oldFilter)) {
     if (_dst) {
       (void)_dst->HideCursors();
     }

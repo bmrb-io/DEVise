@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.132  1999/12/14 20:33:59  wenger
+  Rubberband lines aren't allowed to go outside of data area; rubberband
+  lines are not drawn in views in which zooming is disabled.
+
   Revision 1.131  1999/11/19 17:17:41  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -2436,8 +2440,8 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 	  GetName(), x1, y1, x2, y2, button);
 #endif
 
-    ForceIntoDataArea(x1, y1);
-    ForceIntoDataArea(x2, y2);
+    Boolean outsideDataArea = ForceIntoDataArea(x1, y1) &&
+	    ForceIntoDataArea(x2, y2);
 
     int xlow = MIN(x1, x2);
 	int ylow = MIN(y1, y2);
@@ -2450,6 +2454,7 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 	if (!IsInPileMode()) {
 	  if ((xlow == xhigh) && (ylow == yhigh) &&
 	      WindowRep::GetCursorHit()._hitType == CursorHit::CursorNone &&
+		  !outsideDataArea &&
 	      CheckCursorOp(xlow, ylow)) {	// Was a cursor event?
         return;
       }
@@ -2471,7 +2476,7 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
 	  // if so, move it.
 	  //
 	  DeviseCursor *cursor = WindowRep::GetCursorHit()._cursor;
-	  if (cursor->GetDst() == this) {
+	  if (cursor->GetDst() == this && (x1 != x2 || y1 != y2)) {
 #if defined(DEBUG)
         printf("Moving cursor <%s> in view <%s>\n", cursor->GetName(),
 		    GetName());
