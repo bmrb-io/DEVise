@@ -98,8 +98,6 @@ public:
 		delete myWhere;
 		delete [] next;
 		delete tupleLoader;
-
-		// add more stuff here
 	}
      virtual void initialize(){
           if (left){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/08/14 02:08:52  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.30  1997/08/12 19:58:41  donjerko
   Moved StandardTable headers to catalog.
 
@@ -294,6 +297,7 @@ Site* QueryTree::createSite(){
 	TRY(typifyList(sites, option), 0);
 	sites->rewind();
 	LOG(logFile << "Typified sites\n");
+	Site* dirtyDelete = NULL;
      while(!sites->atEnd()){
 		TRY(List<Site*>* alters = 
 			sites->get()->generateAlternatives(), NULL);
@@ -320,6 +324,9 @@ Site* QueryTree::createSite(){
 
 			// must not delete current because it is used to
 			// typify the global query
+			// memory and fd leak!!!
+
+			dirtyDelete = current;
 
 		}
 		Site* current = sites->get();
@@ -421,5 +428,6 @@ Site* QueryTree::createSite(){
 	LOG(logFile << endl;)
 	assert(predicateList->cardinality() == 0);
 	delete predicateList;	// destroy list too
+//	delete dirtyDelete;  	// it core dumps
 	return siteGroup;
 }

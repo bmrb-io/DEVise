@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/08/14 02:08:57  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.26  1997/08/04 14:50:48  donjerko
   Fixed the bug in insert and delete queries.
 
@@ -334,7 +337,7 @@ public:
 	}
 	virtual ~LocalTable(){
 		delete fout;
-		delete writePtrs;
+		delete [] writePtrs;
 		delete directSite;
 	}
 	virtual void addTable(TableAlias* tabName){

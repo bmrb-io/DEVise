@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/12 19:58:41  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.11  1997/08/10 20:30:55  donjerko
   Fixed the NO_RTREE option.
 
@@ -71,8 +74,9 @@ RTreeReadExec::RTreeReadExec(
 }
 
 RTreeReadExec::~RTreeReadExec(){
-	delete ret_key;
+	delete rtree_m;
 	delete cursor;
+	delete ret_key;
 	delete [] tuple;
 	delete [] unmarshalPtrs;
 	delete [] rtreeFldLens;

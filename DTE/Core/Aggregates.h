@@ -377,6 +377,13 @@ public:
 	}
 
 	virtual ~StandAggsExec(){
+		delete inputIter;
+		if(aggExecs){
+			for(int i = 0; i < numFlds; i++){
+				delete aggExecs[i];
+			}
+		}
+		delete [] aggExecs;
 		delete [] retTuple;
 	}
 
@@ -417,8 +424,10 @@ public:
 	}
 
 	virtual ~StandGroupByExec(){
-		for(int i = 0; i < numFlds; i++){
-			delete aggExecs[i];
+		if(aggExecs){
+			for(int i = 0; i < numFlds; i++){
+				delete aggExecs[i];
+			}
 		}
 		delete [] aggExecs;
 		delete [] grpByPos;

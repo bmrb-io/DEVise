@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/08/12 19:58:43  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.15  1997/07/30 21:39:19  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -82,7 +85,6 @@ public:
 		numFlds(numFlds) {}
 	StandReadExec(const ISchema& schema, istream* in);
 	virtual ~StandReadExec(){
-		// destroyTuple(tuple, numFlds, typeIDs);
 		delete [] currentSz;
 		delete [] readPtrs;
 		destroyTuple(tuple, numFlds, destroyPtrs);

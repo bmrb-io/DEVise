@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/14 02:08:58  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.28  1997/08/12 19:58:47  donjerko
   Moved StandardTable headers to catalog.
 
@@ -975,6 +978,11 @@ public:
 		typeLoaders = NULL;
 	}
 	virtual ~TupleLoader(){
+		if(typeLoaders){
+			for(int i = 0; i < numFlds; i++){
+				delete typeLoaders[i];
+			}
+		}
 		delete [] typeLoaders;
 	}
 	void open(int numFlds, const TypeID* typeIDs){ // throws

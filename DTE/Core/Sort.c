@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/14 02:08:53  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.11  1997/07/30 21:39:18  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -259,24 +262,35 @@ void SortExec::insert_sort(Tuple **A, int length)
 }
 
 SortExec::~SortExec(){ 
-    delete [] temp_files;
-    // out_temp_file deleted by Inserter; 
-    delete output_buf; 
-    delete [] input_buf;	// need to delete Iterators too
-    delete Q;
-    delete [] comparePtrs;
-    delete tupleLoader;
+	delete inpIter;
+	delete tupleLoader;
+	delete [] typeIDs;
+	delete Q;
 
-    char filename[20];
- for (int i =0; i < Nruns; i++)
-   {
-	  strcpy(filename,temp_filename);
-	  char run_num[5];
-	  sprintf(run_num, "%d", i+1);
-	  strcat(filename, run_num);
-	  unlink(filename);
-  }
-}    
+	delete [] temp_files;
+	
+	// individual streams of temp_files are deleted by input_buf destructors
+
+	if(input_buf){
+		for(int i = 0; i < Nruns; i++){
+			delete input_buf[i];
+		}
+	}
+	delete [] input_buf;
+	delete output_buf;    // out_temp_file deleted too; 
+	delete [] sortFlds;
+	delete [] comparePtrs;
+	delete node_ptr;
+
+	char filename[20];
+	for (int i =0; i < Nruns; i++){
+		strcpy(filename,temp_filename);
+		char run_num[5];
+		sprintf(run_num, "%d", i+1);
+		strcat(filename, run_num);
+		unlink(filename);
+	}
+}
 
 Iterator* Sort::createExec(){
 	assert(input);

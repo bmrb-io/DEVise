@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/14 02:08:51  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.14  1997/08/10 20:30:54  donjerko
   Fixed the NO_RTREE option.
 
@@ -266,8 +269,19 @@ Site* IndexParse::createSite(){
 	rtree_m.bulk_load(bulk_file, root1, false); // example bulkload
 	// this has created index
 
-	close(bulk_file);
 	printf("Created index with root page: %d\n", root1.pid);
+
+	close(bulk_file);
+	if(remove(bulkfile.chars()) < 0){
+		perror("remove:");
+		String msg = String("Failed to remove tmp file: ") + bulkfile;
+		THROW(new Exception(msg), NULL);
+	}
+	if(remove(convBulk.chars()) < 0){
+		perror("remove:");
+		String msg = String("Failed to remove tmp file: ") + convBulk;
+		THROW(new Exception(msg), NULL);
+	}
 //	printf("Dump follows:\n");
 //	rtree_m.olddraw(root1, stdout);
 	// note, you MUST keep root page
