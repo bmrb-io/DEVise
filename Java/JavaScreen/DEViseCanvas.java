@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.89  2002/02/19 22:13:28  xuk
+// Improvement for label drawing.
+//
 // Revision 1.88  2002/02/18 22:07:59  xuk
 // Modification for axis label drawing.
 //
@@ -848,26 +851,19 @@ public class DEViseCanvas extends Container
 						   v.fontBoldY, v.fontItalicY));
 
 		    if (v.viewDataYMin >= 0) {
-			currentY = v.viewDataYMin;
-			currentYPos = loc.y + loc.height;
-
 			// round up the min
-			if (v.labelFactorY != 0) {
-			    currentY = (int)((currentY + v.labelFactorY * 0.5) / v.labelFactorY);
-			    currentY = currentY * v.labelFactorY;
-			}
+			currentY = v.getMin(v.viewDataYMin, step);
 			currentYPos = loc.y + loc.height - 
 			    (int)((currentY - v.viewDataYMin) / v.dataYStep);
 
-			while (currentYPos >= loc.y + 20) {
+			while (currentYPos >= loc.y + 10) {
 			    currentY *= v.factorY;
 			    
 			    labelY = v.getYLabel(currentY);
 			    width = gc.getFontMetrics().stringWidth(labelY);
-			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
+			    gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			    //currentYPos -= 40;	    
-			    currentY += step;
+    			    currentY += step;
 			    currentYPos = loc.y + loc.height - 
 				(int)((currentY - v.viewDataYMin) / v.dataYStep);
 			}
@@ -877,13 +873,13 @@ public class DEViseCanvas extends Container
 			currentYPos = loc.y + loc.height - 
 			    (int)((0 - v.viewDataYMin) / v.dataYStep);
 			
-			while (currentYPos >= loc.y + 20) {
+			while (currentYPos >= loc.y + 10) {
 			    currentY *= v.factorY;
 			    
 			    labelY = v.getYLabel(currentY);
 			    width = gc.getFontMetrics().stringWidth(labelY);
 
-			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
+			    gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			    //currentYPos -= 40;	    
 			    currentY += step;
@@ -902,7 +898,7 @@ public class DEViseCanvas extends Container
 			    labelY = v.getYLabel(currentY);
 			    width = gc.getFontMetrics().stringWidth(labelY);
 
-			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
+			    gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			    //currentYPos += 40;	    
 			    currentY -= step;
@@ -941,15 +937,7 @@ public class DEViseCanvas extends Container
 						   v.fontBoldX, v.fontItalicX));
 
 		    if (v.viewDataXMin >= 0) {
-			currentX = v.viewDataXMin;
-			currentXPos = loc.x;
-
-			// round up the min
-			if (v.labelFactorX != 0) {
-			    currentX = (int)((currentX + v.labelFactorX * 0.5) / v.labelFactorX);
-			    currentX = currentX * v.labelFactorX;
-			}
-
+			currentX = v.getMin(v.viewDataXMin, step);
 			currentXPos = loc.x + 
 			    (int)((currentX - v.viewDataXMin) / v.dataXStep);
 
@@ -1046,24 +1034,16 @@ public class DEViseCanvas extends Container
 					       view.fontBoldY, view.fontItalicY));
 
 		if (view.viewDataYMin >= 0) {
-		    currentY = view.viewDataYMin;
-		    currentYPos = loc.y + loc.height;
-
-		    // round up the min
-		    if (view.labelFactorY != 0) {
-			    currentY = (int)((currentY + view.labelFactorY * 0.5) / view.labelFactorY);
-			    currentY = currentY * view.labelFactorY;
-		    }
-		    
+		    currentY = view.getMin(view.viewDataYMin, step);
 		    currentYPos = loc.y + loc.height - 
 			(int)((currentY - view.viewDataYMin) / view.dataYStep);
 
-		    while (currentYPos >= loc.y + 20) {
+		    while (currentYPos >= loc.y + 10) {
 			currentY *= view.factorY;
 			
 			labelY = view.getYLabel(currentY);
 			width = gc.getFontMetrics().stringWidth(labelY);
-			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
+			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			// currentYPos -= 40;	    
 			currentY += step;
@@ -1076,13 +1056,13 @@ public class DEViseCanvas extends Container
 		    currentYPos = loc.y + loc.height - 
 			(int)((0 - view.viewDataYMin) / view.dataYStep);
 
-		    while (currentYPos >= loc.y + 20) {
+		    while (currentYPos >= loc.y + 10) {
 			currentY *= view.factorY;
 			
 			labelY = view.getYLabel(currentY);
 			width = gc.getFontMetrics().stringWidth(labelY);
 
-			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
+			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			//currentYPos -= 40;	    
 			currentY += step;
@@ -1101,7 +1081,7 @@ public class DEViseCanvas extends Container
 			labelY = view.getYLabel(currentY);
 			width = gc.getFontMetrics().stringWidth(labelY);
 
-			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
+			gc.drawString(labelY, loc.x-10-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			//currentYPos += 40;	    
 			currentY -= step;
@@ -1141,15 +1121,8 @@ public class DEViseCanvas extends Container
 					       view.fontBoldX, view.fontItalicX));
 
 		if (view.viewDataXMin >= 0) {
-		    currentX = view.viewDataXMin;
-		    currentXPos = loc.x;
-		    
 		    // round up the min
-		    if (view.labelFactorX != 0) {
-			currentX = (int)((currentX + view.labelFactorX * 0.5) / view.labelFactorX);
-			currentX = currentX * view.labelFactorX;
-		    }
-
+		    currentX = view.getMin(view.viewDataXMin, step);
 		    currentXPos = loc.x + 
 			(int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    

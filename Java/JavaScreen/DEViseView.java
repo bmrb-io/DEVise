@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2002/02/19 22:13:32  xuk
+// Improvement for label drawing.
+//
 // Revision 1.66  2002/02/18 22:08:00  xuk
 // Modification for axis label drawing.
 //
@@ -247,8 +250,6 @@ public class DEViseView
     int fontBoldY = 0;
     int fontItalicX = 0;
     int fontItalicY = 0;
-    float labelFactorX = 1;
-    float labelFactorY = 1;
 
     public DEViseView(jsdevisec panel, String pn, String name,
       String piledname, String title, Rectangle loc, float Z, int dim,
@@ -555,10 +556,7 @@ public class DEViseView
 			  int type, int size, int bold, int italic)
       throws YError
     {
-	float gap = 0;
-	int log = 0;
-        
-	if (axis.equals("X")) {
+       	if (axis.equals("X")) {
             viewDataXMin = min;
             viewDataXMax = max;
             viewInfoFormatX = format;
@@ -573,12 +571,8 @@ public class DEViseView
 	    fontSizeX = size;
 	    fontBoldX = bold;
 	    fontItalicX = italic;
-
-	    gap = viewDataXMax - viewDataXMin;
-	    log = (int)(Math.log(gap)/Math.log(10));
-	    labelFactorX = (float)Math.pow(10, log-1);
-	    
-        } else if (axis.equals("Y")) {
+	
+	} else if (axis.equals("Y")) {
             viewDataYMin = min;
             viewDataYMax = max;
             viewInfoFormatY = format;
@@ -593,11 +587,6 @@ public class DEViseView
 	    fontSizeY = size;
 	    fontBoldY = bold;
 	    fontItalicY = italic;
-
-	    gap = viewDataYMax - viewDataYMin;
-	    log = (int)(Math.log(gap)/Math.log(10));
-	    labelFactorY = (float)Math.pow(10, log-1);
-
         } else {
 	    throw new YError("Illegal axis type (" + axis + ")");
 	}
@@ -882,18 +871,19 @@ public class DEViseView
 	    float abs = Math.abs(y);
 	    String labelY = new Float(y).toString();
 
-	    if (abs > 50000) {
+	    if (abs > 99999) {
 		int y0 = (int)(y);
 		labelY = DEViseViewInfo.viewParser(y0, viewInfoFormatY);
 		int e = labelY.indexOf('E');
-		while (labelY.charAt(e-1) == '0') {
+		while (labelY.charAt(e-1) == '0' 
+		       || labelY.charAt(e-1) == '.') {
 		    labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
 		    e = e-1;
 		}
 		length = labelY.length();
 	    }
 	    else if (abs >= 10) { // |y| >= 10
-		length = (int)(Math.log(abs) / Math.log(10) + 0.001) + 1;
+		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
 		if (y < 0) // "-"
 		    length ++;
 	    } else {
@@ -948,45 +938,37 @@ public class DEViseView
 	float log = 0;
 	float temp = 0;
 
-	// get the factor
-	if (f >= 1) {
-	    log = (int)(Math.log(f)/Math.log(10));
-	    factor = (float)Math.pow(10, log);
+	if (f >= 1)
+	    log = (int)(Math.log(f) / Math.log(10) + 0.0001);
+	else 
+	    log = (int)(Math.log(f) / Math.log(10) + 0.0001) - 1;
+	factor = (float)Math.pow(10, log);
+	temp = f / factor; 
+	
+	if (temp >= 7.5) 
+	    f = (float)((10 + 0.0001) * factor);
+	else if (temp >= 3.5)
+	    f = (float)((5 + 0.0001) * factor);
+	else if (temp >= 1.5)
+	    f = (float)((2 + 0.0001) * factor);
+	else 
+	    f = (float)((1 + 0.0001) * factor);
 
-	
-	    // for step >= 10, round up to 0.5*factor
-	    if (factor > 1) {
-		temp = (int)((f + factor * 0.5) / factor);
-		temp = temp * factor;
-		if (temp >= f) {
-		    if ((temp - f) > (f - temp + 0.5 * factor))
-			temp -= (float)(0.5 * factor);
-		} else {
-		    if ((f - temp) > (temp + 0.5 * factor - f))
-			temp += (float)(0.5 * factor);
-		}
-		f = (int)temp;		    
-	    } else { // for step [1, 10)
-		if (f > 7.5) 
-		    f = 10.0f;
-		else if (f > 4)
-		    f = 5.0f;
-		else if (f > 1.8)
-		    f = 2.0f;
-		else 
-		    f = 1.0f;
-	    }	
-	} else { // 0 < f < 1
-	    if (f < 0.15)
-		f = (float)0.1;
-	    else if (f < 0.25)
-		f = (float)0.2;
-	    else if (f < 0.7)
-		f = (float)0.5;
-	    else 
-		f = (float)1.0;
-	}
-	
+	return f;
+    }
+
+    // get the proper min value on axises
+    public float getMin(float min, float step)
+    {
+	int factor = 0;
+	float f = 0;
+
+	factor = (int)(min / step);
+	f = factor * step;
+
+	if (f < min)
+	    f += step;
+
 	return f;
     }
 
@@ -1008,7 +990,7 @@ public class DEViseView
 	    if (c == 'b') {
 		int mon = cal.get(Calendar.MONTH);
 		
-		switch (mon) {
+		switch (mon+1) {
 		case 1: st = "Jan"; break;
 		case 2: st = "Feb"; break;
 		case 3: st = "March"; break;
@@ -1021,7 +1003,7 @@ public class DEViseView
 		case 10: st = "Oct"; break;
 		case 11: st = "Nov"; break;
 		case 12: st = "Dec"; break;
-		}		    
+		}		
 	    } 
 	    else if (c == 'd') {
 		st = new Integer(cal.get(Calendar.DAY_OF_MONTH)).toString();
@@ -1035,7 +1017,7 @@ public class DEViseView
 		    + cal.get(Calendar.SECOND);
 	    }
 	    else if (c == 'm') {
-		st = new Integer(cal.get(Calendar.MONTH)).toString();
+		st = new Integer(cal.get(Calendar.MONTH)+1).toString();
 	    }
 	    else if (c == 'H') {
 		st = new Integer(cal.get(Calendar.HOUR_OF_DAY)).toString();
