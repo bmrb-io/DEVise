@@ -1,0 +1,14 @@
+depend:
+	makedepend -fMakefile.hp *.C
+
+# DO NOT DELETE
+
+http_url.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+http_url.o: /usr/include/stdlib.h /usr/include/string.h
+http_url.o: /usr/include/netinet/in.h /usr/include/netdb.h
+http_url.o: /usr/include/sys/param.h /usr/include/sys/types.h
+http_url.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+http_url.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+http_url.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
+http_url.o: /usr/include/sys/socket.h

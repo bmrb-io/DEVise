@@ -1,0 +1,11 @@
+depend:
+	makedepend -fMakefile.sun *.C
+
+# DO NOT DELETE
+
+http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
+http_url.o: /usr/include/sys/stdtypes.h /usr/include/string.h
+http_url.o: /usr/include/netinet/in.h /usr/include/netdb.h
+http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
+http_url.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+http_url.o: /usr/include/sys/socket.h

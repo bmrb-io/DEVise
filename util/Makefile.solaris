@@ -1,0 +1,12 @@
+depend:
+	makedepend -fMakefile.solaris -I/usr/X11R6/include \
+		-I/s/tcl/include *.C
+# DO NOT DELETE
+
+http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
+http_url.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+http_url.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+http_url.o: /usr/include/sys/time.h /usr/include/sys/time.h
+http_url.o: /usr/include/sys/unistd.h /usr/include/string.h
+http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
