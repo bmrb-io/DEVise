@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.94  1999/05/26 19:50:52  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.93  1999/05/21 14:52:37  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -541,7 +550,9 @@ QueryProcFull::QueryProcFull()
          &_dispatcherID);
 #endif
 
-  Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+  if (Init::ConvertGData()) {
+    Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+  }
 }
 
 void QueryProcFull::Cleanup()
