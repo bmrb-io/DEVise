@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/04/18 20:46:20  donjerko
+  Added function pointers to marshall types.
+
   Revision 1.18  1997/04/08 01:47:36  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -305,15 +308,13 @@ public:
 		writePtrs = NULL;
 		input = NULL;
 	}
-	LocalTable(String nm, Site* base, List<BaseSelection*>* sel) : Site(nm) {
+	LocalTable(String nm, Site* base) : Site(nm) {
 
 		// This site is used as a root, on top of all other sites.
 		// It does includes leftover constants, if any.
 
 		mySelect = new List<BaseSelection*>;
-		mySelect->addList(sel);
 		this->iterator = NULL;
-		numFlds = mySelect->cardinality();
 		directSite = base;
 		fout = NULL;
 		writePtrs = NULL;

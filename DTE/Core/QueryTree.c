@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/04/18 20:46:17  donjerko
+  Added function pointers to marshall types.
+
   Revision 1.21  1997/04/14 20:44:12  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -309,7 +312,8 @@ Site* QueryTree::createSite(){
 	// Create top site that takes everything left over (constants or nothing)
 
 	assert(predicateList->isEmpty());
-	siteGroup = new LocalTable(siteGroup->getName(), siteGroup, selectList);
+	siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
+	siteGroup->filter(selectList);
 	TRY(siteGroup->typify(option), NULL);
 
 	for(int k = count; k >= 0;k--){
