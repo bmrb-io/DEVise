@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1996/06/27 22:54:09  jussi
+#  Added support for XOR color value.
+#
 #  Revision 1.22  1996/05/15 16:37:05  jussi
 #  Removed ExecuteScript procedure.
 #
@@ -235,7 +238,7 @@ proc CategoryInstances {category } {
 # Get the class of an instance belonging to category
 
 proc GetClass { category instance } {
-    set classes [DEVise get $category ]
+    set classes [DEVise get $category]
     foreach c $classes {
 	set insts [DEVise get $category $c]
 	foreach inst $insts {
@@ -245,6 +248,8 @@ proc GetClass { category instance } {
 	    }
 	}
     }
+    puts "Warning -- could not find class of $instance"
+    return ""
 }
 
 ############################################################
@@ -253,7 +258,7 @@ proc GetClass { category instance } {
 # Form: {tdatafilebasename1 tdatafilebasename2 ...}
 
 proc TdataSet {} {
-    return [CategoryInstances "tdata" ]
+    return [CategoryInstances "tdata"]
 }
 
 ############################################################
@@ -262,7 +267,7 @@ proc TdataSet {} {
 # Form: {gdataname1 gdataname2 ...}
 
 proc GdataSet {} {
-    return [ CategoryInstances "mapping" ]
+    return [CategoryInstances "mapping"]
 }
 
 ############################################################
