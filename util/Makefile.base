@@ -40,7 +40,7 @@ genimage: genimage.o
 issm2bin: issm2bin.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
-dbcetx: dbcetx.o
+dbcext: dbcext.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 tardump: tardump.o
