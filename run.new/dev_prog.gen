@@ -1,0 +1,36 @@
+############################################################
+
+# Define the environment variables needed to run DEVise,
+# given that DEVISE_PROG has already been defined appropriately.
+
+# $Id$
+
+############################################################
+
+setenv DEVISE_MONO_EXEC    $DEVISE_PROG/bin/devise
+setenv DEVISE_CLIENT_EXEC    $DEVISE_PROG/bin/devisec
+setenv DEVISE_SERVER_EXEC    $DEVISE_PROG/bin/devised
+setenv DEVISE_LIB     $DEVISE_PROG/lib
+setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
+setenv DEVISE_WORK    /tmp/`whoami`-devise-work
+setenv DEVISE_LOG_DIR		$DEVISE_TMP
+
+set dyn_lib_dir = $DEVISE_PROG/dyn_lib
+if (-e $dyn_lib_dir) then
+  setenv LD_LIBRARY_PATH $dyn_lib_dir':/s/gcc/lib'
+else
+  setenv LD_LIBRARY_PATH /s/gcc/lib
+endif
+
+set tcl_dir = $DEVISE_PROG/tcl
+if (-e $tcl_dir) then
+  setenv TCL_LIBRARY $tcl_dir
+endif
+
+set tk_dir = $DEVISE_PROG/tk
+if (-e $tk_dir) then
+  setenv TK_LIBRARY $tk_dir
+endif
+
+# For Tasvir, EmbeddedTk, etc.
+set path = ( $path $DEVISE_PROG/bin )

@@ -9,9 +9,8 @@
 
 setenv DEVISE_VIS    /p/devise/demo
 
-setenv DEVISE_DAT     $DEVISE_VIS/dat
-setenv DEVISE_SCHEMA  $DEVISE_VIS/schema/schema
-setenv DEVISE_HOME_TABLE	$DEVISE_SCHEMA/catalog.js.dte
-setenv DEVISE_CACHE   $DEVISE_VIS/cache
+source dev_vis.gen
+
+# Special cases.
 setenv DEVISE_SESSION $DEVISE_VIS/session.js
-setenv DEVISE_PALETTE	$DEVISE_VIS/palette
+setenv DEVISE_HOME_TABLE	$DEVISE_SCHEMA/catalog.js.dte

@@ -12,6 +12,6 @@ limit coredumpsize 0
 limit descriptors 256
 
 source dev_prog.std
-source dev_public.std
+source dev_vis.std
 
 source start_cs

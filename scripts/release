@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2001/08/30 17:12:08  wenger
+#  Minor improvements to make errors more visible.
+#
 #  Revision 1.4  2001/08/30 16:47:06  wenger
 #  Various improvements to release and install scripts.
 #
@@ -91,13 +94,21 @@ endif
 echo ""
 
 #-----------------------------------------------------------
-# Create bin directories and copy executables.
+# Create top-level destination directory.
 
-echo "Creating bin directories"
+echo ""
+echo "Creating top-level destination directory"
 
 if (! -d $dest) then
   mkdir $dest
 endif
+
+
+#-----------------------------------------------------------
+# Create bin and dyn_lib directories.
+
+echo ""
+echo "Creating bin and dyn_lib directories"
 
 if (! -e $dest/bin) then
   ln -s bin_arch/@sys $dest/bin
@@ -107,39 +118,74 @@ if (! -d $dest/bin_arch) then
   mkdir $dest/bin_arch
 endif
 
+if (! -e $dest/dyn_lib) then
+  ln -s dyn_lib_arch/@sys $dest/dyn_lib
+endif
+
+if (! -d $dest/dyn_lib_arch) then
+  mkdir $dest/dyn_lib_arch
+endif
+
+foreach arch ($arches)
+  if ($arch == linux) then
+    set mainarch = i386_linux
+    set otherarches = (i386_linux22 i386_rh61 i386_rh62)
+  else if ($arch == solaris) then
+    set mainarch = sunx86_54
+    set otherarches = (sunx86_55 sunx86_56 sunx86_57)
+  else if ($arch == solsparc) then
+    set mainarch = sun4m_54
+    set otherarches = (sun4m_55 sun4x_55 sun4x_56 sun4x_57)
+  endif
+
+  foreach archdir (bin_arch dyn_lib_arch)
+    pushd $dest/$archdir > /dev/null
+
+    if (! -d $mainarch) then
+      mkdir $mainarch
+    endif
+
+    foreach dir ($otherarches)
+      if (! -e $dir) then
+        ln -s $mainarch $dir
+      endif
+    end
+
+    popd > /dev/null
+  end
+end
+
+#-----------------------------------------------------------
+# Copy libraries to dyn_lib directories.
+cd scripts/release_scripts
+
+foreach arch ($arches)
+  echo "Releasing $arch dynamic libraries"
+
+  ./dyn_lib_$arch'1' $dest/dyn_lib
+end
+
+cd ../..
+
+#-----------------------------------------------------------
+# Copy executables to bin directories.
+
 foreach arch ($arches)
   echo "Releasing DEVise $arch executables"
 
   if ($arch == linux) then
-    set mainbin = i386_linux
-    set otherbins = (i386_linux22 i386_rh61 i386_rh62)
+    set mainarch = i386_linux
   else if ($arch == solaris) then
-    set mainbin = sunx86_54
-    set otherbins = (sunx86_55 sunx86_56 sunx86_57)
+    set mainarch = sunx86_54
   else if ($arch == solsparc) then
-    set mainbin = sun4m_54
-    set otherbins = (sun4m_55 sun4x_55 sun4x_56 sun4x_57)
+    set mainarch = sun4m_54
   endif
 
-  pushd $dest/bin_arch > /dev/null
-
-  if (! -d $mainbin) then
-    mkdir $mainbin
-  endif
-
-  foreach dir ($otherbins)
-    if (! -e $dir) then
-      ln -s $mainbin $dir
-    endif
-  end
-
-  popd > /dev/null
-
-  cp -p $arch/generic/generic $dest/bin_arch/$mainbin/devise
-  cp -p $arch/generic/devise $dest/bin_arch/$mainbin/devisec
-  cp -p $arch/generic/deviseb $dest/bin_arch/$mainbin
-  cp -p $arch/generic/devised $dest/bin_arch/$mainbin
-  chmod a+rx $dest/bin_arch/$mainbin/*
+  cp -p $arch/generic/generic $dest/bin_arch/$mainarch/devise
+  cp -p $arch/generic/devise $dest/bin_arch/$mainarch/devisec
+  cp -p $arch/generic/deviseb $dest/bin_arch/$mainarch
+  cp -p $arch/generic/devised $dest/bin_arch/$mainarch
+  chmod a+rx $dest/bin_arch/$mainarch/*
 end
 
 #-----------------------------------------------------------
