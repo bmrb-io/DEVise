@@ -14,6 +14,40 @@
 
 #	$Id$
 
+#	$Log$
+#	Revision 1.17  1995/11/19 06:04:29  ravim
+#	New way of displaying attributes and groups.
+#
+#	Revision 1.16  1995/11/18 01:49:46  ravim
+#	Groups associated with schema. Also groups chosen at "Auto" stage.
+#
+#	Revision 1.15  1995/11/14 22:50:39  jussi
+#	Interfaced new stream selection dialog into DefSource. Minor other
+#	changes.
+#
+#	Revision 1.14  1995/11/07 20:24:48  jussi
+#	Commented out some output statements.
+#
+#	Revision 1.13  1995/11/06 16:33:33  jussi
+#	Increased minimum vertical size of .map window.
+#
+#	Revision 1.12  1995/10/29 01:01:12  ravim
+#	Bug fix.
+#
+#	Revision 1.11  1995/10/27 21:05:03  ravim
+#	Handles group names starting with capital letters.
+#
+#	Revision 1.10  1995/10/11 17:07:21  ravim
+#	Minor changes.
+#
+#	Revision 1.9  1995/09/30 08:00:52  ravim
+#	No changes - Ignore.
+#
+#	Revision 1.8  1995/09/30 07:59:18  ravim
+#	Minor changes to group handling
+#
+#	Revision 1.7  1995/09/30 07:56:11  ravim
+#	Initial implementation of schema browser - can create new schema files
 #
 #	Revision 1.6  1995/09/28 17:44:03  jussi
 #	Included size, pattern, and orientation in all mapping definitions
@@ -1015,8 +1049,7 @@ proc MacroDefLinks {m default} {
 ############################################################
 
 proc DefSource {} {
-    global sourceList
-    global tdatas schemas maps fsBox sname datadir dialogListVar
+    global sourceList tdatas schemas maps sname
 
     # see if .source window already exists; if so, just return
     set err [catch {set exists [wm state .source]}]
@@ -1041,7 +1074,7 @@ proc DefSource {} {
     # load schema file if necessary
     set schemaTypes [DEVise get tdata]
     if {[lsearch $schemaTypes $schema] < 0} {
-	set result [readSchema $schemafile]
+	set result [DEVise importFileType $schemafile]
 	if {$result == ""} {
 	    return
 	}
@@ -1059,11 +1092,20 @@ proc DefSource {} {
     }
 
     # cache data to disk right now
-    set source [cacheData $sname]
+    if {[isCached $sname -1 -1] == ""} {
+	set but [dialog .cacheData "Caching Data" \
+		"Cache \"$sname\" to disk now?" \
+		"" 1 Yes No]
+	if {$but == 1} {
+	    dialog .notCached "Must Cache Data Stream" \
+		    "Cannot visualize data without caching it to disk first." \
+		    "" 0 OK
+	    return ""
+	}
+    }
+
+    set source [cacheData $sname -1 -1]
     if {$source == ""} {
-	dialog .notCached "Must Cache Data Stream" \
-		"Cannot visualize data without caching it to disk first." \
-		"" 0 OK
 	return
     }
 
