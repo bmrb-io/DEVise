@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/06/16 16:04:55  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.19  1997/06/14 22:34:36  liping
   re-write min/max and recId request with SQL queries
 
@@ -565,31 +568,6 @@ UnmarshalPtr getUnmarshalPtr(String type){
 		// length needs to be passed for the binary data
 
 		return stringUnmarshal;
-	}
-	else{
-		cout << "Don't know how to unmarshal type: " << type << endl;
-		assert(0);
-	}
-}
-
-Type* unmarshal(char* from, String type){
-	if(type == "int"){
-		int tmp;
-		memcpy(&tmp, from, sizeof(int));
-		return (Type*) tmp;
-	}
-	else if(type == "string"){
-		return strdup(from);
-	}
-	else if(type == "double"){
-		IDouble* adt = new IDouble;
-		adt->unmarshal(from);
-		return adt;
-	}
-	else if(type == "date"){
-		IDate* adt = new IDate;
-		adt->unmarshal(from);
-		return adt;
 	}
 	else{
 		cout << "Don't know how to unmarshal type: " << type << endl;

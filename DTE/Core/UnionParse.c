@@ -16,11 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:27  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <String.h>
 #include "ParseTree.h"
 #include "exception.h"
+#include "site.h"
 
 Site* UnionParse::createSite(){	// throws exception;
 	assert(query1);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/06/16 16:04:45  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.8  1997/06/03 16:17:45  arvind
   Removed the bug regarding strdup and strcat when naming temp files.
 
@@ -39,32 +42,23 @@
 #include "Inserter.h"
 #include "types.h"
 
-void Sort::initialize()
+void SortExec::initialize()
 {
-
-   input->initialize();
-   tuple_size = numFlds * sizeof(Type *); 
+   inpIter->initialize();
+   int tuple_size = numFlds * sizeof(Type *); 
    Nruns = 0;
    strcpy(temp_filename, "sort_temp_file");   
 
    // Creates the runs and sets up the Q for merging the runs
-   comparePtrs  = new (GeneralPtr *)[numFlds];
    order = Ascending;
  
-   for (int i=0; i < numFlds; i++)
-    {
-       TypeID retVal;  // is a dummy	       
-       TRY(comparePtrs[i] = getOperatorPtr("comp",attrTypes[i], 
-                                            attrTypes[i],retVal),);
-    }
-  
    generate_runs(); 
 
    // Create a priority queue in memory to merge runs
-   Q = new PQueue(numFlds,attrTypes,numSortFlds,sortFlds, order, Nruns);
+   Q = new PQueue(numFlds,typeIDs,numSortFlds,sortFlds, order, Nruns);
 
    // Open up all the temp files
-   input_buf = new StandardRead[Nruns];
+   input_buf = new Iterator*[Nruns];
    temp_files = new ifstream*[Nruns];
 
    char filename[20];
@@ -76,11 +70,13 @@ void Sort::initialize()
       sprintf(run_num, "%d", i+1);
       strcat(filename, run_num);
 	 temp_files[i] = new ifstream(filename);
-      input_buf[i].open(temp_files[i], numFlds, attrTypes);
+	 StandardRead sr;
+	 sr.open(temp_files[i], numFlds, typeIDs);
+      input_buf[i] = sr.createExec();
 
       // Read the next tuple
       const Tuple *next_tuple = NULL;
-      if  (!(next_tuple = input_buf[i].getNext()))  // Empty run??
+      if  (!(next_tuple = input_buf[i]->getNext()))  // Empty run??
         continue;
       
       // Create a new node to be inserted into Q
@@ -94,7 +90,7 @@ void Sort::initialize()
    return;
 }
 
-const Tuple* Sort::getNext()
+const Tuple* SortExec::getNext()
 {
   // Return the next value from the prority queue
   // Also insert into the queue the next value from the appropriate input 
@@ -105,7 +101,7 @@ const Tuple* Sort::getNext()
 	  // Retrieve next value from appropriate input buffer 
 	  const Tuple* tuple;
 
-	  if ((tuple = input_buf[node_ptr->run_num].getNext()))
+	  if ((tuple = input_buf[node_ptr->run_num]->getNext()))
 	   {
 		 // Enqueue the retrieved tuple 
 
@@ -125,7 +121,7 @@ const Tuple* Sort::getNext()
 }
 
 
-void Sort::generate_runs()
+void SortExec::generate_runs()
 {
 
    // Generate the runs for subsequent merging
@@ -138,16 +134,16 @@ void Sort::generate_runs()
    const Tuple* currTup;
 
    // Read in tuples and set pointers in the table 
-   while((currTup = input->getNext())) 
+   while((currTup = inpIter->getNext())) 
    {
-     table[count] = tupleLoader.insert(currTup);
+     table[count] = tupleLoader->insert(currTup);
      count++;
 
      if (count >= MAX_MEM/(int)sizeof(Tuple)) //Number of tuples exceeds memory
        {
          sort_and_write_run(table, count);
          count = 0;
-	    tupleLoader.reset();
+	    tupleLoader->reset();
        }
    }
    
@@ -157,7 +153,7 @@ void Sort::generate_runs()
    return;
 }
 
-void Sort::sort_and_write_run(Tuple **table, int length)
+void SortExec::sort_and_write_run(Tuple **table, int length)
 {
      Nruns++;       
      qsort(table,0,length-1); 
@@ -172,7 +168,7 @@ void Sort::sort_and_write_run(Tuple **table, int length)
      
      out_temp_file = new ofstream;   
      out_temp_file->open(filename);
-     output_buf->open(out_temp_file, numFlds, attrTypes);
+     output_buf->open(out_temp_file, numFlds, typeIDs);
 
      for (int i = 0; i < length; i++)
        output_buf->insert(table[i]);                
@@ -181,7 +177,7 @@ void Sort::sort_and_write_run(Tuple **table, int length)
      return;
 }
 
-void Sort::qsort(Tuple **A, int left, int right)
+void SortExec::qsort(Tuple **A, int left, int right)
 {
   // This sorts the array almost completely
   // A call to this function must be succeeded by 
@@ -214,7 +210,7 @@ void Sort::qsort(Tuple **A, int left, int right)
     }
 }
 
-Tuple* Sort::find_pivot(Tuple **A,int left, int right)
+Tuple* SortExec::find_pivot(Tuple **A,int left, int right)
 {
   // Pivot is median of left, right and center values
 
@@ -231,7 +227,7 @@ Tuple* Sort::find_pivot(Tuple **A,int left, int right)
   return A[right-1];
 }
 
-inline void Sort::swap(Tuple *&left, Tuple *&right) 
+inline void SortExec::swap(Tuple *&left, Tuple *&right) 
 {
   Tuple *temp = left;
   left = right;
@@ -239,7 +235,7 @@ inline void Sort::swap(Tuple *&left, Tuple *&right)
   return;
 } 
 
-void Sort::insert_sort(Tuple **A, int length)
+void SortExec::insert_sort(Tuple **A, int length)
 {
   Tuple *temp;
   
@@ -254,4 +250,52 @@ void Sort::insert_sort(Tuple **A, int length)
   }
 
   return;
+}
+
+SortExec::~SortExec(){ 
+    delete [] temp_files;
+    // out_temp_file deleted by Inserter; 
+    delete output_buf; 
+    delete [] input_buf;	// need to delete Iterators too
+    delete Q;
+    delete [] comparePtrs;
+    delete tupleLoader;
+
+    char filename[20];
+ for (int i =0; i < Nruns; i++)
+   {
+	  strcpy(filename,temp_filename);
+	  char run_num[5];
+	  sprintf(run_num, "%d", i+1);
+	  strcat(filename, run_num);
+	  unlink(filename);
+  }
+}    
+
+Iterator* Sort::createExec(){
+	assert(input);
+	List<BaseSelection*>* baseISchema = input->getSelectList();
+	TRY(enumerateList(mySelect, name, baseISchema), NULL);
+	TRY(Iterator* inpIter = input->createExec(), NULL);
+	TRY(int* sortFlds = findPositions(mySelect, orderBy), NULL);
+	int numSortFlds = orderBy->cardinality();
+
+	cout << "Sort fields are (index, type) = ";
+	for(int i = 0; i < numSortFlds; i++){
+		cout << "(" << sortFlds[i] << ", ";
+		cout << attrTypes[sortFlds[i]] << ") ";
+	}
+	cout << endl;
+
+	GeneralPtr** comparePtrs  = new (GeneralPtr *)[numFlds];
+	TypeID retVal;  // is a dummy	       
+	for (int i=0; i < numFlds; i++){
+		TypeID tp = attrTypes[i];
+		TRY(comparePtrs[i] = getOperatorPtr("comp", tp, tp, retVal), NULL); 
+	}
+	TupleLoader* tupleLoader = new TupleLoader;
+	TRY(tupleLoader->open(numFlds, attrTypes), NULL);
+
+	return new SortExec(inpIter, tupleLoader, attrTypes, order, 
+		sortFlds, numSortFlds, comparePtrs, numFlds);
 }

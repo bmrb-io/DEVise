@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/06/16 16:04:54  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.15  1997/05/07 18:56:54  donjerko
   Added filterAll function.
 
@@ -54,17 +57,18 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "site.h"
 #include "Iterator.h"
+#include "site.h"
 #include "catalog.h"
 #include "ParseTree.h" 	// for getRootCatalog
+#include "ExecOp.h"
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
      #include "RTreeRead.h"
 #endif
 
-List<BaseSelection*>* createSelectList(String nm, Iterator* iterator){
+List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
 	const String* attNms = iterator->getAttributeNames();
@@ -92,7 +96,7 @@ List<BaseSelection*>* createSelectList(String table, List<String*>* attNms){
 	return retVal;
 }
 
-List<BaseSelection*>* createSelectList(Iterator* iterator){
+List<BaseSelection*>* createSelectList(PlanOp* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
 	String* attNms = iterator->getAttributeNames();
@@ -145,7 +149,7 @@ void LocalTable::typify(String option){	// Throws exception
 		assert(!"not implemented");
 		// iterator = new FunctionRead(iterator, function, shiftVal);
 		assert(iterator);
-		TRY(iterator->initialize(), );
+		// TRY(iterator->initialize(), );
 	}
 }
 
@@ -445,8 +449,6 @@ Site* findIndexFor(String tableStr){	// throws
 	site->addPredicate(predicate);
 	site->addTable(new TableAlias(".sysind", "t"));
 	TRY(site->typify("execute"), NULL);
-	TRY(site->enumerate(), NULL);
-	site->initialize();
 	return site;
 }
 
@@ -457,11 +459,12 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	assert(myFrom->cardinality() == 1);
 	String tableNm = getFullNm();
 	TRY(Site* indexForTable = findIndexFor(tableNm), NULL);
-	indexForTable->initialize();
 	int tmpNumFlds = indexForTable->getNumFlds();
 	assert(tmpNumFlds == 3);
+	Iterator* indexIt = indexForTable->createExec();
+	indexIt->initialize();
 	const Tuple* tup;
-	while((tup = indexForTable->getNext())){
+	while((tup = indexIt->getNext())){
 		IndexDesc* indexDesc = new IndexDesc(*((IndexDesc*) tup[2]));
 		cout << "Index Desc for " << tableNm << ": ";
 		indexDesc->display(cout);
@@ -522,54 +525,10 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			retVal->append(newAlt);
 		}
 	}
-	delete indexForTable;
+	delete indexIt;
 	return retVal;
 }
 
-const Tuple* SiteGroup::getNext(){
-	bool cond = false;
-	const Tuple* innerTup = NULL;
-	if(firstEntry){
-		outerTup = site1->getNext();
-		firstEntry = false;
-	}
-	int innerNumFlds = site2->getNumFlds();
-	while(cond == false){
-		if(firstPass){
-			if((innerTup = site2->getNext())){
-				innerRel.append((Tuple*)innerTup);	// must store the values!
-				// need to fix appendt to take const Tuple*
-			}
-			else{
-				firstPass = false;
-				innerRel.rewind();
-				if(innerRel.atEnd()){
-					return NULL;
-				}
-				innerTup = innerRel.get();
-				innerRel.step();
-				outerTup = site1->getNext();
-			}
-		}
-		else{
-			if(innerRel.atEnd()){
-				innerRel.rewind();
-				outerTup = site1->getNext();
-			}
-			innerTup = innerRel.get();
-			innerRel.step();
-		}
-		assert(innerTup);
-		if(!outerTup){
-			return NULL;
-		}
-		cond = evaluateList(myWhere, outerTup, innerTup);
-	}
-	assert(outerTup);
-	assert(next);
-	tupleFromList(next, mySelect, outerTup, innerTup);
-	return next;
-}
 
 void SiteGroup::typify(String option){	// Throws exception
 	
@@ -583,7 +542,6 @@ void SiteGroup::typify(String option){	// Throws exception
 		TRY(typifyList(mySelect, tmpL), );
 	}
 	numFlds = mySelect->cardinality();
-	next = new Tuple[numFlds];
 	TRY(typifyList(myWhere, tmpL), );
 	double selectivity = listSelectivity(myWhere);
 	int card1 = site1->getStats()->cardinality;
@@ -592,4 +550,40 @@ void SiteGroup::typify(String option){	// Throws exception
 	int* sizes = sizesFromList(mySelect);
 	stats = new Stats(numFlds, sizes, cardinality);
 	TRY(boolCheckList(myWhere), );
+}
+
+Iterator* LocalTable::createExec(){
+	assert(directSite);
+	List<BaseSelection*>* baseISchema = directSite->getSelectList();
+	TRY(enumerateList(mySelect, name, baseISchema), NULL);
+	TRY(enumerateList(myWhere, name, baseISchema), NULL);
+	Iterator* it = directSite->createExec();
+	return new SelProjExec(it, mySelect, myWhere);
+}
+
+Iterator* IndexScan::createExec(){
+	assert(directSite);
+	List<BaseSelection*>* baseISchema = directSite->getSelectList();
+	TRY(enumerateList(mySelect, name, baseISchema), NULL);
+	TRY(enumerateList(myWhere, name, baseISchema), NULL);
+	Iterator* it = directSite->createExec();
+	RTreeReadExec* indexIter = (RTreeReadExec*) index->createExec();
+	return new IndexScanExec(indexIter, it, mySelect, myWhere);
+}
+
+Iterator* SiteGroup::createExec(){
+	TRY(enumerateList(mySelect, site1->getName(), site1->mySelect, 
+		site2->getName(), site2->mySelect), NULL);
+	TRY(enumerateList(myWhere, site1->getName(), site1->mySelect, 
+		site2->getName(), site2->mySelect), NULL);
+	int innerNumFlds = site2->getNumFlds();
+	TRY(Iterator* it1 = site1->createExec(), NULL);
+	TRY(Iterator* it2 = site2->createExec(), NULL);
+	return new NLJoinExec(it1, it2, mySelect, myWhere, innerNumFlds);
+}
+
+Iterator* UnionSite::createExec(){
+	TRY(Iterator* it1 = iter1->createExec(), NULL);
+	TRY(Iterator* it2 = iter2->createExec(), NULL);
+	return new UnionExec(it1, it2);
 }

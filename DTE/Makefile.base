@@ -55,7 +55,9 @@ CORE_SRC = DevRead.c resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c \
 	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
-	PQueue.c Sort.c UnionParse.c TuplePtr.Plex.c TuplePtr.XPlex.c
+	PQueue.c Sort.c UnionParse.c \
+	ExecOp.c Inserter.c
+#	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 
 ifdef NO_RTREE

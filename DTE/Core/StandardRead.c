@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/16 16:04:45  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.9  1997/04/10 21:50:25  donjerko
   Made integers inlined, added type cast operator.
 
@@ -51,6 +54,7 @@
 #include "url.h"
 
 void StandardRead::open(istream* in){	// Throws exception
+	assert(in && in->good());
 	this->in = in;
 	(*in) >> numFlds;
 	if(!in->good()){
@@ -64,17 +68,11 @@ void StandardRead::open(istream* in){	// Throws exception
 	}
 	typeIDs = new String[numFlds];
 	attributeNames = new String[numFlds];
-	readPtrs = new ReadPtr[numFlds];
-	tuple = new Tuple[numFlds];
-	currentSz = new size_t[numFlds];
-	int i;
-	for(i = 0; i < numFlds; i++){
+	for(int i = 0; i < numFlds; i++){
 		(*in) >> typeIDs[i];
 		assert(in->good());
-		readPtrs[i] = getReadPtr(typeIDs[i]);
-		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
-	for(i = 0; i < numFlds; i++){
+	for(int i = 0; i < numFlds; i++){
 		(*in) >> attributeNames[i];
 		assert(in->good());
 	}
@@ -104,21 +102,16 @@ void StandardRead::open(istream* in){	// Throws exception
 }
 
 void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
-	this->in = in;
 	this->numFlds = numFlds;
 	this->typeIDs = new TypeID[numFlds];
-	readPtrs = new ReadPtr[numFlds];
-	currentSz = new size_t[numFlds];
-	tuple = new Tuple[numFlds];
+	assert(in && in->good());
+	this->in = in;
 	for(int i = 0; i < numFlds; i++){
 		this->typeIDs[i] = typeIDs[i];
-		TRY(readPtrs[i] = getReadPtr(typeIDs[i]), );
-		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
 	}
 }
 
 void NCDCRead::open(istream* in){	// Throws exception
-	this->in = in;
      char buff[100];
      ostrstream err;
      while(in->good()){
@@ -166,14 +159,6 @@ void NCDCRead::open(istream* in){	// Throws exception
      typeIDs[0] = "int";
      typeIDs[1] = "int";
 	attributeNames = new String[numFlds];
-	readPtrs = new ReadPtr[numFlds];
-	currentSz = new size_t[numFlds];
-	tuple = new Tuple[numFlds];
-	int i;
-	for(i = 0; i < numFlds; i++){
-		readPtrs[i] = getReadPtr(typeIDs[i]);
-		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
-	}
 	attributeNames[0] = "day";
 	attributeNames[1] = "temp";
 	stats = new Stats(numFlds);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/16 16:04:38  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.3  1997/03/28 16:07:23  wenger
   Added headers to all source files that didn't have them; updated
@@ -74,11 +77,11 @@ Site* DeleteParse::createSite(){
 	TRY(predicate = predicate->enumerate(*alias, siteISchema, "", NULL), NULL); 
 	assert(predicate);
 	predicate->display(cout);
-	TRY(site->enumerate(), NULL);
-	site->initialize();
 	int inputNumFlds = site->getNumFlds();
+	TRY(Iterator* iter = site->createExec(), NULL);
+	iter->initialize();
 	const Tuple* tmpTuple;
-	while((tmpTuple = site->getNext())){
+	while((tmpTuple = iter->getNext())){
 		cond = predicate->evaluate(tmpTuple, NULL);
 		if(!cond){
 			Tuple* copy = new Tuple[inputNumFlds];

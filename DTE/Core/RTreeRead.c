@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/06/16 16:04:43  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.6  1997/03/28 16:07:25  wenger
   Added headers to all source files that didn't have them; updated
@@ -25,16 +28,14 @@
 
 #include "RTreeRead.h"
 
-void RTreeIndex::initialize(){
+Iterator* RTreeIndex::createExec(){
 	assert(rTreeQuery);
-	assert(!initialized);
-	initialized = true;
+	int numKeyFlds = getNumKeyFlds();
+	int numAddFlds = getNumAddFlds();
 
 	int querySize = queryBoxSize();
 	char* bounds = new char[querySize];
 	int offset = 0;
-	int numKeyFlds = getNumKeyFlds();
-	int numAddFlds = getNumAddFlds();
 	for(int j = 0; j < 2; j++){	// conver lower than upper bounds
 		for(int i = 0; i < numKeyFlds; i++){
 			assert(offset < querySize);
@@ -61,22 +62,36 @@ void RTreeIndex::initialize(){
 	queryBox->print();
 	cout << "numKeyFlds = " << numKeyFlds << endl;
 	cout << "typeEnc = " << typeEnc << endl;
-	cursor = new gen_rt_cursor_t(*queryBox);
+	gen_rt_cursor_t* cursor = new gen_rt_cursor_t(*queryBox);
 	assert(cursor);
 
-	if (rtree_m.fetch_init (*Root, *cursor) != RCOK){
+	genrtree_m* rtree_m = new genrtree_m;
+	assert(rtree_m);
+	if (rtree_m->fetch_init (*Root, *cursor) != RCOK){
 		printf("error in init\n");
 		assert(0);
 	}
-	TRY(dataSize = packSize(&(typeIDs[numKeyFlds]), numAddFlds), );
+	int dataSize;
+	TRY(dataSize = packSize(&(typeIDs[numKeyFlds]), numAddFlds), NULL);
 
 	cout << "RTree scan initialized with:\n";
 	display(cout);
+
+	Tuple* tuple = new Tuple[numFlds];
+	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
+	int* rtreeFldLens = new int[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		tuple[i] = allocateSpace(typeIDs[i]);
+		rtreeFldLens[i] = packSize(typeIDs[i]);
+		unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
+	}
+	return new RTreeReadExec(rtree_m, cursor, dataSize, numKeyFlds, 
+		numAddFlds, tuple, unmarshalPtrs, rtreeFldLens);
 }
 
 int RTreeIndex::queryBoxSize(){
-	int size = 0;
 	int numKeyFlds = getNumKeyFlds();
+	int size = 0;
 	for(int j = 0; j < 2; j++){	// add lower than upper bounds
 		for(int i = 0; i < numKeyFlds; i++){
 			ConstantSelection* cs = rTreeQuery[i].values[j];
@@ -87,8 +102,7 @@ int RTreeIndex::queryBoxSize(){
 	return size;
 }
 
-const Tuple* RTreeIndex::getNext(){
-	assert(initialized);
+const Tuple* RTreeReadExec::getNext(){
 	gen_key_t ret_key;
 	bool eof = false;
 	int offsetLen;
@@ -96,51 +110,45 @@ const Tuple* RTreeIndex::getNext(){
 		// This extra space is required because of some bug in RTree.
 
 	assert(cursor);
-	if (rtree_m.fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
+	if (rtree_m->fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
 	}
 	Offset offset;
 	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
-	assert(retVal);
+	assert(tuple);
 	if(!eof){
 		// ret_key.print();
 		int offs = 0;
-		int numKeyFlds = getNumKeyFlds();
-		int numAddFlds = getNumAddFlds();
-		assert(numFlds == numKeyFlds + numAddFlds);
+		int numFlds = numKeyFlds + numAddFlds;
 		for(int i = 0; i < numKeyFlds; i++){
 			char* from = ((char*) ret_key.data) + offs;
-			Type* adt = unmarshal(from, typeIDs[i]);
-			offs += packSize(adt, typeIDs[i]);
-			retVal[i] = adt;
+			unmarshalPtrs[i](from, tuple[i]);
+			offs += rtreeFldLens[i];
 		}
 		offs = 0;
 		for(int i = numKeyFlds; i < numFlds; i++){
 			char* from = ((char*) dataContent) + offs;
-			Type* adt = unmarshal(from, typeIDs[i]);
-			offs += packSize(adt, typeIDs[i]);
-			retVal[i] = adt;
+			unmarshalPtrs[i](from, tuple[i]);
+			offs += rtreeFldLens[i];
 		}
 		#ifdef DEBUG
 		cout << "Offset = " << offset << endl;
 		#endif
-		return retVal;
+		return tuple;
 	}
 	else{
 		return NULL;
 	}
 }
 
-Offset RTreeIndex::getNextOffset(){
-	assert(initialized);
-	assert(!indexDesc->isStandAlone());
+Offset RTreeReadExec::getNextOffset(){
 	gen_key_t ret_key;
 	bool eof = false;
 	int offsetLen;
 	char dataContent[dataSize + sizeof(Offset) + 100];
 		// This extra space is required because of some bug in RTree.
 	assert(cursor);
-	if (rtree_m.fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
+	if (rtree_m->fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
 	}
 	Offset offset;
@@ -184,12 +192,12 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 
 	void setStats(){
 		double selectivity = listSelectivity(indexPreds);
-		assert(baseIterator);
-		Stats* baseStats = baseIterator->getStats();
+		assert(basePlanOp);
+		Stats* baseStats = basePlanOp->getStats();
 		assert(baseStats);
 		int cardinality = int(selectivity * baseStats->cardinality);
 		int* sizes = baseStats->sizes;
-		int nf = baseIterator->getNumFlds();
+		int nf = basePlanOp->getNumFlds();
 		stats = new Stats(nf, sizes, cardinality);
 	}
 

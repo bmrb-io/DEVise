@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/16 16:04:41  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.9  1997/04/18 20:46:16  donjerko
   Added function pointers to marshall types.
 
@@ -43,13 +46,10 @@
 #include "listop.h"
 #include "ParseTree.h"
 #include "Utility.h"
+#include "Iterator.h"
 
-#ifdef NO_RTREE
-	#include "RTreeRead.dummy"
-	#include "RTreeCommon.h"
-#else
+#ifndef NO_RTREE
 	#include "RTree.h"
-	#include "RTreeRead.h"
 #endif
 
 static const int DETAIL = 1;
@@ -101,11 +101,6 @@ Site* IndexParse::createSite(){
 	LOG(site->display(logFile));
 	LOG(logFile << endl);
 
-	LOG(logFile << "Enumeration:\n";)
-	TRY(site->enumerate(), 0);
-	LOG(site->display(logFile, DETAIL);)
-	LOG(logFile << endl;)
-
 	int numFlds = site->getNumFlds();
 	assert(numFlds == numKeyFlds + numAddFlds);
 	String* types = site->getTypeIDs();
@@ -140,12 +135,16 @@ Site* IndexParse::createSite(){
 	int fixedSize; 
 	int tupSize;
 	Offset offset;
-	site->initialize();
+
+	LOG(logFile << "Creating executable:\n";)
+	TRY(Iterator* inpIter = site->createExec(), 0);
+
+	inpIter->initialize();
 	if(!standAlone){
-		TRY(offset = site->getOffset(), NULL);
+		TRY(offset = inpIter->getOffset(), NULL);
 		// cout << "offset = " << offset << endl;
 	}
-	const Tuple* tup = site->getNext();
+	const Tuple* tup = inpIter->getNext();
 	char* flatTup = NULL;
 	if(tup){ // make sure this is not empty
 		TRY(fixedSize = packSize(types, numFlds), NULL);
@@ -154,10 +153,10 @@ Site* IndexParse::createSite(){
 		ind.write(flatTup, fixedSize);
 		if(!standAlone){
 			ind.write((char*) &offset, sizeof(Offset));
-			offset = site->getOffset();
+			offset = inpIter->getOffset();
 			// cout << "offset = " << offset << endl;
 		}
-		while((tup = site->getNext())){
+		while((tup = inpIter->getNext())){
 			tupSize = packSize(tup, types, numFlds);
 			if(tupSize != fixedSize){
 				assert(0);
@@ -166,7 +165,7 @@ Site* IndexParse::createSite(){
 			ind.write(flatTup, fixedSize);
 			if(!standAlone){
 				ind.write((char*) &offset, sizeof(Offset));
-				offset = site->getOffset();
+				offset = inpIter->getOffset();
 				// cout << "offset = " << offset << endl;
 			}
 		}
@@ -191,8 +190,8 @@ Site* IndexParse::createSite(){
 
 	close(bulk_file);
 	printf("Created index with root page: %d\n", root1.pid);
-	printf("Dump follows:\n");
-	rtree_m.olddraw(root1, stdout);
+//	printf("Dump follows:\n");
+//	rtree_m.olddraw(root1, stdout);
 	// note, you MUST keep root page
 
 	String* keyFlds = new String[numKeyFlds];

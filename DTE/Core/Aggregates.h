@@ -314,81 +314,65 @@ public:
 
 };
 
-class Aggregates : public Site {
+class StandAggsExec : public Iterator {
+	Iterator* inputIter;
+	ExecAggregate** aggExecs;
+	int numFlds;
+	Tuple* retTuple;
 public:
-	Aggregates(
-		List<BaseSelection*>* selectClause,	// queries select clause
-		BaseSelection * sequenceby,	// queries select clause
-		BaseSelection* withPredicate,
-		List<BaseSelection*>* groupBy ,	// group by clause
-		BaseSelection* having = NULL			// having clause
-	) : Site(), selList(selectClause),sequenceAttr(sequenceby),
-			withPredicate(withPredicate),groupBy(groupBy)
-	{
-		
-		Site::mySelect = selList;
-		if(selList){
-			numFlds = selList->cardinality();
-			aggFuncs = new (Aggregate*)[numFlds];
-			aggExecs = new (ExecAggregate*)[numFlds];
-			typeIDs = new TypeID[numFlds];
-			for(int i = 0; i < numFlds; i++){
-				aggFuncs[i] = NULL;
-				aggExecs[i] = NULL;
-				typeIDs[i] = UNKN_TYPE;
-			}
-			retTuple = new Tuple[numFlds];
-		}
-		else {
-			numFlds = 0;
-			aggFuncs = NULL;
-			aggExecs = NULL;
-			retTuple = NULL;
-		}
-		isApplicableValue = false;
-		alreadyChecked = false;
-		iterator = NULL;
-		done = false;
+	StandAggsExec(Iterator* inputIter, ExecAggregate** aggExecs, int numFlds)
+		:
+		inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds){
+
+		retTuple = new Tuple[numFlds];
 	}
-	
-	virtual ~Aggregates(){
-		// do not delete selList;
-		delete sequenceAttr;
-		delete iterator;
+	virtual ~StandAggsExec(){
 		delete [] retTuple;
-		delete filteredSelList;		// do not destroy
 	}
-	
-	virtual bool isApplicable();
-	virtual List<BaseSelection*>* getSelectList(){
-	     return selList;
-	}
-	virtual List<BaseSelection*>* filterList(){
-		return filteredSelList;
-	}
-	virtual void typify(Site* inputIterator);
-	
-	virtual void enumerate();
-
 	virtual void initialize();
-
 	virtual const Tuple* getNext();
-	
-	virtual TypeID* getTypeIDs(){
-		return typeIDs;
+	// Need to check this..
+	virtual void reset(int lowRid, int highRid){
+		TRY(inputIter->reset(lowRid, highRid), );
 	}
+};
 
-	virtual String *getOrderingAttrib(){
-		return iterator->getOrderingAttrib();
+class StandGroupByExec : public Iterator {
+	Iterator* inputIter;
+	ExecAggregate** aggExecs;
+	int numFlds;
+	Tuple* retTuple;
+	int* grpByPos;		// positions of group by attributes
+	int grpByPosLen;
+public:
+	StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
+		int numFlds, int* grpByPos, int grpByPosLen)
+		:
+		inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds),
+		grpByPos(grpByPos), grpByPosLen(grpByPosLen) {
+
+		retTuple = new Tuple[numFlds];
+	}
+	virtual ~StandGroupByExec(){
+
+		// should destroy all of its members
+
+		delete inputIter;
+		delete [] retTuple;	// destroy too
+		// ...
+	}
+	virtual void initialize(){// implement this
+	}
+	virtual const Tuple* getNext(){
+		return NULL; // implement
 	}
 	// Need to check this..
 	virtual void reset(int lowRid, int highRid){
-			TRY(iterator->reset(lowRid, highRid), );
+		TRY(inputIter->reset(lowRid, highRid), );
 	}
+};
 
-
-private:
-	
+class Aggregates : public Site {
 	List<BaseSelection*>* selList;
 	List<BaseSelection*>* filteredSelList;
 	BaseSelection * sequenceAttr;
@@ -397,18 +381,66 @@ private:
 	TypeID seqAttrType;
 	int seqAttrPos;
 	BaseSelection* withPredicate;	
-	Site * iterator;
+	Site* inputPlanOp;
 	int withPredicatePos;	
-	List<BaseSelection*>*groupBy;
-
+	List<BaseSelection*>* groupBy;
 	int *positions;
-	int *taboo;
 	TypeID* typeIDs;
-
-	Tuple* retTuple;
 	Aggregate** aggFuncs;
-	ExecAggregate** aggExecs;
-	bool done;
+public:
+	Aggregates(
+		List<BaseSelection*>* selectClause,	// queries select clause
+		BaseSelection * sequenceby,	// queries select clause
+		BaseSelection* withPredicate,
+		List<BaseSelection*>* groupBy ,	// group by clause
+		BaseSelection* having = NULL			// having clause
+	) : Site(), selList(selectClause),sequenceAttr(sequenceby),
+			withPredicate(withPredicate),groupBy(groupBy){
+		
+		Site::mySelect = selList;
+		if(selList){
+			numFlds = selList->cardinality();
+			aggFuncs = new (Aggregate*)[numFlds];
+			typeIDs = new TypeID[numFlds];
+			for(int i = 0; i < numFlds; i++){
+				aggFuncs[i] = NULL;
+				typeIDs[i] = UNKN_TYPE;
+			}
+		}
+		else {
+			numFlds = 0;
+			aggFuncs = NULL;
+		}
+		isApplicableValue = false;
+		alreadyChecked = false;
+		inputPlanOp = NULL;
+		filteredSelList = NULL;
+	}
+	
+	virtual ~Aggregates(){
+		// do not delete selList;
+		delete sequenceAttr;
+		delete inputPlanOp;
+		delete filteredSelList;		// do not destroy
+	}
+	
+	bool isApplicable();
+	virtual List<BaseSelection*>* getSelectList(){
+	     return selList;
+	}
+	List<BaseSelection*>* filterList(){
+		return filteredSelList;
+	}
+	virtual void typify(Site* inputPlanOp);
+	
+	virtual TypeID* getTypeIDs(){
+		return typeIDs;
+	}
+
+	virtual String *getOrderingAttrib(){
+		return iterator->getOrderingAttrib();
+	}
+	Iterator* createExec();
 };
 
 #endif

@@ -16,13 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/06/16 16:04:40  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.9  1997/03/23 23:45:19  donjerko
   Made boolean vars to be in the tuple.
-
-  Revision 1.8  1997/03/20 20:42:19  donjerko
-  Removed the List usage from Aggregates and replaced it with Plex, a
-  form of dynamic array.
 
   Revision 1.7  1997/03/14 18:36:10  donjerko
   Making space for the SQL UNION operator.
@@ -49,30 +48,33 @@
 
 #include "types.h"
 #include "site.h"
+#include "Iterator.h"
 #include <strstream.h>
 
-class Engine : public Iterator {
+class Engine : public PlanOp {
 	String query;
 	Site* topNode;
 	String* attributeNames;
+	Iterator* topNodeIt;
 public:
 	Engine(String query) : query(query), topNode(NULL),
-		attributeNames(NULL) {}
+		attributeNames(NULL), topNodeIt(NULL) {}
 	virtual ~Engine(){
 		delete topNode;	// should delete all the sites
 		delete [] attributeNames;
 	}
 	int optimize();	// throws
-     virtual int getNumFlds(){
+     int getNumFlds(){
 		return topNode->getNumFlds();
      }
-     virtual String* getTypeIDs(){
+     String* getTypeIDs(){
           return topNode->getTypeIDs();
      }
-	virtual const Tuple* getNext(){
-		return topNode->getNext();
+	const Tuple* getNext(){
+		assert(topNodeIt || !"Initialize engine before calling getNext");
+		return topNodeIt->getNext();
 	}
-	virtual String* getAttributeNames(){
+	String* getAttributeNames(){
 		if(attributeNames){
 			return attributeNames;
 		}
@@ -80,7 +82,7 @@ public:
 			return topNode->getAttributeNames();
 		}
 	}
-     virtual String* getOrderingAttrib(){
+     String* getOrderingAttrib(){
 		assert(topNode);
 		return topNode->getOrderingAttrib();
      }
@@ -97,14 +99,18 @@ public:
 		return topNode->getStats();
 	}
 	void reset(int lowRid, int highRid){
-		TRY(topNode->reset(lowRid, highRid), );
+		TRY(topNodeIt->reset(lowRid, highRid), );
 	}
-	virtual void initialize(){
+	void initialize(){
 		assert(getNumFlds() != 0);
-		topNode->initialize();
+		topNodeIt = createExec();
+		topNodeIt->initialize();
 	}
-	virtual void finalize(){
-		topNode->finalize();
+	void finalize(){
+		topNodeIt->finalize();
+	}
+	Iterator* createExec(){
+		return topNode->createExec();
 	}
 };
 

@@ -49,32 +49,39 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 	}
 	numFlds = ud->schema()->NumFlatAttrs() + 1;	// for recId
 	typeIDs = new TypeID[numFlds];
-	unmarshalPtrs = new UnmarshalPtr[numFlds];
 	offsets = new int[numFlds];
 	attributeNames = new String[numFlds];
-	tuple = new Tuple[numFlds];
 	AttrStk *stk = ud->schema()->GetFlatAttrs();
 	typeIDs[0] = INT_TP;
-	unmarshalPtrs[0] = NULL;
-	tuple[0] = allocateSpace(typeIDs[0]);
 	attributeNames[0] = String("recId"); 
 	for(int i = 1; i < numFlds; i++){
 		Attr *at = stk->ith(i - 1);
 		typeIDs[i] = translateUDType(at);
 		if(typeIDs[i] == "tm"){
 			typeIDs[i] = "date";
-			unmarshalPtrs[i] = tmUnmarshal;
 		}
-		else{
-			unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
-		}
-		tuple[i] = allocateSpace(typeIDs[i]);
 		attributeNames[i] = String(at->flat_name()); 
 		offsets[i] = at->offset();
 	}
 }
 
-const Tuple* DevRead::getNext(){
+Iterator* DevRead::createExec(){
+	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
+	size_t* currentSz = new size_t[numFlds];
+	Tuple* tuple = new Tuple[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		if(typeIDs[i] == "date"){
+			unmarshalPtrs[i] = tmUnmarshal;
+		}
+		else{
+			unmarshalPtrs[i] = getUnmarshalPtr(typeIDs[i]);
+		}
+		tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
+	}
+	return new DevReadExec(ud, unmarshalPtrs, tuple, offsets, numFlds);
+}
+
+const Tuple* DevReadExec::getNext(){
 	UD_Status stat;
 	if(!ud->isOk()){
 		assert(0);
@@ -94,16 +101,13 @@ const Tuple* DevRead::getNext(){
 }
 
 void DevRead::Close(){
-	delete ud;
-	ud = NULL;
+
+	// do not delete ud and offsets, they are passed to the Exec
+
 	delete [] typeIDs;
 	typeIDs = NULL;
 	delete [] attributeNames;
 	attributeNames = NULL;
-	delete [] unmarshalPtrs;
-	unmarshalPtrs = NULL;
-	delete [] offsets;
-	offsets = NULL;
 	delete order;
 	order = NULL;
 }

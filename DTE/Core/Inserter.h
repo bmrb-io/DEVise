@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/06/16 16:04:42  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.3  1997/04/10 21:50:24  donjerko
   Made integers inlined, added type cast operator.
 
@@ -29,7 +32,7 @@
 #define INSERTER_H
 
 #include<iostream.h>
-#include "url.h"
+#include "types.h"
 
 class Inserter {
 	String urlString;
@@ -45,19 +48,7 @@ public:
 		delete [] writePtrs;
 		delete out;
 	}
-	void open(String urlString){ // throws
-		this->urlString = urlString;
-		TRY(URL* url = new URL(urlString), );
-		TRY(istream* in = url->getInputStream(), );
-		Iterator* iterator = new StandardRead();
-		TRY(iterator->open(in), );
-		numFlds = iterator->getNumFlds();
-		const TypeID* types = iterator->getTypeIDs();
-		TRY(writePtrs = newWritePtrs(types, numFlds), );
-		delete in;
-		TRY(out = url->getOutputStream(ios::app), );
-		delete url;
-	}
+	void open(String urlString); // throws
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
 		this->out = out;
 		this->numFlds = numFlds;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/06/16 16:04:46  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.10  1997/04/10 21:50:25  donjerko
   Made integers inlined, added type cast operator.
 
@@ -51,37 +54,66 @@
 #include "types.h"
 #include "Iterator.h"
 
-class StandardRead : public Iterator {
+class StandReadExec : public Iterator {
+	istream* in;
+	ReadPtr* readPtrs;
+	Tuple* tuple;
+	size_t* currentSz;
+	int numFlds;
+public:
+	StandReadExec(istream* in, ReadPtr* readPtrs, Tuple* tuple,
+		size_t* currentSz, int numFlds) : 
+		in(in), readPtrs(readPtrs), tuple(tuple), currentSz(currentSz),
+		numFlds(numFlds) {}
+	virtual ~StandReadExec(){
+		// destroyTuple(tuple, numFlds, typeIDs);
+		delete [] currentSz;
+		delete [] readPtrs;
+		delete [] tuple;
+		delete in;
+		cerr << "deleting file in StandExec\n";
+	}
+	virtual const Tuple* getNext(streampos& pos){
+		assert(in);
+		pos = in->tellg();
+		return getNext();
+	}
+	virtual const Tuple* getNext(){
+		assert(in);
+          for(int i = 0; i < numFlds; i++){
+			TRY((readPtrs[i])(*in, tuple[i]), NULL);
+		}
+		if(in->good()){
+			return tuple;
+		}
+		else {
+			return NULL;
+		}
+	}
+};
+
+class StandardRead : public PlanOp {
 protected:
 	istream* in;
 	int numFlds;
 	String* typeIDs;
 	String* attributeNames;
-	ReadPtr* readPtrs;
 	String* order;
 	Stats* stats;
-	Tuple* tuple;
-	size_t* currentSz;
 public:
      StandardRead() : 
 		in(NULL), numFlds(0), typeIDs(NULL), 
 		attributeNames(NULL),
-		readPtrs(NULL), order(NULL), stats(NULL), tuple(NULL),
-		currentSz(NULL) {}
+		order(NULL), stats(NULL) {}
 
 	virtual ~StandardRead(){
-		delete in;
-		destroyTuple(tuple, numFlds, typeIDs);
-		delete [] tuple;
 		delete [] typeIDs;
 		delete [] attributeNames;
-		delete [] readPtrs;
 		delete stats;
-		delete [] currentSz;
 	}
 	virtual void open(istream* in);	// Throws exception
-	void open(istream* in, int numFlds, const TypeID* typeIDs); // throws
-		// used for tmp tables
+	void open(istream* in, int numFlds, const TypeID* typeIDs); 
+		// throws, used for tmp tables
 
 	void writeTo(ofstream* outfile);
 	virtual int getNumFlds(){
@@ -101,23 +133,6 @@ public:
 	}
 	virtual String * getOrderingAttrib(){
 		return order;
-	}
-	virtual const Tuple* getNext(streampos& pos){
-		assert(in);
-		pos = in->tellg();
-		return getNext();
-	}
-	virtual const Tuple* getNext(){
-		assert(in);
-          for(int i = 0; i < numFlds; i++){
-			TRY((readPtrs[i])(*in, tuple[i]), NULL);
-		}
-		if(in->good()){
-			return tuple;
-		}
-		else {
-			return NULL;
-		}
 	}
      virtual Stats* getStats(){
           return stats;
@@ -143,6 +158,16 @@ public:
 			out << attributeNames[i] << " ";
 		}
 		out << ";" << endl;
+	}
+	virtual Iterator* createExec(){
+		ReadPtr* readPtrs = new ReadPtr[numFlds];
+		size_t* currentSz = new size_t[numFlds];
+		Tuple* tuple = new Tuple[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			readPtrs[i] = getReadPtr(typeIDs[i]);
+			tuple[i] = allocateSpace(typeIDs[i], currentSz[i]);
+		}
+		return new StandReadExec(in, readPtrs, tuple, currentSz, numFlds);
 	}
 };
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/06/16 16:04:41  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.2  1997/02/03 04:11:27  donjerko
   Catalog management moved to DTE
@@ -31,12 +34,12 @@
 #include "types.h"
 #include "queue.h"
 
-class FunctionRead : public Iterator {
+class FunctionRead : public PlanOp {
 protected:
-	Iterator * iterator;
+	PlanOp * iterator;
 	String * function;
 public:
-     FunctionRead(Iterator * iterator,String * function,int offset) : 
+     FunctionRead(PlanOp * iterator,String * function,int offset) : 
 		iterator(iterator),function(function),offset(offset){
 			TupleList = new List<Tuple *>;
 			TupleListList = new List<List<Tuple*>*>;

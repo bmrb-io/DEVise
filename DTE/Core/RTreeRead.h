@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/06/16 16:04:44  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.7  1997/06/14 22:34:35  liping
   re-write min/max and recId request with SQL queries
@@ -29,9 +32,10 @@
 #ifndef RTREE_READ_H
 #define RTREE_READ_H
 
-#include "StandardRead.h"
 #include "myopt.h"
 #include "RTree.h"
+#include "Iterator.h"
+#include "StandardRead.h"
 
 struct RTreePred {
 	bool bounded[2];
@@ -163,6 +167,34 @@ struct RTreePred {
 	}
 };
 
+class RTreeReadExec : public Iterator {
+	genrtree_m* rtree_m;
+	gen_rt_cursor_t* cursor;
+	int dataSize;
+	int numKeyFlds;
+	int numAddFlds;
+     Tuple* tuple;
+     UnmarshalPtr* unmarshalPtrs;
+     int* rtreeFldLens;
+public:
+	RTreeReadExec(genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
+		int numKeyFlds, int numAddFlds, Tuple* tuple,
+		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens) :
+		rtree_m(rtree_m), cursor(cursor), dataSize(dataSize),
+		numKeyFlds(numKeyFlds), numAddFlds(numAddFlds),
+		tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
+		rtreeFldLens(rtreeFldLens){}
+	virtual ~RTreeReadExec(){
+		delete cursor;
+		delete [] tuple;
+		delete [] unmarshalPtrs;
+		delete [] rtreeFldLens;
+	}
+	virtual void initialize() {}
+	virtual const Tuple* getNext();
+	virtual Offset getNextOffset();
+};
+
 class RTreeIndex : public StandardRead {
 
 	// Private data members like numFlds, attributeNames and typeIDs
@@ -170,14 +202,8 @@ class RTreeIndex : public StandardRead {
 
 	IndexDesc* indexDesc;
 	RTreePred* rTreeQuery;
-	gen_rt_cursor_t* cursor;
-	genrtree_m rtree_m;
-	int RTreeFile;
 	gen_key_t* queryBox;
 	int queryBoxSize();
-	bool initialized;
-	int dataSize;
-	Tuple* retVal;
 public:
 	RTreeIndex(IndexDesc* indexDesc) : 
 		StandardRead(), indexDesc(indexDesc) {
@@ -189,15 +215,10 @@ public:
 		for(int i = 0; i < indexDesc->getNumKeyFlds(); i++){
 			rTreeQuery[i].setTypeID(typeIDs[i]);
 		}
-		cursor = NULL;
 		queryBox = NULL;
-		retVal = new Tuple[numFlds];
-		initialized = false;
 	}
 	virtual ~RTreeIndex(){
 		delete queryBox;
-		delete cursor;
-		delete retVal;
 	}
 	bool canUse(BaseSelection* predicate);	// Throws exception
 	void write(ostream& out){
@@ -225,9 +246,7 @@ public:
 	int getNumAddFlds(){
 		return indexDesc->getNumAddFlds();
 	}
-	virtual void initialize();
-	virtual const Tuple* getNext();
-	virtual Offset getNextOffset();
+	Iterator* createExec();
 };
 
 #endif

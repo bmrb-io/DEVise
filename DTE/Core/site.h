@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/06/16 16:04:54  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.19  1997/04/18 20:46:20  donjerko
   Added function pointers to marshall types.
@@ -62,17 +65,13 @@
 #include "myopt.h"
 #include "exception.h"
 #include "Iterator.h"
-#include "StandardRead.h"
 // #include "FunctionRead.h"	// temporarily broken
-#ifdef NO_RTREE
-     #include "RTreeRead.dummy"
-#else
-     #include "RTreeRead.h"
-#endif
 #include "url.h"
 
-List<BaseSelection*>* createSelectList(String nm, Iterator* iterator);
-List<BaseSelection*>* createSelectList(Iterator* iterator);
+class RTreeIndex;
+
+List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator);
+List<BaseSelection*>* createSelectList(PlanOp* iterator);
 List<BaseSelection*>* createSelectList(String table, List<String*>* attNms);
 // copies over the attNms
 
@@ -85,7 +84,7 @@ friend class LocalTable;
 friend class SiteGroup;
 protected:
 	String name;
-	Iterator* iterator;
+	PlanOp* iterator;
 	int numFlds;
 	String tables;
 	List<BaseSelection*>* mySelect;
@@ -168,12 +167,11 @@ public:
 		tmp->append(this);
 		return tmp;
 	}
-	virtual void enumerate(){}
-     virtual void typify(String option);	// Throws a exception
-	virtual const Tuple* getNext(){
+	virtual Iterator* createExec(){
 		assert(iterator);
-		return iterator->getNext();
+		return iterator->createExec();	// no projections or selections
 	}
+     virtual void typify(String option);	// Throws a exception
 	virtual int getNumFlds(){
 		if(mySelect){
 			assert(numFlds == mySelect->cardinality());
@@ -204,27 +202,13 @@ public:
 		}
 		return stats;
 	}
-	void reset(int lowRid, int highRid){
-		TRY(iterator->reset(lowRid, highRid), );
-	}
 	virtual List<Site*>* generateAlternatives(){
 		List<Site*>* retVal = new List<Site*>;
 		return retVal;
 	}
-	virtual void initialize(){
-		if(iterator){
-			iterator->initialize();
-		}
-	}
-	virtual void finalize(){
-	}
 	virtual double evaluateCost(){
 		return 1;
 	}
-     virtual Offset getOffset(){
-          assert(!"getOffset not supported for this iterator");
-          return Offset();
-     }
 	virtual void writeOpen(int mode = ios::app){
 		assert(0);
 	}
@@ -252,7 +236,7 @@ public:
 
 class DirectSite : public Site {
 public:
-	DirectSite(String nm, Iterator* iterator) : Site(nm) {
+	DirectSite(String nm, PlanOp* iterator) : Site(nm) {
 		
 		// Used only for typifying LocalTable
 
@@ -275,10 +259,9 @@ class LocalTable : public Site {
 	ofstream* fout;
 	WritePtr* writePtrs;
 protected:
-	Tuple* next;
 	Site* directSite;
 public:
-     LocalTable(String nm, Iterator* marsh, String fileToWrite = "") : 
+     LocalTable(String nm, PlanOp* marsh, String fileToWrite = "") : 
 		Site(nm), directSite(NULL) {
 		iterator = marsh;
 		directSite = NULL;  // will be set up in typify because it
@@ -286,10 +269,9 @@ public:
 		this->fileToWrite = fileToWrite;
 		fout = NULL;
 		writePtrs = NULL;
-		next = NULL;
 	}
 	LocalTable(String nm, List<BaseSelection*>* select, 
-		List<BaseSelection*>* where, Iterator* iterator) : Site(nm) {
+		List<BaseSelection*>* where, PlanOp* iterator) : Site(nm) {
 
 		// Used as a simple filter, not as a real site
 
@@ -302,7 +284,6 @@ public:
 		this->iterator = NULL;
 		fout = NULL;
 		writePtrs = NULL;
-		next = NULL;
 	}
 	LocalTable(String nm, Site* base) : Site(nm) {
 
@@ -314,15 +295,12 @@ public:
 		directSite = base;
 		fout = NULL;
 		writePtrs = NULL;
-		next = NULL;
 	}
 	virtual ~LocalTable(){
 		delete fout;
 		delete writePtrs;
 		delete directSite;
-		delete [] next;
 	}
-	virtual void finalize(){}
 	virtual void addTable(TableAlias* tabName){
 		assert(myFrom->isEmpty());
 		myFrom->append(tabName);
@@ -331,42 +309,9 @@ public:
 		assert(tables.empty());
 		tables = name = *alias;
 	}
-	virtual void enumerate(){
-		assert(directSite);
-		List<BaseSelection*>* baseISchema = directSite->getSelectList();
-		TRY(enumerateList(mySelect, name, baseISchema), );
-		TRY(enumerateList(myWhere, name, baseISchema), );
-		directSite->enumerate();
-	}
+	virtual Iterator* createExec();
 	virtual void typify(String option);	// Throws exception
-	virtual void initialize(){
-		assert(directSite);
-		directSite->initialize();
-		Site::initialize();
-		next = new Tuple[numFlds];
-	}
-	virtual const Tuple* getNext(){
-		bool cond = false;
-		const Tuple* input;
-		assert(next);
-		while(!cond){
-
-			// same thing as iterator->getNext()
-
-			input = directSite->getNext();
-			if(!input){
-				return NULL;
-			}
-			cond = evaluateList(myWhere, input);
-		}
-		tupleFromList(next, mySelect, input);
-		return next;
-	}
 	virtual List<Site*>* generateAlternatives();
-     virtual Offset getOffset(){
-		assert(iterator);
-          return iterator->getOffset();
-     }
 	virtual void writeOpen(int mode = ios::app);
 	virtual void writeClose(){
 		assert(fout);
@@ -401,7 +346,7 @@ class IndexScan : public LocalTable {
 	int numIndexablePreds;
 public:
 	IndexScan(String name, List<BaseSelection*>* select,
-		List<BaseSelection*>* where, RTreeIndex* index, Iterator* iterator) :
+		List<BaseSelection*>* where, RTreeIndex* index, PlanOp* iterator) :
 		LocalTable(name, select, where, iterator), index(index) {
 		numIndexablePreds = 0;
 	}
@@ -409,28 +354,7 @@ public:
 		// return 1.0 / (1 + numIndexablePreds);
 		return 2;	// to be worse than index only scan (LocalTable)
 	}
-	virtual void initialize(){
-		assert(index);
-		index->initialize();
-		LocalTable::initialize();
-	}
-	virtual const Tuple* getNext(){
-		bool cond = false;
-		const Tuple* input;
-		assert(next);
-		while(!cond){
-			Offset offset = index->getNextOffset();
-			if(offset.isNull()){
-				return NULL;
-			}
-			iterator->setOffset(offset);
-			input = iterator->getNext();
-			assert(input);
-			cond = evaluateList(myWhere, input);
-		}
-		tupleFromList(next, mySelect, input);
-		return next;
-	}
+	virtual Iterator* createExec();
 };
 
 class CGISite : public LocalTable {
@@ -447,7 +371,7 @@ class CGISite : public LocalTable {
 	String urlString;
 public:
 	CGISite(String url, Entry* entry, int entryLen) : 
-		LocalTable("", (Iterator*) NULL), entry(entry), 
+		LocalTable("", (PlanOp*) NULL), entry(entry), 
 		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){
 		// do not delete entries, they are deleted in catalog
@@ -460,11 +384,6 @@ protected:
 	List<Site*>* sites;
 	Site* site1;
 	Site* site2;
-	List<Tuple*> innerRel;
-	bool firstEntry;
-	bool firstPass;
-	const Tuple* outerTup;
-	Tuple* next;
 public:
 	SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2){
 		sites = new List<Site*>;
@@ -485,24 +404,11 @@ public:
 		}
 		delete tmp1;
 		delete tmp2;
-		firstEntry = true;
-		firstPass = true;
-		outerTup = NULL;
-		next = NULL;
-	}
-	virtual void initialize(){
-		if (site1){
-			site1->initialize();
-		}
-		if(site2){
-			site2->initialize();
-		}
 	}
 	virtual ~SiteGroup(){
 //		delete sites;	// list only PROBLEm
 		delete site1;
 		delete site2;
-		delete next;
 	}
 	virtual bool have(Site* siteGroup){
 		List<Site*>* checkList = siteGroup->getList();
@@ -533,14 +439,7 @@ public:
 		return tmp;
 		//return sites->duplicate();
 	}
-	virtual void enumerate(){
-		TRY(enumerateList(mySelect, site1->getName(), site1->mySelect, 
-			site2->getName(), site2->mySelect), );
-		TRY(enumerateList(myWhere, site1->getName(), site1->mySelect, 
-			site2->getName(), site2->mySelect), );
-		TRY(site1->enumerate(), );
-		TRY(site2->enumerate(), );
-	}
+	virtual Iterator* createExec();
 	virtual void display(ofstream& out, int detail = 0){
 		Site::display(out, detail);
 		out << endl;
@@ -550,7 +449,6 @@ public:
 		out << endl;
 		site2->display(out, detail);
 	}
-	virtual const Tuple* getNext();
 	virtual int getNumFlds(){
 		return mySelect->cardinality();
 	}
@@ -563,11 +461,8 @@ public:
 class UnionSite : public Site {
 	Site* iter1;
 	Site* iter2;
-	bool runningFirst;
 public:
-	UnionSite(Site* iter1, Site* iter2) : iter1(iter1), iter2(iter2) {
-		runningFirst = true;
-	}
+	UnionSite(Site* iter1, Site* iter2) : iter1(iter1), iter2(iter2) {}
 	virtual int getNumFlds(){
 		return iter1->getNumFlds();
 	}
@@ -577,25 +472,7 @@ public:
 	virtual String* getTypeIDs(){
 		return iter1->getTypeIDs();
 	}
-	virtual void initialize(){
-		iter1->initialize();
-	}
-	virtual const Tuple* getNext(){
-		const Tuple* next;
-		if(runningFirst){
-			if((next = iter1->getNext())){
-				return next;
-			}
-			else{
-				runningFirst = false;
-				iter2->initialize();
-				return iter2->getNext();
-			}
-		}
-		else{
-			return iter2->getNext();
-		}
-	}
+	virtual Iterator* createExec();
 	~UnionSite(){
 		delete iter1;
 		delete iter2;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/06/16 16:04:56  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.20  1997/06/14 22:34:36  liping
   re-write min/max and recId request with SQL queries
 
@@ -889,8 +892,6 @@ UnmarshalPtr getUnmarshalPtr(String type);
 
 void marshal(const Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
 	int* sizes, int numFlds);
-
-Type* unmarshal(char* from, String type);
 
 GeneralPtr* getOperatorPtr(
 	String name, TypeID root, TypeID arg, TypeID& retType);

@@ -7,7 +7,9 @@ bool Aggregates::isApplicable(){
 	if (selList == NULL )
 		return false;
 
-	if (alreadyChecked)
+	assert(!filteredSelList);
+
+	if (alreadyChecked)		// not necessary
 		return isApplicableValue;
 	
 	alreadyChecked = true;
@@ -37,17 +39,17 @@ bool Aggregates::isApplicable(){
 				curr = args->get();
 				aggFuncs[i] = new MaxAggregate();
 			}
-			if(*name == "count" && numArgs == 1){
+			else if(*name == "count" && numArgs == 1){
 				isApplicableValue = true;
 				curr = args->get();
 				aggFuncs[i] = new CountAggregate();
 			}
-			if(*name == "sum" && numArgs == 1){
+			else if(*name == "sum" && numArgs == 1){
 				isApplicableValue = true;
 				curr = args->get();
 				aggFuncs[i] = new SumAggregate();
 			}
-			if(*name == "avg" && numArgs == 1){
+			else if(*name == "avg" && numArgs == 1){
 				isApplicableValue = true;
 				curr = args->get();
 				aggFuncs[i] = new AvgAggregate();
@@ -60,40 +62,40 @@ bool Aggregates::isApplicable(){
 	return isApplicableValue;
 }
 
-void Aggregates::typify(Site* inputIterator){
-	iterator = inputIterator;
-	int numFlds = inputIterator->getNumFlds();
+void Aggregates::typify(Site* inputPlanOp){
+	this->inputPlanOp = inputPlanOp;
+	int numFlds = inputPlanOp->getNumFlds();
 	assert(numFlds == selList->cardinality());
-	const TypeID* inptypes = inputIterator->getTypeIDs();
+	const TypeID* inptypes = inputPlanOp->getTypeIDs();
 	for(int i = 0; i < numFlds; i++){
 		typeIDs[i] = aggFuncs[i]->typify(inptypes[i]);
 	}
 }
 
-void Aggregates::enumerate(){
-	assert(iterator);
-	iterator->enumerate();
+Iterator* Aggregates::createExec(){
+	assert(inputPlanOp);
+	Iterator* inputIter = inputPlanOp->createExec();
+	ExecAggregate** aggExecs = new (ExecAggregate*)[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		aggExecs[i] = aggFuncs[i]->createExec();
 	}
+	return new StandAggsExec(inputIter, aggExecs, numFlds);
 }
 
-void Aggregates::initialize(){
-	assert(iterator);
-	iterator->initialize();
+void StandAggsExec::initialize(){
+	assert(inputIter);
+	inputIter->initialize();
 }
 
-const Tuple* Aggregates::getNext(){
-	if(done)
-	  return NULL;
-
-	done = true;
-	int numFlds = getNumFlds();
-	const Tuple* currt = iterator->getNext();
+const Tuple* StandAggsExec::getNext(){
+	const Tuple* currt = inputIter->getNext();
+	if(!currt){
+		return NULL;
+	}
 	for(int i = 0; i < numFlds; i++){
 		aggExecs[i]->initialize(currt[i]);
 	}
-	while((currt = iterator->getNext())){
+	while((currt = inputIter->getNext())){
 		for(int i = 0; i < numFlds; i++){
 			aggExecs[i]->update(currt[i]);
 		}

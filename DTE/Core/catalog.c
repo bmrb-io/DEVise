@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/06/16 16:04:47  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.16  1997/05/21 14:31:40  wenger
   More changes for Linux.
 
@@ -58,14 +61,15 @@
 #include <string.h>
 #include <fstream.h>
 #include <iostream.h>
+#include "StandardRead.h"
 #include "catalog.h"
 #include "Iterator.h"
 #include "DevRead.h"
-#include "StandardRead.h"
 #include "url.h"
 #include "site.h"
 #include "Utility.h"
 #include "Engine.h"
+#include "Inserter.h"
 
 void readFilter(String viewNm, String& select, 
 		String*& attributeNames, int& numFlds, String& where){
@@ -143,7 +147,7 @@ Site* StandardInterface::getSite(){ // Throws a exception
 
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
-	Iterator* unmarshal = new StandardRead();
+	PlanOp* unmarshal = new StandardRead();
 	TRY(unmarshal->open(in), NULL);
 
 	delete url;
@@ -169,7 +173,7 @@ ISchema* StandardInterface::getISchema(TableName* table){
 	String* attributeNames;
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
-	Iterator* iterator = new StandardRead();
+	PlanOp* iterator = new StandardRead();
 	TRY(iterator->open(in), NULL);
 	numFlds = iterator->getNumFlds();
 	attributeNames = iterator->getAttributeNames();
@@ -270,12 +274,13 @@ ISchema* QueryInterface::getISchema(TableName* table){	// throws exception
 	TRY(in = contactURL(urlString, options, values, count), NULL);
 	delete [] options;
 	delete [] values;
-	Iterator* iterator = new StandardRead();
-	TRY(iterator->open(in), NULL);
-	int numFlds = iterator->getNumFlds();
+	PlanOp* sr = new StandardRead();
+	TRY(sr->open(in), NULL);
+	int numFlds = sr->getNumFlds();
 	assert(numFlds == 1);
-	TypeID* types = iterator->getTypeIDs();
+	TypeID* types = sr->getTypeIDs();
 	assert(types[0] == "schema");
+	TRY(Iterator* iterator = sr->createExec(), NULL);
 	iterator->initialize();
 	const Tuple* tuple;
 	assert(tuple = iterator->getNext());
@@ -299,14 +304,15 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	ifstream* in = new ifstream(fileName);
 	StandardRead* fileRead = new StandardRead();	
 	TRY(fileRead->open(in), NULL);
-	fileRead->initialize();
+	TRY(Iterator* iterator = fileRead->createExec(), NULL);
+	iterator->initialize();
 
 	String firstPathNm = *path->getFirst();
 	path->deleteFirst();
 	const Tuple* tuple;
 	cout << "searching for " << firstPathNm << " in " << fileName << endl;
 
-	while((tuple = fileRead->getNext())){
+	while((tuple = iterator->getNext())){
 		CatEntry* entry = (CatEntry*) tuple[0];
 		assert(entry);
 		String tableNm = entry->getName();

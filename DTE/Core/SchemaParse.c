@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/16 16:04:44  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.3  1997/03/28 16:07:27  wenger
   Added headers to all source files that didn't have them; updated
@@ -25,6 +28,7 @@
 
 #include "ParseTree.h"
 #include "site.h"
+#include "catalog.h"
 
 Catalog* getRootCatalog(){
 	String catalogName;
@@ -52,12 +56,30 @@ String getIndexCatName(){
 }
 */
 
-class ISchemaSite : public Site {
-	ISchema* schema;	
+class ISchemaExec : public Iterator {
 	bool done;
 	Tuple retVal[1];
 public:
-	ISchemaSite(ISchema* schema) : Site(), schema(schema), done(false) {}
+	ISchemaExec(ISchema* schema) : done(false) {
+		retVal[0] = schema;
+	}
+	virtual ~ISchemaExec(){
+		// do not delete schema  ?
+	}
+	virtual void initialize(){}
+	virtual const Tuple* getNext(){
+		if(done){
+			return NULL;
+		}
+		done = true;
+		return retVal;
+	}
+};
+
+class ISchemaSite : public Site {
+	ISchema* schema;	
+public:
+	ISchemaSite(ISchema* schema) : Site(), schema(schema){}
 	virtual ~ISchemaSite(){
 		// do not delete schema
 	}
@@ -70,14 +92,8 @@ public:
      virtual String *getAttributeNames(){
           return new String("schema");
      }
-	virtual void initialize(){}
-	virtual const Tuple* getNext(){
-		if(done){
-			return NULL;
-		}
-		done = true;
-		retVal[0] = schema;
-		return retVal;
+	ISchemaExec* createExec(){
+		return new ISchemaExec(schema);
 	}
 };
 

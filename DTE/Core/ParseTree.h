@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/06/16 16:04:43  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.11  1997/04/08 01:47:32  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -30,8 +33,9 @@
 
 #include "queue.h"
 #include "myopt.h"
-#include "site.h"
-#include "catalog.h"
+
+class Catalog;
+class Site;
 
 Catalog* getRootCatalog();
 // String getIndexCatName();

@@ -32,27 +32,55 @@ typedef long off_t;
 
 TypeID translateUDType(Attr* at);
 
-class DevRead : public Iterator {
-protected:
+class DevReadExec : public Iterator {
 	UniData* ud;
+	UnmarshalPtr* unmarshalPtrs;
+	Tuple* tuple;
 	char buff[BUFSZE+1];
 	off_t off;
+	int* offsets;
 	int numFlds;
+	int recId;
+public:
+	DevReadExec(UniData* ud, UnmarshalPtr* unmarshalPtrs,
+		Tuple* tuple, int* offsets, int numFlds) :
+		ud(ud), unmarshalPtrs(unmarshalPtrs), tuple(tuple),
+		offsets(offsets), numFlds(numFlds) {
+
+		buff[BUFSZE] = '\0';
+		recId = 0;
+	}
+
+	virtual const Tuple* getNext(streampos& pos){
+		assert(! "not implemented");
+		return getNext();
+	}
+
+	virtual const Tuple* getNext();
+
+	virtual void setOffset(Offset offset){
+		off = offset.getOffset();
+	}
+
+     virtual Offset getOffset(){
+		return off;
+     }
+};
+
+class DevRead : public PlanOp {
+	UniData* ud;
+	int numFlds;
+protected:
 	String* typeIDs;
 	String* attributeNames;
-	UnmarshalPtr* unmarshalPtrs;
-	int* offsets;
 	String* order;
-	Tuple* tuple;
-	int recId;
+	int* offsets;
 public:
      DevRead() : 
 		ud(NULL), numFlds(0), typeIDs(NULL), 
 		attributeNames(NULL),
-		unmarshalPtrs(NULL), offsets(NULL), order(NULL), tuple(NULL) {
+		order(NULL), offsets(NULL){
 
-		buff[BUFSZE] = '\0';
-		recId = 0;
 	}
 
 	virtual ~DevRead() { Close(); }
@@ -83,20 +111,6 @@ public:
 	virtual String* getOrderingAttrib(){
 		return order;
 	}
-	virtual const Tuple* getNext(streampos& pos){
-		assert(! "not implemented");
-		return getNext();
-	}
-
-	virtual const Tuple* getNext();
-
-	virtual void setOffset(Offset offset){
-		off = offset.getOffset();
-	}
-
-     virtual Offset getOffset(){
-		return off;
-     }
 	virtual ostream& display(ostream& out){
 		out << "Num fields: " << numFlds << endl;
 		out << "(";
@@ -118,6 +132,7 @@ public:
 		}
 		out << ";" << endl;
 	}
+	virtual Iterator* createExec();
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/04/14 20:44:12  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.3  1996/12/21 22:21:48  donjerko
   Added hierarchical namespace.
 
@@ -35,7 +38,8 @@
 
 #include "machdep.h"
 
-#define LOG(A) A
+// #define LOG(A) A
+#define LOG(A)
 
 LOG(extern ofstream logFile);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/05/07 18:55:49  donjerko
+  Fixed the problem when constants are selected.
+
   Revision 1.23  1997/04/28 06:56:05  donjerko
   *** empty log message ***
 
@@ -339,10 +342,6 @@ Site* QueryTree::createSite(){
 	LOG(siteGroup->display(logFile, DETAIL);)
 	LOG(logFile << endl;)
 	assert(predicateList->cardinality() == 0);
-	LOG(logFile << "Global Enumeration:\n";)
-	TRY(siteGroup->enumerate(), 0);
-	LOG(siteGroup->display(logFile, DETAIL);)
-	LOG(logFile << endl;)
 	delete predicateList;	// destroy list too
 	return siteGroup;
 }

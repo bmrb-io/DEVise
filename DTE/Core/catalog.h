@@ -16,8 +16,8 @@
   $Id$
 
   $Log$
-  Revision 1.13  1997/04/06 19:01:40  donjerko
-  *** empty log message ***
+  Revision 1.14  1997/06/16 16:04:48  donjerko
+  New memory management in exec phase. Unidata included.
 
   Revision 1.11  1997/02/25 22:14:53  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
@@ -54,14 +54,17 @@
 #include "exception.h"
 #include "site.h"
 #include "Utility.h"
-#include "Inserter.h"
+/*
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
      #include "RTreeRead.h"
 #endif
+*/
 
 const int INFINITY = INT_MAX;
+
+class Inserter;
 
 class Catalog {
 private:
