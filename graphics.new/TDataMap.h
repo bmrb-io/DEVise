@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/03/07 16:52:56  jussi
+  Added association of TDataMap and ViewGraph.
+
   Revision 1.6  1996/03/05 23:20:36  jussi
   Added destructor which deletes dynamically allocated objects.
 
@@ -145,16 +148,6 @@ public:
   /* return the max bounding box found so far */
   void MaxBoundingBox(Coord &width, Coord &height);
   
-  void AssociateView(ViewGraph *view) {
-    assert(!_view);
-    _view = view;
-  }
-  void DissociateView() {
-    assert(_view);
-    _view = NULL;
-  }
-  ViewGraph *GetView() { return _view; }
-
   /*************************************************************
     User Defined Map function.
   **************************************************************/
@@ -307,8 +300,6 @@ private:
   void *_userData;
   
   Coord _boundWidth, _boundHeight; /* bounding box width/height */
-
-  ViewGraph *_view;                /* view */
 };
 
 #endif
