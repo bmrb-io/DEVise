@@ -51,6 +51,8 @@ proc AboutDevise {} {
 	set headFont -*-times-medium-i-normal--*-300-*-*-*-*-*-*
 	set bodyFont -*-times-medium-i-normal--*-180-*-*-*-*-*-*
 	set copyFont -*-times-medium-r-normal--*-120-*-*-*-*-*-*
+	set contribFont1 -*-times-medium-i-normal--*-120-*-*-*-*-*-*
+	set contribFont2 -*-times-medium-r-normal--*-120-*-*-*-*-*-*
 
     toplevel .about -background $bg
     wm title .about "About DEVise"
@@ -95,6 +97,50 @@ proc AboutDevise {} {
 			-text $httpurl \
 			-command "catch {exec $browser $httpurl &} result;"
 
+    message .about.contrib1 -justify center -width 10c \
+			-fg $fg -bg $bg -font $bodyFont \
+			-text "Contributors:"
+
+    message .about.contrib2 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont1 \
+			-text "Contributors to the DEVise project include:"
+
+    message .about.contrib3 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Miron Livny, Raghu Ramakrishnan (PIs)"
+
+    message .about.contrib4 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Kevin Beyer, Donko Donjerkovich, Jussi Myllymaki"
+
+    message .about.contrib5 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Chris Weaver, Kent Wenger, Hongyu Yao"
+
+    message .about.contrib6 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Sanjay Agrawal, Okan Alper, Guangshun Chen"
+
+    message .about.contrib7 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Michael Cheng, Anthony D'Silva, Vuk Ercegovac"
+
+    message .about.contrib8 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Shaun Flisakowski, Shilpa Lawande, Yunrui Li"
+
+    message .about.contrib9 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Yugang Liang, Zhenhai Lin, Muralidhar Krishnaprasad"
+
+    message .about.contrib10 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Anand Manikutty, Dongbin Tao, Andy Therber"
+
+    message .about.contrib11 -justify center -width 10c \
+			-fg $fg -bg $bg -font $contribFont2 \
+			-text "Haihong Wang, Liping Zhu" 
+
     button .about.ok -width 6 \
 			-text OK \
 			-command "destroy .about"
@@ -107,6 +153,17 @@ proc AboutDevise {} {
     pack .about.mailtourl -side top -padx 5m -pady 0m
     pack .about.http      -side top -padx 5m -pady 0m
     pack .about.httpurl   -side top -padx 5m -pady 0m
+    pack .about.contrib1   -side top -padx 5m -pady 0m
+    pack .about.contrib2   -side top -padx 5m -pady 0m
+    pack .about.contrib3   -side top -padx 5m -pady 0m
+    pack .about.contrib4   -side top -padx 5m -pady 0m
+    pack .about.contrib5   -side top -padx 5m -pady 0m
+    pack .about.contrib6   -side top -padx 5m -pady 0m
+    pack .about.contrib7   -side top -padx 5m -pady 0m
+    pack .about.contrib8   -side top -padx 5m -pady 0m
+    pack .about.contrib9   -side top -padx 5m -pady 0m
+    pack .about.contrib10   -side top -padx 5m -pady 0m
+    pack .about.contrib11   -side top -padx 5m -pady 0m
     pack .about.ok        -side top -padx 5m -pady 3m
 }
 
