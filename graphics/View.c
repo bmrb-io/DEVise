@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.187  1999/08/09 21:52:40  wenger
+  Now does a better job of avoiding having overlaps of Y axis tick labels.
+
   Revision 1.186  1999/08/05 21:42:35  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -4322,6 +4325,20 @@ View::DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit)
 #if defined(DEBUG)
   printf("View(%s)::DoIsOnCursor(%d, %d)\n", GetName(), pixX, pixY);
 #endif
+
+  int daX, daY, daWidth, daHeight;
+  GetDataArea(daX, daY, daWidth, daHeight);
+
+  int winX, winY;
+  unsigned winWidth, winHeight;
+  Geometry(winX, winY, winWidth, winHeight);
+  daY = winHeight - daHeight - daY;
+
+  if (pixX < daX || pixX > daX + daWidth - 1 || pixY < daY ||
+      pixY > daY + daHeight - 1) {
+	// Mouse is outside of data area.
+    return;
+  }
 
   //
   // How close you have to be to "catch" an edge.
