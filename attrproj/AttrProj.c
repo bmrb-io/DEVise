@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/05 19:46:48  wenger
+  Fixed some bugs in the attribute projection code (handles blanks lines
+  and much longer lines in projection files); removed unneeded -lpthread
+  from Makefile for solaris attribute projection.
+
   Revision 1.13  1996/10/10 16:45:19  wenger
   Changed function names, etc., in ApParseCat.c to get rid of name clashes
   when Donko puts transformation engine code into DEVise.
@@ -283,7 +288,7 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 
 	_tDataP->InitGetRecs(recId, recId, RecIdOrder);
 
-	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize, NULL))
+	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
 	{
 		result = StatusFailed;
 	}
@@ -330,7 +335,7 @@ AttrProj::ReadWholeRec(RecId recId, Vector &vector)
 	int			dataSize;
 	int			numRecs;
 
-	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize, NULL))
+	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize))
 	{
 		result = StatusFailed;
 	}
