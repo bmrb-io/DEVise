@@ -18,8 +18,8 @@ Action.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 Action.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 Action.o: /usr/include/sys/time.h /usr/include/sys/time.h
 Action.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h ViewStats.h
-Action.o: DerivedDataSource.h /usr/include/string.h RecId.h PointStorage.h
-Action.o: ../tape/HashTable.h
+Action.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+Action.o: ../tape/HashTable.h RecId.h PointStorage.h
 ActionClassInfo.o: /usr/include/stdio.h ActionClassInfo.h
 ActionClassInfo.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h Action.h
 ActionClassInfo.o: ../graphics/View.h ../graphics/Dispatcher.h
@@ -56,9 +56,9 @@ ActionDefault.o: ../graphics/Compress.h ../graphics/Control.h
 ActionDefault.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ActionDefault.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ActionDefault.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-ActionDefault.o: ViewStats.h DerivedDataSource.h PointStorage.h
-ActionDefault.o: ../tape/HashTable.h ../graphics/Selection.h RecInterp.h
-ActionDefault.o: QueryProc.h TData.h RecOrder.h
+ActionDefault.o: ViewStats.h DerivedDataSource.h GdataStat.h
+ActionDefault.o: ../tape/HashTable.h PointStorage.h ../graphics/Selection.h
+ActionDefault.o: RecInterp.h QueryProc.h TData.h RecOrder.h
 AmsDiskFile.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 AmsDiskFile.o: AmsDiskFile.h DiskFile.h ../graphics/DeviseTypes.h
 AmsDiskFile.o: TDataAppend.h TData.h RecId.h RecOrder.h ams.h
@@ -337,8 +337,9 @@ GDataBin.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 GDataBin.o: ../graphics/AttrList.h /usr/include/sys/time.h
 GDataBin.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
 GDataBin.o: BasicStats.h ViewStats.h DerivedDataSource.h
-GDataBin.o: /usr/include/string.h Action.h PointStorage.h ../tape/HashTable.h
-GDataBin.o: TDataCMap.h ../graphics/Init.h ../graphics/BufPolicy.h
+GDataBin.o: /usr/include/string.h GdataStat.h ../tape/HashTable.h Action.h
+GDataBin.o: PointStorage.h TDataCMap.h ../graphics/Init.h
+GDataBin.o: ../graphics/BufPolicy.h
 GDataRangeMap.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 GDataRangeMap.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 GDataRangeMap.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
@@ -367,9 +368,9 @@ GDataSnap.o: ../graphics/Control.h ../graphics/ClassDir.h
 GDataSnap.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 GDataSnap.o: /usr/include/sys/time.h /usr/include/sys/time.h
 GDataSnap.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-GDataSnap.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
-GDataSnap.o: PointStorage.h ../tape/HashTable.h ../graphics/Temp.h
-GDataSnap.o: ../graphics/Map3D.h ../graphics/ColorMgr.h
+GDataSnap.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+GDataSnap.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h
+GDataSnap.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/ColorMgr.h
 GDataSnap.o: ../graphics/Selection.h ../graphics/Init.h
 GDataSnap.o: ../graphics/BufPolicy.h GDataSnap.h GDataVar.h
 MapInterpClassInfo.o: /usr/include/ctype.h ../graphics/DeviseTypes.h
@@ -392,8 +393,8 @@ MapInterpClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapInterpClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 MapInterpClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 MapInterpClassInfo.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
-MapInterpClassInfo.o: Action.h PointStorage.h ../tape/HashTable.h Bitmap.h
-MapInterpClassInfo.o: TData.h RecOrder.h MapInterpClassInfo.h
+MapInterpClassInfo.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h
+MapInterpClassInfo.o: Bitmap.h TData.h RecOrder.h MapInterpClassInfo.h
 MapInterpClassInfo.o: ../graphics/Util.h
 MappingInterp.o: /usr/include/stdio.h /s/tcl/include/tcl.h
 MappingInterp.o: ../graphics/DeviseTypes.h Bitmap.h ../graphics/AttrList.h
@@ -414,8 +415,8 @@ MappingInterp.o: /usr/include/sys/sysmacros.h ../graphics/Journal.h
 MappingInterp.o: ../graphics/ViewWin.h ../graphics/Control.h
 MappingInterp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 MappingInterp.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-MappingInterp.o: DerivedDataSource.h /usr/include/string.h Action.h
-MappingInterp.o: PointStorage.h ../tape/HashTable.h MapInterpShape.h
+MappingInterp.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+MappingInterp.o: ../tape/HashTable.h Action.h PointStorage.h MapInterpShape.h
 MappingInterp.o: RectShape.h Shape.h StringStorage.h ../graphics/Util.h
 MappingInterp.o: /usr/include/ctype.h ../graphics/Init.h
 MappingInterp.o: ../graphics/BufPolicy.h
@@ -470,9 +471,10 @@ QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 QueryProc.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 QueryProc.o: ../graphics/AttrList.h /usr/include/sys/time.h
 QueryProc.o: /usr/include/sys/time.h ../graphics/Cursor.h BasicStats.h
-QueryProc.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
-QueryProc.o: PointStorage.h ../tape/HashTable.h TDataMap.h ShapeID.h
-QueryProc.o: GDataRec.h TData.h RecOrder.h ../graphics/Init.h
+QueryProc.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+QueryProc.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h
+QueryProc.o: TDataMap.h ShapeID.h GDataRec.h TData.h RecOrder.h
+QueryProc.o: ../graphics/Init.h
 QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull.o: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull.o: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h
@@ -495,8 +497,9 @@ QueryProcFull.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcFull.o: /usr/include/sys/time.h /usr/include/sys/time.h
 QueryProcFull.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 QueryProcFull.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
-QueryProcFull.o: Action.h PointStorage.h ../tape/HashTable.h GDataBin.h
-QueryProcFull.o: TData.h GData.h RecordLink.h RecFile.h VisualLink.h
+QueryProcFull.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h
+QueryProcFull.o: GDataBin.h TData.h GData.h RecordLink.h RecFile.h
+QueryProcFull.o: VisualLink.h
 QueryProcSimple.o: /usr/include/stdio.h /usr/include/stdlib.h
 QueryProcSimple.o: /usr/include/sys/stdtypes.h /usr/include/math.h
 QueryProcSimple.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -516,11 +519,11 @@ QueryProcSimple.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcSimple.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcSimple.o: /usr/include/sys/time.h /usr/include/sys/time.h
 QueryProcSimple.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-QueryProcSimple.o: DerivedDataSource.h /usr/include/string.h Action.h
-QueryProcSimple.o: PointStorage.h ../tape/HashTable.h BufMgrNull.h BufMgr.h
-QueryProcSimple.o: BufferPolicy.h RecOrder.h BufMgrFull.h RangeInfo.h GData.h
-QueryProcSimple.o: TData.h GDataBin.h PageSize.h ../graphics/Display.h
-QueryProcSimple.o: ../graphics/ColorMgr.h
+QueryProcSimple.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+QueryProcSimple.o: ../tape/HashTable.h Action.h PointStorage.h BufMgrNull.h
+QueryProcSimple.o: BufMgr.h BufferPolicy.h RecOrder.h BufMgrFull.h
+QueryProcSimple.o: RangeInfo.h GData.h TData.h GDataBin.h PageSize.h
+QueryProcSimple.o: ../graphics/Display.h ../graphics/ColorMgr.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: ../graphics/DList.h ../graphics/Exit.h
 RangeHash.o: /usr/include/stdio.h /usr/include/stdlib.h
@@ -586,11 +589,11 @@ Snapshot.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 Snapshot.o: ../graphics/AttrList.h /usr/include/sys/time.h
 Snapshot.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
 Snapshot.o: BasicStats.h ViewStats.h DerivedDataSource.h
-Snapshot.o: /usr/include/string.h Action.h PointStorage.h ../tape/HashTable.h
-Snapshot.o: TData.h RecOrder.h TDataRangeSource.h RangeCallback.h BufMgr.h
-Snapshot.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
-Snapshot.o: GDataRangeSource.h GData.h ViewRanges.h ../graphics/Util.h
-Snapshot.o: /usr/include/ctype.h
+Snapshot.o: /usr/include/string.h GdataStat.h ../tape/HashTable.h Action.h
+Snapshot.o: PointStorage.h TData.h RecOrder.h TDataRangeSource.h
+Snapshot.o: RangeCallback.h BufMgr.h ../graphics/BufPolicy.h BufHint.h
+Snapshot.o: BufferPolicy.h GDataRangeSource.h GData.h ViewRanges.h
+Snapshot.o: ../graphics/Util.h /usr/include/ctype.h
 StringHash.o: /usr/include/stdio.h StringHash.h
 TData.o: /usr/include/stdio.h TData.h ../graphics/DeviseTypes.h RecId.h
 TData.o: RecOrder.h ../graphics/Exit.h
@@ -684,8 +687,8 @@ TDataMap.o: ../graphics/Control.h ../graphics/ClassDir.h
 TDataMap.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 TDataMap.o: /usr/include/sys/time.h /usr/include/sys/time.h
 TDataMap.o: ../graphics/Cursor.h BasicStats.h ViewStats.h DerivedDataSource.h
-TDataMap.o: Action.h PointStorage.h ../tape/HashTable.h GData.h TData.h
-TDataMap.o: RecOrder.h GDataBin.h QueryProc.h
+TDataMap.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h GData.h
+TDataMap.o: TData.h RecOrder.h GDataBin.h QueryProc.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 TDataMmap.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 TDataMmap.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
@@ -718,11 +721,11 @@ TDataViewX.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 TDataViewX.o: ../graphics/AttrList.h /usr/include/sys/time.h
 TDataViewX.o: /usr/include/sys/time.h ../graphics/Config.h
 TDataViewX.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-TDataViewX.o: DerivedDataSource.h Action.h PointStorage.h ../tape/HashTable.h
-TDataViewX.o: GDataBin.h TDataCMap.h ConnectorShape.h Connector.h ShapeID.h
-TDataViewX.o: TDataMap.h GDataRec.h Shape.h ../graphics/Temp.h
-TDataViewX.o: ../graphics/Map3D.h ../graphics/Util.h /usr/include/ctype.h
-TDataViewX.o: RecordLink.h RecFile.h VisualLink.h
+TDataViewX.o: DerivedDataSource.h GdataStat.h ../tape/HashTable.h Action.h
+TDataViewX.o: PointStorage.h GDataBin.h TDataCMap.h ConnectorShape.h
+TDataViewX.o: Connector.h ShapeID.h TDataMap.h GDataRec.h Shape.h
+TDataViewX.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/Util.h
+TDataViewX.o: /usr/include/ctype.h RecordLink.h RecFile.h VisualLink.h
 TkControl.o: /usr/include/stdio.h /usr/include/stdlib.h
 TkControl.o: /usr/include/sys/stdtypes.h TkControl.h /s/tcl/include/tcl.h
 TkControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -781,18 +784,20 @@ ViewClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 ViewClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 ViewClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 ViewClassInfo.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
-ViewClassInfo.o: Action.h PointStorage.h ../tape/HashTable.h GDataBin.h
-ViewClassInfo.o: TDataCMap.h ConnectorShape.h Connector.h ShapeID.h
-ViewClassInfo.o: ViewScatter.h ViewClassInfo.h ../graphics/Selection.h
-ViewClassInfo.o: ../graphics/Util.h /usr/include/ctype.h ActionDefault.h
-ViewClassInfo.o: VisualLink.h ../graphics/ColorMgr.h ../graphics/Parse.h
-ViewGraph.o: ViewGraph.h ../graphics/View.h ../graphics/DeviseTypes.h
-ViewGraph.o: ../graphics/Dispatcher.h /usr/include/stdio.h
-ViewGraph.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-ViewGraph.o: /usr/include/unistd.h /usr/include/sys/types.h
-ViewGraph.o: /usr/include/sys/sysmacros.h ../graphics/DList.h
-ViewGraph.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-ViewGraph.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/ViewWin.h
+ViewClassInfo.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h
+ViewClassInfo.o: GDataBin.h TDataCMap.h ConnectorShape.h Connector.h
+ViewClassInfo.o: ShapeID.h ViewScatter.h ViewClassInfo.h
+ViewClassInfo.o: ../graphics/Selection.h ../graphics/Util.h
+ViewClassInfo.o: /usr/include/ctype.h ActionDefault.h VisualLink.h
+ViewClassInfo.o: ../graphics/ColorMgr.h ../graphics/Parse.h
+ViewGraph.o: /usr/include/assert.h ViewGraph.h ../graphics/View.h
+ViewGraph.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+ViewGraph.o: /usr/include/stdio.h /usr/include/stdlib.h
+ViewGraph.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
+ViewGraph.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+ViewGraph.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ViewGraph.o: ../graphics/VisualArg.h ../graphics/Color.h
+ViewGraph.o: ../graphics/Pattern.h ../graphics/ViewWin.h
 ViewGraph.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 ViewGraph.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ViewGraph.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -801,9 +806,9 @@ ViewGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewGraph.o: /usr/include/sys/time.h ../graphics/Config.h
 ViewGraph.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-ViewGraph.o: DerivedDataSource.h /usr/include/string.h Action.h RecId.h
-ViewGraph.o: PointStorage.h ../tape/HashTable.h TDataMap.h ShapeID.h
-ViewGraph.o: GDataRec.h ActionDefault.h ../graphics/Util.h
+ViewGraph.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+ViewGraph.o: ../tape/HashTable.h Action.h RecId.h PointStorage.h TDataMap.h
+ViewGraph.o: ShapeID.h GDataRec.h ActionDefault.h ../graphics/Util.h
 ViewGraph.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
 ViewGraph.o: RecordLink.h RecFile.h VisualLink.h
 ViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
@@ -838,9 +843,9 @@ ViewScatter.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewScatter.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewScatter.o: /usr/include/sys/time.h ../graphics/Config.h
 ViewScatter.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-ViewScatter.o: DerivedDataSource.h /usr/include/string.h Action.h
-ViewScatter.o: PointStorage.h ../tape/HashTable.h GDataBin.h TDataMap.h
-ViewScatter.o: ShapeID.h GDataRec.h Shape.h ../graphics/Temp.h
+ViewScatter.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+ViewScatter.o: ../tape/HashTable.h Action.h PointStorage.h GDataBin.h
+ViewScatter.o: TDataMap.h ShapeID.h GDataRec.h Shape.h ../graphics/Temp.h
 ViewScatter.o: ../graphics/Map3D.h ../graphics/Util.h /usr/include/ctype.h
 ViewScatter.o: RecordLink.h RecFile.h VisualLink.h
 VisualLink.o: VisualLink.h ViewGraph.h ../graphics/View.h
@@ -859,8 +864,8 @@ VisualLink.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 VisualLink.o: ../graphics/AttrList.h /usr/include/sys/time.h
 VisualLink.o: /usr/include/sys/time.h ../graphics/Config.h
 VisualLink.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-VisualLink.o: DerivedDataSource.h /usr/include/string.h Action.h RecId.h
-VisualLink.o: PointStorage.h ../tape/HashTable.h
+VisualLink.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+VisualLink.o: ../tape/HashTable.h Action.h RecId.h PointStorage.h
 VisualLinkClassInfo.o: /usr/include/stdio.h VisualLinkClassInfo.h
 VisualLinkClassInfo.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 VisualLinkClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
@@ -879,9 +884,9 @@ VisualLinkClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 VisualLinkClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 VisualLinkClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 VisualLinkClassInfo.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
-VisualLinkClassInfo.o: Action.h RecId.h PointStorage.h ../tape/HashTable.h
-VisualLinkClassInfo.o: RecordLink.h RecFile.h ../graphics/Util.h
-VisualLinkClassInfo.o: /usr/include/ctype.h
+VisualLinkClassInfo.o: GdataStat.h ../tape/HashTable.h Action.h RecId.h
+VisualLinkClassInfo.o: PointStorage.h RecordLink.h RecFile.h
+VisualLinkClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 VoidArray.o: /usr/include/stdio.h VoidArray.h ../graphics/DeviseTypes.h
 VoidArray.o: ../graphics/Exit.h
 VoidHash.o: /usr/include/stdio.h /usr/include/stdlib.h
@@ -946,9 +951,10 @@ testGData.o: ../graphics/Control.h ../graphics/ClassDir.h
 testGData.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 testGData.o: /usr/include/sys/time.h /usr/include/sys/time.h
 testGData.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-testGData.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
-testGData.o: PointStorage.h ../tape/HashTable.h PageRange.h BufMgr.h
-testGData.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+testGData.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+testGData.o: GdataStat.h ../tape/HashTable.h Action.h PointStorage.h
+testGData.o: PageRange.h BufMgr.h ../graphics/BufPolicy.h BufHint.h
+testGData.o: BufferPolicy.h
 testGDataRange.o: /usr/include/stdio.h /usr/include/stdlib.h
 testGDataRange.o: /usr/include/sys/stdtypes.h GDataRangeMap.h
 testGDataRange.o: ../graphics/DeviseTypes.h RecId.h GDataRec.h
@@ -972,9 +978,9 @@ testGDataVar.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 testGDataVar.o: ../graphics/AttrList.h /usr/include/sys/time.h
 testGDataVar.o: /usr/include/sys/time.h ../graphics/Config.h
 testGDataVar.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-testGDataVar.o: DerivedDataSource.h /usr/include/string.h Action.h
-testGDataVar.o: PointStorage.h ../tape/HashTable.h PageRange.h BufMgr.h
-testGDataVar.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+testGDataVar.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+testGDataVar.o: ../tape/HashTable.h Action.h PointStorage.h PageRange.h
+testGDataVar.o: BufMgr.h ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
 testMmap.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 testMmap.o: /usr/include/sys/sysmacros.h /usr/include/sys/mman.h
 testMmap.o: /usr/include/sys/stat.h /usr/include/fcntl.h
@@ -1006,8 +1012,8 @@ testQueryProc.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 testQueryProc.o: ../graphics/AttrList.h /usr/include/sys/time.h
 testQueryProc.o: /usr/include/sys/time.h ../graphics/Config.h
 testQueryProc.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-testQueryProc.o: DerivedDataSource.h /usr/include/string.h Action.h
-testQueryProc.o: PointStorage.h ../tape/HashTable.h QueryProc.h
+testQueryProc.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+testQueryProc.o: ../tape/HashTable.h Action.h PointStorage.h QueryProc.h
 testRangeList.o: /usr/include/stdio.h /usr/include/stdlib.h
 testRangeList.o: /usr/include/sys/stdtypes.h RangeList.h
 testRangeList.o: ../graphics/DeviseTypes.h RecId.h RangeInfo.h
@@ -1084,7 +1090,7 @@ BasicStats.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 BasicStats.o: ../graphics/AttrList.h /usr/include/sys/time.h
 BasicStats.o: /usr/include/sys/time.h ../graphics/Config.h
 BasicStats.o: ../graphics/Cursor.h DerivedDataSource.h /usr/include/string.h
-BasicStats.o: Action.h RecId.h PointStorage.h ../tape/HashTable.h
+BasicStats.o: GdataStat.h ../tape/HashTable.h Action.h RecId.h PointStorage.h
 DCE.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/sys/types.h
 DCE.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 DCE.o: /usr/include/sys/stat.h DCE.h /usr/include/sys/ipc.h
@@ -1118,8 +1124,11 @@ DerivedDataSource.o: ../graphics/Control.h ../graphics/ClassDir.h
 DerivedDataSource.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 DerivedDataSource.o: /usr/include/sys/time.h /usr/include/sys/time.h
 DerivedDataSource.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-DerivedDataSource.o: ViewStats.h Action.h RecId.h PointStorage.h
-DerivedDataSource.o: ../tape/HashTable.h
+DerivedDataSource.o: ViewStats.h GdataStat.h ../tape/HashTable.h Action.h
+DerivedDataSource.o: RecId.h PointStorage.h
+GdataStat.o: GdataStat.h /usr/include/stdio.h ../tape/HashTable.h
+GdataStat.o: BasicStats.h ../graphics/DList.h ../graphics/Exit.h
+GdataStat.o: ../graphics/DeviseTypes.h ViewStats.h
 Group.o: /usr/include/stdio.h /usr/include/string.h
 Group.o: /usr/include/sys/stdtypes.h Group.h /usr/include/stdlib.h
 Group.o: MapInterpClassInfo.h ../graphics/ClassDir.h
@@ -1163,9 +1172,9 @@ MapInterpShape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 MapInterpShape.o: ../graphics/AttrList.h /usr/include/sys/time.h
 MapInterpShape.o: /usr/include/sys/time.h ../graphics/Config.h
 MapInterpShape.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-MapInterpShape.o: DerivedDataSource.h /usr/include/string.h Action.h
-MapInterpShape.o: PointStorage.h ../tape/HashTable.h ../graphics/Temp.h
-MapInterpShape.o: ../graphics/Map3D.h StringStorage.h
+MapInterpShape.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+MapInterpShape.o: ../tape/HashTable.h Action.h PointStorage.h
+MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h StringStorage.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/ctype.h /usr/include/assert.h
 ParseAPI.o: ParseAPI.h ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 ParseAPI.o: ../graphics/Control.h /usr/include/sys/types.h
@@ -1181,8 +1190,8 @@ ParseAPI.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 ParseAPI.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ParseAPI.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
 ParseAPI.o: BasicStats.h ViewStats.h DerivedDataSource.h
-ParseAPI.o: /usr/include/string.h Action.h RecId.h PointStorage.h
-ParseAPI.o: ../tape/HashTable.h KGraph.h ../graphics/Util.h ParseCat.h
+ParseAPI.o: /usr/include/string.h GdataStat.h ../tape/HashTable.h Action.h
+ParseAPI.o: RecId.h PointStorage.h KGraph.h ../graphics/Util.h ParseCat.h
 ParseAPI.o: TData.h RecOrder.h TDataMap.h ShapeID.h GDataRec.h
 ParseAPI.o: ../graphics/Parse.h GroupDir.h ItemList.h Group.h
 ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
@@ -1207,8 +1216,8 @@ RecordLink.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 RecordLink.o: ../graphics/AttrList.h /usr/include/sys/time.h
 RecordLink.o: /usr/include/sys/time.h ../graphics/Config.h
 RecordLink.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-RecordLink.o: DerivedDataSource.h /usr/include/string.h Action.h
-RecordLink.o: PointStorage.h ../tape/HashTable.h ../graphics/Init.h
+RecordLink.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+RecordLink.o: ../tape/HashTable.h Action.h PointStorage.h ../graphics/Init.h
 RecordLink.o: ../graphics/BufPolicy.h ../graphics/Util.h /usr/include/ctype.h
 Seq.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 Seq.o: /usr/include/string.h /usr/include/unistd.h /usr/include/sys/types.h
@@ -1249,9 +1258,9 @@ ViewKGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewKGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewKGraph.o: /usr/include/sys/time.h ../graphics/Config.h
 ViewKGraph.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-ViewKGraph.o: DerivedDataSource.h /usr/include/string.h Action.h RecId.h
-ViewKGraph.o: PointStorage.h ../tape/HashTable.h KGraph.h ../graphics/Util.h
-ViewKGraph.o: /usr/include/ctype.h
+ViewKGraph.o: DerivedDataSource.h /usr/include/string.h GdataStat.h
+ViewKGraph.o: ../tape/HashTable.h Action.h RecId.h PointStorage.h KGraph.h
+ViewKGraph.o: ../graphics/Util.h /usr/include/ctype.h
 Web.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 Web.o: /usr/include/unistd.h /usr/include/sys/types.h
 Web.o: /usr/include/sys/sysmacros.h /usr/include/string.h

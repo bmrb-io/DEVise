@@ -22,5 +22,7 @@ http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 http_url.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 http_url.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 http_url.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+mk3dstruct.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/time.h
+mk3dstruct.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/time.h
 mkbinfile.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
