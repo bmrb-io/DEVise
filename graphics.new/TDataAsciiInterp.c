@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/03/20 22:20:26  guangshu
+  Modified CreateWithParameters to submit the statistics to DTE once it
+  gets too expensive to calculate in memory.
+
   Revision 1.24  1996/11/01 19:28:23  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -120,10 +124,10 @@
 #include "Util.h"
 #include "DevError.h"
 #include "TDataDQLInterp.h"
-#include "ViewGraph.h"
-#include "TDataMap.h"
 
 #ifndef ATTRPROJ
+#include "ViewGraph.h"
+#include "TDataMap.h"
 #  include "StringStorage.h"
 #endif
 
@@ -191,13 +195,14 @@ extern ControlPanel *ctrl;
 
 ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-#if defined(DEBUG) || 0
+#if defined(DEBUG) || 1
   for(int i=0; i<argc; i++) {
 	printf("argv[%d] = %s\n", i, argv[i]);
   }
   if(_className) printf("_className=%s\n", _className);
 #endif
 
+#ifndef ATTRPROJ
   if(!strncmp(_className, "GDATASTAT", 9)) {
     ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(argv[0]+8);
     if(!v) {
@@ -226,6 +231,7 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
       return queryClass->CreateWithParams(argc, argv);
       }
   }
+#endif
 
   if (argc != 2 && argc != 3)
     return (ClassInfo *)NULL;
