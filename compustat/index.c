@@ -2,6 +2,9 @@
    $Id$
 
    $Log$
+   Revision 1.3  1995/09/19 14:59:44  jussi
+   Added log message.
+
    Revision 1.1  1995/09/18 18:30:34  jussi
    Initial revision of archive.
 */
@@ -16,7 +19,6 @@
 
 main(int argc, char **argv)
 {
-  FILE *infile;
   FILE *outfile;
 
   if (argc != 3)
@@ -26,9 +28,10 @@ main(int argc, char **argv)
   }
 
   /* Get the input file pointer */
-  if ((infile = fopen(argv[1], "r")) == NULL)
+  TapeDrive tape(argv[1], "r", -1, 8332);
+  if (!tape)
   {
-    printf("Error: could not open input file %s\n", argv[1]);
+    fprintf(stderr, "Error: could not open tape device %s\n", argv[1]);
     exit(0);
   }
 
@@ -41,19 +44,11 @@ main(int argc, char **argv)
   }
 
   /* Call function to create the index file */
-  create_index(infile, outfile);
+  create_index(tape, outfile);
 
   /* Close files */
   if (fclose(outfile) == EOF)
-  {
-    printf("Error in closing output file\n");
-    exit(0);
-  }
-  if (fclose(infile) == EOF)
-  {
-    printf("Error in closing input file\n");
-    exit(0);
-  }
+    perror("fclose");
 }
 
 
@@ -66,21 +61,23 @@ main(int argc, char **argv)
    ...
 
 */
-void create_index(FILE *infile, FILE *outfile)
+void create_index(TapeDrive &tape, FILE *outfile)
 {
   char comp_rec[COMP_REC_LENGTH];	/* buffer to hold a record */
   int offset = 0;			/* Offset of first company is 0 */
 
-  while ((!fseek(infile, offset, SEEK_SET)) &&
-	 (!feof(infile)))
-  {
-    /* Read the first record of company into memory */
-    if (fread((void *)comp_rec, sizeof(char), (size_t)COMP_REC_LENGTH,
-	      infile) != COMP_REC_LENGTH)
+  for(;;) {
+    if (tape.seek(offset) != offset)
     {
-      if (feof(infile))
-	break;
-      printf("Incomplete first record found\n");
+      printf("Cannot seek to offset %d\n", offset);
+      break;
+    }
+    int bytes = tape.read((void *)comp_rec, (size_t)COMP_REC_LENGTH);
+    if (!bytes)
+      break;
+    if (bytes != COMP_REC_LENGTH)
+    {
+      printf("Incomplete first record found: %d bytes\n", bytes);
       break;
     }
 
@@ -91,16 +88,16 @@ void create_index(FILE *infile, FILE *outfile)
     extract_fields(COMP_NUM_FIELDS_1, comp_idx_1, comp_rec, outfile);
 
     /* Seek to the fifth record of company */
-    if ((fseek(infile, 4*COMP_REC_LENGTH, SEEK_CUR)) ||
-	(feof(infile)))
+    int cur_pos = tape.tell();
+    if (tape.seek(cur_pos + 4*COMP_REC_LENGTH) != cur_pos + 4*COMP_REC_LENGTH)
     {
       printf("Error: could not access the fifth record\n");
       break;
     }
 
     /* Read fifth record into memory */
-    if (fread((void *)comp_rec, sizeof(char), (size_t)COMP_REC_LENGTH,
-	      infile) != COMP_REC_LENGTH)
+    if (tape.read((void *)comp_rec, (size_t)COMP_REC_LENGTH)
+	!= COMP_REC_LENGTH)
     {
       printf("Incomplete fifth record found\n");
       break;
@@ -179,4 +176,6 @@ char *comp_str_format(char *str, int len)
 	str[i]='-';
     i++;
   }
+
+  return str;
 }
