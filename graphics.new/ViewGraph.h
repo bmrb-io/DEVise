@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/03/24 17:26:13  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.63  1999/03/16 21:47:59  wenger
   '5' (home) key now works properly on linked piles -- does home on the
   entire pile as a unit.
@@ -618,6 +624,10 @@ public:
   // Force the specified axis/axes to "nice" values from their current
   // values.
   void NiceifyAxes(Boolean xAxis, Boolean yAxis);
+
+  // Refresh the view; then do a GoHome().  (Meant to update follower views
+  // after leader view changes in record links.)
+  void RefreshAndHome();
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.160  1999/03/04 15:10:58  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.159  1999/03/01 23:08:59  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -2301,6 +2308,7 @@ void View::Refresh(Boolean refreshPile)
   } else {
     _doneRefresh = false;
     _refresh = true;
+    _homeAfterQueryDone = false;
     Scheduler::Current()->RequestCallback(_dispatcherID);
   }
 }

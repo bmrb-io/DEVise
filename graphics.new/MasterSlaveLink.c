@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/02/23 15:35:09  wenger
+  Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
+  other pile-related problems.
+
   Revision 1.6  1999/02/17 15:09:44  wenger
   Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
   in mapping dialog updating when a view is selected.
@@ -264,10 +268,14 @@ MasterSlaveLink::Done()
   int index = InitIterator();
   while(More(index)) {
     ViewGraph *view = Next(index);
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Refreshing slave view %s\n", view->GetName());
 #endif
-    view->Refresh();
+    if (view->AutoUpdateFilter()) {
+      view->RefreshAndHome();
+    } else {
+      view->Refresh();
+    }
   }
   DoneIterator(index);
 }

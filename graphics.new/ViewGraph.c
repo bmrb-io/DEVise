@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.99  1999/03/24 17:26:12  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.98  1999/03/16 21:47:58  wenger
   '5' (home) key now works properly on linked piles -- does home on the
   entire pile as a unit.
@@ -967,6 +973,17 @@ ViewGraph::GetHome2D(VisualFilter &filter)
 {
 #if defined(DEBUG)
     printf("ViewGraph(%s)::GetHome2D()\n", GetName());
+#endif
+
+#if 0
+    printf("  _homeInfo.homeX = %d\n", _homeInfo.homeX);
+    printf("  _homeInfo.homeY = %d\n", _homeInfo.homeY);
+    printf("  _homeInfo.mode = %d\n", _homeInfo.mode);
+    printf("  _homeInfo.autoYMinZero = %d\n", _homeInfo.autoYMinZero);
+    printf("  _homeInfo.manXLo, manYLo = %g, %g\n", _homeInfo.manXLo,
+      _homeInfo.manYLo);
+    printf("  _homeInfo.manXHi, manYHi = %g, %g\n", _homeInfo.manXHi,
+      _homeInfo.manYHi);
 #endif
 
     DOASSERT(GetNumDimensions() == 2, "GetHome2D called on non 2D view");
@@ -2010,17 +2027,24 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 		_stats[i].Done();
 #endif
 
-	PrepareStatsBuffer(map);
-	DrawLegend();
+	if (_homeAfterQueryDone) {
+	    GoHome();
+	} else {
+	    PrepareStatsBuffer(map);
+	    DrawLegend();
 
-	// Finish record links whose master is this view
-	int		index = _masterLink.InitIterator();
+	    // Finish record links whose master is this view
+	    int		index = _masterLink.InitIterator();
 
-	while(_masterLink.More(index))
-		_masterLink.Next(index)->Done();
+	    while(_masterLink.More(index))
+		    _masterLink.Next(index)->Done();
 
-	_masterLink.DoneIterator(index);
-	ReportQueryDone(bytes);
+	    _masterLink.DoneIterator(index);
+
+		// We can't call ReportQueryDone() if _homeAfterQueryDone is true,
+		// because that goofs up the drawing of piles.  RKW 1999-04-05.
+	    ReportQueryDone(bytes);
+	}
 }
 
 void	ViewGraph::PrintLinkInfo(void) 
@@ -2452,6 +2476,17 @@ ViewGraph::NiceAxisRange(Coord &low, Coord &high)
 #if defined(DEBUG)
   printf("  resulting range: (%g, %g)\n", low, high);
 #endif
+}
+
+void
+ViewGraph::RefreshAndHome()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::RefreshAndHome()\n", GetName());
+#endif
+
+  Refresh();
+  _homeAfterQueryDone = true;
 }
 
 //******************************************************************************

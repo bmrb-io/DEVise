@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.78  1999/03/04 15:11:01  wenger
+  Implemented 'automatic filter update' features: views can be designated
+  to have their visual filters automatically updated with the 'Update
+  Filters' menu selection; alternatively, a session can be opened with
+  the 'Open, Update, and Save' selection, which updates the designated
+  filters and saves the updated session.
+
   Revision 1.77  1999/03/01 23:09:01  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -880,6 +887,8 @@ protected:
 		char *_yAxisDateFormat;
 
 		Boolean _autoUpdate;
+
+		Boolean _homeAfterQueryDone;
 
 		static Boolean _drawCursors;
 		static Boolean _jsCursors;

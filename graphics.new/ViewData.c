@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/03/12 18:46:05  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.16  1999/03/03 18:22:04  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -318,6 +321,18 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 	  dataP += gRecSize;
 	}
+
+	// If _homeAfterQueryDone is true, all we're trying to do is get all
+	// of the data values to correctly update the visual filter; therefore
+	// we don't want to waste time actually drawing or doing statistics
+	// on the data.
+	if (_homeAfterQueryDone) {
+#if defined(DEBUG)
+        printf("Returning without drawing because _homeAfterQueryDone "
+		  "is set\n");
+#endif
+	    return;
+    }
 
 	// Draw symbols
 	char*		ptr = (char*)gdata;
