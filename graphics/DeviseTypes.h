@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/20 18:44:40  jussi
+  Replaced PENTIUM flag with SOLARIS.
+
   Revision 1.3  1996/04/15 19:32:05  wenger
   Consolidated the two (nearly identical) functions for
   reading/parsing physical schema, and cleaned up the
@@ -19,82 +22,37 @@ typedef double Coord;
 typedef char Boolean;
 
 #if defined(HPUX) || defined(SUN) || defined(SOLARIS)
-inline int trunc(float num){
-	return (int)num;
+inline int trunc(float num) {
+  return (int)num;
 }
-inline int trunc(double num){
-	return (int)num;
+inline int trunc(double num) {
+  return (int)num;
 }
 #endif
 
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
 
-class MinMax {
-public:
-	static inline Coord min(Coord a, Coord b){
-		 return ( (a) < (b) ? (a) : (b));
-	};
+#ifndef MIN3
+#define MIN3(a,b,c) ((a) < (b) ? MIN(a,c) : MIN(b,c))
+#endif
 
-	static inline int min(int a, int b){
-	 return ( (a) < (b) ? (a) : (b));
-	};
+#ifndef MAX
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#endif
 
-	static inline unsigned min(unsigned a, unsigned b){
-	 return ( (a) < (b) ? (a) : (b));
-	};
-
-	static inline unsigned long min(unsigned long a, unsigned long b){
-	 return ( (a) < (b) ? (a) : (b));
-	};
-
-	static inline Coord min(Coord a, Coord b, Coord c){
-		Coord answer = min(a,b);
-		if (c < answer)
-			answer = c;
-		return answer;
-	};
-
-	static inline Coord min(Coord a, Coord b, Coord c, Coord d){
-		Coord answer = min(a,b,c);
-		if (d < answer)
-			answer = d;
-		return answer;
-	};
-
-
-	static inline Coord max(Coord a, Coord b){
-		return ( (a) > (b) ? (a) : (b)) ;
-	};
-
-	static inline int max(int a, int b){
-		return ( (a) > (b) ? (a) : (b)) ;
-	};
-
-	static inline unsigned max(unsigned a, unsigned b){
-		return ( (a) > (b) ? (a) : (b)) ;
-	};
-
-	static inline Coord max(Coord a, Coord b, Coord c){
-		Coord answer =max(a,b);
-		if (c > answer)
-			answer = c;
-		return answer;
-	};
-
-	static inline Coord max(Coord a, Coord b, Coord c, Coord d){
-		Coord answer=max(a,b,c);
-		if (d > answer)
-			answer = d;
-		return answer;
-	};
-};
+#ifndef MAX3
+#define MAX3(a,b,c) ((a) > (b) ? MAX(a,c) : MAX(b,c))
+#endif
 
 enum DevStatus {
-	StatusInvalid = 0,
-	StatusOk = 10000,
-	StatusFailed,
-	StatusWarn,
-	StatusCancel,
-	StatusWarnCancel
+  StatusInvalid = 0,
+  StatusOk = 10000,
+  StatusFailed,
+  StatusWarn,
+  StatusCancel,
+  StatusWarnCancel
 };
 
 #endif
