@@ -58,8 +58,10 @@ List<BaseSelection*>* Aggregates::filterList(){
 				 // It is a function. So replace the list..
 				 args->rewind();
 				 retVal->append(args->get());
+#if defined(DEBUG)
 				cout << " The select List prepended is " << 
 					args->get()->toString() << endl;
+#endif
 			}
 			else
 		  		retVal->append(curr);
@@ -101,8 +103,10 @@ List<BaseSelection*>* Aggregates::filterList(){
 		if (!match){
 			retVal->append(groupBy->get());
 			selList->append(groupBy->get());
+#if defined(DEBUG)
 			cout << " Appended the groupBy attribute --- ";
 			cout << groupBy->get()->toString() << endl;
+#endif
 		}
 		groupBy->step();
 
@@ -127,8 +131,10 @@ void Aggregates::typify(Site* inputIterator){
 	List<BaseSelection*>*selectList = inputIterator->getSelectList();
 	TypeID * TypeIDList = inputIterator->getTypeIDs();
 	int countFlds = inputIterator->getNumFlds();
+#if defined(DEBUG)
 	for(int i = 0; i < countFlds;i++)
 		cout << " Pos " << i << " " << AttribNameList[i] << endl; 
+#endif
 	
 	// Now get the position and type of the sequencing attribute..
 	getSeqAttrType(AttribNameList,TypeIDList,countFlds);
@@ -568,11 +574,13 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 		if (numberUniqueVals - valuesBeforePresent > windowPos){
 			int i = TupleList.low();
 			for(; i <= TupleList.high(); i++){
+#if defined(DEBUG)
 				if(!TupleList.valid(i)){
 					cout << "i = " << i << " is invalid\n";
 					cout << "low = " << TupleList.low() 
 						<< " high = " << TupleList.high() << endl;
 				}
+#endif
 				assert(TupleList.valid(i));
 				if(TupleList[i] == curr){
 					return i;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/04/18 23:40:31  donjerko
+  Integers are being promoted to doubles when doing aggragates.
+
   Revision 1.16  1997/04/14 20:44:11  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -243,7 +246,9 @@ class GenFunction{
 		
 		TRY(computeFuncPtr(funcName),);
 		
+#if defined(DEBUG)
 		cout << " The function " << funcName << " returns " << retType << endl;
+#endif
 		// This is not necessary..
 		//scanner = new Scan(fillNextFunc,wLow,wHigh,false);
 	}
