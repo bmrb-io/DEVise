@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2001/01/23 22:57:27  xuk
+// add SetModeDlg for mode switch.
+//
 // Revision 1.72  2001/01/23 04:01:47  xuk
 // Add "Mode" button and SetCgiUrl dialog for switching between socket and cgi modes.
 //
@@ -306,10 +309,11 @@ public class jsdevisec extends Panel
 		//
         Component[] button = null;
         if (jsValues.uiglobals.inBrowser) {
-            button = new Component[3];
+            button = new Component[4];
             button[0] = restartButton;
             button[1] = stopButton;
-            button[2] = helpButton;
+            button[2] = modeButton;
+            button[3] = helpButton;
         } else {
             button = new Component[9];
             button[0] = openButton;
@@ -1636,12 +1640,6 @@ class SetCgiUrlDlg extends Dialog
 
         url.setText("/cgi-bin/js.cgi");
 
-        if (jsc.jsValues.uiglobals.inBrowser) {
-            url.setEditable(false);
-            setButton.setEnabled(false);
-            cancelButton.setEnabled(false);
-        }
-
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
@@ -1786,11 +1784,6 @@ class SetModeDlg extends Dialog
         cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
         cgiButton.setForeground(jsc.jsValues.uiglobals.fg);
         cgiButton.setFont(jsc.jsValues.uiglobals.font);
-
-        if (jsc.jsValues.uiglobals.inBrowser) {
-            socketButton.setEnabled(false);
-            cgiButton.setEnabled(false);
-        }
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
