@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2001/04/06 19:32:13  wenger
+// Various cleanups of collaboration code (working on strange hang
+// that Miron has seen); added more debug output; turned heartbeat
+// back on (it somehow got turned off by accident).
+//
 // Revision 1.37  2001/04/05 16:13:17  xuk
 // Fixed bugs for JSPoP status query.
 // Don't send JAVAC_GetServerState command to devised.
@@ -227,6 +232,7 @@ public class DEViseClient
     private static int _objectCount = 0;
 
     public Vector collabSockets = new Vector();
+    public Vector collabHostName = new Vector();
     public boolean collabInit = false;
 
     public boolean isAbleCollab = false;
@@ -280,11 +286,20 @@ public class DEViseClient
         socket = sock;
     }
 
-    public void addCollabSocket(DEViseCommSocket sock) {
-        //collabSocket = sock;
+    public void addCollabSocket(DEViseCommSocket sock, String hostname) {
 	collabSockets.addElement(sock);
-	collabInit = true;
+	collabHostName.addElement(hostname);
+        collabInit = true;
     }
+    
+    public void removeCollabSocket(DEViseCommSocket sock) {
+	int i = collabSockets.indexOf(sock);
+	collabSockets.removeElement(sock);
+	collabHostName.removeElementAt(i);
+	sock.closeSocket();
+	sock = null;
+    }
+
 
     public void addNewCmd(String cmd) {
 	if (DEBUG >= 1) {
@@ -538,15 +553,20 @@ public class DEViseClient
 			      " in DEViseClient.getCmd()");
 			}
 			collabSockets.removeAllElements();
+			collabHostName.removeAllElements();
 	
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
-			String state = DEViseCommands.COLLAB_STATE + " {" +collabSockets.size() + "}";
-			state = state.trim();
-			sendCmd(new String[] {state, DEViseCommands.DONE});
+			String cmd = DEViseCommands.COLLAB_STATE;
+			for (int j=0; j<collabHostName.size(); j++) {
+			    String host = (String)collabHostName.elementAt(j);
+			    cmd = cmd + " {" + host + "}";
+			}
+			cmd = cmd.trim();
+			sendCmd(new String[] {cmd, DEViseCommands.DONE});
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
 			isAbleCollab = true;
@@ -597,15 +617,8 @@ public class DEViseClient
         if (status != CLOSE) {
 	    if (cmd != null) {
 
-		if (!collabInit) {
-		    //
-		    // Send command to "normal" client.
-		    //
-		    pop.pn("Sending command to client(" + ID + " " + hostname +
-		       ") :  \"" + cmd + "\"");
-		    socket.sendCmd(cmd);
-		}
-
+		// Here we send commands to followers firstly (if any)
+		// since we may change the JAVAC_CollabState command.
 		if (!collabSockets.isEmpty()) { // also send to collab JS
 		    if (collabInit) {
 			//
@@ -617,11 +630,9 @@ public class DEViseClient
 			    try {
 				String clientCmd = sock.receiveCmd();
 
-				if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-				    collabSockets.removeElement(sock);
-				    sock.closeSocket();
-				    sock = null;
-				} else {
+				if (clientCmd.startsWith(DEViseCommands.EXIT))
+				    removeCollabSocket(sock);
+				else {
 				    pop.pn("Sending command to collabration client: " + cmd);
 				    sock.sendCmd(cmd);
 				}
@@ -644,34 +655,42 @@ public class DEViseClient
 				    String clientCmd = sock.receiveCmd();
 
 				    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-					collabSockets.removeElement(sock);
-					sock.closeSocket();
-					sock = null;
+					removeCollabSocket(sock);
 					// change the cmd, if this sock exits
 					if (cmd.startsWith(DEViseCommands.COLLAB_STATE)) {	
 					    cmd = null;
-					    cmd = DEViseCommands.COLLAB_STATE + " {" +collabSockets.size() + "}";
+					    cmd = DEViseCommands.COLLAB_STATE;
+					    for (int j=0; j<collabHostName.size(); j++) {
+						String host = (String)collabHostName.elementAt(j);
+						cmd = cmd + " {" + host + "}";
+					    }
 					    cmd = cmd.trim();
 					}
 				    } else {
-					if (!cmd.startsWith(DEViseCommands.COLLAB_STATE)) {
-					    pop.pn("Sending command to collabration client: " + cmd);
-					    sock.sendCmd(cmd);
-					}
+					pop.pn("Sending command to collabration client: " + cmd);
+					sock.sendCmd(cmd);
 				    }
 				} catch (InterruptedIOException e) {
 				    System.err.println("InterruptedIOException " +
 				      e.getMessage() + " in DEViseClient.sendCmd()");
 				}
 			    } else {
-				if (!cmd.startsWith(DEViseCommands.COLLAB_STATE)) {
-				    pop.pn("Sending command to collabration client" + " " + i);
-				    sock.sendCmd(cmd);
-				}			    
+				pop.pn("Sending command to collabration client" + " " + i);
+				sock.sendCmd(cmd);
 			    }
 			}
 		    }
                 }
+
+		if (!collabInit) {
+		    //
+		    // Send command to "normal" client.
+		    //
+		    pop.pn("Sending command to client(" + ID + " " + hostname +
+		       ") :  \"" + cmd + "\"");
+		    socket.sendCmd(cmd);
+		}
+
 	    }
         } else {
             throw new YException("Invalid client");
