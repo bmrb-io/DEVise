@@ -16,11 +16,17 @@
 #  files for each user, and creates a DEVise session file that displays
 #  each user's data as a view symbol.
 
+#  Note: this script relies on there being a 'Total' user in the data.
+
 ############################################################
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1999/04/02 22:27:21  wenger
+#  Modified session to allow comparison of two users, as per request from
+#  Miron.
+#
 #  Revision 1.3  1999/03/24 22:05:21  wenger
 #  Viewsyms now arranged vertically; added second window with user names.
 #
@@ -104,7 +110,7 @@ sub UserTopLevel {
   open(TOP_OUT, ">$outfile") || die "Can't create file $outfile: $!";
   foreach $user (sort keys %userlist) {
     print "User: $user\n" if ($debug);
-    print TOP_OUT "$user\t${user}_view\t$userNum\t0\n";
+    print TOP_OUT "$user\t.Condor_${user}\t${user}_view\t$userNum\t0\n";
     $userNum++;
   }
   close(TOP_OUT);
@@ -242,21 +248,25 @@ sub CreateViews {
   print SES_OUT "DEVise setViewAutoFilter User2_view 1\n";
   print SES_OUT "\n";
 
+  my @users;
+  $users[0] = "User1";
+  $users[1] = "User2";
+  $users[2] = "Total";
   my $user;
-  foreach $user (sort keys %userlist) {
+  foreach $user (@users) {
     # Create the view.
-    print SES_OUT "DEVise create {view} {Scatter} ${user}_view 0 1 0 1 36 3\n";
+    print SES_OUT "DEVise create {view} {Scatter} ${user}_viewsym 0 1 0 1 36 3\n";
 
     # Force the bottom of the visual filter to be set to 0 on home.
-    print SES_OUT "DEVise viewSetHome {${user}_view} 1 1 1 1 0.0 0.0 0.0 0.0 ",
+    print SES_OUT "DEVise viewSetHome {${user}_viewsym} 1 1 1 1 0.0 0.0 0.0 0.0 ",
       "100.0 100.0\n";
 
     # Set this view for automatic filter updating.
-    print SES_OUT "DEVise setViewAutoFilter ${user}_view 1\n";
+    print SES_OUT "DEVise setViewAutoFilter ${user}_viewsym 1\n";
 
     # Turn on the X and Y axes.
-    print SES_OUT "DEVise setAxisDisplay ${user}_view {X} 1\n";
-    print SES_OUT "DEVise setAxisDisplay ${user}_view {Y} 1\n";
+    print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {X} 1\n";
+    print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {Y} 1\n";
 
     print SES_OUT "\n";
   }
@@ -293,23 +303,26 @@ sub CreateMappings {
       "{} {} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} 1 ",
-      "1 {} {} {} {} {} {} {}\n";
+      "User1#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\"User1_viewsym\"} 1 ",
+      "1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} 1 ",
-      "1 {} {} {} {} {} {} {}\n";
+      "User2#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\"User2_viewsym\"} 1 ",
+      "1 {\$TDataName} {} {} {} {} {} {}\n";
 
-  my $user;
-  foreach $user (sort keys %userlist) {
-    $dataName = "${data_prefix}${user}";
+  # Note: this is really a "dummy" TData -- it will get switched when the
+  # view symbol is drawn.
+  $dataName = "Condor_Total";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User1sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User2sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
 
-    # Arguments: mappingClass tDataName mappingName dimensions x y z color size
-    # pattern orientation shape shapeAttrs
-    #TEMP --  X and Y are hard-coded
-    print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-        "$user#$mappingClass {} {\$time} {\$jobs_running} {} 8 1 0 0 2 {} {} {} ",
-	"{} {} {} {} {} {} {}\n";
-  }
+  $dataName = "Condor_Total";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "Total#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
 
   return $mappingClass;
 }
@@ -334,10 +347,14 @@ sub InsertMappings {
   print SES_OUT "DEVise insertMapping {User2_view} ",
       "{User2#$mappingClass}\n";
 
-  my $user;
-  foreach $user (sort keys %userlist) {
-    print SES_OUT "DEVise insertMapping {${user}_view} {$user#$mappingClass}\n";
-  }
+#NEW
+  print SES_OUT "DEVise insertMapping {User1_viewsym} ",
+      "{User1sym#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User2_viewsym} ",
+      "{User2sym#$mappingClass}\n";
+
+  print SES_OUT "DEVise insertMapping {Total_viewsym} ",
+      "{Total#$mappingClass}\n";
 }
 
 #-----------------------------------------------------------
@@ -356,24 +373,15 @@ sub CreateLinksCursors {
   print SES_OUT "DEVise setCursorSrc {UserCursor2} {User2_view}\n";
   print SES_OUT "DEVise setCursorDst {UserCursor2} {Select2_view}\n";
 
-  # X (time) link on all user data views.
   print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
-  my $user;
-  my $time_src_view;
-  foreach $user (sort keys %userlist) {
-    if ($user ne "Total") {
-      print SES_OUT "DEVise insertLink {TimeLink} {${user}_view}\n";
-      if (! $time_src_view) {
-        $time_src_view = $user . "_view";
-      }
-    }
-  }
+  print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsym}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsym}\n";
 
   # Cursor to select time range for user data.
   print SES_OUT "DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 ",
       "1.000000\n";
-  print SES_OUT "DEVise setCursorSrc {TimeCursor} {$time_src_view}\n";
-  print SES_OUT "DEVise setCursorDst {TimeCursor} {Total_view}\n";
+  print SES_OUT "DEVise setCursorSrc {TimeCursor} {User1_viewsym}\n";
+  print SES_OUT "DEVise setCursorDst {TimeCursor} {Total_viewsym}\n";
 }
 
 #-----------------------------------------------------------
@@ -389,7 +397,7 @@ sub CreateWindows {
   print SES_OUT "DEVise create {window} {TileLayout} Total 0.02 0.84 0.96 ",
       "0.10 0 0\n";
   #TEMP -- maybe we should use a view symbol here
-  print SES_OUT "DEVise insertWindow {Total_view} {Total}\n";
+  print SES_OUT "DEVise insertWindow {Total_viewsym} {Total}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} Select1 0.02 0.20 ",
       "0.04 0.60 0 0\n";

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1999/03/03 18:22:01  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.31  1999/03/01 23:09:11  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -319,6 +324,12 @@ XColorID	TDataMap::GetXColorID(const char* recPtr) const
 
 void TDataMap::SetDimensionInfo(VisualFlag *dimensionInfo, int numDimensions)
 {
+#if defined(DEBUG)
+  printf("TDataMap(%s)::SetDimensionInfo()\n", GetName());
+  printf("  old: 0x%p\n", _dimensionInfo);
+  printf("  new: 0x%p\n", dimensionInfo);
+#endif
+
   delete _dimensionInfo;
   _dimensionInfo = dimensionInfo;
   _numDimensions = numDimensions;

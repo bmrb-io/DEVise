@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  1999/04/05 16:15:50  wenger
+  Record- and set-link follower views with auto filter update enabled have
+  'home' done on them after they are updated by a record link or set link.
+
   Revision 1.78  1999/03/04 15:11:01  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -887,8 +891,6 @@ protected:
 		char *_yAxisDateFormat;
 
 		Boolean _autoUpdate;
-
-		Boolean _homeAfterQueryDone;
 
 		static Boolean _drawCursors;
 		static Boolean _jsCursors;

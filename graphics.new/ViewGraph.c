@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.103  1999/04/16 20:21:35  wenger
+  Fixed bug 482 (problem with automatic view home).
+
   Revision 1.102  1999/04/14 15:30:19  wenger
   Improved 'switch TData': moved the code from Tcl to C++, functionality
   is more flexible -- schemas don't have to match exactly as long as the
@@ -643,6 +646,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
 
   _niceXAxis = false;
   _niceYAxis = false;
+  _homeAfterQueryDone = false;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -989,6 +993,7 @@ void ViewGraph::DrawLegend()
     while(MoreMapping(index)) {
         MappingInfo *info = NextMapping(index);
         char *label = info->label;
+		if (!label) continue;
         if (!strlen(label))
           continue;
 
@@ -1097,8 +1102,8 @@ ViewGraph::GetHome2D(VisualFilter &filter)
             }
 
             if (filter.xHigh == filter.xLow) {
+                //filter.xLow -= 1.0;
                 filter.xHigh += 1.0;
-                filter.xLow -= 1.0;
             }
         }
 
@@ -1148,7 +1153,7 @@ ViewGraph::GetHome2D(VisualFilter &filter)
             }
 
             if (filter.yHigh == filter.yLow) {
-                filter.yLow -= 1.0;
+                //filter.yLow -= 1.0;
                 filter.yHigh += 1.0;
             }
 
@@ -2083,6 +2088,7 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 #endif
 
 	if (_homeAfterQueryDone) {
+		_homeAfterQueryDone = false;
 	    GoHome();
 		// Make sure view redraws even if filter isn't changed.
 		// (Fixes bug 482.)

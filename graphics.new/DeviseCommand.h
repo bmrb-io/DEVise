@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/04/14 15:30:18  wenger
+  Improved 'switch TData': moved the code from Tcl to C++, functionality
+  is more flexible -- schemas don't have to match exactly as long as the
+  appropriate TData attributes are present; TData can now be specified for
+  view symbols in parent view mapping; updated shape help.
+
   Revision 1.30  1999/03/24 17:26:12  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -191,7 +197,7 @@ class DeviseCommand
 		static ControlPanel* getDefaultControl();
 	private:
 		DeviseCommandOption	_cmdOption;
-		static	ControlPanel* defaultControl;
+		static	ControlPanel* _defaultControl;
 		static void setDefaultControl(ControlPanel* defaultControl);
 		ExtStack	*_controlStack;
 		void pushControl(ControlPanel* control)
@@ -201,16 +207,16 @@ class DeviseCommand
 		void popControl()
 		{
 			 _controlStack->pop();
-			 control =(ControlPanel*) _controlStack->top();
+			 _control =(ControlPanel*) _controlStack->top();
 		}
 	protected:
 		// only friend class can construct this class
-		ControlPanel* control;
+		ControlPanel* _control;
 		DeviseCommand(DeviseCommandOption& cmdOption)
 		{
 			_cmdOption = cmdOption;
 			_controlStack = new ExtStack(5, NULL);
-			result = NULL;
+			_result = NULL;
 		}
 		virtual ~DeviseCommand()
 		{
@@ -220,10 +226,14 @@ class DeviseCommand
 		virtual int ReturnVal(u_short flag, char *result);
 		virtual int ReturnVal(int argc, char **argv);
 	protected:
-        char		*result;
-		ClassDir	*classDir;
-		int			numArgs;
-		char**		args;
+        char		*_result;
+		ClassDir	*_classDir;
+
+		// Note: _numArgs and _args seem to be used as local variables within
+		// methods, and don't seem to maintain any state over the life of
+		// the DeviseCommand object.  RKW 1999-04-15.
+		int			_numArgs;
+		char**		_args;
 	public:
 		virtual int Run(int argc, char** argv, ControlPanel* cntl);
 		DeviseCommandOption& 

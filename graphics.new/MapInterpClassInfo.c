@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/04/14 15:30:19  wenger
+  Improved 'switch TData': moved the code from Tcl to C++, functionality
+  is more flexible -- schemas don't have to match exactly as long as the
+  appropriate TData attributes are present; TData can now be specified for
+  view symbols in parent view mapping; updated shape help.
+
   Revision 1.20  1999/03/01 23:09:10  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -120,7 +126,6 @@ MapInterpClassInfo::MapInterpClassInfo()
   _className = rootClassName;
   _name = NULL;
   _map = NULL;
-  _dimensionInfo = NULL;
 }
 
 MapInterpClassInfo::MapInterpClassInfo(char *className)
@@ -135,7 +140,6 @@ MapInterpClassInfo::MapInterpClassInfo(char *className)
   _className = CopyString(className);
   _name = NULL;
   _map = NULL;
-  _dimensionInfo = NULL;
 }
 
 MapInterpClassInfo::MapInterpClassInfo(char *className,
@@ -154,7 +158,6 @@ MapInterpClassInfo::MapInterpClassInfo(char *className,
   _className = className;
   _fileAlias = fileAlias;
   _name = name;
-  _dimensionInfo = dimensionInfo;
   _numDimensions = numDimensions;
   _map = map;
   _tdata = tdata;
@@ -165,8 +168,13 @@ MapInterpClassInfo::MapInterpClassInfo(char *className,
 
 MapInterpClassInfo::~MapInterpClassInfo()
 {
+  if (_map) {
+    VisualFlag *dimensionInfo;
+    (void)_map->DimensionInfo(dimensionInfo);
+    delete dimensionInfo;
+  }
+
   delete _map;
-  delete _dimensionInfo;
   delete _cmd;
   delete _fileAlias;
   delete _name;
@@ -427,10 +435,11 @@ void MapInterpClassInfo::ChangeParams(int argc, char**argv)
   char *tdataAlias;
   char *name;
   TData *tdata;
+  VisualFlag *dimensionInfo = new VisualFlag;
   if (ExtractCommand(argc, argv, _cmd, _cmdFlag, _attrFlag,
-		 _dimensionInfo, _numDimensions, tdataAlias, tdata,
+		 dimensionInfo, _numDimensions, tdataAlias, tdata,
 		 name).IsComplete()) {
-    _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, _dimensionInfo, _numDimensions);
+    _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, dimensionInfo, _numDimensions);
     delete [] name;
     delete [] tdataAlias;
   }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.67  1999/04/14 15:30:20  wenger
+  Improved 'switch TData': moved the code from Tcl to C++, functionality
+  is more flexible -- schemas don't have to match exactly as long as the
+  appropriate TData attributes are present; TData can now be specified for
+  view symbols in parent view mapping; updated shape help.
+
   Revision 1.66  1999/04/05 21:09:47  wenger
   Fixed bug 476 ('home' on a visually-linked view now does home on the entire
   link as a unit) (removed the corresponding code from the PileStack class,
@@ -722,6 +728,8 @@ public:
   Boolean _dataRangeFirst;
   Coord _dataXMin, _dataXMax;
   Coord _dataYMin, _dataYMax;
+
+  Boolean _homeAfterQueryDone;
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.161  1999/04/05 16:15:38  wenger
+  Record- and set-link follower views with auto filter update enabled have
+  'home' done on them after they are updated by a record link or set link.
+
   Revision 1.160  1999/03/04 15:10:58  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -2308,7 +2312,6 @@ void View::Refresh(Boolean refreshPile)
   } else {
     _doneRefresh = false;
     _refresh = true;
-    _homeAfterQueryDone = false;
     Scheduler::Current()->RequestCallback(_dispatcherID);
   }
 }

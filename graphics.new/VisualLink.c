@@ -30,6 +30,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/04/05 21:09:48  wenger
+  Fixed bug 476 ('home' on a visually-linked view now does home on the entire
+  link as a unit) (removed the corresponding code from the PileStack class,
+  since the pile link now takes care of this automatically).
+
   Revision 1.12  1999/01/06 21:25:10  wenger
   Fixed Condor2.ds redraw problem (a problem with the VisualLink class);
   also added some debug code and code to make sure view filter histories
@@ -91,7 +96,7 @@
 #include "ViewGraph.h"
 #include "Scheduler.h"
 
-//#define DEBUG
+//#define DEBUG 0
 
 VisualLink::VisualLink(char *name, VisualFlag linkFlag) :
   DeviseLink(name, linkFlag)
@@ -281,6 +286,13 @@ VisualLink::GoHome(ViewGraph *view)
 #if defined(DEBUG)
   printf("VisualLink(%s)::GoHome(%s)\n", GetName(), view->GetName());
 #endif
+
+  if (_filterLocked) {
+#if defined(DEBUG)
+    printf("  filter for visual link %s is locked\n", GetName());
+#endif
+	return;
+  }
 
   DOASSERT(view->GetNumDimensions() == 2,
       "VisualLink::GoHome() only works on 2D views");

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/04/01 18:54:27  wenger
+  Fixed bug 332.
+
   Revision 1.5  1996/06/15 14:25:02  jussi
   Rewrote so that a variable number of shape attributes is
   allowed when mapping is created.
@@ -111,7 +114,6 @@ private:
 	char *_name;
 	MappingInterp *_map;
 	TData *_tdata;
-	VisualFlag *_dimensionInfo;
 	int _numDimensions;
 
 	int _isInterp; /* always set to true */
