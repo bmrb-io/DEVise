@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/12 22:02:16  jussi
+  Added destructor.
+
   Revision 1.13  1996/12/04 00:22:57  jussi
   Temporarily changed SelectReady() so that the first request on
   the list is always completed before the second one is started.
@@ -86,12 +89,18 @@
 */
 static const int BM_RANDOM_SKIPS = 10;
 
+/*
+   Max number of records returned by buffer manager per GetRecs() call.
+*/
+static const int BMFULL_RECS_PER_BATCH = 1024;
+
 BufMgrFull::BufMgrFull(int bufSize)
 {
     _tReturned = _tHits = _gReturned = _gHits = 0;
     _totalRanges = _totalBuf = _totalData = 0;
     _numGetRecs = _totalGetRecBytes = _totalGetRecBufSize = 0;
-    
+    _seqIOs = _parIOs = 0;
+
     char *policy = "none";
     if (Init::Policy() == BufPolicy::FOCAL) {
         policy = "Focal";
@@ -135,9 +144,9 @@ BufMgrFull::BufMgrFull(int bufSize)
     _defaultPolicy = new BufferFifo;
     DOASSERT(_defaultPolicy, "Out of memory");
 
-    _reqhead.next = 0;
-    _reqhead.prev = 0;
-    _lastReadyReq = _reqhead.next;
+    _reqhead.next = NULL;
+    _reqhead.prev = NULL;
+    _lastReadyReq = NULL;
 }
 
 BufMgrFull::~BufMgrFull()
@@ -186,59 +195,26 @@ Boolean BufMgrFull::GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range)
 }
 
 /*
-   Getting GData from memory is easy because we know that no other
-   data has been returned yet, so we don't need to check for
-   unprocessed ranges and compute the intersection of in-memory GData
-   ranges and the unprocessed ranges. Just return each in-memory GData
-   range to the caller.
-*/
-
-Boolean BufMgrFull::GetGDataInMem(BufMgrRequest *req, RecId &startRecId,
-                                  int &numRecs, char *&buf)
-{
-#if DEBUGLVL >= 3
-    printf("Looking for in-memory GData in range [%ld,%ld]\n",
-           req->low, req->high);
-#endif
-    
-    RangeInfo *inMem;
-    if (!GetNextRangeInMem(req, inMem)) {
-#if DEBUGLVL >= 3
-        printf("End of in-memory GData ranges\n");
-#endif
-        return false;
-    }
-
-#if DEBUGLVL >= 3
-    printf("Next in-memory GData range is [%ld,%ld]\n",
-           inMem->low, inMem->high);
-#endif
-
-    CalcRetArgs(false, true, req->gdata, inMem, req->low, req->high,
-                buf, startRecId, numRecs);
-    SetUse(inMem);
-
-    return true;
-}
-
-/*
-   Getting TData from memory is more complicated than getting GData.
-   For each in-memory TData range, we have to compare it to the
-   unprocessed record ranges and compute the intersection. An in-memory
-   TData range may overlap several, discontiguous unprocessed ranges,
+   This routine will fetch GData and TData from memory. For each
+   in-memory data range, we have to compare it to the unprocessed
+   record ranges and compute the intersection. An in-memory
+   data range may overlap several, discontiguous unprocessed ranges,
    so we call GetNextRangeInMem() only when the "current" in-memory
-   TData range has been fully consumed.
+   data range has been fully consumed.
 
-   The "current" in-memory TData range is indicated by the inMemoryNext
+   The "current" in-memory data range is indicated by the inMemoryNext
    pointer in the request structure.
 */
 
-Boolean BufMgrFull::GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
-                                  int &numRecs, char *&buf)
+Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
+                                 int &numRecs, char *&buf)
 {
+    Boolean isTData = (!req->gdataInMemory);
+
 #if DEBUGLVL >= 3
-    printf("Looking for in-memory TData in range [%ld,%ld]\n",
-           req->low, req->high);
+    char *dataType = (isTData ? "TData" : "GData");
+    printf("Looking for in-memory %s in range [%ld,%ld]\n",
+           dataType, req->low, req->high);
 #endif
     
     while (1) {
@@ -246,26 +222,31 @@ Boolean BufMgrFull::GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
 
         /*
            See if the last piece of processed data was at the end of
-           an in-memory TData range, in which case we need to advance
-           to the next in-memory TData range. Also do this if advancing
+           an in-memory data range, in which case we need to advance
+           to the next in-memory data range. Also do this if advancing
            is explicitly requested (req->getRange is true).
         */
 
         if (req->getRange || req->currentRec > inMem->high) {
             if (!GetNextRangeInMem(req, inMem)) {
-                /* All in-memory TData ranges have been processed. */
+                /* All in-memory data ranges have been processed. */
+#if DEBUGLVL >= 3
+                printf("End of in-memory %s ranges\n", dataType);
+#endif
                 return false;
             }
             req->inMemoryCur = inMem;
 #if DEBUGLVL >= 3
-            printf("Next in-memory TData range is [%ld,%ld]\n",
-                   inMem->low, inMem->high);
+            printf("Next in-memory %s range is [%ld,%ld]\n",
+                   dataType, inMem->low, inMem->high);
 #endif
             req->currentRec = inMem->low;
             if (req->currentRec < req->low)
                 req->currentRec = req->low;
             req->getRange = false;
         }
+
+        DOASSERT(inMem, "Invalid record range");
 
         RecId uLow, uHigh;
         Boolean noHigh = req->processed.NextUnprocessed(req->currentRec,
@@ -274,20 +255,20 @@ Boolean BufMgrFull::GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
             uHigh = inMem->high;
         
 #if DEBUGLVL >= 3
-        printf("Next unprocessed in-memory TData range is [%ld,%ld]\n",
-               uLow, uHigh);
+        printf("Next unprocessed in-memory %s range is [%ld,%ld]\n",
+               dataType, uLow, uHigh);
 #endif
             
         if (uLow > req->high) {
             /*
                Next unprocessed range is beyond the range requested by
-               the caller. In-memory TData ranges are sorted in recid
+               the caller. In-memory data ranges are sorted in recid
                order, so there's no point in going further to the "right"
                because none of the unprocessed ranges there will be
                interesting. We're done.
             */
 #if DEBUGLVL >= 3
-            printf("End of unprocessed in-memory TData ranges\n");
+            printf("End of unprocessed in-memory %s ranges\n", dataType);
 #endif
             return false;
         }
@@ -295,13 +276,17 @@ Boolean BufMgrFull::GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
         if (uHigh > req->high)
             uHigh = req->high;
         
+        /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
+        if (uLow + BMFULL_RECS_PER_BATCH < uHigh)
+            uHigh = uLow + BMFULL_RECS_PER_BATCH;
+
         if (uLow <= inMem->high) {
             /*
                Return intersection of in-memory range and unprocessed
                range to the caller.
             */
-            CalcRetArgs(true, true, req->tdata, inMem,
-                        uLow, uHigh, buf, startRecId, numRecs);
+            CalcRetArgs(isTData, true, (isTData ? req->tdata : req->gdata),
+                        inMem, uLow, uHigh, buf, startRecId, numRecs);
             SetUse(inMem);
             req->currentRec = startRecId + numRecs;
             return true;
@@ -316,7 +301,7 @@ Boolean BufMgrFull::GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
 }
 
 /*
-   Getting GData from disk is similar to getting TData from memory.
+   Getting GData from disk is similar to getting data from memory.
    For each disk-resident GData range, we have to compare it to the
    unprocessed record ranges and compute the intersection. A disk-resident
    GData range may overlap several, discontiguous unprocessed ranges,
@@ -371,7 +356,7 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
         */
         Boolean noHigh = req->processed.NextUnprocessed(req->currentRec,
                                                         rangeLow, rangeHigh);
-        if (noHigh ||  rangeHigh > req->scanHigh)
+        if (noHigh || rangeHigh > req->scanHigh)
             rangeHigh = req->scanHigh;
         
 #if DEBUGLVL >= 3
@@ -379,7 +364,11 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
                rangeLow, rangeHigh, req->scanLow, req->scanHigh);
 #endif
             
-        req->currentRec = req->scanHigh + 1;
+        /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
+        if (rangeLow + BMFULL_RECS_PER_BATCH < rangeHigh)
+            rangeHigh = rangeLow + BMFULL_RECS_PER_BATCH;
+
+        req->currentRec = rangeHigh + 1;
 
         if (rangeLow <= req->scanHigh)
             break;
@@ -401,6 +390,11 @@ Boolean BufMgrFull::InitGDataScan(BufMgrRequest *req)
     printf("Submitted I/O request 0x%p for GData 0x%p [%ld,%ld]\n",
            (void *)req->tdhandle, req->gdata, rangeLow, rangeHigh);
 #endif
+
+    if (req->tdhandle->IsDirectIO())
+        _seqIOs++;
+    else
+        _parIOs++;
 
     return true;
 }
@@ -439,6 +433,10 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
     printf("Next unprocessed TData range is [%ld,%ld]\n", rangeLow, rangeHigh);
 #endif    
 
+    /* Limit number of records returned to BMFULL_RECS_PER_BATCH. */
+    if (rangeLow + BMFULL_RECS_PER_BATCH < rangeHigh)
+        rangeHigh = rangeLow + BMFULL_RECS_PER_BATCH;
+
     req->currentRec = rangeHigh + 1;
     /* In randomized mode, skip over a large number of records */
     if (req->randomized)
@@ -454,6 +452,11 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
     printf("Submitted I/O request 0x%p for TData 0x%p [%ld,%ld]\n",
            (void *)req->tdhandle, req->tdata, rangeLow, rangeHigh);
 #endif
+
+    if (req->tdhandle->IsDirectIO())
+        _seqIOs++;
+    else
+        _parIOs++;
 
     return true;
 }
@@ -508,15 +511,55 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
     range->tdata = tdata;
     range->data = range->buf;
         
-    CalcRetArgs(isTData, false, tdata, range, range->low,
-                range->high, buf, startRid, numRecs);
-    SetUse(range);
+    RangeList *rangeList = _tdataInMemory.Get(tdata);
+
+    /*
+       Check if range returned from TData overlaps something that has been
+       processed. This may happen when two bufmgr requests are accessing
+       overlapping areas of the same TData, and one request completes
+       after the other is initialized but before it completes.
+    */
+    Boolean overlaps = false;
+    RecId rangeLow, rangeHigh;
+    Boolean noHigh = req->processed.NextUnprocessed(range->low, rangeLow,
+                                                    rangeHigh);
+    if (noHigh)
+        rangeHigh = range->high;
+    /* Overlap exists if unprocessed range does not cover range completely. */
+    if (rangeLow > range->low || rangeHigh < range->high) {
+        overlaps = true;
+    } else {
+        if (rangeList->SearchExact(range->low, range->high)) {
+            fprintf(stderr, "Warning: possible problem in buffer manager\n");
+            overlaps = true;
+        }
+    }
+    if (overlaps) {
+        /*
+           Yes -- range has been processed already. Release allocated
+           memory and tell caller that nothing was retrieved.
+        */
+#if DEBUGLVL >= 3
+        printf("Retrieved data that is already processed. Discarding.\n");
+#endif
+        int status = _memMgr->Deallocate(MemMgr::Cache,
+                                         (char *)range->GetBuffer(),
+                                         range->BufSize() / _pageSize);
+        DOASSERT(status >= 0, "Could not deallocate memory");
+        /* Start looking for unprocessed ranges from beginning. */
+        req->currentRec = req->low;
+        return false;
+    }
 
     /*
        Buffer size required for next I/O (if one exists) is somewhat
        smaller.
     */
     req->bytesLeft -= dataSize;
+
+    CalcRetArgs(isTData, false, tdata, range, range->low,
+                range->high, buf, startRid, numRecs);
+    SetUse(range);
 
     /* Place new range into policy arrays */
     int arrayNum, pos;
@@ -531,7 +574,6 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
     /* Put into list of ranges for this TData */
     int numDisposed;
     RangeInfo **disposed;
-    RangeList *rangeList = _tdataInMemory.Get(tdata);
     rangeList->Insert(range, RangeList::MergeIgnore,
                       numDisposed, disposed);
     
@@ -539,6 +581,10 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
     
     return true;
 }
+
+/*
+   Initialize buffer manager request and return handle to caller.
+*/
 
 BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
                                          RecId lowId, RecId highId,
@@ -549,7 +595,7 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 {
 #if DEBUGLVL >= 3
     printf("BufMgrFull::InitGetRecs [%ld,%ld] with tdata 0x%p, gdata 0x%p\n",
-           lowId, highId, tdata, gdata);
+           lowId, highId, tdata, (tdataOnly ? 0 : gdata));
 #endif
 
     DOASSERT(tdata->RecSize() >= 0, "Cannot handle variable records");
@@ -563,11 +609,6 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 
     BufMgrRequest *req = new BufMgrRequest;
     DOASSERT(req, "Out of memory");
-    if (_reqhead.next)
-        _reqhead.next->prev = req;
-    req->next = _reqhead.next;
-    req->prev = &_reqhead;
-    _reqhead.next = req;
 
     req->tdata = tdata;
     req->gdata = (tdataOnly ? NULL : gdata);
@@ -598,6 +639,13 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
     if (req->gdata != NULL)
         req->gdata->InitConvertedIterator();
 
+    /* Insert into list of requests */
+    if (_reqhead.next)
+        _reqhead.next->prev = req;
+    req->next = _reqhead.next;
+    req->prev = &_reqhead;
+    _reqhead.next = req;
+
     return req;
 }
 
@@ -609,12 +657,6 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 
 BufMgr::BMHandle BufMgrFull::SelectReady()
 {
-#ifndef CONCURRENT_IO
-    // For now, return first request on the list. Later enable
-    // code below for concurrent I/O.
-    return _reqhead.next;
-#endif
-
     /*
        Make one loop through list of requests to see if any one
        of them is ready to deliver data. Start from request that
@@ -624,22 +666,26 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
        we reach the place we started from.
     */
 
-    if (_reqhead.next == NULL || !_lastReadyReq) {
+    if (_reqhead.next == NULL) {
         /* List of requests is empty */
         return NULL;
     }
+
+    if (!_lastReadyReq)
+        _lastReadyReq = _reqhead.next;
 
     BufMgrRequest *last = _lastReadyReq;
     DOASSERT(last, "Inconsistent state");
 
     do {
+        /* Use req as a shorthand for _lastReadyReq */
+        BufMgrRequest *req = _lastReadyReq;
+        DOASSERT(req, "Inconsistent state");
+
+        /* Advance next pointer for next call */
         _lastReadyReq = _lastReadyReq->next;
         if (!_lastReadyReq)
             _lastReadyReq = _reqhead.next;
-        DOASSERT(_lastReadyReq, "Inconsistent state");
-
-        /* Use req as a shorthand for _lastReadyReq */
-        BufMgrRequest *req = _lastReadyReq;
 
         if (req->gdataInMemory || req->tdataInMemory) {
 #if DEBUGLVL >= 3
@@ -647,8 +693,10 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
 #endif
             return req;
         }
+
         if (req->haveIO) {
-            if (req->tdhandle->IsDirectIO()) {
+            if (!req->tdhandle->IsActiveIO() ||
+                req->tdhandle->IsDirectIO()) {
 #if DEBUGLVL >= 3
                 printf("Request 0x%p can perform direct I/O\n", req);
 #endif
@@ -697,14 +745,16 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             int numRanges;
             req->gdataInMemory->GetRangeList(numRanges, req->inMemoryHead);
             req->inMemoryNext = req->inMemoryHead->next;
+            req->getRange = true;
         }
-        if (GetGDataInMem(req, startRid, numRecs, buf)) {
+        if (GetDataInMem(req, startRid, numRecs, buf)) {
             isTData = false;
             return true;
         }
         req->gdataInMemory = NULL;
         req->inMemoryHead = NULL;
         req->inMemoryNext = NULL;
+        req->inMemoryCur = NULL;
     }
 
     /* See if we can find TData in memory */
@@ -717,7 +767,7 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             req->inMemoryNext = req->inMemoryHead->next;
             req->getRange = true;
         }
-        if (GetTDataInMem(req, startRid, numRecs, buf)) {
+        if (GetDataInMem(req, startRid, numRecs, buf)) {
             isTData = true;
             return true;
         }
@@ -804,7 +854,7 @@ void BufMgrFull::DoneGetRecs(BufMgr::BMHandle req)
     if (req->next)
         req->next->prev = req->prev;
 
-    _lastReadyReq = _reqhead.next;
+    _lastReadyReq = NULL;
 
     delete req;
 }
@@ -888,6 +938,8 @@ void BufMgrFull::CalcRetArgs(Boolean isTData, Boolean isInMemory,
                              RecId lowId, RecId highId, char *&buf,
                              RecId &startRid, int &numRecs)
 {
+    DOASSERT(tdata, "Invalid TData");
+
     CheckRange(range);
 
     RecId low, high;
@@ -980,7 +1032,12 @@ void BufMgrFull::PrintStat()
         printf("Total: returned %d, hits %d, %.2f%%\n",
                _tReturned + _gReturned, _tHits + _gHits,
                100.0 * (_tHits + _gHits) / (_tReturned + _gReturned));
-    
+    if (_seqIOs + _parIOs > 0) {
+        printf("I/Os: %d (%.2f%%) synchronous, %d (%.2f%%) asynchronous\n",
+               _seqIOs, 100.0 * _seqIOs / (_seqIOs + _parIOs),
+               _parIOs, 100.0 * _parIOs / (_seqIOs + _parIOs));
+    }
+
 #if DEBUGLVL >= 3
     printf("%d bufs returned: avg buf size %f, avg data size: %f\n",
            _totalRanges, 1.0 * _totalBuf / _totalRanges,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/12 22:02:17  jussi
+  Added destructor.
+
   Revision 1.5  1996/12/03 20:38:51  jussi
   Revised completely to support concurrent requests and better
   handling of processed record ranges. Collapsed several interfaces
@@ -109,13 +112,9 @@ class BufMgrFull: public BufMgr {
     /* Advance to next range of in-memory range list */
     Boolean GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range);
     
-    /* Get in-memory GData */
-    Boolean GetGDataInMem(BufMgrRequest *req, RecId &startRecId,
-                          int &numRecs, char *&buf);
-    
-    /* Get in-memory TData */
-    Boolean GetTDataInMem(BufMgrRequest *req, RecId &startRecId,
-                          int &numRecs, char *&buf);
+    /* Get in-memory GData/TData */
+    Boolean GetDataInMem(BufMgrRequest *req, RecId &startRecId,
+                         int &numRecs, char *&buf);
     
     /* Initiate I/O to get disk-resident GData */
     Boolean InitGDataScan(BufMgrRequest *req);
@@ -215,6 +214,9 @@ class BufMgrFull: public BufMgr {
     int _numGetRecs;          /* # of tdata->GetRecs() calls */
     int _totalGetRecBytes;    /* bytes received in tdata->GetRecs() */
     int _totalGetRecBufSize;  /* buffer space used for tdata->GetRecs() */
+
+    int _seqIOs;              /* number of sequential I/Os */
+    int _parIOs;              /* number of parallel I/Os */
 };
 
 #endif
