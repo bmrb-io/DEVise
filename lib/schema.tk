@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1996/01/17 18:05:01  jussi
+#  Default UserMode value is now set in control.tk.
+#
 #  Revision 1.13  1996/01/08 18:54:45  jussi
 #  Cleaned up a bit the code and rearranged focus grabs. Removed some
 #  bugs related to operating on new and old schemas with no hi or
@@ -86,6 +89,14 @@ proc SchemaBrowse {} {
     global UserMode
 
     if {$UserMode == 0} {
+	SchemaSuperuser
+    } else {
+	SchemaUser
+    }
+}
+
+proc SchemaEdit {mode} {
+    if {$mode == 0} {
 	SchemaSuperuser
     } else {
 	SchemaUser
@@ -394,6 +405,7 @@ proc newschemawin {} {
 	if {$aloval == ""} {
 	    set aloval "none"
 	}
+	set aname [lindex [string trim $aname] 0]
 	if {$aname == ""} {
 	    showmesg "Attribute name has not been specified."
 	    return
@@ -421,31 +433,32 @@ proc newschemawin {} {
 	set atype [lindex $attrl 0]
 	set asort [lindex $attrl 1] 
 	set ahival [lindex $attrl 2]
-	if {$ahival == "none"} {
-	    set ahival ""
-	}
 	set aloval [lindex $attrl 3]
-	if {$aloval == "none"} {
-	    set aloval ""
-	}
 	set aname [lindex $attrl 4]
     }
     
     button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
 	    -command {
+	set aname [lindex [string trim $aname] 0]
 	if {$aname == ""} {
 	    showmesg "Double-click on an item to select it."
-	} else {
-	    set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
-	    .newschema.attrlist.list insert active $fstr
-	    .newschema.attrlist.list delete active
-	    # Clear selection
-	    set aname ""
-	    set atype "double"
-	    set asort "unsorted"
-	    set ahival ""
-	    set aloval ""
+	    return
 	}
+	if {$ahival == ""} {
+	    set ahival "none"
+	}
+	if {$aloval == ""} {
+	    set aloval "none"
+	}
+	set fstr [format "%-8s  %-8s  %-6s %-6s %s" $atype $asort $ahival $aloval $aname]
+	.newschema.attrlist.list insert active $fstr
+	.newschema.attrlist.list delete active
+	# Clear selection
+	set aname ""
+	set atype "double"
+	set asort "unsorted"
+	set ahival ""
+	set aloval ""
     }
     pack .newschema.attrop.add .newschema.attrop.delete \
 	    .newschema.attrop.modify -side left -padx 3m -pady 1m -expand 1
@@ -879,7 +892,6 @@ proc dispgrp {gname } {
     pack .grp.list.scroll  -side right -fill y
     pack .grp.list.list  -fill x 
 
-
     # Insert all the existing members of the group into the list
     glinsert $gname 0
 
@@ -913,57 +925,63 @@ proc dispgrp {gname } {
 
     button .grp.item.bot.add -text "Insert" \
 	    -bg gray75 -fg IndianRed4 -command {
+	set iname [lindex [string trim $iname] 0]
 	if {$iname == ""} {
 	    showmesg "Please specify the name of the item."
-	} elseif {$currgrp == ""} {
+	    return
+	}
+	if {$currgrp == ""} {
 	    showmesg "Specify the current group into which the item would \
 		    be inserted."
-	} elseif {[info exists glist($currgrp)] == 0} {
-		showmesg "Current group $currgrp is invalid."
-	} else {
-	    set elem [list $iname i]
-	    set glist($currgrp) [lappend glist($currgrp) $elem]
-	    # Now insert in the listbox
-	    set cnt -1
-	    endpos $gname $currgrp 
-	    # Actual position got by decrementing
-	    set cnt [expr $cnt-1]
-	    # Have to calculate prefix blanks before inserting into listbox
-	    set level [getLevel $gname $currgrp]
-	    set level [expr $level*2]
-	    set s s
-	    set prefix [format "%$level$s" " "]
-	    .grp.list.list insert $cnt $prefix$iname
-	    set iname ""
+	    return
 	}
+	if {[info exists glist($currgrp)] == 0} {
+	    showmesg "Current group $currgrp is invalid."
+	    return
+	}
+	set elem [list $iname i]
+	set glist($currgrp) [lappend glist($currgrp) $elem]
+	# Now insert in the listbox
+	set cnt -1
+	endpos $gname $currgrp 
+	# Actual position got by decrementing
+	set cnt [expr $cnt-1]
+	# Have to calculate prefix blanks before inserting into listbox
+	set level [getLevel $gname $currgrp]
+	set level [expr $level*2]
+	set s s
+	set prefix [format "%$level$s" " "]
+	.grp.list.list insert $cnt $prefix$iname
+	set iname ""
     }
 
     button .grp.item.bot.del -text "Delete" \
 	    -bg gray75 -fg IndianRed4 -command {
+	set iname [lindex [string trim $iname] 0]
 	if {$iname == ""} {
 	    showmesg "Please specify the name of the item."
-	} else {
-	    set gr $gname
-	    set nm [gsearch $gname $iname]
-	    if {$nm == ""} {
-		showmesg "Item <$iname> does not exist."
-	    } else {
-		set elem [list $iname i]
-		set idx [lsearch $glist($nm) $elem]
-		set glist($nm) [lreplace $glist($nm) $idx $idx]
-		#  Also remove from the listbox
-		set idx 0
-		set elem [.grp.list.list get $idx]
-		set elem [string trim $elem]
-		while {$elem != $iname} {
-		    set idx [expr $idx+1]
-		    set elem [.grp.list.list get $idx]
-		    set elem [string trim $elem]
-		}
-		.grp.list.list delete $idx
-	    }
-	    set iname ""
+	    return
 	}
+	set gr $gname
+	set nm [gsearch $gname $iname]
+	if {$nm == ""} {
+	    showmesg "Item <$iname> does not exist."
+	    return
+	}
+	set elem [list $iname i]
+	set idx [lsearch $glist($nm) $elem]
+	set glist($nm) [lreplace $glist($nm) $idx $idx]
+	#  Also remove from the listbox
+	set idx 0
+	set elem [.grp.list.list get $idx]
+	set elem [string trim $elem]
+	while {$elem != $iname} {
+	    set idx [expr $idx+1]
+	    set elem [.grp.list.list get $idx]
+	    set elem [string trim $elem]
+	}
+	.grp.list.list delete $idx
+	set iname ""
     }
     pack .grp.item.bot.add  \
 	    .grp.item.bot.del -side left -expand 1 -padx 3m -pady 1m
@@ -985,66 +1003,70 @@ proc dispgrp {gname } {
 
     button .grp.ngrp.bot.add -text "Create" \
 	    -bg gray75 -fg IndianRed4 -command {
+	set ngname [lindex [string trim $ngname] 0]
 	if {$ngname == ""} {
 	    showmesg "Please specify the name of the sub group."
-	} elseif {[info exists glist($currgrp)] == 0} {
-	    showmesg "Current group $currgrp is not valid."
-	} else {
-	    set elem [list $ngname g]
-	    set glist($currgrp) [lappend glist($currgrp) $elem]
-	    set glist($ngname) ""
-	    set level [getLevel $gname $currgrp]
-	    set level [expr $level*2]
-	    set s s
-	    set prefix [format "%$level$s" " "]
-
-	    set cnt -1
-	    endpos $gname $currgrp
-	    # Actual position by subtracting 2
-	    set cnt [expr $cnt-2]
-
-	    set line "end group $ngname"
-	    .grp.list.list insert $cnt $prefix$line
-	    set line "begin group $ngname"
-	    .grp.list.list insert $cnt $prefix$line
-	    set nlist [lappend nlist $currgrp]
-	    set currgrp $ngname
-	    set ngname ""
+	    return
 	}
+	if {[info exists glist($currgrp)] == 0} {
+	    showmesg "Current group $currgrp is not valid."
+	    return
+	}
+	set elem [list $ngname g]
+	set glist($currgrp) [lappend glist($currgrp) $elem]
+	set glist($ngname) ""
+	set level [getLevel $gname $currgrp]
+	set level [expr $level*2]
+	set s s
+	set prefix [format "%$level$s" " "]
+	
+	set cnt -1
+	endpos $gname $currgrp
+	# Actual position by subtracting 2
+	set cnt [expr $cnt-2]
+	
+	set line "end group $ngname"
+	.grp.list.list insert $cnt $prefix$line
+	set line "begin group $ngname"
+	.grp.list.list insert $cnt $prefix$line
+	set nlist [lappend nlist $currgrp]
+	set currgrp $ngname
+	set ngname ""
     }
     button .grp.ngrp.bot.del -text "Delete" \
 	    -bg gray75 -fg IndianRed4 -command {
+	set ngname [lindex [string trim $ngname] 0]
 	if {$ngname == ""} {
 	    showmesg "Please specify the name of the sub group."
-	} else {
-	    set outer [gsearch $gname $ngname]
-	    if {$outer == ""} {
-		showmesg "Subgroup $ngname is invalid."
-	    } else {
-		set elem [list $ngname g]
-		set idx [lsearch $glist($outer) $elem]
-		set glist($outer) [lreplace $glist($outer) $idx $idx]
-		delgrp $ngname
-		# Now remove from the listbox
-		set idx 0
-		set elem [.grp.list.list get $idx]
-		set elem [string trim $elem]
-		set start "begin group $ngname"
-		while {$elem != $start} {
-		    set idx [expr $idx+1]
-		    set elem [.grp.list.list get $idx]
-		    set elem [string trim $elem]
-		}
-		set dest "end group $ngname"
-		while {$elem != $dest} {
-		    .grp.list.list delete $idx
-		    set elem [.grp.list.list get $idx]
-		    set elem [string trim $elem]
-		}
-		.grp.list.list delete $idx
-		set ngname ""
-	    }
+	    return
 	}
+	set outer [gsearch $gname $ngname]
+	if {$outer == ""} {
+	    showmesg "Subgroup $ngname is invalid."
+	    return
+	}
+	set elem [list $ngname g]
+	set idx [lsearch $glist($outer) $elem]
+	set glist($outer) [lreplace $glist($outer) $idx $idx]
+	delgrp $ngname
+	# Now remove from the listbox
+	set idx 0
+	set elem [.grp.list.list get $idx]
+	set elem [string trim $elem]
+	set start "begin group $ngname"
+	while {$elem != $start} {
+	    set idx [expr $idx+1]
+	    set elem [.grp.list.list get $idx]
+	    set elem [string trim $elem]
+	}
+	set dest "end group $ngname"
+	while {$elem != $dest} {
+	    .grp.list.list delete $idx
+	    set elem [.grp.list.list get $idx]
+	    set elem [string trim $elem]
+	}
+	.grp.list.list delete $idx
+	set ngname ""
     }
     pack .grp.ngrp.bot.add .grp.ngrp.bot.del \
 	    -side left -expand 1 -padx 3m -pady 1m
@@ -1055,9 +1077,9 @@ proc dispgrp {gname } {
 	set selec [string trim $selec]
 	set first [lindex $selec 0]
 	if {$first == "begin"} {
-	    set ngname [lindex $selec 2]
+	    set currgrp [lindex $selec 2]
 	} elseif {$first == "end"} {
-	    set ngname [lindex $selec 2]
+	    set currgrp [lindex $selec 2]
 	} else {
 	    set iname $first
 	}
@@ -1166,9 +1188,17 @@ proc ginput {f name} {
 
     set glist($name) ""
 
-    set len [gets $f line]
+    while {1} {
+	set len [gets $f line]
+	if {$len < 0} {
+	    break
+	}
 
-    while {$len >= 0 && $line != "endgroup"} {
+	set line [string trim $line]
+	if {$line == "" || $line == "endgroup"} {
+	    break
+	}
+
 	set ty [lindex $line 0]
 	set nm [lindex $line 1]
 	if {$ty == "item"} {
@@ -1178,12 +1208,9 @@ proc ginput {f name} {
 	    set elem [list $nm g]
 	    set glist($name) [lappend glist($name) $elem]
 	    ginput $f $nm
-	} elseif {$ty == ""} {
-	    # skip blank lines
 	} else {
 	    puts "Unrecognized keyword $ty ignored."
 	}
-	set len [gets $f line]
     }
 }
 
