@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/20 18:48:50  jussi
+  Added w command for toggling wireframe/solid 3D.
+
   Revision 1.9  1996/07/10 19:00:18  jussi
   Added toggle switch for perspective.
 
@@ -109,31 +112,37 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 
   Boolean isScatterPlot = view->IsScatterPlot();
   isScatterPlot |= (view->GetNumDimensions() != 2);
+  isScatterPlot &= (view->IsXYZoom());
 
   Boolean zoomInX  = (key == '7');
   Boolean zoomOutX = (key == '9');
   Boolean zoomInY  = (key == '1');
   Boolean zoomOutY = (key == '3');
 
-  if (view->IsScatterPlot()) {
+  if (isScatterPlot) {
     if (zoomInX || zoomInY)
       zoomInX = zoomInY = true;
     if (zoomOutX || zoomOutY)
       zoomOutX = zoomOutY = true;
   }
 
-  if (key == 'w') {
+  if (key == 'w' || key == 'W') {
     Boolean solid = view->GetSolid3D();
     view->SetSolid3D(!solid);
   }
 
-  if (key == 'c') {
+  if (key == 'z' || key == 'Z') {
+    Boolean xyZoom = view->IsXYZoom();
+    view->SetXYZoom(!xyZoom);
+  }
+
+  if (key == 'c' || key == 'C') {
     (void)view->DisplayConnectors(!connectorsOn);
     if (connectorsOn && !symbolsOn)
       (void)view->DisplaySymbols(true);
   }
 
-  if (key == 's') {
+  if (key == 's' || key == 'S') {
     (void)view->DisplaySymbols(!symbolsOn);
     if (!connectorsOn && symbolsOn)
       (void)view->DisplayConnectors(true);

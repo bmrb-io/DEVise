@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/27 15:46:11  jussi
+  Moved key '5' functionality to ViewGraph::UpdateAutoScale().
+
   Revision 1.19  1996/06/24 19:43:52  jussi
   Querying records of a 3D view now produces a popup
   window that tells the user that 3D queries are not
@@ -112,6 +115,7 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
 
     Boolean isScatterPlot = view->IsScatterPlot();
     isScatterPlot |= (view->GetNumDimensions() != 2);
+    isScatterPlot &= (view->IsXYZoom());
 
     if (key == '+') {
         /* increase pixel size */
