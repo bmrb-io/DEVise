@@ -2786,6 +2786,25 @@ Num Date        Status  Description
 			or Tcl/Tk.)
 			(Fixed by rkw, 10/03/01.)
 
+698 10/05/01	OPEN	JavaScreen: 3D manipulation doesn't work in command
+			playback. (xuk/rkw)
+
+699 10/05/01	OPEN	JavaScreen: if you specify a non-existant log file
+			with the -clientlog argument, the JS totally locks
+			up. (rkw)
+
+700 10/05/01	OPEN	JavaScreen: if you specify -autoplayback or
+			-playbackoriginal without specifying a log file,
+			the JS should print an error message. (rkw)
+
+701 10/05/01	OPEN	JavaScreen: simple file paths do not work for
+			command log playback. (rkw)
+
+702 10/05/01	OPEN	JavaScreen: bad command in log file being played
+			back gets the JS permanently stuck in playback
+			mode, seems to get jspop and/or devised into a
+			non-responsive state. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
