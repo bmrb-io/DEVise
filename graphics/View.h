@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.92  1999/08/05 21:42:37  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.91  1999/07/30 21:27:05  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -437,6 +442,7 @@
 #include "Color.h"
 #include "Coloring.h"
 #include "ViewDir.h"
+#include "DevAxis.h"
 
 //******************************************************************************
 
@@ -454,16 +460,6 @@ struct ViewRect {
 // AxisLabels aren't actually used or fully implemented -- using the
 // typedef here to simplify cleaning up.
 typedef void * AxisLabel;
-
-struct AxisInfo {
-  Boolean inUse;          /* TRUE if this axis is in use */
-  int width;              /* width (for Y axis) or height (X axis)
-			     to draw label, in terms of # of pixels */
-  int numTicks;           /* # of ticks to use */
-  int significantDigits;  /* # of significant digits */
-  int labelWidth;         /* height (for Y axis) or width (X axis)
-			     of tick labels */
-};
 
 struct LabelInfo {
   char *name;	          /* name used to draw label */
@@ -485,6 +481,7 @@ class View : public ViewWin
 		friend class View_DispatcherCallback;
 		friend class JavaScreenCmd;
 		friend class PileStack;
+		friend class DevAxis;
 
 		// This is here to allow direct access to dispatcherCallback
 		friend class ActionDefault;
@@ -578,22 +575,22 @@ class View : public ViewWin
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);
-	AttrType GetXAxisAttrType() { return _xAxisAttrType; }
+	AttrType GetXAxisAttrType() { return _xAxis.GetAttrType(); }
 	void SetYAxisAttrType(AttrType type);
-	AttrType GetYAxisAttrType() { return _yAxisAttrType; }
+	AttrType GetYAxisAttrType() { return _yAxis.GetAttrType(); }
 	void SetZAxisAttrType(AttrType type);
-	AttrType GetZAxisAttrType() { return _zAxisAttrType; }
+	AttrType GetZAxisAttrType() { return _zAxis.GetAttrType(); }
 
 	void XAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile = true);
 	void YAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile = true);
 	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
-	  xOnOff = xAxis.inUse;
-	  yOnOff = yAxis.inUse;
+	  xOnOff = _xAxis.IsInUse();
+	  yOnOff = _yAxis.IsInUse();
 	}
 	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff, Boolean &zOnOff) {
-	  xOnOff = xAxis.inUse;
-	  yOnOff = yAxis.inUse;
-	  zOnOff = zAxis.inUse;
+	  xOnOff = _xAxis.IsInUse();
+	  yOnOff = _yAxis.IsInUse();
+	  zOnOff = _zAxis.IsInUse();
         }
 	void XAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile = true);
 	void YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile = true);
@@ -606,8 +603,8 @@ class View : public ViewWin
 	static const int _noTicksZAxisWidth = 2;
 
 	void TicksEnabled(Boolean &xTicks, Boolean &yTicks) {
-	  xTicks = xAxis.width > _noTicksXAxisWidth;
-	  yTicks = yAxis.width > _noTicksYAxisWidth;
+	  xTicks = _xAxis.Width() > _noTicksXAxisWidth;
+	  yTicks = _yAxis.Width() > _noTicksYAxisWidth;
 	}
 
 	/* view locks - lock corners or widths */
@@ -759,9 +756,9 @@ class View : public ViewWin
 
     Boolean IsSelected() { return _selected; }
 
-	const char *GetXAxisDateFormat() { return _xAxisDateFormat; }
+	const char *GetXAxisDateFormat() { return _xAxis.GetDateFormat(); }
 	void SetXAxisDateFormat(const char *format, Boolean notifyPile = true);
-	const char *GetYAxisDateFormat() { return _yAxisDateFormat; }
+	const char *GetYAxisDateFormat() { return _yAxis.GetDateFormat(); }
 	void SetYAxisDateFormat(const char *format, Boolean notifyPile = true);
 
 	// Z coordinate of views.  Initially, at least, this is used only for
@@ -827,10 +824,6 @@ protected:
 			  int &startX);
 	void GetYAxisArea(int &x, int &y, int &width, int &height);
 
-	/* Optimize spacing and location of tick marks */
-	void OptimizeTickMarks(Coord low, Coord high, int numTicks,
-			       Coord &start, int &num, Coord &inc);
-
 private:
     void CleanUpViewSyms();
 
@@ -856,8 +849,6 @@ protected:
 
 	/* Drawing axes and label*/
 	void DrawAxesLabel(WindowRep *win, int x, int y, int w, int h);
-	void DrawXAxis(WindowRep *win, int x, int y, int w, int h);
-	void DrawYAxis(WindowRep *win, int x, int y, int w, int h);
 	void DrawLabel();
 	void DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor);
 
@@ -870,7 +861,7 @@ protected:
 		Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh); */
 
 	Boolean  _displaySymbol; /* true if to be displayed */
-	AxisInfo xAxis, yAxis, zAxis;   /* X, y and z axis info */
+	DevAxis _xAxis, _yAxis, _zAxis;
 
 	DispatcherID _dispatcherID;
 
@@ -919,9 +910,6 @@ protected:
 	   is sent. */
 	Boolean _modeRefresh;
 	Boolean _selected;
-	AttrType _xAxisAttrType;
-	AttrType _yAxisAttrType;
-	AttrType _zAxisAttrType;
 
 	int _view_locks;	// bits from VIEW_LOCK
 
@@ -956,9 +944,6 @@ protected:
 	virtual DevStatus PrintPSDone();
 
 	DevFont _titleFont;
-	DevFont _xAxisFont;
-	DevFont _yAxisFont;
-	DevFont _zAxisFont;
 
 	Boolean _isHighlightView;
 
@@ -985,9 +970,6 @@ protected:
         virtual void DoIsOnCursor(int pixX, int pixY, CursorHit &cursorHit);
 
         virtual void MouseDrag(int x1, int y1, int x2, int y2);
-
-		char *_xAxisDateFormat;
-		char *_yAxisDateFormat;
 
 		Boolean _autoUpdate;
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.189  1999/08/17 19:46:54  wenger
+  Converted Condor UserMonth session from high/low symbols to piles for
+  better representation of data; fixed some cursor/pile drawing bugs and
+  TData switching bugs that I found in the process.
+
   Revision 1.188  1999/08/13 19:43:13  wenger
   DoIsOnCursor now makes sure the mouse is within the data area.
 
@@ -929,7 +934,13 @@ Boolean View::_showNames = false;
 View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 		   AxisLabel*, AxisLabel*,
 		   AxisLabel *, int weight, Boolean boundary)
-	: ViewWin(name, fgid, bgid, weight, boundary)
+	: ViewWin(name, fgid, bgid, weight, boundary),
+	  _xAxis(this, DevAxis::AxisX, false, _defaultXAxisWidth,
+	      _noTicksXAxisWidth, 8, 6, 60),
+      _yAxis(this, DevAxis::AxisY, false, _defaultYAxisWidth,
+	      _noTicksYAxisWidth, 8, 6, 20),
+      _zAxis(this, DevAxis::AxisZ, false, _defaultZAxisWidth,
+	      _noTicksZAxisWidth, 8, 6, 40)
 {
 #if defined(DEBUG)
 	printf("View::View(%s, this = %p)\n", name, this);
@@ -963,34 +974,9 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_hasExposure = false;	// No exposure rectangle yet
 	_querySent = false;		// TRUE if query has been sent
 
-	xAxis.inUse = false;
-	xAxis.width = _defaultXAxisWidth;
-	xAxis.numTicks = 8;
-	xAxis.significantDigits = 6;
-	//TEMP -- we really should adjust this value depending on the length
-	// of the tick label strings -- if we have large values, the tick
-	// labels can overlap.  RKW 1999-07-14.
-	xAxis.labelWidth = 60;
-
-	yAxis.inUse = false;
-	yAxis.width = _defaultYAxisWidth;
-	yAxis.numTicks = 8;
-	yAxis.significantDigits = 6;
-	yAxis.labelWidth = 20;
-
-	zAxis.inUse = false;
-	zAxis.width = _defaultZAxisWidth;
-	zAxis.numTicks = 8;
-	zAxis.significantDigits = 6;
-	zAxis.labelWidth = 40;
-
 	_label.occupyTop = false;
 	_label.extent = 12;
 	_label.name = 0;
-
-	_xAxisAttrType = FloatAttr;
-	_yAxisAttrType = FloatAttr;
-	_zAxisAttrType = FloatAttr;
 
 	_cursors = new DeviseCursorList;
 	DOASSERT(_cursors, "Out of memory");
@@ -1048,9 +1034,6 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_filter.camera.pan_up = 0.0;
 
 	_id = ++_nextId;
-
-	_xAxisDateFormat = NULL;
-	_yAxisDateFormat = NULL;
 
 	_autoUpdate = false;
 
@@ -1515,9 +1498,9 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   Geometry(x, y, windW, winH);
 
   //y += winH - xAxis.width;
-  y += xAxis.width;
+  y += _xAxis.Width();
   width = windW;
-  height = xAxis.width;
+  height = _xAxis.Width();
   
   // space for highlight rectangle -- corresponding change also
   // in GetDataArea()
@@ -1525,8 +1508,8 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   width -= halfHighlightWidth * 2;
 
   startX = x;
-  if (yAxis.inUse)
-    startX += yAxis.width;
+  if (_yAxis.IsInUse())
+    startX += _yAxis.Width();
   else {
     // no space space is really necessary, but add just a little bit
     // of space to separate label from the window border better
@@ -1569,15 +1552,15 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
     //    y += _label.extent;
     // deleted so that y reflects origin of y axis
     height = winH - _label.extent;
-    width = yAxis.width;
+    width = _yAxis.Width();
   } else {
     height = winH - halfHighlightWidth;
-    width = yAxis.width;
+    width = _yAxis.Width();
   }
   
-  if (xAxis.inUse) {
-    height -= xAxis.width;
-    y += xAxis.width; // added so y reflects origin
+  if (_xAxis.IsInUse()) {
+    height -= _xAxis.Width();
+    y += _xAxis.Width(); // added so y reflects origin
   }
     
   if (width <= 0 )
@@ -1620,18 +1603,18 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   
   if (_numDimensions == 2) {
     /* need to display axes */
-    if (xAxis.inUse) {
-      height -= xAxis.width+1;
-      y += xAxis.width+1;
+    if (_xAxis.IsInUse()) {
+      height -= _xAxis.Width() + 1;
+      y += _xAxis.Width() + 1;
     } else {
       height -= halfHighlightWidth;
       y += halfHighlightWidth;
     }
     
-    if (yAxis.inUse) {
+    if (_yAxis.IsInUse()) {
       /* Put back in the 2 pixels we took out for the highlight border. */
-      x += (yAxis.width - 2);
-      width -= (yAxis.width - 2);
+      x += (_yAxis.Width() - 2);
+      width -= (_yAxis.Width() - 2);
     }
   }
   
@@ -1675,7 +1658,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
   if (_numDimensions == 2) {
     int axisX, axisY, axisWidth, axisHeight, startX;
-    if (xAxis.inUse) {
+    if (_xAxis.IsInUse()) {
 #if !FILL_WHOLE_BACKGROUND
       GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
       win->SetForeground(GetBackground());
@@ -1683,9 +1666,9 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
       win->SetLineWidth(0);
       win->ClearBackground(axisX, axisY-axisHeight, axisWidth - 1, axisHeight);
 #endif
-      DrawXAxis(win, x, y, w, h);
+      _xAxis.DrawAxis(win, x, y, w, h);
     }
-    if (yAxis.inUse) {
+    if (_yAxis.IsInUse()) {
 #if !FILL_WHOLE_BACKGROUND
       GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
       win->SetForeground(GetBackground());
@@ -1693,7 +1676,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
       win->SetLineWidth(0);
       win->ClearBackground(axisX, axisY, axisWidth - 1, axisHeight - 1);
 #endif
-      DrawYAxis(win, x, y, w, h);
+      _yAxis.DrawAxis(win, x, y, w, h);
     }
   }
 
@@ -1728,320 +1711,6 @@ void View::DrawLabel()
   }
 
   win->PopTransform();
-}
-
-void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
-{
-#if defined(DEBUG)
-  printf("View::DrawXAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
-#endif
-  
-  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
-
-  const int tickLength = 3;
-
-  int axisX, axisY, axisWidth, axisHeight, startX;
-  GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
-  startX--; // Kludge -- RKW 1999-04-20.
-  int axisMaxX = axisX + axisWidth - 1;
-  int axisMaxY = axisY + axisHeight - 1;
-
-  {
-    Coord maxX = x + w - 1.0;
-    Coord maxY = y + h - 1.0;
-    if (!Geom::RectRectIntersect(x, y, maxX, maxY, axisX, axisY, axisMaxX,
-        axisMaxY)) {
-#if defined(DEBUG)
-      printf("do not intersect\n");
-#endif
-      return;
-    }
-  }
-  
-  win->SetForeground(GetForeground());
-  win->SetPattern(Pattern0);
-  win->SetNormalFont();
-  _xAxisFont.SetWinFont(win);
-
-  /* draw a line from startX to the end of the view */
-  win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
-
-  // Don't draw ticks and labels if space is too small.
-  if (xAxis.width <= tickLength || xAxis.width <= _noTicksXAxisWidth) return;
-
-  Coord drawWidth = axisWidth - (startX - axisX);
-  int numTicks = (int)(drawWidth / xAxis.labelWidth);
-
-  /* if axis is date, draw values and return */
-  if (_xAxisAttrType == DateAttr) {
-
-    // Draw the labels (date values).
-    const char *label = DateString((time_t)_filter.xLow, _xAxisDateFormat);
-    win->AbsoluteText(label, startX, axisY - tickLength - (axisHeight-1),
-        drawWidth / 2 - 1, axisHeight - 1, WindowRep::AlignWest, true);
-    label = DateString((time_t)_filter.xHigh, _xAxisDateFormat);
-    win->AbsoluteText(label, startX + drawWidth / 2,
-        axisY - tickLength - (axisHeight-1), drawWidth / 2 - 1, axisHeight - 1,
-	WindowRep::AlignEast, true);
-
-    // Draw ticks.
-    win->Line(startX - 1, axisY, startX - 1, axisY - tickLength, 1);
-    win->Line(axisMaxX, axisY, axisMaxX, axisY - tickLength, 1);
-
-    return;
-  }
-
-  /*
-     since neither custom nor date labels are used, we can draw
-     tick marks and label each tick with the corresponding value
-  */
-
-  Coord tickMark;
-  int nTicks;
-  Coord tickInc;
-  OptimizeTickMarks(_filter.xLow, _filter.xHigh, numTicks,
-		    tickMark, nTicks, tickInc);
-
-  /* draw tick marks */
-  for(int i = 0; i < nTicks; i++) {
-    Coord xPixel = (tickMark - _filter.xLow) * (axisMaxX - startX) /
-        (_filter.xHigh - _filter.xLow) + startX;
-
-    // Draw the tick mark itself.
-    win->Line(xPixel, axisY, xPixel, axisY - tickLength, 1);
-
-    char buf[32];
-    sprintf(buf, "%.*g", xAxis.significantDigits, tickMark);
-
-    Coord labelX = xPixel - xAxis.labelWidth / 2;
-
-    /* make sure label doesn't go past left or right edge */
-    Boolean pastLeft, pastRight;
-    if (labelX < startX) {
-      pastLeft = true;
-    } else {
-      pastLeft = false;
-    }
-
-    if (labelX + xAxis.labelWidth > axisX + axisWidth) {
-      pastRight = true;
-    } else {
-      pastRight = false;
-    }
-
-    if (!pastLeft && !pastRight) {
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
-			xAxis.labelWidth,
-			axisHeight - 1, WindowRep::AlignCenter, true);
-    } else if (pastLeft && !pastRight) {
-      labelX = startX;
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1), 
-			xAxis.labelWidth,
-			axisHeight - 1, WindowRep::AlignWest, true);
-    } else if (!pastLeft && pastRight) {
-      labelX = axisX + axisWidth - xAxis.labelWidth;
-      win->AbsoluteText(buf, labelX, axisY - tickLength - (axisHeight-1),
-			xAxis.labelWidth,
-			axisHeight - 1, WindowRep::AlignEast, true);
-    } else {
-      // Don't draw the label.
-    }
-
-    tickMark += tickInc;
-  }
-}
-
-void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
-{
-#if defined(DEBUG)
-  printf("View::DrawYAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
-#endif
-  
-  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
-
-  const int tickLength = 4;
-
-  int axisX, axisY, axisWidth, axisHeight;
-  GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
-  Coord startY = axisY;
-  int axisMaxX = axisX + axisWidth - 1;
-  int axisMaxY = axisY + axisHeight - 1;
-
-  {
-    Coord maxX = x + w - 1.0;
-    Coord maxY = y + h - 1.0;
-    if (!Geom::RectRectIntersect(x, y, maxX, maxY, axisX, axisY,
-			         axisMaxX, axisMaxY)) {
-#if defined(DEBUG)
-      printf("do not intersect\n");
-#endif
-      return;
-    }
-  }
-
-  win->SetForeground(GetForeground());
-  win->SetPattern(Pattern0);
-  win->SetNormalFont();
-  _yAxisFont.SetWinFont(win);
-
-  /* draw a line from startY to the bottom of the view */
-  win->Line(axisMaxX, startY, axisMaxX, axisMaxY, 1.0);
-
-  // Don't draw ticks and labels if space is too small.
-  if (yAxis.width <= tickLength || yAxis.width <= _noTicksYAxisWidth) return;
-
-  Coord drawHeight = axisHeight - (startY - axisY);
-  // Factor of 0.6 spaces things out a little better -- RKW 1999-04-15.
-  int numTicks = (int)(drawHeight / yAxis.labelWidth * 0.6);
-
-  /* if axis is date, draw values and return */
-  if (_yAxisAttrType == DateAttr) {
-
-    // Draw the labels (date values).
-    const char *label = DateString((time_t)_filter.yLow, _yAxisDateFormat);
-    win->AbsoluteText(label, axisX, startY, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
-    label = DateString((time_t)_filter.yHigh, _yAxisDateFormat);
-    win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignCenter, true, 90.0);
-
-    // Draw ticks.
-    win->Line(axisMaxX, axisY, axisMaxX - tickLength, axisY, 1);
-    win->Line(axisMaxX, axisMaxY, axisMaxX - tickLength, axisMaxY, 1);
-
-    return;
-  }
-
-  /*
-     since neither custom nor date labels are used, we can draw
-     tick marks and label each tick with the corresponding value
-  */
-
-  Coord tickMark;
-  int nTicks;
-  Coord tickInc;
-  OptimizeTickMarks(_filter.yLow, _filter.yHigh, numTicks,
-		    tickMark, nTicks, tickInc);
-
-  /* draw tick marks */
-  Coord oldTop = -100.0;
-  for(int i = 0; i < nTicks; i++) {
-    // Note: it would be better to use the WindowRep's transform here, but
-    // Zhenhai's inversion makes that a pain.  RKW 1999-04-20.
-    Coord yPixel = (tickMark - _filter.yLow) * (axisMaxY-startY) /
-      (_filter.yHigh - _filter.yLow) + startY;
-
-    // Draw the tick mark itself.
-    win->Line(axisMaxX, yPixel, axisMaxX - tickLength, yPixel, 1);
-
-    char buf[32];
-    sprintf(buf, "%.*g", yAxis.significantDigits, tickMark);
-
-    Coord labelY = yPixel - yAxis.labelWidth/2;
-
-    /* make sure label doesn't go past bottom or top edge */
-    Boolean pastBottom, pastTop;
-    if (labelY < startY) {
-      pastBottom = true;
-    } else {
-      pastBottom = false;
-    }
-
-    if (labelY + yAxis.labelWidth > axisY + axisHeight) {
-      pastTop = true;
-    } else {
-      pastTop = false;
-    }
-
-    if (!pastBottom && !pastTop) {
-	  if (labelY > oldTop) {
-        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			  yAxis.labelWidth, WindowRep::AlignCenter, true);
-	    oldTop = labelY + yAxis.labelWidth;
-	  }
-    } else if (pastBottom && !pastTop) {
-      labelY = startY;
-	  if (labelY > oldTop) {
-        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			  yAxis.labelWidth, WindowRep::AlignSouth, true);
-	    oldTop = labelY + yAxis.labelWidth;
-	  }
-    } else if (!pastBottom && pastTop) {
-      labelY = axisMaxY - yAxis.labelWidth;
-	  if (labelY > oldTop) {
-        win->AbsoluteText(buf, axisX, labelY, axisWidth-1,
-			  yAxis.labelWidth, WindowRep::AlignNorth, true);
-	    oldTop = labelY + yAxis.labelWidth;
-	  }
-    } else {
-      // Don't draw the label.
-    }
-
-    tickMark += tickInc;
-  }
-}
-
-/* Optimize spacing and location of tick marks */
-
-void View::OptimizeTickMarks(Coord low, Coord high, int numTicks,
-			     Coord &start, int &num, Coord &inc)
-{
-#if defined(DEBUG)
-  printf("View(%s)::OptimizeTickMarks(%g, %g, %d)\n", GetName(), low,
-      high, numTicks);
-#endif
-
-  numTicks = MAX(numTicks, 2);
-  Coord tickIncrement = (high - low) / (numTicks - 1);
-
-  /* adjust tick increment so that we get nice tick values */
-  double exponent = log10(tickIncrement);
-
-  /* negative exponent must round down, not up; floor does this, truncating
-   * to integer does not! */
-  Coord tickpow = floor(exponent);
-  double mantissa = tickIncrement / pow(10.0, tickpow);
-
-  if (mantissa < 1.5) {
-    mantissa = 1.0;
-  } else if (mantissa < 2.25) {
-    mantissa = 2.0;
-  } else if (exponent >= 1 && mantissa < 2.75) {
-    mantissa = 2.5;
-#if 0 // I don't like this one.  RKW 1999-04-20.
-  } else if (mantissa < 3.5) {
-    mantissa = 3.0;
-#endif
-  } else if (mantissa < 4.5) {
-    mantissa = 4.0;
-  } else if (mantissa < 7.5) {
-    mantissa = 5.0;
-  } else {
-    mantissa = 10.0;
-  }
-
-  inc = mantissa * pow(10.0, tickpow);
-#if defined(DEBUG)
-  printf("Old tickIncrement %g, new %g\n", tickIncrement, inc);
-#endif
-
-  // Adjust the first tick mark so that tick marks end
-  // up on nice coordinate values.
-  Coord tmpMantissa = low / pow(10.0, tickpow) / mantissa;
-  tmpMantissa = ceil(tmpMantissa);
-  start = tmpMantissa * pow(10.0, tickpow) * mantissa;
-  if (start == -0.0) start = 0.0;
-
-  num = (int)((high - start) / inc) + 1;
-
-#if defined(DEBUG)
-  printf("%d ticks from %g to %g @ %g\n", num, start, high, inc);
-#endif
-
-  // Make sure we get at least two tick marks.
-  if (num < 2) {
-    OptimizeTickMarks(low, high, numTicks + 1, start, num, inc);
-  }
 }
 
 /* Find world coord given screen coord */
@@ -2344,17 +2013,17 @@ void View::XAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
   printf("View(%s)::XAxisDisplayOnOff(%d)\n", GetName(), axisOn);
 #endif
 
-  if (axisOn != xAxis.inUse) {
+  if (axisOn != _xAxis.IsInUse()) {
     if (_pileMode && notifyPile) {
 	  GetParentPileStack()->EnableXAxis(axisOn);
 	} else {
-      xAxis.inUse = axisOn;
+      _xAxis.SetInUse(axisOn);
       _updateTransform = true;
-	}
 
-    DepMgr::Current()->RegisterEvent(dispatcherCallback,
-	    DepMgr::EventViewAxesCh);
-    Refresh();
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewAxesCh);
+      Refresh();
+	}
   }
 }
 
@@ -2364,17 +2033,18 @@ void View::YAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
   printf("View(%s)::YAxisDisplayOnOff(%d)\n", GetName(), axisOn);
 #endif
 
-  if (axisOn != yAxis.inUse) {
+  if (axisOn != _yAxis.IsInUse()) {
     if (_pileMode && notifyPile) {
 	  GetParentPileStack()->EnableYAxis(axisOn);
 	} else {
-      yAxis.inUse = axisOn;
+      _yAxis.SetInUse(axisOn);
       _updateTransform  = true;
+
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewAxesCh);
+      Refresh();
 	}
 
-    DepMgr::Current()->RegisterEvent(dispatcherCallback,
-	    DepMgr::EventViewAxesCh);
-    Refresh();
   }
 }
 
@@ -2384,23 +2054,19 @@ void View::XAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
   printf("View(%s)::XAxisTicksOnOff(%d)\n", GetName(), ticksOn);
 #endif
 
-  Boolean currentTicksOn = xAxis.width > _noTicksXAxisWidth;
+  Boolean currentTicksOn = _xAxis.TicksEnabled();
 
   if (ticksOn != currentTicksOn) {
     if (_pileMode && notifyPile) {
 	  GetParentPileStack()->EnableXTicks(ticksOn);
 	} else {
-	  if (ticksOn) {
-        xAxis.width = _defaultXAxisWidth;
-	  } else {
-        xAxis.width = _noTicksYAxisWidth;
-	  }
+	  _xAxis.EnableTicks(ticksOn);
       _updateTransform  = true;
-	}
 
-    DepMgr::Current()->RegisterEvent(dispatcherCallback,
-	    DepMgr::EventViewAxesCh);
-    Refresh();
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewAxesCh);
+      Refresh();
+	}
   }
 }
 
@@ -2410,23 +2076,19 @@ void View::YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
   printf("View(%s)::YAxisTicksOnOff(%d)\n", GetName(), ticksOn);
 #endif
 
-  Boolean currentTicksOn = yAxis.width > _noTicksYAxisWidth;
+  Boolean currentTicksOn = _yAxis.TicksEnabled();
 
   if (ticksOn != currentTicksOn) {
     if (_pileMode && notifyPile) {
 	  GetParentPileStack()->EnableYTicks(ticksOn);
 	} else {
-	  if (ticksOn) {
-        yAxis.width = _defaultYAxisWidth;
-	  } else {
-        yAxis.width = _noTicksYAxisWidth;
-	  }
+	  _yAxis.EnableTicks(ticksOn);
       _updateTransform  = true;
-	}
 
-    DepMgr::Current()->RegisterEvent(dispatcherCallback,
-	    DepMgr::EventViewAxesCh);
-    Refresh();
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewAxesCh);
+      Refresh();
+	}
   }
 }
 
@@ -2793,17 +2455,17 @@ void View::DrawHighlight()
 
 void View::SetXAxisAttrType(AttrType type)
 { 
-  _xAxisAttrType = type;
+  _xAxis.SetAttrType(type);
 }
 
 void View::SetYAxisAttrType(AttrType type)
 {
-  _yAxisAttrType = type;
+  _yAxis.SetAttrType(type);
 }
 
 void View::SetZAxisAttrType(AttrType type)
 {
-  _zAxisAttrType = type;
+  _zAxis.SetAttrType(type);
 }
 
 void View::AppendCursor(DeviseCursor *cursor)
@@ -3653,11 +3315,11 @@ View::SetFont(const char *which, int family, float pointSize,
     if (!strcmp(which, "title")) {
       _titleFont.Set(family, pointSize, bold, italic);
     } else if (!strcmp(which, "x axis")) {
-      _xAxisFont.Set(family, pointSize, bold, italic);
+      _xAxis.SetFont(family, pointSize, bold, italic);
     } else if (!strcmp(which, "y axis")) {
-      _yAxisFont.Set(family, pointSize, bold, italic);
+      _yAxis.SetFont(family, pointSize, bold, italic);
     } else if (!strcmp(which, "z axis")) {
-      _zAxisFont.Set(family, pointSize, bold, italic);
+      _zAxis.SetFont(family, pointSize, bold, italic);
     } else if (!strcmp(which, "data")) {
       // Moved data font stuff into mapping -- RKW 1999-07-20.
       fprintf(stderr,
@@ -3695,11 +3357,11 @@ View::GetFont(const char *which, int &family, float &pointSize,
   if (!strcmp(which, "title")) {
     _titleFont.Get(family, pointSize, bold, italic);
   } else if (!strcmp(which, "x axis")) {
-    _xAxisFont.Get(family, pointSize, bold, italic);
+    _xAxis.GetFont(family, pointSize, bold, italic);
   } else if (!strcmp(which, "y axis")) {
-    _yAxisFont.Get(family, pointSize, bold, italic);
+    _yAxis.GetFont(family, pointSize, bold, italic);
   } else if (!strcmp(which, "z axis")) {
-    _zAxisFont.Get(family, pointSize, bold, italic);
+    _zAxis.GetFont(family, pointSize, bold, italic);
 #if 0 // Moved data font stuff into mapping -- RKW 1999-07-20.
   } else if (!strcmp(which, "data")) {
     _dataFont.Get(family, pointSize, bold, italic);
@@ -4510,30 +4172,20 @@ View::SetShowNames(Boolean showNames)
 void
 View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 {
-  if (format == NULL) format = "";
   if (_pileMode && notifyPile) {
     GetParentPileStack()->SetXAxisDateFormat(format);
   } else {
-    if (_xAxisDateFormat == NULL || strcmp(format, _xAxisDateFormat)) {
-      delete [] _xAxisDateFormat;
-      _xAxisDateFormat = CopyString(format);
-      Refresh();
-    }
+    _xAxis.SetDateFormat(format);
   }
 }
 
 void
 View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
 {
-  if (format == NULL) format = "";
   if (_pileMode && notifyPile) {
     GetParentPileStack()->SetYAxisDateFormat(format);
   } else {
-    if (_yAxisDateFormat == NULL || strcmp(format, _yAxisDateFormat)) {
-      delete [] _yAxisDateFormat;
-      _yAxisDateFormat = CopyString(format);
-      Refresh();
-    }
+    _yAxis.SetDateFormat(format);
   }
 }
 

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.77  1999/08/13 17:22:30  wenger
+#  Custom view layouts are now saved to session files; removed now unused
+#  TileLayout code.
+#
 #  Revision 1.76  1999/07/19 19:46:34  wenger
 #  If Devise gets hung, it now detects this and kills itself (mainly for
 #  the sake of JavaScreen support).
@@ -279,7 +283,7 @@ LIBSRC = AttrList.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
 	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c \
-	ViewGeom.c HangCheck.c
+	ViewGeom.c HangCheck.c DevAxis.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))
