@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/23 21:23:29  jussi
+  Removed Config.h. Includes Init.h instead.
+
   Revision 1.11  1996/04/23 15:35:34  jussi
   The parser now handles double-quote-delimited strings as well
   as single-quote-delimited strings.
@@ -149,7 +152,7 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
     }
     
 #ifdef DEBUG
-    printf("Parsed separator separated field \"%s\"\n", start);
+  printf("Parsed separator separated field \"%s\"\n", start);
 #endif
 
     if (numArgs >= MAXARGS - 1) {

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1996/11/18 18:12:38  donjerko
+#  Added DTE make stuff
+#
 #  Revision 1.22  1996/11/15 21:30:20  jussi
 #  Added testWindowSpeed.
 #
@@ -52,8 +55,8 @@ SRCC = $(filter %.C,$(SRC))
 OBJ = $(SRCc:.c=.o)
 OBJ += $(SRCC:.C=.o)
 
-ALLLIBS = ../DTE/libdte.a ../graphics/libgraphics.a \
-	../graphics.new/libgraphicsnew.a \
+ALLLIBS = ../graphics/libgraphics.a \
+	../graphics.new/libgraphicsnew.a ../DTE/libdte.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
 	../crsp/libcrsp.a
 

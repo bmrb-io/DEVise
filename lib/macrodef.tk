@@ -15,6 +15,13 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.67  1996/11/25 22:31:34  beyer
+#	1. extended .devise.rc search
+#	2. added DestroyView command
+#	3. query window updated properly, history window update changed
+#	4. filter properly set to (0,100) instead of (100,0) when high,low values
+#	   are not known.
+#
 #	Revision 1.66  1996/11/15 10:06:25  kmurli
 #	Changed importFile parameters and ParseCat parameters to take in the file type
 #	and data file name so that a whole query can be formed if necessary for calling
@@ -514,12 +521,13 @@ proc setupAttrCheckButtons {win var schemaname grpname topgrp} {
     # buttons and the size of the window itself.
     
     set grplist [DEVise getItems $schemaname $topgrp $grpname]
-
+	
     # Find the max width of the attrs and the number of attrs
     set numattrs 0
     set maxwidth 0
     foreach itm $grplist {
-	set subname [lindex $itm 0]
+	 set subname [lindex $itm 0]
+
 	set width [llength [split $subname {}]]
 	if {$width > $maxwidth} {
 	    set maxwidth $width
