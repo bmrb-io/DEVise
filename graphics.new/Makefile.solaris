@@ -644,9 +644,9 @@ TDataAscii.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataAscii.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataAscii.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
 TDataAscii.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h
-TDataAscii.o: DerivedDataSource.h ../graphics/DevError.h DataSeg.h
-TDataAscii.o: QueryProc.h ../graphics/Init.h ../graphics/BufPolicy.h
-TDataAscii.o: DataSourceWeb.h DataSourceFileDesc.h ../graphics/Timer.h
+TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h ../graphics/Init.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
+TDataAscii.o: ../graphics/Timer.h DerivedDataSource.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -939,6 +939,18 @@ VoidArray.o: VoidArray.h ../graphics/DeviseTypes.h ../graphics/Exit.h
 VoidHash.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 VoidHash.o: /usr/include/stdlib.h ../graphics/Exit.h VoidHash.h
 VoidHash.o: ../graphics/DeviseTypes.h
+dsw.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+dsw.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
+dsw.o: /usr/include/unistd.h /usr/include/sys/types.h
+dsw.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+dsw.o: /usr/include/sys/select.h /usr/include/sys/time.h
+dsw.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+dsw.o: /usr/include/sys/param.h /usr/include/sys/stat.h DataSourceWeb.h
+dsw.o: DataSourceFileDesc.h DataSourceFileStream.h DataSource.h
+dsw.o: ../graphics/DeviseTypes.h ../graphics/Timer.h ../graphics/Util.h
+dsw.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+dsw.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+dsw.o: ../graphics/Exit.h Web.h ../graphics/DevError.h
 genAms.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 genAms.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 genAms.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -1189,13 +1201,24 @@ DCE.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 DCE.o: /usr/include/arpa/inet.h ../graphics/Exit.h
 DerivedDataSource.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DerivedDataSource.o: DerivedDataSource.h /usr/include/string.h
-DerivedDataSource.o: ../graphics/DeviseTypes.h ../graphics/Control.h
-DerivedDataSource.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-DerivedDataSource.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-DerivedDataSource.o: /usr/include/sys/time.h /usr/include/sys/time.h
-DerivedDataSource.o: ../graphics/VisualArg.h ../graphics/Color.h
-DerivedDataSource.o: ../graphics/Pattern.h ../graphics/DList.h
-DerivedDataSource.o: ../graphics/Exit.h ../graphics/ClassDir.h
+DerivedDataSource.o: ../graphics/DeviseTypes.h ViewGraph.h ../graphics/View.h
+DerivedDataSource.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+DerivedDataSource.o: /usr/include/unistd.h /usr/include/sys/types.h
+DerivedDataSource.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DerivedDataSource.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DerivedDataSource.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+DerivedDataSource.o: ../graphics/DList.h ../graphics/Exit.h
+DerivedDataSource.o: ../graphics/Journal.h ../graphics/VisualArg.h
+DerivedDataSource.o: ../graphics/Color.h ../graphics/Pattern.h
+DerivedDataSource.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+DerivedDataSource.o: ../graphics/Geom.h /usr/include/math.h
+DerivedDataSource.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DerivedDataSource.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+DerivedDataSource.o: ../graphics/Compress.h ../graphics/Control.h
+DerivedDataSource.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+DerivedDataSource.o: ../graphics/AttrList.h ../graphics/Config.h
+DerivedDataSource.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+DerivedDataSource.o: RecId.h
 Group.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Group.o: /usr/include/string.h Group.h /usr/include/stdlib.h
 Group.o: MapInterpClassInfo.h ../graphics/ClassDir.h
