@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.30  1996/01/13 23:09:49  jussi
+#	Added support for Z attribute and shape attribute 2.
+#
 #	Revision 1.29  1996/01/13 20:56:26  jussi
 #	Reorganized code that opens a data source. The same routine
 #	(OpenDataSource) is now used in the session file.
@@ -836,7 +839,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 
 	# ask DEVise to create view instance
 	set sorted $sortedx
-	set viewinstance [UniqueName "$name vs. $x"]
+	set viewbasename "$name vs. $x"
+	set viewinstance [UniqueName $viewbasename]
 	if {[lsearch [ViewSet] $viewinstance] >= 0} {
 	    dialog .viewError "View Error" \
 		    "View $viewinstance exists already." "" 0 OK
@@ -852,7 +856,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	
 	# ask DEVise to turn on/off label
 	if {$titlesel} {
-	    DEVise setLabel $viewinstance 1 16 $viewinstance
+	    DEVise setLabel $viewinstance 1 16 $viewbasename
 	}
 
 	# ask DEVise to turn on/off X axis
@@ -1222,34 +1226,22 @@ proc OpenDataSource {dispname} {
 
 ############################################################
 
-proc DefSource {} {
-    global sourceList tdatas schemas maps sname
+proc OpenNewDataSource {} {
+    global sourceList
 
-    # see if .source window already exists; if so, just return
-    set err [catch {set exists [wm state .source]}]
-    if {!$err} { wm deiconify .source; return }
-
-    # ask user to select a data stream
+    # select data stream to display
     set sname [selectStream]
-
-    # return if no data stream selected, or user selected
-    # a data stream already on the list of streams
-    if {$sname == ""} { return }
-    foreach tdata $tdatas {
-	set name [lindex $tdata 0]
-	if {$sname == $name} {
-	    return
-	}
+    if {$sname == ""} { return "" }
+    
+    # see if data stream already open
+    if {[lsearch [TdataSet] $sname] >= 0} {
+	return $sname
     }
 
-    # data file must be opened before schema file is accessed;
-    # for SEQ, downloading the data from the server also causes
-    # a new schema to be created
-    set source [lindex [OpenDataSource $sname] 1]
-    if {$source == ""} {
-	return ""
-    }
-
+    # make sure data is cached on disk
+    set sourcedef [OpenDataSource $sname]
+    set sname [lindex $sourcedef 0]
+    set source [lindex $sourcedef 1]
     set schema [lindex $sourceList($sname) 2]
     set schemafile [lindex $sourceList($sname) 3]
 
@@ -1258,7 +1250,7 @@ proc DefSource {} {
     # physical schema may be shared by several logical schemas - the best
     # way of checking is to see that we have no groups defined under the 
     # logical schema name
-
+    
     set topgrps [DEVise getTopGroups [file tail $schemafile]]
     if {[llength $topgrps] == 0} {
 	set result [DEVise importFileType $schemafile]
@@ -1271,23 +1263,44 @@ proc DefSource {} {
 	    set schema $result
 	}
     }
-
-    # initialize element in schema definition array if necessary
-    set err [catch {set sdef $maps($schema)}]
-    if {$err > 0} {
-	set maps($schema) ""
-    }
-
+    
     statusWindow .info "Status" \
 	    "Creating an index on \"$sname\".\n\n\This may take a while."
 
     # ask DEVise to create tdata
     set result [DEVise create tdata $schema $source $sname]
     catch {destroy .info}
+
     if {$result == ""} {
 	dialog .fileError "File Error" \
 		"Error reading file $source" "" 0 OK
 	return ""
+    }
+
+    return $sname
+}
+
+############################################################
+
+proc DefSource {} {
+    global sourceList tdatas schemas maps sname
+
+    # see if .source window already exists; if so, just return
+    set err [catch {set exists [wm state .source]}]
+    if {!$err} { wm deiconify .source; return }
+
+    # ask user to select a data stream
+    set sname [OpenNewDataSource]
+    if {$sname == ""} { return }
+
+    set schema [lindex $sourceList($sname) 2]
+    set schemafile [lindex $sourceList($sname) 3]
+    set source [lindex $sourceList($sname) 4]
+
+    # initialize element in schema definition array if necessary
+    set err [catch {set sdef $maps($schema)}]
+    if {$err > 0} {
+	set maps($schema) ""
     }
 
     set sdef [DEVise getSchema $sname]
