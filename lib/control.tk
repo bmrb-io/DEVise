@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.57  1996/02/02 17:53:07  jussi
+#	Added block shape to DEViseShapes.
+#
 #	Revision 1.56  1996/01/30 21:07:46  jussi
 #	Added a few colors and added menu option to change background
 #	color of a view. Moved some procedures to views.tcl.
@@ -393,8 +396,7 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add cascade -label "Show KGraph" \
 	-menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
-.mbar.view.menu add cascade -label "Background Color" \
-	-menu .mbar.view.menu.colormenu
+.mbar.view.menu add command -label "Background..." -command DoSetBgColor
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
@@ -463,13 +465,6 @@ menu .mbar.view.menu.kmenu -tearoff 1
 set kval 0
 set kcurr 1
 set knew 0
-
-menu .mbar.view.menu.colormenu -tearoff 0
-foreach color $DEViseColors {
-    set name [lindex $color 1]
-    .mbar.view.menu.colormenu add command -label $name \
-	    -command "DoSetBgColor $name"
-}
 
 # menu .mbar.link.menu -tearoff 0
 #.mbar.link.menu add command -label "Create" -command DoLinkCreate
