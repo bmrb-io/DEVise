@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/18 01:53:11  ravim
+  Schemalist created.
+
   Revision 1.2  1995/09/27 23:59:47  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -26,6 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <iostream.h>
+
 #include "GroupDir.h"
 
 GroupDir::GroupDir()
@@ -36,8 +40,7 @@ GroupDir::GroupDir()
 GroupDir::~GroupDir()
 {
   SchemaList *next;
-  while (list)
-  {
+  while (list) {
     next = list->next;
     delete list->sname;
     delete list->topgrps;
@@ -58,6 +61,7 @@ void GroupDir::add_entry(char *schema)
 
 // Searches for the given schema in the directory.
 // If found, returns 1, else returns 0.
+
 int GroupDir::find_entry(char *schema)
 {
   SchemaList *curr = list;
@@ -78,18 +82,17 @@ void GroupDir::add_topgrp(char *schema, Group *gp)
   while (curr && (strcmp(curr->sname, schema)))
     curr = curr->next;
 
-  if (!curr)
-  {
+  if (!curr) {
     cout << "Could not find schema " << schema 
-      << " in the directory...group not added" <<endl;
+         << " in the directory...group not added" <<endl;
     return;
   }
 
   curr->topgrps->add_entry(gp);
-  return;
 }
 
 // Find all top level groups in the given schema.
+
 void GroupDir::top_level_groups(Tcl_Interp *interp, char *schema)
 {
   Group *currgrp = NULL;
@@ -98,21 +101,17 @@ void GroupDir::top_level_groups(Tcl_Interp *interp, char *schema)
   while ((curr) && (strcmp(curr->sname, schema)))
     curr = curr->next;
 
-  if (!curr)
-  {
+  if (!curr) {
     cout << "Could not find schema "<< schema 
       << " in the schema directory "<<endl;
     return;
   }
 
   currgrp = curr->topgrps->first_item();
-  while (currgrp)
-  {
+  while (currgrp) {
     Tcl_AppendElement(interp, currgrp->name);
-
     currgrp = curr->topgrps->next_item();
   }
-  return;
 }
 
 
@@ -121,7 +120,9 @@ void GroupDir::top_level_groups(Tcl_Interp *interp, char *schema)
 // Finally, perform a recursive search till we find the group with the
 // given name.
 // Then, call subitems method on that group.
-void GroupDir::get_items(Tcl_Interp *interp, char *schema, char *topgname, char *gname)
+
+void GroupDir::get_items(Tcl_Interp *interp, char *schema,
+			 char *topgname, char *gname)
 {
   SchemaList *curr = list;
   Group *currgrp, *retgrp;
@@ -129,9 +130,8 @@ void GroupDir::get_items(Tcl_Interp *interp, char *schema, char *topgname, char 
   while ((curr) && (strcmp(curr->sname, schema)))
     curr = curr->next;
 
-  if (!curr)
-  {
-    cout << "Could not find schema "<<schema << endl;
+  if (!curr) {
+    cout << "Could not find schema "<< schema << endl;
     return;
   }
 
@@ -139,21 +139,19 @@ void GroupDir::get_items(Tcl_Interp *interp, char *schema, char *topgname, char 
   while ((currgrp) && (strcmp(currgrp->name, topgname)))
     currgrp = curr->topgrps->next_item();
 
-  if (!currgrp)
-  {
-    cout << "Could not find top group "<<topgname << " within schema "<<schema<<endl;
+  if (!currgrp) {
+    cout << "Could not find top group " << topgname
+         << " in schema " << schema << endl;
     return;
   }
 
   retgrp = find_grp(currgrp, gname);
-  if (!retgrp)
-  {
-    cout << "Could not find group with name "<<gname<<endl;
+  if (!retgrp) {
+    cout << "Could not find group with name " << gname << endl;
     return;
   }
 
   retgrp->subitems(interp);
-  return;
 }
     
 
@@ -166,8 +164,7 @@ Group *GroupDir::find_grp(Group *gp, char *gname)
 
   ret = NULL;
   curr = gp->subgrps->first_item();
-  while (curr && (!ret))
-  {
+  while (curr && (!ret)) {
     if (curr->type != ITEM)
       ret = find_grp(curr, gname);
     curr = gp->subgrps->next_item();
@@ -185,15 +182,13 @@ int GroupDir::num_topgrp(char *schema)
   while (curr && (strcmp(curr->sname, schema)))
     curr = curr->next;
 
-  if (!curr) 
-  {
-    cout << "Could not find schema "<<schema<<endl;
+  if (!curr) {
+    cout << "Could not find schema " << schema << endl;
     return 0;
   }
   
   currgrp = curr->topgrps->first_item();
-  while (currgrp)
-  {
+  while (currgrp) {
     num++;
     currgrp = curr->topgrps->next_item();
   }
