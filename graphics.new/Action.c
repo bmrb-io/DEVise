@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:35:13  jussi
+  Moved files from graphics directory.
+
   Revision 1.7  1996/01/23 20:47:19  jussi
   If both connectors and symbols are turned off, then one
   of them is turned back on. This will prevent a blank
@@ -71,10 +74,10 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
   Boolean symbolsOn = view->DisplaySymbols();
   Boolean connectorsOn = view->DisplayConnectors();
 
-  Boolean zoomInX  = (key == 'a' || key == 'A' || key == '7');
-  Boolean zoomOutX = (key == 'z' || key == 'Z' || key == '9');
-  Boolean zoomInY  = (key == 's' || key == 'S' || key == '1');
-  Boolean zoomOutY = (key == 'x' || key == 'X' || key == '3');
+  Boolean zoomInX  = (key == '7');
+  Boolean zoomOutX = (key == '9');
+  Boolean zoomInY  = (key == '1');
+  Boolean zoomOutY = (key == '3');
 
   if (view->IsScatterPlot()) {
     if (zoomInX || zoomInY)
