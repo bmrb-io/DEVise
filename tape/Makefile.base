@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/08/12 18:44:00  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.8  1996/08/06 20:12:31  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -29,7 +32,7 @@ include ../../Makefile.common
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
-LIBSRC = tapedrive.C QueryProcTape.C Templates.C
+LIBSRC = tapedrive.C Templates.C
 
 LIBOBJ = $(LIBSRC:.C=.o)
 
