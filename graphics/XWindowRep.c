@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/07/14 04:08:50  jussi
+  Added handling of ReparentNotify events and WM_DELETE_WINDOW
+  messages from the window manager.
+
   Revision 1.44  1996/07/10 16:21:12  jussi
   Improvements and simplifications to the code.
 
@@ -1202,6 +1206,7 @@ void XWindowRep::HandleEvent(XEvent &event)
     WindowRep::HandleButton(event.xbutton.x, event.xbutton.y,
 			    event.xbutton.button, event.xbutton.state,
 			    event.xbutton.type);
+    break;
 #else
   case ButtonPress:
     int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
@@ -1220,8 +1225,11 @@ void XWindowRep::HandleEvent(XEvent &event)
 				   buttonXhigh, buttonYhigh,
 				   event.xbutton.button);
     }
-#endif
     break;
+
+  case MotionNotify:
+    break;
+#endif
 
   case Expose:
     Coord minX, minY, maxX, maxY;
@@ -1310,6 +1318,12 @@ void XWindowRep::HandleEvent(XEvent &event)
   case ReparentNotify:
 #ifdef DEBUG
     printf("XWin 0x%lx reparented\n", event.xunmap.window);
+#endif
+    break;
+
+  case DestroyNotify:
+#ifdef DEBUG
+    printf("XWin 0x%lx destroyed\n", event.xdestroywindow.window);
 #endif
     break;
 
