@@ -1,0 +1,6 @@
+depend:
+	makedepend  -fMakefile.solaris -I../DTE -I../graphics -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.c *.C
+
+# DO NOT DELETE
+
