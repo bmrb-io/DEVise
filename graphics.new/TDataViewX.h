@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/05 20:13:31  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.7  1996/01/30 00:02:09  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -90,6 +96,7 @@ private:
   virtual void QueryDone(int bytes, void *userData);
   
   VisualFilter _queryFilter;
+  int          _timestamp;
   QueryProc    *_queryProc;
   TDataMap     *_map;
   GDataBin     *_dataBin;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/09 22:53:41  jussi
+  Added View parameter to DrawGDataArray.
+
   Revision 1.11  1996/04/05 20:13:30  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -73,8 +76,8 @@ TDataViewX::TDataViewX(char *name,
 	ViewGraph(name,initFilter, xAxis, yAxis, fg, bg, action)
 {
   _dataBin = new GDataBin();
+  _map = 0;
   _queryProc = qp;
-  _map = NULL;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
 
@@ -85,21 +88,15 @@ TDataViewX::TDataViewX(char *name,
 
 TDataViewX::~TDataViewX()
 {
-	// SubClassUnmapped aborts any current query; this _must_ be done
-	// before this destructor exits, or members needed to do the abort
-	// will no longer be defined.  RKW 4/5/96.
-	SubClassUnmapped();
+  // SubClassUnmapped aborts any current query; this _must_ be done
+  // before this destructor exits, or members needed to do the abort
+  // will no longer be defined.  RKW 4/5/96.
+  SubClassUnmapped();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
 {
-  if (_map) {
-    fprintf(stderr,"TDataViewX: can't handle > 1 mapping\n");
-    return;
-  }
-
   ViewGraph::InsertMapping(map);
-  _map = map;
   
   Coord xMin;
   if (_queryProc->GetMinX(map, xMin))
@@ -114,23 +111,37 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   printf("start query\n");
 #endif
 
-  if (_map == NULL) {
-    printf("NULL map\n");
-    ReportQueryDone(0);
-    return;
-  }
-  
-  // Init stats class
+  // Initialize statistics collection
   _stats.Init(this);
 
   _queryFilter = filter;
-  
-  _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
+  _timestamp = timestamp;
+
+  InitMappingIterator(true);            // open iterator backwards
+  if (MoreMapping()) {
+    _map = NextMapping();
+#ifdef DEBUG
+    printf("Submitting first query\n");
+#endif
+    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+  } else {
+#ifdef DEBUG
+    printf("View has no mappings; reporting query as done\n");
+#endif
+    ReportQueryDone(0);
+    DoneMappingIterator();
+    _map = 0;
+  }
 }
 
 void TDataViewX::DerivedAbortQuery()
 {
-  _queryProc->AbortQuery(_map, this);
+  if (_map) {
+    _queryProc->AbortQuery(_map, this);
+    DoneMappingIterator();
+    _map = 0;
+  }
+
   _dataBin->Final();
 }
 
@@ -181,7 +192,7 @@ Boolean TDataViewX::DisplayConnectors(Boolean state)
   return oldState;
 }
 
-/* Query data ready to be returned. Do initialization here.*/
+/* Query data ready to be returned. Do initialization here. */
 
 void TDataViewX::QueryInit(void *userData)
 {
@@ -196,27 +207,30 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   _numBatches++;
   int gRecSize = mapping->GDataRecordSize();
 
-  // Update stats based on gdata
-  char *tp = (char *)gdata;
-  for(int tmp = 0; tmp < numGData; tmp++) {
-    GDataBinRec *gt = (GDataBinRec *)tp;
+  // Collect statistics only for last mapping
+  if (!MoreMapping()) {
+    // Update stats based on gdata
+    char *tp = (char *)gdata;
+    for(int tmp = 0; tmp < numGData; tmp++) {
+      GDataBinRec *gt = (GDataBinRec *)tp;
 
-    // eliminate records which won't appear on the screen
-    //
-    // for bar graphs, a vertical line is drawn from y = 0 to
-    //   y = gt->y, so we should eliminate record if 0 > filter.yHigh
-    //
-    // for scatter plots, we should eliminate record if gt->y > filter.yHigh
-    //
-    // plot type is known only later (may even depend on a record field)
-    // so the above elimination can't be done yet
+      // eliminate records which won't appear on the screen
+      //
+      // for bar graphs, a vertical line is drawn from y = 0 to
+      //   y = gt->y, so we should eliminate record if 0 > filter.yHigh
+      //
+      // for scatter plots, we should eliminate record if gt->y > filter.yHigh
+      //
+      // plot type is known only later (may even depend on a record field)
+      // so the above elimination can't be done yet
 
-    if (gt->x >= _queryFilter.xLow &&
-	gt->x <= _queryFilter.xHigh &&
-	gt->y >= _queryFilter.yLow)
-      _stats.Sample(gt->x, gt->y);
-
-    tp += gRecSize;
+      if (gt->x >= _queryFilter.xLow &&
+	  gt->x <= _queryFilter.xHigh &&
+	  gt->y >= _queryFilter.yLow)
+	_stats.Sample(gt->x, gt->y);
+      
+      tp += gRecSize;
+    }
   }
   
   if (_batchRecs) {
@@ -238,6 +252,18 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
+  if (MoreMapping()) {
+#ifdef DEBUG
+    printf("Submitting next query\n");
+#endif
+    _map = NextMapping();
+    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+    return;
+  }
+
+  DoneMappingIterator();
+  _map = 0;
+
   _stats.Done();
   _stats.Report();
   _dataBin->Final();

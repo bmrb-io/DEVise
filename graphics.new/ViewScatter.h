@@ -16,21 +16,28 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/05 20:13:35  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.4  1996/01/30 21:16:14  jussi
   Removed references to specific colors.
 
- * Revision 1.3  1995/11/25  01:20:21  jussi
- * This code now uses Transform matrix operations to convert user/world
- * coordinates to screen pixel coordinates. This is to avoid any future
- * inconsistencies in how the different code locations compute the
- * conversion. xPerPixel and yPerPixel are now obsolete coefficients.
- *
+  Revision 1.3  1995/11/25  01:20:21  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.2  1995/09/05 22:16:21  jussi
   Added CVS header.
 */
 
 #ifndef ViewScatter_h
 #define ViewScatter_h
+
 #include "QueryProc.h"
 #include "ViewGraph.h"
 #include "GDataBin.h"
@@ -67,8 +74,9 @@ private:
   virtual void QueryDone(int bytes, void *userData);
   
   VisualFilter _queryFilter;
-  QueryProc *_queryProc;
-  TDataMap *_map;
-  void *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
+  int          _timestamp;
+  QueryProc    *_queryProc;
+  TDataMap     *_map;
+  void          *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
 };
 #endif

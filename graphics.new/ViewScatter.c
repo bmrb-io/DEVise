@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/09 22:53:32  jussi
+  Added View parameter to DrawGDataArray.
+
   Revision 1.7  1996/04/05 20:13:34  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -55,7 +58,7 @@ ViewScatter::ViewScatter(char *name,
 	ViewGraph(name,initFilter, xAxis, yAxis, fg, bg, action)
 {
   _queryProc = qp;
-  _map = NULL;
+  _map = 0;
 }
 
 ViewScatter::~ViewScatter()
@@ -68,11 +71,6 @@ ViewScatter::~ViewScatter()
 
 void ViewScatter::InsertMapping(TDataMap *map)
 {
-  if (_map != NULL){
-    fprintf(stderr,"ViewScatter: can't handle > 1 mapping\n");
-    return;
-  }
-  _map = map;
   ViewGraph::InsertMapping(map);
 }
 
@@ -80,16 +78,32 @@ void ViewScatter::InsertMapping(TDataMap *map)
 void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
   _queryFilter = filter;
+  _timestamp = timestamp;
 
-  _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
+  InitMappingIterator(true);            // open iterator backwards
+  if (MoreMapping()) {
+    _map = NextMapping();
+#ifdef DEBUG
+    printf("Submitting first query\n");
+#endif
+    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+  } else {
+#ifdef DEBUG
+    printf("View has no mappings; reporting query as done\n");
+#endif
+    ReportQueryDone(0);
+    DoneMappingIterator();
+    _map = 0;
+  }
 }
 
 void ViewScatter::DerivedAbortQuery()
 {
-  _queryProc->AbortQuery(_map, this);
+  if (_map)
+    _queryProc->AbortQuery(_map, this);
 }
 
-/* Query data ready to be returned. Do initialization here.*/
+/* Query data ready to be returned. Do initialization here. */
 void ViewScatter::QueryInit(void *userData)
 {
 }
@@ -137,8 +151,19 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 }
 
 /* Done with query */
-void ViewScatter::QueryDone(int bytes,void *userData)
+void ViewScatter::QueryDone(int bytes, void *userData)
 {
+  if (MoreMapping()) {
+#ifdef DEBUG
+    printf("Submitting next query\n");
+#endif
+    _map = NextMapping();
+    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+    return;
+  }
+
+  DoneMappingIterator();
+  _map = 0;
+
   ReportQueryDone(bytes);
 }
-
