@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1995/11/29 15:55:11  jussi
+#  Removed constant window size definitions because they will produce
+#  unexpected results on some window managers.
+#
 #  Revision 1.2  1995/11/28 16:58:25  jussi
 #  Added capability to store window images in a user specified file
 #  instead of printing it.
@@ -116,7 +120,7 @@ proc PrintActual {toprinter printcmd filename allviews} {
 	    set views [ DEVise get view $viewClass ]
 	    foreach v $views {
 		set win [DEVise getViewWin $v]
-		if {[lsearch $windowlist $win] < 0} {
+		if {$win != "" && [lsearch $windowlist $win] < 0} {
 		    lappend windowlist $win
 		}
 	    }
