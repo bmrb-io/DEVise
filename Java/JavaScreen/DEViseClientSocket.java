@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001
+// (c) Copyright 2001-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -28,6 +28,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/11/13 17:57:01  xuk
+// Could send command in String[] format, no need to compose a long command string before sending.
+//
 // Revision 1.2  2001/11/07 22:31:28  wenger
 // Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
 // js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
@@ -199,6 +202,10 @@ public class DEViseClientSocket implements Runnable
 	}
 
         _socket.sendCmd(cmd, msgType, id);
+
+        if (DEBUG >= 2) {
+            System.out.println("  Done sending command");
+        }
     }
 
     // ------------------------------------------------------------------

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -22,16 +22,18 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-# Java 1.1.
 
 # BIN2 is for JSS and devised.
-JAVA_BIN2 = /s/java-1/bin
+JAVA_BIN2 = /s/std/bin
 PERL_BIN2 = /s/std/bin
 XVFB_BIN2 = /s/std/bin
 
 # BIN2P is for JSPoP.
-JAVA_BIN2P = /s/java-1/bin
+JAVA_BIN2P = /s/std/bin
 PERL_BIN2P = /s/std/bin
+
+# BIN3 is for compiling (Java 1.1).
+JAVA_BIN3 = /s/java-1/bin
 
 POP_DIR = /local.pumori/devise/js.wave
 SERV_DIR = /local.pumori/devise/js.wave

@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2001
+# (c) Copyright 1992-2002
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -21,7 +21,7 @@
 
 include Makefile.config
 
-JAVAC = $(JAVA_BIN2)/javac -d .
+JAVAC = $(JAVA_BIN3)/javac -d .
 
 all: js jsa jspop jss
 js: js.class

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -31,6 +31,9 @@ XVFB_BIN2 = /usr/X11R6/bin
 # BIN2P is for JSPoP.
 JAVA_BIN2P = /usr/java/bin
 PERL_BIN2P = /usr/freeware/bin
+
+# BIN3 is for compiling.
+JAVA_BIN3 = /usr/bin
 
 POP_DIR = /bmrb/htdocs/devise/jspop
 SERV_DIR = /p/devise/js.installed

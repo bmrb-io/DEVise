@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2002/01/24 23:01:47  xuk
+// *** empty log message ***
+//
 // Revision 1.36  2001/12/04 18:59:37  wenger
 // Added missing space in JAVAC_Set3DConfig commands; better debug
 // info in DEViseCommSocket.java.
@@ -893,7 +896,7 @@ public class DEViseCommSocket
       throws YException, InterruptedIOException
     {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseCommSocket.receiveCmd()");
+	    System.out.println("DEViseCommSocket.doReceiveCmd()");
 	}
 
         if (is == null) {
@@ -1008,7 +1011,7 @@ public class DEViseCommSocket
       throws YException, InterruptedIOException
     {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseCommSocket.receiveCmd()");
+	    System.out.println("DEViseCommSocket.doReceiveCmd()");
 	}
 
         if (is == null) {
@@ -1118,7 +1121,7 @@ public class DEViseCommSocket
     {
         if (os == null) {
             closeSocket();
-            throw new YException("Invalid output stream", "DEViseCommSocket:sendData()");
+            throw new YException("Invalid output stream", "DEViseCommSocket:doSendData()");
         }
 
         // simply give up if the input data is invalid
@@ -1134,9 +1137,9 @@ public class DEViseCommSocket
         } catch (IOException e) {
             closeSocket();
             System.err.println("Error occurs while writing to output " +
-	      "stream" + e.getMessage() + " in DEViseCommSocket:sendData()");
+	      "stream" + e.getMessage() + " in DEViseCommSocket:doSendData()");
             throw new YException("Error occurs while writing to output " +
-	      "stream" + e.getMessage(), "DEViseCommSocket:sendData()");
+	      "stream" + e.getMessage(), "DEViseCommSocket:doSendData()");
         }
     }
 
