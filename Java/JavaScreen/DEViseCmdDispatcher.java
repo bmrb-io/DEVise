@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2001/02/16 17:53:55  xuk
+// Added new command and GUI for collect active client ID list.
+// Changed processReceivedCmd() to process new command JAVAC_Clients;
+// Changed run() for the first round collaboration connection, the thread will not loop forever.
+//
 // Revision 1.75  2001/02/15 03:21:35  xuk
 // Fixed bugs for collaboration JavaScreen.
 //
@@ -852,6 +857,10 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.CLIENTS)) {
             jsc.showClientList(response);
+
+        } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
+	    jsc.pn("we are here in collab_state" + args[1]);
+            jsc.showCollabState(args[1]);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
