@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/02/05 23:55:20  jussi
+  Added support for small fonts.
+
   Revision 1.20  1996/01/31 21:35:31  jussi
   Refined Xor stuff.
 
@@ -791,6 +794,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
 		       JoinRound);
     XDrawLine(_display, _win, _gc, ROUND(int, tx1), ROUND(int, ty1),
 	      ROUND(int, tx2), ROUND(int, ty2));
+    XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
   }
 #endif
 }
@@ -806,6 +810,7 @@ void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
     XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
     XDrawLine(_display, _win, _gc, x1, y1, x2, y2);
+    XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
   }
 #endif
 }
