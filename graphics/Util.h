@@ -16,21 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 22:07:23  jussi
+  Fixed problem with very high-precision numbers. Atoi of the decimal
+  part overflowed, while counting the number of digits after the
+  decimal point was correct, resulting in incorrect conversions.
+
   Revision 1.2  1995/09/05 21:13:13  jussi
   Added/updated CVS header.
 */
 
 #ifndef Util_h
 #define Util_h
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#if (defined(SUN) || defined(PENTIUM))
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 #include <ctype.h>
 #include <iostream.h>
 
@@ -44,36 +46,35 @@ void ClearDir(char *dir);
 void CheckAndMakeDirectory(char *dir, int clear = 0);
 
 /* strip file of path name */
-inline char *StripPath(char *name){
-	char *last;
-	if ((last=strrchr(name,'/'))==(char *)NULL)
-		return name;
-	else return (last+1);
+inline char *StripPath(char *name) {
+  char *last;
+  if ((last = strrchr(name,'/')) == (char *)NULL)
+    return name;
+  return last + 1;
 }
 
 /* convert double to string */
 char *DateString(time_t tm);
-inline char *DateString(double d){
-	return DateString((time_t)d);
+inline char *DateString(double d) {
+  return DateString((time_t)d);
 }
 
 /* Return true if a number, set num to the converted number.
-A number is defined as: [0-9]+[.[0-9]*]  or .[0-9]+ */
-inline int ConvertNum(char *str, double &num){
-	int numArgs;
-	char temp;
-	numArgs = sscanf(str,"%lf%c",&num, &temp);
-	if (numArgs == 1)
-		return 1;
-		else return 0;
+   A number is defined as: [0-9]+[.[0-9]*]  or .[0-9]+ */
+inline int ConvertNum(char *str, double &num) {
+  int numArgs;
+  char temp;
+  numArgs = sscanf(str, "%lf%c", &num, &temp);
+  if (numArgs == 1)
+    return 1;
+  return 0;
 }
 
 /* Round num to boundary of wordWidth */
-inline int WordBoundary(int num, int wordWidth){
-	if ((num % wordWidth) != 0){
-		num = wordWidth*((num/wordWidth)+1);
-	}
-	return num;
+inline int WordBoundary(int num, int wordWidth) {
+  if ((num % wordWidth) != 0)
+    num = wordWidth * ((num / wordWidth) + 1);
+  return num;
 }
 
 const double _UtilPower10[] = { 1, 10, 100, 1000, 10000, 100000,

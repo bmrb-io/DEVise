@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 20:45:13  jussi
+  Changed the approach with which inverted lines and areas are
+  drawn.
+
   Revision 1.5  1995/12/18 03:13:47  ravim
   Versions for drawing lines and rectangles with XOR logic.
 
@@ -37,11 +41,7 @@
 
 #include "WindowRep.h"
 #include "Xdef.h"
-#if defined(SUN) || defined(PENTIUM)
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 #include <math.h>
 
 /* Bitmap info */
