@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/11/30 22:27:52  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.19  1999/07/12 19:01:58  wenger
   Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 
@@ -225,7 +232,12 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
 
    struct sockaddr_in servAddr;
    memset(&servAddr, 0, sizeof(struct sockaddr));
-   int len = sizeof(servAddr);
+#if defined(LINUX)
+   socklen_t
+#else
+   int
+#endif
+       len = sizeof(servAddr);
 
 #ifdef DEBUG
    printf("Waiting for server to connect data channnel.\n");
