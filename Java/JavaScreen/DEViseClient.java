@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2001/09/28 19:18:58  xuk
+// *** empty log message ***
+//
 // Revision 1.47  2001/09/28 18:50:53  xuk
 // JavaScreen command log playback.
 // Added logFile variable for each DEViseClient object;
@@ -306,14 +309,6 @@ public class DEViseClient
 	_objectCount++;
 
 	this.cgi = cgi;
-
-	if (pop.clientLog) {
-	    Date d = new Date();
-	    long t = d.getTime();
-	    String time = new Long(t).toString();
-	    String logName = "logs/client.log." + host + "." + time;
-	    logFile = new YLogFile(logName);
-	}
     }
 
     protected void finalize()
@@ -387,8 +382,15 @@ public class DEViseClient
 	} else {
             cmdBuffer.addElement(cmd);
 	    
+	    if (pop.clientLog && logFile == null) {
+		Date d = new Date();
+		long t = d.getTime();
+		String time = new Long(t).toString();
+		String logName = "logs/client.log." + hostname + "." + time;
+		logFile = new YLogFile(logName);
+	    }	    
 	    // add command to logfile
-	    if (pop.clientLog) {
+	    if (pop.clientLog && logFile != null) {
 		Date d = new Date();
 		long t = d.getTime();
 		String timestamp = new Long(t).toString();
@@ -901,7 +903,10 @@ public class DEViseClient
             socket = null;
         }
 
-	logFile.close();
+	if (logFile != null) { 
+	    logFile.close();
+	    logFile = null;
+	}
     }
 
     public boolean checkPass(String requestPass)
