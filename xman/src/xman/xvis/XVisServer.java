@@ -203,7 +203,7 @@ public class XVisServer implements Observer
 	}
     }
     
-    public synchronized void quit ()
+    public void quit ()
     {
 	try {
 	    if (!q) {
@@ -486,10 +486,14 @@ public class XVisServer implements Observer
 	    // ** Print current session. Don't know how to print a devise session
 	    System.out.println ("Print called");
 	}
-	else if (command.equals ("Stop")) {
+	else if (command.equals ("Stop") ||
+		 command.equals ("Window destroyed")) {
 	    // ** Shutdown server.
 	    // Do whatever cleanup is necessary
-	    System.out.println ("Print called");
+	    System.out.println ("XVisServer: Quit called");
+	    serverUI.killFrame ();
+	    this.quit ();
+	    System.exit (0);
 	}
 	else if (command.equals ("Restart")) {
 	    // ** Restart server

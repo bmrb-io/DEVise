@@ -11,7 +11,7 @@ import javax.swing.border.Border;
 import java.util.Observable;
 
 public class ServerUI extends Observable 
-    implements ActionListener
+    implements ActionListener, WindowListener
 {
     public static int gap = 200;
     
@@ -95,16 +95,8 @@ public class ServerUI extends Observable
 	contentPane.add (centerP, BorderLayout.CENTER);
 	frame.setContentPane(contentPane);
 	
-	frame.addWindowListener (new WindowAdapter () {
-	    public void windowClosing (WindowEvent e) {
-		System.out.println ("Window was destroyed");
-		frame.dispose (); 
-		//	setChanged ();
-		notifyObservers ("Window destroyed");
-		// if (x != null) x.quit (); System.exit (0);
-	    }
-	});
-	
+	frame.addWindowListener (this);
+
 	frame.pack();
         frame.setVisible(true);
     }
@@ -169,5 +161,27 @@ public class ServerUI extends Observable
 	setChanged ();
 	notifyObservers (evt.getActionCommand ());
     }
+    
+    public void windowClosing(WindowEvent e) {
+	setChanged ();
+	notifyObservers ("Window destroyed");
+    }
+    
+    public void killFrame () { frame.dispose (); }
+    
+    public void windowClosed(WindowEvent e) {
+	setChanged ();
+	notifyObservers ("Window destroyed");
+    }
+    
+    public void windowOpened(WindowEvent e) {}
+    
+    public void windowIconified(WindowEvent e) {}
+    
+    public void windowDeiconified(WindowEvent e) {}
+    
+    public void windowActivated(WindowEvent e) {}
+    
+    public void windowDeactivated(WindowEvent e) {}
 }
 
