@@ -30,6 +30,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  2001/04/23 19:28:59  wenger
+  Fixed bug in home on linked views.
+
   Revision 1.19  2001/02/20 20:02:55  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -309,10 +312,6 @@ void VisualLink::Run()
   _filterLocked = false;
 }
 
-//TEMPTEMP -- this doesn't seem to work if views are piled, because only
-// the first view gets redrawn before we get here, so the data information
-// is not up-to-date.  (unless the top view in the pile is the one that
-// has auto filter updating turned on
 void
 VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
 {
@@ -343,11 +342,11 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
     if (view->GetNumDimensions() == 2) {
       VisualFilter filter;
       tmpView->GetHome2D(explicitRequest, filter);
-      if (_linkAttrs & VISUAL_X || tmpView == view) {
+      if (_linkAttrs & VISUAL_X) {
         xMin = MIN(xMin, filter.xLow);
         xMax = MAX(xMax, filter.xHigh);
       }
-      if (_linkAttrs & VISUAL_Y || tmpView == view) {
+      if (_linkAttrs & VISUAL_Y) {
         yMin = MIN(yMin, filter.yLow);
         yMax = MAX(yMax, filter.yHigh);
       }

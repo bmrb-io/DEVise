@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  2001/07/13 22:17:14  wenger
+  Automatic view home now takes symbol bounding boxes into account (fixes
+  bugs 547 and 557).
+
   Revision 1.26  2001/04/03 19:57:40  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -400,11 +404,16 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	// on the data.
 	if (_homeAfterQueryDone) {
 #if defined(DEBUG)
-        printf("Returning without drawing because _homeAfterQueryDone "
-		  "is set\n");
+        printf("View %s returning without drawing because _homeAfterQueryDone "
+		  "is set\n", GetName());
 #endif
 	    return;
     }
+
+#if defined(DEBUG)
+    printf("View %s data range: (%g, %g), (%g, %g)\n", GetName(), _dataXMin,
+	    _dataXMax, _dataYMin, _dataYMax);
+#endif
 
 	// Draw symbols
 	char*		ptr = (char*)gdata;
