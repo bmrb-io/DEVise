@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/03/17 17:19:08  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.39  1998/03/12 18:23:29  donjerko
   *** empty log message ***
 
@@ -170,6 +173,10 @@ string* sortOrdering;
 %token JOINNEXT 
 %token JOINPREV 
 %token CREATE
+%token ODBCTABLE
+%token ODBCDSN
+%token ODBCTABLELIST
+%token DSNENTRIES
 %token TABLE
 %token DROP
 %token INDEX
@@ -259,6 +266,30 @@ definition: CREATE optIndType INDEX index_name ON table_name
 	}
 	| MATERIALIZE table_name {
 		globalParseTree = new MaterializeParse($2);
+		YYACCEPT;
+	}
+	| CREATE ODBCTABLE STRING ',' STRING ',' STRING {
+		globalParseTree = new ODBCTableAddParse($3,$5,$7);
+		YYACCEPT;
+	}
+	| CREATE ODBCDSN STRING ',' STRING_CONST {
+		globalParseTree = new ODBCDSNAddParse($3,$5);
+		YYACCEPT;
+	}
+	| DELETEY ODBCTABLE STRING {
+		globalParseTree = new ODBCTableDeleteParse($3);
+		YYACCEPT;
+	}
+	| DELETEY ODBCDSN STRING {
+		globalParseTree = new ODBCDSNDeleteParse($3);
+		YYACCEPT;
+	}
+	| DSNENTRIES {
+		globalParseTree = new DSNEntriesParse();
+		YYACCEPT;
+	}
+	| ODBCTABLELIST STRING {
+		globalParseTree = new ODBCTablesParse($2);
 		YYACCEPT;
 	}
 	;

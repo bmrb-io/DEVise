@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/03/17 17:18:58  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.27  1998/03/12 18:23:22  donjerko
   *** empty log message ***
 
@@ -293,6 +296,71 @@ public:
 	virtual Iterator* createExec();	// throws exception
 	virtual ~CreateTableParse();
 	virtual const ISchema* getISchema();
+};
+
+class ODBCTableAddParse : public ParseTree {
+	string* DTE_Table_Name;
+	string* DSN_Name;
+	string* ODBC_Table_Name;
+public:
+	ODBCTableAddParse(string* DTN, string* DN, string* OTN) : DTE_Table_Name(DTN), DSN_Name(DN), ODBC_Table_Name(OTN) {}
+	virtual Iterator* createExec();
+	virtual ~ODBCTableAddParse() {
+		delete DTE_Table_Name;
+		delete DSN_Name;
+		delete ODBC_Table_Name;
+	}
+};
+
+class ODBCDSNAddParse : public ParseTree {
+	string* DSN_Name;
+	string* DSN_Info;
+public:
+	ODBCDSNAddParse(string* DN, string* DI) : DSN_Name(DN), DSN_Info(DI) {}
+	virtual Iterator* createExec();
+	virtual ~ODBCDSNAddParse() {
+		delete DSN_Name;
+		delete DSN_Info;
+	}
+};
+
+class ODBCTableDeleteParse : public ParseTree {
+	string* DTE_Table_Name;
+public:
+	ODBCTableDeleteParse(string* DTN) : DTE_Table_Name(DTN) {}
+	virtual Iterator* createExec();
+	virtual ~ODBCTableDeleteParse() {
+		delete DTE_Table_Name;
+	}
+};
+
+class ODBCDSNDeleteParse : public ParseTree {
+	string* DSN_Name;
+public:
+	ODBCDSNDeleteParse(string* DN) : DSN_Name(DN) {}
+	virtual Iterator* createExec();
+	virtual ~ODBCDSNDeleteParse() {
+		delete DSN_Name;
+	}
+};
+
+class DSNEntriesParse : public ParseTree {
+	Iterator* myIterator;
+public:
+	DSNEntriesParse();
+	virtual Iterator* createExec();
+	virtual const ISchema* getISchema();
+	virtual ~DSNEntriesParse();
+};
+
+class ODBCTablesParse : public ParseTree {
+	Iterator* myIterator;
+	string* DSN_Name;
+public:
+	ODBCTablesParse(string* DN);
+	virtual Iterator* createExec();
+	virtual const ISchema* getISchema();
+	virtual ~ODBCTablesParse();
 };
 
 #endif

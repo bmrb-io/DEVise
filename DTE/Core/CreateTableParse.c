@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
-#include <netinet/in.h>
 
 #include "ParseTree.h"
 #include "ExecOp.h"

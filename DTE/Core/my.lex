@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/05/09 18:34:28  beyer
+  real constants can now use E format
+
   Revision 1.30  1998/04/14 17:03:26  donjerko
   *** empty log message ***
 
@@ -157,6 +160,10 @@ LessGreat    ">="|">"|"<="|"<"
 [Aa][Nn][Dd]          {return AND;}
 [Oo][Rr]           {return OR;}
 [Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
+[Oo][Dd][Bb][Cc][Tt][Aa][Bb][Ll][Ee]    {return ODBCTABLE;}
+[Oo][Dd][Bb][Cc][Dd][Ss][Nn]    {return ODBCDSN;}
+[Oo][Dd][Bb][Cc][Tt][Aa][Bb][Ll][Ee][Ss] {return ODBCTABLELIST;}
+[Dd][Ss][Nn][Ee][Nn][Tt][Rr][Ii][Ee][Ss] {return DSNENTRIES;}
 [Tt][Aa][Bb][Ll][Ee]		{return TABLE;}
 [Dd][Rr][Oo][Pp]			{return DROP;}
 [Ii][Nn][Dd][Ee][Xx]		{return INDEX;}

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/06/23 17:50:01  wenger
+  Fixed some compile warnings.
+
   Revision 1.51  1998/06/17 20:53:17  donjerko
   *** empty log message ***
 
@@ -210,6 +213,7 @@ extern const int INITIAL_INTERFACE_SIZE;	// defined in Interface.c
 // const char* ISO_TM = "%Y-%m-%d %H:%M:%S";
 
 static size_t dummySz;	// used only as a place holder
+const string dummyStr = "";
 const string UNKN_TYPE = "unknown";
 const string INT_TP = "int";
 const string DOUBLE_TP = "double";
@@ -246,7 +250,7 @@ public:
 	string valueOf(const string& envVar) const;
 private:
 	string getDirectory(const string& envVar) const;
-	string getFile(const string& env, const string& def = string()) const;
+	string getFile(const string& env, const string& def = "") const;
 };
 
 extern const DteEnvVars DTE_ENV_VARS;

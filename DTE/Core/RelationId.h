@@ -5,6 +5,10 @@
 
 #include "sysdep.h"
 
+#ifndef __GNUG__
+using namespace std;
+#endif
+
 class RelationId {
 	int serverId;
 	int localId;

@@ -13,13 +13,16 @@
 */
 
 /*
-  Dummy implementation of DevRead and related classes.
+  Dummy implementation of DataRead and related classes.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.1  1998/06/03 22:10:02  okan
+  *** empty log message ***
+
   Revision 1.3  1998/01/07 19:25:56  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -31,38 +34,50 @@
   and fixed some compile warnings.
 
  */
-
 #include "sysdep.h"
-//#include <strstream.h>   erased for sysdep.h
+#include "types.h"
 
+#if !defined(SGI)
 #undef assert
+#endif
 #include <assert.h>
 
-#include "types.h"
-#include "DevRead.h"
+#include "DataRead.h"
 
 
-TypeID translateUDType(Attr* at){
-   return "unknown";
+void DataRead::translateUDInfo() {
 }
 
-void DevRead::Open(char* schemaFile, char* dataFile){ // throws
+DataRead::DataRead(const string& schemaFile, const string& dataFile) :
+          ud(NULL), numFlds(0), typeIDs(NULL),
+          attributeNames(NULL),
+          order(NULL)
+{
 }
 
-Iterator* DevRead::createExec(){
+Iterator* DataRead::createExec(){
 	return NULL;
 }
 
-DevReadExec::~DevReadExec(){
+DataReadExec::DataReadExec(DataReader* ud, UnmarshalPtr* unmarshalPtrs,
+	DestroyPtr* destroyPtrs,
+	Type** tuple, int* offsets, int numFlds) :
+	ud(ud), unmarshalPtrs(unmarshalPtrs),
+	destroyPtrs(destroyPtrs), tuple(tuple),
+	offsets(offsets), numFlds(numFlds) {
 }
 
-const Tuple* DevReadExec::getNext(){
+DataReadExec::~DataReadExec(){
+}
+
+const Tuple* DataReadExec::getNext(){
 	return NULL;
 }
 
-const Tuple* DevReadExec::getThis(Offset offset, RecId recId){
+const Tuple* DataReadExec::getThis(Offset offset, RecId recId){
 	return NULL;
 }
 
-void DevRead::Close(){
+void DataRead::Close(){
 }
+
