@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.33  1995/12/06 05:42:03  ravim
+#	Added function to display a KGraph.
+#
 #	Revision 1.32  1995/12/04 18:04:45  jussi
 #	User can now specify a view title which appears at the top of the view.
 #	Changed statistics toggling to use getViewStatistics and setViewStatistics
@@ -387,8 +390,8 @@ menu .mbar.view.menu -tearoff 0
 	-menu .mbar.view.menu.yaxismenu
 .mbar.view.menu add cascade -label "Toggle Statistics" \
 	-menu .mbar.view.menu.statmenu
-.mbar.view.menu add command -label "Show KGraph" \
-	-command ShowKGraph
+.mbar.view.menu add cascade -label "Show KGraph" \
+	-menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 
@@ -408,11 +411,45 @@ menu .mbar.view.menu.yaxismenu -tearoff 0
 .mbar.view.menu.yaxismenu add command -label "All Views" \
 	-command {DoToggleAxisAllViews Y}
 
-menu .mbar.view.menu.statmenu -tearoff 0
-.mbar.view.menu.statmenu add command -label "Current View" \
+menu .mbar.view.menu.statmenu -tearoff 1
+.mbar.view.menu.statmenu add checkbutton -label Mean -variable statmean
+.mbar.view.menu.statmenu add checkbutton -label Max -variable statmax
+.mbar.view.menu.statmenu add checkbutton -label Min -variable statmin
+.mbar.view.menu.statmenu add separator
+.mbar.view.menu.statmenu add radiobutton -label "Current View" \
+	-variable statcurr -value 1
+.mbar.view.menu.statmenu add radiobutton -label "All Views" \
+	-variable statcurr -value 0
+.mbar.view.menu.statmenu add separator
+.mbar.view.menu.statmenu add command -label "Apply..." \
 	-command {DoToggleStatistics}
-.mbar.view.menu.statmenu add command -label "All Views" \
-	-command {DoToggleStatisticsAllViews}
+#defaults
+set statmean 1
+set statmax 0
+set statmin 0
+set statcurr 1
+
+menu .mbar.view.menu.kmenu -tearoff 1
+.mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
+.mbar.view.menu.kmenu add radiobutton -label Max -variable kval -value 1
+.mbar.view.menu.kmenu add radiobutton -label Min -variable kval -value 2
+.mbar.view.menu.kmenu add separator
+.mbar.view.menu.kmenu add radiobutton -label "Use Current" \
+	-variable kcurr -value 1
+.mbar.view.menu.kmenu add radiobutton -label "Specify Views" \
+	-variable kcurr -value 0
+.mbar.view.menu.kmenu add separator
+.mbar.view.menu.kmenu add radiobutton -label "New Graph" \
+	-variable knew -value 1
+.mbar.view.menu.kmenu add radiobutton -label "Reuse Graph" \
+	-variable knew -value 0
+.mbar.view.menu.kmenu add separator
+.mbar.view.menu.kmenu add command -label "Apply..." \
+	-command {ShowKGraph}
+#defaults
+set kval 0
+set kcurr 1
+set knew 0
 
 # menu .mbar.link.menu -tearoff 0
 #.mbar.link.menu add command -label "Create" -command DoLinkCreate
@@ -3252,29 +3289,24 @@ proc DoToggleAxisAllViews { axis } {
 }
 
 proc DoToggleStatistics {} {
-    global curView
+    global curView statmean statmax statmin statcurr
     if {$curView == ""} {
 	set but [dialog .toggleWinError "No Current View" \
 		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
 
-    set stat [DEVise getViewStatistics $curView]
-    set stat [expr !$stat]
-    DEVise setViewStatistics $curView $stat
-}
+    #    set stat [DEVise getViewStatistics $curView]
+    #    set stat [expr !$stat]
+    # The status is formed by as a binary string xxx where 1 means that the 
+    # corr. stat is to be displayed.
+    set stat $statmean$statmax$statmin
 
-proc DoToggleStatisticsAllViews {} {
-    global curView
-    if {$curView == ""} {
-	set but [dialog .toggleWinError "No Current View" \
-		"Select a view first by clicking in it." "" 0 OK ]
+    if {$statcurr == 1} {
+	DEVise setViewStatistics $curView $stat
 	return
     }
 
-    set stat [DEVise getViewStatistics $curView]
-    set stat [expr !$stat]
-    
     set viewClasses [ DEVise get view ]
     foreach viewClass $viewClasses {
 	set views [ DEVise get view $viewClass ]
@@ -3497,22 +3529,27 @@ proc UpdateTkControlMargins {name type w h} {
 }
 
 proc ShowKGraph {} {
-    global curView
+    global curView kval kcurr knew
 
-    if {$curView == ""} {
-	dialog .showKGraph "Show KGraph" \
-		"Select a view by clicking in it first." "" 0 { OK }
+    if {$kcurr == 0} {
+	# Find out the views on which to build the KGraph
+	dialog .showKGraph "Error " "Selecting specific views to \
+		display is not yet implemented" "" 0 { OK }
 	return
+    } else {
+	if {$curView == ""} {
+	    dialog .showKGraph "Show KGraph" \
+		    "Select a view by clicking in it first." "" 0 { OK }
+	    return
+	}
+
+	# Form graph out of all the views in the current window
+	set win [ DEVise getViewWin $curView]
+	set vlist [DEVise getWinViews $win]
     }
 
-    # Form graph out of all the views in the current window for now - to be changed later
-    # Also, display the mean as the only stat - to be changed later
-    
-    set win [ DEVise getViewWin $curView]
-    set vlist [DEVise getWinViews $win]
-
     # Pass list of view names and also stat number
-    set cmd "DEVise showkgraph 1 $vlist"
+    set cmd "DEVise showkgraph $knew $kval $vlist"
 
     eval $cmd
 }
