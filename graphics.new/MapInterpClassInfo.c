@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 21:17:43  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.3  1995/11/21 23:27:10  jussi
   Added copyright notice and cleaned up the code. Fixed bug
   in ParamNames where shapeAttr[1] got a bogus value "(null)"
@@ -130,7 +133,8 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   cmdFlag = 0;
   attrFlag=0;
 
-  for(int i = 3; i <= 9; i++) {
+  int i;
+  for(i = 3; i <= 9; i++) {
     if (NotEmpty(argv[i])) {
       cmdFlag |= (1 << (i-3));
     }
@@ -147,7 +151,7 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
 
   cmd->xCmd = cmd->yCmd = cmd->colorCmd = cmd->sizeCmd =
     cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = NULL;
-  for(i =0; i < MAX_GDATA_ATTRS; i++)
+  for(i = 0; i < MAX_GDATA_ATTRS; i++)
     cmd->shapeAttrCmd[i] = NULL;
   
   tdataAlias = CopyString(argv[0]);
