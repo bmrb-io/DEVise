@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/02/16 20:20:28  wenger
+  Fixed bug 463 (data sometimes overdraws axes in piles).
+
   Revision 1.2  1999/02/11 19:54:33  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -68,6 +71,9 @@ public:
   void InsertView(ViewWin *view);
   void DeleteView(ViewWin *view);
 
+  void EnableXAxis(Boolean enable);
+  void EnableYAxis(Boolean enable);
+
 protected:
   ViewWinList *GetViewList();
 
@@ -87,7 +93,7 @@ private:
   void SetStacked();
   void SetPiled(Boolean doLink);
 
-  Boolean CanPileOrStack();
+  Boolean CanPileOrStack(State state);
   void CreatePileLink();
   void SynchronizeAxes();
 };

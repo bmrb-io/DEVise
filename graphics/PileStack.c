@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/02/16 20:20:28  wenger
+  Fixed bug 463 (data sometimes overdraws axes in piles).
+
   Revision 1.2  1999/02/11 19:54:33  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -180,8 +183,13 @@ PileStack::InsertView(ViewWin *view)
 
   if (_state == PSPiledNoLink || _state == PSPiledLinked) {
     ((View *)view)->SetPileMode(true);
-    ((View *)view)->XAxisDisplayOnOff(_xAxisOn);
-    ((View *)view)->YAxisDisplayOnOff(_yAxisOn);
+    if (_views.Size() < 2) {
+      // This is the first view in the pile, so find out whether the
+      // axes are turned on.
+      ((View *)view)->AxisDisplay(_xAxisOn, _yAxisOn);
+    }
+    ((View *)view)->XAxisDisplayOnOff(_xAxisOn, false);
+    ((View *)view)->YAxisDisplayOnOff(_yAxisOn, false);
   }
 
   if (_state == PSPiledLinked) {
@@ -271,7 +279,7 @@ PileStack::SetStacked()
   printf("PileStack(%s)::SetStacked()\n", _name);
 #endif
 
-  if (CanPileOrStack()) {
+  if (CanPileOrStack(PSStacked)) {
     if (_state == PSPiledNoLink || _state == PSPiledLinked) {
       SetNormal();
     }
@@ -297,7 +305,7 @@ PileStack::SetPiled(Boolean doLink)
   printf("PileStack(%s)::SetPiled(%d)\n", _name, doLink);
 #endif
 
-  if (CanPileOrStack()) {
+  if (CanPileOrStack(doLink ? PSPiledLinked : PSPiledNoLink)) {
     //
     // Create the pile link and insert it into all views of the pile.
     //
@@ -342,7 +350,9 @@ PileStack::SetPiled(Boolean doLink)
 	title = view->_label;
         first = false;
       } else {
-        view->SetLabelParam(title.occupyTop, title.extent, view->_label.name);
+	char *tmpStr = CopyString(view->_label.name);
+        view->SetLabelParam(title.occupyTop, title.extent, tmpStr);
+	delete [] tmpStr;
       }
     }
     GetViewList()->DoneIterator(index);
@@ -360,10 +370,10 @@ PileStack::SetPiled(Boolean doLink)
  * Decide whether this object can be piled or stacked.
  */
 Boolean
-PileStack::CanPileOrStack()
+PileStack::CanPileOrStack(State state)
 {
 #if (DEBUG >= 3)
-  printf("PileStack(%s)::CanPileOrStack()\n", _name);
+  printf("PileStack(%s)::CanPileOrStack(%d)\n", _name, state);
 #endif
 
   Boolean result = true;
@@ -376,6 +386,18 @@ PileStack::CanPileOrStack()
     result = false;
   }
 #endif
+
+  if (state == PSPiledNoLink || state == PSPiledLinked) {
+    int index = GetViewList()->InitIterator();
+    while (result && GetViewList()->More(index)) {
+      ViewWin *view = GetViewList()->Next(index);
+      if (view->NumChildren() > 0) {
+        printf("Views containing view symbols cannot be piled.\n");
+        result = false;
+      }
+    }
+    GetViewList()->DoneIterator(index);
+  }
 
 #if (DEBUG >= 3)
   printf("  CanPileOrStackResult: %d\n", result);
@@ -457,8 +479,50 @@ PileStack::SynchronizeAxes()
   }
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
-    view->XAxisDisplayOnOff(_xAxisOn);
-    view->YAxisDisplayOnOff(_yAxisOn);
+    view->XAxisDisplayOnOff(_xAxisOn, false);
+    view->YAxisDisplayOnOff(_yAxisOn, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::EnableXAxis
+ * Enable or disable the X axes for all views in the pile.
+ */
+void
+PileStack::EnableXAxis(Boolean enable)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::EnableXAxis()\n", _name);
+#endif
+
+  _xAxisOn = enable;
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->XAxisDisplayOnOff(_xAxisOn, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::EnableYAxis
+ * Enable or disable the Y axes for all views in the pile.
+ */
+void
+PileStack::EnableYAxis(Boolean enable)
+{
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::EnableYAxis()\n", _name);
+#endif
+
+  _yAxisOn = enable;
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->YAxisDisplayOnOff(_yAxisOn, false);
   }
   GetViewList()->DoneIterator(index);
 }

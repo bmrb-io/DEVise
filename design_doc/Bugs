@@ -1767,8 +1767,9 @@ Num Date        Status  Description
 460 02/11/99	OPEN	Window layout GUI should be disabled if a window
 			is piled or stacked. (rkw)
 
-461 02/11/99	OPEN	Moving views in and out of a piled window sometimes
+461 02/11/99	FIXED	Moving views in and out of a piled window sometimes
 			doesn't force a redraw when it should. (rkw)
+			(Fixed by rkw, 2/19/99.)
 
 462 02/16/99	OPEN	Rubberband line on an unlinked pile in the JavaScreen
 			zooms only the top view. (rkw)
@@ -1777,8 +1778,12 @@ Num Date        Status  Description
 			some views have axes and others don't. (ml/rkw)
 			(Fixed by rkw, 2/16/99.)
 
-464 02/17/99	OPEN	Toggling the axes by view in a pile doesn't work
+464 02/17/99	FIXED	Toggling the axes by view in a pile doesn't work
 			right. (rkw)
+			(Fixed by rkw, 2/19/99.)
+
+465 02/22/99	OPEN	Can't move cursor in in OverView window in
+			jsdemo Condor/cant_move_cursor.ds session. (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

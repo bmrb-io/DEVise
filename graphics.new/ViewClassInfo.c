@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/12/15 14:55:25  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.17  1998/03/05 20:36:22  wenger
   Fixed bugs 304 and 309 (problems with view colors); fixed a few other
   problems related to *ClassInfo classes.
@@ -169,8 +175,10 @@ ViewClassInfo::ViewClassInfo(char *name, ViewGraph *view)
 
 ViewClassInfo::~ViewClassInfo()
 {
-  delete [] _name;
+  // Note: _view must be deleted *before* _name is deleted, in case the
+  // name is referenced during by any of the view destructors.  RKW 1999-02-22.
   delete _view;
+  delete [] _name;
 }
 
 /* Get names of parameters */

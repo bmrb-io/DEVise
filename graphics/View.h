@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.74  1999/02/17 15:10:18  wenger
+  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+  in mapping dialog updating when a view is selected.
+
   Revision 1.73  1999/02/11 19:54:38  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -497,8 +501,8 @@ class View : public ViewWin
 	void SetZAxisAttrType(AttrType type);
 	AttrType GetZAxisAttrType() { return _zAxisAttrType; }
 
-	void XAxisDisplayOnOff(Boolean stat);
-	void YAxisDisplayOnOff(Boolean stat);
+	void XAxisDisplayOnOff(Boolean stat, Boolean notifyPile = true);
+	void YAxisDisplayOnOff(Boolean stat, Boolean notifyPile = true);
 	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
 	  xOnOff = xAxis.inUse;
 	  yOnOff = yAxis.inUse;

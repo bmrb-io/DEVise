@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.156  1999/02/17 15:10:17  wenger
+  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+  in mapping dialog updating when a view is selected.
+
   Revision 1.155  1999/02/11 19:54:37  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -717,6 +721,7 @@
 #include "Scheduler.h"
 #include "DepMgr.h"
 #include "JavaScreenCmd.h"
+#include "PileStack.h"
 
 //******************************************************************************
 
@@ -2045,22 +2050,38 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
   }
 }
 
-void View::XAxisDisplayOnOff(Boolean stat)
+void View::XAxisDisplayOnOff(Boolean stat, Boolean notifyPile)
 {
+#if defined(DEBUG)
+  printf("View(%s)::XAxisDisplayOnOff(%d)\n", GetName(), stat);
+#endif
+
   if (stat != xAxis.inUse) {
-    xAxis.inUse = stat;
-    _updateTransform = true;
+    if (_pileMode && notifyPile) {
+	  GetParent()->GetPileStack()->EnableXAxis(stat);
+	} else {
+      xAxis.inUse = stat;
+      _updateTransform = true;
+	}
   }
 
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewAxesCh);
   Refresh();
 }
 
-void View::YAxisDisplayOnOff(Boolean stat)
+void View::YAxisDisplayOnOff(Boolean stat, Boolean notifyPile)
 {
+#if defined(DEBUG)
+  printf("View(%s)::YAxisDisplayOnOff(%d)\n", GetName(), stat);
+#endif
+
   if (stat != yAxis.inUse) {
-    yAxis.inUse = stat;
-    _updateTransform  = true;
+    if (_pileMode && notifyPile) {
+	  GetParent()->GetPileStack()->EnableYAxis(stat);
+	} else {
+      yAxis.inUse = stat;
+      _updateTransform  = true;
+	}
   }
 
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewAxesCh);
@@ -2220,8 +2241,8 @@ void View::Refresh(Boolean refreshPile)
 #if defined(DEBUG)
   printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
 #endif
-  if (refreshPile && _pileMode && !_isHighlight) {
-    ((View *)GetFirstSibling())->Refresh(false);
+  if (refreshPile && _pileMode && !_isHighlight && GetFirstSibling()) {
+    GetFirstSibling()->Refresh(false);
   } else {
     _doneRefresh = false;
     _refresh = true;

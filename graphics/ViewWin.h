@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/02/11 19:54:39  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.32.2.1  1998/12/29 17:24:49  wenger
   First version of new PileStack objects implemented -- allows piles without
   pile links.  Can't be saved or restored in session files yet.
@@ -334,12 +339,15 @@ class ViewWin : public Coloring
      * because the views are drawn in the order that they're on the
      * list). */
     ViewWin *GetFirstSibling() {
+      ViewWin *sibling = NULL;
       ViewWin *parent = GetParent();
-      DOASSERT(parent, "View has no parent");
-      int index = parent->InitIterator();
-      DOASSERT(parent->More(index), "Parent view has no children");
-      ViewWin *sibling = parent->Next(index);
-      parent->DoneIterator(index);
+      if (parent) {
+        int index = parent->InitIterator();
+	if (parent->More(index)) {
+          sibling = parent->Next(index);
+	}
+        parent->DoneIterator(index);
+      }
       return sibling;
     }
 
@@ -363,6 +371,8 @@ class ViewWin : public Coloring
 
 	PileStack *GetPileStack() { return _pileStack; }
 	void SetPileStack(PileStack *ps);
+
+	virtual void Refresh(Boolean refreshPile = true) {}
 
 protected:
     /* called by base class when it has been mapped/unmapped */
