@@ -29,8 +29,8 @@ setenv LM_TMP			/tmp/LM/dat
 
 setenv DEVISE_LIB               $DEVISE_PUB/lib
 setenv LM_LIB                   $DEVISE_LIB/LM 
-#setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
-setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
+setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
+#setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
 
 $DEVISE_EXEC $* >>& devised.out
 
