@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.8  1996/04/10 03:05:04  jussi
+#	Checking of whether a top-level window already exists is now
+#	made via WindowVisible (utils.tcl).
+#
 #	Revision 1.7  1995/11/29 16:02:49  jussi
 #	Removed constant window size definitions because they will produce
 #	unexpected results on some window managers.
@@ -43,6 +47,7 @@
 set crsp_seclst ""
 set crsp_numsec 0
 set crsp_selection ""
+set crsp_source ""
 
 ############################################################
 
@@ -52,11 +57,11 @@ proc crsp_unique_name {symbol} {
 
 ############################################################
 
-proc crsp_extract_data {tapedrive filenum offset blocksize key file} {
+proc crsp_extract_data {source tapedrive filenum offset blocksize key file} {
     global sourceTypes crsp_status
 
-    set indexFile [lindex $sourceTypes(CRSP) 2]
-    set crsp_status "Extracting CRSP data..."
+    set indexFile [lindex $sourceTypes($source) 2]
+    set crsp_status "Extracting $source data..."
     crsp_setupStatus .crspstatus
     crsp_extract $tapedrive $filenum $offset $blocksize $indexFile $key $file
     catch {destroy .crspstatus}
@@ -117,12 +122,12 @@ proc crsp_setupFirmList {flist} {
 
 proc crsp_scanFirmList {listb msg} {
     global sourceTypes
-    global crsp_seclst crsp_numsec crsp_status
+    global crsp_seclst crsp_numsec crsp_status crsp_source
 
     $listb delete 0 end
     set crsp_seclst ""
     set crsp_numsec 0
-    set indexFile [lindex $sourceTypes(CRSP) 2]
+    set indexFile [lindex $sourceTypes($crsp_source) 2]
     set err [catch { set firms [open $indexFile] }]
     if {$err > 0} {
 	dialog .noFile "No Index File" \
@@ -193,8 +198,8 @@ proc crsp_setupStatus {stat} {
 
 ############################################################
 
-proc crspMain {} {
-    global crsp_seclst crsp_numsec crsp_selection
+proc crspMain {source} {
+    global crsp_seclst crsp_numsec crsp_selection crsp_source
 
     if {[WindowVisible .crsp]} {
 	return
@@ -203,7 +208,7 @@ proc crspMain {} {
     set crsp_selection ""
 
     toplevel .crsp
-    wm title .crsp "Select Security from CRSP Database"
+    wm title .crsp "Select Security from $source Database"
     wm geometry .crsp +50+50
     selection clear .crsp
 
@@ -217,8 +222,10 @@ proc crspMain {} {
     update
 
     # scan firm index only if the firm list doesn't exist yet
-    if {!$crsp_numsec} {
-	if {[crsp_scanFirmList .crsp.seclst.list .crsp.seclst.msg] < 0} {
+    if {!$crsp_numsec || $source != $crsp_source} {
+	set crsp_source $source
+	if {[crsp_scanFirmList .crsp.seclst.list .crsp.seclst.msg] < 0}	{
+	    set crsp_numsec 0
 	    return "Error"
 	}
     } else {
