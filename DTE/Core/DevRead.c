@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.8  1997/03/14 18:36:09  donjerko
+    Making space for the SQL UNION operator.
+
     Revision 1.7  1997/03/02 00:01:45  donjerko
     Changed RecId int recId.
 
@@ -103,7 +106,7 @@ DevRead::Open(char *schemaFile, char *dataFile)
     schemaFile = strdup(schemaFile);
     dataFile = strdup(dataFile);
 
-    DataSeg::Set(schemaFile, dataFile, 0, 0);
+    DataSeg::Set(dataFile, dataFile, 0, 0);
 
     char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
     DOASSERT(schemaName != NULL, "Can't parse schema.");

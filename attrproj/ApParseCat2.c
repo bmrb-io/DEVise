@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/11/22 21:15:56  flisakow
+  An example of how to use the new Sequential (no index) TData class.
+  You need to set USE_SEQ to "yes" in the Makefile to build to the
+  new example.
+
   Revision 1.10  1996/10/10 16:45:16  wenger
   Changed function names, etc., in ApParseCat.c to get rid of name clashes
   when Donko puts transformation engine code into DEVise.
@@ -767,11 +772,11 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 #endif
 
 #ifdef   USE_SEQ
-		  tDataP = new TDataSeqAsciiInterp(catFile, strdup("UNIXFILE"),
+		  tDataP = new TDataSeqAsciiInterp(strdup(dataFile), strdup("UNIXFILE"),
 		    dataFile, recSize, attrs, sep, numSep,
 		    hasSeparator, commentString);
 #else
-		  tDataP = new TDataAsciiInterp(catFile, strdup("UNIXFILE"),
+		  tDataP = new TDataAsciiInterp(strdup(dataFile), strdup("UNIXFILE"),
 		    dataFile, recSize, attrs, sep, numSep,
 		    hasSeparator, commentString);
 #endif
@@ -783,7 +788,7 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 #endif
 		  // Note: the second use of recSize is for the physical
 		  // record size.  This needs to get changed.  RKW 96/06/27.
-		  tDataP = new TDataBinaryInterp(catFile, strdup("UNIXFILE"), dataFile,
+		  tDataP = new TDataBinaryInterp(strdup(dataFile), strdup("UNIXFILE"), dataFile,
 			recSize, recSize/*TEMP*/, attrs);
 		}
 	}

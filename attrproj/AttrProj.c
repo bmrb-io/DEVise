@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/03 20:26:03  jussi
+  Updated to reflect new TData interfaces.
+
   Revision 1.15  1996/11/23 21:35:33  jussi
   Minor change to reflect change in TData::GetRecs().
 
@@ -125,11 +128,12 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 
 	// strdups because TData destructor will try to free all of these
 	// strings -- make sure they're dynamic.
-	schemaFile = strdup(schemaFile);
+	schemaFile = strdup(dataFile);
 	attrProjFile = strdup(attrProjFile);
 	dataFile = strdup(dataFile);
+	char *name = dataFile;
 
-	DataSeg::Set(schemaFile, dataFile, 0, 0);
+	DataSeg::Set(name, dataFile, 0, 0);
 
 	char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
 	DOASSERT(schemaName != NULL, "Can' parse schema");

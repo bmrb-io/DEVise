@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.5  1996/11/18 16:46:03  donjerko
+    Removed DevRead.c from the libdevread.a.
+    DTE and devread should have a single version of DevRead.c.
+
     Revision 1.4  1996/10/10 16:45:26  wenger
     Changed function names, etc., in ApParseCat.c to get rid of name clashes
     when Donko puts transformation engine code into DEVise.
@@ -77,7 +81,7 @@ DevRead::Open(char *schemaFile, char *dataFile)
     schemaFile = strdup(schemaFile);
     dataFile = strdup(dataFile);
 
-    DataSeg::Set(schemaFile, dataFile, 0, 0);
+    DataSeg::Set(dataFile, dataFile, 0, 0);
 
     char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
     DOASSERT(schemaName != NULL, "Can't parse schema.");

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/03 20:26:05  jussi
+  Updated to reflect new TData interfaces.
+
   Revision 1.2  1996/11/25 18:15:04  wenger
   Changes to non-indexed attrproj to match other changes to TData;
   changes to compile non-index attrproj and to get the rest of Devise
@@ -135,8 +138,9 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 	schemaFile = strdup(schemaFile);
 	attrProjFile = strdup(attrProjFile);
 	dataFile = strdup(dataFile);
+	char *name = dataFile;
 
-	DataSeg::Set(schemaFile, dataFile, 0, 0);
+	DataSeg::Set(name, dataFile, 0, 0);
 
 	char *schemaName = ApParseCat(schemaFile, dataFile, _tDataP);
 	DOASSERT(schemaName != NULL, "Can' parse schema");

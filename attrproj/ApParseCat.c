@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/10/10 16:45:16  wenger
+  Changed function names, etc., in ApParseCat.c to get rid of name clashes
+  when Donko puts transformation engine code into DEVise.
+
   Revision 1.9  1996/08/27 19:06:58  flisakow
   Added ifdef's around some information printf's.
 
@@ -753,7 +757,7 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 #ifdef    DEBUG
 		  printf("default source, recSize %d\n",recSize);
 #endif
-		  tDataP = new TDataAsciiInterp(catFile, strdup("UNIXFILE"), dataFile,
+		  tDataP = new TDataAsciiInterp(strdup(dataFile), strdup("UNIXFILE"), dataFile,
 			recSize, attrs, sep, numSep, hasSeparator, commentString);
 		}
 		else
@@ -763,7 +767,7 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 #endif
 		  // Note: the second use of recSize is for the physical
 		  // record size.  This needs to get changed.  RKW 96/06/27.
-		  tDataP = new TDataBinaryInterp(catFile, strdup("UNIXFILE"), dataFile,
+		  tDataP = new TDataBinaryInterp(strdup(dataFile), strdup("UNIXFILE"), dataFile,
 			recSize, recSize/*TEMP*/, attrs);
 		}
 	}

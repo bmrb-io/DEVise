@@ -29,6 +29,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/25 18:15:14  wenger
+  Changes to non-indexed attrproj to match other changes to TData;
+  changes to compile non-index attrproj and to get the rest of Devise
+  to compile with that.
+
   Revision 1.4  1996/11/18 22:51:04  jussi
   Improved the way the index array is allocated and reallocated.
 
@@ -152,7 +157,7 @@ DevStatus
 FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
                       long& lastPos, long& totalRecs)
 {
-  DO_DEBUG(printf("FileIndex::Initialize()\n"));
+  DO_DEBUG(printf("FileIndex::Initialize(%s)\n", indexFileName));
 
   DevStatus result(StatusOk);
   int indexFd = -1;

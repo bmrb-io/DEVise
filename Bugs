@@ -712,7 +712,7 @@ Num Date        Status  Description
 			you don't get the warning about selecting a Y
 			attribute. (rkw)
 
-172 03/19/97	OPEN	If the DTE opens two different data sources that have
+172 03/19/97	FIXED	If the DTE opens two different data sources that have
 			the same schema name, the index files generated
 			conflict, because the TDatas are named by the
 			schema name. (dd/rkw)
