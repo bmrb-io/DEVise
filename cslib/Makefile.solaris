@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1997/12/12 05:49:45  weaver
+# *** empty log message ***
+#
 # Revision 1.9  1997/11/24 23:13:59  weaver
 # Changes for the new ColorManager.
 #
@@ -83,7 +86,7 @@ ClientServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-ClientServer.o: /s/X11/include/X11/Xutil.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 WinServer.o: WinServer.h ClientServer.h /s/tcl/include/tcl.h
 WinServer.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 WinServer.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
@@ -104,7 +107,7 @@ WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 WinServer.o: ../graphics/DevError.h /usr/include/errno.h
 WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
 WinServer.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
-WinServer.o: /s/X11/include/X11/Xutil.h
+WinServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 client.o: /usr/include/string.h ClientServer.h /s/tcl/include/tcl.h
@@ -124,6 +127,7 @@ client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
+client.o: ../graphics/GraphicsDebug.h
 server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 server.o: /usr/include/string.h /usr/include/assert.h WinServer.h
@@ -144,4 +148,4 @@ server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
-server.o: ../graphics/DualWindowRep.h
+server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h

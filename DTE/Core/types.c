@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1997/12/10 00:00:38  okan
+  ODBC Interface Changes ...
+
   Revision 1.45  1997/12/04 04:05:22  donjerko
   *** empty log message ***
 
@@ -234,11 +237,34 @@ void dateAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	*((EncodedDTF*) result) = (*val1 + *val2) ;
 }
 
+// This function is called for evaluating the operator 'similar' for similarity
+// queries in the sequence database.
 void seqSimilar(const Type* arg1, const Type* arg2, Type*& result, size_t&){
 	SeqSimVec* val1 = ((SeqSimVec*)arg1) ;
-	SeqSimVec* val2 = ((SeqSimVec*)arg2) ;
-//	*((double*) result) = val1->similar(*val2);
+	const SeqSimVec* val2 = ((SeqSimVec*)arg2) ;
+	result = (Type*) (val1->similar(val2));
 }
+
+// This function is called while calculating the moving aggregate for the
+// similarity vector in similar queries. It updates the moving aggregate to
+// add a new value in the window for which the aggregate is being called
+void seqAddTup(const Type* arg1, const Type* arg2, Type*& result, size_t&){
+	SeqSimVec* val1 = ((SeqSimVec*) arg1);
+	double * val2 = ((double*)arg2);
+	((SeqSimVec*) result) = val1->addTup(val2);
+}
+
+// This function is called while calculating the moving aggregate for the
+// similarity vector in similar queries. It updates the moving aggregate to
+// remove a value from the window for which the aggregate is being called. Thus
+// seqAddTup and seqSubTup combined will update the moving aggregate by 
+// advancing the window by one tuple.
+void seqSubTup(const Type* arg1, const Type* arg2, Type*& result, size_t&){
+	SeqSimVec* val1 = ((SeqSimVec*) arg1);
+	double * val2 = ((double*)arg2);
+	((SeqSimVec*) result) = val1->subTup(val2);
+}
+
 
 void intervalEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedIDT* val1 = ((EncodedIDT*)arg1) ;
@@ -597,6 +623,20 @@ void indexDescRead(istream& in, Type*& adt){
 	TRY(((IndexDesc*) adt)->read(in), NVOID );
 }
 
+// This function is to read the type 'seqsv'. It reads it from the file
+// stream into the structure of SeqSimVec
+void seqVecRead(istream& in, Type*& adt){
+	SeqSimVec * temp;	
+	int i;
+	temp = new SeqSimVec;
+	for (i=0; i < 2*NFA+2;  i++)
+		in >> temp->DFT_pts[i];
+	((SeqSimVec*) adt)->SeqSimVec();
+	for (i=0; i < 2*NFA+2;  i++)
+		((SeqSimVec*) adt)->DFT_pts[i] = temp->DFT_pts[i];
+	delete temp;
+}
+
 void intWrite(ostream& out, const Type* adt){
 	out << int(adt);
 }
@@ -639,6 +679,13 @@ void indexDescWrite(ostream& out, const Type* adt){
 void dateWrite(ostream& out, const Type* adt){
 	assert(adt);
 	out << *((EncodedDTF*) adt);
+}
+
+// This function is to write a structure of type SeqSimVec into a table
+// as a field.
+void seqVecWrite(ostream& out, const Type* adt){
+	assert(adt);
+	out << *((ISeqSimVec*) adt);
 }
 
 void intervalWrite(ostream& out, const Type* adt){
@@ -696,6 +743,9 @@ int packSize(const Type* adt, string type){
 		int len = atoi(type.substr(6).c_str());
 		return len;
 	}
+	else if (type == SEQSV_TP){	
+		return sizeof (SeqSimVec);
+	}
 	else{
 		cout << "Don't know how to pack type: " << type << endl;
 		assert(0);
@@ -725,6 +775,9 @@ int packSize(string type){	// throws exception
 	}
 	else if(type == "time_t"){
 		return sizeof(time_t);
+	}
+	else if(type == SEQSV_TP){
+		return sizeof(SeqSimVec);
 	}
 	else{
 		string msg = "Don't know size of " + type; 
@@ -879,7 +932,11 @@ GeneralPtr* getOperatorPtr(
 	else if(root == "time_t"){
 		return ITime_t::getOperatorPtr(name, root, arg, retType);
 	}
+	else if(root == SEQSV_TP){	
+		return ISeqSimVec::getOperatorPtr(name,root,arg,retType);
+	}
 	else{
+		cout << "None is the type we have got \n";
 		string msg = "Cannot find OperatorPtr for type: " + root;
 		THROW(new Exception(msg), NULL);
 	}
@@ -931,6 +988,9 @@ ReadPtr getReadPtr(TypeID root){
 	else if(root == DATE_TP){
 		return dateRead;
 	}
+	else if(root == SEQSV_TP){
+		return seqVecRead;
+	}
 	else{
 		cout << "No such type: " << root << endl;
 		assert(0);
@@ -968,6 +1028,9 @@ WritePtr getWritePtr(TypeID root){
 	}
 	else if(root == "time_t"){
 		return time_tWrite;
+	}
+	else if(root == SEQSV_TP){
+		return seqVecWrite;
 	}
 	else{
 		string msg = "Cannot find WritePtr for type: " + root;
@@ -1289,6 +1352,9 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	else if(root == "date"){
 		return dateDestroy;
 	}
+	else if(root == SEQSV_TP){ 	
+		return seqSimVecDestroy;
+	}
 	else{
 		string msg = "Don't know how to destroy type: " + root;
 		cout << msg << endl;
@@ -1306,7 +1372,12 @@ void time_tDestroy(Type* adt){
 }
 
 void dateDestroy(Type* adt){
-//	delete (EncodedDTF*) adt;
+	delete (EncodedDTF*) adt;
+}
+
+// This function is called to destroy a structure of type ISeqSimVec
+void seqSimVecDestroy(Type* adt){
+	delete (ISeqSimVec*) adt;
 }
 
 void boolDestroy(Type* adt){
@@ -1387,6 +1458,14 @@ void dateCopy(const Type* arg, Type*& result, size_t& sz){
 	*((EncodedDTF*) result) = *((EncodedDTF*) arg);
 }
 
+// This function is called to copy a value and make it into a SeqSimVec
+void seqSimVecCopy(const Type* arg, Type*& result, size_t& sz){
+// Add code to initialize the seqVector
+	((SeqSimVec*)result)->SeqSimVec();
+   ((SeqSimVec*)result)->addTup((double*)arg);
+
+}
+
 void intervalCopy(const Type* arg, Type*& result, size_t& sz){
 	*((EncodedIDT*) result) = *((EncodedIDT*) arg);
 }
@@ -1394,6 +1473,7 @@ void intervalCopy(const Type* arg, Type*& result, size_t& sz){
 void stringCopy(const Type* arg, Type*& result, size_t& sz){
 	strncpy((char*) result, (char*) arg, sz);
 }
+
 
 void time_tCopy(const Type* arg, Type*& result, size_t& sz){
 	*((time_t*) result) = *((time_t*) arg);
@@ -1417,6 +1497,9 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	}
 	else if(adt.substr(0, 6) == "string"){
 		return stringCopy;
+	}
+	else if(adt == SEQSV_TP){ 
+		return seqSimVecCopy;
 	}
 	else{
 		cerr << "Function to copy " << adt << " not implemented\n";
@@ -1590,6 +1673,10 @@ char* allocateSpace(TypeID type, size_t& size){
 	else if(type == "indexdesc"){
 		return (char*) new IndexDesc();
 	}
+	else if(type == SEQSV_TP){ 
+		size = packSize(type);
+		return (char*) new ISeqSimVec();
+	}
 	else{
 		cout << "Don't know how to allocate space for " << type << endl; 
 		assert(0);
@@ -1649,6 +1736,88 @@ void dateConstructor
 	*((EncodedDTF*)res) = encDTF;
 }
 
+/* This solves the query D(Q,aS+b) <= epsilon, where a and b are also bounded,
+ * This is essentially the problem where the normal forms of Q and S are close
+ * to each other and the amount of scaling and shifting is also bounded. We 
+ * first convert this problem into the internal representation, where bounds on
+ * a and b are converted to bounds on alpha and sigma of S. */
+void svShiftScaleConstructor
+	 (const Array<const Type*>& inp, Type*& res, size_t& = dummySz)
+{
+	// inp[0] is S, inp[1] is Q, inp[2] is epsilon, inp[3] is l_a, inp[4] is u_a
+	// inp[5] is l_b inp[6] is u_b
+
+	// For queries with just scaling b=0, so l_b=0 and u_b = 0
+	// For queries with just shifting a=1, so l_a=1 and u_a = 1
+	SeqSimVec vec1, vec2;
+	vec1 = *((SeqSimVec *) inp[0]);
+	vec2 = *((SeqSimVec *) inp[1]);
+	double sum = 0;
+	for (int i=2; i < 2*NFA+2; i++)
+		sum += pow((vec1.DFT_pts[i] - vec2.DFT_pts[i]),2);
+	double epsilon = *((double *)inp[2]);
+	if (epsilon > vec2.DFT_pts[1])
+		epsilon = vec2.DFT_pts[1];
+	double epsiloni = sqrt(2 - 2* sqrt(1- epsilon*epsilon/(vec2.DFT_pts[1]*vec2.DFT_pts[1])));
+	double l_alpha, u_alpha, l_sigma, u_sigma;
+	if ((*(double *) inp[3]) > (*(double *) inp[4]))
+	{
+		cout << "In similarity search the lower bound on 'a' (the scaling factor) should not be more then upper bound on 'a'" << endl;
+		assert(0);
+	}
+	if ((*(double *) inp[5]) > (*(double *) inp[6]))
+	{
+		cout << "In similarity search the lower bound on 'b' (the shifting factor) should not be more then upper bound on 'b'" << endl;
+		assert(0);
+	}
+	if ((*(double *) inp[4]) == 0.0 || (*(double *) inp[3]) == 0.0)
+	{
+		cout << "In similarity search the bounds on 'a' (the scaling factor) should be non-zero" << endl;
+		assert(0);
+	}
+	l_sigma = vec2.DFT_pts[1]/(*(double *) inp[4]);
+	u_sigma = vec2.DFT_pts[1]/(*(double *) inp[3]);
+	l_alpha = (vec2.DFT_pts[0] - (*(double *) inp[6]))/(*(double *) inp[4]);
+	u_alpha = (vec2.DFT_pts[0] - (*(double *) inp[5]))/(*(double *) inp[3]);
+	if (sum <= epsiloni)
+	{
+		if ( l_sigma <= vec1.DFT_pts[1] && vec1.DFT_pts[1] <= u_sigma &&
+			 l_alpha <= vec1.DFT_pts[0] && vec1.DFT_pts[0] <= u_alpha)
+   			IBool::setBool(res, true);
+		else
+   			IBool::setBool(res, false);
+	}
+	else
+   		IBool::setBool(res, false);
+}
+
+/* This solves the query D(Q,aS+b) <= epsilon, where a and b are unbounded,
+ * This is essentially the problem where the normal forms of Q and S are close
+ * to each other. No comparison is needed for alpha's and sigmas */ 
+void svNormalConstructor
+	 (const Array<const Type*>& inp, Type*& res, size_t& = dummySz)
+{
+	// inp[0] is S, inp[1] is Q, inp[2] is epsilon
+
+	// For these queries l_b=0 and u_b = INF
+	// For queries with just shifting a=1, so l_a=1 and u_a = INF
+    // calculate ret val
+	SeqSimVec vec1, vec2;
+	vec1 = *((SeqSimVec *) inp[0]);
+	vec2 = *((SeqSimVec *) inp[1]);
+	double sum = 0;
+	for (int i=2; i < 2*NFA+2; i++)
+		sum += pow((vec1.DFT_pts[i] - vec2.DFT_pts[i]),2);
+	double epsilon = *((double *)inp[2]);
+	if (epsilon > vec2.DFT_pts[1])
+		epsilon = vec2.DFT_pts[1];
+	double epsiloni = sqrt(2 - 2* sqrt(1- epsilon*epsilon/(vec2.DFT_pts[1]*vec2.DFT_pts[1])));
+	if (sum <= epsiloni)
+   		IBool::setBool(res, true);
+	else
+   		IBool::setBool(res, false);
+}
+
 ConstructorPtr getConstructorPtr(
      const string& name, const TypeID* inpTypes, int numFlds, TypeID& retType)
 {
@@ -1658,6 +1827,23 @@ ConstructorPtr getConstructorPtr(
 			retType = DATE_TP;
 			return dateConstructor;
 		}
+	}
+	else if (name == "similar"){
+		if(numFlds == 3 && inpTypes[0] == SEQSV_TP && inpTypes[1] ==SEQSV_TP &&
+			inpTypes[2] == DOUBLE_TP ){
+			retType = "bool";
+			return svNormalConstructor;
+		}
+		else 
+		if (numFlds == 7 && inpTypes[0] == SEQSV_TP && inpTypes[1] ==SEQSV_TP &&
+			inpTypes[2] == DOUBLE_TP && inpTypes[3] == DOUBLE_TP && 
+			inpTypes[4] == DOUBLE_TP && inpTypes[5] == DOUBLE_TP &&
+			inpTypes[6] == DOUBLE_TP)
+		{
+			retType = "bool";
+			return svShiftScaleConstructor; 
+		}
+
 	}
 	string msg = "Constructor " + name + "(";
 	for(int i = 0; i < numFlds; i++){

@@ -1,6 +1,6 @@
 #include "Aggregates.h"
 #include "MemoryMgr.h"
-
+#include "SeqSimVecAggregate.h"
 bool Aggregates::isApplicable(){
 	return isApplicableValue;
 }
@@ -122,6 +122,13 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 			    function->setTypeID(INT_TP);
 			    resolved = true;
 			  }
+			  else if (*name == "sv")
+			  {
+			    aggFuncs[i] = new MovSeqSimVecAggregate(windowHigh);
+			    function->setTypeID(SEQSV_TP);
+			    resolved = true;
+				sim_query = true;
+			  }
 			}
 			aggPos[numAggs++] = i;
 		}
@@ -189,8 +196,13 @@ Iterator* Aggregates::createExec(){
 	if(numGrpByFlds > 0){
 	  if (numSeqByFlds > 0) {
 	    // group by and seq by
-		return new MovGroupByExec(inputIter, aggExecs, numFlds,
-			seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, 
+		if (sim_query)
+			return new MovSeqGroupByExec(inputIter, aggExecs, numFlds,
+				seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, 
+					  aggPos, numAggs,windowLow, windowHigh);
+		else
+			return new MovGroupByExec(inputIter, aggExecs, numFlds,
+				seqByPos, numSeqByFlds, grpByPos, numGrpByFlds, 
 					  aggPos, numAggs,windowLow, windowHigh);
 	  }
 	  else {
@@ -201,8 +213,12 @@ Iterator* Aggregates::createExec(){
 	}
 	if(numSeqByFlds > 0){
 	  // just seq by
-		return new MovAggsExec(inputIter, aggExecs, numFlds, seqByPos,
-			numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
+		if (sim_query)
+			return new MovSeqAggsExec(inputIter, aggExecs, numFlds, seqByPos,
+				numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
+		else
+			return new MovAggsExec(inputIter, aggExecs, numFlds, seqByPos,
+				numSeqByFlds, aggPos, numAggs, windowLow, windowHigh);
 	}
 	else {
 		// No sequence by or group by 
@@ -264,8 +280,48 @@ const Tuple* StandGroupByExec::getNext(){
 	}
 	return retTuple;
 }
+/*
+void MovAggsExec::initialize(){
+	assert(inputIter);
+	inputIter->initialize();
+	currInTup = inputIter->getNext();
+	if(!currInTup){
+	  return;
+	}
 
+	for(int i = 0; i < numFlds; i++){
+	  aggExecs[i]->initialize(currInTup[i]);
+	}
 
+	currWindowHeight = 1;
+	numTuplesToBeDropped[nextDrop] = 1; // for the first tuple read
+
+	currInTup = inputIter->getNext();
+	while(currInTup) { 
+	  if (isNewGroup(currInTup)) {
+	    nextDrop = (nextDrop+1) % fullWindowHeight; 
+
+	    if (currWindowHeight == fullWindowHeight) {
+	      break; // end of window
+	    }
+
+	    // Add the currInTuple to end of the seq by queue
+	    for (int i = 0; i < seqByPosLen; i++){
+	      aggExecs[seqByPos[i]]->update(currInTup[seqByPos[i]]); 
+	    }    
+	    currWindowHeight++;
+	  } 
+
+	  for(int i = 0; i < numAggs; i++){
+	    aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+	  }
+
+	  currInTup = inputIter->getNext();
+	  numTuplesToBeDropped[nextDrop]++;
+	}
+	for(int i = 0; i < numFlds; i++){ 
+		retTuple[i] = aggExecs[i]->getValue();
+	}	*/
 void MovAggsExec::initialize(){
   assert(inputIter);
   inputIter->initialize();
@@ -357,6 +413,10 @@ const Tuple* MovAggsExec::flushWindow(){
   }
   
   return retTuple;
+}
+
+const Tuple* MovSeqAggsExec::flushWindow(){
+	return NULL;
 }
 
 const Tuple* MovAggsExec::getNext(){
@@ -491,4 +551,34 @@ const Tuple* MovGroupByExec::flushWindow(){
   }
 
   return retTuple;
+}
+
+const Tuple* MovSeqGroupByExec::flushWindow(){
+  while (currWindowHeight) { // window has been flushed
+  	for(int i = 0; i < numAggs; i++){
+   	 aggExecs[aggPos[i]]->dequeue(toDeque);  
+  	}
+  	for (int i = 0; i < seqByPosLen; i++){
+   	 aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
+  	}    
+
+  	nextDrop = (nextDrop+1) % fullWindowHeight;
+	currWindowHeight--;
+   }
+  
+    if (!currInTup) {
+      return NULL; // end of file
+    }
+
+    for(int i = 0; i < numAggs; i++){
+      aggExecs[aggPos[i]]->dequeue(toDeque);  
+    }
+    for (int i = 0; i < seqByPosLen; i++){
+      aggExecs[seqByPos[i]]->dequeue(1);
+    }    
+
+    setupFirst();
+    firstTime = false;
+    return retTuple; 
+
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/12/10 00:00:37  okan
+  ODBC Interface Changes ...
+
   Revision 1.41  1997/12/04 04:05:20  donjerko
   *** empty log message ***
 
@@ -653,6 +656,13 @@ public:
 		assert(0);
 		return false;
 	}
+
+	// This function is called to get the selectivity of a where clause
+	// in the similarity query.
+	virtual double getSelectivity(){  
+		return 0.01;
+	}
+					 
 };
 
 class EnumSelection : public BaseSelection {

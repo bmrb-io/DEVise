@@ -23,6 +23,7 @@ class ConstantSelection;
 
 template class MemoryLoaderTemplate<EncodedDTF>;
 template class MemoryLoaderTemplate<IDouble>;
+template class MemoryLoaderTemplate<ISeqSimVec>;
 
 struct StringLess {
 	bool operator()(const string& s1, const string& s2) const {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/12/15 16:15:18  wenger
+  Backed out most recent changes to fix compile.
+
   Revision 1.43  1997/12/10 02:31:13  okan
   *** empty log message ***
 
@@ -59,6 +62,7 @@
 #include "myopt.h"
 #include "site.h"
 #include "MemoryMgr.h"
+//#include "SeqSimVecAggregate.h"
 #include "TypeCheck.h"
 
 #ifndef __GNUG__
@@ -898,6 +902,23 @@ protected:
   virtual bool currInTupIsValid() { return (currInTup != NULL); }
 };
 
+class MovSeqAggsExec : public MovAggsExec {
+public :
+	MovSeqAggsExec(Iterator* inputIter, ExecAggregate** aggExecs,
+		int numFlds, int* seqByPos, 
+		int seqByPosLen,
+		int* aggPos, int numAggs,
+		int windowLow, int windowHigh) : 
+	MovAggsExec(inputIter, aggExecs,
+		numFlds, seqByPos, 
+		seqByPosLen,
+		aggPos, numAggs,
+		windowLow, windowHigh) {} 
+
+protected :
+  virtual const Tuple* flushWindow();
+};
+
 class MovGroupByExec : public MovAggsExec {
 public:
   
@@ -921,12 +942,31 @@ protected:
   }
 };
 
+class MovSeqGroupByExec : public MovGroupByExec {
+public:
+  
+  MovSeqGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
+		 int numFlds, int* seqByPos, int seqByPosLen, 
+		 int* grpByPos, int grpByPosLen,
+		 int* aggPos, int numAggs,
+		 int windowLow, int windowHigh) : 
+  MovGroupByExec(inputIter, aggExecs,
+		 numFlds, seqByPos, seqByPosLen, 
+		 grpByPos, grpByPosLen,
+		 aggPos, numAggs,
+		 windowLow, windowHigh) {}
+
+protected :
+  virtual const Tuple* flushWindow();
+};
+
 class Aggregates : public Site {
 	vector<BaseSelection*>& selList;
 	List<BaseSelection*>* filteredSelList;
 	vector<BaseSelection*>& sequenceBy;
 	bool isApplicableValue;
 	bool alreadyChecked;
+	bool sim_query;
 	TypeID seqAttrType; // sequence by on only one attribute?
 	int seqAttrPos;
 	BaseSelection* withPredicate;	
@@ -977,6 +1017,7 @@ public:
 		}
 		isApplicableValue = false;
 		alreadyChecked = false;
+		sim_query = false;
 		inputPlanOp = NULL;
 		filteredSelList = NULL;
 		grpByPos = NULL;

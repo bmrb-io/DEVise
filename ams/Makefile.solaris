@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.47  1997/11/24 23:13:42  weaver
+# Changes for the new ColorManager.
+#
 # Revision 1.46  1997/08/28 18:22:34  wenger
 # Re-made solaris dependencies.
 #
@@ -69,11 +72,12 @@ MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 MapClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
-MapClassInfo.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Temp.h
+MapClassInfo.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
 MapClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
 MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
 MapClassInfo.o: ../tape/HashTable.h ../graphics/Control.h
@@ -97,9 +101,9 @@ ams.o: ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 ams.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
-ams.o: ../graphics/Xdef.h ../graphics/Control.h ../graphics/ClassDir.h
-ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-ams.o: ../graphics.new/MapInterpClassInfo.h
+ams.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h ../graphics/Control.h
+ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
+ams.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 ams.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h

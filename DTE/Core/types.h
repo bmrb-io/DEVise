@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/11/24 06:01:28  donjerko
+  Added more odbc files.
+
   Revision 1.39  1997/11/05 00:19:50  donjerko
   Separated typechecking from optimization.
 
@@ -146,7 +149,7 @@
 #include "queue.h"
 #include "Array.h"
 #include "sysdep.h"
-
+#include "SeqSimVec.h"
 #ifndef __GNUG__
 using namespace std;
 #endif
@@ -288,6 +291,7 @@ void stringCopy(const Type* arg, Type*& result, size_t& = dummySz);
 void dateCopy(const Type* arg, Type*& result, size_t& sz);
 void intervalCopy(const Type* arg, Type*& result, size_t& sz);
 void time_tCopy(const Type* arg, Type*& result, size_t& sz);
+void seqSimVecCopy(const Type* arg, Type*& result, size_t& sz);
 
 void intMarshal(const Type* adt, char* to);
 void doubleMarshal(const Type* adt, char* to);
@@ -313,6 +317,7 @@ int memberSameSize(int a);
 void intDestroy(Type* adt);
 void time_tDestroy(Type* adt);
 void dateDestroy(Type* adt);
+void seqSimVecDestroy(Type* adt);
 void stringDestroy(Type* adt);
 void boolDestroy(Type* adt);
 void doubleDestroy(Type* adt);
@@ -379,6 +384,12 @@ void stringToStringL(const Type* arg, Type*& result, size_t& sz);
 void seqSimilar(const Type* arg1, const Type* arg2, Type*& result, 
 	size_t& = dummySz);
 
+void seqAddTup(const Type* arg1, const Type* arg2, Type*& result, 
+	size_t& = dummySz);
+
+void seqSubTup(const Type* arg1, const Type* arg2, Type*& result, 
+	size_t& = dummySz);
+
 void doubleAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void doubleDiv(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -414,6 +425,7 @@ void boolRead(istream&, Type*&);
 void interfaceRead(istream&, Type*&);
 void schemaRead(istream&, Type*&);
 void indexDescRead(istream&, Type*&);
+void seqVecRead(istream&, Type*&);
 
 void intWrite(ostream&, const Type*);
 void stringWrite(ostream&, const Type*);
@@ -425,6 +437,7 @@ void indexDescWrite(ostream&, const Type*);
 void dateWrite(ostream& out, const Type* adt);
 void intervalWrite(ostream& out, const Type* adt);
 void time_tWrite(ostream& out, const Type* adt);
+void seqVecWrite(ostream& out, const Type* adt);
 
 class IInt {
 /*
@@ -521,26 +534,54 @@ public:
 	}
 };
 
-class SeqSimVec;
 
-class ISeqSimVec {
-//	SeqSimVec sv;
+// This class  deals with the Similarity Vectors which are computed
+// for each of the sub-sequences. It defines operators for creating 
+// the similarity vectors, for updating them and checking similarity
+// between vectors.
+class ISeqSimVec { 
+	SeqSimVec sv;
 public:
 	static GeneralPtr* getOperatorPtr(
-		string name, TypeID arg, TypeID& retType){
-		if(!(arg == SEQSV_TP)){
-			return NULL;
-		}
+		string name, TypeID root, TypeID arg, TypeID& retType){
 		if(name == "similar"){
-			retType = "double";
-			return new GeneralPtr(seqSimilar, doubleSize);
+			if(!(arg == SEQSV_TP)){
+				return NULL;
+			}
+			retType = "bool";	
+			return new GeneralPtr(seqSimilar, boolSize, oneOver100);
+		}
+		else if(name == "addTup"){	// For adding a new value in the moving
+			if (arg != "double"){	// aggregate to get a similarity vector
+				return NULL;
+			}
+			retType = SEQSV_TP;
+			return new GeneralPtr(seqAddTup, sameSize);
+		}
+		else if(name == "-"){	  // For removing a value in the moving
+			if (arg != "double"){ // aggregate to get a similarity vector.
+				return NULL;
+			}
+			retType = SEQSV_TP;
+			return new GeneralPtr(seqSubTup, sameSize);
 		}
 		else{
 			return NULL;
 		}
 	}
+
 	static const SeqSimVec* getSeqSV(const Type* object){
 		return (SeqSimVec*) object;
+	}
+
+	friend ostream& operator<<(ostream& out, const ISeqSimVec& s){
+		s.display(out);
+	}
+
+	void display(ostream& out) const{
+		for (int i=0; i < 2*NFA+2; i++)
+			out << sv.DFT_pts[i] << "   ";
+
 	}
 };
 
@@ -578,6 +619,13 @@ public:
 			return NULL;
 		}
      }
+     static const bool getBool(const Type* object){
+			return (bool) object;
+	 }
+	 static const void setBool(Type*& object, bool value){
+			object =  (Type *) value;
+	 }
+
 };
 
 class IDouble {

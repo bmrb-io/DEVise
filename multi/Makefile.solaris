@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.44  1997/11/24 23:15:54  weaver
+# Changes for the new ColorManager.
+#
 # Revision 1.43  1997/10/03 16:24:19  wenger
 # Updated solaris dependencies.
 #
@@ -80,6 +83,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -164,7 +168,8 @@ CycleEffMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 CycleEffMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 CycleEffMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
 CycleEffMappingClassInfo.o: /usr/include/string.h ../graphics/ETk.h
-CycleEffMappingClassInfo.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
+CycleEffMappingClassInfo.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
+CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
@@ -240,7 +245,8 @@ CycleOccMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 CycleOccMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 CycleOccMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
 CycleOccMappingClassInfo.o: /usr/include/string.h ../graphics/ETk.h
-CycleOccMappingClassInfo.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
+CycleOccMappingClassInfo.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
+CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
@@ -324,6 +330,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/errno.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+CycleSuspendedMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -416,6 +423,7 @@ CycleWorkingMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 CycleWorkingMappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 CycleWorkingMappingClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h
 CycleWorkingMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+CycleWorkingMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
@@ -499,13 +507,14 @@ HostMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 HostMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 HostMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
 HostMappingClassInfo.o: /usr/include/string.h ../graphics/ETk.h
-HostMappingClassInfo.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
-HostMappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-HostMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-HostMappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-HostMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-HostMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
-HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
+HostMappingClassInfo.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
+HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+HostMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+HostMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+HostMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
+HostMappingClassInfo.o: ../graphics.new/Action.h
 HostMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
 HostMappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
 HostMappingClassInfo.o: ../graphics.new/ConnectorShape.h
@@ -560,15 +569,15 @@ MappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 MappingClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
 MappingClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h
 MappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
-MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-MappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
-MappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
-MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-MappingClassInfo.o: ../graphics.new/TDataCMap.h
+MappingClassInfo.o: ../graphics/GraphicsDebug.h ../graphics.new/RectShape.h
+MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
+MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
+MappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
@@ -753,15 +762,16 @@ disp.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 disp.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
 disp.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
-disp.o: ../graphics/Xdef.h ../graphics.new/RectShape.h
-disp.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-disp.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-disp.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h ../graphics/Init.h
-disp.o: ../graphics/BufPolicy.h ../graphics/Temp.h ../graphics/Map3D.h
-disp.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
-disp.o: ../graphics.new/PointStorage.h ../graphics/Control.h
-disp.o: ../graphics/ClassDir.h ../graphics.new/VisualLinkClassInfo.h
-disp.o: TDataMulti.h ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+disp.o: ../graphics/Xdef.h ../graphics/GraphicsDebug.h
+disp.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+disp.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+disp.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+disp.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
+disp.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics.new/ViewGraph.h
+disp.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+disp.o: ../graphics/Control.h ../graphics/ClassDir.h
+disp.o: ../graphics.new/VisualLinkClassInfo.h TDataMulti.h
+disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
 disp.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h

@@ -97,6 +97,9 @@ MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
 		else if(types[i] == DATE_TP){
 			retVal[i] = new MemoryLoaderTemplate<EncodedDTF>;
 		}
+		else if(types[i] == SEQSV_TP){	
+			retVal[i] = new MemoryLoaderTemplate<ISeqSimVec>;
+		}
 		else{
 			cerr << "Loader not implemented for type: " << types[i] << endl;
 			exit(1);
