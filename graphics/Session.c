@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/09/08 20:56:21  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.59  1999/09/07 19:00:31  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -939,6 +943,23 @@ Session::ReadSession(ControlPanelSimple *control, char *filename)
 	while (fgets(lineBuf, bufSize, fp) && result.IsComplete()) {
 #if defined(DEBUG)
       printf("  read line: %s", lineBuf);
+#endif
+
+      // Note: Tcl uses semicolons as command separators; we're not currently
+	  // implementing this.  However, we need to get rid of any trailing
+	  // semicolons so they're not parsed as arguments.  RKW 1999-09-20.
+	  char *tmpC = &lineBuf[strlen(lineBuf) - 1];
+	  while (tmpC >= lineBuf) {
+	    if (*tmpC == ';') {
+	      *tmpC = ' ';
+	    } else if (!isspace(*tmpC)) {
+	      break;
+	    }
+	    tmpC--;
+	  }
+
+#if defined(DEBUG)
+      printf("  semicolons removed: %s", lineBuf);
 #endif
 
 	  if (!IsBlankOrComment(lineBuf)) {
