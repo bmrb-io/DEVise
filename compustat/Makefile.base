@@ -1,0 +1,20 @@
+CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
+
+LIBSRC = compustat.c
+
+LIBOBJ = compustat.o
+
+TESTSRC = index.c extract.c
+
+ALLSRC= $(LIBSRC) $(TESTSRC) 
+
+LIBOBJS= $(LIBOBJ)
+
+cstatobj.o: $(LIBOBJS)
+	ld -r -o $@ $(LIBOBJS)
+
+index:	index.o
+	gcc $(CPPFLAGS) -o $@ $@.o
+
+extract:	extract.o $(LIBOBJS)
+	gcc $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)

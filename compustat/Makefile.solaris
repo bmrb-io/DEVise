@@ -1,0 +1,26 @@
+depend:
+	makedepend -fMakefile.solaris \
+		-I../compustat -I../tape -I/usr/X11R6/include \
+		-I/s/tcl/include *.c
+# DO NOT DELETE
+
+compustat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+compustat.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+compustat.o: /usr/include/unistd.h /usr/include/sys/types.h
+compustat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+compustat.o: /usr/include/sys/select.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/time.h /usr/include/sys/unistd.h compustat.h
+compustat.o: index.h
+extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+extract.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+extract.o: /usr/include/unistd.h /usr/include/sys/types.h
+extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
+extract.o: /usr/include/sys/time.h /usr/include/sys/unistd.h compustat.h
+extract.o: index.h
+index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+index.o: /usr/include/unistd.h /usr/include/sys/types.h
+index.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+index.o: /usr/include/sys/select.h /usr/include/sys/time.h
+index.o: /usr/include/sys/time.h /usr/include/sys/unistd.h index.h

@@ -1,0 +1,291 @@
+/*
+   $Id$
+
+   $Log$*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+
+#include "compustat.h"
+
+#define INFILE_NAME "compustat.dat"
+#define IDXFILE_NAME "compustat.idx"
+
+/* This function extracts the fields in the data and outputs them into
+   a DeVise style file.
+*/
+void create_comp_dat(char fname[], char fvalue[])
+{
+  FILE *infile;
+  FILE *idxfile;
+  FILE *outfile;
+  int i, j;
+  int recoffset, year;
+  char recbuf1[COMP_REC_LENGTH];
+  char recbuf2[COMP_REC_LENGTH];
+
+  /* Get the input file pointer */
+  if ((infile = fopen(INFILE_NAME, "r")) == NULL)
+  {
+    printf("Error: could not open input file\n");
+    exit(0);
+  }
+
+  /* Get the index file pointer */
+  if ((idxfile = fopen(IDXFILE_NAME, "r")) == NULL)
+  {
+    printf("Error: could not open index file\n");
+    exit(0);
+  }
+
+  /* Find the record for the company in the index file and open an output
+     file with the appropriate name */
+  if (find_rec(idxfile, fname, fvalue, &recoffset, &year, &outfile) == FALSE)
+  {
+    printf("Error: Invalid field name, value combination\n");
+    fclose(infile);
+    fclose(idxfile);
+    return;
+  }
+
+  /* Loop through sets of five years-
+     First loop looks at record 1 - first five years for 1 - 175 and
+                         record 5 -                      176 - 350
+     and so on */
+
+  for (i = 0; i < 4; i++)
+  {
+    /* Read record for first record into memory */
+    fseek(infile, recoffset, SEEK_SET);
+    fread(recbuf1, sizeof(char), (size_t)COMP_REC_LENGTH, infile);
+
+    /* Read record for the other set of attrs eg : (1,5), (2,6), .. */
+    fseek(infile, recoffset + 4*COMP_REC_LENGTH, SEEK_SET);
+    fread(recbuf2, sizeof(char), (size_t)COMP_REC_LENGTH, infile);
+
+    /* Loop  for five years - pass in pointers to data arrays for each of
+       the two sets of attrs */
+    for (j = 0; j < 5; j++)
+      generate_dat(recbuf1 + COMP_DARR_OFF + j*COMP_DARR_LEN,
+		   recbuf2 + COMP_DARR_OFF + j*COMP_DARR_LEN,
+		   year++, outfile);
+
+    /* Increment recoffset - pass on to next set of five years */
+    recoffset += COMP_REC_LENGTH;
+  }
+
+  /* Close files */
+  if (fclose(infile) == EOF)
+  {
+    printf("Error in closing input file\n");
+    exit(0);
+  }
+  if (fclose(idxfile) == EOF)
+  {
+    printf("Error in closing index file\n");
+    exit(0);
+  }
+  if (fclose(outfile) == EOF)
+  {
+    printf("Error in closing output file\n");
+    exit(0);
+  }
+}
+
+/* This function scans the index file and finds the record corr. to the
+   passed fname and fvalue.
+   In that record, return the OFFSET, YEAR fields.
+   Create a name of the file based on the value of SMBL field.
+   Create the output file and return the file pointer. */
+
+int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off, 
+	      int *year, FILE **outfile)
+{
+  int i;
+  int offset_pos, year_pos, smbl_pos, fname_pos;
+  int offset_val;
+  int year_val;
+  char smbl_val[COMP_MAX_STR_LEN];
+  char tmpval[COMP_MAX_STR_LEN];
+  char *fname_val;
+
+  /* First do some preprocessing : find the field numbers for OFFSET, YEAR,
+     SMBL and fname fields. */
+  
+  offset_pos = comp_get_pos("OFFSET");
+  year_pos = comp_get_pos("YEAR");
+  smbl_pos = comp_get_pos("SMBL");
+  fname_pos = comp_get_pos(fname);
+  if (fname_pos == -1)		/* Invalid field name */
+  {
+    printf("Error : Invalid field name %s\n", fname);
+    return FALSE;
+  }
+  /* If fname is also SMBL, we should read the field only once from the
+     stream - so make fname_val point to smbl_val */
+  if (fname_pos == smbl_pos)
+    fname_val = (char *)&(smbl_val[0]);
+  else
+    fname_val = malloc(COMP_MAX_STR_LEN);
+
+  /* Go in a loop - In every record save the values of OFFSET, YEAR, SMBL
+     and fname fields. At the end of the loop check if the value of fname
+     field is fvalue. If so, quit the loop. */
+
+  do
+  {
+    for (i=0; i < COMP_NUM_IDX_FIELDS; i++)
+    {
+      if (i == fname_pos)
+	fscanf(idxfile, "%s", fname_val);
+      else if (i == offset_pos)
+	fscanf(idxfile, "%d", &offset_val);
+      else if (i == year_pos)
+	fscanf(idxfile, "%d", &year_val);
+      else if (i == smbl_pos)
+	fscanf(idxfile, "%s", smbl_val);
+      else 
+	fscanf(idxfile, "%s", tmpval);
+    }
+    
+  }while ((!comp_compare(fvalue, fname_val, fname_pos)) &&
+	  (!feof(idxfile)));
+
+  if (comp_compare(fvalue, fname_val, fname_pos))
+  {
+    *off = offset_val;
+    *year = year_val;
+    
+    /* Create name for the data file to be generated */
+    sprintf(tmpval, "%s.dat", smbl_val);
+
+    /* Open file pointer for the data file */
+    if ((*outfile = fopen(tmpval, "w")) == NULL)
+    {
+      printf("Error: could not create file for writing data\n");
+      exit(0);
+    }
+    return TRUE;
+  }
+  
+  printf("Error: field value %s not found for field name %s\n",
+	 fvalue, fname);
+  return FALSE;
+}
+
+
+/* This function generates data corr. to the passed year.
+   off1 represents the start of the data array for the first set of 
+   attrs (1-175) and off2 is the start of the data array for the second 
+   set (176-350). */
+void generate_dat(char *dat1, char *dat2, int year,
+		  FILE *outfile)
+{
+  int i, pos, len, pre;
+  float val;
+
+  /* Output year */
+  fprintf(outfile, "%d ", year);
+
+  /* output values of fields from the first data array */
+  for (i = 0; i < COMP_DAT_FIELDS_1; i++)
+  {
+    pos = comp_dat_1[i*COMP_NUM_PER_DAT];
+    len = comp_dat_1[i*COMP_NUM_PER_DAT + 1];
+    pre = comp_dat_1[i*COMP_NUM_PER_DAT + 2];
+
+    val = comp_get_val(dat1+pos, len, pre);
+    fprintf(outfile, "%f ", val);
+  }
+
+  /* output values of fields from the second data array */
+  for (i = 0; i < COMP_DAT_FIELDS_2; i++)
+  {
+    pos = comp_dat_2[i*COMP_NUM_PER_DAT];
+    len = comp_dat_2[i*COMP_NUM_PER_DAT + 1];
+    pre = comp_dat_2[i*COMP_NUM_PER_DAT + 2];
+
+    val = comp_get_val(dat2+pos, len, pre);
+    fprintf(outfile, "%f ", val);
+  }
+
+  /* Output new line - end of record for this year */
+  fprintf(outfile, "\n");
+}
+
+
+/* This function returns the field position in the index file record for
+   the field with the passed name. This info is got by scanning through the
+   comp_idx_form struct. */
+int comp_get_pos(char fname[])
+{
+  int pos = 0;
+  
+  while (pos < COMP_NUM_IDX_FIELDS)
+    if (!strcmp(comp_idx_form[2*pos], fname))
+      return pos;
+    else
+      pos++;
+
+  return -1;
+}
+	
+
+/* This function checks if val1 and val2 are identical. Returns 1 if
+   identical, 0 otherwise.
+   val1 and val2 are passed as strings - but they might be either string
+   values or integers. So, comparison might be using strcmp or "==".
+   Use pos to check in comp_idx_form struct and find out the type. */
+int comp_compare(char *val1, char *val2, int pos)
+{
+  if (!strcmp(comp_idx_form[2*pos + 1], "I"))	/* Integer field */
+    if (atoi(val1) == atoi(val2))
+      return 1;
+    else return 0;
+  else						/* String field */
+    if (!strcmp(val1, val2))
+      return 1;
+    else return 0;
+}
+
+
+/* This function returns the floating point number which is represented as
+   a character string with the given length and precision. */
+double comp_get_val(char *str, int len, int pre)
+{
+  int intval, decval;
+  char *intpart, *decpart;
+  double denom;
+
+  /* Extract the first (len - pre) characters out - integer part */
+  intpart = malloc(len - pre +1);
+  memcpy(intpart, str, len - pre);
+  intpart[len - pre] = '\0';
+  intval = atoi(intpart);
+  free(intpart);
+
+  /* Extract the last pre characters out - decimal part */
+  decpart = malloc(pre + 1);
+  memcpy(decpart, str+len-pre, pre);
+  decpart[pre] = '\0';
+  decval = atoi(decpart);
+  free(decpart);
+
+  /* Now add up the two parts of the float number adjusting for the 
+     implied decimal point */
+  /* We will optimize for the case pre=3 and 4 */
+  if (pre == 3)
+    denom = 1000.0;
+  else if (pre == 4)
+    denom = 10000.0;
+  else
+  {
+    printf("Error : precision %d is not supported\n", pre);
+    exit(0);
+  }
+
+  return ((double)intval + (double)decval/denom);
+}

@@ -1,0 +1,15 @@
+depend:
+	makedepend -fMakefile.sun \
+		-I../compustat -I../tape -I/s/tcl/include \
+		*.c
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+compustat.o: /usr/include/stdio.h /usr/include/stdlib.h
+compustat.o: /usr/include/sys/stdtypes.h /usr/include/string.h
+compustat.o: /usr/include/ctype.h /usr/include/unistd.h compustat.h index.h
+extract.o: /usr/include/stdio.h /usr/include/stdlib.h
+extract.o: /usr/include/sys/stdtypes.h /usr/include/string.h
+extract.o: /usr/include/ctype.h /usr/include/unistd.h compustat.h index.h
+index.o: /usr/include/stdio.h /usr/include/stdlib.h
+index.o: /usr/include/sys/stdtypes.h /usr/include/string.h
+index.o: /usr/include/ctype.h /usr/include/unistd.h index.h
