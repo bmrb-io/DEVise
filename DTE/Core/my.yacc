@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/01/20 22:46:32  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.44  1998/10/16 20:57:32  beyer
   parser now accepts negative numbers and unary minus (I hope!)
 
@@ -570,12 +576,12 @@ predicate : predicate OR predicate {
 	;
 
 selection :
-	STRING {
-		$$ = new OptField("", *SDel($1));
-	}
-	| STRING '.' STRING {
+	  STRING '.' STRING {
 		$$ = new OptField(*SDel($1), *SDel($3));
 	}
+//	| STRING {
+//		$$ = new OptField("", *SDel($1));
+//	}
 //	|
 //	selection '.' STRING {
 //		$$ = new Member(*$3, $1); delete $3;
