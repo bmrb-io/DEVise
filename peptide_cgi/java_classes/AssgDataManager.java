@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/08/02 17:47:44  wenger
+// Greatly improved error handling.
+//
 // Revision 1.2  2000/07/27 16:11:23  wenger
 // Added standard DEVise headers.
 //
@@ -51,7 +54,7 @@ public class AssgDataManager
 
     //Reads in the input assignment file and stores in memory data structure
     public AssgDataManager( String filename )
-      throws Exception
+      throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("AssgDataManager(" + filename + ")");
@@ -90,14 +93,14 @@ public class AssgDataManager
 	    
 	} catch (FileNotFoundException e) 
 	{
-	    System.err.println("File not found: "
-			       + e.getMessage() );
-	    throw new Exception("Unable to read assignment file " + filename);
+	    System.err.println("File not found: " + e.getMessage() );
+	    throw new S2DException("Unable to read assignment file " +
+	      filename);
 	} catch (IOException e)
 	{
-	    System.err.println("IO Exception: "
-			       + e.getMessage() );
-	    throw new Exception("Unable to read assignment file " + filename);
+	    System.err.println("IO Exception: " + e.getMessage() );
+	    throw new S2DException("Unable to read assignment file " +
+	      filename);
 	}
     }
     

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/08/02 17:47:45  wenger
+// Greatly improved error handling.
+//
 // Revision 1.1  2000/07/28 21:04:42  wenger
 // Combined LocalStar2Devise and WebStar2Devise into Star2Devise, other
 // cleanup.
@@ -52,7 +55,7 @@ public class Star2Devise {
 
     // ----------------------------------------------------------------------
     public static Star2Devise LocalStar2Devise(String file_name)
-      throws Exception
+      throws S2DException
     {
         Star2Devise s2d = null;
 	try {
@@ -60,7 +63,8 @@ public class Star2Devise {
             s2d = new Star2Devise(file_name, stream);
 	} catch(FileNotFoundException ex) {
 	    System.err.println("Unable to open or read " + ex.getMessage());
-	    throw new Exception("Unable to get data in star file " + file_name);
+	    throw new S2DException("Unable to get data in star file " +
+	      file_name);
 	}
 
 	return s2d;
@@ -68,7 +72,7 @@ public class Star2Devise {
 
     // ----------------------------------------------------------------------
     public static Star2Devise WebStar2Devise(String file_name)
-      throws Exception
+      throws S2DException
     {
         Star2Devise s2d = null;
 	try {
@@ -78,7 +82,8 @@ public class Star2Devise {
 	    s2d = new Star2Devise(file_name, starfile.openStream());
 	} catch(java.io.IOException ex) {
 	    System.err.println("Unable to open or read " + ex.getMessage());
-	    throw new Exception("Unable to get data in star file " + file_name);
+	    throw new S2DException("Unable to get data in star file " +
+	      file_name);
 	}
 
 	return s2d;
@@ -86,7 +91,7 @@ public class Star2Devise {
     
     // ----------------------------------------------------------------------
     public Star2Devise(String file_name, InputStream stream)
-      throws Exception
+      throws S2DException
     {
 	try {
 	    this.file_name = file_name;
@@ -102,9 +107,12 @@ public class Star2Devise {
 
 	    value_vector = new Vector();
 	} catch (ParseException e) {
-	    System.err.println("NMR-Star file parse error: " 
-			       + e.getMessage() );
-	    throw new Exception("Unable to parse " + file_name);
+	    System.err.println("NMR-Star file parse error: " +
+	      e.getMessage() );
+	    throw new S2DException("Unable to parse " + file_name);
+	} catch(Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage() );
+	    throw new S2DException("Unable to parse " + file_name);
 	}
     }
 
@@ -115,8 +123,8 @@ public class Star2Devise {
      *   outFileName: the name of the output file, as ASCII text for DEVise
      * Return value: true iff data is successfully output; false otherwise.
      */
-    public boolean outputData (String outFileName)
-      throws Exception
+    public boolean outputData(String outFileName)
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.outputData(" + outFileName + ")");
@@ -181,7 +189,10 @@ public class Star2Devise {
 	    return true;
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
-	    throw new Exception("Unable to output data for " + file_name);
+	    throw new S2DException("Unable to output data for " + file_name);
+	} catch(Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage() );
+	    throw new S2DException("Unable to output data for " + file_name);
 	}
     }
 
@@ -194,7 +205,7 @@ public class Star2Devise {
      * Return value: true iff data is successfully processed; false otherwise.
      */
     public boolean processStrData( String saveFrameName, String outFileName )
-      throws Exception
+      throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.processStrData(" +
@@ -203,9 +214,8 @@ public class Star2Devise {
 
 	try {
 	    
-	    VectorCheckType saveFrameVec;
-	    saveFrameVec = 
-		aStarTree.searchByName(saveFrameName);
+	    VectorCheckType saveFrameVec =
+	      aStarTree.searchByName(saveFrameName);
 
 	    // this vector should have size 1 because there should
 	    // only be one SaveFrame with this name
@@ -223,7 +233,7 @@ public class Star2Devise {
 		    lastLoop.searchByName(RESIDUE_CODE);
 // doesn't work for coupling constants
 // 		if (checkForTag.size() != 1)
-// 		    throw new Exception
+// 		    throw new S2DException
 // 			("Found "
 // 			 + checkForTag.size()
 // 			 + " " + RESIDUE_CODE + " tags"
@@ -251,14 +261,18 @@ public class Star2Devise {
 		return false;
 
 	    } else {		// multiple search strings found
-		throw new Exception("Found " +
+		throw new S2DException("Found " +
 		  saveFrameVec.size() + " " + saveFrameName +
 		  " save frames," + " expect exactly 1.");
 	    }
 	    
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
-	    throw new Exception("Unable to process save frame " +
+	    throw new S2DException("Unable to process save frame " +
+	      saveFrameName);
+	} catch (Exception e) {
+	    System.err.println("Exception: " + e.getMessage() );
+	    throw new S2DException("Unable to process save frame " +
 	      saveFrameName);
 	}
     } // end function processStrData()
@@ -274,7 +288,7 @@ public class Star2Devise {
      * Pulls just the CA atoms out of a residue's structure
      */
     public boolean findBackbone (String saveFrameName, String outFileName)
-      throws Exception
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.findBackbone(" +
@@ -298,6 +312,7 @@ public class Star2Devise {
 		    (DataLoopNode)
 		    ( (SaveFrameNode) saveFrameVec.elementAt(0) )
 		    .lastElement();
+
 		// make sure that this is the correct DataLoopNode
 		// this should find just one instance, because this
 		// tag only appears once in the saveframe
@@ -305,7 +320,7 @@ public class Star2Devise {
 		    lastLoop.searchByName(RESIDUE_CODE);
 
 		if (checkForTag.size() != 1)
-		    throw new Exception
+		    throw new S2DException
 			("Found "
 			 + checkForTag.size()
 			 + " " + RESIDUE_CODE + " tags"
@@ -429,7 +444,7 @@ public class Star2Devise {
 		return false;
 
 	    } else {		// multiple search strings found
-		throw new Exception
+		throw new S2DException
 		    ("Found " + saveFrameVec.size()
 		     + " save frames,"
 		     + " expect exactly 1.");
@@ -437,7 +452,11 @@ public class Star2Devise {
 	    
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
-	    throw new Exception("Unable to find backbone for save frame " +
+	    throw new S2DException("Unable to find backbone for save frame " +
+	      saveFrameName);
+	} catch(Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage() );
+	    throw new S2DException("Unable to find backbone for save frame " +
 	      saveFrameName);
 	}
     } // end findBackbone
@@ -452,7 +471,7 @@ public class Star2Devise {
      * Return value: true iff column is added; false otherwise.
      */
     public boolean addLogColumn(String saveFrameName, String operandName,
-      String outFileName) throws Exception
+      String outFileName) throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.addLogColumn(" +
@@ -480,7 +499,7 @@ public class Star2Devise {
 		VectorCheckType checkForTag =
 		    valuableDataLoop.searchByName(RESIDUE_CODE);
 		if (checkForTag.size() != 1)
-		    throw new Exception
+		    throw new S2DException
 			("Found "
 			 + checkForTag.size()
 			 + " " + RESIDUE_CODE + " tags"
@@ -494,7 +513,7 @@ public class Star2Devise {
 		    names.searchByName(operandName);
 
 		if (operands.size() != 1)
-		    throw new Exception
+		    throw new S2DException
 			("Found "
 			 + operands.size()
 			 + " " + operandName + " tags"
@@ -508,7 +527,7 @@ public class Star2Devise {
 // 		operands = names.searchByName(operandName + "_error");
 		
 // 		if (operands.size() != 1)
-// 		    throw new Exception
+// 		    throw new S2DException
 // 			("Found "
 // 			 + operands.size()
 // 			 + " " + operandName + "_error tags"
@@ -590,14 +609,19 @@ public class Star2Devise {
 		return false;
 	    
 	    else {		// too many found
-		throw new Exception
+		throw new S2DException
 		    ("Found " + saveFrameVec.size()
 		     + " save frames,"
 		     + " expect exactly 1.");
 	    }
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
-	    throw new Exception(
+	    throw new S2DException(
+	      "Unable to find add log column for save frame " +
+	      saveFrameName);
+	} catch(Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage() );
+	    throw new S2DException(
 	      "Unable to find add log column for save frame " +
 	      saveFrameName);
 	}
@@ -611,7 +635,7 @@ public class Star2Devise {
      * Return value: true iff chem shifts are calculated; false otherwise.
      */
     public boolean calcChemShifts (String acc_num)
-      throws Exception
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.calcChemShifts(" + acc_num + ")");
@@ -689,7 +713,7 @@ public class Star2Devise {
 		//assert that this list has just 1 item in it!
 		if( loopMatches.size() != 1 )
 		{
-		    throw new Exception
+		    throw new S2DException
 			( "Found " + loopMatches.size()
 			  + " _Chem_shift_value tags, only expect 1." );
 		}
@@ -1070,9 +1094,17 @@ public class Star2Devise {
 	    
 	    error.close();
 	    return true;
+	} catch (ClassNotFoundException e) {
+	    System.err.println("ClassNotFoundException: " + e.getMessage() );
+	    throw new S2DException(
+	      "Unable to find calculate chem shifts " + acc_num);
 	} catch (IOException e) {
 	    System.err.println("IOException: " + e.getMessage() );
-	    throw new Exception(
+	    throw new S2DException(
+	      "Unable to find calculate chem shifts " + acc_num);
+	} catch(Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage() );
+	    throw new S2DException(
 	      "Unable to find calculate chem shifts " + acc_num);
 	}
     }
@@ -1092,7 +1124,7 @@ public class Star2Devise {
      * Return value: true iff summary is successful; false otherwise.
      */
     public boolean summarize( String outFileName )
-      throws Exception
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.summarize(" + outFileName + ")");
@@ -1101,25 +1133,39 @@ public class Star2Devise {
 	try {
 	    VectorCheckType saveFrameVec =
 		aStarTree.searchByName( "save_entry_information" );
+	    if (DEBUG >= 2) {
+	        System.out.println("  summarizing save_entry_information");
+	    }
 
 	    // this vector should have size 1 because there should
 	    // only be one SaveFrame with this name
 	    if ( saveFrameVec.size() != 1 ) {
-		throw new Exception
+		throw new S2DException
 		    ("Found " + saveFrameVec.size()
 		     + " save frames for save_entry_information;"
 		     + " expect exactly 1.");
 	    }
 	    
 	    // This finds the Entry Title
-	    String title =
-		((DataItemNode) ((SaveFrameNode) saveFrameVec.firstElement())
-				 .searchByName("_Entry_title")
-		 .firstElement()).getValue();
+	    String title = "unknown";
+	    try {
+	        title = ((DataItemNode)
+		  ((SaveFrameNode) saveFrameVec.firstElement())
+		  .searchByName("_Entry_title") .firstElement()).getValue();
+            } catch(Exception ex) {
+	        System.err.println("Exception getting title: " +
+		  ex.getMessage());
+	    }
 
-	    String system_name =
-		((DataItemNode) aStarTree.searchByName("_Mol_system_name")
-		 .firstElement()).getValue();
+            String system_name = "unknown";
+	    try {
+	        system_name = ((DataItemNode)
+		  aStarTree.searchByName("_Mol_system_name")
+		  .firstElement()).getValue();
+            } catch(Exception ex) {
+	        System.err.println("Exception getting system name: " +
+		  ex.getMessage());
+	    }
 
 	    VectorCheckType category_vec =
 		aStarTree.searchForTypeByName
@@ -1127,7 +1173,7 @@ public class Star2Devise {
 		  "_Saveframe_category_type" );
 
 	    if ( category_vec.size() != 1 ) {
-		throw new Exception
+		throw new S2DException
 		    ("Found " + saveFrameVec.size()
 		     + " save frames for _Saveframe_category_type,"
 		     + " expect exactly 1.");
@@ -1168,6 +1214,10 @@ public class Star2Devise {
 		String current_tag =
 		    category_vals.elementAt(i).firstElement().getValue();
 		if (current_tag.equals("assigned_chemical_shifts")) {
+	            if (DEBUG >= 2) {
+	                System.out.println(
+			  "  summarizing assigned_chemical_shifts");
+	            }
 		    
 		    // generate the files
 		    calcChemShifts(null);
@@ -1189,6 +1239,10 @@ public class Star2Devise {
 		} 
 		
 		if (current_tag.equals("T1_relaxation")) {
+	            if (DEBUG >= 2) {
+	                System.out.println(
+			  "  summarizing T1_relaxation");
+	            }
 
 		    // generate the files
 		    if (! processStrData("save_T1_750", 
@@ -1322,12 +1376,15 @@ public class Star2Devise {
        	} catch (FileNotFoundException e) {
  	    System.err.println("File not found exception:  "
  			       + e.getMessage() );
-	    throw new Exception("Unable to summarize " + file_name);
+	    throw new S2DException("Unable to summarize " + file_name);
        	} catch (IOException e) {
  	    System.err.println("IO exception:  "
  			       + e.getMessage() );
-	    throw new Exception("Unable to summarize " + file_name);
- 	}
+	    throw new S2DException("Unable to summarize " + file_name);
+ 	} catch (Exception ex) {
+ 	    System.err.println("Exception:  " + ex.getMessage() );
+	    throw new S2DException("Unable to summarize " + file_name);
+	}
     }
 
     // ----------------------------------------------------------------------
@@ -1348,7 +1405,7 @@ public class Star2Devise {
      */
 
     public boolean countConstraints(String the_number)
-      throws Exception
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("Star2Devise.countConstraints(" +
@@ -1366,7 +1423,7 @@ public class Star2Devise {
 	if (saveFrameVec.size() == 0) {
 	    return false;
 	} else if (saveFrameVec.size() != 1) {
-	    throw new Exception
+	    throw new S2DException
 		("In countConstraints, found " + saveFrameVec.size()
 		 + " save frames, expect exactly 1.");
         }
@@ -1390,7 +1447,7 @@ public class Star2Devise {
 	    return false;
 	
 	else if (saveFrameVec.size() != 1) { // search strings found
-	    throw new Exception
+	    throw new S2DException
 		("Found " + saveFrameVec.size()
 		 + " save frames,"
 		 + " expect exactly 1.");
@@ -1458,7 +1515,7 @@ public class Star2Devise {
 	    return false;
 
 	else if (saveFrameVec.size() != 1) { // search strings found
-	    throw new Exception
+	    throw new S2DException
 		("Found " + saveFrameVec.size()
 		 + " save frames,"
 		 + " expect exactly 1.");
@@ -1483,7 +1540,7 @@ public class Star2Devise {
 	if (saveFrameVec.size() == 0) { // none found
 	    return false;
 	} else if (saveFrameVec.size() != 1) { // search strings found
-	    throw new Exception
+	    throw new S2DException
 		("Found " + saveFrameVec.size()
 		 + " save frames,"
 		 + " expect exactly 1.");
@@ -1580,8 +1637,13 @@ public class Star2Devise {
 	    out_writer.close();
 		
 	} catch (IOException e) {
-	    System.err.println("IO Exception: "
-			       + ": " + e.getMessage() );
+	    System.err.println("IO Exception: " + ": " + e.getMessage() );
+	    throw new S2DException("Unable to count constraints for " +
+	      the_number);
+	} catch(Exception ex) {
+	    System.err.println("Exception: " + ex.getMessage() );
+	    throw new S2DException("Unable to count constraints for " +
+	      the_number);
 	}
 
 	return true;

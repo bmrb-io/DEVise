@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2000/08/02 17:47:45  wenger
+// Greatly improved error handling.
+//
 // Revision 1.2  2000/07/27 16:11:23  wenger
 // Added standard DEVise headers.
 //
@@ -57,7 +60,7 @@ public class ShiftDataManager
 
     //Constructor which initializes the object by reading the data file 
     ShiftDataManager( String filename )
-      throws Exception
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("ShiftDataManager(" + filename + ")");
@@ -86,15 +89,13 @@ public class ShiftDataManager
 
 	} catch (FileNotFoundException e)
 	{
-	    System.err.println("File not found: "
-			       + e.getMessage() );
-	    throw new Exception("Unable to open or read shift data file " +
+	    System.err.println("File not found: " + e.getMessage() );
+	    throw new S2DException("Unable to open or read shift data file " +
 	      filename);
 	} catch (IOException e)
 	{
-	    System.err.println("IO Exception: "
-			       + e.getMessage() );
-	    throw new Exception("Unable to open or read shift data file " +
+	    System.err.println("IO Exception: " + e.getMessage() );
+	    throw new S2DException("Unable to open or read shift data file " +
 	      filename);
 	}
     } // end constructor
@@ -107,7 +108,7 @@ public class ShiftDataManager
     //which result in no match in the table.
     public Pair returnValues( FileWriter error, String in_aminoAcidType, 
 			      String in_atomName )
-      throws Exception
+      throws S2DException
     {
 	if (DEBUG >= 1) {
 	    System.out.println("ShiftDataManager.returnValues(" +
@@ -165,11 +166,9 @@ public class ShiftDataManager
 		return retValues;
 	    }
 	    
-	} catch (IOException e)
-	{
-	    System.err.println("IO Exception: "
-			       + e.getMessage() );
-	    throw new Exception("Unable to return chem shift values for " +
+	} catch (IOException e) {
+	    System.err.println("IO Exception: " + e.getMessage() );
+	    throw new S2DException("Unable to return chem shift values for " +
 	      in_aminoAcidType + ", " + in_atomName);
 	}
 	

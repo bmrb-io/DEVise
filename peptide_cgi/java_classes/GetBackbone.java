@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/08/02 17:47:44  wenger
+// Greatly improved error handling.
+//
 // Revision 1.3  2000/07/28 21:04:41  wenger
 // Combined LocalStar2Devise and WebStar2Devise into Star2Devise, other
 // cleanup.
@@ -63,22 +66,23 @@ public class GetBackbone
             starfile = Star2Devise.LocalStar2Devise(file_name);
             System.out.println(file_name + " parsed successfully.");
 
-	//TEMP -- remove hard-coded 4096s
-//  	if (starfile.calcChemShifts("4096"))
-//  	    System.out.println
-//  		("Chemical shift indices computed successfully.");
+	    //TEMP -- remove hard-coded 4096s
+//  	    if (starfile.calcChemShifts("4096"))
+//  	        System.out.println
+//  	    	("Chemical shift indices computed successfully.");
 
-// 	if (starfile.summarize("4096"))
-//  	    System.out.println
-//  		("summary files computed successfully.");
+// 	    if (starfile.summarize("4096"))
+//  	        System.out.println
+//  	        	("summary files computed successfully.");
 	    
- 	if (starfile.findBackbone("save_GMH4CO_average_refined_structure",
-  				  output_file))
-  	    System.out.println("CA backbone computed successfully.");
+ 	    if (starfile.findBackbone("save_GMH4CO_average_refined_structure",
+	      output_file)) {
+  	        System.out.println("CA backbone computed successfully.");
+            }
 
-	if (starfile.countConstraints("4096"))
- 	    System.out.println
- 		("constraints counted successfully.");
+	    if (starfile.countConstraints("4096")) {
+ 	        System.out.println("constraints counted successfully.");
+            }
 	} catch(Exception ex) {
             System.err.println(ex.getMessage());
 	}
