@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/23 20:12:41  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.6  1996/05/07 16:14:19  jussi
   Added copy constructor and GetVal() method.
 
@@ -34,11 +37,17 @@
 
 #ifndef AttrList_h
 #define AttrList_h
+
 #include <sys/time.h>
 
 #include "DeviseTypes.h"
-#include "Config.h"
 #include "DList.h"
+
+#ifdef ATTRPROJ
+#   include "ApInit.h"
+#else
+#   include "Init.h"
+#endif
 
 enum AttrType { IntAttr, FloatAttr, DoubleAttr, StringAttr, DateAttr };
 
@@ -68,7 +77,7 @@ struct AttrInfo {
 	AttrVal loVal;             /* low value */
 };
 
-const int MAX_ATTRLIST_SIZE = DEVISE_MAX_ATTRS;
+const int MAX_ATTRLIST_SIZE = DEVISE_MAX_TDATA_ATTRS;
 
 class AttrList {
 public:
