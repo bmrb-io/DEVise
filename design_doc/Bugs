@@ -2112,7 +2112,7 @@ Num Date        Status  Description
 			views locks up DEVise (load Test/bad_pile1.ds). (rkw)
 			(Fixed by rkw, 12/1/99.)
 
-540 12/01/99	OPEN	Dragging in the "blank" area with improperly-piled
+540 12/01/99	CD?	Dragging in the "blank" area with improperly-piled
 			views zooms the wrong view (load Test/bad_pile1.ds).
 			(rkw)
 
@@ -2470,6 +2470,10 @@ Num Date        Status  Description
 			the JS does not get the shift-up event, and therefore
 			when you click to move a cursor you drill down again
 			instead. (rkw)
+
+625 12/19/00	OPEN	JavaScreen: mouse location format doesn't work for
+			dates (doesn't pay attention to the format string).
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
