@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2001/12/12 21:55:18  wenger
+// Changed mouse location display formats as requested by John Markley.
+//
 // Revision 1.27  2001/12/12 19:56:42  wenger
 // Got 4038/4096 star file combination working; fixed maximum bond length.
 //
@@ -156,7 +159,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.18";
+    public static final String PEP_CGI_VERSION = "2.19";
 
     private int _masterAccNum; // accession number the user requested
 

@@ -140,7 +140,7 @@ DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
-DEVise setShowMouseLocation {View 3} {1}
+DEVise setShowMouseLocation {View 3} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Coupling_constant_value_vs_Atom_one_residue_seq_code}

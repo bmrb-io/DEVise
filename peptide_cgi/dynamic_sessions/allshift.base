@@ -116,7 +116,7 @@ DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {1}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 1 0 0 1
-DEVise setShowMouseLocation {View 2} {1}
+DEVise setShowMouseLocation {View 2} {0}
 DEVise create {view} {SortedX} {View 6} -0.500000 0.500000 -0.750000 19.750000 0 0
 DEVise setLabel {View 6} 1 16 { }
 DEVise setViewStatistics {View 6} 00000000
@@ -144,7 +144,7 @@ DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {1}
 DEVise setNiceAxes {View 6} 0 0
 DEVise viewSetDisabledActions {View 6} 1 0 0 1
-DEVise setShowMouseLocation {View 6} {1}
+DEVise setShowMouseLocation {View 6} {0}
 DEVise create {view} {Scatter} {View 3} -0.500000 2.500000 -0.500000 0.500000 37 0
 DEVise setLabel {View 3} 1 16 {Select Atom Type}
 DEVise setViewStatistics {View 3} 00000000
@@ -172,7 +172,7 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {1}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 0 1 1
-DEVise setShowMouseLocation {View 3} {1}
+DEVise setShowMouseLocation {View 3} {0}
 DEVise create {view} {Scatter} {View 4} 0.500000 1.500000 -0.500000 0.500000 37 0
 DEVise setLabel {View 4} 0 12 {AtomType() vs. recId}
 DEVise setViewStatistics {View 4} 00000000

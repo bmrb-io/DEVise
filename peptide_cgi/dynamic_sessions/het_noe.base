@@ -112,7 +112,7 @@ DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
-DEVise setShowMouseLocation {View 2} {1}
+DEVise setShowMouseLocation {View 2} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {NOE_value_vs_Residue_seq_code}

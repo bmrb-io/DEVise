@@ -95,7 +95,7 @@ DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {1}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 0 0 1
-DEVise setShowMouseLocation {View 3} {1}
+DEVise setShowMouseLocation {View 3} {0}
 DEVise create {view} {SortedX} {View 4} -0.500000 1.500000 17.500000 19.500000 4 0
 DEVise setLabel {View 4} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 4} 00000000

@@ -224,7 +224,7 @@ DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
 DEVise viewSetDisabledActions {View 6} 0 0 0 0
-DEVise setShowMouseLocation {View 6} {1}
+DEVise setShowMouseLocation {View 6} {0}
 DEVise create {view} {Scatter} {View 7} -1.000000 1.000000 -1.000000 1.000000 37 0
 DEVise setLabel {View 7} 1 16 {}
 DEVise setViewStatistics {View 7} 00000000
@@ -252,7 +252,7 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 0 0 0 0
-DEVise setShowMouseLocation {View 7} {1}
+DEVise setShowMouseLocation {View 7} {0}
 DEVise create {view} {Scatter} {View 8} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 8} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 8} 00000000
@@ -280,7 +280,7 @@ DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
 DEVise viewSetDisabledActions {View 8} 0 0 0 0
-DEVise setShowMouseLocation {View 8} {1}
+DEVise setShowMouseLocation {View 8} {0}
 DEVise create {view} {Scatter} {View 9} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 9} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 9} 00000000
@@ -308,7 +308,7 @@ DEVise setViewAutoFilter {View 9} {0}
 DEVise setDupElim {View 9} {0}
 DEVise setNiceAxes {View 9} 0 0
 DEVise viewSetDisabledActions {View 9} 0 0 0 0
-DEVise setShowMouseLocation {View 9} {1}
+DEVise setShowMouseLocation {View 9} {0}
 DEVise create {view} {Scatter} {View 10} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 10} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 10} 00000000
@@ -336,7 +336,7 @@ DEVise setViewAutoFilter {View 10} {0}
 DEVise setDupElim {View 10} {0}
 DEVise setNiceAxes {View 10} 0 0
 DEVise viewSetDisabledActions {View 10} 0 0 0 0
-DEVise setShowMouseLocation {View 10} {1}
+DEVise setShowMouseLocation {View 10} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {HA_DeltaShift_vs_CurrSeqNum}

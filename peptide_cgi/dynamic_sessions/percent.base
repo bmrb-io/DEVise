@@ -168,7 +168,7 @@ DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {0}
 DEVise setNiceAxes {View 4} 0 0
 DEVise viewSetDisabledActions {View 4} 0 0 0 0
-DEVise setShowMouseLocation {View 4} {1}
+DEVise setShowMouseLocation {View 4} {0}
 DEVise create {view} {Scatter} {View 5} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 5} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 5} 00000000
@@ -196,7 +196,7 @@ DEVise setViewAutoFilter {View 5} {0}
 DEVise setDupElim {View 5} {0}
 DEVise setNiceAxes {View 5} 0 0
 DEVise viewSetDisabledActions {View 5} 0 0 0 0
-DEVise setShowMouseLocation {View 5} {1}
+DEVise setShowMouseLocation {View 5} {0}
 DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 6} 00000000
@@ -224,7 +224,7 @@ DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
 DEVise viewSetDisabledActions {View 6} 0 0 0 0
-DEVise setShowMouseLocation {View 6} {1}
+DEVise setShowMouseLocation {View 6} {0}
 DEVise create {view} {Scatter} {View 7} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 7} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 7} 00000000
@@ -252,7 +252,7 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 0 0 0 0
-DEVise setShowMouseLocation {View 7} {1}
+DEVise setShowMouseLocation {View 7} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {assigForH_vs_CurrSeqNum}
