@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17  1996/07/05 17:05:00  jussi
+#  Disabled debugging statements which I forgot to do before
+#  last check-in.
+#
 #  Revision 1.16  1996/07/05 15:25:52  jussi
 #  The names of compiled mapping classes are no longer saved in session
 #  files. This behavior confused Devise and when the session was
@@ -121,7 +125,7 @@ proc SaveAllViewMappings { f mappingDict viewDict } {
 		puts $f "DEVise insertMapping \$$viewVar \$$mapVar"
 		set label [DEVise getMappingLegend $v $map]
 		if {$label != ""} {
-		    puts $f "DEVise setMappingLegend \$$viewVar \$$mapVar $label"
+		    puts $f "DEVise setMappingLegend \$$viewVar \$$mapVar \{$label\}"
 		}
 	    }
 	}
