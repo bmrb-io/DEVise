@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/16 18:24:12  jussi
+  Moved file from tape subdirectory.
+
   Revision 1.4  1995/09/22 22:08:00  jussi
   Added a couple of high-precision numbers.
 
@@ -31,15 +34,15 @@
 #include <assert.h>
 #include <ctype.h>
 #include <time.h>
-#include <sys/timeb.h>
+#include <math.h>
+#include <sys/time.h>
 
 //#define MYATOI
-
-extern "C" int ftime();
 
 static const double power10[] = { 1, 10, 100, 1000, 10000, 100000,
 				  1e6, 1e7, 1e8, 1e9 };
 static const int maxDecimals = sizeof power10 / sizeof power10[0];
+static const double maxErr = 1e-15;
 
 #ifdef MYATOI
 static const long ipower10[] = { 1, 10, 100, 1000, 10000, 100000,
@@ -130,8 +133,9 @@ int main(int argc, char **argv)
   int numbers = sizeof strings / sizeof strings[0];
 
   cout << "Verifying accuracy of myatof()..." << endl;
-  for(int i = 0; i < numbers; i++) {
-    if (myatof(strings[i]) != atof(strings[i])) {
+  int i;
+  for(i = 0; i < numbers; i++) {
+    if (fabs(myatof(strings[i]) - atof(strings[i])) > maxErr) {
       cout << "Failure at number " << i << endl;
       cout << "myatof(" << strings[i] << ") == "
 	   << myatof(strings[i])
@@ -144,30 +148,30 @@ int main(int argc, char **argv)
 
   cout << "Starting measurement of myatof() and atof()..." << endl;
 
-  struct timeb start;
-  ftime(&start);
+  struct timeval start;
+  gettimeofday(&start, 0);
 
   for(i = 0; i < numIter; i++)
     double z = myatof(strings[i % numbers]);
   
-  struct timeb stop;
-  ftime(&stop);
+  struct timeval stop;
+  gettimeofday(&stop, 0);
 
-  double secs = stop.time - start.time
-                + (stop.millitm - start.millitm) / 1000.0;
+  double secs = stop.tv_sec - start.tv_sec
+                + (stop.tv_usec - start.tv_usec) / 1e6;
 
   cout << secs << " seconds for myatof(), "
        << 1e6 * secs / numIter << " usec per call." << endl;
 
-  ftime(&start);
+  gettimeofday(&start, 0);
 
   for(i = 0; i < numIter; i++)
     double z = atof(strings[i % numbers]);
   
-  ftime(&stop);
+  gettimeofday(&stop, 0);
 
-  secs = stop.time - start.time
-         + (stop.millitm - start.millitm) / 1000.0;
+  secs = stop.tv_sec - start.tv_sec
+         + (stop.tv_usec - start.tv_usec) / 1e6;
 
   cout << secs << " seconds for atof(), "
        << 1e6 * secs / numIter << " usec per call." << endl;
