@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/14 16:17:03  jussi
+  Added destroyPending flag.
+
   Revision 1.14  1996/07/14 04:02:57  jussi
   HandleWindowDestroy() now destroys the window, conditionally.
   Moved the destructor from the header file to the .c file.
@@ -145,7 +148,7 @@ void WindowRep::HandleButtonPress(int xlow, int ylow,
 
 /* called by derived class when key pressed */
 
-void WindowRep::HandleKey(char key, int x, int y)
+void WindowRep::HandleKey(int key, int x, int y)
 {
   int index;
   for(index = InitIterator(); More(index); ){

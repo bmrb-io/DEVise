@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/29 18:14:08  wenger
+  Got testWindowRep to compile and run, added drawing in
+  windows; fixed a few more compile warnings, etc.
+
   Revision 1.3  1995/12/14 21:14:41  jussi
   Replaced 0x%x with 0x%p. Added copyright notice.
 
@@ -53,8 +57,8 @@ public:
 			ylow+height-1);
 	};
 
-	virtual void HandleKey(WindowRep * w,char key, int x, int y){
-		printf("key 0x%p,%c,%d,%d\n",w,key,x,y);
+	virtual void HandleKey(WindowRep * w, int key, int x, int y){
+		printf("key 0x%p,0x%x,%d,%d\n",w,key,x,y);
 	};
 
 	/* handle pop-up */

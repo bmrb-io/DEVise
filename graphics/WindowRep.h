@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/07/23 15:34:43  jussi
+  Added mechanism for bypassing the Devise internal color map.
+
   Revision 1.24  1996/07/14 16:17:27  jussi
   Added destroyPending flag and IsDestroyPending() method.
 
@@ -157,7 +160,7 @@ public:
                             unsigned width, unsigned height) {}
   
   /* Handle key press */
-  virtual void HandleKey(WindowRep *w, char key, int x, int y) {}
+  virtual void HandleKey(WindowRep *w, int key, int x, int y) {}
   
 #ifndef RAWMOUSEEVENTS
   /* handle pop-up */
@@ -540,7 +543,7 @@ protected:
   
   /* called by derived class when key pressed. report event to all
      callbacks */
-  virtual void HandleKey(char key, int x, int y);
+  virtual void HandleKey(int key, int x, int y);
   
 #ifndef RAWMOUSEEVENTS
   /* Called by derived class on pop-up event. Report to all callbacks */
