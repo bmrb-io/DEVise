@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/12/11 20:35:56  wenger
+#  Added 'cslib' target to top-level makefiles; added 'lib' targets
+#  to library makefiles.
+#
 #  Revision 1.4  1996/11/23 00:24:01  wenger
 #  Incorporated all of the PostScript-related stuff into the client/server
 #  library; added printing to PostScript to the example client and server;
@@ -72,7 +76,6 @@ LIBOBJ = \
         ../graphics/Util.o \
         ../graphics.new/ClientAPI.o \
         ../graphics.new/Version.o \
-	../graphics/xvgif.o \
         ../graphics/DevError.o \
         ../graphics/DevStatus.o \
         ../graphics.new/MapIntToInt.o \
