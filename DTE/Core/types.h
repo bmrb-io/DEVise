@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/01/07 19:26:01  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.41  1997/12/22 17:54:12  donjerko
   Initial version of Saeed's sequence similarity search.
 
@@ -624,7 +629,8 @@ public:
 		}
      }
      static const bool getBool(const Type* object){
-			return (bool) object;
+//			return (bool) object;
+			return (object ? true : false);
 	 }
 	 static const void setBool(Type*& object, bool value){
 			object =  (Type *) value;

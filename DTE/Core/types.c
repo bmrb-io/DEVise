@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/02/03 23:04:36  okan
+  Made some changes for NT
+
   Revision 1.47  1997/12/22 17:54:11  donjerko
   Initial version of Saeed's sequence similarity search.
 

@@ -561,7 +561,7 @@ istream& ODBCInterface::read(istream& in){
 }
 
 void ODBCInterface::write(ostream& out) const {
-	out << connectString << " ";
+	out << typeName << " " << connectString << " ";
 	out << tableName;
 	Interface::write(out);
 }
