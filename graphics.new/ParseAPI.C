@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/02/26 16:31:39  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.51  1997/02/18 18:07:14  donjerko
   *** empty log message ***
 
@@ -782,9 +785,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "getSchema")) {
+    	
       TData *tdata = (TData *)classDir->FindInstance(argv[1]);
       if (!tdata) {
-	control->ReturnVal(API_NAK, "Cannot find tdata");
+	control->ReturnVal(API_NAK, "Cannot find Tdata");
 	return -1;
       }
       AttrList *attrList = tdata->GetAttrList();
@@ -798,11 +802,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       attrList->Print();
 #endif
       int numAttrs = attrList->NumAttrs();
-      args = new (char *) [numAttrs + 1];
+//    args = new (char *) [numAttrs + 1];
+      args = new (char *) [numAttrs];
+	 /*
       args[0] = new char[25];
       assert(args && args[0]);
       strcpy(args[0], "recId int 1 0 0 0 0");
-      
+     */ 
       int i;
       for(i = 0; i < numAttrs; i++) {
 	char attrBuf[160];
@@ -851,13 +857,15 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	  printf("Unknown attribute type\n");
 	  Exit::DoExit(1);
 	}
-	args[i + 1] = new char [strlen(attrBuf) + 1];
-	assert(args[i + 1]);
-	strcpy(args[i + 1], attrBuf);
+//	args[i + 1] = new char [strlen(attrBuf) + 1];
+  	args[i] = new char [strlen(attrBuf) + 1];
+	assert(args[i]);
+//	strcpy(args[i + 1], attrBuf);
+	strcpy(args[i], attrBuf);
       }
-      control->ReturnVal(numAttrs + 1, args) ;
-      for(i = 0; i < numAttrs + 1; i++)
-	delete args[i];
+//    control->ReturnVal(numAttrs + 1, args) ;
+      control->ReturnVal(numAttrs, args) ;
+	 delete [] args;
       delete args;
       return 1;
     }
