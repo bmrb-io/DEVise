@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1995/12/28 20:44:38  jussi
+  Changed the approach with which inverted lines are drawn.
+  Statistics report printed only when at least one statistic
+  is turned on.
+
   Revision 1.11  1995/12/22 02:35:48  ravim
   Vertical lines for maximum and minimum.
 
@@ -53,10 +58,13 @@
 */
 
 #include <stdio.h>
+
 #include "XDisplay.h"
 #include "BasicStats.h"
 #include "ViewKGraph.h"
 #include "ViewGraph.h"
+
+const int StatLineWidth = 1;
 
 BasicStats::BasicStats()
 {
@@ -97,7 +105,7 @@ void BasicStats::Sample(double x, double y)
   if (x < xmin) xmin = x;
 
   // Group samples into batches
-  // For values within a bach, simply add to total - at the end of the
+  // For values within a batch, simply add to total - at the end of the
   // batch, compute the average and add to the sum/sqr_sum counter.
   int_x += x;
   int_y += y;
@@ -105,13 +113,13 @@ void BasicStats::Sample(double x, double y)
   if (nval % num_per_batch)
     return;
 
-  float tmp = (float) int_y / (float) num_per_batch;
+  float tmp = (float)int_y / (float)num_per_batch;
   ysum += tmp;
-  ysum_sqr += tmp*tmp;
+  ysum_sqr += tmp * tmp;
 
-  tmp = (float) int_x / (float) num_per_batch;
+  tmp = (float)int_x / (float)num_per_batch;
   xsum += tmp;
-  xsum_sqr += tmp*tmp;
+  xsum_sqr += tmp * tmp;
 
   // Increment number of samples
   nsamples++;
@@ -164,23 +172,22 @@ void BasicStats::Report()
   VisualFilter *filter =  _vw->GetVisualFilter();
   
   // Draw line
-  Color prev = win->GetFgColor();
-  win->SetFgColor(BlackColor);
   win->SetXorMode();
+  win->SetFgColor(HighlightColor);
 
   // Draw stats depending on the binary string representing the stats to 
   // be displayed
   char *statstr = _vw->GetDisplayStats();
   if (statstr[STAT_MAX] == '1') {
-    win->Line(filter->xLow, ymax, filter->xHigh, ymax, 2);
+    win->Line(filter->xLow, ymax, filter->xHigh, ymax, StatLineWidth);
     win->Line(xatymax, 0, xatymax, filter->yHigh, 1);
   }
   if (statstr[STAT_MIN] == '1') {
-    win->Line(filter->xLow, ymin, filter->xHigh, ymin, 2);
+    win->Line(filter->xLow, ymin, filter->xHigh, ymin, StatLineWidth);
     win->Line(xatymin, 0, xatymin, filter->yHigh, 1);
   }
   if (statstr[STAT_MEAN] == '1')
-    win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
+    win->Line(filter->xLow, avg, filter->xHigh, avg, StatLineWidth);
 
   // Display conf. interval
   if (statstr[ZVAL85] == '1')
@@ -193,20 +200,20 @@ void BasicStats::Report()
     win->FillRect(filter->xLow, clow[2], filter->xHigh - filter->xLow, 
 		  chigh[2] - clow[2]);
 
+  win->SetFgColor(ForegroundColor);
   win->SetCopyMode();
-  win->SetFgColor(prev);
 }
 
 Coord BasicStats::GetStatVal(int statnum)
 {
   switch (statnum) {
-    case STAT_NONE: return 0;
-    case STAT_MEAN: return ysum/(nsamples ? nsamples : 1);
-    case STAT_MAX: return ymax;
-    case STAT_MIN: return ymin;
+    case STAT_NONE:  return 0;
+    case STAT_MEAN:  return ysum / (nsamples ? nsamples : 1);
+    case STAT_MAX:   return ymax;
+    case STAT_MIN:   return ymin;
     case STAT_COUNT: return nsamples;
     default: printf("Error: Unknown statistic\n");
-    };
+  }
 
   return 0;
 }
@@ -214,12 +221,12 @@ Coord BasicStats::GetStatVal(int statnum)
 char *BasicStats::GetStatName(int statnum)
 {
   switch (statnum) {
-    case STAT_MEAN: return "MEAN";
-    case STAT_MAX: return "MAX";
-    case STAT_MIN: return "MIN";
+    case STAT_MEAN:  return "MEAN";
+    case STAT_MAX:   return "MAX";
+    case STAT_MIN:   return "MIN";
     case STAT_COUNT: return "COUNT";
     default: return "NONE";
-    }
+  }
 }
 
 void BasicStats::RegisterCallback(ViewKGraph *vkg)
