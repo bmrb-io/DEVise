@@ -196,7 +196,7 @@ $(LIBNAME)(Templates.o): Templates.c
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte gui core script
+	-rm $(LIBNAME) dte gui core script server
 
 mostlyclean:
-	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ)
+	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ) main.o

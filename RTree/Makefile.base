@@ -98,7 +98,8 @@ convert_bulk: $(CONVERT_OBJ)
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) testSBufMgr
+	-rm $(LIBNAME) $(SBMLIBNAME) testSBufMgr rtreetest convert_bulk
 
 mostlyclean:
-	-rm $(LIBOBJ) $(STAND_ALONE_OBJ)
+	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(RTREETEST_OBJ) $(CONVERT_OBJ) \
+		SBMExit.o
