@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/10/12 21:24:22  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.6  1998/10/06 20:06:35  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -170,6 +175,7 @@ int main(int ARGV, char **ARGC) {
 
 end:
 	delete myDataReader;
+	delete [] results;
 
 	cout << endl << "Test result: ";
 	switch (testResult) {

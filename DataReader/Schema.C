@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/10/12 21:24:21  wenger
+  Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
+  increased the robustness of the DataReader (partly addresses bug 409);
+  added test targets in the makefile, and corresponding data and schemas.
+
   Revision 1.10  1998/10/06 20:06:34  wenger
   Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
   code without really changing functionality: better error handling,
@@ -340,8 +345,18 @@ Status DRSchema::finalizeDRSchema() {
 			tableAttr[i]->setQuote(_quote);
 		}
 		
-		if ((tableAttr[i]->getSeparator() == NULL) && (tableAttr[i]->getQuote() == -1) && (tableAttr[i]->getFieldLen() == -1)) {
-			tableAttr[i]->setSeparator(_separator);
+		if ((tableAttr[i]->getSeparator() == NULL) &&
+		  (tableAttr[i]->getQuote() == -1) &&
+		  (tableAttr[i]->getFieldLen() == -1)) {
+
+			// Attribute object must 'own' the separator object
+			// and its string.
+			Holder *tmpSep = new Holder;
+			tmpSep->data = new char[strlen(_separator->data)+1];
+			strcpy(tmpSep->data, _separator->data);
+			tmpSep->repeating = _separator->repeating;
+			tmpSep->length = _separator->length;
+			tableAttr[i]->setSeparator(tmpSep);
 		}
 
 		if (tableAttr[i]->getType() == TYPE_DATE) {
@@ -349,8 +364,10 @@ Status DRSchema::finalizeDRSchema() {
 			// normalize date format
 			char* tmpDF = tableAttr[i]->getDateFormat();
 			if (tmpDF == NULL) {
-				// strdup() so Attribute object 'owns' the date format string.
-				tableAttr[i]->setDateFormat(strdup(_dateFormat));
+				// Attribute object must 'own' the date format string.
+				char *tmpFormat = new char[strlen(_dateFormat)+1];
+				strcpy(tmpFormat, _dateFormat);
+				tableAttr[i]->setDateFormat(tmpFormat);
 			} else {
 				if (normalizeDate(tmpDF) != OK) {
 					cerr << "Default date format is not correct for : " << tableAttr[i]->getFieldName() << " !" << endl;
@@ -361,10 +378,21 @@ Status DRSchema::finalizeDRSchema() {
 
 		}
 
+		// TEMP -- why do we do the separator twice?  (see code a few lines
+		// above this).  RKW 1998-10-13.
 		if (_separator != NULL) {
 			if (tableAttr[i]->getSeparator() == NULL) {
-				if ((tableAttr[i]->getQuote() == -1) && (tableAttr[i]->getFieldLen() == -1))
-					tableAttr[i]->setSeparator(_separator);
+				if ((tableAttr[i]->getQuote() == -1) &&
+				  (tableAttr[i]->getFieldLen() == -1)) {
+					// Attribute object must 'own' the separator object
+					// and its string.
+					Holder *tmpSep = new Holder;
+					tmpSep->data = new char[strlen(_separator->data)+1];
+					strcpy(tmpSep->data, _separator->data);
+					tmpSep->repeating = _separator->repeating;
+					tmpSep->length = _separator->length;
+					tableAttr[i]->setSeparator(tmpSep);
+				}
 			}
 		} else {
 			if ((tableAttr[i]->getQuote() == -1) && (tableAttr[i]->getFieldLen() == -1) && (tableAttr[i]->getSeparator() == NULL)) {
