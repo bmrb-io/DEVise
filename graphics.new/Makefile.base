@@ -56,9 +56,9 @@ QPObj = CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
 # View
 
 VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c BasicStats.c \
-	KGraph.c ViewKGraph.c Seq.C
+	KGraph.c ViewKGraph.c Seq.C Web.C
 VIEWOBJ = ActionDefault.o ConnectorShape.o Snapshot.o BasicStats.o \
-	KGraph.o ViewKGraph.o Seq.o
+	KGraph.o ViewKGraph.o Seq.o Web.o
 
 # Command
 
