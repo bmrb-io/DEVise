@@ -433,7 +433,7 @@ public class DEViseCanvas extends Container
                 }
             }
 
-            if (actualKey != 0) {
+            if (actualKey != 0 && activeView != null) {
                 String cmd = "";
                 if (activeView.isFirstTime) {
                     cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  0 + " " + 0 + "\n";
