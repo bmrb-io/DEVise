@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1998/03/04 18:40:45  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.11  1998/03/02 22:32:10  wenger
 #  Got DEVise to link on SGI (haha) -- had to change things so that all
 #  templates are implicit (they are still not implicit on other
@@ -79,5 +85,10 @@ ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 
 VPATH = ../../generic
+
+ifeq ($(DEV_DEBUG_GENERIC),1)
+  DEV_DEBUG = 1
+endif
+
 include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.sgi
