@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.104  1997/01/28 19:46:33  wenger
+  Fixed bug 139; better testing of ScaledText() in client/server example;
+  fixes to Exit class for client/server library.
+
   Revision 1.103  1997/01/28 16:50:40  wenger
   Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
   doesn't draw over them); Devise now returns a status of 0 when exiting
@@ -432,8 +436,6 @@
 
 //#define DEBUG
 
-#include "Util.h"
-#include "View.h"
 #include "Geom.h"
 #include "WindowRep.h"
 #include "FilterQueue.h"
@@ -449,6 +451,9 @@
 #include "Init.h"
 #include "DaliIfc.h"
 #include "DevError.h"
+#include "Util.h"
+#include "View.h"
+#include "DataSourceFixedBuf.h"
 
 // Whether to draw view borders -- must eventually be controlled by GUI.
 static const Boolean viewBorder = false;
@@ -482,12 +487,16 @@ ViewList *View::_viewList = &theViewList;   /* list of all views */
 int View::_nextPos = 0;
 ViewCallbackList *View::_viewCallbackList = 0;
 
+#ifdef VIEWTABLE
+DataSourceFixedBuf *View::_viewTableBuffer = NULL;
+#endif
+
 
 View::View(char *name, VisualFilter &initFilter, 
-	   GlobalColor fg, GlobalColor bg, AxisLabel *xAxisLabel,
-	   AxisLabel *yAxisLabel,
-	   int weight, Boolean boundary) :
-	ViewWin(name, fg, bg, weight, boundary)
+	    GlobalColor fg, GlobalColor bg, AxisLabel *xAxisLabel,
+	    AxisLabel *yAxisLabel,
+	    int weight, Boolean boundary) :
+            ViewWin(name, fg, bg, weight, boundary)
 {
   DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
   _jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
@@ -673,6 +682,9 @@ void View::SubClassMapped()
   // in batch mode, force Run() method to be called so that
   // (first) query gets properly started up
   Dispatcher::Current()->RequestCallback(_dispatcherID);
+#ifdef VIEWTABLE
+  UpdateViewTable();
+#endif
 }
 	
 void View::SubClassUnmapped()
@@ -893,6 +905,16 @@ void View::SetPileMode(Boolean mode)
   _pileMode = mode;
   _pileViewHold = true;
 
+  Refresh();
+}
+
+/* set view geometry */
+void View::SetGeometry(int x, int y, unsigned wd, unsigned ht) 
+{
+  /*ViewWin::SetGeometry(x,y,wd,ht); */
+  ViewWin::MoveResize(x,y,wd,ht);
+  _updateTransform = true;
+  printf("view: setting geometry done....%d %d %u %u\n", x , y, wd, ht);
   Refresh();
 }
 
@@ -1687,6 +1709,7 @@ void View::Run()
         || !Mapped()) {
 #if defined(DEBUG)
       printf("View:: aborting\n");
+      printf("querySent == true, refresh = %d\n", _refresh);
 #endif
       AbortQuery();
       _refresh = true;
@@ -2256,6 +2279,7 @@ void View::ReportViewCreated()
     callBack->ViewCreated(this);
   }
   _viewCallbackList->DoneIterator(index);
+
 }
 
 void View::ReportViewRecomputed()
@@ -3241,3 +3265,49 @@ View::GetFont(char *which, int &family, float &pointSize,
     reportErrNosys("Illegal font selection");
   }
 }
+
+#ifdef VIEWTABLE
+
+//void 
+// View::UpdateViewTable(char *name, double X, double Y, 
+//		       GlobalColor bgcolor) 
+void View::UpdateViewTable()
+{
+  DataSourceBuf *vBuf = GetViewTable();
+  char line[100];
+  int index = _viewList->InitIterator();
+  _viewTableBuffer->Clear();
+  while (_viewList->More(index)) {
+    View *v = _viewList->Next(index);
+    printf("View %s \n", v->GetName());
+    int x, y, x0, y0;
+    unsigned w, h;
+    v->Geometry(x, y, w, h);
+    v->AbsoluteOrigin(x0,y0);
+    char *name = v->GetName();
+    GlobalColor bgcolor = v->GetBgColor();
+    printf("UpdateViewtable: %g %g %d %s\n", (double)x0, (double)y0, bgcolor, 
+	   name);
+    sprintf(line, "%g %g %d %s\n", (double)x0, (double)y0, bgcolor, name );
+    int len = strlen(line);
+    DOASSERT(len < (int)sizeof(line), "too much data in sprintf");
+    DOASSERT(_viewTableBuffer,"no view table buffer");
+    if ( (int) _viewTableBuffer->Write(line, len) != len) {
+      fprintf(stderr, "Out of viewtable space\n");
+      return;
+    }
+  }
+  _viewList->DoneIterator(index);
+}
+
+
+DataSourceBuf* View::GetViewTable()      
+{ 
+  if (!_viewTableBuffer) {
+    _viewTableBuffer = new DataSourceFixedBuf(3072, "viewTableBuffer");
+  }
+  return _viewTableBuffer; 
+}
+#endif
+
+

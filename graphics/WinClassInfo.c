@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/20 20:34:56  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.8  1996/05/11 02:58:20  jussi
   Removed dependency on ControlPanel's WinName() method.
 
@@ -44,7 +49,11 @@
 #include "Display.h"
 #include "Control.h"
 #include "WinClassInfo.h"
+#ifndef NEW_LAYOUT
 #include "TileLayout.h"
+#else
+#include "Layout.h"
+#endif
 #include "Util.h"
 
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80];
@@ -59,6 +68,7 @@ TileLayoutInfo::TileLayoutInfo()
   DevWindow::_windowCount++;
 }
 
+#ifndef NEW_LAYOUT
 TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win)
 {
   _name = name;
@@ -66,6 +76,15 @@ TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win)
 
   DevWindow::_windowCount++;
 }
+#else 
+TileLayoutInfo::TileLayoutInfo(char *name, Layout *win)
+{
+  _name = name;
+  _win = win;
+
+  DevWindow::_windowCount++;
+}
+#endif
 
 TileLayoutInfo::~TileLayoutInfo()
 {
@@ -115,8 +134,13 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
     return NULL;
   }
   char *name = CopyString(argv[0]);
+#ifndef NEW_LAYOUT
   TileLayout *win = new TileLayout(name, atof(argv[1]), atof(argv[2]),
 				   atof(argv[3]), atof(argv[4]));
+#else 
+  Layout *win = new Layout(name, atof(argv[1]), atof(argv[2]), 
+			   atof(argv[3]), atof(argv[4]));
+#endif
   return new TileLayoutInfo(name, win);
 }
 
@@ -165,3 +189,10 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
   sprintf(buf4, "%f", (double)w / dispWidth);
   sprintf(buf5, "%f", (double)h / dispHeight);
 }
+
+
+
+
+
+
+

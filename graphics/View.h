@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/01/23 17:38:28  jussi
+  Removed references to GetXMin().
+
   Revision 1.48  1997/01/08 19:01:43  wenger
   Fixed bug 064 and various other problems with drawing piled views;
   added related debug code.
@@ -204,7 +207,7 @@
 #ifndef View_h
 #define View_h
 
-#include "DeviseTypes.h"
+
 #include "Dispatcher.h"
 #include "DList.h"
 #include "VisualArg.h"
@@ -216,6 +219,9 @@
 #include "Cursor.h"
 #include "DevFont.h"
 
+//#define VIEWTABLE 
+class DataSourceBuf;
+class DataSourceFixedBuf;
 class View;
 DefinePtrDList(ViewList, View *)
 
@@ -413,7 +419,7 @@ class View
 	}
 
 	void SetOverrideColor(GlobalColor color, Boolean active);
-
+	void SetGeometry(int x, int y, unsigned wd, unsigned ht); 
 	/******** Pixmap manipulations *********/
 
 	/* Put current pixmap into buffer. bytes == # of bytes
@@ -470,6 +476,14 @@ class View
 	  Boolean bold, Boolean italic);
 	virtual void GetFont(char *which, int &family, float &pointSize,
 	  Boolean &bold, Boolean &italic);
+
+#ifdef VIEWTABLE 
+	/* Update Viewtable */
+//	static void UpdateViewTable(char *name, double X, double Y, 
+//				    GlobalColor bgColor);
+	static void UpdateViewTable();
+	static DataSourceBuf* GetViewTable();
+#endif
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
@@ -589,6 +603,11 @@ protected:
 	int _id;                    /* id of this view */
 	static int _nextId;         /* id of next view */
 	static ViewList *_viewList; /* list of all views */
+
+#ifdef VIEWTABLE
+	static DataSourceFixedBuf *_viewTableBuffer; /* for view table */
+#endif
+	
 
 	LabelInfo _label;	  /* info about label */
 	Boolean _updateTransform; /* TRUE if we need to update transform

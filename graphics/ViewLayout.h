@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/11 18:04:58  jussi
+  Added support for stacked windows (one overlays another).
+
   Revision 1.2  1995/12/14 15:31:40  jussi
   Moved Replace and SwapChildren to this base class from derived class
   (used to be WinVertical and WinHorizontal, now TileLayout).
@@ -29,6 +32,7 @@
 
 #include "ViewWin.h"
 #include "WindowRep.h"
+#include <tcl.h>
 
 class ViewLayout: public ViewWin {
 public:

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/11/20 20:34:51  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.17  1996/09/05 21:31:12  jussi
   Moved DestroySessionData to Control.c.
 
@@ -152,6 +157,12 @@ public:
 
   /* Raise the control panel */
   virtual void Raise() {}
+
+  /* Miscellaneous Event Handlers to report events to front end*/
+  /* Given a script which the frond end can execute -in our case 
+   * a Tcl/Tk procedure
+   */
+  virtual void NotifyFrontEnd(char *script) {}
 
   /* Instantiate control panel into display */
   static void InsertDisplay(DeviseDisplay *disp,

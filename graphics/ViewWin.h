@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/11/26 16:47:47  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.18  1996/11/13 16:56:15  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -164,6 +167,9 @@ public:
     /* Get real (non-margin-adjusted) geometry of window */
     void RealGeometry(int &x, int &y, unsigned &w, unsigned &h);
 #endif
+    
+    /* Set geometry of window */
+    void SetGeometry(int x, int y, unsigned w, unsigned h);
 
     /* Get current geometry of window */
     void Geometry(int &x, int &y, unsigned &w, unsigned &h);

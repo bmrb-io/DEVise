@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/01/08 19:01:44  wenger
+  Fixed bug 064 and various other problems with drawing piled views;
+  added related debug code.
+
   Revision 1.30  1996/12/30 23:51:12  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -171,7 +175,7 @@
 #endif
 
 #define DIRECT_POSTSCRIPT 1
-
+#define LAYOUT 1
 ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg,
                  int weight, Boolean boundary)
 {
@@ -344,6 +348,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 
   _mapped = true;
   _iconified = false;
+  
 
   SubClassMapped();
 }
@@ -428,6 +433,14 @@ void ViewWin::Delete(ViewWin *child)
     fprintf(stderr,"ViewWin::Delete child not found\n");
     Exit::DoExit(2);
   }
+}
+/* Set geometry of view */
+void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h) 
+{
+  _x = x;
+  _y = y;
+  _width = w;
+  _height = h;
 }
 
 /* Get current geometry of child w. r. t. parent */
@@ -562,6 +575,7 @@ void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
   if (_marginsOn)
     ResizeMargins(_width, _height);
 #endif
+
 }
 
 void ViewWin::HandleWindowMappedInfo(WindowRep *, Boolean mapped)

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/20 20:34:56  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.4  1995/12/14 15:29:54  jussi
   Replaced WinVertical and WinHorizontal with TileLayout which can
   do both, depending on run-time, user-settable parameters.
@@ -39,17 +44,27 @@ public:
   static int GetCount() { return _windowCount; }
 
 protected:
+
   friend class TileLayoutInfo;
 
   static int _windowCount;
 };
 
+#ifndef NEW_LAYOUT
 class TileLayout;
+#else
+class Layout;
+#endif
 
 class TileLayoutInfo: public ClassInfo {
 public:
   TileLayoutInfo();			       /* class constructor */
+#ifndef NEW_LAYOUT
   TileLayoutInfo(char *name, TileLayout *win); /* instance constructor */
+#else 
+  TileLayoutInfo(char *name, Layout *win);
+#endif
+
   virtual ~TileLayoutInfo();		       /* class constructor */
 
   /*********** Class methods **************************/
@@ -73,7 +88,16 @@ public:
 private:
   char *arg[5];
   char *_name;
+#ifndef NEW_LAYOUT
   TileLayout *_win;
+#else
+  Layout *_win;
+#endif
 };
 
 #endif
+
+
+
+
+

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.37  1997/01/23 17:01:53  wenger
+#  Restored revisisions 1.32 - 1.34 (somehow got lost).
+#
 #  Revision 1.36  1997/01/18 18:35:00  jussi
 #  Removed XawControl.c and XawWidget.c from object list.
 #
@@ -69,14 +72,17 @@ include ../../Makefile.common
 
 CFLAGS = -gstabs $(ARCH_FLAGS)  -I../../graphics.new -I../../generic \
 	-I../../util -I../../tape -I../../DTE/RTree \
-	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS
+	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS \
+	-DNEW_LAYOUT
+#-DVIEWTABLE
 
 LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
-	Util.c View.c ViewWin.c ViewLayout.C \
+	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
+	Layout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
