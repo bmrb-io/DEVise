@@ -16,6 +16,15 @@
    $Id$
 
    $Log$
+   Revision 1.18  1997/12/23 23:35:37  liping
+   Changed internal structure of BufMgrFull and classes it called
+   The buffer manager is now able to accept queries on any attribute from the
+           Query Processor
+   The buffer manager is also able to issue queries on various attributes to DTE
+   Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+           a list for each (T/GData, AttrName, Granularity) combination
+   The class Range was replaced by Interval
+
    Revision 1.17  1997/10/10 21:13:45  liping
    The interface between TData and BufMgr and the interface between BufMgr and
    QueryProc were changed
@@ -257,6 +266,8 @@ class TData {
     DevStatus Save(char *filename);
 
     DataSource* GetDataSource() { return _data; }
+
+    virtual char *DispatchedName() { return "TData"; }
 
   protected:
 

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/10 18:29:25  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
  */
 
 #include <stdio.h>
@@ -53,7 +58,7 @@ MasterSlaveLink::MasterSlaveLink(char *name, VisualFlag linkFlag) :
 MasterSlaveLink::~MasterSlaveLink()
 {
 #if defined(DEBUG)
-  printf("MasterSlaveLink(0x%p)::~MasterSlaveLink()\n", this);
+  printf("MasterSlaveLink(%s)::~MasterSlaveLink()\n", _name);
 #endif
 
   if (_masterView)
@@ -75,7 +80,8 @@ void
 MasterSlaveLink::SetMasterView(ViewGraph *view)
 {
 #if defined(DEBUG)
-  printf("MasterSlaveLink(0x%p)::SetMasterView(%s)\n", this, view->GetName());
+  printf("MasterSlaveLink(%s)::SetMasterView(%s)\n", _name,
+      view != NULL ? view->GetName() : "NULL");
 #endif
 
   if (_masterView) {
@@ -97,7 +103,7 @@ void
 MasterSlaveLink::InsertView(ViewGraph *view)
 {
 #if defined(DEBUG)
-  printf("MasterSlaveLink(0x%p)::InsertView(%s)\n", this, view->GetName());
+  printf("MasterSlaveLink(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
   DeviseLink::InsertView(view);
@@ -112,7 +118,7 @@ bool
 MasterSlaveLink::DeleteView(ViewGraph *view)
 {
 #if defined(DEBUG)
-  printf("MasterSlaveLink(0x%p)::DeleteView(%s)\n", this, view->GetName());
+  printf("MasterSlaveLink(%s)::DeleteView(%s)\n", _name, view->GetName());
 #endif
 
   if( view == _masterView ) {
@@ -135,7 +141,7 @@ void
 MasterSlaveLink::Done()
 {
 #if defined(DEBUG)
-  printf("MasterSlaveLink(0x%p)::Done()\n", this);
+  printf("MasterSlaveLink(%s)::Done()\n", _name);
 #endif
 
   /* Refresh the views of this link. */

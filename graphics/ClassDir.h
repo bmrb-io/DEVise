@@ -1,4 +1,5 @@
-/*
+
+	/*
   ========================================================================
   DEVise Data Visualization Software
   (c) Copyright 1992-1996
@@ -16,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/11 19:09:52  jussi
+  Minor fix.
+
   Revision 1.5  1996/05/11 01:54:28  jussi
   Added DestroyAllInstances() method.
 
@@ -157,6 +161,9 @@ public:
 	/* Find name for instance */
 	char *FindInstanceName(void *instance);
 
+	/* Find ClassInfo object for a given instance */
+	ClassInfo *FindClassInfo(char *instanceName);
+
 	/* Destroy all instances */
 	void DestroyAllInstances();
 
@@ -171,7 +178,6 @@ public:
 
 	/* Change with params */
 	void ChangeParams(char *instance, int num, char **paramNames);
-
 
 	/* Get the creation parameters for an instance */
 	void CreateParams(char *category, char *className, char *instanceName,

@@ -14,12 +14,26 @@
 
 /*
   Implementation of TAttrLink class.
+
+  Current shortcomings:
+  - We need to make sure that GData for the master view is never cached,
+    so that the query processor always has access to the TData values.
+  - Having a view be the slave of multiple masters probably won't work.
+  - If you have two slaves with the same TData and link attributes, they
+    will each create their own new TData.
+  - Donko says that the slave table's query should explicitly name the
+    attributes rather than doing 'select *'.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/10 18:29:31  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
  */
 
 #include <stdio.h>
@@ -31,12 +45,23 @@
 #include "TData.h"
 #include "TDataMap.h"
 #include "Init.h"
+//#include "MappingInterp.h"//TEMPTEMP?
+//#include "DataSeg.h"//TEMPTEMP?
+#include "Control.h"
 
 #include "RelationManager.h"
 #include "types.h"
 #include "Inserter.h"
+//#include "TDataDQLInterp.h"//TEMPTEMP?
 
 //#define DEBUG
+
+class SlaveViewInfo {
+public:
+  View *view;
+  TDataMap *oldMap;
+  //TEMPTEMP -- need to save relation ID of new slave table
+};
 
 /*------------------------------------------------------------------------------
  * function: TAttrLink::TAttrLink
@@ -68,7 +93,7 @@ TAttrLink::TAttrLink(char *name, char *masterAttrName, char *slaveAttrName) :
 TAttrLink::~TAttrLink()
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::~TAttrLink()\n", this);
+  printf("TAttrLink(%s)::~TAttrLink()\n", _name);
 #endif
 
   delete [] _masterAttrName;
@@ -85,7 +110,7 @@ void
 TAttrLink::SetFlag(VisualFlag flag)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::SetFlag(%d)\n", this, flag);
+  printf("TAttrLink(%s)::SetFlag(%d)\n", _name, flag);
 #endif
 
   reportErrNosys("Cannot change link type of TData attribute link\n");
@@ -99,16 +124,45 @@ TAttrLink::SetFlag(VisualFlag flag)
 void
 TAttrLink::SetMasterView(ViewGraph *view)
 {
-#if defined(DEBUG)
-  printf("TAttrLink(0x%p)::SetMasterView(%s)\n", this, view->GetName());
+#if defined(DEBUG) || 1 //TEMPTEMP
+  printf("TAttrLink(%s)::SetMasterView(%s)\n", _name,
+      view != NULL ? view->GetName() : "NULL");
 #endif
 
-  MasterSlaveLink::SetMasterView(view);
+  if (view != NULL && _masterView == view) return;
 
-//TEMPTEMP -- check whether view is already master?
+  MasterSlaveLink::SetMasterView(view);
+  //TEMP -- make sure master view doesn't cache GData
 
   (void) DestroyTable();
-  (void) CreateTable(view);
+
+  if (view != NULL) {
+    //
+    // Create the table to hold the master attribute values; set up any
+    // slave views that have already been added to this link.
+    //
+    (void) CreateTable(view);
+    int index = _viewList->InitIterator();
+    while (_viewList->More(index)) {
+      ViewGraph *slaveView = _viewList->Next(index);
+      (void) SetSlaveTable(slaveView);
+    }
+    _viewList->DoneIterator(index);
+  } else {
+    //
+    // Remove the mappings from all slave views.
+    //
+    int index = _viewList->InitIterator();
+    while (_viewList->More(index)) {
+      ViewGraph *slaveView = _viewList->Next(index);
+      TDataMap *map = slaveView->GetFirstMap();
+      if (map != NULL) {
+	slaveView->RemoveMapping(map);
+	slaveView->Refresh();
+      }
+    }
+    _viewList->DoneIterator(index);
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -119,12 +173,64 @@ void
 TAttrLink::InsertView(ViewGraph *view)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::InsertView(%s)\n", this, view->GetName());
+  printf("TAttrLink(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
   MasterSlaveLink::InsertView(view);
 
-  //TEMPTEMP -- change tdata of slave view (must be table)
+  if (_tableExists) {
+    (void) SetSlaveTable(view);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: TAttrLink::DeleteView
+ * Delete a view from this link.
+ */
+bool
+TAttrLink::DeleteView(ViewGraph *view)
+{
+#if defined(DEBUG) || 1 //TEMPTEMP
+  printf("TAttrLink(%s)::DeleteView(%s)\n", _name, view->GetName());
+#endif
+
+  Boolean isMaster = (view == _masterView);
+
+  bool result = MasterSlaveLink::DeleteView(view);
+
+  if (result) {
+    if (isMaster) {
+      SetMasterView(NULL);
+    } else {
+      //
+      // Set the mapping and TData of this view back to what they were
+      // before it was linked; destroy the slave mapping.
+      //
+      int index = _slaveViewInfo.InitIterator();
+      while (_slaveViewInfo.More(index)) {
+        SlaveViewInfo *slaveInfo = _slaveViewInfo.Next(index);
+        if (slaveInfo->view == view) {
+          TDataMap *map = view->GetFirstMap();
+	  if (map != NULL) {
+            view->RemoveMapping(map);
+            ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+	    classDir->DestroyInstance(map->GetName());
+	  }
+
+//TEMPTEMP -- should we delete the slave mapping and TData?
+
+	  //TEMPTEMP -- maybe make a new mapping with the old TData so
+	  // we keep any changes made in the mapping
+          view->InsertMapping(slaveInfo->oldMap, "");
+	  _slaveViewInfo.DeleteCurrent(index);
+	  break;
+        }
+      }
+      _slaveViewInfo.DoneIterator(index);
+    }
+  }
+
+  return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -135,7 +241,7 @@ void
 TAttrLink::Initialize()
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::Initialize()\n", this);
+  printf("TAttrLink(%s)::Initialize()\n", _name);
 #endif
 
   if (_disableUpdates) {
@@ -180,7 +286,7 @@ DevStatus
 TAttrLink::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::InsertValues()\n", this);
+  printf("TAttrLink(%s)::InsertValues()\n", _name);
 #endif
 
   if (_disableUpdates) {
@@ -283,7 +389,7 @@ void
 TAttrLink::Done()
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::Done()\n", this);
+  printf("TAttrLink(%s)::Done()\n", _name);
 #endif
 
   if (_disableUpdates) {
@@ -312,7 +418,7 @@ void
 TAttrLink::Abort()
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::Abort()\n", this);
+  printf("TAttrLink(%s)::Abort()\n", _name);
 #endif
 }
 
@@ -324,7 +430,7 @@ void
 TAttrLink::SetLinkType(RecordLinkType type)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::SetLinkType(%d)\n", this, type);
+  printf("TAttrLink(%s)::SetLinkType(%d)\n", _name, type);
 #endif
 
   reportErrNosys("Cannot change record link type of TData attribute link\n");
@@ -338,7 +444,7 @@ DevStatus
 TAttrLink::CreateTable(ViewGraph *masterView)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::CreateTable(%s)\n", this, masterView->GetName());
+  printf("TAttrLink(%s)::CreateTable(%s)\n", _name, masterView->GetName());
 #endif
 
   //
@@ -435,6 +541,169 @@ TAttrLink::CreateTable(ViewGraph *masterView)
 }
 
 /*------------------------------------------------------------------------------
+ * function: TAttrLink::SetSlaveTable
+ * Sets the table for a slave view (creates a new table that's the join
+ * of the original table and the table of master attribute values).
+ */
+DevStatus
+TAttrLink::SetSlaveTable(ViewGraph *view)
+{
+#if defined(DEBUG) || 1 //TEMPTEMP
+  printf("TAttrLink(%s)::SetSlaveTable(%s)\n", _name, view->GetName());
+#endif
+
+//TEMPTEMP -- setting master several times causes original TData for
+//slaves to be lost
+// maybe we should always unlink slave view before calling this -- or
+// delete the slave table and mapping for it
+
+  DevStatus result = StatusOk;
+
+  //
+  // Make sure we have a table of the master attribute values.
+  //
+  if (!_tableExists) {
+    char errBuf[256];
+    sprintf(errBuf, "No master table for link %s", GetName());
+    reportErrNosys(errBuf);
+    result = StatusFailed;
+  }
+
+  //
+  // Make sure the slave view has a TData already defined, and that the
+  // TData is a Table (as opposed to a UNIXFILE, or whatever).
+  //
+  TData *tdata;
+  if (result.IsComplete()) {
+    tdata = GetTData(view);
+    if (tdata == NULL) result = StatusFailed;
+  }
+  if (result.IsComplete()) {
+    if (strcmp(tdata->DispatchedName(), "TDataDQL")) {
+      reportErrNosys("Slave view of TAttrLink must have Table data source");
+      result = StatusFailed;
+    }
+  }
+
+  //
+  // Define a new TData that's the join of the slave view's original
+  // TData with the table of master attribute values.
+  //
+  TData *newTData;
+  if (result.IsComplete()) {
+    const int querySize = 1024;
+    char query[querySize];
+    ostrstream ost(query, querySize);
+//TEMPTEMP -- Donko says not to use select *
+    ost << "select * from " << tdata->GetName() << " as t1, " << *_relId <<
+	" as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
+    printf("  query = %s\n", query);//TEMPTEMP
+
+#if 0 //TEMPTEMP?
+    newTData = new TDataDQLInterp(tdata->GetName(), NULL, query);
+#endif
+#if 0 //TEMPTEMP?
+//TEMPTEMP -- try making a new KNOWN tdata here
+    DataSeg::Set(".testcolors2_table", "", 0, 0);
+    newTData = new TDataDQLInterp(".testcolors2_table", NULL,
+	"select * from .testcolors2_table as t");
+#endif
+#if 0 //TEMPTEMP?
+    int numFlds = 4;//TEMPTEMP
+    string attributeNames[4];
+    attributeNames[0] = "X";
+    attributeNames[1] = "Y";
+    attributeNames[2] = "Color";
+    attributeNames[3] = "Name";
+    ViewInterface vi(numFlds, attributeNames, query);
+    RelationId newRelId = RELATION_MNGR.registerNewRelation(vi);
+    if (currExcept) {
+      cerr << currExcept->toString() << endl;
+      return StatusFailed;
+    }
+
+    const int nameSize = 128;
+    char name[nameSize];
+    ostrstream nost(name, nameSize);
+    nost << newRelId;
+
+    const int query2Size = 128;
+    char query2[query2Size];
+    ostrstream qost(query2, query2Size);
+    qost << "select * from " << newRelId << " as t";
+
+    DataSeg::Set(name, "", 0, 0);
+    newTData = new TDataDQLInterp(name, NULL, query2);
+#endif
+    //printf("  newTData = 0x%p\n", newTData);//TEMPTEMP
+  }
+
+  //
+  // Remove the slave view's original mapping and TData and substitute the
+  // new mapping and TData.
+  //
+  TDataMap *map;
+  ClassDir *classDir;
+  ClassInfo *classInfo;
+  if (result.IsComplete()) {
+    map = view->GetFirstMap();
+    view->RemoveMapping(map);
+
+    classDir = ControlPanel::Instance()->GetClassDir();
+    classInfo = classDir->FindClassInfo(map->GetName());
+    if (classInfo == NULL) {
+      reportErrNosys("Can't find class info for existing mapping");
+      result = StatusFailed;
+    }
+  }
+  if (result.IsComplete()) {
+    int argc;
+    char ** argv;
+    classDir->CreateParams(classInfo->CategoryName(), classInfo->ClassName(),
+	map->GetName(), argc, argv);
+
+    // argv[0] is TData name, argv[1] is mapping name.
+    argv[0] = ".testcolors2_table";//TEMPTEMP
+    char mapNameBuf[1024];
+    sprintf(mapNameBuf, "%s_slave", argv[1]);
+    argv[1] = mapNameBuf;
+
+    char *newMapName = classDir->CreateWithParams(
+	classInfo->CategoryName(), classInfo->ClassName(), argc, argv);
+    if (newMapName == NULL) {
+      reportErrNosys("Can't create new mapping");
+      result = StatusFailed;
+    } else {
+      TDataMap *newMap = (TDataMap *)classDir->FindInstance(newMapName);
+      if (newMap == NULL) {
+        reportErrNosys("Can't find new mapping instance");
+        result = StatusFailed;
+      } else {
+        view->InsertMapping(newMap, "");
+	view->Refresh();
+      }
+    }
+  }
+
+  //
+  // Save the info we need to unlink the slave view.
+  //
+  if (result.IsComplete()) {
+    SlaveViewInfo *slaveInfo = new SlaveViewInfo;
+    if (slaveInfo == NULL) {
+      reportErrSys("Out of memory");
+      result = StatusFailed;
+    } else {
+      slaveInfo->view = view;
+      slaveInfo->oldMap = map;
+      _slaveViewInfo.Insert(slaveInfo);
+    }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
  * function: TAttrLink::DestroyTable
  * Destroys the table for storing the master attribute values.
  */
@@ -442,16 +711,21 @@ DevStatus
 TAttrLink::DestroyTable()
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::DestroyTable()\n", this);
+  printf("TAttrLink(%s)::DestroyTable()\n", _name);
 #endif
+
+  if (_tableExists) RELATION_MNGR.deleteRelation(*_relId);
 
   _tableExists = false;
 
-  RELATION_MNGR.deleteRelation(*_relId);
-
   delete _schema;
+  _schema = NULL;
+
   delete _stdInt;
+  _stdInt = NULL;
+
   delete _relId;
+  _relId = NULL;
 
   if (_inserter != NULL) {
     _inserter->close();
@@ -477,7 +751,7 @@ TData *
 TAttrLink::GetTData(ViewGraph *view)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(0x%p)::GetTData(%s)\n", this, view->GetName());
+  printf("TAttrLink(%s)::GetTData(%s)\n", _name, view->GetName());
 #endif
 
   TData *tdata;

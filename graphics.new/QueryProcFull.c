@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.78  1998/04/10 18:29:28  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.77  1998/03/02 22:30:23  wenger
   Got DEVise to link on SGI (haha) -- had to change things so that all
   templates are implicit (they are still not implicit on other
@@ -1731,6 +1736,10 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 #endif
 	int recordsDrawn;
 	BooleanArray *drawnList;
+	if (_rangeQuery->callback->HasTAttrLink()) {
+	  fprintf(stderr, "Query for master view of TAttrLink doesn't have "
+	      "TData; slave views will not be updated correctly.");
+	}
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, (RecId)low,
                                            ptr, (int)(high - low + 1),
 					   recordsProcessed,

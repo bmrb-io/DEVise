@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/10/03 16:00:03  wenger
+  Improved error messages.
+
   Revision 1.14  1997/05/28 15:38:21  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -307,6 +310,29 @@ void *ClassDir::FindInstance(char *name)
 			<< classRec->_instances[k]->InstanceName()
 			<< endl;
 #endif
+	}
+      }
+    }
+  }
+
+  return NULL;
+}
+
+/* Find the ClassInfo object for a given instance. */
+
+ClassInfo *
+ClassDir::FindClassInfo(char *instanceName)
+{
+#if defined(DEBUG)
+  printf("Trying to find %s\n", instanceName);
+#endif
+  for(int i = 0; i < _numCategories; i++) {
+    CategoryRec *catRec = _categories[i];
+    for(int j = 0; j < catRec->_numClasses; j++) {
+      ClassRec *classRec = catRec->_classRecs[j];
+      for(int k = 0; k < classRec->_numInstances; k++) {
+	if (!strcmp(classRec->_instances[k]->InstanceName(), instanceName)) {
+	  return classRec->_instances[k];
 	}
       }
     }
