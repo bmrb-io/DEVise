@@ -1,6 +1,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.4  1995/09/05 22:47:55  jussi
+#	Added/updated CVS header.
+#
 #	Revision 1.3  1995/09/05 22:45:33  jussi
 #	Updated CVS header.
 
@@ -52,6 +55,7 @@ source $libdir/dialogParam.tk
 source $libdir/dialogCkBut.tk
 source $libdir/dialogMapping.tk
 source $libdir/help.tk
+source $libdir/issm.tk
 
 # mark session modified
 proc sessionModified {} {
@@ -199,60 +203,65 @@ menubutton .mbar.window -text Window -underline 0 \
 	-menu .mbar.window.menu -bg LightBlue
 
 menu .mbar.session.menu
-.mbar.session.menu add command -label "Open" -command { DoOpen 0}
-.mbar.session.menu add command -label "Open as Template" -command { DoOpen 1}
-.mbar.session.menu add command -label "Close" -command { DoClose}
-.mbar.session.menu add command -label "Save" -command { DoSave }
-.mbar.session.menu add command -label "Save as"  -command { DoSaveAs }
-.mbar.session.menu add command -label "Demo" -command { DoDemo}
-.mbar.session.menu add command -label "Quit" -command { DoExit }
+.mbar.session.menu add command -label "Open" -command {DoOpen 0}
+.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
+.mbar.session.menu add command -label "Close" -command DoClose
+.mbar.session.menu add command -label "Save" -command DoSave
+.mbar.session.menu add command -label "Save as" -command DoSaveAs
+.mbar.session.menu add command -label "Demo" -command DoDemo
+.mbar.session.menu add command -label "Quit" -command DoExit
 
 menu .mbar.import.menu
-.mbar.import.menu add command -label "Stock Data" -command { NotImplemented }
-.mbar.import.menu add command -label "SEQ Data" -command { NotImplemented }
-.mbar.import.menu add command -label "SQL Query" -command { NotImplemented }
+.mbar.import.menu add command -label "Stock Data" -command issmMain
+.mbar.import.menu add command -label "SEQ Data" -command NotImplemented
+.mbar.import.menu add command -label "SQL Query" -command NotImplemented
+.mbar.import.menu add separator
+.mbar.import.menu add cascade -label "Experimental" -menu .mbar.import.menu.exp
+
+menu .mbar.import.menu.exp
+.mbar.import.menu.exp add command -label "Definitions" -command TestMacroDef
 
 menu .mbar.file.menu
-.mbar.file.menu add command -label "File" -command { DoVisualizeFile }
-.mbar.file.menu add command -label "TData" -command { DoVisualizeTData}
-.mbar.file.menu add command -label "GData" -command { DoVisualizeGData }
+.mbar.file.menu add command -label "File" -command DoVisualizeFile
+.mbar.file.menu add command -label "TData" -command DoVisualizeTData
+.mbar.file.menu add command -label "GData" -command DoVisualizeGData
 
 menu .mbar.view.menu
-.mbar.view.menu add command -label "Remove From Window" -command {DoViewRemove}
-.mbar.view.menu add command -label "Move To Window" -command { DoViewMove}
-.mbar.view.menu add command -label "Link" -command { DoViewLink}
-.mbar.view.menu add command -label "Unlink" -command { DoViewUnlink}
-.mbar.view.menu add command -label "XAxis" -command { DoViewAxis x}
-.mbar.view.menu add command -label "YAxis" -command { DoViewAxis y}
-.mbar.view.menu add command -label "Action" -command { DoViewAction }
-.mbar.view.menu add command -label "Edit Mapping" -command { DoEditMapping}
-.mbar.view.menu add command -label "Switch TData" -command { DoSwitchTData}
-# .mbar.view.menu add command -label "Dup TData" -command { }
+.mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
+.mbar.view.menu add command -label "Move To Window" -command DoViewMove
+.mbar.view.menu add command -label "Link" -command DoViewLink
+.mbar.view.menu add command -label "Unlink" -command DoViewUnlink
+.mbar.view.menu add command -label "XAxis" -command {DoViewAxis x}
+.mbar.view.menu add command -label "YAxis" -command {DoViewAxis y}
+.mbar.view.menu add command -label "Action" -command DoViewAction
+.mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
+.mbar.view.menu add command -label "Switch TData" -command DoSwitchTData
+# .mbar.view.menu add command -label "Dup TData" -command {}
 .mbar.view.menu add command -label "Toggle X Axes" \
 	-command {DoToggleAxisAllViews X}
 .mbar.view.menu add command -label "Toggle Y Axes" \
 	-command {DoToggleAxisAllViews Y}
-.mbar.view.menu add command -label "Swap Position" -command {DoSwapView}
-# .mbar.view.menu add command -label "Save Pixmap" -command {DoSavePixmap}
-# .mbar.view.menu add command -label "Load Pixmap" -command {DoLoadPixmap}
+.mbar.view.menu add command -label "Swap Position" -command DoSwapView
+# .mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
+# .mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
 
 # menu .mbar.link.menu
-# .mbar.link.menu add command -label "Create" -command { DoLinkCreate }
-# .mbar.link.menu add command -label "Modify" -command { DoModifyLink }
-# .mbar.link.menu add command -label "Link View" -command {DoViewLink }
+# .mbar.link.menu add command -label "Create" -command DoLinkCreate
+# .mbar.link.menu add command -label "Modify" -command DoModifyLink
+# .mbar.link.menu add command -label "Link View" -command DoViewLink
 
 menu .mbar.cursor.menu
-.mbar.cursor.menu add command -label "Create" -command { DoCursorCreate}
-.mbar.cursor.menu add command -label "Set src" -command { DoSetCursorSrc}
-.mbar.cursor.menu add command -label "Set Dst" -command {DoSetCursorDst}
+.mbar.cursor.menu add command -label "Create" -command DoCursorCreate
+.mbar.cursor.menu add command -label "Set src" -command DoSetCursorSrc
+.mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
 
 # menu .mbar.edit.menu
 # .mbar.edit.menu add command -label "GData Mapping" -command { DoEditMapping}
 
 # menu .mbar.window.menu
-# .mbar.window.menu add command -label "Create" -command { }
-# .mbar.window.menu add command -label "Destroy" -command { }
-# .mbar.window.menu add command -label "Modify" -command { }
+# .mbar.window.menu add command -label "Create" -command {}
+# .mbar.window.menu add command -label "Destroy" -command {}
+# .mbar.window.menu add command -label "Modify" -command {}
 
 menu .mbar.window.menu
 .mbar.window.menu add command -label "Help" -command { DoHelp}
@@ -959,7 +968,6 @@ proc DoGetWindow { } {
     }
 }
 
-
 proc DoVisualizeTData { } {
     set tdata [ DoSelectTData ]
     DoActualVisualizeTData $tdata
@@ -969,7 +977,6 @@ proc DoVisualizeFile { } {
     set tdata [ DoSelectFile ]
     DoActualVisualizeTData $tdata
 }
-
 
 # Do File/TData command. Return 1 if OK, else return nothing
 proc DoActualVisualizeTData { tdata } {
@@ -3059,4 +3066,754 @@ proc NotImplemented {} {
     set but [ dialog .notImplemented "Not Implemented" \
 	    "This feature not implemented yet." \
 	    "" 0 {OK} ]
+}
+
+proc TestMacroDef {} {
+    global tdatas schemas maps mappings views links windows session
+
+    set session "Test"
+
+    set tdatas {{tdata1 tdata1.dat} {tdata2 tdata2.dat} \
+	        {tdata3 tdata3.dat}}
+
+    set schemas(tdata1) {schema1.schema {{Xattr double 1} {Yattr int 0}}}
+    set schemas(tdata2) {schema2.schema {{Gattr int 0} {Hattr int 0}}}
+    set schemas(tdata3) {schema1.schema {{Xattr double 1} {Yattr int 0}}}
+
+    set maps(schema1.schema) {map0 map2}
+    set maps(schema2.schema) {map1}
+
+    set mappings(map0) {Xattr Yattr 2 2 1 0 0}
+    set mappings(map1) {Gattr Hattr 5 2 1 0 0}
+    set mappings(map2) {Yattr Xattr 7 1 1 0 0}
+
+    set views(view0) {0.0 100.0 0.0 10.0}
+    set views(view1) {50.0 250.0 -10.0 10.0}
+
+    set links(link0) {1 0 0 0 0 0 0}
+    set links(link1) {0 1 0 0 0 1 0}
+
+    set windows(win0) {0.5 0.5 0.7 0.7}
+    set windows(win1) {0.1 0.5 0.4 0.7}
+
+    MacroDef
+}
+
+proc MacroDef {} {
+    global tdatas schemas maps mappings views links windows session
+    global tdata window gdata view link none
+
+    # see if .map window already exists; if so, just return
+    set err [catch {set exists [wm state .map]}]
+    if {!$err} { return }
+
+    set none "-- None --"
+
+    toplevel .map
+    wm minsize .map 500 400
+    wm maxsize .map 500 400
+    MacroDefTitle .map
+    wm geometry .map =500x400+50+50
+    selection clear .map
+
+    frame .map.top -relief groove -borderwidth 2
+    frame .map.but -relief groove -borderwidth 2
+    pack .map.top -side top -pady 3m -fill both -expand 1
+    pack .map.but -side top -pady 3m -fill x
+
+    frame .map.left -relief groove -borderwidth 2
+    frame .map.right -relief groove -borderwidth 2
+    pack .map.left .map.right -in .map.top -side left \
+	    -fill both -expand 1
+
+    frame .map.tdata -relief groove -borderwidth 2
+    frame .map.window -relief groove -borderwidth 2
+    frame .map.gdata -relief groove -borderwidth 2
+    frame .map.view -relief groove -borderwidth 2
+    frame .map.link -relief groove -borderwidth 2
+    pack .map.tdata .map.window -in .map.left -side top -pady 3m \
+	    -fill both -expand 1
+    pack .map.gdata .map.view .map.link -in .map.right -side top -pady 3m \
+	    -fill both -expand 1
+
+    MacroDefTdata .map.tdata "$none"
+    MacroDefWindows .map.window "$none"
+    MacroDefMaps .map.gdata "$none"
+    MacroDefViews .map.view "$none"
+    MacroDefLinks .map.link "$none"
+
+    frame .map.but.row1
+    frame .map.but.row2
+    pack .map.but.row1 .map.but.row2 -side top -pady 3m -fill both -expand 1
+
+    button .map.but.save -text Save -width 10 -command {
+	if {$session == ""} {
+	    .map.but.saveas invoke
+	} else {
+	    MacroDefSave $session.tk
+	}
+    }
+    button .map.but.saveas -text "Save as..." -width 10 -command {
+	if {[MacroDefSession] > 0} {
+	    MacroDefTitle .map
+	    MacroDefSave $session.tk
+	}
+    }
+    button .map.but.load -text "Load..." -width 10 -command MacroDefLoad
+    button .map.but.auto -text "Auto..." -width 10 -command NotImplemented
+    pack .map.but.save .map.but.saveas .map.but.load .map.but.auto \
+	    -in .map.but.row1 -side left -padx 5m
+
+    button .map.but.ok -text OK -width 10 -command NotImplemented
+    button .map.but.apply -text Apply -width 10 -command NotImplemented
+    button .map.but.cancel -text Cancel -width 10 -command "destroy .map"
+    button .map.but.help -text Help -width 10 -command MacroDefHelp
+    pack .map.but.ok .map.but.apply .map.but.cancel .map.but.help \
+	    -in .map.but.row2 -side left -padx 5m
+
+    tkwait visibility .map
+    grab set .map
+    tkwait window .map
+}
+
+proc MacroDefTitle {m} {
+    global session
+
+    if {$session == ""} {
+	wm title $m "Define Session"
+    } else {
+	wm title $m "Define Session - $session"
+    }
+}
+
+proc MacroDefSession {} {
+    global session newsession
+
+    # see if .session window already exists; if so, just return
+    set err [catch {set exists [wm state .session]}]
+    if {!$err} { return 0 }
+
+    toplevel .session
+    wm minsize .session 300 100
+    wm maxsize .session 300 100
+    wm title .session "Session Name"
+    wm geometry .session =300x100+100+100
+    selection clear .session
+
+    frame .session.entry -relief groove -borderwidth 2
+    frame .session.but -relief groove -borderwidth 2
+    pack .session.entry .session.but -side top -pady 3m -fill both -expand 1
+
+    set newsession $session
+    label .session.label -text "Enter session name:"
+    entry .session.name -relief sunken -width 15 -textvariable newsession
+    pack .session.label .session.name -in .session.entry \
+	    -side left -fill x -expand 1
+
+    button .session.ok -text OK -width 10 -command { destroy .session }
+    button .session.cancel -text Cancel -width 10 -command {
+	set newsession ""
+	destroy .session
+    }
+    pack .session.ok .session.cancel -in .session.but -side left -padx 5m \
+	    -fill x -expand 1
+
+    tkwait visibility .session
+    grab set .session
+    tkwait window .session
+
+    if {$newsession == ""} {
+	return 0
+    }
+    set session $newsession
+    return 1
+}
+
+proc MacroDefSave {fname} {
+    global tdatas schemas maps mappings views links windows session
+
+    set f [open $fname w]
+    puts $f "set session \"$session\""
+    puts $f "set tdatas \"$tdatas\""
+    foreach schema [array names schemas] {
+	puts $f "set schemas($schema) \"$schemas($schema)\""
+    }
+    foreach m [array names maps] {
+	puts $f "set maps($m) \"$maps($m)\""
+    }
+    foreach m [array names mappings] {
+	puts $f "set mappings($m) \"$mappings($m)\""
+    }
+    foreach v [array names views] {
+	puts $f "set views($v) \"$views($v)\""
+    }
+    foreach l [array names links] {
+	puts $f "set links($l) \"$links($l)\""
+    }
+    foreach win [array names windows] {
+	puts $f "set windows($win) \"$windows($win)\""
+    }
+
+    close $f
+}
+
+proc MacroDefLoad {} {
+    global tdatas schemas maps mappings views links windows session none
+    if {[MacroDefSession] > 0} {
+	MacroDefTitle .map
+	unset tdatas
+	unset schemas
+	unset maps
+	unset mappings
+	unset views
+	unset links
+	unset windows
+	source $session.tk
+	MacroDefMaps .map.gdata $none
+	MacroDefViews .map.view $none
+	MacroDefLinks .map.link $none
+    }
+}
+
+proc MacroDefHelp {} {
+    # see if .help window already exists; if so, just return
+    set err [catch {set exists [wm state .help]}]
+    if {!$err} { return }
+
+    toplevel .help
+    wm title .help "Help"
+    wm geometry .help +100+300
+    message .help.msg -justify center -width 10c \
+	    -text "This is the help window."
+    button .help.ok -text OK -width 10 -command "destroy .help"
+    pack .help.msg .help.ok -side top -padx 5m -pady 3m
+
+    tkwait visibility .help
+    grab set .help
+    tkwait window .help
+}
+
+proc MacroDefTdata {m default} {
+    global tdatas tdata none
+
+    catch {destroy $m.mbar}
+    catch {destroy $m.label}
+
+    set tdata $none
+    set defExists 0
+
+    menubutton $m.mbar -relief raised -textvariable tdata \
+	    -menu $m.mbar.menu -width 15
+    label $m.label -text "Source:" -width 8
+    pack $m.label $m.mbar -side left -padx 2m
+    menu $m.mbar.menu
+    foreach t $tdatas {
+	set name [lindex $t 0]
+	$m.mbar.menu add command -label $name \
+		-command "set tdata \"$name\"; \
+		          MacroDefMaps .map.gdata \"$none\""
+	if {$tdata == $none} {
+	    set tdata $name
+	}
+	if {$default == $t} {
+	    set defExists 1
+	}
+    }
+
+    if {$default != $none && $defExists > 0} {
+	set tdata $default
+    }
+
+    $m.mbar.menu add command -label "Other..." \
+	    -command NotImplemented
+    tk_menuBar $m $m.mbar
+}
+
+proc MacroDefWindows {m default} {
+    global windows window none
+
+    catch {destroy $m.mbar}
+    catch {destroy $m.label}
+
+    set window $none
+    set defExists 0
+
+    menubutton .map.window.mbar -relief raised -textvariable window \
+	    -menu .map.window.mbar.menu -width 15
+    label .map.window.label -text "Window:" -width 8
+    pack .map.window.label .map.window.mbar -side left -padx 2m
+    menu .map.window.mbar.menu
+    foreach win [array names windows] {
+	.map.window.mbar.menu add command -label $win \
+		-command "set window \"$win\""
+	if {$window == $none} {
+	    set window $win
+	}
+	if {$default == $win} {
+	    set defExists 1
+	}
+    }
+
+    if {$default != $none && $defExists > 0} {
+	set window $default
+    }
+
+    .map.window.mbar.menu add command -label "New..." \
+	    -command NotImplemented
+    tk_menuBar .map.window .map.window.mbar
+}
+
+proc MacroDefMaps {m default} {
+    global schemas maps tdata gdata none
+
+    catch {destroy $m.mbar}
+    catch {destroy $m.label}
+
+    set gdata $none
+    set defExists 0
+
+    menubutton $m.mbar -relief raised -textvariable gdata \
+	    -menu $m.mbar.menu -width 15
+    label $m.label -text "Mapping:" -width 8
+    pack $m.label $m.mbar -side left -padx 2m
+    menu $m.mbar.menu
+    if {$tdata != $none} {
+	set schema [lindex $schemas($tdata) 0]
+	foreach map $maps($schema) {
+	    $m.mbar.menu add command -label $map \
+		    -command "set gdata \"$map\""
+	    if {$gdata == $none} {
+		set gdata $map
+	    }
+	    if {$default == $map} {
+		set defExists 1
+	    }
+	}
+    }
+
+    if {$default != $none && $defExists > 0} {
+	set gdata $default
+    }
+
+    $m.mbar.menu add command -label "New..." \
+	    -command {
+	if {$tdata == $none} {
+	    puts "Error: TData is $tdata"
+	    exit 1
+	}
+	set sname [lindex $schemas($tdata) 0]
+	set schema [lindex $schemas($tdata) 1]
+	set mapname [DefMapping $schema]
+	if {$mapname != ""} {
+	    lappend maps($sname) $mapname
+	    # fix this: .map.gdata s.b. $m
+	    MacroDefMaps .map.gdata $mapname
+	}
+    }
+    tk_menuBar $m $m.mbar
+}
+
+proc MacroDefViews {m default} {
+    global views view none
+
+    catch {destroy $m.mbar}
+    catch {destroy $m.label}
+
+    set view $none
+    set defExists 0
+
+    menubutton $m.mbar -relief raised -textvariable view \
+	    -menu $m.mbar.menu -width 15
+    label $m.label -text "View:" -width 8
+    pack $m.label $m.mbar -side left -padx 2m
+    menu $m.mbar.menu
+    foreach v [array names views] {
+	$m.mbar.menu add command -label $v \
+		    -command "set view \"$v\""
+	if {$view == $none} {
+	    set view $v
+	}
+	if {$default == $v} {
+	    set defExists 1
+	}
+    }
+
+    if {$default != $none && $defExists > 0} {
+	set view $default
+    }
+
+    $m.mbar.menu add command -label "New..." \
+	    -command {
+	set viewname [DefView]
+	if {$viewname != ""} {
+	    # fix this: .map.view s.b. $m
+	    MacroDefViews .map.view $viewname
+	}
+    }
+    tk_menuBar $m $m.mbar
+}
+
+proc MacroDefLinks {m default} {
+    global links link none
+
+    catch {destroy $m.mbar}
+    catch {destroy $m.label}
+
+    set link $none
+    set defExists 0
+
+    menubutton $m.mbar -relief raised -textvariable link \
+	    -menu $m.mbar.menu -width 15
+    label $m.label -text "Link:" -width 8
+    pack $m.label $m.mbar -side left -padx 2m
+    menu $m.mbar.menu
+    foreach l [array names links] {
+	$m.mbar.menu add command -label $l \
+		    -command "set link \"$l\""
+	if {$link == $none} {
+	    set link $l
+	}
+	if {$default == $l} {
+	    set defExists 1
+	}
+    }
+
+    if {$default != $none && $defExists > 0} {
+	set link $default
+    }
+
+    $m.mbar.menu add command -label "New..." \
+	    -command {
+	set linkname [DefLink]
+	if {$linkname != ""} {
+	    # fix this: .map.link s.b. $m
+	    MacroDefLinks .map.link $linkname
+	}
+    }
+    tk_menuBar $m $m.mbar
+}
+
+proc MacroEdit {} {
+}
+
+proc DefMapping {schema} {
+    global DEViseColors DEViseShapes
+    global mappings devcolors devshapes
+    global mapname x y color shape size pattern orient
+
+    # see if .map window already exists; if so, just return
+    set err [catch {set exists [wm state .def]}]
+    if {!$err} { return }
+
+    toplevel .def
+    wm minsize .def 250 280
+    wm maxsize .def 250 280
+    wm title .def "Define Mapping"
+    wm geometry .def =250x280+100+100
+    selection clear .def
+
+    set mapname "Default"
+
+    label .def.label -text "Enter mapping parameters"
+    frame .def.map -relief groove -borderwidth 2
+    frame .def.but -relief groove -borderwidth 2
+    pack .def.label -side top -pady 3m
+    pack .def.map -side top -fill both -expand 1
+    pack .def.but -side top -fill x -expand 1
+
+    frame .def.map.left
+    frame .def.map.right
+    pack .def.map.left .def.map.right -side left -fill both \
+	    -expand 1
+
+    label .def.map.left.x -text X -width 8
+    label .def.map.left.y -text Y -width 8
+    label .def.map.left.color -text Color -width 12
+    label .def.map.left.shape -text Shape -width 12
+    label .def.map.left.size -text Size -width 12
+    label .def.map.left.pattern -text Pattern -width 12
+    label .def.map.left.orient -text Orientation -width 12
+    label .def.map.left.name -text Name -width 12
+    pack .def.map.left.x .def.map.left.y \
+	    .def.map.left.color .def.map.left.shape \
+	    .def.map.left.size .def.map.left.pattern \
+	    .def.map.left.orient -side top
+    pack .def.map.left.name -side top -pady 3m
+
+    menubutton .def.map.right.x -relief raised \
+	    -textvariable x -menu .def.map.right.x.menu -width 15
+    menubutton .def.map.right.y -relief raised \
+	    -textvariable y -menu .def.map.right.y.menu -width 15
+    menubutton .def.map.right.color -relief raised \
+	    -textvariable color -menu .def.map.right.color.menu -width 15
+    menubutton .def.map.right.shape -relief raised \
+	    -textvariable shape -menu .def.map.right.shape.menu -width 15
+    menubutton .def.map.right.size -relief raised \
+	    -textvariable size -menu .def.map.right.size.menu -width 15
+    menubutton .def.map.right.pattern -relief raised \
+	    -textvariable pattern -menu .def.map.right.pattern.menu -width 15
+    menubutton .def.map.right.orient -relief raised \
+	    -textvariable orient -menu .def.map.right.orient.menu -width 15
+    entry .def.map.right.name -relief sunken -width 15 -textvariable mapname
+    pack .def.map.right.x .def.map.right.y \
+	    .def.map.right.color .def.map.right.shape \
+	    .def.map.right.size .def.map.right.pattern \
+	    .def.map.right.orient -side top
+    pack .def.map.right.name -side top -pady 3m
+
+    menu .def.map.right.x.menu
+    menu .def.map.right.y.menu
+    set x ""
+    set y ""
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	set type [lindex $attr 1]
+	set sorted [lindex $attr 2]
+	.def.map.right.x.menu add radiobutton -label $name \
+		-variable x -value $name
+	.def.map.right.y.menu add radiobutton -label $name \
+		-variable y -value $name
+	if {$sorted > 0 && $x == ""} {
+	    set x $name
+	}
+    }
+    tk_menuBar .def.map.right .def.map.right.x
+    tk_menuBar .def.map.right .def.map.right.y
+    if {$x == ""} {
+	set x [lindex [lindex $schema 0] 0]
+    }
+    set y [lindex [lindex $schema 1] 0]
+
+    menu .def.map.right.color.menu
+    foreach color $DEViseColors {
+	set idx [lindex $color 0]
+	set name [lindex $color 1]
+	set devcolors($name) $idx
+	.def.map.right.color.menu add radiobutton -label $name \
+		-variable color -value $name
+    }
+    tk_menuBar .def.map.right .def.map.right.color
+    set color red
+
+    menu .def.map.right.shape.menu
+    foreach shape $DEViseShapes {
+	set idx [lindex $shape 0]
+	set name [lindex $shape 1]
+	set devshapes($name) $idx
+	.def.map.right.shape.menu add radiobutton -label $name \
+		-variable shape -value $name
+    }
+    tk_menuBar .def.map.right .def.map.right.shape
+    set shape Bar
+
+    menu .def.map.right.size.menu
+    .def.map.right.size.menu add radiobutton -label 1 \
+	    -variable size -value 1
+    tk_menuBar .def.map.right .def.map.right.size
+    set size 1
+
+    menu .def.map.right.pattern.menu
+    .def.map.right.pattern.menu add radiobutton -label Normal \
+	    -variable pattern -value Normal
+    tk_menuBar .def.map.right .def.map.right.pattern
+    set pattern Normal
+
+    menu .def.map.right.orient.menu
+    .def.map.right.orient.menu add radiobutton -label Normal \
+	    -variable orient -value Normal
+    tk_menuBar .def.map.right .def.map.right.orient
+    set orient Normal
+
+    button .def.but.ok -text OK -width 10 \
+	    -command {
+	if {$mapname == ""} {
+	    destroy .def
+	}
+	set err [catch {set exists $mappings($mapname)}]
+	if {!$err} {
+	    dialog .mapExists "Mapping Exists" \
+		"Mapping $mapname exists already." \
+		"" 0 {OK}
+	} else {
+	    set cidx $devcolors($color)
+	    set sidx $devshapes($shape)
+	    set pidx 0
+	    set oidx 0
+	    set defn [list $x $y $cidx $sidx $size $pidx $oidx]
+	    set mappings($mapname) $defn
+	    destroy .def
+	}
+    }
+    button .def.but.cancel -text Cancel -width 10 \
+	    -command {
+	set mapname ""
+	destroy .def
+    }
+    pack .def.but.ok .def.but.cancel -side left -expand 1
+
+    tkwait visibility .def
+    grab set .def
+    tkwait window .def
+
+    return $mapname
+}
+
+proc DefView {} {
+    global views
+    global viewname xlo xhi ylo yhi
+
+    # see if .def window already exists; if so, just return
+    set err [catch {set exists [wm state .def]}]
+    if {!$err} { return }
+
+    toplevel .def
+    wm minsize .def 200 200
+    wm maxsize .def 200 200
+    wm title .def "Define View"
+    wm geometry .def =200x200+100+100
+    selection clear .def
+
+    set viewname "Default"
+    set xlo "0.0"
+    set xhi "100.0"
+    set ylo "0.0"
+    set yhi "100.0"
+
+    label .def.label -text "Enter view parameters"
+    frame .def.view -relief groove -borderwidth 2
+    frame .def.but -relief groove -borderwidth 2
+    pack .def.label -side top -pady 3m
+    pack .def.view -side top -fill both -expand 1
+    pack .def.but -side top -fill x -expand 1
+
+    frame .def.view.left
+    frame .def.view.right
+    pack .def.view.left .def.view.right -side left -fill both \
+	    -expand 1
+
+    label .def.view.left.xlo -text "X low" -width 8
+    label .def.view.left.xhi -text "X high" -width 8
+    label .def.view.left.ylo -text "Y low" -width 8
+    label .def.view.left.yhi -text "Y high" -width 8
+    label .def.view.left.name -text Name -width 8
+    pack .def.view.left.xlo .def.view.left.xhi \
+	    .def.view.left.ylo .def.view.left.yhi -side top
+    pack .def.view.left.name -side top -pady 3m
+
+    entry .def.view.right.xlo -relief sunken -width 15 -textvariable xlo
+    entry .def.view.right.xhi -relief sunken -width 15 -textvariable xhi
+    entry .def.view.right.ylo -relief sunken -width 15 -textvariable ylo
+    entry .def.view.right.yhi -relief sunken -width 15 -textvariable yhi
+    entry .def.view.right.name -relief sunken -width 15 -textvariable viewname
+    pack .def.view.right.xlo .def.view.right.xhi \
+	    .def.view.right.ylo .def.view.right.yhi -side top -pady 0.5m
+    pack .def.view.right.name -side top -pady 3m
+
+    button .def.but.ok -text OK -width 10 \
+	    -command {
+	if {$viewname == ""} {
+	    destroy .def
+	}
+	set err [catch {set exists $views($viewname)}]
+	if {!$err} {
+	    dialog .viewExists "View Exists" \
+		"View $viewname exists already." \
+		"" 0 {OK}
+	} else {
+	    set defn [list $xlo $xhi $ylo $yhi]
+	    set views($viewname) $defn
+	    destroy .def
+	}
+    }
+    button .def.but.cancel -text Cancel -width 10 \
+	    -command {
+	set viewname ""
+	destroy .def
+    }
+    pack .def.but.ok .def.but.cancel -side left -expand 1
+
+    tkwait visibility .def
+    grab set .def
+    tkwait window .def
+
+    return $viewname
+}
+proc DefLink {} {
+    global links
+    global linkname x y color shape size pattern orientation
+
+    # see if .def window already exists; if so, just return
+    set err [catch {set exists [wm state .def]}]
+    if {!$err} { return }
+
+    toplevel .def
+    wm minsize .def 200 300
+    wm maxsize .def 200 300
+    wm title .def "Define Link"
+    wm geometry .def =200x300+100+100
+    selection clear .def
+
+    set linkname "Default"
+    set x 1
+    set y 0
+    set color 0
+    set shape 0
+    set size 0
+    set pattern 0
+    set orientation 0
+
+    label .def.label -text "Enter link parameters"
+    frame .def.link -relief groove -borderwidth 2
+    frame .def.name
+    frame .def.but -relief groove -borderwidth 2
+    pack .def.label -side top -pady 3m
+    pack .def.link -side top -fill both -expand 1
+    pack .def.name -side top -fill x -expand 1
+    pack .def.but -side top -fill x -expand 1
+
+    checkbutton .def.link.x -text X -variable x -anchor w
+    checkbutton .def.link.y -text Y -variable y -anchor w
+    checkbutton .def.link.color -text Color -variable color -anchor w
+    checkbutton .def.link.shape -text Shape -variable shape -anchor w
+    checkbutton .def.link.size -text Size -variable size -anchor w
+    checkbutton .def.link.pattern -text Pattern -variable pattern -anchor w
+    checkbutton .def.link.orientation -text Orientation \
+	    -variable orientation -anchor w
+    pack .def.link.x .def.link.y .def.link.color .def.link.shape \
+	    .def.link.size .def.link.pattern .def.link.orientation \
+	    -side top -fill x -expand 1
+
+    label .def.name.label -text "Name"
+    entry .def.name.name -relief sunken -width 18 -textvariable linkname
+    pack .def.name.label -side left -pady 3m
+    pack .def.name.name -side right -pady 3m
+
+    button .def.but.ok -text OK -width 10 \
+	    -command {
+	if {$linkname == ""} {
+	    destroy .def
+	}
+	set err [catch {set exists $links($linkname)}]
+	if {!$err} {
+	    dialog .linkExists "Link Exists" \
+		"Link $linkname exists already." \
+		"" 0 {OK}
+	} else {
+	    set defn [list $x $y $color $shape $size $pattern $orientation]
+	    set links($linkname) $defn
+	    destroy .def
+	}
+    }
+    button .def.but.cancel -text Cancel -width 10 \
+	    -command {
+	set linkname ""
+	destroy .def
+    }
+    pack .def.but.ok .def.but.cancel -side left -expand 1
+
+    tkwait visibility .def
+    grab set .def
+    tkwait window .def
+
+    return $linkname
 }
