@@ -15,12 +15,19 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/11/18 21:08:05  donjerko
+#  *** empty log message ***
+#
 ############################################################
 
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
 #ARCH_LDFLAGS = -lpthread
 
-VPATH = ../../DTE
-include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+DTE_DIR = ../../DTE
+VPATH = $(DTE_DIR)/Core $(DTE_DIR) $(DTE_DIR)/StandAlone
+include $(DTE_DIR)/Makefile.base
+include $(DTE_DIR)/Makefile.solaris
 
+dte: $(STAND_ALONE_OBJ)
+	cd ../devread; make libdevread.a; cd ../DTE;
+	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl

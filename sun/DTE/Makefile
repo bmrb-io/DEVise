@@ -15,12 +15,20 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/11/19 15:33:52  wenger
+#  Added Sun DTE makefile.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_FLAGS = -DSUN 
 
-VPATH = ../../DTE
-include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sun
+DTE_DIR = ../../DTE
+VPATH = $(DTE_DIR)/Core $(DTE_DIR) $(DTE_DIR)/StandAlone
+include $(DTE_DIR)/Makefile.base
+include $(DTE_DIR)/Makefile.solaris
+
+dte: $(STAND_ALONE_OBJ)
+        cd ../devread; make libdevread.a; cd ../DTE;
+        $(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+
