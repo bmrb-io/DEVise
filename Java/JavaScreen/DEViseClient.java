@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2001/10/12 01:49:23  xuk
+// Using timestamp-based client ID.
+// 1. ID has been expended to long int;
+// 2. In DEViseClient(), getConnectionID(), id has been expanded to long int;
+//
 // Revision 1.49  2001/10/05 21:20:28  xuk
 // Fixed bug 705: JSPoP doesn't create log files for the clients that only send JAVAC_CheckPop command.
 //
@@ -232,6 +237,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.lang.*;
+import java.text.*;
 
 public class DEViseClient
 {
@@ -248,7 +254,6 @@ public class DEViseClient
     private int status = CLOSE;
 
     public DEViseUser user = null;
-    //TEMP -- why Integer vs. int?
     public long ID = 0;
     public String hostname = null;
     public DEViseCommSocket socket = null;
@@ -386,18 +391,21 @@ public class DEViseClient
             cmdBuffer.addElement(cmd);
 	    
 	    if (pop.clientLog && logFile == null) {
-		Date d = new Date();
-		long t = d.getTime();
-		String time = new Long(t).toString();
-		String logName = "logs/client.log." + hostname + "." + time;
+		String time = new Long(ID).toString();
+		String logName = "logs/client.log." + time;
 		logFile = new YLogFile(logName);
+		logFile.pn("# Start of logfile for client " + ID +
+		  " at host " + hostname);
 	    }	    
+
 	    // add command to logfile
 	    if (pop.clientLog && logFile != null) {
 		Date d = new Date();
 		long t = d.getTime();
 		String timestamp = new Long(t).toString();
-		logFile.pn(timestamp);
+		DateFormat dtf = DateFormat.getDateTimeInstance(
+		  DateFormat.MEDIUM, DateFormat.MEDIUM);
+		logFile.pn(timestamp + "  # " + dtf.format(d));
 		logFile.pn(cmd);
 	    }
 	    

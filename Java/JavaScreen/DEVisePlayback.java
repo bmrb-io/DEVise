@@ -17,6 +17,10 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.8  2001/10/16 22:14:28  wenger
+// Major cleanup of command playback code; fixed bug 711 (problem with
+// command log playback).
+//
 // Revision 1.7  2001/10/05 20:19:08  xuk
 // Fixed bug 700: show error message for "null" log file name.
 //
@@ -49,6 +53,12 @@ public class DEVisePlayback implements Runnable
     private Thread _thread = null;
     private String _filename = null;
     private jsdevisec _jsc = null;
+    private BufferedReader _logFile = null;
+
+    class JSCommand {
+        public long timestamp;
+	public String command;
+    }
 
     public DEVisePlayback(jsdevisec jsc, DEViseCmdDispatcher dispatcher,
       String filename) {
@@ -62,12 +72,10 @@ public class DEVisePlayback implements Runnable
 
     public void run()
     {
-	long pretime = 0, time = 0;
+	long pretime = 0;
 
 	try {
 	    _jsc.isPlayback = true;
-
-	    BufferedReader file = null;
 
 	    if (_filename == null) {
 		_jsc.showMsg("No log file name specified. Stop playback.");
@@ -77,23 +85,17 @@ public class DEVisePlayback implements Runnable
 
 	    if ( _filename.startsWith("http") ) { 
 		URL myURL = new URL(_filename);
-		file = new BufferedReader(new InputStreamReader(
+		_logFile = new BufferedReader(new InputStreamReader(
 		  myURL.openStream()));
 	    } else {
-		file = new BufferedReader(new FileReader(_filename));
+		_logFile = new BufferedReader(new FileReader(_filename));
 	    }
 
 	    System.out.println("Starting playback of command log " + _filename);
 	    _jsc.pn("Starting playback of command log " + _filename);
 
-	    String line = null;
-	     
-	    while ((line = file.readLine()) != null) {
-	        _jsc.pn("read line: " + line);
-		if (DEBUG >= 1) {
-	            System.out.println("read line: " + line);
-		}
-	        time = Long.valueOf(line).longValue();
+	    JSCommand cmd = null;
+	    while ((cmd = readCommand()) != null) {
 		    
 	        //
 	        // If we are attempting to play back at the original
@@ -107,7 +109,7 @@ public class DEVisePlayback implements Runnable
 	        // leaving it this way for now.  RKW 2001-10-16.
 	        long gap;
 	        if (_jsc.isOriginal && pretime != 0) {
-		    gap = time - pretime;
+		    gap = cmd.timestamp - pretime;
 		    gap = Math.max(gap, 1);
 	        } else {
 	            gap = 1;
@@ -118,40 +120,34 @@ public class DEVisePlayback implements Runnable
 		      " ms");
 		}
 	        Thread.sleep(gap);
-	        pretime = time;		
+	        pretime = cmd.timestamp;		
 		    
-	        line = file.readLine();
-		if (DEBUG >= 1) {
-	            System.out.println("read line: " + line);
-		}
-	        _jsc.pn("read line: " + line);
-
-	        if ( line.startsWith(DEViseCommands.CONNECT) ||
-	          line.startsWith(DEViseCommands.GET_SESSION_LIST) ||
-	          line.startsWith(DEViseCommands.EXIT) ) {
+	        if ( cmd.command.startsWith(DEViseCommands.CONNECT) ||
+	          cmd.command.startsWith(DEViseCommands.GET_SESSION_LIST) ||
+	          cmd.command.startsWith(DEViseCommands.EXIT) ) {
 
 		    //
 		    // Special case -- don't execute these commands.
 		    //
 		    continue;
 
-	        } else if ( line.startsWith(DEViseCommands.SET_3D_CONFIG) ) {
+	        } else if ( cmd.command.startsWith(DEViseCommands.SET_3D_CONFIG) ) {
 
 		    //
 		    // Special case -- execute this command on the
 		    // client side.
 		    //
-		    String[] args = DEViseGlobals.parseString(line);
+		    String[] args = DEViseGlobals.parseString(cmd.command);
 		    _jsc.jscreen.collab3DView(args);
 		    continue;
 
 	        } else {
-		    if (line.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
+		    if (cmd.command.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
 		        //
 		        // Set display size to *our* display size, not
 		        // the one used when the log was generated.
 		        //
-		        line = DEViseCommands.SET_DISPLAY_SIZE + " " + 
+		        cmd.command = DEViseCommands.SET_DISPLAY_SIZE + " " + 
 			    _jsc.jsValues.uiglobals.screenSize.width + " " + 
 			    _jsc.jsValues.uiglobals.screenSize.height + " " + 
 			    _jsc.jsValues.uiglobals.screenRes + " " + 
@@ -161,11 +157,11 @@ public class DEVisePlayback implements Runnable
 		    //
 		    // Send the command to the JSPoP.
 		    //
-		    _dispatcher.start(line);
+		    _dispatcher.start(cmd.command);
 	        }
 	    }
 
-	    file.close();
+	    _logFile.close();
 
 	} catch (InterruptedException e) {
 	    System.err.println("Wrong long number format: " + e.getMessage());
@@ -197,6 +193,81 @@ public class DEVisePlayback implements Runnable
     {
         _thread.stop();
     }
+
+    private JSCommand readCommand() throws IOException
+    {
+	JSCommand cmd = null;
+
+        String timeLine = readLine();
+	if (timeLine != null) {
+	    String cmdLine = readLine();
+	    if (cmdLine != null) {
+	        cmd = new JSCommand();
+		cmd.timestamp = Long.valueOf(timeLine.trim()).longValue();
+		cmd.command = cmdLine;
+	    }
+	}
+
+	if (DEBUG >= 1) {
+	    System.out.println("Read command (timestamp " + cmd.timestamp +
+	      "): " + cmd.command);
+	}
+
+	return cmd;
+    }
+
+    // Read a non-blank, non-comment line.
+    private String readLine() throws IOException
+    {
+        String origLine = null;
+	String procLine = null;
+
+	while ((procLine = stripComment(origLine)) == null) {
+	    origLine = _logFile.readLine();
+	    if (origLine == null) break;
+            _jsc.pn("read line: " + origLine);
+	    if (DEBUG >= 1) {
+                System.out.println("read line: " + origLine);
+	    }
+	}
+
+	return procLine;
+    }
+
+    // Returns null if line is blank or comment; returns non-comment part
+    // of line otherwise.
+    private String stripComment(String line)
+    {
+        String result = null;
+
+	// Note: we may want to not consider a # a comment if it's inside
+	// braces.
+	if (line != null) {
+	    boolean blank = true;
+	    int last = -1;
+
+	    for (int index = 0; index < line.length(); index++) {
+	        char tmpC = line.charAt(index);
+	        if (!Character.isWhitespace(tmpC)) {
+		    // # is comment character.
+		    if (tmpC == '#') {
+			last = index - 1;
+			break;
+		    } else {
+		        blank = false;
+		    }
+	        }
+	    }
+
+	    if (!blank) {
+		if (last > -1) {
+	            result = line.substring(0, last + 1);
+		} else {
+		    result = line;
+		}
+	    }
+	}
+
+	return result;
+    }
 }
-
-
