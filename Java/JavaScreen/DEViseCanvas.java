@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2001/04/01 03:51:12  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.70  2001/03/25 20:38:22  xuk
 // Send JAVAC_Collab_3DView command for 3D view collaboraion.
 // 1. key 'R' or 'r' pressed;
@@ -1217,11 +1220,19 @@ public class DEViseCanvas extends Container
             jsc.jsValues.canvas.isInteractive = false;
 
             if (view.viewDimension == 3) {
-                isMouseDragged = false;
-                repaint();
-		
+
 		// send command to collaborations if necessary
 		if (jsc.specialID == -1) {
+
+		    // for 3D drill-down
+		    if ((jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) 
+			&& (activeView.isDrillDown) && (!isMouseDragged) 
+			&& (isInViewDataArea)) {
+			Point p = event.getPoint();			
+			drillDown3D(p);
+			return;
+		    }
+
 		    String cmd = DEViseCommands.SET_3D_CONFIG
 			+ activeView.getCurlyName();
 		    
@@ -1238,7 +1249,6 @@ public class DEViseCanvas extends Container
 		    for (int i=0; i<3; i++) {
 			f = new Float(origin[i]);
 			cmd = cmd + " {" + f.toString() + "}";
-
 		    }
 
 		    cmd = cmd + " {" + crystal.shiftedX + "}" +
@@ -1246,7 +1256,10 @@ public class DEViseCanvas extends Container
 
 		    dispatcher.start(cmd);	
 		}
-		
+
+                isMouseDragged = false;
+                repaint();		
+
                 return;
             }
 
@@ -1339,7 +1352,7 @@ public class DEViseCanvas extends Container
             }
 
             if (view.viewDimension == 3) {
-                return;
+		return;
             }
 
             if (!isMouseDragged && isInViewDataArea) {
@@ -1350,6 +1363,7 @@ public class DEViseCanvas extends Container
 		    if (activeView.isDrillDown) {
                         cmd = DEViseCommands.SHOW_RECORDS + " " +
 			  activeView.getCurlyName() + " " +
+			  "0 " +   
 			  activeView.translateX(p.x, 2) + " " +
 			  activeView.translateY(p.y, 2);
 		    }
@@ -1416,9 +1430,6 @@ public class DEViseCanvas extends Container
 
         public void mouseDragged(MouseEvent event)
         {
-
-	    int action = 0;
-
             if (DEBUG >= 2) {
                 System.out.println("DEViseCanvas(" + view.viewName +
 		  ").ViewMouseMotionListener.mouseDragged()");
@@ -1437,13 +1448,10 @@ public class DEViseCanvas extends Container
 
                 if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
                     crystal.translate(dx, dy);
-		    action = 1;
                 } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
                     crystal.scale(dx, dy);
-		    action = 2;
                 } else {
                     crystal.rotate(dx, dy);
-		    action = 0;
                 }
 
                 jsc.jsValues.canvas.isInteractive = true;
@@ -1869,6 +1877,39 @@ public class DEViseCanvas extends Container
             }
         }
     }
+
+    // 3D drill-down
+    public void drillDown3D(Point p)
+    {
+	//jsc.pn("mouse point: " + p.x + " " + p.y);
+	Vector atomList = new Vector();
+	Float f;
+
+	crystal.drillDown3D(p, atomList);
+
+	if (atomList.size() > 0) {
+	    String cmd = DEViseCommands.SHOW_RECORDS + " " + 
+	    activeView.getCurlyName() + " " + atomList.size();
+	    
+	    for (int i=0; i<atomList.size(); i++) {
+		DEViseAtomInCrystal atom = (DEViseAtomInCrystal) atomList.elementAt(i);
+		for (int j=0; j<3; j++) {
+		    f = new Float(atom.pos[j]);
+		    cmd = cmd + " " + f.toString();
+		}
+	    }
+
+	    jscreen.guiAction = true;
+	    dispatcher.start(cmd);
+	}
+	
+	isInViewDataArea = false;
+	selectedCursor = null;
+	whichCursorSide = DEViseCursor.sideNone;
+	isMouseDragged = false;
+	repaint();
+    }
+
 }
 
 // this class is used to create XOR of part of image
