@@ -151,7 +151,7 @@ if (! -d $servdir/JavaScreen) then
   mkdir $servdir/JavaScreen
   chmod 755 $servdir/JavaScreen
 endif
-cp -p *.class $servdir/JavaScreen
+cp -p JavaScreen/*.class $servdir/JavaScreen
 chmod 644 $servdir/JavaScreen/*.class
 cp -p *.java $servdir
 chmod 644 $servdir/*.java
@@ -179,7 +179,7 @@ if (! -d $popdir/JavaScreen) then
   mkdir $popdir/JavaScreen
   chmod 755 $popdir/JavaScreen
 endif
-cp -p *.class $popdir/JavaScreen
+cp -p JavaScreen/*.class $popdir/JavaScreen
 chmod 644 $popdir/JavaScreen/*.class
 cp -p *.java $popdir
 chmod 644 $popdir/*.java
