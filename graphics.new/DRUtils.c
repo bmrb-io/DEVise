@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/11/16 17:02:05  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.2  1999/03/10 20:08:32  wenger
   Oops!  Minor error fixed.
 
@@ -33,11 +38,12 @@
 #include <strings.h>
 
 #include "DRUtils.h"
-#include "DataReader.h"
+//#include "DataReader.h"
 #include "DevError.h"
 
 #define DEBUG 0
 
+#if 0
 //-----------------------------------------------------------------------------
 void
 TranslateChars(char *input, ostrstream &listStr)
@@ -102,6 +108,7 @@ OutputType(AttrType type, ostrstream &listStr)
     	break;
     }
 }
+#endif
 
 //-----------------------------------------------------------------------------
 char *

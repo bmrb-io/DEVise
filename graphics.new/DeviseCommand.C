@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.100  2000/03/30 16:27:11  wenger
+  Added printInstances command; destroy command now reports an error
+  if the instance is not found.
+
   Revision 1.99  2000/02/23 21:31:07  wenger
   Re-implemented session description capability.
 
@@ -495,7 +499,6 @@
 #include "MappingInterp.h"
 #include "QueryProc.h"
 
-#include "CatalogComm.h"
 #include "SessionDesc.h"
 #include "StringStorage.h"
 #include "DepMgr.h"
