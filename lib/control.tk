@@ -15,13 +15,16 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.71  1996/06/15 07:15:33  yuc
+#	Add 3D query to the system.
+#
 #	Revision 1.70  1996/06/12 14:57:56  wenger
 #	Added GUI and some code for saving data to templates; added preliminary
-#	graphical display of TDatas; you now have the option of closing a session
-#	in template mode without merging the template into the main data catalog;
-#	removed some unnecessary interdependencies among include files; updated
-#	the dependencies for Sun, Solaris, and HP; removed never-accessed code in
-#	ParseAPI.C.
+#	graphical display of TDatas; you now have the option of closing a
+#	session	in template mode without merging the template into the main
+#	data catalog; removed some unnecessary interdependencies among include
+#	files; updated the dependencies for Sun, Solaris, and HP; removed
+#	never-accessed code in ParseAPI.C.
 #
 #	Revision 1.69  1996/05/31 15:49:03  jussi
 #	Added menu options for SetLinkMaster and ResetLinkMaster.
@@ -284,8 +287,9 @@ set DEViseColors \
 	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
 
 set DEViseShapes \
-	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector} \
-	{6 Block} {7 3DVector} {8 HorLine} {9 Segment} {10 HighLow}}
+	{{0 Rect} {1 RectX} {2 Bar} {3 {Regular Polygon}} {4 Oval} \
+	{5 Vector} {6 Block} {7 3DVector} {8 HorLine} {9 Segment} \
+	{10 HighLow} {11 {GIF Image}} {12 Polygon}}
 
 # global variables:
 # restoring: true if restoring session or template
@@ -557,7 +561,8 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add cascade -label "Kiviat Graph" \
 	-menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
-#.mbar.view.menu add command -label "Background..." -command DoSetBgColor
+.mbar.view.menu add command -label "Foreground..." -command DoSetFgColor
+.mbar.view.menu add command -label "Background..." -command DoSetBgColor
 .mbar.view.menu add cascade -label "Dimensions" \
 	-menu .mbar.view.menu.dimmenu
 .mbar.view.menu add command -label "Title" -command DoSetTitle
@@ -794,20 +799,12 @@ proc DoEditMapping {} {
 	return
     }
 
-    # Find all interpreted mapping
-    set maps [InterpretedGData]
-    if {$maps == ""} {
-	dialog .editError "No Interpreted Mappings" \
-		"View has a compiled mapping which cannot be edited." "" 0 OK
-	return
-    }
-    
-    # Get mapping for the view
+    # Get mapping for the view (first one)
     set map [lindex [DEVise getViewMappings $curView] 0]
     
     # See if map is interpreted
     set found 0
-    foreach m $maps {
+    foreach m [InterpretedGData] {
 	if {$m == $map} {
 	    set found 1
 	    break
@@ -838,6 +835,13 @@ proc DoEditMapping {} {
     set shapeAttr0 [lindex [lindex $params 11] 1]
     set shapeAttr1 [lindex [lindex $params 12] 1]
     set shapeAttr2 [lindex [lindex $params 13] 1]
+    set shapeAttr3 [lindex [lindex $params 14] 1]
+    set shapeAttr4 [lindex [lindex $params 15] 1]
+    set shapeAttr5 [lindex [lindex $params 16] 1]
+    set shapeAttr6 [lindex [lindex $params 17] 1]
+    set shapeAttr7 [lindex [lindex $params 18] 1]
+    set shapeAttr8 [lindex [lindex $params 19] 1]
+    set shapeAttr9 [lindex [lindex $params 20] 1]
 
     set tdata [lindex [lindex $params 0] 1]
 
@@ -860,6 +864,13 @@ proc DoEditMapping {} {
 	    [list "ShapeAttr0" {0 0.1 0.5 1 2} $shapeAttr0] \
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2} $shapeAttr1] \
 	    [list "ShapeAttr2" {0 0.1 0.5 1 2} $shapeAttr2] \
+	    [list "ShapeAttr3" {0 0.1 0.5 1 2} $shapeAttr3] \
+	    [list "ShapeAttr4" {0 0.1 0.5 1 2} $shapeAttr4] \
+	    [list "ShapeAttr5" {0 0.1 0.5 1 2} $shapeAttr5] \
+	    [list "ShapeAttr6" {0 0.1 0.5 1 2} $shapeAttr6] \
+	    [list "ShapeAttr7" {0 0.1 0.5 1 2} $shapeAttr7] \
+	    [list "ShapeAttr8" {0 0.1 0.5 1 2} $shapeAttr8] \
+	    [list "ShapeAttr9" {0 0.1 0.5 1 2} $shapeAttr9] \
 	    ] 0 ]
     
     if {$parm == ""} {
@@ -878,9 +889,12 @@ proc DoEditMapping {} {
 	    [lindex $parm 5] \
 	    [lindex $parm 6] \
 	    [findNumericValue $DEViseShapes [lindex $parm 7]] \
-	    [lindex $parm 8] \
-	    [lindex $parm 9] \
-	    [lindex $parm 10] ]
+	    [lindex $parm 8] [lindex $parm 9] \
+	    [lindex $parm 10] [lindex $parm 11] \
+	    [lindex $parm 12] [lindex $parm 13] \
+	    [lindex $parm 14] [lindex $parm 15] \
+	    [lindex $parm 16] [lindex $parm 17] \
+	]
 
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $params"
