@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/18 18:16:22  jussi
+  This class now creates both X windows and X pixmaps, depending
+  on whether the system is in interactive mode or batch mode.
+
   Revision 1.16  1996/04/11 18:15:36  jussi
   Made XDisplay use the polling mechanism temporarily until the
   occasional display update problem has been resolved.
@@ -168,7 +172,7 @@ void XDisplay::Register()
   printf("About to be registered... %d\n",_display->fd);
 #endif
 
-#if 0
+#if 1
   (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
 						10, AllState, true,
 						_display->fd);

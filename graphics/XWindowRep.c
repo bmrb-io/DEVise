@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/04/18 18:17:01  jussi
+  Added support for drawing into pixmaps instead of windows.
+
   Revision 1.31  1996/04/17 20:33:41  jussi
   Added ExportGIF() method.
 
@@ -1103,7 +1106,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
   
   /* ungrab server */
   XUngrabServer(_display);
-  XFlush(_display);
+  XSync(_display,false);
 }
 
 /***********************************************************************
@@ -1825,7 +1828,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
   XFreeGC(_display, popUpGc);
   if (!savePopup)
     XUngrabServer(_display);
-  XFlush(_display);
+  XSync(_display,false);
 }
 
 Boolean XWindowRep::Scrollable()

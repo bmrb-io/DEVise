@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/09 18:56:00  jussi
+  Minor change to make this file compile under HP-UX.
+
   Revision 1.8  1996/04/09 18:04:09  jussi
   Collection of fd's (fdset) now assembled and disassembled in
   Register/Unregister instead of Run1. Callbacks to be deleted
@@ -99,6 +102,11 @@ DefinePtrDList(DispatcherList,Dispatcher *);
 class Dispatcher {
 public:
   Dispatcher(StateFlag state = GoState );
+
+  static void InsertMarker(int writeFd);
+  static void FlushMarker(int readFd);
+  static void CreateMarker(int &readFd,int& writeFd);
+  static void CloseMarker(int readFd,int writeFd);
 
   virtual ~Dispatcher(){
     DeleteDispatcher();

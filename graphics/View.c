@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/04/19 19:07:02  wenger
+  Changed exit(1) to Exit::DoExit(1).
+
   Revision 1.31  1996/04/16 20:07:01  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -251,12 +254,18 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
   _label.name = 0;
   
   _cursors = new DeviseCursorList;
+
+  Dispatcher::CreateMarker(readFd,writeFd);
   
-  Dispatcher::Current()->Register(this);
+  Dispatcher::Current()->Register(this,10,GoState,false,readFd);
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 View::~View()
 {
+
+  Dispatcher::CloseMarker(readFd,writeFd);
   if (_querySent) {
     fprintf(stderr,
 	    "Destructor of subclass of View did not abort query (%s: %d)\n",
@@ -387,6 +396,8 @@ void View::SetVisualFilter(VisualFilter &filter)
 
   int flushed = _filterQueue->Enqueue(filter);
   ReportFilterChanged(filter, flushed);
+
+  Dispatcher::InsertMarker(writeFd);
 }
 
 void View::GetVisualFilter(VisualFilter &filter)
@@ -1044,6 +1055,8 @@ XXX: need to crop exposure against _filter before sending query.
 
 void View::Run()
 {
+  Dispatcher::FlushMarker(readFd);
+
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
 #ifdef DEBUG
   if (mode == ControlPanel::LayoutMode)
@@ -1134,6 +1147,8 @@ void View::Run()
     return;
   }
   
+  Dispatcher::InsertMarker(writeFd);
+
 #ifdef DEBUG
   printf("Run: window 0x%p scrollable is %d\n", 
 	 winRep, (winRep->Scrollable() ? 1 : 0));

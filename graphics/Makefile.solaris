@@ -1,5 +1,5 @@
 depend:
-	makedepend -fMakefile.solaris -I/s/X11/include *.c *.C
+	makedepend -fMakefile.solaris  -I/s/X11/include *.c *.C
 
 # DO NOT DELETE
 

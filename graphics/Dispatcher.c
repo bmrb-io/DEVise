@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/09 18:55:35  jussi
+  Minor change to make this file compile under HP-UX.
+
   Revision 1.10  1996/04/09 18:03:56  jussi
   Collection of fd's (fdset) now assembled and disassembled in
   Register/Unregister instead of Run1. Callbacks to be deleted
@@ -55,6 +58,7 @@
 #include <unistd.h>
 #include <memory.h>
 #include <sys/time.h>
+#include<fcntl.h>
 #ifdef AIX
 #include <sys/select.h>
 #endif
@@ -67,6 +71,7 @@
 
 //#define DEBUG
 //#define DISPATCHER_SLEEP
+
 
 Dispatcher *Dispatcher::_current_dispatcher = NULL;
 DispatcherList Dispatcher::_dispatchers;
@@ -87,6 +92,55 @@ fd_set Dispatcher::fdset;
 int Dispatcher::fdset;
 #endif
 int Dispatcher::maxFdCheck = 0;
+
+void Dispatcher::InsertMarker(int writeFd)
+{
+	char tempBuff = 'a';
+	if (writeFd != -1 )
+		write(writeFd,&tempBuff,sizeof(char));
+}
+
+void Dispatcher::FlushMarker(int readFd)
+{
+
+ // Read thru the pipe and check if anyone needs the ProcQuery to
+ // start from the first - if so return 1 else return 0;
+ 
+ char tempBuff = 'a';
+ int status = 0;
+
+ while((status = read(readFd,&tempBuff,sizeof(char))) > 0);
+
+}
+
+void Dispatcher::CreateMarker(int & readFd,int & writeFd)
+{
+
+	int pipeFd[2];
+
+	if ( pipe(pipeFd) < 0 ){
+	
+	 perror("Pipe cannot be formed\n");
+	 readFd = writeFd = -1;
+	}
+
+	readFd = pipeFd[0];
+	writeFd = pipeFd[1];
+
+     if (fcntl(readFd,F_SETFL,O_NDELAY) < 0)
+	  perror("Error in DEVise");
+
+
+}
+
+void Dispatcher::CloseMarker(int readFd,int writeFd)
+{
+
+	if (readFd) close(readFd);
+	if (writeFd) close(writeFd);
+
+}
+
 
 Dispatcher::Dispatcher(StateFlag state)
 {
@@ -142,6 +196,10 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   info->flag = flag;
   info->priority = priority;
   info->fd = fd;
+
+#ifdef DEBUG
+  printf("In Register, fd = %d\n", fd);
+#endif
 
   if (fd >= 0) {
 #ifndef HPUX
@@ -382,6 +440,7 @@ void Dispatcher::Run1()
   }
   _callbacks.DoneIterator(index);
 
+  
   long now = DeviseTime::Now();
   long diff = now - _oldTime;
   if (diff >= DISPATCHER_TIMER_INTERVAL) {
@@ -414,13 +473,11 @@ void Dispatcher::Run1()
   if (NumberFdsReady < 0)
     perror("select");
 
-#if 0
-  printf("Checked %d fds, %d have data\n", maxFdCheck + 1, NumberFdsReady);
-#endif
 
   // Check if any one of the fds have something to be read...
 
   if (NumberFdsReady > 0) { 
+  //printf("Checked %d fds, %d have data\n", maxFdCheck + 1, NumberFdsReady);
     for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
       DispatcherInfo *callback = _allCallbacks.Next(index);
       if (callback->flag & _stateFlag) {
@@ -430,8 +487,9 @@ void Dispatcher::Run1()
 #else
 	  if (fdread & (1 << callback->fd)) {
 #endif
+
 #ifdef DEBUG
-	    printf("Check for correctness... Called \n"); 
+	printf(" Check for correctness.. Called fd = %d \n", callback->fd); 
 #endif
 	    callback->callBack->Run();
 	  }
@@ -450,7 +508,7 @@ void Dispatcher::Run1()
 	  if (fdread & (1 << callback->fd)) {
 #endif
 #ifdef DEBUG
-	    printf("Check for correctness... Called \n");
+      	printf(" Check for correctness.. Called FD %d \n",callback->fd);
 #endif
 	    callback->callBack->Run();
 	  }

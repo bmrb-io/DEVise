@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/04/17 20:32:38  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
 
@@ -267,9 +270,9 @@ int Grab()
     startflash();
     for (i=0; i<5; i++) {
       flashrect(ix, iy, iw, ih, 1);
-      XFlush(theDisp);  Timer(100);
+      XSync(theDisp,false);  Timer(100);
       flashrect(ix, iy, iw, ih, 0);
-      XFlush(theDisp);  Timer(100);
+      XSync(theDisp,false);  Timer(100);
     }
     endflash();
   }

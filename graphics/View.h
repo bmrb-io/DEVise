@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/04/10 02:43:54  jussi
+  Added small check to SetXMin() to accommodate multiple mappings
+  per view.
+
   Revision 1.17  1996/04/09 22:51:58  jussi
   Added SetOverrideColor() and GetOverrideColor().
 
@@ -381,6 +385,8 @@ private:
 
 	AxisLabel *_xAxisLabel;
 	AxisLabel *_yAxisLabel;
+
+	int readFd,writeFd;
 
 	/* TRUE if _filter has changed since last time query was sent */
 	Boolean _filterChanged; 
