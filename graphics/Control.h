@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/09 18:12:02  kmurli
+  No change to this makefile.
+
   Revision 1.4  1996/04/16 19:45:11  jussi
   Added DoAbort() method.
 
@@ -54,28 +57,11 @@ public:
 	/* Find pointer to instance with given name */
 	static void *FindInstance(char *name);
 
-	/* Return name of file */
-	virtual char *FileName() = 0;
-	virtual char *FileAlias() = 0;
-
-
-	/* Return name of window last accessed */
-	virtual char *WindowName()= 0;
-
-	/* Return name of gData last accessed */
-	virtual char *GDataName()= 0;
-
-	/* Return name of view last accessed */
-	virtual char *ViewName() = 0;
-
-	/*Return TRUE if currently restoring a session*/
-	virtual Boolean Restoring()=0;
-
 	/* Get current mode */
-	virtual Mode GetMode()=0;
+	virtual Mode GetMode() = 0;
 
 	/* Set busy status, should be called in pairs. */
-	virtual void SetBusy()=0;
+	virtual void SetBusy() = 0;
 	virtual void SetIdle() = 0;
 
 	/* Get current busy status */
@@ -83,8 +69,6 @@ public:
 
 	/* Start current session */
 	virtual void StartSession() = 0;
-	virtual char *SessionName() =0;
-	virtual void SetSessionName(char *name) = 0;
 
 	/* Execute script */
 	virtual void ExecuteScript(char *script) = 0;
