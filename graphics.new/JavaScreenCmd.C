@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.98  2000/03/27 21:42:25  wenger
+  Removed unused JavaScreenCmd::DrawAllCursors() method.
+
   Revision 1.97  2000/03/17 14:25:03  wenger
   Removed unused JAVAC_DeleteView command.
 
@@ -933,6 +936,10 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	_argv = new (char*)[argc];
 	errmsg = NULL;
 
+	_recording = false;
+	_commandFile = NULL;
+	_dataFile = -1;
+
     for (i=0; i< _argc; ++i)
     {
         int j = 0;
@@ -1218,6 +1225,10 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// ...end of kludgey section.
 	//
 
+#if 0 // Under development.
+	(void)StartRecording(fullpath);
+#endif
+
 	// Send commands to create the top-level views.
 	int viewIndex = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex)) {
@@ -1244,7 +1255,12 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 		  "Cleaning up partially-opened session\n");
 #endif
         DoCloseSession();
+		if (_recording) _recordingStatus += StatusFailed;
     }
+
+#if 0 // Under development.
+	(void)StopRecording();
+#endif
 
 #if JS_TIMER
 	et.ReportTime("OpenSession");
@@ -1927,6 +1943,23 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
 				break;
 			}
 			filesize += bytesRead;
+
+			if (_recording) {
+				int bytesWritten = write(_dataFile, buf, bytesRead);
+			    if (bytesWritten < 0) {
+				    reportErrSys("write data file");
+					_recordingStatus += StatusFailed;
+			    } else if (bytesWritten != bytesRead) {
+				    // Note: we may want to re-try the write here.  RKW
+					// 2000-03-28.
+				    char errBuf[2048];
+				    sprintf(errBuf, "Expected to write %d bytes; wrote %d",
+				      bytesRead, bytesWritten);
+				    reportErrSys(errBuf);
+					_recordingStatus += StatusFailed;
+			    }
+			}
+
 #if defined(DEBUG_LOG)
         	sprintf(logBuf, "    %d bytes sent\n", filesize);
         	DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
@@ -2448,6 +2481,12 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
     printf(")\n");
 #endif
 
+    // record the command in the command file if necessary
+	if (_recording) {
+	    fprintf(_commandFile, "command: ");
+		PrintArgs(_commandFile, argc, argv, true);//TEMP?
+	}
+
 	// send the command out
 	int status = _control->ReturnVal(API_JAVACMD, argc, argv, true);
 	if (status < 0) {
@@ -2966,4 +3005,140 @@ JavaScreenCmd::UpdateViewImage(View *view, int imageSize)
 	args.FillInt(imageSize);
 
 	args.ReturnVal(this);
+}
+
+//====================================================================
+DevStatus
+JavaScreenCmd::StartRecording(const char *sessionFile)
+{
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::StartRecording(%s)\n", sessionFile);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
+
+    DevStatus result(StatusOk);
+
+	if (_recording) {
+	    reportErrNosys("Can't start recording when already recording");
+		result = StatusFailed;
+	}
+
+	if (result.IsComplete()) {
+		result += OpenCacheFiles(sessionFile, true);
+	}
+
+	if (result.IsComplete()) {
+	    _recording = true;
+		_recordingStatus = StatusOk;
+		//TEMP -- save display size
+	} else {
+	    if (_commandFile) {
+		    (void)fclose(_commandFile);
+			_commandFile = NULL;
+		}
+	}
+
+//TEMP -- what if command file already exists?
+//TEMP -- add file header?
+
+    return result;
+}
+
+//====================================================================
+DevStatus
+JavaScreenCmd::OpenCacheFiles(const char *sessionFile, Boolean writing)
+{
+    DevStatus result(StatusOk);
+
+	if (result.IsComplete()) {
+		char fileBuf[MAXPATHLEN];
+		sprintf(fileBuf, "%s.commands", sessionFile);
+		_commandFileName = CopyString(fileBuf);
+		_commandFile = fopen(_commandFileName, writing ? "w" : "r");
+		if (!_commandFile) {
+			sprintf(logBuf, "Can't open command file %s", _commandFileName);
+		    reportErrSys(logBuf);
+			result += StatusFailed;
+		}
+	}
+
+	if (result.IsComplete()) {
+		char fileBuf[MAXPATHLEN];
+		sprintf(fileBuf, "%s.data", sessionFile);
+		_dataFileName = CopyString(fileBuf);
+		_dataFile = open(fileBuf, writing ? O_WRONLY | O_CREAT : O_RDONLY,
+		  0644);
+		if (_dataFile < 0) {
+		    sprintf(logBuf, "Can't open data file %s", _dataFileName);
+		    reportErrSys(logBuf);
+			result += StatusFailed;
+		}
+	}
+
+	return result;
+}
+
+//====================================================================
+DevStatus
+JavaScreenCmd::StopRecording()
+{
+#if defined (DEBUG_LOG)
+    sprintf(logBuf, "JavaScreenCmd::StopRecording()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
+
+    DevStatus result(StatusOk);
+
+    if (!_recording) {
+	}
+
+	if (result.IsComplete()) {
+		result += CloseCacheFiles(!_recordingStatus.IsComplete());
+	}
+
+	_recording = false;
+
+    return result;
+}
+
+//====================================================================
+DevStatus
+JavaScreenCmd::CloseCacheFiles(Boolean deleteFiles)
+{
+    DevStatus result(StatusOk);
+
+	if (fclose(_commandFile) != 0) {
+	    reportErrSys("Error closing command file");
+	    result = StatusFailed;
+	}
+	_commandFile = NULL;
+
+	if (deleteFiles) {
+	    if (unlink(_commandFileName) < 0) {
+		    sprintf(logBuf, "Error unlinking command file %s",
+			  _commandFileName);
+		    reportErrSys(logBuf);
+			result += StatusWarn;
+		}
+	}
+	FreeString(_commandFileName);
+	_commandFileName = NULL;
+
+	if (close(_dataFile) < 0) {
+	    reportErrSys("Error closing data file");
+		result = StatusFailed;
+	}
+	_dataFile = -1;
+
+	if (deleteFiles) {
+	    if (unlink(_dataFileName) < 0) {
+		    sprintf(logBuf, "Error unlinking data file %s", _dataFileName);
+		    reportErrSys(logBuf);
+			result += StatusWarn;
+		}
+	}
+	FreeString(_dataFileName);
+	_dataFileName = NULL;
+
+    return result;
 }

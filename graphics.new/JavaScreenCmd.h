@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  2000/03/27 21:42:34  wenger
+  Removed unused JavaScreenCmd::DrawAllCursors() method.
+
   Revision 1.32  2000/03/17 14:25:12  wenger
   Removed unused JAVAC_DeleteView command.
 
@@ -177,6 +180,7 @@ class ControlPanel;
 class ViewGraph;
 
 class DeviseCursor;
+class FILE;
 
 
 class JavaScreenCmd
@@ -253,6 +257,13 @@ class JavaScreenCmd
 
 		static Boolean	_postponeCursorCmds;
 
+		Boolean			_recording;
+		DevStatus		_recordingStatus;
+		char *			_commandFileName;
+		FILE *			_commandFile;
+		char *			_dataFileName;
+		int				_dataFile;
+
 		// JavaScreen->Server Requests
 		void GetSessionList();
 		void CloseCurrentSession();
@@ -296,6 +307,12 @@ class JavaScreenCmd
 		void UpdateViewImage(View *view, int imageSize);
 		void EraseChangedCursors();
 		void DrawChangedCursors();
+
+		DevStatus StartRecording(const char *sessionFile);
+		DevStatus StopRecording();
+		DevStatus OpenCacheFiles(const char *sessionFile, Boolean
+		  writing);
+        DevStatus CloseCacheFiles(Boolean deleteFiles);
 
 	protected:
 		static void DrawCursor(View *view, DeviseCursor *cursor);
