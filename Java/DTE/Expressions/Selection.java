@@ -46,7 +46,7 @@ public class Selection implements Expression {
             return st.get( str );
 
         str="table "+alias+" does not have attr "+attribute;
-        throw new RuntimeException( str );
+        throw new TypeCheckException( str );
     }
 
     public ExecExpr createExec(Vector[] projLists) throws InternalError{

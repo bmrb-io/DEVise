@@ -52,7 +52,6 @@ public class Operator implements Expression {
         evalOp = type.getOperator( operator, right.getType() );	
         type = evalOp.getType();
 
-System.out.println("Not in table!");
         st.put( this );
         return this;
     }

@@ -2,6 +2,7 @@ package Types;
 
 import java.io.*;
 import Operators.*;
+import Expressions.*;
 
 public class IntDesc implements TypeDesc {
     static final String name = "int";
@@ -14,10 +15,16 @@ public class IntDesc implements TypeDesc {
     }
 
     public EvalOperator getOperator( String opStr, TypeDesc arg )
-	throws IllegalArgumentException
+	throws TypeCheckException
     {
+	String msg1 = "\n  This operation is not supported by our current version:"; 
+        String msg2 = "\n\t  int " + opStr + " " + arg.getString( );
+        String msg3 = "\n  The following operations on integers are allowed:";
+	String msg4 = "\n\t  int [op] int,";
+	String msg5 = "\n  where [op] could be ==, !=, <, <=, >, >=, +, -, *, /.\n\n";
+
         if ( ! arg.getString( ).equals(name) )
-	    throw new IllegalArgumentException("Type incompatible!"); 
+	    throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 
 
         if ( opStr.equals("==") ) 
             return new IntEqualOp( );
@@ -49,7 +56,7 @@ public class IntDesc implements TypeDesc {
         if ( opStr.equals("/") ) 
             return new IntDivOp( );
 
-	throw new IllegalArgumentException("Type incompatible!"); 
+	throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 
     }
 }
 

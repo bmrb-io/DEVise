@@ -34,7 +34,6 @@ public class Constant implements Expression {
 		if ( st.containsKey( strRep ) )
 		    return st.get(strRep);
 
-System.out.println( "Not here!");		
 		st.put( this );
 		return this;
 	}

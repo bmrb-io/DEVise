@@ -1,8 +1,8 @@
 package Types;
 
 import java.io.*;
-
 import Operators.*;
+import Expressions.*;
 
 /** Type Descriptor is implemented as a String that contains names like
     "int", "double", etc. */
@@ -10,6 +10,6 @@ import Operators.*;
 public interface TypeDesc {
     public String getString( );
     public EvalOperator getOperator( String opStr, TypeDesc arg )
-	throws IllegalArgumentException;
+	throws TypeCheckException;
 }
 

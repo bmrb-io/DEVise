@@ -30,7 +30,7 @@ public class TypeCheckTest {
         fromClause.addElement( new TableAlias(relId, "t") );
 
         TypeDesc type = new IntDesc( );
-        Selection s = new Selection( "t", "i", type );
+        Selection s = new Selection( "t", "a", type );
         Constant c = new Constant( new DTE_Int( 3 ) );
         Operator op = new Operator( "+", s, c );
         selectClause.addElement( op );
