@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.91  1996/08/29 22:27:35  guangshu
+#	Changed puts to proc Puts in case the client wants to be quiet.
+#
 #	Revision 1.90  1996/08/28 00:20:01  wenger
 #	Improved use of Dali to correctly free images (use of Dali is now fully
 #	functional with filenames in data).
@@ -550,6 +553,7 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Save as Batch Script" \
 	-command {DoSaveAs 0 0 0 1}
 .mbar.session.menu add separator
+
 .mbar.session.menu add cascade -label "Export Template" \
 	-menu .mbar.session.menu.exportMenu
 menu .mbar.session.menu.exportMenu -tearoff 0
@@ -566,7 +570,15 @@ menu .mbar.session.menu.exportMenu -tearoff 0
 .mbar.session.menu add command -label "Remove Replica" \
 	-command { NotImplemented }
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Print" -command PrintView
+
+.mbar.session.menu add cascade -label "Print" \
+	-menu .mbar.session.menu.printMenu
+menu .mbar.session.menu.printMenu -tearoff 0
+.mbar.session.menu.printMenu add command -label "Without Map" \
+	-command PrintView
+.mbar.session.menu.printMenu add command -label "With Map" \
+	-command PrintWithMap
+
 .mbar.session.menu add command -label "Quit" -command DoExit
 
 menu .mbar.tdata.menu -tearoff 0
