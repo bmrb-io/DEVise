@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2001/11/28 21:56:18  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.82.4.1  2001/11/21 23:35:36  wenger
 // Fixed bug 729 (JavaScreen problem displaying mouse location for date
 // axes).
@@ -1096,7 +1099,7 @@ public class DEViseCanvas extends Container
 
 		    // send command to collaborations if necessary
 		    if (jsc.specialID == -1) {
-			String cmd = DEViseCommands.SET_3D_CONFIG 
+			String cmd = DEViseCommands.SET_3D_CONFIG + " "
 			    + activeView.getCurlyName();
 			
 			float[][] data = crystal.lcs.getData();
@@ -1321,7 +1324,7 @@ public class DEViseCanvas extends Container
 			return;
 		    }
 
-		    String cmd = DEViseCommands.SET_3D_CONFIG
+		    String cmd = DEViseCommands.SET_3D_CONFIG + " "
 			+ activeView.getCurlyName();
 		    
 		    float[][] data = crystal.lcs.getData();

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2001/11/19 22:20:38  xuk
+// Changes for String[] format socket/commands.
+//
 // Revision 1.34  2001/11/16 17:10:01  xuk
 // Send and receive command in String[] format in DEViseCommSocket.java.
 // Temporarily wrap old String format sendCmd and receiveCmd method outside these new methods, so needn't to change hige-level methods.
@@ -511,17 +514,11 @@ public class DEViseCommSocket
     public void sendCmd(String cmd, short msgType, int ID)
       throws YException
     {
-	/* Force to use the String[] format
         if (DEBUG >= 1) {
             System.out.println("DEViseCommSocket.sendCmd(" + cmd + ", " +
 	      msgType + ", " + ID + ")");
         }
 
-	synchronized (writeSync) {
-	    doSendCmd(cmd, msgType, ID);
-	}
-	*/
-	
         String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
         if (cmdBuffer == null || cmdBuffer.length == 0) {
 	    System.err.println("Unparseable command");
@@ -552,7 +549,8 @@ public class DEViseCommSocket
     {
 
         if (DEBUG >= 1) {
-            System.out.println("DEViseCommSocket.sendCmd(" + cmds + ", " +
+	    //TEMP -- print all args
+            System.out.println("DEViseCommSocket.sendCmd(" + cmds[0] + ", " +
 	      msgType + ", " + ID + ")");
         }
 
