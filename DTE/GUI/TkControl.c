@@ -5,7 +5,7 @@
 #include <tcl.h>
 #include <tk.h>
 
-#include "Control.h"
+#include "DTEControl.h"
 #include "ParseAPIParent.h"
 
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp, 

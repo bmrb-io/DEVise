@@ -1,3 +1,4 @@
+#include <iostream.h>
 #include "ParseAPI.h"
 #include "ParseAPIDTE.h"
 #include "CatalogComm.h"
@@ -26,6 +27,7 @@ int ParseAPIDTE(int argc, char **argv, TkControlPanel *control)
 
     if(!strcmp(argv[0], "dteListCatalog")){
          char* catListing = dteListCatalog(argv[1]);
+	    cout << "************** listing = " << catListing << endl;
       control->ReturnVal(API_ACK, catListing);
       return 1;
     }

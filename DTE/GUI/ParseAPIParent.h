@@ -2,7 +2,7 @@
 #define ParseAPIParent_h
 
 #include "ParseAPIDTE.h"
-#include "Control.h"
+#include "DTEControl.h"
 
 extern int ParseAPIParent(int argc, char **argv, TkControlPanel *control);
 
