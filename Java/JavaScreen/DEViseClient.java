@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2001/09/28 18:50:53  xuk
+// JavaScreen command log playback.
+// Added logFile variable for each DEViseClient object;
+// Modified DEViseClient(), close() and addNewCmd() to record received commands in log file.
+//
 // Revision 1.46  2001/09/12 19:10:46  xuk
 // *** empty log message ***
 //
@@ -306,7 +311,7 @@ public class DEViseClient
 	    Date d = new Date();
 	    long t = d.getTime();
 	    String time = new Long(t).toString();
-	    String logName = "client.log." + host + "." + time;
+	    String logName = "logs/client.log." + host + "." + time;
 	    logFile = new YLogFile(logName);
 	}
     }
