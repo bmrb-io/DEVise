@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.212  1999/12/15 16:25:42  wenger
+  Fixed bugs 543 and 544 (problems with cursor movement).
+
   Revision 1.211  1999/12/14 20:33:52  wenger
   Rubberband lines aren't allowed to go outside of data area; rubberband
   lines are not drawn in views in which zooming is disabled.
@@ -1132,6 +1135,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_autoUpdate = false;
 
+    _viewHelp = NULL;
+
 	_viewZ = -1.0; // invalid -- needs to be set later
 
 	SetDisabledActions(false, false, false, false);
@@ -1164,6 +1169,7 @@ View::~View(void)
 	delete [] _label.name;
 	delete _cursors;
 	delete _filterQueue;
+	if (_viewHelp) free((char *)_viewHelp);
 
 	Unmap();
 	DeleteFromParent();
@@ -4560,6 +4566,13 @@ View::ForceIntoDataArea(int &x, int &y)
   }
 
   return result;
+}
+
+void
+View::SetViewHelp(const char *helpStr)
+{
+  if (_viewHelp) free((char *)_viewHelp);
+  _viewHelp = CopyString(helpStr);
 }
 
 //******************************************************************************

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.77  2000/01/14 18:23:07  wenger
+  Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
+  filters back to the values defined in the session file, without actually
+  re-opening the session.
+
   Revision 1.76  2000/01/13 23:06:51  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -1062,7 +1067,7 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandP
     const int bufSize = 1024;
 	char lineBuf[bufSize];
 
-	while (fgets(lineBuf, bufSize, fp) && result.IsComplete()) {
+	while (ReadCommand(fp, lineBuf, bufSize) && result.IsComplete()) {
 #if defined(DEBUG)
       printf("  read line: %s", lineBuf);
 #endif
@@ -1092,6 +1097,60 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandP
       reportErrSys(errBuf);
 	}
   }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::ReadCommand
+ * Read a single command from the session file.  (Note that a command may
+ * extend over several lines, or several commands may be on one line,
+ * separated by semicolons.)
+ * Returns true if a command was successfully read.
+ */
+Boolean
+Session::ReadCommand(FILE *fp, char buf[], int bufSize)
+{
+  Boolean result = true;
+
+  Boolean done = false;
+  char *ptr = buf;
+  char *last = buf + bufSize - 1;
+  int leftBraces = 0;
+  int rightBraces = 0;
+
+  while (!done) {
+    int tmpC = getc(fp);
+
+	if (tmpC == EOF) {
+	  done = true;
+	  result = false;
+	} else if (tmpC == ';' || tmpC == '\n') {
+	  if (leftBraces == rightBraces) {
+		// Normal end of command.
+	    done = true;
+		result = true;
+	  }
+	}
+
+	if (!done) {
+	  *ptr++ = tmpC;
+
+	  if (tmpC == '{') {
+	    leftBraces++;
+	  } else if (tmpC == '}') {
+	    rightBraces++;
+	  }
+
+	  if (ptr >= last) {
+	    done = true;
+		reportErrNosys("Command buffer too short");
+		result = false;
+	  }
+	}
+  }
+
+  *ptr = '\0';
 
   return result;
 }
@@ -1421,6 +1480,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   status += SaveParams(saveData, "viewGetDisabledActions",
       "viewSetDisabledActions", instance, NULL, NULL, false);
+
+  status += SaveParams(saveData, "getViewHelp", "setViewHelp", instance,
+      NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

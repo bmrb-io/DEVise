@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/01/14 18:23:17  wenger
+  Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
+  filters back to the values defined in the session file, without actually
+  re-opening the session.
+
   Revision 1.27  1999/10/27 17:59:54  wenger
   Fixed bug 525 (child views can't send GData to the JavaScreen); started
   on provision for drill-down in 3D views in the JavaScreen.
@@ -182,6 +187,7 @@ class JavaScreenCmd
 			CURSORCHANGED,
 			PROTOCOLVERSION,
 			RESET_FILTERS,
+			GET_VIEW_HELP,
 			NULL_SVC_CMD
 		}ServiceCmdType;
 
@@ -197,6 +203,7 @@ class JavaScreenCmd
 			DELETECHILDVIEWS,
 			VIEWDATAAREA,
 			UPDATEVIEWIMAGE,
+			SHOW_VIEW_HELP,
 
 			DONE,
 			ERROR,
@@ -246,6 +253,7 @@ class JavaScreenCmd
 		void CursorChanged();
 		void JSProtocolVersion();
 		void JSResetFilters();
+		void GetViewHelp();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);

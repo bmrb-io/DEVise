@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.52  2000/01/14 18:23:16  wenger
+  Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
+  filters back to the values defined in the session file, without actually
+  re-opening the session.
+
   Revision 1.51  2000/01/13 23:07:06  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -428,6 +433,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_ResetFilters)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_GetViewHelp)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -1878,5 +1889,19 @@ DECLARE_CLASS_END
 //
 DECLARE_CLASS_DeviseCommand_(resetAllFilters)
 DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getViewHelp)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setViewHelp)
+DECLARE_CLASS_END
+
+
 
 #endif // _DeviseCommand_h_

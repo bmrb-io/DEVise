@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.89  2000/02/04 17:13:11  wenger
+  Minor change to make child view coordinates correct in non-batch mode.
+
   Revision 1.76  1999/09/30 15:02:05  wenger
   Changed things around so that session file paths sent by the JS always
   start from the "base" session directory -- the devised doesn't "remember"
@@ -438,8 +441,8 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 3;
-static const int protocolMinorVersion = 2;
+static const int protocolMajorVersion = 4;
+static const int protocolMinorVersion = 0;
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -454,6 +457,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_DeleteChildViews",
 	"JAVAC_ViewDataArea",
 	"JAVAC_UpdateViewImage",
+	"JAVAC_ShowViewHelp",
 
 	"JAVAC_Done",
 	"JAVAC_Error",
@@ -1016,6 +1020,9 @@ JavaScreenCmd::Run()
 			break;
 		case RESET_FILTERS:
 			JSResetFilters();
+			break;
+		case GET_VIEW_HELP:
+			GetViewHelp();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
@@ -1699,6 +1706,53 @@ JavaScreenCmd::JSResetFilters()
 }
 
 //====================================================================
+// Reset all visual filters to the values defined in the session file.
+void
+JavaScreenCmd::GetViewHelp()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::GetViewHelp(", _argc, _argv, ")\n");
+#endif
+
+	// Note: x and y are relative to GIF origin.  This used to be the
+	// DEVise window, but now it's the view.
+	if (_argc != 3)
+	{
+		errmsg = "Usage: GetViewHelp <view name> <x> <y>";
+		_status = ERROR;
+		return;
+	}
+
+	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	if (view == NULL) {
+		errmsg = "Can't find specified view";
+		_status = ERROR;
+		return;
+	}
+
+    const char *helpString = view->GetViewHelp();
+	if (!helpString) {
+	    Boolean occupyTop;
+	    int extent;
+		char *title;
+	    view->GetLabelParam(occupyTop, extent, title);
+		helpString = title;
+	}
+	if (!helpString) {
+	    helpString = view->GetName();
+    }
+
+
+	JSArgs args(2);
+	args.FillString(_controlCmdName[SHOW_VIEW_HELP]);
+	args.FillString(helpString);
+	args.ReturnVal(this);
+
+	_status = DONE;
+}
+
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
@@ -2237,10 +2291,17 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	  gridX = gridY = 0.0;
 	}
 
+	string colorStr;
+	PColorID pColor = cursor->GetCursorColor();
+	RGB rgb;
+	if (PM_GetRGB(pColor, rgb)) {
+		colorStr = rgb.ToString();
+	}
+
 	//
     // Generate the command to send.
 	//
-	JSArgs args(11);
+	JSArgs args(14);
 	args.FillString(_controlCmdName[DRAWCURSOR]);
 	args.FillString(cursor->GetName());
 	args.FillString(view->GetName());
@@ -2252,7 +2313,9 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	args.FillString(fixedSize);
 	args.FillDouble(gridX);
 	args.FillDouble(gridY);
-    //TEMP -- need to put in edgeGrid here somewhere
+	args.FillInt(edgeGrid);
+	args.FillString(colorStr.c_str());
+	args.FillString("xor");//TEMP -- fixed for now
 
 	//
     // This JavaScreenCmd object is created only to send the command.

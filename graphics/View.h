@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.101  1999/12/15 16:25:44  wenger
+  Fixed bugs 543 and 544 (problems with cursor movement).
+
   Revision 1.100  1999/12/14 17:57:19  wenger
   Added enableDrawing command (totally enables or disables drawing) to
   allow Omer to avoid "flashing" when he inserts views into windows.
@@ -653,10 +656,10 @@ class View : public ViewWin
 	int ViewLocks() { return _view_locks; }
 	bool IsViewLocked(int locks) { return (_view_locks & locks) != 0; }
 
-	/* get label parameters */
+	/* get label (title) parameters */
 	void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
 	
-	/* set label parameters */
+	/* set label (title) parameters */
 	void SetLabelParam(Boolean occupyTop, int extent, const char *name = 0,
 	    Boolean notifyPile = true);
 
@@ -851,6 +854,9 @@ class View : public ViewWin
     }
 
 	static void EnableDrawing(Boolean enable);
+
+	const char *GetViewHelp() { return _viewHelp; }
+	void SetViewHelp(const char *helpStr);
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
@@ -1054,6 +1060,8 @@ protected:
 		Boolean _refreshPending;
 
 		static Boolean _drawingEnabled;
+		
+		const char *_viewHelp;
 };
 
 //******************************************************************************

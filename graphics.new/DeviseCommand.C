@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.96  2000/01/14 18:23:14  wenger
+  Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
+  filters back to the values defined in the session file, without actually
+  re-opening the session.
+
   Revision 1.95  2000/01/13 23:07:05  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -766,6 +771,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(JAVAC_ResetFilters)
 	JavaScreenCmd jc(_control,JavaScreenCmd::RESET_FILTERS,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_GetViewHelp)
+	JavaScreenCmd jc(_control,JavaScreenCmd::GET_VIEW_HELP,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
@@ -6356,6 +6367,53 @@ IMPLEMENT_COMMAND_BEGIN(resetAllFilters)
 		}
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in resetAllFilters\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getViewHelp)
+    // Arguments: <view name>
+    // Returns: <help string for view>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        View *view = (View *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+	    const char *helpStr = view->GetViewHelp();
+		if (!helpStr) helpStr = "";
+        ReturnVal(API_ACK, helpStr);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getViewHelp\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setViewHelp)
+    // Arguments: <view name> <help string for view>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        View *view = (View *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		view->SetViewHelp(argv[2]);
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setViewHelp\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

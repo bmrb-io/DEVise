@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  2000/01/14 18:23:08  wenger
+  Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
+  filters back to the values defined in the session file, without actually
+  re-opening the session.
+
   Revision 1.20  1999/12/06 18:40:48  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -183,6 +188,7 @@ private:
       char *argv[]);
   static DevStatus ReadSession(ControlPanelSimple *control,
       const char *filename, CommandProc cp);
+  static Boolean ReadCommand(FILE *fp, char buf[], int bufSize);
 
   static DevStatus DEViseCmd(ControlPanel *control, int argc,
       const char * const *argv);

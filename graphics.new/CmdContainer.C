@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.59  2000/01/14 18:23:14  wenger
+  Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
+  filters back to the values defined in the session file, without actually
+  re-opening the session.
+
   Revision 1.58  1999/12/14 17:57:35  wenger
   Added enableDrawing command (totally enables or disables drawing) to
   allow Omer to avoid "flashing" when he inserts views into windows.
@@ -362,6 +367,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_ProtocolVersion)
 	REGISTER_COMMAND(JAVAC_ShowRecords3D)
 	REGISTER_COMMAND(JAVAC_ResetFilters)
+	REGISTER_COMMAND(JAVAC_GetViewHelp)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -604,6 +610,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setOpeningSession)
 	REGISTER_COMMAND(enableDrawing)
 	REGISTER_COMMAND(resetAllFilters)
+	REGISTER_COMMAND(getViewHelp)
+	REGISTER_COMMAND(setViewHelp)
 }
 
 CmdContainer::~CmdContainer()
