@@ -18,9 +18,8 @@ compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
 compustat.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
-compustat.o: /usr/include/tar.h ../graphics.new/machdep.h
-compustat.o: /usr/include/limits.h /usr/include/sys/param.h
-compustat.o: /usr/include/sys/machine/machparam.h
+compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
+compustat.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
 compustat.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
 compustat.o: /usr/include/sys/time.h /usr/include/sys/time.h
 compustat.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
@@ -32,7 +31,6 @@ compustat.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 compustat.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 compustat.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 compustat.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-compustat.o: /usr/include/arpa/inet.h
 index.o: /usr/include/stdio.h /usr/include/standards.h
 index.o: /usr/include/sys/seek.h /usr/include/va_list.h
 index.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
@@ -42,20 +40,19 @@ index.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
 index.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 index.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
 index.o: /usr/include/unistd.h /usr/include/sys/access.h index.h
-index.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
-index.o: /usr/include/limits.h /usr/include/sys/param.h
-index.o: /usr/include/sys/machine/machparam.h /usr/include/machine/endian.h
-index.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-index.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+index.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
+index.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
+index.o: /usr/include/sys/time.h /usr/include/sys/time.h
+index.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
+index.o: /usr/include/sys/siginfo.h /usr/include/sys/ipc.h
+index.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 index.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
 index.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
 index.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 index.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 index.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 index.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-index.o: /usr/include/arpa/inet.h
 project.o: /usr/include/stdio.h /usr/include/standards.h
 project.o: /usr/include/sys/seek.h /usr/include/va_list.h
 project.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
@@ -66,7 +63,7 @@ project.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
 project.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
 project.o: /usr/include/unistd.h /usr/include/sys/access.h
 project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
-project.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+project.o: ../graphics.new/machdep.h /usr/include/limits.h
 project.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
 project.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
 project.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -79,4 +76,3 @@ project.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 project.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 project.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 project.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-project.o: /usr/include/arpa/inet.h

@@ -23,9 +23,8 @@ crsp_extract.o: /usr/include/sys/rt_limits.h /s/tcl/include/tk.h
 crsp_extract.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 crsp_extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 crsp_extract.o: /usr/include/stddef.h sec.h ../tape/tapedrive.h
-crsp_extract.o: /usr/include/tar.h ../graphics.new/machdep.h
-crsp_extract.o: /usr/include/limits.h /usr/include/sys/param.h
-crsp_extract.o: /usr/include/sys/machine/machparam.h
+crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
 crsp_extract.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
 crsp_extract.o: /usr/include/sys/time.h /usr/include/sys/time.h
 crsp_extract.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
@@ -37,7 +36,6 @@ crsp_extract.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 crsp_extract.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 crsp_extract.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 crsp_extract.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-crsp_extract.o: /usr/include/arpa/inet.h
 crsp_index.o: /usr/include/string.h /usr/include/standards.h
 crsp_index.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 crsp_index.o: /usr/include/stdlib.h /usr/include/getopt.h sec.h
@@ -46,9 +44,9 @@ crsp_index.o: /usr/include/sys/seek.h /usr/include/va_list.h
 crsp_index.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
 crsp_index.o: /usr/include/sys/syslimits.h
 crsp_index.o: /usr/include/sys/machine/machtime.h
-crsp_index.o: /usr/include/sys/rt_limits.h /usr/include/tar.h
-crsp_index.o: ../graphics.new/machdep.h /usr/include/limits.h
-crsp_index.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
+crsp_index.o: /usr/include/sys/rt_limits.h ../graphics.new/machdep.h
+crsp_index.o: /usr/include/limits.h /usr/include/sys/param.h
+crsp_index.o: /usr/include/sys/machine/machparam.h
 crsp_index.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
 crsp_index.o: /usr/include/sys/time.h /usr/include/sys/time.h
 crsp_index.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
@@ -60,28 +58,25 @@ crsp_index.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 crsp_index.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 crsp_index.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 crsp_index.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-crsp_index.o: /usr/include/arpa/inet.h
 main.o: sec.h ../tape/tapedrive.h /usr/include/stdio.h
 main.o: /usr/include/standards.h /usr/include/sys/seek.h
 main.o: /usr/include/va_list.h /usr/include/sys/types.h
 main.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
 main.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
 main.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
-main.o: /usr/include/sys/rt_limits.h /usr/include/tar.h
-main.o: ../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
-main.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-main.o: /usr/include/sys/time.h /usr/include/sys/time.h
-main.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-main.o: /usr/include/sys/siginfo.h /usr/include/sys/ipc.h
-main.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+main.o: /usr/include/sys/rt_limits.h ../graphics.new/machdep.h
+main.o: /usr/include/limits.h /usr/include/sys/param.h
+main.o: /usr/include/sys/machine/machparam.h /usr/include/machine/endian.h
+main.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+main.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+main.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+main.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 main.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
 main.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
 main.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 main.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 main.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 main.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-main.o: /usr/include/arpa/inet.h
 sec.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sys/seek.h
 sec.o: /usr/include/va_list.h /usr/include/sys/types.h
 sec.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
@@ -90,7 +85,7 @@ sec.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
 sec.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
 sec.o: /usr/include/ctype.h /usr/include/sys/localedef.h
 sec.o: /usr/include/sys/lc_core.h sec.h ../tape/tapedrive.h
-sec.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: ../graphics.new/machdep.h /usr/include/limits.h
 sec.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
 sec.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
 sec.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -102,4 +97,4 @@ sec.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
 sec.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
 sec.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 sec.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-sec.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h cal.h
+sec.o: /usr/include/netinet/in.h cal.h

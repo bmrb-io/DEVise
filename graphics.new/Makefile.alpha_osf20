@@ -226,20 +226,7 @@ Command.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
 Command.o: /usr/include/sys/rt_limits.h /usr/include/sys/signal.h
 Command.o: /usr/include/sys/time.h /usr/include/stdio.h
 Command.o: /usr/include/sys/seek.h /usr/include/va_list.h
-Command.o: /usr/include/getopt.h /usr/include/string.h ../graphics/Exit.h
-Command.o: ../graphics/Time.h ../graphics/Journal.h ../graphics/DeviseTypes.h
-Command.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-Command.o: ../graphics/View.h ../graphics/Dispatcher.h /usr/include/stdlib.h
-Command.o: /usr/include/unistd.h /usr/include/sys/access.h
-Command.o: ../graphics/DList.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-Command.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
-Command.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-Command.o: ../graphics/Control.h ../graphics/ClassDir.h
-Command.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-Command.o: ../graphics/Config.h ../graphics/Cursor.h Command.h
-Command.o: ../graphics/Timer.h ../graphics/Parse.h BufMgr.h
-Command.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
-Command.o: RecOrder.h QueryProc.h TData.h ../graphics/Init.h machdep.h
+Command.o: /usr/include/getopt.h /usr/include/string.h machdep.h
 Command.o: /usr/include/limits.h /usr/include/sys/param.h
 Command.o: /usr/include/sys/machine/machparam.h /usr/include/machine/endian.h
 Command.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
@@ -251,7 +238,20 @@ Command.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 Command.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 Command.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 Command.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-Command.o: /usr/include/arpa/inet.h
+Command.o: ../graphics/Exit.h ../graphics/Time.h ../graphics/Journal.h
+Command.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+Command.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/View.h
+Command.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+Command.o: /usr/include/unistd.h /usr/include/sys/access.h
+Command.o: ../graphics/DList.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+Command.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
+Command.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+Command.o: ../graphics/Control.h ../graphics/ClassDir.h
+Command.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+Command.o: ../graphics/Config.h ../graphics/Cursor.h Command.h
+Command.o: ../graphics/Timer.h ../graphics/Parse.h BufMgr.h
+Command.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
+Command.o: RecOrder.h QueryProc.h TData.h ../graphics/Init.h
 CompositeParser.o: /usr/include/stdio.h /usr/include/standards.h
 CompositeParser.o: /usr/include/sys/seek.h /usr/include/va_list.h
 CompositeParser.o: /usr/include/sys/types.h
@@ -711,12 +711,12 @@ QueryProcFull.o: /usr/include/sys/rt_limits.h /usr/include/math.h
 QueryProcFull.o: /usr/include/stdlib.h ../graphics/Dispatcher.h
 QueryProcFull.o: /usr/include/unistd.h /usr/include/sys/access.h
 QueryProcFull.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+QueryProcFull.o: ../graphics/WindowRep.h ../graphics/Transform.h
+QueryProcFull.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 QueryProcFull.o: ../graphics/Init.h BufMgrFull.h BufMgr.h BufHint.h
 QueryProcFull.o: BufferPolicy.h RecOrder.h RangeInfo.h BufMgrNull.h
 QueryProcFull.o: TDataMap.h ShapeID.h GDataRec.h ViewGraph.h
 QueryProcFull.o: ../graphics/View.h ../graphics/ViewWin.h
-QueryProcFull.o: ../graphics/WindowRep.h ../graphics/Transform.h
-QueryProcFull.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcFull.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcFull.o: /usr/include/sys/time.h /usr/include/sys/signal.h
@@ -1732,7 +1732,7 @@ DCE.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
 DCE.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
 DCE.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 DCE.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-DCE.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h ../graphics/Exit.h
+DCE.o: /usr/include/netinet/in.h ../graphics/Exit.h
 DerivedDataSource.o: /usr/include/stdio.h /usr/include/standards.h
 DerivedDataSource.o: /usr/include/sys/seek.h /usr/include/va_list.h
 DerivedDataSource.o: /usr/include/sys/types.h
@@ -1855,7 +1855,7 @@ ParseAPI.o: RecId.h KGraph.h ../graphics/Util.h ParseCat.h TData.h RecOrder.h
 ParseAPI.o: TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h
 ParseAPI.o: ItemList.h Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
 ParseAPI.o: VisualLink.h ../graphics/FilterQueue.h DataSeg.h Version.h
-ParseAPI.o: DevFileHeader.h
+ParseAPI.o: DevFileHeader.h ../graphics/Display.h ../graphics/ColorMgr.h
 RecordLink.o: /usr/include/stdio.h /usr/include/standards.h
 RecordLink.o: /usr/include/sys/seek.h /usr/include/va_list.h
 RecordLink.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
@@ -1904,9 +1904,8 @@ Seq.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
 Seq.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
 Seq.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 Seq.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-Seq.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h ../graphics/Util.h
-Seq.o: /usr/include/math.h ../graphics/DeviseTypes.h ../graphics/Exit.h
-Seq.o: ../graphics/Parse.h
+Seq.o: /usr/include/netinet/in.h ../graphics/Util.h /usr/include/math.h
+Seq.o: ../graphics/DeviseTypes.h ../graphics/Exit.h ../graphics/Parse.h
 StringStorage.o: /usr/include/string.h /usr/include/standards.h
 StringStorage.o: /usr/include/sys/types.h
 StringStorage.o: /usr/include/mach/machine/vm_types.h StringStorage.h
@@ -1954,4 +1953,3 @@ Web.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 Web.o: /usr/include/io/common/devio.h /usr/include/netdb.h
 Web.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
 Web.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
-Web.o: /usr/include/arpa/inet.h

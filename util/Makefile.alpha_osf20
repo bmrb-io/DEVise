@@ -37,7 +37,7 @@ http_url.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
 http_url.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
 http_url.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
 http_url.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-http_url.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+http_url.o: /usr/include/netinet/in.h
 mkbinfile.o: /usr/include/math.h /usr/include/standards.h
 mkbinfile.o: /usr/include/stdlib.h /usr/include/getopt.h
 mkbinfile.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h

@@ -19,13 +19,13 @@ generic.o: /usr/include/unistd.h /usr/include/sys/access.h
 generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ColorMgr.h
+generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
+generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-generic.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+generic.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
