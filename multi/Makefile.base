@@ -1,0 +1,48 @@
+LD = ld
+CC = g++
+LDFLAGS = $(ARCH_LDFLAGS) ../graphics.new/libobj.o \
+	../tape/tapeobj.o ../issm/issmobj.o \
+	-ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
+	$(ARCH_LDPOST)
+CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
+	-I../../graphics.new
+
+.c.o:
+	$(CC) -c $(CFLAGS) $<
+
+ALLSRC= disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
+	MappingClassInfo.c HostMappingClassInfo.c \
+	CycleOccMappingClassInfo.c \
+	CycleEffMappingClassInfo.c \
+	CycleWorkingMappingClassInfo.c \
+	CycleSuspendedMappingClassInfo.c \
+	CycleCpuTimeMappingClassInfo.c 
+
+ALLOBJ= disp.o TDataMulti.o TDataHost.o TDataCycle.o Message.o \
+	MappingClassInfo.o HostMappingClassInfo.o \
+	CycleOccMappingClassInfo.o \
+	CycleEffMappingClassInfo.o \
+	CycleWorkingMappingClassInfo.o \
+	CycleSuspendedMappingClassInfo.o \
+	CycleCpuTimeMappingClassInfo.o 
+
+disp: $(ALLOBJ)
+	$(CC)  -o $@ $(ALLOBJ) $(LDFLAGS)
+
+map_host.h: map_host
+	../parser/parser -o $@ < $?
+
+map_cycle_cpu_time.h: map_cycle_cpu_time
+	../parser/parser -o $@ < $?
+
+map_cycle_eff.h: map_cycle_eff
+	../parser/parser -o $@ < $?
+
+map_cycle_occ.h: map_cycle_occ
+	../parser/parser -o $@ < $?
+
+map_cycle_working.h: map_cycle_working
+	../parser/parser -o $@ < $?
+
+map_cycle_susp.h: map_cycle_susp
+	../parser/parser -o $@ < $?
