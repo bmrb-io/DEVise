@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/06/13 00:16:33  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.14  1996/05/31 15:41:23  jussi
   Added support for record links.
 
@@ -107,6 +111,7 @@ public:
   virtual void InsertMapping(TDataMap *map, char *label = "");
   virtual void RemoveMapping(TDataMap *map);
   virtual char *GetMappingLegend(TDataMap *map);
+  virtual void SetMappingLegend(TDataMap *map, char *label);
 
   int InitMappingIterator(Boolean backwards = false) {
     return _mappings.InitIterator((backwards ? 1 : 0));

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/13 00:16:32  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.17  1996/05/31 15:41:22  jussi
   Added support for record links.
 
@@ -240,6 +244,22 @@ char *ViewGraph::GetMappingLegend(TDataMap *map)
   DoneMappingIterator(index);
 
   return "";
+}
+
+void ViewGraph::SetMappingLegend(TDataMap *map, char *label)
+{
+  int index = InitMappingIterator();
+
+  while(MoreMapping(index)) {
+    MappingInfo *info = NextMapping(index);
+    if (info->map == map) {
+      delete info->label;
+      info->label = CopyString(label);
+      break;
+    }
+  }
+
+  DoneMappingIterator(index);
 }
 
 void ViewGraph::DrawLegend()
