@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/24 21:30:39  jussi
+  Added copyright notice and cleaned up code. Added debugging
+  statements.
+
   Revision 1.4  1995/09/26 23:05:12  jussi
   Made X low label left-justified.
 
@@ -1159,6 +1163,10 @@ void View::HandleResize(WindowRep * w, int xlow,
 
 void View::UpdateTransform(WindowRep *winRep)
 {
+#ifdef DEBUG
+  printf("View::UpdateTransform\n");
+#endif
+
   winRep->ClearTransformStack();
   Transform2D transform;
   CalcTransform(transform);
