@@ -61,6 +61,7 @@ typedef struct my_jpg_error_mgr * my_jpg_error_ptr;
 
 #define IM_KIND_NUM 14
 
+#if defined(NEED_IM_KIND_NAMES)
 static const char *ImKindNames[IM_KIND_NUM] =
 {
   "Unknown", 
@@ -78,6 +79,7 @@ static const char *ImKindNames[IM_KIND_NUM] =
   "JPEG (Color)",
   "SPIHT (Gray)" 
 };
+#endif
  
 #define ImKindString(k) \
   ((((k) < 0) || ((k) >= IM_KIND_NUM)) ? ImKindNames[IM_UNKNOWN] : \

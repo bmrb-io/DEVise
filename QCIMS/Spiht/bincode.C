@@ -46,7 +46,8 @@ int Rep_Bits(int n)
   if (n < 0) n = -n;
   if (n < 3) return n;
   n >>= 2;
-  for (int k = 2; n; k++) n >>= 1;
+  int k;
+  for (k = 2; n; k++) n >>= 1;
   return k;
 }
 

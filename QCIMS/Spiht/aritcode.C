@@ -57,7 +57,8 @@ void Adaptive_Model::update(int index)
     for (int j = nsb; j >= 0; j--) {
       cum_f[j] = cum;  cum += (freq[j] = ((freq[j] + 1) / 2)); } }
 
-  for (int i = index; freq[i] == freq[i-1]; i--) ;
+  int i;
+  for (i = index; freq[i] == freq[i-1]; i--) ;
   if (i < index) {
     int sb_1 = indx_to_sb[i], sb_2 = indx_to_sb[index];
     indx_to_sb[i] = sb_2;  indx_to_sb[index] = sb_1;
@@ -74,7 +75,8 @@ int Adaptive_Model::select_symbol(long value, long * l, long * h)
   long lm1 = *l - 1, range = *h - lm1;
   int cum = int(((value - lm1) * cum_f[0] - 1) / range);
 
-  for (int index = 1; cum_f[index] > cum; index++);
+  int index;
+  for (index = 1; cum_f[index] > cum; index++);
 
   *h = lm1 + (range * cum_f[index-1]) / cum_f[0];
   *l += (range * cum_f[index]) / cum_f[0];
@@ -119,7 +121,8 @@ void Adaptive_Model::reset(void)
 {
   if (nsb == 0) return;
 
-  for (int i = 0; i <= nsb; i++) {
+  int i;
+  for (i = 0; i <= nsb; i++) {
     freq[i] = 1;  cum_f[i] = nsb - i; }
   freq[0] = 0;
 

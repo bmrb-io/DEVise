@@ -153,7 +153,8 @@ int Magn_Val(int n, int s)
   if (n < 0) n = -n;
   if (n < 3) return n + s;
   n >>= 2;
-  for (int k = 2; n; k++) n >>= 1;
+  int k;
+  for (k = 2; n; k++) n >>= 1;
   return k + s;
 }
 
@@ -417,7 +418,8 @@ int Node_Transition(int old_st, const Image_Coord & pc, int * signs)
   int st_trans = 0, os = old_st, ps = old_st, mask = 1;
   int msk[3], count[4];
 
-  for (int i = 0; i < 4; i++) count[i] = 0;
+  int i;
+  for (i = 0; i < 4; i++) count[i] = 0;
   for (i = 0; i < 4; i++, ps >>= 2) ++count[ps&0x3];
   msk[0] = msk[1] = 1;  msk[2] = 1 << count[0];
   int mod = count[2] - count[0] * count[1] - 1 +
@@ -456,7 +458,8 @@ int Desc_Transition(int old_st, const Image_Coord & pc)
   int os = old_st, ps = os, st_trans = 0, mask = 2;
   int msk[3], count[4];
 
-  for (int i = 0; i < 4; i++) count[i] = 0;
+  int i;
+  for (i = 0; i < 4; i++) count[i] = 0;
   for (i = 0; i < 4; i++, ps >>= 2) ++count[ps & 0x3];
   msk[0] = 1;  msk[1] = msk[2] = 1 << count[0];
   int mod = count[2] - count[0] * count[1] - 1 +

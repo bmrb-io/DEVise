@@ -917,6 +917,7 @@ extern int DS_OpenProcess(DataSrc *ds, char *argv[],
   
       return 1; 
   }
+  return 0;
   #endif
 }
 

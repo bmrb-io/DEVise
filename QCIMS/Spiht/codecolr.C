@@ -95,7 +95,8 @@ int Node_Transition(int old_st, const Image_Coord & pc, int * signs)
   int st_trans = 0, os = old_st, ps = old_st, mask = 1;
   int msk[3], count[4];
 
-  for (int i = 0; i < 4; i++) count[i] = 0;
+  int i;
+  for (i = 0; i < 4; i++) count[i] = 0;
   for (i = 0; i < 4; i++, ps >>= 2) ++count[ps&0x3];
   msk[0] = msk[1] = 1;  msk[2] = 1 << count[0];
   int mod = count[2] - count[0] * count[1] - 1 +
@@ -134,7 +135,8 @@ int Desc_Transition(int old_st, const Image_Coord & pc)
   int os = old_st, ps = os, st_trans = 0, mask = 2;
   int msk[3], count[4];
 
-  for (int i = 0; i < 4; i++) count[i] = 0;
+  int i;
+  for (i = 0; i < 4; i++) count[i] = 0;
   for (i = 0; i < 4; i++, ps >>= 2) ++count[ps & 0x3];
   msk[0] = 1;  msk[1] = msk[2] = 1 << count[0];
   int mod = count[2] - count[0] * count[1] - 1 +
@@ -356,7 +358,8 @@ void Process_Image(void)
   root_dim.y = pyramid_dim.y >> pyramid_levels;
   root_code = long(pyramid_levels + 1) << 13;
 
-  for (int c = 0; c < 3; c++) {
+  int c;
+  for (c = 0; c < 3; c++) {
     long st = 0x2L + root_code + long(c << 8);
     for (cd.x = 0; cd.x < root_dim.x; cd.x += 2)
       for (cd.y = 0; cd.y < root_dim.y; cd.y += 2) {

@@ -25,7 +25,7 @@ static int blankline(char *line)
 {
   int i, l = strlen(line);
   for (i=0;i<l;i++) {
-    if (!isspace(line[i])) return 0;
+    if (!isspace((int)line[i])) return 0;
   }
   return 1;
 }
@@ -51,8 +51,8 @@ extern int RD_ReadFloatTable(DataSrc *ds, RD_float *tab, char *prefix)
       if (ret) nextarg = argbuff; 
     } else {
       tab[n++] = (RD_float) temp; 
-      while (isspace(*nextarg)) nextarg++;
-      while ((*nextarg != '\0') && !isspace(*nextarg)) nextarg++; 
+      while (isspace((int)*nextarg)) nextarg++;
+      while ((*nextarg != '\0') && !isspace((int)*nextarg)) nextarg++; 
     } 
   } 
   if (n < 64) return 0;
@@ -80,8 +80,8 @@ extern int RD_ReadLongTable(DataSrc *ds, long *tab, char *prefix)
       if (ret) nextarg = argbuff; 
     } else {
       tab[n++] = (RD_float) temp; 
-      while (isspace(*nextarg)) nextarg++;
-      while ((*nextarg != '\0') && !isspace(*nextarg)) nextarg++; 
+      while (isspace((int)*nextarg)) nextarg++;
+      while ((*nextarg != '\0') && !isspace((int)*nextarg)) nextarg++; 
     } 
   } 
   if (n < 64) return 0;

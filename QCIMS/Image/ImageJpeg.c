@@ -42,7 +42,7 @@ static int
 blankline(char *s)
 {
   while (*s != '\0') {
-    if (!isspace(*s)) return 0;
+    if (!isspace((int)*s)) return 0;
     s++; 
   }
   return 1;
@@ -171,8 +171,8 @@ read_qtabinfo (j_compress_ptr cinfo, void *src, long src_bytes, int src_kind)
       while ((i < 64) && !eof_reached) {
 	if (sscanf(nextchar,"%f",&jc_thresh_table[th_tblno][i]) == 1) {
 	  i++;
-	  while (isspace(*nextchar)) nextchar++; 
-	  while ((*nextchar !='\0') && !isspace(*nextchar)) nextchar++; 
+	  while (isspace((int)*nextchar)) nextchar++; 
+	  while ((*nextchar !='\0') && !isspace((int)*nextchar)) nextchar++; 
 	} else {
           while ((ret =DS_ReadLine(ds,nextline,IMUTILS_STRLENMAX))!=0) {
             if (blankline(nextline)) {
@@ -217,8 +217,8 @@ read_qtabinfo (j_compress_ptr cinfo, void *src, long src_bytes, int src_kind)
       while ((i < 64) && !eof_reached) {
 	if (sscanf(nextchar,"%u",&table[ZigZagCoefOrder[i]]) == 1) {
 	  i++;
-	  while (isspace(*nextchar)) nextchar++; 
-	  while (isdigit(*nextchar)) nextchar++; 
+	  while (isspace((int)*nextchar)) nextchar++; 
+	  while (isdigit((int)*nextchar)) nextchar++; 
 	} else {
           while ((ret =DS_ReadLine(ds,nextline,IMUTILS_STRLENMAX))!=0) {
             if (blankline(nextline)) {
@@ -428,10 +428,10 @@ read_scan_info (j_compress_ptr cinfo, void *src, long src_bytes, int src_kind)
     }
     i=0;
     while (i < 10) {
-      while ((*nextchar != '\0') && !isdigit(*nextchar)) nextchar++;
-      if (!isdigit(*nextchar)) break; 
+      while ((*nextchar != '\0') && !isdigit((int)*nextchar)) nextchar++;
+      if (!isdigit((int)*nextchar)) break; 
       sscanf(nextchar,"%d",&vals[i]);
-      while (isdigit(*nextchar)) nextchar++;
+      while (isdigit((int)*nextchar)) nextchar++;
       i++;
     }
     if ((i <= 4) || (i > (4 + MAXCOMPS))) break; 

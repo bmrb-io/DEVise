@@ -7,7 +7,7 @@ static int blankline(char *s)
   if (!s) return 1;
   l = strlen(s); 
   for (i=0;i<l;i++) {
-    if (!isspace(s[i])) return 0;
+    if (!isspace((int)s[i])) return 0;
   }
   return 1;
 }
@@ -384,7 +384,7 @@ int main(int argc, char *argv[])
     if (blankline(command)) continue;
 
     nextcmdchar = command;
-    while (isspace(*nextcmdchar) && (*nextcmdchar != '\0'))
+    while (isspace((int)*nextcmdchar) && (*nextcmdchar != '\0'))
       nextcmdchar++; 
 
     if (nextcmdchar[0] == '#') continue; 
@@ -530,15 +530,15 @@ int main(int argc, char *argv[])
     #ifdef HAVE_JPEGLIB
     if (!strncasecmp(nextcmdchar,"compress",4)) {
       doingCompression = 1;
-      while (!isspace(*nextcmdchar) && (*nextcmdchar != '\0'))
+      while (!isspace((int)*nextcmdchar) && (*nextcmdchar != '\0'))
 	nextcmdchar++;
-      while (isspace(*nextcmdchar) && (*nextcmdchar != '\0'))
+      while (isspace((int)*nextcmdchar) && (*nextcmdchar != '\0'))
 	nextcmdchar++;
     } else if (!strncasecmp(nextcmdchar,"correct",4)) {
       doingCorrection = 1;
-      while (!isspace(*nextcmdchar) && (*nextcmdchar != '\0'))
+      while (!isspace((int)*nextcmdchar) && (*nextcmdchar != '\0'))
 	nextcmdchar++;
-      while (isspace(*nextcmdchar) && (*nextcmdchar != '\0'))
+      while (isspace((int)*nextcmdchar) && (*nextcmdchar != '\0'))
 	nextcmdchar++;
     }
     if (doingCompression || doingCorrection) {

@@ -6,6 +6,7 @@
 #include <math.h>
 
 
+#define NEED_IM_KIND_NAMES
 #include "Image.h"
 #include "ImageInternal.h"
 

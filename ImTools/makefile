@@ -1,6 +1,6 @@
 CC = gcc
 
-BINPATH = ../bin.PENTIUM
+BINPATH = bin
 
 IMGLIBINCLUDE = -I../Image
 
