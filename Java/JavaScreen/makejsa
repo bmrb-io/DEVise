@@ -3,6 +3,7 @@
 #javac QuickLoader.java
 #jar cf QuickLoader.jar *.class
 rm *.class
+javac DEViseJSLoader.java
 javac jsa.java
 jar cf jsa.jar *.class *.gif
 #rm /var/home/www/public/jsa.jar
