@@ -1750,6 +1750,9 @@ Num Date        Status  Description
 456 02/03/99	OPEN	The DataReader doesn't do anything with the
 			encoding option. (rkw)
 
+457 02/07/99	OPEN	DataReader should allow escaped quotes in date_format
+			strings. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
