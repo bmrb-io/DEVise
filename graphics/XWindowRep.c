@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1996/08/04 22:20:01  jussi
+  Moved variable declarations in HandleEvent out of the switch
+  statement. Newer compiler issued warnings for these.
+
   Revision 1.53  1996/08/04 21:06:39  beyer
   Added support for portable devise keys
 
@@ -259,7 +263,6 @@ XWindowRepInit::XWindowRepInit()
 	{ XK_Return,      DeviseKey::RETURN },
 	{ XK_Pause,       DeviseKey::PAUSE },
 	{ XK_Scroll_Lock, DeviseKey::SCROLL_LOCK },
-	{ XK_Sys_Req,     DeviseKey::SYS_REQ },
 	{ XK_Escape,      DeviseKey::ESCAPE },
 	{ XK_Delete,      DeviseKey::DELETE },
 
@@ -269,9 +272,7 @@ XWindowRepInit::XWindowRepInit()
 	{ XK_Right,       DeviseKey::RIGHT },
 	{ XK_Down,        DeviseKey::DOWN },
 	{ XK_Prior,       DeviseKey::PRIOR },
-	{ XK_Page_Up,     DeviseKey::PAGE_UP },
 	{ XK_Next,        DeviseKey::NEXT },
-	{ XK_Page_Down,   DeviseKey::PAGE_DOWN },
 	{ XK_End,         DeviseKey::END },
 	{ XK_Begin,       DeviseKey::BEGIN },
 
@@ -296,19 +297,6 @@ XWindowRepInit::XWindowRepInit()
 	{ XK_KP_F2,       DeviseKey::KP_F2 },
 	{ XK_KP_F3,       DeviseKey::KP_F3 },
 	{ XK_KP_F4,       DeviseKey::KP_F4 },
-	{ XK_KP_Home,     DeviseKey::KP_HOME },
-	{ XK_KP_Left,     DeviseKey::KP_LEFT },
-	{ XK_KP_Up,       DeviseKey::KP_UP },
-	{ XK_KP_Right,    DeviseKey::KP_RIGHT },
-	{ XK_KP_Down,     DeviseKey::KP_DOWN },
-	{ XK_KP_Prior,    DeviseKey::KP_PRIOR },
-	{ XK_KP_Page_Up,  DeviseKey::KP_PAGE_UP },
-	{ XK_KP_Next,     DeviseKey::KP_NEXT },
-	{ XK_KP_Page_Down, DeviseKey::KP_PAGE_DOWN },
-	{ XK_KP_End,      DeviseKey::KP_END },
-	{ XK_KP_Begin,    DeviseKey::KP_BEGIN },
-	{ XK_KP_Insert,   DeviseKey::KP_INSERT },
-	{ XK_KP_Delete,   DeviseKey::KP_DELETE },
 	{ XK_KP_Equal,    DeviseKey::KP_EQUAL },
 	{ XK_KP_Multiply, DeviseKey::KP_MULTIPLY },
 	{ XK_KP_Add,      DeviseKey::KP_ADD },
@@ -339,6 +327,27 @@ XWindowRepInit::XWindowRepInit()
 	{ XK_F10,         DeviseKey::F10 },
 	{ XK_F11,         DeviseKey::F11 },
 	{ XK_F12,         DeviseKey::F12 },
+
+#if defined(XK_Sys_Req)
+	// these are not defined in X11R5, but are in X11R6
+	{ XK_Sys_Req,     DeviseKey::SYS_REQ },
+	{ XK_Page_Up,     DeviseKey::PAGE_UP },
+	{ XK_Page_Down,   DeviseKey::PAGE_DOWN },
+	{ XK_KP_Home,     DeviseKey::KP_HOME },
+	{ XK_KP_Left,     DeviseKey::KP_LEFT },
+	{ XK_KP_Up,       DeviseKey::KP_UP },
+	{ XK_KP_Right,    DeviseKey::KP_RIGHT },
+	{ XK_KP_Down,     DeviseKey::KP_DOWN },
+	{ XK_KP_Prior,    DeviseKey::KP_PRIOR },
+	{ XK_KP_Page_Up,  DeviseKey::KP_PAGE_UP },
+	{ XK_KP_Next,     DeviseKey::KP_NEXT },
+	{ XK_KP_Page_Down, DeviseKey::KP_PAGE_DOWN },
+	{ XK_KP_End,      DeviseKey::KP_END },
+	{ XK_KP_Begin,    DeviseKey::KP_BEGIN },
+	{ XK_KP_Insert,   DeviseKey::KP_INSERT },
+	{ XK_KP_Delete,   DeviseKey::KP_DELETE },
+#endif
+
 
 	{ 0, 0 }		// must be last entry!
     };
@@ -2103,6 +2112,9 @@ void XWindowRep::DoPopup(int x, int y, int button)
     fontStruct->max_bounds.descent;
 
   for(int i = 0; i < numMsgs; i++) {
+#if defined(DEBUG)
+      printf("msgs[%d]: %s\n", i, msgs[i]);
+#endif
     textWidth = MAX(textWidth,
 			    XTextWidth(fontStruct, msgs[i], strlen(msgs[i])));
   }
