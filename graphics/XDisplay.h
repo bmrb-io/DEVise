@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/09 18:06:00  jussi
+  Added Flush() method.
+
   Revision 1.10  1996/04/08 16:57:57  jussi
   Minor fixes.
 
@@ -57,7 +60,7 @@
 
 #include "Display.h"
 #include "Xdef.h"
-#include "DList.h"
+#include "XWindowRep.h"
 #include "XBitmap.h"
 #include "Pattern.h"
 
@@ -65,10 +68,6 @@
 #include <tcl.h>
 #include <tk.h>
 #endif
-
-class XWindowRep;
-
-DefinePtrDList(XWindowRepList, XWindowRep *);
 
 class XDisplay: public DeviseDisplay {
 public:
