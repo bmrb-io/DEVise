@@ -351,6 +351,10 @@ Num Date        Status  Description
 101 12/16/96	OPEN	'5' key sometimes doesn't work correctly (for example,
 			load the session test/bad5key.tk). (ml/rkw)
 
+102 12/17/96	OPEN	Control-c doesn't seem to be able to terminate
+			Devise if you have an input-grabbing Tk dialog
+			open. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
