@@ -1,0 +1,6 @@
+#! /bin/csh -f
+
+setenv TCL_LIBRARY    /u2/ratnakar/tcl/lib/tcl7.4
+setenv TK_LIBRARY     /u2/ratnakar/tk/lib/tk4.0
+
+devise
