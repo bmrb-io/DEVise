@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/24 19:40:06  jussi
+  Cleaned up the code a little.
+
   Revision 1.15  1996/06/23 20:36:17  jussi
   Minor fix with header files.
 
@@ -87,6 +90,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#if defined(SOLARIS) || defined(AIX)
+#include <sys/select.h>
+#endif
 
 #include "DeviseTypes.h"
 #include "DList.h"
