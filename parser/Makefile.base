@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = $(ARCH_FLAGS)
+CFLAGS = $(ARCH_FLAGS) -Wall -O -DUNIX
 
 ALLSRC = main.c parse.c codegen.c
 
