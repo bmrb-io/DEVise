@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/11/18 23:11:31  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.35  1996/11/07 22:40:31  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -1116,19 +1123,11 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
     }
     mgr->FreeRecs(buf, NoChange);
 
-#if 0
-    // ksb: stopping scans in the middle due to too much data returned
-    // is not working, so the scan is not stopped right now.  
-    // I believe this feature is used to allow the user to interact with
-    // the session while scans are in progress, rather than waiting until
-    // the end.  We should figure out why this is not working, rather than
-    // disabling it, but this was a quick fix.
     if (_memFetched >= QPFULL_MAX_FETCH) {
       /* exceeded max amount to fetch */
       exceedMem = true;
       break;
     }
-#endif
   }
 
   mgr->DoneGetRecs();
