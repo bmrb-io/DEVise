@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/05/16 19:39:43  jussi
+#  Added Solaris/Sparc. Added tentative support for AIX.
+#
 #  Revision 1.4  1996/03/24 20:48:08  jussi
 #  Fixed *.txt path.
 #
@@ -34,6 +37,8 @@
 
 set files = "solaris/generic/generic solsparc/generic/generic \
 	sun/generic/generic hp/generic/generic \
+        solaris/multi/disp solsparc/multi/disp \
+	sun/multi/disp hp/multi/disp \
 	lib/control.tk doc/userman.ps doc/sysman.ps \
 	doc/Agreement doc/Copyright doc/Disclaimer"
 set target = /p/devise/public
@@ -71,7 +76,7 @@ echo Executing release procedures...
 sleep 1
 
 echo ""
-echo Releasing new copy of Devise executables...
+echo Releasing new copy of generic Devise executables...
 ls -l solaris/generic/generic $target/sunx86_54/devise
 cp -p solaris/generic/generic $target/sunx86_54/devise
 ls -l solsparc/generic/generic $target/sun4m_54/devise
@@ -82,6 +87,19 @@ ls -l hp/generic/generic $target/hp700_ux90/devise
 cp -p hp/generic/generic $target/hp700_ux90/devise
 #ls -l aix/generic/generic $target/rs_aix32/devise
 #cp -p aix/generic/generic $target/rs_aix32/devise
+
+echo ""
+echo Releasing new copy of PVM Devise executables...
+ls -l solaris/multi/disp $target/sunx86_54/multi
+cp -p solaris/multi/disp $target/sunx86_54/multi
+ls -l solsparc/multi/disp $target/sun4m_54/multi
+cp -p solsparc/multi/disp $target/sun4m_54/multi
+ls -l sun/multi/disp $target/sun4m_412/multi
+cp -p sun/multi/disp $target/sun4m_412/multi
+ls -l hp/multi/disp $target/hp700_ux90/multi
+cp -p hp/multi/disp $target/hp700_ux90/multi
+#ls -l aix/multi/disp $target/rs_aix32/multi
+#cp -p aix/multi/disp $target/rs_aix32/multi
 
 echo ""
 echo Releasing new Tcl/Tk code...
