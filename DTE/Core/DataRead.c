@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/01/29 23:31:33  beyer
+  DTE continues to try on datareader failure until eof
+
   Revision 1.7  1999/01/20 22:46:03  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -170,13 +173,16 @@ void DataReadExec::translateSchema(DataReader* dr, ISchema& schema)
 
 void DataReadExec::initialize()
 {
-  //kb: shouldn't this seek to beginning??
+  currentOffset = 0;
+  bool ok = dr->setBufferPos(0);
+  assert(ok && "error rewindinding DataReader");
 }
 
 
 const Tuple* DataReadExec::getNext()
 {
   while( !dr->isEof() ) {
+    currentOffset = dr->getBufferPos();
     if( dr->getRecord(buff) ) {
       return tuple;
     }
@@ -187,21 +193,15 @@ const Tuple* DataReadExec::getNext()
 
 Offset DataReadExec::getOffset()
 {
-  //kb: this is never set!!!
-  assert(!"datareader needs to be fixed!! - it doesn't return offsets");
-  return off;
+  return Offset(currentOffset);
 }
 
 
 const Tuple* DataReadExec::getThis(Offset offset)
 {
-  if( !dr->isOk() ) {	// should not happen
-    return NULL;
-  }
-  if( dr->getRndRec(buff, offset.getOffset()) ) {
-    return tuple;
-  }
-  return NULL;
+  bool ok = dr->setBufferPos(offset.getOffset());
+  assert(ok && "error seeking DataReader");
+  return DataReadExec::getNext();
 }
 
 

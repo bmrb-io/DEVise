@@ -68,7 +68,7 @@ protected:
   int buffSize;
   DataReader* dr;
   STuple tuple;
-  off_t off;
+  int currentOffset;
   int numFlds;
 };
 
