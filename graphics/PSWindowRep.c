@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/20 18:43:28  wenger
+  Unfilled arcs and variable line widths now work in PostScript output.
+
   Revision 1.16  1996/12/15 20:22:29  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -1191,6 +1194,8 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   DrawLine(printFile, tx2, ty1, tx1, ty1);
   fprintf(printFile, "[] 0 setdash\n");
 #endif
+
+  fprintf(printFile, "newpath\n");
 
   /* Get the width and height of the given string in the given font. */
   fprintf(printFile, "(%s) DevTextExtents\n", text);

@@ -304,7 +304,7 @@ Num Date        Status  Description
 089 12/03/96	FIXED	PostScript bounding box does not fit tightly around
 			the image. (ml/rkw)
 
-090 12/03/96	OPEN	Load session test/MM1System.tk, print to PostScript;
+090 12/03/96	FIXED	Load session test/MM1System.tk, print to PostScript;
 			'Pwi' text comes out at wrong place. (ml/rkw)
 
 091 12/03/96	OPEN	Print all windows to PostScript with more than one
@@ -376,7 +376,7 @@ Num Date        Status  Description
 			named 'View 110', 'View 111', etc., instead of
 			'View 20', etc. (rkw)
 
-108 01/09/97	OPEN	Load the session /p/devise/session/test/jussitape.tk,
+108 01/09/97	FIXED	Load the session /p/devise/session/test/jussitape.tk,
 			print to PostScript -> some of the text comes out at
 			the wrong place. (jpm/rkw)
 
@@ -388,6 +388,19 @@ Num Date        Status  Description
 			view in window DEViseWn1 -> you can't display
 			axes in this view. (rkw)
 
+111 01/10/97	OPEN	Got the following bug when loading the session
+			/p/devise/session/demo/COD1.tk, only with shared
+			memory, and only (but consistently) on the HP
+			architecture: An internal error has occurred. The
+			reason is: Inconsistent state
+			(../../graphics.new/TDataAscii.c:824). (rkw)
+
+112 01/10/97	OPEN	If a fatal error occurs while running with shared
+			memory, you need to manually kill off processes
+			to clean up. (rkw)
+
+113 01/10/97	OPEN	Devise does not clean up shared memory resources
+			if it crashes. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
