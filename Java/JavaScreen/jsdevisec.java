@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.84  2001/02/16 23:39:39  xuk
+// Added "Cancel" button in "Mode" menu.
+//
 // Revision 1.83  2001/02/16 17:51:16  xuk
 // Added new command and GUI for collaboration JS to collect active client ID list.
 // Added showClientList();
@@ -681,6 +684,11 @@ public class jsdevisec extends Panel
 	collabdlg = null;
     }
 
+    public void showCollabState(String msg)
+    {
+        showMsg("There are " + msg + " JavaScreens collaborating with this user.");
+    }
+
     public void showRecord(String[] msg)
     {
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
@@ -1288,6 +1296,8 @@ class SettingDlg extends Dialog
     public TextField screenY = new TextField(4);
     public Button setButton = new Button("   Set   ");
     public Button statButton = new Button("Request");
+    public Button collabButton = new Button("Request");
+    public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -1322,6 +1332,14 @@ class SettingDlg extends Dialog
         statButton.setBackground(jsc.jsValues.uiglobals.bg);
         statButton.setForeground(jsc.jsValues.uiglobals.fg);
         statButton.setFont(jsc.jsValues.uiglobals.font);
+
+        collabButton.setBackground(jsc.jsValues.uiglobals.bg);
+        collabButton.setForeground(jsc.jsValues.uiglobals.fg);
+        collabButton.setFont(jsc.jsValues.uiglobals.font);
+
+        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
+        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
+        cancelButton.setFont(jsc.jsValues.uiglobals.font);
 
         if (jsc.jsValues.uiglobals.inBrowser) {
             screenX.setEditable(false);
@@ -1373,6 +1391,22 @@ class SettingDlg extends Dialog
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(statButton, c);
         add(statButton);
+
+        c.insets = new Insets(10, 10, 10, 0);
+        c.gridwidth = 1;
+        Label label3 = new Label("Collaboration Status:");
+        gridbag.setConstraints(label3, c);
+        add(label3);
+
+        c.insets = new Insets(10, 0, 10, 10);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(collabButton, c);
+        add(collabButton);
+
+        c.insets = new Insets(10, 0, 10, 10);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(cancelButton, c);
+        add(cancelButton);
 
         pack();
 
@@ -1438,6 +1472,24 @@ class SettingDlg extends Dialog
                         close();
                     }
                 });
+
+        collabButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.dispatcher.start(DEViseCommands.GET_COLLAB_LIST);
+                        close();
+                    }
+                });
+
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        close();
+                    }
+                });
+
     }
 
     protected void processEvent(AWTEvent event)
