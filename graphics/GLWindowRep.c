@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/03/05 08:10:21  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.8  1998/02/26 17:19:15  wenger
   Fixed problems with yesterday's commit.
 
@@ -388,9 +393,11 @@ void GLWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
   if (_dispGraphics) {
     glEnable(GL_SCISSOR_TEST);
     glScissor((GLint)xlow, (GLint)ylow, (GLint)width, (GLint)height);
+#if defined(DEBUG)
     printf("Pushed. Clipping: x=%d, y=%d, w=%d, h=%d\n",
       (GLint)xlow, (GLint)ylow, (GLint)width, (GLint)height);
     fflush(stdout);
+#endif
   }
 #endif
 
@@ -415,9 +422,11 @@ void GLWindowRep::PopClip()
     if (_dispGraphics) {
       glEnable(GL_SCISSOR_TEST);
       glScissor((GLint)x, (GLint)y, (GLint)w, (GLint)h);
+#if defined(DEBUG)
       printf("Popped. Clipping: x=%d, y=%d, w=%d, h=%d\n",
         (GLint)x, (GLint)y, (GLint)w, (GLint)h);
       fflush(stdout);
+#endif
     }
 #endif
   }
@@ -2041,8 +2050,10 @@ void GLWindowRep::HandleEvent(XEvent &event)
   case ButtonRelease:
   case MotionNotify:
     event.xbutton.y=_height-event.xbutton.y-1;
+#if defined(DEBUG)
     printf("HandleButton %d %d\n", event.xbutton.x, event.xbutton.y);
     fflush(stdout);
+#endif
     WindowRep::HandleButton(event.xbutton.x, event.xbutton.y,
 			    event.xbutton.button, event.xbutton.state,
 			    event.xbutton.type);
@@ -2055,8 +2066,10 @@ void GLWindowRep::HandleEvent(XEvent &event)
       /* handle popup */
       DoPopup(event.xbutton.x, event.xbutton.y, event.xbutton.button);
     } else if (event.xbutton.button <= 3) {
+#if defined(DEBUG)
       printf("DoButtonPress %d %d\n", event.xbutton.x, event.xbutton.y);
       fflush(stdout);
+#endif
       DoButtonPress(event.xbutton.x, event.xbutton.y,
 		    buttonXlow, buttonYlow, buttonXhigh, buttonYhigh,
 		    event.xbutton.button);
@@ -2080,11 +2093,9 @@ void GLWindowRep::HandleEvent(XEvent &event)
 
     Coord minX, minY, maxX, maxY, tminY, tmaxY;
     minX = (Coord)event.xexpose.x;
-    tminY = (Coord)event.xexpose.y;
+    minY = (Coord)event.xexpose.y;
     maxX = minX + (Coord)event.xexpose.width - 1;
-    tmaxY = tminY + (Coord)event.xexpose.height - 1;
-    minY= _height-tmaxY-1;
-    maxY= _height-tminY;
+    maxY = minY + (Coord)event.xexpose.height - 1;
 
 #ifdef DEBUG
     printf("GLWindowRep(0x%p) Exposed %d,%d to %d,%d\n", this,

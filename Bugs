@@ -1230,10 +1230,11 @@ Num Date        Status  Description
 323 03/11/98	OPEN	Arrow keys, numeric keys in views don't get passed
 			to slaves in collaboration. (rkw)
 
-324 03/12/98	OPEN	Views are sometimes not redrawn properly when a
+324 03/12/98	FIXED	Views are sometimes not redrawn properly when a
 			window is resized (the full data area may not be
 			redrawn). (ml/rkw)  (This seems to happen more
 			after you've added or removed views.)
+			(Fixed by rkw 3/12/98)
 
 325 03/12/98	OPEN	Kiviat graphs don't seem to work (the whole circle
 			is a single color). (rkw)

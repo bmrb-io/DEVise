@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.105  1998/02/19 23:24:56  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.104  1998/02/03 18:31:29  zhenhai
   Fully implemented functionalities of XWindowRep with GLWindowRep. Fixed bugs in
   postscript printing.
@@ -2548,11 +2556,9 @@ void XWindowRep::HandleEvent(XEvent &event)
   case Expose:
     Coord minX, minY, maxX, maxY, tminY, tmaxY;
     minX = (Coord)event.xexpose.x;
-    tminY = (Coord)event.xexpose.y;
+    minY = (Coord)event.xexpose.y;
     maxX = minX + (Coord)event.xexpose.width - 1;
-    tmaxY = tminY + (Coord)event.xexpose.height - 1;
-    minY= _height-tmaxY-1;
-    maxY= _height-tminY;
+    maxY = minY + (Coord)event.xexpose.height - 1;
 #ifdef DEBUG
     printf("XWindowRep 0x%p Exposed %d,%d to %d,%d\n", this,
 	   (int)minX, (int)minY, (int)maxX, (int)maxY);
