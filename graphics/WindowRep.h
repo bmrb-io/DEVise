@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/28 20:45:38  jussi
+  Changed the approach with which inverted lines and areas are
+  drawn.
+
   Revision 1.6  1995/12/18 03:14:13  ravim
   Lines and Rectangles can be drawn with XOR display function.
 
@@ -51,7 +55,8 @@
 #define WindowRep_h
 
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
+
 #include "Geom.h"
 #include "Transform.h"
 #include "DList.h"

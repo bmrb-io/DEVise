@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 18:15:54  jussi
+  Added copyright notice and fixed for loop variable scope.
+
   Revision 1.2  1995/09/05 21:12:42  jussi
   Added/updated CVS header.
 */
@@ -24,7 +27,8 @@
 #define Dispatcher_h
 
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
+
 #include "DeviseTypes.h"
 #include "DList.h"
 #include "VisualArg.h"

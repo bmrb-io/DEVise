@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/18 01:57:49  ravim
+  Groups associated with schema.
+
   Revision 1.3  1995/11/15 07:04:08  ravim
   Minor changes.
 
@@ -29,7 +32,8 @@
 #ifndef _GROUP_H_
 #define _GROUP_H_
 
-#include <libc.h>
+#include <stdlib.h>
+
 #include "TkControl.h"
 #include "ClassDir.h"
 #include "ViewGraph.h"
