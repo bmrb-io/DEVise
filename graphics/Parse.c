@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/11 17:17:31  jussi
+  Removed bug in call to strcmp(). Month hint was returned too
+  eagerly.
+
   Revision 1.5  1996/01/10 18:45:32  jussi
   Removed bugs and improved code.
 
@@ -39,11 +43,14 @@
 #include "Config.h"
 #include "Exit.h"
 
-const int MAXARGS = DEVISE_MAX_ATTRS;
+static const char *monthNames[] = { "JAN", "FEB", "MAR", "APR",
+				    "MAY", "JUN", "JUL", "AUG",
+				    "SEP", "OCT", "NOV", "DEC" };
 
+static const int MAXARGS = DEVISE_MAX_ATTRS;
 static char *args[MAXARGS];
 
-inline int IsBlank(char c, char *blanks, int numBlanks)
+static inline int IsBlank(char c, char *blanks, int numBlanks)
 {
   for(int i = 0; i < numBlanks; i++) {
     if (c == blanks[i])
@@ -52,7 +59,7 @@ inline int IsBlank(char c, char *blanks, int numBlanks)
   return 0;
 }
 
-inline char *SkipBlanks(char *str, char *blanks, int numBlanks)
+static inline char *SkipBlanks(char *str, char *blanks, int numBlanks)
 {
   while (IsBlank(*str, blanks, numBlanks))
     str++;
@@ -90,7 +97,7 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
       }
       
       if (numArgs >= MAXARGS - 1) {
-	fprintf(stderr,"parse: no more args\n");
+	fprintf(stderr, "parse: too many arguments\n");
 	Exit::DoExit(1);
       }
       args[numArgs++] = start;
@@ -114,7 +121,7 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
     }
     
     if (numArgs >= MAXARGS - 1) {
-      fprintf(stderr, "parse: too many args\n");
+      fprintf(stderr, "parse: too many arguments\n");
       Exit::DoExit(1);
     }
     args[numArgs++] = start;
@@ -123,12 +130,9 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
 
 void Parse(char *str, int &numArgs, char **&returnArgs)
 {
-  char blanks[2] = {' ', '\t'};
-  Parse(str, numArgs, returnArgs, blanks, 2, 0);
+  char blanks[] = {' ', '\t'};
+  Parse(str, numArgs, returnArgs, blanks, sizeof blanks, 0);
 }
-
-static char *monthNames[12] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-				"JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
 
 static int GetMonth(char *month)
 {
@@ -136,14 +140,13 @@ static int GetMonth(char *month)
   if (monthHint >= 0 && !strcmp(monthNames[monthHint], month))
     return monthHint;
 
-  for(int i = 0; i < 12; i++) {
+  for(int i = 0; i < sizeof monthNames / sizeof monthNames[0]; i++) {
     if (!strcmp(monthNames[i], month)) {
       monthHint = i;
       return i;
     }
   }
 
-  /* not found */
   fprintf(stderr, "unknown month %s\n", month);
   Exit::DoExit(2);
 
@@ -199,4 +202,27 @@ int ParseFloatDate(char *input, double &val)
  error:
   val = 0.0;
   return 0;
+}
+
+time_t ParseSQLTimestamp(char *str)
+{
+  struct tm t;
+  if (sscanf(str, "%d-%d-%d %d:%d:%d", &t.tm_year, &t.tm_mon,
+	     &t.tm_mday, &t.tm_hour, &t.tm_min, &t.tm_sec) != 6) {
+    fprintf(stderr, "Invalid date field: %s\n", str);
+    return (time_t)-1;
+  }
+
+  t.tm_year -= 1900;
+  t.tm_mon--;
+  t.tm_isdst = -1;
+
+#ifdef DEBUG
+  printf("Converting time %04d-%02d-%02d %02d:%02d:%02d\n", t.tm_year,
+	 t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+#endif
+
+  time_t tim = mktime(&t);
+
+  return tim;
 }
