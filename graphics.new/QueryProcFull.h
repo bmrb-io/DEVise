@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/13 00:16:29  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.6  1996/05/31 15:41:27  jussi
   Added support for record links.
 
@@ -50,8 +54,8 @@ class DictGroup;
 class RecFile;
 
 /* data for QueryProcFull */
-enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter};
-enum QPFullState { QPFull_InitState, QPFull_ScanState, QPFull_EndState};
+enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter };
+enum QPFullState { QPFull_InitState, QPFull_ScanState, QPFull_EndState };
 
 const int QPFULL_MAX_MAPPINGS = 1024;
 
@@ -257,19 +261,9 @@ private:
   int _tqueryBeginIndex;           /* index of next record to examine */
   Boolean _tqueryApprox;           /* true for approximate match */
 
-  Boolean _needDisplayFlush;       /* display needs to be flushed */
-
-  protected:
-
-  // These are modified by the derived class DispQueryProcFull 
-  // A pipe is created between the DispQueryProcFull object and Dispatcher
-  // The Query Processor writes something to the pipe if it needs to be called
-  // later..It ned not be apipe actually and the implementation is hidden in 
-  // Dispatcher::InsertMarker and toerh functions..
-
-  int readFd;		// The read descriptor
-  int writeFd;      // The write descriptor
-
+protected:
+  int readFd;	                   /* read marker fd */
+  int writeFd;                     /* write marker fd */
 };
 
 #endif

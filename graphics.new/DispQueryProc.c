@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/23 20:32:49  jussi
+  Cleaned up.
+
   Revision 1.4  1996/04/20 19:56:36  kmurli
   QueryProcFull now uses the Marker calls of Dispatcher class to call
   itself when needed instead of being continuosly polled by the Dispatcher.
@@ -31,7 +34,10 @@
 
 DispQueryProcSimple::DispQueryProcSimple()
 {
-  Dispatcher::Current()->Register(this, 20);
+  Dispatcher::CreateMarker(readFd, writeFd);
+  Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
+  Dispatcher::InsertMarker(writeFd);
+  Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
 /********************************************************************8
@@ -48,6 +54,7 @@ DispQueryProcFull::DispQueryProcFull()
   Dispatcher::CreateMarker(readFd, writeFd);
   Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
   Dispatcher::InsertMarker(writeFd);
+  Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
 void DispQueryProcFull::Run()

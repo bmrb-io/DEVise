@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/08 21:38:40  jussi
+  Added copyright statement and a little more.
+
   Revision 1.2  1995/09/05 22:14:45  jussi
   Added CVS header.
 */
@@ -28,36 +31,44 @@
 #include "Dispatcher.h"
 #include "QueryProcSimple.h"
 #include "QueryProcFull.h"
+#include "Timer.h"
 
-class DispQueryProcSimple: public QueryProcSimple, private DispatcherCallback {
+#define QP_TIMER_INTERVAL 1000
+
+class DispQueryProcSimple: public QueryProcSimple,
+                           private DispatcherCallback,
+                           public TimerCallback {
 public:
   DispQueryProcSimple();
 
+  /* active query processor when timer expires */
+  virtual void TimerWake(int arg) {
+    Dispatcher::InsertMarker(writeFd);
+    Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+  }
+
 private:
-  /* from DispatcerhCallback */
-  virtual char *DispatchedName() {
-    return "DispQueryProcSimple";
-  }
+  /* from DispatcherCallback */
+  virtual char *DispatchedName() { return "DispQueryProcSimple"; }
   void Run();
-  void Cleanup(){
-    PrintStat();
-  }
 };
 
-class DispQueryProcFull: public QueryProcFull, private DispatcherCallback {
+class DispQueryProcFull: public QueryProcFull,
+                         private DispatcherCallback,
+                         public TimerCallback {
 public:
   DispQueryProcFull();
 
+  /* active query processor when timer expires */
+  virtual void TimerWake(int arg) {
+    Dispatcher::InsertMarker(writeFd);
+    Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+  }
+
 private:
-  /* from DispatcerhCallback */
-  char *DispatchedName(){
-    return "DispQueryProcFull";
-  }
+  /* from DispatcherCallback */
+  char *DispatchedName() { return "DispQueryProcFull"; }
   void Run();
-  void Cleanup(){
-    /*
-       PrintStat();
-    */
-  }
 };
+
 #endif

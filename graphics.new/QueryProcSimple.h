@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/12 14:56:25  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.6  1996/04/10 01:46:20  jussi
   Added call to Flush() when query processor becomes idle.
 
@@ -86,6 +94,7 @@ struct SaveRangeRec {
 class QueryProcSimple: public QueryProc {
 public:
   QueryProcSimple();
+  virtual ~QueryProcSimple();
 
   /* Abort a query given the mapping and the callback. */
   void AbortQuery(TDataMap *map, QueryCallback *callback);
@@ -246,7 +255,9 @@ private:
   Boolean InMemConvert();
   void DoneInMemConvert();
 
-  Boolean _needDisplayFlush;       /* display needs to be flushed */
+protected:
+  int readFd;	                   /* read marker fd */
+  int writeFd;                     /* write marker fd */
 };
 
 #endif

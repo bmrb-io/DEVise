@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/24 16:58:32  wenger
+  Fixed bug causing internal error.
+
   Revision 1.19  1996/06/23 20:32:32  jussi
   Query processor now properly hibernates when no queries are
   present and when all background GData conversion is complete.
@@ -125,11 +128,6 @@ static const int QPFULL_RANDOM_RECS_PER_BATCH = 1024;
    display */
 static const int QPFULL_RANDOM_ITERATIONS = 5;
 
-QueryProcFull::~QueryProcFull()
-{
-  Dispatcher::CloseMarker(readFd, writeFd);
-}
-
 /* Get X associated with a recId */
 inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
 {
@@ -226,8 +224,12 @@ QueryProcFull::QueryProcFull()
   
   _tqueryQdata = AllocEntry();
   _tqueryQdata->isRandom = false;
+}
 
-  _needDisplayFlush = true;
+QueryProcFull::~QueryProcFull()
+{
+  Dispatcher::FlushMarkers(readFd);
+  Dispatcher::CloseMarker(readFd, writeFd);
 }
 
 void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
@@ -710,15 +712,7 @@ void QueryProcFull::ProcessQPFullScatter(QPFullData *qData)
 
 void QueryProcFull::ProcessQuery()
 {
-  Dispatcher::FlushMarker(readFd); 
-  
   if (NoQueries()) {
-    
-    if (_needDisplayFlush) {
-      DeviseDisplay::DefaultDisplay()->Flush();
-      _needDisplayFlush = false;
-    }
-    
     /*
        If all queries have been executed (system is idle) and
        we need to notify control panel that everything is in
@@ -731,10 +725,6 @@ void QueryProcFull::ProcessQuery()
     DoGDataConvert();
     return;
   }
-
-  Dispatcher::InsertMarker(writeFd);
-
-  _needDisplayFlush = true;
 
   if (InitQueries()) {
     /* Have initialized queries. Return now */
@@ -771,11 +761,6 @@ void QueryProcFull::ProcessQuery()
 	/* finished with this query */
 	DeleteFirstQuery();
   }
-  #if 0
-  tempBuff = 'a';
-  if (writePipeFd != -1)
-	write(writePipeFd,&tempBuff,sizeof(char));
-  #endif
 }
 
 void QueryProcFull::EndQPFullX(QPFullData *qData)
@@ -1296,8 +1281,10 @@ Boolean QueryProcFull::DoInMemGDataConvert(TData *tdata, GData *gdata,
 
 void QueryProcFull::DoGDataConvert()
 {
-  if (!Init::ConvertGData() || !_numMappings)
+  if (!Init::ConvertGData() || !_numMappings) {
+    Dispatcher::FlushMarkers(readFd);
     return;
+  }
 	
   /* Do in-memory conversion, if we can */
   int index = _convertIndex;
@@ -1313,7 +1300,6 @@ void QueryProcFull::DoGDataConvert()
 #ifdef DEBUG
       printf("Done with in-memory GData conversion\n");
 #endif
-      Dispatcher::InsertMarker(writeFd);
       return;
     }
   }
@@ -1382,12 +1368,11 @@ void QueryProcFull::DoGDataConvert()
 #ifdef DEBUG
     printf("Could not find any GData that needs disk conversion\n");
 #endif
+    Dispatcher::FlushMarkers(readFd);
     return;
   }
 
   DOASSERT(map && gdata && tdata, "Invalid TDataMap or GData or TData");
-
-  Dispatcher::InsertMarker(writeFd);
 
   if (noHigh)
     high = lastId;
