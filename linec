@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/05/22 21:41:16  jussi
+#  This script now uses Eben Haber's line count program if available.
+#
 #  Revision 1.4  1996/02/01 19:50:58  jussi
 #  Added categorized display of source code line count.
 #
@@ -56,6 +59,10 @@ echo Mapping Support:
 $PROG graphics.new/Map*.[Cch] | $TAIL
 
 $SEPARATOR
+echo 3D Support:
+$PROG graphics/Map3D*.[Cch] | $TAIL
+
+$SEPARATOR
 echo XWindows and Generic Display Support:
 $PROG graphics/*Win*.[Cch] graphics/*Display*.[Cch] graphics/X*.[Cch] | $TAIL
 
@@ -66,6 +73,10 @@ $PROG graphics/*Link*.[Cch] graphics/*Cursor*.[Cch] | $TAIL
 $SEPARATOR
 echo Ams, Generic, and Multi Applications:
 $PROG ams/*.[Cch] generic/*.[Cch] multi/*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Attribute Projection:
+$PROG attrproj/*.[Cch] | $TAIL
 
 $SEPARATOR
 echo CompuStat, CRSP, and ISSM Interfaces:
