@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/11 21:43:40  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.7  1996/01/11 21:02:06  jussi
   Added ParseSQLTimestamp() function.
 
@@ -143,7 +146,7 @@ static int GetMonth(char *month)
   if (monthHint >= 0 && !strcmp(monthNames[monthHint], month))
     return monthHint;
 
-  for(int i = 0; i < sizeof monthNames / sizeof monthNames[0]; i++) {
+  for(unsigned int i = 0; i < sizeof monthNames / sizeof monthNames[0]; i++) {
     if (!strcmp(monthNames[i], month)) {
       monthHint = i;
       return i;
