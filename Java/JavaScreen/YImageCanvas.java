@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  1999/08/03 07:37:46  hongyu
+// add support for read animation symbol from JAR file           by Hongyu Yao
+//
 // Revision 1.9  1999/08/03 05:56:50  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -185,8 +188,15 @@ public class YImageCanvas extends Canvas
             }
             */
             Graphics og = offScrImg.getGraphics();
+            
             paint(og);
             g.drawImage(offScrImg, 0, 0, this);
+            
+            while (string.size() > 0 || image.size() > 0) {
+                paint(og);
+                g.drawImage(offScrImg, 0, 0, this);
+            } 
+                
             og.dispose();
         }
     }
@@ -197,10 +207,10 @@ public class YImageCanvas extends Canvas
             //if (image != null) {
             //    g.drawImage(image, 0, 0, this);
             //}
-            while (image.size() > 0) {
+            
+            if (image.size() > 0) {
                 lastImage = (Image)image.firstElement();
-                g.drawImage(lastImage, 0, 0, this);
-                image.removeElementAt(0);
+                image.removeElement(lastImage);
             }
 
             if (lastImage != null) {
@@ -216,15 +226,9 @@ public class YImageCanvas extends Canvas
             //    g.drawString(string, xstart, imageHeight - 3);
             //}
 
-            while (string.size() > 0) {
+            if (string.size() > 0) {
                 lastString = (String)string.firstElement();
-                g.setColor(bgcolor);
-                g.fillRect(0, 0, imageWidth, imageHeight);
-                g.setColor(fgcolor);
-                g.setFont(font);
-                int xstart = (imageWidth - lastString.length() * mx) / 2 + xshift;
-                g.drawString(lastString, xstart, imageHeight - 3);
-                string.removeElementAt(0);
+                string.removeElement(lastString);
             }
 
             if (lastString != null) {

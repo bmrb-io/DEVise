@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  1999/08/03 05:56:49  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.33  1999/07/27 17:11:18  hongyu
 // *** empty log message ***
 //
@@ -528,8 +531,10 @@ public class DEViseScreen extends Panel
         //}
 
         while (obsoleteCanvas.size() > 0) {
-            remove((DEViseCanvas)obsoleteCanvas.firstElement());
-            obsoleteCanvas.removeElementAt(0);
+            DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
+            remove(c);
+            //obsoleteCanvas.removeElementAt(0);
+            obsoleteCanvas.removeElement(c);            
         }
 
         //if (isCanvasAdded && whichCanvasAdded != null) {
@@ -543,7 +548,8 @@ public class DEViseScreen extends Panel
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             add(c, c.posZ);
             c.setBounds(c.getBoundsInScreen());
-            newCanvas.removeElementAt(0);
+            //newCanvas.removeElementAt(0);
+            newCanvas.removeElement(c);
         }
 
         //if (isGDataDeleted && whichGDataDeleted != null) {
@@ -562,7 +568,8 @@ public class DEViseScreen extends Panel
             DEViseGData gdata = (DEViseGData)obsoleteGData.firstElement();
             // the element in obsoleteGData will guranteed to be java type GData
             remove(gdata.symbol);
-            obsoleteGData.removeElementAt(0);
+            //obsoleteGData.removeElementAt(0);
+            obsoleteGData.removeElement(gdata);
         }
 
         //if (isGDataAdded && whichGDataAdded != null) {
@@ -585,7 +592,8 @@ public class DEViseScreen extends Panel
             Component gs = gdata.symbol;
             add(gs);
             gs.setBounds(gdata.getBoundsInScreen());
-            newGData.removeElementAt(0);
+            //newGData.removeElementAt(0);
+            newGData.removeElement(gdata);
         }
 
         super.paint(g);
