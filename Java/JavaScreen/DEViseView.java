@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2002/02/13 17:33:28  xuk
+// Drawing axis labels according to the string length in pixels.
+//
 // Revision 1.64  2002/02/12 20:56:44  xuk
 // Improvement for drawing axis labels.
 // Added getDatelabel() for different date format.
@@ -886,8 +889,8 @@ public class DEViseView
 		}
 		length = labelY.length();
 	    }
-	    else if (abs >= 1) { // -1 =< y <= 1
-		length = (int)(Math.log(abs) / Math.log(10)) + 1;
+	    else if (abs >= 10) { // |y| >= 10
+		length = (int)(Math.log(abs) / Math.log(10) + 0.001) + 1;
 		if (y < 0) // "-"
 		    length ++;
 	    } else {
@@ -895,14 +898,13 @@ public class DEViseView
 	    }
 
 	    labelY = labelY.substring(0, length);
-	    
+
 	    if (length > 2) {
 		if (labelY.charAt(length-1) == '.') 
 		    labelY = labelY.substring(0, length-1);
 		if (labelY.charAt(length-2) == '.' && labelY.charAt(length-1) == '0')
 		    labelY = labelY.substring(0, length-2);
 	    }
-
 	    return labelY;
 	}
     }
@@ -994,11 +996,22 @@ public class DEViseView
 	    c = format.charAt(i);
 
 	    if (c == 'b') {
-		DateFormat dateformat = DateFormat.getDateInstance(DateFormat.MEDIUM);
-		st = dateformat.format(date);
-		int first = st.indexOf('-');
-		int second = st.indexOf('-', first+1);
-		st = st.substring(first+1, second);
+		int mon = cal.get(Calendar.MONTH);
+		
+		switch (mon) {
+		case 1: st = "Jan"; break;
+		case 2: st = "Feb"; break;
+		case 3: st = "March"; break;
+		case 4: st = "April"; break;
+		case 5: st = "May"; break;
+		case 6: st = "June"; break;
+		case 7: st = "July"; break;
+		case 8: st = "Aug"; break;
+		case 9: st = "Sep"; break;
+		case 10: st = "Oct"; break;
+		case 11: st = "Nov"; break;
+		case 12: st = "Dec"; break;
+		}		    
 	    } 
 	    else if (c == 'd') {
 		st = new Integer(cal.get(Calendar.DAY_OF_MONTH)).toString();

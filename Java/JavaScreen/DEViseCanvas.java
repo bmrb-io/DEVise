@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.87  2002/02/13 17:33:33  xuk
+// Drawing axis labels according to the string length in pixels.
+//
 // Revision 1.86  2002/02/12 20:55:45  xuk
 // Improvement to drawing axis labels.
 //
@@ -850,6 +853,8 @@ public class DEViseCanvas extends Container
 			    currentY = (int)((currentY + v.labelFactorY * 0.5) / v.labelFactorY);
 			    currentY = currentY * v.labelFactorY;
 			}
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - v.viewDataYMin) / v.dataYStep);
 
 			while (currentYPos >= loc.y + 20) {
 			    currentY *= v.factorY;
@@ -858,8 +863,10 @@ public class DEViseCanvas extends Container
 			    width = gc.getFontMetrics().stringWidth(labelY);
 			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			    currentYPos -= 40;	    
+			    //currentYPos -= 40;	    
 			    currentY += step;
+			    currentYPos = loc.y + loc.height - 
+				(int)((currentY - v.viewDataYMin) / v.dataYStep);
 			}
 		    } else { // min < 0
 			// drawing upward
@@ -875,14 +882,16 @@ public class DEViseCanvas extends Container
 
 			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			    currentYPos -= 40;	    
+			    //currentYPos -= 40;	    
 			    currentY += step;
+			    currentYPos = loc.y + loc.height - 
+				(int)((currentY - v.viewDataYMin) / v.dataYStep);
 			}		
 			
 			// drawing downward
 			currentY = 0 - step;
 			currentYPos = loc.y + loc.height - 
-			    (int)((0 - v.viewDataYMin) / v.dataYStep) + 40;
+			    (int)((currentY - v.viewDataYMin) / v.dataYStep);
 		    	
 			while (currentYPos <= loc.y + loc.height) {
 			    currentY *= v.factorY;
@@ -892,8 +901,10 @@ public class DEViseCanvas extends Container
 
 			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			    currentYPos += 40;	    
+			    //currentYPos += 40;	    
 			    currentY -= step;
+			    currentYPos = loc.y + loc.height - 
+				(int)((currentY - v.viewDataYMin) / v.dataYStep);
 			}		
 		    }
 		} else { // for "date"
@@ -935,7 +946,8 @@ public class DEViseCanvas extends Container
 			    currentX = (int)((currentX + v.labelFactorX * 0.5) / v.labelFactorX);
 			    currentX = currentX * v.labelFactorX;
 			}
-
+			currentXPos = loc.x + 
+			    (int)((currentX - v.viewDataXMin) / v.dataXStep);
 			while (currentXPos <= loc.x + loc.width) {
 			    currentX *= v.factorX;
 			    
@@ -945,8 +957,10 @@ public class DEViseCanvas extends Container
 			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+5);
-			    currentXPos += 100;
+			    //currentXPos += 100;
 			    currentX += step;
+			    currentXPos = loc.x + 
+				(int)((currentX - v.viewDataXMin) / v.dataXStep);
 			}
 		    } else { // min < 0
 			// drawing upward
@@ -962,14 +976,16 @@ public class DEViseCanvas extends Container
 			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+5);
-			    currentXPos += 100;
+			    //currentXPos += 100;
 			    currentX += step;
+			    currentXPos = loc.x + 
+				(int)((currentX - v.viewDataXMin) / v.dataXStep);
 			}		
 			
 			// drawing downward
 			currentX = 0 - step;
 			currentXPos = loc.x + 
-			    (int)((0 - v.viewDataXMin) / v.dataXStep) - 100;
+			    (int)((currentX - v.viewDataXMin) / v.dataXStep);
 		    	
 			while (currentXPos >= loc.x) {
 			    currentX *= v.factorX;
@@ -979,8 +995,10 @@ public class DEViseCanvas extends Container
 			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+5);
-			    currentXPos -= 100;
+			    // currentXPos -= 100;
 			    currentX -= step;
+			    currentXPos = loc.x + 
+				(int)((currentX - v.viewDataXMin) / v.dataXStep);
 			}		
 		    }
 		} else { // for "date"
@@ -1032,6 +1050,9 @@ public class DEViseCanvas extends Container
 			    currentY = (int)((currentY + view.labelFactorY * 0.5) / view.labelFactorY);
 			    currentY = currentY * view.labelFactorY;
 		    }
+		    
+		    currentYPos = loc.y + loc.height - 
+			(int)((currentY - view.viewDataYMin) / view.dataYStep);
 
 		    while (currentYPos >= loc.y + 20) {
 			currentY *= view.factorY;
@@ -1040,8 +1061,10 @@ public class DEViseCanvas extends Container
 			width = gc.getFontMetrics().stringWidth(labelY);
 			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			currentYPos -= 40;	    
+			// currentYPos -= 40;	    
 			currentY += step;
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    }
 		} else { // min < 0
 		    // drawing upward
@@ -1057,14 +1080,18 @@ public class DEViseCanvas extends Container
 
 			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			currentYPos -= 40;	    
+			//currentYPos -= 40;	    
 			currentY += step;
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    }		
     
 		    // drawing downward
 		    currentY = 0 - step;
+		    // currentYPos = loc.y + loc.height - 
+		    //(int)((0 - view.viewDataYMin) / view.dataYStep) + 40;
 		    currentYPos = loc.y + loc.height - 
-			(int)((0 - view.viewDataYMin) / view.dataYStep) + 40;
+			(int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    	
 		    while (currentYPos <= loc.y + loc.height) {
 			currentY *= view.factorY;
@@ -1074,8 +1101,10 @@ public class DEViseCanvas extends Container
 
 			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
-			currentYPos += 40;	    
+			//currentYPos += 40;	    
 			currentY -= step;
+			currentYPos = loc.y + loc.height - 
+			    (int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    }		
 		}
 	    } else { // for "date"
@@ -1118,7 +1147,8 @@ public class DEViseCanvas extends Container
 			currentX = (int)((currentX + view.labelFactorX * 0.5) / view.labelFactorX);
 			currentX = currentX * view.labelFactorX;
 		    }
-		    
+		    currentXPos = loc.x + 
+			(int)((currentX - view.viewDataXMin) / view.dataXStep);		    
 		    while (currentXPos <= loc.x + loc.width) {
 			currentX *= view.factorX;
 			
@@ -1127,8 +1157,10 @@ public class DEViseCanvas extends Container
 			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+5);
-			currentXPos += 100;
+			// currentXPos += 100;
 			currentX += step;
+			currentXPos = loc.x + 
+			    (int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    }
 		} else { // min < 0
 		    // drawing upward
@@ -1144,14 +1176,16 @@ public class DEViseCanvas extends Container
 			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+5);
-			currentXPos += 100;
+			// currentXPos += 100;
 			currentX += step;
+			currentXPos = loc.x + 
+			    (int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    }		
 			
 		    // drawing downward
 		    currentX = 0 - step;
 		    currentXPos = loc.x + 
-			(int)((0 - view.viewDataXMin) / view.dataXStep) - 100;
+			(int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    
 		    while (currentXPos >= loc.x) {
 			currentX *= view.factorX;
@@ -1161,8 +1195,10 @@ public class DEViseCanvas extends Container
 			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+5);
-			currentXPos -= 100;
+			// currentXPos -= 100;
 			currentX -= step;
+			currentXPos = loc.x + 
+			    (int)((currentX - view.viewDataXMin) / view.dataXStep);
 		    }		
 		}
 	    } else { // for "date"
