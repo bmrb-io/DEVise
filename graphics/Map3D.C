@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/20 18:47:58  jussi
+  Added 3D line segment shape and renamed some 3D type names to
+  be more general.
+
   Revision 1.6  1996/07/13 17:24:44  jussi
   Diagonal line across the side of a block is not drawn.
 
@@ -247,6 +251,7 @@ void Map3D::MapBlockSegments(WindowRep *win,
       _segment[_numSegments].pt[0].y = pts[block[i].ed[j].p].y;
       _segment[_numSegments].pt[1].x = pts[block[i].ed[j].q].x;
       _segment[_numSegments].pt[1].y = pts[block[i].ed[j].q].y;
+      _segment[_numSegments].width = block[i].segWidth;
       _segment[_numSegments].color = block[i].color;
       _numSegments++;
     }
@@ -333,6 +338,7 @@ void Map3D::ClipLineSegments(WindowRep *win,
 
     segment[i].clipout = false;  // default is no clip
 
+#if 0
 #define _closeness_ 1.3
 
     if ((segment[i].pt.x_ > 0 && camera.x_ > 0 && 
@@ -359,6 +365,7 @@ void Map3D::ClipLineSegments(WindowRep *win,
       segment[i].clipout = true;
       continue;
     }
+#endif
 
     // If the center of the segment appears on screen,
     // the segment is not clipped, otherwise it is clipped.
@@ -409,6 +416,7 @@ void Map3D::MapLineSegments(WindowRep *win,
     _segment[_numSegments].pt[1].x = pt.x;
     _segment[_numSegments].pt[1].y = pt.y;
 
+    _segment[_numSegments].width = segment[i].segWidth;
     _segment[_numSegments].color = segment[i].color;
 
     _numSegments++;
@@ -467,7 +475,8 @@ void Map3D::DrawSegments(WindowRep *win)
     else
       win->SetFgColor(color);
     win->Line(_segment[i].pt[0].x, _segment[i].pt[0].y,
-	      _segment[i].pt[1].x, _segment[i].pt[1].y, 1);
+	      _segment[i].pt[1].x, _segment[i].pt[1].y,
+              _segment[i].width);
     if (color == XorColor)
       win->SetCopyMode();
   }
@@ -477,7 +486,7 @@ void Map3D::DrawSegments(WindowRep *win)
 // draw the sides of the shapes
 // ---------------------------------------------------------- 
 
-void Map3D::DrawPlanes(WindowRep *win)
+void Map3D::DrawPlanes(WindowRep *win, Boolean frame)
 {
   for(int i = 0; i < _numPlanes; i++) {
     Color color = _plane[i].color;
@@ -489,16 +498,18 @@ void Map3D::DrawPlanes(WindowRep *win)
     if (color == XorColor)
       win->SetCopyMode();
 
-    win->SetFgColor(BlackColor);
-    win->Line(_plane[i].pt[0].x, _plane[i].pt[0].y,
-	      _plane[i].pt[1].x, _plane[i].pt[1].y, 1);
-    win->Line(_plane[i].pt[1].x, _plane[i].pt[1].y,
-	      _plane[i].pt[2].x, _plane[i].pt[2].y, 1);
+    if (frame) {
+      win->SetFgColor(BlackColor);
+      win->Line(_plane[i].pt[0].x, _plane[i].pt[0].y,
+                _plane[i].pt[1].x, _plane[i].pt[1].y, 1);
+      win->Line(_plane[i].pt[1].x, _plane[i].pt[1].y,
+                _plane[i].pt[2].x, _plane[i].pt[2].y, 1);
 #if 0
-    // don't draw diagonal line
-    win->Line(_plane[i].pt[2].x, _plane[i].pt[2].y,
-	      _plane[i].pt[0].x, _plane[i].pt[0].y, 1);
+      // don't draw diagonal line
+      win->Line(_plane[i].pt[2].x, _plane[i].pt[2].y,
+                _plane[i].pt[0].x, _plane[i].pt[0].y, 1);
 #endif
+    }
   }
 }
 
