@@ -1,6 +1,8 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/05 22:45:08  jussi
+#	Added CVS header.
 
 # Do the help command
 # erase the next line when not debugging

@@ -1,3 +1,7 @@
+#	$Id$
+
+#	$Log$
+
 # dialog box with list of check buttons
 # Return the button pressed.
 # Global variable dialogCkButVar(selected) is set to the 

@@ -1,3 +1,7 @@
+#	$Id$
+
+#	$Log$
+
 # dialog box with item lists
 # Return the button pressed.
 # Global variable dialogParamVar(params) is set to the text variables
