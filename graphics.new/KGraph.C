@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/12/06 05:45:08  ravim
+  Initial version.
+*/
 
 #include <stdio.h>
 #include "Transform.h"
@@ -44,6 +47,16 @@ void KGraph::Init()
 {
   _naxes = 0;
   delete [] _pts;
+
+  // Clear up any existing display on the windowrep - is this the right way??
+  // We want to reuse the window for displaying a different graph.
+  int x0, y0;
+  unsigned int w,h;
+  _win->Origin(x0, y0);
+  _win->Dimensions(w, h);
+  _win->SetFgColor(WhiteColor);
+  _win->FillRect(x0, y0, w, h);
+
 }
 
 void KGraph::setAxes(int num)
