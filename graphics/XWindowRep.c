@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1996/07/23 15:34:45  jussi
+  Added mechanism for bypassing the Devise internal color map.
+
   Revision 1.50  1996/07/22 19:32:04  jussi
   Requesting a pixmap of a window that is partially off the screen
   no longer causes Devise to crash.
@@ -1940,7 +1943,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
   attr.border_pixel		= fgnd;
   attr.bit_gravity		= ForgetGravity /* CenterGravity */;
   attr.win_gravity		= NorthWestGravity;
-  attr.backing_store		= /* Always */ NotUseful;
+  attr.backing_store		= Always /* NotUseful WhenMapped */;
   attr.backing_planes		= AllPlanes;
   attr.backing_pixel		= 0;
   attr.save_under		= True;
