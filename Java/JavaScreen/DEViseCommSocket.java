@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2001/05/11 20:36:05  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.22  2001/04/06 19:32:14  wenger
 // Various cleanups of collaboration code (working on strange hang
 // that Miron has seen); added more debug output; turned heartbeat
@@ -183,7 +186,7 @@ public class DEViseCommSocket
     //TEMP -- increased this from 1000 to see if it helps on yola.
     private static final int DEFAULT_RCV_TIMEOUT = 10000; // millisec
 
-    private Socket socket = null;
+    public Socket socket = null;
     public DataInputStream is = null;
     public DataOutputStream os = null;
 
@@ -322,6 +325,28 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
+    // if at the moment of calling, there is something wrong with the socket
+    // isAvailable will return false, otherwise, it will return true
+    public synchronized boolean isAvailable() throws YException
+    {
+        try {
+            int b = is.available();
+            os.flush();
+	    InputStream i = socket.getInputStream();
+	    OutputStream o = socket.getOutputStream();
+        } catch (IOException e) {
+            closeSocket();
+            System.err.println("Socket is not available " +
+	      "DEViseCommSocket:isAvailable()");
+	    return false;
+            //throw new YException("Can not read from input stream",
+	    //  "DEViseCommSocket:isEmpty()");
+        }
+	return true;
+    
+    }
+
+    //-------------------------------------------------------------------
     // Clear all incoming data off of the sockets.
     public synchronized void clearSocket() throws YException
     {
@@ -414,7 +439,7 @@ public class DEViseCommSocket
 
 	    os.writeShort(msgType);
 	    os.writeShort((short)ID);
-	    os.writeShort(0); // not cgi
+ 	    os.writeShort(0); // not cgi
 
             // if nelem is greater than MAX_VALUE of short, if you use readUnsignedShort
             // on the other size, you can still get correct value
@@ -437,10 +462,10 @@ public class DEViseCommSocket
             os.flush();
         } catch (IOException e) {
             closeSocket();
-            System.err.println("Error occurs while writing to output " +
-	      "stream: " + e.getMessage() + " in DEViseCommSocket:sendCmd()");
-            throw new YException("Error occurs while writing to output " +
-	      "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
+	    socket = null;
+            System.err.println("Error occurs while writing command " + cmd + " to output stream: " + e.getMessage() + " in DEViseCommSocket:sendCmd()");
+            //throw new YException("Error occurs while writing to output " +
+	    //  "stream: " + e.getMessage(), "DEViseCommSocket:sendCmd()");
         }
     }
 
@@ -533,8 +558,9 @@ public class DEViseCommSocket
             throw e;
         } catch (IOException e) {
             closeSocket();
-	    System.err.println(e.getMessage());
-            throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveCmd()");
+	    System.err.println(e.getMessage() + "DEViseCommSocket:receiveCmd()");
+	    return("Connection disabled");
+            //throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveCmd()");
         }
 
         int argsize = 0;
