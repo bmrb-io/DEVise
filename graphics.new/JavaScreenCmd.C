@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/12/21 16:33:39  wenger
+  Added more support for cursors, and view axes and titles, for the JavaScreen.
+
   Revision 1.44  1998/12/15 21:20:59  wenger
   Devised now resizes windows to use as much of the JavaScreen real estate
   as possible.
@@ -579,10 +582,9 @@ FillScreen()
 	//
 	Coord xMult = displayWidth / (right - left + 1);
 	Coord yMult = displayHeight / (bottom - top + 1);
-	Coord mult = MIN(xMult, yMult);
 
-	Coord xOffset = -left * mult;
-	Coord yOffset = -top * mult;
+	Coord xOffset = -left * xMult;
+	Coord yOffset = -top * yMult;
 
 	//
 	// Resize each window.
@@ -597,10 +599,10 @@ FillScreen()
 	    window->RealGeometry(winX, winY, winW, winH);
 	    window->AbsoluteOrigin(winX, winY);
 
-		winX = (int)(winX * mult + xOffset);
-		winY = (int)(winY * mult + yOffset);
-		winW = (int)(winW * mult);
-		winH = (int)(winH * mult);
+		winX = (int)(winX * xMult + xOffset);
+		winY = (int)(winY * yMult + yOffset);
+		winW = (int)(winW * xMult);
+		winH = (int)(winH * yMult);
 
 #if defined(DEBUG)
         printf("window %s geometry changed to = %d, %d, %d, %d\n",
