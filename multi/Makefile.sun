@@ -1,15 +1,15 @@
 depend:
 	makedepend -fMakefile.sun \
-		-I../multi -I../graphics -I../graphics.new \
-		-I/usr/sup/tcl/include *.c
+		-I../multi -I../graphics -I../graphics.new -I/s/tcl/include \
+		*.c
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/floatingpoint.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ieeefp.h
-CycleCpuTimeMappingClassInfo.o: /usr/sup/tcl/include/tcl.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/stdio.h
+CycleCpuTimeMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -63,13 +63,13 @@ CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
 CycleCpuTimeMappingClassInfo.o: map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 CycleEffMappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ieeefp.h
-CycleEffMappingClassInfo.o: /usr/sup/tcl/include/tcl.h /usr/include/stdio.h
-CycleEffMappingClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
-CycleEffMappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
-CycleEffMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
-CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
-CycleEffMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
+CycleEffMappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
+CycleEffMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
+CycleEffMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
+CycleEffMappingClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
+CycleEffMappingClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
+CycleEffMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics/Transform.h ../graphics/WindowRep.h
 CycleEffMappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
@@ -113,13 +113,13 @@ CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
 CycleEffMappingClassInfo.o: map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 CycleOccMappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ieeefp.h
-CycleOccMappingClassInfo.o: /usr/sup/tcl/include/tcl.h /usr/include/stdio.h
-CycleOccMappingClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
-CycleOccMappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
-CycleOccMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
-CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
-CycleOccMappingClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
+CycleOccMappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
+CycleOccMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
+CycleOccMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
+CycleOccMappingClassInfo.o: ../graphics/Exit.h ../graphics/VisualArg.h
+CycleOccMappingClassInfo.o: ../graphics/Color.h ../graphics/Journal.h
+CycleOccMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics/Transform.h ../graphics/WindowRep.h
 CycleOccMappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
@@ -165,8 +165,7 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
 CycleSuspendedMappingClassInfo.o: /usr/include/floatingpoint.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/ieeefp.h
-CycleSuspendedMappingClassInfo.o: /usr/sup/tcl/include/tcl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/stdio.h
+CycleSuspendedMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Dispatcher.h
@@ -226,8 +225,7 @@ CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
 CycleWorkingMappingClassInfo.o: /usr/include/floatingpoint.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/ieeefp.h
-CycleWorkingMappingClassInfo.o: /usr/sup/tcl/include/tcl.h
-CycleWorkingMappingClassInfo.o: /usr/include/stdio.h
+CycleWorkingMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleWorkingMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleWorkingMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleWorkingMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -281,7 +279,7 @@ CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
 CycleWorkingMappingClassInfo.o: map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 HostMappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
-HostMappingClassInfo.o: /usr/include/sys/ieeefp.h /usr/sup/tcl/include/tcl.h
+HostMappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 HostMappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 HostMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 HostMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -322,7 +320,7 @@ HostMappingClassInfo.o: ../graphics.new/ViewGraph.h HostMappingClassInfo.h
 HostMappingClassInfo.o: HostRec.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 MappingClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
-MappingClassInfo.o: /usr/include/sys/ieeefp.h /usr/sup/tcl/include/tcl.h
+MappingClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 MappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 MappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -432,12 +430,12 @@ ViewClassInfo.o: Message.h ../graphics.new/TDataMap.h
 ViewClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 disp.o: /usr/include/sys/time.h /usr/include/sys/time.h /usr/include/math.h
 disp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-disp.o: /usr/sup/tcl/include/tcl.h /usr/include/stdio.h
-disp.o: ../graphics/DeviseTypes.h ../graphics/Display.h ../graphics/Geom.h
-disp.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-disp.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-disp.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-disp.o: ../graphics/Transform.h ../graphics/WindowRep.h ../graphics/Pattern.h
+disp.o: /s/tcl/include/tcl.h /usr/include/stdio.h ../graphics/DeviseTypes.h
+disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Dispatcher.h
+disp.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+disp.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/ColorMgr.h
+disp.o: ../graphics.new/RectShape.h ../graphics/Transform.h
+disp.o: ../graphics/WindowRep.h ../graphics/Pattern.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 disp.o: ../graphics.new/Shape.h ../graphics/Control.h ../graphics/Init.h
 disp.o: ../graphics/BufPolicy.h ../graphics/VisualLinkClassInfo.h

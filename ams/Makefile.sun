@@ -1,12 +1,13 @@
 depend:
 	makedepend -fMakefile.sun \
-		-I../graphics -I../graphics.new \
-		-I../tape -I/usr/sup/tcl/include *.c
+		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
+		*.c
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/time.h
 MapClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
-MapClassInfo.o: /usr/include/sys/ieeefp.h /usr/sup/tcl/include/tcl.h
+MapClassInfo.o: /usr/include/sys/ieeefp.h /s/tcl/include/tcl.h
 MapClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 MapClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h

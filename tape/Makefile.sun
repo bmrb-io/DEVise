@@ -1,7 +1,8 @@
 depend:
 	makedepend -fMakefile.sun \
-		-I../graphics -I../graphics.new -I../tape \
+		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
 		*.C
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 QueryProcTape.o: /usr/include/assert.h QueryProcTape.h
@@ -19,7 +20,7 @@ QueryProcTape.o: ../graphics.new/RangeInfo.h ../graphics.new/BufMgrNull.h
 QueryProcTape.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
 QueryProcTape.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
 QueryProcTape.o: ../graphics.new/GDataRec.h ../graphics.new/GDataBin.h
-QueryProcTape.o: ../graphics.new/MappingInterp.h
+QueryProcTape.o: ../graphics.new/MappingInterp.h /s/tcl/include/tcl.h
 QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/AttrList.h
 QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
 QueryProcTape.o: ../graphics/Config.h

@@ -1,6 +1,8 @@
 depend:
 	makedepend -fMakefile.sun \
-		-I../graphics -I../graphics.new *.c
+		-I../graphics -I../graphics.new -I/s/tcl/include \
+		*.c
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 ActionDefault.o: /usr/include/stdio.h /usr/include/time.h
@@ -173,32 +175,34 @@ GDataSnap.o: GDataSnap.h GDataVar.h
 MapInterpClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Control.h
 MapInterpClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
 MapInterpClassInfo.o: ../graphics/DList.h ../graphics/Exit.h MappingInterp.h
-MapInterpClassInfo.o: TDataMapDispatch.h TDataMap.h /usr/include/stdio.h
-MapInterpClassInfo.o: ../graphics/Pattern.h ShapeID.h Bitmap.h RecId.h
-MapInterpClassInfo.o: GDataRec.h ../graphics/Dispatcher.h
-MapInterpClassInfo.o: ../graphics/Journal.h TData.h RecOrder.h
-MapInterpClassInfo.o: ../graphics/AttrList.h /usr/include/sys/time.h
-MapInterpClassInfo.o: /usr/include/time.h /usr/include/sys/stdtypes.h
-MapInterpClassInfo.o: ../graphics/Config.h MapInterpClassInfo.h
-MapInterpClassInfo.o: ../graphics/ClassDir.h ../graphics/Util.h
-MapInterpClassInfo.o: /usr/include/assert.h /usr/include/stdlib.h
-MapInterpClassInfo.o: /usr/include/strings.h /usr/include/ctype.h
-MappingInterp.o: /usr/include/stdio.h ../graphics/DeviseTypes.h Bitmap.h
-MappingInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
-MappingInterp.o: /usr/include/time.h /usr/include/sys/stdtypes.h
-MappingInterp.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
-MappingInterp.o: TData.h RecId.h RecOrder.h ../graphics/VisualArg.h
-MappingInterp.o: ../graphics/Color.h Shape.h ../graphics/Pattern.h
-MappingInterp.o: ../graphics/WindowRep.h ../graphics/Geom.h
-MappingInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
-MappingInterp.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
-MappingInterp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MappingInterp.o: RectShape.h Temp.h MappingInterp.h TDataMapDispatch.h
-MappingInterp.o: TDataMap.h ShapeID.h GDataRec.h ../graphics/Dispatcher.h
-MappingInterp.o: ../graphics/Journal.h MapInterpShape.h ../graphics/Util.h
-MappingInterp.o: /usr/include/assert.h /usr/include/stdlib.h
-MappingInterp.o: /usr/include/strings.h /usr/include/ctype.h
-MappingInterp.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MapInterpClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
+MapInterpClassInfo.o: TDataMapDispatch.h TDataMap.h ../graphics/Pattern.h
+MapInterpClassInfo.o: ShapeID.h Bitmap.h RecId.h GDataRec.h
+MapInterpClassInfo.o: ../graphics/Dispatcher.h ../graphics/Journal.h TData.h
+MapInterpClassInfo.o: RecOrder.h ../graphics/AttrList.h
+MapInterpClassInfo.o: /usr/include/sys/time.h /usr/include/time.h
+MapInterpClassInfo.o: /usr/include/sys/stdtypes.h ../graphics/Config.h
+MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/ClassDir.h
+MapInterpClassInfo.o: ../graphics/Util.h /usr/include/assert.h
+MapInterpClassInfo.o: /usr/include/stdlib.h /usr/include/strings.h
+MapInterpClassInfo.o: /usr/include/ctype.h
+MappingInterp.o: /usr/include/stdio.h /s/tcl/include/tcl.h
+MappingInterp.o: ../graphics/DeviseTypes.h Bitmap.h ../graphics/AttrList.h
+MappingInterp.o: /usr/include/sys/time.h /usr/include/time.h
+MappingInterp.o: /usr/include/sys/stdtypes.h ../graphics/Config.h
+MappingInterp.o: ../graphics/DList.h ../graphics/Exit.h TData.h RecId.h
+MappingInterp.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+MappingInterp.o: Shape.h ../graphics/Pattern.h ../graphics/WindowRep.h
+MappingInterp.o: ../graphics/Geom.h /usr/include/math.h
+MappingInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+MappingInterp.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MappingInterp.o: ../graphics/Compress.h RectShape.h Temp.h MappingInterp.h
+MappingInterp.o: TDataMapDispatch.h TDataMap.h ShapeID.h GDataRec.h
+MappingInterp.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+MappingInterp.o: MapInterpShape.h ../graphics/Util.h /usr/include/assert.h
+MappingInterp.o: /usr/include/stdlib.h /usr/include/strings.h
+MappingInterp.o: /usr/include/ctype.h ../graphics/Init.h
+MappingInterp.o: ../graphics/BufPolicy.h
 MultiArray.o: MultiArray.h ../graphics/DeviseTypes.h /usr/include/stdio.h
 MultiArray.o: VoidArray.h ../graphics/Exit.h
 PageFile.o: /usr/include/stdio.h ../graphics/Exit.h BufMgr.h
@@ -389,7 +393,12 @@ Temp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Temp.o: ../graphics/Transform.h ../graphics/DList.h ../graphics/Exit.h
 Temp.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/DevisePixmap.h
 Temp.o: ../graphics/VisualArg.h ../graphics/Compress.h
-TkControl.o: /usr/include/stdio.h TkControl.h ../graphics/Dispatcher.h
+TkControl.o: /usr/include/stdio.h TkControl.h /s/tcl/include/tcl.h
+TkControl.o: /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+TkControl.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+TkControl.o: /usr/include/sys/sysmacros.h /usr/include/X11/X.h
+TkControl.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+TkControl.o: /usr/include/stddef.h ../graphics/Dispatcher.h
 TkControl.o: ../graphics/DeviseTypes.h ../graphics/DList.h ../graphics/Exit.h
 TkControl.o: ../graphics/VisualArg.h ../graphics/Color.h
 TkControl.o: ../graphics/Journal.h ../graphics/Control.h
@@ -400,11 +409,10 @@ TkControl.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TkControl.o: ../graphics/Transform.h ../graphics/Pattern.h
 TkControl.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 TkControl.o: ../graphics/AttrList.h /usr/include/sys/time.h
-TkControl.o: /usr/include/time.h /usr/include/sys/stdtypes.h
-TkControl.o: ../graphics/Config.h ../graphics/Cursor.h TData.h RecId.h
-TkControl.o: RecOrder.h TDataMap.h ShapeID.h Bitmap.h GDataRec.h
-TkControl.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
-TkControl.o: /usr/include/assert.h /usr/include/stdlib.h
+TkControl.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
+TkControl.o: TData.h RecId.h RecOrder.h TDataMap.h ShapeID.h Bitmap.h
+TkControl.o: GDataRec.h ../graphics/Init.h ../graphics/BufPolicy.h
+TkControl.o: ../graphics/Util.h /usr/include/assert.h /usr/include/stdlib.h
 TkControl.o: /usr/include/strings.h /usr/include/ctype.h
 TkControl.o: ../graphics/VisualLink.h ../graphics/FilterQueue.h ParseCat.h
 TkControl.o: ../graphics/Action.h MapInterpClassInfo.h ../graphics/Parse.h
@@ -648,7 +656,7 @@ testTDataRec.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
 testTDataRec.o: ../graphics/DList.h ../graphics/Exit.h /usr/include/stdio.h
 testTDataRec.o: TestData.h
 testTcl.o: /usr/include/stdio.h /usr/include/stdlib.h
-testTcl.o: /usr/include/sys/stdtypes.h
+testTcl.o: /usr/include/sys/stdtypes.h /s/tcl/include/tcl.h
 testTdata.o: /usr/include/stdio.h BufMgr.h ../graphics/DeviseTypes.h
 testTdata.o: ../graphics/BufPolicy.h BufHint.h RecId.h BufferPolicy.h
 testTdata.o: RecOrder.h ../graphics/DList.h ../graphics/Exit.h TDataAppend.h

@@ -1,7 +1,8 @@
 depend:
 	makedepend -fMakefile.sun \
-		-I../graphics -I../graphics.new -I../tape \
+		-I../graphics -I../graphics.new -I../tape -I/s/tcl/include \
 		*.c
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 generic.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
