@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 16:00:57  jussi
+  Replaced method ClearGData() with ClearData() which allows both
+  TData and GData (which derives from TData) to be cleared. Fixed
+  a few bugs along the way.
+
   Revision 1.8  1996/06/24 19:49:32  jussi
   Improved the interaction between query processors and the dispatcher.
 
@@ -151,8 +156,7 @@ QueryProcTape::QueryProcTape()
   _numSortedTables = 0;
   _sortedTables = 0;
 
-  Dispatcher::CreateMarker(readFd, writeFd);
-  Dispatcher::Current()->Register(this, 10, GoState, false, readFd);
+  Dispatcher::Current()->Register(this, 10, GoState);
 }
 
 void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
@@ -246,13 +250,12 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
   _queries->DoneIterator(index);
 #endif
 
-  Dispatcher::InsertMarker(writeFd);
+  Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
 
 QueryProcTape::~QueryProcTape()
 {
-  Dispatcher::FlushMarkers(readFd);
-  Dispatcher::CloseMarker(readFd, writeFd);
+  Dispatcher::Current()->Unregister(this);
 
   for(int i = 0; i < _numSortedTables; i++)
     delete _sortedTables[i];
@@ -1168,7 +1171,7 @@ Boolean QueryProcTape::DoInMemGDataConvert(TData *tdata, GData *gdata,
 void QueryProcTape::DoGDataConvert()
 {
   if (!Init::ConvertGData() || !_numMappings) {
-    Dispatcher::FlushMarkers(readFd);
+    Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
 	
@@ -1254,7 +1257,7 @@ void QueryProcTape::DoGDataConvert()
 #ifdef DEBUG
     printf("Could not find any GData that needs disk conversion\n");
 #endif
-    Dispatcher::FlushMarkers(readFd);
+    Dispatcher::Current()->CancelCallback(_dispatcherID);
     return;
   }
 

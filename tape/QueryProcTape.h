@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/27 16:00:59  jussi
+  Replaced method ClearGData() with ClearData() which allows both
+  TData and GData (which derives from TData) to be cleared. Fixed
+  a few bugs along the way.
+
   Revision 1.5  1996/06/24 19:49:33  jussi
   Improved the interaction between query processors and the dispatcher.
 
@@ -40,6 +45,7 @@
 #include "SortedTable.h"
 #include "GData.h"
 #include "BufMgr.h"
+#include "Dispatcher.h"
 
 class BufMgr;
 class TData;
@@ -291,8 +297,7 @@ private:
   };
   sortedTableEntry **_sortedTables;
 
-  int readFd;	                   /* read marker fd */
-  int writeFd;                     /* write marker fd */
+  DispatcherID _dispatcherID;
 };
 
 #endif
