@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/11 19:38:27  jussi
+  The Tcl variable 'file' is set to the name of the session file
+  before the session file is executed. Exported session files
+  with data use the 'file' variable.'
+
   Revision 1.10  1996/07/11 18:18:04  jussi
   In batch mode, the Tcl client no longer uses any Tk or X11 features.
   The client operates in batch mode when an idle script is specified.
@@ -188,6 +193,7 @@ void SetupConnection()
     }
 
     if (!_idleScript) {
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
         _mainWindow = Tk_CreateMainWindow(_interp, NULL, "DEVise", "DEVise");
         if (!_mainWindow) {
             fprintf(stderr, "%s\n", _interp->result);
@@ -195,10 +201,14 @@ void SetupConnection()
         }
         Tk_MoveWindow(_mainWindow, 0, 0);
         Tk_GeometryRequest(_mainWindow, 100, 200);
+#endif
         if (Tk_Init(_interp) == TCL_ERROR) {
             fprintf(stderr, "Cannot initialize Tk.\n");
             exit(1);
         }
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION > 0
+        _mainWindow = Tk_MainWindow(_interp);
+#endif
     }
     
     Tcl_LinkVar(_interp, "argv0", (char *)&_progName, TCL_LINK_STRING);
@@ -213,8 +223,14 @@ void SetupConnection()
     if (_deviseFd < 0)
         exit(1);
     
-    if (!_idleScript)
+    if (!_idleScript) {
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
         Tk_CreateFileHandler(_deviseFd, TK_READABLE, ReadServer, 0);
+#else
+        Tcl_CreateFileHandler(Tcl_GetFile((void *)_deviseFd, TCL_UNIX_FD),
+                              TCL_READABLE, ReadServer, 0);
+#endif
+    }
     
     printf("Connection established.\n\n");
     
@@ -328,8 +344,13 @@ int main(int argc, char **argv)
 #endif
     }
     
-    if (!_idleScript)
+    if (!_idleScript) {
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
         Tk_DeleteFileHandler(_deviseFd);
+#else
+        Tcl_DeleteFileHandler(Tcl_GetFile((void *)_deviseFd, TCL_UNIX_FD));
+#endif
+    }
 
     (void)NetworkClose(_deviseFd);
     
