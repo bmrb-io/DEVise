@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/05/06 17:29:03  wenger
+  Tasvir image code gives warning if image filename or image is not a string.
+
   Revision 1.39  1997/04/29 17:35:10  wenger
   Minor fixes to new text labels; added fixed text label shape;
   CheckDirSpace() no longer prints an error message if it can't get disk
@@ -1767,6 +1770,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	Coord width = fabs(size * GetShapeAttr2(gdata, map, offset));
 	Coord height = fabs(size * GetShapeAttr3(gdata, map, offset));
 
+	Coord orientation = GetOrientation(gdata, map, offset);
+
 	/* Figure out a reasonable font size to use so that the amount of scaling
 	 * is as small as possible.  I'm sure this isn't perfect, but it seems
 	 * fairly close. RKW 4/25/97. */
@@ -1838,7 +1843,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	  win->SetPattern(oldPattern);
 	}
     win->ScaledText(label, x - width / 2, y - height / 2, width, height,
-      WindowRep::AlignCenter, true);
+      WindowRep::AlignCenter, true, orientation);
 
     if (color == XorColor)
       win->SetCopyMode();
@@ -1924,6 +1929,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     Coord pointSize = GetSize(gdata, map, offset);
     if (pointSize <= 1.0)
       pointSize = 12.0;
+	Coord orientation = GetOrientation(gdata, map, offset);
     GlobalColor color = GetColor(view, gdata, map, offset);
 
     /* Find or generate the label string. */
@@ -1983,8 +1989,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     // the label in pixels, and if we pass a width or height that
     // is too tight, AbsoluteText() will try to scale the text.
     win->AbsoluteText(label, x - filterWidth / 2, y - filterHeight / 2,
-    filterWidth, filterHeight,
-    WindowRep::AlignCenter, true);
+      filterWidth, filterHeight, WindowRep::AlignCenter, true, orientation);
 
     if (color == XorColor)
       win->SetCopyMode();

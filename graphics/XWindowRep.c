@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.94  1997/06/04 15:50:34  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.93  1997/05/21 22:10:04  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -405,6 +409,7 @@
 #include "DevError.h"
 #include "ETkIfc.h"
 #include "DaliIfc.h"
+#include "../xvertext/rotated.h"
 
 #if !defined(LIBCS)
 #include "Init.h"
@@ -423,6 +428,9 @@ extern "C" {
 // xv.h has a conflict DEBUG - it has a variable called int DEBUG
 // so this define must come after xv.h.
 //#define DEBUG
+
+// Define this to produce some extra drawing to X to help debug stuff...
+//#define X_DEBUG
 
 // Uncomment this line to print some debugging info relevant to 
 // creation and deletion of embedded Tk windows.
@@ -583,6 +591,7 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   if (_parent)
     _parent->_children.Append(this);
   _backingStore = false;
+  _lineStyle = LineSolid;
   _daliServer = NULL;
   _etkServer = NULL;
   Init();
@@ -2273,7 +2282,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   WindowRep::Transform(x2, y2, tx2, ty2);
 #if defined(GRAPHICS)
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
+    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, ROUND(int, tx1), ROUND(int, ty1),
 	      ROUND(int, tx2), ROUND(int, ty2));
@@ -2290,7 +2299,7 @@ void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   
 #ifdef GRAPHICS
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
+    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, x1, y1, x2, y2);
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
@@ -2643,236 +2652,30 @@ void XWindowRep::HandleEvent(XEvent &event)
 void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 			      Coord width, Coord height,
 			      TextAlignment alignment, 
-			      Boolean skipLeadingSpace)
+			      Boolean skipLeadingSpace, Coord orientation)
 {
-#ifdef DEBUG
-  printf("XWindowRep::AbsoluteText: %s at %.2f,%.2f,%.2f,%.2f\n",
-	 text, x, y, width, height);
+#if defined(DEBUG)
+  printf("XWindowRep::AbsoluteText: <%s> at %.2f,%.2f,%.2f,%.2f, orientation %.2f\n",
+	 text, x, y, width, height, orientation);
 #endif
 
-  /* transform into window coords */
-  Coord tx1, ty1, tx2, ty2;
-  WindowRep::Transform(x, y, tx1, ty1);
-  WindowRep::Transform(x + width, y + height, tx2, ty2);
-  int winX, winY, winWidth, winHeight;
-  winX = ROUND(int, MIN(tx1, tx2));
-  winY = ROUND(int, MIN(ty1, ty2));
-  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
-  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
-  
-  if (skipLeadingSpace) {
-    /* skip leading spaces before drawing text */
-    while (*text == ' ')
-      text++;
-  }
-  
-  int textLength = strlen(text);
-  if (!textLength)
-    return;
-  
-  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
-  int textWidth = XTextWidth(fontStruct, text, textLength);
-  int textHeight = fontStruct->max_bounds.ascent
-                   + fontStruct->max_bounds.descent;
-  
-  if (textWidth > winWidth || textHeight > winHeight) {
-    ScaledText(text, x, y, width, height, alignment, skipLeadingSpace);
-    return;
-  }
-  
-  int startX = 0, startY = 0;
-  int widthDiff = winWidth - textWidth;
-  int halfWidthDiff = widthDiff / 2;
-  int heightDiff = winHeight - textHeight;
-  int halfHeightDiff = heightDiff / 2;
-
-  switch(alignment) {
-  case AlignNorthWest:
-    startX = winX; 
-    startY = winY + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignNorth:
-    startX = winX + halfWidthDiff; 
-    startY = winY + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignNorthEast:
-    startX = winX + widthDiff; 
-    startY = winY + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignWest: 
-    startX = winX; 
-    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignCenter: 
-    startX = winX + halfWidthDiff; 
-    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignEast:
-    startX = winX + widthDiff; 
-    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignSouthWest:
-    startX = winX; 
-    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignSouth:
-    startX = winX + halfWidthDiff; 
-    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
-    break;
-
-  case AlignSouthEast:
-    startX = winX + widthDiff; 
-    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
-    break;
-  }
-  
-#ifdef DEBUG
-  printf("Drawing %s starting at %d,%d\n", text, startX, startY);
-#endif
-
-#ifdef GRAPHICS
-  XDrawString(_display, DRAWABLE, _gc, startX, startY, text, textLength);
-#endif
+  DrawText(false, text, x, y, width, height, alignment,
+    skipLeadingSpace, orientation);
 }
 
 /* Draw scaled text */
 
 void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 		      Coord height, TextAlignment alignment,
-		      Boolean skipLeadingSpace)
+		      Boolean skipLeadingSpace, Coord orientation)
 {
 #if defined (DEBUG)
-  printf("XWindowRep::ScaledText: '%s' at %.2f, %.2f, %.2f, %.2f\n",
-	 text, x, y, width, height);
+  printf("XWindowRep::ScaledText: <%s> at %.2f, %.2f, %.2f, %.2f, orientation %.2f\n",
+	 text, x, y, width, height, orientation);
 #endif
 
-  /* transform into window coords */
-  Coord tx1, ty1, tx2, ty2;
-  WindowRep::Transform(x, y, tx1, ty1);
-  WindowRep::Transform(x + width, y + height, tx2, ty2);
-  int winX, winY, winWidth, winHeight; /* box in window coord */
-  winX = ROUND(int, MIN(tx1, tx2));
-  winY = ROUND(int, MIN(ty1, ty2));
-  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
-  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
-
-  if (skipLeadingSpace) {
-    /* skip leading spaces before drawing text */
-    while (*text == ' ')
-      text++;
-  }
-  
-  int textLength = strlen(text);
-  if (textLength == 0) return;
-
-#ifdef GRAPHICS
-  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
-#if 1
-  int direction, ascent, descent;
-  XCharStruct overall;
-  XTextExtents(fontStruct, text, textLength, &direction, &ascent, &descent,
-    &overall);
-  int textWidth = overall.width;
-  int textHeight = overall.ascent + overall.descent;
-  ascent = overall.ascent;
-#else
-  /* We need to clear top row of pixels in the source pixmap if
-   * we do this. */
-  int textWidth = XTextWidth(fontStruct, text, textLength);
-  int textHeight = fontStruct->max_bounds.ascent
-                   + fontStruct->max_bounds.descent;
-  int ascent = fontStruct->max_bounds.ascent;
-#endif
-  
-  if (textWidth > _srcBitmap.width || textHeight > _srcBitmap.height)
-    /* allocate a bigger source pixmap */
-    AllocBitmap(_srcBitmap, textWidth, textHeight);
-  
-  /* use original text to calculate scale factor 
-     to scale text to fit in rectangle of 
-     dimensions (winWidth, winHeight) */
-  double xscale = (double)winWidth / (double)textWidth;
-  double yscale = (double)winHeight / (double)textHeight;
-  double scale = MIN(xscale, yscale);
-  
-#if defined(DEBUG)
-  printf("transformed to x=%d,y=%d,w=%d,h=%d\n", winX, winY,
-	 winWidth, winHeight);
-  printf("textwidth = %d, textHeight = %d\n", textWidth, textHeight);
-#endif
-
-  /* draw text in source bitmap */
-  XSetFont(_display, _srcBitmap.gc, fontStruct->fid);
-  XDrawImageString(_display, _srcBitmap.pixmap, _srcBitmap.gc, 
-		   0, ascent, text, textLength);
-  
-  /* scale into dest bitmap */
-  int dstWidth = ROUND(int, textWidth * scale);
-  int dstHeight = ROUND(int, textHeight * scale);
-
-#if defined(DEBUG)
-  printf("scale= %.2f, textWidth = %d, textHeight = %d, dstw=%d, dstH = %d\n",
-	 scale, textWidth, textHeight, dstWidth, dstHeight);
-  printf("dstwidth = %d, dstHeight = %d\n", dstWidth, dstHeight);
-#endif
-
-  CopyBitmap(textWidth, textHeight, dstWidth, dstHeight);
-  
-  /* draw the text according to alignment */
-  int startX = 0, startY = 0;
-  int widthDiff = winWidth - dstWidth;
-  int halfWidthDiff = widthDiff / 2;
-  int heightDiff = winHeight - dstHeight;
-  int halfHeightDiff = heightDiff / 2;
-
-  switch(alignment) {
-  case AlignNorthWest:
-    startX = winX; startY = winY;
-    break;
-
-  case AlignNorth:
-    startX = winX + halfWidthDiff; startY = winY;
-    break;
-    
-  case AlignNorthEast:
-    startX = winX + widthDiff; startY = winY;
-    break;
-
-  case AlignWest: 
-    startX = winX; startY = winY + halfHeightDiff;
-    break;
-
-  case AlignCenter: 
-    startX = winX + halfWidthDiff; startY = winY + halfHeightDiff;
-    break;
-
-  case AlignEast:
-    startX = winX + widthDiff; startY = winY + halfHeightDiff;
-    break;
-
-  case AlignSouthWest:
-    startX = winX; startY = winY+ heightDiff;
-    break;
-
-  case AlignSouth:
-    startX = winX + halfWidthDiff; startY = winY+heightDiff;
-    break;
-    
-  case AlignSouthEast:
-    startX = winX + widthDiff; startY = winY+heightDiff;
-    break;
-  }
-
-  XCopyPlane(_display, _dstBitmap.pixmap, DRAWABLE, _gc, 
-	     0, 0, dstWidth, dstHeight, startX, startY, 1);
-#endif
+  DrawText(true, text, x, y, width, height, alignment,
+    skipLeadingSpace, orientation);
 }
 
 void XWindowRep::SetXorMode()
@@ -2932,6 +2735,158 @@ void XWindowRep::SetNormalFont()
   GetDisplay()->SetNormalFont();
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);
+}
+
+/* Draw scaled or absolute text */
+
+void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
+			  Coord y, Coord width, Coord height,
+			  TextAlignment alignment,
+			  Boolean skipLeadingSpace, Coord orientation)
+{
+  /* transform into window coords */
+  Coord tx1, ty1, tx2, ty2;
+  WindowRep::Transform(x, y, tx1, ty1);
+  WindowRep::Transform(x + width, y + height, tx2, ty2);
+  int winX, winY, winWidth, winHeight;
+  winX = ROUND(int, MIN(tx1, tx2));
+  winY = ROUND(int, MIN(ty1, ty2));
+  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
+
+#ifdef GRAPHICS
+#if defined(X_DEBUG)
+  {
+    Coord centerX = winX + winWidth / 2.0;
+    Coord centerY = winY + winHeight / 2.0;
+    XDrawLine(_display, DRAWABLE, _gc, (int) centerX - 10, (int) centerY,
+      (int) centerX + 10, (int) centerY);
+    XDrawLine(_display, DRAWABLE, _gc, (int) centerX, (int) centerY - 10,
+      (int) centerX, (int) centerY + 10);
+
+    SetPattern((Pattern) -2);
+    XDrawRectangle(_display, DRAWABLE, _gc, winX, winY, winWidth, winHeight);
+    SetPattern((Pattern) 0);
+  }
+#endif
+
+  if (skipLeadingSpace) {
+    /* skip leading spaces before drawing text */
+    while (*text == ' ')
+      text++;
+  }
+  
+  int textLength = strlen(text);
+  if (!textLength)
+    return;
+  
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
+#if 1
+  int direction, ascent, descent;
+  XCharStruct overall;
+  XTextExtents(fontStruct, text, textLength, &direction, &ascent, &descent,
+    &overall);
+  int textWidth = overall.width;
+  int textHeight = overall.ascent + overall.descent;
+  ascent = overall.ascent;
+#else
+  int textWidth = XTextWidth(fontStruct, text, textLength);
+  int textHeight = fontStruct->max_bounds.ascent
+                   + fontStruct->max_bounds.descent;
+  int ascent = fontStruct->max_bounds.ascent;
+#endif
+  
+  double scale = 1.0;
+  if (scaled) {
+    /* use original text to calculate scale factor 
+     * to scale text to fit in rectangle of 
+     * dimensions (winWidth, winHeight) */
+    double xscale = (double)winWidth / (double)textWidth;
+    double yscale = (double)winHeight / (double)textHeight;
+    scale = MIN(xscale, yscale);
+  } else {
+    if (textWidth > winWidth || textHeight > winHeight) {
+      DrawText(true, text, x, y, width, height, alignment, skipLeadingSpace,
+	orientation);
+      return;
+    }
+  }
+  
+  int startX = 0, startY = 0;
+  int xvtAlign = NONE;
+
+  switch(alignment) {
+  case AlignNorthWest:
+    startX = winX; 
+    startY = winY;
+    xvtAlign = TLEFT;
+    break;
+
+  case AlignNorth:
+    startX = winX + winWidth / 2;
+    startY = winY;
+    xvtAlign = TCENTRE;
+    break;
+
+  case AlignNorthEast:
+    startX = winX + winWidth;
+    startY = winY;
+    xvtAlign = TRIGHT;
+    break;
+
+  case AlignWest: 
+    startX = winX; 
+    startY = winY + winHeight / 2;
+    xvtAlign = MLEFT;
+    break;
+
+  case AlignCenter: 
+    startX = winX + winWidth / 2;
+    startY = winY + winHeight / 2;
+    xvtAlign = MCENTRE;
+    break;
+
+  case AlignEast:
+    startX = winX + winWidth;
+    startY = winY + winHeight / 2;
+    xvtAlign = MRIGHT;
+    break;
+
+  case AlignSouthWest:
+    startX = winX; 
+    startY = winY + winHeight;
+    xvtAlign = BLEFT;
+    break;
+
+  case AlignSouth:
+    startX = winX + winWidth / 2;
+    startY = winY + winHeight;
+    xvtAlign = BCENTRE;
+    break;
+
+  case AlignSouthEast:
+    startX = winX + winWidth;
+    startY = winY + winHeight;
+    xvtAlign = BRIGHT;
+    break;
+  }
+  
+#if defined(DEBUG)
+  printf("Drawing <%s> starting at %d,%d\n", text, startX, startY);
+#endif
+
+#if defined(X_DEBUG)
+  XDrawLine(_display, DRAWABLE, _gc, (int) startX - 10, (int) startY - 10,
+    (int) startX + 10, (int) startY + 10);
+  XDrawLine(_display, DRAWABLE, _gc, (int) startX + 10, (int) startY - 10,
+    (int) startX - 10, (int) startY + 10);
+#endif
+
+  if (scale != 1.0) XRotSetMagnification(scale);
+  XRotDrawAlignedString(_display, fontStruct, orientation,
+    DRAWABLE, _gc, startX, startY, text, xvtAlign);
+  if (scale != 1.0) XRotSetMagnification(1.0);
+#endif
 }
 
 /**********************************************************************
@@ -3014,6 +2969,48 @@ void XWindowRep::SetLineWidth(int w)
 #endif
     }
 }
+
+#ifdef LIBCS
+/***************************************************************
+Set line dash pattern.
+****************************************************************/
+
+void XWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
+{
+#if defined(DEBUG)
+  printf("XWindowRep::SetDashes(%d, ...)\n", dashCount);
+#endif
+
+  char errBuf[256];
+
+  const int maxChar = (1 << 7) - 1;
+
+  if (dashCount > 0) {
+    _lineStyle = LineOnOffDash;
+    char *dashList = new char[dashCount];
+    int dashNum;
+    for (dashNum = 0; dashNum < dashCount; dashNum++) {
+      int dash = dashes[dashNum];
+      if (dash <= 0) {
+	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	reportErrNosys(errBuf);
+        dashList[dashNum] = 1;
+      } else if (dash > maxChar) {
+	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	reportErrNosys(errBuf);
+        dashList[dashNum] = maxChar;
+      } else {
+        dashList[dashNum] = (char) dash;
+      }
+    }
+    XSetDashes(_display, _gc, startOffset, dashList, dashCount);
+    delete [] dashList;
+  } else {
+    _lineStyle = LineSolid;
+  }
+}
+#endif
 
 /***********************************************************************/
 

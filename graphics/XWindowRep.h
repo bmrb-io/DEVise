@@ -15,6 +15,15 @@
 /*
   $Id$
   $Log$
+  Revision 1.44  1997/05/21 22:10:07  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
 
   Revision 1.43  1997/05/05 16:53:53  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -362,6 +371,9 @@ public:
 	virtual void SetPattern(Pattern p);
 
 	virtual void SetLineWidth(int w);
+#ifdef LIBCS
+	virtual void SetDashes(int dashCount, int dashes[], int startOffset);
+#endif
 
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			      Coord height);
@@ -391,12 +403,14 @@ public:
 
 	virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
 			  Coord height, TextAlignment alignment = AlignCenter,
-			  Boolean skipLeadingSpaces = false);
+			  Boolean skipLeadingSpaces = false,
+			  Coord orientation = 0.0);
 
 	virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
 				  Coord height,
 				  TextAlignment alignment = AlignCenter,
-				  Boolean skipLeadingSpaces = false);
+				  Boolean skipLeadingSpaces = false,
+				  Coord orientation = 0.0);
 
 	/* Set XOR or normal drawing mode on */
 	virtual void SetXorMode();
@@ -513,6 +527,12 @@ private:
 			   int &yhigh, int button);
 #endif
 
+	virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
+			      Coord width, Coord height,
+			      TextAlignment alignment = AlignCenter,
+			      Boolean skipLeadingSpaces = false,
+			      Coord orientation = 0.0);
+
 	/* allocate a bitmap of the given width and height into the
 	   given info. Free old bitmap data if necessary */
 	void AllocBitmap(XBitmapInfo &info, int width, int height);
@@ -571,6 +591,8 @@ private:
 
 	/* True if display graphics */
 	Boolean _dispGraphics;
+
+	int _lineStyle;
 
 //#if !defined(LIBCS) || defined(NEW_LIBCS)
 	DaliImageList _daliImages;    // List of Tasvir images

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/05/21 22:09:56  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.28  1997/04/29 17:35:00  wenger
   Minor fixes to new text labels; added fixed text label shape;
   CheckDirSpace() no longer prints an error message if it can't get disk
@@ -1317,14 +1326,15 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 			      Coord width, Coord height,
 			      TextAlignment alignment, 
-			      Boolean skipLeadingSpace)
+			      Boolean skipLeadingSpace, Coord orientation)
 {
 #ifdef DEBUG
   printf("PSWindowRep::AbsoluteText: %s at %.2f,%.2f,%.2f,%.2f\n",
 	 text, x, y, width, height);
 #endif
 
-  DrawText(false, text, x, y, width, height, alignment, skipLeadingSpace);
+  DrawText(false, text, x, y, width, height, alignment, skipLeadingSpace,
+    orientation);
 }
 
 
@@ -1334,14 +1344,15 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 
 void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 		       Coord height, TextAlignment alignment,
-		       Boolean skipLeadingSpace)
+		       Boolean skipLeadingSpace, Coord orientation)
 {
 #if defined(DEBUG)
   printf("PSWindowRep::ScaledText: %s at %.2f,%.2f,%.2f,%.2f\n",
 	 text, x, y, width, height);
 #endif
 
-  DrawText(true, text, x, y, width, height, alignment, skipLeadingSpace);
+  DrawText(true, text, x, y, width, height, alignment, skipLeadingSpace,
+    orientation);
 }
 
 
@@ -1712,7 +1723,7 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
 
 void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 		       Coord width, Coord height, TextAlignment alignment,
-		       Boolean skipLeadingSpace)
+		       Boolean skipLeadingSpace, Coord orientation)
 {
   /* transform into window coords */
   Coord tx1, ty1, tx2, ty2;
@@ -1734,11 +1745,12 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
   if (textLength <= 0) return;
 
   char *comment;
-  char *calculation;
+  char *moveToWindow;
+  char *moveToText;
 
   /* Here, instead of actually calculating the text position, we generate
    * the correct PostScript code to calculate the position. */
-  GetAlignmentStrings(alignment, comment, calculation);
+  GetAlignmentStrings(alignment, comment, moveToWindow, moveToText);
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
@@ -1757,6 +1769,16 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
   DrawLine(printFile, tx2, ty2, tx2, ty1);
   DrawLine(printFile, tx2, ty1, tx1, ty1);
   fprintf(printFile, "[] 0 setdash\n");
+#endif
+
+#if defined(PS_DEBUG)
+  /* Draw a cross at the center of the "text window". */
+  {
+    Coord centerX = winX + winWidth / 2.0;
+    Coord centerY = winY + winHeight / 2.0;
+    DrawLine(printFile, centerX + 10.0, centerY, centerX - 10.0, centerY);
+    DrawLine(printFile, centerX, centerY + 10.0, centerX, centerY - 10.0);
+  }
 #endif
 
   fprintf(printFile, "newpath\n");
@@ -1799,13 +1821,20 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
   fprintf(printFile, "%s\n", comment);
 #endif
 
-  /* Now calculate the location of the text according to the
-   * specified alignment and the size of the text. */
-  fprintf(printFile, "%s", calculation);
+  /* Move to the location within the "text window" specified by the
+   * text alignment. */
+  fprintf(printFile, "%s", moveToWindow);
 
-  /* Move to the calculation location. */
-  fprintf(printFile, "textX textY moveto\n");
+  /* Do any rotation that's necessary. */
+  if (orientation != 0.0) {
+    fprintf(printFile, "gsave\n");
+    fprintf(printFile, "%f rotate\n", orientation);
+  }
 
+  /* Now, move to the beginning of the text string. */
+  fprintf(printFile, "%s", moveToText);
+
+  /* Do any scaling that's necessary. */
   if (scaled) {
     /* Save the graphics state and then set the scaling so that the text
      * will fit the window. */
@@ -1815,8 +1844,12 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 
   fprintf(printFile, "(%s) show\n", text);
 
+  /* Set the coordinate system back the way it was. */
   if (scaled) {
-    /* Set the coordinate system back the way it was. */
+    fprintf(printFile, "grestore\n");
+  }
+
+  if (orientation != 0.0) {
     fprintf(printFile, "grestore\n");
   }
 #endif
@@ -1824,67 +1857,69 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 
 
 /*---------------------------------------------------------------------------*/
-/* Draw a dot (coordinates must have already been scaled if
- * that is necessary). */
+/* Get the correct PostScript code strings according to the alignment
+ * we're using. */
 void PSWindowRep::GetAlignmentStrings(TextAlignment alignment, char *&comment,
-    char *&calculation)
+    char *&moveToWindow, char *&moveToText)
 {
   comment = "";
-  calculation = "";
+  moveToWindow = "";
+  moveToText = "";
 
   switch(alignment) {
   case AlignNorthWest:
     comment = "% AlignNorthWest";
-    calculation = "/textX winX def\n"
-      "/textY winY heightDiff add def\n";
+    moveToWindow = "winX  winY winHeight add  moveto\n";
+    moveToText = "0  textHeight -1 mul  rmoveto\n";
     break;
 
   case AlignNorth:
     comment = "% AlignNorth";
-    calculation = "/textX winX halfWidthDiff add def\n"
-      "/textY winY heightDiff add def\n";
+    moveToWindow = "winX winWidth 0.5 mul add  winY winHeight add  moveto\n";
+    moveToText = "textWidth -0.5 mul  textHeight -1 mul  rmoveto\n";
     break;
 
   case AlignNorthEast:
     comment = "% AlignNorthEast";
-    calculation = "/textX winX widthDiff add def\n"
-      "/textY winY heightDiff add def\n";
+    moveToWindow = "winX winWidth add  winY winHeight add  moveto\n";
+    moveToText = "textWidth -1 mul  textHeight -1 mul  rmoveto\n";
     break;
 
   case AlignWest: 
     comment = "% AlignWest";
-    calculation = "/textX winX def\n"
-      "/textY winY halfHeightDiff add def\n";
+    moveToWindow = "winX  winY winHeight 0.5 mul add  moveto\n";
+    moveToText = "0  textHeight -0.5 mul  rmoveto\n";
     break;
 
   case AlignCenter: 
     comment = "% AlignCenter";
-    calculation = "/textX winX halfWidthDiff add def\n"
-      "/textY winY halfHeightDiff add def\n";
+    moveToWindow = "winX winWidth 0.5 mul add  winY winHeight 0.5 mul "
+      "add  moveto\n";
+    moveToText = "textWidth -0.5 mul  textHeight -0.5 mul  rmoveto\n";
     break;
 
   case AlignEast:
     comment = "% AlignEast";
-    calculation = "/textX winX widthDiff add def\n"
-      "/textY winY halfHeightDiff add def\n";
+    moveToWindow = "winX winWidth add  winY winHeight 0.5 mul add  moveto\n";
+    moveToText = "textWidth -1 mul  textHeight -0.5 mul  rmoveto\n";
     break;
 
   case AlignSouthWest:
     comment = "% AlignSouthWest";
-    calculation = "/textX winX def\n"
-      "/textY winY def\n";
+    moveToWindow = "winX winY moveto\n";
+    moveToText = "";
     break;
 
   case AlignSouth:
     comment = "% AlignSouth";
-    calculation = "/textX winX halfWidthDiff add def\n"
-      "/textY winY def\n";
+    moveToWindow = "winX winWidth 0.5 mul add  winY moveto\n";
+    moveToText = "textWidth -0.5 mul  0  rmoveto\n";
     break;
 
   case AlignSouthEast:
     comment = "% AlignSouthEast";
-    calculation = "/textX winX widthDiff add def\n"
-      "/textY winY def\n";
+    moveToWindow = "winX winWidth add  winY  moveto\n";
+    moveToText = "textWidth -1 mul  0  rmoveto\n";
     break;
 
   default:

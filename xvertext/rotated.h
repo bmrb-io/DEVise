@@ -39,21 +39,24 @@
 /* this shoulf be C++ compliant, thanks to 
      vlp@latina.inesc.pt (Vasco Lopes Paulo) */
 
+/* Note: had to change floats to doubles in function declarations for this
+ * to work right with g++.  RKW 13 June, 1997. */
+
 #if defined(__cplusplus) || defined(c_plusplus)
 
 extern "C" {
 float   XRotVersion(char*, int);
-void    XRotSetMagnification(float);
+void    XRotSetMagnification(double);
 void    XRotSetBoundingBoxPad(int);
-int     XRotDrawString(Display*, XFontStruct*, float,
+int     XRotDrawString(Display*, XFontStruct*, double,
                        Drawable, GC, int, int, char*);
-int     XRotDrawImageString(Display*, XFontStruct*, float,
+int     XRotDrawImageString(Display*, XFontStruct*, double,
                             Drawable, GC, int, int, char*);
-int     XRotDrawAlignedString(Display*, XFontStruct*, float,
+int     XRotDrawAlignedString(Display*, XFontStruct*, double,
                               Drawable, GC, int, int, char*, int);
-int     XRotDrawAlignedImageString(Display*, XFontStruct*, float,
+int     XRotDrawAlignedImageString(Display*, XFontStruct*, double,
                                    Drawable, GC, int, int, char*, int);
-XPoint *XRotTextExtents(Display*, XFontStruct*, float,
+XPoint *XRotTextExtents(Display*, XFontStruct*, double,
 			int, int, char*, int);
 }
 

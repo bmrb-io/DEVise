@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/06/10 18:38:25  wenger
+  Got DEVise to compile on HP again; updated hp, solaris, and sun dependencies.
+
   Revision 1.51  1997/06/04 15:50:32  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -612,13 +615,15 @@ public:
 			 AlignSouth, AlignSouthEast};
   virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
 		    Coord height, TextAlignment alignment = AlignCenter, 
-		    Boolean skipLeadingSpaces = false) = 0;
+		    Boolean skipLeadingSpaces = false,
+		    Coord orientation = 0.0) = 0;
   
   /* draw absolute text: one that does not scale the text */
   virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    TextAlignment alignment = AlignCenter, 
-			    Boolean skipLeadingSpaces = false) = 0;
+			    Boolean skipLeadingSpaces = false, 
+			    Coord orientation = 0.0) = 0;
 
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode() = 0;

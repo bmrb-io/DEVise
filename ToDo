@@ -336,9 +336,6 @@ Allow user to change window names (really titles). (ma/rkw 2/4/97)
 
 Allow access to Qclic browser functions on Tasvir images.  (rr/ml/rkw 2/5/97)
 
-Allow the user to configure the visual filter that will be selected
-with the 5 key. (ml/rkw 2/11/97)
-
 Allow adding a legend to piled views to distinguish the various traces.
 (ma/rkw 2/14/97)
 
@@ -385,10 +382,11 @@ Add an 'Apply' button to the Expression dialog in the mapping dialog.
 
 Add a cursor info dialog like the link info dialog. (rkw 5/21/97)
 
-Have a 'clear' selection in mapping menus. (ml/rkw 5/30/97)
-
 If images are less than a certain number of pixels in size, just draw
 them as boxes and don't have Tasvir do anything. (ml/rkw 5/30/97).
+
+Allow user to select in mapping what the meaning is of X, Y, Z for
+a given shape (center, lower left, upper right, etc.). (ml/rkw 6/13/97)
 
 
 COMPLETED
@@ -442,8 +440,6 @@ different views and the mapping dialog switches to the current
 mapping, and then there should be an 'apply' button to accept changes
 without closing the dialog.  (kb 8/2/96)
 
-Include Tasvir images in PostScript output. (ml/rkw 2/27/97)
-
 Get PostScript output of full screen working. (ml/rkw 2/19/97)
 
 Add a note to the user manual more clearly specifying the difference
@@ -463,6 +459,20 @@ Be able to store some kind of comment or explanation in a session file.
 
 Devise should automatically launch a Tasvir server if one is needed.
 (ml/rkw 3/31/97)
+
+Cursor grid. (ml/rkw 6/13/97)
+
+Allow the user to configure the visual filter that will be selected
+with the 5 key. (ml/rkw 2/11/97)
+
+User-configurable '4' and '6' keys. (ml/rkw 6/13/97)
+
+Allow windows to be printed as pixmaps and/or excluded from display printing.
+(ml/rkw 6/13/97)
+
+Include Tasvir images in PostScript output. (ml/rkw 2/27/97)
+
+Have a 'clear' selection in mapping menus. (ml/rkw 5/30/97)
 
 
 CANCELLED

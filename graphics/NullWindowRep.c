@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/15 20:22:28  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.4  1996/12/03 16:02:04  jussi
   Removed SetSmallFont(). Added more generic SetFont().
 
@@ -632,7 +635,7 @@ void NullWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 void NullWindowRep::AbsoluteText(char *text, Coord x, Coord y,
                                  Coord width, Coord height,
                                  TextAlignment alignment, 
-                                 Boolean skipLeadingSpace)
+                                 Boolean skipLeadingSpace, Coord orientation)
 {
 #ifdef DEBUG
   printf("NullWindowRep::AbsoluteText: %s at %.2f,%.2f,%.2f,%.2f\n",
@@ -669,7 +672,7 @@ void NullWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 void NullWindowRep::ScaledText(char *text, Coord x, Coord y,
                          Coord width, Coord height,
                          TextAlignment alignment,
-                         Boolean skipLeadingSpace)
+                         Boolean skipLeadingSpace, Coord orientation)
 {
 #ifdef DEBUG
   printf("NullWindowRep::Text: %s at %.2f,%.2f,%.2f,%.2f\n",

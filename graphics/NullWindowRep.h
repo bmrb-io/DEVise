@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/05/21 22:09:54  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.8  1997/03/19 19:41:05  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -142,12 +151,14 @@ public:
 
     virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
                       Coord height, TextAlignment alignment = AlignCenter,
-                      Boolean skipLeadingSpaces = false);
+                      Boolean skipLeadingSpaces = false,
+		      Coord orientation = 0.0);
     
     virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
                               Coord height,
                               TextAlignment alignment = AlignCenter,
-                              Boolean skipLeadingSpaces = false);
+                              Boolean skipLeadingSpaces = false,
+			      Coord orientation = 0.0);
 
     /* Set XOR or normal drawing mode on */
     virtual void SetXorMode();
