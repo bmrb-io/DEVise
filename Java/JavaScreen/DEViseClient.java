@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2001/04/01 03:51:18  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.35  2001/03/20 20:11:38  wenger
 // Added more debug output to the JS client and jspop.
 //
@@ -530,6 +533,7 @@ public class DEViseClient
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
+			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
 			String state = DEViseCommands.COLLAB_STATE + " {" +collabSockets.size() + "}";
 			state = state.trim();
