@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.33  1996/06/04 14:22:08  wenger
+#	Ascii data can now be read from session files (or other files
+#	where the data is only part of the file); added some assertions
+#	to check for pointer alignment in functions that rely on this;
+#	Makefile changes to make compiling with debugging easier.
+#
 #	Revision 1.32  1996/05/16 21:39:07  wenger
 #	implemented saving schemas ans session file for importing tdata
 #
@@ -149,11 +155,12 @@ set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
 set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 set sourceFile $datadir/sourcedef.tcl
-#set sourceFile /p/devise/mthomas/lib/sourcedef.tcl
 if {[file exists $sourceFile]} {
     puts "Using data stream catalog $sourceFile"
     source $sourceFile
 }
+
+scanDerivedSources
 
 source $libdir/mapdef.tcl
 source $libdir/autosrc.tcl
@@ -510,9 +517,12 @@ proc getSourceByCache {cachefile} {
 ############################################################
 
 proc isCached {dispname startrec endrec} {
-    global sourceList
+    global sourceList derivedSourceList
 
-    set sourcedef $sourceList($dispname)
+    set err [catch {set sourcedef $derivedSourceList($dispname)}]
+    if {$err} {
+	set sourcedef $sourceList($dispname)
+    }
 
     set source [lindex $sourcedef 0]
     set key [lindex $sourcedef 1]
@@ -1016,6 +1026,61 @@ proc selectStream {{title ""}} {
     return $streamsSelected
 }
 
+############################################################
+
+proc selectDerivedStream {{title ""}} {
+    global streamsSelected
+
+    if {[WindowVisible .srcsel]} {
+	return
+    }
+
+    toplevel .srcsel
+    wm title .srcsel "Derived Data Streams"
+    wm geometry .srcsel +50+50
+    selection clear .srcsel
+
+    frame .srcsel.mbar -relief raised -borderwidth 2
+    frame .srcsel.top
+    frame .srcsel.bot
+    pack .srcsel.mbar -side top -fill x
+    if {$title != ""} {
+	label .srcsel.title -text $title
+	pack .srcsel.title -side top -fill x -expand 1 -pady 3m
+    }
+    pack .srcsel.top -side top -fill both -expand 1
+    pack .srcsel.bot -side top -fill x -pady 5m
+
+    frame .srcsel.bot.but
+    pack .srcsel.bot.but -side top
+
+    listbox .srcsel.top.list -relief raised -borderwidth 2 \
+	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
+	    -selectmode single -width 61 -height 22
+    scrollbar .srcsel.top.scroll -command ".srcsel.top.list yview"
+    pack .srcsel.top.list -side left -fill both -expand 1
+    pack .srcsel.top.scroll -side right -fill y
+    bind .srcsel.top.list <Double-Button-1> {
+	set streamsSelected [getSelectedSource]
+    }
+
+    scanDerivedSources
+    updateDerivedSources
+
+    button .srcsel.bot.but.select -text Select -width 10 -command {
+	set streamsSelected [getSelectedSource]
+    }
+    button .srcsel.bot.but.cancel -text Cancel -width 10 -command {
+	set streamsSelected ""
+    }
+    pack .srcsel.bot.but.select .srcsel.bot.but.cancel -side left -padx 3m
+
+    set streamSelected ""
+    tkwait variable streamsSelected
+    catch {destroy .srcsel}
+
+    return $streamsSelected
+}
 
 ############################################################
 # This procedure adds a new source to the data source list,
@@ -1024,12 +1089,11 @@ proc selectStream {{title ""}} {
 proc addDataSource {dispName source} {
     global sourceList
 
-	set sourceList($dispName) $source
-	updateSources
+    set sourceList($dispName) $source
+    updateSources
 
-	return
+    return
 }
-
 
 ############################################################
 
@@ -1048,6 +1112,61 @@ proc updateSources {} {
 	if {[isCached $dispName -1 -1] != ""} {
 	    set cached "Cached"
 	}
+	set item [format "%-40.40s  %-10.10s  %-6.6s" \
+		$dispName $source $cached]
+	.srcsel.top.list insert end $item
+    }
+}
+
+############################################################
+
+proc scanDerivedSources {} {
+    global derivedSourceList schemadir env
+
+    catch { unset derivedSourceList }
+
+    set workdir "work"
+    if { [info exists env(DEVISE_WORK)] } {
+	set workdir $env(DEVISE_WORK)
+    }
+
+    foreach cachefile [glob -nocomplain [format "%s/*.stat" $workdir]] {
+	set dispName [file tail $cachefile]
+	set source "STAT"
+	set key $dispName
+	set schematype COLORSTAT
+	set schemafile $schemadir/physical/COLORSTAT
+	set evaluation 100
+	set priority 50
+	set command ""
+
+	if {![file readable $schemafile]} {
+	    puts "Schema file $schemafile does not exist."
+	    puts "Cannot handle derived data streams."
+	    return
+	}
+
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($dispName)" $sourcedef
+    }
+}
+
+############################################################
+
+proc updateDerivedSources {} {
+    global derivedSourceList
+
+    if {[catch {wm state .srcsel}] > 0} {
+	return
+    }
+
+    .srcsel.top.list delete 0 end
+
+    foreach dispName [lsort [array names derivedSourceList]] {
+	set source [lindex $derivedSourceList($dispName) 0]
+	set cachefile [lindex $derivedSourceList($dispName) 4]
+	set cached "Cached"
 	set item [format "%-40.40s  %-10.10s  %-6.6s" \
 		$dispName $source $cached]
 	.srcsel.top.list insert end $item
@@ -1163,12 +1282,3 @@ proc mapFollow {newtype} {
 	    clicking on Edit." "" 0 OK
 
 }
-
-
-
-
-
-
-
-
-

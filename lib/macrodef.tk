@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.47  1996/06/16 01:32:53  jussi
+#	Added handling of case where xlo == xhi or ylo == yhi.
+#
 #	Revision 1.46  1996/06/13 23:00:22  jussi
 #	Fixed minor bug with New Mapping check button.
 #
@@ -1235,10 +1238,26 @@ proc MacroDefLinks {m default} {
 ############################################################
 
 proc OpenDataSource {dispname} {
-    global sourceList
+    global sourceList derivedSourceList
+
+    # first see if dispname is a derived source and if the
+    # cache disk file exists
+    set err [catch {set exists $derivedSourceList($dispname)}]
+    if {!$err} {
+	set source [isCached $dispname -1 -1]
+	if {$source == ""} {
+	    dialog .noDerivedData "No Derived Data" \
+		    "Derived data \"$dispname\" does not exist." \
+		    "" 0 Ok
+	    return ""
+	}
+	DEVise dataSegment $dispname $source "" ""
+	return [list $dispname $source]
+    }
 
     # see if data source (still) defined (may be out-of-date in
     # a session file)
+
     set err [catch {set exists $sourceList($dispname)}]
     if {$err} {
 	set but [dialog .sourceNotExists "Undefined Data Stream" \
@@ -1279,8 +1298,9 @@ proc OpenDataSource {dispname} {
     }
 
     # Tell the C++ code whether this data is only a portion of a file.
-	set fileSeg [lindex $sourceList($dispname) 8]
-    DEVise dataSegment $dispname $source [lindex $fileSeg 0] [lindex $fileSeg 1]
+    set fileSeg [lindex $sourceList($dispname) 8]
+    DEVise dataSegment $dispname $source [lindex $fileSeg 0] \
+	    [lindex $fileSeg 1]
 
     return [list $dispname $source]
 }
@@ -1316,27 +1336,31 @@ proc CacheMultipleDataSources {dispnames} {
 
 ############################################################
 
-proc OpenNewDataSource {} {
-    global sourceList
-	
+proc OpenNewDataSource {derivedOnly} {
+    global sourceList derivedSourceList
 
-    # select data stream to display
-    set snames [selectStream]
+    # select data streams to display
+    if {$derivedOnly} {
+	set snames [selectDerivedStream]
+    } else {
+	set snames [selectStream]
+    }
+
     if {$snames == ""} { return "" }
-    
+
     set newsnames ""
 
     foreach sname $snames {
-	# see if data stream already open
-	if {[lsearch [TdataSet] $sname] < 0} {
+        # see if data stream already open
+        if {[lsearch [TdataSet] $sname] < 0} {
 	    # make sure data is cached on disk
 	    set sourcedef [OpenDataSource $sname]
 	    if {$sourcedef == ""} {
 		return ""
-	    }
-	}
+            }
+        }
 
-	lappend newsnames $sname
+        lappend newsnames $sname
     }
 
     set snames $newsnames
@@ -1344,17 +1368,27 @@ proc OpenNewDataSource {} {
     # must choose a single data stream
     if {[llength $snames] > 1} {
 	dialog .singleStream "Select Single Stream" \
-		"You have selected more than one data stream.\
-		Only the first stream will be visualized." "" 0 Continue
+                "You have selected more than one data stream.\
+                Only the first stream will be visualized." "" 0 Continue
     }
-    
-    set sname [lindex $snames 0]
 
+    # make sure data is cached on disk
+    set sname [lindex $snames 0]
     set sourcedef [OpenDataSource $sname]
+    if {$sourcedef == ""} {
+	return ""
+    }
+
     set sname [lindex $sourcedef 0]
     set source [lindex $sourcedef 1]
-    set schema [lindex $sourceList($sname) 2]
-    set schemafile [lindex $sourceList($sname) 3]
+
+    if {$derivedOnly} {
+	set schema [lindex $derivedSourceList($sname) 2]
+	set schemafile [lindex $derivedSourceList($sname) 3]
+    } else {
+	set schema [lindex $sourceList($sname) 2]
+	set schemafile [lindex $sourceList($sname) 3]
+    }
 
     # load schema file if necessary - it is not sufficient to check if
     # the physical schema by the same name has been loaded because the same
@@ -1402,7 +1436,7 @@ proc DefSource {} {
     }
 
     # ask user to select a data stream
-    set sname [OpenNewDataSource]
+    set sname [OpenNewDataSource 0]
     if {$sname == ""} { return }
 
     set schema [lindex $sourceList($sname) 2]
@@ -2222,13 +2256,12 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 
 ############################################################
 
-proc MacroImport {mode} {
-    global dialogListVar
+proc MacroImport {mode derivedOnly} {
+    global dialogListVar sourceList derivedSourceList
 
     set tdata ""
-	
 
-    if {$mode > 0} {
+    if {!$derivedOnly && $mode > 0} {
 	set tdataSet [TdataSet]
 	if {[llength $tdataSet] > 0} {
 	    set answer [ dialogList .selectTData "Visualize Data Stream"  \
@@ -2246,20 +2279,23 @@ proc MacroImport {mode} {
     }
 
     if {$tdata == ""} {
-	set tdata [OpenNewDataSource]
+	set tdata [OpenNewDataSource $derivedOnly]
     }
-	
-    if {$tdata == ""} { 
-		return 
-	}
 
-    MacroDefAutoNew $tdata
+    if {$tdata == ""} { return }
 
+    if {$derivedOnly} {
+	set schemafile [lindex $derivedSourceList($tdata) 3]
+    } else {
+	set schemafile [lindex $sourceList($tdata) 3]
+    }
+
+    MacroDefAutoNew $tdata $schemafile
 }
 
 ############################################################
 
-proc MacroDefAutoNew {tdata} {
+proc MacroDefAutoNew {tdata schemafile} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList macroSelectColor macroMenuSelectColor
@@ -2271,9 +2307,7 @@ proc MacroDefAutoNew {tdata} {
     }
 	
     set schema [ElimStringAttr [DEVise getSchema $tdata]]
-    set sfname [lindex $sourceList($tdata) 3]
-    set schemaname [file tail $sfname]
-
+    set schemaname [file tail $schemafile]
     set topgrp [SelectTopGroup $schemaname]
 
     toplevel .auto
