@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.116  1998/09/10 23:21:22  wenger
+  Fixed bug 388 (missing window in JavaScreen) (caused by '/' in window
+  name, which was then used as part of temp file name); default for
+  JavaScreen is to save selected view when saving a session.
+
   Revision 1.115  1998/09/04 17:26:13  wenger
   Got Tasvir images to work in pixmaps (when running the JavaScreen, for
   example) -- fixes bug 385.
@@ -3465,6 +3470,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
   textHeight = charHeight * numMsgs;
 
   SetForeground(GetPColorID(blackColor));
+  SetBackground(GetPColorID(whiteColor));
   XColorID	fgnd = AP_GetXColorID(GetForeground());
   XColorID	bgnd = AP_GetXColorID(GetBackground());
 
