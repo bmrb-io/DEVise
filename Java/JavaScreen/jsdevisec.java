@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.100  2001/04/17 02:33:49  xuk
+// Added functionality to display logging info under the non-dubug mode.
+// 1. added msgBuffer to store all the logging info.
+// 2. added "Logs" button.
+// 3. added setLog() function.
+// 4. changed pn(), p() functions.
+//
 // Revision 1.99  2001/04/12 15:29:59  xuk
 // When collaboration leader exits, followers don't exit; instead they go back to n
 // ormal mode.
@@ -285,14 +292,13 @@ public class jsdevisec extends Panel
     private Button closeButton = new Button("Close");
     public  Button stopButton = new Button("Stop");
     private Button restartButton = new Button("Restart");
-    //private Button statButton = new Button("Stats");
     private Button setButton = new Button("Option");
     private Button exitButton = new Button("Exit");
     private Button filterButton = new Button("Filter");
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
-    private Button logButton = new Button("Logs");
+    private Button logButton = new Button("DisplayLog");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -684,9 +690,8 @@ public class jsdevisec extends Panel
     {
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.pn(msg, level);
-        } else {
+        } else 
 	    msgBuffer.addElement(msg);
-	}
     }
 
     public void pn(String msg)
@@ -698,9 +703,8 @@ public class jsdevisec extends Panel
     {
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.p(msg, level);
-        } else {
+        } else
 	    msgBuffer.addElement(msg);
-	}
     }
 
     public void p(String msg)
@@ -710,16 +714,28 @@ public class jsdevisec extends Panel
 
     public void setLog()
     {
-        jsValues.debug._debugLevel = 1;
-	debugWindow = new YLogGUI(jsValues.debug._debugLevel);
-        showDebug();
+	String label = logButton.getLabel();
 	
-	for (int i = 0; i < msgBuffer.size(); i++) {
-	    String msg = (String)msgBuffer.elementAt(i);
-	    pn(msg);
+	if (label.equals("DisplayLog")) {
+	    jsValues.debug._debugLevel = 1;
+	    debugWindow = new YLogGUI(jsValues.debug._debugLevel);
+	    showDebug();
+	
+	    for (int i = 0; i < msgBuffer.size(); i++) {
+		String msg = (String)msgBuffer.elementAt(i);
+		pn(msg);
+	    }
+	    
+	    msgBuffer.removeAllElements();
+	    logButton.setLabel("CloseLog");
+	
+	} else {
+	    jsValues.debug._debugLevel = 0;
+	    hideDebug();
+	    debugWindow = null;
+	    logButton.setLabel("DisplayLog");
 	}
 
-	msgBuffer.removeAllElements();
     }
 
 
