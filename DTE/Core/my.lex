@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/11/12 23:17:39  donjerko
+  Improved error checking.
+
   Revision 1.22  1997/11/08 21:02:29  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -140,16 +143,16 @@ LessGreat    ">="|">"|"<="|"<"
 [Ii][Nn][Ss][Ee][Rr][Tt]		{return INSERT;}
 [Vv][Aa][Ll][Uu][Ee][Ss]		{return VALUES;}
 [Ii][Nn][Tt][Oo]			{return INTO;}
-[Dd][Ee][Ll][Ee][Tt][Ee]		{return DELETE;}
+[Dd][Ee][Ll][Ee][Tt][Ee]		{return DELETEY;}
 [Ss][Cc][Hh][Ee][Mm][Aa]		{return SCHEMA;}
 [Mm][Aa][Tt][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]	{return MATERIALIZE;}
 [Aa][Dd][Dd]				{return ADD;}
 [Uu][Nn][Ii][Oo][Nn]		{return UNION;}
 
 {String}     {yylval.stringLit = new string(yytext); return STRING;}
-{IntLit}     {yylval.integer = atoi(yytext); return INT;}
-{DecLit}     {yylval.real = atof(yytext); return DOUBLE;}
-{SignedIntLit}  {yylval.integer = atoi(yytext); return INT;}
+{IntLit}     {yylval.integer = atoi(yytext); return INTY;}
+{DecLit}     {yylval.real = atof(yytext); return DOUBLEY;}
+{SignedIntLit}  {yylval.integer = atoi(yytext); return INTY;}
 {LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
 \"([^\"]|\\\")*\" {
              size_t textLen = strlen(yytext) + 1;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/11/14 22:37:20  donjerko
+  *** empty log message ***
+
   Revision 1.34  1997/11/08 21:02:29  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -111,11 +114,11 @@
 #include "queue.h"
 #include "ParseTree.h"
 #include "joins.h"
-#include <iostream.h>
+//#include <iostream.h>    erased for sysdep
 #include <string>
 #include <assert.h>
 
-#include <sysdep.h>
+#include "sysdep.h"
 
 extern int yylex();
 extern ParseTree* parseTree;
@@ -133,6 +136,10 @@ string* sortOrdering;
 // #define alloca malloc
 // #define __builtin_memcpy memcpy
 
+#if defined(_WINDOWS) || defined(_CONSOLE)
+#define alloca _alloca
+#endif
+
 %}
 %union{
      string* stringLit;
@@ -147,8 +154,8 @@ string* sortOrdering;
 	List<string*>* listOfStrings;
 	ParseTree* parseTree;
 }
-%token <integer> INT
-%token <real> DOUBLE
+%token <integer> INTY
+%token <real> DOUBLEY
 %token TYPE_CHECK
 %token SELECT
 %token FROM
@@ -172,7 +179,7 @@ string* sortOrdering;
 %token INSERT
 %token INTO
 %token VALUES
-%token DELETE
+%token DELETEY
 %token SCHEMA
 %token MATERIALIZE
 %token ADD
@@ -239,7 +246,7 @@ definition: CREATE optIndType INDEX index_name ON table_name
 		parseTree = new InsertParse($3, $6);
 		YYACCEPT;
 	}
-	| DELETE table_name AS STRING WHERE predicate {
+	| DELETEY table_name AS STRING WHERE predicate {
 		parseTree = new DeleteParse($2, $4, $6);
 		YYACCEPT;
 	}
@@ -272,10 +279,10 @@ constant :
 	STRING_CONST {
 		$$ = new ConstantSelection("string", strdup($1->c_str()));
 	}
-	| INT {
+	| INTY {
 		$$ = new ConstantSelection("int", (Type*) $1);
 	}
-	| DOUBLE {
+	| DOUBLEY {
 		$$ = new ConstantSelection("double", new IDouble($1));
 	}
 	;
@@ -537,7 +544,7 @@ tableAlias : STRING '(' table_name optShiftVal ')' AS STRING {
 		$$ = new QuoteAlias($1, $3);
 	}
 	;
-optShiftVal: ',' INT {
+optShiftVal: ',' INTY {
 		$$ = $2;
 	}
 	|{

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/09/05 22:20:09  donjerko
+  Made changes for port to NT.
+
   Revision 1.1  1997/08/10 20:30:54  donjerko
   Fixed the NO_RTREE option.
 
@@ -34,6 +37,8 @@ int NextEmptyPage; // global variable used by genrtree.C
 char *FileArr;     // global variable used by genrtree.C
 int RTreeFile;	    // mapped file pointer
 
+/* These functions are already Implemented in SBMInit.dummy.c
+
 void initialize_system(const char FileName[],
                  int  &RTreeFile,
                  int  VolumeSize)
@@ -46,7 +51,7 @@ void shutdown_system(const char FileName[],
                int  VolumeSize)
 {
 	cout << "RTrees disabled: no shutdown done" << endl;
-}
+} */
 
 char *temp_file_name="bulk_temp";
 int using_sort=1;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/11/13 22:19:24  okan
+  Changes about compilation on NT
+
   Revision 1.4  1997/08/10 20:30:55  donjerko
   Fixed the NO_RTREE option.
 
@@ -69,6 +72,10 @@ Offset RTreeReadExec::getNextOffset(){
 
 RecId RTreeReadExec::getRecId(){
 	return 0;
+}
+
+void RTreeReadExec::initialize(){
+	return;
 }
 
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
