@@ -60,7 +60,7 @@ main()
 		  {
 		    fread(entry_val, 4, 1, stdin);
 		    long long long_entry_val = *((int *)entry_val);
-		    if feof(stdin)
+		    if (feof(stdin))
 			     exit(0);
 		    fwrite(&long_entry_val, 8, 1, stdout);
 		  }
@@ -68,7 +68,7 @@ main()
 		case 'f':
 		  {
 		    fread(entry_val, 4, 1, stdin);
-		    if feof(stdin)
+		    if (feof(stdin))
 			     exit(0);
 		    double double_entry_val = *((float *)entry_val);
 		    flip_bits(double_entry_val);
@@ -77,13 +77,13 @@ main()
 		  break;
 		case 'v':
 		  fread(entry_val, 8, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  fwrite(entry_val, 8, 1, stdout);
 		  break;
 		case 'd':
 		  fread(entry_val, 8, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  flip_bits(*((double *)entry_val));
 		  fwrite(entry_val, 8, 1, stdout);
@@ -93,7 +93,7 @@ main()
 		  sscanf(type_info+2, "%d", &len);
 		  type_info = strpbrk(type_info, "]");
 		  fread(entry_val, len, 1, stdin);
-		  if feof(stdin)
+		  if (feof(stdin))
 		    exit(0);
 		  if (len > 8)
 		    memcpy(extra+place_in_extra, entry_val+8, len);

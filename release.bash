@@ -1,5 +1,9 @@
 cp -p linux/generic/generic /p/devise/public/bin/devise
-cp -p linux/multi/disp /p/devise/public/bin/multi
+cp -p linux/generic/devise /p/devise/public/bin/devisec
+cp -p linux/generic/deviseb /p/devise/public/bin/deviseb
+cp -p linux/generic/devised /p/devise/public/bin/devised
+cp -p linux/generic/collaborator /p/devise/public/bin/collaborator
+#cp -p linux/multi/disp /p/devise/public/bin/multi
 
 cp -p lib/[a-z]* /p/devise/public/lib
 cp -p lib/[A-Z]* /p/devise/public/lib
@@ -14,6 +18,8 @@ cp run_public/multi /p/devise/run
 cp run_public/devise.etk /p/devise/run
 cp run_public/tk2ds.tcl /p/devise/run
 cp run_public/kill_devised /p/devise/run
+cp run_public/dev_collab /p/devise/run
+cp run_public/collab_cleanup /p/devise/run
 
 tar cv --exclude=CVS public | tar xv --directory=/p/devise
 
