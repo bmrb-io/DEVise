@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1999/07/15 15:21:43  wenger
+#  Enabled axes w/o ticks in user data views.
+#
 #  Revision 1.3  1999/06/30 17:39:11  wenger
 #  Changed Condor session creation scripts because of new view symbol
 #  color feature.
@@ -224,7 +227,7 @@ sub CreateMappings {
       "1 1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
-      "{} {-2} {1} {} {} {} {} {} {}\n";
+      "{} {-2} {0.8} {} {} {} {} {} {}\n";
 
   $dataName = ".Condor_Total";
   foreach $user (sort keys %userlist) {

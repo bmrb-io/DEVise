@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1999/06/30 17:39:11  wenger
+#  Changed Condor session creation scripts because of new view symbol
+#  color feature.
+#
 #  Revision 1.4  1999/06/04 20:53:35  wenger
 #  Made total views view symbols so they line up with the other views;
 #  fixed a few other minor problems.
@@ -283,7 +287,10 @@ sub CreateViews {
     }
     print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {Y} 1\n";
 
-    print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsym {%b %d %H:%M}";
+    print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsym {%b %d %H:%M}\n";
+
+    print SES_OUT "DEVise setFont ${user}_viewsym {x axis} 0 10 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsym {y axis} 0 10 0 0\n";
 
     print SES_OUT "\n";
   }
@@ -310,7 +317,7 @@ sub CreateMappings {
       "1 1 {} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
-      "{} {-2} {1} {} {} {} {} {} {}\n";
+      "{} {-2} {0.8} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "Select1#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
