@@ -63,6 +63,10 @@ struct SolDnCompiled_GData {
 
 
 
+
+
+
+
 class SolDnCompiled_RectXShape  : public RectXShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -78,12 +82,12 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 88 "/p/devise/parser/proto/RectXShape_proto.h"
+# 92 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		
     Coord maxWidth, maxHeight;
     map->MaxBoundingBox(maxWidth, maxHeight);
@@ -224,8 +228,8 @@ public:
 		TDataMap::UpdateBoundingBox(width, height);
 	}
 
-	virtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms) {
-		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, TDataMap::GetPixelWidth());
+	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
 private:
@@ -253,6 +257,10 @@ struct RainCompiled_GData {
 
 
  
+
+
+
+
 
 
 
@@ -324,7 +332,7 @@ public:
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
@@ -424,8 +432,8 @@ public:
 		TDataMap::UpdateBoundingBox(width, height);
 	}
 
-	virtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms) {
-		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, TDataMap::GetPixelWidth());
+	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
 private:
@@ -497,6 +505,10 @@ struct TempCompiled_GData {
 
 
 
+
+
+
+
 class TempCompiled_RectXShape  : public RectXShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -512,12 +524,12 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 88 "/p/devise/parser/proto/RectXShape_proto.h"
+# 92 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		
     Coord maxWidth, maxHeight;
     map->MaxBoundingBox(maxWidth, maxHeight);
@@ -657,8 +669,8 @@ public:
 		TDataMap::UpdateBoundingBox(width, height);
 	}
 
-	virtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms) {
-		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, TDataMap::GetPixelWidth());
+	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
+		_shapes[0]->DrawGDataArray(win, syms, numSyms, this, view, TDataMap::GetPixelWidth());
 	}
 
 private:
