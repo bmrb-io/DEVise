@@ -12,6 +12,12 @@
   Development Group.
 */
 
+/*
+  $Id$
+
+  $Log$
+ */
+
 /* interpreted TData using parsed information */
 
 #ifndef TDataDQLInterp_h

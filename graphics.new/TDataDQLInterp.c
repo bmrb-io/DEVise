@@ -12,6 +12,12 @@
   Development Group.
 */
 
+/*
+  $Id$
+
+  $Log$
+ */
+
 #include <string.h>
 #include "machdep.h"
 #include <ctype.h>

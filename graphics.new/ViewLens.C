@@ -1,3 +1,27 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Implementation of ViewLens class.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
+
 #include <time.h>
 
 #include "Util.h"
@@ -55,7 +79,7 @@ void ViewLens::DeleteView(View *v)
   bool found = false;
   
   int index = InitViewLensIterator();
-  ViewInfo *vi;
+  ViewInfo *vi = NULL;
   
   while(MoreViewsInLens(index)) {
     vi = NextViewInfoInLens(index);
@@ -214,7 +238,7 @@ void ViewLens::FilterChanged(View *view, VisualFilter &filter, int flushed)
   // check if the view is in our lenslist 
   Boolean found = false;
   int index = InitViewLensIterator();
-  ViewInfo *vi;
+  ViewInfo *vi = NULL;
 
   while(MoreViewsInLens(index)) {
     vi = NextViewInfoInLens(index); 
@@ -306,7 +330,7 @@ void ViewLens::DrawTransparentStack()
 void ViewLens::DrawOpaqueStack()
 {
   WindowRep *winRep = GetWindowRep();
-  WindowRep *viewWinRep;
+  WindowRep *viewWinRep = NULL;
   int index = InitViewLensIterator();
   while(MoreViewsInLens(index)) {
     ViewInfo *vi = NextViewInfoInLens(index);

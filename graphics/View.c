@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.88  1996/11/26 16:47:45  ssl
+  Added support for Stacked Opaque and Transparent views
+
   Revision 1.87  1996/11/26 15:44:09  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -366,7 +369,7 @@
 
 #include <time.h>
 
-#define DEBUG
+//#define DEBUG
 
 #include "Util.h"
 #include "View.h"
@@ -2092,7 +2095,9 @@ void View::ReportViewRecomputed()
   int index;
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
+#if defined(DEBUG)
     printf("View = %p, ViewCallbacklist = %p\n", this, _viewCallbackList);
+#endif
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
     printf("Calling ViewRecomputed callback 0x%p for view 0x%p (%s)\n",
