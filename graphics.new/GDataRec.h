@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/13 23:10:32  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.3  1995/11/28 00:05:28  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -29,6 +32,7 @@
 #include "Color.h"
 #include "ShapeID.h"
 #include "Pattern.h"
+#include "RecId.h"
 
 const int MAX_GDATA_ATTRS = 10;
 
@@ -37,15 +41,16 @@ const int MAX_GDATA_ATTRS = 10;
 // stores and caches only those fields which depend on user data
 
 struct GDataRec {
-  Coord     x;
-  Coord     y;
-  Coord     z;
-  Color     color;
-  Coord     size;
-  Pattern   pattern; 
-  ShapeID   shape; 
-  Coord     orientation;
-  ShapeAttr shapeAttrs[MAX_GDATA_ATTRS];
+  RecId     _recIdDummy;
+  Coord     _xDummy;
+  Coord     _yDummy;
+  Coord     _zDummy;
+  Color     _colorDummy;
+  Coord     _sizeDummy;
+  Pattern   _patternDummy;
+  ShapeID   _shapeDummy;
+  Coord     _orientationDummy;
+  ShapeAttr _shapeAttrsDummy[MAX_GDATA_ATTRS];
 };
 
 const int MAX_GDATA_REC_SIZE = sizeof(GDataRec);
