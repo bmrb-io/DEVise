@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1997/05/06 17:21:03  wenger
+  Turned off some debug output.
+
   Revision 1.57  1997/03/20 22:15:27  guangshu
   *** empty log message ***
 
@@ -684,7 +687,17 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   }
 
   /* Find first record that matches filter */
+
+  /* Note: the 'if' part of the code is the bug fix.  I've left the old
+   * code in place for now just in case there is some problem with the
+   * fix.  RKW 5/7/97. */
+#if 1
+  if (!DoBinarySearch(query, query->filter.xLow, false, query->low,
+    false, 0, 0, false)) {
+#else
   if (!DoBinarySearch(query, query->filter.xLow, false, query->low)) {
+#endif
+
     AdvanceState(query, QPFull_EndState);
     return;
   }
@@ -696,8 +709,18 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   query->isRandom = false;
   if (!query->tdata->GetDataSource()->isTape()) {
       RecId lastId = query->high;
+
+  /* Note: the 'if' part of the code is the bug fix.  I've left the old
+   * code in place for now just in case there is some problem with the
+   * fix.  RKW 5/7/97. */
+#if 1
+      if (DoBinarySearch(query, query->filter.xHigh, false,
+                         lastId, true, query->low, query->high, true))
+#else
       if (DoBinarySearch(query, query->filter.xHigh, false,
                          lastId, true, query->low, query->high, false))
+#endif
+
           query->high = lastId;
       if (query->high - query->low > QPFULL_RANDOM_RECS)
           query->isRandom = Init::Randomize();
@@ -1192,7 +1215,7 @@ Boolean QueryProcFull::DoBinarySearch(QPFullData *query,
                                       RecId lowBound, RecId highBound,
                                       Boolean maxLower)
 {
-#if DEBUGLVL >= 5 
+#if DEBUGLVL >= 5
   printf("DoBinarySearch xVal = %f, maxLower = %d\n", xVal, maxLower);
 #endif
 
