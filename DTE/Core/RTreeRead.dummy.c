@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/11/18 19:49:20  okan
+  Made several changes for NT compilation
+
   Revision 1.5  1997/11/13 22:19:24  okan
   Changes about compilation on NT
 
@@ -40,11 +43,10 @@
 
 #include "RTreeRead.h"
 
-RTreeReadExec::RTreeReadExec(const IndexDesc& indexDesc,
-	int dataSize, Tuple* tuple,
+RTreeReadExec(const IndexDesc& indexDesc,
+	int dataSize, Type** tuple,
 	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
-	typed_key_t* queryBox) {
-	
+	typed_key_t* queryBox)	 {
 	assert(!"rtree is not linked in");
 }
 

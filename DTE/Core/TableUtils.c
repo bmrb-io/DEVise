@@ -69,7 +69,7 @@ int TableMap::count() const {
 	return cnt;
 }
 
-TableMap::Iterator::Iterator(int bitmap, int counter = 0) :
+TableMap::Iterator::Iterator(int bitmap, int counter) :
 	refMap(bitmap), currMap(1), counter(counter)
 {
 	assert(bitmap);

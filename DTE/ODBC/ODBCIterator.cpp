@@ -7,7 +7,7 @@ ODBCIterator::ODBCIterator(
 	: connectString(connectString), query(query), numFlds(numFlds), destroyPtrs(NULL)
 {
 	this->typeIDs = new TypeID[numFlds];
-	next = new Tuple[numFlds];
+	next = new Type*[numFlds];
 	destroyPtrs = new DestroyPtr[numFlds];
 	typePtrs = new void*[numFlds];
 	for(int i = 0; i < numFlds; i++){

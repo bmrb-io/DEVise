@@ -9,7 +9,8 @@ Iterator* createIteratorFor(
      const ISchema& schema, istream* in, const string& tableStr);
 
 class TableMap {
-
+	int bitmap;
+public:
 	class Iterator {
 		int refMap;
 		int currMap;
@@ -23,8 +24,6 @@ class TableMap {
 		inline TableMap getComplement();
 	};
 
-	int bitmap;
-public:
 	inline TableMap(int bitmap = 0);
 	void initialize(int numTabs);
 	Iterator begin();

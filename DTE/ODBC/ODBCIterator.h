@@ -8,8 +8,8 @@ class ODBCIterator : public Iterator {
 protected:
     string connectString;
 	string query;
-	Tuple* next;
-	Tuple* typePtrs;
+	Type** next;
+	Type** typePtrs;
 	DestroyPtr* destroyPtrs;
 	int numFlds;
 	TypeID* typeIDs;

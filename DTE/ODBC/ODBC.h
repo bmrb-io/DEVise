@@ -45,7 +45,7 @@ public:
 	}
 
 	void ODBC_Connect();
-	int ODBC_Get_Rec(Tuple* results);	//Get Next Tuple from database, return -1 if EOF
+	int ODBC_Get_Rec(Type** results);	//Get Next Tuple from database, return -1 if EOF
 	void checkSpecific();
 	
 	#if defined(_WINDOWS) || defined(_CONSOLE)

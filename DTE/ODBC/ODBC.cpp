@@ -134,7 +134,7 @@ void ODBC_Data::ODBC_Get_ColNums() {
 
 
 
-int ODBC_Data::ODBC_Get_Rec(Tuple* results) {
+int ODBC_Data::ODBC_Get_Rec(Type** results) {
 
 	size_t size;
 	SQLINTEGER Data_Status;

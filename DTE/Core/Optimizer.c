@@ -5,7 +5,6 @@
 
 #include <math.h>
 
-#include <heap.h>
 #include <algorithm>
 
 DTESite THIS_SITE;
@@ -57,7 +56,7 @@ SPJQueryProduced::SPJQueryProduced(TableMap tableMap,
 SPJQueryProduced::~SPJQueryProduced(){
 }
 
-void printAlts(const AltEntry& a, ostream& out = cout)
+void printAlts(const AltEntry& a, ostream& out)
 {
 /*
 	cout << "[ c = " << a.first << "   ";
@@ -556,6 +555,7 @@ void LogPropTable::initialize(const Query& query)
 	tableList = query.getTableList();
 	int numTables = tableList.size();
 	int numComb = (1 << numTables);
+	int i = 0;
 	const vector<BaseSelection*>& preds = query.getPredicateList();
 	predMaps.reserve(preds.size());
 	vector<BaseSelection*>::const_iterator pi;
@@ -578,13 +578,13 @@ void LogPropTable::initialize(const Query& query)
 	cardinalities.push_back(mu * 
 		pow(ratio, double(numTables - 1) / (numTables*numTables)));
 
-	for(int i = 1; i < numTables; i++){
+	for(i = 1; i < numTables; i++){
 		cerr << "card of " << i << " " << cardinalities[i - 1] << endl;
 		cardinalities.push_back(cardinalities[i - 1] / singleRatio);
 	}
 	cerr << "card of " << numTables << " " << cardinalities[numTables - 1] << endl;
 
-	for(int i = 0; i < numTables; i++){
+	for(i = 0; i < numTables; i++){
 
 		// this will not be necessary later when the cardinalities are
 		// read from the catalog
@@ -602,7 +602,7 @@ void LogPropTable::initialize(const Query& query)
 
 	cerr << "Creating log prop table of size " << numComb -1 << " ... ";
 
-	for(int i = 1; i < numComb; i++){
+	for(i = 1; i < numComb; i++){
 
 		logPropTab.push_back(logPropFor(i));
 
