@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2000/06/12 22:13:56  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.59  2000/05/25 14:47:39  wenger
 // 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
 // in view resets to default coordinates.
@@ -574,21 +579,43 @@ public class DEViseScreen extends Panel
 
         if (view.viewDimension == 3 && view.canvas != null) {
 	    DEVise3DLCS oldLcs = null;
+	    int oldSX = 0, oldSY = 0, oldTSX = 0, oldTSY = 0;
 	    if (view.canvas.crystal != null) {
 	        oldLcs = view.canvas.crystal.lcs;
+		oldSX = view.canvas.crystal.shiftedX;
+		oldSY = view.canvas.crystal.shiftedY;
+		oldTSX = view.canvas.crystal.totalShiftedX;
+		oldTSY = view.canvas.crystal.totalShiftedY;
 	    }
 	    view.canvas.crystal = null;
 	    view.canvas.createCrystal();
-	    if (oldLcs != null) view.canvas.crystal.lcs = oldLcs;
+	    if (oldLcs != null) {
+	        view.canvas.crystal.lcs = oldLcs;
+		view.canvas.crystal.shiftedX = oldSX;
+		view.canvas.crystal.shiftedY = oldSY;
+		view.canvas.crystal.totalShiftedX = oldTSX;
+		view.canvas.crystal.totalShiftedY = oldTSY;
+	    }
 	} else if (view.pileBaseView != null &&
 	  view.pileBaseView.viewDimension == 3 &&
 	  view.pileBaseView.canvas != null) {
 	    DEVise3DLCS oldLcs = null;
+	    int oldSX = 0, oldSY = 0, oldTSX = 0, oldTSY = 0;
 	    if (view.pileBaseView.canvas.crystal != null) {
 	        oldLcs = view.pileBaseView.canvas.crystal.lcs;
+		oldSX = view.pileBaseView.canvas.crystal.shiftedX;
+		oldSY = view.pileBaseView.canvas.crystal.shiftedY;
+		oldTSX = view.pileBaseView.canvas.crystal.totalShiftedX;
+		oldTSY = view.pileBaseView.canvas.crystal.totalShiftedY;
 	    }
             view.pileBaseView.canvas.createCrystal();
-	    if (oldLcs != null) view.pileBaseView.canvas.crystal.lcs = oldLcs;
+	    if (oldLcs != null) {
+	        view.pileBaseView.canvas.crystal.lcs = oldLcs;
+		view.pileBaseView.canvas.crystal.shiftedX = oldSX;
+		view.pileBaseView.canvas.crystal.shiftedY = oldSY;
+		view.pileBaseView.canvas.crystal.totalShiftedX = oldTSX;
+		view.pileBaseView.canvas.crystal.totalShiftedY = oldTSY;
+	    }
         }
 
         repaint();

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2000/05/25 14:47:38  wenger
+// 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
+// in view resets to default coordinates.
+//
 // Revision 1.16  2000/05/24 14:07:09  wenger
 // Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
 // DEViseAtomInCrystal, DEVise3DLCS).
@@ -292,6 +296,7 @@ public class DEViseCrystal
             atom.drawSize = atom.type.drawSize;
         }
 
+/* BMRB people asked to get rid of the axes.  RKW 2000-06-21.
 	// Draw the axes.
         gc.setColor(axisColor);
         Font oldfont = gc.getFont(), font = DEViseFonts.getFont(12,
@@ -317,6 +322,7 @@ public class DEViseCrystal
 
         gc.setColor(oldcolor);
         gc.setFont(oldfont);
+*/
     }
 
     public float[] getPos(float[] pos)
@@ -697,12 +703,8 @@ public class DEViseCrystal
     // pixels;
     public synchronized void scale(int dx, int dy)
     {
-        float factor = (float)Math.sqrt((float)dx * dx + (float)dy * dy) /
-	  (float)Math.sqrt((float)viewArea.width * viewArea.width +
-	  (float)viewArea.height * viewArea.height);
-        if (dx < 0) {
-            factor = -factor;
-        }
+        float factor = (float)dy / (float)viewArea.height;
+
         factor = factor + totalScaleFactor;
 
         float d = factor / totalScaleFactor;

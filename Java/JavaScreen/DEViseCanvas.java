@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2000/05/25 15:37:15  wenger
+// Fixed bug 590 (JavaScreen "forgets" that you have control or alt pressed
+// after you release the mouse button).
+//
 // Revision 1.48  2000/05/25 14:47:27  wenger
 // 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
 // in view resets to default coordinates.
@@ -102,6 +106,10 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.49  2000/05/25 15:37:15  wenger
+// Fixed bug 590 (JavaScreen "forgets" that you have control or alt pressed
+// after you release the mouse button).
+//
 // Revision 1.48  2000/05/25 14:47:27  wenger
 // 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
 // in view resets to default coordinates.
@@ -753,6 +761,14 @@ public class DEViseCanvas extends Container
 
             if (view.viewDimension == 3) {
 		if ((keyChar == 'r' || keyChar == 'R') && crystal != null) {
+                    crystal.totalShiftedX = 0;
+                    crystal.totalShiftedY = 0;
+		    crystal.totalX = 0.0f;
+		    crystal.totalY = 0.0f;
+		    crystal.totalZ = 0.0f;
+		    crystal.totalXRotation = 0.0f;
+		    crystal.totalYRotation = 0.0f;
+		    crystal.totalScaleFactor = 1.0f;
 		    crystal.resetAll(true);
 		    repaint();
 		}
@@ -1451,7 +1467,9 @@ public class DEViseCanvas extends Container
             //float[][] atomPos = new float[size][3];
             //float[][][] bondPos = new float[size][
             //String[] atomName = new String[size];
-            Vector aPos = new Vector(size), aName = new Vector(size), aColor = new Vector(size), bPos = new Vector(size), bColor = new Vector(size);
+            Vector aPos = new Vector(size), aName = new Vector(size),
+			  aColor = new Vector(size), bPos = new Vector(size),
+			  bColor = new Vector(size);
             for (int i = 0; i < size; i++) {
                 DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
 				if (gdata.symbolType == gdata._symSegment) {
