@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/20 19:56:36  kmurli
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
+
   Revision 1.3  1996/01/25 20:23:17  jussi
   Added copyright notice and improved code.
 
@@ -41,18 +45,10 @@ void DispQueryProcSimple::Run()
 
 DispQueryProcFull::DispQueryProcFull()
 {
-
-  Dispatcher::CreateMarker(readFd,writeFd);
-
-  Dispatcher::Current()->Register(this, 20,GoState,false,readFd);
-
+  Dispatcher::CreateMarker(readFd, writeFd);
+  Dispatcher::Current()->Register(this, 20, GoState, false, readFd);
   Dispatcher::InsertMarker(writeFd);
-
 }
-
-/********************************************************************8
-Called by dispatcher when we can run
-**********************************************************************/
 
 void DispQueryProcFull::Run()
 {

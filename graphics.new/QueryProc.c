@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/12 14:56:24  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.3  1996/01/15 16:56:31  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -28,16 +36,13 @@
 #include "Init.h"
 #include "Exit.h"
 
-QueryProc *QueryProc::_queryProc = NULL;
+QueryProc *QueryProc::_queryProc = 0;
 int QueryProc::_numQueryProcs = 0;      /* number of query processors */
 QPRec QueryProc::_qpArray[MAX_QUERYPROCS];
 
 void QueryProc::Register(char *name, QueryProcGen *gen)
 {
-  if (_numQueryProcs == MAX_QUERYPROCS) {
-    fprintf(stderr,"too many query processors\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(_numQueryProcs < MAX_QUERYPROCS - 1, "Too many query processors");
 
   _qpArray[_numQueryProcs].name = name;
   _qpArray[_numQueryProcs++].gen = gen;
@@ -45,9 +50,9 @@ void QueryProc::Register(char *name, QueryProcGen *gen)
 
 QueryProc *QueryProc::Instance()
 {
-  if (_queryProc == NULL) {
+  if (!_queryProc) {
     char *qpName = Init::QueryProc();
-    if (!strcmp(qpName,"default")) {
+    if (!strcmp(qpName, "default")) {
       _queryProc = new DispQueryProcFull();
     } else {
       Boolean found = false;
@@ -59,8 +64,8 @@ QueryProc *QueryProc::Instance()
 	}
       }
       if (!found){
-	fprintf(stderr, "can't find query proc %s\n", qpName);
-	Exit::DoExit(1);
+	fprintf(stderr, "Cannot find query processor %s\n", qpName);
+	DOASSERT(0, "Program terminates");
       }
     }
   }
