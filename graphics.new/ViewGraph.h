@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/23 17:26:08  jussi
+  Added support for piled views.
+
   Revision 1.23  1996/07/22 23:44:42  guangshu
   Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
 
@@ -108,10 +111,13 @@
 #include "GdataStat.h"
 
 const int MAXCOLOR = 43;
+const int MAX_GSTAT = 10000;
 
 #include "Action.h"
 #include "RecId.h"
 #include "PointStorage.h"
+
+DefineDList(GStatList, int)
 
 class TDataMap;
 class RecordLink;
@@ -217,8 +223,11 @@ public:
   char _histBuffer[3072];	   /* histograms */
   Coord yMax, yMin;		   /* the ymax and ymin for _allStats */
 
+  char _gdataStatBuffer[3072];         /* the statistics for each x */
+
   GdataStat _gstat;
-  char _gdataStatBuffer[3072];     /* the statistics for each x */
+  GStatList _glist;                /* List to keep track of all the gdata */ 
+
   
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */

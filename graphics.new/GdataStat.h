@@ -20,7 +20,7 @@
 #include "HashTable.h"
 #include "BasicStats.h"
 
-const int  NUM_BUCK = 997;
+const int  NUM_BUCK = 199;
 
 class GdataStat {
   public:

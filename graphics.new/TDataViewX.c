@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/07/23 18:00:53  jussi
+  Ifdef'd out the statistics code because large datasets cause
+  unlimited memory to be consumed.
+
   Revision 1.33  1996/07/23 17:26:06  jussi
   Added support for piled views.
 
@@ -204,6 +208,8 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
     _stats[i].Init(this);
 
   _gstat.Clear();  /* Clear the hashtable and calculate it again */
+  _glist.DeleteAll(); /* Clear the gdata list */
+
 
   // Initialize record links whose master this view is
   int index = _masterLink.InitIterator();
@@ -350,11 +356,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (shape == 13 || shape == 14)
         canElimRecords = false;
 
+      _allStats.SetHistWidth(yMax, yMin); 
+/*    printf("GetHistWidth=%.2f\n",_allStats.GetHistWidth());  */
       // Compute statistics only for records that match the filter's
       // X range and that exceed the Y low boundary
-      if (_allStats.GetHistWidth() == 0 && yMax != 0 && yMin != 0) {
-          _allStats.SetHistWidth(yMax, yMin);
-      }
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
 	  && y >= _queryFilter.yLow) {
 	if (color < MAXCOLOR)
@@ -362,20 +367,31 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	_allStats.Sample(x, y);
 	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y);
       }
+      yMax = _allStats.GetStatVal(STAT_MAX);
+      yMin = _allStats.GetStatVal(STAT_MIN);
 
-#if 0
-      int X = (int)x;
       BasicStats *bs;
-      if(_gstat.Lookup(X, bs)) {
-	bs->Sample(x,y);
-      } else {
-	bs = new BasicStats;
-        DOASSERT(bs, "Out of memory");
-	bs->Init(0);
-	bs->Sample(x, y);
-	_gstat.Insert(X, bs);
+
+      if(_glist.Size() <= MAX_GSTAT) {
+	 int X = (int) x;
+         if(_gstat.Lookup(X, bs)) {
+	   bs->Sample(x,y);
+         } else {
+	   bs = new BasicStats();
+	   bs->Init(0);
+	   _glist.InsertOrderly(X, 1);
+	   bs->Sample(x, y);
+	   _gstat.Insert(X, bs);
+/*	   if(_gstat.Lookup(X, bs)){
+	      printf("%d %d %.2f %.2f %.2f %.2f\n",
+                   X, (int)bs->GetStatVal(STAT_COUNT),
+                   bs->GetStatVal(STAT_YSUM),
+                   bs->GetStatVal(STAT_MEAN),
+                   bs->GetStatVal(STAT_MAX),
+                   bs->GetStatVal(STAT_MIN));
+           } else { printf("Whoops! Insert failed\n"); } */
+         } 
       } 
-#endif
 
       // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link
@@ -440,8 +456,6 @@ void TDataViewX::QueryDone(int bytes, void *userData)
 
   _allStats.Done();
   _allStats.Report();
-  yMax = _allStats.GetStatVal(STAT_MAX);
-  yMin = _allStats.GetStatVal(STAT_MIN);
 
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Done();

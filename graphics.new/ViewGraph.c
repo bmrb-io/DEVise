@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/07/23 19:34:50  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.28  1996/07/23 17:26:07  jussi
   Added support for piled views.
 
@@ -124,6 +128,8 @@
 #include "RecordLink.h"
 
 //#define DEBUG
+
+ImplementDList(GStatList, int)
 
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
 		     AxisLabel *xAxis, AxisLabel *yAxis,
@@ -532,11 +538,10 @@ void ViewGraph::PrepareStatsBuffer()
         }
         strcat(_statBuffer, line);
     }
-
     if(_allStats.GetHistWidth()>0){
 	for(int i=0; i<HIST_NUM; i++) {
-	    sprintf(line, "%.2f %d\n", _allStats.GetStatVal(STAT_MIN)
-                                       + (i + 0.5) * _allStats.GetHistWidth(), 
+	    sprintf(line, "%.2f %d\n", 
+		    _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
 		    _allStats.GetHistVal(i));
 	    if(strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
 	        fprintf(stderr, "Out of histogram buffer space\n");
@@ -546,14 +551,13 @@ void ViewGraph::PrepareStatsBuffer()
         }
     }
 
-#if 0
     BasicStats *bs;
-    // Only put count ysum mean max min into the buffer
-    // considering the size of buffer 
-    for(int i = (int)_allStats.GetStatVal(STAT_XMIN);
-        i <= (int)_allStats.GetStatVal(STAT_XMAX); i++) {
-	if (_gstat.Lookup(i, bs)) {
-	   DOASSERT(bs, "HashTable lookup error");
+    //Only put count ysum mean max min into the buffer considering the size of buffer 
+    int index = _glist.InitIterator();
+    while(_glist.More(index)) {
+	int i = _glist.Next(index); 
+	if(_gstat.Lookup(i, bs)) {
+	   DOASSERT(bs,"HashTable lookup error\n");
 	   sprintf(line, "%d %d %.2f %.2f %.2f %.2f\n",
 		   i, (int)bs->GetStatVal(STAT_COUNT),
 		   bs->GetStatVal(STAT_YSUM),
@@ -568,7 +572,6 @@ void ViewGraph::PrepareStatsBuffer()
            strcat(_gdataStatBuffer, line);
        }
     }	
-#endif
 
 #ifdef DEBUG
     printf("%s\n", _statBuffer);
