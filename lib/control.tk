@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.100  1996/11/28 19:03:10  ssl
+#	Added an apply button to Mapping so that mappings can be changed without
+#	closing the mapping window.
+#
 #	Revision 1.99  1996/11/26 17:25:21  ssl
 #	added support for stacked views
 #
@@ -479,6 +483,7 @@ source $libdir/dialogList.tk
 source $libdir/dialogParam.tk
 source $libdir/dialogCkBut.tk
 source $libdir/dialogMapping.tk
+source $libdir/fonts.tcl
 source $libdir/help.tk
 source $libdir/macrodef.tk
 source $libdir/sources.tcl
@@ -718,6 +723,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Foreground..." -command DoSetFgColor
 .mbar.view.menu add command -label "Background..." -command DoSetBgColor
+#.mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
@@ -757,6 +763,16 @@ menu .mbar.view.menu.kmenu -tearoff 1
 .mbar.view.menu.kmenu add separator
 .mbar.view.menu.kmenu add command -label "Apply..." \
 	-command {ShowKGraph}
+
+#menu .mbar.view.menu.fontsmenu -tearoff false
+#.mbar.view.menu.fontsmenu add command -label "Title" \
+#    -command { GetFont "title" }
+#.mbar.view.menu.fontsmenu add command -label "X Axis" \
+#    -command { GetFont "x axis" }
+#.mbar.view.menu.fontsmenu add  command -label "Y Axis"\
+#    -command { GetFont "y axis" }
+# TEMPTEMP? use this to bring up mapping window
+#.mbar.view.menu.fontsmenu add  command -label "Data Labels"
 
 menu .mbar.view.menu.dimmenu -tearoff 0
 .mbar.view.menu.dimmenu add command -label "Two Dimensions" \

@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.11  1996/11/28 19:03:12  ssl
+#	Added an apply button to Mapping so that mappings can be changed without
+#	closing the mapping window.
+#
 #	Revision 1.10  1996/04/10 03:05:33  jussi
 #	Checking of whether a top-level window already exists is now
 #	made via WindowVisible (utils.tcl).
@@ -48,6 +52,7 @@
 proc dialogMapping {w title text bitmap schemaname params map {getName 0}} { 
     global dialogParamVar dialogListVar DEViseColors DEViseShapes 
     global button1 mappingWinOpened
+    global curView
 
     set xParm [lindex [lindex $params 3] 1]
     set yParm [lindex [lindex $params 4] 1]
@@ -86,7 +91,7 @@ proc dialogMapping {w title text bitmap schemaname params map {getName 0}} {
     wm geometry $w +50+50
     wm title $w $title
 
-    label $w.message -text $text
+    label $w.message -text "$text (view '$curView')"
 
     frame $w.mapping
     frame $w.mapping.label
