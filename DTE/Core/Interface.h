@@ -276,6 +276,7 @@ public:
 	virtual Interface* copyTo(void* space){
 		return new (space) MaterViewInterface(*this);
 	}
+	virtual vector<AccessMethod*> createAccessMethods();
 };
 
 class DeviseInterface : public Interface{

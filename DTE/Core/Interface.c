@@ -808,6 +808,16 @@ istream& CatalogInterface::read(istream& in){
 	return Interface::read(in);
 }
 
+vector<AccessMethod*> MaterViewInterface::createAccessMethods()
+{
+	vector<AccessMethod*> retVal;
+	Stats defStats(schema.getNumFields());
+	Stats* nonNullStats = (stats ? stats : &defStats);
+	AccessMethod* sr = new StandardAM(schema, urlString, *nonNullStats);
+	retVal.push_back(sr);
+	return retVal;
+}
+
 vector<AccessMethod*> Interface::createAccessMethods()
 {
 	vector<AccessMethod*> emptyVec;
