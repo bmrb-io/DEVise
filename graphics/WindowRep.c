@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/12/16 17:53:54  zhenhai
+  Added OpenGL features to graphics.
+
 
   Revision 1.27  1997/10/18 23:28:58  zhenhai
   Rewrote matrix manipulation functions and deleted direct matrix manipulation
@@ -143,6 +146,7 @@
 #include "WindowRep.h"
 #include "Display.h"
 
+//#define DEBUG
 
 Boolean WindowRep::_destroyPending = false;
 

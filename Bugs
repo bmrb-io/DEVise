@@ -1020,6 +1020,9 @@ Num Date        Status  Description
 260 12/17/97	OPEN	Mouse events seem to not get translated to the
 			correct coordinates (since OpenGL commit). (rkw)
 
+261 12/17/97	OPEN	3d_test.ds session doesn't work (error in expression
+			analysis, possibly other problems). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

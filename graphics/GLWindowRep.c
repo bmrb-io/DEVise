@@ -51,13 +51,7 @@ extern "C" {
 // so this define must come after xv.h.
 //#define DEBUG
 
-#ifdef DEBUG
 #include "GraphicsDebug.h"
-#else
-#define DEBUG
-#include "GraphicsDebug.h"
-#undef DEBUG
-#endif
 
 #include "GLDebug.h"
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1997/12/16 17:53:54  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.57  1997/11/24 23:14:39  weaver
   Changes for the new ColorManager.
 
@@ -298,13 +301,7 @@
 #define FILENAME_MAX    1024    /* max # of characters in a path name */
 #endif
 
-#ifdef DEBUG
 #include "GraphicsDebug.h"
-#else
-#define DEBUG
-#include "GraphicsDebug.h"
-#undef DEBUG
-#endif
 
 #include "Color.h"
 #include "Coloring.h"
