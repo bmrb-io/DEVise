@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  1999/12/14 17:57:35  wenger
+  Added enableDrawing command (totally enables or disables drawing) to
+  allow Omer to avoid "flashing" when he inserts views into windows.
+
   Revision 1.90  1999/12/06 18:41:05  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -547,6 +551,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	printf("DeviseCommand::Run(");
 	PrintArgs(stdout, argc, argv, false);
 	printf(")\n");
+	printf("  _cmdDepth = %d\n", _cmdDepth);
 #  if defined(DEBUG_MEM)
     printf("  %s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #  endif
@@ -6212,8 +6217,10 @@ IMPLEMENT_COMMAND_BEGIN(dispatcherRun1)
 	    if (argc == 1) {
 		    count = 1;
 		} else {
-	        int count = atoi(argv[1]);
+	        count = atoi(argv[1]);
 		}
+
+        Dispatcher::Current()->SetMaxRunCount(count);
 
 		for (int index = 0; index < count; index++) {
 			if (Dispatcher::Current()->CallbacksPending() <= 0) break;

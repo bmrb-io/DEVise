@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/11/30 22:28:01  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.62  1999/11/24 15:43:54  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -368,6 +375,8 @@ Dispatcher::Dispatcher(StateFlag state)
   _waitingForQueries = false;
 
   _tag = 0;
+  _runCount = 0;
+  _maxRunCount = -1;
 
   _objectValid.Set();
 }
@@ -739,17 +748,23 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 void Dispatcher::Run1()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-
-  static int waitfor_secs = 0;
-
-  _tag++;
-
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::Run1()\n");
+  sprintf(_logBuf, "Dispatcher::Run1(); _runCount = %d\n", _runCount);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
   sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
+
+  static int waitfor_secs = 0;
+
+  _tag++;
+  _runCount++;
+  if (_maxRunCount >= 0 && _runCount > _maxRunCount) {
+#if defined(DEBUG_LOG)
+    LogMessage("_maxRunCount exceeded");
+#endif
+    return;
+  }
 
 #if defined(DEBUG_CALLBACK_LIST)
   if (!CallbacksOk()) {
@@ -1207,4 +1222,15 @@ void Dispatcher::Unregister(DispatcherCallback *c, DispatcherID id)
   _callbacks.DoneIterator(index);
   printf("Could not find registrant %s: 0x%p\n", c->DispatchedName(), c);
   DOASSERT(0, "attempt to unregister unknown callback");
+}
+
+void
+Dispatcher::SetMaxRunCount(int maxRunCount){
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher(0x%p)::SetMaxRunCount(%d)\n", this,
+      maxRunCount);
+  LogMessage(_logBuf);
+#endif
+
+  _maxRunCount = maxRunCount;
 }

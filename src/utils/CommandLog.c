@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/12/06 18:41:22  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
  */
 
 #include <stdio.h>
@@ -88,6 +92,10 @@ CommandLog::Log(int argc, const char *const *argv)
   }
 
   if (_fp) {
+    fprintf(_fp, "DEVise dispatcherRun1 %d\n",
+        Dispatcher::Current()->GetRunCount());
+    Dispatcher::Current()->ResetRunCount();
+
     fprintf(_fp, "DEVise");
     for (int index = 0; index < argc; index++) {
       fprintf(_fp, " {%s}", argv[index]);
@@ -142,14 +150,6 @@ CommandLog::Playback(const char *logFile)
 	    // Continue even if command fails.
             (void) Session::RunCommand(&control, args.GetCount(),
 	        (char **)args.GetArgs());
-
-	    // Note: this is a temporary measure until we record how many
-	    // times the dispatcher actually runs between commands.  If
-	    // we don't do this, some of the command logs don't play back
-	    // correctly.  RKW 1999-12-06.
-	    if (Dispatcher::Current()->CallbacksPending() > 0) {
-	      Dispatcher::Current()->Run1();
-	    }
 	  }
         }
       }
@@ -160,6 +160,8 @@ CommandLog::Playback(const char *logFile)
       sprintf("Error closing command log file <%s>", logFile);
       reportErrSys(errBuf);
     }
+
+    Dispatcher::Current()->SetMaxRunCount(-1);
   }
 }
 

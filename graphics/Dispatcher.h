@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/11/19 21:29:15  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.37  1999/10/12 17:59:26  wenger
   Fixed bug in code for checking if the mouse is on a cursor that caused
   devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
@@ -284,6 +288,7 @@ public:
   /* Check callback list for self-consistency. */
   Boolean CallbacksOk();
 
+  // For HangCheck class to use to try to figure out if DEVise is hung.
   int GetTag() { return _tag; }
 
   /***********************************************************************
@@ -321,6 +326,13 @@ public:
 
   /***********************************************************************/
 
+  // These functions are for use by the command logging, so the logs can
+  // record how many times we went through the dispatcher between
+  // commands.
+  void ResetRunCount() { _runCount = 0; }
+  int GetRunCount() { return _runCount; }
+  void SetMaxRunCount(int maxRunCount);
+
 private:
 
   /* Clean up before quitting */
@@ -351,6 +363,9 @@ private:
   Boolean _waitingForQueries;
 
   int _tag;
+
+  int _runCount;
+  int _maxRunCount;
 
   ObjectValid _objectValid;
 };

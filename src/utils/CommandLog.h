@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/12/06 18:41:23  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
  */
 
 #ifndef _CommandLog_h_
@@ -34,7 +38,6 @@ class CommandLog {
 public:
   static void Init(const char *logFile = NULL);
   static void Log(int argc, const char *const *argv);
-  //TEMPTEMP? Close();???
 
   static void Playback(const char *logFile);
 

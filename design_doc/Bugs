@@ -2128,6 +2128,9 @@ Num Date        Status  Description
 			Bmrb/4096_pep1_highlight1.ds) (rkw)
 			(Fixed by rkw, 12/15/99.)
 
+545 12/15/99	OPEN	Window moves and resizes are not logged in command
+			log. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
