@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/11/03 18:20:46  kmurli
+  Changes for incorporating DQL type..
+
   Revision 1.37  1996/11/03 02:41:37  kmurli
   Modified to include the query schema level. Also modified to include DQL
   processing
@@ -193,7 +196,7 @@ extern "C" int purify_new_inuse();
 #endif
 
 
-#define DEBUG
+//#define DEBUG
 #define LINESIZE 1024
 
 static char result[10 * 1024];

@@ -92,7 +92,8 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
   if (argc != 2 && argc != 3)
     return (ClassInfo *)NULL;
 
- /* char *name, *type, *query;
+#if 1
+  char *name, *type, *query;
 
   if (argc == 2) {
     name = CopyString(argv[1]);
@@ -103,7 +104,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
     type = CopyString("DQL");
 	// 2 will give the actual type... e.g. UNIXFILE..
   }
-*/
+#endif
   TDataDQLInterp *tdata = new TDataDQLInterp(_attrs,name,type,_query);
                                                  
   return new TDataDQLInterpClassInfo(_className,_schemaFile,_attrs,name,type,_query,tdata);
