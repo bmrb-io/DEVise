@@ -3,6 +3,7 @@ depend:
 		-I../tape *.c
 # DO NOT DELETE
 
+CompDate.o: CompDate.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 generic.o: /usr/include/time.h /usr/include/string.h /usr/include/math.h
 generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h

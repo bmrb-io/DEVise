@@ -4,6 +4,7 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+CompDate.o: CompDate.h
 generic.o: /usr/include/stdio.h /usr/include/time.h
 generic.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 generic.o: /usr/include/math.h /usr/include/floatingpoint.h

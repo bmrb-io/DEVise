@@ -34,8 +34,8 @@ QueryProcTape.o: ../graphics/AttrList.h ../graphics/Config.h
 QueryProcTape.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
 QueryProcTape.o: ../graphics.new/ViewStats.h ../graphics.new/Action.h
 QueryProcTape.o: ../graphics.new/GDataBin.h ../graphics.new/MappingInterp.h
-QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics.new/Bitmap.h
-QueryProcTape.o: ../graphics/Display.h ../graphics/ColorMgr.h
+QueryProcTape.o: ../graphics.new/Bitmap.h ../graphics/Display.h
+QueryProcTape.o: ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics/Pattern.h

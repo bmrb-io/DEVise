@@ -374,20 +374,20 @@ MapInterpClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
 MapInterpClassInfo.o: ../graphics/Pattern.h ../graphics/DList.h
 MapInterpClassInfo.o: ../graphics/Exit.h ../graphics/ClassDir.h
 MapInterpClassInfo.o: MappingInterp.h /s/tcl/include/tcl.h
-MapInterpClassInfo.o: /usr/include/stdio.h TDataMapDispatch.h TDataMap.h
-MapInterpClassInfo.o: ShapeID.h RecId.h GDataRec.h ViewGraph.h
-MapInterpClassInfo.o: ../graphics/View.h ../graphics/Dispatcher.h
-MapInterpClassInfo.o: /usr/include/stdlib.h /usr/include/unistd.h
-MapInterpClassInfo.o: /usr/include/sys/unistd.h ../graphics/Journal.h
-MapInterpClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-MapInterpClassInfo.o: ../graphics/Geom.h /usr/include/math.h
-MapInterpClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-MapInterpClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-MapInterpClassInfo.o: ../graphics/Compress.h ../graphics/ViewCallback.h
-MapInterpClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-MapInterpClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-MapInterpClassInfo.o: Bitmap.h TData.h RecOrder.h MapInterpClassInfo.h
-MapInterpClassInfo.o: ../graphics/Util.h /usr/include/string.h
+MapInterpClassInfo.o: /usr/include/stdio.h TDataMap.h ShapeID.h RecId.h
+MapInterpClassInfo.o: GDataRec.h ViewGraph.h ../graphics/View.h
+MapInterpClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+MapInterpClassInfo.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+MapInterpClassInfo.o: ../graphics/Journal.h ../graphics/ViewWin.h
+MapInterpClassInfo.o: ../graphics/WindowRep.h ../graphics/Geom.h
+MapInterpClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
+MapInterpClassInfo.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
+MapInterpClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapInterpClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MapInterpClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
+MapInterpClassInfo.o: ViewStats.h Action.h Bitmap.h TData.h RecOrder.h
+MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/Util.h
+MapInterpClassInfo.o: /usr/include/string.h
 MappingInterp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 MappingInterp.o: /s/tcl/include/tcl.h ../graphics/DeviseTypes.h Bitmap.h
 MappingInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
@@ -402,8 +402,8 @@ MappingInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MappingInterp.o: ../graphics/Transform.h ../graphics/VisualArg.h
 MappingInterp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MappingInterp.o: ../graphics/Temp.h ../graphics/Map3D.h MappingInterp.h
-MappingInterp.o: TDataMapDispatch.h TDataMap.h ShapeID.h GDataRec.h
-MappingInterp.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+MappingInterp.o: TDataMap.h ShapeID.h GDataRec.h ViewGraph.h
+MappingInterp.o: ../graphics/View.h ../graphics/Dispatcher.h
 MappingInterp.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 MappingInterp.o: ../graphics/Journal.h ../graphics/ViewWin.h
 MappingInterp.o: ../graphics/Control.h ../graphics/ClassDir.h
@@ -580,7 +580,7 @@ ServerAPI.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 ServerAPI.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ServerAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ServerAPI.o: ../graphics/Compress.h ../graphics/Cursor.h ../graphics/Util.h
-ServerAPI.o: /usr/include/ctype.h
+ServerAPI.o: /usr/include/ctype.h Version.h
 Snapshot.o: Snapshot.h ../graphics/DeviseTypes.h TDataMap.h
 Snapshot.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Snapshot.o: ../graphics/Exit.h ../graphics/DList.h ../graphics/Color.h
@@ -707,26 +707,6 @@ TDataMap.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 TDataMap.o: ../graphics/AttrList.h ../graphics/Cursor.h BasicStats.h
 TDataMap.o: ViewStats.h Action.h GData.h TData.h RecOrder.h GDataBin.h
 TDataMap.o: QueryProc.h
-TDataMapDispatch.o: TDataMapDispatch.h TDataMap.h /usr/include/stdio.h
-TDataMapDispatch.o: /usr/include/sys/feature_tests.h
-TDataMapDispatch.o: ../graphics/DeviseTypes.h ../graphics/Exit.h
-TDataMapDispatch.o: ../graphics/DList.h ../graphics/Color.h
-TDataMapDispatch.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
-TDataMapDispatch.o: RecId.h GDataRec.h ViewGraph.h ../graphics/View.h
-TDataMapDispatch.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-TDataMapDispatch.o: /usr/include/unistd.h /usr/include/sys/types.h
-TDataMapDispatch.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-TDataMapDispatch.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TDataMapDispatch.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
-TDataMapDispatch.o: ../graphics/Journal.h ../graphics/ViewWin.h
-TDataMapDispatch.o: ../graphics/WindowRep.h ../graphics/Geom.h
-TDataMapDispatch.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataMapDispatch.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
-TDataMapDispatch.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-TDataMapDispatch.o: ../graphics/Control.h ../graphics/ClassDir.h
-TDataMapDispatch.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-TDataMapDispatch.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-TDataMapDispatch.o: ViewStats.h Action.h TData.h RecOrder.h GData.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 TDataMmap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 TDataMmap.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -790,7 +770,7 @@ TkControl.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TkControl.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 TkControl.o: ../graphics/Compress.h ../graphics/Cursor.h ../graphics/Util.h
 TkControl.o: /usr/include/string.h /usr/include/ctype.h ../graphics/Init.h
-TkControl.o: ../graphics/BufPolicy.h
+TkControl.o: ../graphics/BufPolicy.h Version.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 UnixDiskFile.o: /usr/include/stdlib.h /usr/include/fcntl.h
 UnixDiskFile.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -813,6 +793,7 @@ UnixRecFile.o: /usr/include/sys/errno.h RecFile.h ../graphics/DeviseTypes.h
 UnixRecFile.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 UnixRecFile.o: /usr/include/math.h /usr/include/floatingpoint.h
 UnixRecFile.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
+Version.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h Version.h
 ViewClassInfo.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ViewClassInfo.o: /usr/include/sys/time.h /usr/include/sys/types.h
 ViewClassInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -1232,7 +1213,7 @@ ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h ../graphics/Util.h
 ParseAPI.o: /usr/include/string.h ParseCat.h TData.h RecOrder.h TDataMap.h
 ParseAPI.o: ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h
 ParseAPI.o: Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: VisualLink.h ../graphics/FilterQueue.h DataSeg.h
+ParseAPI.o: VisualLink.h ../graphics/FilterQueue.h DataSeg.h Version.h
 RecordLink.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 RecordLink.o: /usr/include/stdlib.h RecordLink.h RecId.h RecFile.h
 RecordLink.o: ../graphics/DeviseTypes.h VisualLink.h ViewGraph.h
