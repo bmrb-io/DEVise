@@ -1,0 +1,124 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile for the client-server library.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+include ../../Makefile.common
+
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
+        -I../../tape -I../../cslib -Wall -Wno-unused -O $(OPTFLAG) \
+        -DGRAPHICS -fexternal-templates -DLIBCS -DUNIX -DRAWMOUSEEVENTS
+
+TESTSRC = client.C server.C
+TESTOBJ = $(TESTSRC:.C=.o)
+
+LOCALSRC = ClientServer.C
+SRCc = $(filter %.c,$(LOCALSRC))
+SRCC = $(filter %.C,$(LOCALSRC))
+LOCALOBJ = $(SRCc:.c=.o)
+LOCALOBJ += $(SRCC:.C=.o)
+LOCALOBJ += \
+        ColorMgr.o \
+        Display.o \
+	Exit.o \
+        WindowRep.o \
+        XWindowRep.o \
+        XDisplay.o \
+        PSWindowRep.o \
+        PSDisplay.o
+
+LIBOBJ = \
+        ../graphics/DevisePixmap.o \
+        ../graphics/DList.o \
+        ../graphics/Geom.o \
+        ../graphics/XBitmap.o \
+	../graphics/xv24to8.o \
+        ../graphics/xvgifwr.o \
+        ../graphics/xvgrab.o \
+        ../graphics/Compress.o \
+        ../graphics.new/ClientAPI.o \
+        ../graphics.new/Version.o \
+	../graphics/xvgif.o \
+        ../graphics/DevError.o \
+        ../graphics/DevStatus.o \
+        ../graphics.new/MapIntToInt.o \
+        $(LOCALOBJ)
+
+LIB = libcs.a
+
+all: client server
+
+pure: client.pure server.pure
+
+COMPDATE = $(CC) -c $(CFLAGS) ../../generic/CompDate.c
+CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o CompDate.o -L. -lcs $(ARCH_SYSLIBS)
+SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o CompDate.o -L. -lcs $(ARCH_SYSLIBS)
+
+client: client.o $(LIB)
+	$(COMPDATE)
+	$(CLIENT) $(ARCH_LDPOST)
+
+client.pure: client.o $(LIB)
+	$(COMPDATE)
+	$(PURIFY) $(PURE_OPT) $(CLIENT) $(ARCH_LDPOST)
+
+server: server.o $(LIB)
+	$(COMPDATE)
+	$(SERVER) $(ARCH_LDPOST)
+
+server.pure: server.o $(LIB)
+	$(COMPDATE)
+	$(PURIFY) $(PURE_OPT) $(SERVER) $(ARCH_LDPOST)
+
+$(LIB): $(LIBOBJ)
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
+
+Exit.o: ../../graphics/Exit.c
+	$(CC) -c $(CFLAGS) ../../graphics/Exit.c
+
+ColorMgr.o: ../../graphics/ColorMgr.c
+	$(CC) -c $(CFLAGS) ../../graphics/ColorMgr.c
+
+Display.o: ../../graphics/Display.c
+	$(CC) -c $(CFLAGS) ../../graphics/Display.c
+
+WindowRep.o: ../../graphics/WindowRep.c
+	$(CC) -c $(CFLAGS) ../../graphics/WindowRep.c
+
+XDisplay.o: ../../graphics/XDisplay.c
+	$(CC) -c $(CFLAGS) ../../graphics/XDisplay.c
+
+XWindowRep.o: ../../graphics/XWindowRep.c
+	$(CC) -c $(CFLAGS) ../../graphics/XWindowRep.c
+
+PSDisplay.o: ../../graphics/PSDisplay.c
+	$(CC) -c $(CFLAGS) ../../graphics/PSDisplay.c
+
+PSWindowRep.o: ../../graphics/PSWindowRep.c
+	$(CC) -c $(CFLAGS) ../../graphics/PSWindowRep.c
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm -f client client.pure server server.pure
+
+mostlyclean:
+	-rm -f CompDate.o $(TESTOBJ) $(LOCALOBJ) $(LIB)

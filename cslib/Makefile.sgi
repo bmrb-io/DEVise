@@ -1,0 +1,5 @@
+depend:
+	makedepend -fMakefile.sgi -I../graphics -I../tape \
+		-I/usr/include/X11 -I/usr/local/include *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

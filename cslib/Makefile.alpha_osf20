@@ -1,0 +1,5 @@
+depend:
+	makedepend  -fMakefile.alpha_osf20  -I../graphics -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.c *.C
+
+# DO NOT DELETE

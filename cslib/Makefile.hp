@@ -1,0 +1,53 @@
+depend:
+	makedepend -fMakefile.hp -I../graphics -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ClientServer.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+ClientServer.o: /usr/include/stdlib.h /usr/include/string.h
+ClientServer.o: /usr/include/errno.h /usr/include/sys/errno.h
+ClientServer.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+ClientServer.o: /usr/include/sys/types.h /usr/include/sys/socket.h
+ClientServer.o: /usr/include/netinet/in.h /s/tcl/include/tcl.h
+ClientServer.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+ClientServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+ClientServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+ClientServer.o: ClientServer.h ../graphics/Display.h
+ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
+ClientServer.o: /usr/include/math.h ../graphics/Color.h
+ClientServer.o: ../graphics/Dispatcher.h ../graphics/DList.h
+ClientServer.o: ../graphics/Exit.h ../graphics/Journal.h
+ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ClientServer.o: ../graphics/Compress.h
+client.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+client.o: /usr/include/stdlib.h /usr/include/string.h ClientServer.h
+client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+client.o: /usr/include/sys/types.h /s/X11/include/X11/X.h
+client.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+client.o: /usr/include/stddef.h ../graphics/Display.h
+client.o: ../graphics/DeviseTypes.h /usr/include/values.h
+client.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
+client.o: ../graphics/Color.h ../graphics/Dispatcher.h /usr/include/unistd.h
+client.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
+client.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+client.o: ../graphics/Compress.h
+server.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+server.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/assert.h
+server.o: ClientServer.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+server.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+server.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+server.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
+server.o: /usr/include/math.h ../graphics/Color.h ../graphics/Dispatcher.h
+server.o: /usr/include/unistd.h /usr/include/sys/unistd.h ../graphics/DList.h
+server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+server.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
+server.o: ../graphics/WindowRep.h ../graphics/Transform.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
