@@ -118,6 +118,18 @@ SOURCE=..\..\DTE\StandAlone\Common.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\Core\CreateTableParse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\DataRead.dummy.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\DataRead.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\unidata\DateTime.C
 # End Source File
 # Begin Source File
@@ -158,6 +170,10 @@ SOURCE=..\..\DTE\Core\exception.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\Core\ExecExpr.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\DTE\Core\ExecExpr.h
 # End Source File
 # Begin Source File
@@ -175,6 +191,10 @@ SOURCE=..\..\DTE\ODBC\GetHandle.cpp
 # Begin Source File
 
 SOURCE=..\..\DTE\ODBC\GetHandle.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\GlobalConstructors.c
 # End Source File
 # Begin Source File
 
@@ -270,6 +290,14 @@ SOURCE=..\..\DTE\ODBC\ODBC.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\Core\ODBCInfo.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\ODBCInfo.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\DTE\ODBC\ODBCInterface.cpp
 # End Source File
 # Begin Source File
@@ -282,11 +310,31 @@ SOURCE=..\..\DTE\ODBC\ODBCIterator.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\ODBC\ODBCList.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\ODBCList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\ODBCParse.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\DTE\ODBC\ODBCSite.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\DTE\ODBC\ODBCSite.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\Optimizer.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\Optimizer.h
 # End Source File
 # Begin Source File
 
@@ -310,6 +358,22 @@ SOURCE=..\..\DTE\Core\queue.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\Core\RelationId.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\RelationId.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\RelationManager.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\RelationManager.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\DTE\Core\resolve.c
 # End Source File
 # Begin Source File
@@ -327,6 +391,18 @@ SOURCE=..\..\DTE\StandAlone\SBMInit.dummy.c
 # Begin Source File
 
 SOURCE=..\..\DTE\Core\SchemaParse.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\SeqSimVec.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\SeqSimVecAggregate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\SeqSimVecAggregate.h
 # End Source File
 # Begin Source File
 
@@ -371,6 +447,14 @@ SOURCE=..\..\DTE\Core\StringLess.h
 # Begin Source File
 
 SOURCE=..\..\unidata\sysdep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\TableUtils.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\Core\TableUtils.h
 # End Source File
 # Begin Source File
 
