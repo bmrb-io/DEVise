@@ -33,7 +33,8 @@
 #include "DataSource.h"
 #include "FileIndex.h"
 #include "AttrList.h"
-#include "TuplePtr.XPlex.h"
+// #include "TuplePtr.XPlex.h"
+#include "Engine.h"
 
 #ifdef TDATADQLNEW_DEBUG
         #define DBDQLNEW(a) {cout << __FILE__ << ':' << __LINE__ << ' ' << a << endl;}
@@ -181,6 +182,8 @@ private:
 	String* _attributeNames;
 	MarshalPtr* _marshalPtrs;
 	char* _tableName;
+	RecId _nextToFetch;
+	Engine engine;
 };
 
 #endif

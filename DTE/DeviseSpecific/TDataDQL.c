@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/07/03 01:51:44  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.16  1997/06/27 23:17:29  donjerko
   Changed date structure from time_t and tm to EncodedDTF
 
@@ -86,6 +89,9 @@ AttrType getDeviseType(String type){
 	else if(type == "date"){
 		return DateAttr;
 	}
+	else if(type == "time_t"){
+		return DateAttr;
+	}
 	else{
 		cout << "Don't know DEVise type for: " << type << endl;
 		assert(0);
@@ -120,12 +126,12 @@ TDataDQL::TDataDQL(
 void TDataDQL::runQuery(){
 
 #if defined(DEBUG) || 1
-	cout << "Running: " << _query << endl;
+//	cout << "Running: " << _query << endl;
+	cerr << ".";
 #endif
 
 	Timer::StopTimer();
-	Engine engine(_query);
-     TRY(engine.optimize(), );
+     TRY(engine.optimize(_query), );
      assert(_numFlds == engine.getNumFlds() / 2);
 	_types = new TypeID[_numFlds];
 	const TypeID* tmpTypes = engine.getTypeIDs();
@@ -142,14 +148,12 @@ void TDataDQL::runQuery(){
 		}
 	}
      Tuple* tup;
-	Tuple* highTup = new Tuple[_numFlds];
-	memset(highTup, 0, _numFlds * sizeof(Tuple));
-	Tuple* lowTup = new Tuple[_numFlds];
-	memset(lowTup, 0, _numFlds * sizeof(Tuple));
 
 	engine.initialize();
 	const Tuple* firstTup = engine.getNext();
-	assert(firstTup);
+	if(!firstTup){
+		cout << "Empty result set" << endl;
+	}
 
 	int offset = 0;
 	_sizes = new int[_numFlds]; 
@@ -178,11 +182,14 @@ void TDataDQL::runQuery(){
 
 			hasHighLow = false;
 		}
-		else {
+		else if(firstTup) {
 			assert((unsigned) _sizes[i] <= sizeof(AttrVal));
 			hasHighLow = true;
 			_marshalPtrs[i](firstTup[2 * i + 1], (char*) hiVal);
 			_marshalPtrs[i](firstTup[2 * i], (char*) loVal);
+		}
+		else {
+			hasHighLow = false;
 		}
 
 		_attrs.InsertAttr(i, strdup(_attributeNames[i].chars()), 
@@ -194,7 +201,12 @@ void TDataDQL::runQuery(){
 
 	_recSize = offset;
 
-	_totalRecs = ((int) firstTup[1]) + 1;	// max(recId)
+	if(firstTup){
+		_totalRecs = ((int) firstTup[1]) + 1;	// max(recId)
+	}
+	else{
+		_totalRecs = 0;
+	}
 
 //	DataSeg::Set(_tableName, _query, 0, 0);
 
@@ -286,6 +298,10 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
                                  char *AttrName = "recId")
 {
 	
+#if defined(DEBUG)
+  cerr << "TDataDQL::InitGetRecs(" << lowVal << ", " << highVal << ")\n";
+#endif
+
   if (!strcmp(AttrName,"recId")) { // recId stuff
 	//cout << "*********** double is functioning in TDataDQL. **********\n";
   RecId lowId = (RecId)lowVal;
@@ -302,10 +318,42 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
   req->relcb = callback;
   req->AttrName = "recId";
 
-#ifdef DEBUG
-  cout << "TDataDQL::InitGetRecs(" << lowId << ", " << highId << ")\n";
+  _nextToFetch = lowId;
+//  Issue a query to the engine;
+  String SQLquery;
+  SQLquery="select ";
+  SQLquery+="* ";
+  SQLquery+="from ";
+  SQLquery+=_tableName;
+  SQLquery+=" as t where ";
+  char whereClause[29+sizeof(unsigned long)*2];
+  sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", lowId, highId);
+  SQLquery+=whereClause;
+  String query(SQLquery);
+
+#if defined(DEBUG) || 1
+//	cout << "Running: " << query << endl;
+	static int entryCount;
+	static double cumRecs;
+	if(entryCount++ % 100 == 0){
+		int percent = int(cumRecs / _totalRecs * 100);
+		cerr << cumRecs << " records retreived (" << percent << "%) ";
+		cerr << "dte called " << entryCount << " times" << endl;
+	}
+	cumRecs += highVal - lowVal + 1;
 #endif
 
+  engine.optimize(query);
+CATCH(
+     cout << "DTE error coused by query: \n";
+     cout << "   " << query << endl;
+     currExcept->display();
+     currExcept = NULL;
+     cout << endl;
+     exit(0);
+)
+
+  engine.initialize();
   return req;
   } // end of recId stuff
   
@@ -333,6 +381,8 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   if (num < numRecs)
     numRecs = num;
   
+  assert(_nextToFetch == (RecId)(req->nextVal));
+
   ReadRec((RecId)(req->nextVal), numRecs, buf);
   
   startVal = req->nextVal;
@@ -340,6 +390,13 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   req->nextVal += numRecs;
   
   _bytesFetched += dataSize;
+
+#if defined(DEBUG) || 1
+	static int entryCount;
+	if(entryCount++ % 1000 == 0){
+		cerr << " get recs called " << entryCount << "times\n";
+	}
+#endif
 
 #ifdef DEBUG
   printf("TDataDQL::GetRecs buf = ");
@@ -433,50 +490,26 @@ TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
 	
 	char *ptr = (char *)buf;
 
-//  Issue a query to the engine;
-  String SQLquery;
-  SQLquery="select ";
-  SQLquery+="* ";
-  SQLquery+="from ";
-  SQLquery+=_tableName;
-  SQLquery+=" as t where ";
-  char whereClause[29+sizeof(unsigned long)*2];
-  sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", 
-		id, (unsigned long)(id + numRecs - 1));
-  SQLquery+=whereClause;
-  String query(SQLquery);
-
-#if defined(DEBUG) || 1
-	cout << "Running: " << query << endl;
-#endif
-
-  Engine engine(query);
-  engine.optimize();
-CATCH(
-     cout << "DTE error coused by query: \n";
-     cout << "   " << query << endl;
-     currExcept->display();
-     currExcept = NULL;
-     cout << endl;
-     exit(0);
-)
-
-  engine.initialize();
   int counter=0; // how many tuples have been written to buf;
 
   const Tuple* tuple;
 
-  while((tuple = engine.getNext())){
+  while(counter < numRecs){
 
-		counter++;
-		assert(counter <= numRecs);
+		tuple = engine.getNext();
+		assert(tuple);
 		for(int j = 0; j < _numFlds; j++){
+			#if 0 
+				WritePtr* writePtrs = newWritePtrs(_types, _numFlds);
+				writePtrs[j](cerr, tuple[j]);
+				delete [] writePtrs;
+			#endif 
 			_marshalPtrs[j](tuple[j], (char*) ptr);
 			ptr += _sizes[j];
 		}
+		_nextToFetch++;
+		counter++;
 	}
-
-	assert(counter == numRecs);
 
     return TD_OK;
 }
