@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/01/23 20:50:17  jussi
+  Added support for binary data files specified in the schema.
+
   Revision 1.13  1996/01/10 21:00:41  jussi
   Disabled debugging output.
 
@@ -1184,6 +1187,8 @@ char *ParseCatLogical(char *catFile, char *sname)
       newgrp->insert_item(iInfo->name);
     }
   }
+
+  fclose(file);
 
   return sname;
 
