@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/11/11 14:31:01  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.18  1998/07/30 15:31:22  wenger
   Fixed bug 381 (problem with setting master and slave of a link to the same
   view); generally cleaned up some of the master-slave link related code.
@@ -250,6 +256,9 @@ void RecordLink::Initialize()
   _num = 0;
   _lastRec = 0;
 
+#if 0 // I don't think that this is really necessary, because the slave
+      // views will get refreshed again when the master view *finishes*,
+      // and refreshing them now may just cause extra work.  RKW 1999-02-16.
   // refresh slave views so that their data display is cleared
 
   int index = InitIterator();
@@ -258,9 +267,10 @@ void RecordLink::Initialize()
 #ifdef DEBUG
     printf("Refreshing slave view %s\n", view->GetName());
 #endif
-    view->Refresh();
+    view->Refresh(false);
   }
   DoneIterator(index);
+#endif
 }
 
 void RecordLink::InsertRecs(RecId recid, int num)

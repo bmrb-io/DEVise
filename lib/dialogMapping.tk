@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1997
+#  (c) Copyright 1992-1999
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,12 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.43  1998/12/22 19:39:43  wenger
+#       User can now change date format for axis labels; fixed bug 041 (axis
+#       type not being changed between float and date when attribute is changed);
+#       got dates to work semi-decently as Y axis labels; view highlight is now
+#       always drawn by outlining the view; fixed some bugs in drawing the highight.
+#
 #       Revision 1.42  1998/10/20 19:46:33  wenger
 #       Mapping dialog now displays the view's TData name; "Next in Pile" button
 #       in mapping dialog allows user to edit the mappings of all views in a pile
@@ -222,7 +228,7 @@ proc BringUpMappingDialog { w curview } {
 			-command { FlipStackedView }
     
     button $w.message2.next -text "Next in Pile" -state disabled \
-	-command { NextInPile }
+	-command { MappingNextInPile }
 
     frame $w.mapping
     frame $w.mapping.label
@@ -378,7 +384,18 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	if { $curView == "" } {
 		ClearMappingDialog $w
 		return
-	} 	 
+	} else {
+		set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
+				"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4"
+#			"ShapePosition"
+    	]
+
+		foreach item $mappings  {
+			global mappingValue$item
+			set mappingValue$item ""
+			$w.mapping.value.p$item configure -state normal
+		}
+	}
  
 	if {[DEVise getViewPileMode $curView]} {
 		# Note: because of the way the C++ code handles piles, when
@@ -809,7 +826,7 @@ proc DoShapeHelp {} {
 # Edit the mapping of the next view in a pile (or stack) *without actually
 # flipping* the pile or stack.
 
-proc NextInPile {} {
+proc MappingNextInPile {} {
 	global curView
 	global curMappingView
 

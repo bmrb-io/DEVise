@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.155  1999/02/11 19:54:37  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.154  1999/02/02 17:14:40  wenger
   Fixed bug 422 (setting cursor dest w/o source causes crash).
 
@@ -1080,7 +1085,7 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
       int flushed = _filterQueue->Enqueue(filter);
       ReportFilterChanged(filter, flushed);
       
-      Scheduler::Current()->RequestCallback(_dispatcherID);
+	  Refresh();
     }
   }
 }
@@ -1928,7 +1933,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
         printf("View %s refreshes view %s\n", GetName(), view->GetName());
 #endif
         view->_pileViewHold = false;
-        view->Refresh();
+        view->Refresh(false);
       }
 
       parent->DoneIterator(index);
@@ -2210,14 +2215,18 @@ void View::AbortQuery()
   }
 }
 
-void View::Refresh()
+void View::Refresh(Boolean refreshPile)
 {
 #if defined(DEBUG)
-  printf("View(%s)::Refresh()\n", GetName());
+  printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
 #endif
-  _doneRefresh = false;
-  _refresh = true;
-  Scheduler::Current()->RequestCallback(_dispatcherID);
+  if (refreshPile && _pileMode && !_isHighlight) {
+    ((View *)GetFirstSibling())->Refresh(false);
+  } else {
+    _doneRefresh = false;
+    _refresh = true;
+    Scheduler::Current()->RequestCallback(_dispatcherID);
+  }
 }
 
 void View::ReportViewCreated()
@@ -2700,7 +2709,7 @@ void	View::RefreshAll(void)
 	{
 		View*	view = View::NextView(index);
 
-		view->Refresh();
+		view->Refresh(false);
 	}
 
 	View::DoneViewIterator(index);
@@ -3223,7 +3232,7 @@ View::PrintPS()
   FILE *printFile = psDispP->GetPrintFile();
   DOASSERT(printFile != NULL, "No PostScript file open");
   fprintf(printFile, "\n%% Start of view '%s'\n", _name);
-  Refresh();
+  Refresh(false);
 
   return result;
 }

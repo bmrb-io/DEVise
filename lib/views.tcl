@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.55  1998/11/17 14:48:10  wenger
+#  Changed master/slave to leader/follower and fixed a few problems in GUI,
+#  session description, etc.
+#
 #  Revision 1.54  1998/10/20 19:46:35  wenger
 #  Mapping dialog now displays the view's TData name; "Next in Pile" button
 #  in mapping dialog allows user to edit the mappings of all views in a pile
@@ -307,6 +311,7 @@ proc ProcessViewSelected { view } {
  
     set curView $view
 
+    Query_ViewSelected
     Update3DLocation
     Update2DQueryWindow
     Update2DBasicStatWindow

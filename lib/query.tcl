@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-1999
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1998/10/21 17:17:02  wenger
+#  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+#  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+#  closing set link sessions); fixed bug 423 (saving session file over
+#  directory).
+#
 #  Revision 1.13  1997/11/24 23:15:44  weaver
 #  Changes for the new ColorManager.
 #
@@ -66,8 +72,11 @@
 
 ############################################################
 
+# Global holding name of view currently being edited.
+set curQueryView ""
+
 proc SetQuery {} { 
-    global curView
+    global curQueryView
 
     if {[WindowVisible .query]} {
 	return
@@ -84,6 +93,14 @@ proc SetQuery {} {
 
     frame .query.title
     pack .query.title -side top -pady 1m -expand $expand -fill $fill
+
+    # this is used just to (roughly) center the title
+    frame .query.title.spacer -width 26m -height 5m
+    pack .query.title.spacer -side left
+
+    button .query.next -text "Next in Pile" -state disabled \
+        -command { QueryNextInPile }
+    pack .query.next -in .query.title -side right
 
     label .query.title.text -text "No View Selected"
     pack .query.title.text -side top -pady 1m
@@ -217,7 +234,7 @@ proc SetQuery {} {
 	    -side bottom -expand $expand -fill $fill
 
     button .query.goHome -text "Set X, Y to Show All" -command {
-      global curView; DEVise viewGoHome $curView }
+      global curQueryView; DEVise viewGoHome $curQueryView }
     pack .query.goHome -in .query.sel -side bottom -padx 12m
 
 #    button .query.sel.attr -text "Attributes..." \
@@ -259,8 +276,10 @@ proc SetQuery {} {
     pack .query.bot.but -side top
     pack .query.bot -side top -pady 5m
 
-    if {$curView != ""} {
-	.query.title.text configure -text "View: $curView"
+    Query_ViewSelected
+
+    if {$curQueryView != ""} {
+	.query.title.text configure -text "View: $curQueryView"
 	DoUndoEdit
     }
 }
@@ -268,7 +287,7 @@ proc SetQuery {} {
 ############################################################
 
 proc Update2DQueryWindow {} {
-    global curView
+    global curQueryView
 
     if {![WindowExists .query]} {
 	return
@@ -276,12 +295,12 @@ proc Update2DQueryWindow {} {
     foreach i {xlow ylow xhigh yhigh max mean min count} {
         .query.$i delete 0 end
     }
-    if {$curView == ""} {
+    if {$curQueryView == ""} {
         .query.title.text configure -text "No View Selected"
         return
     }
 
-    .query.title.text configure -text "View: $curView"
+    .query.title.text configure -text "View: $curQueryView"
 
     DoUndoEdit
 }
@@ -289,9 +308,9 @@ proc Update2DQueryWindow {} {
 ############################################################
 
 proc ExecuteQuery {} {
-    global curView
+    global curQueryView
 
-    if {$curView == ""} {
+    if {$curQueryView == ""} {
 	return
     }
 
@@ -314,19 +333,19 @@ proc ExecuteQuery {} {
 	return
     }
 
-    DEVise setFilter $curView $xlow $ylow $xhigh $yhigh
+    DEVise setFilter $curQueryView $xlow $ylow $xhigh $yhigh
 }
 
 ############################################################
 
 proc DoUndoEdit {} {
-    global curView
+    global curQueryView
     
-    if { $curView == "" } {
+    if { $curQueryView == "" } {
 	return
     }
     
-    set filters [DEVise getVisualFilters $curView] 
+    set filters [DEVise getVisualFilters $curQueryView] 
     set filter [lindex $filters [expr [llength $filters]-1]]
     
     foreach i { xlow ylow xhigh yhigh} {
@@ -337,7 +356,7 @@ proc DoUndoEdit {} {
     .query.xhigh insert 0 [lindex $filter 2]
     .query.yhigh insert 0 [lindex $filter 3]
 
-    set stat [DEVise getAllStats $curView]
+    set stat [DEVise getAllStats $curQueryView]
     
     foreach i { max mean min count} {
          .query.$i delete 0 end
@@ -351,13 +370,13 @@ proc DoUndoEdit {} {
 ############################################################
 
 proc DoGoBackOne {} {
-    global curView
+    global curQueryView
     
-    if { $curView == "" } {
+    if { $curQueryView == "" } {
 	return
     }
     
-    set filters [DEVise getVisualFilters $curView] 
+    set filters [DEVise getVisualFilters $curQueryView] 
     set len [llength $filters]
     if { $len <= 1 } {
 	return
@@ -582,4 +601,41 @@ proc Update3DLocation {} {
         set persp ""
     }
     .query3d.title.sub configure -text "$coordsys $fixfocus $persp"
+}
+
+proc Query_ViewSelected {} {
+    global curView
+    global curQueryView
+
+    if {![WindowExists .query]} {
+    	return
+    }
+
+    if {$curView != "" && [DEVise getViewPileMode $curView]} {
+        .query.next configure -state normal
+    } else {
+        .query.next configure -state disabled
+    }
+    
+    set curQueryView $curView
+}
+
+proc QueryNextInPile {} {
+    global curQueryView
+
+    # Find the view we're currently editing in the view list; then
+    # edit the *previous* view (work our way down thru the pile).
+    # When we get to the "bottom" (drawn first) view (first on the
+    # list), go back to the end.
+    set win [DEVise getViewWin $curQueryView]
+    set views [DEVise getWinViews $win]
+    set index [lsearch -exact $views $curQueryView]
+    if {$index == 0} {
+        set view [lindex $views end]
+    } else {
+        set view [lindex $views [expr $index - 1]]
+    }
+    set curQueryView $view
+    Update2DQueryWindow
+    Update3DLocation
 }

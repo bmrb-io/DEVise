@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.73  1999/02/11 19:54:38  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.72  1999/02/01 23:13:35  wenger
   Backspace key in a view goes back one in the visual filter history.
 
@@ -521,7 +526,7 @@ class View : public ViewWin
         void AbortQuery();
 
         /* refresh view (re-execute query) */
-	void Refresh();
+	void Refresh(Boolean refreshPile = true);
 
 	/* Insert callback */
 	static void InsertViewCallback(ViewCallback *callBack);

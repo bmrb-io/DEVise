@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/11/11 14:31:00  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.4  1998/10/20 19:46:17  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -225,7 +231,7 @@ MasterSlaveLink::ClearHighlightViews()
       // Change the mapping and re-draw this view.
       //
       map->ChangeCmd(&tmpCmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
-      view->Refresh();
+      view->Refresh(false);
       // WaitForQueries here seems a little dangerous, but doing something
       // else would *really* get complicated. RKW 1998-11-10.
       Dispatcher::Current()->WaitForQueries();
@@ -236,9 +242,7 @@ MasterSlaveLink::ClearHighlightViews()
       map->ChangeCmd(cmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
     }
   }
-    DoneIterator(index);
-
-
+  DoneIterator(index);
 }
 
 /*------------------------------------------------------------------------------
@@ -256,28 +260,10 @@ MasterSlaveLink::Done()
   int index = InitIterator();
   while(More(index)) {
     ViewGraph *view = Next(index);
-
-    if (view->IsInPileMode() && !view->IsHighlight()) {
-      /* Refresh the whole pile of a piled view. */
-
-      /* This code sometimes causes "unnecessary" redraws of a view if a view
-       * below it in a pile has its record link updated (for example, if no
-       * symbols were actually drawn in the lower view, we don't really have
-       * to redraw the upper view).  However, it seems like an awful lot of
-       * work to keep track of whether we really have to redraw the upper
-       * view(s), so for now we refresh the bottom view in the pile, which
-       * refreshes the whole pile. RKW 1/9/97. */
-      View *slave = View::FindViewByName(view->GetFirstSibling()->GetName());
 #ifdef DEBUG
-      printf("Refreshing piled view %s\n", slave->GetName());
+    printf("Refreshing slave view %s\n", view->GetName());
 #endif
-      slave->Refresh();
-    } else {
-#ifdef DEBUG
-      printf("Refreshing slave view %s\n", view->GetName());
-#endif
-      view->Refresh();
-    }
+    view->Refresh();
   }
   DoneIterator(index);
 }
