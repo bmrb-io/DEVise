@@ -6,4 +6,8 @@
 
 ############################################################
 
-java jspop $*
+nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x24 &
+setenv DISPLAY biron.cs.wisc.edu:1.0
+nohup java jspop $*
+setenv DISPLAY biron.cs.wisc.edu:0.0
+

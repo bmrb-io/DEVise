@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.6  1998/08/14 17:48:05  hongyu
+// *** empty log message ***
+//
 // Revision 1.2  1998/06/11 15:07:45  wenger
 // Added standard header to Java files.
 //
@@ -32,330 +35,689 @@ import java.net.*;
 
 public class DEViseCmdDispatcher implements Runnable
 {
-    public jsdevisec jsc = null;
-    DEViseScreen jscreen = null;
-    //DEViseImgSocket imgSocket = null;
-    //DEViseCmdSocket cmdSocket = null;
+    private jsdevisec jsc = null;
+    private DEViseScreen jscreen = null;
+    public String username = DEViseGlobals.DEFAULTUSER;
+    public String password = DEViseGlobals.DEFAULTPASS;
+    public String hostname = DEViseGlobals.DEFAULTHOST;
+    public int cmdPort = DEViseGlobals.DEFAULTCMDPORT;
+    public int imgPort = DEViseGlobals.DEFAULTIMGPORT;
+    public int imgSocketTimeout = 2000;
+    public int cmdSocketTimeout = 1000;
 
-    // status = 0, dispatcher running    
-    // status = 1, dispatcher wait for command
-    // status = 2, dispatcher process command
-    // status = 3, dispatcher quit 
-    // status = 4, dispatcher quit because of unrecoverable error    
-    private int status;
-    private Vector jscommands = new Vector();
-    public Counter counter = null;
-    private Thread counterThread = null;
-        
-    public DEViseCmdDispatcher(jsdevisec what)    
-    {        
+    private Thread dispatcherThread = null;
+    // status = 0, dispatcher running, mostly processing command
+    // status = 1, dispatcher suspend, wait for command
+    // status = -1, dispatcher stop
+    private int status = -1;
+    private boolean abort;
+    private boolean isRead = false;
+    // The api commands buffer
+    private Vector cmdBuffer = new Vector();
+    public DEViseCmdSocket cmdSocket = null;
+    public DEViseImgSocket imgSocket = null;
+    public int connectID = DEViseGlobals.DEFAULTID;
+
+    public DEViseCmdDispatcher(jsdevisec what, String host, String user, String pass, int port)
+    {
         jsc = what;
         jscreen = jsc.jscreen;
-        //imgSocket = jsc.jscomm.imgSocket;
-        //cmdSocket = jsc.jscomm.cmdSocket;
-        counter = new Counter(this, jsc.jscomm.timeout);
-        counterThread = new Thread(counter);
-        counterThread.start();
+
+        if (host != null)
+            hostname = host;
+
+        if (user != null)
+            username = user;
+
+        if (pass != null)
+            password = pass;
+
+        if (port > 1023 && port < 65535)
+            cmdPort = port;
     }
-    
-    public synchronized void startTimer()
-    {
-        if (!counterThread.isAlive()) {
-            counterThread = new Thread(counter);
-            counterThread.start();
-        }
-    }  
-    
-    public synchronized void addCmd(String rsp)
-    {   
-        if (status < 3) {
-            jscommands.insertElementAt(rsp, jscommands.size());
-            notifyAll();
-        } else {
-            YDebug.println("Warning: Can not insert command into pool because dispatcher is already quit!");
-        }
-    }
-    
-    public synchronized String getCmd()
-    {
-        while (jscommands.size() == 0) {
-            status = 1; 
-            try { 
-                wait();
-            } catch (InterruptedException e) {
-            }
-        }
-        
-        status = 0;
-        counter.reset();
-        String cmd = (String)jscommands.elementAt(0);
-        jscommands.removeElementAt(0);
-        return cmd;
-    }
-    
-    public synchronized void clearCmd()
-    {
-        jscommands.removeAllElements();
-    }
-    
+
     public synchronized int getStatus()
     {
         return status;
     }
-    
-    public synchronized void setStatus(int arg)
+
+    private synchronized void setStatus(int arg)
     {
         status = arg;
     }
-    
-    public void run()
+
+    public synchronized boolean isAbort()
     {
-        String cmd = null;
-        String [] commands = null;    
-        String command = null;
-        String[] response = null;
-        
-        setStatus(0);
-        startTimer();
-        
-        while (getStatus() == 0) {
-            cmd = getCmd();
-            
-            if (cmd == null) {
-                YDebug.println("Null command received from command pool!");            
-            } else if (cmd.equals("ExitDispatcher")) {
-                setStatus(3);
-                YDebug.println("Receive command dispatcher quit signal...");
-            } else if (cmd.equals("Timeout")) {
-                setStatus(2);
-                
-                jsc.suspend(true);
-                
-                setStatus(0);
-            } else {
-                commands = DEViseGlobals.parseStr(cmd);
-                
-                if (commands == null) {
-                    YDebug.println("Invalid command received from command pool: " + cmd);
-                } else if (commands.length == 0) {
-                    YDebug.println("Zero length command received from command pool: " + cmd);
-                } else {                    
-                    try {
-                        setStatus(2);
-                        jsc.animPanel.start();
-                        
-                        for (int i = 0; i < commands.length; i++) {
-                            command = commands[i];
-                                                
-                            YDebug.println("Command Dispatcher is processing command: " + command);
-                            
-                            response = jsc.jscomm.cmdSocket.sendCommand(command);
-                            parseRsp(command, response);
-                        
-                            YDebug.println("Command Dispatcher finish processing command: " + command);
-                        }
-                        
-                        jsc.animPanel.stop();
-                        setStatus(0);
-                    } catch (YException e) {                            
-                        setStatus(4);
-                        jsc.animPanel.stop();
-                        String result = YGlobals.showMsg(jsc, "Program encounter unrecoverable error\n" + e.getMessage() 
-                                            + "\nDo you wish to continue(Y) or restart(N)?", "Confirm", YGlobals.MBXYESNO);                                                
-                        if (result.equals(YGlobals.IDYES)) {
-                            clearCmd();
-                            setStatus(0);
-                        } else {
-                            jsc.suspend(false);
-                        }
-                    } catch (InterruptedIOException e) {
-                        jsc.animPanel.stop();
-                        
-                        String result = YGlobals.showMsg(jsc, "Network timeout is reached while sending command: " + command
-                                        + "\nDo you wish to continue next command(Y) or restart(N)?", "Confirm", YGlobals.MBXYESNO);                          
-                        if (result.equals(YGlobals.IDYES)) {
-                            setStatus(0);
-                        } else {
-                            setStatus(4);
-                            jsc.suspend(false);                        
-                        }                            
-                    }
-                }
-            }
+        return abort;
+    }
+
+    private synchronized void setAbort(boolean flag)
+    {
+        abort = flag;
+    }
+
+    public synchronized void stopDispatcher()
+    {
+        if (status < 0) {
+            YGlobals.Ydebugpn("Dispatcher is already stopped at Dispatcher:stopDispatcher!");
+            return;
+        } else {
+            abort = true;
+            notifyAll();
         }
-        
-        clearCmd();
-        
-        if (getStatus() == 3) {
-            YDebug.println("Command dispatcher is quitted!");
-        } else if (getStatus() == 4) {
-            YDebug.println("Command dispatcher is quitted because of unrecoverable error!");
+    }
+
+    public synchronized void startDispatcher()
+    {
+        if (status < 0) {
+            clearCmdBuffer();
+            status = 0;
+            abort = false;
+
+            insertCmd("JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}");
+            dispatcherThread = new Thread(this);
+            dispatcherThread.start();
+        } else {           
+            YGlobals.Ydebugpn("Dispatcher is still active at Dispatcher:startDispatcher!");
+            return;
         }
     }
     
-    private void parseRsp(String command, String[] response) throws YException, InterruptedIOException
-    {   
-        String[] rsp = null;
-        
-        for (int i = 0; i < response.length; i++) {
-            rsp = DEViseGlobals.parseString(response[i]);
-            if (rsp == null)
-                throw new YException("Incorrectly formatted command received from server: " + response[i]);
-            
-            try {    
-                if (rsp[0].equals("JAVAC_CreateWindow")) {
-                    if (rsp.length < 8)
-                        throw new YException("Incorrectly formatted command received from server: " + response[i]);
-                        
-                    YDebug.println("Retrieving image data for window " + rsp[1] + " ... ");
-                    byte[] imageData = jsc.jscomm.imgSocket.receiveImg((Integer.valueOf(rsp[6])).intValue());
-                    YDebug.println("Successfully retrieve image data");
-                    MediaTracker tracker = new MediaTracker(jsc);
-                    Toolkit kit = jsc.getToolkit();
-                    Image image = kit.createImage(imageData);
-                    tracker.addImage(image, 0);            
-                    try  {
-                        tracker.waitForID(0);
-                    }  catch (InterruptedException e)  {
-                    }            
-                    
-                    if (tracker.isErrorID(0))  
-                        throw new YException("Can not create image from the data received from server!");
-                    
-                    String winname = rsp[1];
-                    int x = (Integer.valueOf(rsp[2])).intValue();
-                    int y = (Integer.valueOf(rsp[3])).intValue();
-                    int w = (Integer.valueOf(rsp[4])).intValue();
-                    int h = (Integer.valueOf(rsp[5])).intValue(); 
+    public synchronized void insertCmd(String cmd, int pos)
+    {
+        if (status < 0) {
+            YGlobals.Ydebugpn("Dispatcher is already stopped at DEViseCmdDispatcher:insertCmd!");
+            return;
+        }
+
+        if (abort) // Can not insert command while in the process of abortion of previous command
+            return;
+
+        if (pos < 0 || pos > cmdBuffer.size())
+            pos = cmdBuffer.size();
+
+        String[] cmds = DEViseGlobals.parseStr(cmd); // in case of multiple commands
+        if (cmds == null || cmds.length == 0)
+            return;
+
+        for (int i = 0; i < cmds.length; i++) {
+            if (cmds[i] != null && cmds[i].length() != 0) {
+                // we have to ensure that this command is not a NULL to make getCmd mechanism working
+                cmdBuffer.insertElementAt(cmds[i], pos);
+                pos++;
+            }
+        }
+
+        notifyAll();
+    }
+
+    public void insertCmd(String cmd)
+    {
+        insertCmd(cmd, -1);
+    }
+
+    public synchronized String getCmd()
+    {
+        if (abort)
+            return null;
+
+        int old = status;
+        while (cmdBuffer.size() == 0) {
+            status = 1;
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+
+            if (abort)
+                break;
+        }
+        status = old;
+
+        if (!abort) {
+            String cmd = (String)cmdBuffer.elementAt(0);
+            cmdBuffer.removeElementAt(0);
+            return cmd;
+        } else {
+            return null;
+        }
+    }
+
+    public synchronized void clearCmdBuffer()
+    {
+        cmdBuffer.removeAllElements();
+    }
+    
+    public synchronized boolean connect()
+    {
+        boolean isEnd = false;
+
+        while (!isEnd) {
+            try {
+                YGlobals.Ydebugpn("Try to connect to " + hostname + " at ports " + cmdPort + " and " + imgPort + " ...");
+                cmdSocket = new DEViseCmdSocket(hostname, cmdPort, cmdSocketTimeout);
+                imgSocket = new DEViseImgSocket(hostname, imgPort, imgSocketTimeout);
+                isEnd = true;
+                YGlobals.Ydebugpn("Successfully connect to " + hostname + "!");
+            } catch (YException e) {
+                YGlobals.Ydebugpn(e.getMessage());
+                disconnect();
+
+                String msg = null;
+                int id = e.getID();
+                if (id == 1 || id == 2) {
+                    msg = new String("Can not connect CMD channel to " + hostname + " at port " + cmdPort + "!\n");
+                } else {
+                    msg = new String("Can not connect IMG channel to " + hostname + " at port " + imgPort + "!\n");
+                }
+                
+                String result = YGlobals.Yshowmsg(jsc, msg + "Do you wish to retry now?", 0);
+                if (!result.equals(YGlobals.YIDYES)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public synchronized void disconnect()
+    {
+        if (cmdSocket != null) {
+            cmdSocket.closeSocket();
+            cmdSocket = null;
+        }
+
+        if (imgSocket != null) {
+            imgSocket.closeSocket();
+            imgSocket = null;
+        }
+    }
+    
+    public synchronized void goOnline()
+    {
+        insertCmd("JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}");
+    }    
+    
+    public synchronized boolean isOnline()
+    {
+        if (cmdSocket != null && imgSocket != null)
+            return true;
+        else
+            return false;
+    }
+
+    public void run()
+    {
+        String command = null;
+
+        YGlobals.Ydebugpn("Command Dispatcher is started...");
+
+        while (getStatus() >= 0) {
+            command = getCmd(); // it is ensured command will always be a single command
+
+            if (command == null) { // only when abort event happened will command be NULL
+                clearCmdBuffer();
+            } else {
+                jsc.animPanel.start();
+
+                if (command.equals("ExitDispatcher")) {
+                    if (cmdSocket != null) { // normal exit
+                        try {
+                            cmdSocket.sendCmd("JAVAC_Exit");
+                        } catch (YException e) {
+                            YGlobals.Ydebugpn(e.getMessage());
+                        }
+                    }
+
+                    disconnect();
+
+                    // only in this situation should we change connection id back to default
+                    connectID = DEViseGlobals.DEFAULTID;
+                    clearCmdBuffer();
+                    setStatus(-1);
+                } else {
+                    if (!isOnline()) {
+                        if (!connect()) {
+                            jsc.animPanel.stop();
+                            // insertCmd(command, 0); // no, this command is lost if user refuse to reconnect
+                            continue;
+                        } else {
+                            if (!command.startsWith("JAVAC_Connect")) { // need to reconnect
+                                insertCmd("JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}"
+                                          + "\n" + command, 0);
+                                jsc.animPanel.stop();
+                                continue;
+                            }
+                        }
+                    }
+
+                    try {
+                        YGlobals.Ydebugpn("Dispatcher is processing command: " + command + " ...");
+                        isRead = false;
+                        processCmd(command);
+                        YGlobals.Ydebugpn("Dispatcher finished processing command: " + command + "!");
+                    } catch (YException e) {
+                        int id = e.getID();
+                        YGlobals.Ydebugpn(e.getMessage());
+
+                        if (id == 0) { // connection request is rejected somehow
+                            YGlobals.Yshowmsg(jsc, e.getMessage());
+
+                            disconnect();
+                            connectID = DEViseGlobals.DEFAULTID;
+                            clearCmdBuffer();
+                            setStatus(-1);
+                        } else if (id == 1) { // cmdSocket.sendCmd invalid arguments, just go on to next command
+                        } else if (id == 2 || id == 4) { // cmdSocket or imgSocket communication error
+                                                         // both sockets need to be closed
+                            disconnect();
+
+                            // we need to do something special for this command because there is a open
+                            // dialog hanging out there
+                            if (command.startsWith("JAVAC_GetSessionList")) {
+                                jsc.updateSessionList(null, e.getMessage());
+                            }
+                        } else if (id == 3) { // imgSocket.sendImg invalid argument, will not happen
+                        } else if (id == 5) { // cmdSocket invalid response received
+                            try {
+                                // we need to do something special for this command because there is a open
+                                // dialog hanging out there
+                                if (command.startsWith("JAVAC_GetSessionList")) {
+                                    jsc.updateSessionList(null, e.getMessage());
+                                }
+
+                                // we need to clear both CMD and IMG sockets
+                                if (!cmdSocket.isEmpty() || isRead)
+                                    cmdSocket.clearSocket();
+                                if (!imgSocket.isEmpty() || isRead)
+                                    imgSocket.clearSocket();
+                            } catch (YException e1) {
+                                YGlobals.Ydebugpn(e1.getMessage());
+
+                                // communication error on the sockets, must close them
+                                disconnect();
+                            }
+                        } else if (id == 6) { // imgSocket invalid response received
+                            try {
+                                if (!imgSocket.isEmpty())
+                                    imgSocket.clearSocket();
+                            } catch (YException e1) {
+                                YGlobals.Ydebugpn(e1.getMessage());
+
+                                // communication error on imgSocket, but we need to close both sockets
+                                disconnect();
+                            }
+                        } else if (id == 7) { // abort on receiving response from cmdSocket
+                            try {
+                                // we need to do something special for this command because there is a open
+                                // dialog hanging out there
+                                if (command.startsWith("JAVAC_GetSessionList")) {
+                                    jsc.updateSessionList(null, "Error");
+                                }
+
+                                // we need to clear both CMD and IMG sockets
+                                if (!cmdSocket.isEmpty() || isRead) {
+                                    cmdSocket.clearSocket();
+                                } else {
+                                    // while IMG and CMD sockets both empty, which means server has not yet send
+                                    // anything over, so we need to tell the server that do not send the results
+                                    if (imgSocket.isEmpty())
+                                        cmdSocket.sendCmd("JAVAC_Abort");
+                                }
+
+                                if (!imgSocket.isEmpty() || isRead)
+                                    imgSocket.clearSocket();
+                            } catch (YException e1) {
+                                YGlobals.Ydebugpn(e1.getMessage());
+
+                                // communication error on the sockets, must close them
+                                disconnect();
+                            }
+                        } else if (id == 8) { // abort on receiving response from imgSocket
+                            try {
+                                if (!imgSocket.isEmpty())
+                                    imgSocket.clearSocket();
+                            } catch (YException e1) {
+                                YGlobals.Ydebugpn(e1.getMessage());
+
+                                // communication error on imgSocket, but we need to close both sockets
+                                disconnect();
+                            }
+                        } else { // this should not happening
+                        }
+                    }
+
+                }
+
+                jsc.animPanel.stop();
+
+                // Except for the abort events that actually been catched, some of them
+                // might not been catched, so we need to reset abort on every run
+                setAbort(false);
+            }
+        }
+
+        YGlobals.Ydebugpn("Command Dispatcher is stopped...");
+    }
+
+    // it is ensured that cmdSocket or imgSocket will not be NULL at calling
+    // it is also ensured that command will not be NULL at this calling
+    private void processCmd(String command) throws YException
+    {
+        // command could be any of following
+        // JAVAC_Connect
+        // JAVAC_OpenSession
+        // JAVAC_SaveCurrentState
+        // JAVAC_CloseCurrentSession
+        // JAVAC_MouseAction_Click
+        // JAVAC_MouseAction_DoubleClick
+        // JAVAC_MouseAction_RubberBand
+        // JAVAC_KeyAction
+        // JAVAC_GetStat
+        // JAVAC_GetSessionList
+        // JAVAC_Refresh
+        // JAVAC_SetDisplaySize
+        // JAVAC_Exit: do not need reply so will not appear here
+        // JAVAC_Abort: do not need reply so will not appear here
+
+        // it is ensured that rsp will not be null after calling sendCommand
+        String[] rsp = sendCommand(command);
+
+        String[] cmd = null;
+        for (int i = 0; i < rsp.length; i++) {
+            if (rsp[i].startsWith("JAVAC_Done")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 1 || i != rsp.length - 1) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                if (command.startsWith("JAVAC_OpenSession")) {
+                    jscreen.updateScreen(true);
+                } else if (command.startsWith("JAVAC_CloseCurrentSession")) {
+                    jscreen.updateScreen(false);
+                } else {
+                }
+            } else if (rsp[i].startsWith("JAVAC_Error")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
+                    if (!command.startsWith("JAVAC_GetSessionList"))
+                        YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i]);
+                    else
+                        //YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i], false, false);
+                        throw new YException("Server Error: " + rsp[i], 5);
+
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                } else {
+                    if (!command.startsWith("JAVAC_GetSessionList"))
+                        YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1]);
+                    else
+                        //YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1], false, false);
+                        throw new YException("Server Error: " + cmd[1], 5);
+
+                    //throw new YException("Server Error: " + cmd[i] + " to command: " + command, 5);
+                }
+            } else if (rsp[i].startsWith("JAVAC_Fail")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
+                    if (!command.startsWith("JAVAC_GetSessionList"))
+                        YGlobals.Yshowmsg(jsc, "Server failed: " + rsp[i]);
+                    else
+                        //YGlobals.Yshowmsg(jsc, "Server Failed: " + rsp[i], false, false);
+                        throw new YException("Server failed: " + rsp[i], 2);
+
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 2);
+                } else {
+                    if (!command.startsWith("JAVAC_GetSessionList"))
+                        YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[1]);
+                    else
+                        ;//YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[i], false, false);
+
+                    throw new YException("Server failed: " + cmd[1], 2);
+                }
+            } else if (rsp[i].startsWith("JAVAC_CreateWindow")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length < 8) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                String winname = cmd[1];
+                try {
+                    int x = Integer.parseInt(cmd[2]);
+                    int y = Integer.parseInt(cmd[3]);
+                    int w = Integer.parseInt(cmd[4]);
+                    int h = Integer.parseInt(cmd[5]);
                     w = w - x;
                     h = h - y;
                     Rectangle winloc = new Rectangle(x, y, w, h);
+                    int imageSize = Integer.parseInt(cmd[6]);
+
                     Vector views = new Vector();
-                    int numOfV = (Integer.valueOf(rsp[7])).intValue();
-                    if (rsp.length != numOfV * 5 + 8) {
-                        throw new YException("Incorrectly formatted command receive from server: " + response[i]);
+                    int numOfV = Integer.parseInt(cmd[7]);
+                    if (cmd.length != numOfV * 5 + 8) {
+                        throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
                     } else {
                         for (int j = 0; j < numOfV; j++) {
-                            String name = rsp[8 + j * 5];
-                            Rectangle rect = new Rectangle((Integer.valueOf(rsp[9 + j * 5])).intValue(), (Integer.valueOf(rsp[10 + j * 5])).intValue(),
-                                                           (Integer.valueOf(rsp[11 + j * 5])).intValue(), (Integer.valueOf(rsp[12 + j * 5])).intValue());
-                            DEViseView v = new DEViseView(jsc, name, rect, null, null);
+                            String name = cmd[8 + j * 5];
+                            Rectangle rect = new Rectangle(Integer.parseInt(cmd[9 + j * 5]), Integer.parseInt(cmd[10 + j * 5]),
+                                                           Integer.parseInt(cmd[11 + j * 5]), Integer.parseInt(rsp[12 + j * 5]));
+                            DEViseView v = new DEViseView(jsc, name, rect);
                             views.addElement(v);
                         }
-                    } 
-                                                      
-                    DEViseWindow win = new DEViseWindow(jsc, winname, winloc, image, views);
-            
-                    jscreen.addWindow(win);
-                } else if (rsp[0].equals("JAVAC_UpdateWindow")) {
-                    YDebug.println("Retrieving image data for window " + rsp[1] + " ... ");
-                    byte[] imageData = jsc.jscomm.imgSocket.receiveImg((Integer.valueOf(rsp[2])).intValue());
-                    YDebug.println("Successfully retrieve image data");
+                    }
+
+                    YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
+                    byte[] imageData = receiveImg(imageSize);
+                    YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
+
+                    if (imageData == null)
+                        throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+
                     MediaTracker tracker = new MediaTracker(jsc);
                     Toolkit kit = jsc.getToolkit();
                     Image image = kit.createImage(imageData);
-                    tracker.addImage(image, 0);            
-                    try {
+                    tracker.addImage(image, 0);
+                    try  {
                         tracker.waitForID(0);
-                    }  catch (InterruptedException e) {
-                    }            
-                    
-                    if (tracker.isErrorID(0))  
-                        throw new YException("Can not create image from the data received from server!");
-                    
-                    jscreen.updateWindow(rsp[1], image);
-                } else if (rsp[0].equals("JAVAC_UpdateSessionList")) {
-                    jsc.updateSessionList(rsp);
-                } else if (rsp[0].equals("JAVAC_Done")) {            
-                    if (command.startsWith("JAVAC_OpenSession")) {
-                        jsc.isSessionOpened = true;
-                        jscreen.updateScreen(true);
-                    } else if (command.startsWith("JAVAC_CloseCurrentSession")) {
-                        jsc.isSessionOpened = false;
-                        jscreen.updateScreen(false);
-                    } else {
+                    }  catch (InterruptedException e)  {
                     }
-                } else if (rsp[0].equals("JAVAC_Error")) {
-                    if (command.startsWith("JAVAC_GetSessionList")) {
-                        jsc.updateSessionList(null);
-                    }
-                    
-                    YGlobals.showMsg(jsc, rsp[1], "Warning");
-                } else if (rsp[0].equals("JAVAC_Fail")) {
-                    if (command.startsWith("JAVAC_GetSessionList")) {
-                        jsc.updateSessionList(null);
-                    }
-                    
-                    throw new YException(rsp[1]);
-                } else {
-                    YGlobals.showMsg(jsc, "Unsupported command received from server: " + response[i]);
+
+                    if (tracker.isErrorID(0))
+                        throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+
+                    DEViseWindow win = new DEViseWindow(jsc, winname, winloc, image, views);
+
+                    jscreen.addWindow(win);
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
                 }
-            } catch (NumberFormatException e) {
-                throw new YException("Incorrect value received from server: " + response);
+            } else if (rsp[i].startsWith("JAVAC_UpdateWindow")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 3) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                int imageSize;
+                try {
+                    imageSize = Integer.parseInt(cmd[2]);
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                String winname = cmd[1];
+                YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
+                byte[] imageData = receiveImg(imageSize);
+                YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
+
+                if (imageData == null)
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+
+                MediaTracker tracker = new MediaTracker(jsc);
+                Toolkit kit = jsc.getToolkit();
+                Image image = kit.createImage(imageData);
+                tracker.addImage(image, 0);
+                try {
+                    tracker.waitForID(0);
+                }  catch (InterruptedException e) {
+                }
+
+                if (tracker.isErrorID(0))
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+
+                jscreen.updateWindow(winname, image);
+            } else if (rsp[i].startsWith("JAVAC_UpdateSessionList")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+
+                if (cmd == null) {
+                    jsc.updateSessionList(null, "Invalid list");
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                jsc.updateSessionList(cmd, null);
+            } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 6) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                try {
+                    String viewname = cmd[1];
+                    int x0 = Integer.parseInt(cmd[2]);
+                    int y0 = Integer.parseInt(cmd[3]);
+                    int w = Integer.parseInt(cmd[4]);
+                    int h = Integer.parseInt(cmd[5]);
+                    Rectangle rect = new Rectangle(x0, y0, w, h);
+                    jscreen.drawCursor(viewname, rect);
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+            } else if (rsp[i].startsWith("JAVAC_EraseCursor")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 2) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                jscreen.eraseCursor(cmd[1]);
+            } else if (rsp[i].startsWith("JAVAC_UpdateRecordValue")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null) {
+                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                }
+
+                jsc.displayRecord(cmd);
+            } else if (rsp[i].startsWith("JAVAC_DisplayStat")) {
+                //cmd = DEViseGlobals.parseString(rsp[i]);
+                //if (cmd == null || cmd.length != 1) {
+                //    throw new YException("Dispatcher::processCmd: Incorrect command: " + rsp[i], 3);
+                //}
+            } else if (rsp[i].startsWith("JAVAC_User")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 2) {
+                    throw new YException("Invalid response for connection request: " + rsp[i]);
+                }
+
+                try {
+                    connectID = Integer.parseInt(cmd[1]);
+                    if (connectID < 0 && connectID != DEViseGlobals.DEFAULTID) {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid connection ID: " + cmd[1] + " received!");
+                }
+            } else if (rsp[i].startsWith("JAVAC_Exit")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 2) {
+                    throw new YException("Connection request is rejected!\n" + rsp[i]);
+                }
+
+                throw new YException("Connection request is rejected!\n" + cmd[1]);
+            } else {
+                throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
             }
-        }    
-    }            
-} 
-
-
-class Counter implements Runnable
-{
-    DEViseCmdDispatcher dispatcher = null;
-    long time = 0;
-    long timeout = 0;
-              
-    public Counter(DEViseCmdDispatcher arg, long to) 
-    {
-        dispatcher = arg;
-        timeout = to * 60; // timeout specified in minutes
-    }
-    
-    public synchronized void reset()
-    {
-        time = 0;
-    }
-    
-    // advance in one second step
-    public synchronized void increaseTime()
-    {
-        time++;
-    }
-    
-    public synchronized boolean checkTimeout()
-    {
-        if (timeout <= 0) {
-            time = 0;
-            return false;
         }
-        
-        if (timeout > time)
-            return false;
-        else
-            return true;
     }
-    
-    public synchronized long getTime()
+
+    private byte[] receiveImg(int size) throws YException
     {
-        return time;
-    }
-    
-    public void run()
-    { 
-        reset();
-        
-        while (!checkTimeout()) {
+        boolean isEnd = false;
+        byte[] imgData = null;
+
+        while (!isEnd) {
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                imgData = imgSocket.receiveImg(size);
+                isEnd = true;
+            } catch (InterruptedIOException e) {
+                if (isAbort()) {
+                    throw new YException("Abort receiving image data!", 8);
+                }
             }
-            
-            increaseTime();
         }
-        
-        if (dispatcher.getStatus() > 2) {
-            dispatcher.jsc.suspend(true);
+
+        return imgData;
+    }
+
+    private String[] sendCommand(String command) throws YException
+    {
+        String response = null;
+        // isEnd is used to detect that JAVAC_Done or JAVAC_Error or JAVAC_Fail or JAVAC_Exit is received
+        boolean isEnd = false;
+        // isFinish is used to detect InterruptedIOException
+        boolean isFinish = false;
+        Vector rspbuf = new Vector();
+
+        cmdSocket.sendCmd(command);
+
+        while (!isEnd) {
+            isFinish = false;
+
+            while (!isFinish) {
+                try {
+                    response = cmdSocket.receiveRsp();
+                    isRead = true;
+                    isFinish = true;
+                } catch (InterruptedIOException e) {
+                    if (isAbort()) {
+                        throw new YException("Abort receiving response for " + command, 7);
+                    }
+                }
+            }
+
+            if (response == null || response.length() == 0) {
+                throw new YException("Invalid response received for command: " + command, 5);
+            } else {
+                String[] cmds = DEViseGlobals.parseString(response);
+                if (cmds == null || cmds.length == 0) {
+                    throw new YException("Invalid response received: " + response + " for command: " + command, 5);
+                } else {
+                    String cmd = cmds[0];
+                    // Rip off the { and } around the command but not the arguments
+                    for (int j = 1; j < cmds.length; j++)
+                        cmd = cmd + " {" + cmds[j] + "}";
+
+                    if (cmd.startsWith("JAVAC_")) {
+                        if (cmd.startsWith("JAVAC_Done") || cmd.startsWith("JAVAC_Error")
+                            || cmd.startsWith("JAVAC_Fail") || cmd.startsWith("JAVAC_Exit")) {
+                            isEnd = true;
+                        }
+
+                        rspbuf.addElement(cmd);
+                    } else {
+                        throw new YException("Invalid response received: " + response + " for command " + command, 5);
+                    }
+                }
+            }
+        }
+
+        if (rspbuf.size() > 0) {
+            String[] rspstr = new String[rspbuf.size()];
+            for (int i = 0; i < rspbuf.size(); i++)
+                rspstr[i] = (String)rspbuf.elementAt(i);
+
+            return rspstr;
         } else {
-            dispatcher.addCmd("Timeout");
+            throw new YException("Null response received for command: " + command, 5);
         }
     }
 }
+
+

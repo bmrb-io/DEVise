@@ -5,53 +5,189 @@ import java.util.*;
 public final class YGlobals
 {
     // global constants
-    public static final String IDNO = new String("   No   "), IDYES = new String(" Yes "), IDOK = new String("   OK   "), IDCANCEL = new String("Cancel");
-    public static final int MBXOK = 0, MBXYESNO = 1, MBXOKCANCEL = 2, MBXYESNOCANCEL = 3;
+    public static final String YIDNO = new String("No"), YIDYES = new String("Yes"),
+                               YIDOK = new String("OK"), YIDCANCEL = new String("Cancel"),
+                               YIDRETRY = new String("Retry"), YIDABORT = new String("Abort"),
+                               YIDIGNORE = new String("Ignore");
+    public static final int YMBXOK = 0, YMBXYESNO = 1, YMBXOKCANCEL = 2, YMBXYESNOCANCEL = 3,
+                            YMBXRETRYCANCEL = 4, YMBXABORTRETRYIGNORE = 5;
 
     // global variables
-    public static boolean ISDEBUG = false, ISLOG = false, ISGUI = false, ISAPPLET = false;
+    public static boolean YISDEBUG = false, YISLOG = false, YISGUI = false, YISAPPLET = false;
     public static YDebug DebugInfo = null;
-    public static YLogFile LogFile = null;
+
+    static {
+        DebugInfo = new YDebug();
+    }
 
     // global functions
-    public static void printMsg(String msg)
+    public static void start()
+    {
+        DebugInfo = new YDebug();
+    }
+
+    public static void close()
+    {
+        YDebug.close();
+    }
+
+    public static void Ypmsg(String msg)
+    {
+        System.out.print(msg);
+    }
+
+    public static void Ypnmsg(String msg)
     {
         System.out.println(msg);
     }
 
-    public static String showMsg(Frame frame, String msg, String title, int style, boolean isCenterScreen)
+    public static String Yshowmsg(Frame frame, String msg, String title, int style, boolean isCenterScreen, boolean isModal)
     {
-        YMSGDlg dlg = new YMSGDlg(frame, msg, title, style, isCenterScreen);
-        dlg.show();
+        YMSGDlg dlg = new YMSGDlg(frame, msg, title, style, isCenterScreen, isModal);
+        //dlg.show();
         return dlg.getResult();
     }
-    
-    public static String showMsg(Frame frame, String msg, String title, int style)
+
+    public static String Yshowmsg(Frame frame, String msg, String title, int style, boolean isCenterScreen)
     {
-        return showMsg(frame, msg, title, style, false);
-    }
-    
-    public static String showMsg(Frame frame, String msg, String title)
-    {
-        return showMsg(frame, msg, title, YGlobals.MBXOK, false);
+        return Yshowmsg(frame, msg, title, style, isCenterScreen, true);
     }
 
-    public static String showMsg(Frame frame, String msg)
+    public static String Yshowmsg(Frame frame, String msg, String title, int style)
     {
-        return showMsg(frame, msg, "Program Message", YGlobals.MBXOK, false);
+        return Yshowmsg(frame, msg, title, style, false, true);
     }
 
-    public static String[] parseStr(String str, String delim)
+    public static String Yshowmsg(Frame frame, String msg, int what)
     {
-        return parseStr(str, delim, false);
+        return Yshowmsg(frame, msg, "Confirm", YMBXYESNO, false, true);
     }
 
-    public static String[] parseStr(String str)
+    public static String Yshowmsg(Frame frame, String msg, int what, boolean isCenterScreen, boolean isModal)
     {
-        return parseStr(str, " ", false);
+        return Yshowmsg(frame, msg, "Confirm", YMBXYESNO, isCenterScreen, isModal);
     }
 
-    public static String[] parseStr(String str, String delim, boolean returnDelim)
+    public static String Yshowmsg(Frame frame, String msg)
+    {
+        return Yshowmsg(frame, msg, "Program Message", YMBXOK, false, true);
+    }
+
+    public static String Yshowmsg(Frame frame, String msg, boolean isCenterScreen, boolean isModal)
+    {
+        return Yshowmsg(frame, msg, "Program Message", YMBXOK, isCenterScreen, isModal);
+    }
+
+    public static void Ydebugpn(String msg, int id)
+    {
+        YDebug.println(msg, id);
+    }
+
+    public static void Ydebugpn(String msg)
+    {
+        Ydebugpn(msg, 0);
+    }
+
+    public static void Ydebugp(String msg, int id)
+    {
+        YDebug.print(msg, id);
+    }
+
+    public static void Ydebugp(String msg)
+    {
+        Ydebugp(msg, 0);
+    }
+
+    public static char Ytochar(byte[] data, int offset)
+    {
+        if (data == null || data.length < 2 + offset)
+            return (char)0;
+
+        int v1 = data[0 + offset];
+        int v2 = data[1 + offset];
+
+        return (char)((v1 << 8) + (v2 << 0));
+    }
+
+    public static char Ytochar(byte[] data)
+    {
+        return Ytochar(data, 0);
+    }
+
+    public static short Ytoshort(byte[] data, int offset)
+    {
+        if (data == null || data.length < 2 + offset)
+            return 0;
+
+        int v1 = data[0 + offset];
+        int v2 = data[1 + offset];
+
+        return (short)((v1 << 8) + (v2 << 0));
+    }
+
+    public static short Ytoshort(byte[] data)
+    {
+        return Ytoshort(data, 0);
+    }
+
+    public static int Ytoint(byte[] data, int offset)
+    {
+        if (data == null || data.length < 4 + offset)
+            return 0;
+
+        int v1 = data[0 + offset];
+        int v2 = data[1 + offset];
+        int v3 = data[2 + offset];
+        int v4 = data[3 + offset];
+
+        return (char)((v1 << 24) + (v2 << 16) + (v3 << 8) + (v1 << 0));
+    }
+
+    public static int Ytoint(byte[] data)
+    {
+        return Ytoint(data, 0);
+    }
+
+    public static long Ytolong(byte[] data, int offset)
+    {
+        if (data == null || data.length < 8 + offset)
+            return 0;
+
+        return ( (((long)Ytoint(data, offset)) << 32) + (Ytoint(data, offset + 4) & 0xFFFFFFFFL));
+    }
+
+    public static long Ytolong(byte[] data)
+    {
+        return Ytolong(data, 0);
+    }
+
+    public static float Ytofloat(byte[] data, int offset)
+    {
+        if (data == null || data.length < 4 + offset)
+            return 0.0f;
+
+        return Float.intBitsToFloat(Ytoint(data, offset));
+    }
+
+    public static float Ytofloat(byte[] data)
+    {
+        return Ytofloat(data, 0);
+    }
+
+    public static double Ytodouble(byte[] data, int offset)
+    {
+        if (data == null || data.length < 8 + offset)
+            return 0.0;
+
+        return Double.longBitsToDouble(Ytolong(data, offset));
+    }
+
+    public static double Ytodouble(byte[] data)
+    {
+        return Ytodouble(data, 0);
+    }
+
+    public static String[] Yparsestr(String str, String delim, boolean returnDelim)
     {
         String[] outStr = null;
 
@@ -80,12 +216,17 @@ public final class YGlobals
         return outStr;
     }
 
-    public static String[] parseString(String inputStr, char startChar, char endChar)
+    public static String[] Yparsestr(String str, String delim)
     {
-        return parseString(inputStr, startChar, endChar, false);
+        return Yparsestr(str, delim, false);
     }
 
-    public static String[] parseString(String inputStr, char startChar, char endChar, boolean keep)
+    public static String[] Yparsestr(String str)
+    {
+        return Yparsestr(str, " ", false);
+    }
+
+    public static String[] Yparsestring(String inputStr, char startChar, char endChar, boolean keep)
     {
         String[] outputStr = null;
 
@@ -174,80 +315,110 @@ public final class YGlobals
 
         return outputStr;
     }
+
+    public static String[] Yparsestring(String inputStr, char startChar, char endChar)
+    {
+        return Yparsestring(inputStr, startChar, endChar, false);
+    }
+
 }
 
 final class YMSGDlg extends Dialog
 {
-    private Panel panel1 = new Panel();
-    private Panel panel2 = new Panel();
-    private Panel panel3 = new Panel();
     private Label label[] = null;
     private Button button[] = null;
     private String result = null;
-    private Color buttonbgcolor = new Color(64, 96, 0);
-    private Color buttonfgcolor = Color.white;
-    private Font buttonfont = new Font("Serif", Font.PLAIN, 14);
     private Color bgcolor = new Color(64, 96, 0);
     private Color fgcolor = Color.white;
     private Font font = new Font("Serif", Font.PLAIN, 14);
 
-    public YMSGDlg(Frame frame, String msg, String title, int style, boolean isCenterScreen)
+    public YMSGDlg(Frame frame, String msg, String title, int style, boolean isCenterScreen, boolean isModal)
     {
-        super(frame, title, true);
+        super(frame, title, isModal);
 
         boolean isStyleCorrect = true;
 
-        switch (style)  {
-        case YGlobals.MBXOK:
+        switch (style) {
+        case YGlobals.YMBXOK:
             button = new Button[1];
-            button[0] = new Button(YGlobals.IDOK);
+            button[0] = new Button(YGlobals.YIDOK);
+            result = YGlobals.YIDOK;
             break;
-        case YGlobals.MBXYESNO:
+        case YGlobals.YMBXYESNO:
             button = new Button[2];
-            button[0] = new Button(YGlobals.IDYES);
-            button[1] = new Button(YGlobals.IDNO);
+            button[0] = new Button(YGlobals.YIDYES);
+            button[1] = new Button(YGlobals.YIDNO);
+            result = YGlobals.YIDNO;
             break;
-        case YGlobals.MBXOKCANCEL:
+        case YGlobals.YMBXOKCANCEL:
             button = new Button[2];
-            button[0] = new Button(YGlobals.IDOK);
-            button[1] = new Button(YGlobals.IDCANCEL);
+            button[0] = new Button(YGlobals.YIDOK);
+            button[1] = new Button(YGlobals.YIDCANCEL);
+            result = YGlobals.YIDCANCEL;
             break;
-        case YGlobals.MBXYESNOCANCEL:
+        case YGlobals.YMBXYESNOCANCEL:
             button = new Button[3];
-            button[0] = new Button(YGlobals.IDYES);
-            button[1] = new Button(YGlobals.IDNO);
-            button[2] = new Button(YGlobals.IDCANCEL);
+            button[0] = new Button(YGlobals.YIDYES);
+            button[1] = new Button(YGlobals.YIDNO);
+            button[2] = new Button(YGlobals.YIDCANCEL);
+            result = YGlobals.YIDCANCEL;
+            break;
+        case YGlobals.YMBXRETRYCANCEL:
+            button = new Button[2];
+            button[0] = new Button(YGlobals.YIDRETRY);
+            button[1] = new Button(YGlobals.YIDCANCEL);
+            result = YGlobals.YIDCANCEL;
+            break;
+        case YGlobals.YMBXABORTRETRYIGNORE:
+            button = new Button[3];
+            button[0] = new Button(YGlobals.YIDABORT);
+            button[1] = new Button(YGlobals.YIDRETRY);
+            button[2] = new Button(YGlobals.YIDIGNORE);
+            result = YGlobals.YIDIGNORE;
             break;
         default:
             isStyleCorrect = false;
             button = new Button[1];
-            button[0] = new Button(YGlobals.IDOK);
+            button[0] = new Button(YGlobals.YIDOK);
+            result = YGlobals.YIDOK;
             break;
         }
 
-        if (isStyleCorrect)  {
-            if (msg == null)  {
-                label = new Label[1];
-                label[0] = new Label("Null Message Given!");
-            }  else if (msg.equals(""))  {
+        if (isStyleCorrect) {
+            if (msg == null) {
                 label = new Label[1];
                 label[0] = new Label("No Message Given!");
-            }  else  {
-                String[] msgStr = YGlobals.parseStr(msg, "\n");
+                button = new Button[1];
+                button[0] = new Button(YGlobals.YIDOK);
+                result = YGlobals.YIDOK;
+            } else if (msg.equals("")) {
+                label = new Label[1];
+                label[0] = new Label("No Message Given!");
+                button = new Button[1];
+                button[0] = new Button(YGlobals.YIDOK);
+                result = YGlobals.YIDOK;
+            } else {
+                String[] msgStr = YGlobals.Yparsestr(msg, "\n");
                 if (msgStr == null) {
                     button = new Button[1];
-                    button[0] = new Button(YGlobals.IDOK);
+                    button[0] = new Button(YGlobals.YIDOK);
+                    result = YGlobals.YIDOK;
                     label = new Label[1];
-                    label[0] = new Label("Invalid Message given!");
+                    label[0] = new Label("Invalid message given!");
                 } else {
                     label = new Label[msgStr.length];
-                    for (int i = 0; i < msgStr.length; i++)
-                        label[i] = new Label(msgStr[i]);
-                }    
+                    for (int i = 0; i < msgStr.length; i++) {
+                        if (msgStr[i] != null) {
+                            label[i] = new Label(msgStr[i]);
+                        } else {
+                            label[i] = new Label("");
+                        }
+                    }
+                }
             }
         }  else  {
             label = new Label[1];
-            label[0] = new Label("Invalid Dialog Style!");
+            label[0] = new Label("Unsupported dialog style given!");
         }
 
         setBackground(bgcolor);
@@ -255,54 +426,53 @@ final class YMSGDlg extends Dialog
         setFont(font);
 
         // building the panel that display messages
+        Panel panel1 = new Panel();
         panel1.setLayout(new GridLayout(0, 1, 0, 0));
-        for (int i = 0; i < label.length; i++)
+        for (int i = 0; i < label.length; i++) {
             panel1.add(label[i]);
+        }
 
         // building the panel that display buttons
+        Panel panel2 = new Panel();
         panel2.setLayout(new GridLayout(1, 0, 10, 0));
-        for (int i = 0; i < button.length; i++)  {
-            button[i].setBackground(buttonbgcolor);
-            button[i].setForeground(buttonfgcolor);
-            button[i].setFont(buttonfont);
+        for (int i = 0; i < button.length; i++) {
+            button[i].setBackground(bgcolor);
+            button[i].setForeground(fgcolor);
+            button[i].setFont(font);
             button[i].setActionCommand(button[i].getLabel());
             panel2.add(button[i]);
         }
 
-        // add panel1 and panel2
+        // set new gridbag layout
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
-
-        // panel3 act as an holder of panel2
-        panel3.setLayout(gridbag);
-        gridbag.setConstraints(panel2, c);
-        panel3.add(panel2);
-
         //c.gridx = GridBagConstraints.RELATIVE;
         //c.gridy = GridBagConstraints.RELATIVE;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = new Insets(10, 10, 10, 10);
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(10, 10, 0, 0);
         c.ipadx = 0;
         c.ipady = 0;
-        //c.anchor = GridBagConstraints.CENTER;
+        c.anchor = GridBagConstraints.CENTER;
         //c.weightx = 1.0;
         //c.weighty = 1.0;
 
         setLayout(gridbag);
+
         gridbag.setConstraints(panel1, c);
         add(panel1);
-        c.insets = new Insets(0, 10, 5, 10);
-        gridbag.setConstraints(panel3, c);
-        add(panel3);
+
+        c.insets = new Insets(10, 10, 5, 10);
+        gridbag.setConstraints(panel2, c);
+        add(panel2);
 
         pack();
         //setResizable(false);
-        
+
         // reposition the dialog
         Point parentLoc = null;
-        Dimension parentSize = null;        
+        Dimension parentSize = null;
         if (isCenterScreen) {
             Toolkit kit = Toolkit.getDefaultToolkit();
             parentSize = kit.getScreenSize();
@@ -311,7 +481,7 @@ final class YMSGDlg extends Dialog
             parentLoc = frame.getLocation();
             parentSize = frame.getSize();
         }
-        
+
         Dimension mysize = getSize();
         parentLoc.y += parentSize.height / 2;
         parentLoc.x += parentSize.width / 2;
@@ -329,11 +499,24 @@ final class YMSGDlg extends Dialog
                         }
                     });
         }
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        show();
     }
 
     public String getResult()
     {
         return result;
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            dispose();
+        }
+
+        super.processEvent(event);
     }
 }
 

@@ -1,276 +1,375 @@
 import  java.io.*;
 import  java.net.*;
-import  java.util.*;
 
 // Socket used to send DEVise API commands and receive response between
 // DEViseServer and DEViseClient
 public class DEViseCmdSocket
-{   
+{
     private Socket socket = null;
     private DataInputStream is = null;
     private DataOutputStream os = null;
-        
-    public DEViseCmdSocket(Socket arg) throws IOException
+    private int bufferSize = 4096; // The java default is 512 bytes
+    private int timeout = 0;
+
+    // The following data are used in receiveRsp to support timeout
+    private boolean isFlag = false, isNumOfElement = false, isSize = false;
+    private short flag = 0, numOfElement = 0, size = 0;
+    private String response = null;
+    private byte[] rsp = null;
+    // The number of bytes read so far
+    private int number = 0;
+
+    // The meaning of 'id' in YException
+    // id = 1, incorrect arguments
+    // id = 2, io exception or other socket error, socket is closed, must reconnect
+
+    public DEViseCmdSocket(Socket sk, int to) throws YException
     {
-        socket = arg;        
-        os = new DataOutputStream(new BufferedOutputStream(new DataOutputStream(socket.getOutputStream())));
-        is = new DataInputStream(socket.getInputStream()); 
+        if (sk == null)
+            throw new YException("Null socket!", "DEViseCmdSocket:constructor", 1);
+        else
+            socket = sk;
+
+        if (to < 0)
+            timeout = 0;
+        else
+            timeout = to;
+
         try {
-            socket.setSoTimeout(DEViseGlobals.DEFAULTCMDSOCKETTIMEOUT);
+            os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
+            is = new DataInputStream(socket.getInputStream());
+            socket.setSoTimeout(timeout);
         } catch (SocketException e) {
-            YDebug.println(e.getMessage());
+            closeSocket();
+            throw new YException("Can not set timeout for socket!", "DEViseCmdSocket:constructor", 2);
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not open io stream!", "DEViseCmdSocket:constructor", 2);
         }
+
+        //YGlobals.Ydebugpn("Successfully connect to CMD socket!");
     }
-               
-    public DEViseCmdSocket(String hostname, int port) throws UnknownHostException, IOException
+
+    public DEViseCmdSocket(Socket sk) throws YException
     {
-        socket = new Socket(hostname, port); 
-        os = new DataOutputStream(new BufferedOutputStream(new DataOutputStream(socket.getOutputStream())));
-        is = new DataInputStream(socket.getInputStream());
+        this(sk, 0);
+    }
+
+    public DEViseCmdSocket(String hostname, int port, int to) throws YException
+    {
+        if (hostname == null)
+            throw new YException("Null hostname!", "DEViseCmdSocket:constructor", 1);
+
+        if (port < 1024 || port > 65535)
+            throw new YException("Invalid port number: " + port + "!", "DEViseCmdSocket:constructor", 1);
+
+        if (to < 0)
+            timeout = 0;
+        else
+            timeout = to;
+
         try {
-            socket.setSoTimeout(DEViseGlobals.DEFAULTCMDSOCKETTIMEOUT);
+            socket = new Socket(hostname, port);
+        } catch (UnknownHostException e) {
+            closeSocket();
+            throw new YException("Unkonwn host: " + hostname + "!", "DEViseCmdSocket:constructor", 2);
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not open socket on " + hostname + " at port " + port + "!", "DEViseCmdSocket:constructor", 2);
+        }
+
+        try {
+            os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
+            is = new DataInputStream(socket.getInputStream());
+            socket.setSoTimeout(timeout);
         } catch (SocketException e) {
-            YDebug.println(e.getMessage());
+            closeSocket();
+            throw new YException("Can not set timeout for socket!", "DEViseCmdSocket:constructor", 2);
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not open io stream!", "DEViseCmdSocket:constructor", 2);
+        }
+
+        //YGlobals.Ydebugpn("Successfully connect to CMD socket!");
+    }
+
+    public DEViseCmdSocket(String hostname, int port) throws YException
+    {
+        this(hostname, port, 0);
+    }
+
+    public synchronized void closeSocket()
+    {
+        if (os == null && is == null && socket == null) // socket already closed
+            return;
+
+        clearBuffer();
+
+        try  {
+            if (os != null)
+                os.close();
+        }  catch (IOException e)  {
+            YGlobals.Ydebugpn("Can not close output stream at DEViseCmdSocket:closeSocket!");
+        }
+
+        try {
+            if (is != null)
+                is.close();
+        }  catch (IOException e)  {
+            YGlobals.Ydebugpn("Can not close input stream at DEViseCmdSocket:closeSocket!");
+        }
+
+        try {
+            if (socket != null)
+                socket.close();
+        }  catch (IOException e)  {
+            YGlobals.Ydebugpn("Can not close socket at DEViseCmdSocket:closeSocket!");
+        }
+
+        os = null;
+        is = null;
+        socket = null;
+
+        //YGlobals.Ydebugpn("CMD socket is closed!");
+    }
+
+    // if at the moment of calling, there are something coming from the input stream,
+    // or at the moment of calling, there are already some bytes read from the input
+    // stream, isEmpty will return false, otherwise, it will return true.
+    public synchronized boolean isEmpty() throws YException
+    {
+        if (isFlag || number > 0) {
+            return false;
+        } else {
+            try {
+                if (is.available() > 0)
+                    return false;
+                else
+                    return true;
+            } catch (IOException e) {
+                closeSocket();
+                throw new YException("Can not read from input stream!", "DEViseCmdSocket:isEmpty", 2);
+            }
         }
     }
 
-    public void sendBytes(byte[] data) throws YException
+    public synchronized void clearSocket() throws YException
     {
-        if (data == null)
-            return; 
-            
-        try {
-            os.write(data, 0, data.length);    
-            os.flush();
-        } catch (IOException e) {
-            throw new YException("DEVise Command Socket Error: Communication Error occured while sending data!");
+        clearBuffer();
+
+        if (is == null) {
+            closeSocket();
+            throw new YException("Input stream is closed!", "DEViseCmdSocket:clearSocket", 2);
         }
-    }
-    
-    public byte[] receiveBytes(int howMany) throws YException, InterruptedIOException
-    {
-        if (howMany < 1)
-            return null;
-        
-        byte[] data = new byte[howMany];
+
         try {
-            is.readFully(data);
-            return data;
-        } catch (IOException e) {
-            throw new YException("DEVise Command Socket Error: Communication Error occured while receiving data!");
-        }
-    }
-   
-    public void sendInt(int data) throws YException
-    {
-        try {
-            os.writeInt(data);
-            os.flush();
-        } catch (IOException e) {
-            throw new YException("DEVise Command Socket Error: Communication Error occured while sending integer data!");
-        }        
-    }
-    
-    public int receiveInt() throws YException, InterruptedIOException
-    {
-        try {
-            return is.readInt();
-        } catch (IOException e) {
-            throw new YException("DEVise Command Socket Error: Communication Error occured while receiving integer data!");
-        }            
-    }
-    
-    public String[] sendCommand(String cmd) throws YException, InterruptedIOException
-    {
-        return sendCommand(cmd, DEViseGlobals.API_JAVA);
-    }
-    
-    public String[] sendCommand(String cmd, short flag) throws YException, InterruptedIOException
-    {
-        String[] commands = null;
-        String rsp = null;
-        boolean isEnd = false;
-        Vector rspbuf = new Vector();
-        
-        sendCmd(cmd, flag);
-        while (!isEnd) {
-            rsp = receiveRsp();
-            commands = DEViseGlobals.parseStr(rsp);
-            if (commands == null) {
-                throw new YException("DEVise Command Socket Error: Invalid response received from DEVise POP Server!");
-            } else {
-                for (int i = 0; i < commands.length; i++) {                    
-                    if (commands[i].startsWith("JAVAC_")) {
-                        if (commands[i].equals("JAVAC_Done") || commands[i].startsWith("JAVAC_Error") || commands[i].startsWith("JAVAC_Fail")) {
-                            if (i == commands.length - 1) {
-                                isEnd = true;
-                            } else {
-                                throw new YException("DEVise API error: Incorrectly formatted api received from server: " + rsp);
-                            }
-                        }
-                        
-                        rspbuf.addElement(commands[i]);                            
-                    } else {
-                        throw new YException("DEVise API error: Unrecognized api received from server: " + commands[i]);
-                    }
+            socket.setSoTimeout(0);
+
+            int availableSize = is.available();
+
+            while (availableSize > 0) {
+                byte[] tmpData = new byte[availableSize];
+                is.readFully(tmpData);
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                 }
+
+                availableSize = is.available();
             }
-        }
-        
-        if (rspbuf.size() == 0) {
-            throw new YException("DEVise API error: Invalid response received from server!");
-        } else {
-            String[] rspstr = new String[rspbuf.size()];
-            for (int i = 0; i < rspbuf.size(); i++)
-                rspstr[i] = (String)rspbuf.elementAt(i);
-            
-            return rspstr;
+
+            socket.setSoTimeout(timeout);
+
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not read from input stream!", "DEViseCmdSocket:clearSocket", 2);
         }
     }
-    
+
+    private synchronized void clearBuffer()
+    {
+        isFlag = false;
+        isNumOfElement = false;
+        isSize = false;
+        flag = 0;
+        numOfElement = 0;
+        size = 0;
+        rsp = null;
+        number = 0;
+    }
+
+    public synchronized void sendCmd(String cmd, short flag) throws YException
+    {
+        if (os == null) {
+            closeSocket();
+            throw new YException("Output stream is closed!", "DEViseCmdSocket:sendCmd", 2);
+        }
+
+        if (cmd == null || cmd.length() == 0)
+            throw new YException("Null command!", "DEViseCmdSocket:sendCmd", 1);
+
+        String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
+        if (cmdBuffer == null || cmdBuffer.length == 0)
+            throw new YException("Invalid command: " + cmd + "!", "DEViseCmdSocket:sendCmd", 1);
+
+        short nelem = 0, size = 0;
+        short i;
+        int flushedSize = 0;
+
+        YGlobals.Ydebugpn("Sending: " + cmd);
+
+        try {
+            nelem = (short)cmdBuffer.length;
+            for (i = 0; i < nelem; i++)  {
+                cmdBuffer[i] = cmdBuffer[i] + "\u0000";
+                // since DataOutputStream is a Byte oriented Stream, so it will write
+                // each unicode character(16bits) as ISO-Latin-1 8bits character, which
+                // means only the low 8bits of each unicode character is write out, and
+                // the high 8bits has been throwed out.
+                size = (short)(size + 2 + cmdBuffer[i].length());
+            }
+
+            os.writeShort(flag);
+            os.writeShort(nelem);
+            os.writeShort(size);
+
+            for (i = 0; i < nelem; i++) {
+                // Since we are using a BufferedOutputStream as the underlying stream of
+                // our DataOutputStream, so we must make sure that while the buffer is full,
+                // we must flush our stream.
+                if ((os.size() - flushedSize) >= (bufferSize - 2)) {
+                    flushedSize = os.size();
+                    os.flush();
+                }
+
+                os.writeShort((short)cmdBuffer[i].length());
+                os.writeBytes(cmdBuffer[i]);
+            }
+
+            os.flush();
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not write command " + cmd + " to output stream!", "DEViseCmdSocket:sendCmd", 2);
+        }
+    }
+
     public void sendCmd(String cmd) throws YException
     {
         sendCmd(cmd, DEViseGlobals.API_JAVA);
     }
-        
-    public void sendCmd(String cmd, short flag) throws YException
+
+    public synchronized String receiveRsp() throws YException, InterruptedIOException
     {
-        short nelem = 0, size = 0;
-        short i;
-        
-        YDebug.println("Sending command: " + cmd);
-        
-        try  {
-            String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
-            if (cmdBuffer == null)
-                throw new YException("DEVise Command Socket Error: NULL or Error Formatted API Command!");
-            
-            nelem = (short)cmdBuffer.length;
-            for (i = 0; i < nelem; i++)  {
-                cmdBuffer[i] = cmdBuffer[i] + "\u0000";
-                size = (short)(size + 2 + cmdBuffer[i].length());
-            }
-                    
-            os.writeShort(flag);
-            os.writeShort(nelem);
-            os.writeShort(size);
-            
-            for (i = 0; i < nelem; i++)  {
-                os.writeShort((short)cmdBuffer[i].length());
-                os.writeBytes(cmdBuffer[i]);
-            } 
-            
-            os.flush();
-        }  catch (IOException e)  {
-            throw new YException("DEVise Command Socket Error: Communication Error occured while sending API commands!");
+        if (is == null) {
+            closeSocket();
+            throw new YException("Input stream is closed!", "DEViseCmdSocket:receiveRsp", 2);
         }
-    }
-    
-    public String receiveRsp() throws YException, InterruptedIOException
-    {
-        return receiveRsp(false);
-    }
-    
-    public String receiveRsp(boolean header) throws YException, InterruptedIOException
-    {
-        String response = new String("");
-        short flag = 0, nelem = 0, size = 0, i;
-        boolean isEnd = false;
-        
-        try  {
-            while (!isEnd)  {        
-                flag = is.readShort();
-                switch (flag)  {
-                case DEViseGlobals.API_CMD:
-                    if (header)
-                        response = response + "(CMD) -> ";                    
-                    isEnd = true;
-                    break;
-                case DEViseGlobals.API_ACK:
-                    if (header)
-                        response = response + "(ACK) -> ";                    
-                    isEnd = true;
-                    break;
-                case DEViseGlobals.API_NAK:
-                    if (header)
-                        response = response + "(NAK) -> ";                    
-                    isEnd = true;
-                    break;
-                case DEViseGlobals.API_CTL:
-                    if (header)
-                        response = response + "(CTL) -> ";                    
-                    break;
-                case DEViseGlobals.API_JAVA:
-                    if (header)
-                        response = response + "(JAV) -> ";
-                    isEnd = true;
-                    break;
-                default:
-                    if (header)
-                        response = response + "(   ) -> ";                    
-                    break;
-                }
-                    
-                nelem = is.readShort();
-                size = is.readShort();            
-                short argsize;
-                byte[] arg;
-                for (i = 0; i < nelem; i++)  {
-                    if (i != 0) 
-                        response = response + " ";
-                    argsize = is.readShort();
-                    arg = new byte[argsize];
-                    is.readFully(arg);
-                    
-                    // use argsize - 1 instead of argsize is to skip the NULL '\0'
-                    String rsp = new String(arg, 0, argsize - 1);
-                    
-                    if (i == 0) {
-                        if (rsp.startsWith("{") && rsp.endsWith("}")) {
-                            String[] tmprsp = DEViseGlobals.parseString(rsp);
-                            if (tmprsp != null && tmprsp.length == 1) 
-                                rsp = tmprsp[0];
-                        }
-                    }
-                    
-                    response = response + rsp;
-                }
+
+        try {
+            if (!isFlag) {
+                if (rsp == null)
+                    rsp = new byte[2];
                 
-                if (!isEnd)  {
-                    response = response + "\n";
-                }
+                if (number < 2) 
+                    number = number + is.read(rsp, number, 2 - number);
+                flag = YGlobals.Ytoshort(rsp);
+                isFlag = true;
+                number = 0;
+                rsp = null;
             }
+
+            if (!isNumOfElement) {
+                if (rsp == null)
+                    rsp = new byte[2];
+                
+                if (number < 2) 
+                    number = number + is.read(rsp, number, 2 - number);
+                numOfElement = YGlobals.Ytoshort(rsp);
+                isNumOfElement = true;
+                number = 0;
+                rsp = null;
+            }
+
+            if (!isSize) {
+                if (rsp == null)
+                    rsp = new byte[2];
+                
+                if (number < 2) 
+                    number = number + is.read(rsp, number, 2 - number);
+                size = YGlobals.Ytoshort(rsp);
+                isSize = true;
+                number = 0;
+                rsp = null;
+            }
+
+            if (numOfElement <= 0 || size <= 0) {
+                YGlobals.Ydebugpn("Invalid response received: size " + size + " or numberOfElement " + numOfElement + " at DEViseCmdSocket:receiveRsp!");
+                clearSocket();
+                return null;
+            }
+
+            if (rsp == null)
+                rsp = new byte[size];
             
-            YDebug.println("Receiving response: " + response);
-            
-            return response;
-        }  catch (IOException e)  {
-            throw new YException("DEVise Command Socket Error: Communication Error occured while receiving API responses!");
+            if (number < size)
+                number = number + is.read(rsp, number, size - number);
+        } catch (InterruptedIOException e) {
+            //YGlobals.Ydebugpn("CMD socket time out reached!");
+            throw e;
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not read from input stream!", "DEViseCmdSocket:receiveRsp", 2);
         }
+
+        short argsize;
+        short pastsize = 0;
+        response = new String("");
+        for (short i = 0; i < numOfElement; i++) {
+            if (size < pastsize + 2) {
+                clearBuffer();
+                YGlobals.Ydebugpn("Invalid response received: size is not right at DEViseCmdSocket:receiveRsp!");
+                return null;
+            }
+
+            argsize = YGlobals.Ytoshort(rsp, pastsize);
+            pastsize += 2;
+
+            if (size < pastsize + argsize) {
+                clearBuffer();
+                YGlobals.Ydebugpn("Invalid response received: size is not right at DEViseCmdSocket:receiveRsp!");
+                return null;
+            }
+
+            // use argsize - 1 instead of argsize is to skip the string ending '\0'
+            // use one space to seperate different parts of the response command
+            response += new String(rsp, pastsize, argsize - 1) + " ";
+            pastsize += argsize;
+        }
+
+        clearBuffer();
+
+        YGlobals.Ydebugpn("Receiving: " + response);
+
+        return response;
     }
-    
-    public void closeSocket()
-    {
-        try  {                               
-            os.close();
-        }  catch (IOException e)  {
-            YDebug.println("DEVise Command Socket Error: Communication Error occured while closing socket connection!");
-        }
-        
-        try {
-            is.close();
-        }  catch (IOException e)  {
-            YDebug.println("DEVise Command Socket Error: Communication Error occured while closing socket connection!");
-        }
-           
-        try {
-            socket.close();
-        }  catch (IOException e)  {
-            YDebug.println("DEVise Command Socket Error: Communication Error occured while closing socket connection!");
-        }
-        
-        os = null;
-        is = null;
-        socket = null;
-    }    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

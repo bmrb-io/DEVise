@@ -49,8 +49,10 @@ public class DEViseWindow extends Canvas
     Vector allViews = null;
     DEViseView currentView = null;
 
-    boolean isCurrent = false, isFirstTime = true, isMouseDragged = false, isKeyPressed = false;
-    int lastKey = KeyEvent.VK_UNDEFINED;
+    boolean isCurrent = false, isFirstTime = true, isMouseDragged = false,
+            isKeyPressed = false, isViewFirstTime = true;
+    int lastKeyPressed = KeyEvent.VK_UNDEFINED;
+    char lastKeyTyped = KeyEvent.CHAR_UNDEFINED;
     int userAction = 0;
     Point sp = new Point(), ep = new Point(), cropP = new Point();
 
@@ -101,17 +103,17 @@ public class DEViseWindow extends Canvas
         return windowDim;
     }
 
-    public DEViseView getCurrentView()
+    public synchronized DEViseView getCurrentView()
     {
         return currentView;
     }
 
-    public Vector getAllViews()
+    public synchronized Vector getAllViews()
     {
         return allViews;
     }
 
-    public DEViseView getView(String name)
+    public synchronized DEViseView getView(String name)
     {
         if (name == null)
             return null;
@@ -138,7 +140,7 @@ public class DEViseWindow extends Canvas
         int imageWidth = img.getWidth(this);
         int imageHeight = img.getHeight(this);
         if (imageWidth != windowDim.width || imageHeight != windowDim.height) {
-            YDebug.println("At this moment, the image size for a window can not be changed during a session!");
+            YGlobals.Ydebugpn("Different sized image received for window " + windowName);
             return;
         }
 
@@ -152,7 +154,7 @@ public class DEViseWindow extends Canvas
     // While a moust click occured in this window, the 'setCurrentWindow' of
     // DEViseScreen will be called, and 'setCurrentWindow' will call this
     // this function
-    public void setCurrent(boolean flag)
+    public synchronized void setCurrent(boolean flag)
     {
         isCurrent = flag;
         if (isCurrent == false)
@@ -162,9 +164,15 @@ public class DEViseWindow extends Canvas
         repaint();
     }
 
-    public void setCurrentView(Point point)
+    public synchronized void setCurrentView(Point point)
     {
+        DEViseView old = currentView;
+
         currentView = null;
+        if (point == null) {
+            isViewFirstTime = true;
+            return;
+        }
 
         int number = allViews.size();
         DEViseView view = null;
@@ -173,6 +181,11 @@ public class DEViseWindow extends Canvas
             view = (DEViseView)allViews.elementAt(i);
             if (view.isCurrent(point)) {
                 currentView = view;
+                if (currentView == old)
+                    isViewFirstTime = false;
+                else
+                    isViewFirstTime = true;
+
                 break;
             }
         }
@@ -182,33 +195,35 @@ public class DEViseWindow extends Canvas
 
     protected void processEvent(AWTEvent event)
     {
-        int status = dispatcher.getStatus();
+        if (dispatcher.getStatus() == 0)
+            return;
 
-        if (status != 2) {
-            if (status > 2) {
-                jsc.startDispatcher();
-            }
-
-            super.processEvent(event);
-        }
+        super.processEvent(event);
     }
-    /*
-    public void updateGData(String[] data)
+
+    public void drawCursor(Rectangle loc)
     {
-        gdataName.removeAllElements();
-        gdataValue.removeAllElements();
+        if (loc == null)
+            return;
 
-        if (data.length > 1) {
-            int i = 1;
-            while (i < data.length) {
-                gdataName.addElement(data[i++]);
-                gdataValue.addElement(data[i++]);
-            }
-        }
+        // Should also check that loc is within the range of current view
+        CropImageFilter croppedFilter = new CropImageFilter(loc.x, loc.y, loc.width, loc.height);
+        FilteredImageSource source = new FilteredImageSource(winImage.getSource(), croppedFilter);
+        croppedImage = createImage(source);
+        source = new FilteredImageSource(croppedImage.getSource(), new XORFilter());
+        croppedImage = createImage(source);
+        cropP.x = loc.x;
+        cropP.y = loc.y;
 
-        jsc.viewControl.updateControl();
+        userAction = 1;
+        repaint();
     }
-    */
+
+    public void eraseCursor()
+    {
+        croppedImage = null;
+    }
+
     // Enable double-buffering
     public void update(Graphics g)
     {
@@ -230,9 +245,11 @@ public class DEViseWindow extends Canvas
                 if (currentView != null) {
                     // It is guranteed in other place that cropP, ep and sp
                     // will within the rectangle of currentView
-                    if (userAction == 1) {
+                    if (croppedImage != null) {
                         g.drawImage(croppedImage, cropP.x, cropP.y, this);
-                    } else if (userAction == 2) {
+                    }
+
+                    if (userAction == 2) {
                         int x0, y0, w, h;
                         if (sp.x > ep.x)  {
                             x0 = ep.x;
@@ -249,26 +266,6 @@ public class DEViseWindow extends Canvas
                             y0 = sp.y;
                             h = ep.y - y0;
                         }
-
-                        /*
-                        if (jscreen.isGrid) {
-                            Rectangle rect = currentView.getLoc();
-                            int x1 = x0 + w, y1 = y0 + h, step = currentView.getStep();
-                            x0 = (x0 / step) * step;
-                            y0 = (y0 / step) * step;
-                            if (dim.width - x1 < step)
-                                x1 = dim.width;
-                            else
-                                x1 = (x1 / 20 + 1) * 20;
-                            if (imageHeight - y1 < 20)
-                                y1 = imageHeight;
-                            else
-                                y1 = (y1 / 20 + 1) * 20;
-
-                            w = x1 - x0;
-                            h = y1 - y0;
-                        }
-                        */
 
                         g.drawRect(x0, y0, w, h);
                     } else {
@@ -292,6 +289,9 @@ public class DEViseWindow extends Canvas
 
     public Point adjustPoint(Point p)
     {
+        if (p == null)
+            return new Point(0, 0);
+
         if (p.x < 0)
             p.x = 0;
         if (p.x >= windowDim.width)
@@ -308,6 +308,9 @@ public class DEViseWindow extends Canvas
     {
         // It is guranteed in other place that currentView will not be null
         Rectangle loc = currentView.getLoc();
+        if (p == null)
+            return new Point(loc.x, loc.y);
+
         if (p.x < loc.x)
             p.x = loc.x;
         if (p.x >= loc.x + loc.width)
@@ -326,7 +329,7 @@ public class DEViseWindow extends Canvas
         public void keyPressed(KeyEvent event)
         {
             isKeyPressed = true;
-            lastKey = event.getKeyCode();
+            lastKeyPressed = event.getKeyCode();
         }
 
         public void keyReleased(KeyEvent event)
@@ -336,15 +339,22 @@ public class DEViseWindow extends Canvas
 
         public void keyTyped(KeyEvent event)
         {
-            char key = event.getKeyChar();
+            lastKeyTyped = event.getKeyChar();
 
-            //YDebug.println("this key is pressed: " + key);
+            if (lastKeyTyped != KeyEvent.CHAR_UNDEFINED) {
+                YGlobals.Ydebugpn("Key \'" + lastKeyTyped + "\' is pressed");
 
-            userAction = 0;
-            repaint();
+                if (dispatcher.getStatus() < 0) {
+                     YGlobals.Ydebugpn("Dispatcher is stopped! Restart dispatcher ...");
+                     dispatcher.startDispatcher();
+                     return;
+                }
 
-            dispatcher.addCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + (int)key);
-	        //dispatcher.addCmd("JAVAC_KeyAction {" + currentView.getName() + "}" + key);
+                userAction = 0;
+                repaint();
+
+                dispatcher.insertCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + (int)lastKeyTyped);
+	        }
         }
     }
     // end of class ViewKeyListener
@@ -356,7 +366,6 @@ public class DEViseWindow extends Canvas
         {
             // The starting point will be in this window, otherwise this event
             // will not be catched by this window
-            //sp = adjustPoint(event.getPoint());
             sp = event.getPoint();
             ep = sp;
 
@@ -370,10 +379,11 @@ public class DEViseWindow extends Canvas
                 requestFocus();
             }
 
-            if (currentView == null)
+            if (currentView == null) {
                 jsc.viewInfo.updateInfo(windowName, null, sp.x, sp.y);
-            else
+            } else {
                 jsc.viewInfo.updateInfo(windowName, currentView.getName(), sp.x, sp.y);
+            }
 
             isMouseDragged = false;
         }
@@ -385,17 +395,44 @@ public class DEViseWindow extends Canvas
                 if (sp.x == ep.x && sp.y == ep.y && isMouseDragged == false) {
                     userAction = 0;
                     repaint();
-                    dispatcher.addCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + sp.x + " " + sp.y);
+
+                    if (dispatcher.getStatus() < 0) {
+                         YGlobals.Ydebugpn("Dispatcher is stopped! Restart dispatcher ...");
+                         dispatcher.startDispatcher();
+                         return;
+                    }
+
+                    dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + sp.x + " " + sp.y);
                 } else {
                     if (isMouseDragged == true) {
                         if (sp.x == ep.x || sp.y == ep.y) {
                             userAction = 0;
                             repaint();
+
+                            if (isViewFirstTime) {
+                                if (dispatcher.getStatus() < 0) {
+                                     YGlobals.Ydebugpn("Dispatcher is stopped! Restart dispatcher ...");
+                                     dispatcher.startDispatcher();
+                                     return;
+                                }
+
+                                dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
+                            }
                         }  else {
                             userAction = 0;
                             repaint();
-                            //dispatcher.addCmd("JAVAC_MouseAction_RubberBand {" + currentView.getName() + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
-                            dispatcher.addCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+
+                            if (dispatcher.getStatus() < 0) {
+                                 YGlobals.Ydebugpn("Dispatcher is stopped! Restart dispatcher ...");
+                                 dispatcher.startDispatcher();
+                                 return;
+                            }
+
+                            if (isViewFirstTime) {
+                                dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
+                            } else {
+                                dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                            }
                         }
                     }
                 }
@@ -406,29 +443,22 @@ public class DEViseWindow extends Canvas
         {
             if (currentView != null && !isFirstTime) {
                 if (event.getClickCount() > 1) {
-                    /*
-                    Rectangle cursorLoc = currentView.getCursorLoc(event.getPoint());
-                    if (cursorLoc != null) {
-                        CropImageFilter croppedFilter = new CropImageFilter(cursorLoc.x, cursorLoc.y, cursorLoc.width, cursorLoc.height);
-                        FilteredImageSource source = new FilteredImageSource(winImage.getSource(), croppedFilter);
-                        croppedImage = createImage(source);
-                        source = new FilteredImageSource(croppedImage.getSource(), new XORFilter());
-                        croppedImage = createImage(source);
-                        cropP.x = cursorLoc.x;
-                        cropP.y = cursorLoc.y;
-                    */
-                        Point p = event.getPoint();
-
+                    Point p = event.getPoint();
+                    if (currentView.isCurrent(p)) {
                         userAction = 0;
                         repaint();
 
-                        dispatcher.addCmd("JAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
-                    /*    
-                    } else {
-                        userAction = 0;
-                        repaint();
+                        if (dispatcher.getStatus() < 0) {
+                             YGlobals.Ydebugpn("Dispatcher is stopped! Restart dispatcher ...");
+                             dispatcher.startDispatcher();
+                             return;
+                        }
+
+                        if (isViewFirstTime)
+                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + p.x + " " + p.y);
+                        else
+                            dispatcher.insertCmd("JAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
                     }
-                    */
                 }
             } else {
                 userAction = 0;
@@ -443,7 +473,7 @@ public class DEViseWindow extends Canvas
     {
         public void mouseDragged(MouseEvent event)
         {
-            if (currentView != null && !isFirstTime) {
+            if (currentView != null && !isFirstTime && !isViewFirstTime) {
                 isMouseDragged = true;
 
                 ep = adjustViewPoint(event.getPoint());

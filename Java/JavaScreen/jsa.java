@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.10  1998/08/14 17:48:10  hongyu
+// *** empty log message ***
+//
 // Revision 1.5  1998/07/09 17:38:40  hongyu
 // *** empty log message ***
 //
@@ -41,129 +44,170 @@ import  java.util.*;
 public class jsa extends Applet
 {
     URL baseURL = null;
-    String hostname = null;
-    int port;
+    String host = null;
+    String user = null;
+    String pass = null;
+    int port = 0;
+
     String sessionName = null;
-    
+
+    Vector images = null;
+
+    Button startButton = new Button("Start Java Screen");
+
     TextArea startInfo = null;
-    
-    boolean isStarted = false;
+
     jsdevisec jsc = null;
-    DEViseComm jscomm = null;
 
     public void init()
     {
-        YGlobals.ISAPPLET = true;
+        YGlobals.YISAPPLET = true;
+        YGlobals.YISGUI = true;
+        YGlobals.YISLOG = false;
 
         //baseURL = getDocumentBase();
         baseURL = getCodeBase();
-        hostname = baseURL.getHost();
-        
+        host = baseURL.getHost();
+
+        setLayout(new BorderLayout(0, 10));
+        add(startButton, BorderLayout.NORTH);
+        startButton.setEnabled(false);
+
+        startButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (jsc == null) {
+                            startInfo.append("Start Java Screen ...\n");
+                            jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                            //startButton.setEnabled(false);
+                        } else {
+                            if (jsc.getQuitStatus()) {
+                                startInfo.append("Start Java Screen ...\n");
+                                jsc = null;
+                                jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                                //startButton.setEnabled(false);
+                            } else {
+                                startInfo.append("Java Screen already started!\n");
+                            }
+                        }
+                    }
+                });
+
         startInfo = new TextArea(8, 50);
         startInfo.setBackground(DEViseGlobals.textbgcolor);
         startInfo.setForeground(DEViseGlobals.textfgcolor);
         startInfo.setFont(DEViseGlobals.textfont);
-        add(startInfo);
-        
+        add(startInfo, BorderLayout.CENTER);
+
+        setVisible(true);
+
         String version = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
         startInfo.append("The browser you used is: " + vendor + "\n");
         startInfo.append("The Java version your browser supported is: " + version + "\n");
         if (version.compareTo("1.1") < 0)  {
             startInfo.append("Error: Java version 1.1 or greater is needed to run this program\n");
-            return; 
+            return;
         }
-        
-        // create a YLogFile class that does nothing when its methods called
-        YGlobals.LogFile = new YLogFile();
-        
-        if (YGlobals.ISDEBUG) {
-            YGlobals.DebugInfo = new YDebug(true);
-        } else {
-            // create a YDebug class that does nothing when its methods called
-            YGlobals.DebugInfo = new YDebug();
-        }                
-                        
+
         checkParameters();
-        
-        startJS();
+
+        if (user == null)
+            user = DEViseGlobals.DEFAULTUSER;
+        if (pass == null)
+            pass = DEViseGlobals.DEFAULTPASS;
+
+        YGlobals.start();
     }
 
     public void start()
     {
-        if (jsc != null && !jsc.getQuitStatus()) {
-            jsc.displayMe(true);
-            YDebug.setVisible(true);
+        if (sessionName != null) {
+            startJS(true);
+        } else {
+            startJS(false);
         }
     }
 
     public void stop()
     {
         if (jsc != null && !jsc.getQuitStatus()) {
-            jsc.displayMe(false); 
-            YDebug.setVisible(false);
+            jsc.displayMe(false);
         }
     }
 
     public void destroy()
     {
-        if (jsc != null && !jsc.getQuitStatus()) {
-            jsc.quit();
-            closeJS();
-            jsc = null;
-        }
-        
+        closeJS();
+
         super.destroy();
     }
-    
+
     public void closeJS()
     {
-        isStarted = false;        
-        jscomm.disconnect(true);
+        if (jsc != null && !jsc.getQuitStatus()) {
+            jsc.quit();
+            jsc = null;
+        }
+
+        sessionName = null;
+        images = null;
+        user = null;
+        pass = null;
     }
-    
-    public void startJS() 
-    {        
-        startInfo.append("Trying to load DEVise animation symbol ...\n");        
-        MediaTracker tracker = new MediaTracker(this);
-        Vector images = new Vector();
-        Image image = null;
-        for (int i = 0; i < 4; i++)  {
-            image = getImage(baseURL, "devise" + i + ".gif");
-            tracker.addImage(image, 0);
-            try  {
-                tracker.waitForID(0);
-            }  catch (InterruptedException e)  {
+
+    public void startJS(boolean flag)
+    {
+        if (images == null) {
+            images = new Vector();
+
+            startInfo.append("Trying to load DEVise animation symbol ...\n");
+            MediaTracker tracker = new MediaTracker(this);
+            Image image = null;
+            for (int i = 0; i < 4; i++)  {
+                image = getImage(baseURL, "devise" + i + ".gif");
+                tracker.addImage(image, 0);
+                try  {
+                    tracker.waitForID(0);
+                }  catch (InterruptedException e)  {
+                }
+
+                if (tracker.isErrorID(0)) {
+                    startInfo.append("Can not load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
+                    images = null;
+                    break;
+                }
+
+                images.addElement(image);
             }
 
-            if (tracker.isErrorID(0)) {
-                startInfo.append("Can not load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
-                images = null;
-                break;
-            }
+            if (images != null)
+                startInfo.append("DEVise animation symbol successfully loaded\n");
+        }
 
-            images.addElement(image);
-        } 
-        if (images != null)
-            startInfo.append("DEVise animation symbol successfully loaded\n");
-        
-        jscomm = new DEViseComm(hostname, port, null, null);
-        
-        if (sessionName != null) {
-            startInfo.append("Try to make socket connection to server ...\n");
-            try {
-                jscomm.connect();
-            } catch (YException e) {
-                startInfo.append(e.getMessage());
-                return;
+        startButton.setEnabled(true);
+
+        if (jsc == null) {
+            if (flag) {
+                startInfo.append("Start Java Screen ...\n");
+                jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                //startButton.setEnabled(false);
+            }
+        } else {
+            if (jsc.getQuitStatus()) {
+                if (flag) {
+                    startInfo.append("Start new Java Screen ...\n");
+                    jsc = null;
+                    jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                    //startButton.setEnabled(false);
+                }
+            } else {
+                jsc.displayMe(true);
             }
         }
-        
-        jsc = new jsdevisec(jscomm, images, sessionName);
-        
-        isStarted = true;
-    } 
-    
+    }
+
     private void checkParameters()
     {
         String str = null;
@@ -171,30 +215,35 @@ public class jsa extends Applet
         if (str != null) {
             try {
                 port = Integer.parseInt(str);
-                if (port < 1 || port > 65535) 
+                if (port < 1024 || port > 65535)
                     throw new NumberFormatException();
+                startInfo.append("Parameter port " + port + " is used\n");
             } catch (NumberFormatException e) {
                 port = DEViseGlobals.DEFAULTCMDPORT;
                 startInfo.append("Incorrect port value specified! Default value is used\n");
             }
         } else {
+            port = DEViseGlobals.DEFAULTCMDPORT;
             startInfo.append("Parameter port is not specified! Default value is used\n");
         }
-        
+
         sessionName = getParameter("session");
         if (sessionName == null) {
             startInfo.append("Parameter session is not specified!\n");
+        } else {
+            startInfo.append("Parameter session: " + sessionName + " is used\n");
         }
-        
+
         String debug = getParameter("debug");
         if (debug.equals("true")) {
-            YGlobals.ISDEBUG = true;
+            YGlobals.YISDEBUG = true;
             startInfo.append("Debug Enabled!\n");
         } else {
-            YGlobals.ISDEBUG = false;
+            YGlobals.YISDEBUG = false;
+            startInfo.append("Debug Disabled!\n");
         }
     }
-    
+
     public String[][] getParameterInfo()
     {
         String [][] info = {
@@ -203,13 +252,13 @@ public class jsa extends Applet
                   {"port",            "int",        "jspop command port"},
                   {"session",        "String",      "session file name"},
                };
-               
+
         return info;
     }
-    
+
     public String getAppletInfo()
     {
         return "DEVise Java Screen version 2.0\nBy DEVise Development Group at UW-Madison\nAll rights reserved";
-    }    
+    }
 }
 

@@ -1,244 +1,219 @@
-import java.net.*;
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
-public class DEViseClient implements Runnable
+public class DEViseClient
 {
-    jspop pop = null;
-    DEViseCmdSocket jsCmdSocket = null, deviseCmdSocket = null;
-    public Thread clientThread = null;
+    private long totalOnlineTime = 0, totalSuspendTime = 0, lastActiveTime = 0, lastSuspendTime = 0;
+    private String[] serverCmds = null;
+    private Vector images = null;
+    private DEViseUser user = null;
+    private int connectID = -5;
+    private int stage = 0;
+    public DEViseCmdSocket cmdSocket = null;
+    public DEViseImgSocket imgSocket = null;
+    private String hostname = null;
+    private String session = null; 
+    private boolean isSessionOpened = false;
     
-    public String hostname = null;
-    public int connectID;
-    public String lastSavedSession = null;
-    public DEViseUser user = null;
-    public DEViseServer server = null;   
-    public int deviseImgPort, deviseCmdPort;
-    
-    boolean status = true;
-    String errorMsg = null;
-        
-    public DEViseClient(jspop what, Socket socket) throws IOException
-    {
-        pop = what;
-        jsCmdSocket = new DEViseCmdSocket(socket);
-        hostname = socket.getInetAddress().getHostName();
-        clientThread = new Thread(this);
-        clientThread.start();
+    public DEViseClient(DEViseCmdSocket s1, DEViseImgSocket s2, String h)
+    {                
+        cmdSocket = s1;
+        imgSocket = s2;
+        hostname = h;
     }
     
-    public synchronized void close(boolean isQuit)
+    public synchronized String getLastSavedSession()
     {
-        status = false;                
+        return session;
+    }
+    
+    public synchronized void setLastSavedSession(String s)
+    {
+        session = s;
+    }
+    
+    public synchronized void setSessionFlag(boolean flag)
+    {
+        isSessionOpened = flag;
+    }
+    
+    public synchronized boolean getSessionFlag()
+    {
+        return isSessionOpened;
+    }
+    
+    public synchronized long getTotalOnlineTime(long time)
+    {
+        if (lastSuspendTime == 0 && lastActiveTime == 0)
+            return totalOnlineTime;
+            
+        if (lastSuspendTime > lastActiveTime)
+            return totalOnlineTime;
+        else 
+            return totalOnlineTime + (time - lastActiveTime);
+    }
+    
+    public synchronized void setTotalOnlineTime(long time)
+    {
+        totalOnlineTime = time;
+    }
+    
+    public synchronized long getTotalSuspendTime(long time)
+    {
+        if (lastSuspendTime == 0 && lastActiveTime == 0)
+            return totalSuspendTime;
         
-        try {
-            if (jsCmdSocket != null) {
-                jsCmdSocket.sendCmd("JAVAC_Done");
-            }        
-        } catch (YException e) {
-            YGlobals.printMsg(e.getMessage());
-        }
-        
-        try {
-            if (deviseCmdSocket != null) {
-                if (!isQuit) {
-                    try {
-                        if (lastSavedSession == null)
-                            lastSavedSession = user.username + connectID;
-                            
-                        String[] rsp = deviseCmdSocket.sendCommand("JAVAC_SaveSession {" + lastSavedSession + "}");
-                    } catch (InterruptedIOException e1) {
-                        YGlobals.printMsg("Timeout while sending JAVAC_SaveSession!");
-                    }
-                }
-                    
-                deviseCmdSocket.sendCmd("JAVAC_Exit");
-            }        
-        } catch (YException e) {
-            YGlobals.printMsg(e.getMessage());
-        }
-        
-        if (deviseCmdSocket != null) {
-            deviseCmdSocket.closeSocket();   
-            deviseCmdSocket = null;
-        }
-        
-        if (jsCmdSocket != null) {
-            jsCmdSocket.closeSocket();
-            jsCmdSocket = null;
-        } 
-        
-        if (server != null) 
-            server.isAvailable = true;
-                
-        if (isQuit) 
-            pop.removeClient(this);
+        if (lastSuspendTime > lastActiveTime)
+            return totalSuspendTime + (time - lastSuspendTime);
         else
-            pop.suspendClient(this);
+            return totalSuspendTime;
     }
     
-    public void run()
+    public synchronized void setTotalSuspendTime(long time)
     {
-        try {
-            setStatus(true);
-            
-            String request = null;
-            try {
-                request = jsCmdSocket.receiveRsp();
-            } catch (InterruptedIOException e) {
-                throw new YException("Can not receive response from " + hostname + " within timeout value!");
-            }
-            
-            if (request.startsWith("JAVAC_Connect")) {
-                String[] data = DEViseGlobals.parseString(request);
-                if (data == null)
-                    throw new YException("Invalid connection request received from client!");
-                
-                String username = data[1];
-                String password = data[2];
-                int id;
-                try {
-                    id = Integer.parseInt(data[3]);
-                } catch (NumberFormatException e) {
-                    throw new YException("Invalid connection request received from client: " + request);
-                }
-                
-                if (validateClient(username, password, id)) {
-                    jsCmdSocket.sendCmd("JAVAC_User " + deviseImgPort + " " + user.timeout + " " + connectID);
-                    jsCmdSocket.sendCmd("JAVAC_Done");
-                } else {
-                    jsCmdSocket.sendCmd("JAVAC_Fail {" + errorMsg + "}");
-                    close(true);
-                }
-            } else {
-                throw new YException("Invalid connection request received from client " + hostname + ": " + request);
-            } 
-            
-            String command = null;
-            String[] cmd = null;
-            String[] rsp = null;
-            while (getStatus()) {
-                try {
-                    command = jsCmdSocket.receiveRsp();
-                } catch (InterruptedIOException e) {
-                //    String result = YGlobals.showMsg(jsc, "Can not receive response from client " + hostname + " within timeout!"
-                //                    + "\nDo you wish to continue to wait?", "Confirm", YGlobals.MBXYESNO);
-                //    if (!result.equals(YGlobals.IDYES)) 
-                        close(true);
-                        
-                    continue;
-                }
-                
-                cmd = DEViseGlobals.parseString(command);
-                if (cmd == null)
-                    throw new YException("Incorrect command received from client!");
-                
-                try {                
-                    if (cmd[0].startsWith("JAVAC_Exit")) {
-                        close(true);
-                    } else if (cmd[0].startsWith("JAVAC_Suspend")) {
-                        close(false);
-                    } else if (cmd[0].startsWith("JAVAC_SaveCurrentState")) {
-                        if (lastSavedSession != null) {
-                            rsp = deviseCmdSocket.sendCommand("JAVAC_SaveSession " + lastSavedSession);
-                        } else {
-                            lastSavedSession = user.username + connectID + ".ds";
-                            rsp = deviseCmdSocket.sendCommand("JAVAC_SaveSession " + lastSavedSession);
-                        }
-                    } else if (cmd[0].startsWith("JAVAC_RestoreState")) {
-                        if (lastSavedSession != null) {
-                            rsp = deviseCmdSocket.sendCommand("JAVAC_OpenSession " + lastSavedSession);
-                        } else {
-                            rsp = new String[1];
-                            rsp[0] = new String("JAVAC_Error {Can not find Saved Session!}");
-                        }
-                    } else if (cmd[0].startsWith("JAVAC_GetStat")) {
-                        String newstr = pop.getStat();
-                        rsp = new String[1];
-                        rsp[0] = "JAVAC_UpdateStat {" + newstr + "}";    
-                    } else {
-                        if (command.startsWith("JAVAC")) {
-                            rsp = deviseCmdSocket.sendCommand(command);
-                        } else {
-                            rsp = deviseCmdSocket.sendCommand(command, DEViseGlobals.API_CMD);
-                        }
-                    }
-                } catch (InterruptedIOException e1) {
-                    rsp = new String[1];
-                    rsp[0] = new String("JAVAC_Fail {Can not receive response from DEVise server within timeout!}");
-                }
-                
-                if (rsp != null) {
-                    for (int i = 0; i < rsp.length; i++) 
-                        jsCmdSocket.sendCmd(rsp[i]); 
-                }
-                
-                rsp = null;
-            }            
-        } catch (YException e) {
-            YGlobals.printMsg(e.getMessage() + "\n");
-            close(true);
-        }                  
+        totalSuspendTime = time;
     }
     
-    public synchronized boolean getStatus()
+    public synchronized long getActiveTime(long time)
     {
-        return status;
+        if (lastSuspendTime < lastActiveTime)
+            return (time - lastActiveTime);
+        else
+            return 0;            
     }
     
-    public synchronized void setStatus(boolean s)
+    public synchronized long getSuspendTime(long time)
     {
-        status = s;
+        if (lastSuspendTime > lastActiveTime)
+            return (time - lastSuspendTime);
+        else
+            return 0;
+    }
+    
+    public synchronized void setLastActiveTime(long time)
+    {
+        if (lastSuspendTime != 0) {
+            totalSuspendTime += (time - lastSuspendTime);
+        }
+        
+        lastActiveTime = time;                    
     } 
     
-    public synchronized boolean validateClient(String name, String pass, int id)
-    {   
-        user = pop.checkUser(name, pass);
-        
-        if (user == null) {
-            errorMsg = new String("Connection rejected! Invalid username or Incorrect password received!");
-            YGlobals.printMsg(errorMsg);
-            return false;
+    public synchronized long getLastActiveTime()
+    {
+        return lastActiveTime;
+    }
+    
+    public synchronized void setLastSuspendTime(long time)
+    {
+        if (lastActiveTime != 0) {
+            totalOnlineTime += (time - lastActiveTime);
         }
         
-        if (!pop.checkHost(user, hostname)) {
-            errorMsg = new String("Connection rejected! You can not start more than one client!");
-            YGlobals.printMsg(errorMsg);
+        lastSuspendTime = time;
+    }
+    
+    public synchronized long getLastSuspendTime()
+    {
+        return lastSuspendTime;
+    }
+    
+    public synchronized void setStage(int s)
+    {
+        stage = s;
+    }
+    
+    public synchronized int getStage()
+    {
+        return stage;
+    }
+    
+    public String getHost()
+    {
+        return hostname;
+    }
+    
+    public synchronized String[] getCmds()
+    {
+        return serverCmds;
+    }
+    
+    public synchronized void setCmds(String[] s)
+    {
+        serverCmds = s;
+    }
+    
+    public synchronized Vector getImages()
+    {
+        return images;
+    }
+    
+    public synchronized void setImages(Vector i)
+    {
+        images = i;
+    }
+    
+    public synchronized DEViseUser getUser()
+    {
+        return user;
+    }
+    
+    public synchronized void setUser(DEViseUser u)
+    {
+        user = u;
+    }
+    
+    public synchronized int getID()
+    {
+        return connectID;
+    }
+    
+    public synchronized void setID(int id)
+    {
+        connectID = id;
+    }
+    
+    public synchronized boolean isRequest()
+    {
+        if (cmdSocket == null || imgSocket == null)
             return false;
-        }
-        
-        connectID = pop.checkID(this, id);
-        if (connectID == DEViseGlobals.ERRORID) {
-            errorMsg = new String("Connection rejected! Invalid connection ID received!");
-            YGlobals.printMsg(errorMsg);
-            return false;
-        }
-        
-        if (!pop.startServer(this)) {
-            connectID = DEViseGlobals.ERRORID;
-            if (user.priority == 2) {
-                errorMsg = new String("Connection rejected! Can not start DEVise server within timeout!");
-                YGlobals.printMsg(errorMsg);
-                return false;
-            } else {
-                errorMsg = new String("Connection rejected! All connection are used! Please try again later!");
-                YGlobals.printMsg(errorMsg);
-                return false;
-            }
-        } 
         
         try {
-            deviseCmdSocket = new DEViseCmdSocket("localhost", deviseCmdPort);
-        } catch (UnknownHostException e) {
-            YGlobals.printMsg("Can not open socket connection to DEVise Server");
-            errorMsg = new String("Connection rejected! Can not talk to DEVise Server!");
-            return false;
-        } catch (IOException e) {
-            YGlobals.printMsg("Can not open socket connection to DEVise Server");
-            errorMsg = new String("Connection rejected! Can not talk to DEVise Server!");
+            if (cmdSocket.isEmpty()) 
+                return false;
+            else 
+                return true;
+        } catch (YException e) {
+            YGlobals.Ydebugpn(e.getMessage());
+            close(false);
             return false;
         }
-        
-        return true;
     }
-}                  
+        
+    public synchronized void close(boolean flag)
+    {            
+        if (flag) {
+            //totalOnlineTime = getTotalOnlineTime(time);
+            //totalSuspendTime = getTotalSuspendTime(time);        
+            ; // do something, such as update user information
+        }
+        
+        if (cmdSocket != null) {
+            cmdSocket.closeSocket();
+            cmdSocket = null;
+        }
+        
+        if (imgSocket != null) {
+            imgSocket.closeSocket();
+            imgSocket = null;
+        }
+        
+        // client will retain connectID, user, totalOnlineTime and totalSuspendTime
+        // and lastSuspendTime and lastActiveTime
+        stage = 0;
+        isSessionOpened = false;
+        serverCmds = null;
+        images = null;
+    }
+}

@@ -1,60 +1,146 @@
-import  java.awt.*;
+import java.awt.*;
+import java.io.*;
 
 public final class YDebug
 {
-    private static boolean isdebug = false;
-    private static boolean isgui = false;
     private static YGUIMsg guimsg = null;
+    private static BufferedWriter logfile = null;
 
     public YDebug()
     {
-        // no debug information is written
-    }
-
-    public YDebug(boolean arg)
-    {
-        isdebug = true;
-        isgui = arg;
-
-        if (isgui) {
+        if (YGlobals.YISDEBUG && YGlobals.YISGUI) {
             guimsg = new YGUIMsg();
         }
-    }
 
-    public static void println(String msg)
-    {
-        if (isdebug) {
-            if (isgui) {
-                guimsg.print(msg + "\n");
-            } else {
-                System.out.print(msg + "\n");
+        if (YGlobals.YISLOG) {
+            try {
+                logfile = new BufferedWriter(new FileWriter("debug.log"));
+            } catch (IOException e) {
+                logfile = null;
             }
         }
     }
 
-    public static void print(String msg)
+    public synchronized static void println(String msg, int id)
     {
-        if (isdebug) {
-            if (isgui) {
-                guimsg.print(msg);
-            } else {
-                System.out.print(msg);
+        if (id == 0) {
+            if (YGlobals.YISDEBUG) {
+                if (YGlobals.YISGUI && guimsg != null) {
+                    guimsg.println(msg);
+                } else {
+                    System.out.println(msg);
+                }
             }
+        } else if (id == 1) {
+            if (YGlobals.YISLOG) {
+                if (logfile != null) {
+                    try {
+                        logfile.write(msg, 0, msg.length());
+                        logfile.newLine();
+                    } catch (IOException e) {
+                        closeLogFile();
+                    }
+                }
+            }
+        } else if (id == 2) {
+            if (YGlobals.YISDEBUG) {
+                if (YGlobals.YISGUI && guimsg != null) {
+                    guimsg.println(msg);
+                } else {
+                    System.out.println(msg);
+                }
+            }
+
+            if (YGlobals.YISLOG) {
+                if (logfile != null) {
+                    try {
+                        logfile.write(msg, 0, msg.length());
+                        logfile.newLine();
+                    } catch (IOException e) {
+                        closeLogFile();
+                    }
+                }
+            }
+        } else {
         }
     }
 
-    public static void close()
+    public synchronized static void println(String msg)
     {
-        if (isgui) {
+        println(msg, 2);
+    }
+
+    public synchronized static void print(String msg, int id)
+    {
+        if (id == 0) {
+            if (YGlobals.YISDEBUG) {
+                if (YGlobals.YISGUI && guimsg != null) {
+                    guimsg.print(msg);
+                } else {
+                    System.out.print(msg);
+                }
+            }
+        } else if (id == 1) {
+            if (YGlobals.YISLOG) {
+                if (logfile != null) {
+                    try {
+                        logfile.write(msg, 0, msg.length());
+                    } catch (IOException e) {
+                        closeLogFile();
+                    }
+                }
+            }
+        } else if (id == 2) {
+            if (YGlobals.YISDEBUG) {
+                if (YGlobals.YISGUI && guimsg != null) {
+                    guimsg.print(msg);
+                } else {
+                    System.out.print(msg);
+                }
+            }
+
+            if (YGlobals.YISLOG) {
+                if (logfile != null) {
+                    try {
+                        logfile.write(msg, 0, msg.length());
+                    } catch (IOException e) {
+                        closeLogFile();
+                    }
+                }
+            }
+        } else {
+        }
+    }
+
+    public synchronized static void print(String msg)
+    {
+        print(msg, 2);
+    }
+
+    private static void closeLogFile()
+    {
+        if (logfile != null) {
+            try {
+                logfile.close();
+            } catch (IOException e) {
+            }
+
+            logfile = null;
+        }
+    }
+
+    private static void closeGUI()
+    {
+        if (guimsg != null) {
             guimsg.close();
+            guimsg = null;
         }
     }
-    
-    public static void setVisible(boolean flag)
+
+    public synchronized static void close()
     {
-        if (isgui) {
-            guimsg.setVisible(flag);
-        }
+        closeLogFile();
+        closeGUI();
     }
 }
 
@@ -84,6 +170,11 @@ final class YGUIMsg extends Frame
         textArea.append(msg);
     }
 
+    public void println(String msg)
+    {
+        textArea.append(msg + "\n");
+    }
+
     public void clear()
     {
         textArea.setText("");
@@ -92,11 +183,6 @@ final class YGUIMsg extends Frame
     public void close()
     {
         dispose();
-    }
-
-    protected void finalize()
-    {
-        close();
     }
 }
 

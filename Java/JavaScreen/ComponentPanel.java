@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1998/08/14 17:48:04  hongyu
+// *** empty log message ***
+//
 // Revision 1.10  1998/06/11 15:07:43  wenger
 // Added standard header to Java files.
 //
@@ -30,10 +33,10 @@ import  java.awt.*;
 public class ComponentPanel extends Panel
 {
     public ComponentPanel(Component component[], String style, int gap, int align)
-    {   
+    {
         if (component == null)
             return;
-        
+
         if (align == 0) {
             setLayout(new FlowLayout(FlowLayout.CENTER));
         } else if (align == 1) {
@@ -42,8 +45,8 @@ public class ComponentPanel extends Panel
             setLayout(new FlowLayout(FlowLayout.RIGHT));
         }
         //GridBagLayout gridbag = new GridBagLayout();
-        //GridBagConstraints c = new GridBagConstraints();       
-        
+        //GridBagConstraints c = new GridBagConstraints();
+
         // building the panel that display components
         Panel panel = new Panel();
         if (style.equals("Vertical"))  {
@@ -51,7 +54,7 @@ public class ComponentPanel extends Panel
         }  else  {
             panel.setLayout(new GridLayout(1, 0, gap, 0));
         }
-        
+
         int i;
         for (i = 0; i < component.length; i++)  {
             if (component[i] instanceof Button)  {
@@ -70,25 +73,25 @@ public class ComponentPanel extends Panel
                 if (component[i] instanceof Label)
                     ((Label)component[i]).setAlignment(Label.CENTER);
             }
-            
+
             panel.add(component[i]);
         }
-        
+
         add(panel);
     }
-    
+
     public ComponentPanel(Component component[], String style, int gap)
     {
         this(component, style, gap, 0);
     }
-    
+
     public ComponentPanel(Component component[], String style)
     {
-        this(component, style, 10, 0);        
+        this(component, style, 10, 0);
     }
-    
+
     public ComponentPanel(Component component[])
     {
         this(component, "Horizontal", 10, 0);
-    }                
+    }
 }
