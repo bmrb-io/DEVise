@@ -16,12 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/10/31 17:13:17  jussi
+  Added tar archive handling routines and data structures.
+
   Revision 1.3  1995/09/22 15:46:22  jussi
   Added copyright message.
 
   Revision 1.2  1995/09/05 20:31:56  jussi
   Added CVS header.
 */
+
+//#define TAPE_DEBUG
 
 #include <iostream.h>
 #include <unistd.h>
@@ -116,6 +121,9 @@ void TapeDrive::readTarHeader()
   tarFileSize = oct2int(tarHeader.dbuf.size);
   tarFileOffset = 0;
 
+  TAPEDBG(cout << "Read tar header: " << tarHeader.dbuf.name << ", size "
+	  << tarFileSize << endl);
+
   haveTarHeader = 1;
 }
 
@@ -160,6 +168,10 @@ long TapeDrive::seek(long offset)
 
 int TapeDrive::read(void *buf, int recSize, int binary)
 {
+  TAPEDBG(cout << "Read request for " << recSize << " "
+	  << (binary ? "binary" : "ASCII")
+	  << " bytes to " << (void *)buf << endl);
+
   if (bufferType != readBuffer) {
     cerr << "Must do a seek before switching from writing to reading" << endl;
     exit(1);
@@ -218,6 +230,8 @@ int TapeDrive::read(void *buf, int recSize, int binary)
     assert(end);
     recSize = end - start;              // do not include record separator
   }
+  TAPEDBG(cout << "Copying " << recSize << " bytes to "
+	  << (void *)buf << endl);
   memcpy(buf, start, recSize);
   bufferOffset += recSize + 1;          // go past record separator too
   if (!binary                           // in ASCII mode?
@@ -248,6 +262,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
       if (end)                          // found newline = end of record?
 	b = end - start + 1;
     }
+    TAPEDBG(cout << "Copying " << b << " bytes to " << (void *)p << endl);
     memcpy(p, start, b);
     bufferOffset += b;
     bytesLeft -= b;
@@ -371,6 +386,11 @@ void TapeDrive::getStatus()
 void TapeDrive::fillBuffer()
 {
   read_ios++;
+
+  TAPEDBG(cout << "Reading " << blockSize << " bytes to " << (void *)buffer
+	  << " from fd " << FILE2FD(file) << endl);
+  TAPEDBG(cout << "Bufferblock " << bufferBlock << ", bufferOffset "
+	  << bufferOffset << endl);
 
 //  startTimer();
   int status = ::read(FILE2FD(file), buffer, blockSize);
