@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/12 03:42:33  ravim
+  Fixed a bug.
+
   Revision 1.3  1995/12/11 18:03:29  ravim
   Physical and logical schemas handled.
 
@@ -20,6 +23,7 @@ extern char *ParseCat(char *catFile);
 extern char *ParseCatOriginal(char *catFile);
 extern char *ParseCatPhysical(char *catFile);
 extern char *ParseCatLogical(char *catFile, char *sname);
+extern char *getTail(char *fname);
 
 /* Register a new constructor for class. The
 constructor is called depending on the "source" statment stored
