@@ -76,6 +76,10 @@ public:
 
   const T& operator*() const { return *ptr; }
 
+  T& operator[](int i) { return ptr[i]; }
+
+  const T& operator[](int i) const { return ptr[i]; }
+
   void operator=(T* p) { delete [] ptr; ptr = p; }
 
 private:
