@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.48  1996/06/27 19:04:48  jussi
+  The user can now switch between 2D and 3D display, the
+  data is refreshed and displayed accordingly.
+
   Revision 1.47  1996/06/27 15:43:55  jussi
   Added method AbortAndReexecuteQuery which allows the QueryProc
   to ask the view to re-issue queries when TData has changed.
@@ -2457,6 +2461,8 @@ void View::SetCamera(Camera new_camera)
   _camera.flag = new_camera.flag;
   _camera.H = new_camera.H;
   _camera.V = new_camera.V;
+
+  CompRhoPhiTheta();
 
   /* this call causes the user interface to update the 3D query dialog */
   SetVisualFilter(_filter);
