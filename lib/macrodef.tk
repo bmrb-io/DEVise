@@ -351,12 +351,58 @@ proc MacroDefHelp {} {
 ############################################################
 
 proc MacroDefAuto {tdata} {
-    global schemas modified x xtype sortedx yvar selgrp schema
+    global schemas modified x xtype sortedx yvar selgrp schemaname schema
     global macroSelectColor macroMenuSelectColor
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
     if {!$err} { wm deiconify .auto; return }
+
+    set sname [lindex $schemas($tdata) 0]
+    set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
+    set x ""
+    set xtype ""
+    set sortedx 0
+
+    # get the list of top level group names from DEVise
+    set topgrps [DEVise getTopGroups $sname]
+    set schemaname $sname
+
+    if {[llength $topgrps] == 1 && [lindex $topgrps 0] == "__default"} {
+	set selgrp "__default"
+    } else {
+	# Create window to show list of top level group names
+	toplevel .topgrps
+	wm title .topgrps "Choose AttributeGroup"
+	wm geometry .topgrps 300x200+100+100
+	selection clear .topgrps
+	listbox .topgrps.list -relief raised -borderwidth 2 \
+		-yscrollcommand ".topgrps.scroll set" \
+		-font 9x15 -selectmode single
+	scrollbar .topgrps.scroll -command ".topgrps.list yview"
+	button .topgrps.ok -text OK -command {
+	    set selgrp [.topgrps.list get active]
+	    set topgrp $selgrp
+	    destroy .topgrps
+	}
+	pack .topgrps.ok -side bottom -fill x
+	pack .topgrps.scroll -side right -fill y
+	pack .topgrps.list -fill x 
+	
+	bind .topgrps.list <Double-Button-1> {
+	    set selgrp [.topgrps.list get active]
+	    destroy .topgrps
+	}
+
+	foreach i $topgrps {
+	    .topgrps.list insert end $i
+	}
+	
+	tkwait visibility .topgrps
+	grab set .topgrps
+	tkwait window .topgrps
+    }
+    
 
     toplevel .auto
     wm title .auto "Automatic Views"
@@ -384,7 +430,7 @@ proc MacroDefAuto {tdata} {
     #  For selecting Y attrs - a button here will pop up a new window
     # containing a list of name from which a selection can be made
     button .auto.ysel.sel -text "Attributes from Group : $selgrp" \
-           -command {selYAuto $selgrp}
+           -command {selYAuto $selgrp $selgrp}
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -ipadx 2m -expand 1
 
 
@@ -393,11 +439,12 @@ proc MacroDefAuto {tdata} {
     # with the group name.
     set addname($selgrp) .auto.xsel.attr.g$selgrp
     set grplist $selgrp
+   set topgrp $selgrp
     while {[llength $grplist] > 0} {
 	set grpname [lindex $grplist 0]
 	set grplist [lreplace $grplist 0 0]
 	menu $addname($grpname) -tearoff 0
-	set subgrps [DEVise getItems $grpname]
+	set subgrps [DEVise getItems $schemaname $topgrp $grpname]
         foreach sub $subgrps {
 		set subname [lindex $sub 0]
 		if {[lindex $sub 1] != "intr"} {
@@ -415,12 +462,6 @@ proc MacroDefAuto {tdata} {
 
 
 #    menu .auto.xsel.attr.menu -tearoff 0
-
-    set sname [lindex $schemas($tdata) 0]
-    set schema [ElimStringAttr [lindex $schemas($tdata) 1]]
-    set x ""
-    set xtype ""
-    set sortedx 0
 
 #    set row -1
 #    set col -1
@@ -966,7 +1007,6 @@ proc MacroDefLinks {m default} {
 proc DefSource {} {
     global sourceList
     global tdatas schemas maps fsBox sname datadir dialogListVar
-    global topgrps selgrp
 
     # see if .source window already exists; if so, just return
     set err [catch {set exists [wm state .source]}]
@@ -1031,46 +1071,6 @@ proc DefSource {} {
 	return ""
     }
 
-    # get the list of top level group names from DEVise
-    set topgrps [DEVise getTopGroups]
-
-    if {[llength $topgrps] == 0} {
-	set selgrp "__default"
-	DEVise defaultGroup $sname
-    } elseif {[llength $topgrps] == 1 && [lindex $topgrps 0] == "__default"} {
-	set selgrp "__default"
-	DEVise defaultGroup $sname
-    } else {
-	# Create window to show list of top level group names
-	toplevel .topgrps
-	wm title .topgrps "Choose AttributeGroup"
-	wm geometry .topgrps +100+100
-	selection clear .topgrps
-	listbox .topgrps.list -relief raised -borderwidth 2 \
-		-yscrollcommand ".topgrps.scroll set"
-	scrollbar .topgrps.scroll -command ".topgrps.list yview"
-	button .topgrps.ok -text OK -command {
-	    set selgrp [.topgrps.list get active]
-	    destroy .topgrps
-	}
-	pack .topgrps.ok -side bottom
-	pack .topgrps.list -side left
-	pack .topgrps.scroll -side right -fill y
-	
-	bind .topgrps.list <Double-Button-1> {
-	    set selgrp [.topgrps.list get active]
-	    destroy .topgrps
-	}
-
-	foreach i $topgrps {
-	    .topgrps.list insert end $i
-	}
-	
-	tkwait visibility .topgrps
-	grab set .topgrps
-	tkwait window .topgrps
-    }
-    
     set sdef [DEVise getSchema $sname]
     lappend tdatas [list $sname $source]
     set schemas($sname) [list $schema $sdef]
@@ -1737,8 +1737,8 @@ proc CreateBitmapMenuButton { w file varname } {
 
 
 # Procedure for displaying Y coordinates in Auto mode
-proc selYAuto {grpname} {
-	global yvar macroSelectColor
+proc selYAuto {grpname topgrp} {
+	global yvar macroSelectColor schemaname
 
 	#Check if the window already exists
         set err [catch {set exists [wm state .selY$grpname]}]
@@ -1761,7 +1761,7 @@ proc selYAuto {grpname} {
 	set maxcol 4
 	set varcnt 0
 
-	set grplist [DEVise getItems $grpname]
+	set grplist [DEVise getItems $schemaname $topgrp $grpname]
 
 	foreach itm $grplist {
 		set subname [lindex $itm 0]
@@ -1783,7 +1783,7 @@ proc selYAuto {grpname} {
 			button .selY$grpname.sel.row$row.col$col \
 				-text $subname -width 15 \
 				-command \
-				    [format "selYAuto %s" $subname] 
+				    [format "selYAuto %s %s" $subname $topgrp] 
 		}
 		pack .selY$grpname.sel.row$row.col$col -side left \
 			-fill x -expand 1
