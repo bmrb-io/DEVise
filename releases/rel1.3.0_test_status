@@ -8,7 +8,7 @@ x- SPARC/SunOS GUI: Jussi
 x- Linux GUI: Kent
 
 x- Binary TData: Kent
-- Buffer manager: Jussi
+x- Buffer manager: Jussi
 x- Client/server Devise: Kent
 x- Client/server library: Kent
 x- Composite parsers: Kent
@@ -16,9 +16,9 @@ x- Display (Display, WindowRep, Transform, 3D stuff): Kent
 - DTE: Donko
 - Links (record links, regular links): Kevin
 x- Histograms: Guangshun
-- Large data sets: Jussi
+x- Large data sets: Jussi
 - Mapping: Kevin
-- Multi: Jussi
+x- Multi: Jussi
 x- Printing: Kent
 x- Purify Devise: Guangshun/Kent
 x- Stat (incl. statistical part of KGraph stuff): Guangshun

@@ -440,7 +440,7 @@ Num Date        Status  Description
 			architecture: An internal error has occurred. The
 			reason is: Inconsistent state
 			(../../graphics.new/TDataAscii.c:824). (rkw)
-			Assigned: Jussi
+			Deferred
 
 112 01/10/97	FIXED	If a fatal error occurs while running with shared
 			memory, you need to manually kill off processes
