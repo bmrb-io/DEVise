@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/05/22 21:02:49  jussi
+  Added ImportImage() method.
+
   Revision 1.15  1996/05/20 18:45:05  jussi
   Merged with ClientServer library code.
 
@@ -207,14 +210,12 @@ public:
 	// ---------------------------------------------------------- 
 	// 3D
 
-	XPoint CompProjectionOnViewingPlane(POINT);
-
-	virtual POINT CompLocationOnViewingSpace(POINT);
-
-	virtual void MapAllPoints(BLOCK *block_data, int numSyms);
-	virtual void MapAllSegments(BLOCK *block_data, int numSyms);
+	virtual void MapAllXPoints(BLOCK *block_data, int numSyms, 
+		Camera camera, int H, int V);
+	virtual void MapAllXSegments(BLOCK *block_data, int numSyms,
+		Camera camera, int H, int V);
 	virtual void DrawXSegments();
-	virtual void DrawRefAxis();
+	virtual void DrawRefAxis(Camera camera);
 
 	// ---------------------------------------------------------- 
 
@@ -255,6 +256,12 @@ protected:
 
 	/* data structures for 3D images */
 	XSegment _xsegs[WINDOWREP_BATCH_SIZE * BLOCK_EDGES];
+	int _NumXSegs;
+	POINT _AxisPt[4]; // 0 == origin, 1 == on x, 2 = on y, 3 == on z
+	EDGE _Axis[3];    // 0 == x, 1 == y, 2 = z
+
+	POINT _AimAxisPt[4];  // 0 == origin, 1 == on x, 2 = on y, 3 == on z
+	EDGE  _AimAxis[3];    // 0 == x, 1 == y, 2 = z
 
 #ifdef TK_WINDOW_old
 	/* Assign window to a new parent. */
