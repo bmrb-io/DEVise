@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/08/12 18:42:21  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.2  1996/08/09 15:39:46  wenger
 #  Modified makefiles to allow making static and Purify'd executables.
 #
@@ -29,7 +32,8 @@
 
 # Define our linker and compiler.
 LD = ld
-CC = g++
+CC = /s/gcc-2.7.2/bin/g++
+C  = /s/gcc-2.7.2/bin/gcc
 AR = /s/binutils/bin/ar
 RANLIB = ranlib
 

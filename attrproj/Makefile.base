@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1996/08/12 18:43:21  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.17  1996/08/06 20:11:08  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -81,7 +84,7 @@ all: aptest show
 lib: $(LIB)
 
 aptest: $(ALLTESTOBJ) $(LIB)
-	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
+	$(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
                 -lattrproj -ltcl -lm $(ARCH_LDPOST)
 
 show: $(ALLSHOWOBJ) $(LIB)

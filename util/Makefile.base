@@ -17,14 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/08/06 20:12:40  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
 include ../../Makefile.common
-
-# Note: this overrides Makefile.common
-CCC = g++
-CC = gcc
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../graphics \
 	-Wall -Wno-unused $(OPTFLAG)
@@ -33,9 +33,9 @@ LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 
 # Note: this overrides Makefile.common
 .c.o:
-	$(CC) -c $(CFLAGS) $<
+	$(C) -c $(CFLAGS) $<
 .C.o:
-	$(CCC) -c $(CFLAGS) $<
+	$(CC) -c $(CFLAGS) $<
 
 SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c \
 	tardump.c lc.c dbcext.c addlatlon.c mk3dstruct.C

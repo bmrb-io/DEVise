@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1996/08/12 18:43:32  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.25  1996/08/06 20:11:56  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -62,16 +65,16 @@ $(LIBNAME): $(LIBOBJ)
 	$(RANLIB) $@
 
 xvgifwr.o:	xvgifwr.c
-	gcc -c $(CFLAGS) $<
+	$(C) -c $(CFLAGS) $<
 
 xv24to8.o:	xv24to8.c
-	gcc -c $(CFLAGS) $<
+	$(C) -c $(CFLAGS) $<
 
 xvgrab.o:	xvgrab.c
-	gcc -c $(CFLAGS) $<
+	$(C) -c $(CFLAGS) $<
 
 xvgif.o:	xvgif.c
-	gcc -c $(CFLAGS) $<
+	$(C) -c $(CFLAGS) $<
 
 jstat: jstat.o $(LIBOBJ)
 	$(CC) -o jstat jstat.o $(LIBOBJ) -lXmu -lXt -lXext -lX11 -lm
