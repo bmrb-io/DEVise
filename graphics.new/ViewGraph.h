@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/22 23:44:42  guangshu
+  Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
+
   Revision 1.22  1996/07/19 18:00:32  guangshu
   Added support for histograms.
 
@@ -214,10 +217,8 @@ public:
   char _histBuffer[3072];	   /* histograms */
   Coord yMax, yMin;		   /* the ymax and ymin for _allStats */
 
-  char _gdataStatBuffer[3072];         /* the statistics for each x */
-
-/*  HashTable<int, BasicStats *> _hashTable; */ /* hashTable for gdata stats */
   GdataStat _gstat;
+  char _gdataStatBuffer[3072];     /* the statistics for each x */
   
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */

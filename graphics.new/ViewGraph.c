@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/22 23:44:31  guangshu
+  Added statistics for gdata. The statistics includes count, ysum, max,
+  mean, min.
+
   Revision 1.26  1996/07/20 17:07:57  guangshu
   Small fixes when wirte to HistBuffer.
 
@@ -167,8 +171,6 @@ ViewGraph::~ViewGraph()
         link->DeleteView(this);
     }
     _slaveLink.DoneIterator(index);
-
-    delete &_gstat;
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -328,7 +330,8 @@ void ViewGraph::DrawLegend()
           win->SetFgColor(map->GetDefaultColor());
         else
           win->SetFgColor(BlueColor);
-        win->AbsoluteText(label, x, y, w - 4, yInc, WindowRep::AlignEast, true);
+        win->AbsoluteText(label, x, y, w - 4, yInc, WindowRep::AlignEast,
+                          true);
         y += yInc;
     }
 
@@ -528,7 +531,8 @@ void ViewGraph::PrepareStatsBuffer()
 
     if(_allStats.GetHistWidth()>0){
 	for(int i=0; i<HIST_NUM; i++) {
-	    sprintf(line, "%.2f %d\n", _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
+	    sprintf(line, "%.2f %d\n", _allStats.GetStatVal(STAT_MIN)
+                                       + (i + 0.5) * _allStats.GetHistWidth(), 
 		    _allStats.GetHistVal(i));
 	    if(strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
 	        fprintf(stderr, "Out of histogram buffer space\n");
@@ -538,24 +542,30 @@ void ViewGraph::PrepareStatsBuffer()
         }
     }
 
+#if 0
     BasicStats *bs;
-    //Only put count ysum mean max min into the buffer considering the size of buffer 
-    for(int i = (int)_allStats.GetStatVal(STAT_XMIN); i<=(int)_allStats.GetStatVal(STAT_XMAX); i++) {
-	if(_gstat.Lookup(i, bs)) {
-	   DOASSERT(bs,"HashTable lookup error\n");
+    // Only put count ysum mean max min into the buffer
+    // considering the size of buffer 
+    for(int i = (int)_allStats.GetStatVal(STAT_XMIN);
+        i <= (int)_allStats.GetStatVal(STAT_XMAX); i++) {
+	if (_gstat.Lookup(i, bs)) {
+	   DOASSERT(bs, "HashTable lookup error");
 	   sprintf(line, "%d %d %.2f %.2f %.2f %.2f\n",
 		   i, (int)bs->GetStatVal(STAT_COUNT),
 		   bs->GetStatVal(STAT_YSUM),
 		   bs->GetStatVal(STAT_MAX),
 		   bs->GetStatVal(STAT_MEAN),
 		   bs->GetStatVal(STAT_MIN));
-            if(strlen(_gdataStatBuffer) + strlen(line) + 1 > sizeof _gdataStatBuffer) {
+            if (strlen(_gdataStatBuffer) + strlen(line) + 1
+                > sizeof _gdataStatBuffer) {
 		   fprintf(stderr, "Out of GData Stat Buffer space\n");
 		   break;
             }
-	strcat(_gdataStatBuffer, line);
-        }
-      }	
+           strcat(_gdataStatBuffer, line);
+       }
+    }	
+#endif
+
 #ifdef DEBUG
     printf("%s\n", _statBuffer);
     printf("%s\n", _histBuffer);

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/07/21 14:59:45  jussi
+#  Code no longer inserts an "X" when rotating legend-less mappings
+#  in a merged view.
+#
 #  Revision 1.10  1996/07/08 17:08:38  jussi
 #  The mapping legend (label) is now copied in DupWindow.
 #
@@ -565,30 +569,36 @@ proc DoWindowStackControl {} {
 
     button .stack.bot.row1.but.merge -text "Merge" -width 10 \
 	    -command { DoWindowMerge }
-    button .stack.bot.row1.but.split -text "Split" -width 10 \
+    button .stack.bot.row2.but.split -text "Split" -width 10 \
 	    -command { DoWindowSplit }
+    button .stack.bot.row1.but.pile -text "Pile" -width 10 \
+	    -command { DoWindowPile }
+    button .stack.bot.row2.but.unpile -text "Unpile" -width 10 \
+	    -command { DoWindowUnpile }
     button .stack.bot.row1.but.stack -text "Stack" -width 10 \
 	    -command { DoWindowStack }
-    button .stack.bot.row1.but.unstack -text "Unstack" -width 10 \
+    button .stack.bot.row2.but.unstack -text "Unstack" -width 10 \
 	    -command { DoWindowUnstack }
 
-    pack .stack.bot.row1.but.merge .stack.bot.row1.but.split \
-	    .stack.bot.row1.but.stack .stack.bot.row1.but.unstack \
-	    -side left -expand 1 -fill x -padx 3m
-
-    button .stack.bot.row2.but.rotate -text "Rotate" -width 10 \
+    button .stack.bot.row1.but.rotate -text "Rotate" -width 10 \
 	    -command { RotateMergedView }
     button .stack.bot.row2.but.flip -text "Flip" -width 10 \
 	    -command { FlipStackedView }
-    button .stack.bot.row2.but.edit -text "Edit..." -width 10 \
+    button .stack.bot.row1.but.edit -text "Edit..." -width 10 \
 	    -command { EditMergedView }
     button .stack.bot.row2.but.close -text Close -width 10 \
 	    -command "global stackyWinOpened; \
 	              set stackWinOpened false; \
 	              destroy .stack"
 
-    pack .stack.bot.row2.but.rotate .stack.bot.row2.but.flip \
-	    .stack.bot.row2.but.edit .stack.bot.row2.but.close \
+    pack .stack.bot.row1.but.merge .stack.bot.row1.but.pile \
+            .stack.bot.row1.but.stack .stack.bot.row1.but.rotate \
+            .stack.bot.row1.but.edit \
+	    -side left -expand 1 -fill x -padx 3m
+
+    pack .stack.bot.row2.but.split .stack.bot.row2.but.unpile \
+	    .stack.bot.row2.but.unstack .stack.bot.row2.but.flip \
+            .stack.bot.row2.but.close \
 	    -side left -expand 1 -fill x -padx 3m
 
     pack .stack.bot.row1.but -side top
@@ -663,6 +673,111 @@ proc FlipStackedView {} {
 
 ############################################################
 
+proc DoWindowPile {} {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    # no need to pile if there are no views other than curView
+    if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
+	return
+    }
+
+    # no need to pile if current view already in pile mode
+    if {[DEVise getViewPileMode $curView]} {
+        return
+    }
+
+    # create new XY link for piled views
+    set link [UniqueName "Pile: Link"]
+    puts "Creating $link for pile"
+    set result [DEVise create link Visual_Link $link 3]
+    if {$result == ""} {
+        dialog .linkError "Link Error" \
+                "Error creating link $link" "" 0 OK
+        return
+    }
+
+    # insert pile link into current view first so that its filter
+    # will progagate to other views in pile
+    puts "Inserting $link into $curView"
+    DEVise insertLink $link $curView
+
+    # set pileMode flag 'on' in all views in current window and
+    # insert link to all views
+
+    set win [DEVise getViewWin $curView]
+    foreach v [DEVise getWinViews $win] {
+        if {$v != $curView} {
+            puts "Inserting $link into $v"
+            DEVise insertLink $link $v
+        }
+        puts "Setting $v to pile mode"
+        DEVise setViewPileMode $v 1
+    }
+
+    # set window to stacked mode
+    DEVise setWindowLayout $win -1 -1 1
+    DEVise refreshView $curView
+}
+
+############################################################
+
+proc DoWindowUnpile {} {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    # no need to unpile if there are no views other than curView
+    if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
+	return
+    }
+
+    # no need to unpile if current view not in pile mode
+    if {![DEVise getViewPileMode $curView]} {
+        return
+    }
+
+    # find name(s) of pile links in current view
+    set pileLinks ""
+    foreach link [LinkSet] {
+	if {[DEVise viewInLink $link $curView]} {
+            if {[string range $link 0 4] == "Pile:"} {
+                lappend pileLinks $link
+            }
+	}
+    }
+
+    puts "Pile has links: $pileLinks"
+
+    # set pileMode flag 'off' in all views in current window and
+    # remove pile links from all views
+
+    set win [DEVise getViewWin $curView]
+    foreach v [DEVise getWinViews $win] {
+        puts "Setting $v to normal mode"
+        DEVise setViewPileMode $v 0
+        foreach link $pileLinks {
+	    if {[DEVise viewInLink $link $v]} {
+                puts "Unlinking $link from $v"
+		DEVise unlinkView $link $v
+	    }
+        }
+    }
+
+    # restore window layout
+    set layout [DEVise getWindowLayout $win]
+    set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
+    eval DEVise setWindowLayout {$win} $newLayout
+    DEVise refreshView $curView
+}
+
+############################################################
+
 proc DoWindowStack {} {
     global curView
 
@@ -672,6 +787,7 @@ proc DoWindowStack {} {
 
     set win [DEVise getViewWin $curView]
     DEVise setWindowLayout $win -1 -1 1
+    DEVise refreshView $curView
 }
 
 ############################################################
@@ -687,4 +803,5 @@ proc DoWindowUnstack {} {
     set layout [DEVise getWindowLayout $win]
     set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
     eval DEVise setWindowLayout {$win} $newLayout
+    DEVise refreshView $curView
 }

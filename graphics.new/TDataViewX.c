@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/07/22 23:44:19  guangshu
+  Added statistics for gdata. The statistics includes count, ysum, max,
+  mean, min.
+
   Revision 1.31  1996/07/20 17:06:35  guangshu
   Small fixes when wirte to HistBuffer.
 
@@ -198,7 +202,6 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
   _gstat.Clear();  /* Clear the hashtable and calculate it again */
 
-
   // Initialize record links whose master this view is
   int index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
@@ -340,9 +343,6 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
 
-      //BasicStats for x
-      BasicStats *bs;
-
       // Line and LineShade records prevent record elimination
       if (shape == 13 || shape == 14)
         canElimRecords = false;
@@ -350,8 +350,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       // Compute statistics only for records that match the filter's
       // X range and that exceed the Y low boundary
       if (_allStats.GetHistWidth() == 0 && yMax != 0 && yMin != 0) {
-/*		printf("yMax = %.2f yMin = %.2f\n", yMax, yMin); */
-		_allStats.SetHistWidth(yMax, yMin);
+          _allStats.SetHistWidth(yMax, yMin);
       }
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
 	  && y >= _queryFilter.yLow) {
@@ -361,22 +360,16 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y);
       }
 
-      int X = (int) x;
+      int X = (int)x;
+      BasicStats *bs;
       if(_gstat.Lookup(X, bs)) {
 	bs->Sample(x,y);
       } else {
-	bs = new BasicStats();
+	bs = new BasicStats;
+        DOASSERT(bs, "Out of memory");
 	bs->Init(0);
 	bs->Sample(x, y);
 	_gstat.Insert(X, bs);
-/*	if(_gstat.Lookup(X, bs)){
-	   printf("%d %d %.2f %.2f %.2f %.2f\n",
-                   X, (int)bs->GetStatVal(STAT_COUNT),
-                   bs->GetStatVal(STAT_YSUM),
-                   bs->GetStatVal(STAT_MEAN),
-                   bs->GetStatVal(STAT_MAX),
-                   bs->GetStatVal(STAT_MIN));
-        } else { printf("Whoops! Insert failed\n"); } */
       } 
 
       // Contiguous ranges which match the filter's X *and* Y range
@@ -445,7 +438,6 @@ void TDataViewX::QueryDone(int bytes, void *userData)
   yMax = _allStats.GetStatVal(STAT_MAX);
   yMin = _allStats.GetStatVal(STAT_MIN);
 
-
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Done();
 
@@ -472,7 +464,23 @@ void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
   printf("TDataViewX %d recs buf start 0x%p\n", numRecs, recs);
 #endif
 
-  map->DrawGDataArray(this, GetWindowRep(), recs, numRecs);
+  WindowRep *win = GetWindowRep();
+
+  if (IsInPileMode()) {
+    ViewWin *parent = GetParent();
+    DOASSERT(parent, "View has no parent");
+    int index = parent->InitIterator();
+    DOASSERT(parent->More(index), "Parent view has no children");
+    ViewWin *vw = parent->Next(index);
+    win = vw->GetWindowRep();
+    parent->DoneIterator(index);
+#ifdef DEBUG
+    printf("Drawing view %s in view %s, window 0x%p\n",
+           GetName(), vw->GetName(), win);
+#endif
+  }
+      
+  map->DrawGDataArray(this, win, recs, numRecs);
 }
 
 void TDataViewX::ReturnGDataBinConnectors(TDataCMap *cmap,

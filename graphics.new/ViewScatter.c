@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/19 02:43:01  jussi
+  Added point storage for missing data points.
+
   Revision 1.20  1996/07/13 17:25:11  jussi
   When view is iconified, statistics are collected but data
   is not drawn.
@@ -204,6 +207,22 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   mapping->UpdateMaxSymSize(gdata, numGData);
   mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
+  WindowRep *win = GetWindowRep();
+
+  if (IsInPileMode()) {
+    ViewWin *parent = GetParent();
+    DOASSERT(parent, "View has no parent");
+    int index = parent->InitIterator();
+    DOASSERT(parent->More(index), "Parent view has no children");
+    ViewWin *vw = parent->Next(index);
+    win = vw->GetWindowRep();
+    parent->DoneIterator(index);
+#ifdef DEBUG
+    printf("Drawing view %s in view %s, window 0x%p\n",
+           GetName(), vw->GetName(), win);
+#endif
+  }
+      
   GDataAttrOffset *offset = mapping->GetGDataOffset();
   int gRecSize = mapping->GDataRecordSize();
   char *ptr = (char *)gdata;
@@ -255,7 +274,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     if (!Iconified()) {
       _recs[recIndex++] = ptr;
       if (recIndex == WINDOWREP_BATCH_SIZE) {
-        mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
+        mapping->DrawGDataArray(this, win, _recs, recIndex);
         recIndex = 0;
       }
     }
@@ -269,7 +288,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   }
 
   if (!Iconified() && recIndex > 0)
-    mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
+    mapping->DrawGDataArray(this, win, _recs, recIndex);
 }
 
 /* Done with query */
