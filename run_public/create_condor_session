@@ -21,6 +21,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1999/03/23 20:31:16  wenger
+#  First version -- still needs a little cleanup, but almost there.
+#
 
 ############################################################
 
@@ -172,7 +175,11 @@ sub DefineData {
   #TEMP?
   my $schemaType = "CondorUserList";
 
-  print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+  print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
+      "$dataName} oldEntry]\n";
+  print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
+  print SES_OUT "  DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+  print SES_OUT "}\n";
 
   #TEMP?
   $schemaType = "CondorUser";
@@ -183,7 +190,11 @@ sub DefineData {
     $dataName = $data_prefix . $user;
     $dataFile = $user . ".dat";
 
+    print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
+        "$dataName} oldEntry]\n";
+    print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
     print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $data_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+    print SES_OUT "}\n";
   }
 }
 
