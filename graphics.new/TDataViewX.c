@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/01/14 15:48:23  wenger
+  Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
+  flexibility in overriding startup script default; fixed bug 116
+  (off-by-one error in BufMgrFull caused buffer overflow in XWindowRep).
+
   Revision 1.48  1997/01/11 23:04:31  jussi
   Changed code to use GetFirstSibling().
 
@@ -259,10 +264,6 @@ TDataViewX::~TDataViewX()
 void TDataViewX::InsertMapping(TDataMap *map)
 {
   ViewGraph::InsertMapping(map);
-  
-  Coord xMin;
-  if (_queryProc->GetMinX(map, xMin))
-    View::SetXMin(true, xMin);
   
   Refresh();
 }

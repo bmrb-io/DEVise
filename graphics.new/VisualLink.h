@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/26 16:51:43  ssl
+  Added support for piled viws
+
   Revision 1.3  1996/08/04 21:59:58  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -85,9 +88,6 @@ public:
 
 protected:
   void ProcessFilterChanged(View *view, VisualFilter &filter);
-
-  /* Return the xMin coord */
-  Boolean HasXMin(Coord &xMin);
 
   void SetVisualFilter(View *view,  VisualFilter &filter);
 

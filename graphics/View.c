@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.100  1997/01/17 20:31:47  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.99  1997/01/14 20:05:31  wenger
   Fixed some compile warnings; fixed relative positions of OK/Cancel
   buttons in link GUI; removed some debug code I accidentally left
@@ -515,8 +522,6 @@ View::View(char *name, VisualFilter &initFilter,
   int flushed = _filterQueue->Enqueue(initFilter);
   ReportFilterChanged(initFilter, flushed);
   _highlight = false; 
-
-  _hasXMin = false;
 
   _view_locks = 0;
 

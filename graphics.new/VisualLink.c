@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/03 15:20:04  wenger
+  Conditionaled out some debug code.
+
   Revision 1.5  1996/11/26 16:51:43  ssl
   Added support for piled viws
 
@@ -194,14 +197,8 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
   
   if ((testFlag & VISUAL_X) && (tempFilter.xLow != filter.xLow 
 				|| tempFilter.xHigh != filter.xHigh)) {
-    Coord xMin;
-    Boolean hasXMin = HasXMin(xMin);
     tempFilter.xLow = filter.xLow;
     tempFilter.xHigh = filter.xHigh;
-    if (hasXMin && filter.xLow < xMin) {
-      tempFilter.xHigh = xMin + (filter.xHigh - filter.xLow);
-      tempFilter.xLow = xMin;
-    }
     if (tempFilter.xHigh <= tempFilter.xLow)
       tempFilter.xHigh = tempFilter.xLow + 1;
     change = true;
@@ -278,34 +275,6 @@ ViewGraph *VisualLink::Next(int index)
 void VisualLink::DoneIterator(int index)
 {
   _viewList->DoneIterator(index);
-}
-
-/* Find xMin, if any */
-
-Boolean VisualLink::HasXMin(Coord &xMin)
-{
-  Boolean hasXMin = true;
-  Boolean first = true;
-
-  int index;
-  for(index = _viewList->InitIterator(); _viewList->More(index);) {
-    View *view = _viewList->Next(index);
-    Coord lowX;
-    if (!view->GetXMin(lowX)) {
-      hasXMin = false;
-      break;
-    } else if (first) {
-      xMin = lowX;
-      first = false;
-    } else if (xMin > lowX)
-      xMin = lowX;
-  }
-  _viewList->DoneIterator(index);
-
-  if (first)
-    return false;
-
-  return hasXMin;
 }
 
 void VisualLink::Print() {

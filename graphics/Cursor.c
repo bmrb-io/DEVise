@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/13 16:56:04  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.7  1996/06/13 00:14:28  jussi
   Added support for XY cursors. All types of cursors can now
   be moved by clicking on their new location in the data area.
@@ -172,9 +182,6 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
   if (_visFlag & VISUAL_X) {
     Coord width = filter.xHigh - filter.xLow;
     Coord newXLow = x - width / 2.0;
-    Coord xMin;
-    if (_src->GetXMin(xMin) && newXLow < xMin)
-      newXLow = xMin;
     filter.xLow = newXLow;
     filter.xHigh = newXLow + width;
   }

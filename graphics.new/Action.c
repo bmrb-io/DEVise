@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/12/12 22:01:55  jussi
+  Updated to use Dispatcher::Terminate().
+
   Revision 1.17  1996/11/26 09:33:10  beyer
   control-c in any window now exits devise.
 
@@ -171,9 +174,6 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       Coord width = filter.xHigh - filter.xLow;
       Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
       filter.xLow -= halfWidth;
-      Coord xMin;
-      if (view->GetXMin(xMin) && filter.xLow < xMin)
-	filter.xLow = xMin;
       filter.xHigh = filter.xLow + width;
       view->SetVisualFilter(filter);
     } else {
@@ -597,9 +597,6 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  filter.xLow -= delta;
 	  filter.xHigh += delta;
       }
-      Coord xMin;
-      if (view->GetXMin(xMin) && filter.xLow < xMin)
-	filter.xLow = xMin;
       view->SetVisualFilter(filter);
     } else {
       Camera camera = view->GetCamera();

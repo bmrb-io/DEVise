@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/01/08 19:01:43  wenger
+  Fixed bug 064 and various other problems with drawing piled views;
+  added related debug code.
+
   Revision 1.47  1996/12/20 16:50:14  wenger
   Fonts for view label, x axis, and y axis can now be changed.
 
@@ -329,18 +333,6 @@ class View
 	void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback; }
 	AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
 
-	/* set/clear min info about a view */
-	void SetXMin(Boolean hasXMin, Coord xMin = 0.0) {
-	  _hasXMin = hasXMin;
-	  if (_hasXMin && xMin < _xMin) {
-	      _xMin = xMin;
-	  }
-	}
-	Boolean GetXMin(Coord &xMin) {
-	  xMin = _xMin;
-	  return _hasXMin;
-	}
-
 	void XAxisDisplayOnOff(Boolean stat);
 	void YAxisDisplayOnOff(Boolean stat);
 	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
@@ -624,9 +616,6 @@ protected:
 	Boolean _highlight;
 	AttrType _xAxisAttrType;
 	AttrType _yAxisAttrType;
-
-	Boolean _hasXMin;
-	Coord _xMin;
 
 	int _view_locks;	// bits from VIEW_LOCK
 
