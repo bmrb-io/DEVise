@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/19 03:29:46  jussi
+  Fixed erroneous coordinate in LineShadeShape.
+
   Revision 1.27  1996/07/19 03:23:38  jussi
   Added LineShape and LineShadeShape.
 
@@ -1208,16 +1211,13 @@ public:
 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
-    /* get coordinates of first data point in this batch and insert
-       into point storage */
+    /* get coordinates of first data point in this batch */
 
     char *gdata = (char *)gdataArray[0];
     RecId recId = GetRecId(gdata, map, offset);
     Coord x0 = GetX(gdata, map, offset);
     Coord y0 = GetY(gdata, map, offset);
     Color c0 = GetColor(view, gdata, map, offset);
-
-    view->GetPointStorage()->Insert(recId, x0, y0, c0);
 
     /* draw line connecting last point of previous batch to
        first point of this batch */
@@ -1229,6 +1229,8 @@ public:
             DrawConnectingLine(win, GetPattern(gdata, map, offset),
                                xp, yp, cp, x0, y0, c0);
             (void)view->GetPointStorage()->Remove(recId - 1);
+        } else {
+            view->GetPointStorage()->Insert(recId, x0, y0, c0);
         }
     }
 
@@ -1257,9 +1259,7 @@ public:
         DrawConnectingLine(win, Pattern0, x0, y0, c0, xn, yn, cn);
         (void)view->GetPointStorage()->Remove(recId + numSyms);
     } else {
-        if (numSyms > 1) {
-            view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
-        }
+        view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
     }
   }
 
