@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/07/21 02:22:05  jussi
+  Added _xyZoom variable and associated methods.
+
   Revision 1.32  1996/07/20 18:47:20  jussi
   Added solid3D flag.
 
@@ -297,6 +300,14 @@ public:
 	Boolean IsXYZoom() { return _xyZoom; }
 	void SetXYZoom(Boolean xyZoom) { _xyZoom = xyZoom; }
 
+	/* Get/set data value display flag */
+	Boolean GetDisplayDataValues() { return _dispDataValues; }
+	void SetDisplayDataValues(Boolean disp);
+
+	/* Get/set pile mode */
+	Boolean IsInPileMode() { return _pileMode; }
+	void SetPileMode(Boolean mode);
+
 	/* Get/set override color */
 	Color GetOverrideColor(Boolean &active) {
 	  active = _hasOverrideColor;
@@ -519,6 +530,10 @@ private:
         Boolean _solid3D;               /* true if solid 3D objects */
 
         Boolean _xyZoom;                /* true if XY zooms */
+        Boolean _dispDataValues;        /* true if data values display
+                                           in graph */
+        Boolean _pileMode;              /* true if view is in pile mode */
+        Boolean _pileViewHold;          /* true if bottom view must hold */
 
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;

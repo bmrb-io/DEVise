@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  1996/07/21 02:21:22  jussi
+  Added _xyZoom flag. Fixed problem when small exposures caused
+  the whole view to be erased but not redrawn.
+
   Revision 1.56  1996/07/20 18:47:17  jussi
   Added solid3D flag.
 
@@ -327,9 +331,12 @@ View::View(char *name, VisualFilter &initFilter,
   _solid3D = true;
 
   _xyZoom = true;
+  _dispDataValues = false;
+  _pileMode = false;
+  _pileViewHold = true;
 
   _hasOverrideColor = false;
-  _overrideColor = fg;
+  _overrideColor = DeviseDisplay::DefaultDisplay()->GetLocalColor(fg);
 
   _displaySymbol = true;
 
@@ -610,18 +617,48 @@ void View::SetSolid3D(Boolean solid)
   Refresh();
 }
 
+/* set flag for data value display */
+
+void View::SetDisplayDataValues(Boolean disp)
+{
+  if (disp == _dispDataValues)
+    return;
+
+  _dispDataValues = disp;
+
+  Refresh();
+}
+
+/* set pile mode flag */
+
+void View::SetPileMode(Boolean mode)
+{
+  if (mode == _pileMode)
+    return;
+
+  _pileMode = mode;
+  _pileViewHold = true;
+
+  Refresh();
+}
+
 /* set override color */
 
 void View::SetOverrideColor(Color color, Boolean active)
 {
+  /* no change in color override? */
   if (_hasOverrideColor == active && color == _overrideColor)
     return;
 
-  _hasOverrideColor = active;
   _overrideColor = color;
-  _filterChanged = true;
 
-  Dispatcher::InsertMarker(writeFd);
+  /* color override still not enabled (but color may have changed)? */
+  if (_hasOverrideColor == active && !active)
+    return;
+
+  _hasOverrideColor = active;
+
+  Refresh();
 }
 
 /* get area for displaying label */
@@ -749,7 +786,7 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     /* _label occupies top of view */
     y +=  _label.extent; 
     /* 
-       subtract 2 from left and right so that data doesn't draw
+       subtract 2 from left so that data doesn't draw
        over the highlight border
     */
     x += 2;
@@ -1196,16 +1233,48 @@ void View::ReportQueryDone(int bytes)
   _querySent = false;
   _hasLastFilter = false;
 
+  /* if view is on top of a pile, it has to wake the other views
+     up and ask them to refresh; the bottom views might not have
+     received an Exposure or ConfigurationNotify event requesting
+     them to redraw; also, first view erases window and draws
+     axes and other decorations, so it has to go first */
+
+  if (_pileMode) {
+    ViewWin *parent = GetParent();
+    DOASSERT(parent, "View has no parent");
+    int index = parent->InitIterator();
+    DOASSERT(parent->More(index), "Parent view has no children");
+    ViewWin *vw = parent->Next(index);
+    if ((ViewWin *)this == vw) {        /* first view will refresh others */
+      while(parent->More(index)) {
+        vw = parent->Next(index);
+        View *view = FindViewByName(vw->GetName());
+        DOASSERT(view, "Cannot find view");
+#ifdef DEBUG
+        printf("View %s refreshes view %s\n", GetName(), view->GetName());
+#endif
+        view->_pileViewHold = false;
+        view->Refresh();
+      }
+    }
+    parent->DoneIterator(index);
+  }
+
   _cursorsOn = false;
 
   if (_numDimensions == 2)
     (void)DrawCursors();
   else
     Draw3DAxis();
+
   GetWindowRep()->PopClip();
   GetWindowRep()->Flush();
 
   ControlPanel::Instance()->SetIdle();
+
+#ifdef DEBUG
+  printf("View %s completed\n", GetName());
+#endif
 
   // report to interested parties that view has been recomputed
   ReportViewRecomputed();
@@ -1219,6 +1288,32 @@ XXX: need to crop exposure against _filter before sending query.
 void View::Run()
 {
   Dispatcher::FlushMarkers(readFd);
+
+  /* if view is in pile mode but not the top view, it has to wait until
+     the top view has erased the window and drawn axes and other
+     decorations; the top view will send explicit refresh requests
+     to the bottom views */
+
+  if (_pileMode) {
+    ViewWin *parent = GetParent();
+    DOASSERT(parent, "View has no parent");
+    int index = parent->InitIterator();
+    DOASSERT(parent->More(index), "Parent view has no children");
+    ViewWin *vw = parent->Next(index);
+    parent->DoneIterator(index);
+    if (this != vw) {
+      if (_pileViewHold) {
+#ifdef DEBUG
+        printf("View %s cannot continue\n", GetName());
+#endif
+        return;
+      }
+      _pileViewHold = true;
+    } else {
+      /* make sure top view is visible */
+      GetWindowRep()->Raise();
+    }
+  }
 
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
 #ifdef DEBUGxxx
@@ -1276,7 +1371,8 @@ void View::Run()
 
   VisualFilter newFilter;
   
-  if (!Iconified() && RestorePixmap(_filter, newFilter) == PixmapTotal) {
+  if (!Iconified() && !_pileMode &&
+      RestorePixmap(_filter, newFilter) == PixmapTotal) {
 #ifdef DEBUG
     printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
 #endif
@@ -1346,7 +1442,29 @@ void View::Run()
     _updateTransform = false;
   }
   
-  if (_filterChanged || _refresh) {
+  Boolean piledDisplay = false;
+
+  if (_pileMode) {
+    ViewWin *parent = GetParent();
+    DOASSERT(parent, "View has no parent");
+    int index = parent->InitIterator();
+    DOASSERT(parent->More(index), "Parent view has no children");
+    ViewWin *firstChild = parent->Next(index);
+    if (this != firstChild) {
+#ifdef DEBUG
+      printf("View %s follows first child %s\n", GetName(),
+             firstChild->GetName());
+#endif
+      piledDisplay = true;
+    } else {
+#ifdef DEBUG
+      printf("View %s is first child\n", GetName());
+#endif
+    }
+    parent->DoneIterator(index);
+  }
+      
+  if (piledDisplay || _filterChanged || _refresh) {
     /* Need to redraw the whole screen */
     _queryFilter = _filter;
     _hasLastFilter = true;
@@ -1397,13 +1515,15 @@ void View::Run()
   winRep->PushTop();
   winRep->MakeIdentity();
   
-  /* Draw axes */
-  DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);
+  if (!piledDisplay) {
+    /* Draw axes */
+    DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);
   
-  /* Draw highlight border */
-  Boolean oldHighlight = _highlight;
-  _highlight = false;
-  Highlight(oldHighlight);
+    /* Draw highlight border */
+    Boolean oldHighlight = _highlight;
+    _highlight = false;
+    Highlight(oldHighlight);
+  }
 
   /* push clip region using this transform */
   int dataX, dataY, dataW, dataH;
@@ -1419,14 +1539,21 @@ void View::Run()
     dataH = dataY2 - dataY + 1;
   }
 
-  /* clip and blank out area to be drawn */
+  /* clip area to be drawn */
   winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);
-  winRep->SetFgColor(GetBgColor());
-  winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+
+  /* blank out area to be drawn */
+  if (!piledDisplay) {
+#ifdef DEBUG
+    printf("Clearing data area in window 0x%p\n", winRep);
+#endif
+    winRep->SetFgColor(GetBgColor());
+    winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+  }
   
-  /* pop the transform */
+  /* pop the identity transform matrix */
   winRep->PopTransform();
-  
+
   _hasExposure = false;
   _filterChanged = false;
   _refresh = false;
@@ -1444,7 +1571,7 @@ void View::Run()
     _bytes = 0;
     DerivedStartQuery(_queryFilter, _timeStamp);
   } else {
-      winRep->PopClip();
+    winRep->PopClip();
   }
 
 #ifdef DEBUG
@@ -1476,7 +1603,7 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
 void View::UpdateTransform(WindowRep *winRep)
 {
 #ifdef DEBUG
-  printf("View::UpdateTransform\n");
+  printf("View::UpdateTransform %s\n", GetName());
 #endif
 
   winRep->ClearTransformStack();
