@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/11/06 16:51:40  wenger
+#  Added script to set up a Devise user with their own data, session files,
+#  etc.
+#
 
 ############################################################
 
@@ -27,16 +31,22 @@ echo ""
 echo "Setting you up to run DEVise with your own data, schemas, session"
 echo "files, and cache."
 
-mkdir devise
-cd devise
-mkdir dat cache session
-cp -r /p/devise/public/schema schema
+cd ~
+set dir = devise
+
+if (! -d $dir) then
+  mkdir $dir
+endif
+
+cd $dir
+mkdir dat cache session 
+cp -r /p/devise/public/schema .
+cp /p/devise/public/session_local/* session/.
+cp /p/devise/public/dat_local/* dat/.
 cp /p/devise/public/devisepub .
 cp /p/devise/public/run.script---copy.and.customize devise
 
 echo ""
 echo "To be able to run DEVise from any directory, you must perform the"
 echo "following additional steps:"
-echo "o Add the 'devise' directory to your path."
-echo "o Edit the 'devise' script file and make all of the paths absolute"
-echo "  rather than relative."
+echo "  o Add the 'devise' directory to your path."
