@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/06/15 13:46:49  jussi
+  X and Y axes now use the view foreground color as their color.
+  The axis.color field was removed.
+
   Revision 1.22  1996/06/13 00:14:33  jussi
   Added support for XY cursors. All types of cursors can now
   be moved by clicking on their new location in the data area.
@@ -299,6 +303,20 @@ public:
 	virtual Boolean DisplayConnectors() { return false; }
 	virtual Boolean DisplayConnectors(Boolean state) { return state; }
 
+	/* Report size of data display area. */
+	void GetDataArea(int &x, int &y, int &width,int &height);
+
+	/* -------------- 3D stuffs -------------  */
+	Camera GetCamera () {return _camera;}
+	void SetCamera (Camera new_camera);
+	void SetViewDir (int, int);
+
+	// based on the camera's coordinates, compute rho, phi, theta
+	void CompRhoPhiTheta();
+
+	// if flag is false, then label occupies left of view
+	void SetLabelInfo (int flag) {_label.occupyTop = flag;};
+
 	virtual void SetFgBgColor(Color fg, Color bg) {
 	  ViewWin::SetFgBgColor(fg, bg);
 	  Refresh();
@@ -319,14 +337,15 @@ protected:
 	void ReportQueryDone(int bytes);
 
 	/* Report size of data display area. */
-	void GetDataArea(int &x, int &y, int &width,int &height);
-
-	/* check Cursor Op. Return cursor operated on */
-	Boolean CheckCursorOp(WindowRep *win, int x, int y, int button);
+	/* void GetDataArea(int &x, int &y, int &width,int &height); */
 
 	/* Find World coord given screen coord */
 	void FindWorld(int sx1, int sy1, int sx2, int sy2,
 		       Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh);
+
+
+	/* check Cursor Op. Return cursor operated on */
+	Boolean CheckCursorOp(WindowRep *win, int x, int y, int button);
 
 	/* Get area for displaying label */
 	void GetLabelArea(int &x, int &y, int &w, int &h);
@@ -373,6 +392,11 @@ private:
 
 	/* Calculate the transformation for this view */
 	void CalcTransform(Transform2D &transform);
+	void CalcTransform(Transform3D &transform);
+
+	/* Find World coord given screen coord */
+	/* void FindWorld(int sx1, int sy1, int sx2, int sy2,
+		Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh); */
 
 	/* from WindowRepCallback */
 	/* draw in the exposed area */
@@ -471,6 +495,9 @@ private:
 	Boolean _hasOverrideColor;      /* override color defined */
 	Color _overrideColor;           /* color that overrides color
 					   defined in mapping */
+
+	/* -------------- 3D stuffs -------------  */
+	Camera _camera;
 };
 
 #endif
