@@ -298,6 +298,12 @@ rkw 12/16/96)
 
 Remove merged views (from API and View classes) (kb 12/18/96)
 
+Be able to run in batch mode without having to connect to an X server.
+(rkw 12/23/96)
+
+Have a button in the user interface that forces a refresh of all views.
+(ml/rkw 12/23/96)
+
 
 COMPLETED
 ---------
