@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1996/09/26 18:53:59  jussi
+#  Added -lpthread to get thread support.
+#
 #  Revision 1.10  1996/05/20 18:37:54  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -32,7 +35,7 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
-ARCH_LDPOST  = -lsocket -lnsl -lpthread
+ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../ams
 include $(VPATH)/Makefile.base
