@@ -443,6 +443,16 @@ variables, and use configuration files; perhaps split up the scripts
 into one determining which program is run and another determining
 which sessions, catalog, etc., are used. (devel 12/4/97)
 
+Eliminate streaming buffer manager code or get it working. (rkw/kb 12/8/97)
+
+If possible, use new expression interpreting code (or extend it) to allow
+the mappings needed for the PVM session to be interpreted (enabling us to
+eliminate the 'multi' form of DEVise). (rr/rkw 12/6/97)
+
+Possibly eliminate crsp, compustat, etc. (devel 12/11/97)
+
+Build and release only the client/server form of DEVise. (devel 12/11/97)
+(Depends on being able to get rid of multi.)
 
 
 COMPLETED
