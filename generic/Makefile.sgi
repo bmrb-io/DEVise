@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1998/02/12 17:15:43  wenger
+# Merged through collab_br_2; updated version number to 1.5.1.
+#
 # Revision 1.9.16.1  1998/02/12 05:19:10  taodb
 # Updated dependency list
 #
@@ -32,74 +35,90 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 CompDate.o: CompDate.h
-generic.o: /usr/include/stdio.h /usr/include/errno.h /usr/include/sys/errno.h
-generic.o: /usr/include/time.h /usr/include/sys/types.h
-generic.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-generic.o: /usr/include/sys/select.h /usr/include/string.h
-generic.o: /usr/include/math.h /usr/include/sys/time.h
+DeviseBatchClient.o: /usr/include/stdio.h /usr/include/standards.h
+DeviseBatchClient.o: /usr/include/sgidefs.h /usr/include/stdlib.h
+DeviseBatchClient.o: DeviseBatchClient.h ../graphics/DeviseTypes.h
+DeviseBatchClient.o: /usr/include/values.h ../graphics/DevStatus.h
+DeviseBatchClient.o: /usr/include/sys/types.h ../csgroup/Client.h
+DeviseBatchClient.o: ../csgroup/Csprotocols.h /usr/include/sys/socket.h
+DeviseBatchClient.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+DeviseBatchClient.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+DeviseBatchClient.o: /usr/include/arpa/inet.h /usr/include/netdb.h
+DeviseBatchClient.o: ../csgroup/keys.h ../csgroup/types.h
+DeviseClient.o: /usr/include/stdio.h /usr/include/standards.h
+DeviseClient.o: /usr/include/sgidefs.h /usr/include/stdlib.h DeviseClient.h
+DeviseClient.o: ../graphics/DeviseTypes.h /usr/include/values.h
+DeviseClient.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+DeviseClient.o: ../csgroup/TclClient.h ../csgroup/Client.h
+DeviseClient.o: ../csgroup/Csprotocols.h /usr/include/sys/socket.h
+DeviseClient.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+DeviseClient.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+DeviseClient.o: /usr/include/arpa/inet.h /usr/include/netdb.h
+DeviseClient.o: ../csgroup/keys.h ../csgroup/types.h
+collaborator.o: ../csgroup/server.h ../csgroup/types.h
+collaborator.o: /usr/include/sys/types.h /usr/include/standards.h
+collaborator.o: /usr/include/sgidefs.h /usr/include/sys/socket.h
+collaborator.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+collaborator.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+collaborator.o: /usr/include/arpa/inet.h ../csgroup/colbr.h
+collaborator.o: /usr/include/string.h ../csgroup/dbase.h ../csgroup/error.h
+collaborator.o: ../csgroup/htable.h ../csgroup/bucket.h ../csgroup/entry.h
+collaborator.o: ../csgroup/datum.h ../csgroup/queue.h ../csgroup/queueElem.h
+collaborator.o: ../csgroup/colbrLog.h ../csgroup/log.h /usr/include/stdio.h
+collaborator.o: /usr/include/stdlib.h /usr/include/sys/uio.h
+collaborator.o: /usr/include/unistd.h ../csgroup/prnfns.h
+collaborator.o: /usr/include/strings.h ../csgroup/serverInterface.h
+collaborator.o: /usr/include/signal.h /usr/include/sys/signal.h
+collaborator.o: /usr/include/memory.h /usr/include/stropts.h
+collaborator.o: /usr/include/sys/stropts.h /usr/include/netconfig.h
+collaborator.o: /usr/include/sys/netconfig.h /usr/include/sys/resource.h
+collaborator.o: /usr/include/syslog.h /usr/include/sys/syslog.h
+generic.o: /usr/include/stdio.h /usr/include/standards.h
+generic.o: /usr/include/sgidefs.h /usr/include/errno.h
+generic.o: /usr/include/sys/errno.h /usr/include/time.h
+generic.o: /usr/include/sys/types.h /usr/include/sys/signal.h
+generic.o: /usr/include/string.h /usr/include/math.h /usr/include/sys/time.h
 generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
 generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-generic.o: /usr/include/stdlib.h /usr/include/unistd.h ../graphics/DList.h
-generic.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-generic.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-generic.o: ../graphics/Compress.h ../graphics/DevError.h
-generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
-generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-generic.o: ../graphics.new/MapInterpClassInfo.h
-generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
-generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-generic.o: ../graphics/Cursor.h ../graphics/DevFont.h
-generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-generic.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
-generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-generic.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
-generic.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-generic.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-generic.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-generic.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-generic.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-generic.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-generic.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
-generic.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-generic.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+generic.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
+generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
+generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+generic.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+generic.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+generic.o: ../graphics/GraphicsDebug.h ../graphics/Control.h
+generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics.new/VisualLinkClassInfo.h
+generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
 generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
-generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
-generic.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
-generic.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
-generic.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
-generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
+generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
+generic.o: ../graphics.new/ViewData.h ../graphics.new/ViewLens.h
 generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
-testWindowSpeed.o: /usr/include/stdio.h /usr/include/time.h
-testWindowSpeed.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-testWindowSpeed.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-testWindowSpeed.o: /usr/include/sys/time.h ../graphics.new/TkControl.h
-testWindowSpeed.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-testWindowSpeed.o: /usr/include/unistd.h /usr/include/string.h
-testWindowSpeed.o: ../graphics/DeviseTypes.h /usr/include/values.h
-testWindowSpeed.o: ../graphics/DevStatus.h ../graphics/DList.h
-testWindowSpeed.o: ../graphics/Exit.h ../graphics/Journal.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Color.h
-testWindowSpeed.o: ../graphics/Pattern.h ../graphics/Control.h
-testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-testWindowSpeed.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-testWindowSpeed.o: ../graphics.new/Group.h
-testWindowSpeed.o: ../graphics.new/MapInterpClassInfo.h
-testWindowSpeed.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-testWindowSpeed.o: ../graphics.new/ParseAPI.h ../graphics/Display.h
+generic.o: ../graphics/CursorClassInfo.h ../graphics.new/StringStorage.h
+generic.o: StateMap.h ../graphics/Util.h /usr/include/stdlib.h
+generic.o: /usr/include/ctype.h
+testWindowSpeed.o: /usr/include/stdio.h /usr/include/standards.h
+testWindowSpeed.o: /usr/include/sgidefs.h /usr/include/time.h
+testWindowSpeed.o: /usr/include/sys/types.h /usr/include/sys/signal.h
+testWindowSpeed.o: /usr/include/sys/time.h ../graphics/TestControl.h
+testWindowSpeed.o: ../graphics/Control.h ../graphics/DeviseTypes.h
+testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
+testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/Display.h
 testWindowSpeed.o: ../graphics/Geom.h /usr/include/math.h
-testWindowSpeed.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+testWindowSpeed.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
 testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
+testWindowSpeed.o: ../graphics/ETkIfc.h /usr/include/string.h
+testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
+testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+testWindowSpeed.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+testWindowSpeed.o: ../graphics/GraphicsDebug.h

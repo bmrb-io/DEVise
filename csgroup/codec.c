@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/19 23:24:08  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.2  1998/02/12 17:14:44  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -56,6 +64,9 @@
 ** 	         University of Wisconsin, Computer Sciences Dept.
 ** 
 */ 
+#if defined(SGI)
+#include <stdarg.h>
+#endif
 #include "codec.h"
 #include <assert.h>
 

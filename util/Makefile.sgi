@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1997/03/28 16:13:00  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -23,34 +27,36 @@ depend:
 		-I/usr/include/X11 -I/usr/local/include *.C
 # DO NOT DELETE
 
-atof.o: /usr/include/stdlib.h /usr/include/sgidefs.h /usr/include/assert.h
-atof.o: /usr/include/ctype.h /usr/include/time.h /usr/include/sys/types.h
-atof.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+atof.o: /usr/include/stdlib.h /usr/include/standards.h /usr/include/sgidefs.h
+atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
+atof.o: /usr/include/sys/types.h /usr/include/sys/signal.h
 atof.o: /usr/include/math.h /usr/include/sys/time.h ../graphics/Util.h
 atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
 atof.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
-http_url.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
+http_url.o: /usr/include/stdio.h /usr/include/standards.h
+http_url.o: /usr/include/sgidefs.h /usr/include/stdlib.h
 http_url.o: /usr/include/unistd.h /usr/include/string.h /usr/include/errno.h
 http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
 http_url.o: /usr/include/limits.h /usr/include/sys/types.h
-http_url.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 http_url.o: /usr/include/sys/param.h /usr/include/sys/signal.h
 http_url.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-http_url.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-http_url.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-http_url.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-http_url.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-http_url.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-http_url.o: /usr/include/netdb.h /usr/include/sys/socket.h
-http_url.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-mk3dstruct.o: /usr/include/math.h /usr/include/time.h
-mk3dstruct.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-mk3dstruct.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+http_url.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+http_url.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+http_url.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+http_url.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+http_url.o: /usr/include/sys/endian.h
+mk3dstruct.o: /usr/include/math.h /usr/include/sgidefs.h
+mk3dstruct.o: /usr/include/standards.h /usr/include/time.h
+mk3dstruct.o: /usr/include/sys/types.h /usr/include/sys/signal.h
 mk3dstruct.o: /usr/include/stdlib.h
-mkbinfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/types.h
-mkbinfile.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-mkbinfile.o: /usr/include/sys/select.h /usr/include/stdlib.h
-mkparfile.o: /usr/include/math.h /usr/include/time.h /usr/include/sys/types.h
-mkparfile.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-mkparfile.o: /usr/include/sys/select.h /usr/include/stdlib.h
+mkbinfile.o: /usr/include/math.h /usr/include/sgidefs.h
+mkbinfile.o: /usr/include/standards.h /usr/include/time.h
+mkbinfile.o: /usr/include/sys/types.h /usr/include/sys/signal.h
+mkbinfile.o: /usr/include/stdlib.h
+mkparfile.o: /usr/include/math.h /usr/include/sgidefs.h
+mkparfile.o: /usr/include/standards.h /usr/include/time.h
+mkparfile.o: /usr/include/sys/types.h /usr/include/sys/signal.h
+mkparfile.o: /usr/include/stdlib.h

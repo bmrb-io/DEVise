@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:09  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:24:11  liping
   Added CVS header
 
@@ -57,7 +60,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#if !defined(SGI)
 #include <sys/varargs.h>
+#else
+#include <stdarg.h>
+#endif
 #include <unistd.h>
 
 #include "sndMsg.h"

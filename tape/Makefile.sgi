@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  1997/03/28 16:12:52  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -26,16 +30,14 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 Templates.o: ../graphics.new/QueryProcFull.h /usr/include/time.h
-Templates.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-Templates.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+Templates.o: /usr/include/standards.h /usr/include/sys/types.h
+Templates.o: /usr/include/sgidefs.h /usr/include/sys/signal.h
 Templates.o: /usr/include/sys/time.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
 Templates.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
-Templates.o: ../graphics/Color.h ../graphics/Pattern.h
-Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-Templates.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/unistd.h
-Templates.o: /usr/include/string.h ../graphics/Journal.h SortedTable.h
+Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
+Templates.o: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
 Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
 Templates.o: ../graphics/BufPolicy.h ../graphics.new/BufferPolicy.h
 Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
@@ -43,66 +45,62 @@ Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
 Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
 Templates.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
 Templates.o: /usr/include/errno.h /usr/include/sys/errno.h
-Templates.o: /usr/include/assert.h /usr/include/limits.h
+Templates.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/limits.h
 Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-Templates.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-Templates.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-Templates.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+Templates.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 Templates.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
 Templates.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 Templates.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
 Templates.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Templates.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 Templates.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
 Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
-Templates.o: ../graphics.new/RangeInfo.h
-devtype.o: /usr/include/stdlib.h /usr/include/sgidefs.h
-devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
-devtype.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-devtype.o: /usr/include/sys/select.h
-tapedrive.o: /usr/include/unistd.h /usr/include/string.h tapedrive.h
-tapedrive.o: /usr/include/stdio.h ../graphics.new/machdep.h
-tapedrive.o: /usr/include/limits.h /usr/include/sgidefs.h
-tapedrive.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-tapedrive.o: /usr/include/sys/select.h /usr/include/sys/param.h
-tapedrive.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-tapedrive.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-tapedrive.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+Templates.o: ../graphics.new/RangeInfo.h ../graphics/AttrList.h
+Templates.o: ../graphics/Init.h ../graphics/Scheduler.h
+devtype.o: /usr/include/stdlib.h /usr/include/standards.h
+devtype.o: /usr/include/sgidefs.h /usr/include/sys/stat.h
+devtype.o: /usr/include/sys/types.h
+tapedrive.o: /usr/include/unistd.h /usr/include/standards.h
+tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
+tapedrive.o: /usr/include/sgidefs.h ../graphics.new/machdep.h
+tapedrive.o: /usr/include/limits.h /usr/include/sys/types.h
+tapedrive.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/wait.h
 tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 tapedrive.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 tapedrive.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
 tapedrive.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
 tapedrive.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-tapedrive.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+tapedrive.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+tapedrive.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 tapedrive.o: /usr/include/sys/endian.h ../graphics.new/DCE.h
 tapedrive.o: /usr/include/errno.h /usr/include/sys/errno.h
 tapedrive.o: /usr/include/assert.h /usr/include/sys/stat.h ../graphics/Exit.h
 tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
 tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
-testtape.o: tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
-testtape.o: /usr/include/limits.h /usr/include/sgidefs.h
-testtape.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-testtape.o: /usr/include/sys/select.h /usr/include/sys/param.h
-testtape.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-testtape.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-testtape.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/standards.h
+testtape.o: /usr/include/sgidefs.h ../graphics.new/machdep.h
+testtape.o: /usr/include/limits.h /usr/include/sys/types.h
+testtape.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+testtape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
 testtape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 testtape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 testtape.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
 testtape.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
 testtape.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-testtape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+testtape.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+testtape.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 testtape.o: /usr/include/sys/endian.h
-vertape.o: tapedrive.h /usr/include/stdio.h ../graphics.new/machdep.h
-vertape.o: /usr/include/limits.h /usr/include/sgidefs.h
-vertape.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-vertape.o: /usr/include/sys/select.h /usr/include/sys/param.h
-vertape.o: /usr/include/sys/signal.h /usr/include/sys/time.h
-vertape.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-vertape.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
+vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/standards.h
+vertape.o: /usr/include/sgidefs.h ../graphics.new/machdep.h
+vertape.o: /usr/include/limits.h /usr/include/sys/types.h
+vertape.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+vertape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
 vertape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 vertape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 vertape.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
 vertape.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
 vertape.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-vertape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+vertape.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+vertape.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 vertape.o: /usr/include/sys/endian.h

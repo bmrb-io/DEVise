@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:32  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:23:48  liping
   Added CVS header
 
@@ -30,7 +33,11 @@
 #include <stdio.h>
 #include "Csprotocols.h"
 #include "ServerAPI.h"
+#if !defined(SGI)
 #include <sys/varargs.h>
+#else
+#include <stdarg.h>
+#endif
 
 char* ServerServerProt::DefaultStr = "NULL";
 char* ServerServerProt::ControlSeperator = "?+?";

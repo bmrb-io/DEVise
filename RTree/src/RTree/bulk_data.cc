@@ -88,7 +88,11 @@ void bulk_data_t::init(int       infile,
     entry_sz=2*dim*sizeof(dbword_t)+data_sz;
   off=offset;
   file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
-		  PROT_READ|PROT_WRITE, MAP_SHARED|MAP_NORESERVE, infile, 0);
+		  PROT_READ|PROT_WRITE, MAP_SHARED
+#if !defined(SGI)
+		  |MAP_NORESERVE
+#endif
+		  , infile, 0);
 }
 
 

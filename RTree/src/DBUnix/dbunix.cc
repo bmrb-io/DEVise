@@ -59,7 +59,11 @@ db_mgr_unix::db_mgr_unix(const char * filename, const unsigned long filesize)
   }
 
 
-  filebase = (char *) mmap(0, filesize, frags , MAP_SHARED | MAP_NORESERVE, fd, 0);
+  filebase = (char *) mmap(0, filesize, frags , MAP_SHARED
+#if !defined(SGI)
+      | MAP_NORESERVE
+#endif
+      , fd, 0);
   if (filebase == (char *) -1) {
     DEBUG(("db_mgr_unix::db_mgr_unix: mmap failed\n"));
     PERROR("db_mgr_unix:mmap");

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:56  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:01  liping
   Added CVS header
 
@@ -57,6 +60,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#if defined(SGI)
+#include <stdarg.h>
+#endif
 
 #include "colbrLog.h"
 #include "logfns.h"
@@ -152,7 +158,7 @@ LogState(int fd)
 void
 AppendLog(int type, ...)
 {
-	LogRecord *log;
+	LogRecord *log = NULL;
 	GroupKey *GroupName;
 	DbEntry *ServerAddr;
 	va_list pvar;

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:52  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:58  liping
   Added CVS header
 
@@ -54,6 +57,9 @@
 ** 
 */ 
 #include <stdio.h>
+#if defined(SGI)
+#include <stdarg.h>
+#endif
 
 #include "error.h"
 

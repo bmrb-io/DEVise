@@ -15,6 +15,14 @@
 # $Id$
 
 # $Log$
+# Revision 1.36  1998/02/19 23:25:51  wenger
+# Improved color library and got client/server test code to work
+# (except for setting colors by RGB): reduced compile interdependencies,
+# especially in color library; color and utils libraries install headers
+# as per code reorg plans; added standard DEVise headers to all color
+# manager files; moved color initialization into Display constructors;
+# fixed some compile warnings throughout the code.
+#
 # Revision 1.35  1998/02/16 18:13:34  wenger
 # Added collaborator to appropriate release scripts; got deviseb to compile
 # and link.
@@ -106,7 +114,7 @@
 #
 
 LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree xvertext csgroup 
+	unidata RTree DTE xvertext csgroup 
 
 #devread is obsolete
 #attrproj is broken

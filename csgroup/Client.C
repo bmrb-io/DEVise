@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:31  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 07:47:43  liping
   Fixed bugs related to: queue algorithms, bucket expansion, iterator reset
 
@@ -40,7 +43,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#if !defined(SGI)
 #include <sys/varargs.h> 
+#else
+#include <stdarg.h> 
+#endif
+#if defined(SGI)
+#include <sys/param.h> // for MAXHOSTNAMELEN
+#endif
 
 #include "Client.h"
 #include "ClientAPI.h"

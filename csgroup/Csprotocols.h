@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:33  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:23:48  liping
   Added CVS header
 
@@ -32,7 +35,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#if !defined(SGI)
 #include <sys/varargs.h>
+#else
+#include <varargs.h>
+#endif
 
 extern "C" {
 	void bzero(void *s, size_t n);

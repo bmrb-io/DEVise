@@ -23,17 +23,15 @@ depend:
 # DO NOT DELETE
 
 example.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-example.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-example.o: /usr/include/sys/select.h /usr/include/X11/X.h
-example.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-example.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-example.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/math.h
-example.o: rotated.h
+example.o: /usr/include/standards.h /usr/include/sgidefs.h
+example.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+example.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+example.o: /usr/include/X11/Xutil.h /usr/include/stdio.h
+example.o: /usr/include/stdlib.h /usr/include/math.h rotated.h
 rotated.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-rotated.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-rotated.o: /usr/include/sys/select.h /usr/include/X11/X.h
-rotated.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-rotated.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-rotated.o: /usr/include/X11/Xatom.h /usr/include/stdio.h
-rotated.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/math.h
-rotated.o: rotated.h
+rotated.o: /usr/include/standards.h /usr/include/sgidefs.h
+rotated.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+rotated.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+rotated.o: /usr/include/X11/Xutil.h /usr/include/X11/Xatom.h
+rotated.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/string.h
+rotated.o: /usr/include/math.h rotated.h

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:40  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/12 05:02:22  taodb
   Made code proceed even if DEVISE_COLLABORATOR environmental variable is not defined
 
@@ -40,6 +43,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#if defined(SGI)
+#include <stdarg.h>
+#endif
+#if defined(SGI)
+#include <sys/param.h> // for MAXHOSTNAMELEN
+#endif
 
 
 #if defined(LINUX)

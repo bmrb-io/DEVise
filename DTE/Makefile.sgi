@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1997/03/28 16:07:11  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -33,342 +37,194 @@ depend:
 
 # DO NOT DELETE
 
-Aggregates.o: Aggregates.h types.h /usr/include/assert.h
-Aggregates.o: /usr/include/string.h /usr/include/sys/types.h
-Aggregates.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-Aggregates.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-Aggregates.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-Aggregates.o: ../../graphics.new/machdep.h /usr/include/limits.h
-Aggregates.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-Aggregates.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-Aggregates.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-Aggregates.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Aggregates.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Aggregates.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-Aggregates.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-Aggregates.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-Aggregates.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-Aggregates.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-Aggregates.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-Aggregates.o: ../../graphics/Exit.h ../../graphics/Init.h
-Aggregates.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h myopt.h
-Aggregates.o: url.h /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
-Aggregates.o: listop.h site.h Iterator.h StandardRead.h FunctionRead.h
-Aggregates.o: catalog.h
-DevRead.o: /usr/include/stdio.h /usr/include/string.h
-DevRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-DevRead.o: /usr/include/sgidefs.h /usr/include/sys/types.h
-DevRead.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-DevRead.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-DevRead.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-DevRead.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-DevRead.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-DevRead.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-DevRead.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-DevRead.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-DevRead.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DevRead.o: /usr/include/netinet/in.h /usr/include/sys/endian.h DevRead.h
-DevRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-DevRead.o: ../../graphics/DevStatus.h ../../graphics.new/RecId.h types.h
-DevRead.o: /usr/include/assert.h exception.h ../../graphics/AttrList.h
-DevRead.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-DevRead.o: ../../graphics/BufPolicy.h queue.h Iterator.h
-DevRead.o: ../../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
-DevRead.o: /usr/include/ctype.h /usr/include/math.h
-DevRead.o: ../../graphics.new/TData.h ../../graphics.new/DataSource.h
-DevRead.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
-DevRead.o: /usr/include/errno.h /usr/include/sys/errno.h
-DevRead.o: /usr/include/sys/stat.h ../../graphics.new/DataSeg.h
-Engine.o: /usr/include/memory.h /usr/include/string.h /usr/include/assert.h
-Engine.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/sgidefs.h
-Engine.o: queue.h /usr/include/stdio.h myopt.h types.h
-Engine.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-Engine.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-Engine.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-Engine.o: ../../graphics.new/machdep.h /usr/include/limits.h
-Engine.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-Engine.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-Engine.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-Engine.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Engine.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Engine.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-Engine.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-Engine.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-Engine.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-Engine.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-Engine.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-Engine.o: ../../graphics/Exit.h ../../graphics/Init.h
-Engine.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-Engine.o: /usr/include/unistd.h SockStream.h listop.h Engine.h site.h
-Engine.o: Iterator.h StandardRead.h FunctionRead.h ParseTree.h joins.h
-FunctionRead.o: /usr/include/string.h FunctionRead.h Iterator.h types.h
-FunctionRead.o: /usr/include/assert.h /usr/include/sys/types.h
-FunctionRead.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-FunctionRead.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-FunctionRead.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-FunctionRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-FunctionRead.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-FunctionRead.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-FunctionRead.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-FunctionRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-FunctionRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-FunctionRead.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-FunctionRead.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-FunctionRead.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-FunctionRead.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-FunctionRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-FunctionRead.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-FunctionRead.o: ../../graphics/Exit.h ../../graphics/Init.h
-FunctionRead.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h url.h
-FunctionRead.o: /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
-IndexParse.o: /usr/include/memory.h /usr/include/string.h
-IndexParse.o: /usr/include/assert.h /usr/include/math.h /usr/include/stdlib.h
-IndexParse.o: /usr/include/sgidefs.h /usr/include/stdio.h
-IndexParse.o: /usr/include/errno.h /usr/include/sys/errno.h queue.h myopt.h
-IndexParse.o: types.h /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-IndexParse.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-IndexParse.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-IndexParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
-IndexParse.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-IndexParse.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-IndexParse.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-IndexParse.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-IndexParse.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-IndexParse.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-IndexParse.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-IndexParse.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-IndexParse.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-IndexParse.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-IndexParse.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-IndexParse.o: ../../graphics/Exit.h ../../graphics/Init.h
-IndexParse.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-IndexParse.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
-IndexParse.o: StandardRead.h FunctionRead.h catalog.h DevRead.h
-IndexParse.o: ../../graphics.new/RecId.h Aggregates.h ParseTree.h
-QueryTree.o: /usr/include/memory.h /usr/include/string.h
-QueryTree.o: /usr/include/assert.h /usr/include/math.h /usr/include/stdlib.h
-QueryTree.o: /usr/include/sgidefs.h queue.h /usr/include/stdio.h myopt.h
-QueryTree.o: types.h /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-QueryTree.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-QueryTree.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-QueryTree.o: ../../graphics.new/machdep.h /usr/include/limits.h
-QueryTree.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-QueryTree.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-QueryTree.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-QueryTree.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-QueryTree.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-QueryTree.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-QueryTree.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-QueryTree.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-QueryTree.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-QueryTree.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-QueryTree.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-QueryTree.o: ../../graphics/Exit.h ../../graphics/Init.h
-QueryTree.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-QueryTree.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
-QueryTree.o: StandardRead.h FunctionRead.h catalog.h DevRead.h
-QueryTree.o: ../../graphics.new/RecId.h Aggregates.h ParseTree.h joins.h
-RTreeRead.o: RTreeRead.h StandardRead.h types.h /usr/include/assert.h
-RTreeRead.o: /usr/include/string.h /usr/include/sys/types.h
-RTreeRead.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-RTreeRead.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-RTreeRead.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-RTreeRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-RTreeRead.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-RTreeRead.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-RTreeRead.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-RTreeRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-RTreeRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-RTreeRead.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-RTreeRead.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-RTreeRead.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-RTreeRead.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-RTreeRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-RTreeRead.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-RTreeRead.o: ../../graphics/Exit.h ../../graphics/Init.h
-RTreeRead.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h
-RTreeRead.o: Iterator.h myopt.h url.h /usr/include/sys/uio.h
-RTreeRead.o: /usr/include/unistd.h SockStream.h listop.h
-StandardRead.o: /usr/include/string.h StandardRead.h types.h
-StandardRead.o: /usr/include/assert.h /usr/include/sys/types.h
-StandardRead.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-StandardRead.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-StandardRead.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-StandardRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
-StandardRead.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-StandardRead.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-StandardRead.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-StandardRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-StandardRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-StandardRead.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-StandardRead.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-StandardRead.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-StandardRead.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-StandardRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-StandardRead.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-StandardRead.o: ../../graphics/Exit.h ../../graphics/Init.h
-StandardRead.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h
-StandardRead.o: Iterator.h url.h /usr/include/sys/uio.h /usr/include/unistd.h
-StandardRead.o: SockStream.h
-catalog.o: /usr/include/string.h catalog.h /usr/include/assert.h
-catalog.o: /usr/include/limits.h /usr/include/sgidefs.h queue.h
-catalog.o: /usr/include/stdio.h exception.h /usr/include/sys/time.h
-catalog.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
-catalog.o: /usr/include/sys/select.h ../../graphics.new/machdep.h
-catalog.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-catalog.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-catalog.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-catalog.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-catalog.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-catalog.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-catalog.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-catalog.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-catalog.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-catalog.o: /usr/include/sys/endian.h site.h types.h ../../graphics/AttrList.h
-catalog.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-catalog.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-catalog.o: ../../graphics/Exit.h ../../graphics/Init.h
-catalog.o: ../../graphics/BufPolicy.h myopt.h url.h /usr/include/sys/uio.h
-catalog.o: /usr/include/unistd.h SockStream.h listop.h Iterator.h
-catalog.o: StandardRead.h FunctionRead.h DevRead.h ../../graphics.new/RecId.h
-joins.o: joins.h site.h /usr/include/assert.h queue.h /usr/include/stdio.h
-joins.o: types.h /usr/include/string.h /usr/include/sys/types.h
-joins.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-joins.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-joins.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-joins.o: ../../graphics.new/machdep.h /usr/include/limits.h
-joins.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-joins.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-joins.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-joins.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-joins.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-joins.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-joins.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-joins.o: /usr/include/netdb.h /usr/include/sys/socket.h
-joins.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-joins.o: /usr/include/values.h ../../graphics/DevStatus.h
-joins.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-joins.o: ../../graphics/BufPolicy.h myopt.h url.h /usr/include/sys/uio.h
-joins.o: /usr/include/unistd.h SockStream.h listop.h Iterator.h
-joins.o: StandardRead.h FunctionRead.h
-listop.o: /usr/include/memory.h /usr/include/string.h /usr/include/assert.h
-listop.o: /usr/include/math.h queue.h /usr/include/stdio.h myopt.h types.h
-listop.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-listop.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-listop.o: /usr/include/netinet/in.h /usr/include/sys/endian.h exception.h
-listop.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-listop.o: /usr/include/limits.h /usr/include/sys/param.h
-listop.o: /usr/include/sys/signal.h /usr/include/sys/wait.h
-listop.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-listop.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-listop.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-listop.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-listop.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-listop.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-listop.o: /usr/include/netdb.h /usr/include/sys/socket.h
-listop.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-listop.o: /usr/include/values.h ../../graphics/DevStatus.h
-listop.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-listop.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-listop.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
-listop.o: StandardRead.h FunctionRead.h catalog.h
-resolve.o: myopt.h /usr/include/assert.h queue.h /usr/include/stdio.h types.h
-resolve.o: /usr/include/string.h /usr/include/sys/types.h
-resolve.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-resolve.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-resolve.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-resolve.o: ../../graphics.new/machdep.h /usr/include/limits.h
-resolve.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-resolve.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-resolve.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-resolve.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-resolve.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-resolve.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-resolve.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-resolve.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
-resolve.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
-resolve.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-resolve.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-resolve.o: ../../graphics/Exit.h ../../graphics/Init.h
-resolve.o: ../../graphics/BufPolicy.h url.h /usr/include/sys/uio.h
-resolve.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
-resolve.o: StandardRead.h FunctionRead.h
-site.o: /usr/include/string.h site.h /usr/include/assert.h queue.h
-site.o: /usr/include/stdio.h types.h /usr/include/sys/types.h
-site.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-site.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-site.o: /usr/include/sys/endian.h exception.h /usr/include/sys/time.h
-site.o: ../../graphics.new/machdep.h /usr/include/limits.h
-site.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-site.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-site.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-site.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-site.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-site.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-site.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-site.o: /usr/include/netdb.h /usr/include/sys/socket.h
-site.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-site.o: /usr/include/values.h ../../graphics/DevStatus.h
-site.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-site.o: ../../graphics/BufPolicy.h myopt.h url.h /usr/include/sys/uio.h
-site.o: /usr/include/unistd.h SockStream.h listop.h Iterator.h StandardRead.h
-site.o: FunctionRead.h
-types.o: types.h /usr/include/assert.h /usr/include/string.h
-types.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-types.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-types.o: /usr/include/netinet/in.h /usr/include/sys/endian.h exception.h
-types.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-types.o: /usr/include/limits.h /usr/include/sys/param.h
-types.o: /usr/include/sys/signal.h /usr/include/sys/wait.h
-types.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-types.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-types.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-types.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-types.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-types.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-types.o: /usr/include/netdb.h /usr/include/sys/socket.h
-types.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-types.o: /usr/include/values.h ../../graphics/DevStatus.h
-types.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-types.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h myopt.h
-types.o: url.h /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
-types.o: listop.h catalog.h site.h Iterator.h StandardRead.h FunctionRead.h
-url.o: url.h /usr/include/sys/types.h /usr/include/sgidefs.h
-url.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-url.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-url.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-url.o: /usr/include/netdb.h /usr/include/string.h /usr/include/assert.h
-url.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h exception.h
-url.o: /usr/include/sys/time.h ../../graphics.new/machdep.h
-url.o: /usr/include/limits.h /usr/include/sys/param.h
-url.o: /usr/include/sys/signal.h /usr/include/sys/wait.h
-url.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
-url.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
-url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-url.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
-url.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
-url.o: /usr/include/sys/ttydev.h
+Aggregates.o: Aggregates.h types.h /usr/include/assert.h exception.h
+Aggregates.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+Aggregates.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
+Aggregates.o: SockStream.h listop.h site.h Iterator.h MemoryMgr.h TypeCheck.h
+Aggregates.o: StringLess.h SeqSimVecAggregate.h
+DeleteParse.o: /usr/include/assert.h /usr/include/math.h
+DeleteParse.o: /usr/include/sgidefs.h /usr/include/standards.h queue.h
+DeleteParse.o: myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
+DeleteParse.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h
+DeleteParse.o: ParseTree.h TypeCheck.h StringLess.h ExecExpr.h MemoryMgr.h
+DevRead.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
+DevRead.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+DevRead.o: /usr/include/standards.h DevRead.h Iterator.h
+DevRead.dummy.o: /usr/include/assert.h types.h exception.h Utility.h queue.h
+DevRead.dummy.o: Array.h SeqSimVec.h /usr/include/math.h
+DevRead.dummy.o: /usr/include/sgidefs.h /usr/include/standards.h DevRead.h
+DevRead.dummy.o: Iterator.h
+DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
+DropIndexParse.o: exception.h Utility.h Array.h SeqSimVec.h
+DropIndexParse.o: /usr/include/math.h /usr/include/sgidefs.h
+DropIndexParse.o: /usr/include/standards.h url.h SockStream.h listop.h
+DropIndexParse.o: TypeCheck.h StringLess.h Engine.h site.h Iterator.h
+Engine.o: /usr/include/assert.h /usr/include/math.h /usr/include/sgidefs.h
+Engine.o: /usr/include/standards.h queue.h myopt.h types.h exception.h
+Engine.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h Engine.h
+Engine.o: site.h Iterator.h ParseTree.h TypeCheck.h StringLess.h ExecOp.h
+Engine.o: ExecExpr.h
+ExecOp.o: ExecOp.h queue.h /usr/include/assert.h Array.h ExecExpr.h types.h
+ExecOp.o: exception.h Utility.h SeqSimVec.h /usr/include/math.h
+ExecOp.o: /usr/include/sgidefs.h /usr/include/standards.h Iterator.h listop.h
+ExecOp.o: RTreeRead.h myopt.h url.h SockStream.h StandardRead.h MemoryMgr.h
+FunctionRead.o: FunctionRead.h Iterator.h /usr/include/assert.h types.h
+FunctionRead.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+FunctionRead.o: /usr/include/math.h /usr/include/sgidefs.h
+FunctionRead.o: /usr/include/standards.h url.h SockStream.h
+IndexParse.o: /usr/include/memory.h /usr/include/assert.h /usr/include/math.h
+IndexParse.o: /usr/include/sgidefs.h /usr/include/standards.h
+IndexParse.o: /usr/include/stdlib.h /usr/include/stdio.h /usr/include/errno.h
+IndexParse.o: /usr/include/sys/errno.h queue.h myopt.h types.h exception.h
+IndexParse.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h
+IndexParse.o: site.h Iterator.h catalog.h ParseTree.h TypeCheck.h
+IndexParse.o: StringLess.h Aggregates.h MemoryMgr.h Inserter.h MinMax.h
+IndexParse.o: StandardRead.h Interface.h
+IndexParse.dummy.o: /usr/include/assert.h /usr/include/math.h
+IndexParse.dummy.o: /usr/include/sgidefs.h /usr/include/standards.h queue.h
+IndexParse.dummy.o: myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
+IndexParse.dummy.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h
+IndexParse.dummy.o: ParseTree.h TypeCheck.h StringLess.h Aggregates.h
+IndexParse.dummy.o: MemoryMgr.h
+InsertParse.o: /usr/include/assert.h /usr/include/math.h
+InsertParse.o: /usr/include/sgidefs.h /usr/include/standards.h queue.h
+InsertParse.o: myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
+InsertParse.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h
+InsertParse.o: ParseTree.h TypeCheck.h StringLess.h
+Inserter.o: url.h /usr/include/assert.h SockStream.h exception.h Inserter.h
+Inserter.o: types.h Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+Inserter.o: /usr/include/sgidefs.h /usr/include/standards.h StandardRead.h
+Inserter.o: Iterator.h MemoryMgr.h
+Interface.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
+Interface.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+Interface.o: /usr/include/standards.h Interface.h site.h myopt.h url.h
+Interface.o: SockStream.h listop.h Iterator.h DevRead.h StandardRead.h
+Interface.o: Inserter.h Engine.h catalog.h ParseTree.h TypeCheck.h
+Interface.o: StringLess.h
+MaterializeParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
+MaterializeParse.o: exception.h Utility.h Array.h SeqSimVec.h
+MaterializeParse.o: /usr/include/math.h /usr/include/sgidefs.h
+MaterializeParse.o: /usr/include/standards.h url.h SockStream.h listop.h
+MaterializeParse.o: TypeCheck.h StringLess.h site.h Iterator.h catalog.h
+MaterializeParse.o: Engine.h Interface.h Inserter.h
+MemoryMgr.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
+MemoryMgr.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+MemoryMgr.o: /usr/include/standards.h Interface.h MemoryMgr.h
+MinMax.o: MinMax.h myopt.h /usr/include/assert.h queue.h types.h exception.h
+MinMax.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+MinMax.o: /usr/include/sgidefs.h /usr/include/standards.h url.h SockStream.h
+MinMax.o: listop.h StandardRead.h Iterator.h catalog.h
+ODBCInterface.dummy.o: types.h /usr/include/assert.h exception.h Utility.h
+ODBCInterface.dummy.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+ODBCInterface.dummy.o: /usr/include/sgidefs.h /usr/include/standards.h
+ODBCInterface.dummy.o: Interface.h site.h myopt.h url.h SockStream.h listop.h
+ODBCInterface.dummy.o: Iterator.h DevRead.h StandardRead.h Inserter.h
+ODBCInterface.dummy.o: Engine.h catalog.h
+Optimizer.o: Optimizer.h StringLess.h
+PQueue.o: PQueue.h types.h /usr/include/assert.h exception.h Utility.h
+PQueue.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+PQueue.o: /usr/include/sgidefs.h /usr/include/standards.h
+QueryTree.o: queue.h /usr/include/assert.h myopt.h types.h exception.h
+QueryTree.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+QueryTree.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
+QueryTree.o: SockStream.h listop.h site.h Iterator.h catalog.h DevRead.h
+QueryTree.o: Aggregates.h MemoryMgr.h TypeCheck.h StringLess.h ParseTree.h
+QueryTree.o: Sort.h StandardRead.h PQueue.h MinMax.h Interface.h Optimizer.h
+RTreeRead.o: RTreeRead.h myopt.h /usr/include/assert.h queue.h types.h
+RTreeRead.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+RTreeRead.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
+RTreeRead.o: SockStream.h listop.h Iterator.h StandardRead.h
+RTreeRead.dummy.o: RTreeRead.h myopt.h /usr/include/assert.h queue.h types.h
+RTreeRead.dummy.o: exception.h Utility.h Array.h SeqSimVec.h
+RTreeRead.dummy.o: /usr/include/math.h /usr/include/sgidefs.h
+RTreeRead.dummy.o: /usr/include/standards.h url.h SockStream.h listop.h
+RTreeRead.dummy.o: Iterator.h StandardRead.h
+SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
+SchemaParse.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+SchemaParse.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
+SchemaParse.o: SockStream.h listop.h TypeCheck.h StringLess.h site.h
+SchemaParse.o: Iterator.h catalog.h Interface.h
+SeqSimVecAggregate.o: SeqSimVecAggregate.h Aggregates.h types.h
+SeqSimVecAggregate.o: /usr/include/assert.h exception.h Utility.h queue.h
+SeqSimVecAggregate.o: Array.h SeqSimVec.h /usr/include/math.h
+SeqSimVecAggregate.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h
+SeqSimVecAggregate.o: url.h SockStream.h listop.h site.h Iterator.h
+SeqSimVecAggregate.o: MemoryMgr.h TypeCheck.h StringLess.h
+Sort.o: /usr/include/assert.h Sort.h site.h queue.h types.h exception.h
+Sort.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+Sort.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
+Sort.o: SockStream.h listop.h Iterator.h StandardRead.h PQueue.h Inserter.h
+Sort.o: MemoryMgr.h
+StandardRead.o: StandardRead.h types.h /usr/include/assert.h exception.h
+StandardRead.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+StandardRead.o: /usr/include/sgidefs.h /usr/include/standards.h Iterator.h
+StandardRead.o: url.h SockStream.h ExecOp.h ExecExpr.h
+Templates.o: queue.h /usr/include/assert.h Array.h types.h exception.h
+Templates.o: Utility.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+Templates.o: /usr/include/standards.h ExecExpr.h MemoryMgr.h listop.h myopt.h
+Templates.o: url.h SockStream.h Optimizer.h StringLess.h
+TypeCheck.o: myopt.h /usr/include/assert.h queue.h types.h exception.h
+TypeCheck.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+TypeCheck.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
+TypeCheck.o: SockStream.h listop.h TypeCheck.h StringLess.h catalog.h
+TypeCheck.o: Interface.h
+UnionParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
+UnionParse.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+UnionParse.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
+UnionParse.o: SockStream.h listop.h TypeCheck.h StringLess.h site.h
+UnionParse.o: Iterator.h
+Util.o: types.h /usr/include/assert.h exception.h Utility.h queue.h Array.h
+Util.o: SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+Util.o: /usr/include/standards.h Inserter.h
+catalog.o: StandardRead.h types.h /usr/include/assert.h exception.h Utility.h
+catalog.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+catalog.o: /usr/include/sgidefs.h /usr/include/standards.h Iterator.h
+catalog.o: catalog.h url.h SockStream.h site.h myopt.h listop.h Inserter.h
+catalog.o: Interface.h
+joins.o: joins.h site.h queue.h /usr/include/assert.h types.h exception.h
+joins.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+joins.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
+joins.o: SockStream.h listop.h Iterator.h
+lex.yy.o: /usr/include/stdio.h /usr/include/standards.h
+lex.yy.o: /usr/include/sgidefs.h /usr/include/assert.h myopt.h queue.h
+lex.yy.o: types.h exception.h Utility.h Array.h SeqSimVec.h
+lex.yy.o: /usr/include/math.h url.h SockStream.h listop.h ParseTree.h
+lex.yy.o: TypeCheck.h StringLess.h /usr/include/stdlib.h
+listop.o: /usr/include/assert.h /usr/include/math.h /usr/include/sgidefs.h
+listop.o: /usr/include/standards.h queue.h myopt.h types.h exception.h
+listop.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h site.h
+listop.o: Iterator.h catalog.h ExecExpr.h
+resolve.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
+resolve.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+resolve.o: /usr/include/standards.h myopt.h url.h SockStream.h listop.h
+resolve.o: site.h Iterator.h ExecExpr.h catalog.h Interface.h
+site.o: site.h queue.h /usr/include/assert.h types.h exception.h Utility.h
+site.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+site.o: /usr/include/standards.h myopt.h url.h SockStream.h listop.h
+site.o: Iterator.h Interface.h ExecOp.h ExecExpr.h RTreeRead.h StandardRead.h
+site.o: MemoryMgr.h
+types.o: types.h /usr/include/assert.h exception.h Utility.h queue.h Array.h
+types.o: SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+types.o: /usr/include/standards.h Interface.h catalog.h
+url.o: url.h /usr/include/assert.h SockStream.h exception.h
 
-main.o: /usr/include/memory.h /usr/include/string.h /usr/include/assert.h
-main.o: /usr/include/math.h ../Core/types.h /usr/include/sys/types.h
-main.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-main.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-main.o: /usr/include/sys/endian.h ../Core/exception.h /usr/include/sys/time.h
-main.o: ../../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/param.h /usr/include/sys/signal.h
-main.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
-main.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
-main.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-main.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
-main.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
-main.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
-main.o: /usr/include/netdb.h /usr/include/sys/socket.h
-main.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-main.o: /usr/include/values.h ../../graphics/DevStatus.h
-main.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-main.o: ../../graphics/BufPolicy.h ../Core/queue.h /usr/include/stdio.h
-main.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h ../Core/url.h
-main.o: /usr/include/sys/uio.h /usr/include/unistd.h ../Core/SockStream.h
-main.o: ../Core/listop.h ../Core/Iterator.h ../Core/StandardRead.h
-main.o: ../Core/FunctionRead.h
+SBMInit.o: SBMInit.h ../../graphics.new/SBufMgr.h /usr/include/sys/types.h
+SBMInit.o: /usr/include/standards.h /usr/include/sgidefs.h
+SBMInit.o: /usr/include/sys/uio.h /usr/include/unistd.h
+SBMInit.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+SBMInit.o: ../../graphics/DevStatus.h ../../graphics.new/MemMgr.h
+SBMInit.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
+SBMInit.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
+SBMInit.o: /usr/include/sys/errno.h /usr/include/assert.h
+SBMInit.o: /usr/include/stdio.h /usr/include/limits.h /usr/include/sys/stat.h
+SBMInit.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
+SBMInit.o: /usr/include/sys/signal.h /usr/include/sys/time.h
+SBMInit.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+SBMInit.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
+SBMInit.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
+SBMInit.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+SBMInit.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
+SBMInit.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+SBMInit.o: /usr/include/sys/endian.h InitShut.h
+SBMInit.dummy.o: InitShut.h
+main.o: InitShut.h Common.h

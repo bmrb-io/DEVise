@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/01/07 19:26:49  wenger
+#  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+#  server library into Devise); updated solaris, sun, linux, and hp
+#  dependencies.
+#
 #  Revision 1.1.2.1  1997/12/30 14:18:58  wenger
 #  Forgot to add new Makefile.sgi's.
 #
@@ -27,40 +32,37 @@ depend:
 
 # DO NOT DELETE
 
-LMAPI.o: /usr/include/stdio.h /usr/include/string.h /usr/include/stdlib.h
-LMAPI.o: /usr/include/sgidefs.h LMAPI.h LMControl.h LMWindow.h LMHashTable.h
-LMAPI.o: LMLayout.h ../graphics/DList.h ../graphics/Exit.h
-LMAPI.o: ../graphics/Dispatcher.h /usr/include/sys/types.h
-LMAPI.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+LMAPI.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
+LMAPI.o: /usr/include/string.h /usr/include/stdlib.h LMAPI.h LMControl.h
+LMAPI.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
+LMAPI.o: ../graphics/Exit.h ../graphics/Dispatcher.h /usr/include/sys/types.h
 LMAPI.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMAPI.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMAPI.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-LMAPI.o: LMError.h
-LMControl.o: /usr/include/stdlib.h /usr/include/sgidefs.h
-LMControl.o: /usr/include/string.h LMControl.h LMWindow.h LMHashTable.h
-LMControl.o: LMLayout.h ../graphics/DList.h ../graphics/Exit.h
-LMControl.o: ../graphics/Dispatcher.h /usr/include/sys/types.h
-LMControl.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-LMControl.o: ../graphics/DeviseTypes.h /usr/include/values.h
-LMControl.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMControl.o: ../graphics/VisualArg.h ../graphics/Color.h
+LMAPI.o: ../graphics/VisualArg.h ../graphics/Pattern.h LMError.h
+LMControl.o: /usr/include/stdlib.h /usr/include/standards.h
+LMControl.o: /usr/include/sgidefs.h /usr/include/string.h LMControl.h
+LMControl.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
+LMControl.o: ../graphics/Exit.h ../graphics/Dispatcher.h
+LMControl.o: /usr/include/sys/types.h ../graphics/DeviseTypes.h
+LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
+LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
 LMControl.o: ../graphics/Pattern.h LMAPI.h
-LMHashTable.o: /usr/include/string.h LMHashTable.h
-LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/math.h LMWindow.h
+LMHashTable.o: /usr/include/string.h /usr/include/standards.h LMHashTable.h
+LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/standards.h
+LMLayout.o: /usr/include/sgidefs.h /usr/include/math.h LMWindow.h
 LMLayout.o: LMHashTable.h ../graphics/DList.h ../graphics/Exit.h
 LMMain.o: LMControl.h LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
 LMMain.o: ../graphics/Exit.h ../graphics/Dispatcher.h
-LMMain.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-LMMain.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-LMMain.o: ../graphics/DeviseTypes.h /usr/include/values.h
-LMMain.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMMain.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+LMMain.o: /usr/include/sys/types.h /usr/include/standards.h
+LMMain.o: /usr/include/sgidefs.h ../graphics/DeviseTypes.h
+LMMain.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Journal.h
+LMMain.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
 LMWindow.o: ../graphics/Exit.h LMControl.h ../graphics/Dispatcher.h
-LMWindow.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-LMWindow.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
-LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMWindow.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+LMWindow.o: /usr/include/sys/types.h /usr/include/standards.h
+LMWindow.o: /usr/include/sgidefs.h ../graphics/DeviseTypes.h
+LMWindow.o: /usr/include/values.h ../graphics/DevStatus.h
+LMWindow.o: ../graphics/Journal.h ../graphics/VisualArg.h
+LMWindow.o: ../graphics/Pattern.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

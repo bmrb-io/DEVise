@@ -1,0 +1,247 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1998
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+BASE = $(PWD)
+BASE = .
+INCLUDE_DIRS = \
+     . \
+	src \
+     src/DBJussi \
+     src/PageClasses \
+     src/TypeSupport \
+     src/Common \
+     src/RTree \
+     ../graphics \
+     ../graphics.new \
+     ../tape 
+
+FULL_PATH_INCLUDES = \
+	-I/usr/gnu/lib/g++-include 
+
+INCLUDE_DIRS1 = $(addprefix -I, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+INCLUDE_DIRS2 = $(addprefix -I../, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+INCLUDE_DIRS3 = $(addprefix -I../../, $(INCLUDE_DIRS)) $(FULL_PATH_INCLUDES)
+
+
+depend:
+	makedepend -f Makefile.sgi $(INCLUDE_DIRS1) *.cc
+	cd src; makedepend -a -f../Makefile.sgi $(INCLUDE_DIRS2) *.cc
+	cd src/Common; makedepend -a -f../../Makefile.sgi $(INCLUDE_DIRS2) *.cc
+	cd src/DBJussi; \
+		makedepend -a -f../../Makefile.sgi $(INCLUDE_DIRS3) *.cc
+	cd src/PageClasses; \
+		makedepend -a -f../../Makefile.sgi $(INCLUDE_DIRS3) *.cc
+	cd src/Progs; \
+		makedepend -a -f../../Makefile.sgi $(INCLUDE_DIRS3) *.cc
+	cd src/RTree; \
+		makedepend -a -f../../Makefile.sgi $(INCLUDE_DIRS3) *.cc
+	cd src/TypeSupport; \
+		makedepend -a -f../../Makefile.sgi $(INCLUDE_DIRS3) *.cc
+
+# DO NOT DELETE
+
+setup.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
+setup.o: /usr/include/stdarg.h /usr/include/unistd.h /usr/include/errno.h
+setup.o: /usr/include/sys/errno.h
+
+correct_math.o: /usr/include/stdio.h /usr/include/standards.h
+correct_math.o: /usr/include/sgidefs.h /usr/include/math.h heap.h
+heap.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
+heap.o: heap.h
+int_key.o: int_key.h .././setup.h /usr/include/assert.h /usr/include/stdio.h
+int_key.o: /usr/include/standards.h /usr/include/sgidefs.h
+int_key.o: /usr/include/math.h bit_vec.h /usr/include/stdlib.h
+int_key.o: /usr/include/strings.h /usr/include/sys/types.h
+
+dbJussi.o: /usr/include/sys/types.h /usr/include/standards.h
+dbJussi.o: /usr/include/sgidefs.h /usr/include/unistd.h /usr/include/stdlib.h
+dbJussi.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+dbJussi.o: /usr/include/sys/fcntl.h dbJussi.h ../../src/setup.h
+dbJussi.o: /usr/include/assert.h ../../src/dbinterface.h
+dbJussi.o: /usr/include/stddef.h ../../../graphics.new/SBufMgr.h
+dbJussi.o: /usr/include/sys/uio.h ../../../graphics/DeviseTypes.h
+dbJussi.o: /usr/include/values.h ../../../graphics/DevStatus.h
+dbJussi.o: ../../../graphics.new/MemMgr.h ../../../graphics.new/DCE.h
+dbJussi.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+dbJussi.o: /usr/include/sys/shm.h /usr/include/errno.h
+dbJussi.o: /usr/include/sys/errno.h /usr/include/stdio.h
+dbJussi.o: /usr/include/limits.h ../../../graphics.new/machdep.h
+dbJussi.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+dbJussi.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+dbJussi.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+dbJussi.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+dbJussi.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+dbJussi.o: /usr/include/netdb.h /usr/include/sys/socket.h
+dbJussi.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+dbJussi.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+dbJussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
+dbJussi.o: /usr/gnu/lib/g++-include/iostream.h
+dbJussi.o: /usr/gnu/lib/g++-include/streambuf.h
+dbJussi.o: /usr/gnu/lib/g++-include/libio.h
+dbJussi.o: /usr/gnu/lib/g++-include/_G_config.h /usr/include/sys/cdefs.h
+
+alignedsortedpage.o: /usr/include/stdio.h /usr/include/standards.h
+alignedsortedpage.o: /usr/include/sgidefs.h /usr/include/string.h
+alignedsortedpage.o: ../../src/setup.h /usr/include/assert.h
+alignedsortedpage.o: ../../src/dbinterface.h /usr/include/stddef.h
+alignedsortedpage.o: alignedsortedpage.h
+fixed_entrysz_p.o: /usr/include/stdlib.h /usr/include/standards.h
+fixed_entrysz_p.o: /usr/include/sgidefs.h fixed_entrysz_p.h stackpage.h
+fixed_entrysz_p.o: ../../src/dbinterface.h /usr/include/stddef.h
+fixed_entrysz_p.o: ../../src/setup.h /usr/include/assert.h
+fixed_entrysz_p.o: ../../src/Common/bit_vec.h /usr/include/stdio.h
+int_keyed_p.o: /usr/include/stdlib.h /usr/include/standards.h
+int_keyed_p.o: /usr/include/sgidefs.h int_keyed_p.h fixed_entrysz_p.h
+int_keyed_p.o: stackpage.h ../../src/dbinterface.h /usr/include/stddef.h
+int_keyed_p.o: ../../src/setup.h /usr/include/assert.h
+int_keyed_p.o: ../../src/Common/bit_vec.h /usr/include/stdio.h
+int_keyed_p.o: ../../src/Common/int_key.h /usr/include/math.h
+stackpage.o: /usr/include/stddef.h /usr/include/sgidefs.h
+stackpage.o: /usr/include/stdio.h /usr/include/standards.h
+stackpage.o: /usr/include/assert.h ../../src/dbinterface.h ../../src/setup.h
+stackpage.o: stackpage.h
+
+make_test_bulk_file.o: /usr/include/stdlib.h /usr/include/standards.h
+make_test_bulk_file.o: /usr/include/sgidefs.h /usr/include/stdio.h
+make_test_bulk_file.o: /usr/include/strings.h /usr/include/sys/types.h
+make_test_bulk_file.o: ../setup.h /usr/include/assert.h
+test_aspage.o: /usr/include/stdio.h /usr/include/standards.h
+test_aspage.o: /usr/include/sgidefs.h /usr/include/stdlib.h ../../src/setup.h
+test_aspage.o: /usr/include/assert.h ../../src/dbinterface.h
+test_aspage.o: /usr/include/stddef.h
+test_aspage.o: ../../src/PageClasses/alignedsortedpage.h
+test_bit_vec.o: /usr/include/stdlib.h /usr/include/standards.h
+test_bit_vec.o: /usr/include/sgidefs.h /usr/include/stdio.h
+test_bit_vec.o: ../../src/Common/bit_vec.h ../../src/setup.h
+test_bit_vec.o: /usr/include/assert.h
+test_btree.o: /usr/include/stdio.h /usr/include/standards.h
+test_btree.o: /usr/include/sgidefs.h /usr/include/stdlib.h ../../src/setup.h
+test_btree.o: /usr/include/assert.h ../../src/dbinterface.h
+test_btree.o: /usr/include/stddef.h ../../src/PageClasses/alignedsortedpage.h
+test_ikp.o: ../../src/PageClasses/int_keyed_p.h
+test_ikp.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_ikp.o: ../../src/PageClasses/stackpage.h ../../src/dbinterface.h
+test_ikp.o: /usr/include/stddef.h /usr/include/sgidefs.h ../../src/setup.h
+test_ikp.o: /usr/include/assert.h ../../src/Common/bit_vec.h
+test_ikp.o: /usr/include/stdio.h /usr/include/standards.h
+test_ikp.o: ../../src/Common/int_key.h /usr/include/math.h
+test_rtree1.o: /usr/include/sys/types.h /usr/include/standards.h
+test_rtree1.o: /usr/include/sgidefs.h /usr/include/sys/stat.h
+test_rtree1.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+test_rtree1.o: ../../src/RTree/rtree.h ../../src/index.h
+test_rtree1.o: ../../src/dbinterface.h /usr/include/stddef.h
+test_rtree1.o: ../../src/setup.h /usr/include/assert.h
+test_rtree1.o: ../../src/Common/int_key.h /usr/include/stdio.h
+test_rtree1.o: /usr/include/math.h ../../src/Common/bit_vec.h
+test_rtree1.o: ../../src/PageClasses/int_keyed_p.h
+test_rtree1.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_rtree1.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+test_rtree1.o: ../../src/RTree/bulk_data.h /usr/include/stdlib.h
+test_rtree1.o: /usr/include/unistd.h
+test_rtree_jussi.o: ../../src/DBJussi/dbJussi.h ../../src/setup.h
+test_rtree_jussi.o: /usr/include/assert.h ../../src/dbinterface.h
+test_rtree_jussi.o: /usr/include/stddef.h /usr/include/sgidefs.h
+test_rtree_jussi.o: ../../../graphics.new/SBufMgr.h /usr/include/sys/types.h
+test_rtree_jussi.o: /usr/include/standards.h /usr/include/sys/uio.h
+test_rtree_jussi.o: /usr/include/unistd.h ../../../graphics/DeviseTypes.h
+test_rtree_jussi.o: /usr/include/values.h ../../../graphics/DevStatus.h
+test_rtree_jussi.o: ../../../graphics.new/MemMgr.h
+test_rtree_jussi.o: ../../../graphics.new/DCE.h /usr/include/sys/ipc.h
+test_rtree_jussi.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+test_rtree_jussi.o: /usr/include/errno.h /usr/include/sys/errno.h
+test_rtree_jussi.o: /usr/include/stdio.h /usr/include/limits.h
+test_rtree_jussi.o: /usr/include/sys/stat.h ../../../graphics.new/machdep.h
+test_rtree_jussi.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+test_rtree_jussi.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+test_rtree_jussi.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+test_rtree_jussi.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+test_rtree_jussi.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+test_rtree_jussi.o: /usr/include/netdb.h /usr/include/sys/socket.h
+test_rtree_jussi.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+test_rtree_jussi.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+test_rtree_jussi.o: ../../../tape/tapedrive.h ../../../tape/HashTable.h
+test_rtree_jussi.o: /usr/gnu/lib/g++-include/iostream.h
+test_rtree_jussi.o: /usr/gnu/lib/g++-include/streambuf.h
+test_rtree_jussi.o: /usr/gnu/lib/g++-include/libio.h
+test_rtree_jussi.o: /usr/gnu/lib/g++-include/_G_config.h
+test_rtree_jussi.o: /usr/include/sys/cdefs.h /usr/include/fcntl.h
+test_rtree_jussi.o: /usr/include/sys/fcntl.h ../../src/RTree/rtree.h
+test_rtree_jussi.o: ../../src/index.h ../../src/Common/int_key.h
+test_rtree_jussi.o: /usr/include/math.h ../../src/Common/bit_vec.h
+test_rtree_jussi.o: ../../src/PageClasses/int_keyed_p.h
+test_rtree_jussi.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_rtree_jussi.o: ../../src/PageClasses/stackpage.h
+test_rtree_jussi.o: ../../src/Common/stack_t.h ../../src/RTree/bulk_data.h
+test_rtree_jussi.o: /usr/include/stdlib.h
+test_types.o: /usr/include/stdlib.h /usr/include/standards.h
+test_types.o: /usr/include/sgidefs.h /usr/include/stdio.h
+test_types.o: /usr/include/sys/types.h /usr/include/sys/stat.h
+test_types.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+test_types.o: /usr/include/unistd.h ../../src/TypeSupport/typed_key.h
+test_types.o: /usr/include/strings.h ../../src/Common/int_key.h
+test_types.o: ../../src/setup.h /usr/include/assert.h /usr/include/math.h
+test_types.o: ../../src/Common/bit_vec.h ../../src/TypeSupport/typed_rtree.h
+test_types.o: ../../src/RTree/rtree.h ../../src/index.h
+test_types.o: ../../src/dbinterface.h /usr/include/stddef.h
+test_types.o: ../../src/PageClasses/int_keyed_p.h
+test_types.o: ../../src/PageClasses/fixed_entrysz_p.h
+test_types.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+test_types.o: ../../src/RTree/bulk_data.h
+
+bulk_data.o: /usr/include/stdlib.h /usr/include/standards.h
+bulk_data.o: /usr/include/sgidefs.h /usr/include/sys/types.h
+bulk_data.o: /usr/include/sys/mman.h /usr/include/errno.h
+bulk_data.o: /usr/include/sys/errno.h /usr/include/stdio.h
+bulk_data.o: /usr/include/unistd.h ../../src/setup.h /usr/include/assert.h
+bulk_data.o: bulk_data.h ../../src/Common/int_key.h /usr/include/math.h
+bulk_data.o: ../../src/Common/bit_vec.h
+rtree.o: /usr/include/stdlib.h /usr/include/standards.h
+rtree.o: /usr/include/sgidefs.h /usr/include/sys/types.h
+rtree.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+rtree.o: /usr/include/sys/fcntl.h /usr/include/unistd.h /usr/include/string.h
+rtree.o: rtree.h ../../src/index.h ../../src/dbinterface.h
+rtree.o: /usr/include/stddef.h ../../src/setup.h /usr/include/assert.h
+rtree.o: ../../src/Common/int_key.h /usr/include/stdio.h /usr/include/math.h
+rtree.o: ../../src/Common/bit_vec.h ../../src/PageClasses/int_keyed_p.h
+rtree.o: ../../src/PageClasses/fixed_entrysz_p.h
+rtree.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+rtree.o: bulk_data.h
+
+convert_bulk.o: /usr/include/stdlib.h /usr/include/standards.h
+convert_bulk.o: /usr/include/sgidefs.h /usr/include/stdio.h
+convert_bulk.o: /usr/include/strings.h /usr/include/sys/types.h
+convert_bulk.o: ../../src/Common/correct_math.h
+generate_testfile.o: /usr/include/stdlib.h /usr/include/standards.h
+generate_testfile.o: /usr/include/sgidefs.h /usr/include/stdio.h
+interp_file.o: /usr/include/stdlib.h /usr/include/standards.h
+interp_file.o: /usr/include/sgidefs.h /usr/include/stdio.h typed_key.h
+interp_file.o: /usr/include/strings.h /usr/include/sys/types.h
+interp_file.o: ../../src/Common/int_key.h ../../src/setup.h
+interp_file.o: /usr/include/assert.h /usr/include/math.h
+interp_file.o: ../../src/Common/bit_vec.h
+typed_key.o: typed_key.h /usr/include/strings.h /usr/include/standards.h
+typed_key.o: /usr/include/sys/types.h /usr/include/sgidefs.h
+typed_key.o: ../../src/Common/int_key.h ../../src/setup.h
+typed_key.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/math.h
+typed_key.o: ../../src/Common/bit_vec.h ../../src/Common/correct_math.h
+typed_rtree.o: typed_rtree.h ../../src/RTree/rtree.h ../../src/index.h
+typed_rtree.o: ../../src/dbinterface.h /usr/include/stddef.h
+typed_rtree.o: /usr/include/sgidefs.h ../../src/setup.h /usr/include/assert.h
+typed_rtree.o: ../../src/Common/int_key.h /usr/include/stdio.h
+typed_rtree.o: /usr/include/standards.h /usr/include/math.h
+typed_rtree.o: ../../src/Common/bit_vec.h ../../src/PageClasses/int_keyed_p.h
+typed_rtree.o: ../../src/PageClasses/fixed_entrysz_p.h
+typed_rtree.o: ../../src/PageClasses/stackpage.h ../../src/Common/stack_t.h
+typed_rtree.o: ../../src/RTree/bulk_data.h /usr/include/stdlib.h typed_key.h
+typed_rtree.o: /usr/include/strings.h /usr/include/sys/types.h

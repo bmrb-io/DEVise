@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1998
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,22 +15,19 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.2  1998/01/07 19:31:58  wenger
-#  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
-#  server library into Devise); updated solaris, sun, linux, and hp
-#  dependencies.
-#
-#  Revision 1.1.2.1  1997/12/30 14:25:21  wenger
-#  This somehow didn't get committed before(!).
-#
-#  Revision 1.1  1997/06/12 17:59:45  wenger
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/usr/include/X11
-ARCH_LDFLAGS = 
-ARCH_LDPOST  = -lsocket -lnsl
+ARCH_FLAGS = -DSGI
+ARCH_LDFLAGS =
+ARCH_SYSLIBS = -lm
+ARCH_LDPOST  = -lnsl
+ARCH_ENDIAN =
 
-VPATH = ../../xvertext
-include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sgi
+DTE_DIR = ../../RTree
+VPATH = $(DTE_DIR) $(DTE_DIR)/src $(DTE_DIR)/src/Common \
+	$(DTE_DIR)/src/DBJussi $(DTE_DIR)/src/PageClasses \
+	$(DTE_DIR)/src/Progs $(DTE_DIR)/src/RTree $(DTE_DIR)/src/TypeSupport
+
+include $(DTE_DIR)/Makefile.base
+include $(DTE_DIR)/Makefile.sgi
