@@ -51,13 +51,20 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     }
     
     //
+    // Eventually I'll find a better way, but for now I'm just going
+    // to delete all the ETk windows, and draw them all again from
+    // scratch.
+    //
+    win->ETk_FreeWindows();
+    
+    //
     // Shape attributes should store:
     //   attr[0] = name of script
     //   attr[1] = number of arguments to be passed to the script
     //   attr[2] = arg
     //   attr[3] = arg
     //   ...
-    //   attr[argc-1] = arg
+    //   attr[argc+1] = arg
     //
     int argc;
     char argv[MAX_GDATA_ATTRS][ETK_MAX_STR_LENGTH];
