@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/13 17:28:00  jussi
+  Removed unnecessary virtual function prototypes.
+
   Revision 1.9  1996/06/27 16:39:50  jussi
   With the new dispatching scheme in place, the server uses blocking-mode
   I/O with interrupts generated from the select() call in the dispatcher.
@@ -104,6 +107,8 @@ public:
 
   /* Remove replica server */
   virtual int RemoveReplica(char *hostName, int port);
+  virtual void OpenDataChannel(int port);
+  virtual int getFd() { return _dataFd; }
 
 protected:
   /* replicate API command to replica servers */
@@ -145,6 +150,8 @@ private:
 
   int _listenFd;                        // socket for listening for clients
   int _socketFd;                        // socket for client connection
+  int _dataFd;				// socket for transfering large data, eg.gif
+  struct sockaddr_in clientAddr;        // Address of client
 
   int _replicate;                       // number of servers to replicate to
   const int _maxReplicas = 10;
