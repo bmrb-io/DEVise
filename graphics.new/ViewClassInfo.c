@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/15 13:52:55  jussi
+  Rewrote in order to reduce code size and redundancy. Added
+  ChangeParams() method which allows Devise to change the
+  view foreground and background colors at runtime.
+
   Revision 1.7  1996/05/11 02:58:52  jussi
   Removed dependency on ControlPanel's ViewName() method.
 
@@ -171,8 +176,8 @@ void ViewClassInfo::ChangeParams(int argc, char **argv)
 
   _fgName = CopyString(argv[4]);
   _bgName = CopyString(argv[5]);
-  Color fgColor = ColorMgr::AllocColor(_fgName);
-  Color bgColor = ColorMgr::AllocColor(_bgName);
+  GlobalColor fgColor = ColorMgr::AllocColor(_fgName);
+  GlobalColor bgColor = ColorMgr::AllocColor(_bgName);
 
   _view->SetFgBgColor(fgColor, bgColor);
 }
@@ -210,8 +215,8 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
     fgName = CopyString(argv[5]);
     bgName = CopyString(argv[6]);
   }
-  Color fgColor = ColorMgr::AllocColor(fgName);
-  Color bgColor = ColorMgr::AllocColor(bgName);
+  GlobalColor fgColor = ColorMgr::AllocColor(fgName);
+  GlobalColor bgColor = ColorMgr::AllocColor(bgName);
 
   TDataViewX *view = new TDataViewX(name, filter, GetQueryProc(), 
 				    fgColor, bgColor, NULL, NULL, NULL);
@@ -251,8 +256,8 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
     fgName = CopyString(argv[5]);
     bgName = CopyString(argv[6]);
   }
-  Color fgColor = ColorMgr::AllocColor(fgName);
-  Color bgColor = ColorMgr::AllocColor(bgName);
+  GlobalColor fgColor = ColorMgr::AllocColor(fgName);
+  GlobalColor bgColor = ColorMgr::AllocColor(bgName);
 
   ViewScatter *view = new ViewScatter(name, filter, GetQueryProc(), 
 				      fgColor, bgColor, NULL, NULL, NULL);

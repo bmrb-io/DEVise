@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/07 22:40:09  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.10  1996/10/28 15:55:37  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -70,13 +78,13 @@ class Segment {             // line segment in 2D space
 public:
   Point pt[2];              // two ends of the segment
   Coord width;              // width of line segment
-  Color color;              // color of segment
+  GlobalColor color;        // color of segment
 };
 
 class Plane {               // triangular plane in 2D space
 public:
   Point pt[3];              // three corners of the triangle
-  Color color;              // color of triangle
+  GlobalColor color;        // color of triangle
   Coord dist;               // distance from camera (for sorting)
 };
 
@@ -84,6 +92,7 @@ class Rectangle {           // rectangle in 2D space
 public:
   Coord x, y;               // upper left corner unless otherwise noted
   Coord width, height;
+  GlobalColor color;	    // color of rectangle
 };
 
 // ---------------------------------------------------------- 

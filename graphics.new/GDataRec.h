@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/18 20:31:54  jussi
+  Renamed fields in structure to make sure no source file
+  really uses these fields.
+
   Revision 1.4  1996/01/13 23:10:32  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -45,7 +49,7 @@ struct GDataRec {
   Coord     _xDummy;
   Coord     _yDummy;
   Coord     _zDummy;
-  Color     _colorDummy;
+  GlobalColor     _colorDummy;
   Coord     _sizeDummy;
   Pattern   _patternDummy;
   ShapeID   _shapeDummy;

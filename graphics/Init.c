@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/10/07 22:53:49  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.21  1996/09/19 19:32:46  wenger
   Devise now complains about illegal command-line flags (fixes bug 042).
 
@@ -230,8 +234,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-ylow <value>: not yet implemented\n");
   fprintf(stderr, "\t-xhigh <value>: not yet implemented\n");
   fprintf(stderr, "\t-yhigh <value>: not yet implemented\n");
-  fprintf(stderr, "\t-dali <name>: specify name of dali server\n");
-  fprintf(stderr, "\t-daliquit: kills dali server when Devise exits\n");
+  fprintf(stderr, "\t-tasvir <name>: specify name of tasvir server\n");
+  fprintf(stderr, "\t-tasvirquit: kills tasvir server when Devise exits\n");
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
   fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
@@ -572,7 +576,7 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,2);
       }
 
-      else if (strcmp(&argv[i][1], "dali") == 0) {
+      else if (strcmp(&argv[i][1], "tasvir") == 0) {
 	if (i >= argc -1) {
 	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
@@ -581,7 +585,7 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,2);
       }
 
-      else if (strcmp(&argv[i][1], "daliquit") == 0) {
+      else if (strcmp(&argv[i][1], "tasvirquit") == 0) {
 	_daliQuit = true;
 	MoveArg(argc,argv,i,1);
       }

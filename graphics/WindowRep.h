@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/10/28 15:55:48  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.32  1996/10/18 20:34:12  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -305,11 +310,11 @@ public:
 			      int dstX, int dstY) = 0;
 
   /* Color selection interface using Devise colormap */
-  virtual void SetFgColor(Color fg) { _fgndColor = fg; }
-  virtual void SetBgColor(Color bg) { _bgndColor = bg; }
-  virtual Color GetFgColor() { return _fgndColor; }
-  virtual Color GetBgColor() { return _bgndColor; }
-  virtual void SetWindowBgColor(Color bg) = 0;
+  virtual void SetFgColor(GlobalColor fg) { _fgndColor = fg; }
+  virtual void SetBgColor(GlobalColor bg) { _bgndColor = bg; }
+  virtual GlobalColor GetFgColor() { return _fgndColor; }
+  virtual GlobalColor GetBgColor() { return _bgndColor; }
+  virtual void SetWindowBgColor(GlobalColor bg) = 0;
 
 #ifdef LIBCS
   /* Color selection interface using specific colors */
@@ -615,13 +620,14 @@ protected:
   /* called by derived class on window destroy event */
   virtual void HandleWindowDestroy();
 
+//TEMPTEMP -- this is kind of X-specific
   /* called by derived class to get currennt local color from
      global color */
-  Color GetLocalColor(Color globalColor);
+  LocalColor GetLocalColor(GlobalColor globalColor);
   
   /* constructor */
-  WindowRep(DeviseDisplay *disp, Color fgndColor = ForegroundColor,
-	    Color bgndColor = BackgroundColor, Pattern p = Pattern0);
+  WindowRep(DeviseDisplay *disp, GlobalColor fgndColor = ForegroundColor,
+	    GlobalColor bgndColor = BackgroundColor, Pattern p = Pattern0);
   
   WindowRepCallbackList  *_callbackList;
 
@@ -639,7 +645,7 @@ protected:
 #if 0 // Not used anywhere.  RKW 10/11/96.
   Coord _x, _y, _width, _height;  /* location and dimensions of window */
 #endif
-  Color _fgndColor, _bgndColor;   /* current fg and bg colors */
+  GlobalColor _fgndColor, _bgndColor;   /* current fg and bg colors */
   Pattern _pattern;               /* current pattern */
   int _line_width;		  /* current border line width */
   DeviseDisplay *_display;        /* display object */

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/09/27 21:09:39  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.27  1996/08/04 21:59:57  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -150,7 +156,7 @@ class ViewGraph
 public:
   ViewGraph(char *name, VisualFilter &initFilter, 
 	    AxisLabel *xAxis, AxisLabel *yAxis,
-	    Color fg, Color bg, Action *action = 0);
+	    GlobalColor fg, GlobalColor bg, Action *action = 0);
 
   virtual ~ViewGraph();
 

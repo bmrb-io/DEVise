@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/19 02:54:10  jussi
+  Changed view parameter to DrawGDataArray().
+
   Revision 1.15  1996/07/02 22:47:07  jussi
   Rewrote interface for setting and querying maximum symbol
   size (bounding box).
@@ -153,7 +156,7 @@ public:
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
   Coord GetDefaultZ() { return _z; }
-  Color GetDefaultColor() { return _color; }
+  GlobalColor GetDefaultColor() { return _color; }
   Coord GetDefaultSize() { return _size; }
   Pattern GetDefaultPattern() { return _pattern; }
   Coord GetDefaultOrientation() { return _orientation; }
@@ -248,7 +251,7 @@ protected:
   void SetDefaultX(Coord x) { _x = x; }
   void SetDefaultY(Coord y) { _y = y; }
   void SetDefaultZ(Coord z) { _z = z; }
-  void SetDefaultColor(Color color) { _color = color; }
+  void SetDefaultColor(GlobalColor color) { _color = color; }
   void SetDefaultSize(Coord size) { _size = size; }
   void SetDefaultPattern(Pattern pattern) { _pattern = pattern; }
   void SetDefaultOrientation(Coord orientation) { _orientation = orientation; }
@@ -276,7 +279,7 @@ private:
   Coord _x;
   Coord _y;
   Coord _z;
-  Color _color;
+  GlobalColor _color;
   Coord _size;
   Pattern _pattern;
   Coord _orientation;

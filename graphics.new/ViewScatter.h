@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/13 00:16:34  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.8  1996/05/31 15:41:24  jussi
   Added support for record links.
 
@@ -61,8 +65,8 @@ class ViewScatter: public ViewGraph, private QueryCallback {
 public:
 
   ViewScatter(char *name, VisualFilter &initFilter,
-	      QueryProc *qp, Color fg = ForegroundColor,
-	      Color bg = BackgroundColor, AxisLabel *xAxis = NULL,
+	      QueryProc *qp, GlobalColor fg = ForegroundColor,
+	      GlobalColor bg = BackgroundColor, AxisLabel *xAxis = NULL,
 	      AxisLabel *yAxis = NULL, Action *action = NULL);
 
   ~ViewScatter();

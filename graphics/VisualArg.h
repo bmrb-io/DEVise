@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/15 07:08:14  yuc
+  Add Camera structure to the system.
+
   Revision 1.3  1996/05/31 15:31:24  jussi
   Added VISUAL_RECORD visual argument.
 
@@ -80,7 +83,7 @@ struct VisualFilter {
   int lastN;		           /* # of records to examine */
   Coord sizeLow, sizeHigh;         /* size filter */
   Pattern patternLow, patternHigh; /* pattern filter */
-  Color colorLow, colorHigh;	   /* color filter */
+  GlobalColor colorLow, colorHigh;   /* color filter */
   Coord orientationLow, orientationHigh; /* orientation filter*/
   int shapeLow, shapeHigh;         /* shape filter */
   

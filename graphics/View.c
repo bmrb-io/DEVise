@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.81  1996/11/07 22:40:14  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.80  1996/10/28 15:55:45  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -370,7 +378,8 @@ ViewCallbackList *View::_viewCallbackList = 0;
 
 
 View::View(char *name, VisualFilter &initFilter, 
-	   Color fg, Color bg, AxisLabel *xAxisLabel, AxisLabel *yAxisLabel,
+	   GlobalColor fg, GlobalColor bg, AxisLabel *xAxisLabel,
+	   AxisLabel *yAxisLabel,
 	   int weight, Boolean boundary) :
 	ViewWin(name, fg, bg, weight, boundary)
 {
@@ -444,7 +453,7 @@ View::View(char *name, VisualFilter &initFilter,
   _printing = false;
 
   _hasOverrideColor = false;
-  _overrideColor = DeviseDisplay::DefaultDisplay()->GetLocalColor(fg);
+  _overrideColor = fg;
 
   _displaySymbol = true;
 
@@ -760,7 +769,7 @@ void View::SetPileMode(Boolean mode)
 
 /* set override color */
 
-void View::SetOverrideColor(Color color, Boolean active)
+void View::SetOverrideColor(GlobalColor color, Boolean active)
 {
   /* no change in color override? */
   if (_hasOverrideColor == active && color == _overrideColor)
@@ -1551,9 +1560,9 @@ void View::Run()
     /* Draw view border. */
     if (viewBorder)
     {
-      Color oldColor = winRep->GetFgColor();
+      GlobalColor oldColor = winRep->GetFgColor();
       winRep->SetFgColor(RedColor/*TEMPTEMP*/);
-      winRep->SetFgColor((winRep->GetBgColor()+1) % 43/*TEMPTEMP*/);
+      winRep->SetFgColor((GlobalColor) ((winRep->GetBgColor()+1) % 43)/*TEMPTEMP*/);
       DrawHighlight();
       winRep->SetFgColor(oldColor);
     }
@@ -1689,11 +1698,11 @@ void View::Run()
     /* Draw view border. */
     if (viewBorder)
     {
-      Color oldColor = winRep->GetFgColor();
+      GlobalColor oldColor = winRep->GetFgColor();
       winRep->SetFgColor(RedColor/*TEMPTEMP*/);
-      Color junk = winRep->GetBgColor();
+      GlobalColor junk = winRep->GetBgColor();
 /*TEMPTEMP*/printf("Background color = %d\n", (int) junk);
-      junk = (junk + 1) % 43;
+      junk = (GlobalColor) ((junk + 1) % 43);
 /*TEMPTEMP*/printf("  Highlight color = %d\n", (int) junk);
       winRep->SetFgColor(junk);
       DrawHighlight();
@@ -2282,7 +2291,7 @@ void View::DoDrawCursors()
   for(index = _cursors->InitIterator(); _cursors->More(index);) {
     DeviseCursor *cursor = _cursors->Next(index);
     VisualFilter *filter;
-    Color color;
+    GlobalColor color;
     cursor->GetVisualFilter(filter, color);
 
     Coord xLow, yLow, xHigh, yHigh;

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/09/06 07:00:13  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.20  1996/08/03 15:38:29  jussi
   Added GetShapeAttr3() function.
 
@@ -128,16 +135,16 @@ inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, zOffset, Coord, offset);
 }
 
-inline Color GetColor(ViewGraph *view, char *ptr, TDataMap *map,
+inline GlobalColor GetColor(ViewGraph *view, char *ptr, TDataMap *map,
 		      GDataAttrOffset *offset)
 {
   Boolean active;
-  Color color = view->GetOverrideColor(active);
+  GlobalColor color = view->GetOverrideColor(active);
   if (active)
     return color;
   if (offset->colorOffset < 0)
     return map->GetDefaultColor();
-  return GetAttr(ptr, colorOffset, Color , offset);
+  return GetAttr(ptr, colorOffset, GlobalColor , offset);
 }
 
 inline Coord GetSize(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -271,7 +278,7 @@ class Shape {
       int count = 1;
       _x[0] = GetX(gdata, map, offset);
       _y[0] = GetY(gdata, map, offset);
-      Color firstColor = GetColor(view, gdata, map, offset);
+      GlobalColor firstColor = GetColor(view, gdata, map, offset);
       
       int colorIndex;
       for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {

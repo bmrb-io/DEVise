@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/09/27 21:09:38  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.39  1996/08/29 19:07:29  ssl
   Same bug fix for reclinks slightly modified.
 
@@ -169,7 +175,7 @@ ImplementDList(GStatList, int)
 
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
 		     AxisLabel *xAxis, AxisLabel *yAxis,
-		     Color fg, Color bg,
+		     GlobalColor fg, GlobalColor bg,
 		     Action *action)
 : View(name, initFilter, fg, bg, xAxis, yAxis),
   _updateLink("stats link")

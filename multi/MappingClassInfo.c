@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/10 00:01:26  jussi
+  TDataMapDispatch replaced with TDataMap.
+
   Revision 1.4  1996/05/16 19:27:01  jussi
   Removed references to ControlPanel::File_Alias().
 
@@ -55,8 +58,8 @@
 #include "MultiRec.h"
 #include "Util.h"
 
-Color suspendColor;
-Color abortColor;
+GlobalColor suspendColor;
+GlobalColor abortColor;
 struct MapInfo *mapInfo;
 
 #include "mapfile.h"

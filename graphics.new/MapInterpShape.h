@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/09/06 07:00:11  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.33  1996/08/08 21:01:21  beyer
   Moved virtual functions from .h to .C file
 
@@ -376,8 +383,8 @@ class FullMapping_LineShape
 
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
-				    Coord x0, Coord y0, Color c0,
-				    Coord x1, Coord y1, Color c1);
+				    Coord x0, Coord y0, GlobalColor c0,
+				    Coord x1, Coord y1, GlobalColor c1);
 };
 
 // -----------------------------------------------------------------
@@ -392,8 +399,8 @@ class FullMapping_LineShadeShape
     
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
-				    Coord x0, Coord y0, Color c0,
-				    Coord x1, Coord y1, Color c1);
+				    Coord x0, Coord y0, GlobalColor c0,
+				    Coord x1, Coord y1, GlobalColor c1);
 };
 
 // -----------------------------------------------------------------

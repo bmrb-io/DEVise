@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/07 22:40:10  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.6  1996/11/06 17:00:38  wenger
   Text alignment now working for AbsoluteText() method for PostScript
   output. (Direct PostScript output is still disabled pending colors.)
@@ -75,7 +83,7 @@ Constructor.
 ***********************************************************************/
 
 PSWindowRep::PSWindowRep(DeviseDisplay *display,
-                          Color fgndColor, Color bgndColor,
+                          GlobalColor fgndColor, GlobalColor bgndColor,
                           PSWindowRep *parent, int x, int y) :
 	WindowRep(display, fgndColor, bgndColor)
 {
@@ -281,20 +289,36 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 /*---------------------------------------------------------------------------*/
 /* color selection interface using Devise colormap */
 
-void PSWindowRep::SetFgColor(Color fg)
+void PSWindowRep::SetFgColor(GlobalColor fg)
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::SetFgColor(%ld)\n", fg);
+#endif
+
   WindowRep::SetFgColor(fg);
 #ifdef GRAPHICS
-  //DOASSERT(false, "PSWindowRep::SetFgColor() not yet implemented");
-    /* do something */
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+  FILE * printFile = psDispP->GetPrintFile();
+  
+  float red, green, blue;
+  //TEMPTEMP -- maybe this should go through the PSDisplay to be
+  // consistent w/ X stuff
+  ColorMgr::GetColorRgb(fg, red, green, blue);
+  fprintf(printFile, "%f %f %f setrgbcolor\n", red, green, blue);
+
 #endif
 }
 
 
 
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::SetBgColor(Color bg)
+void PSWindowRep::SetBgColor(GlobalColor bg)
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::SetBgColor(%d)\n", bg);
+#endif
+
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
   DOASSERT(false, "PSWindowRep::SetBgColor() not yet implemented");
@@ -305,7 +329,7 @@ void PSWindowRep::SetBgColor(Color bg)
 
 
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::SetWindowBgColor(Color bg)
+void PSWindowRep::SetWindowBgColor(GlobalColor bg)
 {
 #ifdef GRAPHICS
   DOASSERT(false, "PSWindowRep::SetWindowBgColor() not yet implemented");
@@ -614,16 +638,6 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
   printf("PSWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
          xlow, ylow, width, height);
 #endif
-
-  //TEMPTEMP -- temporary expedient to keep from drawing over the whole data
-  // area.
-  if (GetFgColor() == GetBgColor()) {
-#if 0
-    printf("Dropping out of PSWindowRep::FillRect() because foreground\n");
-    printf("  is the same as background color\n");
-#endif
-    return;
-  }
 
   /* XXX: need to clip rect against window dimensions */
 
@@ -936,13 +950,6 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   
   int textLength = strlen(text);
   if (textLength <= 0) return;
-
-#if 0 //TEMPTEMP
-  if (textWidth > winWidth || textHeight > winHeight) {
-    ScaledText(text, x, y, width, height, alignment, skipLeadingSpace);
-    return;
-  }
-#endif
 
   char *comment = "";
   char *calculation = "";

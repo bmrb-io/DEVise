@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/10/18 20:34:14  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.30  1996/09/18 20:17:31  guangshu
   Modified function ExportGIF.
 
@@ -219,9 +225,9 @@ public:
 				    unsigned height, int dstX, int dstY);
 
         /* Color selection interface using Devise colormap */
-	virtual void SetFgColor(Color fg);
-	virtual void SetBgColor(Color bg);
-	virtual void SetWindowBgColor(Color bg);
+	virtual void SetFgColor(GlobalColor fg);
+	virtual void SetBgColor(GlobalColor bg);
+	virtual void SetWindowBgColor(GlobalColor bg);
 
 #ifdef LIBCS
         /* Color selection interface using specific colors */
@@ -316,13 +322,13 @@ protected:
 
 	/* called by XDisplay to create new X window */
  	XWindowRep(Display *display, Window window, XDisplay *DVDisp, 
-		   XWindowRep *parent, Color fgndColor, Color bgndColor,
-		   Boolean backingStore = false); 
+		   XWindowRep *parent, GlobalColor fgndColor,
+		   GlobalColor bgndColor, Boolean backingStore = false); 
 
 	/* called by XDisplay to create new X pixmap */
  	XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp, 
-		   XWindowRep *parent, Color fgndColor, Color bgndColor,
-		   int x, int y); 
+		   XWindowRep *parent, GlobalColor fgndColor,
+		   GlobalColor bgndColor, int x, int y); 
 
 	/* called by constructors to initialize object */
 	void Init();
@@ -411,8 +417,8 @@ private:
 
 #ifdef LIBCS
         /* current foreground/background color pixel values */
-        Color _rgbForeground;
-        Color _rgbBackground;
+        LocalColor _rgbForeground;
+        LocalColor _rgbBackground;
 #endif
 
 	/* pixmap and child/parent links for pixmaps */

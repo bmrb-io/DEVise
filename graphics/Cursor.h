@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/13 17:21:29  jussi
+  Removed unnecessary code.
+
   Revision 1.6  1996/06/13 00:14:30  jussi
   Added support for XY cursors. All types of cursors can now
   be moved by clicking on their new location in the data area.
@@ -51,7 +54,8 @@ DefinePtrDList(DeviseCursorList, DeviseCursor *)
 
 class DeviseCursor : private ViewCallback {
 public:
-  DeviseCursor(char *name, VisualFlag flag, Color color = ForegroundColor);
+  DeviseCursor(char *name, VisualFlag flag,
+    GlobalColor color = ForegroundColor);
   virtual ~DeviseCursor();
 
   /* Set source view. Changing this view's visual filter
@@ -65,7 +69,7 @@ public:
   View *GetDst() { return _dst; }
   
   /* Get current visual filter. return TRUE if it exists. */
-  Boolean GetVisualFilter(VisualFilter *&filter, Color &color);
+  Boolean GetVisualFilter(VisualFilter *&filter, GlobalColor &color);
 
   /* Move the X and Y coords of source */
   void MoveSource(Coord x, Coord y);
@@ -79,7 +83,7 @@ private:
   View *_src, *_dst;                    /* source and destination views */
   VisualFilter _filter;                 /* current filter */
   VisualFlag _visFlag;                  /* valid components in filter */
-  Color _color;                         /* cursor color */
+  GlobalColor _color;                   /* cursor color */
 };
 
 #endif

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1996/05/07 21:13:11  jussi
+  Renamed MappingInfo to MultiMappingInfo.
+*/
 
 #ifndef MappingClassInfo_h
 #define MappingClassInfo_h
@@ -25,11 +28,11 @@
 /* Info needed by mapping */
 struct MapInfo {
   int *job_ordering;
-  Color **colorArrays;
+  GlobalColor **colorArrays;
 };
 
-extern Color suspendColor;
-extern Color abortColor;
+extern GlobalColor suspendColor;
+extern GlobalColor abortColor;
 extern MapInfo *mapInfo;
 
 class MultiMappingInfo : public ClassInfo {

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/13 00:14:28  jussi
+  Added support for XY cursors. All types of cursors can now
+  be moved by clicking on their new location in the data area.
+  Previously only the X label area was sensitive for cursor
+  movement.
+
   Revision 1.6  1996/05/14 18:07:55  jussi
   Cursor now inserts itself into the view callback list at
   construction time, and removes itself at destruction time.
@@ -41,7 +47,7 @@
 #include "Cursor.h"
 #include "View.h"
 
-DeviseCursor::DeviseCursor(char *name, VisualFlag flag, Color color)
+DeviseCursor::DeviseCursor(char *name, VisualFlag flag, GlobalColor color)
 {
   _name = name;
   _visFlag = flag;
@@ -115,7 +121,7 @@ void DeviseCursor::SetDst(View *view)
 
 /* Get current visual filter. return TRUE if it exists. */
 
-Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, Color &color)
+Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, GlobalColor &color)
 {
   if (!_src)
     return false;

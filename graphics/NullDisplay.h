@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:40:39  jussi
+  Initial revision.
+*/
 
 #ifndef NullDisplay_h
 #define NullDisplay_h
@@ -42,8 +45,8 @@ public:
        coord from (0,0) to (1,1) */
     virtual WindowRep *CreateWindowRep(char *name, Coord x, Coord y,
 				       Coord width, Coord height, 
-				       Color fgnd = ForegroundColor,
-				       Color bgnd = BackgroundColor,
+				       GlobalColor fgnd = ForegroundColor,
+				       GlobalColor bgnd = BackgroundColor,
 				       WindowRep *parentRep = NULL,
                                        Coord min_width = 0.05,
 				       Coord min_height = 0.05,
@@ -65,8 +68,9 @@ protected:
     virtual void Register() {}
 #endif
 
-    virtual void AllocColor(char *name, Color globalColor);
-    virtual void AllocColor(double r, double g, double b, Color globalColor);
+    virtual void AllocColor(char *name, GlobalColor globalColor);
+    virtual void AllocColor(double r, double g, double b,
+      GlobalColor globalColor);
 };
 
 #endif

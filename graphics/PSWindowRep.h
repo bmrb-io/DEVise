@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/07 22:40:11  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.7  1996/10/28 15:55:44  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -104,9 +112,9 @@ public:
     virtual void ScrollAbsolute(int x, int y, unsigned width,
                                 unsigned height, int dstX, int dstY) {}
 
-    virtual void SetFgColor(Color bg);
-    virtual void SetBgColor(Color bg);
-    virtual void SetWindowBgColor(Color bg);
+    virtual void SetFgColor(GlobalColor bg);
+    virtual void SetBgColor(GlobalColor bg);
+    virtual void SetWindowBgColor(GlobalColor bg);
 
 #ifdef LIBCS
     /* Color selection interface using specific colors */
@@ -205,7 +213,7 @@ protected:
 
     /* called by PSDisplay to create new window */
     PSWindowRep(DeviseDisplay *display,
-                Color fgndColor, Color bgndColor,
+                GlobalColor fgndColor, GlobalColor bgndColor,
                 PSWindowRep *parent, int x, int y); 
 
     /* called by constructors to initialize object */

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/11/07 22:40:16  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.42  1996/10/28 15:55:46  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -255,8 +263,8 @@ class View
 
 
 	View(char *name, VisualFilter &initFilter,
-		Color foreground = ForegroundColor,
-	        Color background = BackgroundColor,
+		GlobalColor foreground = ForegroundColor,
+	        GlobalColor background = BackgroundColor,
 		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 		int weight = 1, Boolean boundary = false);
 	virtual ~View();
@@ -372,11 +380,11 @@ class View
 	void SetPileMode(Boolean mode);
 
 	/* Get/set override color */
-	Color GetOverrideColor(Boolean &active) {
+	GlobalColor GetOverrideColor(Boolean &active) {
 	  active = _hasOverrideColor;
 	  return _overrideColor;
 	}
-	void SetOverrideColor(Color color, Boolean active);
+	void SetOverrideColor(GlobalColor color, Boolean active);
 
 	/******** Pixmap manipulations *********/
 
@@ -422,7 +430,7 @@ class View
 	void SetViewDir(int H, int V);
 	void CompRhoPhiTheta();
 
-	virtual void SetFgBgColor(Color fg, Color bg) {
+	virtual void SetFgBgColor(GlobalColor fg, GlobalColor bg) {
 	  ViewWin::SetFgBgColor(fg, bg);
 	  Refresh();
 	}
@@ -607,7 +615,7 @@ protected:
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;
 
 	Boolean _hasOverrideColor;      /* override color defined */
-	Color _overrideColor;           /* color that overrides color
+	GlobalColor _overrideColor;     /* color that overrides color
 					   defined in mapping */
 
 	/* 3D data structures */

@@ -13,9 +13,16 @@
 */
 
 /*
+  Implementation of ColorMgr class.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/20 16:49:04  jussi
+  Replaced green1 with DarkSeaGreen.
+
   Revision 1.6  1996/04/16 19:49:38  jussi
   Replaced assert() calls with DOASSERT().
 
@@ -38,10 +45,12 @@
 #include "Display.h"
 #include "Color.h"
 
+//#define DEBUG
+
 ColorMgr *ColorMgr::_instance = NULL;   // one and only manager instance
 
 static struct {
-  Color value;                          // Color value of color
+  GlobalColor value;                    // GlobalColor value of color
   char *name;                           // name of color
 } defaultColors[] = {                   // list of default colors
   { BlackColor, "black" },
@@ -89,8 +98,15 @@ static struct {
   { GoldColor2, "gold2" }
 };
 
+/*------------------------------------------------------------------------------
+ * Constructor.
+ */
 ColorMgr::ColorMgr()
 {
+#if defined(DEBUG)
+  printf("ColorMgr::ColorMgr()\n");
+#endif
+
   /* init default colors. Do not insert them into the DeviseDisplays yet:
      1) if there are no displays, we don't need to insert them.
      2) otherwise, the ColorMgr is created only when InitializeColors()
@@ -100,56 +116,55 @@ ColorMgr::ColorMgr()
   _colorArraySize = InitColorArraySize;
   _numColors = sizeof defaultColors / sizeof defaultColors[0];
   DOASSERT(_numColors <= _colorArraySize, "Too many colors");
-
   _colorArray = new ColorData * [_colorArraySize];
 
   for(unsigned int i = 0; i < _numColors; i++) {
     DOASSERT(defaultColors[i].value == i, "Invalid color index");
     ColorData *data = _colorArray[defaultColors[i].value] = new ColorData;
-    data->type = ColorData::NameVal;
-    data->val.nameVal = defaultColors[i].name;
+    data->colorName = defaultColors[i].name;
+    data->hasRgb = false;
   }
 }
 
-/******************************************************************
-Initialize color for a newly created display
-********************************************************************/
-
+/*------------------------------------------------------------------------------
+ * Initialize colors for a newly created display
+ */
 void ColorMgr::_InitializeColors(DeviseDisplay *disp)
 {
 #ifdef DEBUG
-  printf("_ColorMgr::_InitializeColors\n");
+  printf("ColorMgr::_InitializeColors\n");
 #endif
 
   for(unsigned int i = 0; i < _numColors; i++) {
     ColorData *data = _colorArray[i];
-    if (data->type == ColorData::RGBVal) {
-      disp->AllocColor(data->val.rgbVal.r, data->val.rgbVal.g,
-		       data->val.rgbVal.b, i);
+    if (data->hasRgb) {
+      disp->AllocColor(data->rgb, (GlobalColor) i);
 #ifdef DEBUG
-      printf("insert rgb %f,%f,%f\n", data->val.rgbVal.r,
-	     data->val.rgbVal.g, data->val.rgbVal.b);
+      printf("insert rgb %f,%f,%f\n", data->rgb.red,
+	     data->rgb.green, data->rgb.blue);
 #endif
-    } else
-      disp->AllocColor(data->val.nameVal, i);
+    } else {
+      DOASSERT(data->colorName != NULL, "No color name or RGB specified");
+      disp->AllocColor(data->colorName, (GlobalColor) i, data->rgb);
+      data->hasRgb = true;
+    }
   }
 }
 
-/****************************************************************
- insert one color into the color manager, and
- update all displays to relfect the new global color.
- Return the color.
-******************************************************************/
-
-Color ColorMgr::Insert(ColorData *data)
+/*------------------------------------------------------------------------------
+ * insert one color into the color manager, and
+ * update all displays to relfect the new global color.
+ * Return the color.
+ */
+GlobalColor ColorMgr::Insert(ColorData *data)
 {
 #ifdef DEBUG
   printf("ColorMgr::Insert ");
-  if (data->type == ColorData::RGBVal){
-    printf("insert rgb %f,%f,%f\n", data->val.rgbVal.r, 
-	   data->val.rgbVal.g, data->val.rgbVal.b);
+  if (data->hasRgb) {
+    printf("insert rgb %f,%f,%f\n", data->rgb.red, 
+	   data->rgb.green, data->rgb.blue);
   } else {
-    printf("nameVal %s\n", data->val.nameVal);
+    printf("colorName %s\n", data->colorName);
   }
 #endif
 
@@ -166,27 +181,84 @@ Color ColorMgr::Insert(ColorData *data)
   _colorArray[_numColors] = data;
   
   /* propagate color to all displays */
-  Color tempColor = _numColors++;
+  GlobalColor tempColor = (GlobalColor) _numColors++;
   int index;
   for(index = DeviseDisplay::InitIterator();DeviseDisplay::More(index); ){
     DeviseDisplay *disp = DeviseDisplay::Next(index);
-    if (data->type == ColorData::RGBVal){
-      disp->AllocColor(data->val.rgbVal.r, data->val.rgbVal.g, 
-		       data->val.rgbVal.b,tempColor);
-    } else
-      disp->AllocColor(data->val.nameVal,tempColor);
+    if (data->hasRgb) {
+      disp->AllocColor(data->rgb, tempColor);
+    } else {
+      disp->AllocColor(data->colorName, tempColor, data->rgb);
+      data->hasRgb = true;
+    }
   }
   DeviseDisplay::DoneIterator(index);
 
   return tempColor;
 }
 
-Color ColorMgr::AllocColor(double r, double g, double b)
+/*------------------------------------------------------------------------------
+ * Allocate a new color by name.
+ */
+GlobalColor ColorMgr::AllocColor(char *name)
 {
-  ColorData *data = new ColorData;
-  data->type = ColorData::RGBVal;
-  data->val.rgbVal.r = r;
-  data->val.rgbVal.g = g;
-  data->val.rgbVal.b = b;
+#if defined(DEBUG)
+  printf("ColorMgr::AllocColor(%s)\n", name);
+#endif
+
+  /* If we've already allocated this color, just return the corresponding
+   * GlobalColor value. */
+  int numColors = Instance()->_numColors;
+  ColorData *data;
+  for (int count = 0; count < numColors; count++) {
+    data = Instance()->_colorArray[count];
+    if (data->colorName != NULL && !strcasecmp(name, data->colorName)) {
+#if defined(DEBUG)
+      printf("Color %s already allocated\n", name);
+#endif
+      return (GlobalColor) count;
+    }
+  }
+
+  /* Otherwise, go ahead and allocate this color. */
+  data = new ColorData;
+  data->colorName = name;
+  data->hasRgb = false;
+
+  return Instance()->Insert(data);
+}
+
+/*------------------------------------------------------------------------------
+ * Allocate a new color by RGB.
+ */
+GlobalColor ColorMgr::AllocColor(double r, double g, double b)
+{
+#if defined(DEBUG)
+  printf("ColorMgr::AllocColor(%f, %f, %f)\n", r, g, b);
+#endif
+
+  /* If we've already allocated this color, just return the corresponding
+   * GlobalColor value. */
+  int numColors = Instance()->_numColors;
+  ColorData *data;
+  for (int count = 0; count < numColors; count++) {
+    data = Instance()->_colorArray[count];
+    if (data->hasRgb && (data->rgb.red == r) && (data->rgb.green == g) &&
+      (data->rgb.blue == b)) {
+#if defined(DEBUG)
+      printf("Color 0x%.2f%.2f%.2f already allocated\n", r, g, b);
+#endif
+      return (GlobalColor) count;
+    }
+  }
+
+  /* Otherwise, go ahead and allocate this color. */
+  data = new ColorData;
+  data->colorName = NULL;
+  data->hasRgb = true;
+  data->rgb.red = r;
+  data->rgb.green = g;
+  data->rgb.blue = b;
+
   return Instance()->Insert(data);
 }

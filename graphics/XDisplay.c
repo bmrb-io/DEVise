@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/09/26 20:38:31  jussi
+  Removed duplicate default argument.
+
   Revision 1.39  1996/09/19 03:34:02  guangshu
   Minor midification to make it more flexible when saving the mapping file.
 
@@ -193,6 +196,9 @@ extern "C" {
 
 #include "Util.h"
 
+/* The maximum intensity of red, green, and blue. */
+const int MaxColorIntensity = 65535;
+
 #ifdef TK_WINDOW_EV2
 static int HandleTkEvent(ClientData data, XEvent *event)
 {
@@ -208,7 +214,9 @@ Open a new X display
 
 XDisplay::XDisplay(char *name)
 {
-  DO_DEBUG(printf("XDisplay::XDisplay(%s)\n", name != NULL ? name : "NULL"));
+#if defined(DEBUG)
+  printf("XDisplay::XDisplay(%s)\n", name != NULL ? name : "NULL");
+#endif
   if (!(_display = XOpenDisplay(name))) {
     fprintf(stderr, "Cannot open XDisplay\n");
     Exit::DoExit(1);
@@ -222,7 +230,7 @@ XDisplay::XDisplay(char *name)
     Exit::DoExit(1);
   }
   float error;
-  if (!ClosestColor(cmap, baseColorDef, baseColor, error)) {
+  if (!ClosestColor(cmap, baseColorDef, _baseColor, error)) {
     fprintf(stderr, "Cannot allocate color %s.\n", baseColorName);
     Exit::DoExit(1);
   }
@@ -612,9 +620,10 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
 /*******************************************************************
   Allocate closest matching color;
   grayscales will only be matched with grayscales
+  color will contain the RGB values we actually got
 ********************************************************************/
 
-Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
+Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, LocalColor &c,
 			       float &error)
 {
   if (XAllocColor(_display, map, &color)) {
@@ -731,13 +740,14 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
       return false;
     if (XAllocColor(_display, map, &cols_in_map[best_index[i]])) {
       c = cols_in_map[best_index[i]].pixel;
-      error = best_error[i] * 1.732050808 / 65535.0;
+      error = best_error[i] * 1.732050808 / (double) MaxColorIntensity;
       // this return value of error conforms with what
       // Jussi used to compute, which is:
-      //  float rerr = (ctry.red - color.red) / 65535;
-      //  float gerr = (ctry.green - color.green) / 65535;
-      //  float berr = (ctry.blue - color.blue) / 65535;
+      //  float rerr = (ctry.red - color.red) / MaxColorIntensity;
+      //  float gerr = (ctry.green - color.green) / MaxColorIntensity;
+      //  float berr = (ctry.blue - color.blue) / MaxColorIntensity;
       //  error = sqrt(rerr * rerr + gerr * gerr + berr * berr);
+      color = cols_in_map[best_index[i]];
       return true;
     }
   } 
@@ -749,8 +759,12 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
 Alloc color by name
 ********************************************************************/
 
-void XDisplay::AllocColor(char *name, Color globalColor)
+void XDisplay::AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb)
 {
+#if defined(DEBUG)
+  printf("XDisplay::AllocColor(%s, %ld)\n", name, globalColor);
+#endif
+
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
 
   XColor color_def;
@@ -763,70 +777,81 @@ void XDisplay::AllocColor(char *name, Color globalColor)
   printf("XDisplay::AllocColor %s\n", name);
 #endif
 
-  Color color;
+  LocalColor color;
   float error;
   if (ClosestColor(cmap, color_def, color, error)) {
     DeviseDisplay::MapColor(color, globalColor);
-    if (error > 0)
+    if (error > 0) {
       printf("Color %s allocated with %.2f error\n", name, error);
+    }
+    rgb.red = color_def.red / (double) MaxColorIntensity;
+    rgb.green = color_def.green / (double) MaxColorIntensity;
+    rgb.blue = color_def.blue / (double) MaxColorIntensity;
     return;
   }
 
   // substitute base color instead of requested color
-  DeviseDisplay::MapColor(baseColor, globalColor);
+  DeviseDisplay::MapColor(_baseColor, globalColor);
   printf("Color %s mapped to color %s\n", name, baseColorName);
+//TEMPTEMP -- set rgb
 }
 
 /*********************************************************************
 Alloc color by RGB
 *********************************************************************/
 
-void XDisplay::AllocColor(float r, float g, float b, Color globalColor)
+void XDisplay::AllocColor(RgbVals &rgb, GlobalColor globalColor)
 {
-#ifdef DEBUG
-  printf("XDisplay::AllocColor(%.2f,%.2f,%.2f)\n",r,g,b);
+#if defined(DEBUG)
+  printf("XDisplay::AllocColor(%.2f,%.2f,%.2f,%ld)\n", rgb.red, rgb.green,
+    rgb.blue, globalColor);
 #endif
 
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
 
   /* convert from (0.0,1.0) to (0,65535)*/
   XColor color_def;
-  color_def.red = (unsigned short)(r * 65535); 
-  color_def.green = (unsigned short)(g * 65535);
-  color_def.blue = (unsigned short)(b * 65535);
+  color_def.red = (unsigned short)(rgb.red * MaxColorIntensity); 
+  color_def.green = (unsigned short)(rgb.green * MaxColorIntensity);
+  color_def.blue = (unsigned short)(rgb.blue * MaxColorIntensity);
 
 #ifdef DEBUG
   printf("XDisplay::AllocColor red %d, green %d, blue %d\n",
 	 color_def.red, color_def.green, color_def.blue);
 #endif
 
-  Color color;
+  LocalColor color;
   float error;
   if (ClosestColor(cmap, color_def, color, error)) {
     DeviseDisplay::MapColor(color, globalColor);
-    if (error > 0)
+    if (error > 0) {
       printf("Color <%.2f,%.2f,%.2f> allocated with %.2f error\n",
-	     r, g, b, error);
+	     rgb.red, rgb.green, rgb.blue, error);
+    }
+    rgb.red = color_def.red / (double) MaxColorIntensity;
+    rgb.green = color_def.green / (double) MaxColorIntensity;
+    rgb.blue = color_def.blue / (double) MaxColorIntensity;
     return;
   }
 
   // substitute base color instead of requested color
-  DeviseDisplay::MapColor(baseColor, globalColor);
+  DeviseDisplay::MapColor(_baseColor, globalColor);
   printf("Color <%.2f,%.2f,%.2f> mapped to color %s\n",
-	 r, g, b, baseColorName);
+	 rgb.red, rgb.green, rgb.blue, baseColorName);
+//TEMPTEMP -- set rgb
 }
 
 #ifdef LIBCS
-Color XDisplay::FindLocalColor(float r, float g, float b)
+LocalColor XDisplay::FindLocalColor(float r, float g, float b)
 {
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
 
-  Color c;
+  LocalColor c;
   float error;
   XColor color;
-  color.red = (unsigned short)(r * 65535); 
-  color.green = (unsigned short)(g * 65535);
-  color.blue = (unsigned short)(b * 65535);
+  color.red = (unsigned short)(r * MaxColorIntensity); 
+  color.green = (unsigned short)(g * MaxColorIntensity);
+  color.blue = (unsigned short)(b * MaxColorIntensity);
 
   if (ClosestColor(cmap, color, c, error))
     return c;
@@ -834,15 +859,15 @@ Color XDisplay::FindLocalColor(float r, float g, float b)
   return 0;
 }
 
-void XDisplay::FindLocalColor(Color c, float &r, float &g, float &b)
+void XDisplay::FindLocalColor(GlobalColor c, float &r, float &g, float &b)
 {
   XColor color;
-  color.pixel = c;
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
+  color.pixel = GetLocalColor(c);
   XQueryColor(_display, cmap, &color);
-  r = color.red / 65535.0;
-  g = color.green / 65535.0;
-  b = color.blue / 65535.0;
+  r = color.red / (double) MaxColorIntensity;
+  g = color.green / (double) MaxColorIntensity;
+  b = color.blue / (double) MaxColorIntensity;
 }
 #endif
 
@@ -899,7 +924,7 @@ Create a new window
 
 WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
-				     Color fgnd, Color bgnd, 
+				     GlobalColor fgnd, GlobalColor bgnd, 
 				     WindowRep *parentRep,
 				     Coord min_width, Coord min_height,
 				     Boolean relative, Boolean winBoundary)
@@ -949,7 +974,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 #endif
 
-  Color realFgnd, realBgnd;
+  LocalColor realFgnd, realBgnd;
   realFgnd = GetLocalColor(fgnd);
   realBgnd = GetLocalColor(bgnd);
 

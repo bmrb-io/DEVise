@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/11/07 22:40:12  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
  */
 
 
@@ -164,12 +172,38 @@ Note: when in piled mode, all views are actually drawn using the WindowRep
 from the top view in the pile (seeTDataViewX::ReturnGDataBinRecs).
 The top view is the first child of the parent ViewWin.
 
+--- 4.3 COLOR
+
+The ColorMgr class allocates colors and keeps track of the colors we
+have (I modified this class to keep the RGB values of colors it has
+allocated by name so we can easily get them for PostScript output).
+The initialization function in ColorMgr is called by the XDisplay
+class -- this allocates all of the default colors from the list in
+ColorMgr.c.
+
+Note that there is a potential source of conflict in allocating the
+default colors: the default colors are allocated from the list in
+ColorMgr.c, but the colors in the "Color Chooser" GUI are allocated
+completely separate in the Tcl/Tk code.  Then, if you want all of
+the names to correspond, Colors.h also must be consistent with both
+of the above sections of code.
+
+Colors are currently allocated by the X color name -- we get the RGB
+values back from X.  When the PostScript code needs to get the RGB
+values for a given global color, it gets them from the ColorMgr class.
+
+The DeviseDisplay class keeps track of the mapping between global
+colors (the numbers the user sees in the Color Chooser, etc.) and
+local colors (what X knows about).  The LocalColor stuff is really
+in some classes it shouldn't be, since for the PostScript code, for
+example, local colors are meaningless.  FindLocalColor() and related
+functions in DeviseDisplay should probably be virtual and PSDisplay
+should fail an assertion if you call FindLocalColor() on it.
+
 
 --- 5 FUTURE TASKS
 
 Print the trademark notice at the top of each window.
-
-Get colors working.
 
 Get patterns working.
 
@@ -180,3 +214,12 @@ so that the PostScript file doesn't get so huge.
 
 Perhaps define subroutines in the generated PostScript to reduce the size
 of the output.
+
+Have an option to generate encapsulated PostScript.
+
+Allow the user to change the output page size.
+
+Clean up the Display classes so that things that apply only to X are
+confined to XDisplay.
+
+Get this to work with Tasvir images.

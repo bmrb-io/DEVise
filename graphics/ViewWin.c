@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/11/07 22:40:17  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.21  1996/10/28 15:55:47  wenger
   Scaling and clip masks now work for printing multiple views in a window
   to PostScript; (direct PostScript printing still disabled pending correct
@@ -119,9 +127,10 @@
 #include <tk.h>
 #endif
 
-#define DIRECT_POSTSCRIPT 0
+#define DIRECT_POSTSCRIPT 1
 
-ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
+ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg, int weight,
+  Boolean boundary)
 {
   DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
   _name = name;
@@ -230,8 +239,8 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   Coord min_height = 100;
 
   WindowRep *parentWinRep;
-  Color foreground;
-  Color background;
+  GlobalColor foreground;
+  GlobalColor background;
 
   if (_parent) {
 #ifdef DEBUG
@@ -584,7 +593,7 @@ void ViewWin::Lower()
   }
 }
 
-void ViewWin::SetFgBgColor(Color fg, Color bg)
+void ViewWin::SetFgBgColor(GlobalColor fg, GlobalColor bg)
 {
   _foreground = fg;
   _background = bg;

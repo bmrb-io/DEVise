@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/09/18 20:15:38  guangshu
+  Added function ExportView and modified function ExportGIF.
+
   Revision 1.21  1996/09/13 23:04:52  guangshu
   Added methods to save map files for www when save display.
 
@@ -130,8 +133,8 @@ public:
        coord from (0,0) to (1,1) */
     virtual WindowRep *CreateWindowRep(char *name, Coord x, Coord y,
 				       Coord width, Coord height, 
-				       Color fgnd = ForegroundColor,
-				       Color bgnd = BackgroundColor,
+				       GlobalColor fgnd = ForegroundColor,
+				       GlobalColor bgnd = BackgroundColor,
 				       WindowRep *parentRep = NULL,
                                        Coord min_width = 0.05,
 				       Coord min_height = 0.05,
@@ -157,8 +160,8 @@ public:
 
 #ifdef LIBCS
     /* Translate RGB colors to pixel values and back */
-    virtual Color FindLocalColor(float r, float g, float b);
-    virtual void FindLocalColor(Color c, float &r, float &g, float &b);
+    virtual LocalColor FindLocalColor(float r, float g, float b);
+    virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b);
 #endif
 
 protected:
@@ -173,10 +176,10 @@ protected:
                             XWindowAttributes xwa,
                             FILE *fp);
 
-    Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
+    Boolean ClosestColor(Colormap &map, XColor &color, LocalColor &c,
 			 float &error);
-    virtual void AllocColor(char *name, Color globalColor);
-    virtual void AllocColor(float r, float g, float b, Color globalColor);
+    virtual void AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb);
+    virtual void AllocColor(RgbVals &rgb, GlobalColor globalColor);
     
     friend class XWindowRep;
 
@@ -229,7 +232,7 @@ private:
     XFontStruct *_fontStruct;       /* current font */
     XFontStruct *_normalFontStruct; /* big font used in window */
     XFontStruct *_smallFontStruct;  /* small font used in window */
-    Color baseColor;                /* base color */
+    LocalColor _baseColor;           /* base color */
 };
 
 #endif

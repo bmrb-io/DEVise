@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/08/03 15:36:41  jussi
+  Added line segment width.
+
   Revision 1.3  1996/07/20 18:47:59  jussi
   Added 3D line segment shape and renamed some 3D type names to
   be more general.
@@ -63,7 +66,7 @@ public:
   Vertex3D vt[BLOCK_VERTEX]; // shape's vertices
   Edge3D   ed[BLOCK_EDGES];  // shape's edges
   Side3D   sd[BLOCK_SIDES];  // shape's sides
-  Color    color;            // base color of shape
+  GlobalColor color;         // base color of shape
   Boolean  clipout;          // true = clip, false = keep it
 };
 

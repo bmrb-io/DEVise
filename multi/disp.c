@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/08/13 20:16:51  jussi
+  Increased number of colors from 3 to 6.
+
   Revision 1.9  1996/07/05 15:22:54  jussi
   This executable can now handle SortedX views.
 
@@ -199,13 +202,13 @@ main(int argc, char **argv)
   job_ordering[ 14] = 30;
   
   /* init colors */
-  Color colorArray0[MAX_COLORS];
-  Color colorArray1[MAX_COLORS];
-  Color colorArray2[MAX_COLORS];
-  Color colorArray3[MAX_COLORS];
-  Color colorArray4[MAX_COLORS];
-  Color colorArray5[MAX_COLORS];
-  Color *colorArrays[6];
+  GlobalColor colorArray0[MAX_COLORS];
+  GlobalColor colorArray1[MAX_COLORS];
+  GlobalColor colorArray2[MAX_COLORS];
+  GlobalColor colorArray3[MAX_COLORS];
+  GlobalColor colorArray4[MAX_COLORS];
+  GlobalColor colorArray5[MAX_COLORS];
+  GlobalColor *colorArrays[6];
   colorArrays[0] = colorArray0;
   colorArrays[1] = colorArray1;
   colorArrays[2] = colorArray2;
@@ -246,12 +249,12 @@ main(int argc, char **argv)
     all_busyColor = ColorMgr::AllocColor(.7,.7,.7);
     some_idleColor = ColorMgr::AllocColor(.4,.4,.4);
 
-    Color color0  = ColorMgr::AllocColor(.97,.97,.97);
-    Color color1  = ColorMgr::AllocColor(.7,.7,.7);
-    Color color2  = ColorMgr::AllocColor(.5,.5,.5);
-    Color color3  = ColorMgr::AllocColor(.4,.4,.4);
-    Color color4  = ColorMgr::AllocColor(.3,.3,.3);
-    Color color5  = ColorMgr::AllocColor(.2,.2,.2);
+    GlobalColor color0  = ColorMgr::AllocColor(.97,.97,.97);
+    GlobalColor color1  = ColorMgr::AllocColor(.7,.7,.7);
+    GlobalColor color2  = ColorMgr::AllocColor(.5,.5,.5);
+    GlobalColor color3  = ColorMgr::AllocColor(.4,.4,.4);
+    GlobalColor color4  = ColorMgr::AllocColor(.3,.3,.3);
+    GlobalColor color5  = ColorMgr::AllocColor(.2,.2,.2);
 
     for(int i = 0; i < MAX_COLORS; i++) {
       colorArray0[i] = color0;

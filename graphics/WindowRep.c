@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/10/28 15:55:47  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.19  1996/10/18 20:34:11  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -93,8 +98,8 @@
 
 Boolean WindowRep::_destroyPending = false;
 
-WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor, 
-		     Pattern p)
+WindowRep::WindowRep(DeviseDisplay *disp, GlobalColor fgndColor,
+		     GlobalColor bgndColor, Pattern p)
 {
   _callbackList = new WindowRepCallbackList;
   DOASSERT(_callbackList, "Out of memory");
@@ -254,7 +259,7 @@ void WindowRep::HandleWindowDestroy()
 
 /* called by derived class to get current local color from global color */
 
-Color WindowRep::GetLocalColor(Color globalColor)
+LocalColor WindowRep::GetLocalColor(GlobalColor globalColor)
 {
   return _display->GetLocalColor(globalColor);
 }

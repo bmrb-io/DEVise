@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.72  1996/10/28 15:55:49  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.71  1996/10/18 20:34:13  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -455,8 +460,8 @@ Initializer
 ***********************************************************************/
 
 XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
-			XWindowRep *parent, Color fgndColor, Color bgndColor,
-			Boolean backingStore) :
+			XWindowRep *parent, GlobalColor fgndColor,
+			GlobalColor bgndColor, Boolean backingStore) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
 {
   DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
@@ -476,8 +481,8 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 }
 
 XWindowRep::XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
-			XWindowRep *parent, Color fgndColor, Color bgndColor,
-			int x, int y) :
+			XWindowRep *parent, GlobalColor fgndColor,
+			GlobalColor bgndColor, int x, int y) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
 {
   DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
@@ -970,8 +975,12 @@ void XWindowRep::CoalescePixmaps(XWindowRep *root)
 
 /* color selection interface using Devise colormap */
 
-void XWindowRep::SetFgColor(Color fg)
+void XWindowRep::SetFgColor(GlobalColor fg)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::SetFgColor(%d)\n", fg);
+#endif
+
   WindowRep::SetFgColor(fg);
 #ifdef GRAPHICS
   if (_dispGraphics)
@@ -979,8 +988,12 @@ void XWindowRep::SetFgColor(Color fg)
 #endif
 }
 
-void XWindowRep::SetBgColor(Color bg)
+void XWindowRep::SetBgColor(GlobalColor bg)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::SetBgColor(%d)\n", bg);
+#endif
+
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
   if (_dispGraphics)
@@ -988,8 +1001,12 @@ void XWindowRep::SetBgColor(Color bg)
 #endif
 }
 
-void XWindowRep::SetWindowBgColor(Color bg)
+void XWindowRep::SetWindowBgColor(GlobalColor bg)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::SetWindowBgColor(%d)\n", bg);
+#endif
+
 #ifdef GRAPHICS
   if (_dispGraphics)
     XSetWindowBackground(_display, _win, WindowRep::GetLocalColor(bg));
@@ -1019,6 +1036,8 @@ void XWindowRep::SetBgRGB(float r, float g, float b)
 
 void XWindowRep::GetFgRGB(float &r, float &g, float &b)
 {
+//TEMPTEMP  -- whoa -- does this take a GlobalColor or LocalColor as
+//an argument?
   GetDisplay()->FindLocalColor(_rgbForeground, r, g, b);
 #ifdef DEBUG
   printf("Current foreground color is %lu: %.2f,%.2f,%.2f\n",
@@ -1028,6 +1047,8 @@ void XWindowRep::GetFgRGB(float &r, float &g, float &b)
 
 void XWindowRep::GetBgRGB(float &r, float &g, float &b)
 {
+//TEMPTEMP  -- whoa -- does this take a GlobalColor or LocalColor as
+//an argument?
   GetDisplay()->FindLocalColor(_rgbBackground, r, g, b);
 #ifdef DEBUG
   printf("Current background color is %lu: %.2f,%.2f,%.2f\n",
@@ -1037,7 +1058,7 @@ void XWindowRep::GetBgRGB(float &r, float &g, float &b)
 
 void XWindowRep::SetWindowBgRGB(float r, float g, float b)
 {
-  Color color = GetDisplay()->FindLocalColor(r, g, b);
+  LocalColor color = GetDisplay()->FindLocalColor(r, g, b);
 #ifdef GRAPHICS
   if (_dispGraphics)
     XSetWindowBackground(_display, _win, color);
@@ -2457,8 +2478,8 @@ void XWindowRep::DoPopup(int x, int y, int button)
   }
   textHeight = charHeight * numMsgs;
   
-  long bgnd = GetLocalColor(BackgroundColor);
-  long fgnd = GetLocalColor(ForegroundColor);
+  LocalColor bgnd = GetLocalColor(BackgroundColor);
+  LocalColor fgnd = GetLocalColor(ForegroundColor);
 
   /* Create window */
   XSetWindowAttributes attr;

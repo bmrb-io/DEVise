@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/09/10 20:07:08  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.11  1996/09/05 21:30:15  jussi
   Moved user-specified screen size to Display.
 
@@ -95,7 +102,7 @@ DeviseDisplay::DeviseDisplay()
 
   _numColors = 0;
   _colorMapSize = InitColorMapSize;
-  _colorMap = new Color[InitColorMapSize];
+  _colorMap = new LocalColor[InitColorMapSize];
   _displays.Append(this);
 
   DO_DEBUG(printf("Number of displays = %d\n", _displays.Size()));
@@ -120,15 +127,15 @@ DeviseDisplay::~DeviseDisplay()
 
 /***************************************************************
  map local color to global color.
- XXX: Need to check for duplicate globalColor 
+ TEMPTEMPXXX: Need to check for duplicate globalColor 
 ********************************************************************/
 
-void DeviseDisplay::MapColor(Color localColor, Color globalColor)
+void DeviseDisplay::MapColor(LocalColor localColor, GlobalColor globalColor)
 {
   if (globalColor >= _colorMapSize - 1){
     /* overflow, create a new array  */
     _colorMapSize = globalColor + AdditionalColorMapSize + 1;
-    Color *tempMap = new Color[_colorMapSize];
+    LocalColor *tempMap = new LocalColor[_colorMapSize];
     for(unsigned int i = 0; i < _numColors; i++)
       tempMap[i] = _colorMap[i];
     delete _colorMap;
@@ -142,10 +149,10 @@ void DeviseDisplay::MapColor(Color localColor, Color globalColor)
 get local color given global color. 
 ***************************************************************************/
 
-Color DeviseDisplay::GetLocalColor(Color globalColor)
+LocalColor DeviseDisplay::GetLocalColor(GlobalColor globalColor)
 {
   if (globalColor >= _numColors)
-      return _colorMap[0];
+      return _colorMap[BlackColor];
   return _colorMap[globalColor];
 }
 

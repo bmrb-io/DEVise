@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/27 22:54:50  jussi
+  Added XorColor value.
+
   Revision 1.7  1996/06/20 16:49:03  jussi
   Replaced green1 with DarkSeaGreen.
 
@@ -41,54 +44,79 @@
 #ifndef Color_h
 #define Color_h
 
-typedef unsigned long Color;
+/* Note: a GlobalColor is the "color number" referred to in the user
+ * interface.  A GlobalColor _cannot_ be used directly by X, PostScript,
+ * etc.; it must first be converted into a LocalColor, RGB values, or
+ * whatever. */
 
-const Color BlackColor		= 0;
-const Color WhiteColor		= 1;
-const Color RedColor		= 2;
-const Color BlueColor		= 3;
-const Color OrangeColor		= 4;
-const Color TanColor		= 5;
-const Color GreenColor		= 6;
-const Color PurpleColor		= 7;
-const Color AquamarineColor	= 8;
-const Color PeruColor		= 9;
-const Color ChocolateColor	= 10;
-const Color TomatoColor		= 11;
-const Color PinkColor		= 12;
-const Color PlumColor		= 13;
-const Color AzureColor		= 14;
-const Color CyanColor		= 15;
-const Color SeaGreenColor	= 16;
-const Color KhakiColor		= 17;
-const Color GoldenRodColor	= 18;
-const Color YellowColor		= 19;
-const Color SiennaColor		= 20;
-const Color LightCoralColor	= 21;
-const Color AntiqueWhiteColor	= 22;
-const Color LemonChiffonColor	= 23;
-const Color LightGrayColor	= 24;
-const Color LavenderColor	= 25;
-const Color LavenderBlushColor	= 26;
-const Color MistyRoseColor	= 27;
-const Color NavyBlueColor	= 28;
-const Color SlateBlueColor	= 29;
-const Color MediumBlueColor	= 30;
-const Color DeepSkyBlueColor	= 31;
-const Color SkyBlueColor	= 32;
-const Color RedColor1		= 33;
-const Color RedColor2		= 34;
-const Color DarkSeaGreen	= 35;
-const Color GreenColor2		= 36;
-const Color BlueColor1		= 37;
-const Color BlueColor2		= 38;
-const Color BlueColor3		= 39;
-const Color BlueColor4		= 40;
-const Color GoldColor1		= 41;
-const Color GoldColor2		= 42;
-const Color XorColor            = 1000;
+/* Note: the following values are not _always_ the only legal values for
+ * GlobalColor.  However, values outside this range may not produce the
+ * expected results.  Mainly, I defined GlobalColor as an enum so that
+ * the compiler will complain about (illegitimate) assigments of a LocalColor
+ * to a GlobalColor.  It is sometimes okay to cast an int to a GlobalColor;
+ * however, it is never okay to cast a LocalColor to a global color.  Even
+ * if this doesn't cause a crash, it will give incorrect results.
+ * RKW 11/11/96. */
 
-const Color ForegroundColor	= BlackColor;
-const Color BackgroundColor	= AntiqueWhiteColor;
+enum GlobalColor {
+  BlackColor		= 0,
+  WhiteColor		= 1,
+  RedColor		= 2,
+  BlueColor		= 3,
+  OrangeColor		= 4,
+  TanColor		= 5,
+  GreenColor		= 6,
+  PurpleColor		= 7,
+  AquamarineColor	= 8,
+  PeruColor		= 9,
+  ChocolateColor	= 10,
+  TomatoColor		= 11,
+  PinkColor		= 12,
+  PlumColor		= 13,
+  AzureColor		= 14,
+  CyanColor		= 15,
+  SeaGreenColor		= 16,
+  KhakiColor		= 17,
+  GoldenRodColor	= 18,
+  YellowColor		= 19,
+  SiennaColor		= 20,
+  LightCoralColor	= 21,
+  AntiqueWhiteColor	= 22,
+  LemonChiffonColor	= 23,
+  LightGrayColor	= 24,
+  LavenderColor		= 25,
+  LavenderBlushColor	= 26,
+  MistyRoseColor	= 27,
+  NavyBlueColor		= 28,
+  SlateBlueColor	= 29,
+  MediumBlueColor	= 30,
+  DeepSkyBlueColor	= 31,
+  SkyBlueColor		= 32,
+  RedColor1		= 33,
+  RedColor2		= 34,
+  DarkSeaGreen		= 35,
+  GreenColor2		= 36,
+  BlueColor1		= 37,
+  BlueColor2		= 38,
+  BlueColor3		= 39,
+  BlueColor4		= 40,
+  GoldColor1		= 41,
+  GoldColor2		= 42,
+  XorColor		= 1000,
+};
+
+const GlobalColor ForegroundColor	= BlackColor;
+const GlobalColor BackgroundColor	= AntiqueWhiteColor;
+
+
+
+/* Note: LocalColor values are actually only meaningful at the X level,
+ * so this definition should probably be moved to someplace like
+ * XDisplay.h.  However, there are a number of places right now outside
+ * of the X code that use local colors.  Until those parts of the code
+ * are fixed, this definition probably has to stay here.  RKW 11/11/96. */
+
+typedef unsigned long LocalColor;
+
 
 #endif

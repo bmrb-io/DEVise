@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:40:38  jussi
+  Initial revision.
+*/
 
 #include "NullDisplay.h"
 #ifndef LIBCS
@@ -39,7 +42,7 @@ NullDisplay::NullDisplay(char *name)
 Allocate color by name
 ********************************************************************/
 
-void NullDisplay::AllocColor(char *name, Color globalColor)
+void NullDisplay::AllocColor(char *name, GlobalColor globalColor)
 {
 #ifdef DEBUG
   printf("NullDisplay::AllocColor(%s)\n", name);
@@ -52,7 +55,8 @@ void NullDisplay::AllocColor(char *name, Color globalColor)
 Allocate color by RGB
 *********************************************************************/
 
-void NullDisplay::AllocColor(double r, double g, double b, Color globalColor)
+void NullDisplay::AllocColor(double r, double g, double b,
+  GlobalColor globalColor)
 {
 #ifdef DEBUG
   printf("NullDisplay::AllocColor(%.2f,%.2f,%.2f)\n", r, g, b);
@@ -67,7 +71,7 @@ Create a new window
 
 WindowRep *NullDisplay::CreateWindowRep(char *name, Coord x, Coord y,
                                         Coord width, Coord height, 
-                                        Color fgnd, Color bgnd, 
+                                        GlobalColor fgnd, GlobalColor bgnd, 
                                         WindowRep *parentRep,
                                         Coord min_width, Coord min_height,
                                         Boolean relative, Boolean winBoundary)

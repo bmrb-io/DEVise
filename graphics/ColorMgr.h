@@ -13,9 +13,18 @@
 */
 
 /*
+  Color manager -- maintains relationships between GlobalColor, color
+  name, and RGB value.  This class must also be used to allocate new
+  colors (it propagates changes down to the Display objects).
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 18:39:32  jussi
+  Minor fixes to remove compiler warnings.
+
   Revision 1.3  1995/12/05 21:58:15  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -32,31 +41,34 @@
 #define ColorMgr_h
 
 #include <stdio.h>
+#include <string.h>
 #include "Color.h"
+#include "DeviseTypes.h"
+#include "Exit.h"
 
 const unsigned int InitColorArraySize = 64;
 const unsigned int AdditionalColorArraySize = 64;
 
+/* RGB color values (0.0 - 1.0). */
+struct RgbVals {
+  double red;
+  double green;
+  double blue;
+};
+
 /* color data structure */
 
 struct ColorData {
-  enum ColorDataType { NameVal, RGBVal};
-  enum ColorDataType type;
-  union {
-    char *nameVal;
-    struct { double r, g, b; } rgbVal;
-  } val;
+  char *colorName;
+  Boolean hasRgb;
+  RgbVals rgb;
 };
 
 class ColorMgr {
 public:
+
   /* allocate color by name */
-  static Color AllocColor(char *name) {
-    ColorData *data = new ColorData;
-    data->type = ColorData::NameVal;
-    data->val.nameVal = name;
-    return Instance()->Insert(data);
-  }
+  static GlobalColor AllocColor(char *name);
 
   /* allocate lots of colors by name */
   static void AllocColor(char **names, int numNames) {
@@ -65,7 +77,29 @@ public:
   }
 
   /* allocate color by rgb */
-  static Color AllocColor(double r, double g, double b);
+  static GlobalColor AllocColor(double r, double g, double b);
+
+  /* Get the name of a given color by its global color number. */
+  static char *GetColorName(GlobalColor color) {
+    DOASSERT(color < Instance()->_numColors, "Color not allocated");
+    ColorData *data = Instance()->_colorArray[color];
+    if (data->colorName != NULL) {
+      return data->colorName;
+    }
+    //DOASSERT(false, "No name for color");
+    return NULL;
+  }
+
+  /* Get the RGB values of a given color by its global color number. */
+  static void GetColorRgb(GlobalColor color, float &red, float &green,
+    float &blue) {
+    DOASSERT(color < Instance()->_numColors, "Color not allocated");
+    ColorData *data = Instance()->_colorArray[color];
+    DOASSERT(data->hasRgb, "No RGB values for color");
+    red = data->rgb.red;
+    green = data->rgb.green;
+    blue = data->rgb.blue;
+  }
 
 protected:
   friend class DeviseDisplay;
@@ -80,7 +114,7 @@ private:
   /* insert one color into the color manager, and
      update all displays to relfect the new global color.
      Return the color.*/
-  Color Insert(ColorData *data);
+  GlobalColor Insert(ColorData *data);
 
   /* initialize colors for a display */
   void _InitializeColors(DeviseDisplay *disp);

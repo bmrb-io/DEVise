@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/11/07 22:40:18  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.16  1996/10/18 20:34:11  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -112,8 +120,8 @@ class WindowRep;
 
 class ViewWin: protected WindowRepCallback {
 public:
-    ViewWin(char *name, Color foreground = ForegroundColor,
-            Color background = BackgroundColor, int weight = 1,
+    ViewWin(char *name, GlobalColor foreground = ForegroundColor,
+            GlobalColor background = BackgroundColor, int weight = 1,
             Boolean boundary = true);
     virtual ~ViewWin();
 
@@ -213,9 +221,9 @@ public:
     /* Return true if window is iconified */
     Boolean Iconified();
     
-    Color GetBgColor() { return _background; }
-    Color GetFgColor() { return _foreground; }
-    virtual void SetFgBgColor(Color fg, Color bg);
+    GlobalColor GetBgColor() { return _background; }
+    GlobalColor GetFgColor() { return _foreground; }
+    virtual void SetFgBgColor(GlobalColor fg, GlobalColor bg);
 
     virtual DevStatus PrintPS();
     void SetScreenOutput() { _winReps.SetScreenOutput(); }
@@ -249,8 +257,8 @@ protected:
     char *_name;          /* name of window */
     int _weight;          /* relative weight of window */
     Boolean _mapped;      /* TRUE if this window is mapped */
-    Color _background;    /* background color */
-    Color _foreground;    /* foreground color */
+    GlobalColor _background;    /* background color */
+    GlobalColor _foreground;    /* foreground color */
 
 #ifdef MARGINS
     void DrawMargins();

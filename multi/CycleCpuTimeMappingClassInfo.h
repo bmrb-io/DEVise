@@ -5,7 +5,7 @@
 /* Info needed by mapping */
 struct CycleCpuTimeMapInfo {
 	int *job_ordering;
-		Color **colorArrays;
+	GlobalColor **colorArrays;
 };
 
 extern CycleCpuTimeMapInfo *CycleCpuTimemapInfo;

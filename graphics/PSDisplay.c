@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/28 15:55:41  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.3  1996/09/19 20:11:50  wenger
   More PostScript output code (still disabled); some code for drawing
   view borders (disabled).
@@ -61,7 +66,7 @@ PSDisplay::PSDisplay(char *name)
 Allocate color by name
 ********************************************************************/
 
-void PSDisplay::AllocColor(char *name, Color globalColor)
+void PSDisplay::AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb)
 {
 #ifdef DEBUG
   printf("PSDisplay::AllocColor(%s)\n", name);
@@ -74,7 +79,7 @@ void PSDisplay::AllocColor(char *name, Color globalColor)
 Allocate color by RGB
 *********************************************************************/
 
-void PSDisplay::AllocColor(float r, float g, float b, Color globalColor)
+void PSDisplay::AllocColor(RgbVals &rgb, GlobalColor globalColor)
 {
 #ifdef DEBUG
   printf("PSDisplay::AllocColor(%.2f,%.2f,%.2f)\n", r, g, b);
@@ -89,7 +94,7 @@ Create a new window
 
 WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
-				     Color fgnd, Color bgnd, 
+				     GlobalColor fgnd, GlobalColor bgnd, 
 				     WindowRep *parentRep,
 				     Coord min_width, Coord min_height,
 				     Boolean relative, Boolean winBoundary)
@@ -144,7 +149,8 @@ WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 #endif
 
-  Color realFgnd, realBgnd;
+  //TEMPTEMP -- what is going on here?
+  LocalColor realFgnd, realBgnd;
   realFgnd = GetLocalColor(fgnd);
   realBgnd = GetLocalColor(bgnd);
 
@@ -373,7 +379,6 @@ void PSDisplay::PrintPSHeader()
 {
   DOASSERT(_printFile != NULL, "No print file");
 
-  //TEMPTEMP
   fprintf(_printFile, "%%!PS-Adobe-1.0\n");
   fprintf(_printFile, "%%%%BoundingBox: 0 0 558 480\n");
   fprintf(_printFile, "%%%%Creator: trigger:wenger (R. Kent Wenger)\n");
@@ -393,7 +398,6 @@ void PSDisplay::PrintPSTrailer()
 {
   DOASSERT(_printFile != NULL, "No print file");
 
-  //TEMPTEMP?
   fprintf(_printFile, "\nshowpage\n");
   fprintf(_printFile, "%%%%Trailer\n");
 }

@@ -5,7 +5,7 @@
 /* Info needed by mapping */
 struct CycleEffMapInfo {
 	int *job_ordering;
-		Color **colorArrays;
+	GlobalColor **colorArrays;
 };
 
 extern CycleEffMapInfo *CycleEffmapInfo;

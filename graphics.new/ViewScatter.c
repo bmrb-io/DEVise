@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/09/06 07:00:13  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.24  1996/08/05 18:39:41  beyer
   Fixed debugging statement
 
@@ -112,7 +119,7 @@
 //#define DEBUG
 
 ViewScatter::ViewScatter(char *name, VisualFilter &initFilter,
-			 QueryProc *qp, Color fg, Color bg, 
+			 QueryProc *qp, GlobalColor fg, GlobalColor bg, 
 			 AxisLabel *xAxis, AxisLabel *yAxis,
 			 Action *action) : 
 	ViewGraph(name, initFilter, xAxis, yAxis, fg, bg, action)
@@ -251,9 +258,9 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     Coord y1 = y - height/2;
     Coord y2 = y + height/2;
 #endif
-    Color color = mapping->GetDefaultColor();
+    GlobalColor color = mapping->GetDefaultColor();
     if (offset->colorOffset >= 0)
-      color = *(Color *)(ptr + offset->colorOffset);
+      color = *(GlobalColor *)(ptr + offset->colorOffset);
     Boolean complexShape = mapping->IsComplexShape(shape);
     complexShape |= (GetNumDimensions() == 3);
 

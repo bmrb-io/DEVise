@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/11/04 22:05:04  wenger
+  Turned off debug output in ParseAPI.C; fixed compile problem in
+  TDataDQLInterp.c.
+
   Revision 1.38  1996/11/03 18:20:46  kmurli
   Changes for incorporating DQL type..
 
@@ -1055,7 +1059,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       Boolean active;
-      Color color = view->GetOverrideColor(active);
+      GlobalColor color = view->GetOverrideColor(active);
       sprintf(result, "%d %d", (active ? 1 : 0),
 	      (int)color);
       control->ReturnVal(API_ACK, result);
@@ -1675,7 +1679,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       Boolean active = (atoi(argv[2]) == 1);
-      view->SetOverrideColor(atoi(argv[3]), active);
+      view->SetOverrideColor((GlobalColor) atoi(argv[3]), active);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/19 13:27:43  jussi
+  Removed unnecessary checks from methods.
+
   Revision 1.1  1996/07/19 03:23:59  jussi
   Initial revision.
 */
@@ -43,7 +46,7 @@ class PointStorage {
         _table.clear();
     }
 
-    void Insert(RecId id, Coord x, Coord y, Color c) {
+    void Insert(RecId id, Coord x, Coord y, GlobalColor c) {
 #ifdef DEBUGPS
         printf("Inserting <%ld,%.2f,%.2f,%ld> to point storage 0x%p\n",
                id, x, y, c, this);
@@ -55,7 +58,7 @@ class PointStorage {
         _table.insert(id, point);
     }
 
-    Boolean Find(RecId id, Coord &x, Coord &y, Color &c) {
+    Boolean Find(RecId id, Coord &x, Coord &y, GlobalColor &c) {
         PointRec point;
         if (_table.lookup(id, point) >= 0) {
             x = point.x;
@@ -89,7 +92,7 @@ class PointStorage {
     struct PointRec {
         Coord x;
         Coord y;
-        Color c;
+        GlobalColor c;
     };
 
     HashTable<RecId, PointRec> _table;

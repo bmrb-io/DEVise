@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/08/03 15:35:42  jussi
+  Added line segment width and commented out line segment clipping
+  algorithm.
+
   Revision 1.7  1996/07/20 18:47:58  jussi
   Added 3D line segment shape and renamed some 3D type names to
   be more general.
@@ -469,7 +473,7 @@ Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
 void Map3D::DrawSegments(WindowRep *win)
 {
   for(int i = 0; i < _numSegments; i++) {
-    Color color = _segment[i].color;
+    GlobalColor color = _segment[i].color;
     if (color == XorColor)
       win->SetXorMode();
     else
@@ -489,7 +493,7 @@ void Map3D::DrawSegments(WindowRep *win)
 void Map3D::DrawPlanes(WindowRep *win, Boolean frame)
 {
   for(int i = 0; i < _numPlanes; i++) {
-    Color color = _plane[i].color;
+    GlobalColor color = _plane[i].color;
     if (color == XorColor)
       win->SetXorMode();
     else

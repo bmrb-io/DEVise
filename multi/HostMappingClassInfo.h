@@ -5,11 +5,11 @@
 /* Info needed by mapping */
 struct HostMapInfo {
 	int *job_ordering;
-		Color **colorArrays;
+	GlobalColor **colorArrays;
 };
 
-extern Color all_busyColor;
-extern Color some_idleColor;
+extern GlobalColor all_busyColor;
+extern GlobalColor some_idleColor;
 
 extern HostMapInfo *HostmapInfo;
 

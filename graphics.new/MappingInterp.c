@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/11/07 22:40:29  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.41  1996/09/27 15:53:20  wenger
   Fixed a number of memory leaks.
 
@@ -238,8 +246,8 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
     size += sizeof(double);
   }
   if ((flag & MappingCmd_Color) && !IsConstCmd(cmd->colorCmd, val)) {
-    size = WordBoundary(size, sizeof(Color));
-    size += sizeof(Color);
+    size = WordBoundary(size, sizeof(GlobalColor));
+    size += sizeof(GlobalColor);
   }
   if ((flag & MappingCmd_Size) && !IsConstCmd(cmd->sizeCmd, val)) {
     size = WordBoundary(size, sizeof(double));
@@ -665,7 +673,8 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       /*
 	 printf("eval color\n");
       */
-      *((Color *)(gPtr + _offsets->colorOffset)) = (Color)_interpResult;
+      *((GlobalColor *)(gPtr + _offsets->colorOffset)) =
+	(GlobalColor)_interpResult;
     }
     
     if (_offsets->sizeOffset >= 0) {
@@ -825,12 +834,13 @@ AttrList *MappingInterp::InitCmd(char *name)
       goto complexCmd;
     if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       /* constant */
-      SetDefaultColor((Color)_simpleCmd->colorCmd.cmd.num);
+      SetDefaultColor((GlobalColor)_simpleCmd->colorCmd.cmd.num);
     } else {
-      _offsets->colorOffset = offset = WordBoundary(offset, sizeof(Color));
+      _offsets->colorOffset = offset = WordBoundary(offset,
+	sizeof(GlobalColor));
       attrList->InsertAttr(3, "color", offset, sizeof(double),
 			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(Color);
+      offset += sizeof(GlobalColor);
     }
   }
 
@@ -1008,14 +1018,14 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   if (_cmdFlag & MappingCmd_Color) {
     if (IsConstCmd(_cmd->colorCmd, constVal)) {
-      SetDefaultColor((Color)constVal);
+      SetDefaultColor((GlobalColor)constVal);
       _tclCmd->colorCmd = "";
     } else {
       _tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
-      _offsets->colorOffset = offset = WordBoundary(offset,sizeof(Color));
+      _offsets->colorOffset = offset = WordBoundary(offset,sizeof(GlobalColor));
       attrList->InsertAttr(3, "color", offset, sizeof(double), attrType,
 			   false, NULL, false, isSorted);
-      offset += sizeof(Color);
+      offset += sizeof(GlobalColor);
     }
   }
 
@@ -1515,8 +1525,8 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
       *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0);
     }
     if (_offsets->colorOffset >= 0) {
-      Color *cPtr = (Color *)(gPtr + _offsets->colorOffset);
-      *cPtr= (Color)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0);
+      GlobalColor *cPtr = (GlobalColor *)(gPtr + _offsets->colorOffset);
+      *cPtr= (GlobalColor)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0);
     }
     if (_offsets->sizeOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->sizeOffset);

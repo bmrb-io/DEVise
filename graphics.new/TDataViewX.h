@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/09/27 15:53:22  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.12  1996/06/13 00:16:31  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -79,7 +82,8 @@ class TDataViewX: public ViewGraph, private QueryCallback,
 public:
 
   TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
-	     Color fg = ForegroundColor, Color bg = BackgroundColor,
+	     GlobalColor fg = ForegroundColor,
+	     GlobalColor bg = BackgroundColor,
 	     AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 	     Action *action = NULL);
 

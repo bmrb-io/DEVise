@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/10/28 15:55:41  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.6  1996/09/26 20:25:00  jussi
   Added missing methods for LIBCS environment.
 
@@ -68,8 +73,8 @@ public:
        coord from (0,0) to (1,1) */
     virtual WindowRep *CreateWindowRep(char *name, Coord x, Coord y,
 				       Coord width, Coord height, 
-				       Color fgnd = ForegroundColor,
-				       Color bgnd = BackgroundColor,
+				       GlobalColor fgnd = ForegroundColor,
+				       GlobalColor bgnd = BackgroundColor,
 				       WindowRep *parentRep = NULL,
                                        Coord min_width = 0.05,
 				       Coord min_height = 0.05,
@@ -104,10 +109,10 @@ public:
 
 #ifdef LIBCS
     /* Translate RGB colors to pixel values and back */
-    virtual Color FindLocalColor(float r, float g, float b) {
+    virtual LocalColor FindLocalColor(float r, float g, float b) {
         return 0;
     }
-    virtual void FindLocalColor(Color c, float &r, float &g, float &b) {
+    virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b) {
         r = g = b = 0;
     }
 #endif
@@ -118,8 +123,8 @@ protected:
     virtual void Register() {}
 #endif
 
-    virtual void AllocColor(char *name, Color globalColor);
-    virtual void AllocColor(float r, float g, float b, Color globalColor);
+    virtual void AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb);
+    virtual void AllocColor(RgbVals &rgb, GlobalColor globalColor);
 
 private:
     FILE *_printFile;

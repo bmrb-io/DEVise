@@ -17,6 +17,14 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/11/07 22:40:28  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.19  1996/09/13 16:44:57  wenger
   PixelSize in GData now used as multiplier to the size when symbols are
   larger than one screen pixel (makes the '+' and '-' keys more useful).
@@ -175,7 +183,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     int i = 0;
     while (i < numSyms) {
 
-	Color firstColor = 0;
+	GlobalColor firstColor = BlackColor;
 	Pattern firstPattern = Pattern0;
 	int firstLineWidth = 0;
 
@@ -184,7 +192,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	for(; i < numSyms; i++) {
 	    char *gdata = (char *)gdataArray[i];
 
-	    Color color = GetColor(view, gdata, map, offset);
+	    GlobalColor color = GetColor(view, gdata, map, offset);
 	    Coord size = GetSize(gdata, map, offset);
 	    size *= pixelSize;
 	    Pattern pattern = GetPattern(gdata, map, offset);
@@ -377,7 +385,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (height < pixelSize)
 	  height = pixelSize;
 
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -467,7 +475,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (width > pixelWidth)
 	  x -= width / 2.0;
 
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -566,7 +574,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	    points[seg].y = y + height / 2 * sin(angle);
 	}
 	
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -649,7 +657,7 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
         height *= pixelSize;
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -732,7 +740,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	h *= pixelSize;
 	Coord x = GetX(gdata, map, offset) - w / 2;
 	Coord y = GetY(gdata, map, offset) - h / 2;
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -821,7 +829,7 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
 	Coord y = GetY(gdata, map, offset);
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -929,7 +937,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	h *= pixelSize;
 	Coord x = GetX(gdata, map, offset) - w / 2;
 	Coord y = GetY(gdata, map, offset) - h / 2;
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -1078,7 +1086,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord tw = width / 20.0;
 	Coord hw = width / 2.0;
 
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -1197,7 +1205,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -1291,7 +1299,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	  win->SetXorMode();
 	else
@@ -1440,7 +1448,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 
 	char *file = "polyline.dat";
 	char *format = "%lf%lf";
@@ -1566,7 +1574,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	Color color = GetColor(view, gdata, map, offset);
+	GlobalColor color = GetColor(view, gdata, map, offset);
 
 	char *label = "X";
 
@@ -1637,7 +1645,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     RecId recId = GetRecId(gdata, map, offset);
     Coord x0 = GetX(gdata, map, offset);
     Coord y0 = GetY(gdata, map, offset);
-    Color c0 = GetColor(view, gdata, map, offset);
+    GlobalColor c0 = GetColor(view, gdata, map, offset);
 
     // How should line width be handled for line types?
     int width = GetLineWidth(gdata, map, offset);
@@ -1647,7 +1655,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
     if (recId > 0) {
         Coord xp, yp;
-        Color cp;
+        GlobalColor cp;
         if (view->GetPointStorage()->Find(recId - 1, xp, yp, cp)) {
             DrawConnectingLine(win, view,
                                GetPattern(gdata, map, offset), width,
@@ -1666,7 +1674,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
         char *gdata = (char *)gdataArray[i];
         Coord x = GetX(gdata, map, offset);
         Coord y = GetY(gdata, map, offset);
-        Color color = GetColor(view, gdata, map, offset);
+        GlobalColor color = GetColor(view, gdata, map, offset);
 	width = GetLineWidth(gdata, map, offset);
         DrawConnectingLine(win, view,
                            GetPattern(gdata, map, offset), width,
@@ -1682,7 +1690,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
        first point of next batch */
 
     Coord xn, yn;
-    Color cn;
+    GlobalColor cn;
     if (view->GetPointStorage()->Find(recId + numSyms, xn, yn, cn)) {
         DrawConnectingLine(win, view,
                            Pattern0, width, x0, y0, c0, xn, yn, cn);
@@ -1694,9 +1702,9 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 
 void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
-					       Pattern pattern, int line_width,
-					       Coord x0, Coord y0, Color c0,
-					       Coord x1, Coord y1, Color c1)
+					   Pattern pattern, int line_width,
+					   Coord x0, Coord y0, GlobalColor c0,
+					   Coord x1, Coord y1, GlobalColor c1)
 {
     win->SetPattern(pattern);
     if (c0 == XorColor)
@@ -1753,9 +1761,9 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 						    Pattern pattern,
 						    int line_width,
 						    Coord x0, Coord y0,
-						    Color c0,
+						    GlobalColor c0,
 						    Coord x1, Coord y1,
-						    Color c1)
+						    GlobalColor c1)
 {
     /* clip top of shape with filter (filled polygons are
        really slow if y0 or y1 is far outside of the screen */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/28 00:08:20  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:38  jussi
   Added CVS header.
 */
@@ -34,7 +37,7 @@ const unsigned MAX_CONNECTOR_SHAPE_ATTRS = 10;
 struct Connector {
 public:
   Coord x1,y1,x2,y2;                    /* end points of the connector */
-  Color color;
+  GlobalColor color;
   Pattern pattern;
   ConnectorShapeID cShapeID;            /* ID of connector shape */
   int numShapeAttrs;                    /* # of attributes for shape */

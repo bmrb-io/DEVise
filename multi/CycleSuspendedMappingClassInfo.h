@@ -5,7 +5,7 @@
 /* Info needed by mapping */
 struct CycleSuspendedMapInfo {
 	int *job_ordering;
-		Color **colorArrays;
+	GlobalColor **colorArrays;
 };
 
 extern CycleSuspendedMapInfo *CycleSuspendedmapInfo;

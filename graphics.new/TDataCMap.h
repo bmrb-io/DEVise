@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/30 21:15:51  jussi
+  Removed references to specific colors.
+
   Revision 1.4  1995/12/29 22:40:13  jussi
   Cleaned up the code a bit.
 
@@ -65,7 +68,7 @@ public:
     return Map(grec1, grec2, c);
   }
 
-  void SetDefaultColor(Color c) { defaultColor = c; }
+  void SetDefaultColor(GlobalColor c) { defaultColor = c; }
   void SetDefaultPattern(Pattern p) { defaultPattern = p; }
   void SetDefaultConnectorShape(ConnectorShapeID shapeId,
 				int numAttrs = 0,
@@ -79,14 +82,14 @@ public:
     _numShapeAttrs = numAttrs;
     _shapeAttrs = shapeAttr;
   }
-  Color GetDefaultColor() { return defaultColor; }
+  GlobalColor GetDefaultColor() { return defaultColor; }
   Pattern GetDefaultPattern() { return defaultPattern; }
 
 protected:
   virtual Boolean Map(void *, void *, Connector *) { return true; }
 
 private:
-  Color            defaultColor;
+  GlobalColor      defaultColor;
   Pattern          defaultPattern;
   ConnectorShapeID _shapeId;
   int              _numShapeAttrs;

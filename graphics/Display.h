@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/09/18 20:11:54  guangshu
+  Added function ExportView to save each view in a window to a separate gif
+  file. Modified function ExportGIF.
+
   Revision 1.17  1996/09/13 23:02:42  guangshu
   Added ExportImageAndMap function.
 
@@ -122,8 +126,8 @@ public:
      relative == 1 if in relative dimensions.*/
   virtual WindowRep* CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
-				     Color fgnd = ForegroundColor,
-				     Color bgnd = BackgroundColor, 
+				     GlobalColor fgnd = ForegroundColor,
+				     GlobalColor bgnd = BackgroundColor, 
 				     WindowRep *parentRep = NULL,
 				     Coord min_width = 0.05,
 				     Coord min_height = 0.05,
@@ -156,12 +160,16 @@ public:
   void Run() { InternalProcessing(); }
 
   /* Get local color given global color. */
-  Color GetLocalColor(Color globalColor);
+//TEMPTEMP -- this should probably be virtual -- doesn't apply to PS
+  LocalColor GetLocalColor(GlobalColor globalColor);
 
 #ifdef LIBCS
+//TEMPTEMP -- NOTE this is at least somewhat specific to X -- at least the
+// one that returns LocalColor -- maybe PSDisplay abort if that's called
+// on it
   /* Translate RGB colors to pixel values and back */
-  virtual Color FindLocalColor(float r, float g, float b) = 0;
-  virtual void FindLocalColor(Color c, float &r, float &g, float &b) = 0;
+  virtual LocalColor FindLocalColor(float r, float g, float b) = 0;
+  virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b) = 0;
 #endif
 
 #ifndef LIBCS
@@ -187,20 +195,24 @@ protected:
 
   friend class ColorMgr;
 
-  /* allocate internal colors for the given global color */
-  virtual void AllocColor(char *name, Color globalColor) = 0;
+  /* Allocate internal colors for the given global color, set rgb to the
+   * RGB values we actually got. */
+  virtual void AllocColor(char *name, GlobalColor globalColor,
+    RgbVals &rgb) = 0;
 
-  /* allocate internal color by RGB, from 0.0 to 1.0, for the 
-     given global color. */
-  virtual void AllocColor(float r, float g, float b, Color globalColor) = 0;
+  /* Allocate internal color by RGB, from 0.0 to 1.0, for the 
+     given global color.  On input, set rgb to the color you want; it will
+     be set to the RGB values you actually got. */
+  virtual void AllocColor(RgbVals &rgb, GlobalColor globalColor) = 0;
 
   /* functions for derived classes to facilitate color processing.
      Each display instance must match the global color to its own
      local color. MapColor() maps local color to global color, while
-     GetLocalColor() retrieeves the local color given global color. */
+     GetLocalColor() retrieves the local color given global color. */
   
+//TEMPTEMP -- this should probably be virtual -- doesn't apply to PS
   /* map local color to global color.*/
-  void MapColor(Color localColor, Color globalColor);
+  void MapColor(LocalColor localColor, GlobalColor globalColor);
 
   friend class WindowRep;
 
@@ -210,7 +222,7 @@ protected:
   
   unsigned long _numColors;
   unsigned long _colorMapSize;
-  Color *_colorMap;
+  LocalColor *_colorMap;
   static DeviseDisplay *_defaultDisplay;
   static DeviseDisplay *_psDisplay;
 

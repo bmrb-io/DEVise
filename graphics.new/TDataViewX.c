@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/09/27 15:53:22  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.39  1996/08/05 18:37:40  beyer
   Minor simplification of stats gathering
 
@@ -176,8 +179,8 @@
 ImplementDList(BStatList, BasicStats *)
 
 TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
-		       Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
-		       Action *action) :
+		       GlobalColor fg, GlobalColor bg, AxisLabel *xAxis,
+		       AxisLabel *yAxis, Action *action) :
 	ViewGraph(name, initFilter, xAxis, yAxis, fg, bg, action)
 {
   _dataBin = new GDataBin();
@@ -383,9 +386,9 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       Coord x = GetX(tp, mapping, offset);
       Coord y = GetY(tp, mapping, offset);
       ShapeID shape = GetShape(tp, mapping, offset);
-      Color color = mapping->GetDefaultColor();
+      GlobalColor color = mapping->GetDefaultColor();
       if (offset->colorOffset >= 0)
-	color = *(Color *)(tp + offset->colorOffset);
+	color = *(GlobalColor *)(tp + offset->colorOffset);
       Boolean complexShape = mapping->IsComplexShape(shape);
       complexShape |= (GetNumDimensions() == 3);
 
