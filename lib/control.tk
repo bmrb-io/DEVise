@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.30  1995/11/29 17:58:39  jussi
+#	Slightly better interface to removing a window.
+#
 #	Revision 1.29  1995/11/29 17:49:48  jussi
 #	Added RemoveWindow command.
 #
@@ -389,7 +392,7 @@ menu .mbar.cursor.menu -tearoff 0
 .mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
 
 menu .mbar.window.menu -tearoff 0
-.mbar.window.menu add command -label "Remove" -command RemoveWindow
+.mbar.window.menu add command -label "Remove" -command {RemoveWindow ""}
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Demo" -command DoDemo
 .mbar.window.menu add command -label "Help" -command DoHelp
@@ -2496,8 +2499,8 @@ proc DoActualCreateAxisLabel { type } {
     }
 
     set cmd "DEVise create axisLabel $type $dialogParamVar(params)"
-    set result [eval $cmd ]
-    if { [string compare $result "" ] == 0 } {
+    set result [ eval $cmd ]
+    if { $result == "" } {
 	set but [ dialog .axisError "AxisError" \
 		"Can't create axis" "" 0 OK ]
 	return
@@ -2510,15 +2513,21 @@ proc DoActualCreateAxisLabel { type } {
 proc DoCreateAxisLabel {} {
     global dialogListVar
     set axisTypes [ DEVise get axisLabel]
+
+    if {![llength $axisTypes]} {
+	dialog .noAxisTypes "No Axis Types Defined" \
+		"No axis types have been defined." "" 0 OK
+	return ""
+    }
+
     set answer [ dialogList .createAxis "CreateAxis"  \
 	    "Select type of axis label to create" "" "" \
 	    { Cancel Ok } $axisTypes ]
-    if { $answer == 0 || \
-	    [ string compare $dialogListVar(selected) "" ] == 0 } {
-	return
-    } else {
-	return [ DoActualCreateAxisLabel $dialogListVar(selected) ]
+    if { $answer == 0 || $dialogListVar(selected) == "" } {
+	return ""
     }
+
+    return [ DoActualCreateAxisLabel $dialogListVar(selected) ]
 }
 
 # Get an axis label for current view
@@ -2528,9 +2537,8 @@ proc DoGetAxisLabel {} {
     if { [llength $axisSet] == 0 } {
 	set axisLabel [ DoCreateAxisLabel]
     } else {
-	set answer [ dialogList .getAxisLabel "GetAxisLabel" "Select a \
-		axis label for view $curView,\n\
-		or press <New> to create a new one"\
+	set answer [ dialogList .getAxisLabel "Select Axis Label" \
+		"Select an axis label for current view."\
 		"" 0 { New Cancel OK } $axisSet ]
 	if { $answer == 0 } {
 	    set axisLabel [ DoCreateAxisLabel ]
@@ -2551,7 +2559,7 @@ proc DoViewAxis { axis } {
 	return
     }
     set axisLabel [DoGetAxisLabel]
-    if { [string compare $axisLabel "" ] == 0 } {
+    if {$axisLabel == ""} {
 	return
     }
     
@@ -2622,7 +2630,7 @@ proc DoViewAction {} {
 	return
     }
     set action [DoGetAction]
-    if { [string compare $action "" ] == 0 } {
+    if {$action == ""} {
 	return
     }
     
@@ -3046,20 +3054,19 @@ proc DoGoBackOne {} {
 }
 
 # remove window
-proc RemoveWindow {} {
+proc RemoveWindow {win} {
     global dialogListVar
 
-    set winSet [ WinSet ]
-
-    set answer [ dialogList .window "Select Window" \
-	    "Select window to remove" "" "" \
-	    { Cancel Ok } $winSet ]
-
-    if {$answer == 0  || $dialogListVar(selected) == ""} {
-	return 
+    if {$win == ""} {
+	set winSet [ WinSet ]
+	set answer [ dialogList .window "Select Window" \
+		"Select window to remove" "" "" \
+		{ Cancel Ok } $winSet ]
+	if {$answer == 0  || $dialogListVar(selected) == ""} {
+	    return 
+	}
+	set win $dialogListVar(selected)
     }
-
-    set win $dialogListVar(selected)
 
     set views [DEVise getWinViews $win]
     if {$views != ""} {
@@ -3280,4 +3287,103 @@ proc NotImplemented {} {
     dialog .notImplemented "Not Implemented" \
 	    "This feature not implemented yet." \
 	    "" 0 OK
+}
+
+############################################################
+
+proc GetTkControlMargins {type} {
+    # a view has left and bottom margin controls
+    if {$type == "View"} {
+	return "5 5 5 20"
+    }
+
+    # a window has bottom margin controls
+    return "0 0 0 20"
+}
+
+############################################################
+
+proc CreateTkControlWindows {name w h margins} {
+    set lm [lindex $margins 0]
+    set rm [lindex $margins 1]
+    set tm [lindex $margins 2]
+    set bm [lindex $margins 3]
+
+    set controls ""
+    if {$lm > 0} { lappend controls "left" }
+    if {$rm > 0} { lappend controls "right" }
+    if {$tm > 0} { lappend controls "top" }
+    if {$bm > 0} { lappend controls "bottom" }
+
+    foreach side $controls {
+	toplevel "$name-$side"
+	wm title "$name-$side" "$name-$side"
+	pack propagate "$name-$side" 0
+    }
+
+    # force new window to screen so that ViewWin.c can reparent
+    # a data display subwindow to this window
+
+    update
+}
+
+############################################################
+
+proc CreateTkMarginControls {name type w h} {
+    set margins [GetTkControlMargins $type]
+    CreateTkControlWindows $name $w $h $margins
+    UpdateTkControlMargins $name $type $w $h
+
+    if {$type == "View"} {
+	frame "$name-bottom.frame" -relief groove -borderwidth 1
+	pack "$name-bottom.frame" -side left -fill both -expand 1
+	pack propagate "$name-bottom.frame" 0
+	button "$name-bottom.frame.zoominx" -text "X-" \
+		-command ProcessInButton
+	button "$name-bottom.frame.zoomoutx" -text "X+" \
+		-command ProcessOutButton
+	button "$name-bottom.frame.zoominy" -text "Y-" \
+		-command ProcessYInButton
+	button "$name-bottom.frame.zoomouty" -text "Y+" \
+		-command ProcessYOutButton  
+	pack "$name-bottom.frame.zoominx" "$name-bottom.frame.zoomoutx" \
+		"$name-bottom.frame.zoominy" "$name-bottom.frame.zoomouty" \
+		-side left -padx 0m
+    } else {
+	button "$name-bottom.print" -text print -command PrintView
+	button "$name-bottom.remove" -text remove -command {RemoveWindow ""}
+	pack "$name-bottom.print" "$name-bottom.remove" -side left
+    }
+
+    return $margins
+}
+
+############################################################
+
+proc UpdateTkControlMargins {name type w h} {
+    set margins [GetTkControlMargins $type]
+    set lm [lindex $margins 0]
+    set rm [lindex $margins 1]
+    set tm [lindex $margins 2]
+    set bm [lindex $margins 3]
+
+    set controls [list \
+	    [list left 0 $tm $lm [expr $h - $tm - $bm]] \
+	    [list right [expr $w - $rm] $tm $rm [expr $h - $tm - $bm]] \
+	    [list top 0 0 $w $tm] \
+	    [list bottom 0 [expr $h - $bm] $w $bm]]
+
+    foreach control $controls {
+	set side [lindex $control 0]
+	set x [lindex $control 1]
+	set y [lindex $control 2]
+	set width [lindex $control 3]
+	set height [lindex $control 4]
+	# see if window exists
+	set err [catch {set exists [wm state "$name-$side"]}]
+	if {!$err} {
+	    wm geometry "$name-$side" [format "=%dx%d+%d+%d" \
+		    $width $height $x $y]
+	}
+    }
 }
