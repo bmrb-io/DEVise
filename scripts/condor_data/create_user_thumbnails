@@ -1,0 +1,350 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1999
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script takes a file of Condor user data, splits it into separate
+#  files for each user, and creates a DEVise session file that displays
+#  each user's data as a view symbol.
+
+#  Note: this script relies on there being a 'Total' user in the data.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+$debug = 0;
+
+die "usage: create_user_thumbnails <data directory> <session file>\n",
+    "  <user list schema file> <data schema file>\n" if ($#ARGV != 3);
+
+$data_dir = shift(@ARGV);
+$session_file = shift(@ARGV);
+$user_schema = shift(@ARGV);
+$data_schema = shift(@ARGV);
+
+# Find all of the users in the data file.
+%userlist = ();
+GetUsers();
+
+# Create the session file.
+CreateSession($session_file);
+
+#-----------------------------------------------------------
+
+sub GetUsers {
+
+  open(DATA_IN, "${data_dir}/UserList") ||
+      die "Couldn't open data file $data_file: $!\n";
+
+  while ($line = <DATA_IN>) {
+    print "line = $line" if ($debug);
+    $tmpuser = GetUserFromLine($line);
+    print "  tmpuser = $tmpuser\n" if ($debug);
+    $userlist{$tmpuser} = 1;
+  }
+  print "\n" if ($debug);
+
+  close(DATA_IN);
+}
+
+#-----------------------------------------------------------
+
+sub GetUserFromLine {
+  my $line = shift(@_);
+
+  my @tmpuser = split(" ", $line);
+
+  return $tmpuser[0];
+}
+
+#-----------------------------------------------------------
+
+sub CreateSession {
+  my $session_file = shift(@_);
+
+  open(SES_OUT, ">$session_file") ||
+      die "Can't create session_file $session_file: $!";
+
+  #TEMP -- add std header??
+  print SES_OUT "# DEVise session file created by create_condor_session\n\n";
+
+  my $data_prefix = "Condor_";
+
+  # Define data sources.
+  DefineData($data_prefix);
+
+  # Create views.
+  CreateViews();
+
+  # Create the mapping class and mappings.
+  $mapClass = CreateMappings($data_prefix);
+
+  # Insert mappings into views.
+  InsertMappings($mapClass);
+
+  # Create links and cursors and insert them into views.
+  CreateLinksCursors();
+
+  # Create the windows and insert the views into them.
+  CreateWindows();
+
+  # Force the visual filters to get updated when this session is opened.
+  print SES_OUT "DEVise updateFilters\n";
+
+  # Initialize views to show the full X range of data.
+  #TEMPTEMP? print SES_OUT "DEVise viewGoHome Total_viewsym\n";
+  #TEMPTEMP? print SES_OUT "DEVise waitForQueries\n";
+  #TEMPTEMP? print SES_OUT "DEVise viewGoHome User1_viewsym\n";
+
+  close(SES_OUT);
+}
+
+#-----------------------------------------------------------
+
+sub DefineData {
+  my $data_prefix = shift(@_);
+
+  print SES_OUT "# Define data sources\n";
+
+  use Cwd;
+  $data_path = cwd() . "/$data_dir";
+
+  # Create a data source for the top-level data (list of users).
+  #TEMP -- name should probably be a variable
+  my $dataName = $data_prefix . "UserList";
+  my $dataFile = $top_level_file;
+
+  #TEMP?
+  my $schemaType = "CondorUserList";
+
+  print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
+      "$dataName} oldEntry]\n";
+  print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
+  print SES_OUT "  DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $user_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+  print SES_OUT "}\n";
+
+  #TEMP?
+  $schemaType = "CondorUser";
+
+  # Create a data source for each user's data.
+  my $user;
+  foreach $user (sort keys %userlist) {
+    $dataName = $data_prefix . $user;
+    $dataFile = $user . ".dat";
+
+    print SES_OUT "set errCode [catch {DEVise dteShowCatalogEntry .",
+        "$dataName} oldEntry]\n";
+    print SES_OUT "if {[llength \$oldEntry] <= 0} {\n";
+    print SES_OUT "DEVise dteInsertCatalogEntry . {\"$dataName\" UNIXFILE $dataFile $schemaType $data_schema \"\" 100 50 \"$data_path\" \"\"\} ;\n";
+    print SES_OUT "}\n";
+  }
+}
+
+#-----------------------------------------------------------
+
+sub CreateViews {
+  print SES_OUT "\n# Create views\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} UserList_view -0.05 1.05 0 1 36 9\n";
+  print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
+      "100.0 100.0\n";
+  print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
+  print SES_OUT "DEVise viewSetAlign UserList_view 1\n";
+  print SES_OUT "\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} DataParent_view 0 1 -1 -2 36 9\n";
+  print SES_OUT "DEVise viewSetImplicitHome {DataParent_view} 1 1 1 1 0.50 ",
+      "0.50 0.0 0.0 100.0 100.0\n";
+  print SES_OUT "DEVise setViewAutoFilter DataParent_view 1\n";
+  print SES_OUT "\n";
+
+  my $user;
+  foreach $user (sort keys %userlist) {
+    # Create the view.
+    print SES_OUT "DEVise create {view} {Scatter} ${user}_view 0 1 0 1 36 9\n";
+
+    # Force the bottom of the visual filter to be set to 0 on home.
+    print SES_OUT "DEVise viewSetImplicitHome {${user}_view} 1 1 1 1 0.0 ",
+        "0.0 0.0 0.0 100.0 100.0\n";
+
+    # Set this view for automatic filter updating.
+    print SES_OUT "DEVise setViewAutoFilter ${user}_view 1\n";
+
+    # Turn on the X and Y axes.
+    #TEMPTEMP? print SES_OUT "DEVise setAxisDisplay ${user}_view {X} 1\n";
+    #TEMPTEMP? print SES_OUT "DEVise setAxisDisplay ${user}_view {Y} 1\n";
+
+    print SES_OUT "DEVise setXAxisDateFormat ${user}_view {%b %d %H:%M}";
+
+    print SES_OUT "\n";
+  }
+}
+
+#-----------------------------------------------------------
+
+sub CreateMappings {
+  my $data_prefix = shift(@_);
+
+  print SES_OUT "\n# Create mapping class\n";
+
+  # Just use a single mapping class for all mappings.  Not the way
+  # DEVise does it, but there doesn't seem to be any reason for
+  # multiple mapping classes.
+  my $mappingClass = "condor_user_mc";
+  print SES_OUT "DEVise createMappingClass {$mappingClass}\n";
+
+  print SES_OUT "\n# Create mappings\n";
+
+  my $dataName = "${data_prefix}UserList";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "AllUser#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} ",
+      "1 1 {\$TDataName} {} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
+      "{} {-2} {1} {} {} {} {} {} {}\n";
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "Select1#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
+      "{} {} {} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "Select2#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
+      "{} {} {} {} {} {} {} {}\n";
+
+  #TEMPTEMP
+  $dataName = ".Condor_Total";
+  foreach $user (sort keys %userlist) {
+      print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+          "${user}#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+          "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+  }
+
+  #TEMPTEMP?
+  return $mappingClass;
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User1#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User1_viewsym\"} 1 ",
+      "1 {\$TDataName} {} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User2#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
+      "1 {\$TDataName} {} {} {} {} {} {}\n";
+
+  # Note: this is really a "dummy" TData -- it will get switched when the
+  # view symbol is drawn.
+  $dataName = "Condor_Total";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User1sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User2sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+
+  $dataName = "Condor_Total";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "Total#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
+      "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
+
+  return $mappingClass;
+}
+
+#-----------------------------------------------------------
+
+sub InsertMappings {
+  my $mappingClass = shift(@_);
+
+  print SES_OUT "\n# Insert mappings into views\n";
+
+  print SES_OUT "DEVise insertMapping {UserList_view} ",
+      "{UserList#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {DataParent_view} ",
+      "{AllUser#$mappingClass}\n";
+
+  foreach $user (sort keys %userlist) {
+      print SES_OUT "DEVise insertMapping {${user}_view} ",
+          "{${user}#$mappingClass}\n";
+  }
+
+  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User1_view} ",
+      #TEMPTEMP? "{User1#$mappingClass}\n";
+  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User2_view} ",
+      #TEMPTEMP? "{User2#$mappingClass}\n";
+
+  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User1_viewsym} ",
+      #TEMPTEMP? "{User1sym#$mappingClass}\n";
+  #TEMPTEMP? print SES_OUT "DEVise insertMapping {User2_viewsym} ",
+      #TEMPTEMP? "{User2sym#$mappingClass}\n";
+
+  #TEMPTEMP? print SES_OUT "DEVise insertMapping {Total_viewsym} ",
+      #TEMPTEMP? "{Total#$mappingClass}\n";
+}
+
+#-----------------------------------------------------------
+
+sub CreateLinksCursors {
+
+  # Link user list and actual data on Y (user).
+  print SES_OUT "DEVise create {link} {Visual_Link} UserLink 2\n";
+  print SES_OUT "DEVise insertLink {UserLink} {UserList_view}\n";
+  print SES_OUT "DEVise insertLink {UserLink} {DataParent_view}\n";
+
+  # Link the view symbols on X (time).
+  print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
+  foreach $user (sort keys %userlist) {
+      print SES_OUT "DEVise insertLink {TimeLink} {${user}_view}\n";
+  }
+
+  #TEMPTEMP
+  return;
+
+  # Cursor to select first user to view.
+  print SES_OUT "DEVise create {cursor} {Cursor} UserCursor1 2 1 1.000000 ",
+      "1.000000\n";
+  print SES_OUT "DEVise setCursorSrc {UserCursor1} {User1_view}\n";
+  print SES_OUT "DEVise setCursorDst {UserCursor1} {Select1_view}\n";
+
+  # Cursor to select second user to view.
+  print SES_OUT "DEVise create {cursor} {Cursor} UserCursor2 2 1 1.000000 ",
+      "1.000000\n";
+  #TEMPTEMP? print SES_OUT "DEVise setCursorSrc {UserCursor2} {User2_view}\n";
+  print SES_OUT "DEVise setCursorDst {UserCursor2} {Select2_view}\n";
+
+  print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsym}\n";
+  #TEMPTEMP? print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsym}\n";
+
+  # Cursor to select time range for user data.
+  print SES_OUT "DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 ",
+      "1.000000\n";
+  print SES_OUT "DEVise setCursorSrc {TimeCursor} {User1_viewsym}\n";
+  print SES_OUT "DEVise setCursorDst {TimeCursor} {Total_viewsym}\n";
+}
+
+#-----------------------------------------------------------
+
+sub CreateWindows {
+
+  print SES_OUT "\n# Create windows and insert views\n";
+
+  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.02 0.20 ",
+      "0.25 0.75 0 0\n";
+  print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
+
+  print SES_OUT "DEVise create {window} {TileLayout} User1 0.27 0.20 0.71 ",
+      "0.75 0 0\n";
+  print SES_OUT "DEVise insertWindow {DataParent_view} {User1}\n";
+}
+
+#-----------------------------------------------------------

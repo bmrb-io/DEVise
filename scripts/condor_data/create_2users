@@ -12,8 +12,8 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  This script takes a file of Condor user data, splits it into separate
-#  files for each user, and creates a DEVise session file that displays
+#  This script takes Condor data, already split by split_user_data,
+#  and creates a DEVise session file that displays
 #  each user's data as a view symbol.
 
 #  Note: this script relies on there being a 'Total' user in the data.
@@ -23,6 +23,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1999/04/22 19:30:02  wenger
+#  Separated the configuration of explicit (user-requested) and implicit
+#  home actions (no GUI for configuring the implicit home); changed the
+#  Condor user script accordingly; modified JavaScreen support so that this
+#  all works for the JS.
+#
 #  Revision 1.7  1999/04/21 14:54:44  wenger
 #  Text scaling in text symbols can be bypassed with negative width and
 #  non-zero orientation (actually an unintentional affect of the previous
@@ -54,36 +60,17 @@
 
 $debug = 0;
 
-die "usage: create_condor_session <data file> <session file>\n",
+die "usage: create_2users <data directory> <session file>\n",
     "  <user list schema file> <data schema file>\n" if ($#ARGV != 3);
 
-$data_file = shift(@ARGV);
+$data_dir = shift(@ARGV);
 $session_file = shift(@ARGV);
 $user_schema = shift(@ARGV);
 $data_schema = shift(@ARGV);
 
-open(DATA_IN, "$data_file") || die "Couldn't open data file $data_file: $!\n";
-
-
-# Find all of the users listed in the data file.
+# Find all of the users in the data file.
 %userlist = ();
 GetUsers();
-
-
-# Dump each user into the top-level data file.
-$data_dir = "userdat";
-mkdir $data_dir, 0755;
-
-$top_level_file = "UserList";
-UserTopLevel();
-
-
-# Dump a data file for each user.
-SplitUserData();
-
-
-close(DATA_IN);
-
 
 # Create the session file.
 CreateSession($session_file);
@@ -91,6 +78,10 @@ CreateSession($session_file);
 #-----------------------------------------------------------
 
 sub GetUsers {
+
+  open(DATA_IN, "${data_dir}/UserList") ||
+      die "Couldn't open data file $data_file: $!\n";
+
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug);
     $tmpuser = GetUserFromLine($line);
@@ -98,6 +89,8 @@ sub GetUsers {
     $userlist{$tmpuser} = 1;
   }
   print "\n" if ($debug);
+
+  close(DATA_IN);
 }
 
 #-----------------------------------------------------------
@@ -105,47 +98,9 @@ sub GetUsers {
 sub GetUserFromLine {
   my $line = shift(@_);
 
-  # Note: assumes that timestamp is always 9 digits.
-  my @tmpuser = split(" ", substr($line, 9));
-
-  # Change dots in name to underscores because data source names cannot
-  # contain dots.
-  $tmpuser[0] =~ s/\./_/g;
+  my @tmpuser = split(" ", $line);
 
   return $tmpuser[0];
-}
-
-#-----------------------------------------------------------
-
-sub UserTopLevel {
-  $userNum = 0;
-  $outfile = $data_dir . "/" . $top_level_file;
-  open(TOP_OUT, ">$outfile") || die "Can't create file $outfile: $!";
-  foreach $user (sort keys %userlist) {
-    print "User: $user\n" if ($debug);
-    print TOP_OUT "$user\t.Condor_${user}\t${user}_view\t$userNum\t0\n";
-    $userNum++;
-  }
-  close(TOP_OUT);
-}
-
-#-----------------------------------------------------------
-
-sub SplitUserData {
-  foreach $user (sort keys %userlist) {
-    seek DATA_IN, 0, 0;
-
-    $userfile = "$data_dir/" . $user . ".dat";
-    open(USER_OUT, ">$userfile") || die "Can't create file $userfile: $!\n";
-
-    while ($line = <DATA_IN>) {
-      if (GetUserFromLine($line) eq $user) {
-        print "line = $line" if ($debug);
-        print USER_OUT $line;
-      }
-    }
-    close(USER_OUT);
-  }
 }
 
 #-----------------------------------------------------------
@@ -336,7 +291,7 @@ sub CreateMappings {
 
   # Note: this is really a "dummy" TData -- it will get switched when the
   # view symbol is drawn.
-  $dataName = "Condor_Total";
+  $dataName = ".Condor_Total";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "User1sym#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 8 1 ",
       "{\$total_jobs} {0} {5} {3} {} {} {} {} {}\n";
@@ -415,7 +370,7 @@ sub CreateWindows {
   print SES_OUT "\n# Create windows and insert views\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} UserList 0.06 0.20 ",
-      "0.25 0.60 0 0\n";
+      "0.25 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} Total 0.35 0.80 0.63 ",
@@ -424,11 +379,11 @@ sub CreateWindows {
   print SES_OUT "DEVise insertWindow {Total_viewsym} {Total}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} Select1 0.02 0.20 ",
-      "0.04 0.60 0 0\n";
+      "0.04 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {Select1_view} {Select1}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} Select2 0.31 0.20 ",
-      "0.04 0.60 0 0\n";
+      "0.04 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {Select2_view} {Select2}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} User1 0.35 0.20 0.63 ",

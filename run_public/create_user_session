@@ -1,6 +1,0 @@
-#! /bin/csh -f
-rm -r userdat
-/p/condor/home/bin/condor_devise_userdata -lastweek > UserLastMonth.dat
-create_condor_session UserLastMonth.dat ../../session.js/Condor/UserMonth.ds \
-  /p/devise/demo/schema/schema/physical/Condor:userlist \
-  /p/devise/demo/schema/schema/physical/Condor:user1

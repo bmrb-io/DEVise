@@ -1,0 +1,114 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1999
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script takes a file of Condor user data and splits it into separate
+#  files for each user.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+$debug = 0;
+
+die "usage: split_user_data <data file>\n", if ($#ARGV != 0);
+
+$data_file = shift(@ARGV);
+
+open(DATA_IN, "$data_file") || die "Couldn't open data file $data_file: $!\n";
+
+
+# Find all of the users listed in the data file.
+%userlist = ();
+GetUsers();
+
+
+# Dump each user into the top-level data file.
+$data_dir = "userdat";
+mkdir $data_dir, 0755;
+
+$top_level_file = "UserList";
+UserTopLevel();
+
+
+# Dump a data file for each user.
+SplitUserData();
+
+
+close(DATA_IN);
+
+#-----------------------------------------------------------
+
+sub GetUsers {
+  while ($line = <DATA_IN>) {
+    print "line = $line" if ($debug);
+    $tmpuser = GetUserFromLine($line);
+    print "  tmpuser = $tmpuser\n" if ($debug);
+    $userlist{$tmpuser} = 1;
+  }
+  print "\n" if ($debug);
+}
+
+#-----------------------------------------------------------
+
+sub GetUserFromLine {
+  my $line = shift(@_);
+
+  # Note: assumes that timestamp is always 9 digits.
+  my @tmpuser = split(" ", substr($line, 9));
+
+  # Change dots in name to underscores because data source names cannot
+  # contain dots.
+  $tmpuser[0] =~ s/\./_/g;
+
+  return $tmpuser[0];
+}
+
+#-----------------------------------------------------------
+
+sub UserTopLevel {
+  $userNum = 0;
+  $outfile = $data_dir . "/" . $top_level_file;
+  open(TOP_OUT, ">$outfile") || die "Can't create file $outfile: $!";
+  foreach $user (sort keys %userlist) {
+    print "User: $user\n" if ($debug);
+    print TOP_OUT "$user\t.Condor_${user}\t${user}_view\t$userNum\t0\n";
+    $userNum++;
+  }
+  close(TOP_OUT);
+}
+
+#-----------------------------------------------------------
+
+sub SplitUserData {
+  foreach $user (sort keys %userlist) {
+    seek DATA_IN, 0, 0;
+
+    $userfile = "$data_dir/" . $user . ".dat";
+    open(USER_OUT, ">$userfile") || die "Can't create file $userfile: $!\n";
+
+    while ($line = <DATA_IN>) {
+      if (GetUserFromLine($line) eq $user) {
+        print "line = $line" if ($debug);
+        print USER_OUT $line;
+      }
+    }
+    close(USER_OUT);
+  }
+}
+
+#-----------------------------------------------------------

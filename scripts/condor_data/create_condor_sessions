@@ -1,0 +1,16 @@
+#! /bin/csh -f
+rm -r userdat
+
+/p/condor/home/bin/condor_devise_userdata -lastweek > UserLastMonth.dat
+
+split_user_data UserLastMonth.dat
+
+rm UserLastMonth.dat
+
+create_2users userdat UserMonth.ds \
+  /p/devise/demo/schema/schema/physical/Condor:userlist \
+  /p/devise/demo/schema/schema/physical/Condor:user1
+
+create_user_thumbnails userdat UserThumb.ds \
+  /p/devise/demo/schema/schema/physical/Condor:userlist \
+  /p/devise/demo/schema/schema/physical/Condor:user1
