@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,10 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/02/26 00:18:54  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.28  1998/01/07 19:28:28  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
   dependencies.
+
+  Revision 1.27.4.2  1998/03/10 17:58:29  wenger
+  Changes to Dispatcher and Timer classes to fix problems (excessive
+  timer wakes and inconsistent callback lists) on SGIs.
 
   Revision 1.27.4.1  1998/01/07 15:59:22  wenger
   Removed replica cababilities (since this will be replaced by collaboration
@@ -141,7 +148,7 @@
 #include "DeviseTypes.h"
 #include "DList.h"
 #include "Journal.h"
-#include "Exit.h"
+//#include "Exit.h"
 
 
 class DispatcherCallback {
@@ -156,8 +163,10 @@ const unsigned GoState   = 0x1;
 const unsigned StopState = 0x2;
 const unsigned AllState  = 0xffffffff;
 
-struct DispatcherInfo {
-public:
+class DispatcherInfo {
+protected:
+  friend class Dispatcher;
+
   DispatcherCallback *callBack;
   StateFlag flag;		// if flag is zero, this info will be deleted
   int priority;
@@ -173,9 +182,6 @@ typedef DispatcherInfo* DispatcherID;
 class Dispatcher;
 class View;
 class Selection;
-
-/* the one and only global dispatcher */
-extern Dispatcher dispatcher;
 
 //DefinePtrDList(DeviseWindowList, DeviseWindow *);
 DefinePtrDList(DispatcherInfoList, DispatcherInfo *);
@@ -196,23 +202,10 @@ protected:
      Also, once the callback is made, it will not be made again unless
      the callback reschedules itself.
    */
-  void RequestCallback(DispatcherID info) {
-    DOASSERT(info, "bad dispatcher id");
-    if( !(info->callback_requested) ) {
-      info->callback_requested = true;
-      _callback_requests++;
-    } 
-  }
+  void RequestCallback(DispatcherID info);
 
   /* cancel a scheduled callback */
-  void CancelCallback(DispatcherID info) {
-    DOASSERT(info, "bad dispatcher id");
-    if( info->callback_requested ) {
-      info->callback_requested = false;
-      _callback_requests--;
-      DOASSERT(_callback_requests >= 0, "callback request count too low");
-    } 
-  }
+  void CancelCallback(DispatcherID info);
 
 public:
   /* Register callback */
@@ -237,6 +230,9 @@ public:
   /* Print what's in the queue */
   void Print();
 
+  /* Check callback list for self-consistency. */
+  Boolean CallbacksOk();
+
   /***********************************************************************
     the following static functions are no longer needed, since there
     is only one dispatcher. I left them here to avoid changing a lot of
@@ -244,10 +240,10 @@ public:
   ***********************************************************************/
 
   /* Return the current dispatcher */
-  static Dispatcher *Current() { return &dispatcher; }
+  static Dispatcher *Current();
 
   /* Run once, for single step */
-  static void SingleStepCurrent() { dispatcher.Run1(); }
+  static void SingleStepCurrent();
 
   /* Run, no return */
   static void RunNoReturn();
@@ -256,7 +252,7 @@ public:
   static void RunCurrent();
 
   /* Return from Run() */
-  static void ReturnCurrent() { dispatcher._returnFlag = true; }
+  static void ReturnCurrent();
   
   /* Catch interrupts from the user and terminate program if necessary */
   static void Terminate(int dummy);
@@ -265,7 +261,7 @@ public:
   static void ImmediateTerminate(int dummy);
 
   /* Cleanup dispatcher */
-  static void Cleanup() { dispatcher.DoCleanup(); }
+  static void Cleanup();
 
   /* Check if user has hit interrupt (Control-C) */
   static void CheckUserInterrupt();
@@ -280,6 +276,8 @@ private:
   /* process any callbacks that have an fd set in fdread or fdexc,
      or any callbacks that have callback_requested set */
   void ProcessCallbacks(fd_set& fdread, fd_set& fdexc);
+
+  void Unregister(DispatcherCallback *c, DispatcherID id);
 
   long _oldTime;		/* time when clock was read last */
   long _playTime;		/* time last read for playback */

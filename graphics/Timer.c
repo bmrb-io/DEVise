@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -14,8 +14,16 @@
 
 /*
   $Id$
+  $Id$
 
   $Log$
+  Revision 1.14  1998/02/09 17:28:44  wenger
+  Added more diagnostic/debug output.
+
+  Revision 1.13.16.1  1998/03/10 17:58:30  wenger
+  Changes to Dispatcher and Timer classes to fix problems (excessive
+  timer wakes and inconsistent callback lists) on SGIs.
+
   Revision 1.13  1996/10/01 14:00:28  wenger
   Removed extra path info from includes.
 
@@ -67,8 +75,10 @@
 
 #include "machdep.h"
 #include "Timer.h"
+#include "DebugLog.h"
 
 //#define DEBUG
+//#define DEBUG_LOG
 
 struct TimerQueueEntry {
     TimerQueueEntry *next;
@@ -198,6 +208,9 @@ void Timer::TimerHandler(int arg)
 #if defined(DEBUG)
     printf("Timer::TimerHandler()\n");
 #endif
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Timer::TimerHandler()\n");
+#endif
 
     StopTimer();
 
@@ -207,7 +220,7 @@ void Timer::TimerHandler(int arg)
     while (_head && _head->when <= _now) {
         entry = _head;
         _head = _head->next;
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("Waking up timer 0x%p, arg %d at %ld\n",
                entry->callback, entry->arg, entry->when);
 #endif
@@ -251,6 +264,10 @@ Stop the timer
 
 void Timer::StopTimer()
 {
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Timer::StopTimer()\n");
+#endif
+
     if (_inHandler || !_timerRunning)
         return;
 
@@ -266,11 +283,18 @@ void Timer::StopTimer()
 
     long left = oldTimerVal.it_value.tv_sec * 1000
                 + oldTimerVal.it_value.tv_usec / 1000;
+#if defined(DEBUG)
+    printf("  _nexthop = %ld, left = %ld\n", _nexthop, left);
+#endif
 
-    if (left < _nexthop)
+    // Note: we need <= here rather than < for SGI because the timers seem
+    // to work a little differently than for the other architectures.
+    // RKW Mar. 9, 1998
+    if (left <= _nexthop) {
         _now += _nexthop - left;
-    else
+    } else {
         _now += _nexthop;
+    }
 
 #ifdef DEBUG
     printf("Timer now at %ld\n", _now);
@@ -283,6 +307,10 @@ Restart the timer
 
 void Timer::StartTimer()
 {
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("Timer::StartTimer()\n");
+#endif
+
     if (_inHandler)
         return;
 
@@ -301,6 +329,13 @@ void Timer::StartTimer()
     printf("Next timer event is after %ld ms\n", _nexthop);
 #endif
 
+    if (_nexthop < 0) {
+#if defined(DEBUG)
+	printf("_nexthop is negative\n");
+#endif
+	_nexthop = 1;
+    }
+
     if (_nexthop < 1) {
         /* cannot set to zero, as the timer would be canceled */
         _nexthop = 1;
@@ -312,5 +347,9 @@ void Timer::StartTimer()
     timerVal.it_interval.tv_usec = 0;
     timerVal.it_value.tv_sec = _nexthop / 1000;
     timerVal.it_value.tv_usec = (_nexthop % 1000) * 1000;
+#if defined(DEBUG)
+    printf("setitimer(%ld, %ld)\n", timerVal.it_value.tv_sec,
+        timerVal.it_value.tv_usec);
+#endif
     setitimer(ITIMER_REAL, &timerVal, 0);
 }

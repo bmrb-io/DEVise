@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/01/07 19:28:26  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
+  Revision 1.38.4.2  1998/03/10 17:58:17  wenger
+  Changes to Dispatcher and Timer classes to fix problems (excessive
+  timer wakes and inconsistent callback lists) on SGIs.
+
   Revision 1.38.4.1  1998/01/07 15:59:22  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -191,11 +200,24 @@
 #include "Selection.h"
 #include "Time.h"
 #include "Display.h"
+#include "DebugLog.h"
+#include "Timer.h"
 
 //#define DEBUG
+//#define DEBUG_LOG
+//#define DEBUG_CALLBACK_LIST
+//#define DEBUG_CALLBACK_ORDER
+
+#if defined(DEBUG_LOG)
+#  define LogMessage(msg) DebugLog::DefaultLog()->Message(msg)
+#else
+#  define LogMessage(msg) fprintf(stderr, "%s", msg)
+#endif
 
 // The global dispatcher
-Dispatcher dispatcher;
+static Dispatcher dispatcher;
+
+static char _logBuf[MAXPATHLEN*2];
 
 
 Dispatcher::Dispatcher(StateFlag state)
@@ -264,6 +286,14 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 	 this, c->DispatchedName(), c, fd, priority);
 #endif
 
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher(0x%p)::Register: %s: 0x%p, fd %d, p %d\n",
+	 this, c->DispatchedName(), c, fd, priority);
+  LogMessage(_logBuf);
+  sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
+  LogMessage(_logBuf);
+#endif
+
   DispatcherInfo *info = new DispatcherInfo;
   info->callBack = c;
   info->flag = flag;
@@ -308,38 +338,18 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   }
   _callbacks.DoneIterator(index);
 #endif
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "  DispatcherID is 0x%p\n", info);
+  DebugLog::DefaultLog()->Message(_logBuf);
+#endif
   return info;
 }
 
 
 void Dispatcher::Unregister(DispatcherCallback *c)
 {
-#if defined(DEBUG)
-  printf("Dispatcher(0x%p)::Unregister: %s: 0x%p\n",
-	 this, c->DispatchedName(), c);
-#endif
-
-  int index;
-  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
-    DispatcherInfo *info = _callbacks.Next(index);
-#if defined(DEBUG)
-    printf("local: looking for callback 0x%p, found 0x%p\n", 
-	   c, info->callBack);
-#endif
-    if (info->callBack == c) {
-      info->flag = 0;                   // prevent callback from being called
-					// and mark for deletion
-      CancelCallback(info);		// cancel any user-requested calls
-      if (info->fd >= 0) {
-	FD_CLR(info->fd, &fdset);
-      }
-      _callbacks.DoneIterator(index);
-      return;
-    }
-  }
-  _callbacks.DoneIterator(index);
-  printf("Could not find registrant %s: 0x%p\n", c->DispatchedName(), c);
-  DOASSERT(0, "attempt to unregister unknown callback");
+  Unregister(c, NULL);
 }
 
 
@@ -348,33 +358,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
 
 void Dispatcher::Unregister(DispatcherID id)
 {
-#if defined(DEBUG)
-  printf("Dispatcher(0x%p)::Unregister: %s: 0x%p\n",
-	 this, id->callBack->DispatchedName(), id);
-#endif
-
-  int index;
-  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
-    DispatcherInfo *info = _callbacks.Next(index);
-#if defined(DEBUG)
-    printf("local: looking for callback 0x%p, found 0x%p\n", 
-	   id, info);
-#endif
-    if (info == id) {
-      info->flag = 0;                   // prevent callback from being called
-					// and mark for deletion
-      CancelCallback(info);		// cancel any user-requested calls
-      if (info->fd >= 0) {
-	FD_CLR(info->fd, &fdset);
-      }
-      _callbacks.DoneIterator(index);
-      return;
-    }
-  }
-  _callbacks.DoneIterator(index);
-  printf("Could not find registrant %s: 0x%p\n",
-      id->callBack->DispatchedName(), id);
-  DOASSERT(0, "attempt to unregister unknown callback");
+  Unregister(NULL, id);
 }
 
 
@@ -443,8 +427,6 @@ void Dispatcher::ImmediateTerminate(int sig)
           sig);
   fprintf(stderr, "Aborting.\n");
 
-  abort();
-
   /* Kill all processes in the process group */
 
   kill(-getpgrp(), SIGKILL);
@@ -467,16 +449,33 @@ void Dispatcher::CheckUserInterrupt()
 
 void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 {
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
+    _callback_requests);
+  DebugLog::DefaultLog()->Message(_logBuf);
+#endif
+
+#if defined(DEBUG_CALLBACK_LIST)
+  (void) CallbacksOk();
+#endif
+
   int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *info = _callbacks.Next(index);
     if( info->flag == 0 ) {
       // callback has been unregistered - remove it 
-      // note: info->callback could very well be an invalid pointer!
+      // note: info->callBack could very well be an invalid pointer!
 #if defined(DEBUG)
-      printf("deleting callback 0x%p\n", info->callBack);
+      sprintf(_logBuf, "deleting callback 0x%p\n", info->callBack);
+      LogMessage(_logBuf);
+      if (info->callback_requested) {
+        sprintf(_logBuf, "Dispatcher internal error: callback to delete"
+          " requests callback\n");
+        LogMessage(_logBuf);
+      }
 #endif
       _callbacks.DeleteCurrent(index);
+      info->callBack = NULL; // for safety
       delete info;
     } else if (info->flag & _stateFlag) {
       if ( info->callback_requested
@@ -484,16 +483,28 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	      && (   FD_ISSET(info->fd, &fdread) 
 		  || FD_ISSET(info->fd, &fdexc))) ) {
 #if defined(DEBUG)
-	printf("Calling callback 0x%p (%s): called fd = %d  req = %d\n", 
+	sprintf(_logBuf,
+               "Calling callback 0x%p (%s): called fd = %d  req = %d\n", 
 	       info->callBack, info->callBack->DispatchedName(),
 	       info->fd, info->callback_requested); 
+        LogMessage(_logBuf);
 #endif
 	CancelCallback(info);
 	info->callBack->Run();
       }
     }
+#if defined(DEBUG_CALLBACK_LIST)
+    (void) CallbacksOk();
+#endif
   }
   _callbacks.DoneIterator(index);
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf,
+    "done with Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
+    _callback_requests);
+  DebugLog::DefaultLog()->Message(_logBuf);
+#endif
 }
 
 
@@ -503,6 +514,19 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 
 void Dispatcher::Run1()
 {
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher::Run1()\n");
+  DebugLog::DefaultLog()->Message(_logBuf);
+  sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
+  DebugLog::DefaultLog()->Message(_logBuf);
+#endif
+
+#if defined(DEBUG_CALLBACK_LIST)
+  if (!CallbacksOk()) {
+    Exit::DoExit(1);
+  }
+#endif
+
   CheckUserInterrupt();
 
   // kb 11/26/96
@@ -528,8 +552,11 @@ void Dispatcher::Run1()
   if( _callback_requests > 0 || _playback ) timeoutp = &timeout;
 
 #if defined(DEBUG)
-  if( !timeoutp ) printf("blocking select: %d userdefs\n", _callback_requests);
-  else printf("non-blocking select\n");
+  if( !timeoutp ) {
+    printf("blocking select: %d userdefs\n", _callback_requests);
+  } else {
+    printf("non-blocking select\n");
+  }
 #endif
 
 #if defined(HPUX)
@@ -560,13 +587,15 @@ void Dispatcher::Run1()
 
   /* end of call backs */
 
-  if (!_playback)
+  if (!_playback) {
     return;
+  }
 
   long now = DeviseTime::Now();
   long playdiff = now - _playTime;
-  if (playdiff < _playInterval)
+  if (playdiff < _playInterval) {
     return;
+  }
 
   switch(_nextEvent) {
 
@@ -641,13 +670,196 @@ void Dispatcher::DoCleanup()
 void Dispatcher::Print()
 {
   int index;
-  printf("Dispatcher: callbacks\n");
+  sprintf(_logBuf, "\nDispatcher: callbacks\n");
+  LogMessage(_logBuf);
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *info = _callbacks.Next(index);
-    if (info->flag)
-      printf("%s: 0x%p\n", info->callBack->DispatchedName(), info->callBack);
-    else
-      printf("deleted: 0x%p\n", info->callBack);
+    if (info->flag) {
+      sprintf(_logBuf, "%s: 0x%p\n", info->callBack->DispatchedName(),
+          info->callBack);
+      LogMessage(_logBuf);
+      sprintf(_logBuf, "  fd: %d\n", info->fd);
+      LogMessage(_logBuf);
+      sprintf(_logBuf, "  callback_requested: %d\n", info->callback_requested);
+      LogMessage(_logBuf);
+    } else {
+      sprintf(_logBuf, "deleted: 0x%p\n", info->callBack);
+      LogMessage(_logBuf);
+    }
   }
   _callbacks.DoneIterator(index);
+}
+
+Boolean Dispatcher::CallbacksOk()
+{
+  Timer::StopTimer();
+
+  Boolean result;
+
+  int reqCount = 0;
+  int index = _callbacks.InitIterator();
+  while (_callbacks.More(index)) {
+    DispatcherInfo *info = _callbacks.Next(index);
+    if (info->callback_requested) reqCount++;
+  }
+  _callbacks.DoneIterator(index);
+
+  if (reqCount != _callback_requests) {
+    sprintf(_logBuf, "Dispatcher internal error: _callback_requests is %d;"
+      "  should be %d!!\n", _callback_requests, reqCount);
+    LogMessage(_logBuf);
+    Print();
+    result = false;
+  } else {
+    result = true;
+  }
+
+  Timer::StartTimer();
+  return result;
+}
+
+void Dispatcher::RequestCallback(DispatcherID info)
+{
+  Timer::StopTimer();
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher::RequestCallback(0x%p %s)\n", info,
+    info->callBack->DispatchedName());
+  DebugLog::DefaultLog()->Message(_logBuf);
+#endif
+
+  DOASSERT(info, "bad dispatcher id");
+  if( !(info->callback_requested) ) {
+    _callback_requests++;
+    info->callback_requested = true;
+
+#if defined(DEBUG_LOG)
+    sprintf(_logBuf, "  After increment, _callback_requests = %d\n",
+        _callback_requests);
+    DebugLog::DefaultLog()->Message(_logBuf);
+#endif
+  }
+
+#if defined(DEBUG_CALLBACK_LIST)
+  if (!CallbacksOk()) {
+    sprintf(_logBuf,
+        "Callback list error in Dispatcher::RequestCallback(%s)\n",
+	info->callBack->DispatchedName());
+    LogMessage(_logBuf);
+    Exit::DoExit(1);
+  }
+#endif
+
+  Timer::StartTimer();
+}
+
+void Dispatcher::CancelCallback(DispatcherID info)
+{
+  Timer::StopTimer();
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher::CancelCallback(0x%p %s)\n", info,
+    info->callBack->DispatchedName());
+  DebugLog::DefaultLog()->Message(_logBuf);
+#endif
+
+  DOASSERT(info, "bad dispatcher id");
+  if( info->callback_requested ) {
+    info->callback_requested = false;
+    _callback_requests--;
+#if defined(DEBUG_LOG)
+    sprintf(_logBuf, "  After decrement, _callback_requests = %d\n",
+	_callback_requests);
+    DebugLog::DefaultLog()->Message(_logBuf);
+#endif
+      
+#if defined(DEBUG)
+    if (_callback_requests < 0) {
+      sprintf(_logBuf,
+	  "callback request count too low in Dispatcher::CancelCallback(%s)\n",
+          info->callBack->DispatchedName());
+      LogMessage(_logBuf);
+      Print();
+      Exit::DoExit(1);
+    }
+#endif
+    DOASSERT(_callback_requests >= 0, "callback request count too low");
+  } 
+
+#if defined(DEBUG_CALLBACK_LIST)
+  if (!CallbacksOk()) {
+    sprintf(_logBuf,
+	"Callback list error in Dispatcher::CancelCallback(%s)\n",
+	info->callBack->DispatchedName());
+    LogMessage(_logBuf);
+    Exit::DoExit(1);
+  }
+#endif
+
+  Timer::StartTimer();
+}
+
+Dispatcher *Dispatcher::Current()
+{
+  return &dispatcher;
+}
+
+void Dispatcher::SingleStepCurrent()
+{
+  dispatcher.Run1();
+ }
+
+void Dispatcher::ReturnCurrent()
+{
+  dispatcher._returnFlag = true;
+ }
+
+void Dispatcher::Cleanup()
+{
+  dispatcher.DoCleanup();
+}
+
+void Dispatcher::Unregister(DispatcherCallback *c, DispatcherID id)
+{
+#if defined(DEBUG) || defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher(0x%p)::Unregister\n", this);
+  LogMessage(_logBuf);
+  if (c != NULL) {
+    sprintf(_logBuf, "  unregister by object: %s: 0x%p\n",
+	    c->DispatchedName(), c);
+    LogMessage(_logBuf);
+  }
+  if (id != NULL) {
+    sprintf(_logBuf, "  unregister by DispatcherID: %s: 0x%p\n",
+	    id->callBack->DispatchedName(), id);
+    LogMessage(_logBuf);
+  }
+#endif
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
+  LogMessage(_logBuf);
+#endif
+
+  int index;
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    DispatcherInfo *info = _callbacks.Next(index);
+#if defined(DEBUG)
+    printf("local: looking for callback 0x%p, found 0x%p\n", 
+	   c, info->callBack);
+#endif
+    if (info->callBack == c || info == id) {
+      info->flag = 0;                   // prevent callback from being called
+					// and mark for deletion
+      CancelCallback(info);		// cancel any user-requested calls
+      if (info->fd >= 0) {
+	FD_CLR(info->fd, &fdset);
+      }
+      _callbacks.DoneIterator(index);
+      return;
+    }
+  }
+  _callbacks.DoneIterator(index);
+  printf("Could not find registrant %s: 0x%p\n", c->DispatchedName(), c);
+  DOASSERT(0, "attempt to unregister unknown callback");
 }
