@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/03/19 19:41:48  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.47  1997/02/26 16:31:37  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -213,6 +222,7 @@
 
 #include <stdio.h>
 #include <tcl.h>
+#include <assert.h>
 
 #include "DeviseTypes.h"
 #include "Bitmap.h"

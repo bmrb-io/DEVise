@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.63  1997/03/20 22:37:42  guangshu
+#	Added GDATASTAT_X AND GDATASTAT_Y.
+#
 #	Revision 1.62  1997/03/18 20:42:42  donjerko
 #	Changes for GUI.
 #
@@ -2086,7 +2089,6 @@ proc updateSources {} {
     }
     .srcsel.top.list delete 0 end
 	set listing [DEVise dteListCatalog [CWD]]
-        puts "->>>>>$listing"
 	if {[notRootDir]} {
 		set sname ".."
 		set source "Directory"
@@ -2095,7 +2097,6 @@ proc updateSources {} {
 			$sname $source $cached]
 		.srcsel.top.list insert end $item
 	}
-	puts "listing = $listing"
 	foreach pair [lsort $listing] {
 		set sname [lindex $pair 0]
 		set source [lindex $pair 1]

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/03/21 23:14:00  guangshu
+  Added ifndef Attrproj to make attrproj compilable.
+
   Revision 1.25  1997/03/20 22:20:26  guangshu
   Modified CreateWithParameters to submit the statistics to DTE once it
   gets too expensive to calculate in memory.
@@ -123,9 +126,9 @@
 #include "Control.h"
 #include "Util.h"
 #include "DevError.h"
-#include "TDataDQLInterp.h"
 
 #ifndef ATTRPROJ
+#include "TDataDQLInterp.h"
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #  include "StringStorage.h"
@@ -195,7 +198,7 @@ extern ControlPanel *ctrl;
 
 ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-#if defined(DEBUG) || 1
+#if defined(DEBUG) || 0
   for(int i=0; i<argc; i++) {
 	printf("argv[%d] = %s\n", i, argv[i]);
   }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/01/28 19:46:31  wenger
+  Fixed bug 139; better testing of ScaledText() in client/server example;
+  fixes to Exit class for client/server library.
+
   Revision 1.14  1997/01/28 16:50:37  wenger
   Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
   doesn't draw over them); Devise now returns a status of 0 when exiting
@@ -94,6 +98,7 @@ void Exit::DoExit(int code)
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
+	cout << "Calling RTree shutdown\n";
     shutdown_system(VolumeName, RTreeFile, VolumeSize);
 #endif
 

@@ -10,6 +10,8 @@
 
 static int numFlds;	// just for debugging
 
+// #define DEBUG
+
 void getDirAndFileNames(const char* fullPath, char*& dir, char*& file){
 	assert(fullPath[0] == '.');
 	int len = strlen(fullPath);
@@ -58,7 +60,11 @@ char* executeQuery(const char* query){
 	out << ends;
 	engine.finalize();
 	char* retVal = out.str();
+
+#ifdef DEBUG
 	cout << "Returns: " << retVal << endl;
+#endif
+
 	return retVal;
 }
 

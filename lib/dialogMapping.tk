@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.21  1997/03/20 22:59:48  guangshu
+#       Reorganized the code in UpdateMappingDialog a little bit.
+#
 #       Revision 1.20  1997/03/20 20:46:02  donjerko
 #       DTE Tdata generates unique names by appending sequential numbers to the
 #       end of the table name. This way, same table can be opened multiple times.
@@ -304,17 +307,18 @@ proc UpdateMappingDialog { w curView } {
 
      puts "params ========== $params"
      set tdata [lindex [lindex $params 0] 1]
+	set schemaname ""
      set error [catch {set sfname [lindex $derivedSourceList($tdata) 3]}]
 
      if {$error > 0} {
 
-        set sourcedef [DEVise dteShowCatalogEntry $tdata]
-#	puts "********** tdata: $tdata  sourcedef: $sourcedef"
-	set sourcedef [lindex $sourcedef 0]
-
 	set nextToLast [string length $tdata]
 	set nextToLast [expr $nextToLast - 2]
 	set tdata [string range $tdata 0 $nextToLast]
+
+	set sourcedef [DEVise dteShowCatalogEntry $tdata]
+ 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
+	set sourcedef [lindex $sourcedef 0]
 
  	set err [expr [llength $sourcedef] == 0]
 
@@ -323,12 +327,14 @@ proc UpdateMappingDialog { w curView } {
 		set stype [lindex $sourcedef 1]
 		if {[isDTEType $stype]} {
 			set schemaname $tdata
-		} 
+		} else { 
 		set sfname [lindex $sourcedef 4]
+		set schemaname [file tail $sfname]
+		}
 	} 
      }
-     set schemaname [file tail $sfname]
 
+	puts "schemaname = $schemaname"
      set xParm [lindex [lindex $params 3] 1]
      set yParm [lindex [lindex $params 4] 1]
      set zParm [lindex [lindex $params 5] 1]

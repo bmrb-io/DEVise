@@ -110,8 +110,6 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 	cout << "})" << endl;
 #endif
 
-	_counter++;	// this is used to create unique names;
-
 	if(argc != 2){
 		cout << "Number of arguments = " << argc << " (2 expected)" << endl;
 		for(int i = 0; i < argc; i++){
@@ -147,7 +145,12 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 
 
 	ostrstream name;
-	name << argv[0] << _counter << ends;
+	name << argv[0];
+//	if(_counter){
+		name << _counter;
+//	}
+	_counter++;
+	name << ends;
 	_name = name.str();
 
   DataSeg::Set(_name, _query, 0, 0);

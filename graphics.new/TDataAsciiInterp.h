@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/20 22:21:07  guangshu
+  Added include files.
+
   Revision 1.10  1996/07/01 19:28:08  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -60,8 +63,8 @@
 #include "DeviseTypes.h"
 #include "ClassDir.h"
 #include "TDataAscii.h"
+
 #include "AttrList.h"
-#include "TDataDQLInterp.h"
 
 #ifndef ATTRPROJ
 class TDataAsciiInterpClassInfo: public ClassInfo {

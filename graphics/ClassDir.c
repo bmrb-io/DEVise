@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/21 22:15:37  guangshu
+  Comment line ellimination.
+
   Revision 1.10  1997/03/21 16:15:42  guangshu
   Minor changes corresponding to DTE change in FindInstance.
 
@@ -218,6 +221,10 @@ char *ClassDir::CreateWithParams(char *category, char *className,
     if (!strcmp(catRec->name,category)) {
       for(int j = 0; j < catRec->_numClasses; j++) {
 	ClassRec *classRec = catRec->_classRecs[j];
+#ifdef DEBUG
+	cout << "Comparing class " << className << " to "
+		<< classRec->classInfo->ClassName() << endl;
+#endif
 	if (!strcmp(classRec->classInfo->ClassName(),className)) {
           DOASSERT(classRec->_numInstances < MaxInstances,
                    "Too many instances");
@@ -261,11 +268,16 @@ void *ClassDir::FindInstance(char *name)
     for(int j = 0; j < catRec->_numClasses; j++) {
       ClassRec *classRec = catRec->_classRecs[j];
       for(int k = 0; k < classRec->_numInstances; k++) {
-#if defined(DEBUG) || 0
-      printf("category name %s name %s\n", catRec->name, classRec->_instances[k]->InstanceName());
+	if (!strcmp(classRec->_instances[k]->InstanceName(), name)){
+	  return classRec->_instances[k]->GetInstance();
+	  }
+	  else{
+#ifdef DEBUG
+	  	cout << "Comparing " << name << " to: " 
+			<< classRec->_instances[k]->InstanceName()
+			<< endl;
 #endif
-	if (!strcmp(classRec->_instances[k]->InstanceName(), name)) {
-	  return classRec->_instances[k]->GetInstance(); }
+	}
       }
     }
   }

@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "AttrList.h"
+#include "Timer.h"
 
 #include "Parse.h"
 #include "TDataDQL.h"
@@ -77,6 +78,7 @@ TDataDQL::TDataDQL(
 
 void TDataDQL::runQuery(){
 
+	Timer::StopTimer();
 	_result.clear();
      Engine engine(_query);
      TRY(engine.optimize(), );
@@ -140,18 +142,22 @@ void TDataDQL::runQuery(){
 		TRY(int deviseSize = packSize(_types[i]), );
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
-		AttrVal* hiVal = (AttrVal*) highTup[i];
-		AttrVal* loVal = (AttrVal*) lowTup[i];
-
-		// Devise will not take high and low values for strings
-
-		bool hasHighLow = true;
-		if(!hiVal || !loVal){
-			hasHighLow = false;
-		}
+		bool hasHighLow = false;
+		AttrVal* hiVal = new AttrVal;
+		AttrVal* loVal = new AttrVal;
 		if(_types[i].through(5).contains("string")){
+
+			// Devise will not take high and low values for strings
+
 			hasHighLow = false;
 		}
+		else if(highTup[i] && lowTup[i]){
+			assert((unsigned) _sizes[i] <= sizeof(AttrVal));
+			hasHighLow = true;
+			memcpy(hiVal, highTup[i], _sizes[i]);
+			memcpy(loVal, lowTup[i], _sizes[i]);
+		}
+
 		_attrs.InsertAttr(i, strdup(atname), offset, deviseSize, 
 			deviseType, false, 0, false, false, hasHighLow, hiVal, 
 			hasHighLow, loVal); 
@@ -163,6 +169,11 @@ void TDataDQL::runQuery(){
 	_totalRecs = _result.length();
 
 //	DataSeg::Set(_tableName, _query, 0, 0);
+
+//	cout << "Attr list is:\n";
+	_attrs.Print();
+
+	Timer::StartTimer();
 }
 
 TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) : _attrs(tableName), TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {

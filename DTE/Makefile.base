@@ -179,7 +179,7 @@ $(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte FormatVolume convert_bulk gui
+	-rm $(LIBNAME) dte FormatVolume convert_bulk gui core script
 
 mostlyclean:
 	-rm $(LIBOBJ) $(STAND_ALONE_OBJ) $(GUI_OBJ)
