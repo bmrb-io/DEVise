@@ -36,7 +36,6 @@ char* tmpKey;
 %token <string_val> STRING_TOKEN
 %token <int_val> INTVAL_TOKEN
 %token <string_val> IDENT_TOKEN
-%token <string_val> CONFIRM_TOKEN
 %token ';'
 %token '='
 %token '{'

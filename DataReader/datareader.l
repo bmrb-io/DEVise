@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/06/25 23:41:20  okan
+  *** empty log message ***
+
   Revision 1.5  1998/06/24 09:24:15  okan
   *** empty log message ***
 
@@ -43,7 +46,6 @@ ident	[a-zA-Z_][a-zA-Z_0-9]*
 format  [a-zA-Z_%][a-zA-Z_%]*
 sdigit  [0-9]
 digit	[0-9]+
-confirm [yYnN]
 
 %x	STR
 %x  BRACKET
@@ -132,13 +134,11 @@ comment     return COMMENT_TOKEN;
 {digit}		{	yylval.int_val = atoi(yytext);
 				return INTVAL_TOKEN;
 			}
-{confirm}   { 
-				yylval.string_val = yytext;
-				return CONFIRM_TOKEN;
-			}
 
 {ident}		{	yylval.string_val = yytext;
 				return IDENT_TOKEN;
 			}
+
 .|\n		{ return yytext[0]; }
+
 %%
