@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/06/27 19:06:52  jussi
+  Merged 3D block shape into 2D rect shape, the appropriate shape
+  is chosen based on current view setting. Removed Block and 3DVector
+  shapes. Added empty default 3D drawing routine to all other
+  shapes.
+
   Revision 1.20  1996/06/21 19:33:56  jussi
   Moved BlockShape private functions to Map3D.
 
@@ -171,8 +177,13 @@ public:
 	count++;
       }
       
-      win->SetFgColor(firstColor);
+      if (firstColor == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(firstColor);
       win->FillRectArray(_x, _y, _width, _height, count);
+      if (firstColor == XorColor)
+        win->SetCopyMode();
     }
   }
 
@@ -225,7 +236,7 @@ public:
       Coord tx, ty;
       Coord width, height;
       win->Transform(GetX(gdata, map, offset), GetY(gdata, map, offset),
-		     tx, ty);
+                     tx, ty);
       win->Transform(fabs(GetShapeAttr0(gdata, map, offset)), 0.0,
 		     x1, y1);
       width = x1 - x0;
@@ -238,9 +249,15 @@ public:
       if (height < pixelSize)
 	height = pixelSize;
 
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillPixelRect(tx, ty, width, height);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -297,9 +314,15 @@ public:
 	x -= width / 2.0;
       Coord y = GetY(gdata, map, offset);
 
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillRect(x, 0.0, width, y);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -361,9 +384,15 @@ public:
 	points[seg].y = y + height / 2 * sin(angle);
       }
       
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillPoly(points, segments);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -412,9 +441,15 @@ public:
       Coord height = fabs(GetShapeAttr1(gdata, map, offset));
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Arc(x, y, width, height, 0, 2 * PI);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -459,17 +494,23 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Color color = GetColor(view, gdata, map, offset);
       Coord w = GetShapeAttr0(gdata, map, offset);
       Coord h = GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(color);
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Line(x, y, x + w, y + h, 1);
 
-      if (w == 0 && h == 0)
+      if (w == 0 && h == 0) {
+        if (color == XorColor)
+          win->SetCopyMode();
 	continue;
+      }
 
       // compute pixel locations
       Coord tx, ty, tw, th;
@@ -499,6 +540,9 @@ public:
       win->MakeIdentity();
       win->FillPoly(points, 3);
       win->PopTransform();
+
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -531,9 +575,15 @@ public:
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Line(xLow, y, xHigh, y, 2);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -595,14 +645,19 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Color color = GetColor(view, gdata, map, offset);
       Coord w = GetShapeAttr0(gdata, map, offset);
       Coord h = GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(color);
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Line(x, y, x + w, y + h, 1);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -672,12 +727,18 @@ public:
       Coord tw = width / 20.0;
       Coord hw = width / 2.0;
 
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillRect(x - tw, low, 2 * tw, high - low);
       win->Line(x - hw, y, x + hw, y, 1);
       win->Line(x - hw, low, x + hw, low, 1);
       win->Line(x - hw, high, x + hw, high, 1);
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -754,14 +815,21 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
 
       win->DrawPixel(x, y);
 
       int npOff = offset->shapeAttrOffset[0];
-      if (npOff < 0)
+      if (npOff < 0) {
+        if (color == XorColor)
+          win->SetCopyMode();
 	continue;
+      }
 
       int np = (int)*(Coord *)(gdata + npOff);
 #ifdef DEBUG
@@ -780,6 +848,9 @@ public:
 	x = x1;
 	y = y1;
       }
+
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -812,7 +883,11 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
 
       Coord tx, ty;
@@ -822,6 +897,9 @@ public:
       win->Line(tx - 3, ty, tx + 3, ty, 1);
       win->Line(tx, ty - 3, tx, ty + 3, 1);
       win->PopTransform();
+
+      if (color == XorColor)
+        win->SetCopyMode();
 
       char *file = "/p/devise/dat/defaultimage.gif";
       // need to figure out how to get file from shape attribute 0
@@ -859,7 +937,11 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
 
       char *file = "/p/devise/dat/defaultpoly.dat";
@@ -870,6 +952,8 @@ public:
       FILE *fp = fopen(file, "r");
       if (!fp) {
 	printf("Cannot open polyline file %s\n", file);
+        if (color == XorColor)
+          win->SetCopyMode();
 	continue;
       }
 
@@ -906,6 +990,9 @@ public:
       }
 
       fclose(fp);
+
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };
@@ -934,7 +1021,11 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(view, gdata, map, offset));
+      Color color = GetColor(view, gdata, map, offset);
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
 
       char *label = "label";
@@ -947,6 +1038,9 @@ public:
       Coord fakeSize = 500;
       win->AbsoluteText(label, x - fakeSize / 2, y - fakeSize / 2,
 			fakeSize, fakeSize, WindowRep::AlignCenter, true);
+
+      if (color == XorColor)
+        win->SetCopyMode();
     }
   }
 };

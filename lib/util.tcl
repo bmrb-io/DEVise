@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1996/05/15 16:37:05  jussi
+#  Removed ExecuteScript procedure.
+#
 #  Revision 1.21  1996/05/14 15:08:59  jussi
 #  Removed extract puts statement.
 #
@@ -407,10 +410,18 @@ proc getColor {varname} {
 	    frame .getColor.top.row$row
 	    pack .getColor.top.row$row -side top -fill x -expand 1
 	}
-	button .getColor.top.row$row.col$col -background $color \
-		-activebackground $color -width $size -text $cindex \
-		-command "set $varname $color; destroy .getColor"
-	pack .getColor.top.row$row.col$col -side left -fill x -expand 1
+        if {$cindex >= 1000} {
+            # for colors >= 1000, we want to display their names (e.g. "XOR")
+            # instead of the color index values
+            button .getColor.top.row$row.col$col -background black \
+                    -activebackground black -width $size -text $color \
+                    -command "set $varname $color; destroy .getColor"
+        } else {
+            button .getColor.top.row$row.col$col -background $color \
+                    -activebackground $color -width $size -text $cindex \
+                    -command "set $varname $color; destroy .getColor"
+        }
+        pack .getColor.top.row$row.col$col -side left -fill x -expand 1
 	incr col
 	if {$col >= $maxcol} {
 	    set col -1

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/06/23 18:35:24  jussi
+  Block height is now mapped to the Y axis and block depth to
+  the Z axis. Y and Z were reversed.
+
   Revision 1.2  1996/06/21 19:49:31  jussi
   Minor change so that older compilers will accept the code.
 
@@ -373,8 +377,15 @@ void Map3D::DrawSegments(WindowRep *win)
 void Map3D::DrawPlanes(WindowRep *win)
 {
   for(int i = 0; i < _numPlanes; i++) {
-    win->SetFgColor(_plane[i].color);
+    Color color = _plane[i].color;
+    if (color == XorColor)
+      win->SetXorMode();
+    else
+      win->SetFgColor(color);
     win->FillPoly(_plane[i].pt, 3);
+    if (color == XorColor)
+      win->SetCopyMode();
+
     win->SetFgColor(BlackColor);
     win->Line(_plane[i].pt[0].x, _plane[i].pt[0].y,
 	      _plane[i].pt[1].x, _plane[i].pt[1].y, 1);
