@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/01/23 20:51:42  jussi
+#  Moved general utility functions from control.tk.
+#
 #  Revision 1.7  1996/01/17 21:02:16  jussi
 #  Added appropriate suffixes to file names.
 #
@@ -36,9 +39,16 @@
 #  Added capability to store window images in a user specified file
 #  instead of printing it.
 #
-# Revision 1.1  1995/11/28  00:02:52  jussi
-# Initial revision.
+#  Revision 1.1  1995/11/28  00:02:52  jussi
+#  Initial revision.
 #
+
+############################################################
+
+proc ExecuteScript {script} {
+    puts "Executing script $script..."
+    source $script
+}
 
 ############################################################
 
