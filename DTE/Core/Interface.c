@@ -644,6 +644,7 @@ istream& Interface::read(istream& in)
 		string msg = "Catalog entry must end with semicolon";
 		THROW(new Exception(msg), in);
 	}
+	return in; // Avoid Visual C++ error : not all control paths return a value
 }
 
 istream& StandardInterface::read(istream& in){
