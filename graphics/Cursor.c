@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:33  jussi
+  Added/update CVS header.
+*/
 
 #include "Cursor.h"
 #include "View.h"
@@ -61,6 +64,7 @@ Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, Color &color){
 	_filter.flag = _visFlag;
 	filter = &_filter;
 	color = _color;
+	return true;
 }
 
 void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
