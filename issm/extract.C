@@ -2,6 +2,9 @@
    $Id$
 
    $Log$
+   Revision 1.2  1995/09/06 17:23:57  jussi
+   Updated names of linked variables.
+
    Revision 1.1  1995/09/06 15:28:56  jussi
    Initial revision of archive.
 */
@@ -26,8 +29,6 @@ Tcl_Interp *interp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(interp, "update"); }
 
-static char *tapeDrive = 0;
-static int tapeFile = 0;
 static char *tradePath = 0;
 static char *quotePath = 0;
 
@@ -692,20 +693,21 @@ static int extract(RecTape &tape, char *stock, long offset)
 
 int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
-  // Create variable links
-  Tcl_LinkVar(interp, "issm_tapeDrive", (char *)&tapeDrive, TCL_LINK_STRING);
-  Tcl_LinkVar(interp, "issm_tapeFile", (char *)&tapeFile, TCL_LINK_INT);
-  Tcl_LinkVar(interp, "issm_tradePath", (char *)&tradePath, TCL_LINK_STRING);
-  Tcl_LinkVar(interp, "issm_quotePath", (char *)&quotePath, TCL_LINK_STRING);
+  // Get parameter values from TCL script
 
-  if (!tapeDrive || !tradePath || !quotePath) {
-    cerr << "One of issm_tapeDrive, issm_tradePath, and "
-         << "issm_quotePath is undefined." << endl;
+  char *tapeDrive = Tcl_GetVar(interp, "issm_tapeDrive", TCL_GLOBAL_ONLY);
+  char *tapeFile = Tcl_GetVar(interp, "issm_tapeFile", TCL_GLOBAL_ONLY);
+  tradePath = Tcl_GetVar(interp, "issm_tradePath", TCL_GLOBAL_ONLY);
+  quotePath = Tcl_GetVar(interp, "issm_quotePath", TCL_GLOBAL_ONLY);
+
+  if (!tapeDrive || !tapeFile || !tradePath || !quotePath) {
+    cerr << "One of issm_tapeDrive, issm_tapeFile, issm_tradePath," << endl;
+    cerr << "and issm_quotePath is undefined." << endl;
     cerr << "Define these values in $(DEVISE_LIB)/issm.tk." << endl;
     return TCL_ERROR;
   }
 
-  RecTape tape(tapeDrive, "r", tapeFile);
+  RecTape tape(tapeDrive, "r", atoi(tapeFile));
   if (!tape) {
     cerr << "Cannot open " << tapeDrive << " for reading." << endl;
     return TCL_ERROR;
