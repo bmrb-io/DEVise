@@ -2178,6 +2178,15 @@ Num Date        Status  Description
 556 01/12/00	OPEN	Open Test/bug556.ds, destroy or remove View 6 -> DEVise
 			crashes. (rkw)
 
+557 01/21/00	OPEN	'5' (home) on a view containing view symbols doesn't
+			take into account the size of the view symbols. (oz/rkw)
+
+558 02/02/00	OPEN	There's no GUI to change a cursor from X to XY, etc.
+			(rkw)
+
+559 02/08/00	OPEN	JavaScreen should check protocol version compatibility
+			*before* getting session list, not *after*. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
