@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.210  1999/12/14 17:57:09  wenger
+  Added enableDrawing command (totally enables or disables drawing) to
+  allow Omer to avoid "flashing" when he inserts views into windows.
+
   Revision 1.209  1999/12/01 00:09:35  wenger
   Disabled extra debug logging for tracking down Omer's crash.
 
@@ -4289,7 +4293,9 @@ View::MouseDrag(int x1, int y1, int x2, int y2)
 
   CursorHit::HitType hitType = WindowRep::GetCursorHit()._hitType;
   if (hitType == CursorHit::CursorNone) {
-    if (x1 != x2 && y1 != y2) {
+    ForceIntoDataArea(x1, y1);
+    ForceIntoDataArea(x2, y2);
+    if (x1 != x2 && y1 != y2 && !GetRubberbandDisabled()) {
       winRep->DrawRubberband(x1, y1, x2, y2);
     }
   } else {
@@ -4517,6 +4523,24 @@ View::EnableDrawing(Boolean enable)
     }
     _drawingEnabled = enable;
   }
+}
+
+void
+View::ForceIntoDataArea(int &x, int &y)
+{
+  int dataX, dataY, dataWidth, dataHeight;
+  GetDataArea(dataX, dataY, dataWidth, dataHeight);
+
+  // Correct for the fact that GetDataArea expresses Y up from the bottom(!!).
+  int viewX, viewY;
+  unsigned int viewWidth, viewHeight;
+  Geometry(viewX, viewY, viewWidth, viewHeight);
+  int dataY2 = viewHeight - (dataY + dataHeight);
+
+  x = MAX(dataX, x);
+  x = MIN(dataX + dataWidth - 1, x);
+  y = MAX(dataY2 - 1, y);
+  y = MIN(dataY2 + dataHeight - 1, y);
 }
 
 //******************************************************************************

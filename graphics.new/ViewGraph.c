@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.131  1999/11/19 17:17:41  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.130  1999/11/18 22:49:19  wenger
   Fixed bug Omer ran into (removing a mapping from a view while a query is
   running in that view causes DEVise to crash).
@@ -2431,6 +2435,9 @@ void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
     printf("ViewGraph(0x%p, <%s>)::DoHandlePress(%d, %d, %d, %d, %d)\n", this,
 	  GetName(), x1, y1, x2, y2, button);
 #endif
+
+    ForceIntoDataArea(x1, y1);
+    ForceIntoDataArea(x2, y2);
 
     int xlow = MIN(x1, x2);
 	int ylow = MIN(y1, y2);
