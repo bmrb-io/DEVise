@@ -8,7 +8,7 @@ TCL_INCS = -I/usr/include/tcl
 TCL_LIBS = -L/usr/include/tcl/lib -ltk -ltcl
 #TCL_LIBS = -L/usr/include/tcl/lib -ltk4.1 -ltcl7.5 -ldl
 X_INCS = -I/usr/X11R6/include
-X_LIBS = -L/usr/X11R6/lib -lX11
+X_LIBS = -L/usr/X11R6/lib -lX11 -lXmu
 SOCKET_LIBS =
 
 include Makefile.base
