@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.47  1996/11/18 18:10:47  donjerko
+#  New files and changes to make DTE work with Devise
+#
 #  Revision 1.46  1996/11/01 19:28:19  kmurli
 #  Added DQL sources to include access to TDataDQL. This is equivalent to
 #  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -44,16 +47,14 @@
 
 include ../../Makefile.common
 
-CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics -I../../DTE -I../../graphics.new -I../../tape \
-	-I../../generic -fexternal-templates -Wall -Wno-unused $(OPTFLAG) \
-	-DUNIX
+CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics -I../../DTE -I../../DTE/Core \
+        -I../../graphics.new -I../../tape -I../../generic \
+        -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 # Buffer manager
 
-BufMgrSrc = BufMgr.c BufMgrNull.c VoidArray.c RangeInfo.c RecRange.c \
-	RangeInfoArray.c BufferFifo.c BufferFocal.c BufferLifo.c \
-	BufferRnd.c BufMgrFull.c \
-	RangeList.c TDataRangeList.c MultiArray.c  RangeCallback.c \
+BufMgrSrc = BufMgr.c VoidArray.c RecRange.c RangeInfoArray.c BufMgrFull.c \
+	RangeList.c TDataRangeList.c MultiArray.c RangeCallback.c \
 	GDataRangeSource.c TDataRangeSource.c
 
 BufMgrObj = $(BufMgrSrc:.c=.o)
@@ -61,12 +62,11 @@ BufMgrObj = $(BufMgrSrc:.c=.o)
 # query processor
 
 QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
-	Bitmap.c ParseCat.c ItemList.C Group.C GroupDir.C\
-	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
-	RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c TDataMap.c \
-	FileIndex.c TDataDQLInterp.c TDataMap.c TDataDQL.c \
+	Bitmap.c ParseCat.c ItemList.C Group.C GroupDir.C QueryProc.c \
+        QueryProcFull.c RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c \
+        TDataMap.c FileIndex.c TDataDQLInterp.c TDataMap.c TDataDQL.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
-	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
+	PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
@@ -110,10 +110,10 @@ LIBOBJ = $(BufMgrObj) $(QPObj) $(VIEWOBJ) $(CMDOBJ) $(MISCOBJ)
 TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testTdata.c testbit.c testPageRange.c testPageRangeMap.c \
 	testPageRangeFile.c testAms1.c rstat.c testAms1Sym.c makeGData.c \
-	testGData.c testGDataVar.c testBufPage.c testRecFile.c testTDataRec.c \
-	testBufMgrNull.c test2d.c testraw.c testVoidArray.c testRecRange.c \
-	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
-	StringHash.c testViewRanges.c testXY.c testSBufMgr.C
+	testBufPage.c testRecFile.c test2d.c testraw.c testVoidArray.c \
+        testRecRange.c testBufMech.c testBufMgrFull.c testRangeList.c \
+        genStrData.c testStr.c StringHash.c testViewRanges.c testXY.c \
+        testSBufMgr.C
 
 LIBNAME = libgraphicsnew.a
 
@@ -140,8 +140,9 @@ libbufmgr.a: $(BufMgrObj)
 	$(RANLIB) $@
 
 testSBufMgr: testSBufMgr.o SBufMgr.o DCE.o
-	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o SBufMgr.o DCE.o \
-		../graphics/ExitClean.o ../graphics/DList.o
+	$(CC) -o $@ $@.o SBufMgr.o DCE.o \
+		-L../graphics -lgraphics -L. -lgraphicsnew -lX11 -lm \
+                $(ARCH_LDFLAGS)
 
 testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
@@ -158,8 +159,7 @@ rstat: rstat.o ../graphics/Parse.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o ../graphics/Exit.o -lm
 
 TESTBUFMGROBJ =  RangeInfoArray.o MultiArray.o ../graphics/Parse.o \
-	RecRange.o RangeInfo.o VoidArray.o BufferFifo.o BufMgrFull.o \
-	RangeList.o TDataRangeList.o
+	RecRange.o VoidArray.o BufMgrFull.o RangeList.o TDataRangeList.o
 
 testBufMgrFull: testBufMgrFull.o $(TESTBUFMGROBJ)
 	$(CC) -o $@ $@.o $(TESTBUFMGROBJ) ../graphics/ExitClean.o
@@ -169,9 +169,9 @@ testGDataRange: testGDataRange.o GDataRangeMap.o ../graphics/Parse.o \
 	$(CC) -o $@ $@.o GDataRangeMap.o ../graphics/Parse.o \
 		../graphics/ExitClean.o
 	
-testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o RangeInfo.o \
+testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o \
 	../graphics/Exit.o
-	$(CC) -o $@ $@.o ../graphics/Parse.o RangeList.o RangeInfo.o \
+	$(CC) -o $@ $@.o ../graphics/Parse.o RangeList.o \
 		../graphics/ExitClean.o
 
 testRecRange: testRecRange.o ../graphics/Parse.o RecRange.o ../graphics/Exit.o
@@ -197,15 +197,6 @@ testAms1: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testAms1.o
 testXY: $(VIEWOBJ) $(QPObj) $(CMDOBJ) libbufmgr.a testXY.o
 	$(CC) -o $@ $@.o $(VIEWOBJ) $(QPObj) $(CMDOBJ) \
 		-lbufmgr -L../graphics -lgraphics-lX11 -lm
-
-testBufMgrNull: testBufMgrNull.o BufMgrNull.o TDataRec.o RecFile.o\
-		UnixRecFile.o
-	$(CC) -o $@ $@.o BufMgrNull.o TDataRec.o RecFile.o \
-		UnixRecFile.o ../graphics/ExitClean.o
-
-testTDataRec: testTDataRec.o TDataRec.o RecFile.o UnixRecFile.o
-	$(CC) -o $@ $@.o TDataRec.o RecFile.o UnixRecFile.o \
-		../graphics/ExitClean.o
 
 testRecFile: testRecFile.o RecFile.o UnixRecFile.o
 	$(CC) -o $@ $@.o RecFile.o UnixRecFile.o ../graphics/ExitClean.o
@@ -236,23 +227,6 @@ testPageRangeMap: testPageRangeMap.o PageRangeMap.o
 
 testPageRangeFile: testPageRangeFile.o PageRange.o
 	$(CC) -o $@ $@.o PageRange.o ../graphics/Exit.o
-
-TESTGDATAVAR_OBJ = TDataAppend.o GDataVar.o testGDataVar.o \
-	TDataMap.o UnixDiskFile.o PageRange.o BufMgr.o PageFile.o \
-	PageRangeMap.o TData.o BufHash.o BufPageList.o DiskFile.o  Bitmap.o
-
-testGDataVar: $(TESTGDATAVAR_OBJ)
-	$(CC) -o $@ $(TESTGDATAVAR_OBJ) ../graphics/ExitClean.o \
-		../graphics/DList.o 
-
-TESTGDATA_OBJ = TDataAppend.o GData.o testGData.o  \
-	TDataMap.o UnixDiskFile.o \
-	PageRange.o BufMgr.o PageFile.o TData.o BufHash.o BufPageList.o \
-	DiskFile.o 
-
-testGData: $(TESTGDATA_OBJ)
-	$(CC) -o $@ $(TESTGDATA_OBJ) ../graphics/ExitClean.o \
-		../graphics/DList.o 
 
 testbit: testbit.o Bitmap.o
 	$(CC) -o $@ $@.o Bitmap.o
