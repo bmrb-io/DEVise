@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1999/10/08 22:04:33  wenger
+  Fixed bugs 512 and 514 (problems related to cursor moving).
+
   Revision 1.83  1999/10/04 19:36:59  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -1191,6 +1194,8 @@ protected:
 
   // Info about the cursor, if any, the mouse is currently on.
   static CursorHit _cursorHit;
+
+  CursorHit::HitType _lastCursorHitType;
 };
 
 //******************************************************************************

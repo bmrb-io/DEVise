@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/10/05 17:55:36  wenger
+  Added debug log level.
+
   Revision 1.56  1999/07/19 19:46:31  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -307,6 +310,15 @@ static char _logBuf[MAXPATHLEN*2];
 
 Dispatcher::Dispatcher(StateFlag state)
 {
+#if defined(DEBUG)
+  printf("Dispatcher(0x%p)::Dispatcher()\n", this);
+#endif
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher(0x%p)::Dispatcher()\n", this);
+  LogMessage(_logBuf);
+#endif
+
   _stateFlag = state;
   _firstIntr = false;
   _quit = false;
@@ -352,6 +364,30 @@ Dispatcher::Dispatcher(StateFlag state)
   }
 
   _tag = 0;
+
+  _objectValid.Set();
+}
+
+Dispatcher::~Dispatcher()
+{
+#if defined(DEBUG)
+  printf("Dispatcher(0x%p)::~Dispatcher()\n", this);
+#endif
+
+#if defined(DEBUG_LOG)
+  sprintf(_logBuf, "Dispatcher(0x%p)::~Dispatcher()\n", this);
+  LogMessage(_logBuf);
+#endif
+
+  signal(SIGINT, SIG_DFL);
+
+  signal(SIGILL, SIG_DFL);
+  signal(SIGFPE, SIG_DFL);
+  signal(SIGSEGV, SIG_DFL);
+  signal(SIGBUS, SIG_DFL);
+#if !defined(LINUX)
+  signal(SIGSYS, SIG_DFL);
+#endif
 }
 
 
@@ -370,7 +406,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 				  Boolean /* ignored */,
 				  int fd)
 {
-
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Dispatcher(0x%p)::Register: %s: 0x%p, fd %d, p %d\n",
 	 this, c->DispatchedName(), c, fd, priority);
@@ -448,6 +484,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 
 void Dispatcher::Unregister(DispatcherCallback *c)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   Unregister(c, NULL);
 }
 
@@ -457,6 +494,7 @@ void Dispatcher::Unregister(DispatcherCallback *c)
 
 void Dispatcher::Unregister(DispatcherID id)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   Unregister(NULL, id);
 }
 
@@ -562,6 +600,8 @@ void Dispatcher::CheckUserInterrupt()
 
 long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   _processingDepth++;
 
   long waitfor_secs = -1;
@@ -686,6 +726,8 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 
 void Dispatcher::Run1()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   static int waitfor_secs = 0;
 
   _tag++;
@@ -859,6 +901,8 @@ void Dispatcher::Run1()
 
 void Dispatcher::DoCleanup()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   Session::Close();
 
   int index;
@@ -873,6 +917,8 @@ void Dispatcher::DoCleanup()
 
 void Dispatcher::Print()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   int index;
   sprintf(_logBuf, "\nDispatcher: callbacks\n");
   LogMessage(_logBuf);
@@ -896,6 +942,8 @@ void Dispatcher::Print()
 
 Boolean Dispatcher::CallbacksOk()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   Timer::StopTimer();
 
   Boolean result;
@@ -925,6 +973,7 @@ Boolean Dispatcher::CallbacksOk()
 void
 Dispatcher::WaitForQueries()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Dispatcher::WaitForQueries()\n");
 #endif
@@ -983,6 +1032,8 @@ Dispatcher::WaitForQueries()
 int
 Dispatcher::CallbacksPending()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   Timer::StopTimer();
 
   int callbackCount = 0;
@@ -1004,6 +1055,7 @@ Dispatcher::CallbacksPending()
 
 void Dispatcher::RequestCallback(DispatcherID info)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
     printf("Dispatcher::RequestCallback(0x%p, %s)\n", info,
 	  info->callBack->DispatchedName());
@@ -1014,6 +1066,8 @@ void Dispatcher::RequestCallback(DispatcherID info)
 
 void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)
@@ -1073,6 +1127,8 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 
 void Dispatcher::CancelCallback(DispatcherID info)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)

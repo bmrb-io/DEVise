@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/08/12 16:02:48  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.36  1999/08/05 21:42:37  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -205,6 +208,7 @@ WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
   _clipCurrent = -1;
   _pattern = p;
   _gifDirty = false;
+  _lastCursorHitType = CursorHit::CursorNone;
 }
 
 WindowRep::~WindowRep(void)

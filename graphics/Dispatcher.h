@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/07/19 19:46:32  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.35  1998/11/24 19:31:19  wenger
   Fixed problem with soil science sessions sometimes locking up the
   JavaScreen by disallowing input from file descriptors while waiting for
@@ -181,6 +185,7 @@
 #include "DeviseTypes.h"
 #include "DList.h"
 #include "Journal.h"
+#include "ObjectValid.h"
 //#include "Exit.h"
 
 
@@ -226,7 +231,7 @@ class Dispatcher {
 public:
   Dispatcher(StateFlag state = GoState );
 
-  ~Dispatcher() {}
+  ~Dispatcher();
 
 protected:
   friend class Scheduler;
@@ -354,6 +359,8 @@ private:
   Boolean _waitingForQueries;
 
   int _tag;
+
+  ObjectValid _objectValid;
 };
 
 #if 0

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.136  1999/10/08 22:04:34  wenger
+  Fixed bugs 512 and 514 (problems related to cursor moving).
+
   Revision 1.135  1999/10/08 19:57:47  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -894,8 +897,9 @@ void	XWindowRep::SetBackground(PColorID bgid)
 void	XWindowRep::SetWindowBackground(PColorID bgid)
 {
 #ifdef GRAPHICS
-	if (_dispGraphics)
-		XSetWindowBackground(_display, _win, AP_GetXColorID(bgid));
+	if (_dispGraphics) {
+		XSetWindowBackground(_display, DRAWABLE, AP_GetXColorID(bgid));
+    }
 #endif
 }
 
@@ -1779,6 +1783,10 @@ XWindowRep::ETk_GetInfo(int handle, ETkInfo &info)
 void XWindowRep::GetRootGeometry(int &x, int &y,
                                  unsigned int &w, unsigned int &h)
 {
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::GetRootGeometry()\n", this);
+#endif
+
   if (_pixmap) {
     Origin(x, y);
     Dimensions(w, h);
@@ -3782,6 +3790,8 @@ void XWindowRep::Flush()
 
 Boolean XWindowRep::HasBackingStore()
 {
+  DOASSERT(_win, "Can't get window attributes on a pixmap??");
+
   XWindowAttributes attr;
   XGetWindowAttributes(_display, _win, &attr);
   return attr.backing_store;
@@ -4287,6 +4297,19 @@ XWindowRep::DeleteInputWR(XWindowRep *winRep)
 void
 XWindowRep::SetMouseCursor(CursorHit::HitType cursorHit)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::SetMouseCursor(%d)\n", cursorHit);
+#endif
+
+  if (!_win) {
+    // Can't do this on a pixmap.
+    return;
+  }
+
+  if (cursorHit == _lastCursorHitType) {
+    return;
+  }
+
   int cursorShape;
 
   switch (cursorHit) {
@@ -4339,6 +4362,8 @@ XWindowRep::SetMouseCursor(CursorHit::HitType cursorHit)
   Cursor cursor = XCreateFontCursor(_display, cursorShape);
   XDefineCursor(_display, _win, cursor);
   XFreeCursor(_display, cursor);
+
+  _lastCursorHitType = cursorHit;
 }
 
 void
@@ -4358,10 +4383,11 @@ XWindowRep::UpdateCursorHit()
 {
 #if defined(DEBUG)
   printf("XWindowRep(0x%p)::UpdateCursorHit()\n", this);
+  printf("  _mouseX, _mouseY = %d, %d\n", _mouseX, _mouseY);
 #endif
 
-  int index;
-  for(index = InitIterator(); More(index); ){
+  int index = InitIterator();
+  while (More(index)) {
     WindowRepCallback *c = Next(index);
     c->IsOnCursor(_mouseX, _mouseY, _cursorHit);
     c->ShowMouseLocation(&_mouseX, &_mouseY);

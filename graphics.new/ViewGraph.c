@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.127  1999/10/08 22:04:42  wenger
+  Fixed bugs 512 and 514 (problems related to cursor moving).
+
   Revision 1.126  1999/10/08 19:57:57  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -2402,7 +2405,10 @@ void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
     DoHandlePress(NULL, x1, y1, x2, y2, button, state, allowZoom);
   }
 
-  GetWindowRep()->UpdateCursorHit();
+  // No reason to do this in batch mode (pixmaps only).
+  if (!ControlPanel::Instance()->GetBatchMode()) {
+    GetWindowRep()->UpdateCursorHit();
+  }
 }
 
 void	ViewGraph::DoHandlePress(WindowRep *, int x1, int y1,
