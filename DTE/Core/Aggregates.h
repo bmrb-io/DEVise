@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/07/07 20:43:21  beyer
+  added missing 'return' in AggFn
+
   Revision 1.49  1998/06/28 21:47:33  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -227,8 +230,9 @@ public:
   void update(const Type* input)  {
     Type* boolVal;
     opPtr(input, minMax, boolVal); // boolVal = input (opPtr) minMax
-    if(boolVal)
+    if(boolVal) {
       copyPtr(input, minMax, valueSize); // change value of current minMax
+    }
   }
 	
   const Type* getValue() {
@@ -255,7 +259,8 @@ public:
 
   void initialize(const Type* input) { count = 1; }
 
-  void update(const Type* input)  { count++; }
+  void update(const Type* input)  {
+  count++; }
 	
   const Type* getValue() {
     return (Type*)count;  // assumes int is inlined

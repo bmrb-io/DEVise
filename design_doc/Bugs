@@ -1413,7 +1413,7 @@ Num Date        Status  Description
 			(rkw) (It looks like about 20 MB of this is in the
 			DTE.)
 
-374 07/07/98	OPEN	Assertion fails when opening beyer/genome.ds session
+374 07/07/98	FIXED	Assertion fails when opening beyer/genome.ds session
 			on SPARC/Solaris:
 			../../DTE/DeviseSpecific/TDataDQL.c:615: failed
 			assertion `tuple'. (rkw)
@@ -1427,6 +1427,7 @@ Num Date        Status  Description
 377 07/07/98	OPEN	Attempting to open test/setlink2.ds session with
 			my catalog causes crash on SPARC/Solaris (works on
 			Intel/Solaris). (rkw)
+			(Also crashes on Intel/Linux.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

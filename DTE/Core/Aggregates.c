@@ -272,6 +272,7 @@ bool SeqAggsExec::isNewSeqVal(const Tuple* tup)
     }
     return false;
   }
+  return false; // avoid compiler warning
 }
 
 

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1998/07/03 23:41:30  wenger
+#  Fixed some memory leaks; added provision to print data segment size
+#  at certain places in the code.
+#
 #  Revision 1.29  1998/06/28 21:48:53  beyer
 #  changed to implicit templates
 #
@@ -154,6 +158,7 @@ else
 	OPTFLAG = -gstabs -Wno-return-type
     endif
 endif
+OPTFLAG += -Wreturn-type
 
 
 ifeq ($(IMPLICIT_TEMPLATES),1)

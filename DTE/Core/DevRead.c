@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/07/07 21:50:15  wenger
+  Fixed part of the SPARC/Solaris and Intel/Linux crash problem.
+
   Revision 1.31  1998/06/28 21:47:34  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -181,10 +184,12 @@ Offset DevReadExec::getOffset()
 const Tuple* DevReadExec::getNext(){
 	UD_Status stat;
 	if(!ud->isOk()){	// should not happen
+		fprintf(stderr, "Error in UniData\n");
 		return NULL;
 	}
 	stat = ud->getRec(buff,&off);
 	if(stat == UD_EOF){
+		fprintf(stderr, "End of file in UniData\n");
 		return NULL;
 	}
 	assert(stat == UD_OK);
