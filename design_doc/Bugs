@@ -2121,6 +2121,7 @@ Num Date        Status  Description
 
 542 12/03/99	OPEN	JavaScreen totally fails if font family specified
 			in GData is illegal. (rkw)
+			(This may be fixed????)
 
 543 12/10/99	FIXED	If a view has axes and a cursor, clicking in the
 			axis area (outside the data area) moves the cursor.
@@ -2157,6 +2158,7 @@ Num Date        Status  Description
 552 01/04/00	OPEN	Specification of an illegal/unavailable font family
 			in GData should not prevent the JavaScreen from
 			drawing *some* symbol. (rkw)
+			(This may be fixed????)
 
 553 01/06/00	OPEN	If the JavaScreen requests that the devised open a
 			session, and the session can't be opened (because of
@@ -2279,7 +2281,8 @@ Num Date        Status  Description
 			(Yes -- they are needed by Tcl GUI for logical
 			schemas.)
 
-582 04/25/00	OPEN	View help in the JavaScreen doesn't wrap lines. (rkw)
+582 04/25/00	FIXED	View help in the JavaScreen doesn't wrap lines. (rkw)
+			(Fixed by ven, 7/20/00.)
 
 583 04/27/00	FIXED	Drill-down in the JavaScreen doesn't seem to work
 			in views with cursors (moves the cursor instead
@@ -2375,6 +2378,11 @@ Num Date        Status  Description
 603 7/19/00	FIXED	JavaScreen: variable name strings in left window
 			are truncated. (rkw)
 			(Fixed by rkw, 7/20/00.)
+
+604 7/26/00	OPEN	peptide-cgi: view one accession number, then a
+			different one, and then go back to the first one:
+			the sessions are not updated to the correct data
+			source. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
