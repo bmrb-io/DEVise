@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.10  1996/04/10 03:06:32  jussi
+#	Checking of whether a top-level window already exists is now
+#	made via WindowVisible (utils.tcl).
+#
 #	Revision 1.9  1995/11/29 16:07:36  jussi
 #	Removed constant window size definitions because they will produce
 #	unexpected results on some window managers.
@@ -49,6 +53,7 @@
 set issm_firmlst ""
 set issm_numfirms 0
 set issm_selection ""
+set issm_source ""
 
 ############################################################
 
@@ -58,42 +63,15 @@ proc issm_unique_name {symbol} {
 
 ############################################################
 
-proc issm_extract_data {tapedrive filenum offset blocksize key file} {
+proc issm_extract_data {source tapedrive filenum offset blocksize key file} {
     global sourceTypes issm_status
 
-    set indexFile [lindex $sourceTypes(ISSM) 2]
-    set err [catch { set firms [open $indexFile] }]
-    if {$err > 0} {
-	dialog .noFile "No Index File" \
-		"Cannot find index file $indexFile." \
-		"" 0 OK
-	return -1
-    }
-
-    set tapepos -1
-
-    while {[gets $firms line] >= 0} {
-	set line [split $line ,]
-	set symbol [lindex $line 0]
-	if {$symbol == $key} {
-	    set tapepos [lindex $line 1]
-	    break
-	}
-    }
-
-    close $firms
-
-    if {$tapepos >= 0} {
-	incr tapepos $offset
-	set issm_status "Extracting ISSM data..."
-	issm_setupStatus .issmstatus
-	issm_extractStocks $tapedrive $filenum $blocksize $key $tapepos $file
-	catch {destroy .issmstatus}
-    } else {
-	dialog .notFound "Symbol Not Found" \
-		"Cound not find ISSM symbol $key." \
-		"" 0 OK
-    }
+    set indexFile [lindex $sourceTypes($source) 2]
+    set issm_status "Extracting $source data..."
+    issm_setupStatus .issmstatus
+    issm_extractStocks $tapedrive $filenum $offset $blocksize $indexFile \
+	    $key $file
+    catch {destroy .issmstatus}
 }
 
 ############################################################
@@ -151,12 +129,12 @@ proc issm_setupFirmList {flist} {
 
 proc issm_scanFirmList {listb msg} {
     global sourceTypes
-    global issm_firmlst issm_numfirms issm_status
+    global issm_firmlst issm_numfirms issm_status issm_source
 
     $listb delete 0 end
     set issm_firmlst ""
     set issm_numfirms 0
-    set indexFile [lindex $sourceTypes(ISSM) 2]
+    set indexFile [lindex $sourceTypes($issm_source) 2]
     set err [catch { set firms [open $indexFile] }]
     if {$err > 0} {
 	dialog .noFile "No Index File" \
@@ -225,8 +203,8 @@ proc issm_setupStatus {stat} {
 
 ############################################################
 
-proc issmMain {} {
-    global issm_firmlst issm_numfirms issm_selection
+proc issmMain {source} {
+    global issm_firmlst issm_numfirms issm_selection issm_source
 
     if {[WindowVisible .issm]} {
 	return
@@ -237,7 +215,7 @@ proc issmMain {} {
     toplevel .issm
     wm minsize .issm 505 400
     wm maxsize .issm 505 1000
-    wm title .issm "Select Stock Symbol from ISSM Database"
+    wm title .issm "Select Stock Symbol from $source Database"
     wm geometry .issm +50+50
     selection clear .issm
 
@@ -251,8 +229,10 @@ proc issmMain {} {
     update
 
     # scan firm index only if the firm list doesn't exist yet
-    if {!$issm_numfirms} {
+    if {!$issm_numfirms || $source != $issm_source} {
+	set issm_source $source
 	if {[issm_scanFirmList .issm.firmlst.list .issm.firmlst.msg] < 0} {
+	    set issm_numfirms 0
 	    return "Error"
 	}
     } else {
