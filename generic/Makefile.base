@@ -10,7 +10,7 @@ LDFLAGS = $(ARCH_LDFLAGS) \
 	-ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -O -DUNIX
+	-fexternal-templates -Wall -Wno-unused -O -DUNIX
 
 all: generic issm
 
