@@ -1272,6 +1272,11 @@ Num Date        Status  Description
 			when DEVISE_COLLABORATOR environment variable is not
 			defined causes devised to crash. (rkw)
 
+334 04/10/98	OPEN	Dot in schema name within UniData schema file causes
+			core dump. (rkw)
+
+335 04/10/98	OPEN	'float' type not implemented in UniData. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
