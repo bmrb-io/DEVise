@@ -21,6 +21,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2000/02/18 22:21:15  wenger
+#  Various changes to make cron scripts work better with new two-machine
+#  setup: added -id argument to devise, jspop, jss; updated cron scripts
+#  that check status of jspop, etc.; improved usage messages of jspop,
+#  jss, js; improved DEVise.kill script; removed obsolete sections of
+#  Java code.
+#
 #  Revision 1.4  1999/08/04 15:41:23  wenger
 #  Fixed goofed up commit by Hongyu.
 #
@@ -57,20 +64,20 @@ if ($#ARGV >= 0) {
 }
 
 while (<PS>) {
-#    print "line: ";
-#    print;
+    #print "line: ";
+    #print;
     # Avoid killing ourself!
-    if ((!($_ =~ /kill_devised2/)) and $_ =~ /$pattern/) {
+    if ((!($_ =~ /DEVise.kill/)) and $_ =~ /$pattern/) {
 	print "Killing $_";
 
-	@words = split /  */, $_;
-	$pid = @words[1];
-
-        system("kill -INT $pid");
-        system sleep 1;
-        system("kill -INT $pid");
-        system sleep 1;
-        system("kill -INT $pid");
+	if ($_ =~ / *(\d+)/) {
+	    $pid = $1;
+            system("kill -s INT $pid");
+            system sleep 1;
+            system("kill -s INT $pid");
+            system sleep 1;
+            system("kill -s INT $pid");
+	}
     }
 }
 

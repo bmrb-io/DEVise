@@ -20,6 +20,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  2000/02/18 22:21:16  wenger
+#  Various changes to make cron scripts work better with new two-machine
+#  setup: added -id argument to devise, jspop, jss; updated cron scripts
+#  that check status of jspop, etc.; improved usage messages of jspop,
+#  jss, js; improved DEVise.kill script; removed obsolete sections of
+#  Java code.
+#
 #  Revision 1.8  1999/12/17 23:24:10  wenger
 #  Improved scripts to automatically re-start jspops if necessary.
 #
@@ -73,19 +80,23 @@ $foundDevised = 0;
 # the line would be long enough, except that with the latest Intel/Solaris
 # ps, this makes the command totally hang!!  RKW 1999-12-17.
 
-$ps_cmd = "/usr/ucb/ps -axw";
+if ($ENV{ARCH} eq "LINUX") {
+  $ps_cmd = "/bin/ps -axw";
+} else {
+  $ps_cmd = "/usr/ucb/ps -axw";
+}
 
 open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
 
 while (<PS>) {
-  if ($_ =~ /java *jspop.*id$idStr/) {
+  if ($_ =~ /.*java *jspop.*id$idStr/) {
     $foundJspop = 1;
   }
-  if ($_ =~ /java *jss.*id$idStr/) {
+  if ($_ =~ /.*java *jss.*id$idStr/) {
     $foundJss = 1;
   }
   # Wildcard here because -w option screws up ps output.
-  if ($_ =~ /devised.*id $idStr/) {
+  if ($_ =~ /.*devised.*id $idStr/) {
     $foundDevised = 1;
   }
 }
@@ -111,6 +122,8 @@ if (!$foundJspop || !$foundJss || !$foundDevised) {
 
   KillJspopJss();
   SaveLogs();
+
+  sleep 5;
 
   StartJspopJss();
 }
@@ -138,11 +151,12 @@ sub KillJspopJss {
   open PS, "$ps_cmd >& 1 |" or die "can't fork: $!";
 
   while (<PS>) {
-    if ($_ =~ /java *jspop.*id$idStr/ || $_ =~ /java *jss.*id$idStr/) {
+    if ($_ =~ /.*java *jspop.*id$idStr/ || $_ =~ /.*java *jss.*id$idStr/) {
       print "Killing $_";
-      @words = split /  */, $_;
-      $pid = @words[1];
-      system("kill $pid");
+      if ($_ =~ / *(\d+)/) {
+        $pid = $1;
+        system("kill $pid");
+      }
     }
   }
 
