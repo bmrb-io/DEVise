@@ -16,18 +16,22 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/11 21:53:54  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 21:13:43  jussi
   Added/updated CVS header.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <X11/Shell.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
 #include "XawControl.h"
 #include "Xdef.h"
+
+#include <X11/Shell.h>
 
 /*************************************************************************/
 void XawControlPanel::SubclassInsertDisplay(DeviseDisplay * /*disp*/,
