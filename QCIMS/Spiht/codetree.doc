@@ -1,0 +1,366 @@
+
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  V E C T O R - T R E E  I M A G E   C O M P R E S S I O N   P R O G R A M S
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+                    C++ version  7.01  -  6/25/95
+
+       Amir Said: amir@densis.fee.unicamp.br
+       DENSIS - Faculty of Electrical Engineering
+       University of Campinas (UNICAMP)
+       Campinas, SP 13081, Brazil
+
+       William A. Pearlman - pearlman@ecse.rpi.edu
+       Dept. of Electrical, Computer, and Systems Engineering
+       Rensselaer Polytechnic Institute
+       Troy, NY 12180, USA
+
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+           Copyright (c) 1995 Amir Said & William A. Pearlman
+
+  These programs are Copyright (c) by Amir Said & William A. Pearlman. 
+  They may be freely redistributed in their entirety provided that this
+  copyright notice is not removed. They may not be sold for profit or
+  incorporated in commercial programs without the written permission of
+  the copyright holders. Each program is provided as is, without any
+  express or implied warranty, without even the warranty of fitness for
+  a particular purpose.
+
+  There are pending patent applications by Amir Said and William A.
+  Pearlman, for some of the methods and algorithms used in the programs.
+
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+DESCRIPTION
+===========
+
+The image compression programs in this package are implementations
+of the algorithm present in the paper "A new fast and efficient
+implementation of an image codec based on set partitioning in
+hierarchical trees." by Amir Said & William A. Pearlman, submitted
+to the IEEE Transaction on Circuits and Systems for Video Technology.
+
+There are 4 codecs with the following characteristics:
+
+  +-------------------------+------------------+-------------------+
+  |       PROGRAM NAME      |  ENTROPY-CODING  |     PYRAMID       |
+  +------------+------------+     METHOD       |  TRANSFORMATION   |
+  |  ENCODER   |  DECODER   |                  |                   |
+  +------------+------------+------------------+-------------------+
+  |  codetree  |  decdtree  |    arithmetic    |  wavelet (lossy)  |
+  |  fastcode  |  fastdecd  |       none       |  wavelet (lossy)  |
+  |  progcode  |  progdecd  |    arithmetic    |  S+P (lossless)   |
+  |  codecolr  |  decdcolr  |    arithmetic    |   KL & wavelet    |
+  +------------+------------+------------------+-------------------+
+
+The S+P multiresolution representation is presented in the paper
+"Reversible image compression via multiresolution representation and
+predictive coding", by A. Said & W.A. Pearlman, in Visual Communications
+and Image Processing '93, Proc. SPIE 2094, pp. 664-674, Cambridge, MA,
+Nov. 1993.
+
+The three first codecs are for monochrome images, and the fourth is
+for color images. Maximum compression is obtained with the programs
+'codetree/decdtree', while 'fastcode/fastdecd' yield slightly smaller
+compression, but with a much shorter compression/recovery time. The
+programs 'progcode/progdecd' are similar to 'codetree/decdtree', but
+also allow lossless compression. The codec 'codecolr/decdcolr' is a
+straightforward adaptation of 'codetree/decdtree' for color images
+(they definitely do not represent the best color codec, see REMARKS
+below).
+
+These programs are intended for research and comparative tests only,
+to give an indication of the potential of the proposed methods.
+They were not optimized to commercial application level.
+
+Please send corrections, suggestions and bug reports to
+
+  -> amir@densis.fee.unicamp.br
+  -> pearlman@ecse.rpi.edu
+
+
+
+REMARKS
+=======
+
+-> The programs were designed to minimize the mean squared-error (MSE).
+   It is a well-known fact that the MSE may be awful to estimate the
+   subjective (visual) quality of the reconstructed images. However, the
+   MSE may not be so bad either, and there are tricks that can be used
+   to improve its usage. The monochrome-lossy codecs have an option for
+   "smoothing" the recovered image to obtain visually better images.
+   Please note that NO METHOD in the universe can improve the image
+   if the bit-rate is too low.
+
+-> The problem of subjective quality is even more complicated with
+   color images. For that reason we made no attempt to improve the
+   visual quality of the images produced by 'codecolr/decdcolr'.
+   Consider them simply as "MSE minimizers in 3-color spaces."
+
+-> Although it can be done, this version is not set to write to
+   EXACTLY the desired rate, because it may add 1-2 bytes to "close"
+   the coded message. On the other hand, 6-7 bytes are used in a
+   message header, and those ARE added to the coding rate. Normally
+   these few bytes correspond to insignificant contributions to the
+   bit rate.
+
+-> In the literature about image compression frequently the published
+   results are unreliable (to say the least). Here the encoder and
+   decoder are implemented in separate programs because it allows
+   us to PROVE (in the math sense--left as an exercise) that the
+   program's rate x distortion results are correct.
+
+   The distortion is calculated after the pixel values are rounded
+   to integer values. This process can slightly increase or reduce
+   the distortion.
+
+-> After a certain rate the programs 'progcode/progdecd' change the
+   type of compression algorithm used. This normally happens when the
+   recovered image is visually indistinguishable from the original.
+   The second algorithm is not as efficient as the first for embedded
+   coding, but, for larger rates, is faster and uses less memory.
+
+-> When coding non-square images, care must be taken to input the
+   image dimensions in the correct order.
+
+
+
+COMPILATION
+===========
+
+The programs are divided in several files, which are shared by the
+different versions. To be included by the compiler they should be in
+the same directory.
+
+To compile all programs just type
+
+  > compile.bat
+
+at the UNIX prompt.
+
+In the make-file 'codetree.mk' the compiler name is defined by the
+macro
+
+C=g++ -O2
+
+which sets GNU's 'g++' compiler and '-O2' sets the optimization to
+level 2. To use another C++ compiler replace 'g++ -O2' by the
+corresponding compiler name and optimization option.
+
+
+
+USAGE
+=====
+
+All three codecs have the same interactive user interface. The programs
+asks the user for all required file names and image data. This is shown
+in the examples below.
+
+When in doubt about the command-line options and parameters, run
+program with the option '-u' after the program name.
+
+The original images should be in raster format, but WITHOUT the header
+(also called RAW format). It is assumed that the image is stored as a
+sequence of horizontal lines.
+
+For monochrome images each pixel can be represented with 1 or 2 bytes
+(most significant first). When the image uses 2 bytes/pixel, the decoder
+asks for the peak value to be used for PSNR computations. Otherwise it
+uses the default value 255.
+
+The color codecs work only with 3-color, 1 byte/color, images. The color
+format (RGB, BGR, YUV, etc.) is not important, as long as the 3 colors are
+stored in 3 consecutive bytes. The encoder minimizes the MSE for the
+corresponding color format.
+
+The smoothing option can only be selected by the monochrome-lossy encoders.
+The user is asked for a number in the range 0-7, with 0 representing
+no smoothing, and 7 the maximum. The best value depends on the image
+and on user's taste.
+
+The decoder can be used to recover the image up to any bit/pixel
+rate below the rate used by the encoder. It can be used interactively
+to compare the recovered image to the original or to save it.
+
+The decoder can also be used in a 'batch mode' to evaluate a curve of
+rate x PSNR of the algorithm, for a given image. In this case the
+results are written to a text file.
+
+
+EXAMPLES
+========
+
+(1) Here is an example of the usage of the program 'codetree'. The
+    messages before the symbol '=?' were output by the program, and
+    what is after that symbol was written by the user. Exactly the
+    same interface is used by the programs 'fastcode' and 'progcode',
+    with the exception that the program 'progcode' does not ask for
+    the coding rate because it compresses the image to full recovery.
+
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+<UNIX prompt> codetree
+
+  File with original image =? lena.pic
+
+  File with compressed image =? lena.cmp
+
+  Number of image lines =? 512
+
+  Number of pixels per line =? 512
+
+  Number of bytes per pixel =? 1
+
+  Rate (bits per pixel) =? 0.5
+
+  Use smoothing? (y/n) -> n
+
+  Starting image transformation...
+  Image transformed in  0.75 seconds.
+
+  Starting computation of maximum magnitudes...
+  Maximum magnitudes computed in  0.28 seconds.
+
+  Starting image compression...
+  Image compressed in  1.08 seconds.
+
+  Compressed file size = 16385 bytes (0.50 bits/pixel).
+
+  Total execution time (I/O included) =  2.60 seconds.
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+(2) The parameters in Example (1) could be entered at the command line:
+
+<UNIX prompt> codetree  lena.pic  lena.cmp  512  512  1  0.5
+
+    A rate of value 0 (zero) informs the program 'progcode' to code
+    for lossless recovery. Thus, for lossless compression the example
+    above is:
+
+<UNIX prompt> progcode  lena.pic  lena.cmp  512  512  1  0
+
+    The color (lossy) encoder, 'codecolr', does not need the value of
+    bits/pixel, and its usage is:
+
+<UNIX prompt> codecolr  lena.bgr  lena.cmp  512  512  0.5
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+(3) Below it is shown how the decoders are used interactively. The
+    program 'progdecd' also has the option of lossless recovery.
+
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+<UNIX prompt> decdtree
+
+  Interactive mode? (y/n) -> y
+
+  Name of the compressed image file =? lena.cmp
+
+  Recovered image will be compared to original? (y/n) -> y
+
+  File with original image =? lena.pic
+
+  Image size = 512 x 512, 1 byte/pixel
+
+  Code rate (bits per pixel) =? 0.25
+
+  Starting image recovery...
+  Image recovered in  0.57 seconds.
+
+  Starting inverse transformation...
+  Image transformed in  0.80 seconds.
+
+  Rate =  0.250 bpp, mean squared-error =  25.266 =  34.11 dB PSNR
+
+  Total execution time (I/O included) =  1.58 seconds.
+
+  Save new image to disk? (y/n) -> y
+
+  Name of the new image file =? lena025.pic
+
+  Test new rate? (y/n) -> n
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+(4) A test for comparisons only, and with a single rate can be done
+    with command-line parameters. With the data of the example above
+    we would use
+
+<UNIX prompt> decdtree  lena.cmp  lena.pic  0.25
+
+    The program 'progdecd' also interprets a 0 (zero) rate as a
+    command for lossless recovery, as shown below:
+
+<UNIX prompt> progdecd  lena.cmp  lena.pic  0
+
+    If it is desired to save the new image (instead of only 
+    comparing) add the option '-s' after the decoder name, like
+
+<UNIX prompt> decdtree  -s  lena.cmp  lena.new  0.25
+<UNIX prompt> progdecd  -s  lena.cmp  lena.new  0
+
+    Be careful, to avoid overwriting your original images with
+    lossy reproductions!
+
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+(5) Below it is shown how the decoders can be used in batch mode.
+
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+<UNIX prompt> decdtree
+
+  Interactive mode? (y/n) -> n
+
+  Name of the compressed image file =? lena.cmp
+
+  File with original image =? lena.pic
+
+  File with rate x PSNR results =? lena.plot
+
+  First rate (bits/pixel) =? 0.2
+
+  Last rate (bits/pixel) =? 0.5
+
+  Rate increment =? 0.05
+
+  Image size = 512 x 512, 1 byte/pixel
+
+  Starting image recovery...
+  Image recovered in  0.45 seconds.
+
+  Starting inverse transformation...
+  Image transformed in  0.80 seconds.
+
+  Rate = 0.200 bpp --> mean squared-error =  31.458 =  33.15 dB PSNR
+
+  Total execution time (I/O included) =  3.03 seconds.
+
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+
+-> The last information above is repeated for several rates. After the
+   execution the file 'lena.plot' (name chosen by the user) contains
+   the rate x PSNR pairs
+
+   0.2000   33.1498
+   0.2500   34.1138
+   0.3000   34.9514
+   0.3500   35.6582
+   0.4000   36.2383
+   0.4500   36.7338
+   0.5000   37.2100
+
+   which give the method's performance for the image Lena.
+
+ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
