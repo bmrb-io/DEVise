@@ -1,0 +1,38 @@
+# 1 ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class map1_RectXShape: public RectXShape {
+public:
+
+	virtual void DrawGDataArray(WindowRep *win, GData **symbols, int numSyms,
+		TDataMap *map){
+		int i;
+		win->SetFgColor(map->GetDefaultColor());();
+		win->SetPattern(map->GetDefaultPattern());();
+		win->SetFgColor(BlackColor);
+		for (i=0; i < numSyms; i++){
+			GData *sym = symbols[i];
+			();
+			();
+			_x[i] = CLASSNAME_GET_X();
+			_y[i] = CLASSNAME_GET_Y();
+		}
+		win->DrawPixelArray(_x,_y,numSyms);
+	}
+
+	Coord _x[1024];
+	Coord _y[1024];
+};

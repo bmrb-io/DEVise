@@ -1,0 +1,61 @@
+
+mapping SolDnCompiled AmsRec {
+	shape { RectXShape }
+	static {
+		AttrList *attrList = new AttrList("SolDnCompiled_Attrs");
+		attrList->InsertAttr(0, "x", 0, sizeof(double), DateAttr, false, 
+			NULL, false, true);
+		attrList->InsertAttr(1, "y", 8, sizeof(double), DoubleAttr, false, 
+			NULL, false, false);
+		SetGDataAttrList(attrList);
+
+		double attrs[2];
+		attrs[0] = 0.5; attrs[1] = 0.5;
+		TDataMap::SetDefaultShape(SolDnCompiled_RectXShapeID,2,attrs);
+		TDataMap::SetDefaultColor(ColorMgr::AllocColor("blue"));
+	}
+	dynamic x, y {
+		symbol->x =  (double)data->DATE;
+		symbol->y =  (double)data->TOTAL_INCIDENT_RADTN;
+	}
+}
+
+mapping RainCompiled AmsRec {
+	shape { BarShape }
+	static {
+		AttrList *attrList = new AttrList("RainCompiled_Attrs");
+		attrList->InsertAttr(0, "x", 0, sizeof(double), DateAttr, false, 
+			NULL, false, true);
+		attrList->InsertAttr(1, "y", 8, sizeof(double), DoubleAttr, false, 
+			NULL, false, false);
+		SetGDataAttrList(attrList);
+		double attrs[2];
+		attrs[0] = 0.5; attrs[1] = 0.5;
+		TDataMap::SetDefaultShape(RainCompiled_BarShapeID,2,attrs);
+		TDataMap::SetDefaultColor(ColorMgr::AllocColor("red"));
+	}
+	dynamic x, y {
+		symbol->x =  (double)data->DATE;
+		symbol->y =  (double)data->ACCUM_RAINFALL;
+	}
+}
+
+mapping TempCompiled AmsRec {
+	shape { RectXShape }
+	static {
+		AttrList *attrList = new AttrList("TempCompiled_Attrs");
+		attrList->InsertAttr(0, "x", 0, sizeof(double), DateAttr, false, 
+			NULL, false, true);
+		attrList->InsertAttr(1, "y", 8, sizeof(double), DoubleAttr, false, 
+			NULL, false, false);
+		SetGDataAttrList(attrList);
+		double attrs[2];
+		attrs[0] = 0.5; attrs[1] = 0.5;
+		TDataMap::SetDefaultShape(TempCompiled_RectXShapeID,2,attrs);
+		TDataMap::SetDefaultColor(ColorMgr::AllocColor("red"));
+	}
+	dynamic x, y {
+		symbol->x =  (double)data->DATE;
+		symbol->y =  (double)data->DOME_TEMP;
+	}
+}

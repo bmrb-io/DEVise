@@ -1,0 +1,39 @@
+Devise configuration:
+  - main memory buffer: 6 MB
+  - GData disk cache: 16 MB (now 1 MB)
+
+10,000 records, view at beginning of file
+
+date	version	index	disp	cache	exit	#rew5	#fsr3	#bsr4	#fsf1	#bsf2	#read	#write
+6/15/95 1	172	1540	3961	4015	2	551345	561345	4	0	20000	0
+6/16/95 2	172	461	537	575	2	11472	21472	4	0	20000	0
+6/18/95	3	45	269	330	350	0	68	142	2	3	20000	0
+6/19/95	4	3	228	290	308	0	68	142	2	3	20000	0
+6/22/95	5	3	72	126	130	0	1	2	4	5	22589	0
+
+10,000 records, view at end of file
+
+date	version	index	disp	cache	exit	#rew5	#fsr3	#bsr4	#fsf1	#bsf2	#read	#write
+6/22/95	4	3	144	202	208	0	65	60	3	4	20000	0
+6/21/95	5	3	115	165	170	0	0	21	3	4	25525	0
+
+150,000 records, view at beginning of file
+
+date	version	index	disp	cache	exit	#rew5	#fsr3	#bsr4	#fsf1	#bsf2	#read	#write
+6/16/95 2	1470	1650	3141	3172	2	151478	301478	0	0	300000	0
+6/18/95	3	630	747	1368	1381	3	944	1904	0	0	300000	0
+6/19/95	4	36	153	770	785	3	944	1904	0	0	300000	0
+6/21/95	5	36	74	710	720	3	25	20	0	0	300573	0
+
+150,000 records, view at end of file
+
+date	version	index	disp	cache	exit	#rew5	#fsr3	#bsr4	#fsf1	#bsf2	#read	#write
+6/22/95	4	36	163	787	792	3	938	189	0	0	300000	0
+6/21/95	5	36	144	770	775	3	866	134	0	0	300871	0
+6/28/95	6	36	130	200	210	3	866	134	0	0	300871	0
+
+1,500,000 records, view at end of file
+
+date	version	index	disp	cache	exit	#rew5	#fsr3	#bsr4	#fsf1	#bsf2	#read	#write
+6/21/95	5	350	1053	0	0	0	0	0	0	0	0	0
+6/28/95	6	350	710	1530	1596	0	8329	1527	4	5	3001867	0

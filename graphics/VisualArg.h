@@ -1,0 +1,51 @@
+/* VisualArg.h */
+#ifndef VisualArg_h
+#define VisualArg_h
+#include "DeviseTypes.h"
+#include "Color.h"
+
+/* index of the attributes */
+const unsigned VISUAL_X_INDEX = 0;
+const unsigned VISUAL_Y_INDEX = 1;
+const unsigned VISUAL_SIZE_INDEX = 2;
+const unsigned VISUAL_PATTERN_INDEX = 3;
+const unsigned VISUAL_COLOR_INDEX = 4;
+const unsigned VISUAL_ORIENTATION_INDEX = 5;
+const unsigned VISUAL_SHAPE_INDEX = 6;
+
+/* A VisualFlag is the union of visual attributes.
+It indicates which attributes are changeable or tested in a filter.*/
+typedef unsigned VisualFlag;
+const unsigned VISUAL_X = (1<< VISUAL_X_INDEX);
+const unsigned VISUAL_Y = (1<< VISUAL_Y_INDEX);
+const unsigned VISUAL_LOC=	((1<<VISUAL_X_INDEX) | (1<<VISUAL_Y_INDEX));
+const unsigned VISUAL_COLOR= (1<< VISUAL_COLOR_INDEX);
+const unsigned VISUAL_SIZE= (1<< VISUAL_SIZE_INDEX);
+const unsigned VISUAL_PATTERN= (1<< VISUAL_PATTERN_INDEX);
+const unsigned VISUAL_ORIENTATION = (1<< VISUAL_ORIENTATION_INDEX);
+const unsigned VISUAL_SHAPE = (1 << VISUAL_SHAPE_INDEX);
+const unsigned VISUAL_ALLBITS = (VISUAL_X | VISUAL_Y | VISUAL_LOC |
+			VISUAL_COLOR | VISUAL_SIZE | VISUAL_PATTERN | VISUAL_ORIENTATION
+			| VISUAL_SHAPE);
+
+/* complement visual flag */
+inline unsigned VisualComplement(VisualFlag flag) { return (flag ^ VISUAL_ALLBITS); };
+
+/* A visual filter: used to filter symbols inside a view. */
+struct VisualFilter {
+	VisualFlag flag;	/* which attribute is to test. set to 0 if no filter  */
+	Coord xLow, xHigh; /* X filter */
+	Coord yLow, yHigh;	/* y filter */
+	int lastN;		/* # of records to examine */
+	Coord sizeLow, sizeHigh;	/* size filter */
+	Coord patternLow, patternHigh; /* pattern filter */
+	Color colorLow, colorHigh;	/* color filter */
+	Coord orientationLow, orientationHigh; /* orientation filter*/
+	int shapeLow, shapeHigh; /* shape filter */
+
+	Boolean marked; /* TRUE if this is marked in the control panel 
+			list box */
+};
+
+#endif
+

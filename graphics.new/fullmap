@@ -1,0 +1,8 @@
+mapping FullMapping FullMapRec {
+	shape { RectShape, RectXShape, BarShape }
+	static {
+	}
+	dynamic x, y, color, size, pattern, shape, orientation,
+		shapeAttr[0], shapeAttr[1] {
+	}
+}

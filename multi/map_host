@@ -1,0 +1,54 @@
+
+mapping HostMapping HostRec {
+	shape { RectShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1; attrs[1] = 0.5;
+		TDataMap::SetDefaultShape(HostMapping_RectShapeID,2,attrs);
+		TDataMap::SetDefaultColor(ColorMgr::AllocColor("red"));
+	}
+	dynamic x,y,color, shapeAttr[1], shapeAttr[0] {
+		static int last_time = 10000;
+		static int last_working = -1;
+		/*
+		MapInfo *mapInfo = (MapInfo *)userData;
+		*/
+#if 1
+		if (data->time > last_time) {
+			symbol->x = (((float)(data->time + last_time)) / 2.0);
+			symbol->shapeAttr_0 = data->time - last_time;
+		} else {
+			symbol->x = (float)(data->time);
+			symbol->shapeAttr_0 = 2;
+		}
+		last_time = data->time;
+		if (last_working > 0) {
+			symbol->y = (((float)(data->hosts + last_working)) / 2.0 );
+			symbol->shapeAttr_1 = data->hosts - last_working;
+		} else {
+			symbol->y = (((float) (data->hosts + data->working)) / 2.0 );
+			symbol->shapeAttr_1 = data->hosts - data->working;
+		}
+		last_working = data->working;
+#else
+
+		symbol->shapeAttr_0 = 1;
+		symbol->shapeAttr_1 = data->hosts - data->working;
+		symbol->x = data->time;
+		symbol->y = (((float) (data->hosts + data->working)) / 2.0 );
+#endif
+
+		symbol->color = some_idleColor;
+		if (symbol->shapeAttr_1 < 1) {
+			symbol->shapeAttr_1 = 0.5;
+			symbol->y -= 0.25;
+			symbol->color = all_busyColor;
+		}
+
+		/*
+		printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
+			symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
+				symbol->color);
+		*/
+	}
+}

@@ -1,0 +1,11 @@
+# Schema for Generic sample file
+
+type Generic-Schema ascii
+comment //
+separator '	'
+
+# 0 to keep them separate
+# mergeseparator 0
+
+attr X double
+attr Y double

@@ -1,0 +1,16 @@
+
+mapping XYMapping XYData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 90.0; attrs[1] = 90.0;
+		TDataMap::SetDefaultShape(XYMapping_RectXShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		symbol->x = data->x;
+		symbol->y = data->y;
+		if (symbol->y > 0)
+			symbol->color = *((Color *)userData);
+		else symbol->color = BlackColor;
+	}
+}

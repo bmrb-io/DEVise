@@ -1,0 +1,230 @@
+/* Full Query Processor */
+#ifndef QueryProcFull_h
+#define QueryProcFull_h
+#include "QueryProc.h"
+#include "QPRange.h"
+#include "DList.h"
+#include "BufPolicy.h"
+
+class BufMgr;
+class TData;
+class TDataMap;
+class GData;
+class DictGroup;
+
+/* max # of bytes to fetch for each iteration of the query processor.
+After fetching this many bytes, the query processor relinquishes control
+(coming out for air) to allow the rest of the system to check for user input */
+const int QPFULL_MAX_FETCH = 81920;
+
+const int QPFULL_MAXSYMS = 4096; /* max symbols per batch returned */
+
+/* For randomized display */
+/* # of records to be returned before randomize is to begin */
+const int QPFULL_RANDOM_RECS = 10240;
+/* # of records to be returned for each batch */
+const int QPFULL_RANDOM_RECS_PER_BATCH = 1024;
+/* # of iterations to scan for data to simulation pseudo-random
+display */
+const int QPFULL_RANDOM_ITERATIONS = 5;
+
+/* data for QueryProcFull */
+enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter};
+enum QPFullState { QPFull_InitState, QPFull_ScanState, QPFull_EndState};
+
+const int QPFULL_MAX_MAPPINGS = 1024;
+
+struct QPFullData {
+	QPFullData *next; /* for linked list on free list */
+	int priority;
+	BufMgr *mgr;
+	TData *tdata;
+	GData *gdata;
+	TDataMap *map;
+	VisualFilter filter;
+	QueryCallback *callback;
+	QPFullType qType;
+	QPFullState state;
+	/* for QPFull_ScanState: current == next id to get.
+	low == low id, high == high id */
+	RecId low, current, high;
+
+	/* true if doing random display fetch */
+	Boolean isRandom;
+	int iteration; /* current iteration */
+
+
+	QPRange *range;	/* range of data that has been returned */
+
+	int bytes; /* # of bytes used to process this query */
+
+	RecId hintId; /* ID for hint */
+	void *userData;
+};
+
+DefinePtrDList(QPFullDataList, QPFullData *)
+
+class QueryProcFull: public QueryProc, private QPRangeCallback {
+public:
+	QueryProcFull();
+
+	/* batch a query. For now, we'll just queue it up.  */
+	virtual void BatchQuery( TDataMap *map, VisualFilter &filter,
+		QueryCallback *callback, void *userData, int priority=0);
+	
+	/* Abort a query given the mapping and the callback. */
+	virtual void AbortQuery(TDataMap *map, QueryCallback *callback);
+
+	virtual BufMgr *GetMgr();
+
+	/* TRUE if this qp is idle */
+	virtual Boolean Idle();
+
+	/* print statistics */
+	virtual void PrintStat();
+
+	/* Called to process query */
+	virtual void ProcessQuery();
+
+	/* Interface to query for TData */
+	virtual void InitTDataQuery(TDataMap *map, VisualFilter &filter,
+		Boolean approx = false);
+	virtual Boolean GetTData(RecId &startRid, int &numRecs, char *&buf);
+	virtual void DoneTDataQuery();
+
+	/* Clear all queries from query processor */
+	virtual void ClearQueries();
+
+	/* Clear info about GData from qp */
+	virtual void ClearGData(GData *gdata);
+	virtual void ResetGData(TData *tdata, GData *gdata);
+
+
+
+    /* Get minimum X value for mapping. Return true if found */
+	virtual Boolean GetMinX(TDataMap *map, Coord &minX);
+
+private:
+	BufPolicy::policy _policy;
+
+	Boolean _prefetch, _useExisting;
+	BufMgr *_mgr;
+
+	QPFullDataList *_queries;
+
+	/* Initialize all queries. Return false if no query
+	is in initial state */
+	Boolean InitQueries();
+
+	/* Init for individual query types */
+	void InitQPFullX(QPFullData *qData);
+	void InitQPFullYX(QPFullData *qData);
+	void InitQPFullScatter(QPFullData *qData);
+
+	/* Process scan for 1 iteration for the range [qData->current, qData->high].
+	Set state == QPFull_EndState if finished with scan.
+	One iteration is defined as:
+		either QPFULL_MAX_FETCH bytes fetched, or end of query is reached */
+	void ProcessScan(QPFullData *qData); 
+
+	/* Process query for each query type */
+	void ProcessQPFullX(QPFullData *qData);
+	void ProcessQPFullYX(QPFullData *qData);
+	void ProcessQPFullScatter(QPFullData *qData);
+
+	/* End of queries */
+	void EndQueries(QPFullData *qData);
+
+	/* End of queries for each query type */
+	void EndQPFullX(QPFullData *qData);
+	void EndQPFullYX(QPFullData *qData);
+	void EndQPFullScatter(QPFullData *qData);
+
+
+	/*Do Binary Search, and returning the Id of first matching record.
+	isPrefetch == TRUE if we're doing prefetch.
+	maxLower == true to find max record with x < xVal.
+		Otherwise, find min records with x > xVal.
+	Return true if found.
+	*/
+	Boolean DoBinarySearch(BufMgr *mgr,
+		TData *tdata, TDataMap *map, Coord xVal, Boolean isPrefetch,
+		RecId &id,Boolean bounded=false, RecId lowBound=0, RecId highBound=0,
+		Boolean maxLower = true);
+	
+	/* Return true if we should only retrieve TDAta from 
+	buffer manager. This is determined by the number of queries
+	that have the same tdata, with visual filter that overlaps
+	with the given one, and size of TData versus gData extracted. */
+	Boolean UseTDataQuery(TData *tdata, VisualFilter &filter);
+
+	/* Initialize scan. by initializing the amount of memory used */
+	int _memFetched; /* # of bytes fetched by scan */
+	void InitScan();
+
+	/* Do scan of record ID range. Distribute data to all queries
+	that need it. Return TRUE if have not exceeded
+	amount of memory used for this iteration of the query processor */
+	Boolean DoScan(QPFullData *qData, RecId low, RecId high, Boolean tdataOnly);
+
+	/* Distribute tdata/gdata to all queries that need it */
+	void DistributeTData(QPFullData *qData, RecId startRid,
+		int numRecs, void *buf, void **recs);
+	void DistributeGData(QPFullData *qData, RecId startRid,
+		int numRecs, void *buf, void **recs);
+
+	QPFullData *FirstQuery();
+
+	/* Delete first query in the list of queries */
+	void DeleteFirstQuery();
+
+	/* Return true if range is empty */
+	Boolean NoQueries();
+
+	/* Convert in mem gdata into gdata. Return true if conversion
+	took place */
+	Boolean DoInMemGDataConvert(TData *tdata, GData *gdata, TDataMap *map);
+
+	/* Do gdata convertion */
+	void DoGDataConvert();
+
+	/* Allocate an record for query. Init the range field. */
+	QPFullData *AllocEntry();
+	void FreeEntry(QPFullData *entry);
+	/* freelist */
+	QPFullData *_freeList;
+
+	/* Report to journal */
+	void JournalReport();
+
+	/* callback from QPRange */
+	QPFullData *_rangeQData; /* query we are currently processing */
+	void *_rangeBuf;
+	RecId _rangeStartId;
+	void **_rangeRecs; /* pointer to first reocrd */
+	int _rangeNumRecs;
+	Boolean _rangeTData;
+	virtual void QPRangeInserted(RecId low, RecId high);
+
+	/* list of mappings */
+	TDataMap *_mappings[QPFULL_MAX_MAPPINGS];
+	int _numMappings;
+	int _convertIndex; /* index of next mapping to convert */
+
+	/* Insert new mapping */
+	void InsertMapping(TDataMap *map);
+	/* clear all mappings */
+	void ClearMapping();
+
+
+	/* for TData Query */
+	RecId _tqueryStartRid; /* starting record id of tdata buffer */
+	int _tqueryNumRecs; /* # of tdata records in buffer */
+	QPFullData *_tqueryQdata; /* info about tdata query */
+	Boolean _hasTqueryRecs; /* true if we have unexamined tdata records */
+	void *_tqueryBuf; /* buffer to tdata records */
+	int _tqueryBeginIndex; /* index of next record to examine in buffer */
+	Boolean _tqueryApprox; /* true for approximate match */
+};
+
+#endif

@@ -1,0 +1,63 @@
+# catalog file for soil
+type Soil ascii
+comment //
+separator ','
+# 0 to keep them separate
+# mergeseparator 0
+attr SITEGRID_ID string 12
+attr STATION_ID int
+attr OBS_DATE string 12
+attr OBS_TIME int
+attr DRY_BULB_TEMP double
+attr WET_BULB_TEMP double
+attr ATMOSIC_PRESS double
+attr ACCUM_RAINFALL double
+attr RAINFALL_RATE double
+attr U_COMPNT_WIND_VELOC double
+attr V_COMPNT_WIND_VELOC double
+attr W_COMPNT_WIND_VELOC double
+attr MAX_WIND_SPEED double
+attr W_COMPNT_WIND_VELOC_SDEV double
+attr SURF_TEMP double
+attr SOIL_TEMP_10CM double
+attr SOIL_TEMP_50CM double
+attr SHORTWAVE_SOLAR_REFL double
+attr NET_RADTN double
+attr INCIDENT_LONGWAVE_RADTN double
+attr DOME_TEMP double
+attr INSTR_TEMP double
+attr TOTAL_INCIDENT_RADTN double
+attr TOTAL_INCIDENT_PAR double
+attr DIFFUSE_INCIDENT_RADTN double
+attr DIFFUSE_INCIDENT_PAR double
+attr DATA_QUAL_CODE string 28
+attr LAST_REVISION_DATE string 10
+attr FIFE_DATA_CRTFCN_CODE string 10
+
+# composite attributes go here
+sorted compattr DATE date
+compattr QUAL_OBS_DATE int
+compattr QUAL_OBS_TIME int
+compattr QUAL_DRY_BULB_TEMP int
+compattr QUAL_WET_BULB_TEMP int
+compattr QUAL_ATMOSIC_PRESS int
+compattr QUAL_ACCUM_RAINFALL int
+compattr QUAL_RAINFALL_RATE  int
+compattr QUAL_U_COMPNT_WIND_VELOC  int
+compattr QUAL_V_COMPNT_WIND_VELOC  int
+compattr QUAL_W_COMPNT_WIND_VELOC  int
+compattr QUAL_MAX_WIND_SPEED  int
+compattr QUAL_W_COMPNT_WIND_VELOC_SDEV  int
+compattr QUAL_SURF_TEMP  int
+compattr QUAL_SOIL_TEMP_10CM  int
+compattr QUAL_SOIL_TEMP_50CM  int
+compattr QUAL_SHORTWAVE_SOLAR_REFL  int
+compattr QUAL_NET_RADTN  int
+compattr QUAL_INCIDENT_LONGWAVE_RADTN  int
+compattr QUAL_DOME_TEMP  int
+compattr QUAL_INSTR_TEMP  int
+compattr QUAL_TOTAL_INCIDENT_RADTN  int
+compattr QUAL_TOTAL_INCIDENT_PAR  int
+compattr QUAL_DIFFUSE_INCIDENT_RADTN  int
+compattr QUAL_DIFFUSE_INCIDENT_PAR  int
+#'1563-PAM',27,15-JUL-87,15,25.39,16.65,971.17,0.0,0.0,1.46,5.41,.79,9.4,.5,25.08,26.28,27.14,84.0,38.15,,,,,,,,'GGGGGGGGGGGGGGGG*_______ ',21-JUN-89,'CPI-MRG'

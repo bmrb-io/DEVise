@@ -1,0 +1,393 @@
+# Do the help command
+# erase the next line when not debugging
+# set libdir ./
+proc helpUnit { num } {
+	return $num\i
+}
+
+
+set helpWinCreated 0
+proc DoHelp { } {
+	global helpWinCreated libdir regularColor hiliteColor
+
+	if { $helpWinCreated } {
+		return
+	}
+
+	set hiliteColor red
+	set regularColor blue
+
+	set helpWinCreated 1
+	set w .help
+	toplevel $w
+	wm geometry $w +100+100
+	wm title $w "DEVise help"
+	wm iconname $w "help"
+
+	frame .help.frame
+	set canvasName .help.canvas
+	canvas $canvasName -width [helpUnit 9] -height [helpUnit 3]
+
+	$canvasName create rectangle 0.0 0.0 [helpUnit 8.99] [helpUnit 2.99]
+	$canvasName configure -bg white
+
+#	DEVise
+	$canvasName create text [helpUnit 0.5] [helpUnit 0.3] \
+			-fill $regularColor -text "DEVise" -tag "DEVise.fill"
+	$canvasName create rectangle [helpUnit 1.1] [helpUnit 0.5] \
+		[helpUnit 8.95] [helpUnit 2.90] -outline $regularColor \
+		-tag "DEVise.outline"
+
+#	file
+	$canvasName create text [helpUnit 0.5] [helpUnit 1] \
+			-fill $regularColor -text "file" -tag "file.fill"
+
+	set o [$canvasName create oval [helpUnit 0.1] [helpUnit 1.2] \
+		[helpUnit 0.9] \ [helpUnit 1.3] -tag "file.outline" \
+			-outline $regularColor]
+	$canvasName itemconfigure $o -width 3
+	
+	
+	set l [$canvasName create line [helpUnit 0.1] [helpUnit 1.25] \
+		[helpUnit 0.1] \ [helpUnit 1.95] -tag "file.fill" -fill $regularColor]
+	$canvasName itemconfigure $l -width 3
+
+	set l [$canvasName create line [helpUnit 0.9] [helpUnit 1.25] \
+		[helpUnit 0.9] \ [helpUnit 1.95] -tag "file.fill" -fill $regularColor]
+	$canvasName itemconfigure $l -width 3
+
+	set o [$canvasName create oval [helpUnit 0.1] [helpUnit 1.9] \
+		[helpUnit 0.9]  [helpUnit 2.0] -tag "file.outline" \
+		-outline $regularColor]
+	$canvasName itemconfigure $o -width 3
+
+#
+#	schema
+	set c [$canvasName create arc [helpUnit 1.25] [helpUnit 0.75] \
+		[helpUnit 1.50] [helpUnit 1.0] -tag "schema.outline" ]
+	$canvasName itemconfigure $c -outline $regularColor \
+		-style chord -extent 359.9999 
+	$canvasName create text [helpUnit 1.37] [helpUnit 0.9] \
+		-fill $regularColor -text "1"  -tag "schema.fill"
+
+	$canvasName create text [helpUnit 1.5] [helpUnit 1.25] \
+		-fill $regularColor -text "schema" -tag "schema.fill"
+	set l [$canvasName create line [helpUnit 1.0] [helpUnit 1.5] \
+		[helpUnit 1.9] [helpUnit 1.5] -fill $regularColor  -tag "schema.fill" \
+		-arrow last ]
+	$canvasName itemconfigure $l -width 3
+
+#	GUI
+	$canvasName create text [helpUnit 4.5] [helpUnit .3] \
+		-fill $regularColor -text "Graphica User Interface(GUI)" -tag "gui.fill"
+
+#	tdata
+	$canvasName create text [helpUnit 2.5] [helpUnit 1] \
+		-text "tdata" -fill $regularColor  -tag "tdata.fill"
+
+	$canvasName create rectangle [helpUnit 2.2] [helpUnit 1.45] \
+		[helpUnit 2.7] [helpUnit 1.7] -fill $regularColor \
+			-tag "tdata.fill"
+
+	$canvasName create rectangle [helpUnit 2.3] [helpUnit 1.55] \
+		[helpUnit 2.8] [helpUnit  1.8] -fill $regularColor \
+			-tag "tdata.fill"
+	$canvasName create rectangle [helpUnit 2.4] [helpUnit 1.65] \
+		[helpUnit 2.9] [helpUnit 1.9] -fill $regularColor \
+			-tag "tdata.fill"
+
+#	mapping
+	set c [$canvasName create arc [helpUnit 3.4] [helpUnit 0.75] \
+		[helpUnit 3.65] [helpUnit 1.0] -tag "mapping.outline" ]
+	$canvasName itemconfigure $c -outline $regularColor \
+		-style chord -extent 359.9999 
+	$canvasName create text [helpUnit 3.5] [helpUnit 0.9] \
+		-fill $regularColor -text "2"  -tag "mapping.fill"
+
+	$canvasName create text [helpUnit 3.5] [helpUnit 1.25] \
+		-text "mapping" -fill $regularColor  -tag "mapping.fill"
+	set l [$canvasName create line [helpUnit 3.0] [helpUnit 1.7] \
+		[helpUnit 3.9] [helpUnit 1.5] -fill $regularColor  -tag "mapping.fill" \
+		-arrow last ]
+	$canvasName itemconfigure $l -width 3
+
+	set l [$canvasName create line [helpUnit 3.0] [helpUnit 1.7] \
+		[helpUnit 3.9] [helpUnit 2.25] -fill $regularColor  \
+		-tag "mapping.fill" -arrow last ]
+	$canvasName itemconfigure $l -width 3
+
+#	GData
+	$canvasName create text [helpUnit 4.5] [helpUnit 1] \
+		-text "gdata" -fill $regularColor  -tag "gdata.fill"
+
+	$canvasName create rectangle [helpUnit 4.2] [helpUnit 1.45] \
+		[helpUnit 4.7] [helpUnit 1.7] -fill $regularColor \
+			-tag "gdata.fill"
+	$canvasName create rectangle [helpUnit 4.3] [helpUnit 1.55] \
+		[helpUnit 4.8] [helpUnit  1.8] -fill $regularColor \
+			-tag "gdata.fill"
+	$canvasName create rectangle [helpUnit 4.4] [helpUnit 1.65] \
+		[helpUnit 4.9] [helpUnit 1.9] -fill $regularColor \
+			-tag "gdata.fill"
+
+	$canvasName create rectangle [helpUnit 4.2] [helpUnit 2.2] \
+		[helpUnit 4.7] [helpUnit 2.45] -fill $regularColor \
+			-tag "gdata.fill"
+	$canvasName create rectangle [helpUnit 4.3] [helpUnit 2.3] \
+		[helpUnit 4.8] [helpUnit  2.55] -fill $regularColor \
+			-tag "gdata.fill"
+	$canvasName create rectangle [helpUnit 4.4] [helpUnit 2.4] \
+		[helpUnit 4.9] [helpUnit 2.65] -fill $regularColor \
+			-tag "gdata.fill"
+
+#	visual filter
+	set c [$canvasName create arc [helpUnit 5.4] [helpUnit 0.75] \
+		[helpUnit 5.65] [helpUnit 1.0] -tag "visual.outline" ]
+	$canvasName itemconfigure $c -outline $regularColor \
+		-style chord -extent 359.9999 
+	$canvasName create text [helpUnit 5.5] [helpUnit 0.9] \
+		-fill $regularColor -text "3"  -tag "visual.fill"
+
+	$canvasName create text [helpUnit 5.5] [helpUnit 1.25] \
+		-text "visual filter" -fill $regularColor  -tag "visual.fill"
+	set l [$canvasName create line [helpUnit 5.0] [helpUnit 1.5] \
+		[helpUnit 5.9] [helpUnit 1.5] -fill $regularColor  -tag "visual.fill" \
+		-arrow last ]
+	$canvasName itemconfigure $l -width 3
+
+	set l [$canvasName create line [helpUnit 5.0] [helpUnit 2.25] \
+		[helpUnit 5.9] [helpUnit 2.25] -fill $regularColor  -tag "visual.fill" \
+		-arrow last ]
+	$canvasName itemconfigure $l -width 3
+
+#	view
+	$canvasName create text [helpUnit 6.5] [helpUnit 1] \
+		-text "view" -fill $regularColor  -tag "view.fill"
+
+	set r [$canvasName create rectangle [helpUnit 6.0] [helpUnit 1.3] \
+		[helpUnit 6.9] [helpUnit 1.8] -outline $regularColor \
+			-tag "view.outline" ]
+	$canvasName itemconfigure $r -width 2
+
+	set r [$canvasName create rectangle [helpUnit 6.0] [helpUnit 2.3] \
+		[helpUnit 6.9] [helpUnit 2.8] -outline $regularColor \
+			-tag "view.outline" ]
+	$canvasName itemconfigure $r -width 2
+
+# link
+	set c [$canvasName create arc [helpUnit 6.4] [helpUnit 1.95] \
+		[helpUnit 6.65] [helpUnit 2.2] -tag "link.outline" ]
+	$canvasName itemconfigure $c -outline $regularColor \
+		-style chord -extent 359.9999 
+	$canvasName create text [helpUnit 6.5] [helpUnit 2.1] \
+		-fill $regularColor -text "5"  -tag "link.fill"
+
+	set l [$canvasName create line [helpUnit 6.2] [helpUnit 1.8] \
+		[helpUnit 6.2] [helpUnit 2.3] -arrow both \
+		 -fill $regularColor  -tag "link.fill" ]
+	$canvasName itemconfigure $l -width 3
+
+	$canvasName create text [helpUnit 5.2] [helpUnit 2.0] \
+		-text "link, cursor" -fill $regularColor  -tag "link.fill" -anchor w
+	
+
+#	window placement
+	set c [$canvasName create arc [helpUnit 7.4] [helpUnit 0.75] \
+		[helpUnit 7.65] [helpUnit 1.0] -tag "window.outline" ]
+	$canvasName itemconfigure $c -outline $regularColor \
+		-style chord -extent 359.9999 
+	$canvasName create text [helpUnit 7.5] [helpUnit 0.9] \
+		-fill $regularColor -text "4"  -tag "window.fill"
+
+	set l [$canvasName create line [helpUnit 7.0] [helpUnit 1.6] \
+		[helpUnit 7.75] [helpUnit 1.75] -arrow last \
+		 -fill $regularColor  -tag "window.fill" ]
+	$canvasName itemconfigure $l -width 3
+
+	set l [$canvasName create line [helpUnit 7.0] [helpUnit 2.5] \
+		[helpUnit 7.75] [helpUnit 2.5] -arrow last\
+		 -fill $regularColor  -tag "window.fill" ]
+	$canvasName itemconfigure $l -width 3
+	
+
+#	window
+	$canvasName create text [helpUnit 8.25] [helpUnit 1] \
+		-text "window" -fill $regularColor  -tag "window.fill"
+
+	set r [$canvasName create rectangle [helpUnit 7.75] [helpUnit 1.5] \
+		[helpUnit 8.9] [helpUnit 2.75] \
+		-outline $regularColor  -tag "window.outline" ]
+	$canvasName itemconfigure $r -width 3
+
+	set r [$canvasName create rectangle [helpUnit 7.80] [helpUnit 1.6] \
+		[helpUnit 8.85] [helpUnit 2.1] \
+		-outline $regularColor  -tag "window.outline" ]
+	$canvasName itemconfigure $r -width 2
+
+	set r [$canvasName create rectangle [helpUnit 7.8] [helpUnit 2.2] \
+		[helpUnit 8.85] [helpUnit 2.7] \
+		-outline $regularColor  -tag "window.outline" ]
+	$canvasName itemconfigure $r -width 2
+
+
+	frame .help.txtFrame
+
+#	Create topic widget
+	set topicFrame .help.txtFrame.topicFrame
+	frame $topicFrame
+	set index [lsort { DEVise file schema tdata mapping gdata \
+		"visual filter" view window link tour gui}]
+	set listboxName $topicFrame.listbox 
+	set topicScrollName $topicFrame.scroll
+	set topicName $topicFrame.topicName
+	label $topicName -text "Topics:" 
+
+	listbox $listboxName -relief raised -yscrollcommand "$topicScrollName set"
+	$listboxName configure -bg white
+	tk_listboxSingleSelect $listboxName
+	foreach item $index {
+		$listboxName insert end $item
+	}
+	scrollbar $topicScrollName -command "$listboxName yview"
+
+
+#	create text widget
+	set textName .help.txtFrame.txt
+	set scrollName .help.txtFrame.scroll
+	text $textName -relief raised -bd 2 -yscrollcommand "$scrollName set" 
+	$textName configure -bg white -foreground $regularColor -height 17 
+	scrollbar $scrollName -command "$textName yview"
+
+#	binding for listbox
+	bind $listboxName <ButtonPress-1> "helpSelectTopic %W %y $canvasName \
+		$textName"
+
+#	create button
+	button .help.button -text "close" -command {
+		set helpWinCreated 0
+		destroy .help
+	}
+
+	foreach attr {DEVise file schema tdata mapping gdata visual view window \
+		link gui } {
+		$canvasName bind $attr.outline <ButtonPress-1> "helpSelectCanvasWidget \
+			$listboxName $attr $canvasName $textName"
+		$canvasName bind $attr.fill <ButtonPress-1> "helpSelectCanvasWidget \
+			$listboxName $attr $canvasName $textName"
+	}
+
+#	packing
+	pack .help.button $canvasName -side bottom -in .help
+
+	pack $scrollName -in .help.txtFrame -side right -fill y
+	pack $textName  -in .help.txtFrame -side right -fill both -expand 1
+	pack $topicFrame -in .help.txtFrame -side left  -fill both -expand 1
+
+	pack $topicName -in $topicFrame -side top -fill x
+	pack $topicScrollName -in $topicFrame -side left -fill y
+	pack $listboxName  -in $topicFrame -side right -expand 1 -fill both
+
+	pack .help.txtFrame -side top -in .help -fill x -expand 1
+
+
+
+#	read text widget from helpfile */
+	set f [open $libdir/helpfile.txt]
+	while { [gets $f line ] >= 0 } {
+		if { [llength $line] == 2  && \
+			[string compare [lindex $line 0] "BEGINTAG"] == 0} {
+#			beginning of a tag
+			set tagPlace [$textName index end]
+			set tagName [lindex $line 1]
+		} elseif { [llength $line] == 2  && \
+			[string compare [lindex $line 0] "ENDTAG"] == 0} {
+			if { [string compare [lindex $line 1] $tagName] == 0 } {
+#				add a new tag
+				$textName tag add $tagName $tagPlace \
+					[$textName index end]-1char
+			}
+		} else {
+			$textName insert end $line
+			$textName insert end \n
+		}
+	}
+	close $f
+	$textName configure -state disabled
+
+}
+
+proc helpSelectTopic { widget ycoord canvasName textName } {
+	global regularColor hiliteColor
+	set nearest [$widget nearest $ycoord]
+
+#	unhighlight current selection
+	set cur [$widget curselection]
+	if { [string compare $cur "" ] != 0 } {
+		set attr [lindex [$widget get $cur ] 0]
+		$canvasName itemconfigure $attr.outline -outline $regularColor
+		$canvasName itemconfigure $attr.fill -fill $regularColor
+		$textName tag configure $attr -foreground $regularColor
+	}
+
+#	find current selection 
+	if { $nearest >= 0 } {
+		$widget select from $nearest
+		$widget select to $nearest
+	}
+	set attr [lindex [$widget get $nearest] 0]
+	if { [string compare $attr "" ] != 0 } {
+		$canvasName itemconfigure $attr.fill -fill $hiliteColor
+		$canvasName itemconfigure $attr.outline -outline $hiliteColor
+	}
+	$textName yview $attr.first
+	$textName tag configure $attr -foreground $hiliteColor
+}
+
+# Get index of attr in listBoxWidget. Return -1 if not found
+proc FindListBoxIndex { widget txt } {
+# puts "FindListBoxIndex $widget $txt"
+	set size [$widget size]
+#	puts "listbox size $size"
+	for { set i 0} { $i < $size} { set i [expr $i+1] } {
+		set attr [lindex [$widget get $i] 0]
+#		puts "index $i attr $attr"
+		if { [string compare $txt $attr] == 0 } {
+			return $i
+		}
+	}
+	return -1
+}
+
+# Do button events in canvas widgets. Input:
+#	widget: the listBox widget for topics
+#	attr: attr name being selected
+#	canvanName: name of canvas
+#	textName: name of the text widget
+proc helpSelectCanvasWidget { widget attr canvasName textName } {
+# puts "helpSelectCanvasWidget $widget $attr $canvasName $textName"
+	global regularColor hiliteColor
+
+#	unhighlight current selection
+	set cur [$widget curselection]
+	if { [string compare $cur "" ] != 0 } {
+		set oldAttr [lindex [$widget get $cur ] 0]
+		$canvasName itemconfigure $oldAttr.outline -outline $regularColor
+		$canvasName itemconfigure $oldAttr.fill -fill $regularColor
+		$textName tag configure $oldAttr -foreground $regularColor
+	}
+
+	set index [FindListBoxIndex $widget $attr]
+#	puts "FindListboxIndex return $index"
+	if { $index < 0 } {
+		return
+	}
+	$widget select clear
+	$widget select from $index
+	$widget select to $index
+
+	$canvasName itemconfigure $attr.fill -fill $hiliteColor
+	$canvasName itemconfigure $attr.outline -outline $hiliteColor
+
+	$textName yview $attr.first
+	$textName tag configure $attr -foreground $hiliteColor
+}

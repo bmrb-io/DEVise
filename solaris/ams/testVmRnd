@@ -1,0 +1,8 @@
+#! /bin/csh
+# test time to scan with just 1 buffer
+set buffer=15000
+ams -buffer $buffer -restore -session disp.tk -iconify 0 -convert 0 < vm.cmd >>! vmRnd.out
+ams -buffer $buffer -restore -session disp.tk -iconify 0 -convert 0 < vm.cmd >>! vmRnd.out
+ams -buffer $buffer -restore -session disp.tk -iconify 0 -convert 0 < vm.cmd >>! vmRnd.out
+ams -buffer $buffer -restore -session disp.tk -iconify 0 -convert 0 < vm.cmd >>! vmRnd.out
+ams -buffer $buffer -restore -session disp.tk -iconify 0 -convert 0 < vm.cmd >>! vmRnd.out

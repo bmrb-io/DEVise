@@ -1,0 +1,14 @@
+/* Pattern.h*/
+#ifndef Pattern_h
+#define Pattern_h
+
+/* name of patterns */
+enum Pattern { Pattern0, Pattern1, Pattern2, Pattern3, Pattern4, Pattern5,
+	Pattern6, Pattern7, Pattern8, Pattern9, Pattern10, Pattern11,
+	Pattern12, Pattern13, Pattern14, Pattern15, Pattern16, Pattern17,
+	Pattern18, Pattern19, Pattern20, Pattern21, Pattern22, Pattern23,
+	Pattern24, Pattern25, Pattern26, Pattern27, Pattern28, Pattern29,
+	Pattern30, Pattern31, Pattern32, Pattern33, Pattern34, Pattern35,
+	Pattern36, Pattern37, Pattern38, NumPatterns};
+
+#endif

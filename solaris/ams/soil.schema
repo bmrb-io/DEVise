@@ -1,0 +1,63 @@
+# catalog file for soil
+type Soil ascii
+comment //
+separator ','
+# 0 to keep them separate
+# mergeseparator 0
+attr SITEGRID_ID string 12
+attr STATION_ID int
+attr OBS_DATE string 12
+attr OBS_TIME int
+attr DRY_BULB_TEMP float
+attr WET_BULB_TEMP float
+attr ATMOSIC_PRESS float
+attr ACCUM_RAINFALL float
+attr RAINFALL_RATE float
+attr U_COMPNT_WIND_VELOC float
+attr V_COMPNT_WIND_VELOC float
+attr W_COMPNT_WIND_VELOC float
+attr MAX_WIND_SPEED float
+attr W_COMPNT_WIND_VELOC_SDEV float
+attr SURF_TEMP float
+attr SOIL_TEMP_10CM float
+attr SOIL_TEMP_50CM float
+attr SHORTWAVE_SOLAR_REFL float
+attr NET_RADTN float
+attr INCIDENT_LONGWAVE_RADTN float
+attr DOME_TEMP float
+attr INSTR_TEMP float
+attr TOTAL_INCIDENT_RADTN float
+attr TOTAL_INCIDENT_PAR float
+attr DIFFUSE_INCIDENT_RADTN float
+attr DIFFUSE_INCIDENT_PAR float
+attr DATA_QUAL_CODE string 28
+attr LAST_REVISION_DATE string 10
+attr FIFE_DATA_CRTFCN_CODE string 10
+
+# composite attributes go here
+sorted compattr DATE date
+compattr QUAL_OBS_DATE int
+compattr QUAL_OBS_TIME int
+compattr QUAL_DRY_BULB_TEMP int
+compattr QUAL_WET_BULB_TEMP int
+compattr QUAL_ATMOSIC_PRESS int
+compattr QUAL_ACCUM_RAINFALL int
+compattr QUAL_RAINFALL_RATE  int
+compattr QUAL_U_COMPNT_WIND_VELOC  int
+compattr QUAL_V_COMPNT_WIND_VELOC  int
+compattr QUAL_W_COMPNT_WIND_VELOC  int
+compattr QUAL_MAX_WIND_SPEED  int
+compattr QUAL_W_COMPNT_WIND_VELOC_SDEV  int
+compattr QUAL_SURF_TEMP  int
+compattr QUAL_SOIL_TEMP_10CM  int
+compattr QUAL_SOIL_TEMP_50CM  int
+compattr QUAL_SHORTWAVE_SOLAR_REFL  int
+compattr QUAL_NET_RADTN  int
+compattr QUAL_INCIDENT_LONGWAVE_RADTN  int
+compattr QUAL_DOME_TEMP  int
+compattr QUAL_INSTR_TEMP  int
+compattr QUAL_TOTAL_INCIDENT_RADTN  int
+compattr QUAL_TOTAL_INCIDENT_PAR  int
+compattr QUAL_DIFFUSE_INCIDENT_RADTN  int
+compattr QUAL_DIFFUSE_INCIDENT_PAR  int
+#'1563-PAM',27,15-JUL-87,15,25.39,16.65,971.17,0.0,0.0,1.46,5.41,.79,9.4,.5,25.08,26.28,27.14,84.0,38.15,,,,,,,,'GGGGGGGGGGGGGGGG*_______ ',21-JUN-89,'CPI-MRG'

@@ -1,0 +1,66 @@
+# import file types
+DEVise importFileType /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/generic.schema
+
+# layout mode
+DEVise changeMode 0
+
+# Import file (Create TData)
+# format: DEVise create tdata fileType filePath fileAlias
+if { $template } {
+	set tdata_1 [ GetTDataTemplate Generic-Schema 1 1 ]
+	if { [string compare $tdata_1 "" ] == 0 } {
+		return 0
+	}
+} else {
+	set tdata_1 generic.dat
+	DEVise create tdata Generic-Schema /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/generic.dat generic.dat
+}
+
+# Create interpreted mapping classes 
+
+# Create mappings instances (and GData)
+# format: DEVise create mapping mapType fileAlias gdataName
+
+# Save pixel width for mappings
+
+# Create views
+# format: DEVise create view viewType viewName xlow xhigh ylow yhigh
+
+# Create windows
+# format: DEVise create window winType winName x y width height
+
+# Create Links
+# format: DEVise create link Visual_Link name flag
+
+# Create Cursors
+# format: DEVise create cursor Cursor name flag
+
+#Create axislabel
+# format: DEVise create axisLabel type name format
+
+# Create Actions
+# format: DEVise create action type name
+
+# Put labels into views
+# put action into view
+# Link views
+# Put views in cursors
+# Put axis label into views
+# Insert mappings into views
+# format: DEVise insertMapping viewName gdataName
+
+# Insert views into windows
+# format: DEVise insertWindow viewName winName
+
+# Init history of view
+#load pixmaps from views
+set pixmapName /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/test.tk.pixmap
+ if { !$template && [ file exists $pixmapName ] } {
+set pixmapFile [ DEVise open $pixmapName rb ]
+set fileDate [ DEVise readLine $pixmapFile ]
+set sessionDate {Sep  4 1995 16:28:55}
+if { [string compare $fileDate $sessionDate ] == 0 } { 
+}
+DEVise close $pixmapFile
+}
+return 1

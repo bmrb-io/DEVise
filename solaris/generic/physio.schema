@@ -1,0 +1,22 @@
+# Schema for physio file
+
+type Generic-Schema ascii
+comment //
+separator ' '
+
+# 0 to keep them separate
+# mergeseparator 0
+
+sorted attr TIME   int   
+attr RR     float 
+attr HR     float 
+attr O2     float 
+attr CO2    float 
+attr PERIOD int   
+attr AS     int   
+attr ADAL   int   
+attr AQQS   int   
+attr WOWC   int   
+attr D      int   
+attr T      int   
+

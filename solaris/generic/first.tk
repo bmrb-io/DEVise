@@ -1,0 +1,307 @@
+# import file types
+DEVise importFileType /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/physio.schema
+
+# layout mode
+DEVise changeMode 0
+
+# Import file (Create TData)
+# format: DEVise create tdata fileType filePath fileAlias
+if { $template } {
+	set tdata_1 [ GetTDataTemplate Generic-Schema 1 1 ]
+	if { [string compare $tdata_1 "" ] == 0 } {
+		return 0
+	}
+} else {
+	set tdata_1 physio.dat
+	DEVise create tdata Generic-Schema /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/physio.dat physio.dat
+}
+
+# Create interpreted mapping classes 
+DEVise createInterp $tdata_1 {RR_vs_TIME}  {}  {$TIME}  {$RR}  {2}  {}  {}  {}  {2}  {}  {}
+DEVise createInterp $tdata_1 {HR_vs_TIME}  {}  {$TIME}  {$HR}  {3}  {}  {}  {}  {2}  {}  {}
+DEVise createInterp $tdata_1 {ADAL_vs_TIME}  {}  {$TIME}  {$ADAL}  {4}  {}  {}  {}  {2}  {}  {}
+DEVise createInterp $tdata_1 {CO2_vs_TIME}  {}  {$TIME}  {$CO2}  {4}  {}  {}  {}  {2}  {}  {}
+DEVise createInterp $tdata_1 {O2_vs_TIME}  {}  {$TIME}  {$O2}  {6}  {}  {}  {}  {1}  {}  {}
+DEVise createInterp $tdata_1 {CO2_vs_HR}  {}  {$HR}  {$CO2}  {19}  {}  {}  {}  {0}  {}  {}
+DEVise createInterp $tdata_1 {ADAL_vs_TIME}  {}  {$TIME}  {$ADAL}  {3}  {}  {}  {}  {2}  {}  {}
+DEVise createInterp $tdata_1 {AQQS_vs_TIME}  {}  {$TIME}  {$AQQS}  {2}  {}  {}  {}  {2}  {}  {}
+DEVise createInterp $tdata_1 {ADAL_vs_recId}  {}  {$recId}  {$ADAL}  {2}  {}  {}  {}  {1}  {}  {}
+
+# Create mappings instances (and GData)
+# format: DEVise create mapping mapType fileAlias gdataName
+set map_1 [ format "%s#RR_vs_TIME" $tdata_1 ]
+DEVise create mapping RR_vs_TIME $tdata_1 $map_1 {} {$TIME} {$RR} 2 {} {} {} 2 {} {}
+set map_2 [ format "%s#HR_vs_TIME" $tdata_1 ]
+DEVise create mapping HR_vs_TIME $tdata_1 $map_2 {} {$TIME} {$HR} 3 {} {} {} 2 {} {}
+set map_3 [ format "%s#ADAL_vs_TIME" $tdata_1 ]
+DEVise create mapping ADAL_vs_TIME $tdata_1 $map_3 {} {$TIME} {$ADAL} 4 {} {} {} 2 {} {}
+set map_4 [ format "%s#CO2_vs_TIME" $tdata_1 ]
+DEVise create mapping CO2_vs_TIME $tdata_1 $map_4 {} {$TIME} {$CO2} 4 {} {} {} 2 {} {}
+set map_5 [ format "%s#O2_vs_TIME" $tdata_1 ]
+DEVise create mapping O2_vs_TIME $tdata_1 $map_5 {} {$TIME} {$O2} 6 {} {} {} 2 {} {}
+set map_6 [ format "%s#CO2_vs_HR" $tdata_1 ]
+DEVise create mapping CO2_vs_HR $tdata_1 $map_6 {} {$HR} {$CO2} 0 {} {} {} 0 {} {}
+set map_7 [ format "%s#ADAL_vs_TIME" $tdata_1 ]
+DEVise create mapping ADAL_vs_TIME $tdata_1 $map_7 {} {$TIME} {$ADAL} 4 {} {} {} 2 {} {}
+set map_8 [ format "%s#AQQS_vs_TIME" $tdata_1 ]
+DEVise create mapping AQQS_vs_TIME $tdata_1 $map_8 {} {$TIME} {$AQQS} 2 {} {} {} 2 {} {}
+
+# Save pixel width for mappings
+DEVise setPixelWidth $map_1 1
+DEVise setPixelWidth $map_2 1
+DEVise setPixelWidth $map_3 1
+DEVise setPixelWidth $map_4 1
+DEVise setPixelWidth $map_5 1
+DEVise setPixelWidth $map_6 3
+DEVise setPixelWidth $map_3 1
+DEVise setPixelWidth $map_8 1
+
+# Create views
+# format: DEVise create view viewType viewName xlow xhigh ylow yhigh
+set view_1 [ format "%s#RR_vs_TIME#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_1 38.104651 1257.453488 0.000000 80.000000 white
+set view_2 [ format "%s#HR_vs_TIME#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_2 38.104651 1257.453488 0.000000 300.000000 white
+set view_3 [ format "%s#ADAL_vs_TIME#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_3 831.744781 984.163386 0.000000 2.000000 white
+set view_4 [ format "%s#CO2_vs_TIME#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_4 38.104651 1257.453488 20.000000 60.000000 white
+set view_5 [ format "%s#O2_vs_TIME#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_5 38.104651 1257.453488 0.000000 130.000000 white
+set view_6 [ format "%s#AQQS_vs_TIME#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_6 38.104651 1257.453488 0.000000 2.000000 white
+set view_7 [ format "%s#CO2_vs_HR#Scatter" $tdata_1 ]
+DEVise create view Scatter $view_7 100.000000 200.000000 0.000000 80.000000 white
+
+# Create windows
+# format: DEVise create window winType winName x y width height
+DEVise create window WinVertical DEViseWn0 0.094727 0.351562 0.862305 0.548177
+DEVise create window WinVertical DEViseWn1 0.454102 0.033854 0.478516 0.260417
+DEVise create window WinVertical DEViseWn2 0.097656 0.236979 0.856445 0.130208
+
+# Create Links
+# format: DEVise create link Visual_Link name flag
+DEVise create link Visual_Link TimeLink 1
+
+# Create Cursors
+# format: DEVise create cursor Cursor name flag
+DEVise create cursor Cursor timeCurser 1
+
+#Create axislabel
+# format: DEVise create axisLabel type name format
+
+# Create Actions
+# format: DEVise create action type name
+
+# Put labels into views
+DEVise setAxisDisplay $view_1 X 0
+DEVise setAxisDisplay $view_1 Y 0
+DEVise setAxisDisplay $view_2 X 0
+DEVise setAxisDisplay $view_2 Y 0
+DEVise setAxisDisplay $view_3 X 0
+DEVise setAxisDisplay $view_3 Y 0
+DEVise setAxisDisplay $view_4 X 0
+DEVise setAxisDisplay $view_4 Y 0
+DEVise setAxisDisplay $view_5 X 0
+DEVise setAxisDisplay $view_5 Y 0
+DEVise setAxisDisplay $view_6 X 0
+DEVise setAxisDisplay $view_6 Y 0
+DEVise setAxisDisplay $view_7 X 0
+DEVise setAxisDisplay $view_7 Y 0
+# put action into view
+# Link views
+DEVise insertLink TimeLink $view_1
+DEVise insertLink TimeLink $view_2
+DEVise insertLink TimeLink $view_4
+DEVise insertLink TimeLink $view_5
+DEVise insertLink TimeLink $view_6
+# Put views in cursors
+DEVise setCursorSrc timeCurser $view_3
+DEVise setCursorDst timeCurser $view_1
+# Put axis label into views
+# Insert mappings into views
+# format: DEVise insertMapping viewName gdataName
+DEVise insertMapping $view_1 $map_1
+DEVise insertMapping $view_2 $map_2
+DEVise insertMapping $view_3 $map_3
+DEVise insertMapping $view_4 $map_4
+DEVise insertMapping $view_5 $map_5
+DEVise insertMapping $view_6 $map_8
+DEVise insertMapping $view_7 $map_6
+
+# Insert views into windows
+# format: DEVise insertWindow viewName winName
+DEVise insertWindow $view_1 DEViseWn0
+DEVise insertWindow $view_2 DEViseWn0
+DEVise insertWindow $view_4 DEViseWn0
+DEVise insertWindow $view_5 DEViseWn0
+DEVise insertWindow $view_7 DEViseWn1
+DEVise insertWindow $view_3 DEViseWn2
+DEVise insertWindow $view_6 DEViseWn2
+
+# Init history of view
+DEVise clearViewHistory $view_1
+DEVise insertViewHistory $view_1 {266.73} {0.00} {342.94} {80.00} {0}
+DEVise insertViewHistory $view_1 {304.84} {0.00} {381.05} {80.00} {0}
+DEVise insertViewHistory $view_1 {266.73} {0.00} {419.15} {80.00} {0}
+DEVise insertViewHistory $view_1 {190.52} {0.00} {495.36} {80.00} {0}
+DEVise insertViewHistory $view_1 {38.10} {0.00} {342.94} {80.00} {0}
+DEVise insertViewHistory $view_1 {190.52} {0.00} {495.36} {80.00} {0}
+DEVise insertViewHistory $view_1 {342.94} {0.00} {647.78} {80.00} {0}
+DEVise insertViewHistory $view_1 {495.36} {0.00} {800.20} {80.00} {0}
+DEVise insertViewHistory $view_1 {647.78} {0.00} {952.62} {80.00} {0}
+DEVise insertViewHistory $view_1 {800.20} {0.00} {1105.03} {80.00} {0}
+DEVise insertViewHistory $view_1 {952.62} {0.00} {1257.45} {80.00} {0}
+DEVise insertViewHistory $view_1 {1105.03} {0.00} {1409.87} {80.00} {0}
+DEVise insertViewHistory $view_1 {952.62} {0.00} {1257.45} {80.00} {0}
+DEVise insertViewHistory $view_1 {800.20} {0.00} {1105.03} {80.00} {0}
+DEVise insertViewHistory $view_1 {647.78} {0.00} {952.62} {80.00} {0}
+DEVise insertViewHistory $view_1 {495.36} {0.00} {800.20} {80.00} {0}
+DEVise insertViewHistory $view_1 {571.57} {0.00} {723.99} {80.00} {0}
+DEVise insertViewHistory $view_1 {495.36} {0.00} {800.20} {80.00} {0}
+DEVise insertViewHistory $view_1 {342.94} {0.00} {952.62} {80.00} {0}
+DEVise insertViewHistory $view_1 {38.10} {0.00} {1257.45} {80.00} {0}
+DEVise clearViewHistory $view_2
+DEVise insertViewHistory $view_2 {266.73} {0.00} {342.94} {300.00} {0}
+DEVise insertViewHistory $view_2 {304.84} {0.00} {381.05} {300.00} {0}
+DEVise insertViewHistory $view_2 {266.73} {0.00} {419.15} {300.00} {0}
+DEVise insertViewHistory $view_2 {190.52} {0.00} {495.36} {300.00} {0}
+DEVise insertViewHistory $view_2 {38.10} {0.00} {342.94} {300.00} {0}
+DEVise insertViewHistory $view_2 {190.52} {0.00} {495.36} {300.00} {0}
+DEVise insertViewHistory $view_2 {342.94} {0.00} {647.78} {300.00} {0}
+DEVise insertViewHistory $view_2 {495.36} {0.00} {800.20} {300.00} {0}
+DEVise insertViewHistory $view_2 {647.78} {0.00} {952.62} {300.00} {0}
+DEVise insertViewHistory $view_2 {800.20} {0.00} {1105.03} {300.00} {0}
+DEVise insertViewHistory $view_2 {952.62} {0.00} {1257.45} {300.00} {0}
+DEVise insertViewHistory $view_2 {1105.03} {0.00} {1409.87} {300.00} {0}
+DEVise insertViewHistory $view_2 {952.62} {0.00} {1257.45} {300.00} {0}
+DEVise insertViewHistory $view_2 {800.20} {0.00} {1105.03} {300.00} {0}
+DEVise insertViewHistory $view_2 {647.78} {0.00} {952.62} {300.00} {0}
+DEVise insertViewHistory $view_2 {495.36} {0.00} {800.20} {300.00} {0}
+DEVise insertViewHistory $view_2 {571.57} {0.00} {723.99} {300.00} {0}
+DEVise insertViewHistory $view_2 {495.36} {0.00} {800.20} {300.00} {0}
+DEVise insertViewHistory $view_2 {342.94} {0.00} {952.62} {300.00} {0}
+DEVise insertViewHistory $view_2 {38.10} {0.00} {1257.45} {300.00} {0}
+DEVise clearViewHistory $view_3
+DEVise insertViewHistory $view_3 {825.10} {0.00} {863.20} {2.00} {0}
+DEVise insertViewHistory $view_3 {873.31} {0.00} {911.41} {2.00} {0}
+DEVise insertViewHistory $view_3 {904.50} {0.00} {942.60} {2.00} {0}
+DEVise insertViewHistory $view_3 {914.02} {0.00} {933.08} {2.00} {0}
+DEVise insertViewHistory $view_3 {918.79} {0.00} {928.31} {2.00} {0}
+DEVise insertViewHistory $view_3 {914.02} {0.00} {933.08} {2.00} {0}
+DEVise insertViewHistory $view_3 {904.50} {0.00} {942.60} {2.00} {0}
+DEVise insertViewHistory $view_3 {885.45} {0.00} {961.66} {2.00} {0}
+DEVise insertViewHistory $view_3 {847.34} {0.00} {999.76} {2.00} {0}
+DEVise insertViewHistory $view_3 {715.48} {0.00} {867.90} {2.00} {0}
+DEVise insertViewHistory $view_3 {871.44} {0.00} {1023.86} {2.00} {0}
+DEVise insertViewHistory $view_3 {1013.23} {0.00} {1165.65} {2.00} {0}
+DEVise insertViewHistory $view_3 {698.47} {0.00} {850.89} {2.00} {0}
+DEVise insertViewHistory $view_3 {463.10} {0.00} {615.52} {2.00} {0}
+DEVise insertViewHistory $view_3 {627.57} {0.00} {779.99} {2.00} {0}
+DEVise insertViewHistory $view_3 {637.50} {0.00} {789.92} {2.00} {0}
+DEVise insertViewHistory $view_3 {648.84} {0.00} {801.26} {2.00} {0}
+DEVise insertViewHistory $view_3 {651.68} {0.00} {804.10} {2.00} {0}
+DEVise insertViewHistory $view_3 {663.02} {0.00} {815.44} {2.00} {0}
+DEVise insertViewHistory $view_3 {831.74} {0.00} {984.16} {2.00} {0}
+DEVise clearViewHistory $view_4
+DEVise insertViewHistory $view_4 {266.73} {20.00} {342.94} {60.00} {0}
+DEVise insertViewHistory $view_4 {304.84} {20.00} {381.05} {60.00} {0}
+DEVise insertViewHistory $view_4 {266.73} {20.00} {419.15} {60.00} {0}
+DEVise insertViewHistory $view_4 {190.52} {20.00} {495.36} {60.00} {0}
+DEVise insertViewHistory $view_4 {38.10} {20.00} {342.94} {60.00} {0}
+DEVise insertViewHistory $view_4 {190.52} {20.00} {495.36} {60.00} {0}
+DEVise insertViewHistory $view_4 {342.94} {20.00} {647.78} {60.00} {0}
+DEVise insertViewHistory $view_4 {495.36} {20.00} {800.20} {60.00} {0}
+DEVise insertViewHistory $view_4 {647.78} {20.00} {952.62} {60.00} {0}
+DEVise insertViewHistory $view_4 {800.20} {20.00} {1105.03} {60.00} {0}
+DEVise insertViewHistory $view_4 {952.62} {20.00} {1257.45} {60.00} {0}
+DEVise insertViewHistory $view_4 {1105.03} {20.00} {1409.87} {60.00} {0}
+DEVise insertViewHistory $view_4 {952.62} {20.00} {1257.45} {60.00} {0}
+DEVise insertViewHistory $view_4 {800.20} {20.00} {1105.03} {60.00} {0}
+DEVise insertViewHistory $view_4 {647.78} {20.00} {952.62} {60.00} {0}
+DEVise insertViewHistory $view_4 {495.36} {20.00} {800.20} {60.00} {0}
+DEVise insertViewHistory $view_4 {571.57} {20.00} {723.99} {60.00} {0}
+DEVise insertViewHistory $view_4 {495.36} {20.00} {800.20} {60.00} {0}
+DEVise insertViewHistory $view_4 {342.94} {20.00} {952.62} {60.00} {0}
+DEVise insertViewHistory $view_4 {38.10} {20.00} {1257.45} {60.00} {0}
+DEVise clearViewHistory $view_5
+DEVise insertViewHistory $view_5 {266.73} {0.00} {342.94} {130.00} {0}
+DEVise insertViewHistory $view_5 {304.84} {0.00} {381.05} {130.00} {0}
+DEVise insertViewHistory $view_5 {266.73} {0.00} {419.15} {130.00} {0}
+DEVise insertViewHistory $view_5 {190.52} {0.00} {495.36} {130.00} {0}
+DEVise insertViewHistory $view_5 {38.10} {0.00} {342.94} {130.00} {0}
+DEVise insertViewHistory $view_5 {190.52} {0.00} {495.36} {130.00} {0}
+DEVise insertViewHistory $view_5 {342.94} {0.00} {647.78} {130.00} {0}
+DEVise insertViewHistory $view_5 {495.36} {0.00} {800.20} {130.00} {0}
+DEVise insertViewHistory $view_5 {647.78} {0.00} {952.62} {130.00} {0}
+DEVise insertViewHistory $view_5 {800.20} {0.00} {1105.03} {130.00} {0}
+DEVise insertViewHistory $view_5 {952.62} {0.00} {1257.45} {130.00} {0}
+DEVise insertViewHistory $view_5 {1105.03} {0.00} {1409.87} {130.00} {0}
+DEVise insertViewHistory $view_5 {952.62} {0.00} {1257.45} {130.00} {0}
+DEVise insertViewHistory $view_5 {800.20} {0.00} {1105.03} {130.00} {0}
+DEVise insertViewHistory $view_5 {647.78} {0.00} {952.62} {130.00} {0}
+DEVise insertViewHistory $view_5 {495.36} {0.00} {800.20} {130.00} {0}
+DEVise insertViewHistory $view_5 {571.57} {0.00} {723.99} {130.00} {0}
+DEVise insertViewHistory $view_5 {495.36} {0.00} {800.20} {130.00} {0}
+DEVise insertViewHistory $view_5 {342.94} {0.00} {952.62} {130.00} {0}
+DEVise insertViewHistory $view_5 {38.10} {0.00} {1257.45} {130.00} {0}
+DEVise clearViewHistory $view_6
+DEVise insertViewHistory $view_6 {266.73} {0.00} {342.94} {2.00} {0}
+DEVise insertViewHistory $view_6 {304.84} {0.00} {381.05} {2.00} {0}
+DEVise insertViewHistory $view_6 {266.73} {0.00} {419.15} {2.00} {0}
+DEVise insertViewHistory $view_6 {190.52} {0.00} {495.36} {2.00} {0}
+DEVise insertViewHistory $view_6 {38.10} {0.00} {342.94} {2.00} {0}
+DEVise insertViewHistory $view_6 {190.52} {0.00} {495.36} {2.00} {0}
+DEVise insertViewHistory $view_6 {342.94} {0.00} {647.78} {2.00} {0}
+DEVise insertViewHistory $view_6 {495.36} {0.00} {800.20} {2.00} {0}
+DEVise insertViewHistory $view_6 {647.78} {0.00} {952.62} {2.00} {0}
+DEVise insertViewHistory $view_6 {800.20} {0.00} {1105.03} {2.00} {0}
+DEVise insertViewHistory $view_6 {952.62} {0.00} {1257.45} {2.00} {0}
+DEVise insertViewHistory $view_6 {1105.03} {0.00} {1409.87} {2.00} {0}
+DEVise insertViewHistory $view_6 {952.62} {0.00} {1257.45} {2.00} {0}
+DEVise insertViewHistory $view_6 {800.20} {0.00} {1105.03} {2.00} {0}
+DEVise insertViewHistory $view_6 {647.78} {0.00} {952.62} {2.00} {0}
+DEVise insertViewHistory $view_6 {495.36} {0.00} {800.20} {2.00} {0}
+DEVise insertViewHistory $view_6 {571.57} {0.00} {723.99} {2.00} {0}
+DEVise insertViewHistory $view_6 {495.36} {0.00} {800.20} {2.00} {0}
+DEVise insertViewHistory $view_6 {342.94} {0.00} {952.62} {2.00} {0}
+DEVise insertViewHistory $view_6 {38.10} {0.00} {1257.45} {2.00} {0}
+DEVise clearViewHistory $view_7
+DEVise insertViewHistory $view_7 {-10.00} {-10.00} {1000.00} {150.00} {0}
+DEVise insertViewHistory $view_7 {-515.00} {-10.00} {1505.00} {150.00} {0}
+DEVise insertViewHistory $view_7 {-10.00} {-10.00} {1000.00} {150.00} {0}
+DEVise insertViewHistory $view_7 {242.50} {-10.00} {747.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {-10.00} {-10.00} {495.00} {150.00} {0}
+DEVise insertViewHistory $view_7 {-262.50} {-10.00} {242.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {-136.25} {-10.00} {116.25} {150.00} {0}
+DEVise insertViewHistory $view_7 {-10.00} {-10.00} {242.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {-10.00} {368.75} {150.00} {0}
+DEVise insertViewHistory $view_7 {-10.00} {-10.00} {242.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {-136.25} {-10.00} {368.75} {150.00} {0}
+DEVise insertViewHistory $view_7 {-10.00} {-10.00} {242.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {53.12} {-10.00} {179.38} {150.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {-10.00} {242.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {0.00} {242.50} {150.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {0.00} {242.50} {50.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {0.00} {242.50} {80.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {0.00} {200.50} {80.00} {0}
+DEVise insertViewHistory $view_7 {116.25} {0.00} {200.00} {80.00} {0}
+DEVise insertViewHistory $view_7 {100.00} {0.00} {200.00} {80.00} {0}
+#load pixmaps from views
+set pixmapName /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/first.tk.pixmap
+ if { !$template && [ file exists $pixmapName ] } {
+set pixmapFile [ DEVise open $pixmapName rb ]
+set fileDate [ DEVise readLine $pixmapFile ]
+set sessionDate {Sep  3 1995 15:17:12}
+if { [string compare $fileDate $sessionDate ] == 0 } { 
+DEVise loadPixmap physio.dat#RR_vs_TIME#SortedX $pixmapFile
+DEVise loadPixmap physio.dat#HR_vs_TIME#SortedX $pixmapFile
+DEVise loadPixmap physio.dat#ADAL_vs_TIME#SortedX $pixmapFile
+DEVise loadPixmap physio.dat#CO2_vs_TIME#SortedX $pixmapFile
+DEVise loadPixmap physio.dat#O2_vs_TIME#SortedX $pixmapFile
+DEVise loadPixmap physio.dat#AQQS_vs_TIME#SortedX $pixmapFile
+DEVise loadPixmap physio.dat#CO2_vs_HR#Scatter $pixmapFile
+}
+DEVise close $pixmapFile
+}
+return 1

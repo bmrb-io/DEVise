@@ -1,0 +1,242 @@
+#!/usr/local/bin/wish -f
+# tian zhang 01/20/95
+# mod by jussi myllymaki 09/04/95
+# -- mappings are changed using pull-down menus rather than separate dialogs
+#
+# this procedure use a dialog box to input and edit mapping.
+# The interface of dialogMapping:
+# proc dialogMapping {w title text bitmap mappings GetName}
+#
+# w: window name
+# title: window title
+# text: text message
+# bitmap: bitmap to be displayed
+# mappings: mapping params in the following form:
+# { { name1 {{attr type} {attr type} ...} {default mapping 1} }
+#   { name2 {{attr type} {attr type} ...} {default mapping 2}}
+#  ...
+# }
+# For example:
+# { {x { {time date} {name string} {temp int} } time }
+#   {y { {time date} {name string} {temp int} } temp }
+#   {color { {1 black} {2 red} {3 yellow} } 3 }
+#  ...
+# }
+# getName: set true to display the name of the mapping.
+# REturn: 
+#	if netName == false, the new mapping.
+#	else, a list containing {mappingName mapping}
+#############################################################################
+
+# Find maximum length of labels
+# { {label {val1 val2 ...} defvalue} ... }
+proc FindMaxLabelLength { mappings } {
+    set maxlen 1
+    foreach item $mappings {
+	set len [string length [lindex $item 0]]
+	if {$len > $maxlen} {
+	    set maxlen $len
+	}
+    }
+    return $maxlen
+}
+
+# Find maximum length of values
+# { {label {val1 val2 ...} defvalue} ... }
+proc FindMaxValueLength { mappings } {
+    set maxlen 1
+    foreach item $mappings {
+	foreach val [lindex $item 1] {
+	    set len [string length $val]
+	    if {$len > $maxlen} {
+		set maxlen $len
+	    }
+	}
+    }
+    return $maxlen
+}
+
+proc dialogMapping {w title text bitmap mappings {getName 0} } { 
+    global button1
+
+    # default options for Frame, Button
+    set tmpFrameOpt ""
+    set tmpButtonOpt ""
+
+    # destroy the old widget with the same name if there exists one
+    if {"[info commands XFDestroy]" != ""} {
+	catch {XFDestroy $w}
+    } else {
+	catch {destroy $w}
+    }
+
+    # toplevel widget parameters
+    toplevel $w -borderwidth 2
+    catch "$w config $tmpFrameOpt"
+    wm geometry $w +50+50
+    # wm geometry $w 400x150
+    wm maxsize $w 1000 1000
+    wm minsize $w 100 100
+    wm title $w $title
+    wm iconname $w DialogMapping
+
+    #########################################################################
+
+    # display TEXT or BITMAP in a sub widget
+    label $w.message -relief raised -text "$text" -bitmap "$bitmap" \
+	    -font -*-*-medium-r-normal-*-140-*-*-m-*
+    catch "$w.message config $tmpFrameOpt" 
+
+    #########################################################################
+
+    # handle mapping: {x y color shape ...} in a sub widget
+    frame $w.mapping -borderwidth 4 -relief raised
+    catch "$w.mapping config $tmpFrameOpt"
+    frame $w.mapping.gdata -borderwidth 0 -relief raised
+    catch "$w.mapping.gdata config $tmpFrameOpt"
+    frame $w.mapping.map -borderwidth 0 -relief raised
+    catch "$w.mapping.map config $tmpFrameOpt"
+
+    # calculate width of label and value fields
+    set labelWidth [expr [FindMaxLabelLength $mappings] + 5]
+    set valueWidth [expr [FindMaxValueLength $mappings] + 5]
+
+    # create the name widget
+    set nameMsgWidget ""
+    set nameEntryWidget ""
+    if { $getName } {
+	set nameMsgWidget $w.mapping.gdata.mapNameMsg
+	set nameEntryWidget $w.mapping.map.mapNameEntry
+	label $nameMsgWidget -text "mapName" -width $labelWidth
+	entry $nameEntryWidget -relief sunken -width $valueWidth
+	set item0 [lindex $mappings 0]
+	set item1 [lindex $mappings 1]
+	set initName [UniqueName [format {%s_vs_%s} \
+		[lindex $item1 2] [lindex $item0 2]]]
+	$nameEntryWidget insert 0 $initName
+    }
+
+    set xname [lindex [lindex $mappings 0] 0]
+    set xval $w.mapping.map.val$xname
+    set yname [lindex [lindex $mappings 1] 0]
+    set yval $w.mapping.map.val$yname
+
+    foreach item $mappings {
+	set itemname [lindex $item 0]
+	set itemval [findCompleteValue [lindex $item 1] [lindex $item 2]]
+	global $w.mapping.map.val$itemname
+	set $w.mapping.map.val$itemname $itemval
+	label $w.mapping.gdata.$itemname -text $itemname \
+		-width $labelWidth
+	catch "$w.mapping.gdata.$itemname config $tmpButtonOpt"
+	menubutton $w.mapping.map.$itemname -relief raised \
+		-textvariable $w.mapping.map.val$itemname \
+		-menu $w.mapping.map.$itemname.menu \
+		-width $valueWidth
+	catch "$w.mapping.map.$itemname config $tmpButtonOpt"
+	menu $w.mapping.map.$itemname.menu
+	foreach val [lindex $item 1] {
+	    if {$getName} {
+		$w.mapping.map.$itemname.menu add radiobutton \
+			-label $val -variable $w.mapping.map.val$itemname \
+			-value $val \
+			-command "updateMapName $nameEntryWidget $xval $yval"
+	    } else {
+		$w.mapping.map.$itemname.menu add radiobutton \
+			-label $val -variable $w.mapping.map.val$itemname \
+			-value $val
+	    }
+	}
+	tk_menuBar $w.mapping.map $w.mapping.map.$itemname
+    }
+
+    #########################################################################
+    # handle decision: ok cancel in a sub widget
+    #########################################################################
+    frame $w.decision -borderwidth 2 -relief raised
+    catch "$w.decision config $tmpFrameOpt"
+
+    # Ok: return new mapping
+    button $w.decision.ok -text "Ok" -command  { set button1 1 }
+    catch "$w.decision.ok config $tmpButtonOpt"
+
+    # Cancel: return old mapping
+    button $w.decision.cancel -text "Cancel" -command { set button1 0 }
+    catch "$w.decision.cancel config $tmpButtonOpt"
+
+    #########################################################################
+    # packings
+    #########################################################################
+
+    pack append $w.decision \
+	    $w.decision.cancel {left fill expand} \
+	    $w.decision.ok {left fill expand} 
+
+    foreach item $mappings {
+	set itemname [lindex $item 0]
+	pack append $w.mapping.gdata $w.mapping.gdata.$itemname \
+		{top fill expand}
+	pack append $w.mapping.map $w.mapping.map.$itemname \
+		{top fill expand}
+    }
+
+    # Pack the mapping name widget
+    if { $getName } {
+	pack append $w.mapping.gdata $nameMsgWidget {top fill expand}
+	pack append $w.mapping.map $nameEntryWidget {top fill expand}
+    }
+
+    pack append $w.mapping \
+	    $w.mapping.gdata {left fill expand} \
+	    $w.mapping.map {right fill expand}
+
+    pack append $w \
+	    $w.message {top fill} \
+	    $w.mapping {top fill} \
+	    $w.decision {bottom fill} 
+
+    #########################################################################
+
+    tkwait variable button1
+    set newmap ""
+    if { $button1 == 1 } {
+	foreach item $mappings {
+	    set itemname [lindex $item 0]
+	    lappend newmap [lindex [deref $w.mapping.map.val$itemname] 0]
+	}
+	if {$getName } {
+	    set newmap [list [$nameEntryWidget get] $newmap]
+	}
+    }
+ 
+    if {"[info commands XFDestroy]" != ""} {
+	catch {XFDestroy $w}
+    } else {
+	catch {destroy $w}
+    }
+
+    return $newmap
+}
+
+proc findCompleteValue {list key} {
+    foreach item $list {
+	if {[lindex $item 0] == $key} {
+	    return $item
+	}
+    }
+    puts "Cannot find $key in $list"
+    exit 1
+}
+
+proc deref {var} {
+    upvar $var vderef
+    return $vderef
+}
+
+proc updateMapName {w xval yval} {
+    upvar $xval x
+    upvar $yval y
+    set name [UniqueName [format {%s_vs_%s} $y $x]]
+    $w delete 0 end
+    $w insert 0 $name
+}

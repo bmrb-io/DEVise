@@ -1,0 +1,504 @@
+BEGINTAG DEVise
+section 0: DEVise: Introduction
+
+    DEVise (A Data Exploration and Visualization Environment) is designed
+for 2D visualization of stream data. A streams is an append-only
+object, e.g, an append-only text file. 
+
+DEVise is designed with the following features:
+
+	+ ability to handle data larger than memory
+
+	+ ability to read ascii files directly through the user-provided schema
+	file.
+
+	+ support for double, int, and date data attributes.
+
+	+ flexible mapping mechanism from data attributes into graphical
+	attributes: x, y, color, shape.  (To be implemented: pattern,
+	size, orientation. )
+
+	+ Flexible layout mechanism that allows the user to
+	move views from or between windows.
+
+	+ Generalized linkage of graphics using graphical attributes.
+
+	+ Structured interface that takes the user from the input file
+	to the final visualization.
+
+ENDTAG DEVise
+BEGINTAG file
+Section1: FILE
+    The input file is provided by the user. It is stored on disk in
+ascii. An example of an ascii file containing sin(time) and cos(time) might
+look like:
+
+    #	time       sin        cos
+		0.000000.2 1.000000.2 0.000000.2
+		0.017453.2 0.999848.2 0.017452.2
+		0.034906.2 0.999391.2 0.034898.2
+		0.052358.2 0.998630.2 0.052334.2
+		...
+
+We will use this example throughout the help window.
+
+To visualize the contents of a file, use the 'Visualize/File' menu
+from the control panel. A separate 'schema' file is also needed by
+DEVise. (See the 'schema' section.)
+
+ENDTAG file
+BEGINTAG schema
+Section 2: SCHEMA
+	Step 1: import a file into DEVise through a schema file.
+The schema file describes the layout of an ascii input file.
+It is used to convey: name and type of attributes, characters that 
+separate the attributes in the file, and characters that should be 
+ignored while reading the file. For our example file, the schema file looks 
+like:
+
+	type Sensor ascii
+	comment #
+	whitespace ' '
+	attr time double 
+	attr sin double
+	attr cos double
+
+The first line names the file type: Sensor. All sensor files have
+data stored in the same format.  More than one file type can be imported 
+into DEVise, each having its own schema file. For example, we can also 
+create a Stock file type to read information about stock prices, with data 
+stored in a different format.  The second line tells DEVise to ginore 
+lines that start with '#'. The third line tells DEVise that the 
+attributes in the file are separated by white spaces. (DEVise
+can also read files separated by delimineters, such as '10,20,20'.)
+The remaining lines describe attribute names and types.
+
+While executing 'visuazlize/File' the user is asked to select a file type. If
+no file type is available, DEVise automatically asks the user
+to select a schema file.
+
+ENDTAG schema
+BEGINTAG tdata
+section 3: TDATA
+After selecting the file type, the user is asked to enter an alias
+for the tdata. The default name is the name of the input file,
+stripped of its path information. After entering the alias, the
+file is imported as tdata into DEVise.
+
+	A Textual Data (TDAta) is the representation used by DEVise to
+access the file. Once a file is imported into DEVise as a tdata, the
+user uses the tdata to create visualizations. This can be done by
+following the steps in the 'visualize/file' menu when starting
+from scratch, or using the 'visaulize/tdata' menu when the tdata
+has already been created.
+
+
+ENDTAG tdata
+BEGINTAG mapping
+section 4: MAPPING
+	Step 2: Convert textual data (TData) into graphical data (GData).
+A mapping converts textual data (tdata) attributes into graphical 
+data (gdata) attributes. The user decides how tdata is visualize by
+selecting the tdata attributes that map onto the the x, y, color and shape
+gdata attributes. (More attributes will become available in a
+future implementation.) Notice that a tdata can be visualized in
+more than one way by creating more than one mapping.
+
+A mapping can be created by following the steps in the 'Visualize/File'
+or 'Visualize/TData" menu. If no mapping is available, the user
+interface automatically asks the user to create a new mapping.
+Otherwise, the user interface asks the user to select an existing mapping.
+clicking <New> gives the user a chance to create a new mapping.
+
+For our example, we can create the following example mappings:
+	sin_vs_time
+		x <-- time
+		y <-- sin
+	
+	cos_vs_time:
+		x <-- time
+		y <-- cos
+	
+	sin_vs_cos
+		x <-- cos
+		y <-- sin
+
+Once a mapping is created, it can be used on all tdata with the
+same file type.
+
+ENDTAG mapping
+BEGINTAG gdata
+section 5: GDATA
+    The graphical data (gdata) is the graphical representation of the
+tdata. It consists of attributes: x, y, color, pattern, size, orientation,
+shape, and shape specific attributes. Using the 'Visualize/File' or the 
+'Visualize/TData' menu, the user selects the mapping that is used to 
+create the gdata.
+
+ENDTAG gdata
+BEGINTAG visual
+section 6: Visual Filter
+	Step 3: use visual filter to specify portions of GData to be viewed.
+A visual filter defines a range query over the graphical data
+attributes of the gdata. The user sets the visual filter as follows:
+
+1) When creating a new view, the user is asked to type in the initial
+visual filter for the view.
+
+2) After the view is created and placed in a window, the user sets the
+visual filter by first clicking the view to highlight it, and
+then:
+    i)  then clicking the control panel buttons: up, down, left, right, etc.
+	ii) Using the history mechanism of the control panel to type in the
+	new coordinates
+	iii) Using the keypad commands with the mouse still in the view as
+	follows:
+		left		4
+		right		6
+		up			8
+		down		2
+		zoomin x	7
+		zoomout x	9
+		zoomin y	1
+		zoomout y	3
+	iv) Use the left or right mouse button to sketch an area to zoom in.
+	The left button zooms in to X, while the right button zooms in X and Y.
+	v)The user can also create a cursor to display the view boundaries
+	of one view inside another view. See the section on 'link, cursor'.
+
+
+ENDTAG visual
+BEGINTAG view
+section 7: VIEW
+	A view is used to display those gdata that fall within the range
+of the visual filter. Currently we have two types of views: Scatter
+and SortedX. The Scatter view is used to draw a scattered plot.
+The SortedX view implements optimizations used to reduce the time
+used to draw the gdata if the X attribute is sorted.
+
+	Selecting the wrong view means sometimes it takes longer
+to draw the data. (Note: we hope to make the selection of view
+automatic in the future.)
+
+	The user creates a new view by following the steps in the
+'Visualize/File', 'Visualize/TData', or 'Visualize/GData' menu.
+Note that currently we do not allow more than one gdata to
+be inserted in a view.
+
+ENDTAG view
+BEGINTAG window
+section 8: WINDOW
+	
+	A window provides the screen real estate used by views to
+draw the gdata. It it also responsible for arranging views in its
+boundaries. Currently, we only have WinVer that arranges the views
+vertically inside window boundaries.
+
+	A view can be removed from a window by clicking the view
+to highight it, and then using the 'View/Remove from Window' menu.
+It can also be moved to a different window by using the
+'View/Move to Window' menu.
+
+	Windows can be duplicated using the 'Window/duplicate' menu.
+
+ENDTAG window
+BEGINTAG link
+section 9: LINK, CURSOR
+
+	Step 5: Link multiple views together.
+A link is used to link visual filters so that updating one
+synchronously updates all linked visual filters. Most of the time, a
+link is used to create linked axes, with either linked x and/or y axes. 
+However, a link can be used on any of the of the graphical attributes: 
+x, y, color, size, pattern, orientation, and shape. 
+
+	A cursor can also be used to display the X/Y boundaries of one view
+within another view. First, use the Cursor/Create menu to create a new
+cursor. Next, use the 'Cursor/Set Src' menu to set the source
+of the cursor. The source view is where the cursor fetches information
+about the current view X/Y axes boundaries. Finally, use the 
+'Cursor/Set Dst' menu to set the destination view. The X/Y boundaries 
+of the source view are drawn as line segments in the axes
+of the destination view. Click in the axes area of the destination view
+to move the source view (by changing its visual filter)
+to the location clicked.
+
+ENDTAG link
+BEGINTAG tour
+section 10: Tour using the sample data.
+
+	We now take the user through the steps necessary to create a visualization
+of the sample file. Let us assume that the name of the file is sensor.dat,
+and it looks as follows:
+
+    #time      sin        cos
+    0.000000.2 1.000000.2 0.000000.2
+    0.017453.2 0.999848.2 0.017452.2
+    0.034906.2 0.999391.2 0.034898.2
+    0.052358.2 0.998630.2 0.052334.2
+
+	First, create a schema file, and name it sensor.schema:
+
+	type Sensor ascii
+	comment #
+	whitespace ' '
+	sorted attr time double
+	attr sin double
+	attr cos double
+
+	Next, start DEVise, and choose the Visualize/File menu.
+
+	Step 1: Importing file as TData
+
+	Click Sensor.dat to pick the data file, then click <OK>.
+	Click <OK> at the dialog box to import schema file.
+	click sensor.schema to import the schema file.
+	click <ok> to import sensor.dat
+
+	Step 2: Mapping to GData
+	click <OK> to create a new mapping
+	click <x> to set attribute for x; click time, then <OK>
+	click <y> ; click sin; click <OK>
+	click color, pick a color, and click <OK>
+	click <OK> to create a new sin_vs_time mapping
+	click <OK> to use the default gdata name: sensor.dat.sin_vs_time
+
+	Step 3: Insert int a view
+	click <SortedX> to use the SortedX view, then <OK>
+	Enter 0 for xlow, 15 for xhigh, -1 for yLow, 1 for yHigh, <OK>
+
+	Step 4: Select window 
+	click <OK> to use default window parameters
+	After the window appears, type '+' a few times with the mouse in the
+	window to enlarge the shapes in the window.
+
+	Step 5: link
+	First, create an additional view by choosing <Visualize/tdata> menu
+	click <sensor.dat>, then <OK>
+	click <new> to create a new mapping
+	click <x>; click <time>; then <OK>
+	click <y>; click <cos>, then <OK>
+	Change color/shape as you would prefer, then click <OK>
+	click <OK> to use the the mapping cos_vs_time
+	click <OK> to use default GData name: sensor.dat.cos_vs_time
+	click <SortedX> for view, then <OK>
+	Enter 0 for xLow, 15 for xhigh, -1 for ylow, 1 for yhigh, then <OK>
+	click <DEViseWn0> then <OK> to insert into the same window
+
+	To link the two views together:
+	click in the view <sensor.dat.sin_vs_time.SortedX>
+	Choose <View/Link> menu
+	Make sure only <X> is selected
+	type linkX for the name of this link, then <OK>
+	click in the view <sensor.dat.cos_vs_time.SortedX>
+	choose <View/Link> menu
+	click <linkX> then <OK>
+
+	Now the two are linked together.
+
+	To plot sin vs cos:
+	Choose <Visualize/TData> menu
+	Pick sensor.dat, click <OK>
+	Click <New> to create a new mapping
+	Click <x>, then cos, then <OK>
+	click <y>, then sin, then <OK>
+	click <OK> to use mapping sin_vs_cos
+	click <OK> to use default GData anme "sensor.dat.sun_vs_cos"
+	Click <scatter> for scattered plot
+	click -1 for xlow, 1 for xhigh, -1 for ylow, 1 for yhigh, then <OK>
+	click <New> to create a new window; click <OK> for window parameters
+	Notice the sin_vs_cos is circular.
+
+
+	To see the result of this session: 
+		Choose Session/Demo menu to load the demo session.
+
+ENDTAG tour
+BEGINTAG gui 
+Section 11: Graphical User Interface (GUI)
+	This section contains a brief description of the GUI implemented
+	by DEVise. The GUI consists of the control panel,
+	and the data windows that display the views.
+
+Section 11A- CONTROL PANEL
+	The control panel consists of menu and widgets.  We will
+	start with menus, and then describe the widgets
+
+*****************************************************************
+CONTROL PANEL MENUS
+
+Session Menu:
+
+	Session/Open: 
+		Restore a previously saved session.
+
+	Session/Open as template:
+		Restore a previously saved session, but with a different set of 
+		input file.  DEVise will prompt you for the new files.
+
+	Session/Close:
+		Close current session.
+
+	Session/Save
+		Save session.
+
+	Session/Save as:
+		Save session under a different name.
+
+	Session/Demo:
+		open the demo session.
+
+	Session/Quit
+		exit DEVise.
+
+Visualize Menu:
+	The Visualize menu is the starting point for visualizing a file.
+	It allows the user to create visualizations through a structured 
+	interface. The structured interface takes the user step by step
+	using a point and click interface.
+
+	Visualize/File:
+		Structured interface: file --> tdata --> mapping --> view --> window.
+
+	Visualize/TData
+		Structured interface: tdata --> mapping --> view --> window.
+
+	Visualize/GData:
+		Structured interface: mapping --> view --> window.
+
+View Menu:
+	Most of the menu items under the View menu require that you
+	specify a current view. Select the current view by
+	clicking in the view with the left mouse button.
+
+	View/Remove From Window:
+		Remove current view from its window.
+
+	View/Move To Window:
+		Move a view to a window. (Devise will provided a list of views.)
+
+	View/Link
+		Link current view to a Visual Link.
+
+	View/Unlink
+		Remove current view from a Visual Link.
+
+	View/XAxis:
+		For applications that have user provided X axis: set the X
+		axis for the view.
+
+	View/YAxis:
+		For applications that have user provided Y axis: set the Y
+		axis for the view.
+
+	View/Action:
+		For applications that have user provided actions: set the action
+		the view.
+
+	View/Edit Mapping:
+		Edit mapping for this view.
+
+	View/Switch TData:
+		Apply the methods to create this view on a different TData.
+		Display the new view in place of current view.
+
+	View/Toggle X Axis:
+		Toggle the display of X axis.
+
+	View/Toggle Y Axis:
+		Toggle the display of Y axis.
+
+	View/Swap Position:
+		Swap the position of the last 2 views selected. They must
+		fall within the same window.
+
+Cursor Menu:
+	A cursor displays the location of one view inside a second view.
+
+	Cursor/Create
+		Carete a new cursor.
+
+	Cursor/Set Src:
+		Make the current view the source of the cursor. 
+
+	Cursor/Set Dst:
+		Make the current view the destination of the cursor. The destination
+		is where the cursor will be displayed.
+
+Window Menu:
+	Window/Help:
+		Open the help window to display this help message.
+
+	Window/History:
+		Open the history window.
+
+	Window/Duplicate:
+		Make a copy of this window. Note: links and cursors are not copied.
+
+*******************************************************************
+Control Panel Widgets:
+	mode button:
+		The mode button is used to toggle between display and layout mode.
+		The default is the display mode. In the layout mode, users can
+		still create new views. Howerver, the graphics in the views
+		are not updated. This is a way for users to quickly create
+		desired layouts of the views without having to wait for
+		the graphics to be updated.
+	
+	status message:
+		This is an icon that indicates whether the system is busy or
+		idle. An hourglass indicates busy, while a head with a question
+		mark indicates idle.
+	
+	Information about current view:
+		Current view widget: displays the name of current view
+		xlow, ylow, xhigh, yhigh: Display the boundaries of the selected view.
+			These widgets can be edited. 
+		use: make the edited xlow/ylow/xhigh/yhigh be the
+			new visual filter for the view.
+		undo-edit: undo the editing of the text widgets
+		back one: go back to the previous visual filter
+		history: bring up the history window. To go back to a previously
+			visited location, click an entry in the history window, then 
+			click "use" to use that entry in the history window.
+		
+		For scrlooing and zooming, the layout of the buttons on the
+		lower left hand of the control panel as as follows:
+
+               ZoomInX      ZoomOutX
+                         Up
+                   left     right
+                        down
+                 ZoomInY    ZoomOutY
+***************************************************************************
+**************************************************************************
+Section 11B- Data Windows
+	The Data Window contains the graphics display for the different
+	views. The events for the views are as follows:
+
+	1) Click in any view to select it as the current view.
+	A bar appears on the left to highlight the selected view.
+
+	2) Middle mouse button in the upper-left region displays information
+	about the current view. Middle mouse button in the data area
+	displays a pop-up window containing information about the current view.
+
+	3) For changing the Visual Filter:
+		i)Using the keypad commands with the mouse still in the view as
+		follows:
+			left		4
+			right		6
+			up		8
+			down		2
+			zoomin x	7
+			zoomout x	9
+			zoomin y	1
+			zoomout y	3
+
+		ii) Use the left or right mouse button to sketch an area to zoom in.
+		The left button zooms in to X, while the right button zooms in X and Y.
+
+	4) If a cursor is displayed in the view, click along the axes of
+	the destination view moves the source view to the clicked region
+	by changing its visual filter.
+ENDTAG gui

@@ -1,0 +1,173 @@
+CPPFLAGS =  -g -O -DUNIX  -I/p/miron/miron/DEVise/src/graphics \
+	-I/p/miron/miron/DEVise/src/graphics.new -I/usr/unsup/include \
+	-I/usr/sup/tcl/include $(ARCH_FLAGS) -Wall -fexternal-templates
+
+LIBSRC = TDataTape.C TDataTapeInterp.C tapedrive.C QueryProcTape.C \
+         Templates.C
+
+LIBOBJ = TDataTape.o TDataTapeInterp.o tapedrive.o QueryProcTape.o \
+         Templates.o
+
+ALLSRC= $(LIBSRC) $(TESTSRC) 
+
+
+LIBOBJS= $(LIBOBJ)
+
+tapeobj.o: $(LIBOBJS)
+	ld -r -o tapeobj.o $(LIBOBJS)
+
+	
+depend:
+	makedepend -fMakefile.alpha \
+                -I/usr/psup/gcc/lib/g++-include \
+		-I../graphics -I../graphics.new $(ALLSRC)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+TDataTape.o: /usr/psup/gcc/lib/g++-include/iostream.h
+TDataTape.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+TDataTape.o: /usr/psup/gcc/lib/g++-include/libio.h /usr/include/assert.h
+TDataTape.o: /usr/include/stdio.h /usr/psup/gcc/lib/g++-include/libc.h
+TDataTape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+TDataTape.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
+TDataTape.o: /usr/include/sys/stat.h /usr/include/sys/types.h
+TDataTape.o: /usr/include/sys/sysmacros.h /usr/include/limits.h
+TDataTape.o: /usr/include/unistd.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Parse.h TDataTape.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Journal.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h tapedrive.h
+TDataTape.o: machdep.h /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataTape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+TDataTape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataTape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataTape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataTape.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+TDataTape.o: /usr/include/sys/time.h /usr/include/sys/timeb.h
+TDataTape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataTape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Util.h
+TDataTape.o: /usr/include/strings.h /usr/include/ctype.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/Init.h
+TDataTape.o: /u/m/c/mcheng/public/devise/graphics/BufPolicy.h
+TDataTapeInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+TDataTapeInterp.o: /usr/include/assert.h TDataTapeInterp.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/ClassDir.h
+TDataTapeInterp.o: TDataTape.h /usr/include/stdio.h /usr/include/sys/types.h
+TDataTapeInterp.o: /usr/include/sys/sysmacros.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+TDataTapeInterp.o: /usr/psup/gcc/lib/g++-include/libc.h /usr/include/stdlib.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Journal.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h
+TDataTapeInterp.o: tapedrive.h machdep.h /usr/include/limits.h
+TDataTapeInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTapeInterp.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataTapeInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+TDataTapeInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataTapeInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataTapeInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataTapeInterp.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+TDataTapeInterp.o: /usr/include/sys/time.h /usr/include/sys/timeb.h
+TDataTapeInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataTapeInterp.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/AttrList.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Config.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/RecInterp.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics.new/CompositeParser.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Parse.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Control.h
+TDataTapeInterp.o: /u/m/c/mcheng/public/devise/graphics/Util.h
+TDataTapeInterp.o: /usr/include/strings.h /usr/include/ctype.h
+tapedrive.o: /usr/psup/gcc/lib/g++-include/iostream.h
+tapedrive.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+tapedrive.o: /usr/psup/gcc/lib/g++-include/libio.h /usr/include/unistd.h
+tapedrive.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+tapedrive.o: /usr/include/assert.h tapedrive.h /usr/include/stdio.h machdep.h
+tapedrive.o: /usr/include/limits.h /usr/include/sys/types.h
+tapedrive.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+tapedrive.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+tapedrive.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+tapedrive.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+tapedrive.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+tapedrive.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+tapedrive.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/sys/timeb.h /usr/include/sys/ipc.h
+tapedrive.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+tapedrive.o: /usr/include/sys/sem.h
+QueryProcTape.o: /usr/include/assert.h QueryProcTape.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/QueryProc.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/QPRange.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/BufPolicy.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+QueryProcTape.o: /usr/include/stdio.h /usr/psup/gcc/lib/g++-include/libc.h
+QueryProcTape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Journal.h SortedTable.h
+QueryProcTape.o: /usr/psup/gcc/lib/g++-include/iostream.h
+QueryProcTape.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+QueryProcTape.o: /usr/psup/gcc/lib/g++-include/libio.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/GData.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgr.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufHint.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufferPolicy.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Init.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgrFull.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/RangeInfo.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgrNull.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/TDataMap.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Pattern.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/ShapeID.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/Bitmap.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/GDataRec.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/GDataBin.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/MappingInterp.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics.new/TDataMapDispatch.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/AttrList.h
+QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+QueryProcTape.o: /u/m/c/mcheng/public/devise/graphics/Config.h
+Templates.o: QueryProcTape.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/QueryProc.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/DeviseTypes.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/VisualArg.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Color.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/RecId.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/QPRange.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/DList.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Exit.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/BufPolicy.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Dispatcher.h
+Templates.o: /usr/include/stdio.h /usr/psup/gcc/lib/g++-include/libc.h
+Templates.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics/Journal.h SortedTable.h
+Templates.o: /usr/psup/gcc/lib/g++-include/iostream.h
+Templates.o: /usr/psup/gcc/lib/g++-include/streambuf.h
+Templates.o: /usr/psup/gcc/lib/g++-include/libio.h /usr/include/assert.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/GData.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/TData.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/RecOrder.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/BufMgr.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/BufHint.h
+Templates.o: /u/m/c/mcheng/public/devise/graphics.new/BufferPolicy.h

@@ -1,0 +1,6 @@
+#! /bin/csh -f
+
+/bin/rm -rf $DEVISE_TMP/*
+#/bin/rm -rf $DEVISE_WORK/* *.pixmap
+devise/sun/ams/ams -restore -session tape.150k.tk -queryProc Tape \
+                   -convert 1 -iconify 0 -gdataPages 64 &

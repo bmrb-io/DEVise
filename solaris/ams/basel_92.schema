@@ -1,0 +1,25 @@
+# catalog file for soil
+type Basel92 ascii
+comment //
+separator ','
+# 0 to keep them separate
+# mergeseparator 0
+attr SITEGRID_ID string 12
+attr STATION_ID int
+attr OBS_DATE string 12
+attr OBS_TIME int
+attr NET_RADTN double
+attr LATENT_HEAT_FLUX double
+attr SENSIBLE_HEAT_FLUX double
+attr SOIL_HEAT_FLUX double
+attr SPIKE_FLAG int
+attr IDF_FLAG int
+attr FIFE_DATA_CRTFCN_CODE string 12
+attr LAST_REVISION_DATE string 12
+
+# composite attributes go here
+sorted compattr DATE date
+
+# example:
+# '1246-BRL',40,26-MAY-87,515,-58.0,-48.0,90.0,16.21,1,4,'CGR    ',04-JAN-94
+

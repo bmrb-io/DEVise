@@ -1,0 +1,438 @@
+#include <iostream.h>
+#include <unistd.h>
+#include <string.h>
+#include <assert.h>
+
+#include "tapedrive.h"
+
+// Use fake fileno and blkno to make this file compile in Alpha
+// until a real fix is found. The problem is that in Alpha/OSF,
+// struct mtget (mtio.h) does not include fields mt_fileno and
+// mt_blkno. See warning printed out below.
+
+#ifdef __alpha
+#define mt_fileno mt_resid * 0
+#define mt_blkno  mt_resid * 0
+#endif
+
+TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
+	initialized(0), fileNo(fno), blockSize(blockSz)
+{
+#ifdef __alpha
+  cerr << "Warning: In Alpha/OSF/1, file number and block number inquiry"
+       << endl;
+  cerr << "         does not work. TapeDrive will probably fail." << endl;
+#endif
+
+  if (!(file = fopen(name, mode))) {
+    perror("fopen");
+    return;
+  }
+
+  atEof = (mode[0] == 'w');
+
+  for(int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
+    mt_tim[i] = mt_ios[i] = mt_cnt[i] = 0;
+  read_time = read_ios = read_cnt = 0;
+  write_time = write_ios = write_cnt = 0;
+
+  // If the caller gave us the 'target' file number, let's use it.
+  // If no number was given, use the current file on the tape.
+  if (fileNo < 0) {
+    getStatus();
+    fileNo = tstat.mt_fileno;
+  }
+  gotoBeginningOfFile();
+
+  buffer = new char [blockSize];
+  assert(buffer);
+  bufferType = readBuffer;
+  bufferBlock = 0;
+  bufferOffset = 0;
+  bufferBytes = 0;
+
+  initialized = 1;
+}
+
+TapeDrive::~TapeDrive()
+{
+  if (!initialized)
+    return;
+
+  if (bufferType == writeBuffer)
+    flushBuffer();
+  delete buffer;
+
+  fclose(file);
+}
+
+void TapeDrive::printStats()
+{
+  cout << "Tape usage statistics:" << endl;
+  cout << "  cmd\tcalls\tcount\tavgtime" << endl;
+  for(int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
+    cout << "  " << i << "\t" << mt_ios[i]
+         << "\t" << mt_cnt[i]
+	 << "\t" << mt_tim[i] / (mt_cnt[i] ? mt_cnt[i] : 1) << endl;
+  cout << "  read\t" << read_ios << "\t" << read_cnt
+       << "\t" << read_time / (read_ios ? read_ios : 1) << endl;
+  cout << "  write\t" << write_ios << "\t" << write_cnt
+       << "\t" << write_time / (write_ios ? write_ios : 1) << endl;
+}
+
+long TapeDrive::seek(long offset)
+{
+  if (bufferType == writeBuffer) {      // flush out write buffer
+    flushBuffer();
+    bufferType = readBuffer;
+    bufferBlock = 0;
+  }
+
+  long block = offset / blockSize;
+  long off = offset % blockSize;
+
+  if (atEof)                            // system screwed up after reading
+    resynchronize();                    // to EOF; must resynchronize
+
+  if (block != bufferBlock - 1) {       // not current block?
+    gotoBlock(block);                   // goto new block location
+    fillBuffer();                       // read it into buffer
+  }
+
+  bufferBlock = block + 1;              // on tape, just past current block
+  bufferOffset = off;
+
+  if (bufferOffset > bufferBytes) {
+    cerr << "Seeking past end of file" << endl;
+    exit(1);
+  }
+
+  return offset;
+}
+
+int TapeDrive::read(void *buf, int recSize, int binary)
+{
+  if (bufferType != readBuffer) {
+    cerr << "Must do a seek before switching from writing to reading" << endl;
+    exit(1);
+  }
+
+  assert(bufferOffset >= 0 && bufferOffset <= blockSize);
+  assert(bufferBytes >= 0 && bufferBytes <= blockSize);
+  assert(bufferOffset <= bufferBytes);
+
+  if (atEof)                            // already at end of tape file?
+    return 0;
+
+  if (bufferOffset >= bufferBytes) {    // no more bytes in buffer?
+    fillBuffer();                       // get next block from file
+    if (!bufferBytes)                   // end of file?
+      return 0;
+  }
+
+  read_cnt++;
+  if (read_cnt % 1000 == 0)
+    TAPEDBG(cout << read_cnt << " " << flush);
+
+#ifdef TAPE_BLOCK_PADDING
+  char *start = buffer + bufferOffset;  // starting point for this record
+  assert(*start != 0);                  // must not be an empty record
+
+  if (recSize > bufferBytes - bufferOffset)
+    recSize = bufferBytes - bufferOffset;
+  if (!binary) {                        // reading an ASCII record?
+    char *end = (char *)memchr(start, 0, recSize);
+    assert(end);
+    recSize = end - start;              // do not include record separator
+  }
+  memcpy(buf, start, recSize);
+  bufferOffset += recSize + 1;          // go past record separator too
+  if (!binary                           // in ASCII mode?
+      && bufferOffset < bufferBytes     // still data left but...
+      && !buffer[bufferOffset]))        // last record in block?
+    bufferOffset = bufferBytes;         // must fetch new block next time
+
+#else
+
+  int bytesLeft = recSize;
+  recSize = 0;
+  char *p = (char *)buf;
+  while(bytesLeft > 0) {
+    char *start = buffer + bufferOffset;
+    int b = bufferBytes - bufferOffset; // bytes left in buffer
+    if (bytesLeft < b)                  // caller doesn't want that many?
+      b = bytesLeft;
+    char *end = 0;
+    if (!binary) {                      // reading an ASCII record?
+      end = (char *)memchr(start, '\n', b);
+      if (end)                          // found newline = end of record?
+	b = end - start + 1;
+    }
+    memcpy(p, start, b);
+    bufferOffset += b;
+    bytesLeft -= b;
+    recSize += b;
+    p += b;
+    if (end)                            // found newline = end of record?
+      break;
+    if (bufferOffset >= bufferBytes)    // need next block?
+      fillBuffer();
+    if (!bufferBytes)                   // end of physical file?
+      break;
+  }
+
+  if (!binary                           // in ASCII mode?
+      && bufferOffset < bufferBytes     // still data left but...
+      && !buffer[bufferOffset])         // end of logical file (NULL char)?
+    bufferOffset = bufferBytes;         // must try to fetch block next time
+#endif
+
+  return recSize;
+}
+
+int TapeDrive::write(void *buf, int recSize)
+{
+  write_cnt++;
+  cerr << "Random writes not supported on tapes." << endl;
+  assert(0);
+  return 0;
+}
+
+int TapeDrive::append(void *buf, int recSize)
+{
+  write_cnt++;
+
+  if (!atEof) {
+    gotoEndOfFile();
+    atEof = 1;
+    bufferBlock = tstat.mt_blkno;
+  }
+
+  if (bufferType != writeBuffer) {
+    // can simply discard read buffer
+    bufferOffset = 0;
+    bufferType = writeBuffer;
+  }
+
+#ifdef TAPE_BLOCK_PADDING
+  if (recSize > blockSize - 1)
+    recSize = blockSize - 1;
+
+  if (bufferOffset + recSize + 1 > blockSize)
+    flushBuffer();
+
+  assert(bufferOffset + recSize + 1 <= blockSize);
+  memcpy(buffer + bufferOffset, buf, recSize);
+  *(buffer + bufferOffset + recSize) = '\0';
+  bufferOffset += recSize + 1;
+#else
+  int bytes = recSize;
+  char *p = (char *)buf;
+  while(bytes > 0) {
+    int spaceLeft = blockSize - bufferOffset;
+    int b = (bytes <= spaceLeft ? bytes : spaceLeft);
+    assert(bufferOffset + b <= blockSize);
+    memcpy(buffer + bufferOffset, p, b);
+    bufferOffset += b;
+    bytes -= b;
+    p += b;
+    if (bufferOffset >= blockSize)
+      flushBuffer();
+  }
+#endif
+
+  return recSize;
+}
+
+int TapeDrive::command(short mt_op, daddr_t mt_count)
+{
+  static struct mtop cmd;
+  cmd.mt_op = mt_op;
+  cmd.mt_count = mt_count;
+  TAPEDBG(cout << "Tape command " << mt_op << ", count " << mt_count
+	  << ", " << flush);
+
+  assert(mt_op >= 0 && mt_op < sizeof(mt_ios) / sizeof(mt_ios[0]));
+  mt_ios[mt_op]++;
+  mt_cnt[mt_op] += (mt_count >= 0 ? mt_count : -mt_count);
+
+  startTimer();
+  int status = ioctl(FILE2FD(file), MTIOCTOP, (char *)&cmd);
+  mt_tim[mt_op] += getTimer();
+
+  TAPEDBG(cout << "status = " << status << endl);
+  if (status < 0)
+    perror("ioctl");
+
+  return status;
+}
+
+void TapeDrive::getStatus()
+{
+#if defined(__aix) || defined(_AIX)
+  tstat.mt_resid  = 0;
+  tstat.mt_fileno = 0;
+  tstat.mt_blkno  = 0;
+#else
+  int status = ioctl(FILE2FD(file), MTIOCGET, (char *)&tstat);
+  if (status < 0)
+    perror("ioctl");
+  assert(status >= 0);
+#endif
+}
+
+void TapeDrive::fillBuffer()
+{
+  read_ios++;
+
+//  startTimer();
+  int status = ::read(FILE2FD(file), buffer, blockSize);
+//  read_time += getTimer();
+
+  bufferBlock++;
+  bufferOffset = 0;
+  bufferBytes = status;
+
+  if (!status) {                        // end of tape file?
+    atEof = 1;
+    return;
+  }
+
+  atEof = 0;
+
+  if (status < 0) {                     // read error?
+    perror("read");
+    exit(1);
+  }
+  
+#ifdef PARTIAL_BLOCK_ERROR
+  if (status < blockSize) {             // partial block read?
+    cerr << "Partial block read: " << status << " vs. " << blockSize << endl;
+    exit(1);
+  }
+#endif
+}
+
+void TapeDrive::flushBuffer()
+{
+  assert(bufferType == writeBuffer);
+  if (!bufferOffset)
+    return;
+  write_ios++;
+  if (bufferOffset < blockSize)
+    memset(buffer + bufferOffset, 0, blockSize - bufferOffset);
+
+  startTimer();
+  if (::write(FILE2FD(file), buffer, blockSize) < blockSize) {
+    perror("write");
+    exit(1);
+  }
+  write_time += getTimer();
+
+  bufferBlock++;
+  bufferOffset = 0;
+}
+
+void TapeDrive::gotoBlock(long block)
+{
+  getStatus();
+  if (fileNo != tstat.mt_fileno)        // oops, we're in another file
+    gotoBeginningOfFile();
+
+  getStatus();
+  long diff = block - tstat.mt_blkno;   // difference in block numbers
+  if (!diff)                            // no movement required?
+    return;
+
+  if (!block) {                         // do we just want to go to BOF?
+    gotoBeginningOfFile();
+    return;
+  }
+
+  int status = 0;
+  if (diff > 0)
+    status = command(MTFSR, diff);      // go forward
+  else
+    status = command(MTBSR, -diff);     // go backward
+  assert(status >= 0);
+}
+
+void TapeDrive::resynchronize()
+{
+  getStatus();
+  if (tstat.mt_fileno > 0) {            // not first file on tape?
+    int status = command(MTBSF, 1);     // move to end of previous file
+    assert(status >= 0);
+    status = command(MTBSR, 2);         // a couple of records backwards
+    // assert(status >= 0);             // what if file has < 2 records?
+  }  
+  gotoBeginningOfFile();                // find beginning of file again
+}
+
+void TapeDrive::gotoBeginningOfFile()
+{
+  if (!fileNo) {                        // first file? just rewind
+    int status = command(MTREW, 1);
+    assert(status >= 0);
+    gotoBlock(0);
+    return;
+  }
+
+  getStatus();
+  long diff = fileNo - tstat.mt_fileno;
+
+#if 0
+  // quickest but may not be portable
+  int status = command(MTNBSF, diff);
+  assert(status >= 0);
+  gotoBlock(0);
+#endif
+
+  // portable and quick; may be unreliable on DLT
+  if (diff > 0) {                       // go forward?
+    int status = command(MTFSF, diff);
+    assert(status >= 0);
+  } else {                              // else go backward
+    int status = command(MTBSF, -diff + 1);
+    assert(status >= 0);
+    status = command(MTFSF, 1);
+    assert(status >= 0);
+  }
+
+  getStatus();
+  assert(tstat.mt_fileno == fileNo);
+
+  int status = lseek(FILE2FD(file), 0, SEEK_SET);
+  if (status < 0)
+    perror("lseek");
+  assert(status >= 0);
+}
+
+void TapeDrive::gotoEndOfFile()
+{ 
+  if (atEof)
+    return;
+
+  const unsigned long skipSize = 1000000;
+  static struct mtop cmd;
+  cmd.mt_op = MTFSR;
+  cmd.mt_count = skipSize;
+
+  while(1) {
+    TAPEDBG(cout << "Tape command " << MTFSR << ", count " << skipSize
+	    << ", " << flush);
+    int status = ioctl(FILE2FD(file), MTIOCTOP, (char *)&cmd);
+    TAPEDBG(cout << "status = " << status << endl);
+    if (status < 0) {
+      getStatus();
+      if (tstat.mt_resid > 0) {
+	TAPEDBG(cout << "At end of file, drive status " << tstat.mt_dsreg
+		<< ", error status " << tstat.mt_erreg << endl);
+	mt_ios[MTFSR] -= tstat.mt_resid;
+	return;
+      }
+    }
+    perror("ioctl");
+    assert(status >= 0);
+  }
+}

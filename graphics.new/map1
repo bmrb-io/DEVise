@@ -1,0 +1,33 @@
+
+mapping SolDnMapping AmsData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 90.0; attrs[1] = 90.0;
+		TDataMap::SetDefaultShape(SolDnMapping_RectXShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		symbol->x = data->time;
+		symbol->y = data->solDn;
+		if (symbol->y > 0)
+			symbol->color = *((Color *)userData);
+		else symbol->color = BlackColor;
+	}
+}
+
+mapping RainMapping AmsData {
+    shape { BarShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1.0; 
+		TDataMap::SetDefaultShape(RainMapping_BarShapeID,1,attrs);
+	}
+	dynamic x,y,color {
+		symbol->x = data->time;
+		symbol->y = data->rain;
+		if (data->rain > 0)
+			symbol->color = red;
+		else
+			symbol->color = BlackColor;
+	}
+}

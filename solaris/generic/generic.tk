@@ -1,0 +1,89 @@
+# import file types
+DEVise importFileType /p/miron/miron/DEVise/solaris/generic/generic.schema
+
+# layout mode
+DEVise changeMode 0
+
+# Import file (Create TData)
+# format: DEVise create tdata fileType filePath fileAlias
+if { $template } {
+	set tdata_1 [ GetTDataTemplate Generic-Schema 1 1 ]
+	if { [string compare $tdata_1 "" ] == 0 } {
+		return 0
+	}
+} else {
+	set tdata_1 generic.dat
+	DEVise create tdata Generic-Schema /p/miron/miron/DEVise/solaris/generic/generic.dat generic.dat
+}
+
+# Create interpreted mapping classes 
+DEVise createInterp $tdata_1 {Y_vs_X}  {}  {$X}  {$Y}  {2}  {}  {}  {}  {2}  {}  {}
+
+# Create mappings instances (and GData)
+# format: DEVise create mapping mapType fileAlias gdataName
+set map_1 [ format "%s#Y_vs_X" $tdata_1 ]
+DEVise create mapping Y_vs_X $tdata_1 $map_1 {} {$X} {$Y} 2 {} {} {} 2 {} {}
+
+# Save pixel width for mappings
+DEVise setPixelWidth $map_1 1
+
+# Create views
+# format: DEVise create view viewType viewName xlow xhigh ylow yhigh
+set view_1 [ format "%s#Y_vs_X#SortedX" $tdata_1 ]
+DEVise create view SortedX $view_1 0.000000 10.000000 0.000000 100.000000 white
+
+# Create windows
+# format: DEVise create window winType winName x y width height
+DEVise create window WinVertical DEViseWn0 0.076563 0.331055 0.500000 0.500000
+
+# Create Links
+# format: DEVise create link Visual_Link name flag
+
+# Create Cursors
+# format: DEVise create cursor Cursor name flag
+
+#Create axislabel
+# format: DEVise create axisLabel type name format
+
+# Create Actions
+# format: DEVise create action type name
+
+# Put labels into views
+DEVise setAxisDisplay $view_1 X 1
+DEVise setAxisDisplay $view_1 Y 1
+# put action into view
+# Link views
+# Put views in cursors
+# Put axis label into views
+# Insert mappings into views
+# format: DEVise insertMapping viewName gdataName
+DEVise insertMapping $view_1 $map_1
+
+# Insert views into windows
+# format: DEVise insertWindow viewName winName
+DEVise insertWindow $view_1 DEViseWn0
+
+# Init history of view
+DEVise clearViewHistory $view_1
+DEVise insertViewHistory $view_1 {0.00} {0.00} {0.00} {0.00} {0}
+DEVise insertViewHistory $view_1 {NaN} {0.00} {NaN} {0.00} {0}
+DEVise insertViewHistory $view_1 {NaN} {0.00} {NaN} {100.00} {0}
+DEVise insertViewHistory $view_1 {0.00} {0.00} {10.00} {100.00} {0}
+DEVise insertViewHistory $view_1 {2.50} {0.00} {7.50} {100.00} {0}
+DEVise insertViewHistory $view_1 {0.00} {0.00} {10.00} {100.00} {0}
+DEVise insertViewHistory $view_1 {-5.00} {0.00} {15.00} {100.00} {0}
+DEVise insertViewHistory $view_1 {-15.00} {0.00} {25.00} {100.00} {0}
+DEVise insertViewHistory $view_1 {-5.00} {0.00} {15.00} {100.00} {0}
+DEVise insertViewHistory $view_1 {0.00} {0.00} {10.00} {100.00} {0}
+#load pixmaps from views
+set pixmapName /p/miron/miron/DEVise/solaris/generic/generic.tk.pixmap
+ if { !$template && [ file exists $pixmapName ] } {
+set pixmapFile [ DEVise open $pixmapName rb ]
+set fileDate [ DEVise readLine $pixmapFile ]
+set sessionDate {Aug 21 1995 17:50:07}
+if { [string compare $fileDate $sessionDate ] == 0 } { 
+DEVise loadPixmap generic.dat#Y_vs_X#SortedX $pixmapFile
+}
+DEVise close $pixmapFile
+}
+return 1

@@ -1,0 +1,141 @@
+# dialog box with list of check buttons
+# Return the button pressed.
+# Global variable dialogCkButVar(selected) is set to the 
+#bitwise or of the items selected.
+# input: w: name of window
+#	title: title of window
+#	text to be displayed for window
+#	bitmap: bitmap for window
+#	default: position of default arg in args
+#	args: list of args to be displayed at the button of window.
+#	items: checkbutton items
+#	flag: ith bit set if ith button is on.
+#	entry: name of entry widget, or "" if no entry widget is required.
+# output: return the button pressed
+#	dialogCkButVar(selected) : bitwise OR of the bits selected in
+#	the button widget
+#	dialogCkButVar(entry): text in the entry.
+set dialogCkButVar(selected) ""
+set dialogCkButVar(entry) ""
+proc dialogCkBut { w title text bitmap default args entryName items {flag 0} } {
+	global button dialogCkButVar dialogCkButInternalVar
+
+	# 1. Create the top-level window and divide it into top
+	# and bottom parts.
+
+	toplevel $w -class Dialog
+	wm geometry $w +100+100
+	wm title $w $title
+	wm iconname $w Dialog
+	frame $w.top -relief raised -bd 1
+	frame $w.listFrame
+	pack $w.top $w.listFrame -side top -fill both
+	frame $w.bot -relief raised -bd 1
+	pack $w.bot -side bottom -fill both
+
+	# 2. Fill the top part with the bitmap and message.
+
+    set txtWidth [LineWidth $text]
+	set txtHeight [LineHeight $text]
+	text $w.top.msg -width $txtWidth -height $txtHeight \
+		-font -*-*-medium-r-normal-*-140-*-*-m-*
+	$w.top.msg insert end $text
+	$w.top.msg configure -state disabled
+#	message $w.top.msg -width 3i -text $text\
+#			-font -Adobe-Times-Medium-R-Normal-*-180-*
+	pack $w.top.msg -side right -expand 1 -fill both\
+			-padx 3m -pady 3m
+	if {$bitmap != ""} {
+		label $w.top.bitmap -bitmap $bitmap
+		pack $w.top.bitmap -side left -padx 3m -pady 3m
+	}
+
+	# Create entry, if any
+	if { [string compare $entryName "" ] != 0 } {
+		frame $w.entries
+		label $w.entries.label -text $entryName
+		entry $w.entries.entry -relief sunken -width 60
+		pack $w.entries.label $w.entries.entry -side left
+	}
+
+	# Create a checkbutton for each of the items
+	set butNames ""
+	set varNames ""
+	set cnt 0
+	foreach i $items {
+		set butName $w.but_$i
+		set varName dialogCkButInternalVar(var_$i)
+		if { [expr (1 << $cnt) & $flag] == 0 } {
+			set $varName 0
+		} else {
+			set $varName 1 
+		}
+		lappend butNames $butName
+		lappend varNames $varName
+		set cnt [incr cnt]
+
+		checkbutton $butName -text $i -variable $varName -anchor w
+	}
+	if { [string compare $entryName "" ] == 0 } {
+		eval pack $butNames -in $w.listFrame -side top -fill x -expand 1
+	} else {
+		eval pack $w.entries $butNames -in $w.listFrame -side top \
+			-fill x -expand 1
+	}
+
+	# 3. Create a row of buttons at the bottom of the dialog.
+
+	set i 0
+	foreach but $args {
+		button $w.bot.button$i -text $but -command\
+				"set button $i"
+		if {$i == $default} {
+			frame $w.bot.default -relief sunken -bd 1
+			raise $w.bot.button$i
+			pack $w.bot.default -side left -expand 1 -fill x
+#					-padx 3m -pady 2m
+			pack $w.bot.button$i -in $w.bot.default\
+					-side left -expand 1 -fill x
+#					-padx 2m -pady 2m -ipadx 2m -ipady 1m
+		} else {
+			pack $w.bot.button$i -side left -expand 1 -fill x
+#					-padx 3m -pady 3m -ipadx 2m -ipady 1m
+		}
+		incr i
+	}
+
+	# 4. Set up a binding for <Return>, if there`s a default,
+	# set a grab, and claim the focus too.
+
+	if {$default >= 0} {
+		bind $w <Return> "$w.bot.button$default flash; \
+			set button $default"
+	}
+	set oldFocus [focus]
+	grab set $w
+	focus $w
+
+	# 5. Wait for the user to respond, then restore the focus
+	# and return the index of the selected button.
+
+	tkwait variable button
+
+	set i 0
+	set retVal 0
+	foreach varName $varNames {
+		eval set val $$varName
+		if { $val > 0 } {
+			set retVal [expr $retVal|(1<<$i)]
+		}
+		set i [incr i]
+	}
+	set dialogCkButVar(selected) $retVal
+
+	if { [string compare $entryName "" ] != 0 } {
+		set dialogCkButVar(entry) [ $w.entries.entry get ]
+	}
+
+	destroy $w
+	focus $oldFocus
+	return $button
+}

@@ -1,0 +1,17 @@
+
+mapping CycleEffMapping CycleRec {
+	shape { RectShape }
+	static {
+		float attrs[2];
+		attrs[0] = 5; attrs[1] = 0.01;
+		TDataMap::SetDefaultShape(CycleEffMapping_RectShapeID,2,attrs);
+		TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
+	}
+	dynamic x, y, shapeAttr[0], shapeAttr[1] {
+		symbol->x = (((float)(data->time + data->last_time)) / 2.0);
+		symbol->shapeAttr_0 = data->time - data->last_time;
+		symbol->y = data->eff;
+/*		symbol->shapeAttr_1 = symbol->y / 20; */
+		symbol->shapeAttr_1 = 0.025;
+	}
+}

@@ -1,0 +1,202 @@
+
+struct HostMapping_GData {
+	float x;
+	float y;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class HostMapping_RectShape: public RectShape {
+public:
+	virtual void BoundingBoxGData(TDataMap *map, void **gdataArray,int numSyms,
+		Coord &width,Coord &height){
+
+		HostMapping_GData *gdata = (HostMapping_GData *)gdataArray[0];
+		width = (( map->GetDefaultShapeAttrs())[0]);
+		height = ((map->GetDefaultShapeAttrs())[1]);
+
+	}
+
+	virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+		TDataMap *map, Coord xPerPixel, Coord yPerPixel, int pixelWidth){
+		
+		int i;
+		Coord maxWidth, maxHeight;
+		map->MaxBoundingBox(maxWidth,maxHeight);
+
+		if (maxWidth <= xPerPixel  && maxHeight <= yPerPixel ){
+			
+			i= 0;
+			while (i < numSyms){
+				HostMapping_GData *gdata = (HostMapping_GData *)gdataArray[i];
+				int count = 1;
+				_x[0] = (gdata->x);
+				_y[0] = (gdata->y);
+				int colorIndex;
+				for (colorIndex = i+1; colorIndex < numSyms; colorIndex++){
+					HostMapping_GData *colorGData = (HostMapping_GData *)gdataArray[colorIndex];
+					if ((map->GetDefaultColor())!= (map->GetDefaultColor()))
+						break;
+					_x[count] = (colorGData->x);
+					_y[count++] = (colorGData->y);
+				}
+
+				win->SetFgColor((map->GetDefaultColor()));
+				win->DrawPixelArray(_x,_y,count, pixelWidth);
+	
+				i = colorIndex;
+			}
+		}
+		else {
+			
+
+			
+			i= 0;
+			HostMapping_GData *gdata = (HostMapping_GData *)gdataArray[0];
+			Coord width = ((map->GetDefaultShapeAttrs())[0]);
+			Coord height = ((map->GetDefaultShapeAttrs())[1]);
+			Coord halfWidth = width/2.0;
+			Coord halfHeight = height/2.0;
+
+			while (i < numSyms){
+				gdata = (HostMapping_GData *)gdataArray[i];
+				int count = 1;
+
+				_x[0] = (gdata->x)- halfWidth;
+				_y[0] = (gdata->y) - halfHeight;
+
+				int colorIndex;
+				for (colorIndex = i+1; colorIndex < numSyms; colorIndex++){
+					HostMapping_GData *colorGData = (HostMapping_GData *)gdataArray[colorIndex];
+					if ((map->GetDefaultColor())!= (map->GetDefaultColor()))
+						break;
+
+					_x[count] = (colorGData->x)- halfWidth;
+					_y[count] = (colorGData->y)- halfHeight;
+
+					count++;
+				}
+
+				win->SetFgColor((map->GetDefaultColor()));
+				win->FillRectArray(_x,_y,width, height,count);
+	
+				i = colorIndex;
+			}
+
+
+		}
+	}
+};
+const int HostMapping_RectShapeID = 0;
+class HostMapping : public TDataMapDispatch{
+public:
+	HostMapping(TData *tdata, char *gdataName, VisualFlag *dimensionInfo, int numDimensions,int maxGDataPages= -1, void *uData=NULL): TDataMapDispatch("HostMapping", tdata, gdataName, sizeof(HostMapping_GData), 0|VISUAL_X|VISUAL_Y,0, maxGDataPages,dimensionInfo,numDimensions){
+		userData = uData;
+
+		float attrs[2];
+		attrs[0] = 0.5; attrs[1] = 0.5;
+		TDataMap::SetDefaultShape(HostMapping_RectShapeID,2,attrs);
+		TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
+	
+	_shapes[0] = new HostMapping_RectShape;
+	}
+	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf){
+		int i;
+		int tRecSize= TDataRecordSize();
+		if (tRecSize >0){
+			char *tptr = (char *)buf;
+			for (i=0; i < numRecs; i++){
+				HostMapping_GData *symbol = (HostMapping_GData *)gdataBuf;
+				HostRec *data = (HostRec *)tptr;
+				tptr += tRecSize;
+
+		/*
+		MapInfo *mapInfo = (MapInfo *)userData;
+		*/
+		symbol->x = (float)(data->time);
+		symbol->y = (float)(data->hosts);
+
+		/*
+		printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
+			symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
+				symbol->color);
+		*/
+	
+				recId++;
+				gdataBuf = (char *)gdataBuf + GDataRecordSize();;
+			}
+		}
+		else{
+			for(i=0; i < numRecs; i++){
+				HostMapping_GData *symbol = (HostMapping_GData *)gdataBuf;
+				HostRec *data = (HostRec *)tRecs[i];
+
+		/*
+		MapInfo *mapInfo = (MapInfo *)userData;
+		*/
+		symbol->x = (float)(data->time);
+		symbol->y = (float)(data->hosts);
+
+		/*
+		printf("sym %d (%f,%f,%f,%f) color %d\n", recId,
+			symbol->x, symbol->y, symbol->shapeAttr_0, symbol->shapeAttr_1,
+				symbol->color);
+		*/
+	
+				recId++;
+				gdataBuf = (char *)gdataBuf + GDataRecordSize();
+			}
+		}
+	}
+
+	virtual void UpdateBoundingBox(int pageNum, void **syms, int numSyms){
+		if (TDataMap::TestAndSetPage(pageNum)) return;
+		Coord width, height;
+		_shapes[0]->BoundingBoxGData(this, syms,numSyms,width,height);
+		TDataMap::UpdateBoundingBox(width, height);
+	}
+	virtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms, Coord xPerPixel, Coord yPerPixel){
+		_shapes[0]->DrawGDataArray(win,syms,numSyms,this,xPerPixel, yPerPixel, TDataMap::GetPixelWidth());
+	}
+private:
+	void *userData;
+	Shape *_shapes[1];
+};
+
