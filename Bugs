@@ -1061,6 +1061,8 @@ Num Date        Status  Description
 271 01/23/98	OPEN	Color allocation fails on anything but 8 bit displays.
 			(rkw)
 
+272 01/23/98	OPEN	Trying to create an index causes a core dump. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
