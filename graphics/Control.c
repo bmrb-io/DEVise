@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/09/05 21:31:26  jussi
+  Added resetting of screen size parameters.
+
   Revision 1.11  1996/08/07 19:26:10  jussi
   Added methods which allow query processor to control when
   a synchronization message is sent to client.
@@ -129,12 +132,12 @@ void ControlPanel::DoQuit()
 {
   Journal::StopRecording();	
    
+  Dispatcher::Cleanup();
+  
   /* Clear tmp directory */
   char *tmpDir = Init::TmpDir();
   ClearDir(tmpDir);
   (void)rmdir(tmpDir);
-  
-  Dispatcher::Cleanup();
   
   Exit::DoExit(2);
 }
