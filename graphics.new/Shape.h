@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/12 23:30:12  jussi
+  Added missing semicolon.
+
   Revision 1.15  1996/07/12 23:12:36  jussi
   Fixed bug in DrawGDataArray().
 
@@ -116,11 +119,11 @@ inline Color GetColor(View *view, char *ptr, TDataMap *map,
   return GetAttr(ptr, colorOffset, Color , offset);
 }
 
-inline ShapeID GetShape(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+inline Coord GetSize(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-  if (offset->shapeOffset < 0)
-    return map->GetDefaultShape();
-  return GetAttr(ptr, shapeOffset, ShapeID, offset);
+  if (offset->sizeOffset < 0)
+    return map->GetDefaultSize();
+  return GetAttr(ptr, sizeOffset, Coord, offset);
 }
 
 inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -128,6 +131,20 @@ inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   if (offset->patternOffset < 0)
     return map->GetDefaultPattern();
   return GetAttr(ptr, patternOffset, Pattern, offset);
+}
+
+inline Coord GetOrientation(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+  if (offset->orientationOffset < 0)
+    return map->GetDefaultOrientation();
+  return GetAttr(ptr, orientationOffset, Coord, offset);
+}
+
+inline ShapeID GetShape(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+  if (offset->shapeOffset < 0)
+    return map->GetDefaultShape();
+  return GetAttr(ptr, shapeOffset, ShapeID, offset);
 }
 
 inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -179,9 +196,10 @@ class Shape {
     char *ptr = (char *)gdata;
 
     for(int i = 0; i < numSyms; i++) {
-      Coord temp = fabs(GetShapeAttr0(ptr, map, offset));
+      Coord temp;
+      temp = fabs(GetSize(ptr, map, offset) * GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
-      temp = fabs(GetShapeAttr1(ptr, map,  offset));
+      temp = fabs(GetSize(ptr, map, offset) * GetShapeAttr1(ptr, map,  offset));
       if (temp > height) height = temp;
       ptr += gRecSize;
     }
