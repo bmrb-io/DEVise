@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/08 16:58:39  jussi
+  #define'd XLIB_ILLEGAL_ACCESS so that we have access to Display->fd
+  in the X display data structured. Minor other fixes.
+
   Revision 1.13  1996/04/04 05:18:30  kmurli
   Major modification: The dispatcher now receives the register command
   from the displays directly (i.e. from XDisplay instead of from Display)
@@ -154,8 +158,6 @@ XDisplay::XDisplay(char *name)
   Register();
 }
 
-// A simple function to register the Display with the dispatcher..
-
 void XDisplay::Register()
 {
 #ifdef DEBUG
@@ -167,6 +169,11 @@ void XDisplay::Register()
 						_display->fd);
 }
 
+void XDisplay::Flush()
+{
+  /* Do a sync to force all buffered window operations on the screen */
+  XSync(_display, false);
+}
 
 /*******************************************************************
 Allocate closest matching color
@@ -401,7 +408,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   }
 
 #ifdef DEBUG
-  printf("XDisplay: Created X window 0x%p to parent 0x%p at %u,%u,\n",
+  printf("XDisplay: Created X window 0x%lx to parent 0x%lx at %u,%u,\n",
 	 w, parent, (unsigned)realX, (unsigned)realY);
   printf("          size %u,%u, borderwidth %d\n", (unsigned)realWidth,
 	 (unsigned)realHeight, border_width);
@@ -466,7 +473,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   }
 
 #ifdef DEBUG
-  printf("XDisplay::DestroyWindowRep 0x%p, X Window 0x%p\n",
+  printf("XDisplay::DestroyWindowRep 0x%p, X Window 0x%lx\n",
 	 xwin, xwin->GetWin());
 #endif
 
@@ -486,14 +493,6 @@ void XDisplay::InternalProcessing()
 #ifdef TK_WINDOW_EV2
   // X events handled in HandleTkEvent
   return;
-#endif
-
-#if 0
-  static first = true;
-  if (first) {
-    printf("first XDisplay::InternalProcessing\n");
-    first = false;
-  }
 #endif
 
   while (XPending(_display) > 0) {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/08 16:56:44  jussi
+  Minor fixes.
+
   Revision 1.5  1996/04/04 05:18:28  kmurli
   Major modification: The dispatcher now receives the register command
   from the displays directly (i.e. from XDisplay instead of from
@@ -83,6 +86,9 @@ public:
   /* Do internal event processing, but do not block*/
   virtual void InternalProcessing() = 0;
 
+  /* Flush buffered window operations to screen */
+  virtual void Flush() = 0;
+
   /* iterator to go through all displays */
   static int InitIterator() { return _displays.InitIterator(); }
   static Boolean More(int index){ return _displays.More(index); }
@@ -129,7 +135,6 @@ protected:
   Dispatcher * ReturnDispatcher(){
 	return _dispatcher;
   }
-
 
 private:
   virtual char *DispatchedName();

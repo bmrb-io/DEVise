@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/08 16:57:57  jussi
+  Minor fixes.
+
   Revision 1.9  1996/04/04 05:18:31  kmurli
   Major modification: The dispatcher now receives the register command
   from the displays directly (i.e. from XDisplay instead of from
@@ -103,6 +106,9 @@ public:
 
     /* Do internal event processing, but do not block while doing it */
     virtual void InternalProcessing();
+
+    /* Flush buffered window operations to screen */
+    virtual void Flush();
 
     // Register with the dispatcher..
     virtual void  Register();
