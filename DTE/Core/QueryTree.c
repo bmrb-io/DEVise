@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/03/12 18:23:24  donjerko
+  *** empty log message ***
+
   Revision 1.49  1998/02/09 21:12:15  donjerko
   Added Bin by clause and implementation.
 
@@ -471,13 +474,14 @@ Iterator* QueryTree::createExec(){
 	}
 
 	assert(groupBy);
-	if(!groupBy->isEmpty()){
+	if(!groupBy->isEmpty() || (sequenceby && !sequenceby->isEmpty())){
 
 		// group by requires sorted input 
 
 	  // if sequence by is present, 
 	  // sort on concat of group by and sequence by fields
 	  if (sequenceby && !sequenceby->isEmpty()) {
+
 	    grpAndSeqFields = new List<BaseSelection*>;
 
 	    for (groupBy->rewind(); !groupBy->atEnd(); groupBy->step()) {
