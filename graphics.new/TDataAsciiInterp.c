@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/23 15:40:45  jussi
+  Added debugging statements and allowed decoder to accept integer
+  values with +/- prefixes.
+
   Revision 1.12  1996/04/19 17:21:21  wenger
   Put the GenClassInfo code back in -- this is needed for tape data;
   started adding the tape-related code back in (it was previously
@@ -181,7 +185,6 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
     _commentStringLength = strlen(_commentString);
   _numAttrs = _attrList->NumAttrs();
   
-  _numMatchingAttrs = 0;
   hasComposite = false;
 
   for(int i = 0; i < _attrList->NumAttrs(); i++) {
@@ -189,11 +192,6 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
     if (info->isComposite) {
       hasComposite = true;
       _numAttrs--;
-    }
-    if (info->hasMatchVal) {
-      DOASSERT(_numMatchingAttrs < MAX_MATCHING_ATTRS,
-	       "Too many matching attributes");
-      _matchingAttrs[_numMatchingAttrs++] = info;
     }
   }
   

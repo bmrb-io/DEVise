@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/03/26 21:33:01  jussi
+  Added computation of max/min attribute values.
+
   Revision 1.4  1996/01/23 20:56:06  jussi
   Cleaned up the code a little bit.
 
@@ -49,10 +52,10 @@ public:
   virtual ~TDataAsciiInterpClassInfo();
 
   /* Info for category */
-  virtual char *CategoryName(){ return "tdata"; } 
+  virtual char *CategoryName() { return "tdata"; } 
 
   /* Info for class */
-  virtual char *ClassName();    /* name of class */
+  virtual char *ClassName();
 
   /* Get name of parameters and default/current values */
   virtual void ParamNames(int &argc, char **&argv);
@@ -83,17 +86,12 @@ private:
   Boolean _isSeparator;
 };
 
-/* Max # of fields for which the interprter searches for a
-   matching value */
-
-const int MAX_MATCHING_ATTRS = 10;
-
 class RecInterp;
 
 class TDataAsciiInterp: public TDataAscii {
 public:
   TDataAsciiInterp(char *name, int recSize, AttrList *attrs,
-		   char *separators,int numSeparators, 
+		   char *separators, int numSeparators, 
 		   Boolean isSeparator, char *commentString);
   virtual ~TDataAsciiInterp();
 
@@ -108,18 +106,16 @@ protected:
   virtual Boolean ReadCache(int fd);
 
 private:
-  AttrList *_attrList; /* list of attributes */
+  AttrList *_attrList;      /* list of attributes */
   Boolean hasComposite;
   char *_name;
   int _recSize;
   char *_separators;
   Boolean _isSeparator;
   int _numSeparators;
-  char *_commentString; /* string for comment, or NULL */
+  char *_commentString;     /* string for comment, or NULL */
   int _commentStringLength; /* length of comment string */
   int _numAttrs;
-  AttrInfo *_matchingAttrs[MAX_MATCHING_ATTRS];
-  int _numMatchingAttrs;
   RecInterp *_recInterp;
 };
 
