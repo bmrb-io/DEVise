@@ -1,30 +1,48 @@
-CC = g++
+CPP = g++
+CC = gcc
 
-CFLAGS = $(ARCH_FLAGS) -O -Wall -I../../graphics.new
+CFLAGS = $(ARCH_FLAGS) -O -Wall -Wno-unused -I../../graphics.new
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 
-.C.o:
+.c.o:
 	$(CC) -c $(CFLAGS) $<
+.C.o:
+	$(CPP) -c $(CFLAGS) $<
 
-SRC = http_url.c atof.C mkbinfile.C
+SRC = http_url.C atof.C mkbinfile.C gendots.C genimage.C issm2bin.c tardump.c
+SRC1 = $(filter %.c,$(SRC))
+SRC2 = $(filter %.C,$(SRC))
+OBJ = $(SRC1:.c=.o)
+OBJ += $(SRC2:.C=.o)
+TARGET = $(OBJ:.o=)
 
-OBJ = http_url.o atof.o mkbinfile.o
-
-all: http_url atof mkbinfile
+all: $(TARGET)
 
 http_url: http_url.o
-	$(CC) -o $@ $@.o $(LDFLAGS)
+	$(CPP) -o $@ $@.o $(LDFLAGS)
 
 atof: atof.o
-	$(CC) -o $@ $@.o $(LDFLAGS)
+	$(CPP) -o $@ $@.o $(LDFLAGS)
 
 mkbinfile: mkbinfile.o
+	$(CPP) -o $@ $@.o $(LDFLAGS)
+
+gendots: gendots.o
+	$(CPP) -o $@ $@.o $(LDFLAGS)
+
+genimage: genimage.o
+	$(CPP) -o $@ $@.o $(LDFLAGS)
+
+issm2bin: issm2bin.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
+
+tardump: tardump.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm http_url
+	-rm $(TARGET)
 
 mostlyclean:
 	-rm $(OBJ)
