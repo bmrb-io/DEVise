@@ -2,7 +2,7 @@ package Types;
 
 import java.io.*;
 
-public class DTE_Boolean extends DTE_Type implements Cloneable 
+public class DTE_Boolean extends DTE_Type //implements Cloneable 
 {
   boolean val;
   
@@ -46,10 +46,16 @@ public class DTE_Boolean extends DTE_Type implements Cloneable
     ps.print(val);   
     ps.print(" "); 
   }
-
+    /*
   public Object clone()
   {
     return new DTE_Boolean(val);
   }
+    */
+
+    public void copyTo(DTE_Type d)
+	{
+	    ((DTE_Boolean)d).val = val;
+	}
 }
 

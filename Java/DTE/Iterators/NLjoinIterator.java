@@ -39,11 +39,13 @@ public class NLjoinIterator implements Iterator
 
 
   public NLjoinIterator(Iterator left1, Iterator right1, ExecExpr[] mySelect1, 
-		ExecExpr[] myWhere1, TypeDesc[] typeStrings, int bucketsize)
+		ExecExpr[] myWhere1,TypeDesc[] typeStrings, 
+			TypeDesc[] typeStrings1, TypeDesc[] typeStrings2,
+			int bucketsize)
        throws IOException
   {
       left       = left1;
-      right      = right;
+      right      = right1;
       
       mySelect   = mySelect1;
       myWhere    = myWhere1;
@@ -54,26 +56,26 @@ public class NLjoinIterator implements Iterator
       outerTup   = null;
       innerTup   = null;
       next       = new Tuple(typeStrings);
-
-
+      
+      
       try
-	{
-	  temp_file = (String)stack.pop();
-	}
-
+	  {
+	      temp_file = (String)stack.pop();
+	  }
+      
       catch(EmptyStackException ex)
-	{
-	  System.out.println("There can't be more than 100 temporary files for NLjoin.");
-	  System.exit(-1);
-	} 
-
-
+	  {
+	      System.out.println("There can't be more than 100 temporary files for NLjoin.");
+	      System.exit(-1);
+	  } 
+      
+      
       fw = new FileWriter(temp_file);
       bw = new BufferedWriter(fw);
       pw = new PrintWriter(bw);
       
-      innerRel = new FileScanIterator(temp_file, typeStrings);
-      outerRel = new MemoryLoader(bucketsize, left);
+      innerRel = new FileScanIterator(temp_file, typeStrings2);
+      outerRel = new MemoryLoader(bucketsize, left, typeStrings1);
       
       f = new File(temp_file);
   }
@@ -94,6 +96,8 @@ public class NLjoinIterator implements Iterator
       {
 	outerRel.load();
 	innerTup = right.getNext();
+	if(innerTup != null)
+	  innerTup.print(pw);
 	firstEntry = false;
       }
 

@@ -2,7 +2,7 @@ package Types;
 
 import java.io.*;
 
-public class DTE_Int extends DTE_Type implements Cloneable 
+public class DTE_Int extends DTE_Type// implements Cloneable 
 {
   int val;
   
@@ -63,6 +63,7 @@ public class DTE_Int extends DTE_Type implements Cloneable
   public void print(PrintWriter ps)
   {
     ps.print(val);
+    ps.print(" ");
   }
 
   public void print(PrintStream ps)
@@ -70,10 +71,16 @@ public class DTE_Int extends DTE_Type implements Cloneable
     ps.print(val);   
     ps.print(" "); 
   }
-
+    /*
   public Object clone()
   {
     return new DTE_Int(val);
   }
+    */
+
+    public void copyTo(DTE_Type d)
+	{
+	   ((DTE_Int)d).val = val;
+	}
 }
 

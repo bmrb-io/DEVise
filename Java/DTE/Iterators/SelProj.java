@@ -26,8 +26,7 @@ public class SelProj implements Iterator
   public Tuple getNext() throws IOException
   {
     boolean cond = false;
-    TypeDesc[] t = new TypeDesc[1];
-    Tuple input = new Tuple(t);
+    Tuple input = new Tuple();
 
     while(!cond)
       {

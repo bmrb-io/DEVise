@@ -1,6 +1,8 @@
 package Expressions;
 
 import Types.*;
+//import Expressions.*;
+
 
 
 public class ListOp
@@ -19,10 +21,11 @@ public class ListOp
   public static void tupleFromList(Tuple retVal, ExecExpr[] list,
 			    Tuple left, Tuple right)
   {
-    DTE_Type[] t = retVal.get_fields();
+    DTE_Type[] t = new DTE_Type[1];
+    retVal.get_field(t);
 
     for(int i = 0; i < list.length; i++)
-	(list[i].evaluate(left, right)).copyTo(t[i]);
+      t[i] = (DTE_Type)(list[i].evaluate(left, right)).clone();
   }
 }
 
