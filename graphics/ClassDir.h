@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/02/16 18:51:19  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.12  2000/01/13 23:06:50  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -128,7 +131,8 @@ private:
 
 const int MaxCategories = 10;	/* max # of categories */
 const int MaxClasses = 100;	/* # of classes for each category */
-const int MaxInstances = 100;	/* # of instances for each class */
+const int MaxInstances = 1000;	/* # of instances for each class */
+
 struct ClassRec {
 	ClassInfo *classInfo;
 	int _numInstances;
