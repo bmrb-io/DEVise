@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/03/26 21:27:08  jussi
+#  Commented out extraneous debugging statement.
+#
 #  Revision 1.12  1996/03/26 21:16:40  jussi
 #  Added ScaleUpper and ScaleLower.
 #
@@ -355,9 +358,9 @@ proc DoExit {} {
 proc getColor {varname} {
     global $varname DEViseColors
 
-    # see if .getColor window already exists; if so, just return
-    set err [catch {wm state .getColor}]
-    if {!$err} { wm deiconify .getColor; return }
+    if {[WindowVisible .getColor]} {
+	return
+    }
 
     toplevel .getColor
     wm title .getColor "Choose Color"
@@ -415,9 +418,9 @@ proc getColor {varname} {
 proc PrintView {} {
     global toprinter printcmd filename allviews formatsel
 
-    # see if .printdef window already exists; if so, just return
-    set err [catch {wm state .printdef}]
-    if {!$err} { wm deiconify .printdef; return }
+    if {[WindowVisible .printdef]} {
+	return
+    }
 
     toplevel .printdef
     wm title .printdef "Print View"
@@ -579,4 +582,22 @@ proc ScaleLower {val} {
 	set prevs $s
     }
     return $prevs
+}
+
+proc WindowVisible {w} {
+
+    # see if $w already exists
+    set err [catch {set state [wm state $w]}]
+
+    if {$err} {
+	return 0
+    }
+
+    if {$state == "iconic"} {
+	wm deiconify $w
+    } else {
+	wm iconify $w
+    }
+
+    return 1
 }
