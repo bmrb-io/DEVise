@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/05/21 18:18:45  wenger
+  Most code for keeping track of 'dirty' GIFs in place; added 'test'
+  command to be used for generic test code that needs to be controlled
+  by GUI; added debug code in NetworkSend().
+
   Revision 1.16  1998/02/19 23:25:10  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -263,20 +268,31 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   NetworkHeader hdr;
   while(1) {
    
+	errno = 0;
 	int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
 	
 	//printf(" Received %d no of bytes \n",res);
     
 	if (res == (int)sizeof hdr)
       break;
+	if (res == 0) {
+	  continue;
+	}
     if (res < 0 && errno == EINTR) {
-#ifdef DBEUG
+#if defined(DEBUG) || 1 //TEMPTEMP
       printf("Call to recv interrupted, continuing\n");
 #endif
       continue;
     }
-    if (block)
+    if (block) {
+	  printf("Error at %s: %d: ", __FILE__, __LINE__);
       perror("recv");
+#if defined(DEBUG) || 1 //TEMPTEMP
+      printf("errno = %d\n", errno);
+      printf("res = %d\n", res);
+      printf("sizeof(hdr) = %d\n", sizeof(hdr));
+#endif
+	}
     return -1;
   }
   flag = ntohs(hdr.flag);
@@ -305,6 +321,7 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   while(totrem > 0) {
     int res = 0;
     while(1) {
+	  errno = 0;
       res = recv(fd, ptr, totrem, 0);
       if (!res)
         return 0;
@@ -316,6 +333,7 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 #endif
         continue;
       }
+	  printf("Error at %s: %d: ", __FILE__, __LINE__);
       perror("recv");
       return -1;
     }
