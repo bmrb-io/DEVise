@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/12/30 23:51:07  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.29  1996/12/16 21:03:07  donjerko
   Removed #if 0
 
@@ -210,6 +215,8 @@ int Init::_screenWidth = -1;
 int Init::_screenHeight = -1;
 
 Boolean Init::_useSharedMem = true;
+Boolean Init::_forceBinarySearch = false;
+Boolean Init::_forceTapeSearch = false;
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -266,6 +273,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
   fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
   fprintf(stderr, "\t-noshm: don't use shared memory\n");
+  fprintf(stderr, "\t-forceBinarySearch: force binary search on tape files\n");
+  fprintf(stderr, "\t-forceTapeSearch: force searching on tape files\n");
 
   Exit::DoExit(1);
 }
@@ -603,6 +612,18 @@ void Init::DoInit(int &argc, char **argv)
 
       else if (strcmp(&argv[i][1], "noshm") == 0) {
 	_useSharedMem = false;
+	MoveArg(argc,argv,i,1);
+      }
+
+      else if (strcmp(&argv[i][1], "forceBinarySearch") == 0) {
+	_forceBinarySearch = true;
+        printf("Enabling binary searches on tape\n");
+	MoveArg(argc,argv,i,1);
+      }
+
+      else if (strcmp(&argv[i][1], "forceTapeSearch") == 0) {
+	_forceTapeSearch = true;
+        printf("Enabling searches on tape\n");
 	MoveArg(argc,argv,i,1);
       }
 

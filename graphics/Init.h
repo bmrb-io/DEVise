@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/30 23:51:08  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.13  1996/12/15 20:21:42  wenger
   Added '-noshm' command line flag to allow user to disable shared memory;
   temporarily disabled RTree stuff.
@@ -130,7 +135,9 @@ class Init {
     static int ScreenHeight() { return _screenHeight; }
 
     static Boolean UseSharedMem() { return _useSharedMem; }
-    
+    static Boolean ForceBinarySearch() { return _forceBinarySearch; }
+    static Boolean ForceTapeSearch() { return _forceTapeSearch; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -179,7 +186,8 @@ protected:
     static int _screenHeight;      /* requested screen height */
 
     static Boolean _useSharedMem;  /* use shared memory */
-
+    static Boolean _forceBinarySearch; /* force binary search on tape */
+    static Boolean _forceTapeSearch;   /* force search for tape sources */
 };
 
 #endif
