@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  1999/10/14 15:09:05  hongyu
+// *** empty log message ***
+//
 // Revision 1.39  1999/10/12 21:58:14  hongyu
 // *** empty log message ***
 //
@@ -434,7 +437,10 @@ public class DEViseScreen extends Panel
         }
 
         if (view.viewDimension == 3 && view.canvas != null) {
-            view.canvas.createCrystal();
+	    view.canvas.crystal = null;
+	    view.canvas.createCrystal();
+	} else if (view.piledView != null && view.piledView.viewDimension == 3 && view.piledView.canvas != null) {
+            view.piledView.canvas.createCrystal();
         }
 
         repaint();

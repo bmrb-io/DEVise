@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  1999/10/14 15:08:53  hongyu
+// *** empty log message ***
+//
 // Revision 1.19  1999/10/12 22:00:03  hongyu
 // *** empty log message ***
 //
@@ -941,14 +944,7 @@ public class DEViseCanvas extends Container
             if (view.viewDimension == 3 && crystal != null) {
                 point.x = p.x;
                 point.y = p.y;
-
-                action3d = 1;
-                repaint();
-
-                highlightAtomIndex = crystal.find(p.x, p.y);
-
-                action3d = 1;
-
+                
                 jsc.lastCursor = DEViseGlobals.rbCursor;
                 setCursor(jsc.lastCursor);
 
@@ -957,9 +953,17 @@ public class DEViseCanvas extends Container
                 if (jscreen.getCurrentView() != activeView) {
                     jscreen.setCurrentView(activeView);
                 }
-
-                repaint();
-                return;
+                
+		int index = crystal.find(p.x, p.y);
+		if (index != oldHighlightAtomIndex) {
+		    action3d = 1;
+		    repaint();
+		    highlightAtomIndex = index;
+		    action3d = 1;
+		    repaint();
+                }
+                
+		return;
             }
 
             checkMousePos(p, true);
@@ -1148,17 +1152,19 @@ public class DEViseCanvas extends Container
             } catch (YException e) {
                 jsc.pn(e.getMessage());
                 crystal = null;
+		return;
             }
-        } else {
-            if (view.viewGDatas.size() == crystal.getNumberOfAtoms()) {
-                crystal.setSelect();
-                return;
-            }
+        }
 
+        if (view.viewPiledViews.size() > 0) { 	
             crystal.setSelect();
-            for (int i = 0; i < view.viewGDatas.size(); i++) {
-                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-                crystal.setSelect(gdata.x0, gdata.y0, gdata.z0);
+
+            for (int i = 0; i < view.viewPiledViews.size(); i++) {
+		DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
+		for (int j = 0; j < v.viewGDatas.size(); j++) {
+                    DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
+                    crystal.setSelect(gdata.x0, gdata.y0, gdata.z0);
+                } 
             }
         }
     }
