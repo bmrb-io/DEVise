@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/08/29 18:24:42  wenger
+  A number of Dali-related improvements: ShapeAttr1 now specifies image
+  type when shape is 'image'; added new '-bytes' flag to Dali commands
+  when sending images; TDataBinaryInterp now uses StringStorage so GData
+  can access strings; fixed hash function for StringStorage so having the
+  high bit set in a byte in the string doesn't crash the hash table;
+  improved the error checking in some of the Dali code.
+
   Revision 1.2  1996/07/21 02:53:15  jussi
   The Insert() now returns 1 indicating that a new value was stored,
   or 0 if value was already in the table. A negative value indicates
@@ -59,6 +67,8 @@ class StringStorage {
         if (code < 0) return code;
         return _keys.clear();
     }
+
+    static int PopulateFromInitFile();
 
   protected:
     static int StringHash(char *&string, int numBuckets) {
