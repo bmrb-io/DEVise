@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/06/24 19:41:08  jussi
+  All dispatcher clients are now handled in a single select().
+  The dispatcher no longer supports timer events (see Timer.c
+  for this kind of service).
+
   Revision 1.16  1996/06/23 20:36:27  jussi
   Minor fix with header files.
 
@@ -120,14 +125,12 @@ Dispatcher::Dispatcher(StateFlag state)
   _stateFlag = state;
   AppendDispatcher();
 
-#ifdef USE_SELECT
 #ifndef HPUX
   memset(&fdset, 0, sizeof fdset);
 #else
   fdset = 0;
 #endif
   maxFdCheck = 0;
-#endif
 
   /* init current time */
   _oldTime = DeviseTime::Now();
