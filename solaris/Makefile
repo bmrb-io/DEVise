@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.24  1997/12/02 17:35:38  wenger
+# Set up src/color and src/utils to compile "normally" for solaris and
+# solsparc.
+#
 # Revision 1.23  1997/11/14 00:34:56  donjerko
 # Fixed the multi target.
 #
@@ -105,5 +109,10 @@ cslib:
 	cd graphics; make lib; cd ..
 	cd graphics.new; make ClientAPI.o Version.o MapIntToInt.o; cd ..
 	cd cslib; make lib; cd ..
+
+strip:
+	strip generic/generic
+	strip generic/devise generic/deviseb generic/devised
+	strip multi/disp
 
 # DO NOT DELETE
