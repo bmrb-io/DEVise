@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/10/02 02:27:28  donjerko
+  Implementing moving aggregates.
+
   Revision 1.15  1997/09/17 02:35:43  donjerko
   Fixed the broken remote DTE interface.
 
@@ -77,8 +80,6 @@ void SortExec::initialize()
    strcpy(temp_filename, "sort_temp_file");   
 
    // Creates the runs and sets up the Q for merging the runs
-   order = Ascending;
- 
    generate_runs(); 
 
    // Create a priority queue in memory to merge runs
@@ -166,7 +167,7 @@ void SortExec::generate_runs()
      table[count] = tupleLoader->insert(currTup);
      count++;
 
-     if (count >= MAX_MEM/(int)sizeof(Tuple)) //Number of tuples exceeds memory
+     if (count >= MAX_MEM/(int)sizeof(Tuple)) //Num of tuples exceeds memory
        {
          sort_and_write_run(table, count);
          count = 0;
@@ -218,18 +219,32 @@ void SortExec::qsort(Tuple **A, int left, int right)
       int i = left;
       int j = right-1;
  
-      while (true)
-	{
-	  while (tupleCompare(sortFlds, numSortFlds, comparePtrs,
-                              A[++i], pivot) < 0);  // A[++i] < pivot
-          while (tupleCompare(sortFlds, numSortFlds, comparePtrs, 
-                              A[--j], pivot) > 0);
-          if (i < j)     
-            swap (A[i], A[j]);
-          else
-	    break;
-	}
-
+      if (order == Ascending) {
+	while (true)
+	  {
+	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs,
+				A[++i], pivot) < 0);  // A[++i] < pivot
+	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs, 
+				A[--j], pivot) > 0);
+	    if (i < j)     
+	      swap (A[i], A[j]);
+	    else
+	      break;
+	  }
+      }
+      else { 
+	while (true)
+	  {
+	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs,
+				A[++i], pivot) > 0);  // pivot < A[++i]
+	    while (tupleCompare(sortFlds, numSortFlds, comparePtrs, 
+				A[--j], pivot) < 0);
+	    if (i < j)     
+	      swap (A[i], A[j]);
+	    else
+	      break;
+	  }
+      }
       swap(A[i], A[right-1]);
 
       qsort(A, left, i-1);
@@ -242,13 +257,23 @@ Tuple* SortExec::find_pivot(Tuple **A,int left, int right)
   // Pivot is median of left, right and center values
 
   int center = (left + right)/2 ;  
-
-  if (tupleCompare(sortFlds, numSortFlds, comparePtrs, A[center],A[left]) < 0)
-    swap(A[left], A[center]);
-  if (tupleCompare(sortFlds, numSortFlds, comparePtrs, A[right], A[left]) < 0)
-    swap(A[left], A[right]);
-  if (tupleCompare(sortFlds, numSortFlds, comparePtrs, A[right], A[center])< 0)
-    swap(A[center], A[right]);
+  
+  if (order == Ascending) {
+    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[center],A[left]) < 0)
+      swap(A[left], A[center]);
+    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right], A[left]) < 0)
+      swap(A[left], A[right]);
+    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right],A[center])< 0)
+      swap(A[center], A[right]);
+  }
+  else {
+    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[center],A[left]) > 0)
+      swap(A[left], A[center]);
+    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right], A[left]) > 0)
+      swap(A[left], A[right]);
+    if (tupleCompare(sortFlds,numSortFlds,comparePtrs, A[right],A[center])> 0)
+      swap(A[center], A[right]);
+  }
 
   swap(A[center], A[right-1]);
   return A[right-1];
@@ -262,9 +287,18 @@ void SortExec::insert_sort(Tuple **A, int length)
     {
       temp = A[i];
       int j;
-      for (j = i; j > 0 && tupleCompare(sortFlds, numSortFlds, 
-                               comparePtrs, temp, A[j-1]) < 0; j--)
-        A[j] = A[j-1];
+      for (j = i; j > 0 ; j--) {
+	if (order==Ascending && tupleCompare(sortFlds,numSortFlds,comparePtrs,
+					     temp, A[j-1]) >= 0) {
+	  break;
+	}
+	else if (order==Descending && tupleCompare(sortFlds,numSortFlds,comparePtrs, temp, A[j-1]) <= 0) {
+	  break;
+	}
+
+	A[j] = A[j-1];
+      }
+
       A[j] = temp;
   }
 

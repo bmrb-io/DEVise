@@ -670,7 +670,6 @@ public:
 
 };
 
-// Need to change CreateExec to initialize a tupleLoader 
 class SequenceAttribute : public GroupAttribute{
 
   virtual ExecAggregate* createExec(){
@@ -784,15 +783,18 @@ protected:
 	}
 };
 
+
 class MovAggsExec : public StandGroupByExec {
+protected:
   int* seqByPos;
   int seqByPosLen;
   int windowLow, windowHigh, fullWindowHeight; // window measurements
   int *numTuplesToBeDropped; // array of size windowHeight 
   int nextDrop; // pointer to element in array numTuplesToBeDropped
+  int toDeque; // numver of Tuples to be dropped
   int currWindowHeight;
   const Tuple* currInTup;
-  bool firstTime; 
+  bool firstTime, endOfGroup; 
 
 public:
   
@@ -805,10 +807,10 @@ public:
 			    seqByPosLen, aggPos, numAggs), 
 	  seqByPos(seqByPos), seqByPosLen(seqByPosLen), 
 	  windowLow(windowLow), windowHigh(windowHigh) {
-
+	    // seqBypos and grpByPos are same for this class
+	    // similarly seqByPosLen and grpByPosLen are same
 		retTuple = new Tuple[numFlds];
 		currInTup = NULL;
-		assert(numAggs + seqByPosLen == numFlds);
 		fullWindowHeight = windowHigh - windowLow;
 		assert (fullWindowHeight > 0); 
 		numTuplesToBeDropped = new int[fullWindowHeight];
@@ -825,6 +827,44 @@ public:
   virtual void initialize();
   virtual const Tuple* getNext();
 
+protected:
+
+  bool isNewSeqVal(const Tuple* tup){
+    for (int i = 0; i < seqByPosLen; i++){
+      ExecSeqAttr* curr = (ExecSeqAttr*) aggExecs[seqByPos[i]];
+      if(curr->isDifferent(tup[seqByPos[i]])){
+	return true;
+      }
+    }
+    return false;
+  }
+
+  virtual const Tuple* flushWindow();
+  virtual void setupFirst();
+  virtual bool currInTupIsValid() { return (currInTup != NULL); }
+};
+
+class MovGroupByExec : public MovAggsExec {
+public:
+  
+  MovGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
+		 int numFlds, int* seqByPos, int seqByPosLen, 
+		 int* grpByPos, int grpByPosLen,
+		 int* aggPos, int numAggs,
+		 int windowLow, int windowHigh) : 
+    MovAggsExec (inputIter, aggExecs, numFlds, grpByPos, 
+		 grpByPosLen, aggPos, numAggs, windowLow, windowHigh) {
+      // override assignment of seqByPos and seqByPosLen 
+      // done by MovAggsExec constructor
+      this->seqByPos = seqByPos;
+      this->seqByPosLen = seqByPosLen;
+  }
+  
+protected:
+  virtual const Tuple* flushWindow();
+  virtual bool currInTupIsValid() { 
+    return (currInTup && !isNewGroup(currInTup));
+  }
 };
 
 class Aggregates : public Site {
@@ -836,8 +876,10 @@ class Aggregates : public Site {
   TypeID seqAttrType; // sequence by on only one attribute?
 	int seqAttrPos;
 	BaseSelection* withPredicate;	
+	BaseSelection* havingPredicate;	
 	Site* inputPlanOp;
 	int withPredicatePos;	
+	int havingPredicatePos;	
 	List<BaseSelection*>* groupBy;
 	int* grpByPos; // positions of groupBy fields
 	int* aggPos;		// positions of aggregate fields
@@ -852,12 +894,13 @@ class Aggregates : public Site {
 public:
 	Aggregates(
 		List<BaseSelection*>* selectClause, // queries select clause
-		List<BaseSelection*>* sequenceby,   // queries seq by clause
+		List<BaseSelection*>* sequenceby,   
 		BaseSelection* withPredicate,
-		List<BaseSelection*>* groupBy ,	// group by clause
-		BaseSelection* having = NULL			// having clause
-	) : Site(), selList(selectClause),sequenceBy(sequenceby),
-			withPredicate(withPredicate),groupBy(groupBy){
+		List<BaseSelection*>* groupBy ,	
+		BaseSelection* havingPredicate=NULL)
+	  : Site(), selList(selectClause),sequenceBy(sequenceby),
+	    withPredicate(withPredicate),groupBy(groupBy), 
+	    havingPredicate(havingPredicate) {
 		
 		if(selList){
 			numFlds = selList->cardinality();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/05 00:19:36  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.18  1997/09/05 22:20:02  donjerko
   Made changes for port to NT.
 
@@ -87,10 +90,8 @@ Exception* currExcept;
 
 ParseTree* parseTree = NULL;
 List<string*>* namesToResolve = NULL;
-BaseSelection * sequenceby;
 const char* queryString;
 bool rescan;
-BaseSelection * withPredicate;
 DefaultExceptHndl defaultExceptHndl;
 List<JoinTable*>* joinList = NULL;
 JoinTable * joinTable = NULL;

@@ -38,7 +38,7 @@ public:
     : num_flds(num_flds), fld_types(fld_types), num_sort_flds(num_sort_flds), 
       sort_flds(sort_flds), order(sort_order)
     {
-       Items = new (Node *) [size+1]; 
+       Items = new Node* [size+1]; 
        num_of_elems = 0;
        
        comparePtrs  = new GeneralPtr*[num_flds];

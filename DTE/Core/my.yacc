@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/11/05 00:19:46  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.32  1997/10/15 02:23:36  arvind
   Sequence by handles multiple attributes
 
@@ -116,12 +119,12 @@ extern List<string*>* namesToResolve;
 extern List<JoinTable*>* joinList;
 extern JoinTable * joinTable;
 extern JoinTable * jTable;
-extern BaseSelection* withPredicate;
-extern BaseSelection* sequencebyTable;
-// extern string *sequencebyTable; 
 int yyerror(char* msg);
 extern char* queryString;
 static int my_yyaccept();
+BaseSelection* withPredicate;
+BaseSelection* havingPredicate;
+string* sortOrdering;
 
 %}
 %union{
@@ -148,6 +151,9 @@ static int my_yyaccept();
 %token GROUP 
 %token ORDER 
 %token BY 
+%token HAVING 
+%token ASC
+%token DESC
 %token JOINNEXT 
 %token JOINPREV 
 %token CREATE
@@ -181,8 +187,10 @@ static int my_yyaccept();
 %type <constList> listOfConstants
 %type <selList> optOverClause
 %type <sel> optWithClause
+%type <sel> optHavingClause
 %type <selList> optGroupByClause
 %type <selList> optOrderByClause
+%type <stringLit> optOrdering
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
 %type <tableList> JoinList 
@@ -280,8 +288,9 @@ table_name : table_name '.' STRING {
 	;
 query : SELECT listOfSelectionsOrStar 
 		FROM listOfTables optWhereClause 
-		optSequenceByClause optGroupByClause optOrderByClause {
-		$$ = new QueryTree($2,$4,$5,$6,withPredicate,$7,$8,namesToResolve);
+		optGroupByClause optSequenceByClause optOrderByClause {
+		$$ = new QueryTree($2,$4,$5,$6,havingPredicate, 
+			$7,withPredicate,$8,sortOrdering,namesToResolve);
 	}
 	| query UNION query {
 		$$ = new UnionParse($1, $3);
@@ -360,37 +369,57 @@ optWhereClause : WHERE predicate {
 	}
 	;
 
-optSequenceByClause :SEQUENCE BY listOfSelections optWithClause{
+optSequenceByClause :SEQUENCE BY listOfSelections optWithClause {
 		$$ = $3;
-		withPredicate= $4;
+		withPredicate = $4;
 	}
 	| {
 		$$ = NULL;
-		withPredicate= NULL;
+		withPredicate = NULL;
 	}
 	;
-
-optGroupByClause: GROUP BY listOfSelections{
-		$$ = $3;
-	}
-	|{
-		$$ = new List<BaseSelection*>;
-	}
-	;
-	
-optOrderByClause: ORDER BY listOfSelections{
-		$$ = $3;
-	}
-	|{
-		$$ = new List<BaseSelection*>;
-	}
-	;
-	
 optWithClause: WITH predicate {
 		$$ = $2;
 	}
 	|{
 		$$ = NULL;
+	}
+	;
+optGroupByClause: GROUP BY listOfSelections optHavingClause{
+		$$ = $3;
+		havingPredicate = $4;
+	}
+	|{
+		$$ = new List<BaseSelection*>; 
+		havingPredicate = NULL;
+	}
+	;
+	
+optHavingClause: HAVING predicate {
+		$$ = $2;
+	}
+	|{
+		$$ = NULL;
+	}
+	;
+
+optOrderByClause: ORDER BY listOfSelections optOrdering{
+		$$ = $3;
+		sortOrdering = $4;
+	}
+	|{
+		$$ = new List<BaseSelection*>;
+		sortOrdering = NULL;
+	}
+	;
+optOrdering: ASC {
+		$$ = new string("ascending");
+	}
+	| DESC {
+		$$ = new string("descending");
+	} 
+	| {
+		$$ = new string("ascending");
 	}
 	;
 predicate : predicate OR predicate {

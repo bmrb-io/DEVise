@@ -65,16 +65,16 @@ void PQueue::adjust(int root)
 			       Items[right_child]->tuple, Items[child]->tuple);
     if (right_child < num_of_elems) {
       
-    if (order == Ascending){
+      if (order == Ascending){
 	if (right < 0)
 	  child = right_child; // index of smaller child
-    }
+      }
       else{
 	if (right > 0)
 	  child = right_child; // index of larger child
       } 
     }
-
+    
     int root_smaller;
     if (order == Ascending)
       root_smaller = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
@@ -95,15 +95,4 @@ void PQueue::adjust(int root)
 
   return;
 } 
-  
-
-
-
-
-
-
-
-
-
-
 

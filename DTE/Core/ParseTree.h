@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/11/05 00:19:39  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.19  1997/10/15 02:22:58  arvind
   Sequence by handles multiple attributes
 
@@ -72,33 +75,40 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>* tableList;
 	BaseSelection* predicates;
+        List<BaseSelection*>* groupBy;
+        BaseSelection* havingPredicate;
 	List<BaseSelection*>* sequenceby;
 	BaseSelection* withPredicate;
-	List<BaseSelection*>* groupBy;
 	List<BaseSelection*>* orderBy;
+	string* sortOrdering;
 	List<string*>* namesToResolve;
 	void resolveNames();	// throws exception
 	bool typeCheckOnly;
+  List<BaseSelection*>* grpAndSeqFields; // concat of grp and seq fields
 public:	
 	QueryTree(
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
+		List<BaseSelection *>*groupBy,
+		BaseSelection* havingPredicate,
 		List<BaseSelection*>* sequenceby,
 		BaseSelection* withPredicate,
-		List<BaseSelection *>*groupBy,
 		List<BaseSelection*>* orderBy,
+		string* sortOrdering,
 		List<string*>* namesToResolve) :
 		selectList(selectList), tableList(tableList), 
-		predicates(predicates), sequenceby(sequenceby),
-		withPredicate(withPredicate),groupBy(groupBy), orderBy(orderBy),
-		namesToResolve(namesToResolve), typeCheckOnly(false) {}
+		predicates(predicates), groupBy(groupBy), 
+		havingPredicate(havingPredicate),
+		sequenceby(sequenceby), withPredicate(withPredicate), 
+		orderBy(orderBy), sortOrdering(sortOrdering),
+		namesToResolve(namesToResolve) {}
 	
 	virtual Site* createSite();	// throws exception
 	virtual ~QueryTree(){
 		delete selectList;      // destroy list too
 		delete tableList;
-
+		if (grpAndSeqFields) {delete grpAndSeqFields; }
 		// predicates should be deleted in createSite
 	}
 	virtual void setTypeCheckOnlyFlag(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/11/05 00:19:40  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.40  1997/10/14 05:16:34  arvind
   Implemented a first version of moving aggregates (without group bys).
 
@@ -164,7 +167,7 @@ void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec){
 }
 
 Site* QueryTree::createSite(){
-	if(!namesToResolve->isEmpty()){
+  if(!namesToResolve->isEmpty()){
 		TRY(resolveNames(), 0);
 	}
 	LOG(logFile << "Query was:\n";)
@@ -300,15 +303,14 @@ Site* QueryTree::createSite(){
 		if (count == MAX_AGG){
 			THROW(new Exception(" Numbr of nesting levels too high "),NULL);
 		}
-    	aggregates[count] = new Aggregates(
-		selectList,sequenceby,withPredicate,groupBy);
+		aggregates[count] = new Aggregates(selectList,sequenceby,withPredicate,groupBy, havingPredicate);
 	}
 	count --;
 
 	assert(groupBy);
 	if(count == -1 && !groupBy->isEmpty()){
 		aggregates[0] = new 
-			Aggregates(selectList,sequenceby,withPredicate,groupBy);
+			Aggregates(selectList,sequenceby,withPredicate,groupBy,havingPredicate);
 		count = 0;
 	}
 
@@ -458,8 +460,28 @@ Site* QueryTree::createSite(){
 
 		// group by requires sorted input 
 
-		siteGroup = new Sort(siteGroup->getName(), groupBy, siteGroup);
-		TRY(siteGroup->typify(option), NULL);
+	  // if sequence by is present, 
+	  // sort on concat of group by and sequence by fields
+	  if (sequenceby && !sequenceby->isEmpty()) {
+	    grpAndSeqFields = new List<BaseSelection*>;
+
+	    for (groupBy->rewind(); !groupBy->atEnd(); groupBy->step()) {
+	      grpAndSeqFields->append(groupBy->get());
+	    }
+	    
+	    for(sequenceby->rewind();!sequenceby->atEnd();sequenceby->step()){
+	      grpAndSeqFields->append(sequenceby->get());
+	    }
+
+	    siteGroup = new Sort(siteGroup->getName(), grpAndSeqFields, siteGroup, sortOrdering);
+		
+	  }
+	  else {
+
+	    siteGroup = new Sort(siteGroup->getName(), groupBy, siteGroup, sortOrdering);
+	  }
+
+	  TRY(siteGroup->typify(option), NULL);
 	}
 
 	for(int k = count; k >= 0;k--){
@@ -469,7 +491,7 @@ Site* QueryTree::createSite(){
 
 	assert(orderBy);
 	if(!orderBy->isEmpty()){
-		siteGroup = new Sort(siteGroup->getName(), orderBy, siteGroup);
+		siteGroup = new Sort(siteGroup->getName(), orderBy, siteGroup,sortOrdering);
 		TRY(siteGroup->typify(option), NULL);
 	}
 

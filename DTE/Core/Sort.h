@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/10/14 05:16:40  arvind
+  Implemented a first version of moving aggregates (without group bys).
+
   Revision 1.14  1997/10/02 02:27:29  donjerko
   Implementing moving aggregates.
 
@@ -82,9 +85,9 @@ class SortExec : public Iterator {
 	SortOrder order;          // Ascending or Descending
 	int       Nruns;          // Number of runs
 	PQueue *Q;                // Internal Priority Queue
-	Iterator**  input_buf;  // Used to read in the sorted runs while merging
+	Iterator**  input_buf;    // Used to read in sorted runs while merging
 	ifstream** temp_files;    // Temporary files that hold the runs
-	Inserter*  output_buf;    // Output buffer in which current run is placed
+	Inserter*  output_buf;    // Output buf in which current run is placed
 	ofstream  *out_temp_file; // File connected with output_buf
 	char      temp_filename[20]; // Name of temporary file to hold a run
 
@@ -123,14 +126,21 @@ private:
   Site* input;              // The iterator
 
   TypeID    *attrTypes;     // Attribute types of the tuple fields
-  SortOrder order;          // Ascending or Descending
+  SortOrder order;          // Asc or Desc (enum SortOrder def in PQueue.h)
 
 public:
 
-    Sort(string nm, List<BaseSelection*>* orderBy, Site* input): /*SortOrder*/
-       Site(nm), orderBy(orderBy), input(input),
-	  order(Ascending)
-       {}
+    Sort(string nm, List<BaseSelection*>* orderBy, Site* input, 
+	 string* sortOrder): 
+      Site(nm), orderBy(orderBy), input(input)
+       {
+	 if ((!sortOrder) || (*sortOrder == "ascending")) {
+	   order = Ascending;
+	 }
+	 else { 
+	   order = Descending;
+	 }
+       }
 
 	~Sort(){
     		// do not delete attrTypes, passed to Exec;

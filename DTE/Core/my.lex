@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/11/05 00:19:46  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.20  1997/09/05 22:20:17  donjerko
   Made changes for port to NT.
 
@@ -118,10 +121,13 @@ LessGreat    ">="|">"|"<="|"<"
 [Gg][Rr][Oo][uU][Pp]  {return GROUP;}
 [Oo][Rr][Dd][Ee][Rr]  {return ORDER;}
 [Bb][Yy]			  {return BY;}
+[Aa][Ss][Cc] {return ASC;}
+[Dd][Ee][Ss][Cc] {return DESC;}
 [Jj][Oo][Ii][Nn][Pp][Rr][Ee][Vv]  {return JOINPREV;}
 [Jj][Oo][Ii][Nn][Nn][Ee][Xx][Tt]  {return JOINNEXT;}
 [Oo][Vv][Ee][rR]         {return OVER;}
 [Ww][Ii][Tt][Hh]         {return WITH;}
+[Hh][Aa][Vv][Ii][Nn][Gg] {return HAVING;}
 [Aa][Nn][Dd]          {return AND;}
 [Oo][Rr]           {return OR;}
 [Cc][Rr][Ee][Aa][Tt][Ee]		{return CREATE;}
