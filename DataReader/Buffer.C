@@ -2,10 +2,10 @@
 #include <math.h>
 #include "DateTime.h"
 
-Buffer::Buffer(char* fileName, Schema* mySchema) {
+Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 	int i,j;
 	Holder* temArr;
-	_nAttr = mySchema->qAttr;
+	_nAttr = myDRSchema->qAttr;
 	_fileName = fileName;
 	_in.open(_fileName);
 	if (_in.fail()) {
@@ -18,14 +18,14 @@ Buffer::Buffer(char* fileName, Schema* mySchema) {
 	for (i = 0 ; i<128 ; i++) 
 		_EOLCheck[i] = 0;
 	
-	if (mySchema->getDelimiter() != NULL) {
-		_EOL = mySchema->getDelimiter();
+	if (myDRSchema->getDelimiter() != NULL) {
+		_EOL = myDRSchema->getDelimiter();
 		for (i = 0 ; i < _EOL->length ; i++) {
 			_EOLCheck[_EOL->data[i]] = 1;
 		}
 	}
 
-	_separatorCheck = new char*[mySchema->qAttr];
+	_separatorCheck = new char*[myDRSchema->qAttr];
 	_curDate = new DateInfo;
 
 	// Initialize month names and abbreviated month names arrays
@@ -59,35 +59,35 @@ Buffer::Buffer(char* fileName, Schema* mySchema) {
 	_monthAbbr[10] = "NOV" ;
 	_monthAbbr[11] = "DEC" ;
 	
-	extFunc = new eFunc[mySchema->qAttr];
-	valFunc = new vFunc[mySchema->qAttr];
+	extFunc = new eFunc[myDRSchema->qAttr];
+	valFunc = new vFunc[myDRSchema->qAttr];
 
-	repeatings = new bool[mySchema->qAttr];
-	maxLens = new int[mySchema->qAttr];
-	fieldLens = new int[mySchema->qAttr];
-	quoteChars = new char[mySchema->qAttr];
+	repeatings = new bool[myDRSchema->qAttr];
+	maxLens = new int[myDRSchema->qAttr];
+	fieldLens = new int[myDRSchema->qAttr];
+	quoteChars = new char[myDRSchema->qAttr];
 
 
 	// Initialize _separatorCheck to make faster separator comparison
 	// Also, initialize ext and val Funcs to proper extractor functions
 
-	for (i = 0 ; i < (int)(mySchema->qAttr) ; i++) {
-		if (mySchema->tableAttr[i]->getSeparator() != NULL) {
-			temArr = mySchema->tableAttr[i]->getSeparator();
+	for (i = 0 ; i < (int)(myDRSchema->qAttr) ; i++) {
+		if (myDRSchema->tableAttr[i]->getSeparator() != NULL) {
+			temArr = myDRSchema->tableAttr[i]->getSeparator();
 			_separatorCheck[i] = new char[128];
 			for (j = 0; j < 128 ; j++)
 				_separatorCheck[i][j] = 0;
 			for (j = 0; j < temArr->length; j++)
 				_separatorCheck[i][temArr->data[j]] = 1;
-			repeatings[i] = mySchema->tableAttr[i]->getSeparator()->repeating;
+			repeatings[i] = myDRSchema->tableAttr[i]->getSeparator()->repeating;
 		}
 
-		maxLens[i] = mySchema->tableAttr[i]->getMaxLen();
-		fieldLens[i] = mySchema->tableAttr[i]->getFieldLen();
-		quoteChars[i] = mySchema->tableAttr[i]->getQuote();
+		maxLens[i] = myDRSchema->tableAttr[i]->getMaxLen();
+		fieldLens[i] = myDRSchema->tableAttr[i]->getFieldLen();
+		quoteChars[i] = myDRSchema->tableAttr[i]->getQuote();
 
-		if (mySchema->tableAttr[i]->getFieldLen() != -1) {
-			switch (mySchema->tableAttr[i]->getType())	{
+		if (myDRSchema->tableAttr[i]->getFieldLen() != -1) {
+			switch (myDRSchema->tableAttr[i]->getType())	{
 				case TYPE_INT:
 					extFunc[i] = &getIntLen;
 					valFunc[i] = &getIntVal;
@@ -101,11 +101,11 @@ Buffer::Buffer(char* fileName, Schema* mySchema) {
 					valFunc[i] = &getPosTarget;
 					break;
 			}
-		} else if (mySchema->tableAttr[i]->getQuote() != -1) {
+		} else if (myDRSchema->tableAttr[i]->getQuote() != -1) {
 			extFunc[i] = &getStringQuote;
 			valFunc[i] = &getPosTarget;
 		} else {
-			switch (mySchema->tableAttr[i]->getType()) {
+			switch (myDRSchema->tableAttr[i]->getType()) {
 				case TYPE_INT:
 					extFunc[i] = getIntTo;
 					valFunc[i] = getIntVal;

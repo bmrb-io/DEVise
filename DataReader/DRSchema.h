@@ -136,12 +136,12 @@ public:
 };
 
 // This class holds information about schema and an array of attributes
-class Schema {
+class DRSchema {
 private:
 	Holder* _delimiter; // Record delimiter
 	Holder* _separator; // Default separator
 	char _quote;
-	char* _fileName; // Schema file name
+	char* _fileName; // DRSchema file name
 	char* _nullIf; // null string, not implemented yet
 	char* _schemaName; // Name of the schema
 	char* _dateFormat; // Default date format
@@ -163,7 +163,7 @@ public:
 	size_t qAttr; // Number of attributes in this schema
 	size_t tAttr; // Number of attributes - number of skip attributes
 
-	Schema(char* fileName) {
+	DRSchema(char* fileName) {
 		_fileName = fileName;
 		qAttr = 0;
 		_delimiter = NULL;
@@ -179,7 +179,7 @@ public:
 		_quote = -1;
 	}
 
-	~Schema();
+	~DRSchema();
 
 	void addAttribute(Attribute* newAttr); // add new attribute to schema
 	void addKey(vector<char*> inVector) { // add new key to schema
@@ -206,7 +206,7 @@ public:
 	// this function is used for checking errors in the schema file
 	// also makes some adjustments such as setting each attributes 
 	// separator to default separator
-	Status finalizeSchema();
+	Status finalizeDRSchema();
 
 	Holder* getDelimiter() {
 		return _delimiter;
@@ -248,11 +248,11 @@ public:
 		_fileName = fileName;
 	}
 
-	char* getSchemaName() {
+	char* getDRSchemaName() {
 		return _schemaName;
 	}
 
-	void setSchemaName(char* schemaName) {
+	void setDRSchemaName(char* schemaName) {
 		_schemaName = schemaName;
 	}
 	

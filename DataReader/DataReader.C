@@ -1,31 +1,32 @@
 #include "sysdep.h"
 #include "DataReader.h"
+#include "DataReaderParser.h"
 
-DataReader::DataReader(char* dataFile, char* schemaFile) {
+DataReader::DataReader(const char* dataFile, const char* schemaFile) {
 	int rc;
 	_uStat = OK;
 	_dataFileName = new char[strlen(dataFile)+1];
 	strcpy(_dataFileName,dataFile);
 	_schemaFileName = new char[strlen(schemaFile)+1];
 	strcpy(_schemaFileName,schemaFile);
-	mySchema = new Schema(schemaFile);
+	myDRSchema = new DRSchema(_schemaFileName);
 
 	schemaStream.open(_schemaFileName);
 	if (schemaStream.fail()) {
-		cout << "Schema File can't be opened !..." << endl;
+		cout << "DRSchema File can't be opened !..." << endl;
 		_uStat = FAIL;
 	} else {
 		myParser = new DataReaderParser(&schemaStream,0);
-		myParser->setSchema(mySchema);
+		myParser->setDRSchema(myDRSchema);
 		rc = myParser->parse();
 		schemaStream.close();
 		if (rc != 0) {
-			cerr << "Parse Error, Schema file can't be parsed !" << endl;
+			cerr << "Parse Error, DRSchema file can't be parsed !" << endl;
 			_uStat = FAIL;
 		} else {
-			if (mySchema->finalizeSchema() == OK) {
-				offset = new long[mySchema->qAttr];
-				myBuffer = new Buffer(dataFile, mySchema);
+			if (myDRSchema->finalizeDRSchema() == OK) {
+				offset = new long[myDRSchema->qAttr];
+				myBuffer = new Buffer(_dataFileName, myDRSchema);
 			} else {
 				_uStat = FAIL;
 			}
@@ -51,17 +52,17 @@ DataReader::~DataReader() {
 	if (offset != NULL)
 		delete [] offset;
 		
-	if (mySchema != NULL)
-		delete mySchema;
+	if (myDRSchema != NULL)
+		delete myDRSchema;
 }
 
 Status DataReader::getRecord(char* dest) {
 	Status status;
 	char* tmpPoint;
 
-	for (int i = 0 ; i < (int)(mySchema->qAttr); i++) {
-		tmpPoint = dest + mySchema->tableAttr[i]->offset; 
-		status = myBuffer->extractField(mySchema->tableAttr[i],tmpPoint);
+	for (int i = 0 ; i < (int)(myDRSchema->qAttr); i++) {
+		tmpPoint = dest + myDRSchema->tableAttr[i]->offset; 
+		status = myBuffer->extractField(myDRSchema->tableAttr[i],tmpPoint);
 		if (status != FOUNDSEPARATOR)
 			return status;
 	}

@@ -3,7 +3,7 @@
 
 #include "sysdep.h"
 #include <assert.h>
-#include "Schema.h"
+#include "DRSchema.h"
 
 extern int drdebug;
 #define YYSTYPE DataReaderParser::yystype
@@ -36,8 +36,8 @@ class DataReaderParser
       line_nr = 1;
       return drparse();
     }
-	Schema* mySchema;
-	void setSchema(Schema* tmpSchema) { mySchema = tmpSchema;}
+	DRSchema* myDRSchema;
+	void setDRSchema(DRSchema* tmpDRSchema) { myDRSchema = tmpDRSchema;}
 	Attribute* tmpAttr;
 
   protected:

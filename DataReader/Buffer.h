@@ -2,7 +2,7 @@
 #define DATAREADER_BUFFER_H
 
 #include "sysdep.h"
-#include "Schema.h"
+#include "DRSchema.h"
 
 class Buffer;
 
@@ -80,7 +80,7 @@ private:
 	char** _monthAbbr; // array of abbreviated month names
 
 public:
-	Buffer(char* fileName, Schema* mySchema); // constructor
+	Buffer(char* fileName, DRSchema* myDRSchema); // constructor
 	~Buffer();
 
 	// read temporary private members and calculates the final result

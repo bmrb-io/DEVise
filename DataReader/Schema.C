@@ -1,4 +1,4 @@
-#include "Schema.h"
+#include "DRSchema.h"
 #include "sysdep.h"
 #include "DateTime.h"
 
@@ -41,7 +41,7 @@ Attribute::~Attribute() {
 
 }
 
-Schema::~Schema() {
+DRSchema::~DRSchema() {
 	int i;
 	tAttr = 0;
 
@@ -76,7 +76,7 @@ Schema::~Schema() {
 		delete _keys;
 }
 
-void Schema::addAttribute(Attribute* newAttr) {
+void DRSchema::addAttribute(Attribute* newAttr) {
 	int i=0;
 	if (qAttr == 0) {
 		tableAttr = new Attribute*[1];
@@ -94,7 +94,7 @@ void Schema::addAttribute(Attribute* newAttr) {
 	}
 }
 
-Status Schema::finalizeSchema() {
+Status DRSchema::finalizeDRSchema() {
 	int i,j,k;
 	bool compoundFound = true;
 	int curOff = 0;
@@ -295,7 +295,7 @@ Status Schema::finalizeSchema() {
 	return OK;
 }
 
-Status Schema::normalizeDate(char*& curDate) {
+Status DRSchema::normalizeDate(char*& curDate) {
 	char* tmp = curDate;
 	char* boundary = curDate + strlen(curDate) - 1;
 	ostringstream tmpString;

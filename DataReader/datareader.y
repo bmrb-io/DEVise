@@ -47,11 +47,11 @@ char* tmpKey;
 
 beginschema: SCHEMA_TOKEN getident '{' getschema '}' ;
 
-getident:	IDENT_TOKEN { if (mySchema->getSchemaName() != NULL) 
-								drerror("Schema name can't be entered twice!");
+getident:	IDENT_TOKEN { if (myDRSchema->getDRSchemaName() != NULL) 
+								drerror("DRSchema name can't be entered twice!");
 						  char* tmpSCN = new char[strlen($1)+1];
 						  strcpy(tmpSCN,$1);
-						  mySchema->setSchemaName(tmpSCN); 
+						  myDRSchema->setDRSchemaName(tmpSCN); 
 						} ;
 
 getschema: getanyschema
@@ -65,10 +65,10 @@ getanyschema: getdelim ';'
 			  | getsorted ';'
 			  | getattribute
 			  ;
-getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (mySchema->getDelimiter() != NULL)
-												drerror("Schema Delimiter can't be entered twice !...");
+getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getDelimiter() != NULL)
+												drerror("DRSchema Delimiter can't be entered twice !...");
 											if ($3 == NULL)
-												drerror("Schema Delimiter NULL ??? ") ;
+												drerror("DRSchema Delimiter NULL ??? ") ;
 											char* tmpChar = new char[strlen($3)+1];
 											strcpy(tmpChar,$3);
                                             Holder* tmpHolder = new Holder;
@@ -81,12 +81,12 @@ getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (mySchema->getDelimiter() != NULL)
 
                                             tmpHolder->data = tmpChar;
                                             tmpHolder->length = strlen(tmpChar);
-                                            mySchema->setDelimiter(tmpHolder);
+                                            myDRSchema->setDelimiter(tmpHolder);
                                         }
 			;
 getupsep: SEPARATOR_TOKEN '=' BRACKET_TOKEN {
-											if (mySchema->getSeparator() != NULL) 
-												drerror("Schema Separator can't be entered twice!...");
+											if (myDRSchema->getSeparator() != NULL) 
+												drerror("DRSchema Separator can't be entered twice!...");
 											char* tmpSChar = new char[strlen($3)+1];
 											strcpy(tmpSChar,$3);
 											Holder* tmpHolder = new Holder;
@@ -99,28 +99,28 @@ getupsep: SEPARATOR_TOKEN '=' BRACKET_TOKEN {
 
 											tmpHolder->data = tmpSChar;
 											tmpHolder->length = strlen(tmpSChar);
-											mySchema->setSeparator(tmpHolder);
+											myDRSchema->setSeparator(tmpHolder);
 										}
 			;
 
 getupqu: QUOTE_TOKEN '=' BRACKET_TOKEN {
-											if (mySchema->getQuote() != -1) 
-												drerror("Schema Quote can't be entered twice!...");
+											if (myDRSchema->getQuote() != -1) 
+												drerror("DRSchema Quote can't be entered twice!...");
 											char* tmpQChar = new char[strlen($3)+1];
 											strcpy(tmpQChar,$3);
 
-											mySchema->setQuote(tmpQChar[0]);
+											myDRSchema->setQuote(tmpQChar[0]);
 										}
 			;
 
 getkey: KEY_TOKEN '=' '(' { tmpVector = new vector<char*> ;}
-			 getkeys ')'   { mySchema->addKey(*tmpVector);
+			 getkeys ')'   { myDRSchema->addKey(*tmpVector);
 						delete tmpVector;
 					  }
 		 ;
 
 getsorted: SORTED_TOKEN '=' '(' { tmpVector = new vector<char*> ; }
-						getkeys ')' { if (mySchema->setSorted(tmpVector) == FAIL) {
+						getkeys ')' { if (myDRSchema->setSorted(tmpVector) == FAIL) {
 											delete tmpVector;
 											drerror("Sorted can't be entered twice !...");
 									  }
@@ -138,7 +138,7 @@ getkeyparts: IDENT_TOKEN {  tmpKey = new char[strlen($1)+1];
 		 ;
 
 getattribute: getattrtype '{' getattributeoption '}' {
-														mySchema->addAttribute(tmpAttr);
+														myDRSchema->addAttribute(tmpAttr);
 													 }
 			  ;
 
