@@ -576,19 +576,16 @@ testpfile: ../graphics/DList.h ../graphics/Exit.h
 testpfileGap: ../graphics/DeviseTypes.h PageFile.h BufHint.h BufMgr.h
 testpfileGap: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RecOrder.h
 testpfileGap: ../graphics/DList.h ../graphics/Exit.h PageRange.h
-BasicStats: ../graphics/XDisplay.h ../graphics/Display.h
-BasicStats: ../graphics/DeviseTypes.h ../graphics/Geom.h ../graphics/Color.h
-BasicStats: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-BasicStats: ../graphics/Journal.h ../graphics/VisualArg.h
-BasicStats: ../graphics/Pattern.h ../graphics/ColorMgr.h ../graphics/Xdef.h
-BasicStats: ../graphics/XWindowRep.h ../graphics/WindowRep.h
+BasicStats: BasicStats.h ../graphics/DList.h ../graphics/Exit.h
+BasicStats: ../graphics/DeviseTypes.h ViewStats.h ViewGraph.h
+BasicStats: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/Journal.h
+BasicStats: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+BasicStats: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
 BasicStats: ../graphics/Transform.h ../graphics/DevisePixmap.h
-BasicStats: ../graphics/Compress.h ../graphics/XBitmap.h BasicStats.h
-BasicStats: ViewStats.h ViewKGraph.h ViewGraph.h ../graphics/View.h
-BasicStats: ../graphics/ViewWin.h ../graphics/Control.h
+BasicStats: ../graphics/Compress.h ../graphics/Control.h
 BasicStats: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 BasicStats: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-BasicStats: DerivedDataSource.h Action.h RecId.h KGraph.h
+BasicStats: DerivedDataSource.h Action.h RecId.h
 DCE: DCE.h machdep.h ../graphics/Exit.h
 DerivedDataSource: DerivedDataSource.h ../graphics/DeviseTypes.h ViewGraph.h
 DerivedDataSource: ../graphics/View.h ../graphics/Dispatcher.h
@@ -611,12 +608,12 @@ GroupDir: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ItemList: ItemList.h Group.h MapInterpClassInfo.h ../graphics/ClassDir.h
 ItemList: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 ItemList: ../graphics/Color.h ../graphics/Pattern.h
-KGraph: ../graphics/Transform.h ../graphics/DeviseTypes.h
-KGraph: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-KGraph: ../graphics/Geom.h ../graphics/WindowRep.h ../graphics/DList.h
+KGraph: KGraph.h ../graphics/Geom.h ../graphics/DeviseTypes.h
+KGraph: ../graphics/Color.h ../graphics/WindowRep.h ../graphics/Transform.h
+KGraph: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/DList.h
 KGraph: ../graphics/Exit.h ../graphics/DevisePixmap.h ../graphics/Compress.h
-KGraph: KGraph.h ../graphics/Display.h ../graphics/Dispatcher.h
-KGraph: ../graphics/Journal.h ../graphics/ColorMgr.h
+KGraph: ../graphics/Display.h ../graphics/Dispatcher.h ../graphics/Journal.h
+KGraph: ../graphics/ColorMgr.h
 MapInterpShape: MapInterpShape.h ../graphics/Transform.h
 MapInterpShape: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 MapInterpShape: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Geom.h
@@ -641,11 +638,11 @@ ParseAPI: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ParseAPI: ../graphics/Compress.h ../graphics/ViewCallback.h
 ParseAPI: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 ParseAPI: BasicStats.h ViewStats.h DerivedDataSource.h Action.h RecId.h
-ParseAPI: KGraph.h ../graphics/Display.h ../graphics/ColorMgr.h
-ParseAPI: ../graphics/Util.h ParseCat.h TData.h RecOrder.h TDataMap.h
-ParseAPI: ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h
-ParseAPI: Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
-ParseAPI: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
+ParseAPI: KGraph.h ../graphics/Util.h ParseCat.h TData.h RecOrder.h
+ParseAPI: TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h
+ParseAPI: ItemList.h Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
+ParseAPI: VisualLink.h ../graphics/FilterQueue.h DataSeg.h Version.h
+ParseAPI: DevFileHeader.h
 RecordLink: RecordLink.h RecId.h RecFile.h ../graphics/DeviseTypes.h
 RecordLink: VisualLink.h ViewGraph.h ../graphics/View.h
 RecordLink: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
@@ -670,6 +667,5 @@ ViewKGraph: ../graphics/Compress.h ../graphics/Control.h
 ViewKGraph: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewKGraph: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 ViewKGraph: BasicStats.h ViewStats.h DerivedDataSource.h Action.h RecId.h
-ViewKGraph: KGraph.h ../graphics/Display.h ../graphics/ColorMgr.h
-ViewKGraph: ../graphics/Util.h
+ViewKGraph: KGraph.h ../graphics/Util.h
 Web: ../graphics/Exit.h Web.h machdep.h

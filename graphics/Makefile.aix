@@ -82,7 +82,8 @@ View: DevisePixmap.h Compress.h Control.h ClassDir.h ViewCallback.h
 View: AttrList.h Config.h Cursor.h FilterQueue.h TimeStamp.h Parse.h Map3D.h
 ViewWin: ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h Geom.h Color.h
 ViewWin: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
-ViewWin: Display.h Dispatcher.h Journal.h ColorMgr.h Init.h BufPolicy.h
+ViewWin: Display.h Dispatcher.h Journal.h ColorMgr.h ClassDir.h Control.h
+ViewWin: Init.h BufPolicy.h
 WinClassInfo: Display.h DeviseTypes.h Geom.h Color.h Dispatcher.h DList.h
 WinClassInfo: Exit.h Journal.h VisualArg.h Pattern.h ColorMgr.h Control.h
 WinClassInfo: ClassDir.h WinClassInfo.h TileLayout.h ViewLayout.h ViewWin.h

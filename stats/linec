@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/08 14:50:23  jussi
+#  Moved from root directory.
+#
 #  Revision 1.6  1996/06/27 22:43:36  jussi
 #  Added 3D and AttrProj categories.
 #
@@ -42,6 +45,10 @@ if (-f stats/lc) then
   set PROG = stats/lc
   set TAIL = cat
 endif
+
+echo ""
+echo "DEVise Source Code Statistics as of `date`"
+echo ""
 
 $SEPARATOR
 echo Buffer Manager:
@@ -117,13 +124,11 @@ $PROG util/*.[Cch] | $TAIL
 
 $SEPARATOR
 echo Makefiles:
-echo -n "  "
-wc */Makefile.base */*/Makefile | tail -1
+$PROG */Makefile.base */*/Makefile | $TAIL
 
 $SEPARATOR
 echo All Files:
-echo -n "  "
-wc */*.[Cch] */*/Makefile */Makefile.base */*.lex */*.y \
-	*/*.tk */*.tcl | tail -1
+$PROG */*.[Cch] */*/Makefile */Makefile.base */*.lex */*.y \
+	*/*.tk */*.tcl | $TAIL
 
 popd
