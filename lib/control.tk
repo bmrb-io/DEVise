@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.129  1997/04/30 18:27:21  wenger
+#	Added session text description capability.
+#
 #	Revision 1.128  1997/04/29 17:35:27  wenger
 #	Minor fixes to new text labels; added fixed text label shape;
 #	CheckDirSpace() no longer prints an error message if it can't get disk
@@ -869,9 +872,9 @@ proc displayTable {table} {
 	set oldTableName [lindex $entry 0]
 	set type [lindex $entry 1]
 	set retVal [define$type $entry]
-	puts "retVal = $retVal"
+#DEBUG	puts "retVal = $retVal"
 	set newTableName [lindex $retVal 0]
-	puts "newTableName = $newTableName"
+#DEBUG	puts "newTableName = $newTableName"
 	if {$retVal != ""} {
 		if {$newTableName == $oldTableName} {
 
@@ -946,7 +949,7 @@ proc getSelectedIndex {} {
 		set item [format "%-40.40s  %-10.10s" $tablename $indexname]
 		lappend formated $item
 	}
-	puts "formated = $formated"
+#DEBUG	puts "formated = $formated"
 	set answer [dialogList .selectIndex "Select Index"  \
 			    "Select Index" \
 			   "" 0 { OK Cancel } \
@@ -1016,9 +1019,9 @@ menu .mbar.tdata.menu.filterMenu -tearoff 0
 		set as [lindex $result 1]
 		set where [lindex $result 2]
 		set viewName [file tail $file]
-		puts "calling qbrowse 1 $viewName $select $as $where"
+#DEBUG		puts "calling qbrowse 1 $viewName $select $as $where"
 		qbrowse 1 $viewName "" "" $select $as $where
-		puts "returns qbrowse 1 $viewName $select $as $where"
+#DEBUG		puts "returns qbrowse 1 $viewName $select $as $where"
 		set fileName "$filterdir/$viewName"
 		saveViewFile $fileName $select $as $where
 	}
@@ -1242,7 +1245,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "New" \
     -command { set tmp [DoCreateWindow "Select window type"]; unset tmp }
 .mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
-.mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
+#.mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
 .mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator

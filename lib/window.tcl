@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1997/02/14 16:48:10  wenger
+#  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #  Revision 1.27  1997/02/03 20:02:03  ssl
 #  Added interface for negative record links and user defined layout mode
 #
@@ -209,7 +212,7 @@ proc SetWindowLayout {win} {
 	    -value auto -width 12 -anchor w -command {
 	.setLayout.row2.e configure -state disabled
 	.setLayout.row3.e configure -state disabled
-	.setLayout.row5.edit configure -state disabled
+#	.setLayout.row5.edit configure -state disabled
     }
     pack .setLayout.row1.b -side left
 
@@ -218,7 +221,7 @@ proc SetWindowLayout {win} {
 	    -command {
 	.setLayout.row2.e configure -state normal
 	.setLayout.row3.e configure -state disabled
-	.setLayout.row5.edit configure -state disabled
+#	.setLayout.row5.edit configure -state disabled
     }
     label .setLayout.row2.l -text "Width:" -width 8
     entry .setLayout.row2.e -relief sunken -textvariable horRequested \
@@ -230,7 +233,7 @@ proc SetWindowLayout {win} {
 	    -command {
 	.setLayout.row2.e configure -state disabled
 	.setLayout.row3.e configure -state normal
-	.setLayout.row5.edit configure -state disabled
+#	.setLayout.row5.edit configure -state disabled
     }
     label .setLayout.row3.l -text "Height:" -width 8
     entry .setLayout.row3.e -relief sunken -textvariable verRequested \
@@ -241,24 +244,24 @@ proc SetWindowLayout {win} {
 	    -value stacked -width 12 -anchor w -command {
 	.setLayout.row2.e configure -state disabled
 	.setLayout.row3.e configure -state disabled
-	.setLayout.row5.edit configure -state disabled
+#	.setLayout.row5.edit configure -state disabled
     }
     pack .setLayout.row4.b -side left
-    radiobutton .setLayout.row5.b -text UserDefined  -variable layoutOption \
-	    -value  custom  -width 12 -anchor w -command {
-	.setLayout.row2.e configure -state disabled
-	.setLayout.row3.e configure -state disabled
-	.setLayout.row5.edit configure -state normal
-    }
-    button .setLayout.row5.edit -text "Editor" -command { RootLayout } 
-    pack .setLayout.row5.b .setLayout.row5.edit -side left
+#    radiobutton .setLayout.row5.b -text UserDefined  -variable layoutOption \
+#	    -value  custom  -width 12 -anchor w -command {
+#	.setLayout.row2.e configure -state disabled
+#	.setLayout.row3.e configure -state disabled
+#	.setLayout.row5.edit configure -state normal
+#    }
+#    button .setLayout.row5.edit -text "Editor" -command { RootLayout } 
+#    pack .setLayout.row5.b .setLayout.row5.edit -side left
 
     set verRequested 1
     set horRequested 1
     set layoutOption auto
     .setLayout.row2.e configure -state disabled
     .setLayout.row3.e configure -state disabled
-    .setLayout.row5.edit configure -state disabled
+#    .setLayout.row5.edit configure -state disabled
 
     set layout [DEVise getWindowLayout $layoutWin]
     if {[lindex $layout 0] >= 1} {
@@ -276,7 +279,7 @@ proc SetWindowLayout {win} {
 	.setLayout.row2.e configure -state normal
     } elseif {[lindex $layout 0] == 0 && [lindex $layout 1] == 0 } {
 	set layoutOption custom
-	.setLayout.row5.edit configure -state normal
+#	.setLayout.row5.edit configure -state normal
     }
 
     button .setLayout.bot.but.ok -text OK -width 10 -command {
