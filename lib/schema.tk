@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1997/07/28 17:36:50  donjerko
+#  Changed default record delimiter to "Whitespace"
+#
 #  Revision 1.29  1997/06/10 02:30:31  guangshu
 #  Added unidata schema which can generate unidata schema and parse to the
 #  users unidata schema.
@@ -2046,12 +2049,23 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
     }
 
     label .gbrowse.ops.select.label -text "SELECT "
-    entry .gbrowse.ops.select.entry -width 100 -relief sunken -bd 2 \
+    entry .gbrowse.ops.select.entry -width 90 -relief sunken -bd 2 \
 	    -textvariable select 
 
     label .gbrowse.ops.as.label -text "AS "
-    entry .gbrowse.ops.as.entry -width 100 -relief sunken -bd 2 \
+    entry .gbrowse.ops.as.entry -width 80 -relief sunken -bd 2 \
 	    -textvariable as 
+
+    button .gbrowse.ops.as.selbox -text "Mirror" -width 10 -command {
+         set as ""
+	    set selLen [llength $select]
+	    for {set i 0} {$i < $selLen} {incr i} {
+               set current [lindex $select $i]
+			set beg [expr [string first . $current] + 1]
+	    		append as [string range $current $beg end]
+			append as " "
+	    }
+    }
 
     label .gbrowse.ops.where.label -text "WHERE "
     entry .gbrowse.ops.where.entry -width 100 -relief sunken -bd 2 \
@@ -2062,7 +2076,8 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
 	    -fill x -padx 1m -pady 1m -expand 1
     pack .gbrowse.ops.select.label .gbrowse.ops.select.entry -side left \
 	    -fill x -padx 1m -pady 1m -expand 1
-    pack .gbrowse.ops.as.label .gbrowse.ops.as.entry -side left \
+    pack .gbrowse.ops.as.label .gbrowse.ops.as.entry \
+         .gbrowse.ops.as.selbox -side left \
 	    -fill x -padx 1m -pady 1m -expand 1
     pack .gbrowse.ops.where.label .gbrowse.ops.where.entry -side left \
 	    -fill x -padx 1m -pady 1m -expand 1
