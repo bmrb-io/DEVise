@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.33  1997/06/05 21:32:37  wenger
+# Re-made sun, solaris, and hp dependencies.
+#
 # Revision 1.32  1997/05/29 15:22:09  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -49,20 +52,6 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/WindowRep.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/limits.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/param.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/machine/param.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sysmacros.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/machine/spl.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/wait.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sem.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/bitypes.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/socket.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
@@ -96,8 +85,21 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/assert.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/stat.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/param.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/param.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sysmacros.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/spl.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/wait.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/bitypes.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/cdefs.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/socket.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/AssoArray.h
@@ -131,18 +133,7 @@ CycleEffMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
 CycleEffMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
 CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 CycleEffMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-CycleEffMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
-CycleEffMappingClassInfo.o: /usr/include/sys/param.h
-CycleEffMappingClassInfo.o: /usr/include/machine/param.h
-CycleEffMappingClassInfo.o: /usr/include/sys/sysmacros.h
-CycleEffMappingClassInfo.o: /usr/include/machine/spl.h
-CycleEffMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-CycleEffMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleEffMappingClassInfo.o: /usr/include/sys/bitypes.h
-CycleEffMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleEffMappingClassInfo.o: /usr/include/sys/socket.h
-CycleEffMappingClassInfo.o: /usr/include/netinet/in.h ../graphics/Transform.h
+CycleEffMappingClassInfo.o: ../graphics/Transform.h
 CycleEffMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 CycleEffMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 CycleEffMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
@@ -169,7 +160,19 @@ CycleEffMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-CycleEffMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+CycleEffMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+CycleEffMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+CycleEffMappingClassInfo.o: ../graphics.new/machdep.h
+CycleEffMappingClassInfo.o: /usr/include/sys/param.h
+CycleEffMappingClassInfo.o: /usr/include/machine/param.h
+CycleEffMappingClassInfo.o: /usr/include/sys/sysmacros.h
+CycleEffMappingClassInfo.o: /usr/include/machine/spl.h
+CycleEffMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+CycleEffMappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+CycleEffMappingClassInfo.o: /usr/include/sys/cdefs.h
+CycleEffMappingClassInfo.o: /usr/include/sys/socket.h
+CycleEffMappingClassInfo.o: /usr/include/netinet/in.h
 CycleEffMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleEffMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleEffMappingClassInfo.o: ../graphics/AssoArray.h ../graphics.new/Action.h
@@ -201,18 +204,7 @@ CycleOccMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
 CycleOccMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
 CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 CycleOccMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-CycleOccMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
-CycleOccMappingClassInfo.o: /usr/include/sys/param.h
-CycleOccMappingClassInfo.o: /usr/include/machine/param.h
-CycleOccMappingClassInfo.o: /usr/include/sys/sysmacros.h
-CycleOccMappingClassInfo.o: /usr/include/machine/spl.h
-CycleOccMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-CycleOccMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleOccMappingClassInfo.o: /usr/include/sys/bitypes.h
-CycleOccMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleOccMappingClassInfo.o: /usr/include/sys/socket.h
-CycleOccMappingClassInfo.o: /usr/include/netinet/in.h ../graphics/Transform.h
+CycleOccMappingClassInfo.o: ../graphics/Transform.h
 CycleOccMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 CycleOccMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 CycleOccMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
@@ -239,7 +231,19 @@ CycleOccMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-CycleOccMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+CycleOccMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+CycleOccMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+CycleOccMappingClassInfo.o: ../graphics.new/machdep.h
+CycleOccMappingClassInfo.o: /usr/include/sys/param.h
+CycleOccMappingClassInfo.o: /usr/include/machine/param.h
+CycleOccMappingClassInfo.o: /usr/include/sys/sysmacros.h
+CycleOccMappingClassInfo.o: /usr/include/machine/spl.h
+CycleOccMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+CycleOccMappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+CycleOccMappingClassInfo.o: /usr/include/sys/cdefs.h
+CycleOccMappingClassInfo.o: /usr/include/sys/socket.h
+CycleOccMappingClassInfo.o: /usr/include/netinet/in.h
 CycleOccMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleOccMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleOccMappingClassInfo.o: ../graphics/AssoArray.h ../graphics.new/Action.h
@@ -277,22 +281,6 @@ CycleSuspendedMappingClassInfo.o: ../graphics/VisualArg.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Pattern.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleSuspendedMappingClassInfo.o: ../graphics/WindowRep.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
-CycleSuspendedMappingClassInfo.o: /usr/include/limits.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/param.h
-CycleSuspendedMappingClassInfo.o: /usr/include/machine/param.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/sysmacros.h
-CycleSuspendedMappingClassInfo.o: /usr/include/machine/spl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/wait.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ipc.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/sem.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/netdb.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/bitypes.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/socket.h
-CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Transform.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Compress.h
@@ -327,8 +315,24 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/assert.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/DCE.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ipc.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/sem.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
+CycleSuspendedMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/param.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/param.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/sysmacros.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/spl.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/wait.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl.h
+CycleSuspendedMappingClassInfo.o: /usr/include/netdb.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/bitypes.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/cdefs.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/socket.h
+CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleSuspendedMappingClassInfo.o: ../graphics/AssoArray.h
@@ -365,20 +369,6 @@ CycleWorkingMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
 CycleWorkingMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
 CycleWorkingMappingClassInfo.o: ../graphics/ColorMgr.h
 CycleWorkingMappingClassInfo.o: ../graphics/WindowRep.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
-CycleWorkingMappingClassInfo.o: /usr/include/limits.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/param.h
-CycleWorkingMappingClassInfo.o: /usr/include/machine/param.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/sysmacros.h
-CycleWorkingMappingClassInfo.o: /usr/include/machine/spl.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/wait.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/sem.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/bitypes.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/cdefs.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/socket.h
-CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
 CycleWorkingMappingClassInfo.o: ../graphics/Transform.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleWorkingMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
@@ -412,8 +402,21 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/assert.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/stat.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/param.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/param.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/sysmacros.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/spl.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/wait.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/bitypes.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/cdefs.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/socket.h
+CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/UpdateLink.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleWorkingMappingClassInfo.o: ../graphics/AssoArray.h
@@ -446,16 +449,7 @@ HostMappingClassInfo.o: /usr/include/sys/unistd.h /usr/include/string.h
 HostMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 HostMappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
 HostMappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
-HostMappingClassInfo.o: ../graphics/WindowRep.h ../graphics.new/machdep.h
-HostMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/param.h
-HostMappingClassInfo.o: /usr/include/machine/param.h
-HostMappingClassInfo.o: /usr/include/sys/sysmacros.h
-HostMappingClassInfo.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-HostMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-HostMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-HostMappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-HostMappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-HostMappingClassInfo.o: /usr/include/netinet/in.h ../graphics/Transform.h
+HostMappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 HostMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 HostMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 HostMappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
@@ -479,8 +473,17 @@ HostMappingClassInfo.o: ../graphics.new/GdataStat.h
 HostMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 HostMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 HostMappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-HostMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/assert.h
-HostMappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/UpdateLink.h
+HostMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+HostMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+HostMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+HostMappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+HostMappingClassInfo.o: /usr/include/sys/param.h /usr/include/machine/param.h
+HostMappingClassInfo.o: /usr/include/sys/sysmacros.h
+HostMappingClassInfo.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+HostMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+HostMappingClassInfo.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+HostMappingClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+HostMappingClassInfo.o: ../graphics.new/UpdateLink.h
 HostMappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
 HostMappingClassInfo.o: ../graphics.new/Action.h
 HostMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
@@ -507,15 +510,7 @@ MappingClassInfo.o: /usr/include/sys/unistd.h /usr/include/string.h
 MappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 MappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
 MappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
-MappingClassInfo.o: ../graphics/WindowRep.h ../graphics.new/machdep.h
-MappingClassInfo.o: /usr/include/limits.h /usr/include/sys/param.h
-MappingClassInfo.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-MappingClassInfo.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-MappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-MappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-MappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-MappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-MappingClassInfo.o: /usr/include/netinet/in.h ../graphics/Transform.h
+MappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 MappingClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
@@ -537,8 +532,16 @@ MappingClassInfo.o: ../graphics.new/GdataStat.h
 MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/assert.h
-MappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/UpdateLink.h
+MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+MappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+MappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
+MappingClassInfo.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+MappingClassInfo.o: /usr/include/sys/param.h /usr/include/machine/param.h
+MappingClassInfo.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
+MappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+MappingClassInfo.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
+MappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+MappingClassInfo.o: /usr/include/netinet/in.h ../graphics.new/UpdateLink.h
 MappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
 MappingClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
 MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
@@ -655,13 +658,6 @@ disp.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/unistd.h
 disp.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
 disp.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
 disp.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-disp.o: ../graphics.new/machdep.h /usr/include/limits.h
-disp.o: /usr/include/sys/param.h /usr/include/machine/param.h
-disp.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-disp.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-disp.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
-disp.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-disp.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 disp.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 disp.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
 disp.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
@@ -678,11 +674,18 @@ disp.o: ../graphics/BufPolicy.h ../graphics/Cursor.h ../graphics/DevFont.h
 disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
 disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-disp.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/assert.h
-disp.o: /usr/include/sys/stat.h ../graphics.new/UpdateLink.h
-disp.o: ../graphics.new/VisualLink.h ../graphics/AssoArray.h
-disp.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-disp.o: ../graphics/Temp.h ../graphics/Map3D.h
+disp.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
+disp.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
+disp.o: /usr/include/limits.h /usr/include/sys/stat.h
+disp.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+disp.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+disp.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+disp.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+disp.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+disp.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+disp.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+disp.o: ../graphics/AssoArray.h ../graphics.new/Action.h
+disp.o: ../graphics.new/PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
 disp.o: ../graphics.new/VisualLinkClassInfo.h TDataMulti.h
 disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/FileIndex.h TDataHost.h TDataCycle.h

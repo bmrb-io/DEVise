@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/06/04 15:50:32  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.50  1997/05/29 15:21:23  wenger
   Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
   compile on linux.
@@ -257,7 +261,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "machdep.h"	// Needed for FILENAME_MAX on sun.
 #include "Geom.h"
 #include "Transform.h"
 #include "DList.h"
@@ -268,6 +271,12 @@
 #include "VisualArg.h"
 #include "DevError.h"
 #include "ETkIfc.h"
+
+/* Note: this is defined explicitly here, instead of including machdep.h,
+ * because that breaks the compile on HPs.  RKW June 10, 1997. */
+#ifndef FILENAME_MAX
+#define FILENAME_MAX    1024    /* max # of characters in a path name */
+#endif
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/05/21 22:09:51  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.4  1997/05/05 16:53:43  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
   necessary.
@@ -29,10 +38,10 @@
 #ifndef _ETKIFC_H_
 #define _ETKIFC_H_
 
+#include <string.h>
 #include "ETk.h"
 #include "Xdef.h"
 #include "DeviseTypes.h"
-#include <string.h>
 
 class ETkIfc
 {

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.43  1997/06/05 21:31:56  wenger
+# Re-made sun, solaris, and hp dependencies.
+#
 # Revision 1.42  1997/05/29 15:21:09  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -52,27 +55,9 @@ generic.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
 generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
 generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
 generic.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-generic.o: ../graphics.new/machdep.h /usr/include/limits.h
-generic.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-generic.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-generic.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-generic.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-generic.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-generic.o: /usr/include/netdb.h /usr/include/sys/socket.h
-generic.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-generic.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-generic.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-generic.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-generic.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-generic.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-generic.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-generic.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-generic.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-generic.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-generic.o: /usr/include/sys/byteorder.h ../graphics/Transform.h
-generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
-generic.o: ../graphics/Xdef.h ../graphics/ViewWin.h
+generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
+generic.o: ../graphics/ETk.h ../graphics/Xdef.h ../graphics/ViewWin.h
 generic.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
 generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
@@ -85,7 +70,24 @@ generic.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 generic.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-generic.o: /usr/include/assert.h /usr/include/sys/stat.h
+generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+generic.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
+generic.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+generic.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+generic.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+generic.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+generic.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+generic.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+generic.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+generic.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+generic.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+generic.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+generic.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+generic.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+generic.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+generic.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+generic.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+generic.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 generic.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 generic.o: ../graphics/AssoArray.h ../graphics.new/Action.h
 generic.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
@@ -115,26 +117,9 @@ testWindowSpeed.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
 testWindowSpeed.o: /usr/include/stdlib.h /usr/include/unistd.h
 testWindowSpeed.o: /usr/include/sys/unistd.h /usr/include/string.h
 testWindowSpeed.o: ../graphics/Journal.h ../graphics/ColorMgr.h
-testWindowSpeed.o: ../graphics/WindowRep.h ../graphics.new/machdep.h
-testWindowSpeed.o: /usr/include/limits.h /usr/include/sys/param.h
-testWindowSpeed.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-testWindowSpeed.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testWindowSpeed.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-testWindowSpeed.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-testWindowSpeed.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-testWindowSpeed.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testWindowSpeed.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-testWindowSpeed.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-testWindowSpeed.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-testWindowSpeed.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-testWindowSpeed.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-testWindowSpeed.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testWindowSpeed.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testWindowSpeed.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testWindowSpeed.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testWindowSpeed.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-testWindowSpeed.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-testWindowSpeed.o: ../graphics/Compress.h ../graphics/DevError.h
-testWindowSpeed.o: /usr/include/errno.h /usr/include/sys/errno.h
-testWindowSpeed.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-testWindowSpeed.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+testWindowSpeed.o: ../graphics/WindowRep.h ../graphics/Transform.h
+testWindowSpeed.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+testWindowSpeed.o: ../graphics/DevError.h /usr/include/errno.h
+testWindowSpeed.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h ../graphics/ViewWin.h
+testWindowSpeed.o: ../graphics/DualWindowRep.h

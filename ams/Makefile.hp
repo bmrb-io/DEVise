@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.33  1997/06/05 21:31:47  wenger
+# Re-made sun, solaris, and hp dependencies.
+#
 # Revision 1.32  1997/05/29 15:20:44  wenger
 # Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
 # compile on linux.
@@ -43,15 +46,7 @@ MapClassInfo.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 MapClassInfo.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
 MapClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
 MapClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
-MapClassInfo.o: ../graphics/WindowRep.h ../graphics.new/machdep.h
-MapClassInfo.o: /usr/include/limits.h /usr/include/sys/param.h
-MapClassInfo.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-MapClassInfo.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
-MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-MapClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-MapClassInfo.o: /usr/include/netdb.h /usr/include/sys/bitypes.h
-MapClassInfo.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
-MapClassInfo.o: /usr/include/netinet/in.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MapClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
 MapClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
@@ -72,7 +67,15 @@ MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 MapClassInfo.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-MapClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+MapClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+MapClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
+MapClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+MapClassInfo.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+MapClassInfo.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+MapClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+MapClassInfo.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+MapClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 MapClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 MapClassInfo.o: ../graphics/AssoArray.h ../graphics.new/Action.h
 MapClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
@@ -90,18 +93,11 @@ ams.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
-ams.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-ams.o: ../graphics.new/machdep.h /usr/include/limits.h
-ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
-ams.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-ams.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-ams.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
-ams.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-ams.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-ams.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
-ams.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
-ams.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+ams.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
+ams.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+ams.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 ams.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 ams.o: /usr/include/stddef.h /usr/include/X11/Xutil.h ../graphics/ViewWin.h
 ams.o: ../graphics/DualWindowRep.h ../graphics/Control.h
@@ -115,7 +111,14 @@ ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 ams.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
 ams.o: ../graphics.new/DataSourceFixedBuf.h ../graphics.new/DataSourceBuf.h
 ams.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-ams.o: ../graphics.new/DCE.h /usr/include/assert.h /usr/include/sys/stat.h
+ams.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
+ams.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
+ams.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
+ams.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
+ams.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h /usr/include/netdb.h
+ams.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 ams.o: ../graphics/AssoArray.h ../graphics.new/Action.h
 ams.o: ../graphics.new/RecId.h ../graphics.new/PointStorage.h
