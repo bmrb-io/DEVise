@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/09 18:14:23  kmurli
+  Modified Group.C and GroupDir.C to include an oiverloaded functions for
+  get_items, subitems to take in a char * instead of Tcp_interp *. This
+  is for use in the ServerAPI.c
+
   Revision 1.44  1996/04/18 18:14:20  jussi
   The Tcl/Tk file interpreted in batch mode is now batch.tcl.
 
@@ -164,6 +169,7 @@
 */
 
 #include<stdio.h>
+#include<iostream.h>
 #include<stdlib.h>
 #include"ClientAPI.h"
 #include<netinet/in.h>
@@ -452,15 +458,19 @@ void ClientControl::openConnection(char *servName,int portNum)
 		perror("Get sockname");
 	
 	u_short port = tempAddr.sin_port;
-	u_short size = strlen(servName)+1;
+	u_short size = strlen(cliName)+1;
 	u_short tempSize = htons(size);
-
+	
+	cout << "size (proper)|" << size << endl;
+	cout << "Size converted to N/w " << tempSize << endl;
 	if (send(socketFd,(char *)&tempSize,sizeof(u_short),0) < 0)	
 		perror("Send");
 	
 	if (send(socketFd,cliName,size,0) < 0)	
 		perror("Send");
 	
+	cout << " Port " << port << endl;
+	cout << " Port converted (not sent) " << ntohs(port) << endl;
 	if (send(socketFd,(char *)&port,sizeof(u_short),0) < 0)	
 		perror("Send");
 	
