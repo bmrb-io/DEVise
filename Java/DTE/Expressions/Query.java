@@ -97,14 +97,11 @@ public class Query {
                      s = s + t.toString();
                }
 
-
                if(whereClause != null){			
                   s = s + " WHERE " + whereClause.toString();
                }
 
                return s; 
-
-
         }
 
 	public void typeCheck(RelationManager relMngr) throws IOException {
@@ -133,13 +130,39 @@ public class Query {
 			predList.setElementAt(e, i);
 		}
 	}
+
 	public String printTypes(){
+               String s = "SELECT ";
+               Expression e = null;
+               TableAlias t = null;
 
-		// to avoid writing new code, maybe we should parametrize
-		// print function (0 for no types, 1 for print with types).
+               for ( int i = 0; i < selectClause.size(); i++ ) 
+               {
+                  e = ( Expression )( selectClause.elementAt(i) );
+                  if ( i != (selectClause.size() -1) )
+                     s = s + e.printTypes() + ", ";
+                  else
+                     s = s + e.printTypes() ;
+               }
 
-		return toString();
-	}
+               s = s +  " FROM ";
+
+               for ( int i = 0; i < fromClause.size(); i++ )
+               {
+                  t = ( TableAlias )( fromClause.elementAt(i) );
+                  if ( i != (fromClause.size() -1))
+                     s = s + t.toString() + " ";
+                  else
+                     s = s + t.toString();
+               }
+
+               if(whereClause != null){			
+                  s = s + " WHERE " + whereClause.printTypes();
+               }
+
+               return s; 
+        }
+
 	public PlanNode optimize() throws IOException {
 		TableAlias curTa = (TableAlias) fromClause.elementAt(0);
 		PlanNode leftNode = new FileScanNode(curTa, this);

@@ -29,6 +29,7 @@ public abstract class DTE_Type {
     abstract public void print(PrintStream ps);
     //abstract public Object clone( );
     abstract public TypeDesc getType( );
+    abstract public String toString( );
     abstract public void copyTo(DTE_Type d);
 }
 

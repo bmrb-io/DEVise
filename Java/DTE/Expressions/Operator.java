@@ -36,6 +36,10 @@ public class Operator implements Expression {
         right.toString() + ")";
     }
 
+    public String printTypes( ) {
+        return type.getString()+"[" + left.printTypes() + " " + operator + " " +            right.printTypes() + "]";
+    }
+
     public TypeDesc getType( ) {
         return type;
     }

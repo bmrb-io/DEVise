@@ -10,8 +10,6 @@ public class Selection implements Expression {
     private String attribute;
     private TypeDesc type;
 
-
-
     public Selection(String alias, String attribute){
         this.alias = alias;
         this.attribute = attribute;
@@ -34,6 +32,10 @@ public class Selection implements Expression {
 
     public String toString(){
         return alias + "." + attribute;
+    }
+
+    public String printTypes(){
+        return "["+type.getString()+": "+toString()+"]";
     }
 
     public TypeDesc getType( ) {

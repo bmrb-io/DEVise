@@ -31,11 +31,11 @@ public class CheckType {
 
         TypeDesc type = new IntDesc( );
         Selection s = new Selection( "t", "i", type );
-        Constant c = new Constant( new DTE_Boolean( true ) );
-        Operator op = new Operator( "a", c, s );
+        Constant c = new Constant( new DTE_Int( 5 ) );
+        Operator op = new Operator( "-", c, s );
         selectClause.addElement( op );
         query = new Query(selectClause, fromClause, whereClause);
-        System.out.println("Query was: " + query);
+        System.out.println("Query was: " + query.toString() );
     }
  
     void typeCheck( ) throws TypeCheckException
@@ -52,6 +52,7 @@ public class CheckType {
 	    throw e;
         }
 
+        System.out.println("Query is: " + query.printTypes() );
     // Hongju has to implement this part and related stuff.
     // To demonstrate that it works, build manually a bunch of queries,
     // typecheck them, and display them annotated with type information.

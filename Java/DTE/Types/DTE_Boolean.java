@@ -16,6 +16,10 @@ public class DTE_Boolean extends DTE_Type //implements Cloneable
     val = b;
   }
   
+  public String toString( ){
+      return String.valueOf( val );
+  }
+
   public TypeDesc getType( )
   {
     return new BooleanDesc( );

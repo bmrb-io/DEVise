@@ -83,13 +83,21 @@ public class DTE_String extends DTE_Type implements Cloneable
 	    
 	    return true;
 	}
-  
 
   public void print(PrintWriter ps)
   {
       for(int i =0; i < length; i++)
 	  ps.print(val[i]);
       ps.print(" ");
+  }
+
+  public String toString( ) {
+      String str = null;
+
+      for(int i =0; i < length; i++)
+	  str += val[i];
+	   
+      return str;
   }
 
   public void print(PrintStream ps)

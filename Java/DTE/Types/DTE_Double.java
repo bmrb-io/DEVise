@@ -12,7 +12,6 @@ public class DTE_Double extends DTE_Type  //implements Cloneable
      return String.valueOf( val );
   }
 
-
   public DTE_Double()
   {
     val = 0;

@@ -24,6 +24,10 @@ public class Constant implements Expression {
 		return value.toString( );
 	}
 
+	public String printTypes( ) {
+		return toString( );
+	}
+
 	public TypeDesc getType( )
 	{
 		return type;
