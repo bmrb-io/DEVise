@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.151  2001/12/28 18:34:40  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.150  2001/04/03 19:57:41  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -2651,7 +2654,8 @@ void	ViewGraph::HandlePress(WindowRep *, int x1, int y1,
       && (x1 != x2 || y1 != y2)) {
 	// Don't zoom if rubberband region is too small.
 	const int minZoomPix = 5;
-	if (ABS(x2 - x1) <= minZoomPix || ABS(y2 - y1) <= minZoomPix) {
+	if ((ABS(x2 - x1) <= minZoomPix) || 
+	    ((button == 3) && (ABS(y2 - y1) <= minZoomPix))) {
 	  allowZoom = false;
 	}
 
