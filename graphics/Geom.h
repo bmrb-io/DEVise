@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/20 17:46:01  jussi
+  Removed unnecessary code.
+
   Revision 1.3  1996/02/28 17:49:41  yuc
   Added 4 new types (for 3D shapes): POINT, EDGE, VERTEX, and BLOCK.
 
@@ -29,7 +32,7 @@ typedef struct POINT_ {
 
 typedef struct EDGE_ {
 	int  p,  // start pt for a edge, refer to vertex num
-		q;  // end   pt for a edge, refer to vertex num
+	     q;  // end   pt for a edge, refer to vertex num
 } EDGE;
 
 typedef POINT VERTEX;
@@ -42,6 +45,8 @@ typedef struct Block_type {
      VERTEX vt[BLOCK_VERTEX]; // shape's vertex
      EDGE   ed[BLOCK_EDGES];  // shape's edges
      POINT  pt;
+     int    clipout;          // T = clip the pt, F = keep it
+	double W, D, H;          // size of the block
 } BLOCK;
 
 /* Useful Geometry functions */
