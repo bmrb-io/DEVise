@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/12/18 22:12:12  beyer
+  Query abort (especially for statistical views) bug fixed.
+
   Revision 1.17  1996/12/18 15:33:39  jussi
   Rewrote DoInMemGDataConvert() to improve performance.
 
@@ -86,6 +89,9 @@
 #ifndef QueryProcFull_h
 #define QueryProcFull_h
 
+#include <time.h>
+#include <sys/time.h>
+
 #include "QueryProc.h"
 #include "QPRange.h"
 #include "DList.h"
@@ -124,6 +130,7 @@ struct QPFullData {
   Boolean isRandom;                     /* true if doing random display */
   Boolean isRecLinkSlave;               /* true if query is reclink slave */
   QPRange *processed;	                /* ranges that have been returned */
+  struct timeval started;               /* timestamp of start time */
   int bytes;                            /* # of bytes processed in query */
   
   RecId hintId;                         /* record ID for hint */
@@ -182,7 +189,7 @@ public:
   virtual Boolean GetMinX(TDataMap *map, Coord &minX);
 
   void ReOrderQueries();
-  void PrintQueryData(QPFullData *qdata);
+  void PrintQueryData(QPFullData *query);
 
 protected:
   Boolean _prefetch;
@@ -195,22 +202,25 @@ protected:
   Boolean InitQueries();
 
   /* Init for individual query types */
-  void InitQPFullX(QPFullData *qData);
-  void InitQPFullYX(QPFullData *qData);
-  void InitQPFullScatter(QPFullData *qData);
+  void InitQPFullX(QPFullData *query);
+  void InitQPFullYX(QPFullData *query);
+  void InitQPFullScatter(QPFullData *query);
   
   /*
-     Process scan for 1 iteration for the range [qData->current,qData->high].
+     Process scan for 1 iteration for the range [query->current,query->high].
      Set state == QPFull_EndState if finished with scan.
      One iteration is defined as:
      either QPFULL_MAX_FETCH bytes fetched, or end of query is reached.
   */
-  void ProcessScan(QPFullData *qData); 
+  void ProcessScan(QPFullData *query); 
 
   /* Do query cleanup */
   void EndQueries();
-  void EndQuery(QPFullData *qData);
+  void EndQuery(QPFullData *query);
   
+  /* Report elapsed time of query */
+  void ReportQueryElapsedTime(QPFullData *query);
+
   /*
      Do Binary Search, and return the Id of first matching record.
      isPrefetch == TRUE if we're doing prefetch.
@@ -240,7 +250,7 @@ protected:
   Boolean UseTDataQuery(TData *tdata, VisualFilter &filter);
 
   /* Distribute TData/GData to all queries that need it */
-  void DistributeData(QPFullData *qData, Boolean isTData,
+  void DistributeData(QPFullData *query, Boolean isTData,
                       RecId startRid, int numRecs, char *buf);
   
   /* Prepare processed list */

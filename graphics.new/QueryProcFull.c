@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/01/09 18:47:52  jussi
+  Improved tape search algorithm.
+
   Revision 1.46  1996/12/18 22:12:11  beyer
   Query abort (especially for statistical views) bug fixed.
 
@@ -319,6 +322,7 @@ QueryProcFull::QueryProcFull()
   DOASSERT(_tdataQuery, "Out of memory");
 
   _tdataQuery->isRandom = false;
+  gettimeofday(&_tdataQuery->started, NULL);
 
   _dispatcherID = Dispatcher::Current()->Register(this, 20, GoState);
   Dispatcher::Current()->RequestCallback(_dispatcherID);
@@ -397,9 +401,8 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   }
 
   /* If tape data, associate mapping with a coordinate mapping tables */
-  if (query->useCoordMap) {
+  if (query->useCoordMap) 
       AssociateMappingWithCoordinateTable(map);
-  }
 
   if (numDimensions == 0) {
     query->qType = QPFull_Scatter;
@@ -434,6 +437,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   query->filter = filter;
 
   query->isRandom = false;
+  gettimeofday(&query->started, NULL);
   query->callback = callback;
   query->priority = priority;
   query->state = QPFull_InitState;
@@ -555,6 +559,7 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
     QPFullData *query = (QPFullData *)_queries->Next(index);
     if (query->map == map && query->callback == callback) {
       AdvanceState(query, QPFull_EndState);
+      ReportQueryElapsedTime(query);
       // callback not called because view classes can't handle it!
       //query->callback->QueryDone(query->bytes, query->userData);
       query->callback = NULL;
@@ -1045,12 +1050,23 @@ void QueryProcFull::EndQuery(QPFullData *query)
   if( query->handle != NULL ) {
     _mgr->DoneGetRecs(query->handle);
   }
+  ReportQueryElapsedTime(query);
   if( query->callback != NULL ) {
     query->callback->QueryDone(query->bytes, query->userData);
   }
   JournalReport();
 }
 
+void QueryProcFull::ReportQueryElapsedTime(QPFullData *query)
+{
+#if DEBUGLVL >= 1
+  struct timeval stop;
+  gettimeofday(&stop, 0);
+  double seconds = stop.tv_sec - query->started.tv_sec
+                   + (stop.tv_usec - query->started.tv_usec) / 1e6;
+  printf("Query finished in %.2f seconds.\n", seconds);
+#endif
+}
 
 /**********************************************************************
   Do Binary Search, and returning the Id of first matching record.
@@ -1145,9 +1161,6 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
 
   return true;
 }
-
-#undef DEBUGLVL
-#define DEBUGLVL 9
 
 /**********************************************************************
   Do Linear Search, and returning the Id of first matching record.
@@ -1352,9 +1365,6 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 
   return true;
 }
-
-#undef DEBUGLVL
-#define DEBUGLVL 0
 
 /*
    Return true if sum of GData record sizes exceeds the size of 
