@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.58  1997/03/18 20:42:35  donjerko
+  Changes for GUI.
+
   Revision 1.57  1997/03/14 20:33:55  donjerko
   *** empty log message ***
 
@@ -1097,8 +1100,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       GlobalColor color = view->GetBgColor();
-      printf("color = %ld\n", color);
-      sprintf(result,"%ld", color);
+      sprintf(result,"%d", (int) color);
       control->ReturnVal(API_ACK, result);
       return 1;
     }
