@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1995/12/14 21:17:57  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.11  1995/12/14 17:35:32  jussi
   Made small fixes to get rid of g++ -Wall warnings.
 
@@ -183,6 +186,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[2] = new FullMapping_BarShape;
     _shapes[3] = new FullMapping_PolygonShape;
     _shapes[4] = new FullMapping_OvalShape;
+    _shapes[5] = new FullMapping_VectorShape;
 
     /* Init tcl */
     _interp = Tcl_CreateInterp();

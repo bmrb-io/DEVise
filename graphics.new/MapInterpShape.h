@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/14 17:35:39  jussi
+  Made small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.9  1995/12/13 22:07:28  jussi
   Added debugging statements. If symbol width or height is non-constant
   (depends on user data), then we cannot use the pixel array display
@@ -51,6 +54,7 @@
   Added CVS header.
 */
 
+#include <assert.h>
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
@@ -111,8 +115,8 @@ public:
 	if (count == 0)
 	  firstColor = GetColor(gdata, map, offset);
 
-	_width[count] = GetShapeAttr0(gdata, map, offset);
-	_height[count] = GetShapeAttr1(gdata, map, offset);
+	_width[count] = fabs(GetShapeAttr0(gdata, map, offset));
+	_height[count] = fabs(GetShapeAttr1(gdata, map, offset));
 	_x[count] = GetX(gdata, map, offset);
 	if (_width[count] > pixelWidth)
 	  _x[count] -= _width[count] / 2.0;
@@ -167,13 +171,13 @@ public:
       Coord width, height;
       win->Transform(GetX(gdata, map, offset), GetY(gdata, map, offset),
 		     tx, ty);
-      win->Transform(GetShapeAttr0(gdata, map, offset), 0.0,
+      win->Transform(fabs(GetShapeAttr0(gdata, map, offset)), 0.0,
 		     x1, y1);
       width = x1 - x0;
       if (width < 0.0)
 	width = -width;
-      height = GetShapeAttr1(gdata, map, offset) /
-	GetShapeAttr0(gdata, map, offset) * width;
+      height = fabs(GetShapeAttr1(gdata, map, offset)) /
+	fabs(GetShapeAttr0(gdata, map, offset)) * width;
       if (width < pixelSize)
 	width = pixelSize;
       if (height < pixelSize)
@@ -196,7 +200,7 @@ public:
     GDataAttrOffset *offset = map->GetGDataOffset();
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord temp = GetShapeAttr0(gdata, map, offset);
+      Coord temp = fabs(GetShapeAttr0(gdata, map, offset));
       if (temp > width) width = temp;
       temp = fabs(GetY(gdata, map, offset));
       if (temp > height) height = temp;
@@ -220,7 +224,7 @@ public:
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
-      Coord width = GetShapeAttr0(gdata, map, offset);
+      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
 #if 0
       // experiment with 2-pixel wide bars to prevent white vertical
       // lines from showing up
@@ -271,8 +275,8 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord width = GetShapeAttr0(gdata, map, offset);
-      Coord height = GetShapeAttr1(gdata, map, offset);
+      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord height = fabs(GetShapeAttr1(gdata, map, offset));
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       
@@ -326,13 +330,90 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord width = GetShapeAttr0(gdata, map, offset);
-      Coord height = GetShapeAttr1(gdata, map, offset);
+      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord height = fabs(GetShapeAttr1(gdata, map, offset));
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       win->SetFgColor(GetColor(gdata, map, offset));
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Arc(x, y, width, height, 0, 2 * PI);
+    }
+  }
+};
+
+class FullMapping_VectorShape: public VectorShape {
+public:
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, int pixelSize) {
+		 
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
+
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 ? true : false);
+
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+#ifdef DEBUG
+      printf("VectorShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	return;
+      }
+    }
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Color color = GetColor(gdata, map, offset);
+      Coord w = GetShapeAttr0(gdata, map, offset);
+      Coord h = GetShapeAttr1(gdata, map, offset);
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      win->SetFgColor(color);
+      win->SetPattern(GetPattern(gdata, map, offset));
+      win->Line(x, y, x + w, y + h, 1);
+
+      if (w == 0 && h == 0)
+	continue;
+
+      // compute pixel locations
+      Coord tx, ty, tw, th;
+      win->Transform(x + w, y + h, tx, ty);
+      win->Transform(w, h, tw, th);
+      tw -= x0;
+      th -= y0;
+
+      // draw arrow head
+      Coord arrowSize = 0.15 * sqrt(tw * tw + th * th);
+      if (arrowSize < 10)
+	arrowSize = 10;
+      const Coord angle = atan2(th, tw);
+      const Coord arrowSteepness = 0.1 * PI;
+      const Coord leftAngle = angle - arrowSteepness;
+      const Coord rightAngle = angle + arrowSteepness;
+      
+      Point points[3];
+      points[0].x = tx;
+      points[0].y = ty;
+      points[1].x = tx - arrowSize * cos(leftAngle);
+      points[1].y = ty - arrowSize * sin(leftAngle);
+      points[2].x = tx - arrowSize * cos(rightAngle);
+      points[2].y = ty - arrowSize * sin(rightAngle);
+
+      win->PushTop();
+      win->MakeIdentity();
+      win->FillPoly(points, 3);
+      win->PopTransform();
     }
   }
 };
