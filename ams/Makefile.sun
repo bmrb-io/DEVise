@@ -36,9 +36,9 @@ MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
 MapClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
-MapClassInfo.o: ../graphics/ViewWinVer.h ../graphics/ViewLayout.h
 MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
-MapClassInfo.o: ../graphics.new/ViewGraph.h MapClassInfo.h
+MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
+MapClassInfo.o: ../graphics.new/ViewStats.h MapClassInfo.h
 MapClassInfo.o: ../graphics/ClassDir.h Soil.h AmsMap.h
 ams.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 ams.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
@@ -63,6 +63,7 @@ ams.o: ../tape/SortedTable.h /usr/include/assert.h ../graphics.new/GData.h
 ams.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 ams.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 ams.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
+ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 ams.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h

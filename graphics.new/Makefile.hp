@@ -616,7 +616,7 @@ testTdata.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h BufHint.h
 testTdata.o: RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
 testTdata.o: ../graphics/Exit.h TDataAppend.h TData.h ../graphics/VisualArg.h
 testTdata.o: ../graphics/Color.h DiskFile.h
-testViewRanges.o: ../graphics/ViewWinVer.h ../graphics/ViewLayout.h
+testViewRanges.o: ../graphics/TileLayout.h ../graphics/ViewLayout.h
 testViewRanges.o: ../graphics/ViewWin.h ../graphics/DList.h
 testViewRanges.o: ../graphics/Exit.h ../graphics/DeviseTypes.h
 testViewRanges.o: ../graphics/WindowRep.h /usr/include/stdio.h

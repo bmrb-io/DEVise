@@ -163,18 +163,6 @@ ViewWin.o: WindowRep.h Geom.h /usr/include/math.h
 ViewWin.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Transform.h
 ViewWin.o: Color.h Pattern.h DevisePixmap.h VisualArg.h Compress.h Display.h
 ViewWin.o: Dispatcher.h Journal.h ColorMgr.h
-ViewWinHor.o: ViewWinHor.h ViewLayout.h ViewWin.h DList.h Exit.h
-ViewWinHor.o: DeviseTypes.h WindowRep.h /usr/include/stdio.h Geom.h
-ViewWinHor.o: /usr/include/math.h /usr/include/floatingpoint.h
-ViewWinHor.o: /usr/include/sys/ieeefp.h Transform.h Color.h Pattern.h
-ViewWinHor.o: DevisePixmap.h VisualArg.h Compress.h Display.h Dispatcher.h
-ViewWinHor.o: Journal.h ColorMgr.h
-ViewWinVer.o: ViewWinVer.h ViewLayout.h ViewWin.h DList.h Exit.h
-ViewWinVer.o: DeviseTypes.h WindowRep.h /usr/include/stdio.h Geom.h
-ViewWinVer.o: /usr/include/math.h /usr/include/floatingpoint.h
-ViewWinVer.o: /usr/include/sys/ieeefp.h Transform.h Color.h Pattern.h
-ViewWinVer.o: DevisePixmap.h VisualArg.h Compress.h Display.h Dispatcher.h
-ViewWinVer.o: Journal.h ColorMgr.h
 VisualLink.o: VisualLink.h DList.h Exit.h Dispatcher.h /usr/include/stdio.h
 VisualLink.o: DeviseTypes.h VisualArg.h Color.h Journal.h View.h ViewWin.h
 VisualLink.o: WindowRep.h Geom.h /usr/include/math.h
@@ -287,19 +275,6 @@ testAtof.o: Util.h /usr/include/assert.h /usr/include/stdlib.h
 testAtof.o: /usr/include/sys/stdtypes.h /usr/include/stdio.h
 testAtof.o: /usr/include/sys/time.h /usr/include/strings.h
 testAtof.o: /usr/include/ctype.h
-testView.o: /usr/include/stdio.h Init.h DeviseTypes.h BufPolicy.h
-testView.o: ViewWinVer.h ViewLayout.h ViewWin.h DList.h Exit.h WindowRep.h
-testView.o: Geom.h /usr/include/math.h /usr/include/floatingpoint.h
-testView.o: /usr/include/sys/ieeefp.h Transform.h Color.h Pattern.h
-testView.o: DevisePixmap.h VisualArg.h Compress.h View.h Dispatcher.h
-testView.o: Journal.h Control.h ViewCallback.h AttrList.h
-testView.o: /usr/include/sys/time.h /usr/include/sys/time.h Config.h Cursor.h
-testView.o: Action.h
-testViewWin.o: Dispatcher.h /usr/include/stdio.h DeviseTypes.h DList.h Exit.h
-testViewWin.o: VisualArg.h Color.h Journal.h ViewWinVer.h ViewLayout.h
-testViewWin.o: ViewWin.h WindowRep.h Geom.h /usr/include/math.h
-testViewWin.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-testViewWin.o: Transform.h Pattern.h DevisePixmap.h Compress.h ViewWinHor.h
 testWindowRep.o: /usr/include/stdio.h Dispatcher.h DeviseTypes.h DList.h
 testWindowRep.o: Exit.h VisualArg.h Color.h Journal.h Display.h Geom.h
 testWindowRep.o: /usr/include/math.h /usr/include/floatingpoint.h
