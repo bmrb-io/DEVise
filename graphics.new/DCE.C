@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/12 03:52:27  jussi
+  Initial revision.
+*/
 
 /*
   Copyright 1993-1996 by Jussi Myllymaki
@@ -30,6 +33,7 @@
 #include <iostream.h>
 #include <stdio.h>
 #include <assert.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 
 #include "DCE.h"
