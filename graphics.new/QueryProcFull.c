@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/08/30 15:56:10  wenger
+  Modified View and QueryProcessor code to work correctly with current
+  dispatcher semantics (call back forever unless cancelled).
+
   Revision 1.31  1996/08/08 21:02:15  beyer
   Disabled partial scans because they were not working properly.
 
@@ -1078,7 +1082,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
     // is not working, so the scan is not stopped right now.  
     // I believe this feature is used to allow the user to interact with
     // the session while scans are in progress, rather than waiting until
-    // the end.  We should figure out why this isn't working, rather than
+    // the end.  We should figure out why this is not working, rather than
     // disabling it, but this was a quick fix.
     if (_memFetched >= QPFULL_MAX_FETCH) {
       /* exceeded max amount to fetch */
@@ -1178,9 +1182,14 @@ void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
     // if query is a slave of a record link, do not distribute tdata
     // to it; the query will be executed when the master of the link
     // is done
-    if (queryData != qData && qData->recLinkListIter >= 0)
-      continue;
-
+    if (queryData != qData && qData->recLinkListIter >= 0){
+      // current query  is a reclink slave and another query slave of 
+      // the same reclink go ahead with Distribution else skip.
+	if (! (queryData->recLinkListIter >= 0)  
+	    && (queryData->recLink == qData->recLink))
+	  continue;
+    }
+    
     RecId tempLow = low;
     RecId tempHigh = high;
     if (qData->tdata == queryData->tdata) {
@@ -1230,8 +1239,14 @@ void QueryProcFull::DistributeGData(QPFullData *queryData, RecId startRid,
     // if query is a slave of a record link, do not distribute tdata
     // to it; the query will be executed when the master of the link
     // is done
-    if (queryData != qData && qData->recLinkListIter >= 0)
-      continue;
+    if (queryData != qData && qData->recLinkListIter >= 0) {
+     // current query  is a reclink slave and another query slave of 
+     // the same reclink go ahead with Distribution else skip.
+       if (! (queryData->recLinkListIter >= 0)  
+	   && (queryData->recLink == qData->recLink))
+	 continue;
+    }
+    
 
     if (qData->gdata == queryData->gdata) {
       RecId tempLow = low;
