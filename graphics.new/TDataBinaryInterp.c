@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/27 15:49:35  jussi
+  TDataAscii and TDataBinary now recognize when a file has been deleted,
+  shrunk, or has increased in size. The query processor is asked to
+  re-issue relevant queries when such events occur.
+
   Revision 1.6  1996/05/11 03:14:52  jussi
   Made this code independent of some control panel variables like
   _fileAlias and _fileName.
@@ -51,6 +56,7 @@
 #include "Control.h"
 #include "Util.h"
 
+#ifndef ATTRPROJ
 TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
 						       AttrList *attrList,
 						       int recSize)
@@ -139,6 +145,7 @@ void TDataBinaryInterpClassInfo::CreateParams(int &argc, char **&argv)
   args[0] = _name;
   args[1] = _alias;
 }
+#endif
 
 TDataBinaryInterp::TDataBinaryInterp(char *name, char *alias, int recSize,
 				     int physRecSize, AttrList *attrs) :

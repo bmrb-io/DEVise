@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/06/07 19:41:19  wenger
+#  Integrated some of the special attribute projection sources back
+#  into the regular Devise sources.
+#
 #  Revision 1.2  1996/05/20 18:37:56  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -30,6 +34,6 @@ ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = -static
 
-VPATH = ../../attrproj:../../graphics
+VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base
 include ../../attrproj/Makefile.solaris

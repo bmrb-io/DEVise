@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/06/27 15:49:31  jussi
+  TDataAscii and TDataBinary now recognize when a file has been deleted,
+  shrunk, or has increased in size. The query processor is asked to
+  re-issue relevant queries when such events occur.
+
   Revision 1.24  1996/06/24 19:45:42  jussi
   TDataAscii no longer passes the fd of the open file to the
   Dispatcher. TDataAscii only needs the Dispatcher to call
@@ -118,7 +123,11 @@
 #include "TDataAscii.h"
 #include "Exit.h"
 #include "Util.h"
-#include "Init.h"
+#ifdef ATTRPROJ
+#   include "ApInit.h"
+#else
+#   include "Init.h"
+#endif
 #include "DataSourceFileStream.h"
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
@@ -230,7 +239,9 @@ Boolean TDataAscii::CheckFileStatus()
     if (_fileOkay) {
       printf("Data stream %s is no longer available\n", _alias);
       _data->Close();
+#ifndef ATTRPROJ
       QueryProc::Instance()->ClearTData(this);
+#endif
       _fileOkay = false;
     }
     Boolean old = DevError::SetEnabled(false);
@@ -280,14 +291,18 @@ Boolean TDataAscii::LastID(RecId &recId)
       printf("Rebuilding index...\n");
 #endif
       RebuildIndex();
+#ifndef ATTRPROJ
       QueryProc::Instance()->ClearTData(this);
+#endif
     } else if (_currPos > _lastPos) {
       // file has grown, build index for new records
 #ifdef DEBUG
       printf("Extending index...\n");
 #endif
       BuildIndex();
+#ifndef ATTRPROJ
       QueryProc::Instance()->RefreshTData(this);
+#endif
     }
   }
   

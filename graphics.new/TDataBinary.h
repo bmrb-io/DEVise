@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/27 15:49:34  jussi
+  TDataAscii and TDataBinary now recognize when a file has been deleted,
+  shrunk, or has increased in size. The query processor is asked to
+  re-issue relevant queries when such events occur.
+
   Revision 1.6  1996/06/12 14:56:35  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -55,7 +60,11 @@
 #include <stdio.h>
 
 #include "DeviseTypes.h"
-#include "Dispatcher.h"
+#ifdef ATTRPROJ
+#   include "ApDispatcher.h"
+#else
+#   include "Dispatcher.h"
+#endif
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"

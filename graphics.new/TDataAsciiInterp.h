@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/27 15:49:33  jussi
+  TDataAscii and TDataBinary now recognize when a file has been deleted,
+  shrunk, or has increased in size. The query processor is asked to
+  re-issue relevant queries when such events occur.
+
   Revision 1.7  1996/05/07 16:46:01  jussi
   This class now makes a copy of the attribute list so that attribute
   hi/lo values can be maintained per data stream, not per schema.
@@ -47,6 +52,7 @@
 #include "TDataAscii.h"
 #include "AttrList.h"
 
+#ifndef ATTRPROJ
 class TDataAsciiInterpClassInfo: public ClassInfo {
 public:
   TDataAsciiInterpClassInfo(char *className, AttrList *attrList, 
@@ -91,6 +97,7 @@ private:
   char *_commentString;
   Boolean _isSeparator;
 };
+#endif
 
 class RecInterp;
 

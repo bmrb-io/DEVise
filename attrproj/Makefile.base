@@ -1,11 +1,14 @@
 .c.o:
 	$(CC) -c $(CFLAGS) $<
+.C.o:
+	$(CC) -c $(CFLAGS) $<
 
 CC = g++
 
 #LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
-CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused -O -DUNIX -DATTRPROJ
+CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
+	-I../../graphics.new -I../../tape \
+	-fexternal-templates -Wall -Wno-unused -O -DUNIX -DATTRPROJ -DLIBCS
 
 TESTSRC = aptest.c vector.c
 TESTOBJ = $(TESTSRC:.c=.o)
@@ -13,19 +16,34 @@ TESTOBJ = $(TESTSRC:.c=.o)
 SHOWSRC = show.c vector.c
 SHOWOBJ = $(SHOWSRC:.c=.o)
 
-LOCALSRC = AttrProj.c ApExit.c ApGroup.c ApGroupDir.c ApInit.c \
-	ApItemList.c ApParseCat.c ApTDataAsciiInterp.c ApTDataAscii.c \
-	ApTDataBinaryInterp.c ApTDataBinary.c VectorArray.c ProjectionList.c
-LOCALOBJ = $(LOCALSRC:.c=.o)
+LOCALSRC = AttrProj.c ApInit.c ApParseCat.c VectorArray.c ProjectionList.c
+#The following sources are in other directories, but must be specially
+#compiled for attrproj.
+LOCALSRC += Exit.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
+	TDataBinaryInterp.c
+
+SRC1 = $(filter %.c,$(LOCALSRC))
+SRC2 = $(filter %.C,$(LOCALSRC))
+LOCALOBJ = $(SRC1:.c=.o)
+LOCALOBJ += $(SRC2:.C=.o)
 
 LIBOBJ = \
 	../graphics/Parse.o \
 	../graphics/AttrList.o \
 	../graphics/Time.o \
 	../graphics/Util.o \
+	../graphics/DevError.o \
 	../graphics.new/RecInterp.o \
 	../graphics.new/CompositeParser.o \
 	../graphics.new/TData.o \
+	../graphics.new/Group.o \
+	../graphics.new/GroupDir.o \
+	../graphics.new/ItemList.o \
+	../graphics.new/DataSeg.o \
+	../graphics.new/DataSource.o \
+	../graphics.new/DataSourceFileStream.o \
+	../graphics.new/DataSourceSegment.o \
+	../graphics.new/DataSourceTape.o \
 	../tape/tapedrive.o \
 	$(LOCALOBJ)
 
@@ -51,4 +69,4 @@ clean: mostlyclean
 	-rm aptest
 
 mostlyclean:
-	-rm $(TESTOBJ) $(LOCALOBJ) $(LIB)
+	-rm $(TESTOBJ) $(SHOWOBJ) $(LOCALOBJ) $(LIB)

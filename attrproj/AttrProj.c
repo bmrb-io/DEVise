@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/19 19:55:52  wenger
+  Improved UtilAtof() to increase speed; updated code for testing it.
+
   Revision 1.6  1996/06/17 20:01:07  wenger
   First version of 'show' program for dumping projections to stdout.
 
@@ -57,6 +60,7 @@
 #include "TData.h"
 #include "AttrList.h"
 #include "ProjectionList.h"
+#include "DataSeg.h"
 
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
@@ -72,6 +76,8 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 {
 	DO_DEBUG(printf("AttrProj::AttrProj(%s, %s, %s)\n", schemaFile,
 		attrProjFile, dataFile));
+
+	DataSeg::Set(schemaFile, dataFile, 0, 0);
 
 	// Provision for having the schema in the data file.
 	if ((schemaFile == NULL) || !strcmp(schemaFile, ""))

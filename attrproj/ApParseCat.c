@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/17 20:01:03  wenger
+  First version of 'show' program for dumping projections to stdout.
+
   Revision 1.4  1996/06/07 19:40:34  wenger
   Integrated some of the special attribute projection sources back
   into the regular Devise sources.
@@ -46,8 +49,8 @@
 #include "Parse.h"
 #include "ApInit.h"
 #include "DeviseTypes.h"
-#include "ApTDataAsciiInterp.h"
-#include "ApTDataBinaryInterp.h"
+#include "TDataAsciiInterp.h"
+#include "TDataBinaryInterp.h"
 #include "Util.h"
 
 //#define DEBUG
@@ -727,13 +730,16 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 	{
 		if (isAscii) {
 		  printf("default source, recSize %d\n",recSize);
-		  tDataP = new TDataAsciiInterp(dataFile, recSize,
+		  tDataP = new TDataAsciiInterp(dataFile, catFile, recSize,
 			attrs, sep, numSep, hasSeparator, commentString);
 		}
 		else
 		{
 		  printf("default binary source, recSize %d\n",recSize);
-		  tDataP = new TDataBinaryInterp(dataFile, recSize, attrs);
+		  // Note: the second use of recSize is for the physical
+		  // record size.  This needs to get changed.  RKW 96/06/27.
+		  tDataP = new TDataBinaryInterp(dataFile, catFile, recSize,
+			recSize/*TEMP*/, attrs);
 		}
 	}
 

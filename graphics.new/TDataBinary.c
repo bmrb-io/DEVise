@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 15:49:34  jussi
+  TDataAscii and TDataBinary now recognize when a file has been deleted,
+  shrunk, or has increased in size. The query processor is asked to
+  re-issue relevant queries when such events occur.
+
   Revision 1.8  1996/06/04 19:58:48  wenger
   Added the data segment option to TDataBinary; various minor cleanups.
 
@@ -63,7 +68,11 @@
 #include "TDataBinary.h"
 #include "Exit.h"
 #include "Util.h"
-#include "Init.h"
+#ifdef ATTRPROJ
+#   include "ApInit.h"
+#else
+#   include "Init.h"
+#endif
 #include "DataSourceFileStream.h"
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
@@ -170,7 +179,9 @@ Boolean TDataBinary::CheckFileStatus()
     if (_fileOkay) {
       printf("Data stream %s is no longer available\n", _alias);
       _data->Close();
+#ifndef ATTRPROJ
       QueryProc::Instance()->ClearTData(this);
+#endif
       _fileOkay = false;
     }
     if (_data->Open("r") != StatusOk) {
@@ -217,13 +228,17 @@ Boolean TDataBinary::LastID(RecId &recId)
     printf("Rebuilding index...\n");
 #endif
     RebuildIndex();
+#ifndef ATTRPROJ
     QueryProc::Instance()->ClearTData(this);
+#endif
   } else if (_currPos > _lastPos) {
 #ifdef DEBUG
     printf("Extending index...\n");
 #endif
     BuildIndex();
+#ifndef ATTRPROJ
     QueryProc::Instance()->RefreshTData(this);
+#endif
   }
 
   recId = _totalRecs - 1;
