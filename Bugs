@@ -129,6 +129,9 @@ Num Date        Status  Description
 			aren't correctly updated until the session is saved
 			and re-opened. (rkw)
 
+042 09/19/96	FIXED	Devise doesn't complain if you give an illegal
+			command line option. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

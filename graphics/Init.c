@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/09/12 18:49:40  wenger
+  Oops!  I guess I should make sure this works before I commit it.
+
   Revision 1.19  1996/09/12 18:42:31  wenger
   Make sure imageDelay is non-negative.
 
@@ -601,10 +604,14 @@ void Init::DoInit(int &argc, char **argv)
       }
 
       else {
+        fprintf(stderr, "Unrecognized argument '%s'\n", argv[i]);
+	Usage(argv[0]);
 	i++;
       }
     }
     else {
+      printf("Argument '%s' doesn't begin with '-'\n", argv[i]);
+      Usage(argv[0]);
       i++;
     }
   }

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/09/10 20:07:24  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.8  1996/09/04 21:25:03  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -70,7 +77,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.8";
+static const char *	version = "1.1.9";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
