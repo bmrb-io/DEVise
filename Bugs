@@ -1038,7 +1038,7 @@ Num Date        Status  Description
 263 12/19/97	OPEN	Different parts of lines are sometimes not connected
 			correctly. (rkw)
 
-264 12/19/97	OPEN	Direct PostScript output doesn't work (it comes out
+264 12/19/97	FIXED	Direct PostScript output doesn't work (it comes out
 			totally blank since OpenGL commit, other problems
 			before that). (rkw)
 
@@ -1093,7 +1093,7 @@ Num Date        Status  Description
 281 02/02/98	OPEN	Saving the SoilScience session ASA1.ds caused the
 			session file to create duplicate mappings. (rkw)
 
-282 02/03/98	OPEN	Axes aren't labeled correctly for date attributes.
+282 02/03/98	FIXED	Axes aren't labeled correctly for date attributes.
 			(rkw)
 
 283 02/03/98	FIXED	Can't bring up GUI for 'group by' correctly. (rkw)
