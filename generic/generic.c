@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/03/25 17:58:37  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.44  1997/02/26 16:31:04  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -632,6 +635,102 @@ public:
 
 private:
   int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+
+/*
+ * User composite function for ISO 8601 date format.
+ * This format is: YYYY-MM-DD hh:mm:ss
+ * YYYY is 1970-2037
+ * MM is 01-12
+ * DD is 01-31
+ * hh is 00-24
+ * mm is 00-59
+ * ss is 00-60 (60 only for leap seconds)
+ * (24:00:00 is the only legal value for hours == 24.)
+ * (Seconds are optional in this composite parser.)
+ */
+class ISODateComposite : public UserComposite {
+public:
+  ISODateComposite() {
+    _init = false;
+    _attrOffset = 0;
+  }
+
+  virtual ~ISODateComposite() {
+    delete _attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "Date", "Time", "Timestamp" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      _attrOffset = new int [numPrimAttrs];
+      DOASSERT(_attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	if (!strcmp(info->name, "Timestamp") && (info->type != DateAttr)) {
+	  reportErrNosys("Type of Timestamp attribute is not date");
+	}
+	_attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *) recInterp->GetBuf();
+
+    /* decode date */
+    struct tm now;
+    memset(&now, 0, sizeof(now));
+
+    /* Get year, month, day. */
+    if (sscanf(buf + _attrOffset[0], "%d-%d-%d", &now.tm_year, &now.tm_mon,
+	&now.tm_mday) != 3) {
+      char errBuf[256];
+      sprintf(errBuf, "Improper date string: <%s>", buf + _attrOffset[0]);
+      reportErrNosys(errBuf);
+
+      now.tm_year = 1970;
+      now.tm_mon = 1;
+      now.tm_mday = 1;
+    }
+    now.tm_year -= 1900;
+    now.tm_mon -= 1;
+
+    /* Get hour, minute, second. */
+    if (sscanf(buf + _attrOffset[1], "%d:%d:%d", &now.tm_hour, &now.tm_min,
+	&now.tm_sec) != 3) {
+      /* Try without seconds. */
+      if (sscanf(buf + _attrOffset[1], "%d:%d", &now.tm_hour,
+	  &now.tm_min) != 2) {
+        char errBuf[256];
+        sprintf(errBuf, "Improper time string: <%s>", buf + _attrOffset[1]);
+        reportErrNosys(errBuf);
+
+        now.tm_hour = 0;
+        now.tm_min = 0;
+        now.tm_sec = 0;
+      } else {
+	now.tm_sec = 0;
+      }
+    }
+
+    now.tm_isdst = -1;
+
+    time_t *datePtr = (time_t *)(buf + _attrOffset[2]);
+    *datePtr = GetTime(now);
+  }
+
+private:
+  int       *_attrOffset;          /* attribute offsets */
   Boolean   _init;                /* true when instance initialized */
 };
 
@@ -1415,6 +1514,8 @@ int main(int argc, char **argv)
   		CompositeParser::Register(schemaChar,new MailorderDateDiffComposite);
   	else if (parserName.matches("MmDdYyHhMmAmPmComposite"))
   		CompositeParser::Register(schemaChar,new MmDdYyHhMmAmPmComposite);
+  	else if (parserName.matches("ISODateComposite"))
+  		CompositeParser::Register(schemaChar,new ISODateComposite);
    }
 
   /* Register known classes  with control panel */
