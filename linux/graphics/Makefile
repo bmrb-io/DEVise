@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/03/19 18:44:50  wenger
+#  Disabled RTree indices in DTE, got that to compile; fixed some compile
+#  warnings; undid accidental(?) changes to devise run script; devise.etk
+#  uses 'localhost' instead of '$HOSTNAME'; added Solaris-only release
+#  script.
+#
 #  Revision 1.1  1996/03/27 18:04:04  wenger
 #  Changes to get DEVise to compile and run on Linux.
 #
@@ -31,7 +37,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DLINUX -I/usr/include/tcl
+ARCH_FLAGS = -DLINUX
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

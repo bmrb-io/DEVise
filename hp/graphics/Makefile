@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1997/03/20 19:56:55  wenger
+#  Minor mods to get latest version to compile on HP and SunOS; cleaned
+#  up DTE makefiles (moved all targets from architecture-specific makefiles
+#  to DTE/Makefile.base).
+#
 #  Revision 1.4  1996/04/05 20:14:00  wenger
 #  Fixed error causing pure virtual function to be called
 #  if a session was closed during a query; fixed an error
@@ -34,8 +39,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_FLAGS = -DHPUX
+ARCH_LDFLAGS =
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

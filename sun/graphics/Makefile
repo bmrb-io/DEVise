@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/03/29 18:14:43  wenger
+#  Got testWindowRep to compile and run, added drawing in
+#  windows; fixed a few more compile warnings, etc.
+#
 #  Revision 1.7  1995/12/02 21:52:56  jussi
 #  Added -I/s/tcl/include.
 #
@@ -24,8 +28,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSUN -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_FLAGS = -DSUN
+ARCH_LDFLAGS =
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

@@ -15,11 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/17 00:27:41  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DULTRIX -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_FLAGS = -DULTRIX
+ARCH_LDFLAGS =
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base

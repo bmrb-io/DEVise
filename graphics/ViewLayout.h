@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/02/03 19:40:01  ssl
+  1) Added a new Layout interface which handles user defined layouts
+  2) Added functions to set geometry and remap views as changes in the
+     layout editor
+  3) Added a function to notify the front end of some change so that it
+     can execute a Tcl command
+  4) The old TileLayout.[Ch] files still exist but are commented out
+     conditionally using #ifdef NEW_LAYOUT
+
   Revision 1.3  1996/04/11 18:04:58  jussi
   Added support for stacked windows (one overlays another).
 
@@ -32,7 +41,6 @@
 
 #include "ViewWin.h"
 #include "WindowRep.h"
-#include <tcl.h>
 
 class ViewLayout: public ViewWin {
 public:
