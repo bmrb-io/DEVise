@@ -2883,9 +2883,10 @@ Num Date        Status  Description
 			blocks while reading a client command. (rkw)
 			(Fixed by rkw, 10/24/01.)
 
-721 10/23/01	OPEN	JavaScreen: when a collaboration client exits or
+721 10/23/01	NB	JavaScreen: when a collaboration client exits or
 			goes out of collaboration mode, the corresponding
 			socket is not closed in the JSPoP. (rkw)
+			(I was mistaken about this, I think.)
 
 722 10/24/01	WORK?	JavaScreen: collaborator client can goof up leader
 			by sending erroneous commands. (rkw)  (Note: GUI

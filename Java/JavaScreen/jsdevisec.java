@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.123  2001/10/19 19:28:55  xuk
+// Added playback indicator.
+//
 // Revision 1.122  2001/10/18 15:15:26  xuk
 // Fixed bug 714: can't switch out of collabration mode in Netscape.
 //
@@ -3161,7 +3164,11 @@ class EnterCollabPassDlg extends Dialog
 			jsc.jscreen.updateScreen(false);
 
 			if (jsc.dispatcher.getStatus() != 0) {
-			    jsc.dispatcher.setAbortStatus(true);
+			    // For some reason, we get an interruption on
+			    // the socket when setting up collaboration
+			    // when the JSPoP uses the new DEViseClientSocket
+			    // class.
+			    // jsc.dispatcher.setAbortStatus(true);
 			}
 			jsc.dispatcher.setStatus(0);
 

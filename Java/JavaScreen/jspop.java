@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2001/10/24 20:49:40  wenger
+// Fix to previous fix, which is also a workaround to bug 722.
+//
 // Revision 1.66  2001/10/24 18:53:11  wenger
 // Fixed bug 719 (JSPoP deals with invalid client IDs better).
 //
@@ -1554,6 +1557,13 @@ public class jspop implements Runnable
 		    // the server that's connected to the other client??
 		    // RKW 2001-10-23.
 		    client.addCollabSocket(clientSock, hostname);
+		    
+		    // We don't want to listen for commands from this
+		    // client; corresponds to the way things were before
+		    // adding the DEViseClientSocket class, I think.
+		    // RKW 2001-10-24.
+		    activeSockets.removeElement(clientSock);
+
 		    DEViseServer server = getNextAvailableServer();
 		    if (server != null && 
 		        (server.getCurrentClient()) != client) {
