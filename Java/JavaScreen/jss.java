@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/02/14 09:26:33  hongyu
+// *** empty log message ***
+//
 // Revision 1.3  2000/01/19 20:41:13  hongyu
 // *** empty log message ***
 //
@@ -160,6 +163,7 @@ public class jss implements Runnable
                     try {
                         jspopIS = new DataInputStream(socket.getInputStream());
                         String msg = receiveFromJSPOP();
+
                         boolean isQuit = false;
                         try {
                             isQuit = processRequest(msg);
@@ -253,9 +257,11 @@ public class jss implements Runnable
         }
 
         try {
+            System.out.println("Try to send msg \"" + msg + "\" to JSPOP server ...");
             jspopOS.writeInt(msg.length());
             jspopOS.writeBytes(msg);
             jspopOS.flush();
+            System.out.println("Message successfully sended!");
         } catch (IOException e) {
             throw new YException("IO Error while send message to JSPOP", "jss:sendToJSPOP()");
         }
@@ -268,10 +274,13 @@ public class jss implements Runnable
         }
 
         try {
+            System.out.println("Try to receive data from JSPOP server ...");
             int length = jspopIS.readInt();
             byte[] data = new byte[length];
             jspopIS.readFully(data);
-            return new String(data);
+            String msg = new String(data);
+            System.out.println("Message \"" + msg + "\" successfully received from JSPOP!");
+            return msg;
         } catch (IOException e) {
             throw new YException("IO Error while receive message from JSPOP", "jss:receiveFromJSPOP()");
         }

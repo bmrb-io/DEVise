@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2000/02/14 10:45:23  hongyu
+// *** empty log message ***
+//
 // Revision 1.20  2000/02/14 09:26:32  hongyu
 // *** empty log message ***
 //
@@ -465,11 +468,13 @@ public class jspop implements Runnable
             Socket socket = new Socket(server.hostname, server.jssport);
             DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             String msg = "JSS_Restart " + server.cmdPort + " " + server.dataPort;
+            System.out.println("Try to send restart request to " + server.hostname + " ...");
             os.writeInt(msg.length());
             os.writeBytes(msg);
             os.flush();
             os.close();
             socket.close();
+            System.out.println("Message \"" + msg + "\" successfully send to JSS server at " + server.hostname);
         } catch (UnknownHostException e) {
             pn("Can not find jss host " + server.hostname);
         } catch (NoRouteToHostException e) {

@@ -107,7 +107,7 @@ public class JssHandler implements Runnable
 
                 try {
                     is = new DataInputStream(socket.getInputStream());
-                    String msg = receiveFromJSS(is);
+                    String msg = receiveFromJSS(is, hostname);
 
                     String[] cmd = DEViseGlobals.parseString(msg);
                     if (cmd == null) {
@@ -160,17 +160,20 @@ public class JssHandler implements Runnable
         }
     }
 
-    private String receiveFromJSS(DataInputStream is) throws YException
+    private String receiveFromJSS(DataInputStream is, String hostname) throws YException
     {
         if (is == null) {
             throw new YException("Null jss input stream!", "JssHandler:receiveFromJSS()");
         }
 
         try {
+            System.out.println("Try to receive data from JSS server at " + hostname + " ...");
             int length = is.readInt();
             byte[] data = new byte[length];
             is.readFully(data);
-            return new String(data);
+            String msg = new String(data);
+            System.out.println("Message \"" + msg + "\" successfully received from JSS server!");
+            return msg;
         } catch (IOException e) {
             throw new YException("IO Error while receive message from jss", "JssHandler:receiveFromJSS()");
         }
