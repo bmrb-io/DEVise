@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/03/05 08:13:08  zhenhai
+  *** empty log message ***
+
   Revision 1.11  1998/03/04 19:11:22  wenger
   Fixed some more dynamic memory errors.
 
@@ -131,6 +134,10 @@ HashTable<Index,Value>::HashTable(int tableSz,
                                                Index &index2)) :
 	tableSize(tableSz), hashfcn(hashF), compfcn(compF)
 {
+#if defined(DEBUG)
+  cout << "HashTable<Index,Value>::HashTable(" << tableSz << ")\n";
+#endif
+
   if (!(ht = new HashBucket<Index, Value>* [tableSize])) {
     cerr << "Insufficient memory for hash table" << endl;
     exit(1);

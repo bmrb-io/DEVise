@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/05/28 15:04:58  wenger
+  OpenGL cursors now drawn in view foreground color;
+  fixes to OpenGL crashes with some sessions (bugs 342, 356?).
+
   Revision 1.31  1998/05/21 18:18:33  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -293,6 +297,10 @@ void WindowRep::HandleExpose(int x, int y, unsigned w, unsigned h)
 Boolean WindowRep::HandlePopUp(int x, int y, int button, char **&msgs,
 			       int &numMsgs)
 {
+#if defined(DEBUG)
+  printf("WindowRep::HandlePopUp(%d, %d)\n", x, y);
+#endif
+
   int index = InitIterator(); 
   if (More(index)) {
     /* do only first callback */

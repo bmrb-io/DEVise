@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.113  1998/08/20 18:55:37  wenger
+  Fixed bug 252 (problem with color of drill-down text).
+
   Revision 1.112  1998/06/03 17:09:31  wenger
   Rubberband line in JavaScreen now sends updates of all changed windows
   using the "dirty GIF" flag; updated DEVise version to 1.5.3.
@@ -2568,6 +2571,10 @@ void XWindowRep::HandleEvent(XEvent &event)
     break;
 #else
   case ButtonPress:
+#if defined(DEBUG)
+    printf("ButtonPress: button = %d, x = %d, y = %d\n", event.xbutton.button,
+	event.xbutton.x, event.xbutton.y);
+#endif
     int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
     if (event.xbutton.button == 2) {
       /* handle popup */

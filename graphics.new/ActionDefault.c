@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/08/17 17:11:50  wenger
+  Devised now responds to KeyAction commands from JavaScreen.
+
   Revision 1.33  1998/08/11 13:43:21  wenger
   Server responds to KeyAction commands from JavaScreen (still needs event
   coordinates); did some cleanup of the ActionDefault class.
@@ -257,6 +260,10 @@ static Boolean CheckParams()
 
 static Boolean PutMessage(char *msg)
 {
+#if defined(DEBUG)
+    printf("PutMessage(%s)\n", msg);
+#endif
+
     if (!CheckParams())
       return false;
     
@@ -272,6 +279,10 @@ static Boolean PutMessage(char *msg)
 static Boolean InitPutMessage(double x, AttrType xAttr,
 			      double y, AttrType yAttr)
 {
+#if defined(DEBUG)
+    printf("InitPutMessage(%g, %g)\n", x, y);
+#endif
+
     msgIndex = 0;
     numMsgs = 0;
     char buf[128];
@@ -297,6 +308,10 @@ static Boolean InitPutMessage(double x, AttrType xAttr,
 
 static void EndPutMessage(int &numMessages, char **&msgs)
 {
+#if defined(DEBUG)
+    printf("EndPutMessage()\n");
+#endif
+
     numMessages = numMsgs;
     msgs = msgPtr;
 }
@@ -313,6 +328,13 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 			     Coord yHigh, int button, char **& msgs,
 			     int &numMsgs)
 {
+#if defined(DEBUG)
+    char *viewName = view->GetName();
+    if (viewName == NULL) viewName = "NULL";
+    printf("ActionDefault::PopUp(%s, %g, %g, %g, %g, %d)\n", viewName, x, y,
+      xHigh, yHigh, button);
+#endif
+
     ControlPanel::Instance()->SelectView(view);
     
     AttrType xAttr = view->GetXAxisAttrType();
@@ -461,8 +483,13 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
 
     qp->DoneTDataQuery();
 
-    if (approxFlag || numRecs)
+    if (approxFlag || numRecs) {
         return(!tooMuch);
+    }
+
+#if defined(DEBUG)
+    printf("Didn't get any records on the first try.\n");
+#endif
 
 
       // Try it again, this time trying to take the size
