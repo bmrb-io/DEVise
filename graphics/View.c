@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.96  1997/01/09 18:41:17  wenger
+  Added workarounds for some Tasvir image bugs, added debug code.
+
   Revision 1.95  1997/01/08 19:01:42  wenger
   Fixed bug 064 and various other problems with drawing piled views;
   added related debug code.
@@ -1458,6 +1461,8 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   _querySent = false;
   _hasLastFilter = false;
 
+  WindowRep *win = GetWindowRep();
+
   /* if view is on top of a pile, it has to wake the other views
      up and ask them to refresh; the bottom views might not have
      received an Exposure or ConfigurationNotify event requesting
@@ -1469,33 +1474,38 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
    * it wakes up the one after it, etc.  This is done to be sure that the
    * various views are drawn in the correct order.  RKW 1/7/97. */
 
-  if (!aborted && _pileMode) {
-    ViewWin *parent = GetParent();
-    DOASSERT(parent, "View has no parent");
+  if (_pileMode) {
+    /* The piled view was actually drawn into this window */
+    win = GetFirstSibling()->GetWindowRep();
 
-    int index = parent->InitIterator();
-    DOASSERT(parent->More(index), "Parent view has no children");
+    if (!aborted) {
+      ViewWin *parent = GetParent();
+      DOASSERT(parent, "View has no parent");
 
-    /* Skip over all views in order up to and including this view. */
-    while (parent->More(index) && (parent->Next(index) != this)) {}
+      int index = parent->InitIterator();
+      DOASSERT(parent->More(index), "Parent view has no children");
 
-    /* Now refresh the next view. */
-    if (parent->More(index)) {
-      ViewWin *vw = parent->Next(index);
+      /* Skip over all views in order up to and including this view. */
+      while (parent->More(index) && (parent->Next(index) != this)) {}
 
-      /* FindViewByName is a type-safe way to convert from a ViewWin to
-       * a View, which is necessary to call Refresh(). */
-      View *view = FindViewByName(vw->GetName());
-      DOASSERT(view, "Cannot find view");
-      DOASSERT(vw == view, "ViewWin != View");
+      /* Now refresh the next view. */
+      if (parent->More(index)) {
+        ViewWin *vw = parent->Next(index);
+
+        /* FindViewByName is a type-safe way to convert from a ViewWin to
+         * a View, which is necessary to call Refresh(). */
+        View *view = FindViewByName(vw->GetName());
+        DOASSERT(view, "Cannot find view");
+        DOASSERT(vw == view, "ViewWin != View");
 #if defined(DEBUG)
-      printf("View %s refreshes view %s\n", GetName(), view->GetName());
+        printf("View %s refreshes view %s\n", GetName(), view->GetName());
 #endif
-      view->_pileViewHold = false;
-      view->Refresh();
-    }
+        view->_pileViewHold = false;
+        view->Refresh();
+      }
 
-    parent->DoneIterator(index);
+      parent->DoneIterator(index);
+    }
   }
 
   _cursorsOn = false;
@@ -1505,8 +1515,8 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   else
     Draw3DAxis();
 
-  GetWindowRep()->PopClip();
-  GetWindowRep()->Flush();
+  win->PopClip();
+  win->Flush();
 
   if (_printing)
   {
@@ -1519,7 +1529,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   printf("View %s completed\n", GetName());
 #endif
 
-  // report to interested parties that view has been recomputed
+  /* Report to interested parties that view has been recomputed */
   ReportViewRecomputed();
 }
 
@@ -1549,7 +1559,6 @@ void View::Run()
     // If we are running client/server Devise, we may get here before this
     // view's parent has been created, so do not bomb out.  RKW 8/30/96.
     if (parent == NULL) return;
-    //DOASSERT(parent, "View has no parent");
 
     int index = parent->InitIterator();
     DOASSERT(parent->More(index), "Parent view has no children");
@@ -1634,6 +1643,9 @@ void View::Run()
   }
 
   WindowRep *winRep = GetWindowRep();
+  if (_pileMode)
+      winRep = GetFirstSibling()->GetWindowRep();
+
   int scrnX, scrnY, scrnWidth, scrnHeight;
   unsigned int sW, sH;
   Geometry(scrnX, scrnY, sW, sH);
@@ -1725,15 +1737,11 @@ void View::Run()
   Boolean piledDisplay = false;
 
   if (_pileMode) {
-    ViewWin *parent = GetParent();
-    DOASSERT(parent, "View has no parent");
-    int index = parent->InitIterator();
-    DOASSERT(parent->More(index), "Parent view has no children");
-    ViewWin *firstChild = parent->Next(index);
-    if (this != firstChild) {
+    ViewWin *firstSibling = GetFirstSibling();
+    if (this != firstSibling) {
 #if defined(DEBUG)
-      printf("View %s follows first child %s\n", GetName(),
-             firstChild->GetName());
+      printf("View %s follows first sibling %s\n", GetName(),
+             firstSibling->GetName());
 #endif
       piledDisplay = true;
     } else {
@@ -1741,7 +1749,6 @@ void View::Run()
       printf("View %s is first child\n", GetName());
 #endif
     }
-    parent->DoneIterator(index);
   }
       
   if (piledDisplay || _filterChanged || _refresh) {
@@ -1821,7 +1828,10 @@ void View::Run()
 
   /* push clip region using this transform */
   int dataX, dataY, dataW, dataH;
-  GetDataArea(dataX, dataY, dataW, dataH);
+  if (_pileMode)
+      ((View *)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
+  else
+      GetDataArea(dataX, dataY, dataW, dataH);
 
   /* use exposure rectangle if needed */
   if (_hasExposure) {
