@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2001/01/08 20:31:54  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.49.4.2  2000/12/11 22:14:18  wenger
 // Merged chagnes from link_gui_improvements thru js_restart_improvements
 // onto the branch, removing imgport code from the restart scripts.
@@ -136,7 +140,7 @@ public class DEViseViewInfo extends Panel
         add(mouseY);
     }
 
-    public void updateInfo(String name, String x, String y)
+    public void updateInfo(String name, String x, String y, float factor)
     {
         if (name == null) {
             //viewName.setText("");
@@ -153,21 +157,40 @@ public class DEViseViewInfo extends Panel
         if (x == null) {
             mouseX.setText("");
         } else {
-            mouseX.setText(x);
+	    try {
+		Float floatX = new Float(x);
+		float fX = floatX.floatValue();
+
+		fX = fX * factor;
+		String strX = String.valueOf(fX);
+		mouseX.setText(strX);
+	    } catch (NumberFormatException e) {
+		jsc.pn ("String does not contain a parsable float.");
+	    }
         }
 
         if (y == null) {
             mouseY.setText("");
         } else {
-            mouseY.setText(y);
+	    try {
+		Float floatY = new Float(y);
+		float fY = floatY.floatValue();
+
+		fY = fY * factor;
+		String strY = String.valueOf(fY);
+		mouseY.setText(strY);
+	    } catch (NumberFormatException e) {
+		jsc.pn ("String does not contain a parsable float.");
+	    }
         }
 
         validate();
     }
 
-    public void updateInfo(String x, String y)
+
+    public void updateInfo(String x, String y, float factor)
     {
-        updateInfo(null, x, y);
+        updateInfo(null, x, y, factor);
     }
 
     public void updateInfo()
