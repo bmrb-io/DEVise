@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/06/28 21:39:20  beyer
+  corrected c++ calling convention for methods
+
   Revision 1.8  1998/06/24 09:24:10  okan
   *** empty log message ***
 
@@ -217,12 +220,15 @@ void Buffer::getDoubleVal(char* dest) {
 		retExp = _exponent * (_expSign == true ? -1.0 : 1.0);
 		retVal = (retVal == 0 ? 1 : retVal * pow(10.0,retExp));
 	}
-	*(double*)dest = retVal;
+	// We MUST use memcpy() here in case dest is not aligned.
+	memcpy(dest, &retVal, sizeof(retVal));
 }
+
 void Buffer::getIntVal(char* dest) {
 	int retVal = 0;
 	retVal = _iRetVal * (_sign == true ? -1 : 1);
-	*(int*)dest = retVal;
+	// We MUST use memcpy() here in case dest is not aligned.
+	memcpy(dest, &retVal, sizeof(retVal));
 }
 
 void Buffer::getDateVal(char* dest) {
@@ -243,7 +249,8 @@ void Buffer::getDateVal(char* dest) {
 	
 	tmpDate->setNanoSec(_curDate->nanosec);
 	
-	*(EncodedDTF*)dest = *tmpDate;
+	// We MUST use memcpy() here in case dest is not aligned.
+	memcpy(dest, &tmpDate, sizeof(*tmpDate));
 	delete tmpDate;
 	
 }
@@ -664,22 +671,24 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 
 	_iRetVal = 0;
 
-	if ((_curChar = getChar()) == 0)
+	if ((_curChar = getChar()) == 0) {
 		return FOUNDEOF;
+	}
 	
 	if ((_curChar == PLUS) || (_curChar == MINUS)) {
 	
 		_sign = (_curChar == MINUS);
 		count ++;
-		if ((_curChar = getChar()) == 0)
+		if ((_curChar = getChar()) == 0) {
 			return FOUNDEOF;
-
+        }
 	}
 	
 	while (true) {
 		status = checkEOL(_curChar);
-		if (status != OK)
+		if (status != OK) {
 			return status;
+        }
 
 		if (!ignoreRest) {
 			ignoreRest = !(isDigit(_curChar));
@@ -689,19 +698,22 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 		count++;
 
 		if (count >= fieldLen) {
-			if ((_curChar = getChar()) == 0) 
+			if ((_curChar = getChar()) == 0) {
 				return FOUNDEOF;
+			}
 			status = checkEOL(_curChar);
-			if (status != OK)
+			if (status != OK) {
 				return status;
-			else
+			} else {
 				_in.putback(_curChar);
-				
+			}
+
 			return FOUNDSEPARATOR;
 		}
 
-		if ((_curChar = getChar()) == 0)
+		if ((_curChar = getChar()) == 0) {
 			return FOUNDEOF;
+		}
 	}
 	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
 	return FAIL;

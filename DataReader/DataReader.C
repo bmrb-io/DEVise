@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/06/16 16:30:52  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #include "sysdep.h"
@@ -83,8 +86,9 @@ Status DataReader::getRecord(char* dest) {
 	for (int i = 0 ; i < (int)(myDRSchema->qAttr); i++) {
 		tmpPoint = dest + myDRSchema->tableAttr[i]->offset; 
 		status = myBuffer->extractField(myDRSchema->tableAttr[i],tmpPoint);
-		if (status != FOUNDSEPARATOR)
+		if (status != FOUNDSEPARATOR) {
 			return status;
+		}
 	}
 	return FOUNDSEPARATOR;
 }

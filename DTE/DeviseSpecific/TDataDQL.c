@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/04/16 17:34:58  donjerko
+  *** empty log message ***
+
   Revision 1.31  1998/04/14 17:04:02  donjerko
   Removed command "schema", using typecheck "select * from ..." instead.
 
@@ -80,7 +83,7 @@
 
 */
 
-// #define DEBUG
+//#define DEBUG
 #include <assert.h>
 #include <iostream.h>
 #include <stdio.h>
@@ -373,7 +376,7 @@ TData::TDHandle TDataDQL::InitGetRecs(Interval *interval, int &bytesleft,
 {
 	
 #if defined(DEBUG)
-  cerr << "TDataDQL::InitGetRecs(" << range->Low << ", " << range->High << ")\n";
+  cerr << "TDataDQL::InitGetRecs(" << interval->Low << ", " << interval->High << ")\n";
 #endif
 
   if (!strcmp(interval->AttrName,"recId")) { // recId stuff

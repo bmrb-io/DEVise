@@ -1405,7 +1405,7 @@ Num Date        Status  Description
 371 06/28/98	OPEN	Devise leaks loads of memory when running the session
 			beyer/genome.ds. (kb/rkw)
 
-372 06/29/98	OPEN	Devise on SPARC/Solaris crashes when opening the
+372 06/29/98	FIXED	Devise on SPARC/Solaris crashes when opening the
 			session beyer/genome.ds. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.52  1998/06/10 14:59:28  wenger
+#  Added DataReader to link.
+#
 #  Revision 1.51  1998/05/06 22:04:30  wenger
 #  Single-attribute set links are now working except where the slave of
 #  one is the master of another.
@@ -220,7 +223,7 @@ ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../DTE/libdte.a \
 	../RTree/librtree.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a ../xvertext/libXrot.a
+	../crsp/libcrsp.a ../xvertext/libXrot.a ../DataReader/libdatareader.a
 
 CLIENTLIB = ../graphics.new/libclient.a
 SERVERLIB = ../graphics.new/libserver.a ../csgroup/libcsgroup.a
