@@ -1,0 +1,35 @@
+
+all: Jpg Img Rdp Vr Tsv
+
+Jpg:
+	@echo "****** Making jpeg lib"
+	( cd jpeg; make -f makefile.$(MC)  )
+
+Img:
+	@echo "****** Making Image lib"
+	( cd Image; make -f makefile.$(MC) )
+
+Rdp:
+	@echo "****** Making RD-OPT lib"
+	( cd Rdopt; make -f makefile.$(MC) )
+
+Vr:
+	@echo "****** Making VR lib"
+	( cd VR; make -f makefile.$(MC) )
+
+Tsv:
+	@echo "****** Making Tasvir"
+	( cd Tasvir; make -f makefile.$(MC) )
+
+clean:
+	@echo "****** Cleaning jpeg lib"
+	( cd jpeg; make -f makefile.$(MC) clean  )
+	@echo "****** Cleaning Image lib"
+	( cd Image; make -f makefile.$(MC) clean )
+	@echo "****** Cleaning RD-OPT lib"
+	( cd Rdopt; make -f makefile.$(MC) clean )
+	@echo "****** Cleaning VR lib"
+	( cd VR; make -f makefile.$(MC) clean )
+	@echo "****** Cleaning Tasvir"
+	( cd Tasvir; make -f makefile.$(MC) clean )
+

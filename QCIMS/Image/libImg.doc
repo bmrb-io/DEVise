@@ -1,0 +1,359 @@
+libImg : Image management library
+----------------------------------------------------
+(c) 1995, 1996, 1997 Viresh Ratnakar, Miron Livny
+
+
+The Img library provides functions to read, write, compress, and
+manipulate grayscale or RGB images in various formats. The core
+formats (with in-built libary code) are RAW, PNM, and JPEG. For
+reading other formats, the library uses a filter process (like
+giftopnm).
+
+The main structure used is called "Image". Use the macros provided
+to access its fields. The basic sequence of functions for reading
+an image are:
+
+  Image *Im; 
+  ...
+  Allocate memory for Im, or make it point to an Image structure
+  ...
+  /* Initialize Im */
+  ImInitImg(Im);
+
+  /* Set image source to file; "size" bytes will be read off
+     the file. "size" can be left as 0, in most cases: the
+     library can figure it out. 
+  */
+  if (!ImSetImgFile(Im, file, size)) {
+    Some error occurred. The string "ImErrorString" can
+    be examined to see a description of the error, whenever
+    a libImg function returns False.
+  } 
+
+  /* Read the image  header to figure out the format. An
+     image identifying string will be printed on stderr. Use
+     the macro ImSetSilent(Im) to suppress. 
+  */ 
+  if (!ImPeekImg(Im)) {
+    Deal with the error. 
+  } 
+
+  /* Read the image. */ 
+  if (!ImReadImg(Im)) {
+    Deal with the error. 
+  } 
+
+  ...
+  Do whatever you want to with the image. The image data
+  can be accessed with the macros ImPlane(Im, pnum)
+  ...
+
+  /* Free memory */ 
+  ImFreeImg(Im); 
+
+
+
+While this is the basic sequence, there is a lot more you can do.
+Read on for detailed descriptions.
+
+ 
+#define ImKindString(k) \
+  ((((k) < 0) || ((k) >= IM_KIND_NUM)) ? ImKindNames[IM_UNKNOWN] : \
+                                     ImKindNames[(k)])
+
+#define ImKindSubSetOf(a,b) \
+     ((a==b) ? 1 : \
+     ((((a==IM_PGM_ASCII) || (a==IM_PGM_RAW) || (a==IM_PGM)) && \
+       ((b==IM_PGM) || (b==IM_PNM))) ? 1 : \
+     ((((a==IM_PPM_ASCII) || (a==IM_PPM_RAW) || (a==IM_PPM)) && \
+       ((b==IM_PPM) || (b==IM_PNM))) ? 1 : \
+     ((((a==IM_JPEG_GRAY) || (a==IM_JPEG_RGB)) && \
+       (b==IM_JPEG)) ? 1 : \
+     (((b==IM_NOT_RAW) && (a!=IM_RAW) && (a!=IM_UNKNOWN)) ? 1 : \
+	     0)))))
+
+
+/*********************************************
+  Meanings for ImState:
+**********************************************/
+
+#define ImStateNotExtant 0
+#define ImStateInited 1
+#define ImStatePeeked 2
+#define ImStateReadSome 3
+#define ImStateReadAll 4
+#define ImStateDead 5
+
+
+typedef enum ImColorSpaceEnum {ImC_None, ImC_Gray, ImC_RGB, ImC_YCbCr} ImColorSpaceType;
+
+
+#define ImPlanesOfCspace(csp) \
+  ( ((csp)==ImC_Gray) ? 1  : \
+  ( ((csp)==ImC_RGB) ? 3   :  \
+  ( ((csp)==ImC_YCbCr) ? 3 :  \
+    0 )))
+
+#define ImCspaceCompatible(c1, c2) (ImPlanesOfCspace(c1) == ImPlanesOfCspace(c2))
+
+typedef unsigned char Pixel;
+typedef unsigned short Pixel2;
+typedef unsigned long Pixel4;
+
+#define Endian_LSBFirst 0
+#define Endian_MSBFirst 1
+
+
+
+extern void ImInitImg(Image *Im);
+extern int  ImPrintImgChars(Image *Im);
+extern int  ImSetSampleBits(Image *Im, int nbits, int planenum);
+extern int  ImSetKindRaw(Image *Im, int nplanes, int rows, int cols, boolean enforce);
+extern int  ImSetKind(Image *Im, int imkind, boolean enforce);
+extern int  ImPeekImg(Image *Im);
+extern int  ImSetImgFile(Image *Im, char *fname, long nbytes);
+extern int  ImSetImgMemory(Image *Im, char *buff, long nbytes);
+extern int  ImSetImgFd(Image *Im, int fd, long nbytes);
+extern int  ImExtendImgBytes(Image *Im, long nbytes);
+extern int  ImSetImgBytes(Image *Im, long nbytes);
+extern int  ImReadImg(Image *Im);
+extern int  ImReadMoreImg(Image *Im);
+
+/* next 4 fns return 0 on failure and #bytes written on success */
+
+extern long  ImSaveImg(Image *Im, char * fname, int saveKind);
+extern long  ImWriteImg(Image *Im, int fd, int saveKind);
+extern long  ImBufferImg(Image *Im, char *buff, long buffsize,
+			  char **extramem, int saveKind);
+extern long  ImSendImg(Image *Im, DataDest *dd, char **extramem,
+	    int saveKind);
+
+
+extern void ImFreeImg(Image *Im);
+
+
+extern int ImSetImgDim(Image *Im, int planenum, int rows, int cols,
+	       int do_smooth, int maintain_aspect);
+extern int ImStretchAndShrink(Image *Im, int planenum, 
+	       int vert_stretch, int vert_shrink,
+	       int horz_stretch, int horz_shrink,
+	       int do_smooth, int maintain_aspect);
+extern int ImCrop(Image *Im, int start_row, int start_col,
+   int end_row, int end_col);
+
+/* ImStretchAndShrink always applies to the current image state */
+/* for all the above, setting planenum to -1 implies all image planes */
+
+extern int ImBackToNormal(Image *Im);
+
+extern int ImBackToNormalPixels(Image *Im);
+
+extern int ImDiscardOriginal(Image *Im);
+
+#ifdef HAVE_JPEGLIB
+
+/********************** JPEG compression routines ****************
+
+  These next 4 fns return 0 on failure and #bytes written on success.
+  For these JPEG compression routines, here are the meanings of some
+  of the parameters:
+
+  int on_original
+    1 iff original image is to be compressed.  0 for current image,
+    which might have been resized/brightened/contrasted. 
+  void *comp_till
+    Pointer to a desired quality or size.  "comp_till_metric" determines
+    its meaning. Ignored if 0. Overrides the "quality" parameter below.
+    If "qsrc" is also provided, it *will* be used and comp_till will be
+    ignored. If "tryhard_comp_till" is set along with "qsrc" and
+    "comp_till", then compressed file will be pruned (if needed) to meet
+    "comp_till". There never are any guarantees that "comp_till" will
+    be met, but with "tryhard_comp_till" set, we'll get very close. 
+  char *comp_till_metric
+    Determines the meaning of comp_till. Can be any of the strings
+    allowed for "qclicqmetric". The ones you need to really know are:
+      "SIZE"
+	 comp_till is (long *) pointer to a desired size in bytes. 
+      "PSIZE"
+	 comp_till is (float *) ptr to a desired percentange size, where
+         the percentage is taken wrt the uncompressed size in bytes of
+	 the image (rows * cols * #planes). 
+      NULL or "PSNR"
+	 comp_till is (float *) ptr to a desired PSNR.
+   int tryhard_comp_till
+     Try hard to achieve comp_till. If "qsrc" is provided, the
+     quantization tables in qsrc put an upper bound on achievable
+     quality, and we will "try hard" only if "comp_till" is less
+     than that upper bound. If "qsrc" is not provided, we'll pick
+     a quantization table (eventually using RDOPT) and/or prune
+     the compressed file, to come very close to the target. 
+
+*********************************************************************/
+
+extern long ImSaveJpeg(Image *Im,
+  int on_original, 
+  void *comp_till, 
+  char *comp_till_metric,  
+  int tryhard_comp_till, 
+  char *fname,
+  char *qclicfname,
+  long *qclicbytes,
+  char *qclicqmetric, 
+  void * qsrc, long qsrc_bytes, int qsrc_kind,  
+  void * ssrc, long ssrc_bytes, int ssrc_kind,  
+  int quality);  
+extern long ImWriteJpeg(Image *Im,
+  int on_original, 
+  void *comp_till, 
+  char *comp_till_metric,  
+  int tryhard_comp_till, 
+  int fd,
+  int qclicfd,
+  long *qclicbytes,
+  char *qclicqmetric, 
+  void * qsrc, long qsrc_bytes, int qsrc_kind,  
+  void * ssrc, long ssrc_bytes, int ssrc_kind,  
+  int quality);  
+extern long ImBufferJpeg(Image *Im,
+  int on_original, 
+  void *comp_till, 
+  char *comp_till_metric,  
+  int tryhard_comp_till, 
+  char *buff, long buffsize, char **extramem,
+  char *qclicbuff, long qclicbuffsize, char **qclicextramem,
+  long *qclicbytes,
+  char *qclicqmetric, 
+  void * qsrc, long qsrc_bytes, int qsrc_kind,  
+  void * ssrc, long ssrc_bytes, int ssrc_kind,  
+  int quality);  
+extern long ImSendJpeg(Image *Im,
+  int on_original, 
+  void *comp_till, 
+  char *comp_till_metric,  
+  int tryhard_comp_till, 
+  DataDest *dd, char **extramem,
+  DataDest *qclicdd, char **qclicextramem,
+  long *qclicbytes,
+  char *qclicqmetric, 
+  void * qsrc, long qsrc_bytes, int qsrc_kind,  
+  void * ssrc, long ssrc_bytes, int ssrc_kind,  
+  int quality);  
+
+
+
+#endif
+
+extern int ImSetOrigCspace(Image *Im, ImColorSpaceType cspace); /* rename original 
+							       color space */
+extern int ImChangeCspace(Image *Im, ImColorSpaceType cspace);
+
+extern int ImBrighten(Image *Im, int planenum, int bright_add);
+
+extern int ImContrast(Image *Im, int planenum, float contrast); 
+
+extern int ImChanged(Image *Im);
+extern int ImSetTotalBytes(Image *Im, long tot, int isguess); 
+
+extern char ImErrorString[IM_STRLENMAX];
+extern long ImQclicIcurveSofQ(Image *Im, float quality, boolean is_percent);
+extern float ImQclicIcurveQofS(Image *Im, long nbytes, boolean in_percent);
+extern char * ImQclicLossless(Image *Im);
+
+#define ImStateOfImg(Im) ((Im)->ImState)
+#define ImSetRetainOrig(Im)  (Im)->RetainOrigOnChange = TRUE; 
+
+#define ImKindOfImg(Im) ((Im)->ImKind)
+
+#define ImSetSilent(Im) (Im)->Silent = 1
+#define ImSetNotSilent(Im) (Im)->Silent = 0
+
+#define ImOrigRows(Im) ((Im)->NumRows)
+#define ImOrigCols(Im) ((Im)->NumCols)
+
+#define ImCurrRows(Im) ((Im)->CurrRows[0])
+#define ImCurrCols(Im) ((Im)->CurrCols[0])
+
+#define ImPlanesOfImg(Im) ((Im)->NumPlanes)
+
+/* these fields are useful */ 
+#define ImFirstChanged(Im,p) (Im)->FirstChangedRow[(p)]
+#define ImLastChanged(Im,p) (Im)->LastChangedRow[(p)]
+
+#define ImSampleBytes(Im) ((Im)->SampleBytes[0])
+#define ImPlaneSampleBytes(Im, pnum) \
+  (((pnum) < 0) ? ((Im)->SampleBytes[0]) : \
+  (((pnum) >= (Im)->NumPlanes) ? ((Im)->SampleBytes[(Im)->NumPlanes - 1]) : \
+  ((Im)->SampleBytes[(pnum)])))
+
+#define ImHostEndian(Im) ((Im)->HostEndian[0])
+#define ImPlaneHostEndian(Im, pnum) \
+  (((pnum) < 0) ? ((Im)->HostEndian[0]) : \
+  (((pnum) >= (Im)->NumPlanes) ? ((Im)->HostEndian[(Im)->NumPlanes - 1]) : \
+  ((Im)->HostEndian[(pnum)])))
+
+
+#define ImCurrPlaneRows(Im, pnum) \
+  (((pnum) < 0) ? ((Im)->CurrRows[0]) : \
+  (((pnum) >= (Im)->NumPlanes) ? ((Im)->CurrRows[(Im)->NumPlanes - 1]) : \
+  ((Im)->CurrRows[(pnum)])))
+
+#define ImCurrPlaneCols(Im, pnum) \
+  (((pnum) < 0) ? ((Im)->CurrCols[0]) : \
+  (((pnum) >= (Im)->NumPlanes) ? ((Im)->CurrCols[(Im)->NumPlanes - 1]) : \
+  ((Im)->CurrCols[(pnum)])))
+
+#define ImAllPlanesEqual(Im) ((Im)->AllPlanesEqual)
+
+#define ImColorSpace(Im) ((Im)->CurrCspace)
+#define ImOrigColorSpace(Im) ((Im)->OrigCspace)
+
+#define ImSetErrfile(Im, f) (Im)->errfile = (f)
+
+#define ImNameOfImg(Im) ((Im)->ImName)
+
+#define ImSetName(Im, name) strcpy((Im)->ImName, (name))
+
+#define ImGetCropInfo(Im, iscropped, sr, sc, er, ec) \
+  (iscropped) = (Im)->WasCropped; \
+  (sr) = (Im)->CropStartRow; \
+  (sc) = (Im)->CropStartCol; \
+  (er) = (Im)->CropEndRow; \
+  (ec) = (Im)->CropEndCol
+
+#define ImFileNameOfImg(Im) (DS_name(&((Im)->ImgSrc)))
+
+#define ImFilterOfImg(Im) ((Im)->ImFilterUsed)
+
+#define ImBytesRead(Im) (DS_total_count(&((Im)->ImgSrc)))
+
+
+#define ImResetSrcBytes(Im, tot) \
+  DS_ResetSrcBytes(&((Im)->ImgSrc), (tot))
+
+
+#define ImTotalBytes(Im) (Im)->TotalImBytes
+
+#define ImUserGivenFd(Im) (DS_fd_src(&((Im)->ImgSrc))) 
+
+#define ImSrcAllRead(Im) (DS_all_read(&((Im)->ImgSrc)))
+
+#define ImPlane(Im,n) ((Im)->Im[(n)])
+#define Im2Plane(Im,n) ((Im)->Im2[(n)])
+#define Im4Plane(Im,n) ((Im)->Im4[(n)])
+
+#define ImQclicIcurveQmetric(Im) (Im)->qclic.icurve_qmetric
+
+#define ImQclicIcurvePoints(Im) (Im)->qclic.icurve_points
+
+#define ImQclicIcurveS(Im,i) (Im)->qclic.icurve_size[(i)] 
+#define ImQclicIcurveQ(Im,i) (Im)->qclic.icurve_quality[(i)] 
+#define ImQclicHeaderBytes(Im) (Im)->qclic.qclic_info_end_offset
+
+#define ImCopyQclicInfo(Imtgt, Imsrc) \
+  QclicInfoCopy(&((Imtgt)->qclic), &((Imsrc)->qclic))
+
+#define ImIsCompressed(Im) ImKindSubSetOf((Im)->ImKind, IM_JPEG)
+
+#endif /* IMAGE_H_INCLUDED */
+
+

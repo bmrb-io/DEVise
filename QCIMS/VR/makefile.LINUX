@@ -1,0 +1,9 @@
+MC=LINUX
+
+XLIBPATH = -L/usr/X11R6/lib
+
+XLIBINCLUDE = 
+
+XLIB = -lX11
+
+include makefile.common

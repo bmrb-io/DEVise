@@ -1,0 +1,1588 @@
+#!/bin/sh -f
+
+
+# \
+exec wish "$0" "$@"
+
+
+
+#usage: (booleans being "1" or "0")
+#TasvirControl handle imname
+#  src_xwin
+#  xoff yoff width height nplanes 
+#  currwidth currheight smoothed aspected
+#  imbpp format compressed? filter dithered? vis_kind vis_bpp vis_maxpixel
+#  fixed_colors? 
+#  [if fixed_colors==0:] cols_used maxc ccube priv_colors?
+#  image_exists?
+#  [if image_exists==1:] lastsrcfile bytesread image_complete?
+#         num_q_points 
+#         [if num_q_points > 0:] qmetric x1 y1 x2 y2...
+#         is_lossless?
+#         [if is_lossless==0:] know_lossless?
+#            [if know_lossless==1:] losslessfile
+#         allow_resize?
+
+
+
+
+proc isnumeric {val} {
+  if {[catch "expr $val"]} {
+    return 0
+  } else {
+    return 1
+  }
+}
+
+proc ShowMesg {s} {
+  global originX originY imname
+  catch {destroy .msgwin}
+  toplevel .msgwin
+  wm title .msgwin "Tasvir: [file tail $imname]: Message"
+  wm geometry .msgwin [getGoodLocation 100 100]
+
+  frame .msgwin.f -width 100 -height 100 -bg white
+  pack .msgwin.f
+  label .msgwin.f.l -text "$s" -bg white
+
+  button .msgwin.f.b -text "Dismiss" -command "catch {destroy .msgwin}" -bg white
+
+  pack .msgwin.f.l -side top -pady 20
+  pack .msgwin.f.b -side top
+}
+
+proc ShowError {s} {
+  global originX originY imname
+  catch {destroy .errwin}
+  toplevel .errwin
+  wm title .errwin "Tasvir: [file tail $imname]: Error"
+  wm geometry .errwin [getGoodLocation 100 100]
+
+  frame .errwin.f -width 100 -height 100 -bg white
+  pack .errwin.f
+  label .errwin.f.l -text "$s" -bg white
+
+  button .errwin.f.b -text "Dismiss" -command "catch {destroy .errwin}" -bg white
+
+  pack .errwin.f.l -side top -pady 20
+  pack .errwin.f.b -side top
+}
+
+
+proc GetReply {} {
+  global colors_used imcomplete bytesread maxc ccube dithered \
+    width height aspected imexists smoothed privcolors numqpoints \
+    msgprefix 
+
+  gets stdin ans
+
+  . configure -cursor arrow
+  if {[string match "ERR*" $ans]} {
+    ShowError $ans
+    return 0
+  } else { 
+    set was_complete $imcomplete
+    set oldbread $bytesread
+    set auxinfo ""
+    catch {scan $ans "%s%d%d%d%d%d%d%d%d%d%d%d%d%d%d%s" \
+      foo goo colors_used boo imexists \
+      imcomplete bytesread width height maxc ccube \
+      aspected smoothed dithered privcolors auxinfo}
+    if {$imcomplete && !$was_complete} {
+      pack forget .ctrl.qsf.size.readmore
+      if {$numqpoints > 0} {
+        catch "pack forget .ctrl.qsf.qual.readmore"
+      } 
+    }
+    if {$bytesread != $oldbread} {
+      UpdateQplot
+    }
+    if {![string match "" $auxinfo]} {
+      set x [string last $auxinfo $ans]
+      if {$x >= 0} {
+	set ans [string range $ans $x end]
+	ShowMesg "$msgprefix $ans"
+	set msgprefix "Tasvir also said: "
+      }
+    }
+    update
+    return 1
+  }
+} 
+
+proc SendCommand {cmd} {
+  . configure -cursor watch
+  puts $cmd
+  flush stdout
+} 
+
+proc StdOptions {} {
+  global maxc ccube privcolors dithered
+
+  set ans "-maxc $maxc -ccube $ccube"
+  if {$privcolors} {
+    set ans "$ans -priv"
+  } else {
+    set ans "$ans -nopriv"
+  }
+  if {$dithered} {
+    set ans "$ans -dither"
+  } else {
+    set ans "$ans -nodither"
+  }
+  return $ans
+}
+
+proc StdResizeOptions {} {
+  global smoothed aspected
+
+  if {$smoothed} {
+    set ans "-smooth"
+  } else {
+    set ans "-nosmooth"
+  }
+
+  if {$aspected} {
+    set ans "$ans -aspect"
+  } else {
+    set ans "$ans -noaspect"
+  }
+}
+
+proc DoResize {} {
+  global width height widthShadow heightShadow handle
+
+  set cmd "relocate $handle - -"
+         
+  if {![isnumeric $widthShadow] || ($widthShadow <= 0)} {
+    set widthShadow $width
+  }
+  if {![isnumeric $heightShadow] || ($heightShadow <= 0)} {
+    set heightShadow $height
+  }
+
+  set cmd "$cmd [expr $widthShadow -1] [expr $heightShadow -1]"
+
+  set cmd "$cmd [StdResizeOptions] [StdOptions]"
+
+  SendCommand $cmd 
+}
+
+proc DoCrop {} {
+  global width height handle \
+    cropsx cropsy cropex cropey
+
+  if {![isnumeric $cropsx] || ($cropsx < 0)} {
+    set cropsx 0
+  }
+  if {![isnumeric $cropsy] || ($cropsy < 0)} {
+    set cropsy 0
+  }
+  if {![isnumeric $cropex] || ($cropex < 0)} {
+    set cropex [expr $width - 1]
+  }
+  if {![isnumeric $cropey] || ($cropey < 0)} {
+    set cropey [expr $height - 1]
+  }
+  if {(($cropsx + 5) >= $cropex) || (($cropsy + 5) >= $cropey)} {
+    ShowError "Bad crop specifications"
+    return
+  }
+
+  if {(($cropex - $cropsx + 1) == $width) && \
+      (($cropey - $cropsy + 1) == $height)} {
+	return
+  }
+
+  set cmd "crop $handle $cropsx $cropsy $cropex $cropey"
+         
+  set cmd "$cmd [StdOptions]"
+
+  SendCommand $cmd 
+}
+
+
+proc DoNormalize {} {
+  global width height widthShadow heightShadow \
+	 owidth oheight \
+	 handle
+
+  set cmd "normalize $handle [StdOptions]"
+         
+  SendCommand $cmd
+}
+
+proc ShowResize {} {
+
+  global widthShadow heightShadow imname smallfont
+
+  catch "destroy .dimensions"
+  toplevel .dimensions
+  wm title .dimensions "Tasvir: [file tail $imname]: Resize"
+  wm geometry .dimensions [getGoodLocation 200 100]
+  frame .dimensions.new -bg white
+
+  frame .dimensions.new.dim -bg white
+  label .dimensions.new.dim.first -text "New width: " -bg white -font $smallfont
+  entry .dimensions.new.dim.wd -width 5 -textvariable widthShadow -bg white -font $smallfont
+  label .dimensions.new.dim.second -text " height: " -bg white -font $smallfont
+  entry .dimensions.new.dim.ht -width 5 -textvariable heightShadow -bg white -font $smallfont
+  bind .dimensions.new.dim.wd <Return> DoResize
+  bind .dimensions.new.dim.ht <Return> DoResize
+  pack .dimensions.new.dim.first  .dimensions.new.dim.wd \
+    .dimensions.new.dim.second .dimensions.new.dim.ht \
+    -side left -anchor w -expand true
+
+  button .dimensions.new.dim.go -command {DoResize;destroy .dimensions} \
+    -text "Change!" -bg white -font $smallfont
+  button .dimensions.new.dim.cancel -command {destroy .dimensions} \
+    -text "Cancel" -bg white -font $smallfont
+  pack .dimensions.new.dim.go .dimensions.new.dim.cancel \
+    -side top
+  pack .dimensions.new.dim -side top
+
+  pack .dimensions.new -side top
+
+}
+
+proc ShowCrop {} {
+
+  global cropsx cropsy cropex cropey imname smallfont \
+    width height
+
+  catch "destroy .crop"
+  toplevel .crop
+  wm title .crop "Tasvir: [file tail $imname]: Crop"
+  wm geometry .crop [getGoodLocation 200 100]
+
+  set cropsx 0
+  set cropsy 0
+  set cropex [expr $width-1]
+  set cropey [expr $height-1]
+
+  frame .crop.new -bg white
+
+  frame .crop.new.dim -bg white
+  label .crop.new.dim.lowxl -text "Low X:" -font $smallfont \
+    -bg white
+  label .crop.new.dim.lowyl -text "Low Y:" -font $smallfont \
+    -bg white
+  label .crop.new.dim.highxl -text "High X:" -font $smallfont \
+    -bg white
+  label .crop.new.dim.highyl -text "High Y:" -font $smallfont \
+    -bg white
+  entry .crop.new.dim.lowx -width 5 -textvariable cropsx \
+    -bg white -font $smallfont
+  entry .crop.new.dim.lowy -width 5 -textvariable cropsy \
+    -bg white -font $smallfont
+  entry .crop.new.dim.highx -width 5 -textvariable cropex \
+    -bg white -font $smallfont
+  entry .crop.new.dim.highy -width 5 -textvariable cropey \
+    -bg white -font $smallfont
+
+  bind .crop.new.dim.lowx <Return> DoCrop
+  bind .crop.new.dim.lowy <Return> DoCrop
+  bind .crop.new.dim.highx <Return> DoCrop
+  bind .crop.new.dim.highy <Return> DoCrop
+
+  pack .crop.new.dim.lowxl .crop.new.dim.lowx \
+    .crop.new.dim.lowyl .crop.new.dim.lowy \
+    -side left -anchor w -fill x
+  pack .crop.new.dim.highxl .crop.new.dim.highx \
+    .crop.new.dim.highyl .crop.new.dim.highy \
+    -side left -anchor w -fill x
+
+  button .crop.new.dim.go -command {DoCrop;destroy .crop} \
+    -text "Change!" -bg white -font $smallfont
+  button .crop.new.dim.cancel -command {destroy .crop} \
+    -text "Cancel" -bg white -font $smallfont
+  pack .crop.new.dim.go .crop.new.dim.cancel \
+    -side top
+  pack .crop.new.dim -side top
+
+  pack .crop.new -side top
+
+}
+
+proc ChangeStdOptions {} {
+  global dithered maxc ccube \
+    vismaxpixel fixed_colors smallfont imname \
+    handle dithered_shadow \
+    maxc_shadow ccube_shadow
+
+
+  set maxc_shadow $maxc
+  set ccube_shadow $ccube
+  set dithered_shadow $dithered
+
+  catch "destroy .stdoptions"
+  toplevel .stdoptions
+  wm title .stdoptions "Tasvir: [file tail $imname]: Reshow-Options"
+  wm geometry .stdoptions [getGoodLocation 200 100]
+  frame .stdoptions.new -bg white -width 200
+
+  radiobutton .stdoptions.dither -variable dithered_shadow -value 1 \
+    -text "Dither" -font $smallfont -relief raised
+  radiobutton .stdoptions.nodither -variable dithered_shadow -value 0 \
+    -text "Dont dither" -font $smallfont -relief raised
+  pack .stdoptions.dither .stdoptions.nodither -side top -fill x -anchor w
+
+  scale .stdoptions.ccube -from 1 -to 6 -resolution 1 -length 4c \
+    -variable ccube_shadow -font $smallfont -orient horizontal \
+    -label Ccube
+  pack .stdoptions.ccube -side top -fill x
+
+  if {!$fixed_colors} {
+    scale .stdoptions.maxc -from 2 -to $vismaxpixel -resolution 1 -length 4c \
+      -variable maxc_shadow -font $smallfont -orient horizontal \
+      -label "Max colors"
+    pack .stdoptions.maxc -side top -fill x
+  }
+
+
+  button .stdoptions.ok -text OK -command {
+    set maxc $maxc_shadow
+    set ccube $ccube_shadow
+    set dithered $dithered_shadow
+    SendCommand "reshow $handle [StdOptions] -remap"
+    destroy .stdoptions
+  } 
+  button .stdoptions.dismiss -text Dismiss -command {destroy .stdoptions}
+
+  pack .stdoptions.ok .stdoptions.dismiss -side left -fill x 
+}
+
+proc ChangeResizeOptions {} {
+  global smoothed aspected \
+    smallfont imname handle \
+    smoothed_shadow aspected_shadow 
+
+
+  set smoothed_shadow $smoothed
+  set aspected_shadow $aspected
+
+  catch "destroy .resizeoptions"
+  toplevel .resizeoptions
+  wm title .resizeoptions "Tasvir: [file tail $imname]: Resize-Options"
+  wm geometry .resizeoptions [getGoodLocation 200 100]
+  frame .resizeoptions.new -bg white -width 200
+
+  radiobutton .resizeoptions.smooth -variable smoothed_shadow -value 1 \
+    -text "Smooth-resize" -font $smallfont -relief raised
+  radiobutton .resizeoptions.nosmooth -variable smoothed_shadow -value 0 \
+    -text "Not smooth" -font $smallfont -relief raised
+  pack .resizeoptions.smooth .resizeoptions.nosmooth -side top \
+    -fill x -anchor w
+
+  radiobutton .resizeoptions.aspect -variable aspected_shadow -value 1 \
+    -text "Maintain Aspect-Ratio" -font $smallfont -relief raised
+  radiobutton .resizeoptions.noaspect -variable aspected_shadow -value 0 \
+    -text "Any A-R" -font $smallfont -relief raised
+  pack .resizeoptions.aspect .resizeoptions.noaspect -side top \
+    -fill x -anchor w
+
+
+  button .resizeoptions.ok -text OK -command {
+    if {($aspected_shadow != $aspected) || \
+        ($smoothed_shadow != $smoothed)} {
+      set smoothed $smoothed_shadow
+      set aspected $aspected_shadow
+      SendCommand "relocate $handle - - - - [StdResizeOptions] [StdOptions]"
+    } 
+    destroy .resizeoptions
+  } 
+  button .resizeoptions.dismiss -text Dismiss -command {destroy .resizeoptions}
+
+  pack .resizeoptions.ok .resizeoptions.dismiss -side left -fill x 
+}
+
+proc ChangePixelOptions {} {
+  global smallfont imname imbpp \
+    bright_step contrast_step handle
+
+  catch "destroy .pixoptions"
+  toplevel .pixoptions
+  wm title .pixoptions "Tasvir: [file tail $imname]: Pixel-Options"
+  wm geometry .pixoptions [getGoodLocation 200 100]
+  frame .pixoptions.new -bg white -width 200
+
+  set imbyt [expr $imbpp/8]
+  if {!$imbyt} {
+    set imbyt 1
+  }
+  set minbr [expr 1 << (($imbyt-1)*8)]
+  set maxbr [expr (1 << ($imbyt*8)) - 1]
+
+  scale .pixoptions.bright -from $minbr -to $maxbr -resolution 1 -length 4c \
+    -variable bright_step -font $smallfont -orient horizontal \
+    -label "Brightness step"
+  pack .pixoptions.bright -side top -fill x
+
+  scale .pixoptions.contrast -from 0 -to 0.5 -resolution 0.01 -length 4c \
+    -variable contrast_step -font $smallfont -orient horizontal \
+    -label "Contrast step"
+  pack .pixoptions.contrast -side top -fill x
+
+
+  button .pixoptions.ok -text OK -command {
+    destroy .pixoptions
+  } 
+
+  pack .pixoptions.ok -side left -fill x 
+}
+
+proc DoBright {brit} {
+  global handle 
+
+  set cmd "brighten $handle $brit -plane 0 -ycc [StdOptions]"
+         
+  SendCommand $cmd
+}
+
+proc DoContrast {contr} {
+  global handle 
+
+  set cmd "contrast $handle $contr -plane 0 -ycc [StdOptions]"
+
+  SendCommand $cmd
+}
+
+proc ReadMore {} {
+  global imcomplete sync_chunk read_more_step handle
+
+  if {$imcomplete} {
+    return
+  }
+
+  if {![isnumeric $sync_chunk]} {
+    set sync_chunk -1
+  }
+  if {![isnumeric $read_more_step]} {
+    set read_more_step 0
+  }
+
+  if {$read_more_step < 0} {
+    set read_more_step 0
+  }
+  
+  SendCommand \
+    "add $handle . -rbytes $read_more_step -sync $sync_chunk [StdOptions]"
+
+}
+
+
+proc ReadMorePq {} {
+  global imcomplete sync_chunk read_more_pqstep handle
+
+  if {$imcomplete} {
+    return
+  }
+
+  if {![isnumeric $sync_chunk]} {
+    set sync_chunk -1
+  }
+  if {![isnumeric $read_more_pqstep]} {
+    set read_more_pqstep 10
+  }
+
+  if {$read_more_pqstep < 0} {
+    set read_more_pqstep 10
+  }
+  
+  SendCommand \
+    "add $handle . -qual %$read_more_pqstep -sync \
+     $sync_chunk [StdOptions]"
+
+}
+
+proc setOrigin {} {
+  global srcxwin originX originY Xoff Yoff
+  set originX -1
+  set originY -1
+  if {[catch {set fp [open "|xwininfo -id $srcxwin -stats" "r"]}]} {
+    set originX $Xoff
+    set originY $Yoff
+    return;
+  }
+  while {([gets $fp line] >= 0) && (($originX==-1) || ($originY==-1))} {
+    if {[string match "*bsolute*upper-left*X*" $line]} {
+      scan $line "%s%s%s%d" foo1 foo2 foo3 originX 
+    } elseif {[string match "*bsolute*upper-left*Y*" $line]} {
+      scan $line "%s%s%s%d" foo1 foo2 foo3 originY 
+    }
+  }
+  catch "close $fp"
+  if {$originX==-1} {
+    set originX $Xoff
+  } else {
+    incr originX $Xoff
+  }
+  if {$originY==-1} {
+    set originY $Yoff
+  } else {
+    incr originY $Yoff
+  }
+
+
+}
+
+proc getGoodLocation {wd ht} {
+  global originX originY screenW screenH width height
+
+  if {($originX + $width + $wd) <= $screenW} {
+    set ansX [expr $originX + $width]
+  } elseif {($originX - $wd) >= 0} {
+    set ansX [expr $originX - $wd]
+  } else {
+    set ansX [expr $screenW - $wd]
+  }
+
+  if {($originY + $ht) <= $screenH} {
+    set ansY $originY
+  } else {
+    set ansY [expr $screenH - $ht]
+  }
+  
+  return "+${ansX}+${ansY}"
+}
+
+proc sizeToX {s} {
+  global plotxoffleft plotxspan qpoint sspan lastqpoint
+  
+  if {$s <= $qpoint(0,size)} {
+    return $plotxoffleft
+  } elseif {$s >= $qpoint($lastqpoint,size)} {
+    return [expr $plotxoffleft + $plotxspan]
+  } else {
+    set x_from_orig [expr (0.0+$s-$qpoint(0,size))*(0.0+$plotxspan) \
+	  / (0.0+$sspan)]
+    if {$x_from_orig < 0} {
+      set x_from_orig 0
+    } elseif {$x_from_orig > $plotxspan} {
+      set $x_from_orig $plotxspan 
+    }
+    return [expr $plotxoffleft + $x_from_orig]
+  }
+}
+
+proc xToSize {x} {
+  global plotxoffleft plotxspan qpoint sspan lastqpoint
+  
+  if {$x <= $plotxoffleft} {
+    return $qpoint(0,size)
+  } elseif {$x >= ($plotxoffleft + $plotxspan)} {
+    return $qpoint($lastqpoint,size)
+  } else {
+    set x_from_orig [expr (0.0+$x-$plotxoffleft)]
+    set s_from_orig [expr $x_from_orig * (0.0+$sspan)/(0.0+$plotxspan)]
+    set s [expr round($s_from_orig + $qpoint(0,size))]
+    if {$s <= $qpoint(0,size)} {
+      return $qpoint(0,size)
+    } elseif {$s >= $qpoint($lastqpoint,size)} {
+      return $qpoint($lastqpoint,size)
+    } else {
+      return $s
+    }
+  }
+}
+
+proc pqualToY {pq} {
+  global plotyofftop plotyspan qpoint lastqpoint
+  if {$pq >= 100} {
+    return $plotyofftop
+  } elseif {$pq <= 0} {
+    return [expr $plotyofftop + $plotyspan]
+  } else {
+    set y_from_orig [expr (0.0+$pq)*(0.0+$plotyspan)/100.0]
+    return [expr 0.0+$plotyofftop + $plotyspan - $y_from_orig]
+  }
+}
+
+proc yToPqual {y} {
+  global plotyofftop plotyspan qpoint lastqpoint
+  if {$y <= $plotyofftop} {
+    return 100
+  } elseif {$y >= ($plotyofftop + $plotyspan)} {
+    return 0
+  } else {
+    set y_from_orig [expr 0.0+$plotyofftop + $plotyspan - $y]
+    return [expr $y_from_orig*100.0/(0.0+$plotyspan)]
+  }
+}
+
+proc qualToPqual {q} {
+  global qpoint lastqpoint qspan
+  if {$q <= $qpoint(0,qual)} {
+    return 0
+  } elseif {$q >= $qpoint($lastqpoint,qual)} {
+    return 100
+  } else {
+    return [expr 100.0*(0.0+$q-$qpoint(0,qual))/(0.0+$qspan)]
+  }
+}
+
+proc pqualToQual {pq} {
+  global qpoint lastqpoint qspan
+  if {$pq <= 0} {
+    return $qpoint(0,qual)
+  } elseif {$pq >= 100} {
+    return $qpoint($lastqpoint,qual)
+  } else {
+    return [expr ((0.0+$qspan)*(0.0+$pq)/100.0) + $qpoint(0,qual)]
+  }
+}
+
+proc sizeToPqual {s} {
+  global qpoint lastqpoint qspan sspan
+  
+  if {$s <= $qpoint(0,size)} {
+    return $qpoint(0,pqual)
+  } elseif {$s >= $qpoint($lastqpoint,size)} {
+    return $qpoint($lastqpoint,pqual)
+  }
+
+  for {set i 1} {$i <= $lastqpoint} {incr i 1} {
+    set j [expr $i - 1]
+    if {$s == $qpoint($i,size)} {
+      return $qpoint($1,pqual)
+    } elseif {$s < $qpoint($i,size)} {
+      break
+    }
+  }
+  
+  if {$i > $lastqpoint} {
+    # shouldn't happen!
+    return $qpoint($lastqpoint,pqual)
+  } 
+  return [expr ((0.0+$s-$qpoint($j,size)) * \
+	(0.0+$qpoint($i,pqual)-$qpoint($j,pqual))/ \
+	(0.0+$qpoint($i,size)-$qpoint($j,size)))+$qpoint($j,pqual)]
+}
+
+
+proc AddBytes {x y} {
+  global bytesread handle sync_chunk imcomplete
+
+
+  if {$imcomplete} {
+    return
+  }
+
+  if {![winfo exists .ctrl.qf.qplot]} {
+    return
+  }
+
+  set s [xToSize $x]
+
+  if {$bytesread >= $s} {
+    return
+  }
+
+  set pq [sizeToPqual $s]
+  set yup [pqualToY $pq]
+
+  if {$yup > $y} {
+    return
+  }
+
+  if {![isnumeric $sync_chunk]} {
+    set sync_chunk 0
+  }
+
+  SendCommand \
+    "add $handle . -rbytes [expr $s - $bytesread] -sync $sync_chunk"
+
+}
+
+proc UpdateQplot {} {
+  global qpoint lastqpoint bytesread plotareaheight currpq
+
+  if {![winfo exists .ctrl.qf.qplot]} {
+    return
+  }
+  catch {.ctrl.qf.qplot delete currbox}
+  catch {.ctrl.qf.qplot delete currline}
+  for {set i 1} {$i <= $lastqpoint} {incr i 1} {
+    set j [expr $i -1]
+    if {$bytesread >= $qpoint($i,size)} {
+      .ctrl.qf.qplot itemconfigure box$i -fill gray
+      set currpq $qpoint($i,pqual)
+      .ctrl.qf.qplot bind box$i <Enter> ""
+      .ctrl.qf.qplot bind box$i <Leave> ""
+    } else {
+      break
+    }
+  }
+  if {($i <= $lastqpoint) && ($qpoint($j,size) < $bytesread)} {
+    # qpoint(i-1,size) < bytesread < qpoint(i,size)
+    set firstx [sizeToX $qpoint($j,size)]
+    set firsty [pqualToY $qpoint($j,pqual)]
+    set midx [sizeToX $bytesread]
+    set currpq [expr ((0.0+$bytesread-$qpoint($j,size)) * \
+	(0.0+$qpoint($i,pqual)-$qpoint($j,pqual))/ \
+	(0.0+$qpoint($i,size)-$qpoint($j,size)))+$qpoint($j,pqual)]
+    set midy [pqualToY $currpq]
+    .ctrl.qf.qplot create polygon \
+      $firstx $firsty \
+      $midx $midy \
+      $midx $plotareaheight \
+      $firstx $plotareaheight \
+      -tags currbox -fill gray
+    .ctrl.qf.qplot create line \
+      $midx $plotareaheight \
+      $firstx $plotareaheight \
+      $firstx $firsty \
+      $midx $midy \
+      -tags currline
+  }
+}
+
+proc SetFileName {suggested} {
+  global setfname currdir setfnamedone \
+    ff i tfp tid
+
+  catch {destroy .filew}
+  toplevel .filew
+
+  wm title .filew "Tasvir: file selection"
+
+  wm geometry .filew [getGoodLocation 300 300] 
+  wm minsize .filew 10 10
+
+
+  set setfnamedone 0
+  set setfname $suggested
+
+  frame .filew.f -width 30 -height 60
+  frame .filew.df -width 30 -height 60
+
+  scrollbar .filew.f.scroll -command ".filew.f.list yview"
+  listbox .filew.f.list -yscroll ".filew.f.scroll set" \
+    -relief sunken -width 20 -height 10 -setgrid yes
+  
+  scrollbar .filew.df.scroll -command ".filew.df.list yview"
+  listbox .filew.df.list -yscroll ".filew.df.scroll set" \
+    -relief sunken -width 20 -height 10 -setgrid yes
+
+  set bscript \
+    "if {!\[catch {set ff \[lsort \[glob \$currdir/*\]\]}\]} { \
+      .filew.f.list delete 0 end; \
+      .filew.df.list delete 0 end; \
+      .filew.df.list insert end \"..\"; \
+      foreach i \$ff { \
+        if {\[file isdirectory \$i\]} { \
+	  .filew.df.list insert end \[file tail \$i\] \
+        } else { \
+	  .filew.f.list insert end \[file tail \$i\] \
+	} \
+      } \
+    }"
+  eval $bscript
+
+  set tempbscript ".filew configure -cursor watch; \
+    set currdir \$currdir/\[selection get\]; \
+    if {\[string match .. \[file tail \$currdir\]\]} { \
+      set currdir \[file dirname \[file dirname \$currdir\]\]; \
+    }; \
+    $bscript; \
+    .filew configure -cursor arrow"
+
+  bind .filew.df.list <Double-Button-1> $tempbscript
+
+  bind .filew.f.list <Double-Button-1> {
+    .filew configure -cursor watch
+    set setfname [selection get]
+    .filew configure -cursor arrow
+    set setfnamedone 1
+  } 
+
+
+  frame .filew.dbuttons 
+  frame .filew.fbuttons 
+
+  label .filew.dbuttons.dir -text "Directory: "
+  entry .filew.dbuttons.dire -width 20 -textvariable currdir
+
+  set tempbscript ".filew configure -cursor watch; \
+    $bscript; \
+    .filew configure -cursor arrow"
+  bind .filew.dbuttons.dire <Return> $tempbscript
+
+
+  label .filew.fbuttons.label -text "File name:"
+  entry .filew.fbuttons.e -width 20 -textvariable setfname
+  bind .filew.fbuttons.e <Return> {
+    set setfnamedone 1
+  }
+
+
+
+
+  pack append  .filew.df \
+       .filew.df.scroll {right filly} \
+       .filew.df.list {left fill expand}
+
+
+  pack append  .filew.f \
+       .filew.f.scroll {right filly} \
+       .filew.f.list {left fill expand}
+
+  pack append .filew.dbuttons \
+        .filew.dbuttons.dir {left} \
+	.filew.dbuttons.dire {left fill expand} 
+  button .filew.fbuttons.ok -text OK -command {set setfnamedone 1}
+  button .filew.fbuttons.cancel -text Cancel -command {set setfnamedone 2}
+  pack append .filew.fbuttons \
+        .filew.fbuttons.label {left} \
+	.filew.fbuttons.e {left fill expand}  \
+	.filew.fbuttons.ok {left fill expand} \
+	.filew.fbuttons.cancel {left fill expand}
+
+  pack append .filew \
+	.filew.fbuttons {bottom fill} \
+	.filew.dbuttons {bottom fill} \
+	.filew.df {left fill expand} \
+	.filew.f {right fill expand}  
+
+  tkwait variable setfnamedone
+  catch "destroy .filew"
+
+  if {$setfnamedone==1} {
+    if {[string compare $currdir "."]} {
+      set setfname $currdir/$setfname
+    }
+    return $setfname
+  } else {
+    return ""
+  } 
+}
+
+proc DoReplace {} {
+  global handle currpq
+  set fname [SetFileName ""]
+  if {![string compare $fname ""]} {
+    return
+  }
+  SendCommand "replace $handle $fname [StdOptions] -quality %$currpq" 
+} 
+
+proc DoGetLossless {} {
+  global handle lossless
+  SendCommand "replace $handle $lossless [StdOptions] -qclicsame" 
+} 
+
+proc DoSave {} {
+  global handle srcfile
+  set fname [SetFileName [file tail $srcfile].new]
+  if {![string compare $fname ""]} {
+    return
+  }
+  SendCommand "save $handle $fname"
+} 
+
+proc DoPSShow {} {
+  global handle srcfile msgprefix
+  set fname [SetFileName [file tail $srcfile].ps]
+  if {![string compare $fname ""]} {
+    return
+  }
+  set msgprefix "Postscript bytes saved:"
+  SendCommand "psshow $handle $fname -handle"
+} 
+
+proc GetCompressionParams {} {
+  global dordopt rdcoarseness rdthresh ctarget ctargetkind smallfont \
+    ctargetretries ctargetname handle srcfile gcpardone ctargetunit \
+    qclictarget doqclic ctargptol ctargntol
+
+  catch {destroy .cparamw}
+  toplevel .cparamw -bg white
+
+  wm title .cparamw "Tasvir: compression param selection"
+
+  wm geometry .cparamw [getGoodLocation 300 300] 
+  wm minsize .cparamw 10 10
+
+  frame .cparamw.f -bg white
+
+  set ctargetname [file tail $srcfile].new
+  set qclictarget $ctargetname.qclic
+  set doqclic 0
+
+  frame .cparamw.f.fname -bg white
+  label .cparamw.f.fname.lab -text "File name:" -bg white \
+     -font $smallfont
+  entry .cparamw.f.fname.fname -width 30 -textvariable \
+	ctargetname -bg white -font $smallfont
+  button .cparamw.f.fname.sel -text "Select new" -bg white -font $smallfont \
+    -relief raised -command "set ctargetname \[SetFileName $ctargetname\]"
+  pack .cparamw.f.fname.lab .cparamw.f.fname.fname .cparamw.f.fname.sel \
+    -side left -anchor w -ipadx 2 -expand true
+  pack .cparamw.f.fname -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.qclic -bg white
+  frame .cparamw.f.qclic.dodont -bg white
+  radiobutton .cparamw.f.qclic.dodont.dont -variable doqclic -value "0" \
+    -text "No Qclic Info" -font $smallfont -bg white  \
+    -command ".cparamw.f.qclic.qfname.fname configure -state disabled; \
+    .cparamw.f.qclic.qfname.sel configure -state disabled"
+  radiobutton .cparamw.f.qclic.dodont.do -variable doqclic -value "1" \
+    -text "Write Qclic Info" -font $smallfont -bg white  \
+    -command ".cparamw.f.qclic.qfname.fname configure -state normal; \
+    .cparamw.f.qclic.qfname.sel configure -state normal"
+  pack .cparamw.f.qclic.dodont.dont .cparamw.f.qclic.dodont.do \
+    -side left -anchor w -ipadx 2 -ipady 2 -expand true
+  pack .cparamw.f.qclic.dodont -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.qclic.qfname -bg white
+  label .cparamw.f.qclic.qfname.lab -text "Qclic file:" -bg white \
+    -font $smallfont
+  entry .cparamw.f.qclic.qfname.fname -width 30 -textvariable \
+	qclictarget -bg white -font $smallfont -state disabled
+  button .cparamw.f.qclic.qfname.sel -text "Select new" -bg white \
+    -font $smallfont -state disabled \
+    -relief raised -command "set qclictarget \[SetFileName $qclictarget\]"
+  pack .cparamw.f.qclic.qfname.lab .cparamw.f.qclic.qfname.fname \
+    .cparamw.f.qclic.qfname.sel \
+    -side left -anchor w -ipadx 2 -expand true
+  pack .cparamw.f.qclic.qfname 
+  pack .cparamw.f.qclic -anchor w -padx 2 -pady 4
+
+
+  frame .cparamw.f.rdopt -bg white
+  radiobutton .cparamw.f.rdopt.do -variable dordopt -value "-rdopt" \
+    -text "Use RDOPT" -font $smallfont -bg white 
+  radiobutton .cparamw.f.rdopt.dont -variable dordopt -value "-nordopt" \
+    -text "No RDOPT" -font $smallfont -bg white
+  pack .cparamw.f.rdopt.do .cparamw.f.rdopt.dont \
+    -side left -anchor w -ipadx 2 -ipady 2 -expand true
+  pack .cparamw.f.rdopt -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.target -bg white
+
+  frame .cparamw.f.target.kind -bg white
+  radiobutton .cparamw.f.target.kind.size -variable ctargetkind \
+    -value "size" -text "Target: Size" -font $smallfont \
+    -command "set ctargetunit bytes; \
+     set ctargptol 0; set ctargntol 100; set ctarget 30000" -bg white
+  radiobutton .cparamw.f.target.kind.bpp -variable ctargetkind \
+    -value "bpp" -text "Target: Bits per pel" -font $smallfont \
+    -command "set ctargetunit bpp; \
+     set ctargptol 0.005; set ctargntol 0.005; set ctarget 1.0" -bg white
+  radiobutton .cparamw.f.target.kind.psnr -variable ctargetkind \
+    -value "psnr" -text "Target: PSNR" -font $smallfont \
+    -command "set ctargetunit dB; \
+    set ctargptol -1; set ctargntol 0.1; set ctarget 35.0" -bg white
+  pack .cparamw.f.target.kind.size .cparamw.f.target.kind.bpp \
+    .cparamw.f.target.kind.psnr -anchor w -side left -ipady 2 -ipadx 2
+  pack .cparamw.f.target.kind -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.target.val -bg white
+  label .cparamw.f.target.val.lab -text "Target: " \
+    -bg white -font $smallfont
+  entry .cparamw.f.target.val.target -width 10 -textvariable \
+	ctarget -bg white -font $smallfont
+  label .cparamw.f.target.val.unit -textvariable \
+    ctargetunit -bg white -font $smallfont
+  pack .cparamw.f.target.val.lab .cparamw.f.target.val.target \
+    .cparamw.f.target.val.unit -side left -anchor w 
+  pack .cparamw.f.target.val -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.target.tol -bg white
+  label .cparamw.f.target.tol.lab \
+    -text "Tolerance (-ve implies none):" -bg white -font $smallfont
+  label .cparamw.f.target.tol.nlab \
+    -text "Target - " -bg white -font $smallfont
+  entry .cparamw.f.target.tol.neg -width 5 -textvariable \
+	ctargntol -bg white -font $smallfont
+  label .cparamw.f.target.tol.plab \
+    -text "Target + " -bg white -font $smallfont
+  entry .cparamw.f.target.tol.pos -width 5 -textvariable \
+	ctargptol -bg white -font $smallfont
+  pack .cparamw.f.target.tol.lab -anchor w -padx 2 
+  pack .cparamw.f.target.tol.nlab .cparamw.f.target.tol.neg \
+    -side left -anchor w 
+  pack .cparamw.f.target.tol.pos .cparamw.f.target.tol.plab \
+    -side right -anchor e 
+  pack .cparamw.f.target.tol -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.target.retries -bg white
+  label .cparamw.f.target.retries.lab -text "Max attempts to beat lower bound: " \
+    -bg white -font $smallfont
+  scale .cparamw.f.target.retries.r -from 0 -to 100 -resolution 1 -length 4c \
+    -variable ctargetretries -font $smallfont -orient horizontal -bg white
+  pack .cparamw.f.target.retries.lab .cparamw.f.target.retries.r \
+    -anchor w -side left -ipady 2 -ipadx 2
+  pack .cparamw.f.target.retries -anchor w -padx 2 -pady 4
+  
+  pack .cparamw.f.target -anchor w -padx 2 -pady 4
+
+  frame .cparamw.f.finale -bg white
+  button .cparamw.f.finale.cancel -text "Cancel" -font $smallfont -relief raised \
+    -command "set gcpardone -1" -bg white 
+  button .cparamw.f.finale.ok -text "OK" -font $smallfont -relief raised \
+    -command "set gcpardone 1" -bg white 
+
+  set gcpardone 0
+  pack .cparamw.f.finale.cancel -ipadx 2 -side left
+  pack .cparamw.f.finale.ok -ipadx 2 -side right
+  pack .cparamw.f.finale -padx 2 -pady 4
+  
+  pack .cparamw.f
+
+  tkwait variable gcpardone
+  catch "destroy .cparamw"
+  catch "destroy .filew"
+  if {[string match "" $ctargetname] || ($gcpardone != 1)} {
+    return 0
+  } else {
+    return 1
+  }
+}
+
+proc DoCSave {} {
+  global dordopt rdcoarseness rdthresh ctarget ctargetkind \
+    ctargetretries ctargetname handle srcfile msgprefix \
+    doqclic qclictarget ctargptol ctargntol
+  if {[GetCompressionParams]} {
+    set msgprefix "Bytes saved (JPEG and Qclic):"
+    set cmd "csave $handle $ctargetname $dordopt -rdcoarseness $rdcoarseness \
+      -rdthresh $rdthresh -target $ctargetkind $ctarget \
+      -negtol $ctargntol -postol $ctargptol -ntries $ctargetretries"
+    if {$doqclic} {
+      set cmd "$cmd -qclicf $qclictarget"
+    }
+    SendCommand $cmd
+  }
+} 
+
+proc DoCSaveOrig {} {
+  global dordopt rdcoarseness rdthresh ctarget ctargetkind \
+    ctargetretries ctargetname handle srcfile msgprefix \
+    doqclic qclictarget ctargptol ctargntol
+  if {[GetCompressionParams]} {
+    set msgprefix "Bytes saved (JPEG and Qclic):"
+    set cmd "csave $handle $ctargetname $dordopt -original -rdcoarseness $rdcoarseness \
+      -rdthresh $rdthresh -target $ctargetkind $ctarget \
+      -negtol $ctargntol -postol $ctargptol -ntries $ctargetretries"
+    if {$doqclic} {
+      set cmd "$cmd -qclicf $qclictarget"
+    }
+    SendCommand $cmd
+  }
+} 
+
+proc round2 {x} {
+  return [expr (0.0+round($x*100.0))/100.0]
+}
+
+proc startUp {} {
+  global ctrlwidth ctrlheight plotwidth plotheight \
+	 plotxoffleft plotxoffright plotyofftop plotyoffbot \
+	 plotareawidth plotxspan plotareaheight plotyspan \
+	 screenW screenH handle imname srcxwin fixed_colors \
+	 imcomplete imexists colors_used ccube maxc privcolors \
+	 srcfile bytesread sync_chunk read_more_step read_more_pqstep \
+	 bright_step contrast_step Xoff Yoff owidth oheight \
+	 width height nplanes smoothed aspected format dithered \
+	 is_compressed filter viskind visbpp vismaxpixel \
+	 numqpoints is_lossless know_lossless \
+	 qmetric qpoint lastqpoint qspan sspan \
+	 allow_resize lossless currdir setfname setfnamedone \
+	 smallfont widthShadow heightShadow smoothShadow aspectShadow \
+         maxcShadow ccubeShadow privcShadow ditherShadow \
+	 argv argc imbpp currpq \
+	 dordopt rdcoarseness rdthresh ctarget ctargetkind ctargetretries \
+	 ctargetname ctargetunit msgprefix ctargptol ctargntol 
+
+
+
+
+set ctrlwidth 450
+set ctrlheight 380
+set plotwidth 400
+set plotheight 200
+set plotxoffleft 35
+set plotxoffright 20
+set plotyofftop 20
+set plotyoffbot 35
+set plotareawidth [expr $plotwidth - $plotxoffleft]
+set plotxspan [expr $plotareawidth - $plotxoffright]
+set plotareaheight [expr $plotheight - $plotyoffbot]
+set plotyspan [expr $plotareaheight - $plotyofftop]
+
+set screenW [winfo screenwidth .]
+set screenH [winfo screenheight .]
+
+set handle 0
+set imname "unknown"
+set srcxwin 0x0
+set fixed_colors 0
+set imcomplete 1
+set imexists 0 
+set colors_used 0
+set ccube 0
+set maxc 0
+set privcolors 0
+set srcfile "-"
+set bytesread 0
+set sync_chunk -1
+set read_more_step 8192
+set read_more_pqstep 20
+
+set nextarg 0
+
+set handle [lindex $argv $nextarg]; incr nextarg 1
+set imname [lindex $argv $nextarg]; incr nextarg 1 
+set srcfile $imname
+set srcxwin [lindex $argv $nextarg]; incr nextarg 1 
+set Xoff [lindex $argv $nextarg]; incr nextarg 1
+set Yoff [lindex $argv $nextarg]; incr nextarg 1
+
+setOrigin
+
+set owidth [lindex $argv $nextarg]; incr nextarg 1
+set oheight [lindex $argv $nextarg]; incr nextarg 1
+set nplanes [lindex $argv $nextarg]; incr nextarg 1
+set width [lindex $argv $nextarg]; incr nextarg 1
+set height [lindex $argv $nextarg]; incr nextarg 1
+set smoothed [lindex $argv $nextarg]; incr nextarg 1
+set aspected [lindex $argv $nextarg]; incr nextarg 1
+
+set imbpp [lindex $argv $nextarg]; incr nextarg 1
+set bright_step [expr (1 << $imbpp)*4/100]
+set contrast_step 0.1
+
+set format [lindex $argv $nextarg]; incr nextarg 1
+
+set is_compressed [lindex $argv $nextarg]; incr nextarg 1
+
+if {[string match "(*)" $is_compressed]} {
+  set format "$format $is_compressed"
+  set is_compressed [lindex $argv $nextarg]; incr nextarg 1
+}
+
+set filter [lindex $argv $nextarg]; incr nextarg 1
+set dithered [lindex $argv $nextarg]; incr nextarg 1
+set viskind [lindex $argv $nextarg]; incr nextarg 1
+set visbpp [lindex $argv $nextarg]; incr nextarg 1
+set vismaxpixel [lindex $argv $nextarg]; incr nextarg 1
+set fixed_colors [lindex $argv $nextarg]; incr nextarg 1
+
+
+if {!$fixed_colors} {
+  set colors_used [lindex $argv $nextarg]; incr nextarg 1
+  set maxc [lindex $argv $nextarg]; incr nextarg 1
+  set ccube [lindex $argv $nextarg]; incr nextarg 1
+  set privcolors [lindex $argv $nextarg]; incr nextarg 1
+} else {
+  set colors_used $vismaxpixel
+  set maxc $vismaxpixel
+  set ccube 6
+  set privcolors 0
+}
+
+
+set imexists [lindex $argv $nextarg]; incr nextarg 1
+
+set numqpoints 0
+set is_lossless [expr !$is_compressed]
+set know_lossless 0; #examine only if !$is_lossless
+
+
+
+if {$imexists} {
+  set srcfile [lindex $argv $nextarg]; incr nextarg 1
+  set bytesread [lindex $argv $nextarg]; incr nextarg 1
+  set imcomplete [lindex $argv $nextarg]; incr nextarg 1
+  set numqpoints [lindex $argv $nextarg]; incr nextarg 1
+  if {$numqpoints > 0} {
+    set qmetric [lindex $argv $nextarg]; incr nextarg 1
+    for {set i 0} {$i < $numqpoints} {incr i 1} {
+      set qpoint($i,size) [lindex $argv $nextarg]; incr nextarg 1
+      set qpoint($i,qual) [lindex $argv $nextarg]; incr nextarg 1
+    }
+  } 
+  if {$numqpoints <= 1} {
+    set numqpoints 0
+  } else {
+    set lastqpoint [expr $numqpoints - 1]
+    set qspan [expr $qpoint($lastqpoint,qual) - $qpoint(0,qual)]
+    set sspan [expr $qpoint($lastqpoint,size) - $qpoint(0,size)]
+    for {set i 1} {$i < $lastqpoint} {incr i 1} {
+      set qpoint($i,pqual) \
+	[expr ((0.0+$qpoint($i,qual)-$qpoint(0,qual))*100.0)/(0.0+$qspan)]
+    }
+    set qpoint(0,pqual) 0.0
+    set qpoint($lastqpoint,pqual) 100.0
+  }
+  set is_lossless [lindex $argv $nextarg]; incr nextarg 1
+  if {!$is_lossless} {
+    set know_lossless [lindex $argv $nextarg]; incr nextarg 1
+    if {$know_lossless} {
+      set lossless [lindex $argv $nextarg]; incr nextarg 1
+    }
+  } 
+  set allow_resize [lindex $argv $nextarg]; incr nextarg 1
+} 
+
+set currdir [file dirname $srcfile]
+if {[string match "http://*" $currdir]} {
+  set currdir "."
+}
+
+
+
+set setfname ""
+set setfnamedone 0
+
+set msgprefix "Tasvir also said: "
+
+set dordopt "-rdopt"
+set rdcoarseness 10
+set rdthresh 20
+set ctarget 1.0
+set ctargetkind "bpp"
+set ctargetunit "bpp"
+set ctargetretries 50
+set ctargptol "0.005" 
+set ctargntol "0.005" 
+set ctargetname ""
+
+set smallfont "*-times-medium-r-normal--*-120-*-*-*-*-*-*"
+
+wm title . "Tasvir: [file tail $imname]: Controls"
+wm geometry . [getGoodLocation $ctrlwidth $ctrlheight]
+wm minsize . $ctrlwidth $ctrlheight
+wm maxsize . $ctrlwidth $ctrlheight
+
+frame .ctrl -width $ctrlwidth -height $ctrlheight -bg white
+
+frame .ctrl.mbar -relief raised -bd 2
+
+menubutton .ctrl.mbar.file -font $smallfont \
+  -text File -relief raised \
+  -menu .ctrl.mbar.file.menu 
+menu .ctrl.mbar.file.menu
+.ctrl.mbar.file.menu add command -font $smallfont -label "new image" \
+  -command DoReplace
+
+if {$imexists} { 
+  .ctrl.mbar.file.menu add cascade -font $smallfont \
+    -label "save" -menu .ctrl.mbar.file.menu.save
+  
+  menu .ctrl.mbar.file.menu.save
+  .ctrl.mbar.file.menu.save add command -font $smallfont \
+    -label "PNM" -command DoSave
+  .ctrl.mbar.file.menu.save add command -font $smallfont \
+    -label "PostScript" -command DoPSShow
+  .ctrl.mbar.file.menu.save add cascade -font $smallfont \
+    -label "JPEG" -menu .ctrl.mbar.file.menu.save.jpg
+
+  menu .ctrl.mbar.file.menu.save.jpg
+  .ctrl.mbar.file.menu.save.jpg add command -font $smallfont \
+    -label "current image" -command DoCSave
+  .ctrl.mbar.file.menu.save.jpg add command -font $smallfont \
+    -label "original image" -command DoCSaveOrig
+
+  if {$is_compressed} { 
+    if {!$is_lossless && $know_lossless} { 
+      .ctrl.mbar.file.menu add command -font $smallfont \
+        -label "get lossless" -command DoGetLossless
+    }
+  }
+} 
+.ctrl.mbar.file.menu add command -font $smallfont -label "Quit" \
+  -command {SendCommand "free $handle"}
+pack .ctrl.mbar.file -side left
+
+if {!$fixed_colors} {
+  menubutton .ctrl.mbar.remap -font $smallfont -text "Remap" -relief raised \
+    -menu .ctrl.mbar.remap.menu
+  
+  menu .ctrl.mbar.remap.menu
+  .ctrl.mbar.remap.menu add command -font $smallfont -label "Remap" \
+    -command {SendCommand "reshow $handle [StdOptions] -remap"}
+  .ctrl.mbar.remap.menu add command -font $smallfont \
+    -label "Remap with new settings" \
+    -command ChangeStdOptions
+
+  pack .ctrl.mbar.remap -side left
+
+}
+
+
+if {$imexists} {
+  
+  if {$allow_resize} { 
+    button .ctrl.mbar.normal -font $smallfont -text Normal -relief raised \
+      -command {SendCommand "normalize $handle [StdOptions]"}
+    pack .ctrl.mbar.normal -side left
+
+    menubutton .ctrl.mbar.resize -font $smallfont -text Resize -relief raised \
+      -menu .ctrl.mbar.resize.menu 
+    menu .ctrl.mbar.resize.menu
+    .ctrl.mbar.resize.menu add command -font $smallfont -label ">10%" \
+      -command {SendCommand "relocate $handle - - -x1.1 -x1.1 [StdOptions]"}
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "<10%" \
+      -command {SendCommand "relocate $handle - - -x0.9 -x0.9 [StdOptions]"}
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "double" \
+      -command {SendCommand "relocate $handle - - -x2 -x2 [StdOptions]"}
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "halve" \
+      -command {SendCommand "relocate $handle - - -x0.5 -x0.5 [StdOptions]"}
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "original" \
+      -command {SendCommand "relocate $handle - - 0 0 [StdOptions]"}
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "set size" \
+      -command ShowResize
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "crop" \
+      -command ShowCrop
+    .ctrl.mbar.resize.menu add command -font $smallfont -label "set options" \
+      -command ChangeResizeOptions
+    pack .ctrl.mbar.resize -side left
+  }
+
+  button .ctrl.mbar.xv -font $smallfont -text xv -relief raised \
+    -command {SendCommand "xv $handle -quick"}
+  pack .ctrl.mbar.xv -side left
+
+  menubutton .ctrl.mbar.pixels -font $smallfont -text Pixels -relief raised \
+    -menu .ctrl.mbar.pixels.menu
+  menu .ctrl.mbar.pixels.menu
+  .ctrl.mbar.pixels.menu add command -font $smallfont -label ">bright" \
+    -command {DoBright $bright_step}
+  .ctrl.mbar.pixels.menu add command -font $smallfont -label "<bright" \
+    -command {DoBright -$bright_step}
+  .ctrl.mbar.pixels.menu add command -font $smallfont -label ">contrast" \
+    -command {DoContrast [expr 1.0 + $contrast_step]}
+  .ctrl.mbar.pixels.menu add command -font $smallfont -label "<contrast" \
+    -command {DoContrast [expr 1.0 - $contrast_step]}
+  .ctrl.mbar.pixels.menu add command -font $smallfont -label "normal" \
+    -command {SendCommand "pixnormalize $handle [StdOptions]"}
+  .ctrl.mbar.pixels.menu add command -font $smallfont -label "set options" \
+    -command ChangePixelOptions
+  pack .ctrl.mbar.pixels -side left
+}
+
+button .ctrl.mbar.dismiss -font $smallfont -text "Dismiss" -relief raised \
+  -command {SendCommand "noctrl $handle"}
+pack .ctrl.mbar.dismiss -side right
+
+pack .ctrl.mbar -side top -fill x
+
+# image info frame
+frame .ctrl.iminfo -bg white
+set labtext "[file tail $imname]: ${owidth}x${oheight}x${nplanes} $format $imbpp-bit image"
+if {![string match "none" $filter]} {
+  set labtext "$labtext (filter used: $filter)"
+}
+label .ctrl.iminfo.lab -text "$labtext" -bg white -font $smallfont
+pack .ctrl.iminfo.lab -side top -expand true -anchor w -fill x
+set labtext2 "Source: $srcfile"
+label .ctrl.iminfo.lab2 -text "$labtext2" -bg white -font $smallfont
+pack .ctrl.iminfo.lab2 -side top -expand true -anchor w -fill x
+
+pack .ctrl.iminfo -side top
+
+# visual info frame
+frame .ctrl.visinfo -bg white
+set labtext "Visual: $viskind with $visbpp bits-per-pixel"
+if {!$fixed_colors} {
+  set labtext "$labtext. Colors used: "
+  label .ctrl.visinfo.lab -text "$labtext" -bg white -font $smallfont
+  label .ctrl.visinfo.cused -bg white -font $smallfont \
+    -textvariable colors_used
+  pack .ctrl.visinfo.lab .ctrl.visinfo.cused -side left -expand true -anchor w 
+} else {
+  label .ctrl.visinfo.lab -text "$labtext" -bg white -font $smallfont
+  pack .ctrl.visinfo.lab -side left -expand true -anchor w 
+}
+
+pack .ctrl.visinfo.lab -side left -expand true -anchor w 
+
+pack .ctrl.visinfo -side top
+
+
+set widthShadow $width
+set heightShadow $height
+set smoothShadow $smoothed
+set aspectShadow $aspected
+set maxcShadow $maxc
+set ccubeShadow $ccube
+set privcShadow $privcolors
+set ditherShadow $dithered
+
+# image dimensions frame
+frame .ctrl.dimensions -bg white
+frame .ctrl.dimensions.curr -bg white
+label .ctrl.dimensions.curr.first -text "Current dimensions: " -bg white -font $smallfont
+label .ctrl.dimensions.curr.wid -textvariable width -bg white -font $smallfont
+label .ctrl.dimensions.curr.second -text "x" -bg white -font $smallfont
+label .ctrl.dimensions.curr.ht -textvariable height -bg white -font $smallfont
+pack .ctrl.dimensions.curr.first .ctrl.dimensions.curr.wid \
+     .ctrl.dimensions.curr.second .ctrl.dimensions.curr.ht \
+     -side left -anchor w -expand true
+pack .ctrl.dimensions.curr -side top
+
+
+pack .ctrl.dimensions -side top
+
+set currpq 100
+
+if {$imexists} {
+
+  frame .ctrl.qf -bg white
+  frame .ctrl.qsf -bg white
+
+  if {$numqpoints > 0} {
+
+
+    #create qcurve canvas
+    canvas .ctrl.qf.qplot -width $plotwidth -height $plotheight \
+      -background white -bd 2 -relief sunken
+    .ctrl.qf.qplot create text [expr $plotxoffleft + 30] $plotheight \
+      -anchor sw -text "Size (K bytes)" -font $smallfont
+    set sincr [expr 1000*((($sspan/6)+500)/1000)]
+    if {$sincr < 1000} {
+      set sincr [expr 100*((($sspan/6)+50)/100)]
+      if {$sincr < 100} {
+	set sincr 100
+      }
+    }
+    for {set s $sincr} {$s <= $sspan} {incr s $sincr} {
+      if {$s >= $qpoint(0,size)} {
+        set sx [sizeToX $s]
+        .ctrl.qf.qplot create line ${sx} ${plotareaheight} ${sx} [expr $plotareaheight + 10] 
+        .ctrl.qf.qplot create text ${sx} [expr $plotareaheight + 10] \
+          -text [expr (0.0+round((0.0+$s)/100.0))/10.0] -anchor n  -font $smallfont
+      }
+    }
+    .ctrl.qf.qplot create line 0 ${plotareaheight} $plotwidth ${plotareaheight}
+    
+    for {set pq 20} {$pq <= 100} {incr pq 20} {
+      set y [pqualToY $pq]
+      .ctrl.qf.qplot create line [expr $plotxoffleft - 10] $y $plotxoffleft $y
+      .ctrl.qf.qplot create text [expr $plotxoffleft - 10] $y \
+	-text $pq -anchor e -font $smallfont
+    }
+    .ctrl.qf.qplot create line $plotxoffleft 0 $plotxoffleft $plotheight
+    .ctrl.qf.qplot create text [expr $plotxoffleft + 5] $plotyofftop \
+      -text "Quality (percent)" -anchor nw -font $smallfont
+
+    for {set i 1} {$i <= $lastqpoint} {incr i 1} {
+      set j [expr $i - 1]
+      set firstx [sizeToX $qpoint($j,size)]
+      set midx [sizeToX $qpoint($i,size)]
+      .ctrl.qf.qplot create polygon \
+	$firstx [pqualToY $qpoint($j,pqual)] \
+	$midx [pqualToY $qpoint($i,pqual)] \
+	$midx $plotareaheight \
+	$firstx $plotareaheight \
+	-fill white -tags box$i -outline black
+       .ctrl.qf.qplot bind box$i <Enter> \
+ 	[concat .ctrl config -cursor hand2]
+       .ctrl.qf.qplot bind box$i <Leave> \
+ 	[concat .ctrl config -cursor arrow]
+    }
+
+    bind .ctrl.qf.qplot <Button-1> {AddBytes %x %y}
+
+    UpdateQplot
+
+    pack .ctrl.qf.qplot -side top -fill x -anchor center
+
+    frame .ctrl.qsf.qual -bg white -width 50 -bd 2 -relief sunken
+
+    frame .ctrl.qsf.qual.curr -bg white
+    label .ctrl.qsf.qual.curr.lab -text \
+      "Curr qual ($qmetric): " -bg white -font $smallfont
+    label .ctrl.qsf.qual.curr.val -textvariable currpq \
+      -bg white -font $smallfont
+    label .ctrl.qsf.qual.curr.tot -text \
+      "% of [round2 $qpoint(0,qual)]-[round2 $qpoint($lastqpoint,qual)]" \
+      -bg white -font $smallfont
+    pack .ctrl.qsf.qual.curr.lab .ctrl.qsf.qual.curr.val .ctrl.qsf.qual.curr.tot -side left \
+      -anchor w -expand true
+    pack .ctrl.qsf.qual.curr -side top -anchor w
+
+    if {!$imcomplete} {
+      frame .ctrl.qsf.qual.readmore  -bg white -width [expr $ctrlwidth - 10]
+      label .ctrl.qsf.qual.readmore.first -text "Read " -bg white \
+	-font $smallfont
+      entry .ctrl.qsf.qual.readmore.step -width 3 -textvariable \
+	read_more_pqstep -bg white -font $smallfont
+      label .ctrl.qsf.qual.readmore.second -text " % more:" \
+        -bg white -font $smallfont
+      button .ctrl.qsf.qual.readmore.go -command ReadMore -text "Read!" \
+        -bg white -font $smallfont
+      bind .ctrl.qsf.qual.readmore.step <Return> ReadMorePq
+
+      pack .ctrl.qsf.qual.readmore.first .ctrl.qsf.qual.readmore.step \
+        .ctrl.qsf.qual.readmore.second \
+        .ctrl.qsf.qual.readmore.go \
+        -side left -anchor w -expand true
+      pack .ctrl.qsf.qual.readmore -side top -anchor w
+    }
+
+  } else {
+    frame .ctrl.qsf.qual -bg white
+  }
+
+  frame .ctrl.qsf.size -bg white -bd 2 -relief sunken
+
+
+  frame .ctrl.qsf.size.curr -bg white
+  label .ctrl.qsf.size.curr.lab -text "Curr size (bytes): " -bg white -font $smallfont
+  label .ctrl.qsf.size.curr.val -textvariable bytesread -bg white -font $smallfont
+  pack .ctrl.qsf.size.curr.lab .ctrl.qsf.size.curr.val -side left -anchor w 
+  if {$numqpoints > 0} {
+    label .ctrl.qsf.size.curr.tot -text \
+      " (of $qpoint($lastqpoint,size))" -bg white \
+      -font $smallfont
+    pack .ctrl.qsf.size.curr.tot -side left -anchor w
+  } 
+  pack .ctrl.qsf.size.curr -side top
+
+
+  if {!$imcomplete} {
+    frame .ctrl.qsf.size.readmore  -bg white -width [expr $ctrlwidth - 10]
+    label .ctrl.qsf.size.readmore.first -text "Read " -bg white -font $smallfont
+    entry .ctrl.qsf.size.readmore.step -width 6 -textvariable read_more_step -bg white -font $smallfont
+    label .ctrl.qsf.size.readmore.second -text " bytes more:" -bg white -font $smallfont
+    button .ctrl.qsf.size.readmore.go -command ReadMore -text "Read!" -bg white -font $smallfont
+    bind .ctrl.qsf.size.readmore.step <Return> ReadMore
+    pack .ctrl.qsf.size.readmore.first .ctrl.qsf.size.readmore.step .ctrl.qsf.size.readmore.second \
+    .ctrl.qsf.size.readmore.go \
+      -side left -anchor w -expand true
+
+    pack .ctrl.qsf.size.readmore -side top
+  }
+
+  pack .ctrl.qsf.qual .ctrl.qsf.size -side left -fill x
+  
+  pack .ctrl.qf .ctrl.qsf -side top -anchor center
+}
+
+pack .ctrl
+
+pack propagate .ctrl 0
+
+# create a tiny frame that Tasvir will send an X event to,
+# to tell TasvirControl to read a new status line
+
+frame .ctrl.attngrabber -width 1 -height 1 -bg white
+pack .ctrl.attngrabber -fill y
+
+bind .ctrl.attngrabber <Enter> { 
+  if {%E} {
+    GetReply
+  }
+}
+update
+
+puts [winfo id .ctrl.attngrabber]
+flush stdout
+
+}
+
+startUp
+

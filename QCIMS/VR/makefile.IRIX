@@ -1,0 +1,9 @@
+MC=IRIX
+
+XLIBPATH =
+
+XLIBINCLUDE = 
+
+XLIB = -lX11
+
+include makefile.common

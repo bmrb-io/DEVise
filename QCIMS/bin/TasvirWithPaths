@@ -1,0 +1,13 @@
+#!/bin/csh
+
+set oldpath = ( $path )
+
+set newpath = ( $cwd $path )
+
+set path = ( $newpath )
+
+Tasvir $argv[1-]
+
+set path = ( $oldpath )
+
+

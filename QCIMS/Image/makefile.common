@@ -1,0 +1,70 @@
+CC = gcc
+
+BINPATH = ../bin/
+
+JPEGLIBINCLUDE = -I../jpeg
+
+JPEGLIBPATH = -L$(BINPATH)
+
+JPEGLIB = -ljpeg
+
+IMGLIBPATH = -L$(BINPATH)
+
+IMGLIB = -lImg
+
+RDLIBINCLUDE = -I../Rdopt
+
+RDLIB = -lRdopt
+
+RDLIBPATH = -L$(BINPATH)
+
+INCLUDES = $(JPEGLIBINCLUDE) $(RDLIBINCLUDE)
+
+CFLAGS = -D_$(MC) -O -O2 -O3 -Wall $(INCLUDES)  $(AUXSOFT)
+
+SRC = Image.c jdynam.c ImageOps.c DataSrcDest.c Qclic.c \
+      ImagePS.c ImageJpeg.c 
+
+OBJ = Image.o jdynam.o ImageOps.o DataSrcDest.o Qclic.o \
+      ImagePS.o ImageJpeg.o
+
+# library (.a) file creation command
+AR= ar rc
+# second step in .a creation (use "touch" if not needed)
+AR2= ranlib
+
+all:   libImg.a ImIdentify RGBtoY
+	
+
+libImg.a:  $(OBJ) Image.h jdynam.h ImageInternal.h
+	rm -f $(BINPATH)/libImg.a
+	$(AR) $(BINPATH)/libImg.a  $(OBJ)
+	$(AR2) $(BINPATH)/libImg.a
+
+ImIdentify: Image.h ImIdentify.o
+	$(CC) $(CFLAGS) -o $(BINPATH)/ImIdentify ImIdentify.o \
+	  $(IMGLIBPATH) $(IMGLIB) $(JPEGLIBPATH) $(JPEGLIB) \
+	  $(NETLIBPATH) $(NETLIB) -lm
+
+RGBtoY: Image.h RGBtoY.o
+	$(CC) $(CFLAGS) -o $(BINPATH)/RGBtoY RGBtoY.o \
+	  $(IMGLIBPATH) $(IMGLIB) $(JPEGLIBPATH) $(JPEGLIB) \
+	  $(NETLIBPATH) $(NETLIB) -lm
+
+
+clean:
+	rm -f *.o
+
+depend:
+	makedepend $(INCLUDES) $(SRC) 
+
+# DO NOT DELETE
+
+Image.o: Image.h DataSrcDest.h Qclic.h ImageInternal.h
+jdynam.o: ../jpeg/jinclude.h ../jpeg/jconfig.h ../jpeg/jpeglib.h
+jdynam.o: ../jpeg/jmorecfg.h ../jpeg/jerror.h jdynam.h DataSrcDest.h
+ImageOps.o: Image.h DataSrcDest.h Qclic.h ImageInternal.h
+ImageJpeg.o: Image.h DataSrcDest.h Qclic.h ImageInternal.h
+ImagePS.o: Image.h DataSrcDest.h Qclic.h ImageInternal.h
+DataSrcDest.o: DataSrcDest.h
+Qclic.o: Qclic.h DataSrcDest.h

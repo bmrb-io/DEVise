@@ -1,0 +1,50 @@
+
+  Calling sequence
+  ****************
+
+Basic sequence that *must* be followed:
+
+  Image *Im; 
+
+  1. Either malloc or set Im to point to an Image structure.
+
+  2. ImInitImg(Im, size);
+
+  3. ImPeekImg(Im); 
+
+  4. ImReadImg(Im);
+
+  5. ImFreeImg(Im);
+
+* No image routine can be called before ImInitImg, and after
+  ImFreeImg (except for restarting with another ImInitImg).
+
+* ImPrintImgChars can be called any time after ImPeekImg.
+
+* ImSetKind can only be called  before ImPeekImg
+
+* ImSetKindRaw can be only be called  before ImPeekImg
+
+* ImSetSampleBits can be called anytime before ImReadImg. However,
+  the image kind must be IM_RAW (either set by ImSetKind or
+  ImSetKindRaw, or determined by ImPeekImg)
+
+* ImSetImgFile, ImSetImgFd, ImSetImgBytes can be called
+  any number of times between ImInitImg and ImFreeImg.
+
+* ImReadMoreImg can be called any number of times after ImReadImg.
+  Typically, you would reset the image source using
+  ImSetImgFile, ImSetImgFd, ImSetImgBytes, and then call
+  ImReadMoreImg.
+
+* ImSaveImg can be called after ImReadImg
+
+* ImSetImgDim, ImStretchAndShrink, ImBackToNormal, ImChangeCspace
+  can be called after ImReadImg
+
+* ImDiscardOrig can be called after ImPeekImg (by default, the
+  original image will be saved in a temp file on changes).
+
+* ImSetOrigCspace can be called after ImPeekImg but before
+  ImReadImg
+

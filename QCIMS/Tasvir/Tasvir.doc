@@ -1,0 +1,802 @@
+
+
+TASVIR: Transform, Arrange, Scale, and View Incremental Rasters
+
+  Tasvir is a server for displaying images on X, with incremental
+loading capability. Tasvir clients need to make TCP/IP connections
+on TASVIR_PORT for each command. The function "TasvirPatron" 
+illustrates a typical client.
+
+Image formats supported:
+-------------------------
+  PNM (PGM and PPM, both ascii and raw)
+  RAW (headerless)
+  JPEG
+  GIF
+  TIFF
+  Sun Raster
+  FITS
+Tasvir has code to understand the first three, currently, and
+supports incremental loading for these. The others are read
+after a filter (like "giftopnm") to convert them to the PNM format,
+and no incremental loading is supported for them.
+Soon to come: SPIHT wavelet-compression of Said & Pearlman,
+
+
+Server options
+----------------
+-display <display> 
+  The X server to use (default: DISPLAY in the shell environment)
+-visual <visclass>
+  The preferred visual class. <visclass> should be between -1 and
+  5, where 0=StaticGray, 1=GrayScale, 2=StaticColor, 
+  3=PseudocColor, 4=TrueColor, 5=DirectColor. If <visclass> is
+  -1, the default visual for the display is used.
+  The preferred visual class may not be available for the display.
+  The following strategy is used to determine the visual class in
+  that case: If the display depth is <= 8, PseudoColor is the
+  second preference tried, else TrueColor is the second preference
+  tried. If even this fails. All visuals from 5 downto 0 are tried
+  in that order. 
+  Default: -1.
+-port <portnum>
+  Port on which the server will listen for commands.
+  Default: TASVIR_PORT (from Tasvir.h)
+
+
+All commands and return messages should/will have a trailing \n
+character. All commands and return messages should/will be less
+than TASVIR_MAX_STR_LENGTH characters long.
+
+Command summary and reply syntax 
+------------------------------------
+A. Image-specific commands
+   1. show <imf> <xwin> <top_lx> <top_ly> <bot_lx> <bot_ly> [options]
+   2. add <handle> <imf> [options]
+   3. reshow <handle> [options]
+   4. replace <handle> <imf> [options]
+   5. bright <handle> <add_brite> [options]
+   6. contrast <handle> <contr_factor> [options]
+   7. relocate <handle> <top_lx> <top_ly> <bot_lx> <bot_ly> [options]
+   8. query <handle> [options]
+   9. ctrl <handle> [options]
+  10. noctrl <handle> [options]
+  11. save <handle> <file> [options]
+  12. csave <handle> <file> [options]
+  13. normalize <handle> [options]
+  14. pixnormalize <handle> [options] 
+  15. xv <handle> [options]
+  16. free <handle> [options]
+
+  Each of the above image-specific commands returns a '\n'-terminated
+  string. In case of an error, the reply format is:
+    ERROR <error-message>\n
+  When successful, the returned message for all the above commands
+  except "free" is ("free" just returns " OK \n" on success):
+    OK <handle> <clrs> <totclrs> <haveim?> <imdone?> <bytes> \
+       <W> <H> <maxc> <ccube> <ar?> <sm?> <dith?> <priv?> [info]\n
+  <clrs> is the # of colors being used by this image, <totclrs> is the
+  total # of colors being used by Tasvir from the colormap used for
+  this image. <haveim?> is 1 iff the image data is still available for
+  further operations (it will be, unless -noops was set in "show").
+  <imdone?> is 1 iff the image has been fully read. <bytes> is the
+  number of image bytes read so far. <W> and <H> are current width
+  and height, respectively. <maxc> is the # of colors Tasvir
+  requested for this image (and got <clrs>). <ccube> is the last
+  used value of the -ccube option (see standard options below)
+  <ar?> is 1 iff the image has the original aspect-ratio. <sm?> is 
+  1 iff smoothing was done when resizing. <dith?> is 1 iff dithering
+  was used.  <priv?> is 1 iff a private colormap is being used.
+  [info] is some optional extra info.
+
+B. General commands:
+  1. reset [options]
+  2. logfile <logf> [options]
+  3. xbacking?  [options]
+  4. status [options]
+  5. quit [options]
+   
+  Thse commands return "OK [info]\n" or "ERROR <error-message>\n" except
+  "quit", which terminates the server.
+
+------------------------------------------------------------------------
+
+The -noreply option
+---------------------
+All commands take the -noreply option. No reply is sent to the
+client if -noreply is present.
+
+Tasvir standard display options [stdopt]
+-----------------------------------------
+  All these options have a default which is indicated below.
+For a particular image being displayed, the last specified
+value of an option is used. All of these are accepted by all the
+commands that result in an image-display on screen (ie, "show",
+"add", "replace", "brighten", "contrast", "crop", "relocate",
+"reshow", "normalize", "pixnormalize").
+This set is denoted by [stdopt] in the command descriptions to follow.
+
+
+-dither
+-nodither
+  Dictates whether or not Floyd-Steinberg dithering is used in
+  displaying. Default is "-nodither", but it's advisable to
+  always use "-dither" for <=8-bit displays. This option is ignored
+  on 24-bit displays. 
+
+-maxc <M>
+  Use at most <M> colors in displaying the image. This is ignored
+  for StaticGray, StaticColor, and TrueColor visuals.
+  Default: Maximum possible (2^d for d-bit depth display). 
+
+-privcolors
+-noprivcolors
+  Use a private/shared colormap for displaying the image.
+  This is ignored for StaticGray, StaticColor, and TrueColor visuals.
+  Default: -noprivcolors.
+  Bug: doesn't seem possible to switch back to normal colors for
+  a window once a private colormap has been used. 
+
+-ccube <C>
+  This option is meaningful only for RGB images (ie, non-grayscale).
+  Tasvir builds a color-translation table based on the colors used
+  in the image and the available colors. The algorithm used for
+  this (Heckbert's median-cut) uses histograms of color counts and
+  takes a lot of memory/time. The "-ccube" option can be used to
+  vary the goodness/complexity of the median-cut algotrithm and the
+  size of the color translation table. For example, with <C> set to 4, 
+  only the most significant 4 bits each from Red, Green, and Blue are
+  used for building the color-translation table and displaying the 
+  images. <C> can be set (currently) to any integer from 1 to 6.
+  <C>=1 is the fastest and worst, while <C>=6 is the slowest and best. 
+  The actual number of bits used from RxGxB, for each value of <C>, are:
+  1: 2x2x2. 2: 3x3x2. 3: 3x3x3. 4: 4x4x4. 5: 5x5x5. 6: 5x6x5.
+  This option is ignored for TrueColor, StaticGray, and GrayScale
+  visuals. 
+  Default: 4.
+
+-remap
+  With this option set, a new color-translator will be built,
+  even if "-maxc", "-ccube", and "-privcolors/-noprivcolors" options
+  have not changed from the last time the image was shown. This is
+  most useful for the "add" command---as more and more detail about
+  the image becomes known, the old color-translator becomes
+  obsolete. It is also useful when you "show"ed the image but didn't
+  get great colors as some other application was hogging the colormap,
+  and killed the offending app (Netscape!), and would like to
+  re-allocate colors. Of course, for StaticGray and TrueColor visuals,
+  -remap is never needed. For StaticColor, colormapping is only a
+  function of the -ccube option which determines how many bits each of
+  R, G, and B are used. For grayscale images shown on StaticColor 
+  visuals, colormapping is constant. 
+  This option is meaningless (but allowed for completeness)
+  in the "show" command, which is the first time an image is shown
+  and hence always uses a new translator.
+
+
+Tasvir commands: detailed description
+--------------------------------------
+
+A. Image-specific commands
+
+   After the first "show", a displayed image is identified by its
+   unique handle (returned by "show") in subsequent commands. 
+
+1. show <imf> <xwin> <top_l_x> <top_l_y> <bot_r_x> <bot_r_y> [options] 
+
+    This is the basic Tasvir command to show the image <imf> in the
+    X window <xwin> in the specified area.
+
+    * <imf> is the name of a file containing the image data in any of
+        the formats listed at the top.
+      <imf> can be an http URL in which case the image is read off the
+        World Wide Web.
+      <imf> can be "-" in which case the image is read off the client
+        connection itself.
+    * <xwin> is the X window identifier (in hexadecimal, beginning
+        with '0x') for the X window in which the image is to be shown.
+      <xwin> can be 0, in which case the root window of the display
+        will be used.
+    * (<top_l_x>, <top_l_y>), (<bot_r_x>, <bot_r_y>) are the
+        coordinates, respectively, of the top-left and bottom-right
+        corners of the area in which the image is to be displayed.
+      The actual image area might be lesser, as by default, Tasvir
+        maintains the original aspect ratio (width/height) of the image.
+        See option "-noaspect" below for getting the exact area. 
+      It is legal to have the image partially or fully (now why
+        would anyone want that!?) outside the parent <xwin>, with
+        two exceptions: If you set <bot_r_x> or <bot_r_y> to 0, that
+        doesn't mean that the image's bottom-right x or y coordinate
+        should be 0. It means:
+      If <bot_r_x> is given as 0, the original image width is used
+	by Tasvir to calculate the bottom-right x coordinate. If
+	<bot_r_y> is given as 0, the original image height is used to
+	calculate the bottom-right y coordinate.
+      Both <bot_r_x> and <bot_r_y> may be specified in the form
+	0x<scale> where <scale> is a positive real number. In this
+	case, the image will be scaled in the appropriate dimension by
+	<scale>, to calculate the image box. 
+
+    * Options:
+
+      All the standard options in [stdopt]
+
+      -subwin
+	By default, Tasvir creates a subwindow of the given
+	<xwin> and puts the image there. With this option
+	set, Tasvir will use <xwin> directly. In this case,
+	however, Tasvir never grabs *any* X events for the
+	window: <xwin> is entirely the responsibility of the
+	client application. Options that make Tasvir grab X events
+	(-refresh, -xbacking (even tho it doesn't), -control,
+	and -quitonq) are silently ignored. Also, -noresize is
+	automatically turned on: changes in <xwin>'s dimensions
+	will not automatically resize the image. If the client needs
+	images to be refreshed, and the X server does not
+	provide backing, the client must call "reshow" on
+	exposes. 
+	This option is ignored when <xwin> is 0 (for root window). 
+      -refresh
+	When the image gets obscured by some other window,
+	and is later re-exposed, you probably want to refresh
+	the image display. By default, this is not done. With
+	this option set, Tasvir will get Exposure events for the
+	X window where it displays the image (a subwindow of <xwin>)
+	and  redisplay the image. If this is used, then Tasvir will
+	be using up some extra memory to store the ximage,
+        which will be freed with the "free" command.  Most X servers
+	can themselves manage this refreshing: see the next option. 
+	Also see -subwin above.
+      -xbacking
+	If the Xserver supports backing stores, then Tasvir will ask
+	X to do the refreshing if this option is specified. If both
+	-xbacking and -refresh are given, X-backing will be tried first.
+	This too is off by default. Note thus that if you don't use
+	-xbacking *and* don't use -refresh, re-exposed areas of the 
+	image will be blank! The Xlib reference says that using
+	backing stores imposes big penalties on server performance.
+	If this seems to be the case then you'll be better off using
+	-refresh. If you want to get refreshing under any circs 
+	(which should probably be the case!), you can:
+        (a) Use the command "xbacking" which will return OK or ERROR to 
+            find out if X can do backing, and then use -xbacking or
+	    -refresh appropriately, in the "show" commands.  
+        (b) Simply use both -xbacking and -refresh options.  X backing
+	    will be tried first, if that fails, then Tasvir would back
+	    up images. 
+	Also see -subwin above.
+      -aspect
+      -noaspect
+        -aspect tells Tasvir to maintain the original aspect ratio
+	of the image, even for future resizing, until a "relocate"
+	command turns this option off. Any specified height or width
+	may be changed to maintain the original width/height ratio.
+	Tasvir *decreases* either height or width to achieve the
+	aspect ratio. Tasvir is "crop-smart" in doing this: it will
+	map any sequence of crops/resizes to the original image to
+	calculate the aspect-ratio.
+        Default: -aspect
+      -smooth
+      -nosmooth
+        -smooth tells Tasvir to do smoothing when enlarging an image
+        dimension. 
+        Default: -smooth
+      -quitonq
+	If the key 'q' is pressed on the image, the image will be
+	free'd. This too is off by default. If -quitonq is given,
+	Tasvir will grab KeyPress events for the window displaying the
+        image. Also see -subwin above.
+      -raw <W> <H> <n>
+	Indicates to Tasvir that the image data has no headers. 
+        <W> is the width, <H> is the height, and <n> is the number of
+        planes (1 for gray, 3 for RGB images, nothing else allowed).
+	The image data should be organized in row-major order, one
+	byte per pixel. For RGB images (n=3), R values of all pixels
+	should come before G of all, followed by B. 
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax, and, if the image is being sent on the connection too
+	(with "-" as <imf>), reading the image. The reply may not
+	contain the actual image-display information. 
+      -title <name>
+	Identify this image with the name <name>. <name> overrides
+	any other name for the image, such as one picked out of a
+	QCLIC header, or the filename. Image names will be used
+	to uniquely identify images for caching (a soon-to-come
+	feature).
+      -popctrl
+	Pop up the control-window. The control-window will show
+	up after the first image chunk has been displayed (see
+	-showafter).
+      -controls <xevt>
+	Toggle control-window's showing-up on the X event <xevt>.
+	The following are the possible values of <xevt>:
+	buttonpress-<n>
+	buttonrelease-<n>
+	  where <n> is 1, 2, or 3
+	keypress-<k>
+	keyrelease-<k>
+	  where <k> is in 0-9 or a-z or A-Z
+        This is silently ignored on -nosubwin.
+      -noresize
+	By default, Tasvir will grab configure events for the
+	window and resize the image whenever the window is resized
+	(by some X client). -noresize turns this behavior off. Also,
+	auto-resizing is always off when -subwin is used. You can
+        always use the "relocate" command to resize the image.
+      -noops
+	Absolutely no further operations are allowed on images shown
+	with this "show-once-and-throw-away" option. The only 
+	subsequent commands for this image can be "query", "ctrl",
+	"free", and "replace". Also, -refresh is turned off, -noresize
+	is turned on.
+      -bytes <n>
+	Indicates that the image has totally <n> bytes. Either -bytes
+	or -rbytes has to be specified when the image is sent over
+	the connection (ie, <imf> is - ). 
+      -rbytes <n>
+	Read only the first <n> bytes of the image for now. If the image
+	is sent over the connection (with <imf> as - ) then this should
+	be set to the # of bytes you are sending. If you are sending the
+	whole image, -bytes would suffice.
+	Default is to read the whole image, or till EOF. 
+      -quality <q>
+	Most images have the notion of "incremental quality" for Tasvir.
+	This option tells Tasvir to read only as much of the image as
+	to get quality level <q>. The quality metric used can vary:
+	if the image has a Qclic header, the header will contain the
+	metric used and how the quality builds up with image bytes.
+	Otherwise, the number of bytes read will be used as the quality
+	metric. It is possible and indeed recommended that the
+	quality level <q> be specified as a percentage by prefixing it
+	with the % character (eg. -quality %50) which makes the
+	specification metric-independent. This option is ignored for
+	images sent over the connection (ie, when <imf> is - ). 
+	Default is to read the whole image, or till EOF. 
+	If both -quality and -rbytes are given, the one requiring
+	lesser number of bytes will be used to determine how much of
+	the image is to be read.
+      -showafter <S>
+      -sync <s>
+	Display the image as soon as <S> bytes have been read. Then,
+	display more after every <s> bytes. These options make sure
+	that one doesn't have to wait till the whole image has been
+	read for something to appear on the screen. By default,
+	Tasvir calculates some reasonable values for <S> and <s>. If
+	you set either to -1, Tasvir will do this reasonable calculation
+	for it. If you set <S> to 0, Tasvir will wait till all the
+	image bytes to be read have been read (dictated by -quality 
+	and/or -rbytes) before displaying the image. If <S> is not
+	0 but <s> is 0, then no "chunking" will be done for the bytes
+	remaining after <S>.
+	Note that the colors allocated for the image come from the
+	first <S> bytes of info about the image only. It might be
+	a good idea to call "reshow ... -remap ..." after the
+	"show" command, to get better colors.
+
+    * An example of a typical "good" set of options for the show 
+      command would be:
+        show .... -refresh -xbacking -dither -control buttonpress-1 
+		  -quality %50 
+
+2. add <handle> <imf> [options] 
+
+    For images incompletely loaded after the "show" command, the
+    "add" command can be repeatedly used to add image data until
+    the whole image has been read. This would happen if the "-rbytes"
+    or "-quality" option was used in "show", or if the <imf> in
+    "show" didn't have the entire image data. Not all formats can
+    be incrementally loaded: see the list of formats above. 
+
+    * <handle> is the handle returned by "show"
+
+    * <imf> is the image data source. You can specify "." as <imf>,
+      which tells Tasvir to use read more data off the previous
+      source itself. Again, <imf> can be "-" in which case data will
+      be read off the connection itself, and it can be an http URL in
+      which case the image is read off the World Wide Web.
+
+    * Options:
+
+    All the standard options in [stdopt]
+
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax, and, if the image is being sent on the connection too
+	(with "-" as <imf>), reading the image. The reply will
+	contain the last used image-display information. 
+      -rbytes <n>
+	Read the next <n> bytes of the image for now. If the image
+	is sent over the connection (with <imf> as - ) then this should
+	be set to the # of bytes you are sending. 
+	Default is to read the whole image, or till EOF. 
+      -quality <q> 
+	This option tells Tasvir to read only as much of the image as
+	to add quality <q>. Again, <q> can be a percentage like %20.
+	This option is ignored for images sent over the connection
+	(ie, when <imf> is - ). 
+	Default is to read the whole image, or till EOF. 
+	If both -quality and -rbytes are given, the one requiring
+	lesser number of bytes will be used to determine how much of
+	the image is to be read.
+      -sync <s>
+	Display the "added" image after every <s> bytes.  By default,
+	Tasvir calculates some reasonable value for <s>. If
+	you set it to -1, Tasvir will do this reasonable calculation
+	for it. If <s> is 0, then no "chunking" will be done and the
+	image will be displayed only after "adding" has finished. 
+
+3. reshow <handle> [options] 
+
+    Show the image again. Typically done to get better colors, or to
+    refresh the displayed image when Tasvir is not doing it
+    automatically (for instance when "show" used -subwin or when "show"
+    didn't specify -refresh/-xbacking).
+
+    * Options:
+
+    All the standard options in [stdopt]
+
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax. The reply will contain the last used image-display
+	information. 
+
+4. replace <handle> <imf> [options]
+
+    This is like calling "reshow", except that a new image will be
+    shown. The image box size, colormapping, dithering, etc. are
+    retained (some can be overridden by options), but the image data
+    itself is replaced by that in the new source, <imf>. Useful for
+    presenting a movie from a sequence of images. Or for loading a
+    high-resoution version of a previous low-res image. 
+
+    * Options:
+
+    All the standard options in [stdopt]
+
+      -raw <W> <H> <n>
+	Indicates to Tasvir that the image data has no headers. 
+        <W> is the width, <H> is the height, and <n> is the number of
+        planes (1 for gray, 3 for RGB images, nothing else allowed).
+	The image data should be organized in row-major order, one
+	byte per pixel. For RGB images (n=3), R values of all pixels
+	should come before G of all, followed by B. 
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax, and, if the image is being sent on the connection too
+	(with "-" as <imf>), reading the image. The reply may not
+	contain the actual image-display information. 
+      -title <name>
+	Identify this image with the name <name>. <name> overrides
+	any other name for the image, such as one picked out of a
+	QCLIC header, or the filename. Image names will be used
+	to uniquely identify images for caching (a soon-to-come
+	feature).
+      -bytes <n>
+	Indicates that the image has totally <n> bytes. Either -bytes
+	or -rbytes has to be specified when the image is sent over
+	the connection (ie, <imf> is - ). 
+      -rbytes <n>
+	Read only the first <n> bytes of the image for now. If the image
+	is sent over the connection (with <imf> as - ) then this should
+	be set to the # of bytes you are sending. If you are sending the
+	whole image, -bytes would suffice.
+	Default is to read the whole image, or till EOF. 
+      -quality <q>
+	Most images have the notion of "incremental quality" for Tasvir.
+	This option tells Tasvir to read only as much of the image as
+	to get quality level <q>. The quality metric used can vary:
+	if the image has a Qclic header, the header will contain the
+	metric used and how the quality builds up with image bytes.
+	Otherwise, the number of bytes read will be used as the quality
+	metric. It is possible and indeed recommended that the
+	quality level <q> be specified as a percentage by prefixing it
+	with the % character (eg. -quality %50) which makes the
+	specification metric-independent. This option is ignored for
+	images sent over the connection (ie, when <imf> is - ). 
+	Default is to read the whole image, or till EOF. 
+	If both -quality and -rbytes are given, the one requiring
+	lesser number of bytes will be used to determine how much of
+	the image is to be read.
+      -showafter <S>
+      -sync <s>
+	Display the image as soon as <S> bytes have been read. Then,
+	display more after every <s> bytes. These options make sure
+	that one doesn't have to wait till the whole image has been
+	read for something to appear on the screen. By default,
+	Tasvir calculates some reasonable values for <S> and <s>. If
+	you set either to -1, Tasvir will do this reasonable calculation
+	for it. If you set <S> to 0, Tasvir will wait till all the
+	image bytes to be read have been read (dictated by -quality 
+	and/or -rbytes) before displaying the image. If <S> is not
+	0 but <s> is 0, then no "chunking" will be done for the bytes
+	remaining after <S>.
+	Note that the colors allocated for the image come from the
+	first <S> bytes of info about the image only. It might be
+	a good idea to call "reshow ... -remap ..." after the
+	"replace" command, to get better colors.
+      -qclicsame
+	Retain the Qclic information from the previous image.
+	Useful for "replacing" with a different version of the same
+	image (a losslessly compressed image replacing a lossy image,
+	for example).
+
+5. bright <handle> <add_brite> [options]
+
+    Add brightness <add_brite> to image pixels. <add_brite> must be an
+    integer (it can be negative). 
+
+    * Options:
+
+    All the standard options in [stdopt]
+
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax. The reply will contain the last used image-display
+	information. 
+      -plane <p>
+	Add brightness only to plane number <p>. This is used 
+	only for RGB images. <p> can be 0, 1, or 2. -1 (the default)
+	indicates all planes. 
+      -ycc
+	Add brightness in Y-Cb-Cr colorspace rather than RGB. Again,
+	this is ignored for Grayscale images. 
+
+    * A good set of options for "bright" is "bright ... -plane 0 -ycc"
+
+6. contrast <handle> <contr_factor> [options]
+
+    Scale image pixels by <contr_factor>. <contr_factor> must be a
+    positive real number. 
+
+    * Options:
+
+    All the standard options in [stdopt]
+
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax. The reply will contain the last used image-display
+	information. 
+      -plane <p>
+	Change contrast only for plane number <p>. This is used 
+	only for RGB images. <p> can be 0, 1, or 2. -1 (the default)
+	indicates all planes. 
+      -ycc
+	Change contrast in Y-Cb-Cr colorspace rather than RGB. Again,
+	this is ignored for Grayscale images. 
+
+    * A good set of options for "contast" is "contast ... -plane 0 -ycc"
+
+7. relocate <handle> <top_lx> <top_ly> <bot_lx> <bot_ly> [options]
+
+    Change the image position and/or resize image box.
+
+    * (<top_l_x>, <top_l_y>), (<bot_r_x>, <bot_r_y>) are the
+        coordinates, respectively, of the top-left and bottom-right
+        corners of the area in which the image is to be displayed.
+      The actual image area might be lesser if aspect ratio is being
+      maintained. 
+      If <top_l_x> is given as "-", then the current top-left X
+      coordinate of the image is returned. In this case, <bot_r_x>
+      is interpreted as a desired width rather than an absolute
+      coordinate. 
+      If <top_l_y> is given as "-", then the current top-left Y
+      coordinate of the image is returned. In this case, <bot_r_y>
+      is interpreted as a desired height rather than an absolute
+      coordinate. 
+      If <bot_r_x> is given as 0, the original image width is used
+	by Tasvir to calculate the bottom-right x coordinate. If
+	<bot_r_y> is given as 0, the original image height is used to
+	calculate the bottom-right y coordinate.
+      Both <bot_r_x> and <bot_r_y> may be specified in the form
+	0x<scale> where <scale> is a positive real number. In this
+	case, the image will be scaled in the appropriate dimension by
+	<scale>, to calculate the image box. 
+      If <bot_r_x> is given as "-", the current image width is retained
+	and if <bot_r_y> is given as "-", the current image height is
+	retained. 
+      Both <bot_r_x> and <bot_r_y> can also be specified in the form
+	-x<scale> where <scale> is a positive real number. In this case,
+	the current image box size will be scaled in the appropriate
+	dimension by <scale>, to calculate the new image box. 
+
+    * Options:
+
+      All the standard options in [stdopt]
+
+      -quickreturn
+	Tasvir will respond immediately, after checking the command
+        syntax. The reply will contain the last used image-display
+	information. 
+      -aspect
+      -noaspect
+        -aspect tells Tasvir to maintain the original aspect ratio
+	of the image, even for future resizing, until a "relocate"
+	command turns this option off. Any specified height or width
+	may be changed to maintain the original width/height ratio.
+	Tasvir *decreases* either height or width to achieve the
+	aspect ratio. Tasvir is "crop-smart" in doing this: it will
+	map any sequence of crops/resizes to the original image to
+	calculate the aspect-ratio.
+        Default: last specified value (either in "show" or "relocate")
+      -smooth
+      -nosmooth
+        -smooth tells Tasvir to do smoothing when enlarging an image
+        dimension. 
+        Default: last specified value (either in "show" or "relocate")
+
+8. query <handle> [options] 
+
+    Gets the latest information about the image
+
+    * Options:
+
+      none except the "-noreply" thingy that every command has. 
+
+9. ctrl <handle> [options] 
+
+    Pops up the control-window for the image.
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
+10. noctrl <handle> [options]
+
+    Hides the control-window for the image.
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
+11. save <handle> <file> [options]
+
+    Save the current image as a PNM file into <file>.
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
+12. csave <handle> <file> [options]
+
+    Compresses the current image. Only JPEG compression
+    supported currently. Writes the compressed image into <file>.
+    Can generate qclic info too (see options). 
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+      -original
+	Use original rather than current image. 
+      -qtables <qtabfile>
+	Read quantization table(s) (and possible thresholding tables)
+	from file <qtabfile>. <qtabfile> can be a regular file, or an
+	http source, or "-" in which case the qtables should be sent
+	on the connection itself. See "-scans" too.
+      -scans <scanfile> 
+        Read a progressive scan script
+      -target <kind> <target>
+	Compress to target <target>. <kind> can be "size" or "psnr"
+	or "bpp". Tasvir will try to compress as close to <target>
+	as possible, based on the next few options. If this option
+	is not used, and "-qtables" is not given too, Tasvir will pick
+	a reasonable target itself. All the following options make 
+	sense only when "-target" is used. 
+      -rdopt
+      -nordopt
+	If a target is specified, and "-qtables" is not used,
+	Tasvir will run RDOPT to figure out a quantization table.
+	This default RDOPTing can be turned off with "-nordopt"
+      -negtolerance <ntol>
+	Try to achieve target greater than <target> - <ntol>. This
+	is not guaranteed to happen. Tasvir uses a technique called
+	"scan refinement" to try and achieve this lower bound. Upto
+	<ntries> refinements will be tried (see "-ntries").
+	Negative value indicates no upper bound is desired. Default
+	is a Tasvir-picked reasonable value that depends on <kind>. 
+      -postolerance <ptol>
+	Achieve target less than <target> + <ptol>. This is guaranteed,
+	except for ridiculously low targets (technically, targets for
+	which even the lowest quality DC scan is worse than the target).
+	Negative value indicates no upper bound is desired. Default
+	is 0 for <kind>= "size" or "bpp", and -1 (no bound) for kind
+	= "psnr". 
+      -ntries <ntries>
+	Don't try any more than <ntries> scan refinements. Default
+	is 100. 
+
+13. normalize <handle> [options]
+
+    Restore the image to its original dimensions and pixel values.
+
+    * Options:
+      
+      All the options in [stdopt] 
+
+      -quickreturn
+	Return immediately.
+
+14. pixnormalize <handle> [options] 
+
+    Restore the image pixels to their original values. This is useful
+    to undo "bright" and "contrast". 
+
+    * Options:
+      
+      All the options in [stdopt] 
+
+      -quickreturn
+	Return immediately.
+
+15. xv <handle> [options]
+
+    Invoke "xv" on the current image. A new "xv" process is forked off.
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
+16. free <handle> [options] 
+
+    Free the image and all associated memory. 
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
+B. General commands:
+
+1. reset [options]
+   
+    Free all the images being shown. 
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
+2. logfile <logf> [options]
+
+   Change Tasvir log file to <logf>. Can be done only when no images
+   are being shown.
+   
+   * Options:
+
+     none except the no-good option -noreply
+
+3. xbacking?  [options]
+
+   Returns OK if the X display being used provides backing stores,
+   ERROR otherwise.
+
+   * Options:
+
+     none except the no-good option -noreply
+
+4. status [options]
+
+   Returns "OK <num_ims> Images, <num_cms> Colormaps, port: <port_num>,
+	    visual: <vis_class>, depth: <depth>\n"
+
+   * Options:
+
+     none except the no-good option -noreply
+
+5. quit [options]
+
+   Terminates Tasvir. 
+
+   * Options:
+
+     none except the no-good option -noreply
+
+
+
+-----------------------------------------------------------------------

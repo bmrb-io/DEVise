@@ -1,0 +1,5 @@
+MC=RS6000
+
+AUXSOFT = -DHAVE_JPEGLIB -DHAVE_DJPEG -DHAVE_IJG_EXTENSIONS 
+
+include makefile.common

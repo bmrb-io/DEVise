@@ -1,0 +1,11 @@
+#ifndef TASVIR_H
+#define TASVIR_H
+
+#define TASVIR_MAX_STR_LENGTH 400
+#define DALI_MAX_STR_LENGTH TASVIR_MAX_STR_LENGTH
+
+#define TASVIR_PORT 6600
+#define DALI_PORT TASVIR_PORT
+
+#endif
+

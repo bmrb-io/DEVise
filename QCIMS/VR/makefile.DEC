@@ -1,0 +1,9 @@
+MC=DEC
+
+XLIBPATH = -L/s/X11/lib
+
+XLIBINCLUDE = -I/s/X11/include
+
+XLIB = -lX11
+
+include makefile.common

@@ -1,0 +1,83 @@
+
+CC = gcc
+
+BINPATH = ../bin
+
+JPEGLIBINCLUDE = -I../jpeg
+
+JPEGLIBPATH = -L$(BINPATH)
+
+JPEGLIB = -ljpeg
+
+RDLIBPATH = -L$(BINPATH)
+
+RDLIB = -lRdopt
+
+IMGLIBPATH = -L$(BINPATH)
+
+IMGLIBINCLUDE = -I../Image
+
+IMGLIB = -lImg
+
+INCLUDES = $(JPEGLIBINCLUDE) $(IMGLIBINCLUDE)
+
+CFLAGS = -D_$(MC) -O -O2 -O3 -Wall $(INCLUDES)  $(AUXSOFT)
+
+SRC = RDOPT_Controls.c RDOPT_DP_FillTables.c RDOPT_DP_Optimize.c \
+      RDOPT_DP_QTab.c RDOPT_Histogram.c RDOPT_Lagr_FillTables.c \
+      RDOPT_Lagr_QTab.c RDOPT_QTabMap.c RDOPT_Utils.c ImCjpeg.c
+
+OBJ = RDOPT_Controls.o RDOPT_DP_FillTables.o RDOPT_DP_Optimize.o \
+      RDOPT_DP_QTab.o RDOPT_Histogram.o RDOPT_Lagr_FillTables.o \
+      RDOPT_Lagr_QTab.o RDOPT_QTabMap.o RDOPT_Utils.o
+
+# library (.a) file creation command
+AR= ar rc
+# second step in .a creation (use "touch" if not needed)
+AR2= ranlib
+
+all:   libRdopt.a ImRdopt ImCjpeg
+
+libRdopt.a:  $(OBJ) RDOPT.h RDOPT_Internal.h RDOPT_Operators.h
+	rm -f $(BINPATH)/libRdopt.a
+	$(AR) $(BINPATH)/libRdopt.a  $(OBJ)
+	$(AR2) $(BINPATH)/libRdopt.a
+
+ImRdopt: RDOPT_Rdopt.o
+	$(CC) $(CFLAGS) -o $(BINPATH)/ImRdopt RDOPT_Rdopt.o \
+	  $(IMGLIBPATH) $(IMGLIB) $(JPEGLIBPATH) $(JPEGLIB) \
+	  $(NETLIBPATH) $(NETLIB) $(RDLIBPATH) $(RDLIB) -lm
+
+ImCjpeg: ImCjpeg.o 
+	$(CC) $(CFLAGS) -o $(BINPATH)/ImCjpeg ImCjpeg.o \
+	  $(IMGLIBPATH) $(IMGLIB) $(JPEGLIBPATH) $(JPEGLIB) \
+	  $(NETLIBPATH) $(NETLIB) $(RDLIBPATH) $(RDLIB) -lm
+
+
+clean:
+	rm -f *.o
+
+depend:
+	makedepend $(INCLUDES) $(SRC)
+
+# DO NOT DELETE
+
+RDOPT_Controls.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_Controls.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_DP_FillTables.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_DP_FillTables.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_DP_Optimize.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_DP_Optimize.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_DP_QTab.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_DP_QTab.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_Histogram.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_Histogram.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_Lagr_FillTables.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_Lagr_FillTables.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_Lagr_QTab.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_Lagr_QTab.o: ../Image/Qclic.h RDOPT_Internal.h RDOPT_Operators.h
+RDOPT_QTabMap.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h
+RDOPT_QTabMap.o: ../Image/Qclic.h
+RDOPT_Utils.o: RDOPT.h ../Image/Image.h ../Image/DataSrcDest.h ../Image/Qclic.h
+RDOPT_Utils.o: RDOPT_Internal.h RDOPT_Operators.h
+ImCjpeg.o: ../Image/Image.h ../Image/DataSrcDest.h ../Image/Qclic.h RDOPT.h

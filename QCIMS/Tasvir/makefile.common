@@ -1,0 +1,86 @@
+CC = gcc
+
+BINPATH = ../bin
+
+IMGLIBINCLUDE = -I../Image
+
+IMGLIBPATH = -L$(BINPATH)
+
+IMGLIB = -lImg
+
+JPEGLIBPATH = -L$(BINPATH)
+
+JPEGLIBINCLUDE = -I../jpeg
+
+JPEGLIB = -ljpeg
+
+VRLIBINCLUDE = -I../VR
+
+VRLIBPATH = -L$(BINPATH)
+
+VRLIB = -lVR
+
+RDLIBINCLUDE = -I../Rdopt
+
+RDLIB = -lRdopt
+
+RDLIBPATH = -L$(BINPATH)
+
+INCLUDES = $(JPEGLIBINCLUDE) $(XLIBINCLUDE) $(IMGLIBINCLUDE) \
+	   $(VRLIBINCLUDE) $(RDLIBINCLUDE)
+
+CFLAGS = -D_$(MC) -O -O2 -O3 $(INCLUDES) $(AUXSOFT)
+
+SRC = Tasvir.c TasvirPatron.c TasvirPatronMain.c TasvirPatronSend.c
+
+
+all:	Tasvir TasvirLocal TasvirPatron TasvirPatronSend
+	
+
+
+Tasvir:	TasvirServer.o 
+	$(CC) $(CFLAGS) -DTASVIR_SERVER TasvirServer.o \
+	-o $(BINPATH)/Tasvir \
+	$(VRLIBPATH) $(VRLIB) \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) $(RDLIBPATH) $(RDLIB) \
+	$(XLIBPATH) $(XLIB) $(NETLIBPATH) $(NETLIB) -lm
+
+TasvirServer.o: Tasvir.c
+	$(CC) $(CFLAGS) -DTASVIR_SERVER -o TasvirServer.o -c Tasvir.c
+
+TasvirLocal:	TasvirLocal.o 
+	$(CC) $(CFLAGS) TasvirLocal.o \
+	-o $(BINPATH)/TasvirLocal \
+	$(VRLIBPATH) $(VRLIB) \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) $(RDLIBPATH) $(RDLIB) \
+	$(XLIBPATH) $(XLIB) $(NETLIBPATH) $(NETLIB) -lm
+
+TasvirLocal.o: Tasvir.c
+	$(CC) $(CFLAGS) -o TasvirLocal.o -c Tasvir.c
+
+TasvirPatron: TasvirPatron.o TasvirPatronMain.o ../Image/DataSrcDest.o
+	$(CC) $(CFLAGS)  TasvirPatron.o TasvirPatronMain.o ../Image/DataSrcDest.o \
+	-o $(BINPATH)/TasvirPatron  $(NETLIBPATH) $(NETLIB)
+
+TasvirPatronSend: TasvirPatron.o TasvirPatronSend.o
+	$(CC) $(CFLAGS)  TasvirPatron.o TasvirPatronSend.o \
+	-o $(BINPATH)/TasvirPatronSend  $(NETLIBPATH) $(NETLIB)
+
+
+clean:
+	rm -f *.o
+
+depend:
+	makedepend $(INCLUDES) $(SRC)
+
+# DO NOT DELETE
+
+TasvirServer.o: ../VR/VR.h ../Image/Image.h ../Image/DataSrcDest.h ../Image/Qclic.h
+TasvirServer.o: Tasvir.h ../Rdopt/RDOPT.h
+TasvirLocal.o: ../VR/VR.h ../Image/Image.h ../Image/DataSrcDest.h ../Image/Qclic.h
+TasvirLocal.o: Tasvir.h ../Rdopt/RDOPT.h
+TasvirPatron.o: TasvirPatron.h Tasvir.h ../Image/DataSrcDest.h
+TasvirPatronMain.o: TasvirPatron.h Tasvir.h
+TasvirPatronSend.o: TasvirPatron.h Tasvir.h

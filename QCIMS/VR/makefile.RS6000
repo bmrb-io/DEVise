@@ -1,0 +1,9 @@
+MC=RS6000
+
+XLIBPATH =
+
+XLIBINCLUDE = 
+
+XLIB = -lX11
+
+include makefile.common

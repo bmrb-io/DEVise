@@ -1,0 +1,3 @@
+MC=RS6000
+
+include makefile.common

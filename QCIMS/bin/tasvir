@@ -1,0 +1,4 @@
+#!/bin/csh -f
+
+TasvirLocal "$1" 0 20 20 0 0 -refresh -xbacking -control buttonpress-1 -popctrl -quitonq -qual %40 -dither $argv[2-] 
+

@@ -1,0 +1,69 @@
+Platforms supported:
+---------------------
+Solaris on Pentium
+Solaris on Sun Sparc
+AIX on RS6000
+LINUX on Pentium
+
+Send me mail if you need binaries for any other unix platform.. 
+
+There are two tools here, ImCjpeg and ImRdopt. Both can
+do optimized, RD-OPT-based JPEG compression. Which one to
+use depends upon what you are trying to do.
+
+1. If you want to study the effects of various amounts of
+   compression on an image, and/or want to compress an image
+   several times with different settings, use ImRdopt.
+2. If you want to compress a given image once, perhaps with
+   precise rate-control or quality-control, use ImCjpeg.
+
+With ImCjpeg, you can get very precise rate-control if you
+want, at the cost of going a little farther off optimality.
+Of course, even with  ImCjpeg, you can get the full RD-OPT 
+optimality, if you choose not to do precise rate-control
+(ie, set -negt and -post to -1..read ImCjpeg.doc). Here is
+how you could compress an image, lena.pgm, to 40000 bytes, as
+closely as possible without going over: 
+
+ImCjpeg -rdcoarse 2 -rdthresh 30 -outfile lena.jpg -target size 40000 \
+   -negtolerance 0 -postolerance 0 -ntries 1000 lena.pgm
+This results in 39928 bytes, with PSNR 40.0 dB, on my machine. 
+
+If you want precise rate-control *and* want to remain as close
+to the optimal as given by RD-OPT, use ImRdopt, and from the
+command interface, compress until you meet the target exactly,
+using a little searching. For example, here is how you could
+compress lena.pgm to exactly 40000 bytes using ImRdopt: 
+
+% ImRdopt -coarse 2 -thresh 30 lena.pgm
+Command> cfile lena.jpg
+Command> compress size 40000
+Predicted 39990 bytes (1.220385 bpp), 40.386387 dB PSNR (2.439051 rmse).
+Saved 39761 bytes (1.213409 bpp).
+Command> compress size 40200
+Predicted 40199 bytes (1.226782 bpp), 40.419674 dB PSNR (2.429721 rmse).
+Saved 40045 bytes (1.222076 bpp).
+Command> compress size 40175
+Predicted 40158 bytes (1.225519 bpp), 40.413147 dB PSNR (2.431548 rmse).
+Saved 39972 bytes (1.219849 bpp).
+Command> compress size 40191
+Predicted 40199 bytes (1.226782 bpp), 40.419674 dB PSNR (2.429721 rmse).
+Saved 40045 bytes (1.222076 bpp).
+Command> compress size 40190
+Predicted 40158 bytes (1.225519 bpp), 40.413147 dB PSNR (2.431548 rmse).
+Saved 39972 bytes (1.219849 bpp).
+Command> quit
+
+Thus, this gave 39972 bytes, with a PSNR of 40.4 dB.
+You should write a little script to automatically do the above
+"search". 
+
+Read ImCjpeg.doc and ImRdopt.doc for detailed descriptions.
+
+Comments/Suggestions/bugs:
+Send mail to ratnakar@cs.wisc.edu
+
+Viresh Ratnakar
+Dept of Computer Sciences
+UW-Madison
+

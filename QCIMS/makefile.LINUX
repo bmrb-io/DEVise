@@ -1,0 +1,3 @@
+MC=LINUX
+
+include makefile.common
