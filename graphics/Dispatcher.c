@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/29 21:39:59  wenger
+  Fixed various compile errors and warnings.
+
   Revision 1.21  1996/07/23 19:33:52  beyer
   Changed dispatcher so that pipes are not longer used for callback
   requests from other parts of the code.
@@ -107,12 +110,12 @@
 #include <sys/select.h>
 #endif
 
+#include "machdep.h"
 #include "Dispatcher.h"
 #include "Control.h"
 #include "Init.h"
 #include "Selection.h"
 #include "Time.h"
-#include "machdep.h"
 
 //#define DEBUG
 
