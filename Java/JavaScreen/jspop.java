@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2001/01/30 03:04:46  xuk
+// Add collabration function onCollab().
+//
 // Revision 1.35  2001/01/27 00:11:15  wenger
 // Minor improvements to diagnostic output.
 //
@@ -1250,13 +1253,20 @@ public class jspop implements Runnable
     {
 	// find the proper client;
 	DEViseClient client = findClientById(id);
-			
-	if (client != null) {
-	    client.setCollabSocket(socket);
-	    client.collabInit = 1;
-	} else {
+	
+	try {			
+       	    if (client != null) {
+		client.setCollabSocket(socket);
+		client.collabInit = 1;
+	    } else {
+		pn("No client for ID: " + id);
+		socket.sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
+		socket.closeSocket();
+	    }
+	} catch (YException e) {
+	    socket.closeSocket();
 	    pn("No client for ID: " + id);
-	}
+        }
     }
 
 }
