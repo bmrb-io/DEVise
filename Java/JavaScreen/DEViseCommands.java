@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2001/04/20 21:05:11  wenger
+// Changed 3D version of JAVAC_ShowRecords to use the previously-defined
+// JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
+// but doesn't actually return records yet; updated JavaScreen version;
+// updated command documentation and protocol version.
+//
 // Revision 1.11  2001/04/01 03:51:18  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 //
@@ -173,6 +179,7 @@ public final class DEViseCommands
     public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
 
     public static final String SET_3D_CONFIG = JS_PREFIX + "Set3DConfig";
+    public static final String DISABLE_COLLAB = JS_PREFIX + "DisableCollab";
 
     // -------------------------------------------------------------------
     // JSS commands.
