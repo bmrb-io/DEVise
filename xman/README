@@ -1,0 +1,44 @@
+#----------------------------------------------------------------------
+# 
+# README file for Experiment Management (XMan)
+#
+# Hao Wang 
+# University of Wisconsin - Madison
+# May 14, 2000 
+#
+# $Id$
+#----------------------------------------------------------------------
+
+This is the structure layout for Experiment Management (XMan)
+   
+      README        -- This file
+      Makefile      -- master makefile
+      Makerules     -- used to compile packages
+      src/xman/
+              xnav      -- XNavigator
+              xvis      -- XDevise
+              shared    -- XMan Shared resources
+              importers -- XMan importers
+              xmanGUI   -- XMan GUI related
+              xmanMain  -- Xman Main program
+      bin/
+         run    -- shell script that starts devise component and front end
+         images -- used by XDevise component
+      classes/  -- all the compiled code (same layout as src/xman)
+	      xman/xnav
+              xman/xvis
+              xman/shared
+              xman/importers
+              xman/xmanGUI
+              xman/xmanMain
+      doc       -- all current/future java documentations
+      html      -- all current/future html files
+
+IMPORTANT NOTES:
+
+1. DO NOT add anything from classes directory. This directory is used for
+   compile only.  
+2. All the source code should go to src/xman/your_directory where 
+   your_directory is the subpackage you are working on
+3. All the documentations should go to the doc directory.
+4. bin directory is where you can start the program
