@@ -4,6 +4,28 @@ struct SolDnCompiled_GData {
 };
 
 # 1 "/p/devise/parser/proto/RectXShape_proto.h"
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
 
 
@@ -50,7 +72,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 60 "/p/devise/parser/proto/RectXShape_proto.h"
+# 82 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
@@ -210,6 +232,28 @@ struct RainCompiled_GData {
 };
 
 # 1 "/p/devise/parser/proto/BarShape_proto.h"
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
 
 
@@ -388,6 +432,28 @@ struct TempCompiled_GData {
 };
 
 # 1 "/p/devise/parser/proto/RectXShape_proto.h"
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
 
 
@@ -434,7 +500,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 60 "/p/devise/parser/proto/RectXShape_proto.h"
+# 82 "/p/devise/parser/proto/RectXShape_proto.h"
 
   }
 
