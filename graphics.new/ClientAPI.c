@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/02/19 23:25:10  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.15  1998/02/12 17:16:09  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -86,6 +94,9 @@
 #include <signal.h>
 
 #include "ClientAPI.h"
+#include "Util.h"
+
+//#define DEBUG
 
 int NetworkNonBlockMode(int fd)
 {
@@ -272,14 +283,14 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
   NetworkAnalyseHeader((char*)&hdr,numElements, tsize);
 
 #ifdef DEBUG
-  //printf("Got flag %u, numElements = %u, size = %u\n",flag,numElements,tsize);
+  printf("Got flag %u, numElements = %u, size = %u\n",flag,numElements,tsize);
 #endif
 
   if (!recBuff || tsize >= recBuffSize) {
     delete recBuff;
     recBuffSize = tsize + 1;
 #ifdef DEBUG
-    //printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
+    printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
 #endif
     recBuff = new char [recBuffSize];
     if (!recBuff) {
@@ -363,7 +374,7 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
     }
 
 #ifdef DEBUG
-    //printf("Element %d is \"%s\"\n", i, ptr);
+    printf("Element %d is \"%s\"\n", i, ptr);
 #endif
     // Note: casting 'const char *' to 'char *' here to get rid of compiler
     // complaint; that's not really the right thing to do, but I don't want
@@ -374,7 +385,7 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
   }
 
 #ifdef DEBUG
-  //printf("Parsed complete message\n\n");
+  printf("Parsed complete message\n\n");
 #endif
 
   return 1;
@@ -382,6 +393,13 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
 
 int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 {
+#if defined(DEBUG)
+  printf("NetworkSend(%d, %d, %d, ", fd, flag, bracket);
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+  fflush(stdout);
+#endif
+
   int msgsize;
   char *recBuffer = 0;
 
@@ -450,17 +468,18 @@ int NetworkPrepareMsg(u_short flag,
   for(i = 0; i < argc; i++) {
     // must send terminating NULL too
     u_short size = strlen(argv[i]) + 1;
-    if (bracket)
+    if (bracket) {
       size += 2;
+    }
 #ifdef DEBUG
     printf("Sending size of element %d: %u\n", i, size);
 #endif
-    size = htons(size);
-    memcpy(buff, &size, sizeof size);
-    buff += sizeof size;
-    size = ntohs(size);
-    if (bracket)
+    u_short nsize = htons(size);
+    memcpy(buff, &nsize, sizeof nsize);
+    buff += sizeof nsize;
+    if (bracket) {
       size -= 2;
+    }
 
     if (bracket) {
 #ifdef DEBUG
@@ -482,8 +501,17 @@ int NetworkPrepareMsg(u_short flag,
   }
 
   assert(buff - recBuff == msgsize);
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Sending message: flag %u, nelem %u, size %u\n", flag, argc, tsize);
+  printf("  buffer = <");
+  for (int count = 0; count < msgsize; count++) {
+    if (isprint(recBuff[count])) {
+      printf("%c", recBuff[count]);
+    } else {
+      printf("0x%x", recBuff[count]);
+    }
+  }
+  printf(">\n");
 #endif
 
   *recBufferp = recBuff;

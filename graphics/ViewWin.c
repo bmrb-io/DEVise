@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/05/14 18:21:11  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.44  1998/05/05 15:14:52  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -300,6 +304,17 @@ ViewWin::~ViewWin(void)
 //******************************************************************************
 // Getters and Setters
 //******************************************************************************
+
+Boolean
+ViewWin::GetGifDirty()
+{
+  WindowRep *winRep = GetWindowRep();
+  if (winRep != NULL) {
+	return winRep->GetGifDirty();
+  } else {
+	return false;
+  }
+}
 
 void	ViewWin::SetBackground(PColorID bgid)
 {

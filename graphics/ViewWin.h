@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/05/14 18:21:12  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.27  1998/02/04 20:22:04  zhenhai
   Fixed bugs of displaying date and customized text at axis.
 
@@ -214,6 +218,10 @@ class ViewWin : public Coloring
 		{ return _winReps.GetWindowRep(); }
 		const WindowRep*	GetWindowRep(void) const
 		{ return _winReps.GetWindowRep(); }
+
+		// GetGifDirty() returns true iff the window's image has been
+		// changed since the last time it was dumped as a gif.
+		Boolean GetGifDirty();
 
 		virtual void		SetBackground(PColorID bgid);
 		

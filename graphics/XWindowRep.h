@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/05/14 18:21:18  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.54  1998/04/16 21:51:00  wenger
   Committed Sanjay's text code.
 
@@ -562,6 +566,8 @@ class XWindowRep : public WindowRep
 	/* Tk window size changed -- update size of this window */
 	virtual void TkWindowSizeChanged();
 #endif
+
+    virtual void SetGifDirty(Boolean dirty);
 
 protected:
 

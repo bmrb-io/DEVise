@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.164  1998/04/16 21:51:53  wenger
+#	Committed Sanjay's text code.
+#
 #	Revision 1.163  1998/03/27 15:09:15  wenger
 #	Added dumping of logical session description, added GUI for dumping
 #	logical or physical description; cleaned up some of the command code
@@ -987,6 +990,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
+#.mbar.session.menu add command -label "Test" -command { DEVise test }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 

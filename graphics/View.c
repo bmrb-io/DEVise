@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.135  1998/05/06 22:04:43  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.134  1998/05/05 15:14:49  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -1352,6 +1356,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 void View::DrawLabel()
 {
 	WindowRep*	win = GetWindowRep();
+	win->SetGifDirty(true);
 	
   win->PushTop();
   win->MakeIdentity();
@@ -1762,6 +1767,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   _hasLastFilter = false;
 
   WindowRep *win = GetWindowRep();
+  win->SetGifDirty(true);
 
   /* if view is on top of a pile, it has to wake the other views
      up and ask them to refresh; the bottom views might not have
@@ -1893,6 +1899,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
     if (_winReps.GetWindowRep()) {
       DrawLabel();
       _winReps.GetWindowRep()->Flush();
+      _winReps.GetWindowRep()->SetGifDirty(true);
     }
   } else {
     _updateTransform = true;
@@ -2005,6 +2012,7 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
     printf("data: x:%d, y:%d, w:%d, h:%d\n", dataX, dataY, dataW, dataH);
 #endif
 
+	winRep->SetGifDirty(true);
     winRep->ScrollAbsolute(oxl, oyl, overlapWidth, overlapHeight,
 			oxl-fxl+lxl, oyl-fyl+lyl);
     
@@ -2228,6 +2236,7 @@ void View::Highlight(Boolean flag)
 
   WindowRep *winRep = GetWindowRep();
   if (!winRep) {
+//TEMP -- do we want to set the GifDirty flag here???
     /* View is unmapped but is still selected, and we're told by the
        client to unhighlight the view. This may occur when a window
        is destroyed by the window manager and all views are unmapped,
@@ -2250,6 +2259,7 @@ void View::DrawHighlight()
     return;
 
   WindowRep *winRep = GetWindowRep();
+//TEMP -- do we want to set the GifDirty flag here???
 
   int x,y;
   unsigned int w,h;
@@ -2313,6 +2323,7 @@ Boolean View::DrawCursors()
   int index;
 
   WindowRep *winRep = GetWindowRep();
+//TEMP -- do we want to set the GifDirty flag here???
 
   if (!Mapped()) {
 #if defined(DEBUG)
@@ -2355,6 +2366,7 @@ Boolean View::HideCursors()
 #endif
   int index;
   WindowRep *winRep = GetWindowRep();
+//TEMP -- do we want to set the GifDirty flag here???
 
   if (!Mapped()) {
 #if defined(DEBUG)
@@ -2395,6 +2407,7 @@ void View::DoDrawCursors()
     return;
 
   WindowRep *winRep = GetWindowRep();
+//TEMP -- do we want to set the GifDirty flag here???
   winRep->SetPattern(Pattern0);
   winRep->SetLineWidth(0);
   winRep->SetXorMode();
@@ -2575,6 +2588,7 @@ void View::SavePixmaps(FILE *file)
     /* save current pixmap */
     saved = 1;
     WindowRep *winRep = GetWindowRep();
+	winRep->SetGifDirty(true);
     pixmap = winRep->GetPixmap();
     if (!pixmap) {
       saved = 0;
@@ -3011,6 +3025,7 @@ void View::Draw3DAxis()
 #endif
 
   WindowRep*	win = GetWindowRep();
+  win->SetGifDirty(true);
 
   win->SetForeground(GetForeground());
   Map3D::DrawRefAxis(win, _filter.camera);
@@ -3356,6 +3371,8 @@ void	View::Run(void)
 
 	if (_pileMode)
 		winRep = GetFirstSibling()->GetWindowRep();
+
+	winRep->SetGifDirty(true);
 
 	Geometry(scrnX, scrnY, sW, sH);
 
@@ -3735,6 +3752,7 @@ void	View::Run2(void)
 
 		winRep->PushTop();
 		winRep->MakeIdentity();			// Set up identity transformation
+		winRep->SetGifDirty(true);
 		DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);	// Draw axes
 	
 		if (viewBorder)					// Draw view border

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/05/14 18:21:43  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.4  1998/05/08 17:16:23  taodb
   Added stripping functions for "{}"
 
@@ -82,6 +86,7 @@ JavaScreenCmd::GetSessionList()
 		"/p/devise/session/JFK2.ds",
 		"/p/devise/session/demo/colors.ds",
 		"/p/devise/session/test/js_test.ds",// no spaces in names
+		"/p/devise/session/test/js_test2.ds",// no spaces in names
 		"dummy_session"
 	};
 
@@ -809,7 +814,7 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 	// hand, if we do add braces, the JavaScreen sometimes seems to get
 	// mixed up and not know when it has finished reading stuff from the
 	// server.
-	_control->ReturnVal(API_JAVACMD, argc, nargv, false);
+	_control->ReturnVal(API_JAVACMD, argc, nargv, false/*TEMP*/);
 	delete []nargv;
 }
 

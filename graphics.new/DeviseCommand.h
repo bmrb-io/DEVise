@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/13 13:36:38  wenger
+  Fixed some dynamic memory errors in the csgroup code; cleaned up
+  DeviseCommand class somewhat -- simplified the calling of Run()
+  functions in subclasses.
+
   Revision 1.5  1998/05/02 09:00:42  taodb
   Added support for JAVA Screen and command logging
 
@@ -1277,4 +1282,11 @@ DECLARE_CLASS_END
 //
 DECLARE_CLASS_DeviseCommand_(playLog) 
 DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(test) 
+DECLARE_CLASS_END
+
 #endif // _DeviseCommand_h_

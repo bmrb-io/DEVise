@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/05/05 15:14:54  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.29  1998/02/26 00:19:06  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -157,7 +162,7 @@
 Boolean WindowRep::_destroyPending = false;
 
 //******************************************************************************
-// Constructore and Destructors
+// Constructor and Destructors
 //******************************************************************************
 
 WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
@@ -170,6 +175,7 @@ WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
   _current3 = 0;
   _clipCurrent = -1;
   _pattern = p;
+  _gifDirty = false;
 }
 
 WindowRep::~WindowRep(void)
@@ -384,6 +390,16 @@ WindowRep::CopyState(WindowRep *winRepP)
   SetDimensions(width, height);
 
   return;
+}
+
+void
+WindowRep::SetGifDirty(Boolean dirty)
+{
+#if defined(DEBUG)
+  printf("WindowRep(0x%p)::SetGifDirty(%d)\n", this, dirty);
+#endif
+
+  _gifDirty = dirty;
 }
 
 //******************************************************************************

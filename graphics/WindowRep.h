@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  1998/05/14 18:21:14  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.71  1998/05/04 17:49:02  wenger
   Fixed error in declaration of ETk_MoveResizeWindow.
 
@@ -1008,6 +1012,11 @@ public:
   /* Free pixmap from memory */
   virtual void FreePixmap(DevisePixmap *pixmap) = 0;  
 
+  // GifDirty means that the WindowRep's image has been changed since
+  // the last time it was dumped as a GIF.
+  Boolean GetGifDirty() { return _gifDirty; }
+  virtual void SetGifDirty(Boolean dirty);
+
 protected:
 
   /* called by derived class to cache current clip region */
@@ -1097,6 +1106,8 @@ protected:
   static Boolean _destroyPending; /* true if window destroy is pending */
 
   int _numDim;
+
+  Boolean _gifDirty; // true iff image changed since last GIF dump
 };
 
 //******************************************************************************

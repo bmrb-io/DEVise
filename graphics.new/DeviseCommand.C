@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/05/13 13:36:35  wenger
+  Fixed some dynamic memory errors in the csgroup code; cleaned up
+  DeviseCommand class somewhat -- simplified the calling of Run()
+  functions in subclasses.
+
   Revision 1.12  1998/05/05 15:15:14  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -4315,3 +4320,25 @@ IMPLEMENT_COMMAND_BEGIN(playLog)
 		return -1;
 	}
 IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(test)
+// Note: modify this code to do whatever you need to test.
+    if (argc == 1) {
+		int index = DevWindow::InitIterator();
+		while (DevWindow::More(index)) {
+			ClassInfo *info = DevWindow::Next(index);
+			ViewWin *win = (ViewWin *)info->GetInstance();
+			if (win != NULL) {
+			    printf("Window: %s; gif dirty: %d\n", win->GetName(),
+			      win->GetGifDirty());
+			}
+		}
+		DevWindow::DoneIterator(index);
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+/*============================================================================*/

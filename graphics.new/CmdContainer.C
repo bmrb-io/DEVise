@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/05/14 18:21:41  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.8  1998/05/02 09:00:38  taodb
   Added support for JAVA Screen and command logging
 
@@ -307,6 +311,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setViewGDS)
 	REGISTER_COMMAND(viewSetHome)
 	REGISTER_COMMAND(playLog)
+	REGISTER_COMMAND(test)
 }
 
 CmdContainer::~CmdContainer()

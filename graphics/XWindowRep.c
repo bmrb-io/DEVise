@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.110  1998/05/14 18:21:17  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.109  1998/04/16 21:50:57  wenger
   Committed Sanjay's text code.
 
@@ -1700,6 +1704,10 @@ Window XWindowRep::FindTopWindow(Window win)
 
 void XWindowRep::ExportGIF(FILE *fp, int isView)
 {
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::ExportGIF()\n", this);
+#endif
+
   if (_win) {
     Window win;
 /* Don't do FindTopWindow so we don't print the window manager border.
@@ -1721,6 +1729,7 @@ void XWindowRep::ExportGIF(FILE *fp, int isView)
     }
     XRaiseWindow(_display, win);
     GetDisplay()->ConvertAndWriteGIF(win, xwa, fp);
+    SetGifDirty(false);
     return;
   }
 
@@ -4291,6 +4300,22 @@ void XWindowRep::CalculateLocation(int &symbolX, int &symbolY, int width,
   default:
     DOASSERT(false, "Illegal alignment value");
     break;
+  }
+}
+
+void
+XWindowRep::SetGifDirty(Boolean dirty)
+{
+#if defined(DEBUG)
+  printf("XWindowRep(0x%p)::SetGifDirty(%d)\n", this, dirty);
+#endif
+
+  WindowRep::SetGifDirty(dirty);
+
+  if (dirty) {
+    if (_parent) {
+      _parent->SetGifDirty(true);
+    }
   }
 }
 
