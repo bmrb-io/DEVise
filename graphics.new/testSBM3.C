@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/12/03 20:30:46  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,11 +35,6 @@ int main(int argc, char **argv)
                 argv[0]);
         exit(1);
     }
-
-    // destroy all shared memory segments
-
-    Semaphore::destroyAll();
-    SharedMemory::destroyAll();
 
     // create space for 16 virtual semaphores
 
@@ -106,6 +104,8 @@ int main(int argc, char **argv)
             len / 1048576.0 / secs);
 
     task.Terminate();
+
+    delete memMgr;
 
     return 0;
 }
