@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/09/23 15:46:38  wenger
+  Added per-session data source capability:  data sources defined in a
+  session file are added to a separate catalog which is delete when the
+  session is closed; the "regular" and the per-session catalog are treated
+  as a single catalog while the session is open.
+
   Revision 1.5  1999/09/07 19:01:14  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -379,6 +385,9 @@ DataCatalog::ListCatalog(const char *catName)
   const int catBufSize = MAXPATHLEN;
   char catBuf[catBufSize];
   char *catFile = FindCatFile(catName, catBuf, catBufSize);
+  if (!catFile) {
+    return list;
+  }
 
   //
   // Find the size of the catalog file so we have a guess as to how big
@@ -616,6 +625,11 @@ DataCatalog::DeleteEntry(const char *entryName)
   char catBuf[catBufSize];
   if (result == 0) {
     catFile = FindCatFile(dirName, catBuf, catBufSize);
+    if (!catFile) {
+      free(dirName);
+      result = -1;
+      return result;
+    }
 
     struct stat catStat;
     if (stat(catFile, &catStat) != 0) {
@@ -728,7 +742,7 @@ DataCatalog::DeleteEntry(const char *entryName)
   }
 
   delete [] outBuf;
-  delete [] dirName;
+  free(dirName);
 
   return result;
 }
