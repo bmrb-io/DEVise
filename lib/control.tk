@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.193  1999/05/17 18:38:07  wenger
+#	Views now have GData sending configuration that is only employed when
+#	connecting to the JavaScreen (eliminates the need for the current kludgey
+#	setup to send GData to the JS).
+#	
 #	Revision 1.192  1999/05/14 21:00:01  wenger
 #	DEVise GUI now "remembers" the most recent session directory.
 #	
@@ -1082,37 +1087,37 @@ pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
 
 # SESSION MENU.
 menu .mbar.session.menu -tearoff 0
-.mbar.session.menu add command -label "Open" -command {DoOpen 0}
+.mbar.session.menu add command -label "Open..." -command {DoOpen 0}
 .mbar.session.menu add command -label "Save" -command DoSave
-.mbar.session.menu add command -label "Save as" -command {DoSaveAs 0 0 0 0}
+.mbar.session.menu add command -label "Save as..." -command {DoSaveAs 0 0 0 0}
 .mbar.session.menu add command -label "Close" -command DoClose
 .mbar.session.menu add command -label "Refresh" -command DoRefresh
 .mbar.session.menu add command -label "Update Filters" -command {DEVise updateFilters}
-.mbar.session.menu add command -label "Open, Update, and Save" -command {DoUpdate}
+.mbar.session.menu add command -label "Open, Update, and Save..." -command {DoUpdate}
 # <<< Changes for saving sessions as batch scripts only...
 #TEMP.mbar.session.menu add separator
-#TEMP.mbar.session.menu add command -label "Open as Template" -command {DoOpen 1}
-#TEMP.mbar.session.menu add command -label "Save as Template" \
+#TEMP.mbar.session.menu add command -label "Open as Template..." -command {DoOpen 1}
+#TEMP.mbar.session.menu add command -label "Save as Template..." \
 #TEMP	-command {DoSaveAs 1 0 0 0}
 #TEMP.mbar.session.menu add separator
 
 #TEMP.mbar.session.menu add cascade -label "Export Template" \
 #TEMP	-menu .mbar.session.menu.exportMenu
 #TEMPmenu .mbar.session.menu.exportMenu -tearoff 0
-#TEMP.mbar.session.menu.exportMenu add command -label "Without Data" \
+#TEMP.mbar.session.menu.exportMenu add command -label "Without Data..." \
 #TEMP	-command {DoSaveAs 0 1 0 0}
-#TEMP.mbar.session.menu.exportMenu add command -label "With Data" \
+#TEMP.mbar.session.menu.exportMenu add command -label "With Data..." \
 #TEMP	-command {DoSaveAs 0 1 1 0}
 #TEMP.mbar.session.menu add command -label "Merge Template" \
 #TEMP	-command {DoTemplateMerge}
 
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Delete Session" \
+.mbar.session.menu add command -label "Delete Session..." \
 	-command {DoDelete}
 
 #TEMP -- session descriptions don't work with batch scripts
 #TEMP.mbar.session.menu add separator
-#TEMP.mbar.session.menu add command -label "Session Description" \
+#TEMP.mbar.session.menu add command -label "Session Description..." \
 #TEMP	-command {ViewDescription}
 # ... >>>
 
@@ -1125,38 +1130,38 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add cascade -label "Print" \
 	-menu .mbar.session.menu.printMenu
 menu .mbar.session.menu.printMenu -tearoff 0
-.mbar.session.menu.printMenu add command -label "Without Map" \
+.mbar.session.menu.printMenu add command -label "Without Map..." \
 	-command PrintView
-.mbar.session.menu.printMenu add command -label "With Map" \
+.mbar.session.menu.printMenu add command -label "With Map..." \
 	-command PrintWithMap
 
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Load String Space" \
+.mbar.session.menu add command -label "Load String Space..." \
 	-command { LoadStringSpace }
-.mbar.session.menu add command -label "Get String Count" \
+.mbar.session.menu add command -label "Get String Count..." \
 	-command { GetStringCount }
-.mbar.session.menu add command -label "Save String Space" \
+.mbar.session.menu add command -label "Save String Space..." \
 	-command { SaveStringSpace }
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Show Link/Cursor Info" \
+.mbar.session.menu add command -label "Show Link/Cursor Info..." \
 	-command { ShowLinkCursorInfo }
-.mbar.session.menu add command -label "Dump Link/Cursor Info" \
+.mbar.session.menu add command -label "Dump Link/Cursor Info..." \
 	-command { DumpLinksCursors }
 .mbar.session.menu add cascade -label "Save Session Description" \
 	-menu .mbar.session.menu.descMenu
 menu .mbar.session.menu.descMenu -tearoff 0
-.mbar.session.menu.descMenu add command -label "Logical" \
+.mbar.session.menu.descMenu add command -label "Logical..." \
 	-command { SaveSessionDesc 0 }
-.mbar.session.menu.descMenu add command -label "Physical" \
+.mbar.session.menu.descMenu add command -label "Physical..." \
 	-command { SaveSessionDesc 1 }
-.mbar.session.menu.descMenu add command -label "Range/MQL" \
+.mbar.session.menu.descMenu add command -label "Range/MQL..." \
 	-command { SaveRangeDesc }
 
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
-#.mbar.session.menu add separator
-#.mbar.session.menu add command -label "Test" -command { DEVise test }
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Test" -command { DEVise test }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
@@ -1185,12 +1190,12 @@ proc displayTable {table} {
     MacroDefAuto $table [GetSchema $table]
 }
 
-.mbar.tdata.menu add command -label "Display" -command {
+.mbar.tdata.menu add command -label "Display..." -command {
 	set table [selectStream]
 	displayTable $table
 }
 
-.mbar.tdata.menu add command -label "Display Active" -command { MacroImport 1 0 }
+.mbar.tdata.menu add command -label "Display Active..." -command { MacroImport 1 0 }
 
 
 .mbar.tdata.menu add separator
@@ -1198,7 +1203,7 @@ proc displayTable {table} {
 .mbar.tdata.menu add cascade -label "New" \
 	-menu .mbar.tdata.menu.import 
 
-.mbar.tdata.menu add command -label "Edit" -command {
+.mbar.tdata.menu add command -label "Edit..." -command {
 	
 	# boolean var
 	global displayImmediately
@@ -1270,7 +1275,7 @@ if {0} {
 }
 }
 
-.mbar.tdata.menu add command -label "Delete" -command {
+.mbar.tdata.menu add command -label "Delete..." -command {
 	set table [selectStream "Select table(s) to delete"]
      foreach d $table {
          set but [dialog .confirm "Confirm Stream Deletion" \
@@ -1288,7 +1293,7 @@ if {0} {
 
 .mbar.tdata.menu add separator
 
-.mbar.tdata.menu add command -label "Materialize" -command {
+.mbar.tdata.menu add command -label "Materialize..." -command {
 	set table [selectStream]
      foreach d $table {
 		statusWindow .info "Status" \
@@ -1311,7 +1316,7 @@ if {0} {
 	-menu .mbar.tdata.menu.indexMenu 
 
 menu .mbar.tdata.menu.indexMenu -tearoff 0
-.mbar.tdata.menu.indexMenu add command -label New -command {
+.mbar.tdata.menu.indexMenu add command -label "New..." -command {
 
      global indexName
      global keyAttrs
@@ -1367,7 +1372,7 @@ proc getSelectedIndex {} {
 	return $table_index_pair
 }
 
-.mbar.tdata.menu.indexMenu add command -label Browse -command {
+.mbar.tdata.menu.indexMenu add command -label "Browse..." -command {
 	set table_index_pair [getSelectedIndex]
 	if {$table_index_pair == ""} {
 		return
@@ -1391,7 +1396,7 @@ proc getSelectedIndex {} {
 	indexUpdate $attrs
 }
 
-.mbar.tdata.menu.indexMenu add command -label Delete -command {
+.mbar.tdata.menu.indexMenu add command -label "Delete..." -command {
 	set table_index_pair [getSelectedIndex]
 	if {$table_index_pair == ""} {
 		return
@@ -1407,12 +1412,12 @@ proc getSelectedIndex {} {
 	-menu .mbar.tdata.menu.filterMenu 
 
 menu .mbar.tdata.menu.filterMenu -tearoff 0
-.mbar.tdata.menu.filterMenu add command -label New -command {
+.mbar.tdata.menu.filterMenu add command -label "New..." -command {
 	newViewFile
 	return
 }
 
-.mbar.tdata.menu.filterMenu add command -label Edit -command {
+.mbar.tdata.menu.filterMenu add command -label "Edit..." -command {
 	global filterdir fsBox
 	global viewName select as where
 	set fsBox(path) $filterdir
@@ -1432,7 +1437,7 @@ menu .mbar.tdata.menu.filterMenu -tearoff 0
 	}
 }
 
-.mbar.tdata.menu.filterMenu add command -label Delete -command {
+.mbar.tdata.menu.filterMenu add command -label "Delete..." -command {
 	global filterdir fsBox
 	set fsBox(path) $filterdir
 	set fsBox(pattern) *
@@ -1454,12 +1459,12 @@ menu .mbar.tdata.menu.filterMenu -tearoff 0
 
 .mbar.tdata.menu add separator
 
-.mbar.tdata.menu add command -label "Check Data Sources" \
+.mbar.tdata.menu add command -label "Check Data Sources..." \
 	-command { CheckDataSources }
 
 menu .mbar.tdata.menu.import -tearoff 0
 foreach sourcetype [lsort [array names sourceTypes]] {
-	.mbar.tdata.menu.import add command -label $sourcetype \
+	.mbar.tdata.menu.import add command -label "$sourcetype..." \
 		-command 	[list defineANY $sourcetype]
 }
 		
@@ -1496,13 +1501,13 @@ menu .mbar.tdata.menu.mappingMenu -tearoff 0
 # GDATA MENU.
 menu .mbar.gdata.menu -tearoff 0
 
-.mbar.gdata.menu add command -label "Edit Mapping" -command DoEditMapping
-.mbar.gdata.menu add command -label "Count Mapping" -command EditCountMapping
-.mbar.gdata.menu add command -label "Duplicate Elimination" \
+.mbar.gdata.menu add command -label "Edit Mapping..." -command DoEditMapping
+.mbar.gdata.menu add command -label "Count Mapping..." -command EditCountMapping
+.mbar.gdata.menu add command -label "Duplicate Elimination..." \
         -command EditDupElim
-.mbar.gdata.menu add command -label "Copy/Edit" -command DoViewCopy
-.mbar.gdata.menu add command -label "Switch TData" -command DoSwitchTData
-.mbar.gdata.menu add command -label "Flush TData" -command DoFlushTData
+.mbar.gdata.menu add command -label "Copy/Edit..." -command DoViewCopy
+.mbar.gdata.menu add command -label "Switch TData..." -command DoSwitchTData
+.mbar.gdata.menu add command -label "Flush TData..." -command DoFlushTData
 
 # VIEW MENU.
 menu .mbar.view.menu -tearoff 0
@@ -1515,7 +1520,7 @@ menu .mbar.view.menu -tearoff 0
     -menu .mbar.view.menu.niceaxismenu
 
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Title" -command DoSetTitle
+.mbar.view.menu add command -label "Title..." -command DoSetTitle
 .mbar.view.menu add command -label "Toggle View Names" -command ToggleViewNames
 .mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
 .mbar.view.menu add cascade -label "Date Formats" \
@@ -1526,27 +1531,27 @@ menu .mbar.view.menu -tearoff 0
 	-menu .mbar.view.menu.linkMenu 
 
 menu .mbar.view.menu.linkMenu -tearoff 0
-.mbar.view.menu.linkMenu add command -label "Create Link" \
+.mbar.view.menu.linkMenu add command -label "Create Link..." \
 	-command { CreateAndLinkLink }
 .mbar.view.menu.linkMenu add separator
-.mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
-.mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
+.mbar.view.menu.linkMenu add command -label "Link..." -command DoViewLink
+.mbar.view.menu.linkMenu add command -label "Unlink..." -command DoViewUnlink
 .mbar.view.menu.linkMenu add separator
-.mbar.view.menu.linkMenu add command -label "Set Leader" \
+.mbar.view.menu.linkMenu add command -label "Set Leader..." \
 	-command { DoSetLinkMaster }
-.mbar.view.menu.linkMenu add command -label "Reset Leader" \
+.mbar.view.menu.linkMenu add command -label "Reset Leader..." \
 	-command { DoResetLinkMaster}
-.mbar.view.menu.linkMenu add command -label "Set Record Link Type" \
+.mbar.view.menu.linkMenu add command -label "Set Record Link Type..." \
 	-command { DoSetLinkType }
-.mbar.view.menu.linkMenu add command -label "Set TData Attr Link Attribute" \
+.mbar.view.menu.linkMenu add command -label "Set TData Attr Link Attribute..." \
 	-command { DoSetLinkAttr }
 # this line is probably a mistake??? DD
 #	-command { DoResetLinkMaster }
 .mbar.view.menu.linkMenu add separator
-.mbar.view.menu.linkMenu add command -label "Link Info" \
+.mbar.view.menu.linkMenu add command -label "Link Info..." \
 	-command { DoDisplayLinkInfo }
 .mbar.view.menu.linkMenu add separator
-.mbar.view.menu.linkMenu add command -label "Destroy Link" \
+.mbar.view.menu.linkMenu add command -label "Destroy Link..." \
 	-command { DoLinkDestroy }
 
 #.mbar.view.menu add separator
@@ -1557,20 +1562,20 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 
 
 menu .mbar.view.menu.cursorMenu -tearoff 0
-.mbar.view.menu.cursorMenu add command -label "Create" -command DoCursorCreate
-.mbar.view.menu.cursorMenu add command -label "Delete" -command DoCursorDelete
+.mbar.view.menu.cursorMenu add command -label "Create..." -command DoCursorCreate
+.mbar.view.menu.cursorMenu add command -label "Delete..." -command DoCursorDelete
 .mbar.view.menu.cursorMenu add separator
-.mbar.view.menu.cursorMenu add command -label "Set Source" \
+.mbar.view.menu.cursorMenu add command -label "Set Source..." \
 	-command DoSetCursorSrc
-.mbar.view.menu.cursorMenu add command -label "Set Destination" \
+.mbar.view.menu.cursorMenu add command -label "Set Destination..." \
 	-command DoSetCursorDst
 .mbar.view.menu.cursorMenu add separator
-.mbar.view.menu.cursorMenu add command -label "Set Grid" \
+.mbar.view.menu.cursorMenu add command -label "Set Grid..." \
 	-command DoSetCursorGrid
-.mbar.view.menu.cursorMenu add command -label "Set Fixed Size" \
+.mbar.view.menu.cursorMenu add command -label "Set Fixed Size..." \
         -command EditFixedCursor
 #.mbar.view.menu.cursorMenu add separator
-#.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
+#.mbar.view.menu.cursorMenu add command -label "Set Record Cursor..." \
 #	-command DoSetRecordCursor
 
 .mbar.view.menu add separator
@@ -1583,21 +1588,21 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add cascade -label "Keypad Config"  \
     -menu .mbar.view.menu.configmenu
-.mbar.view.menu add command -label "3D Query" -command Do3DQuery
+.mbar.view.menu add command -label "3D Query..." -command Do3DQuery
 .mbar.view.menu add command -label "Save GData..." -command SaveGData
 .mbar.view.menu add command -label "JavaScreen GData..." -command EditJSGData
 
 menu .mbar.view.menu.statMenu -tearoff 0
 
-.mbar.view.menu.statMenu add command -label "Basic Stat" \
+.mbar.view.menu.statMenu add command -label "Basic Stat..." \
 	-command { DoBasicStat
 		   Update2DBasicStatWindow }
-# .mbar.view.menu.statMenu add command -label "Group By" -command DoGroupByStat
-.mbar.view.menu.statMenu add command -label "Histogram" -command DoHistStat
+# .mbar.view.menu.statMenu add command -label "Group By..." -command DoGroupByStat
+.mbar.view.menu.statMenu add command -label "Histogram..." -command DoHistStat
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Symbol Alignment" -command EditSymbolAlignment
-.mbar.view.menu add command -label "Assign String Tables" -command EditStringTables 
-.mbar.view.menu add command -label "Auto Filter Update" -command EditAutoFilter
+.mbar.view.menu add command -label "Symbol Alignment..." -command EditSymbolAlignment
+.mbar.view.menu add command -label "Assign String Tables..." -command EditStringTables 
+.mbar.view.menu add command -label "Auto Filter Update..." -command EditAutoFilter
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView
@@ -1640,16 +1645,14 @@ menu .mbar.view.menu.kmenu -tearoff 1
 	-command {ShowKGraph}
 
 menu .mbar.view.menu.fontsmenu -tearoff false
-.mbar.view.menu.fontsmenu add command -label "Title" \
+.mbar.view.menu.fontsmenu add command -label "Title..." \
     -command { GetFont "title" }
-.mbar.view.menu.fontsmenu add command -label "X Axis" \
+.mbar.view.menu.fontsmenu add command -label "X Axis..." \
     -command { GetFont "x axis" }
-.mbar.view.menu.fontsmenu add  command -label "Y Axis"\
+.mbar.view.menu.fontsmenu add  command -label "Y Axis..."\
     -command { GetFont "y axis" }
-.mbar.view.menu.fontsmenu add  command -label "Data"\
+.mbar.view.menu.fontsmenu add  command -label "Data..."\
     -command { GetFont "data" }
-# TEMPTEMP? use this to bring up mapping window
-#.mbar.view.menu.fontsmenu add  command -label "Data Labels"
 
 menu .mbar.view.menu.niceaxismenu -tearoff false
 .mbar.view.menu.niceaxismenu add command -label "X Axis" \
@@ -1662,9 +1665,9 @@ menu .mbar.view.menu.niceaxismenu -tearoff false
     -command EditNiceAxes
 
 menu .mbar.view.menu.dateformatmenu -tearoff false
-.mbar.view.menu.dateformatmenu add command -label "X Axis" \
+.mbar.view.menu.dateformatmenu add command -label "X Axis..." \
     -command { EditDateFormat X }
-.mbar.view.menu.dateformatmenu add command -label "Y Axis" \
+.mbar.view.menu.dateformatmenu add command -label "Y Axis..." \
     -command { EditDateFormat Y }
 
 menu .mbar.view.menu.dimmenu -tearoff 0
@@ -1674,11 +1677,11 @@ menu .mbar.view.menu.dimmenu -tearoff 0
 	-command { DoSetViewDimensions 3 }
 
 menu .mbar.view.menu.configmenu -tearoff false
-.mbar.view.menu.configmenu add command -label "Home" \
+.mbar.view.menu.configmenu add command -label "Home..." \
     -command { GetViewHome }
-.mbar.view.menu.configmenu add command -label "Horiz. Scroll" \
+.mbar.view.menu.configmenu add command -label "Horiz. Scroll..." \
     -command { GetViewHorPan }
-.mbar.view.menu.configmenu add command -label "Vert. Scroll" \
+.mbar.view.menu.configmenu add command -label "Vert. Scroll..." \
     -command { GetViewVerPan }
 
 # WINDOW MENU.
@@ -1691,15 +1694,15 @@ menu .mbar.window.menu -tearoff 0
 # We probably should add these functions to the window menu eventually,
 # but I don't want to deal with them right now.  RKW 2/7/97.
 #.mbar.window.menu add separator
-#.mbar.window.menu add command -label "Title"
+#.mbar.window.menu add command -label "Title..."
 
 .mbar.window.menu add separator
 .mbar.window.menu add cascade -label "Fonts" -menu .mbar.window.menu.fontsmenu
 
 .mbar.window.menu add separator
-.mbar.window.menu add command -label "New" \
+.mbar.window.menu add command -label "New..." \
     -command { set tmp [DoCreateWindow "Select window type"]; unset tmp }
-.mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
+.mbar.window.menu add command -label "Layout..." -command { SetWindowLayout "" }
 #.mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
 #.mbar.window.menu add command -label "LM Cmd test " -command \
 #	{ SendCommandToLM "LM printWindow Display" }
@@ -1708,7 +1711,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
 
-.mbar.window.menu add command -label "Stack Control" \
+.mbar.window.menu add command -label "Stack Control..." \
 	-command { DoWindowStackControl }
 ######################MODIFIED SSL 2/6########################################
 # Disabled this because it doesn't work -- RKW Mar. 12, 1998
@@ -1717,34 +1720,34 @@ menu .mbar.window.menu -tearoff 0
 ######################MODIFIED SSL 2/6########################################
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Swap Views" -command DoSwapView
-.mbar.window.menu add command -label "Move View" -command DoViewMove
+.mbar.window.menu add command -label "Move View..." -command DoViewMove
 .mbar.window.menu add command -label "Remove View" -command DoViewRemove
-.mbar.window.menu add command -label "Restore View" -command DoBringView
+.mbar.window.menu add command -label "Restore View..." -command DoBringView
 .mbar.window.menu add command -label "Group/Ungroup Views" -command { DEVise groupUngroupViews }
 .mbar.window.menu add separator
-.mbar.window.menu add command -label "View List" -command WinViewList
-.mbar.window.menu add command -label "Print Config" -command GetWinPrintConfig
+.mbar.window.menu add command -label "View List..." -command WinViewList
+.mbar.window.menu add command -label "Print Config..." -command GetWinPrintConfig
 
 .mbar.window.menu add separator
-.mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }
+.mbar.window.menu add command -label "Destroy..." -command { RemoveWindow "" }
 
 menu .mbar.window.menu.fontsmenu -tearoff false
-.mbar.window.menu.fontsmenu add command -label "Title" \
+.mbar.window.menu.fontsmenu add command -label "Title..." \
     -command { GetFont "title" 1 }
-.mbar.window.menu.fontsmenu add command -label "X Axis" \
+.mbar.window.menu.fontsmenu add command -label "X Axis..." \
     -command { GetFont "x axis" 1 }
-.mbar.window.menu.fontsmenu add  command -label "Y Axis"\
+.mbar.window.menu.fontsmenu add  command -label "Y Axis..."\
     -command { GetFont "y axis" 1 }
-.mbar.window.menu.fontsmenu add  command -label "Data"\
+.mbar.window.menu.fontsmenu add  command -label "Data..."\
     -command { GetFont "data" 1 }
 
 # HELP MENU.
 menu .mbar.help.menu -tearoff 0
 .mbar.help.menu add command -label "About..." -command { AboutDevise }
 .mbar.help.menu add separator
-.mbar.help.menu add command -label "Demo" -command DoDemo
+#.mbar.help.menu add command -label "Demo" -command DoDemo
 #.mbar.help.menu add command -label "Help" -command DoHelp
-.mbar.help.menu add command -label "History" -command OpenHistory
+.mbar.help.menu add command -label "History..." -command OpenHistory
 
 tk_menuBar .mbar .mbar.session .mbar.tdata .mbar.view \
 	.mbar.link .mbar.window .mbar.color .mbar.help

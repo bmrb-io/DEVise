@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.79  1999/01/20 17:44:59  beyer
+#	minor fix
+#	
 #	Revision 1.78  1998/11/23 19:20:00  donjerko
 #	*** empty log message ***
 #
@@ -2588,6 +2591,12 @@ proc mapFollow {newtype} {
 
 proc CheckDataSources {} {
     global env
+
+    set button [dialog .checkSrcs "Check Sources" \
+      "Check data sources, reporting 'broken' ones?" "" 0 OK Cancel]
+    if {$button == 1} {
+        return
+    }
 
     # Open and initialize the log file and "bad source" file.
     # When the checking is done, open the "bad source" file as a session
