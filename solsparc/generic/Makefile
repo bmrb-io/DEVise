@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1999/02/18 18:01:40  wenger
+#  OpenGL is now disabled except on SGI platform.
+#
 #  Revision 1.12  1998/05/26 20:49:08  wenger
 #  Changed makefiles for new Tcl/Tk installation.
 #
@@ -69,9 +72,9 @@ include ../Makefile.config
 ARCH_LDFLAGS = -L/usr/lib -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
 		-L /s/X11/lib -L /s/tcl7.4/lib -R /s/X11/lib
 #ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
-#		-ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
+#		-ltk -ltcl -lXmu -lX11 -lm
 ARCH_SYSLIBS = -lopengldum \
-               -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
+               -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static
 
