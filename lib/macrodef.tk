@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.24  1995/12/14 15:49:16  jussi
+#	Added support for TileLayout with automatic or manual view layout
+#	control.
+#
 #	Revision 1.23  1995/12/13 02:06:06  ravim
 #	Changed criterion for not reloading the schema.
 #
@@ -121,24 +125,13 @@ proc MacroDefStart {} {
     set err [catch {set exists [wm state .map]}]
     if {!$err} { wm deiconify .map; return }
 
-    # clear tdatas, schemas, windows, and links because they can be
-    # reconstructed from DEVise data structures; maps, mappings,
-    # and views cannot be safely reconstructed
-    
     set tdatas ""
     catch {unset schemas}
+    catch {unset maps}
+    catch {unset mappings}
     catch {unset links}
     catch {unset windows}
-
-    # the following are required for the old Tcl to work properly;
-    # these define arrays with zero elements
-
-    set schemas(a) a
-    unset schemas(a)
-    set links(a) a
-    unset links(a)
-    set windows(a) a
-    unset windows(a)
+    catch {unset views}
 
     foreach schema [DEVise get tdata] {
 	set err [catch {set exists $maps($schema)}]
@@ -175,7 +168,6 @@ proc MacroDefStart {} {
 	    set shapeAttr1 [lindex $params 11]
 	    set defn [list $x $y $color $size $pattern $orient $shape \
 		    $shapeAttr0 $shapeAttr1]
-	    
 	    set mappings($mapname) $defn
 	    if {[string first $mapname $maps($schema)] < 0} {
 		lappend maps($schema) $mapname
@@ -203,15 +195,6 @@ proc MacroDefStart {} {
 	foreach view [lsort [DEVise get "view" $class]] {
 	    set params [DEVise getCreateParam "view" $class $view]
 	    set name [lindex $params 0]
-	    set firsthash [string first \# $name]
-	    if {$firsthash < 0} { continue }
-	    incr firsthash
-	    set name [string range $name $firsthash end]
-	    set secondhash [string first \# $name]
-	    if {$secondhash >= 0} {
-		incr secondhash -1
-		set name [string range $name 0 $secondhash]
-	    }
 	    set views($name) [lrange $params 1 end]
 	}
     }
@@ -311,7 +294,7 @@ proc MacroDefNewMapping {} {
 
     # ask DEVise to create view instance
     set sorted SortedX
-    set viewname [UniqueName "$tdata: $y vs. $x"]
+    set viewname [UniqueName "$y vs. $x"]
     if {[lsearch [ViewSet] $viewname] >= 0} {
 	dialog .viewError "View Error" \
 		"View $viewname exists already." "" 0 OK
@@ -456,11 +439,6 @@ proc MacroDefAuto {tdata} {
 	pack .topgrps.scroll -side right -fill y
 	pack .topgrps.list -fill x 
 	
-	bind .topgrps.list <Double-Button-1> {
-	    set selgrp [.topgrps.list get active]
-	    destroy .topgrps
-	}
-
 	foreach i $topgrps {
 	    .topgrps.list insert end $i
 	}
@@ -840,7 +818,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 
 	# ask DEVise to create view instance
 	set sorted $sortedx
-	set viewinstance [UniqueName "$tdata: $name vs. $x"]
+	set viewinstance [UniqueName "$name vs. $x"]
 	if {[lsearch [ViewSet] $viewinstance] >= 0} {
 	    dialog .viewError "View Error" \
 		    "View $viewinstance exists already." "" 0 OK
