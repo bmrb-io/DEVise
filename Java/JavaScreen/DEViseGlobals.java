@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2002/01/28 23:51:59  wenger
+// Updated the DEVised to support drawing axis labels on the JS side:
+// changed JAVAC_ViewDataArea command; leaves blank areas for axis
+// labels (temporarily disabled until the JS end is done); protocol
+// version is now 10.0 -- JS code accepts but ignores new arguments.
+//
 // Revision 1.62  2001/12/13 21:35:32  wenger
 // Added flexibility to enable/disable mouse location display individually
 // for X and Y axes (needed for peptide-cgi session improvements requested
@@ -273,13 +279,11 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
-    public static final String PROTOCOL_VERSION = new String("10.0");
+    public static final String PROTOCOL_VERSION = new String("11.0");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
-    //public static final String DISABLECOLLAB = new String("disablecollaboration");
-    //public static final String ENABLECOLLAB = new String("enablecollaboration");
 
     public static final int CHECKINTERVAL = 600000, // check interval for dead JS, 10 minutes
 	                    KILLINTERVAL = 3600000, // kill a JS for not response after 60 minutes

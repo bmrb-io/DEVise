@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 10.0.
+version 11.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -140,6 +140,10 @@ see comments in DEViseCommSocket.java.
     Arguments:
         <leader ID>: client ID of the leader of this collaborator
 
+    3.9 JAVAC_UpdateJS
+    Purpose: update JavaScreen after a JAVAC_Open_Session or 
+	     JAVAC_Close_Session command
+    Arguments: 0
 
 
 4. JavaScreen to devised (via JSPoP)
