@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.53  1997/01/22 20:13:58  wenger
+#	Removed other non-functional user interface components (includes workaround
+#	for bug 127); fixed a number of OK/Cancel button positions.
+#
 #	Revision 1.52  1996/12/27 14:59:51  donjerko
 #	Import button is used only for importing new streams.
 #	Added a button "Display" in the import window that immediately goes to
@@ -1341,7 +1345,8 @@ proc updateSources {} {
     }
 
     .srcsel.top.list delete 0 end
-    foreach sname [lsort [array names sourceList]] {
+    #    foreach sname [lsort [array names sourceList]] {}
+    foreach sname [lsortCase [array names sourceList]] {
 	set source [lindex $sourceList($sname) 0]
 	set cachefile [lindex $sourceList($sname) 4]
 	set cached ""
