@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/07/23 17:26:06  jussi
+  Added support for piled views.
+
   Revision 1.32  1996/07/22 23:44:19  guangshu
   Added statistics for gdata. The statistics includes count, ysum, max,
   mean, min.
@@ -360,6 +363,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y);
       }
 
+#if 0
       int X = (int)x;
       BasicStats *bs;
       if(_gstat.Lookup(X, bs)) {
@@ -371,6 +375,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	bs->Sample(x, y);
 	_gstat.Insert(X, bs);
       } 
+#endif
 
       // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link
