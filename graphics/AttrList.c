@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/20 07:04:08  ravim
+  High and low values of attrs can be specified.
+
   Revision 1.5  1995/12/13 18:42:43  jussi
   Now iterator works even if attribute list has holes i.e. list is
   non-contiguous.
@@ -162,21 +165,14 @@ void AttrList::Print()
       printf("date");
       break;
     }
-    if (info->hasHiVal)
-    {
-      printf(" Hi ");
+    if (info->hasHiVal) {
+      printf(", hi ");
       printVal(&(info->hiVal), info->type);
     }
-    else
-      printf(" noHi ");
-
-    if (info->hasLoVal) 
-    {
-      printf(" Lo ");
+    if (info->hasLoVal) {
+      printf(", lo ");
       printVal(&(info->loVal), info->type);
     }
-    else
-      printf(" noLo ");
     printf("\n");
   }
 }
@@ -197,7 +193,9 @@ void AttrList::printVal(AttrVal *aval, AttrType atype)
       printf(" %s ", aval->strVal);
       break;
     case DateAttr:
+      printf(" %ld ", (long)aval->dateVal);
+      break;
     default:
-      /* print nothing for now */;
-    }
+      break;
+  }
 }
