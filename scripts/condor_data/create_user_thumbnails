@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1999/06/30 17:39:11  wenger
+#  Changed Condor session creation scripts because of new view symbol
+#  color feature.
+#
 #  Revision 1.2  1999/04/29 15:50:12  wenger
 #  Changed HighLow symbols so that Y is the top rather than the middle (so
 #  visual filter and home work better); changed Condor session scripts
@@ -189,7 +193,11 @@ sub CreateViews {
     # Set this view for automatic filter updating.
     print SES_OUT "DEVise setViewAutoFilter ${user}_view 1\n";
 
-    print SES_OUT "DEVise setXAxisDateFormat ${user}_view {%b %d %H:%M}";
+    print SES_OUT "DEVise setXAxisDateFormat ${user}_view {%b %d %H:%M}\n";
+    print SES_OUT "DEVise setAxisDisplay ${user}_view X 1\n";
+    print SES_OUT "DEVise setAxisDisplay ${user}_view Y 1\n";
+    print SES_OUT "DEVise setAxisTicks ${user}_view X 0\n";
+    print SES_OUT "DEVise setAxisTicks ${user}_view Y 0\n";
 
     print SES_OUT "\n";
   }
