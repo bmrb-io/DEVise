@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/08/04 21:03:36  beyer
+  Added view-locks and changed key handling.
+
   Revision 1.37  1996/08/03 15:35:09  jussi
   Solid3D flag now has three values: wireframe, solid with frame,
   and solid without frame.
@@ -301,7 +304,7 @@ class View
 	/* view locks - lock corners or widths */
 	void SetViewLocks(int locks) { _view_locks |= locks; }
 	void ClearViewLocks(int locks) { _view_locks &= ~locks; }
-	bool ToggleViewLocks(int locks) { _view_locks ^= locks; }
+	void ToggleViewLocks(int locks) { _view_locks ^= locks; }
 	int ViewLocks() { return _view_locks; }
 	bool IsViewLocked(int locks) { return (_view_locks & locks) != 0; }
 
