@@ -65,7 +65,8 @@ DEVISE_SPECIFIC_SRC = \
 	TDataDQL.c TDataDQLInterp.c CatalogComm.c CatalogComm2.c \
 	ParseAPIDTE.c DTEControl.c
 	
-GUI_SRC = CatalogComm.c DTEControl.c TkControl.c
+GUI_SRC = CatalogComm.c DTEControl.c 
+#TkControl.c
 
 ParseAPIDTE_SA.o : ParseAPIDTE.c ParseAPIDTE.o
 	$(CC) -c $(CFLAGS) -DDTE_STANDALONE -o $@ $<
@@ -106,8 +107,8 @@ DEVREAD_OBJ = \
 	../graphics.new/DataSourceDQL.o \
 	../graphics.new/DevFileHeader.o \
 	../graphics.new/Version.o \
-     ../graphics.new/MemMgr.o \
-     ../graphics.new/DCE.o \
+	../graphics.new/MemMgr.o \
+	../graphics.new/DCE.o \
 	../tape/tapedrive.o \
 	../generic/CompDate.o 
 

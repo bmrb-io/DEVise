@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  1997/03/28 16:08:54  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -30,7 +34,7 @@ DevRead.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DevRead.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 DevRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 DevRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DevRead.o: /usr/include/sys/time.h ../graphics.new/RecId.h types.h
+DevRead.o: /usr/include/time.h ../graphics.new/RecId.h types.h
 DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h
 DevRead.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 DevRead.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -62,7 +66,7 @@ drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 drtest.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
 drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 drtest.o: /usr/include/sys/select.h /usr/include/sys/time.h
-drtest.o: /usr/include/sys/time.h DevRead.h ../graphics/DeviseTypes.h
+drtest.o: /usr/include/time.h DevRead.h ../graphics/DeviseTypes.h
 drtest.o: /usr/include/values.h ../graphics/DevStatus.h
 drtest.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
 drtest.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
@@ -79,7 +83,7 @@ drtest.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h marshal.h
 types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
 types.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 types.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-types.o: /usr/include/sys/time.h /usr/include/sys/time.h
+types.o: /usr/include/sys/time.h /usr/include/time.h
 types.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 types.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
 types.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h

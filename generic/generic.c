@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/04/18 17:52:32  wenger
+  Argh!  Forgot to remove debug output.
+
   Revision 1.47  1997/04/17 15:05:11  wenger
   Added ISODate2Composite parser for data with _two_ ISO 8601 dates per
   record (geez, these composite parsers are a pain!).
@@ -420,7 +423,7 @@ public:
     /* decode date */
     time_t *datePtr = (time_t *)(buf + attrOffset[3]);
     char *dash1 = strchr(buf + attrOffset[0], '-');
-    char *dash2 = (!dash1 ? NULL : strchr(dash1 + 1, '-'));
+    char *dash2 = (!dash1 ? (char *) NULL : strchr(dash1 + 1, '-'));
     char *colon = strchr(buf + attrOffset[1], ':');
     char ampm = *(buf + attrOffset[2]);
     if (islower(ampm))

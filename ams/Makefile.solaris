@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.39  1997/03/28 16:08:14  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -26,7 +30,7 @@ depend:
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+MapClassInfo.o: /usr/include/time.h /usr/include/math.h
 MapClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MapClassInfo.o: /usr/include/sys/va_list.h ../graphics/DeviseTypes.h
@@ -40,18 +44,20 @@ MapClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
 MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
 MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MapClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-MapClassInfo.o: /usr/include/sys/errno.h ../graphics.new/RectShape.h
-MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
-MapClassInfo.o: ../graphics/DevFont.h ../graphics.new/BasicStats.h
-MapClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-MapClassInfo.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
+MapClassInfo.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+MapClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
+MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
+MapClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MapClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
+MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
 MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
@@ -82,8 +88,8 @@ MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
 MapClassInfo.o: ../graphics.new/ViewScatter.h ../graphics.new/QueryProc.h
 MapClassInfo.o: MapClassInfo.h Soil.h AmsMap.h
-ams.o: /usr/include/sys/time.h /usr/include/stdio.h
-ams.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+ams.o: /usr/include/time.h /usr/include/sys/feature_tests.h
+ams.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 ams.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 ams.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -97,6 +103,7 @@ ams.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h
 ams.o: ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
+ams.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 ams.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics.new/MapInterpClassInfo.h
@@ -144,15 +151,15 @@ amsStat.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 amsStat.o: /usr/include/fcntl.h /usr/include/sys/types.h
 amsStat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 amsStat.o: /usr/include/sys/select.h /usr/include/sys/time.h
-amsStat.o: /usr/include/sys/time.h /usr/include/sys/fcntl.h
-amsStat.o: /usr/include/limits.h /usr/include/unistd.h
-amsStat.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
-amsStat.o: /usr/include/sys/stat.h ../graphics.new/BufHint.h
-amsStat.o: ../graphics.new/PageSize.h ../graphics.new/TDataAppend.h
-amsStat.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-amsStat.o: /usr/include/values.h ../graphics/DevStatus.h
-amsStat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+amsStat.o: /usr/include/time.h /usr/include/sys/fcntl.h /usr/include/limits.h
+amsStat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+amsStat.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
+amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
+amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
+amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
+amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
+amsStat.o: ../graphics.new/DataSource.h ../graphics/Exit.h
+amsStat.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 amsStat.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 amsStat.o: /usr/include/sys/shm.h /usr/include/errno.h
 amsStat.o: /usr/include/sys/errno.h /usr/include/assert.h
@@ -179,7 +186,7 @@ extendAms.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 extendAms.o: /usr/include/fcntl.h /usr/include/sys/types.h
 extendAms.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 extendAms.o: /usr/include/sys/select.h /usr/include/sys/time.h
-extendAms.o: /usr/include/sys/time.h /usr/include/sys/fcntl.h
+extendAms.o: /usr/include/time.h /usr/include/sys/fcntl.h
 extendAms.o: /usr/include/limits.h /usr/include/unistd.h
 extendAms.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
 extendAms.o: /usr/include/sys/stat.h ../graphics.new/ams.h
@@ -189,4 +196,4 @@ testdir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testdir.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
 testdir.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 testdir.o: /usr/include/sys/select.h /usr/include/sys/time.h
-testdir.o: /usr/include/sys/time.h
+testdir.o: /usr/include/time.h

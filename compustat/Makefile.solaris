@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.21  1997/03/28 16:08:28  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -28,7 +32,7 @@ compustat.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 compustat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 compustat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 compustat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/time.h
+compustat.o: /usr/include/sys/time.h /usr/include/time.h
 compustat.o: /usr/include/sys/unistd.h /s/tcl/include/tcl.h
 compustat.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
@@ -56,7 +60,7 @@ index.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 index.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 index.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 index.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-index.o: /usr/include/sys/time.h /usr/include/sys/time.h
+index.o: /usr/include/sys/time.h /usr/include/time.h
 index.o: /usr/include/sys/unistd.h index.h ../tape/tapedrive.h
 index.o: ../graphics.new/machdep.h /usr/include/limits.h
 index.o: /usr/include/sys/param.h /usr/include/sys/wait.h
@@ -80,7 +84,7 @@ project.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 project.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 project.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 project.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-project.o: /usr/include/sys/time.h /usr/include/sys/time.h
+project.o: /usr/include/sys/time.h /usr/include/time.h
 project.o: /usr/include/sys/unistd.h /usr/include/assert.h compustat.h
 project.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
 project.o: /usr/include/limits.h /usr/include/sys/param.h
