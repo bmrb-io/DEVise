@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:07  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include <libc.h>
@@ -11,6 +28,7 @@
 #include <limits.h>
 #include <unistd.h>
 #include <errno.h>
+
 #include "Exit.h"
 #include "FileMacro.h"
 #include "PageRange.h"
@@ -294,8 +312,8 @@ void PageRange::InsertPage(int pageNum, void *firstInPage, void *lastInPage,
 			data->lowPage = pageNum;
 			data->highPage = pageNum;
 			if (info != MergeIgnoreRecs){
-				bcopy(firstInPage,data->firstRec, _recSize); 
-				bcopy(lastInPage,data->lastRec, _recSize);
+				memcpy(data->firstRec, firstInPage, _recSize); 
+				memcpy(data->lastRec, lastInPage, _recSize);
 			}
 			if (current == NULL){
 				/* insert as head of list */
@@ -312,7 +330,7 @@ void PageRange::InsertPage(int pageNum, void *firstInPage, void *lastInPage,
 			if (info != MergeIgnoreRecs){
 				callBack->PageMerged(current->highPage, pageNum,
 					current->lastRec, firstInPage);
-				bcopy(lastInPage,current->lastRec,_recSize); 
+				memcpy(current->lastRec, lastInPage, _recSize); 
 			}
 			current->highPage = pageNum;
 			break;
@@ -321,7 +339,7 @@ void PageRange::InsertPage(int pageNum, void *firstInPage, void *lastInPage,
 			if (info != MergeIgnoreRecs){
 				callBack->PageMerged(pageNum,next->lowPage,
 					lastInPage, next->firstRec);
-				bcopy(firstInPage,next->firstRec,_recSize); 
+				memcpy(next->firstRec, firstInPage, _recSize); 
 			}
 			next->lowPage = pageNum;
 			break;
@@ -332,7 +350,7 @@ void PageRange::InsertPage(int pageNum, void *firstInPage, void *lastInPage,
 					current->lastRec, firstInPage);
 				callBack->PageMerged(pageNum, next->lowPage,
 					lastInPage, next->firstRec);
-				bcopy(next->lastRec, current->lastRec,_recSize); 
+				memcpy(current->lastRec, next->lastRec, _recSize); 
 			}
 			current->highPage = next->highPage;
 

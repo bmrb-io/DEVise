@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:25  jussi
+  Added CVS header.
+*/
 
 #include "RangeInfoArray.h"
 #include "BufferFocal.h"
@@ -59,8 +76,8 @@ Boolean BufferFocal::PickVictim(RangeInfoArrays *rangeArrays,
 	int i;
 	/* find 1st valid range */
 	Boolean found = false;
-	int index;
-	RecId furthestId;
+	int index = 0;
+	RecId furthestId = 0;
 	for (i=0; i < rangeArrays->Size(0); i++){
 		RangeInfo *rangeInfo = rangeArrays->GetRange(0,i);
 		if (!rangeInfo->InUse() && 

@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:32  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include "Exit.h"
@@ -216,11 +219,13 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 			page number is next->low-1.
 	MERGE_BOTH: merge with current and next range 
 	*/
-	int action;
+
 #define CREATE_RANGE 0
 #define MERGE_CURRENT 1
 #define MERGE_NEXT 2
 #define MERGE_BOTH 3
+
+	int action = CREATE_RANGE;
 
 	/* find next range */
 	if (current != NULL){
@@ -246,7 +251,7 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 				action = MERGE_NEXT;
 		}
 		else {
-			fprintf(stderr,"RecRange::Insert:inconsistent id: low %d high %d\n",
+			fprintf(stderr,"RecRange::Insert:inconsistent id: low %ld high %ld\n",
 				low,high);
 			Exit::DoExit(2);
 		}
@@ -254,9 +259,9 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 	else {
 		/* current not NULL */
 		if ( !(low > current->high)){
-				printf("current: %d %d\n", current->low, current->high);
+				printf("current: %ld %ld\n", current->low, current->high);
 				Print();
-				fprintf(stderr,"RecRange::Insert() recId %d,%d already processed\n", low,high);
+				fprintf(stderr,"RecRange::Insert() recId %ld,%ld already processed\n", low,high);
 				Exit::DoExit(1);
 		}
 
@@ -313,8 +318,8 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 			data->low = low;
 			data->high = high;
 			if (info != MergeIgnoreRecs){
-				bcopy(lowRec,data->firstRec, _recSize); 
-				bcopy(highRec,data->lastRec, _recSize);
+				memcpy(data->firstRec, lowRec, _recSize); 
+				memcpy(data->lastRec, highRec, _recSize);
 			}
 			if (current == NULL){
 				/* insert as head of list */
@@ -331,7 +336,7 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 			if (info != MergeIgnoreRecs){
 				callBack->RecsMerged(current->high, 
 					current->lastRec, lowRec);
-				bcopy(highRec,current->lastRec,_recSize); 
+				memcpy(current->lastRec, highRec, _recSize); 
 			}
 			current->high = high;
 			break;
@@ -340,7 +345,7 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 			if (info != MergeIgnoreRecs){
 				callBack->RecsMerged(high,
 					highRec, next->firstRec);
-				bcopy(lowRec,next->firstRec,_recSize); 
+				memcpy(next->firstRec, lowRec, _recSize); 
 			}
 			next->low = low;
 			break;
@@ -350,7 +355,7 @@ void RecRange::Insert(RecId low, RecId high, void *lowRec,
 				callBack->RecsMerged(current->high,
 					current->lastRec, lowRec);
 				callBack->RecsMerged(high, highRec, next->firstRec);
-				bcopy(next->lastRec, current->lastRec,_recSize); 
+				memcpy(current->lastRec, next->lastRec, _recSize); 
 			}
 			current->high = next->high;
 
@@ -377,7 +382,7 @@ void RecRange::Print(){
 	RecRangeData *data;
 	int num=0;
 	for (data = _rangeList.next; data != &_rangeList; data = data->next){
-		printf("(%d,%d) ",data->low, data->high);
+		printf("(%ld,%ld) ",data->low, data->high);
 		if (++num > 7){
 			printf("\n");
 			num=0;

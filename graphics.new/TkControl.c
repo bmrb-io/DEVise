@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1995/12/14 15:37:20  jussi
+  Minor fixes.
+
   Revision 1.21  1995/12/14 15:27:44  jussi
   Changed getViewStatistics to reflect the new scheme of turning
   multiple stats on/off in one setViewStatistics call.
@@ -404,7 +407,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	int code;
 	int numArgs; char **args;
 	char *name;
-	Group *grp;
 	
 	if (argc == 1) {
 		interp->result = "wrong args";

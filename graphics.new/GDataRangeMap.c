@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/27 16:21:57  jussi
+  Added copyright notice and replaced bcopy()'s with more portable
+  memcpy()'s.
+
   Revision 1.2  1995/09/05 22:14:52  jussi
   Added CVS header.
 */
@@ -295,12 +299,13 @@ GDataRangeMapRec *GDataRangeMap::FindNoOverlap(RecId tId)
   
   if (tId > rec->tHigh)
     return rec;
-  else {
-    /* rec->tLow <= tId <= rec->tHigh */
-    fprintf(stderr,"GDataRangeMap::FindNoOverlap: %d overlaps (%d,%d)\n",
-	    tId, rec->tLow, rec->tHigh);
-    Exit::DoExit(2);
-  }
+
+  fprintf(stderr,"GDataRangeMap::FindNoOverlap: %ld overlaps (%ld,%ld)\n",
+	  tId, rec->tLow, rec->tHigh);
+  Exit::DoExit(2);
+
+  // keep compiler happy
+  return 0;
 }
 
 /**************************************************************
@@ -368,12 +373,13 @@ void GDataRangeMap::InsertRange(RecId tLow, RecId tHigh, RecId gLow,
 				RecId gHigh, void *firstRec, void *lastRec)
 {
   GDataRangeMapRec *rec = FindMaxLower(tLow);
-  GDataRangeMapRec *insertPt;
+  GDataRangeMapRec *insertPt = 0;
+
   if (rec == NULL) {
     /* insert after dummy head 0f list */
     if (_head.next != &_head && tHigh >= _head.next->tLow) {
       /* overlap with 1st range in the list */
-      fprintf(stderr,"InsertRange: (%d,%d) overlaps with (%d,%d)\n",
+      fprintf(stderr,"InsertRange: (%ld,%ld) overlaps with (%ld,%ld)\n",
 	      tLow, tHigh, _head.next->tLow, _head.next->tHigh);
       Exit::DoExit(2);
     }
@@ -381,13 +387,14 @@ void GDataRangeMap::InsertRange(RecId tLow, RecId tHigh, RecId gLow,
   }
   else if ((tLow >= rec->tLow && tLow <= rec->tHigh) ||
 	   (tHigh >= rec->tLow && tHigh <= rec->tHigh)) {
-    fprintf(stderr,"GDataRangeMap::InsertRange: (%d,%d) overlaps (%d,%d)\n",
+    fprintf(stderr,
+	    "GDataRangeMap::InsertRange: (%ld,%ld) overlaps (%ld,%ld)\n",
 	    tLow, tHigh, rec->tLow, rec->tHigh);
     Exit::DoExit(2);
   }
   else if( rec->next != &_head && tHigh >= rec->next->tLow) {
     /* high page overlaps with next range */
-    fprintf(stderr,"InsertRange: (%d,%d) overlaps with (%d,%D)\n",
+    fprintf(stderr,"InsertRange: (%ld,%ld) overlaps with (%ld,%ld)\n",
 	    tLow, tHigh, rec->next->tLow, rec->next->tHigh);
     Exit::DoExit(2);
   }
@@ -424,7 +431,7 @@ void GDataRangeMap::Print()
   printf("GDataRaneMap\n");
   GDataRangeMapRec *rec;
   for (rec= _head.next; rec != &_head; rec = rec->next) {
-    printf("T: (%5d,%5d), G: (%5d,%5d)\n",
+    printf("T: (%ld,%ld), G: (%ld,%ld)\n",
 	   rec->tLow, rec->tHigh, rec->gLow, rec->gHigh);
   }
 }

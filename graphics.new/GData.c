@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/14 20:34:02  jussi
+  Removed extraneous keyword 'virtual'.
+
   Revision 1.2  1995/09/05 22:14:46  jussi
   Added CVS header.
 */
@@ -115,14 +132,14 @@ Init getting records.
 ***************************************************************/
 void GData::InitGetRecs(RecId lowId, RecId highId,RecordOrder order){
 /*
-printf("GData::InitGetRecs(%d,%d)\n",lowId, highId);
+printf("GData::InitGetRecs(%ld,%ld)\n",lowId, highId);
 */
 	_nextId = lowId;
 	_highId = highId;
 	_numRecs = highId-lowId+1;
 	_rec = _rangeMap->FindMaxLower(_nextId);
 	if (_rec == NULL){
-		fprintf(stderr,"GData::InitGetRecs(): %d,%d out of range\n",
+		fprintf(stderr,"GData::InitGetRecs(): %ld,%ld out of range\n",
 			lowId, highId);
 		Exit::DoExit(2);
 	}
@@ -131,7 +148,7 @@ printf("GData::InitGetRecs(%d,%d)\n",lowId, highId);
 Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
 		int &numFetched, int &dataFetched, void **recPtrs){
 /*
-printf("GData::GetRecs bufSize %d, %d recs left, nex Id %d\n", 
+printf("GData::GetRecs bufSize %d, %ld recs left, nex Id %ld\n", 
 	bufSize, _numRecs, _nextId);
 */
 
@@ -207,16 +224,16 @@ void GData::WriteRecs(RecId startId, int numRecs, void *buf){
 		if (rec == NULL || nextId < rec->tLow || nextId > rec->tHigh){
 			if (rec != NULL)
 				fprintf(stderr,
-					"GData::Write Recs (%d,%d) into gap T(%d,%d),G(%d,%d)\n",
+					"GData::Write Recs (%ld,%ld) into gap T(%ld,%ld),G(%ld,%ld)\n",
 					startId, startId+numRecs-1,
 					rec->tLow, rec->tHigh, rec->gLow, rec->gHigh);
-			else fprintf(stderr,"GData::Write Recs (%d,%d) into gap\n",
+			else fprintf(stderr,"GData::Write Recs (%ld,%ld) into gap\n",
 					startId, startId+numRecs-1);
 			Exit::DoExit(2);
 		}
 
 		/*
-		printf("GDataWriteRecs: T:(%d,%d), G:(%d,%d)\n",
+		printf("GDataWriteRecs: T:(%ld,%ld), G:(%ld,%ld)\n",
 			rec->tLow,rec->tHigh,rec->gLow,rec->gHigh);
 		*/
 
@@ -257,7 +274,7 @@ void GData::UpdateConversionInfo(RecId tLow, RecId tHigh,
 	_callbacks.DoneIterator(index);
 
 /*
-printf("GData: %s update %d,%d, %d left\n",GetName(), tLow, tHigh, _recsLeft);
+printf("GData: %s update %ld,%ld, %d left\n",GetName(), tLow, tHigh, _recsLeft);
 */
 }
 
@@ -283,10 +300,12 @@ Boolean GData::NextRange(RecId &lowId, RecId &highId){
 
 void GData::DoneConvertedIterator(){ }
 
-int GData::UserAttr(int attrNum){
-	if(attrNum == GDataAttrNum)
-		return 1;
-	else TData::UserAttr(attrNum);
+int GData::UserAttr(int attrNum)
+{
+  if(attrNum == GDataAttrNum)
+    return 1;
+
+  return TData::UserAttr(attrNum);
 }
 
 /* Get next unconverted range <= id.
