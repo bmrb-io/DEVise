@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.42  1997/08/28 18:23:25  wenger
+# Re-made solaris dependencies.
+#
 # Revision 1.41  1997/06/16 16:06:04  donjerko
 # New memory management in exec phase. Unidata included.
 #
@@ -149,7 +152,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/TData.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
-CycleCpuTimeMappingClassInfo.o: map_cycle_cpu_time.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Session.h map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleEffMappingClassInfo.o: /usr/include/sys/types.h
@@ -237,7 +240,7 @@ CycleEffMappingClassInfo.o: ../graphics.new/TData.h
 CycleEffMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
-CycleEffMappingClassInfo.o: map_cycle_eff.h
+CycleEffMappingClassInfo.o: ../graphics/Session.h map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h
 CycleOccMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleOccMappingClassInfo.o: /usr/include/sys/types.h
@@ -325,7 +328,7 @@ CycleOccMappingClassInfo.o: ../graphics.new/TData.h
 CycleOccMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleOccMappingClassInfo.o: CycleOccMappingClassInfo.h CycleRec.h
-CycleOccMappingClassInfo.o: map_cycle_occ.h
+CycleOccMappingClassInfo.o: ../graphics/Session.h map_cycle_occ.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/types.h
@@ -435,7 +438,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/TData.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleSuspendedMappingClassInfo.o: CycleSuspendedMappingClassInfo.h CycleRec.h
-CycleSuspendedMappingClassInfo.o: map_cycle_suspended.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Session.h map_cycle_suspended.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/feature_tests.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/types.h
@@ -538,7 +541,7 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/TData.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewScatter.h
 CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
-CycleWorkingMappingClassInfo.o: map_cycle_working.h
+CycleWorkingMappingClassInfo.o: ../graphics/Session.h map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h
 HostMappingClassInfo.o: /usr/include/sys/feature_tests.h
 HostMappingClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -610,7 +613,7 @@ HostMappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
 HostMappingClassInfo.o: TDataHost.h ../graphics.new/TDataAscii.h
 HostMappingClassInfo.o: ../graphics.new/TData.h ../graphics.new/FileIndex.h
 HostMappingClassInfo.o: ../graphics.new/ViewScatter.h HostMappingClassInfo.h
-HostMappingClassInfo.o: HostRec.h map_host.h
+HostMappingClassInfo.o: HostRec.h ../graphics/Session.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MappingClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MappingClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
@@ -674,7 +677,8 @@ MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h TDataMulti.h
 MappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 MappingClassInfo.o: ../graphics.new/FileIndex.h ../graphics.new/ViewScatter.h
-MappingClassInfo.o: MappingClassInfo.h MultiRec.h mapfile.h
+MappingClassInfo.o: MappingClassInfo.h MultiRec.h ../graphics/Session.h
+MappingClassInfo.o: mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Message.o: /usr/include/sys/va_list.h /usr/include/sys/time.h
 Message.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

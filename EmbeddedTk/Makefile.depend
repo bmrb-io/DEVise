@@ -79,6 +79,26 @@ EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h \
  /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/errno.h \
  /usr/include/sys/errno.h \
  /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h
+NetscapeRemote.o: NetscapeRemote.c \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdio.h \
+ /usr/include/sys/feature_tests.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/types.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/sys/isa_defs.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/time.h \
+ /usr/include/sys/siginfo.h /usr/include/sys/machsig.h \
+ /usr/include/vm/faultcode.h /usr/include/sys/unistd.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/string.h \
+ /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
+ /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stddef.h \
+ /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmu/WinUtil.h \
+ /s/X11/include/X11/Xutil.h vroot.h BrowserCommands.h \
+ /s/tcl/include/tcl.h
 SampleClient.o: SampleClient.c \
  /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
  /s/gcc-2.7.2/sunx86_55/lib/g++-include/streambuf.h \
@@ -118,7 +138,8 @@ TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
  /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
  /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
- ETkCommands.h /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
+ ETkCommands.h BrowserCommands.h \
+ /s/gcc-2.7.2/sunx86_55/lib/g++-include/iostream.h \
  /s/gcc-2.7.2/sunx86_55/lib/g++-include/streambuf.h \
  /s/gcc-2.7.2/sunx86_55/lib/g++-include/libio.h \
  /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/_G_config.h \
@@ -148,7 +169,7 @@ main.o: main.c TkWindowRep.h EmbeddedTk.h \
  /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
  /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
  /s/gcc-2.7.2/sunx86_55/i386-unknown-solaris2.5/include/assert.h \
- ETkCompDate.h \
+ ETkCompDate.h BrowserCommands.h \
  /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/stdlib.h \
  /usr/include/fcntl.h /usr/include/sys/fcntl.h \
  /s/gcc-2.7.2/sunx86_55/lib/gcc-lib/i386-unknown-solaris2.5/2.7.2/include/unistd.h \

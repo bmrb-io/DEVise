@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/09/26 02:27:09  taodb
+# Most files are copied from cslib. csgroup will support group
+# communication amonger servers. Our current server no longer
+# support SINGLE_CLIENT compilatoin.
+#
 # Revision 1.8  1997/08/28 18:22:47  wenger
 # Re-made solaris dependencies.
 #
@@ -63,10 +68,13 @@ ClientServer.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 ClientServer.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 ClientServer.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 ClientServer.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+ClientServer.o: /usr/include/arpa/inet.h /usr/include/netdb.h
 ClientServer.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
 ClientServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 ClientServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-ClientServer.o: /usr/include/stddef.h ClientServer.h ../graphics/Display.h
+ClientServer.o: /usr/include/stddef.h ClientServer.h serverInterface.h
+ClientServer.o: dbase.h /usr/include/ndbm.h /usr/include/fcntl.h
+ClientServer.o: /usr/include/sys/fcntl.h ../graphics/Display.h
 ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
 ClientServer.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -88,7 +96,21 @@ client.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 client.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 client.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
 client.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-client.o: /usr/include/stddef.h ../graphics/Display.h
+client.o: /usr/include/stddef.h serverInterface.h dbase.h
+client.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+client.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+client.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+client.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+client.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+client.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+client.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+client.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+client.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+client.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+client.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+client.o: /usr/include/arpa/inet.h /usr/include/ndbm.h /usr/include/fcntl.h
+client.o: /usr/include/sys/fcntl.h ../graphics/Display.h
 client.o: ../graphics/DeviseTypes.h /usr/include/values.h
 client.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
 client.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -108,7 +130,21 @@ server.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 server.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 server.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
 server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-server.o: /usr/include/stddef.h ../graphics/Display.h
+server.o: /usr/include/stddef.h serverInterface.h dbase.h
+server.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+server.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+server.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+server.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+server.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+server.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+server.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+server.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+server.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+server.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+server.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+server.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+server.o: /usr/include/arpa/inet.h /usr/include/ndbm.h /usr/include/fcntl.h
+server.o: /usr/include/sys/fcntl.h ../graphics/Display.h
 server.o: ../graphics/DeviseTypes.h /usr/include/values.h
 server.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
 server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h

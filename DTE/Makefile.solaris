@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.57  1997/10/02 02:27:15  donjerko
+# Implementing moving aggregates.
+#
 # Revision 1.56  1997/09/29 02:51:05  donjerko
 # *** empty log message ***
 #
@@ -407,7 +410,16 @@ Aggregates.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
 Aggregates.o: /s/gcc/lib/g++-include/std/new.h exception.h
 Aggregates.o: ../../unidata/sysdep.h /usr/include/varargs.h
 Aggregates.o: /usr/include/sys/va_list.h Utility.h queue.h Array.h myopt.h
-Aggregates.o: url.h SockStream.h listop.h site.h Iterator.h
+Aggregates.o: url.h SockStream.h listop.h site.h Iterator.h MemoryMgr.h
+Aggregates.o: /s/gcc/lib/g++-include/deque /s/gcc/lib/g++-include/deque.h
+Aggregates.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
+Aggregates.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
+Aggregates.o: /s/gcc/lib/g++-include/iterator.h
+Aggregates.o: /s/gcc/lib/g++-include/iostream.h
+Aggregates.o: /s/gcc/lib/g++-include/streambuf.h
+Aggregates.o: /s/gcc/lib/g++-include/libio.h
+Aggregates.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+Aggregates.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 DeleteParse.o: /s/gcc/lib/g++-include/string
 DeleteParse.o: /s/gcc/lib/g++-include/std/string.h
 DeleteParse.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -590,15 +602,21 @@ IndexParse.o: /usr/include/sys/errno.h queue.h ../../unidata/sysdep.h
 IndexParse.o: /usr/include/varargs.h myopt.h types.h
 IndexParse.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
 IndexParse.o: exception.h Utility.h Array.h url.h SockStream.h listop.h
-IndexParse.o: site.h Iterator.h catalog.h ParseTree.h Aggregates.h Inserter.h
-IndexParse.o: MinMax.h StandardRead.h Interface.h ../RTree/RTree.h
-IndexParse.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
-IndexParse.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
-IndexParse.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
-IndexParse.o: ../RTree/tools/pqueue.C /s/gcc/lib/g++-include/stream.h
-IndexParse.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
-IndexParse.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h
-IndexParse.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+IndexParse.o: site.h Iterator.h catalog.h ParseTree.h Aggregates.h
+IndexParse.o: MemoryMgr.h /s/gcc/lib/g++-include/deque
+IndexParse.o: /s/gcc/lib/g++-include/deque.h
+IndexParse.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
+IndexParse.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
+IndexParse.o: /s/gcc/lib/g++-include/iterator.h
+IndexParse.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/limits.h
+IndexParse.o: /usr/include/sys/isa_defs.h Inserter.h MinMax.h StandardRead.h
+IndexParse.o: Interface.h ../RTree/RTree.h ../RTree/genrtree.h
+IndexParse.o: ../RTree/port_genrtree.h ../RTree/type_compat.h
+IndexParse.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
+IndexParse.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
+IndexParse.o: /s/gcc/lib/g++-include/stream.h ../RTree/tools/pqueue.h
+IndexParse.o: ../RTree/tools/key.h ../RTree/tools/box.h
+IndexParse.o: ../RTree/tools/bit_vec.h /usr/include/sys/types.h
 IndexParse.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 IndexParse.o: /usr/include/sys/time.h /usr/include/time.h
 IndexParse.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
@@ -635,7 +653,19 @@ IndexParse.dummy.o: /usr/include/varargs.h /usr/include/sys/va_list.h myopt.h
 IndexParse.dummy.o: types.h /s/gcc/lib/g++-include/new.h
 IndexParse.dummy.o: /s/gcc/lib/g++-include/std/new.h exception.h Utility.h
 IndexParse.dummy.o: Array.h url.h SockStream.h listop.h site.h Iterator.h
-IndexParse.dummy.o: catalog.h ParseTree.h Aggregates.h
+IndexParse.dummy.o: catalog.h ParseTree.h Aggregates.h MemoryMgr.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/deque
+IndexParse.dummy.o: /s/gcc/lib/g++-include/deque.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/function.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/bool.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/algobase.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/pair.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/iterator.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/iostream.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/streambuf.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/libio.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+IndexParse.dummy.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 InsertParse.o: /s/gcc/lib/g++-include/string
 InsertParse.o: /s/gcc/lib/g++-include/std/string.h
 InsertParse.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -785,9 +815,8 @@ QueryTree.o: /s/gcc/lib/g++-include/std/cassert.h
 QueryTree.o: /s/gcc/lib/g++-include/std/sinst.h types.h
 QueryTree.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
 QueryTree.o: exception.h Utility.h Array.h url.h SockStream.h listop.h site.h
-QueryTree.o: Iterator.h catalog.h DevRead.h Aggregates.h ParseTree.h joins.h
-QueryTree.o: Sort.h StandardRead.h PQueue.h TypeCheck.h
-QueryTree.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
+QueryTree.o: Iterator.h catalog.h DevRead.h Aggregates.h MemoryMgr.h
+QueryTree.o: /s/gcc/lib/g++-include/deque /s/gcc/lib/g++-include/deque.h
 QueryTree.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
 QueryTree.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
 QueryTree.o: /s/gcc/lib/g++-include/iterator.h
@@ -795,11 +824,13 @@ QueryTree.o: /s/gcc/lib/g++-include/iostream.h
 QueryTree.o: /s/gcc/lib/g++-include/streambuf.h
 QueryTree.o: /s/gcc/lib/g++-include/libio.h /s/gcc/lib/g++-include/defalloc.h
 QueryTree.o: /usr/include/stdlib.h /usr/include/limits.h
-QueryTree.o: /usr/include/sys/isa_defs.h SymbolTable.h
-QueryTree.o: /s/gcc/lib/g++-include/map.h /s/gcc/lib/g++-include/tree.h
-QueryTree.o: /s/gcc/lib/g++-include/projectn.h MinMax.h Interface.h
-QueryTree.o: /usr/include/math.h /usr/include/floatingpoint.h
-QueryTree.o: /usr/include/sys/ieeefp.h
+QueryTree.o: /usr/include/sys/isa_defs.h ParseTree.h joins.h Sort.h
+QueryTree.o: StandardRead.h PQueue.h TypeCheck.h
+QueryTree.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
+QueryTree.o: SymbolTable.h /s/gcc/lib/g++-include/map.h
+QueryTree.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
+QueryTree.o: MinMax.h Interface.h /usr/include/math.h
+QueryTree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 RTreeInit.dummy.o: ../../unidata/sysdep.h /usr/include/varargs.h
 RTreeInit.dummy.o: /usr/include/sys/va_list.h
 RTreeRead.o: RTreeRead.h myopt.h /s/gcc/lib/g++-include/string
@@ -1132,6 +1163,8 @@ url.o: /s/gcc/lib/g++-include/std/sinst.h SockStream.h exception.h
 url.o: ../../unidata/sysdep.h /usr/include/varargs.h
 url.o: /usr/include/sys/va_list.h
 
+main.o: /usr/include/assert.h /usr/include/math.h
+main.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 main.o: ../Core/types.h /s/gcc/lib/g++-include/string
 main.o: /s/gcc/lib/g++-include/std/string.h
 main.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1141,39 +1174,14 @@ main.o: /s/gcc/lib/g++-include/std/straits.h
 main.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
 main.o: /usr/include/sys/feature_tests.h /s/gcc/lib/g++-include/std/cstring.h
 main.o: /usr/include/string.h /s/gcc/lib/g++-include/cassert
-main.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+main.o: /s/gcc/lib/g++-include/std/cassert.h
 main.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
 main.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
 main.o: ../../unidata/sysdep.h /usr/include/varargs.h
 main.o: /usr/include/sys/va_list.h ../Core/Utility.h ../Core/queue.h
-main.o: ../Core/Array.h ../Core/MemoryMgr.h /s/gcc/lib/g++-include/deque
-main.o: /s/gcc/lib/g++-include/deque.h /s/gcc/lib/g++-include/function.h
-main.o: /s/gcc/lib/g++-include/bool.h /s/gcc/lib/g++-include/algobase.h
-main.o: /s/gcc/lib/g++-include/pair.h /s/gcc/lib/g++-include/iterator.h
-main.o: /s/gcc/lib/g++-include/iostream.h /s/gcc/lib/g++-include/streambuf.h
-main.o: /s/gcc/lib/g++-include/libio.h /s/gcc/lib/g++-include/defalloc.h
-main.o: /usr/include/stdlib.h /usr/include/limits.h
-main.o: /usr/include/sys/isa_defs.h
-realmain.o: /usr/include/assert.h /usr/include/math.h
-realmain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-realmain.o: ../Core/types.h /s/gcc/lib/g++-include/string
-realmain.o: /s/gcc/lib/g++-include/std/string.h
-realmain.o: /s/gcc/lib/g++-include/std/bastring.h
-realmain.o: /s/gcc/lib/g++-include/std/stddef.h
-realmain.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
-realmain.o: /s/gcc/lib/g++-include/std/straits.h
-realmain.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
-realmain.o: /usr/include/sys/feature_tests.h
-realmain.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
-realmain.o: /s/gcc/lib/g++-include/cassert
-realmain.o: /s/gcc/lib/g++-include/std/cassert.h
-realmain.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
-realmain.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
-realmain.o: ../../unidata/sysdep.h /usr/include/varargs.h
-realmain.o: /usr/include/sys/va_list.h ../Core/Utility.h ../Core/queue.h
-realmain.o: ../Core/Array.h ../Core/Engine.h ../Core/site.h ../Core/myopt.h
-realmain.o: ../Core/url.h ../Core/SockStream.h ../Core/listop.h
-realmain.o: ../Core/Iterator.h ../RTree/RTreeCommon.h
+main.o: ../Core/Array.h ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+main.o: ../Core/url.h ../Core/SockStream.h ../Core/listop.h
+main.o: ../Core/Iterator.h ../RTree/RTreeCommon.h
 
 post-query.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 post-query.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
