@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2001/12/12 19:56:42  wenger
+// Got 4038/4096 star file combination working; fixed maximum bond length.
+//
 // Revision 1.26  2001/12/11 20:23:34  wenger
 // First version of bond-visualization generation; added RCS Id string to
 // schema files; manually added environment variables to data source
@@ -153,7 +156,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.17";
+    public static final String PEP_CGI_VERSION = "2.18";
 
     private int _masterAccNum; // accession number the user requested
 
