@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/11 18:05:46  wenger
+  Arc() method now works in PSWindowRep class; put SetSmallFont() method
+  back into WindowRep classes for backwards compatibility for Opossum;
+  server example program tests more of the WindowRep methods than before;
+  removed 'not yet implemented' warnings from some PSWindowRep methods.
+
   Revision 1.4  1996/12/04 18:12:31  wenger
   Unimplemented methods in PSWindowRep now report an error but do not
   abort when called; fixed code in cslib server example that caused problems
@@ -144,14 +150,16 @@ class SampleWinServer : public WinServer {
     Coord yCenter1 =  y + 0.12 * h;
     Coord horizDiam = 0.2 * w;
     Coord vertDiam = 0.2 * h;
+    _winReps.GetWindowRep()->SetPattern(Pattern10);
     _winReps.GetWindowRep()->Arc(xCenter1, yCenter1, horizDiam, vertDiam,
       0.5, 2.8);
 
-    _winReps.GetWindowRep()->SetPattern(Pattern10);
     Coord xCenter2 = x + 0.75 * w;
     Coord yCenter2 = y + 0.12 * h;
     horizDiam = 0.3 * w;
     vertDiam = 0.2 * h;
+    _winReps.GetWindowRep()->SetPattern((Pattern) -Pattern1);
+    _winReps.GetWindowRep()->SetLineWidth(2);
     _winReps.GetWindowRep()->Arc(xCenter2, yCenter2, horizDiam, vertDiam,
       0.0, 6.3);
     _winReps.GetWindowRep()->SetPattern(Pattern0);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/15 20:22:30  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.14  1996/12/11 18:05:38  wenger
   Arc() method now works in PSWindowRep class; put SetSmallFont() method
   back into WindowRep classes for backwards compatibility for Opossum;
@@ -162,6 +165,8 @@ public:
     virtual void GetBgRGB(float &r, float &g, float &b);
     virtual void SetWindowBgRGB(float r, float g, float b) {}
 #endif
+
+    virtual void SetLineWidth(int w);
 
     virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
     /* Fill rectangles, variable width/height */

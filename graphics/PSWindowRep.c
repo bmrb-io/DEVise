@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/12/15 20:22:29  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.15  1996/12/11 18:05:37  wenger
   Arc() method now works in PSWindowRep class; put SetSmallFont() method
   back into WindowRep classes for backwards compatibility for Opossum;
@@ -354,7 +357,7 @@ void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 void PSWindowRep::SetFgColor(GlobalColor fg)
 {
 #if defined(DEBUG)
-  printf("PSWindowRep::SetFgColor(%ld)\n", fg);
+  printf("PSWindowRep::SetFgColor(%d)\n", fg);
 #endif
 
   WindowRep::SetFgColor(fg);
@@ -447,6 +450,24 @@ void PSWindowRep::GetBgRGB(float &r, float &g, float &b)
 
 #endif
 
+
+/*---------------------------------------------------------------------------*/
+void
+PSWindowRep::SetLineWidth(int w)
+{
+  WindowRep::SetLineWidth(w);
+
+#ifdef GRAPHICS
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+  // Scale width to points.
+  Coord tx3, ty3, tx4, ty4;
+  TransPixToPoint(0.0, 0.0, tx3, ty3);
+  TransPixToPoint((Coord) w, 0.0, tx4, ty4);
+
+  fprintf(printFile, "%f setlinewidth\n", fabs(tx4 - tx3));
+#endif
+}
 
 
 /* drawing primitives */
@@ -938,7 +959,7 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 {
 #ifdef DEBUG
   printf("PSWindowRep::Arc %.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
-	 x, y, w, h, startAngle, endAngle);
+	 xCenter, yCenter, horizDiam, vertDiam, startAngle, endAngle);
 #endif
   
   Coord tx, ty, tempX, tempY;
@@ -960,6 +981,12 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  Boolean fill = (GetPattern() != -Pattern1);
+
   /* Change coordinate system for non-circular arc. */
   if (!circular) {
     fprintf(printFile, "gsave\n");
@@ -969,12 +996,17 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", tx, ty / diamRatio);
 
-  fprintf(printFile, "%f %f rlineto\n", radius * cos(startAngle),
-    radius * sin(startAngle));
+  fprintf(printFile, "%f %f %s\n", radius * cos(startAngle),
+    radius * sin(startAngle), fill ? "rlineto" : "rmoveto");
   fprintf(printFile, "%f %f %f %f %f arc\n", tx, ty / diamRatio, radius,
     startDeg, endDeg);
   fprintf(printFile, "closepath\n");
-  fprintf(printFile, "fill\n");
+
+  if (fill) {
+    fprintf(printFile, "fill\n");
+  } else {
+    fprintf(printFile, "stroke\n");
+  }
 
   /* Set the coordinate system back the way it was. */
   if (!circular) {
@@ -1004,7 +1036,14 @@ void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
 #endif
 
+  // Scale width to points.
+  Coord tx3, ty3, tx4, ty4;
+  TransPixToPoint(0.0, 0.0, tx3, ty3);
+  TransPixToPoint(width, 0.0, tx4, ty4);
+
+  fprintf(printFile, "%f setlinewidth\n", fabs(tx4 - tx3));
   DrawLine(printFile, tx1, ty1, tx2, ty2);
+  fprintf(printFile, "0 setlinewidth\n");
 #endif
 }
 
