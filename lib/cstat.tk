@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1995/11/10 21:56:12  jussi
+#	Minor fix.
+#
 #	Revision 1.5  1995/11/10 21:45:08  jussi
 #	Changed interface to be through sources.tcl.
 #
@@ -81,8 +84,8 @@ proc get_cstat_selection {} {
     if {$owner != ".cstat.firmlst.list"} { return "" }
     set err [catch { set select [selection get] }]
     if {$err > 0} { return "" }
-    set sel [list [string trim [string range $select 0 6]] \
-	          [string trim [string range $select 8 37]]]
+    set sel [list [string trim [string range $select 34 39]] \
+	          [string trim [string range $select 0 32]]]
     return $sel
 }
 
@@ -128,13 +131,14 @@ proc cstat_scanFirmList {listb msg} {
     cstat_setupStatus .cstatstatus
 
     while {[gets $firms line] >= 0} {
-	set name [lindex $line 4]
-	set symbol  [lindex $line 5]
-	set industry [lindex $line 1]
-	set year [lindex $line 6]
-	set line [format "%-6.6s  %-30.30s  %4d  19%2d" $symbol $name \
-		$industry $year]
-	lappend cstat_firmlst $line
+#	set name [lindex $line 4]
+#	set symbol  [lindex $line 5]
+#	set industry [lindex $line 1]
+#	set year [lindex $line 6]
+#	set line [format "%-6.6s  %-30.30s  %4d  19%2d" $symbol $name \
+#		$industry $year]
+	
+	lappend cstat_firmlst [split $line ,]
 	incr cstat_numfirms
 	if {$cstat_numfirms % 500 == 0} {
 	    $msg configure -text "Database has $cstat_numfirms companies."
@@ -161,7 +165,14 @@ proc cstat_updateFirmListBox {listb} {
     $listb delete 0 end
     set n 0
     foreach sel $cstat_firmlst {
-	$listb insert end $sel
+	set name [string trim [lindex $sel 4] "\""]
+	set cusip [lindex $sel 2]
+	set symbol [lindex $sel 5]
+	set year [lindex $sel 6]
+	set listitem [format "%-32.32s  %-6.6s  %-6.6s  19%2d" $name $cusip \
+		$symbol $year]
+
+	$listb insert end $listitem
 	if {$n % 500 == 0} { update }
 	incr n
     }
