@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.38  2000/08/30 20:08:46  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.37  2000/05/16 13:54:32  wenger
   Found and fixed bug 587 (cursor size problem).
 
@@ -228,6 +234,7 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _partInDest = true;
   _allInDest = false;
   _oldPixelsValid = false;
+  _inMoveSource = false;
 
   View::InsertViewCallback(this);
 }
@@ -353,7 +360,11 @@ void DeviseCursor::FilterChanged(View *view, const VisualFilter &filter,
   printf("DeviseCursor(%s)::FilterChanged(%s)\n", GetName(), view->GetName());
 #endif
 
-  SatisfyConstraints();
+  // Only do the constraints check if a view relevant to this cursor has
+  // changed.
+  if ((_dst && view == _dst) || (_src && view == _src)) {
+    SatisfyConstraints();
+  }
 
   if (_dst && view == _src) {
     (void)_dst->DrawCursors();
@@ -380,7 +391,19 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
       width, height);
 #endif
 
-  if (!_src) return;
+  if (!_src) {
+    return;
+  }
+
+  if (_inMoveSource) {
+	// Since MoveSource() calls View::SetVisualFilter(), which will eventually
+	// call FilterChanged(), which calls SatisfyConstraints(), which calls
+	// MoveSource(), keep ourselves from getting too tangled up here.
+	// RKW 2000-09-11.
+    return;
+  }
+
+  _inMoveSource = true;
 
   VisualFilter filter;
   // Note: we must get the filter directly from the source view here
@@ -405,10 +428,14 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
 
   SatisfyConstraints(location);
 
-  filter.xLow = location.xCen - location.width / 2.0;
-  filter.xHigh = location.xCen + location.width / 2.0;
-  filter.yLow = location.yCen - location.height / 2.0;
-  filter.yHigh = location.yCen + location.height / 2.0;
+  if (_visFlag & VISUAL_X) {
+    filter.xLow = location.xCen - location.width / 2.0;
+    filter.xHigh = location.xCen + location.width / 2.0;
+  }
+  if (_visFlag & VISUAL_Y) {
+    filter.yLow = location.yCen - location.height / 2.0;
+    filter.yHigh = location.yCen + location.height / 2.0;
+  }
 
   if (!(filter == oldFilter)) {
     if (_dst) {
@@ -421,6 +448,8 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
       _src->SetVisualFilter(filter);
     }
   }
+
+  _inMoveSource = false;
 }
 
 void DeviseCursor::ReadCursorStore(WindowRep*w)
@@ -1206,8 +1235,12 @@ DeviseCursor::PartInDest(CursorLocation& location)
     if (outside && _dst->Mapped()) {
       // The cursor is outside the visual filter -- move it to the center
       // of the destination view.
-      location.xCen = (dFilter->xLow + dFilter->xHigh) / 2.0;
-      location.yCen = (dFilter->yLow + dFilter->yHigh) / 2.0;
+      if (_visFlag & VISUAL_X) {
+        location.xCen = (dFilter->xLow + dFilter->xHigh) / 2.0;
+	  }
+      if (_visFlag & VISUAL_Y) {
+        location.yCen = (dFilter->yLow + dFilter->yHigh) / 2.0;
+	  }
     }
   }
 }
@@ -1219,37 +1252,57 @@ DeviseCursor::AllInDest(CursorLocation &location)
   if (_dst) {
     const VisualFilter *filter = _dst->GetVisualFilter();
 
-    Coord xLo = location.xCen - (location.width / 2.0);
-    Coord xHi = location.xCen + (location.width / 2.0);
-	Coord yLo = location.yCen - (location.height / 2.0);
-	Coord yHi = location.yCen + (location.height / 2.0);
+    if (_visFlag & VISUAL_X) {
+      Coord xLo = location.xCen - (location.width / 2.0);
+      Coord xHi = location.xCen + (location.width / 2.0);
 
-    if (location.width > filter->xHigh - filter->xLow) {
-	  xLo = filter->xLow;
-	  xHi = filter->xHigh;
-	} else if (xLo < filter->xLow) {
-	  xLo = filter->xLow;
-	  xHi = xLo + location.width;
-	} else if (xHi > filter->xHigh) {
-	  xHi = filter->xHigh;
-	  xLo = xHi - location.width;
+	  Boolean changed = false;
+
+      if (location.width > filter->xHigh - filter->xLow) {
+	    xLo = filter->xLow;
+	    xHi = filter->xHigh;
+		changed = true;
+	  } else if (xLo < filter->xLow) {
+	    xLo = filter->xLow;
+	    xHi = xLo + location.width;
+		changed = true;
+	  } else if (xHi > filter->xHigh) {
+	    xHi = filter->xHigh;
+	    xLo = xHi - location.width;
+		changed = true;
+	  }
+
+	  if (changed) {
+	    location.xCen = (xLo + xHi) / 2.0;
+	    location.width = xHi - xLo;
+	  }
 	}
 
-    if (location.height > filter->yHigh - filter->yLow) {
-	  yLo = filter->yLow;
-	  yHi = filter->yHigh;
-	} else if (yLo < filter->yLow) {
-	  yLo = filter->yLow;
-	  yHi = yLo + location.height;
-	} else if (yHi > filter->yHigh) {
-	  yHi = filter->yHigh;
-	  yLo = yHi - location.height;
-	}
+    if (_visFlag & VISUAL_Y) {
+	  Coord yLo = location.yCen - (location.height / 2.0);
+	  Coord yHi = location.yCen + (location.height / 2.0);
 
-	location.xCen = (xLo + xHi) / 2.0;
-	location.width = xHi - xLo;
-	location.yCen = (yLo + yHi) / 2.0;
-	location.height = yHi - yLo;
+	  Boolean changed = false;
+
+      if (location.height > filter->yHigh - filter->yLow) {
+	    yLo = filter->yLow;
+	    yHi = filter->yHigh;
+		changed = true;
+	  } else if (yLo < filter->yLow) {
+	    yLo = filter->yLow;
+	    yHi = yLo + location.height;
+		changed = true;
+	  } else if (yHi > filter->yHigh) {
+	    yHi = filter->yHigh;
+	    yLo = yHi - location.height;
+		changed = true;
+	  }
+
+	  if (changed) {
+	    location.yCen = (yLo + yHi) / 2.0;
+	    location.height = yHi - yLo;
+	  }
+	}
   }
 }
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.27  2000/08/30 20:08:56  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.26  2000/02/16 18:51:20  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -278,6 +284,8 @@ private:
   int _oldPixY1;
   int _oldPixX2;
   int _oldPixY2;
+
+  Boolean _inMoveSource;
 };
 
 //******************************************************************************

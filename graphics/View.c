@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.229  2000/08/10 16:10:40  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.228  2000/07/20 18:52:53  wenger
   Added support for blank floating-point format for axes and mouse location.
 
@@ -2623,6 +2626,10 @@ void View::ReportViewDestroyed()
 
 void View::ReportFilterAboutToChange()
 {
+#if defined(DEBUG)
+  printf("View(%s)::ReportFilterAboutToChange()\n", GetName());
+#endif
+
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_viewCallbackList)
     return;

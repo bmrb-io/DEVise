@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/02/16 18:22:54  wenger
+  Better error messages.
+
   Revision 1.12  1998/12/10 21:53:16  wenger
   Devised now sends GIFs to JavaScreen on a per-view rather than per-window
   basis; GIF "dirty" flags are now also referenced by view rather than by
@@ -243,10 +246,11 @@ int listName::InitIterator(int backwards) {\
 \
 /* DEBUGGING FUNCTION : Print Iterators */ \
 void listName::PrintIterators() { \
-    printf("printing active iterators (%d)",_numIterators );\
+    printf("DList 0x%p printing active iterators (%d):\n", this, \
+	    _numIterators );\
     for (int i = 0; i < MaxIterators; i++) { \
 	if (_iterators[i].current != NULL) {\
-	   printf("iterator open %p\n", _iterators[i].current);\
+	   printf("  iterator open %p\n", _iterators[i].current);\
 	}\
     }\
 }\
