@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/08/09 00:54:45  donjerko
+  Added indexing of select-project unmaterialized views.
+
   Revision 1.17  1997/07/22 15:00:55  donjerko
   *** empty log message ***
 
@@ -63,13 +66,6 @@
 #include "exception.h"
 #include "site.h"
 #include "Utility.h"
-/*
-#ifdef NO_RTREE
-     #include "RTreeRead.dummy"
-#else
-     #include "RTreeRead.h"
-#endif
-*/
 
 const int INFINITY = INT_MAX;
 

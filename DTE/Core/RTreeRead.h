@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/07/22 15:00:53  donjerko
+  *** empty log message ***
+
   Revision 1.9  1997/06/21 22:48:01  donjerko
   Separated type-checking and execution into different classes.
 
@@ -36,9 +39,12 @@
 #define RTREE_READ_H
 
 #include "myopt.h"
-#include "RTree.h"
 #include "Iterator.h"
 #include "StandardRead.h"
+
+class gen_key_t;
+class genrtree_m;
+class gen_rt_cursor_t;
 
 struct RTreePred {
 	bool bounded[2];
@@ -181,44 +187,15 @@ class RTreeReadExec : public Iterator {
      int* rtreeFldLens;
 
 	char* dataContent;
-	gen_key_t ret_key;
+	gen_key_t* ret_key;
 	bool ridInKey;
 	int ridOffset;
 public:
 	RTreeReadExec(genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
 		int numKeyFlds, int numAddFlds, Tuple* tuple,
-		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition) :
-		rtree_m(rtree_m), cursor(cursor), dataSize(dataSize),
-		numKeyFlds(numKeyFlds), numAddFlds(numAddFlds),
-		tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
-		rtreeFldLens(rtreeFldLens){
-		
-		dataContent = new char[dataSize + sizeof(Offset) + 100];
-			// This extra space is required because of some bug in RTree.
-		
-		assert(ridPosition >= 0 && ridPosition < numKeyFlds + numAddFlds);
+		UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition);
 
-		ridOffset = 0;
-		if(ridPosition < numKeyFlds){
-			ridInKey = true;
-			for(int i = 0; i < ridPosition; i++){
-				ridOffset += rtreeFldLens[i];
-			}
-		}
-		else{
-			ridInKey = false;
-			for(int i = numKeyFlds; i < ridPosition; i++){
-				ridOffset += rtreeFldLens[i];
-			}
-		}
-	}
-	virtual ~RTreeReadExec(){
-		delete cursor;
-		delete [] tuple;
-		delete [] unmarshalPtrs;
-		delete [] rtreeFldLens;
-		delete [] dataContent;
-	}
+	virtual ~RTreeReadExec();
 	virtual void initialize() {}
 	virtual const Tuple* getNext();
 	virtual Offset getNextOffset();
@@ -247,9 +224,7 @@ public:
 		}
 		queryBox = NULL;
 	}
-	virtual ~RTreeIndex(){
-		delete queryBox;
-	}
+	virtual ~RTreeIndex();
 	bool canUse(BaseSelection* predicate);	// Throws exception
 	void write(ostream& out){
 		out << numFlds << " ";

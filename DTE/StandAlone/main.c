@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/07/30 21:41:23  donjerko
+  *** empty log message ***
+
   Revision 1.10  1997/06/16 16:05:22  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -62,9 +65,7 @@ int main(int argc, char** argv){
 	iTimer.reset();
 	cout << "Query in main is: " << query << endl; 
 
-#ifndef NO_RTREE
      initialize_system(VolumeName, RTreeFile, VolumeSize);
-#endif
 
 	Engine engine(query);
 	TRY(engine.optimize(), 0);
@@ -93,9 +94,7 @@ int main(int argc, char** argv){
 	}
 
      // shutdown
-#ifndef NO_RTREE
      shutdown_system(VolumeName, RTreeFile, VolumeSize);
-#endif
 
 	LOG(logFile << "Query completed at ");
 	LOG(iTimer.display(logFile));

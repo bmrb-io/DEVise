@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/07/30 21:39:26  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.18  1997/07/22 15:00:57  donjerko
   *** empty log message ***
 
@@ -68,11 +71,7 @@
 #include "catalog.h"
 #include "ParseTree.h" 	// for getRootCatalog
 #include "ExecOp.h"
-#ifdef NO_RTREE
-     #include "RTreeRead.dummy"
-#else
-     #include "RTreeRead.h"
-#endif
+#include "RTreeRead.h"
 
 List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator){
 	assert(iterator);

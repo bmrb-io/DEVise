@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/07/30 21:39:17  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.12  1997/07/22 15:00:52  donjerko
   *** empty log message ***
 
@@ -55,16 +58,13 @@
 #include "Iterator.h"
 #include "Aggregates.h"
 
-#ifndef NO_RTREE
-	#include "RTree.h"
-#endif
+#include "RTree.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
 Site* IndexParse::createSite(){
 
-#ifndef NO_RTREE
 	LOG(logFile << "Creating ");
 	if(standAlone){
 		LOG(logFile << "StandAlone ");
@@ -293,6 +293,5 @@ Site* IndexParse::createSite(){
 		delete minExs[i];
 		delete maxExs[i];
 	}
-#endif
 	return new Site();
 }

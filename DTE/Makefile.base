@@ -20,7 +20,7 @@ include ../../Makefile.common
 
 DTE_DIR = ../../DTE
 
-#NO_RTREE = 1
+NO_RTREE = 1
 #NO_UNIDATA = 1
 
 PERL_INCL = -I$(PERL_CORE)
@@ -47,17 +47,13 @@ CFLAGS = $(ARCH_FLAGS) $(ARCH_ENDIAN) $(DTE_INCLUDES)\
 	-G
 #	-fexternal-templates \
 
-ifdef NO_RTREE
-	CFLAGS += -DNO_RTREE
-endif
-
 ifdef DTE_DEBUG
 	CFLAGS += -g
 endif
 
 CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c \
-	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c Util.c \
+	Engine.c Aggregates.c joins.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c \
 	ExecOp.c Inserter.c TypeCheck.c
@@ -65,9 +61,9 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 #	ApParseCat.c FunctionRead.c
 
 ifdef NO_RTREE
-	CORE_SRC += RTreeRead.dummy.c
+	CORE_SRC += RTreeRead.dummy.c IndexParse.dummy.c
 else
-	CORE_SRC += RTreeRead.c
+	CORE_SRC += RTreeRead.c IndexParse.c
 endif
 
 ifdef NO_UNIDATA
@@ -87,7 +83,7 @@ DEVISE_SPECIFIC_SRC = \
 	
 GUI_SRC = CatalogComm.c DTEControl.c 
 
-GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_SRC:.C=.o) \
+GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_OBJ) \
 	ParseAPIDTE_SA.o
 
 DEVREAD_OBJ = \
@@ -130,8 +126,11 @@ RTREE_SRC = \
 	RTree.C genrtree.C port_genrtree.C type_compat.C \
 	bitmap.C key.C box.C heap.C
 
+RTREE_OBJ = $(RTREE_SRC:.C=.o)
+
 ifdef NO_RTREE
-	RTREE_SRC =
+	RTREE_SRC = RTreeInit.dummy.c
+	RTREE_OBJ = $(RTREE_SRC:.c=.o)
 endif
 
 RTREE_UTIL = FormatVolume.c
@@ -140,10 +139,10 @@ STAND_ALONE_SRC = main.c
 
 SCRIPT_SRC = post-query.c util.c
 
-SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(RTREE_SRC:.C=.o) $(SCRIPT_SRC:.c=.o) \
+SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(RTREE_OBJ) $(SCRIPT_SRC:.c=.o) \
 	scriptServer.o
 
-SCRIPTSERVER_OBJ = $(CORE_SRC:.c=.o) $(RTREE_SRC:.C=.o) $(SCRIPT_SRC:.c=.o) \
+SCRIPTSERVER_OBJ = $(CORE_SRC:.c=.o) $(RTREE_OBJ) $(SCRIPT_SRC:.c=.o) \
 	scriptServer_CS.o
 
 SCRIPTCLIENT_SRC = scriptClient.c
@@ -152,10 +151,10 @@ SCRIPTCLIENT_OBJ = $(SCRIPTCLIENT_SRC:.c=.o)
 
 LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
-LIBOBJ = $(LIBSRC:.c=.o) $(RTREE_SRC:.C=.o)
+LIBOBJ = $(LIBSRC:.c=.o) $(RTREE_OBJ)
 
 STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
-	$(RTREE_SRC:.C=.o)
+	$(RTREE_OBJ)
 
 LIBNAME = libdte.a
 

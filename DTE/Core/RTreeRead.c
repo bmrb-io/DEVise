@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/07/22 15:00:53  donjerko
+  *** empty log message ***
+
   Revision 1.9  1997/06/21 22:48:00  donjerko
   Separated type-checking and execution into different classes.
 
@@ -30,6 +33,50 @@
  */
 
 #include "RTreeRead.h"
+#include "RTree.h"
+
+RTreeReadExec::RTreeReadExec(
+	genrtree_m* rtree_m, gen_rt_cursor_t* cursor, int dataSize,
+	int numKeyFlds, int numAddFlds, Tuple* tuple,
+	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition) :
+	rtree_m(rtree_m), cursor(cursor), dataSize(dataSize),
+	numKeyFlds(numKeyFlds), numAddFlds(numAddFlds),
+	tuple(tuple), unmarshalPtrs(unmarshalPtrs), 
+	rtreeFldLens(rtreeFldLens){
+	
+	ret_key = new gen_key_t;
+	dataContent = new char[dataSize + sizeof(Offset) + 100];
+		// This extra space is required because of some bug in RTree.
+	
+	assert(ridPosition >= 0 && ridPosition < numKeyFlds + numAddFlds);
+
+	ridOffset = 0;
+	if(ridPosition < numKeyFlds){
+		ridInKey = true;
+		for(int i = 0; i < ridPosition; i++){
+			ridOffset += rtreeFldLens[i];
+		}
+	}
+	else{
+		ridInKey = false;
+		for(int i = numKeyFlds; i < ridPosition; i++){
+			ridOffset += rtreeFldLens[i];
+		}
+	}
+}
+
+RTreeReadExec::~RTreeReadExec(){
+	delete ret_key;
+	delete cursor;
+	delete [] tuple;
+	delete [] unmarshalPtrs;
+	delete [] rtreeFldLens;
+	delete [] dataContent;
+}
+
+RTreeIndex::~RTreeIndex(){
+	delete queryBox;
+}
 
 Iterator* RTreeIndex::createExec(){
 	assert(rTreeQuery);
@@ -125,18 +172,19 @@ const Tuple* RTreeReadExec::getNext(){
 	int offsetLen;
 
 	assert(cursor);
-	if (rtree_m->fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
+	assert(ret_key);
+	if (rtree_m->fetch(*cursor, *ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
 	}
 	Offset offset;
 	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
 	assert(tuple);
 	if(!eof){
-		// ret_key.print();
+		// ret_key->print();
 		int offs = 0;
 		int numFlds = numKeyFlds + numAddFlds;
 		for(int i = 0; i < numKeyFlds; i++){
-			char* from = ((char*) ret_key.data) + offs;
+			char* from = ((char*) ret_key->data) + offs;
 			unmarshalPtrs[i](from, tuple[i]);
 			offs += rtreeFldLens[i];
 		}
@@ -161,7 +209,8 @@ Offset RTreeReadExec::getNextOffset(){
 	int offsetLen;
 
 	assert(cursor);
-	if (rtree_m->fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
+	assert(ret_key);
+	if (rtree_m->fetch(*cursor, *ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
 	}
 	Offset offset;
@@ -179,7 +228,7 @@ RecId RTreeReadExec::getRecId(){
 	int recId;
 	char* from = NULL;
 	if(ridInKey){
-		from = ((char*) ret_key.data) + ridOffset;
+		from = ((char*) ret_key->data) + ridOffset;
 	}
 	else{
 		from = ((char*) dataContent) + ridOffset;
