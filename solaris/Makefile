@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.51  1999/11/16 17:01:51  wenger
+# Removed all DTE-related conditional compiles; changed version number to
+# 1.7.0 because of removing DTE; removed DTE-related schema editing and
+# data source creation GUI.
+#
 # Revision 1.50  1999/10/12 17:57:59  wenger
 # Added devised.pure target.
 #
@@ -184,7 +189,7 @@ LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
 #devread is obsolete
 #attrproj is broken
 
-MODULES = $(LIBMODULES) cslib generic
+MODULES = $(LIBMODULES) generic
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
 	csgroup
