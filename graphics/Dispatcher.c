@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.46  1998/08/28 22:01:08  wenger
+  Made Dispatcher::WaitForQueries() function -- improved over earlier
+  versions because it also checks the callback list (this fixes bug 367);
+  fixed other piled-related JavaScreen support problems; JAVAC_OpenSession
+  closes any existing session before opening the new one.
+
   Revision 1.45  1998/06/23 17:51:36  wenger
   Added client timeout to Devise -- quits if no commands from client
   within specified period.
@@ -430,7 +436,12 @@ void Dispatcher::RunNoReturn()
 
 void Dispatcher::Terminate(int sig)
 {
-  if (dispatcher._firstIntr) {
+  if (dispatcher._quit) {
+    // Can now quit immediately (without looping again) on third interrupt
+    // in case we're hung in a loop somewhere.
+    printf("\nReceived interrupt. Terminating program immediately.\n");
+    CheckUserInterrupt();
+  } else if (dispatcher._firstIntr) {
     printf("\nReceived interrupt. Terminating program.\n");
     dispatcher._quit = true;
   } else {
