@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  1999/09/01 16:11:00  wenger
+  New version of JAVAC_CreateView command (with more title info) is in place
+  but currently disabled.
+
   Revision 1.71  1999/08/25 14:56:16  wenger
   More improvements to JavaScreen argument handling; assertion failures are
   written to debug log.
@@ -378,9 +382,10 @@
 #include "CursorClassInfo.h"
 #include "PileStack.h"
 #include "DebugLog.h"
+#include "ElapsedTime.h"
 
 #define DEBUG_LOG
-#define JS_TIMER 0
+#define JS_TIMER 1
 #define MONOLITHIC_TEST 0
 #define NO_BATCH 0 // Non-zero for test only.
 
@@ -1059,11 +1064,8 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 #endif
 
 #if JS_TIMER
-    struct timeval startTime;
-	int timeResult = gettimeofday(&startTime, NULL);
-	if (timeResult < 0) {
-		perror("gettimeofday");
-	}
+	ElapsedTime et;
+	et.Start();
 #endif
 
 	// Close the current session, if any, to prevent possible name conflicts
@@ -1113,6 +1115,10 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	SetGDataFiles();
 
 	// Wait for all queries to finish before continuing.
+#if JS_TIMER
+	et.ReportTime("Before WaitForQueries()");
+#endif
+
 #if defined(DEBUG_LOG)
     DebugLog::DefaultLog()->Message("Before WaitForQueries()\n");
 #endif
@@ -1122,6 +1128,10 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 
 #if defined(DEBUG_LOG)
     DebugLog::DefaultLog()->Message("After WaitForQueries()\n");
+#endif
+
+#if JS_TIMER
+	et.ReportTime("After WaitForQueries()");
 #endif
 
 	// Now re-create the view lists so that we get the correct view symbol
@@ -1157,14 +1167,7 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
     }
 
 #if JS_TIMER
-    struct timeval stopTime;
-	timeResult = gettimeofday(&stopTime, NULL);
-	if (timeResult < 0) {
-		perror("gettimeofday");
-	}
-	double time1 = startTime.tv_sec + startTime.tv_usec * 1.0e-6;
-	double time2 = stopTime.tv_sec + stopTime.tv_usec * 1.0e-6;
-	printf("  OpenSession took %g sec.\n", time2 - time1);
+	et.ReportTime("OpenSession");
 #endif
 
 #if defined(DEBUG_LOG)
@@ -1673,6 +1676,11 @@ JavaScreenCmd::SendWindowData(const char* fileName)
     sprintf(logBuf, "JavaScreenCmd::SendWindowData(%s)\n", fileName);
 #endif
 
+#if defined(JS_TIMER)
+    ElapsedTime et;
+	et.Start();
+#endif
+
 	ControlCmdType	status = DONE;
 #if MONOLITHIC_TEST
 	return status;
@@ -1731,6 +1739,12 @@ JavaScreenCmd::SendWindowData(const char* fileName)
     DebugLog::DefaultLog()->Message(logBuf);
 #endif
 
+#if defined(JS_TIMER)
+	char timeBuf[MAXPATHLEN * 2];
+	sprintf(timeBuf, "Sending file <%s>", fileName);
+	et.ReportTime(timeBuf);
+#endif
+
 	return status;
 }
 
@@ -1741,6 +1755,10 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 #if defined (DEBUG_LOG)
     sprintf(logBuf, "JavaScreenCmd::SendChangedViews(%d)\n", update);
     DebugLog::DefaultLog()->Message(logBuf);
+#endif
+#if JS_TIMER
+	ElapsedTime et;
+	et.Start();
 #endif
 
     JavaScreenCmd::ControlCmdType result = DONE;
@@ -1899,6 +1917,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "End of SendChangedViews; result = %d\n", result);
     DebugLog::DefaultLog()->Message(logBuf);
+#endif
+#if JS_TIMER
+	et.ReportTime("Sending changed views");
 #endif
 
 	return result;

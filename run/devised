@@ -27,6 +27,7 @@ setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    /p/devise/taodb/world/solaris/generic/devised
 setenv DEVISE_PALETTE	$DEVISE_ROOT/palette
 setenv DEVISE_COLLABORATOR coral
+setenv DEVISE_LOG_DIR		$DEVISE_TMP
 
 if (! -f $DEVISE_EXEC) then
   echo "Cannot find Devise executable ($DEVISE_EXEC)."

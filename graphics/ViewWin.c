@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/06/15 18:09:44  wenger
+  Added dumping of ViewWin objects to help with pile debugging.
+
   Revision 1.59  1999/06/11 20:46:49  wenger
   Fixed bug that caused DEVise to crash when closing the
   SoilSci/TwoStations.ds demo session.
@@ -318,6 +321,7 @@
 #include "ETkIfc.h"
 #include "RecordLink.h"
 #include "PileStack.h"
+#include "ElapsedTime.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
@@ -328,6 +332,7 @@
 
 #define DIRECT_POSTSCRIPT 1
 #define LAYOUT 1
+#define VIEWWIN_TIMER
 
 //******************************************************************************
 // Constructors and Destructors
@@ -428,6 +433,11 @@ ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
 {
   DO_DEBUG(printf("ViewWin(%s)::ExportImage(_parent = %p, filename = %s)\n",
     GetName(), _parent, filename));
+#if defined(VIEWWIN_TIMER)
+  ElapsedTime et;
+  et.Start();
+#endif
+
   DevStatus result = StatusOk;
 
 #if 0 //TEMP
@@ -495,6 +505,12 @@ ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
   {
     GetWindowRep()->ExportImage(format, filename);
   }
+
+#if defined(VIEWWIN_TIMER)
+  char timeBuf[256];
+  sprintf(timeBuf, "View(%s)::ExportImage()", GetName());
+  et.ReportTime(timeBuf);
+#endif
 
   return result;
 }

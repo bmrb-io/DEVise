@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/08/13 17:22:31  wenger
+  Custom view layouts are now saved to session files; removed now unused
+  TileLayout code.
+
   Revision 1.56  1999/07/21 18:51:00  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -303,9 +307,11 @@
 #include "ViewGeom.h"
 #include "ViewGraph.h"
 #include "Layout.h"
+#include "ElapsedTime.h"
 
 
 //#define DEBUG
+#define SESSION_TIMER
 
 // Note: we're defining this class so we have a ControlPanel * to pass
 // to ParseAPI so it can return its results.
@@ -690,6 +696,11 @@ Session::CreateTData(char *name)
   printf("Session::CreateTData(%s)\n", name);
 #endif
 
+#if defined(SESSION_TIMER)
+  ElapsedTime et;
+  et.Start();
+#endif
+
   CmdSource cmdSrc(CmdSource::INTERNAL, CLIENT_INVALID);
   CmdDescriptor cmdDes(cmdSrc, CmdDescriptor::UNDEFINED);
 
@@ -876,6 +887,12 @@ Session::CreateTData(char *name)
   }
 
   if (catEntry != NULL) free(catEntry);
+
+#if defined(SESSION_TIMER)
+  char timeBuf[256];
+  sprintf(timeBuf, "Creating TData <%s>", name);
+  et.ReportTime(timeBuf);
+#endif
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

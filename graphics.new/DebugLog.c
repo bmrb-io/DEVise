@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/07/22 20:10:57  wenger
+  Minor fixes for Linux compile.
+
   Revision 1.5  1999/07/16 21:36:06  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -47,6 +50,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <errno.h>
 #include <unistd.h>
@@ -165,8 +169,12 @@ DebugLog *
 DebugLog::DefaultLog()
 {
   if (_defaultLog == NULL) {
-    char filename[128];
-    sprintf(filename, "devise_debug_log_%ld", (long)getpid());
+    char *logDir = getenv("DEVISE_LOG_DIR");
+    if (!logDir) {
+      logDir = ".";
+    }
+    char filename[MAXPATHLEN];
+    sprintf(filename, "%s/devise_debug_log_%ld", logDir, (long)getpid());
     _defaultLog = new DebugLog(filename);
   }
 

@@ -7,6 +7,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1998/06/17 17:20:50  wenger
+#  Devised now sends "real" session file list to JavaScreen.
+#
 #  Revision 1.11  1998/03/04 18:41:43  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -81,7 +84,7 @@ CFLAGS_T = $(ARCH_FLAGS) $(UTILS_INCLUDES) $(OPTFLAG) \
 	-Wall -Wno-unused -DHAVE_CONFIG_H
 CFLAGS = $(CFLAGS_T) $(TEMPLATE_FLAGS)
 
-UTILS_SRC = BooleanArray.c ArgList.c
+UTILS_SRC = BooleanArray.c ArgList.c ElapsedTime.c
 ifneq ($(IMPLICIT_TEMPLATES),1)
     UTILS_SRC += templates.C
 endif
