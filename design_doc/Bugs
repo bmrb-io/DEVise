@@ -2874,6 +2874,13 @@ Num Date        Status  Description
 			from active sockets list in JSPoP. (rkw)
 			(Fixed by rkw, 10/22/01.)
 
+719 10/22/01	OPEN	JavaScreen: the JSPoP doesn't clean up properly after
+			receiving a connection request from a client with an
+			invalid ID. (rkw)
+
+720 10/22/01	OPEN	JavaScreen: all clients are blocked if the JSPoP
+			blocks while reading a client command. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
