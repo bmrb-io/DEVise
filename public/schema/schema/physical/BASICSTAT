@@ -1,0 +1,14 @@
+type BASICSTAT ascii
+comment //
+separator ' '
+sorted attr Color int
+attr Count int
+attr Mean double
+attr Max double
+attr Min double
+attr ZVal85Low double
+attr ZVal85High double
+attr ZVal90Low double
+attr ZVal90High double
+attr ZVal95Low double
+attr ZVal95High double

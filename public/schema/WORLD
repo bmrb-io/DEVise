@@ -1,0 +1,7 @@
+type WORLD ascii
+comment //
+separator ','
+attr X float
+attr Y float
+attr DX float
+attr DY float

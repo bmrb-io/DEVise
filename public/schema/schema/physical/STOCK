@@ -1,0 +1,10 @@
+type MIT_STOCK ascii
+comment //
+whitespace '	 '
+attr YYMMDD int
+attr High double
+attr Low double
+attr Close double
+attr Volume double
+attr PriceVolume double
+sorted compattr DATE date hi 'Jan 31 1996 00:00:00' lo 'Jan 1 1993 00:00:00'

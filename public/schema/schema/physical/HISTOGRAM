@@ -1,0 +1,5 @@
+type HISTOGRAM ascii
+comment //
+separator ' '
+sorted attr Bucket double
+attr Value int

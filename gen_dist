@@ -1,0 +1,61 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Generate tar files for DEVise distribution.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+if ($#argv > 0) then
+  set version = $1
+else
+  echo "Usage: $0 <version>"
+  exit 1
+endif
+
+set target = /p/devise/ftp/Devise-$version
+
+if (! -d $target) then
+  mkdir $target
+endif
+
+
+set src = /p/devise/dist/hpux-hppa
+set dest = $target/hpux-hppa.tar.gz
+cd $src
+tar cvfzh $dest .
+
+set src = /p/devise/dist/solaris-intel
+set dest = $target/solaris-intel.tar.gz
+cd $src
+tar cvfzh $dest .
+
+set src = /p/devise/dist/solaris-sparc
+set dest = $target/solaris-sparc.tar.gz
+cd $src
+tar cvfzh $dest .
+
+set src = /p/devise/dist/sunos-sparc
+set dest = $target/sunos-sparc.tar.gz
+cd $src
+tar cvfzh $dest .
+
+
+echo ""
+echo Done!

@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/09/05 20:05:23  wenger
+#  Put the 'public' and 'run' files into CVS; the release script now installs
+#  them.
+#
 #  Revision 1.7  1996/08/14 21:22:33  wenger
 #  Minor dispatcher cleanups, etc.  Fixed release script to release
 #  statically-linked executables for HP and Sun.
@@ -230,21 +234,7 @@ if (! -f $target/bin) then
   ln -s @sys $target/bin
 endif
 
-set miscfiles = "public/devise.rc \
-	public/pvm.script--copy.and.customize \
-	public/run.script---copy.and.customize public/sample_restore_session"
-
-foreach file ($miscfiles)
-  if ($file == "") then
-    continue
-  endif
-  if (! -f $file) then
-    echo File $file missing. Cannot proceed with release procedure.
-    exit 1
-  else
-    cp -p $file $target
-  endif
-end
+tar cv --exclude=CVS public | tar xv --directory=$target/..
 
 cp run_public/devise $target/devisepub
 

@@ -1,0 +1,101 @@
+# DEVise startHeader
+# file type: session
+# file date: Aug  3 1996 11:46:42
+# DEVise version: 1.1.3
+# DEVise date: Aug  3 1996
+# DEVise endHeader
+
+# Import schemas
+DEVise importFileType ../schema/WORLD
+
+# Layout mode
+DEVise changeMode 0
+
+# Create views
+set view_1 {Data View}
+DEVise create view {Scatter} $view_1 -179.870000 179.450000 -85.400000 100.000000 Black AntiqueWhite
+DEVise setLabel $view_1 0 12 {}
+DEVise setViewStatistics $view_1 0000000
+DEVise setViewDimensions $view_1 2
+DEVise setViewSolid3D $view_1 2
+DEVise setViewXYZoom $view_1 1
+DEVise setViewDisplayDataValues $view_1 0
+DEVise setViewPileMode $view_1 0
+DEVise setViewOverrideColor $view_1 0 0
+
+scanDerivedSources
+
+# Import file (Create TData)
+
+set loadPixmap 1
+
+if { $template } {
+	set loadPixmap 0
+	set tdata_1 [ GetTDataTemplate WORLD 1 1 ]
+	if {$tdata_1 == ""} {
+		return 0
+	}
+} else {
+	set tdata_1 {World Outline}
+	set source [OpenDataSource $tdata_1]
+	if {$source == ""} {
+		return 0
+	}
+	set sname [lindex $source 0]
+	set param [lindex $source 1]
+	set stype [lindex $source 2]
+	DEVise create tdata {WORLD} $sname $stype $param
+	if {$sname != $tdata_1} {
+		set loadPixmap 0
+		set tdata_1 $sname
+	}
+}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {Y_vs_X}
+
+# Create mapping instances (GData)
+set map_1 [ format "%s#Y_vs_X" $tdata_1 ]
+DEVise create mapping {Y_vs_X} $tdata_1 $map_1 {} {$X} {$Y} {} 3 1 0 0 7 {$DX} {$DY} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth $map_1 {1}
+
+# Create windows
+DEVise create {window} {TileLayout} {Map of the World} 0.116406 0.191406 0.500000 0.500000
+
+# Setup window layouts
+DEVise setWindowLayout {Map of the World} -1 -1 0
+
+# Create Links
+
+# Create Cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay $view_1 X 1
+DEVise setAxisDisplay $view_1 Y 1
+
+# Put action into view
+
+# Link views
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping $view_1 $map_1
+
+# Insert views into windows
+DEVise insertWindow $view_1 {Map of the World}
+
+# Init history of view
+DEVise clearViewHistory $view_1
+DEVise insertViewHistory $view_1 {-179.87} {-85.40} {179.45} {100.00} {0}
+
+# Set camera location for each view
+DEVise set3DLocation $view_1 4.6 4 -4 0 0 0
+
+return 1

@@ -1,0 +1,14 @@
+# Schema for 3D test case
+type Generic-Schema ascii
+comment //
+separator '	'
+# ------------------------------------------
+attr X double
+attr Y double
+attr Z double
+attr Color int
+attr Shape int 
+attr size  int
+attr Shape_width  double
+attr Shape_height double
+attr Shape_depth  double

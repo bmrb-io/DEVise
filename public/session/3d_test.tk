@@ -1,0 +1,138 @@
+# DEVise startHeader
+# file type: session
+# file date: Aug  3 1996 10:53:04
+# DEVise version: 1.1.3
+# DEVise date: Aug  3 1996
+# DEVise endHeader
+
+# Import schemas
+DEVise importFileType ../schema/3d_test.schema
+
+# Layout mode
+DEVise changeMode 0
+
+# Create views
+set view_1 {Y vs. recId}
+DEVise create view {SortedX} $view_1 -1.000000 15.000000 0.000000 100.000000 Black white
+DEVise setLabel $view_1 0 12 {}
+DEVise setViewStatistics $view_1 0000000
+DEVise setViewDimensions $view_1 3
+DEVise setViewSolid3D $view_1 1
+DEVise setViewXYZoom $view_1 1
+DEVise setViewDisplayDataValues $view_1 0
+DEVise setViewPileMode $view_1 0
+DEVise setViewOverrideColor $view_1 0 0
+set view_2 {Y vs. recId 2}
+DEVise create view {SortedX} $view_2 -1.000000 15.000000 -1.000000 15.000000 Black white
+DEVise setLabel $view_2 1 16 {Three-dimensional view}
+DEVise setViewStatistics $view_2 0000000
+DEVise setViewDimensions $view_2 3
+DEVise setViewSolid3D $view_2 2
+DEVise setViewXYZoom $view_2 1
+DEVise setViewDisplayDataValues $view_2 0
+DEVise setViewPileMode $view_2 0
+DEVise setViewOverrideColor $view_2 0 0
+set view_3 {X vs. recId}
+DEVise create view {SortedX} $view_3 -1.000000 15.000000 0.000000 100.000000 Black white
+DEVise setLabel $view_3 0 12 {}
+DEVise setViewStatistics $view_3 0000000
+DEVise setViewDimensions $view_3 3
+DEVise setViewSolid3D $view_3 1
+DEVise setViewXYZoom $view_3 1
+DEVise setViewDisplayDataValues $view_3 0
+DEVise setViewPileMode $view_3 0
+DEVise setViewOverrideColor $view_3 0 0
+
+scanDerivedSources
+
+# Import file (Create TData)
+
+set loadPixmap 1
+
+if { $template } {
+	set loadPixmap 0
+	set tdata_1 [ GetTDataTemplate Generic-Schema 1 1 ]
+	if {$tdata_1 == ""} {
+		return 0
+	}
+} else {
+	set tdata_1 {3d_test.dat}
+	set source [OpenDataSource $tdata_1]
+	if {$source == ""} {
+		return 0
+	}
+	set sname [lindex $source 0]
+	set param [lindex $source 1]
+	set stype [lindex $source 2]
+	DEVise create tdata {Generic-Schema} $sname $stype $param
+	if {$sname != $tdata_1} {
+		set loadPixmap 0
+		set tdata_1 $sname
+	}
+}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {Y_vs_recId}
+DEVise createMappingClass {Default}
+
+# Create mapping instances (GData)
+set map_1 [ format "%s#Y_vs_recId" $tdata_1 ]
+DEVise create mapping {Y_vs_recId} $tdata_1 $map_1 {} {$recId} {$Y} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth $map_1 {1}
+
+set map_2 [ format "%s#Y_vs_recId 2" $tdata_1 ]
+DEVise create mapping {Y_vs_recId} $tdata_1 $map_2 {} {$X} {$Y} {$Z} {$Color} 1 0 0 0 {$Shape_width} {$Shape_height} {$Shape_depth} {} {} {} {} {} {} {}
+DEVise setPixelWidth $map_2 {1}
+
+set map_3 [ format "%s#Default" $tdata_1 ]
+DEVise create mapping {Default} $tdata_1 $map_3 {} {$recId} {$X} {} 2 1 0 0 5 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth $map_3 {1}
+
+# Create windows
+DEVise create {window} {TileLayout} {3d_test.dat (Auto) 2} 0.113281 0.221680 0.554688 0.609375
+
+# Setup window layouts
+DEVise setWindowLayout {3d_test.dat (Auto) 2} -1 1 0
+
+# Create Links
+DEVise create {link} {Visual_Link} {recId Link} 1
+
+# Create Cursors
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+DEVise setAxisDisplay $view_1 X 0
+DEVise setAxisDisplay $view_1 Y 1
+DEVise setAxisDisplay $view_2 X 0
+DEVise setAxisDisplay $view_2 Y 1
+DEVise setAxisDisplay $view_3 X 0
+DEVise setAxisDisplay $view_3 Y 1
+
+# Put action into view
+
+# Link views
+DEVise insertLink {recId Link} $view_1
+DEVise insertLink {recId Link} $view_2
+DEVise insertLink {recId Link} $view_3
+
+# Put views in cursors
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping $view_1 $map_1
+DEVise insertMapping $view_2 $map_2
+DEVise insertMapping $view_3 $map_3
+
+# Insert views into windows
+DEVise insertWindow $view_2 {3d_test.dat (Auto) 2}
+
+# Set camera location for each view
+DEVise set3DLocation $view_1 4.6 4 -4 0 0 0
+DEVise set3DLocation $view_2 5.13 3.78212 -2.8946 0 0 0
+DEVise set3DLocation $view_3 4.6 4 -4 0 0 0
+
+return 1
