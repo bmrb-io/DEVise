@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/27 18:12:43  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.7  1996/06/27 15:49:35  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -66,7 +71,7 @@ TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
   _recSize = recSize;
   _tdata = NULL;
 
-  // compute size of physical record (excluding attributes)
+  // compute size of physical record (excluding composite attributes)
 
   _physRecSize = 0;
   _attrList->InitIterator();
@@ -83,12 +88,14 @@ TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
 
 TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
 						       char *name,
-						       char *alias,
+						       char *type,
+                                                       char *param,
 						       TData *tdata)
 {
   _className = className;
   _name = name;
-  _alias = alias;
+  _type = type;
+  _param = param;
   _tdata = tdata;
 }
 
@@ -103,34 +110,49 @@ char *TDataBinaryInterpClassInfo::ClassName()
   return _className;
 }
 
-static char buf1[256], buf2[256];
-static char *args[2];
+static char buf[3][256];
+static char *args[3];
 
 void TDataBinaryInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 3;
   argv = args;
-  args[0] = buf1;
-  args[1] = buf2;
+  args[0] = buf[0];
+  args[1] = buf[1];
+  args[2] = buf[2];
   
-  strcpy(buf1, "File {foobar}");
-  strcpy(buf2, "Alias {foobar}");
+  strcpy(buf[0], "Name {foobar}");
+  strcpy(buf[1], "Type {foobar}");
+  strcpy(buf[2], "Param {foobar}");
 }
 
 ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-  DOASSERT(argc == 2, "Invalid parameters");
+  if (argc != 2 && argc != 3)
+    return (ClassInfo *)NULL;
 
-  char *name = CopyString(argv[0]);
-  char *alias = CopyString(argv[1]);
-  TDataBinaryInterp *tdata = new TDataBinaryInterp(name, alias, _recSize,
-						   _physRecSize, _attrList);
-  return new TDataBinaryInterpClassInfo(_className, name, alias, tdata);
+  char *name, *type, *param;
+
+  if (argc == 2) {
+    name = CopyString(argv[1]);
+    type = CopyString("UNIXFILE");
+    param = CopyString(argv[0]);
+  } else {
+    name = CopyString(argv[0]);
+    type = CopyString(argv[1]);
+    param = CopyString(argv[2]);
+  }
+
+  TDataBinaryInterp *tdata = new TDataBinaryInterp(name, type,
+                                                   param, _recSize,
+                                                   _physRecSize,
+                                                   _attrList);
+  return new TDataBinaryInterpClassInfo(_className, name, type, param, tdata);
 }
 
 char *TDataBinaryInterpClassInfo::InstanceName()
 {
-  return _alias;
+  return _name;
 }
 
 void *TDataBinaryInterpClassInfo::GetInstance()
@@ -140,17 +162,18 @@ void *TDataBinaryInterpClassInfo::GetInstance()
 
 void TDataBinaryInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 3;
   argv = args;
   args[0] = _name;
-  args[1] = _alias;
+  args[1] = _type;
+  args[2] = _param;
 }
 #endif
 
-TDataBinaryInterp::TDataBinaryInterp(char *name, char *alias, int recSize,
+TDataBinaryInterp::TDataBinaryInterp(char *name, char *type,
+                                     char *param, int recSize,
 				     int physRecSize, AttrList *attrs) :
-     TDataBinary(name, alias, recSize, physRecSize),
-     _attrList(*attrs)
+     TDataBinary(name, type, param, recSize, physRecSize), _attrList(*attrs)
 {
 #ifdef DEBUG
   printf("TDataBinaryInterp %s, recSize %d, physRecSize %d\n",
@@ -160,7 +183,6 @@ TDataBinaryInterp::TDataBinaryInterp(char *name, char *alias, int recSize,
   _recInterp = new RecInterp();
   _recInterp->SetAttrs(attrs);
   
-  _name = name;
   _recSize = recSize;
   _physRecSize = physRecSize;
   _numAttrs = _numPhysAttrs = _attrList.NumAttrs();
@@ -184,16 +206,16 @@ TDataBinaryInterp::~TDataBinaryInterp()
 {
 }
 
-void TDataBinaryInterp::InvalidateCache()
+void TDataBinaryInterp::InvalidateIndex()
 {
-    for(int i = 0; i < _attrList.NumAttrs(); i++) {
-        AttrInfo *info = _attrList.Get(i);
-        info->hasHiVal = false;
-        info->hasLoVal = false;
-    }
+  for(int i = 0; i < _attrList.NumAttrs(); i++) {
+      AttrInfo *info = _attrList.Get(i);
+      info->hasHiVal = false;
+      info->hasLoVal = false;
+  }
 }
 
-Boolean TDataBinaryInterp::WriteCache(int fd)
+Boolean TDataBinaryInterp::WriteIndex(int fd)
 {
   int numAttrs = _attrList.NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
@@ -228,7 +250,7 @@ Boolean TDataBinaryInterp::WriteCache(int fd)
   return true;
 }
 
-Boolean TDataBinaryInterp::ReadCache(int fd)
+Boolean TDataBinaryInterp::ReadIndex(int fd)
 {
   int numAttrs;
   if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
@@ -236,7 +258,7 @@ Boolean TDataBinaryInterp::ReadCache(int fd)
     return false;
   }
   if (numAttrs != _attrList.NumAttrs()) {
-    printf("Cache has inconsistent schema; rebuilding\n");
+    printf("Index has inconsistent schema; rebuilding\n");
     return false;
   }
 

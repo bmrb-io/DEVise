@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/06/27 18:12:44  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.4  1996/06/27 15:49:35  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -47,15 +52,15 @@ class TDataBinaryInterpClassInfo: public ClassInfo {
 public:
   TDataBinaryInterpClassInfo(char *className, AttrList *attrList, int recSize);
 	
-  TDataBinaryInterpClassInfo(char *className, char *name, char *alias,
-			    TData *tdata);
+  TDataBinaryInterpClassInfo(char *className, char *name, char *type,
+                             char *param, TData *tdata);
   virtual ~TDataBinaryInterpClassInfo();
 
   /* Info for category */
   virtual char *CategoryName(){ return "tdata"; } 
 
   /* Info for class */
-  virtual char *ClassName();    /* name of class */
+  virtual char *ClassName();
 
   /* Get name of parameters and default/current values */
   virtual void ParamNames(int &argc, char **&argv);
@@ -76,7 +81,8 @@ public:
 private:
   char *_className;
   char *_name;
-  char *_alias;
+  char *_type;
+  char *_param;
   TData *_tdata;
   int _recSize;
   int _physRecSize;
@@ -88,8 +94,8 @@ class RecInterp;
 
 class TDataBinaryInterp: public TDataBinary {
 public:
-  TDataBinaryInterp(char *name, char *alias, int recSize,
-		    int physRecSize, AttrList *attrs);
+  TDataBinaryInterp(char *name, char *type, char *param,
+                    int recSize, int physRecSize, AttrList *attrs);
   virtual ~TDataBinaryInterp();
 
   AttrList *GetAttrList() { return &_attrList; }
@@ -98,14 +104,13 @@ protected:
   /* Copy record to buffer. Return false if invalid record. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
-  virtual void InvalidateCache();
-  virtual Boolean WriteCache(int fd);
-  virtual Boolean ReadCache(int fd);
+  virtual void InvalidateIndex();
+  virtual Boolean WriteIndex(int fd);
+  virtual Boolean ReadIndex(int fd);
 
 private:
   AttrList _attrList;  /* list of attributes */
   Boolean hasComposite;
-  char *_name;
   int _recSize;
   int _physRecSize;
   int _numAttrs;       /* number of attributes (including composite) */

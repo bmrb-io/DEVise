@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/06/27 18:12:42  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.7  1996/06/27 15:49:34  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -68,21 +73,20 @@
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"
+#include "DataSource.h"
 
 const int BIN_INDEX_ALLOC_INC = 25000; // allocation increment for index
 
-/* We cache the first BIN_CONTENT_COMPARE_BYTES from the
-   file in the cache. The next time we start up, this cache is
-   compared with what's in the file to determine if they are
-   the same file. */
+/* We cache the first BIN_CONTENT_COMPARE_BYTES from the file.
+   The next time we start up, this cache is compared with what's in
+   the file to determine if they are the same file. */
 
 const int BIN_CONTENT_COMPARE_BYTES = 4096;
 
-class DataSource;
-
 class TDataBinary: public TData, private DispatcherCallback {
 public:
-  TDataBinary(char *name, char *alias, int recSize, int physRecSize);
+  TDataBinary(char *name, char *type, char *param,
+              int recSize, int physRecSize);
 
   virtual ~TDataBinary();
 
@@ -179,21 +183,23 @@ protected:
      file close. Return false and the index will be rebuilt
      from scratch every time. Return true and the base class
      will reuse the index it has cached. */
-  virtual Boolean WriteCache(int fd) { return false; }
-  virtual Boolean ReadCache(int fd) { return false; }
+  virtual Boolean WriteIndex(int fd) { return false; }
+  virtual Boolean ReadIndex(int fd) { return false; }
 
   /* This function is called by this class to ask the derived
      class to invalidate all cached information */
-  virtual void InvalidateCache() {}
+  virtual void InvalidateIndex() {}
 
-  static char *MakeCacheName(char *alias);
+  static char *MakeIndexFileName(char *name, char *type);
+  static char *MakeCacheFileName(char *name, char *type);
 
 private:
   /* From DispatcherCallback */
   char *DispatchedName() { return "TDataBinary"; }
+  virtual void Run();
+  virtual void Cleanup();
 
   Boolean CheckFileStatus();
-  virtual void Cleanup();
 
   /* Build or rebuild index */
   void BuildIndex();
@@ -208,9 +214,11 @@ private:
   void PrintIndices();
 
   long _totalRecs;                // total number of records
-  char *_name;                    // name of file/dataset
-  char *_alias;                   // alias of file/dataset
-  char *_cacheFileName;           // name of cache file
+  char *_name;                    // name of data stream
+  char *_type;                    // type of data stream
+  char *_param;                   // parameters of data stream
+  char *_file;                    // name of (cache) file
+  char *_indexFileName;           // name of index file
   int _recSize;                   // size of record
   int _physRecSize;               // physical record size
   DataSource *_data;              // Source of data (disk file or tape)
@@ -223,6 +231,7 @@ private:
 
   long _lastPos;                  // position of last record in file
   long _currPos;                  // current file position
+  long _lastIncompleteLen;        // length of last incomplete record
 
   char *_recBuf;                  // record buffer
 

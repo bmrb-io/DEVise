@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/27 18:12:41  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.9  1996/06/27 15:49:34  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -54,6 +59,8 @@
   Initial revision.
 */
 
+//#define DEBUG
+
 #include <iostream.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,22 +83,32 @@
 #include "DataSourceFileStream.h"
 #include "DataSourceSegment.h"
 #include "DataSourceTape.h"
+#include "DataSourceWeb.h"
 #include "DevError.h"
 #include "DataSeg.h"
 #include "QueryProc.h"
 
-//#define DEBUG
-
 static char fileContent[BIN_CONTENT_COMPARE_BYTES];
-static char cachedFileContent[BIN_CONTENT_COMPARE_BYTES];
+static char indexFileContent[BIN_CONTENT_COMPARE_BYTES];
 static char *   srcFile = __FILE__;
 
-TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
+TDataBinary::TDataBinary(char *name, char *type, char *param,
+                         int recSize, int physRecSize)
 {
   _name = name;
-  _alias = alias;
+  _type = type;
+  _param = param;
   _recSize = recSize;
   _physRecSize = physRecSize;
+
+  if (!strcmp(_type, "UNIXFILE")) {
+    _file = CopyString(_param);
+  } else if (!strcmp(_type, "WWW")) {
+    _file = MakeCacheFileName(_name, _type);
+  } else {
+    fprintf(stderr, "Invalid TData type: %s\n", _type);
+    DOASSERT(0, "Invalid TData type");
+  }
 
   _data = NULL;
 
@@ -104,38 +121,54 @@ TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
 
   DataSeg::Get(segLabel, segFile, segOffset, segLength);
 
-  if (strcmp(name, segFile) || strcmp(alias, segLabel))
-  {
-    DOASSERT(false, "data segment does not match tdata");
-  }
-
-  DataSeg::Set(NULL, NULL, 0, 0);
-
   // Now instantiate the appropriate type of object, according to
-  // whether this is a tape or disk file, and whether or not the
-  // data occupies the entire file.
-  if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
-     || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
+  // whether this is a tape, disk file, or Web resource, and whether
+  // or not the data occupies the entire file.
 
-     if ((segOffset == 0) && (segLength == 0))
-     {
-	_data = new DataSourceTape(name, NULL);
-     }
-     else
-     {
-	_data = new DataSourceSegment<DataSourceTape>(name, NULL,
-	  segOffset, segLength);
-     }
+  if (!strcmp(_type, "WWW")) {
+    if (strcmp(_name, segLabel))
+    {
+      DOASSERT(false, "Data segment does not match tdata");
+    }
+    if ((segOffset == 0) && (segLength == 0))
+    {
+      _data = new DataSourceWeb(_param, NULL, _file);
+    }
+    else
+    {
+      _data = new DataSourceSegment<DataSourceWeb>(_param, NULL, _file,
+                                                   segOffset, segLength);
+    }
   } else {
-     if ((segOffset == 0) && (segLength == 0))
-     {
-	_data = new DataSourceFileStream(name, NULL);
-     }
-     else
-     {
-	_data = new DataSourceSegment<DataSourceFileStream>(name, NULL,
-	  segOffset, segLength);
-     }
+    if (strcmp(_file, segFile) || strcmp(_name, segLabel))
+    {
+      DOASSERT(false, "Data segment does not match tdata");
+    }
+    if (!strncmp(name, "/dev/rmt", 8)
+        || !strncmp(name, "/dev/nrmt", 9)
+        || !strncmp(name, "/dev/rst", 8)
+        || !strncmp(name, "/dev/nrst", 9)) {
+      if ((segOffset == 0) && (segLength == 0))
+      {
+        _data = new DataSourceTape(_file, NULL);
+      }
+      else
+      {
+        _data = new DataSourceSegment<DataSourceTape>(_file, NULL, NULL,
+                                                      segOffset, segLength);
+      }
+    } else {
+      if ((segOffset == 0) && (segLength == 0))
+      {
+        _data = new DataSourceFileStream(_file, NULL);
+      }
+      else
+      {
+        _data = new DataSourceSegment<DataSourceFileStream>(_file, NULL, NULL,
+                                                            segOffset,
+                                                            segLength);
+      }
+    }
   }
 
   DOASSERT(_data, "Out of memory");
@@ -144,16 +177,20 @@ TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
   if (_data->Open("r") != StatusOk)
     _fileOkay = false;
   
+  DataSeg::Set(NULL, NULL, 0, 0);
+
   _bytesFetched = 0;
   
   _lastPos = 0;
   _currPos = 0;
+  _lastIncompleteLen = 0;
+
   _totalRecs = 0;
 
   _indexSize = 0;
   _index = 0;
 
-  Dispatcher::Current()->Register(this);
+  Dispatcher::Current()->Register(this, 10, AllState, false, _data->AsyncFd());
 }
 
 TDataBinary::~TDataBinary()
@@ -166,9 +203,11 @@ TDataBinary::~TDataBinary()
 
   delete _data;
   delete _index;
-  delete _alias;
+  delete _file;
+  delete _param;
+  delete _type;
   delete _name;
-  delete _cacheFileName;
+  delete _indexFileName;
 }
 
 Boolean TDataBinary::CheckFileStatus()
@@ -177,7 +216,8 @@ Boolean TDataBinary::CheckFileStatus()
   if (!_data->IsOk()) {
     // if file used to be okay, close it
     if (_fileOkay) {
-      printf("Data stream %s is no longer available\n", _alias);
+      Dispatcher::Current()->Unregister(this);
+      printf("Data stream %s is no longer available\n", _name);
       _data->Close();
 #ifndef ATTRPROJ
       QueryProc::Instance()->ClearTData(this);
@@ -189,12 +229,16 @@ Boolean TDataBinary::CheckFileStatus()
       delete _index;
       _initTotalRecs = _totalRecs = 0;
       _initLastPos = _lastPos = 0;
+      _lastIncompleteLen = 0;
       _indexSize = 0;
       _index = 0;
       return false;
     }
-    printf("Data stream %s has become available\n", _alias);
+    printf("Data stream %s has become available\n", _name);
     _fileOkay = true;
+    Dispatcher::Current()->Unregister(this);
+    Dispatcher::Current()->Register(this, 10, AllState,
+                                    false, _data->AsyncFd());
   }
 
   return true;
@@ -306,41 +350,53 @@ int TDataBinary::GetModTime()
   return _data->GetModTime();
 }
 
-char *TDataBinary::MakeCacheName(char *alias)
+char *TDataBinary::MakeIndexFileName(char *name, char *type)
 {
-  char *fname = StripPath(alias);
+  char *fname = StripPath(name);
   int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
-  char *name = new char[nameLen];
-  sprintf(name, "%s/%s", Init::WorkDir(), fname);
-  return name;
+  char *fn = new char[nameLen];
+  sprintf(fn, "%s/%s", Init::WorkDir(), fname);
+  return fn;
+}
+
+char *TDataBinary::MakeCacheFileName(char *name, char *type)
+{
+  char *fname = StripPath(name);
+  char *cacheDir = getenv("DEVISE_CACHE");
+  if (!cacheDir)
+    cacheDir = ".";
+  int nameLen = strlen(cacheDir) + 1 + strlen(fname) + 1 + strlen(type) + 1;
+  char *fn = new char [nameLen];
+  sprintf(fn, "%s/%s.%s", cacheDir, fname, type);
+  return fn;
 }
 
 void TDataBinary::Initialize()
 {
-  _cacheFileName = MakeCacheName(_alias);
+  _indexFileName = MakeIndexFileName(_name, _type);
 
   if (!CheckFileStatus())
     return;
 
   Boolean fileOpened = false;
 
-  int cacheFd;
-  if ((cacheFd = open(_cacheFileName, O_RDONLY, 0)) < 0)
+  int indexFd;
+  if ((indexFd = open(_indexFileName, O_RDONLY, 0)) < 0)
     goto error;
 
   fileOpened = true;
   
   unsigned long magicNumber;
-  if (read(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
+  if (read(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
     perror("read");
     goto error;
   }
   if (magicNumber != 0xdeadbeef) {
-    printf("Cache file incompatible\n");
+    printf("Index file incompatible\n");
     goto error;
   }
 
-  /* cache file exists. See if we are still working on the same
+  /* index file exists. See if we are still working on the same
      file, and if we are, reinitialize */
   if (_data->Seek(0, SEEK_SET) < 0) {
     perror("fseek");
@@ -351,30 +407,30 @@ void TDataBinary::Initialize()
     goto error;
   }
 
-  if (read(cacheFd, cachedFileContent, BIN_CONTENT_COMPARE_BYTES)
+  if (read(indexFd, indexFileContent, BIN_CONTENT_COMPARE_BYTES)
       != BIN_CONTENT_COMPARE_BYTES) {
     perror("read");
     goto error;
   }
-  if (memcmp(cachedFileContent, fileContent, BIN_CONTENT_COMPARE_BYTES)) {
-    printf("Cache file invalid\n");
+  if (memcmp(indexFileContent, fileContent, BIN_CONTENT_COMPARE_BYTES)) {
+    printf("Index file invalid\n");
     goto error;
   }
   
-  /* File has not changed since cache file was built */
+  /* File has not changed since index file was built */
 
-  /* Let subclass read cache */
-  if (!ReadCache(cacheFd))
+  /* Let subclass read index */
+  if (!ReadIndex(indexFd))
     goto error;
   
   /* Read last file position */
-  if (read(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
+  if (read(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
     perror("read");
     goto error;
   }
   
   /* Read number of records */
-  if (read(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
+  if (read(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
     perror("read");
     goto error;
   }
@@ -390,7 +446,7 @@ void TDataBinary::Initialize()
   }
 
   /* read the index */
-  if (read(cacheFd, _index, _totalRecs * sizeof(long))
+  if (read(indexFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
     perror("read");
     goto error;
@@ -398,12 +454,12 @@ void TDataBinary::Initialize()
   
   for(int i = 1; i < _totalRecs; i++) {
     if (_index[i - 1] > _index[i]) {
-      printf("Cached index inconsistent\n");
+      printf("Indexed index inconsistent\n");
       goto error;
     }
   }
 
-  close(cacheFd);
+  close(indexFd);
   
   _initTotalRecs = _totalRecs;
   _initLastPos  = _lastPos;
@@ -415,8 +471,8 @@ void TDataBinary::Initialize()
  error:
   /* recover from error by building index from scratch  */
   if (fileOpened)
-    close(cacheFd);
-  (void)unlink(_cacheFileName);
+    close(indexFd);
+  (void)unlink(_indexFileName);
 
 #ifdef DEBUG
   printf("Rebuilding index...\n");
@@ -427,11 +483,11 @@ void TDataBinary::Initialize()
 void TDataBinary::Checkpoint()
 {
   if (!CheckFileStatus()) {
-    printf("Cannot checkpoint %s\n", _alias);
+    printf("Cannot checkpoint %s\n", _name);
     return;
   }
 
-  printf("Checkpointing %s: %ld total records, %ld new\n", _alias,
+  printf("Checkpointing %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
@@ -441,18 +497,18 @@ void TDataBinary::Checkpoint()
   Boolean fileOpened = false;
   unsigned long magicNumber = 0xdeadbeef;
 
-  int cacheFd;
-  if ((cacheFd = open(_cacheFileName, O_CREAT| O_RDWR,
+  int indexFd;
+  if ((indexFd = open(_indexFileName, O_CREAT| O_RDWR,
 		      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP
 		      | S_IROTH | S_IWOTH)) < 0) {
-    fprintf(stderr, "Cannot create cache file %s\n", _cacheFileName);
+    fprintf(stderr, "Cannot create index file %s\n", _indexFileName);
     perror("open");
     goto error;
   }
 
   fileOpened = true;
   
-  if (write(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
+  if (write(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
     perror("write");
     goto error;
   }
@@ -470,44 +526,44 @@ void TDataBinary::Checkpoint()
   }
   
   /* write contents of file to be compared later */
-  if (write(cacheFd, fileContent, BIN_CONTENT_COMPARE_BYTES) !=
+  if (write(indexFd, fileContent, BIN_CONTENT_COMPARE_BYTES) !=
       BIN_CONTENT_COMPARE_BYTES) {
     perror("write");
     goto error;
   }
   
   /* let subclass write its contents */
-  if (!WriteCache(cacheFd))
+  if (!WriteIndex(indexFd))
     goto error;
   
   /* write last position in the file */
-  if (write(cacheFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
+  if (write(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
     perror("write");
     goto error;
   }
   
   /* write # of records */
-  if (write(cacheFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
+  if (write(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
     perror("write");
     goto error;
   }
     
   /* write indices */
-  if (write(cacheFd, _index, _totalRecs * sizeof(long))
+  if (write(indexFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
     perror("write");
     goto error;
   }
 
-  close(cacheFd);
+  close(indexFd);
   _currPos = _data->Tell();
 
   return;
   
  error:
   if (fileOpened)
-    close(cacheFd);
-  (void)unlink(_cacheFileName);
+    close(indexFd);
+  (void)unlink(_indexFileName);
 
   _currPos = _data->Tell();
 }
@@ -522,13 +578,15 @@ void TDataBinary::BuildIndex()
   char recBuf[_recSize];
   int oldTotal = _totalRecs;
   
-  // File has been appended, extend index
-  if (_data->Seek(_lastPos, SEEK_SET) < 0) {
+  _currPos = _lastPos - _lastIncompleteLen;
+
+  // First go to last valid position of file
+  if (_data->Seek(_currPos, SEEK_SET) < 0) {
     perror("fseek");
     return;
   }
 
-  _currPos = _lastPos;
+  _lastIncompleteLen = 0;
 
   while(1) {
 
@@ -537,6 +595,7 @@ void TDataBinary::BuildIndex()
     len = _data->Fread(physRec, 1, _physRecSize);
     if (!len)
       break;
+
     DOASSERT(len >= 0, "Cannot read data stream");
 
     if (len == _physRecSize) {
@@ -545,12 +604,16 @@ void TDataBinary::BuildIndex()
 	  ExtendIndex();                  // extend it
 	_index[_totalRecs++] = _currPos;
       } else {
-#if 0
+#ifdef DEBUG
 	printf("Ignoring invalid or non-matching record\n");
 #endif
       }
+      _lastIncompleteLen = 0;
     } else {
+#ifdef DEBUG
       printf("Ignoring incomplete record (%d bytes)\n", len);
+#endif
+      _lastIncompleteLen = len;
     }
 
     _currPos += len;
@@ -562,7 +625,7 @@ void TDataBinary::BuildIndex()
   _lastPos = _data->Tell();
   DOASSERT(_lastPos >= _currPos, "Incorrect file position");
 
-  printf("Index for %s: %ld total records, %ld new\n", _alias,
+  printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
 }
 
@@ -570,11 +633,12 @@ void TDataBinary::BuildIndex()
 
 void TDataBinary::RebuildIndex()
 {
-  InvalidateCache();
+  InvalidateIndex();
 
   delete _index;
   _initTotalRecs = _totalRecs = 0;
   _initLastPos = _lastPos = 0;
+  _lastIncompleteLen = 0;
   _indexSize = 0;
 
   BuildIndex();
@@ -653,6 +717,17 @@ void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 void TDataBinary::WriteLine(void *rec)
 {
   WriteRecs(0, 1, rec);
+}
+
+void TDataBinary::Run()
+{
+    int fd = _data->AsyncFd();
+    _data->AsyncIO();
+    if (_data->AsyncFd() != fd) {
+        Dispatcher::Current()->Unregister(this);
+        Dispatcher::Current()->Register(this, 10, AllState,
+                                        false, _data->AsyncFd());
+    }
 }
 
 void TDataBinary::Cleanup()

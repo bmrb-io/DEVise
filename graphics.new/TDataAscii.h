@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/06/27 18:12:39  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.11  1996/06/27 15:49:32  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -76,22 +81,20 @@
 #include "TData.h"
 #include "RecId.h"
 #include "RecOrder.h"
+#include "DataSource.h"
 
 const int INDEX_ALLOC_INC = 10000;      // allocation increment for index
 const int LINESIZE = 4096;              // maximum size of each line
 
-/* We cache the first FILE_CONTENT_COMPARE_BYTES from the
-   file in the cache. The next time we start up, this cache is
-   compared with what's in the file to determine if they are
-   the same file. */
+/* We cache the first FILE_CONTENT_COMPARE_BYTES from the file.
+   The next time we start up, this cache is compared with what's in
+   the file to determine if they are the same file. */
 
 const int FILE_CONTENT_COMPARE_BYTES = 4096;
 
-class DataSource;
-
 class TDataAscii: public TData, private DispatcherCallback {
 public:
-	TDataAscii(char *name, char *alias, int recSize);
+	TDataAscii(char *name, char *type, char *param, int recSize);
 
 	virtual ~TDataAscii();
 
@@ -122,8 +125,8 @@ public:
 	// A -1 is returned for none-existing attrNum
 	virtual int UserAttr(int attrNum) { return -1; }
 
-	// Get name
-	virtual char *GetName() { return _name; }
+	// Get name of file
+	virtual char *GetName() { return _file; }
 
 	/* convert RecId into index */
 	virtual void GetIndex(RecId id, int *&indices);
@@ -141,7 +144,7 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual void InitGetRecs(RecId lowId, RecId highId,RecordOrder order);
+	virtual void InitGetRecs(RecId lowId, RecId highId, RecordOrder order);
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -189,27 +192,29 @@ protected:
 	this line is not valid. */
 	virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
-	/* Read/Write specific to each subclass cache. The cached information
+	/* Read/Write specific to each subclass index. The cached information
            is to be read during file start up, and written when file closes,
            so as to get the TData back to the state at the last
            file close. Return false and the index will be rebuilt
            from scratch every time. Return true and the base class
            will reuse the index it has cached. */
-	virtual Boolean WriteCache(int fd) { return false; }
-	virtual Boolean ReadCache(int fd) { return false; }
+	virtual Boolean WriteIndex(int fd) { return false; }
+	virtual Boolean ReadIndex(int fd) { return false; }
 
         /* This function is called by this class to ask the derived
-           class to invalidate all cached information */
-        virtual void InvalidateCache() {}
+           class to invalidate all indexed information */
+        virtual void InvalidateIndex() {}
 
-	static char *MakeCacheName(char *alias);
+	static char *MakeIndexFileName(char *name, char *type);
+	static char *MakeCacheFileName(char *name, char *type);
 
 private:
 	/* From DispatcherCallback */
 	char *DispatchedName() { return "TDataAscii"; }
+        virtual void Run();
+	virtual void Cleanup();
 
 	Boolean CheckFileStatus();
-	virtual void Cleanup();
 
 	/* Build or rebuild index */
 	void BuildIndex();
@@ -224,9 +229,11 @@ private:
 	void PrintIndices();
 
 	long _totalRecs;                // total number of records
-	char *_name;                    // name of file/dataset
-	char *_alias;                   // alias of file/dataset
-	char *_cacheFileName;           // name of cache file
+	char *_name;                    // name of data stream
+        char *_type;                    // type of data stream
+        char *_param;                   // parameters of data stream
+	char *_file;                    // name of (cache) file
+        char *_indexFileName;           // name of index file
 	int _recSize;                   // size of record
 	DataSource *_data;              // Source of data (disk file or tape)
 
@@ -238,6 +245,7 @@ private:
 
 	long _lastPos;                  // position of last record in file
 	long _currPos;                  // current file position
+        long _lastIncompleteLen;        // length of last incomplete record
 
         Boolean _fileOkay;              // true if file is okay
 

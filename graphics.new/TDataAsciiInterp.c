@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/27 18:12:40  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.17  1996/06/27 15:49:32  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -113,12 +118,14 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
 
 TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
 						     char *name,
-						     char *alias,
+                                                     char *type,
+                                                     char *param,
 						     TData *tdata)
 {
   _className = className;
   _name = name;
-  _alias = alias;
+  _type = type;
+  _param = param;
   _tdata = tdata;
 }
 
@@ -133,37 +140,51 @@ char *TDataAsciiInterpClassInfo::ClassName()
   return _className;
 }
 
-static char buf1[256], buf2[256];
-static char *args[2];
+static char buf[3][256];
+static char *args[3];
 
 void TDataAsciiInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 3;
   argv = args;
-  args[0] = buf1;
-  args[1] = buf2;
+  args[0] = buf[0];
+  args[1] = buf[1];
+  args[2] = buf[2];
   
-  strcpy(buf1, "File {foobar}");
-  strcpy(buf2, "Alias {foobar}");
+  strcpy(buf[0], "Name {foobar}");
+  strcpy(buf[1], "Type {foobar}");
+  strcpy(buf[2], "Param {foobar}");
 }
 
 ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 2)
+  if (argc != 2 && argc != 3)
     return (ClassInfo *)NULL;
 
-  char *name = CopyString(argv[0]);
-  char *alias = CopyString(argv[1]);
-  TDataAsciiInterp *tdata = new TDataAsciiInterp(name, alias, _recSize,
-						 _attrList, _separators,
-						 _numSeparators,
-						 _isSeparator, _commentString);
-  return new TDataAsciiInterpClassInfo(_className, name, alias, tdata);
+  char *name, *type, *param;
+
+  if (argc == 2) {
+    name = CopyString(argv[1]);
+    type = CopyString("UNIXFILE");
+    param = CopyString(argv[0]);
+  } else {
+    name = CopyString(argv[0]);
+    type = CopyString(argv[1]);
+    param = CopyString(argv[2]);
+  }
+
+  TDataAsciiInterp *tdata = new TDataAsciiInterp(name, type,
+                                                 param, _recSize,
+                                                 _attrList, _separators,
+                                                 _numSeparators,
+                                                 _isSeparator,
+                                                 _commentString);
+  return new TDataAsciiInterpClassInfo(_className, name, type, param, tdata);
 }
 
 char *TDataAsciiInterpClassInfo::InstanceName()
 {
-  return _alias;
+  return _name;
 }
 
 void *TDataAsciiInterpClassInfo::GetInstance()
@@ -174,18 +195,20 @@ void *TDataAsciiInterpClassInfo::GetInstance()
 /* Get parameters that can be used to re-create this instance */
 void TDataAsciiInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 2;
+  argc = 3;
   argv = args;
   args[0] = _name;
-  args[1] = _alias;
+  args[1] = _type;
+  args[2] = _param;
 }
 #endif
 
-TDataAsciiInterp::TDataAsciiInterp(char *name, char *alias, int recSize,
+TDataAsciiInterp::TDataAsciiInterp(char *name, char *type,
+                                   char *param, int recSize,
 				   AttrList *attrs, char *separators,
 				   int numSeparators, Boolean isSeparator,
 				   char *commentString) :
-     TDataAscii(name, alias, recSize), _attrList(*attrs)
+     TDataAscii(name, type, param, recSize), _attrList(*attrs)
 {
 #ifdef DEBUG
   printf("TDataAsciiInterp %s, recSize %d\n", name, recSize);
@@ -194,7 +217,6 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, char *alias, int recSize,
   _recInterp = new RecInterp();
   _recInterp->SetAttrs(attrs);
   
-  _name = name;
   _recSize = recSize;
   _separators = separators;
   _numSeparators = numSeparators;
@@ -224,16 +246,16 @@ TDataAsciiInterp::~TDataAsciiInterp()
 {
 }
 
-void TDataAsciiInterp::InvalidateCache()
+void TDataAsciiInterp::InvalidateIndex()
 {
-    for(int i = 0; i < _attrList.NumAttrs(); i++) {
-        AttrInfo *info = _attrList.Get(i);
-        info->hasHiVal = false;
-        info->hasLoVal = false;
-    }
+  for(int i = 0; i < _attrList.NumAttrs(); i++) {
+      AttrInfo *info = _attrList.Get(i);
+      info->hasHiVal = false;
+      info->hasLoVal = false;
+  }
 }
 
-Boolean TDataAsciiInterp::WriteCache(int fd)
+Boolean TDataAsciiInterp::WriteIndex(int fd)
 {
   int numAttrs = _attrList.NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
@@ -268,7 +290,7 @@ Boolean TDataAsciiInterp::WriteCache(int fd)
   return true;
 }
 
-Boolean TDataAsciiInterp::ReadCache(int fd)
+Boolean TDataAsciiInterp::ReadIndex(int fd)
 {
   int numAttrs;
   if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
@@ -276,7 +298,7 @@ Boolean TDataAsciiInterp::ReadCache(int fd)
     return false;
   }
   if (numAttrs != _attrList.NumAttrs()) {
-    printf("Cache has inconsistent schema; rebuilding\n");
+    printf("Index has inconsistent schema; rebuilding\n");
     return false;
   }
 

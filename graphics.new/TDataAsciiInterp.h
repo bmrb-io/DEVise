@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 18:12:40  wenger
+  Re-integrated most of the attribute projection code (most importantly,
+  all of the TData code) into the main code base (reduced the number of
+  modules used only in attribute projection).
+
   Revision 1.8  1996/06/27 15:49:33  jussi
   TDataAscii and TDataBinary now recognize when a file has been deleted,
   shrunk, or has increased in size. The query processor is asked to
@@ -59,8 +64,8 @@ public:
 			    int recSize, char *separators, int numSeparators,
 			    Boolean isSeparator, char *commentString);
 	
-  TDataAsciiInterpClassInfo(char *className, char *name, char *alias,
-			    TData *tdata);
+  TDataAsciiInterpClassInfo(char *className, char *name, char *type,
+                            char *param, TData *tdata);
   virtual ~TDataAsciiInterpClassInfo();
 
   /* Info for category */
@@ -88,7 +93,8 @@ public:
 private:
   char *_className;
   char *_name;
-  char *_alias;
+  char *_type;
+  char *_param;
   TData *_tdata;
   int _recSize;
   AttrList *_attrList;
@@ -103,7 +109,8 @@ class RecInterp;
 
 class TDataAsciiInterp: public TDataAscii {
 public:
-  TDataAsciiInterp(char *name, char *alias, int recSize, AttrList *attrs,
+  TDataAsciiInterp(char *name, char *type, char *param,
+                   int recSize, AttrList *attrs,
 		   char *separators, int numSeparators, 
 		   Boolean isSeparator, char *commentString);
   virtual ~TDataAsciiInterp();
@@ -115,22 +122,21 @@ protected:
      this line is not valid. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
-  virtual void InvalidateCache();
-  virtual Boolean WriteCache(int fd);
-  virtual Boolean ReadCache(int fd);
+  virtual void InvalidateIndex();
+  virtual Boolean WriteIndex(int fd);
+  virtual Boolean ReadIndex(int fd);
 
 private:
-  AttrList _attrList;       /* list of attributes */
-  Boolean hasComposite;
-  char *_name;
-  int _recSize;
-  char *_separators;
-  Boolean _isSeparator;
-  int _numSeparators;
-  char *_commentString;     /* string for comment, or NULL */
-  int _commentStringLength; /* length of comment string */
-  int _numAttrs;            /* number of attributes (including composite) */
-  int _numPhysAttrs;        /* number of physical attributes */
+  AttrList  _attrList;             /* list of attributes */
+  Boolean   hasComposite;
+  int       _recSize;
+  char      *_separators;
+  Boolean   _isSeparator;
+  int       _numSeparators;
+  char      *_commentString;       /* string for comment, or NULL */
+  int       _commentStringLength;  /* length of comment string */
+  int       _numAttrs;             /* # attributes (including composite) */
+  int       _numPhysAttrs;         /* number of physical attributes */
   RecInterp *_recInterp;
 };
 
