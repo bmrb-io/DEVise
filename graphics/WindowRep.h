@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/12/04 22:38:54  wenger
+  Fixed bug 087 (view removal crash); noted several other fixed bugs
+  in the bug list.
+
   Revision 1.37  1996/12/03 17:00:26  jussi
   Added SetFont() for generic font support. Removed SetSmallFont().
 
@@ -372,8 +376,11 @@ public:
 			     Coord minWidth = 1.0, Coord minHeight = 1.0) = 0;
   virtual void FillPoly(Point *, int n) = 0;
   virtual void FillPixelPoly(Point *, int n) = 0;
-  virtual void Arc(Coord x, Coord y, Coord w, Coord h,
-		   Coord startAngle, Coord endAngle) = 0;
+
+  /* Draw an arc.  Angles are in radians, end is _relative_ to start. */
+  virtual void Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
+		   Coord vertDiam, Coord startAngle, Coord endAngle) = 0;
+
   /* draw line. end points are in world coord, but the width is in pixels */
   virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width) = 0;
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width) = 0;
@@ -406,6 +413,8 @@ public:
   virtual void SetFont(char *family, char *weight, char *slant,
                        char *width, int pointSize) = 0;
   virtual void SetNormalFont() = 0;
+  virtual void SetSmallFont() { SetFont("Courier", "Medium", "r", "Normal",
+					 80); }
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;

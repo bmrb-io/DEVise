@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/12/04 18:12:40  wenger
+  Unimplemented methods in PSWindowRep now report an error but do not
+  abort when called; fixed code in cslib server example that caused problems
+  for Anand; corrected the values returned by some of the NumShapeAttrs()
+  methods in MapInterpShape.
+
   Revision 1.13  1996/12/03 17:00:27  jussi
   Added SetFont() for generic font support. Removed SetSmallFont().
 
@@ -88,6 +94,9 @@
   Revision 1.1  1996/07/10 16:23:02  jussi
   Initial revision.
 */
+
+#include <stdio.h>
+#include <math.h>
 
 #include "PSWindowRep.h"
 #include "PSDisplay.h"
@@ -918,8 +927,8 @@ void PSWindowRep::FillPixelPoly(Point *pts, int n)
 
 
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
-		     Coord startAngle, Coord endAngle)
+void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
+		      Coord vertDiam, Coord startAngle, Coord endAngle)
 {
 #ifdef DEBUG
   printf("PSWindowRep::Arc %.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
@@ -927,16 +936,44 @@ void PSWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 #endif
   
   Coord tx, ty, tempX, tempY;
-  Transform(x - w / 2, y - h / 2, tx, ty);
-  Transform(x + w / 2, y + h / 2, tempX, tempY);
-  int realWidth = ROUND(int, fabs(tempX - tx));
-  int realHeight = ROUND(int, fabs(tempY - ty));
-  int realStart= ROUND(int, ToDegree(startAngle) * 64);
-  int realEnd = ROUND(int, ToDegree(endAngle) * 64);
+  Transform(xCenter, yCenter, tx, ty);
+  Transform(xCenter + horizDiam, yCenter + vertDiam, tempX, tempY);
+  Coord realHorD = fabs(tempX - tx);
+  Coord realVertD = fabs(tempY - ty);
+  Coord startDeg = ToDegree(startAngle);
+  Coord endDeg = ToDegree(endAngle) + startDeg;
+
+  Coord radius = horizDiam / 2.0;
+  Coord diamRatio = 1.0;
+
+  Boolean circular = (horizDiam == vertDiam);
+  if (!circular) {
+    diamRatio = vertDiam / horizDiam;
+  }
 
 #ifdef GRAPHICS
-  reportErrNosys("PSWindowRep::Arc() not yet implemented");
-  /* do something */
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+  /* Change coordinate system for non-circular arc. */
+  if (!circular) {
+    fprintf(printFile, "gsave\n");
+    fprintf(printFile, "1.0 %f scale\n", diamRatio);
+  }
+
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", tx, ty / diamRatio);
+
+  fprintf(printFile, "%f %f rlineto\n", radius * cos(startAngle),
+    radius * sin(startAngle));
+  fprintf(printFile, "%f %f %f %f %f arc\n", tx, ty / diamRatio, radius,
+    startDeg, endDeg);
+  fprintf(printFile, "closepath\n");
+  fprintf(printFile, "fill\n");
+
+  /* Set the coordinate system back the way it was. */
+  if (!circular) {
+    fprintf(printFile, "grestore\n");
+  }
 #endif
 }
 
@@ -1245,7 +1282,9 @@ void PSWindowRep::SetFont(char *family, char *weight, char *slant,
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::UpdateWinDimensions()
 {
+#if 0
   reportErrNosys("PSWindowRep::UpdateWinDimensions() not yet implemented");
+#endif
   /* do something */
 }
 
@@ -1366,7 +1405,9 @@ void PSWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 	 x, y, w, h);
 #endif
 
+#if 0
   reportErrNosys("PSWindowRep::MoveResize() not yet implemented");
+#endif
   /* do something */
 
   UpdateWinDimensions();
@@ -1379,7 +1420,9 @@ void PSWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 
 void PSWindowRep::Iconify()
 {
+#if 0
   reportErrNosys("PSWindowRep::Iconify() not yet implemented");
+#endif
     /* do something */
 }
 
@@ -1394,7 +1437,9 @@ void PSWindowRep::Raise()
   printf("PSWindowRep::Raise window %p\n", this);
 #endif
 
+#if 0
   reportErrNosys("PSWindowRep::Raise() not yet implemented");
+#endif
   /* do something */
 }
 
@@ -1409,7 +1454,9 @@ void PSWindowRep::Lower()
   printf("PSWindowRep::Lower window %p:\n", this);
 #endif
 
+#if 0
   reportErrNosys("PSWindowRep::Lower() not yet implemented");
+#endif
   /* do something */
 }
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/04 18:12:31  wenger
+  Unimplemented methods in PSWindowRep now report an error but do not
+  abort when called; fixed code in cslib server example that caused problems
+  for Anand; corrected the values returned by some of the NumShapeAttrs()
+  methods in MapInterpShape.
+
   Revision 1.3  1996/11/26 15:43:54  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -107,8 +113,12 @@ class SampleWinServer : public WinServer {
     _winReps.GetWindowRep()->SetFgColor(BlackColor);
     _winReps.GetWindowRep()->GetFgRGB(red, green, blue);
     printf("BlackColor RGB: %f %f %f\n", red, green, blue);
+    _winReps.GetWindowRep()->SetNormalFont();
     _winReps.GetWindowRep()->AbsoluteText("Server Display", x, y, w, h,
 		       WindowRep::AlignCenter, false);
+    _winReps.GetWindowRep()->SetSmallFont();
+    _winReps.GetWindowRep()->AbsoluteText("Server Display", x, y, w, h,
+		       WindowRep::AlignWest, false);
 
     /* bypass local colormap */
     for(float i = 0; i < 1.0; i += 0.1) {
@@ -126,6 +136,46 @@ class SampleWinServer : public WinServer {
 	0.05 * h);
     }
 
+    /* test the Arc() and Pattern() functions */
+    _winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 1.0);
+    _winReps.GetWindowRep()->SetBgRGB(1.0, 0.0, 0.0);
+
+    Coord xCenter1 = x + 0.25 * w;
+    Coord yCenter1 =  y + 0.12 * h;
+    Coord horizDiam = 0.2 * w;
+    Coord vertDiam = 0.2 * h;
+    _winReps.GetWindowRep()->Arc(xCenter1, yCenter1, horizDiam, vertDiam,
+      0.5, 2.8);
+
+    _winReps.GetWindowRep()->SetPattern(Pattern10);
+    Coord xCenter2 = x + 0.75 * w;
+    Coord yCenter2 = y + 0.12 * h;
+    horizDiam = 0.3 * w;
+    vertDiam = 0.2 * h;
+    _winReps.GetWindowRep()->Arc(xCenter2, yCenter2, horizDiam, vertDiam,
+      0.0, 6.3);
+    _winReps.GetWindowRep()->SetPattern(Pattern0);
+
+    _winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 0.0);
+
+    Coord size = 0.03;
+    Coord lineWidth = 2.0;
+    _winReps.GetWindowRep()->Line(xCenter1 - size * w, yCenter1,
+      xCenter1 + size * w, yCenter1, lineWidth);
+    _winReps.GetWindowRep()->Line(xCenter1, yCenter1 - size * h, xCenter1,
+      yCenter1 + size * h, lineWidth);
+
+    _winReps.GetWindowRep()->Line(xCenter2 - size * w, yCenter2,
+      xCenter2 + size * w, yCenter2, lineWidth);
+    _winReps.GetWindowRep()->Line(xCenter2, yCenter2 - size * h, xCenter2,
+      yCenter2 + size * h, lineWidth);
+
+/* Note: we should add code to test the following functions:
+ * FillPoly FillPixelPoly DrawPixel DrawPixelArray FillPixelRect Line
+ * AbsoluteLine ScaledText SetXorMode SetCopyMode SetOrMode SetFont
+ * SetNormalFont SetDaliServer DaliShowImage DaliFreeImages. */
+
+    /* make sure everything gets drawn to the screen */
     _winReps.GetWindowRep()->Flush();
   }
 

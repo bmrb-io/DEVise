@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/12/03 17:00:24  jussi
+  Added SetFont() for generic font support. Removed SetSmallFont().
+
   Revision 1.33  1996/11/26 16:47:50  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -273,8 +276,10 @@ public:
 				   Coord minWidth = 1.0, Coord minHeigh = 1.0);
 	virtual void FillPoly(Point *, int n);
 	virtual void FillPixelPoly(Point *, int n);
-	virtual void Arc(Coord x, Coord y, Coord w, Coord h,
-			Coord startAngle, Coord endAngle);
+
+        /* Draw an arc.  Angles are in radians. */
+        virtual void Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
+                         Coord vertDiam, Coord startAngle, Coord endAngle);
 
 	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
