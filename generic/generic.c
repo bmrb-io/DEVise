@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/02/26 17:19:04  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.53  1998/02/26 00:18:48  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -232,7 +235,7 @@
 
 #include <sys/time.h>
 #include <sys/types.h>
-#include <String.h>
+#include <string>
 #include <fstream.h>
 
 #include "DeviseTypes.h"
@@ -1558,66 +1561,62 @@ private:
 int main(int argc, char **argv)
 {
   Init::DoInit(argc,argv);
-  String env,schemaStr,parserName;	
-  char dummy;
-  char * schemaChar;
 	
  // Reads the composite file from the DEVISE_LIB directory
   
-  env = getenv("DEVISE_LIB");
-  if (env.chars() == 0 )
-	env = ".";
+  const char* envcp = getenv("DEVISE_LIB");
+  if( envcp == 0 ) envcp = ".";
+  string env(envcp);
   env += "/composite.ini";
  	
-  ifstream fin(env);
+  ifstream fin(env.c_str());
   if(!fin) {
 	fprintf(stderr, "Cannot open %s for read: %s\n", 
-			env.chars(), strerror(errno));
+			env.c_str(), strerror(errno));
 	exit(1);
   }
-  fprintf(stderr, "\nReading composite file %s\n", env.chars());
+  fprintf(stderr, "\nReading composite file %s\n", env.c_str());
+
+  string schemaStr, parserName;
 
   while(fin){
-	
-	fin >> dummy;
-	fin.putback(dummy);
-	// Ignore comments
-	if (dummy == '#'){
-		readline(fin,schemaStr); // Read line and ignore
-	 	continue;
+	fin.ipfx(0);            // skip ws
+	if( fin.peek() == '#' ){ // comment
+          fin.ignore(999999, '\n'); // Read line and ignore
+          continue;
 	}	
 	fin >> schemaStr >> parserName;
 
-	schemaChar = strdup(schemaStr.chars());
+	char* schemaChar = strdup(schemaStr.c_str());
 	
 	// Register the corresponding composite attribs with their parsers.
-	if (parserName.matches("YyMmDdComposite"))
+	if (parserName == "YyMmDdComposite")
   		CompositeParser::Register(schemaChar ,new YyMmDdComposite);
-  	else if (parserName.matches("ObsDateComposite"))
+  	else if (parserName == "ObsDateComposite")
   		CompositeParser::Register(schemaChar,new ObsDateComposite);
-  	else if (parserName.matches("DOLDateComposite"))
+  	else if (parserName == "DOLDateComposite")
   		CompositeParser::Register(schemaChar,new DOLDateComposite);
-  	else if (parserName.matches("MmDdYyComposite"))
+  	else if (parserName == "MmDdYyComposite")
   		CompositeParser::Register(schemaChar,new MmDdYyComposite);
-  	else if (parserName.matches("LatLonComposite"))
+  	else if (parserName == "LatLonComposite")
   		CompositeParser::Register(schemaChar,new LatLonComposite);
-  	else if (parserName.matches("DayOfYearComposite"))
+  	else if (parserName == "DayOfYearComposite")
   		CompositeParser::Register(schemaChar,new DayOfYearComposite);
-  	else if (parserName.matches("YyDdd_HhMmComposite"))
+  	else if (parserName == "YyDdd_HhMmComposite")
   		CompositeParser::Register(schemaChar,new YyDdd_HhMmComposite);
-  	else if (parserName.matches("StateLatLonComposite"))
+  	else if (parserName == "StateLatLonComposite")
   		CompositeParser::Register(schemaChar,new StateLatLonComposite);
-  	else if (parserName.matches("IBMAddressTraceComposite2"))
+  	else if (parserName == "IBMAddressTraceComposite2")
   		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite2);
-  	else if (parserName.matches("IBMAddressTraceComposite"))
+  	else if (parserName == "IBMAddressTraceComposite")
   		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite);
-  	else if (parserName.matches("MailorderDateDiffComposite"))
+  	else if (parserName == "MailorderDateDiffComposite")
   		CompositeParser::Register(schemaChar,new MailorderDateDiffComposite);
-  	else if (parserName.matches("MmDdYyHhMmAmPmComposite"))
+  	else if (parserName == "MmDdYyHhMmAmPmComposite")
   		CompositeParser::Register(schemaChar,new MmDdYyHhMmAmPmComposite);
-  	else if (parserName.matches("ISODateComposite"))
+  	else if (parserName == "ISODateComposite")
   		CompositeParser::Register(schemaChar,new ISODateComposite);
-  	else if (parserName.matches("ISODate2Composite"))
+  	else if (parserName == "ISODate2Composite")
   		CompositeParser::Register(schemaChar,new ISODate2Composite);
    }
   /* Register known classes  with control panel */

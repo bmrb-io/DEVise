@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/01/14 16:39:19  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.42  1997/11/24 23:15:13  weaver
   Changes for the new ColorManager.
 
@@ -1359,7 +1362,7 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
  * Read and parse a schema file.
  */
 int
-ParseCatDQL(char *catFile, String &phySchemaFile, String &list) 
+ParseCatDQL(char *catFile, string& phySchemaFile, string& list) 
 {
   // Check the first line of catFile - if it is "physical abc",
   // call ParseCatPhysical(DataSourceFile(abc), false) and then
@@ -1410,13 +1413,13 @@ ParseCatDQL(char *catFile, String &phySchemaFile, String &list)
 }
 
 int
-ParseDQLCatLogical(DataSource *schemaSource,String &list)
+ParseDQLCatLogical(DataSource *schemaSource, string &list)
 {
   char buf[LINESIZE];
   int numArgs;
   char **args;
   list = "";
-  String phySchema;
+  string phySchema;
 
   if (!(schemaSource->Open("r") == StatusOk))
   {
@@ -1464,8 +1467,8 @@ ParseDQLCatLogical(DataSource *schemaSource,String &list)
   if (list.length() == 0 ){
 	// Call physical schema Parse
 	cout << " Physchema .chars () = *" << phySchema << "*" << endl;
-    DataSourceFileStream  phySchemaSource((char *)phySchema.chars(),
-							StripPath((char *)phySchema.chars()));
+    DataSourceFileStream  phySchemaSource((char *)phySchema.c_str(),
+                                          StripPath((char *)phySchema.c_str()));
     return ParseDQLCatPhysical(&phySchemaSource, list);
   }	
   return true;
@@ -1478,7 +1481,7 @@ ParseDQLCatLogical(DataSource *schemaSource,String &list)
 }
 
 int
-ParseDQLCatPhysical(DataSource *schemaSource, String &list)
+ParseDQLCatPhysical(DataSource *schemaSource, string& list)
 {
 	Boolean hasSource = false;
 	char *source = 0; /* source of data. Which interpreter we use depends

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/11/19 02:42:23  kmurli
+  Changed to include original importFileType parameters..This means that
+  the those using the importFileType with a single parameter cannot use
+  Query interface.
+
   Revision 1.14  1996/11/18 18:10:52  donjerko
   New files and changes to make DTE work with Devise
 
@@ -73,7 +78,7 @@
 #include "DeviseTypes.h"
 #include "ClassDir.h"
 #include "AttrList.h"
-#include <String.h>
+#include <string>
 #include "DataSourceBuf.h"
 //#define NO_GEN_CLASS_INFO
 
@@ -84,9 +89,9 @@ extern char *ParseCat(char *);
 extern char *ParseDQL(char *name,char *schema,char * schemaFile,\
 					  char *fileType,char *dataFile,char * query);
 
-extern int ParseCatDQL(char *,String &,String &);
-extern int ParseDQLCatPhysical(DataSource *,String &);
-extern int ParseDQLCatLogical (DataSource *,String &);
+extern int ParseCatDQL(char*, string&, string&);
+extern int ParseDQLCatPhysical(DataSource*, string &);
+extern int ParseDQLCatLogical (DataSource*, string &);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,
