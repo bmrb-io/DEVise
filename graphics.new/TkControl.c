@@ -16,12 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.21  1995/12/14 15:27:44  jussi
+  Changed getViewStatistics to reflect the new scheme of turning
+  multiple stats on/off in one setViewStatistics call.
+
   Revision 1.20  1995/12/08 23:47:12  ravim
   Window name is a parameter to KGraph creation. Previous KGraph not deleted
   when the new one is created.
 
   Revision 1.19  1995/12/07 02:18:29  ravim
-  The set of stats to be displayed is specified as a parameter to setViewStatistics.
+  The set of stats to be displayed is specified as a parameter to
+  setViewStatistics.
 
   Revision 1.18  1995/12/06 05:42:57  ravim
   Added function to display KGraph.
@@ -102,6 +107,7 @@
 #include "Cursor.h"
 #include "Group.h"
 #include "GroupDir.h"
+#include "ViewLayout.h"
 #include "ViewKGraph.h"
 
 #ifdef TK_WINDOW
@@ -400,11 +406,11 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	char *name;
 	Group *grp;
 	
-	if (argc == 1){
+	if (argc == 1) {
 		interp->result = "wrong args";
 		goto error;
 	}
-	else if (argc == 2){
+	else if (argc == 2) {
 		if (strcmp(argv[1],"date") == 0 ) {
 			time_t tm = time((time_t *)0);
 			sprintf(interp->result,"%s",DateString(tm));
@@ -668,6 +674,18 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		else if (strcmp(argv[1], "getTopGroups") == 0)
 		{
 		  gdir->top_level_groups(interp, argv[2]);
+		}
+		else if (strcmp(argv[1], "getWindowLayout") == 0) {
+		  ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[2]);
+		  if (!layout) {
+		    fprintf(stderr,
+			    "TkControl:cmd getWindowLayout can't find window %s\n",
+			    argv[2]);
+		    Exit::DoExit(2);
+		  }
+		  int v, h;
+		  layout->GetPreferredLayout(v, h);
+		  sprintf(interp->result, "%d %d", v, h);
 		}
 		else if (strcmp(argv[1],"getSchema") == 0 ){
 
@@ -1204,12 +1222,12 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[2]);
 		View *view1 = (View *)classDir->FindInstance(argv[3]);
 		View *view2 = (View *)classDir->FindInstance(argv[4]);
-		if (viewWin == NULL || view1 == NULL || view2 == NULL){
+		if (viewWin == NULL || view1 == NULL || view2 == NULL) {
 			interp->result = "Can't find view or window in swapView ";
 			goto error;
 		}
 		if (view1->GetParent() != viewWin || view2->GetParent() != viewWin){
-			interp->result = "Can't view not in window in swapView ";
+			interp->result = "Views not in same window in swapView\n";
 			goto error;
 		}
 		viewWin->SwapChildren(view1, view2);
@@ -1295,6 +1313,10 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	}
 	else if (strcmp(argv[1],"create") == 0) {
 		control->SetBusy();
+		// HACK to provide backward compatibility
+		if (!strcmp(argv[3], "WinVertical") ||
+		    !strcmp(argv[3], "WinHorizontal"))
+		  argv[3] = "TileLayout";
 		char *name = classDir->CreateWithParams(argv[2],argv[3],
 			argc-4, &argv[4]);
 		control->SetIdle();
@@ -1313,15 +1335,29 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		classDir->SetDefault(argv[2],argv[3],argc-4,&argv[4]);
 	}
 	else if (argc == 5) {
-		if (strcmp(argv[1],"getCreateParam") == 0){
-			/*getCreateParam category class instance: 
-			get parameters used to recreate an instance */
-			classDir->CreateParams(argv[2],argv[3],argv[4],numArgs,args);
-			MakeReturnVals(interp, numArgs, args);
-		}
-		else if (strcmp(argv[1], "getItems") == 0) {
-		  gdir->get_items(interp, argv[2], argv[3], argv[4]);
-		}
+	  if (strcmp(argv[1],"getCreateParam") == 0){
+	    /* getCreateParam category class instance: 
+	       get parameters used to recreate an instance */
+	    classDir->CreateParams(argv[2],argv[3],argv[4],numArgs,args);
+	    MakeReturnVals(interp, numArgs, args);
+	  }
+	  else if (strcmp(argv[1], "getItems") == 0) {
+	    gdir->get_items(interp, argv[2], argv[3], argv[4]);
+	  }
+	  else if (strcmp(argv[1], "setWindowLayout") == 0) {
+	    ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[2]);
+	    if (!layout) {
+	      fprintf(stderr,
+		      "TkControl:cmd setWindowLayout can't find window %s\n",
+		      argv[2]);
+	      Exit::DoExit(2);
+	    }
+	    layout->SetPreferredLayout(atoi(argv[3]), atoi(argv[4]));
+	  }
+	  else {
+	    interp->result = "wrong args";
+	    goto error;
+	  }
 	}
 	else if (argc == 6) {
 		if (strcmp(argv[1], "setLabel") == 0) {
