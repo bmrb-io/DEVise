@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/09/10 20:07:09  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.1  1996/07/10 16:23:01  jussi
   Initial revision.
 */
@@ -64,6 +71,8 @@ public:
 
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename) {}
+    virtual void ExportImageAndMap(DisplayExportFormat format,
+      char *gifFilename, char *mapFilename, char *url, char *defaultUrl) {}
     virtual void ExportGIF(FILE *fp) {}
 
 protected:
