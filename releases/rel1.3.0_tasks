@@ -1,6 +1,7 @@
 		Tasks for Devise 1.3.0 Release
 			$Revision$
 
+x- "Freeze" sources
 x- Testing
 x- Bug fixing
 x- Build released software:
@@ -16,7 +17,8 @@ a- Generate distribution files
 a- Test distribution files (re-run at least some of the user interface
   tests on each architecure, running Devise untarred from the distribution
   files)
-- Tag sources (but not html and doc directories)
+- Tag sources (but not html and doc directories) and "thaw" sources
+- Change the Devise version number in the sources
 - Generate "official" sources1.3.0.tar.gz file
 - Build on SGI
     - Maybe commit SGI-related changes as a CVS branch
