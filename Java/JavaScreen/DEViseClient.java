@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2001/02/06 16:37:25  xuk
+// change for multiple collaborated JSs:
+// add collabSocket vector for multiple collaborate sockets;
+// change setCollabSocket() to addCollabSocket();
+// changes in sendCmd() and sendDate() for sending commands and data to multiple collaborated JSs.
+//
 // Revision 1.25  2001/01/31 22:21:34  xuk
 // Modify sendCmd(), for wrong collaboration JS ID. Close the collabSocket only when a JAVAC_EXIT is received from client.
 //
@@ -173,10 +179,11 @@ public class DEViseClient
 
     private static int _objectCount = 0;
 
-    //public DEViseCommSocket collabSocket = null;
-    //public int collabInit = 0;
     public Vector collabSockets = new Vector();
     public int collabInit = 0;
+
+    public boolean isAbleCollab = true;
+
 
     public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
       boolean cgi)
@@ -443,11 +450,15 @@ public class DEViseClient
 			cmdBuffer.removeAllElements();
 		    } else if (command.startsWith(DEViseCommands.CONNECT)) {
 			String[] cmds = DEViseGlobals.parseString(command);
-			if (cmds != null && cmds.length == 4) {
+			if (cmds != null && cmds.length == 5) {
 			    user = pop.getUser(cmds[1], cmds[2]);
 			    if (user != null) { 
 				cmdBuffer.removeAllElements();
 				cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
+				pop.pn("Collaboration Status: " + cmds[4]);
+				if (cmds[4].equals(DEViseGlobals.DISABLECOLLAB)) {
+				    isAbleCollab = false;
+				}
 			    } else {
 				sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
 				throw new YException("Client send invalid login information");
