@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/08/21 21:04:29  donjerko
+  Implemented view materialization
+
   Revision 1.21  1997/08/14 02:08:55  donjerko
   Index catalog is now an independent file.
 
@@ -87,12 +90,10 @@ class Directory {
 public:
 	Directory(const string& fileName) : fileName(fileName) {}
 	~Directory(){}
-	Interface* createInterface(const string& entry);
+	Interface* createInterface(const string& entry) const;
 	// throws
 
-	void remove(const string& entry);
-	void insert(const string& entry, const Interface* interf);
-	void replace(const string& entry, const Interface* interf);
+	void replace(const string& entry, const Interface* interf) const;
 	// throws
 };
 

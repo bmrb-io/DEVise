@@ -31,7 +31,7 @@ static int findMaxInterfSize(){
 	max = MAX_VAL(sizeof(CatalogInterface), max);
 	max = MAX_VAL(sizeof(DeviseInterface), max);
 	max = MAX_VAL(sizeof(DummyInterface), max);
-	cerr << "INITIAL_INTERFACE_SIZE = " << max << endl;
+//	cerr << "INITIAL_INTERFACE_SIZE = " << max << endl;
 	return max;
 }
 
@@ -416,9 +416,9 @@ void CGIEntry::write(ostream& out) const {
 	out << option << " " << "\"" << value << "\"";
 }
 
+/*
 void insert(string tableStr, Tuple* tuple){	// throws exception
 	assert(!"broken");
-	/*
 	Catalog* catalog = getRootCatalog();
 	assert(catalog);
 	TableName tableName(tableStr.c_str());
@@ -428,8 +428,8 @@ void insert(string tableStr, Tuple* tuple){	// throws exception
 	delete interf;
 	inserter->insert(tuple);
 	delete inserter;
-	*/
 }
+*/
 
 CatalogInterface* CatalogInterface::duplicate() const {
 	return new CatalogInterface(*this);

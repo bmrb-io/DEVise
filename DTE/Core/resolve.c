@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/08/21 21:04:34  donjerko
+  Implemented view materialization
+
   Revision 1.21  1997/08/14 02:08:56  donjerko
   Index catalog is now an independent file.
 
@@ -101,6 +104,8 @@
 #include "site.h"
 #include "machdep.h"
 #include "ExecExpr.h"
+#include "catalog.h" 	// for root catalog
+#include "Interface.h"
 
 BaseSelection* PrimeSelection::filter(Site* site){
 	assert(alias);
@@ -522,4 +527,18 @@ string TableName::fileName(){
 	else{
 		return "";
 	}
+}
+
+Site* TableAlias::createSite(){
+	TRY(return ROOT_CATALOG.find(table), NULL);
+}
+
+Site* QuoteAlias::createSite(){
+	assert(interf || !"not implemented");
+	return interf->getSite();
+}
+
+QuoteAlias::~QuoteAlias(){
+	delete quote;
+	delete interf;
 }

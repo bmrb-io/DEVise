@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/08/22 23:13:02  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.17  1997/08/21 21:04:19  donjerko
   Implemented view materialization
 
@@ -70,6 +73,8 @@
 #include "Iterator.h"
 #include "Aggregates.h"
 #include "Inserter.h"
+#include "MinMax.h"
+#include "Interface.h"
 
 #include "RTree.h"
 
@@ -310,11 +315,26 @@ Site* IndexParse::createSite(){
 	inserter.open(out, INDEX_SCHEMA.getNumFlds(), INDEX_SCHEMA.getTypeIDs());
 	inserter.insert(tuple);
 
-	Tuple tupleM[2];
-	tupleM[0] = (Type*) tablename.c_str();
-//	tupleM[1] = (Type*) 
+	Tuple minTup[numTFlds];
+	Tuple maxTup[numTFlds];
+	for(int i = 0; i < numTFlds; i++){
+		minTup[i] = minExs[i]->getValue();
+		maxTup[i] = maxExs[i]->getValue();
+	}
 
-	for(int i = 0; i < numFlds; i++){
+	Inserter mmFile;
+	string mmFilePath = MinMax::getPathName(tablename);
+	ISchema tableSchema(numTFlds, types, attrNms);
+	TRY(mmFile.open(tableSchema, mmFilePath, ios::out), NULL);
+
+	mmFile.insert(minTup);
+	mmFile.insert(maxTup);
+
+	StandardInterface interf(tableSchema, mmFilePath);
+	MinMax::replace(tablename, &interf);
+	CATCH(cerr << "Warning: "; currExcept->display(cerr); cerr << endl;);
+
+	for(int i = 0; i < numTFlds; i++){
 		delete minExs[i];
 		delete maxExs[i];
 	}

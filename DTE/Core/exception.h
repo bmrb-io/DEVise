@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/21 21:04:30  donjerko
+  Implemented view materialization
+
   Revision 1.6  1997/08/12 19:58:44  donjerko
   Moved StandardTable headers to catalog.
 
@@ -126,6 +129,6 @@ extern ITimer iTimer;
 
 #define TRY(A,B) A; if(currExcept){return B;}
 #define CHECK(A,B) if(currExcept){currExcept->append(A); return B;}
-#define CATCH(A) if(currExcept){A; currExcept = NULL;}
+#define CATCH(A) if(currExcept){A; delete currExcept; currExcept = NULL;}
 
 #endif

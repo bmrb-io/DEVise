@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/08/22 23:13:07  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.32  1997/08/21 21:04:38  donjerko
   Implemented view materialization
 
@@ -158,6 +161,22 @@ const string STRING_TP = "string";
 const string INTERFACE_TP = "interface";
 
 const string RID_STRING = "recId";
+
+class DteEnvVars {
+public:
+	string materViewDir;
+	string minmaxDir;
+	string rootCatalog;
+	string indexTable;
+	string minmaxCatalog;
+public:
+	DteEnvVars();
+private:
+	string getDirectory(const string& envVar);
+	string getFile(const string& env, const string& def);
+};
+
+extern const DteEnvVars DTE_ENV_VARS;
 
 struct Stats{
 	int* fldSizes;
@@ -625,6 +644,9 @@ public:
 	static const char* getCStr(const Type* object){
 		return (const char*)object;
 	}
+	static const Type* getTypePtr(const char* c){
+		return (const Type*) c;
+	}
 };
 
 class IDate {
@@ -873,7 +895,7 @@ public:
 	friend ostream& operator<<(ostream& out, const ISchema& s);
 };
 
-extern ISchema DIR_SCHEMA;
+const ISchema DIR_SCHEMA("2 string name interface interf");
 const ISchema INDEX_SCHEMA("3 string table string name indexdesc descriptor");
 
 class MemoryLoader {

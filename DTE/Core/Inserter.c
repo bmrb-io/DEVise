@@ -17,6 +17,10 @@ void Modifier::replace
 {
 	int objIndex = (key2 == NULL ? 1 : 2);
 	ifstream* ins = new ifstream(fileName.c_str());
+	if(!ins->good()){
+		string msg = "Could not open file: " + fileName;
+		THROW(new Exception(msg), );
+	}
 	assert(ins && ins->good());
 	StandReadExec* iter = new StandReadExec(schema, ins);
      iter->initialize();
@@ -26,8 +30,11 @@ void Modifier::replace
 	TupleLoader tupleLoader;
 	TRY(tupleLoader.open(numFlds, schema.getTypeIDs()), );
 	TRY(tmpTuple = iter->getNext(), );
+
+	bool isReplaced = false;
+	
+	Tuple* copy;
 	while(tmpTuple){
-		Tuple* copy;
 		if(predicate(key, key2, tmpTuple)){
 			ConstTuple localTup[numFlds];
 			for(int i = 0; i < numFlds; i++){
@@ -35,6 +42,7 @@ void Modifier::replace
 			}
 			localTup[objIndex] = object;
 			copy = tupleLoader.insert(localTup);
+			isReplaced = true;
 		}
 		else{
 			copy = tupleLoader.insert(tmpTuple);
@@ -43,6 +51,16 @@ void Modifier::replace
 		TRY(tmpTuple = iter->getNext(), );
 	}
 	delete iter;
+	if(!isReplaced){
+		ConstTuple localTup[numFlds];
+		localTup[0] = IString::getTypePtr(key->c_str());
+		if(key2){
+			localTup[1] = IString::getTypePtr(key2->c_str());
+		}
+		localTup[objIndex] = object;
+		copy = tupleLoader.insert(localTup);
+		tupleList.append(copy);
+	}
 	Inserter newFile;
 	TRY(newFile.open(schema, fileName, ios::out), );
 	for(tupleList.rewind(); !tupleList.atEnd(); tupleList.step()){

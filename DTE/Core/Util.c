@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/21 21:04:28  donjerko
+  Implemented view materialization
+
   Revision 1.7  1997/08/14 02:08:54  donjerko
   Index catalog is now an independent file.
 
@@ -34,7 +37,7 @@
 
 #include "types.h"
 #include "exception.h"
-#include "catalog.h"
+// #include "catalog.h"
 #include "Inserter.h"
 
 #include "Utility.h"
@@ -44,30 +47,8 @@
 #include <strstream.h>
 #include <stdlib.h>
 
-string selectFileName(const string& env, const string& def){
-	char* nm = getenv(env.c_str());
-	if(nm){
-		return string(nm);
-	}
-	else{
-		return def;
-	}
-}
-
-const Catalog ROOT_CATALOG(
-	selectFileName("DEVISE_HOME_TABLE", "./catalog.dte").c_str());
-
-/*
-const Catalog* getRootCatalog(){
-	string catalogName;
-	catalogName = selectFileName("DEVISE_HOME_TABLE", "./catalog.dte");
-	return &ROOT_CATALOG;
-}
-*/
-
 istream* getIndexTableStream(){
-	string catalogName;
-	catalogName = selectFileName("DEVISE_INDEX_TABLE", "./sysind.dte");
+	string catalogName = DTE_ENV_VARS.indexTable;
 	istream* in = new ifstream(catalogName.c_str());
 	if(!in || !in->good()){
 		cerr << "Warning: could not open index file \"" << catalogName
@@ -77,8 +58,7 @@ istream* getIndexTableStream(){
 }
 
 ostream* getIndexTableOutStream(int mode){
-	string catalogName;
-	catalogName = selectFileName("DEVISE_INDEX_TABLE", "./sysind.dte");
+	string catalogName = DTE_ENV_VARS.indexTable;
 	ostream* in = new ofstream(catalogName.c_str(), mode);
 	if(!in || !in->good()){
 		cerr << "Warning: could not open index file \"" << catalogName

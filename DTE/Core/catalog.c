@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/08/22 23:13:04  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.25  1997/08/21 21:04:29  donjerko
   Implemented view materialization
 
@@ -105,14 +108,14 @@ Site* Catalog::find(TableName* path) const { // Throws Exception
 	return retVal;
 }
 
-void Directory::replace(const string& entry, const Interface* interf)
+void Directory::replace(const string& entry, const Interface* interf) const
 {
 	Modifier modifier(DIR_SCHEMA, fileName);
 
 	TRY(modifier.replace(&entry, interf), );
 }
 
-Interface* Directory::createInterface(const string& entry)
+Interface* Directory::createInterface(const string& entry) const
 { 
 
 // Throws Exception
@@ -120,6 +123,12 @@ Interface* Directory::createInterface(const string& entry)
 //	cerr << "searching for " << entry << " in " << fileName << endl;
 
 	ifstream* in = new ifstream(fileName.c_str());
+	assert(in);
+	if(!in->good()){
+		delete in;
+		string msg = "Could not open file " + fileName;
+		THROW(new Exception(msg), NULL);
+	}
 	Iterator* iterator = new StandReadExec(DIR_SCHEMA, in);
 	assert(iterator);
 	iterator->initialize();

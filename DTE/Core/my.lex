@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/08/22 23:13:06  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.17  1997/08/21 21:04:31  donjerko
   Implemented view materialization
 
@@ -62,7 +65,6 @@
  */
 
 %{
-#include <string>
 #include <string>
 #include <stdlib.h>
 #include <assert.h>

@@ -5,11 +5,11 @@
 #include "StandardRead.h"
 
 class MinMax {
-	static StandardRead minMaxTable;
 public:
 	static bool isApplicable(List<BaseSelection*>* selectList);
 	static TableAlias* createReplacement(TableAlias* table);
-	static void insert(const string& tableName, const string& fileName);
+	static void replace(const string& entry, const Interface* interf);
+	static string getPathName(const string& tableName);
 };
 
 #endif

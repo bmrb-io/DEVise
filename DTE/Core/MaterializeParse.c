@@ -16,8 +16,13 @@ Site* MaterializeParse::createSite(){
 #endif
 
 	string fileName = tableName->fileName();
-	Interface* interf = ROOT_CATALOG.createInterface(&dirName);
+	TRY(Interface* interf = ROOT_CATALOG.createInterface(&dirName), NULL);
 
+	if(!interf){
+		string err("Collection ");
+		err += dirName.toString() + " does not exists";
+		THROW(new Exception(err), NULL);
+	}
 	if(interf->getType() != Interface::CATALOG){
 		string err("View ");
 		err += nameStr + " is not defined within a directroy file";
@@ -46,17 +51,7 @@ Site* MaterializeParse::createSite(){
 	int numFlds = engine.getNumFlds();
 	const TypeID* typeIDs = engine.getTypeIDs();
 
-	const char* dmd = NULL;
-	if((dmd = getenv("DEVISE_MATERIAL_DIR"))){
-	}
-	else if((dmd = getenv("PWD"))){
-	}
-	else{
-		string err("Could not read env. var DEVISE_MATERIAL_DIR nor PWD");
-		THROW(new Exception(err), NULL);
-	}
-	assert(dmd);
-	string materFile = dmd;
+	string materFile = DTE_ENV_VARS.materViewDir; 
 	materFile += "/" + nameStr;
 	cerr << "Materializing view: " << nameStr << " into " << materFile << endl;
 	ofstream* outf = new ofstream(materFile.c_str());

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/08/21 21:04:33  donjerko
+  Implemented view materialization
+
   Revision 1.29  1997/08/14 02:08:55  donjerko
   Index catalog is now an independent file.
 
@@ -1178,19 +1181,22 @@ public:
 	virtual bool isQuote(){
 		return  false;
 	}
+	virtual Site* createSite();
 };
 
 class QuoteAlias : public TableAlias {
 	string* quote;
+	Interface* interf;
 public:
 	QuoteAlias(string* quote, string* alias = NULL) :
-		TableAlias(new TableName(), alias), quote(quote) {}
-	virtual ~QuoteAlias(){
-		delete quote;
-	}
+		TableAlias(new TableName(), alias), quote(quote), interf(NULL) {}
+	QuoteAlias(Interface* interf, string* alias) :
+		TableAlias(new TableName(), alias), quote(NULL), interf(interf) {}
+	virtual ~QuoteAlias();
 	virtual void display(ostream& out, int detail = 0){
-		assert(quote);
-		out << *quote;
+		if(quote){
+			out << *quote;
+		}
 		if(alias){
 			out << " " << *alias;
 		}
@@ -1208,6 +1214,7 @@ public:
 	virtual bool isQuote(){
 		return  true;
 	}
+	virtual Site* createSite();
 };
 
 #endif

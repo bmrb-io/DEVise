@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/08/22 23:13:03  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.33  1997/08/21 21:04:24  donjerko
   Implemented view materialization
 
@@ -182,7 +185,7 @@ Site* QueryTree::createSite(){
 	if(minMaxCond && MinMax::isApplicable(selectList)){
 		tableList->rewind();
 		TableAlias* table = tableList->get();
-		TableAlias* replacement = MinMax::createReplacement(table);
+		TRY(TableAlias* replacement = MinMax::createReplacement(table), 0);
 		if(replacement){
 			tableList->replace(replacement);
 			delete table;
@@ -196,22 +199,7 @@ Site* QueryTree::createSite(){
 		TableAlias* ta = tableList->get();
 		string fullPathNm = ta->getTable()->toString();
 		Site* site = NULL;
-		if(ta->isQuote()){
-			QuoteAlias* qa = (QuoteAlias*) ta;
-			const string* quote = qa->getQuote();
-			cout << "quote is:\n" << *quote << endl;
-			strstream qstr;
-			qstr << *quote;
-			assert(!"broken");
-			Interface* interf;
-			TRY(interf->read(qstr), 0);
-			cout << "quoute entry read:" << endl;
-			interf->write(cout);
-			TRY(site = interf->getSite(), 0);
-		}
-		else{
-			TRY(site = ROOT_CATALOG.find(ta->getTable()), 0);
-		}
+		TRY(site = ta->createSite(), 0);
 		assert(site);
 		site->addTable(ta);
 		site->setFullNm(fullPathNm);	// used to retreive indexes

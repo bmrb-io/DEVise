@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/21 21:04:25  donjerko
+  Implemented view materialization
+
   Revision 1.13  1997/08/15 00:17:34  donjerko
   Completed the Iterator destructor code.
 
@@ -41,7 +44,7 @@
 
  */
 
-#define DEBUG
+// #define DEBUG
 
 #include "RTreeRead.h"
 #include "RTree.h"

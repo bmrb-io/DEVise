@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/08/22 23:13:06  okan
+  Changed #include <string.h> 's to #include <string>
+
   Revision 1.31  1997/08/21 21:04:37  donjerko
   Implemented view materialization
 
@@ -92,13 +95,52 @@
 #include "Interface.h"
 #include "Utility.h"
 #include "DateTime.h"
+#include "catalog.h" 	// for root catalog
 #include <string>
 #include <time.h>
 #include <strstream.h>
 #include <stdlib.h>
 #include <limits.h>
 
-ISchema DIR_SCHEMA("2 string name interface interf");
+const DteEnvVars DTE_ENV_VARS;
+
+extern const Catalog ROOT_CATALOG(DTE_ENV_VARS.rootCatalog);
+
+extern const Directory MINMAX_DIR(DTE_ENV_VARS.minmaxCatalog);
+
+string DteEnvVars::getDirectory(const string& envVar){
+	const char* dmd = NULL;
+	if((dmd = getenv(envVar.c_str()))){
+	}
+	else if((dmd = getenv("PWD"))){
+	}
+	else{
+		string err("Could not read env. var ");
+		err += envVar + " nor PWD";
+		cerr << err << endl;
+		exit(1);
+	}
+	assert(dmd);
+	return dmd;
+}
+
+string DteEnvVars::getFile(const string& env, const string& def){
+	char* nm = getenv(env.c_str());
+	if(nm){
+		return string(nm);
+	}
+	else{
+		return def;
+	}
+}
+
+DteEnvVars::DteEnvVars(){
+	materViewDir = getDirectory("DEVISE_MATER_DIR");
+	minmaxDir = getDirectory("DEVISE_MINMAX_DIR");
+	rootCatalog = getFile("DEVISE_HOME_TABLE", "./catalog.dte");
+	indexTable = getFile("DEVISE_INDEX_TABLE", "./sysind.dte");
+	minmaxCatalog = getFile("DEVISE_MINMAX_TABLE", "./minmax.dte");
+}
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val1 = ((EncodedDTF*)arg1);
@@ -382,6 +424,12 @@ void intRead(istream& in, Type*& adt){
 	int tmp;
 	in >> tmp;
 	adt = (Type*) tmp;
+}
+
+void time_tRead(istream& in, Type*& adt){
+	time_t x;
+	in >> x;
+	*((time_t*) adt) = x;
 }
 
 void doubleRead(istream& in, Type*& adt){
@@ -799,6 +847,9 @@ ReadPtr getReadPtr(TypeID root){
 	}
 	else if(root == "indexdesc"){
 		return indexDescRead;
+	}
+	else if(root == "time_t"){
+		return time_tRead;
 	}
 	else{
 		cout << "No such type: " << root << endl;
