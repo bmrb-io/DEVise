@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/11/01 19:28:23  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.23  1996/10/07 22:54:00  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -114,6 +119,10 @@
 #include "Control.h"
 #include "Util.h"
 #include "DevError.h"
+#include "TDataDQLInterp.h"
+#include "ViewGraph.h"
+#include "TDataMap.h"
+
 #ifndef ATTRPROJ
 #  include "StringStorage.h"
 #endif
@@ -178,8 +187,46 @@ void TDataAsciiInterpClassInfo::ParamNames(int &argc, char **&argv)
   strcpy(buf[2], "Param {foobar}");
 }
 
+extern ControlPanel *ctrl;
+
 ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
+#if defined(DEBUG) || 0
+  for(int i=0; i<argc; i++) {
+	printf("argv[%d] = %s\n", i, argv[i]);
+  }
+  if(_className) printf("_className=%s\n", _className);
+#endif
+
+  if(!strncmp(_className, "GDATASTAT", 9)) {
+    ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(argv[0]+8);
+    if(!v) {
+      printf("argv[0]=%s argv[1]=%s\n", argv[0]+8, argv[1]+8);
+      printf("Invalid View Name.\n");
+      return NULL;
+    }
+
+    if(v->IsGStatInMem() == false) {
+      TDataMap *map = v->GetFirstMap();
+      TData *tdata = map->GetTData();
+      char *sourceName = ctrl->GetClassDir()->FindInstanceName(tdata);
+      if (sourceName[0] != '.') {
+	 printf("DTE doesn't support queries on statistics yet.\n");
+	 return NULL;
+      }
+      char *query = new char[1024];
+      if(strncmp(argv[0], "GstatX: ", 8) == 0 ) {
+      	sprintf(query, "select t.X, count(t.Y), max(t.Y), avg(t.Y), min(t.Y) from %s as t group by t.X", sourceName);
+      } else if (strncmp(argv[0], "GstatY: ", 8) == 0 ) {
+      	sprintf(query, "select t.Y, count(t.X), max(t.X), avg(t.X), min(t.X) from %s as t group by t.Y", sourceName);
+      }
+      TDataDQLInterpClassInfo *queryClass =
+            new TDataDQLInterpClassInfo(sourceName, query);
+
+      return queryClass->CreateWithParams(argc, argv);
+      }
+  }
+
   if (argc != 2 && argc != 3)
     return (ClassInfo *)NULL;
 
