@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1996/05/11 17:24:57  jussi
+#  Added warning output to DictLookup.
+#
 #  Revision 1.18  1996/05/11 03:00:22  jussi
 #  Small changes.
 #
@@ -560,7 +563,8 @@ proc PrintActual {toprinter printcmd filename allviews format} {
     foreach win $windowlist {
 	set file [format $template $i]
 	puts "Save window $win to file $file"
-	set err [ DEVise saveWindowImage $format $win $file ]
+	set err [ catch { DEVise saveWindowImage $format $win $file } ]
+	puts "err = $err"
 	if {$err > 0} {
 	    dialog .printError "Window Image Save Error" \
 		    "An error occurred while saving window images to files." \
