@@ -1,22 +1,31 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/09 00:24:52  jussi
+  Increased MaxClasses from 50 to 100.
+
   Revision 1.2  1995/09/05 21:12:26  jussi
   Added/update CVS header.
 */
 
-/*
-   ClassDir.h : directory about classes and instances.
-   The hierarchy is as follows:
-     category --> class --> instance
-   For example:
-     tdata --> multi --> run_trace
-     view --> ViewScatter --> g8639.solar.Scatter
-*/
-
 #ifndef ClassDir_h
 #define ClassDir_h
+
 #include "DeviseTypes.h"
 
 /*
@@ -26,6 +35,7 @@
 */
 
 class InstanceInfo;
+
 class ClassInfo {
 public:
 	ClassInfo();
@@ -43,7 +53,7 @@ public:
 	virtual char *ClassName()=0; 	/* name of class */
 
 	/* Get name of parameters and default/current values */
-	virtual void ParamNames(int &argc, char **&argv) =0;
+	virtual void ParamNames(int &argc, char **&argv) = 0;
 
 	/* Create instance using the supplied parameters. Return 
 	the instance info if successful, otherwise return NULL. */
@@ -74,6 +84,7 @@ public:
 
 	/* Get parameters that can be used to re-create this instance */
 	virtual void CreateParams(int &argc, char **&argv);
+
 private:
 	char **_defaultParams;
 	int _numDefaultParams;
@@ -159,6 +170,7 @@ public:
 		int &numParams, char **&params);
 
 	void Print();
+
 private:
 	CategoryRec *_categories[MaxCategories];
 	int _numCategories;
