@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/06/17 20:53:17  donjerko
+  *** empty log message ***
+
   Revision 1.50  1998/06/08 04:09:53  okan
   *** empty log message ***
 
@@ -267,7 +270,7 @@ public:
 	int cardinality;
 	int numFlds;
 public:
-	const static string KEYWD;
+	static const string KEYWD;
 	Stats(int numFlds, int* fldSizes, int c) :
 		fldSizes(fldSizes), cardinality(c), numFlds(numFlds) {}
 	Stats(int numflds){

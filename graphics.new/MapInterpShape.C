@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/04/28 18:02:59  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.51  1998/04/16 21:51:36  wenger
   Committed Sanjay's text code.
 
@@ -2300,17 +2305,15 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 	win->Transform(1, 1, x1, y1);
 	Coord pointSize =  fabs(y1 - y0);
 	
-		//TEMP -- should these be Coords instead of ints?
-        int pixelperUnitHeight     = fabs(y1 - y0);
-	int pixelperUnitWidth      = fabs(x1 - x0);
+    Coord pixelperUnitHeight     = fabs(y1 - y0);
+	Coord pixelperUnitWidth      = fabs(x1 - x0);
 
 #if defined(DEBUG)
         cout << "pixelper Unit (Height) = " << pixelperUnitHeight <<endl;
 	cout << "pixelper Unit (Width) = " << pixelperUnitWidth <<endl;
 #endif
 
-		//TEMP -- should these be Coords instead of ints?
-        int pixelperUnit = size * (MIN(pixelperUnitWidth,pixelperUnitHeight));
+    Coord pixelperUnit = size * (MIN(pixelperUnitWidth,pixelperUnitHeight));
 	pixelperUnit  = (Coord) ((int) (pixelperUnit + 0.5));
 
     /* Find or generate the label string. */
