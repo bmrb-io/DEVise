@@ -5,5 +5,6 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-atof: ../graphics/Util.h ../graphics/DeviseTypes.h ../graphics/Exit.h
+atof: ../graphics/Util.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+atof: ../graphics/Exit.h
 http_url: ../graphics.new/machdep.h

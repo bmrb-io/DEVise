@@ -5,37 +5,42 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 QueryProcTape: QueryProcTape.h ../graphics.new/QueryProc.h
-QueryProcTape: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-QueryProcTape: ../graphics/Color.h ../graphics/Pattern.h
-QueryProcTape: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-QueryProcTape: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
+QueryProcTape: ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+QueryProcTape: ../graphics/VisualArg.h ../graphics/Color.h
+QueryProcTape: ../graphics/Pattern.h ../graphics.new/RecId.h
+QueryProcTape: ../graphics.new/QPRange.h ../graphics/DList.h
+QueryProcTape: ../graphics/Exit.h ../graphics/BufPolicy.h
 QueryProcTape: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
 QueryProcTape: ../graphics.new/GData.h ../graphics.new/TData.h
-QueryProcTape: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
-QueryProcTape: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
-QueryProcTape: ../graphics/Init.h ../graphics.new/BufMgrFull.h
-QueryProcTape: ../graphics.new/RangeInfo.h ../graphics.new/BufMgrNull.h
-QueryProcTape: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-QueryProcTape: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-QueryProcTape: ../graphics/View.h ../graphics/ViewWin.h
-QueryProcTape: ../graphics/WindowRep.h ../graphics/Geom.h
-QueryProcTape: ../graphics/Transform.h ../graphics/DevisePixmap.h
-QueryProcTape: ../graphics/Compress.h ../graphics/Control.h
-QueryProcTape: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-QueryProcTape: ../graphics/AttrList.h ../graphics/Config.h
-QueryProcTape: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-QueryProcTape: ../graphics.new/ViewStats.h
-QueryProcTape: ../graphics.new/DerivedDataSource.h ../graphics.new/Action.h
-QueryProcTape: ../graphics.new/GDataBin.h ../graphics.new/MappingInterp.h
-QueryProcTape: ../graphics.new/Bitmap.h ../graphics/Display.h
-QueryProcTape: ../graphics/ColorMgr.h
+QueryProcTape: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+QueryProcTape: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+QueryProcTape: ../graphics.new/BufferPolicy.h ../graphics/Init.h
+QueryProcTape: ../graphics.new/BufMgrFull.h ../graphics.new/RangeInfo.h
+QueryProcTape: ../graphics.new/BufMgrNull.h ../graphics.new/TDataMap.h
+QueryProcTape: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
+QueryProcTape: ../graphics.new/ViewGraph.h ../graphics/View.h
+QueryProcTape: ../graphics/ViewWin.h ../graphics/WindowRep.h
+QueryProcTape: ../graphics/Geom.h ../graphics/Transform.h
+QueryProcTape: ../graphics/DevisePixmap.h ../graphics/Compress.h
+QueryProcTape: ../graphics/Control.h ../graphics/ClassDir.h
+QueryProcTape: ../graphics/ViewCallback.h ../graphics/AttrList.h
+QueryProcTape: ../graphics/Config.h ../graphics/Cursor.h
+QueryProcTape: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+QueryProcTape: ../graphics.new/GdataStat.h HashTable.h
+QueryProcTape: ../graphics.new/DataSourceFixedBuf.h
+QueryProcTape: ../graphics.new/DataSourceBuf.h ../graphics.new/UpdateLink.h
+QueryProcTape: ../graphics.new/VisualLink.h ../graphics.new/Action.h
+QueryProcTape: ../graphics.new/PointStorage.h ../graphics.new/GDataBin.h
+QueryProcTape: ../graphics.new/MappingInterp.h ../graphics.new/Bitmap.h
+QueryProcTape: ../graphics/Display.h ../graphics/ColorMgr.h
 Templates: QueryProcTape.h ../graphics.new/QueryProc.h
-Templates: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-Templates: ../graphics/Color.h ../graphics/Pattern.h ../graphics.new/RecId.h
-Templates: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-Templates: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
-Templates: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+Templates: ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+Templates: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+Templates: ../graphics.new/RecId.h ../graphics.new/QPRange.h
+Templates: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
+Templates: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
+Templates: ../graphics.new/GData.h ../graphics.new/TData.h
+Templates: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 Templates: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 Templates: ../graphics.new/BufferPolicy.h
 tapedrive: tapedrive.h ../graphics.new/machdep.h ../graphics/Exit.h

@@ -38,7 +38,8 @@ atof.o: /usr/include/stdlib.h /usr/include/ansi_compat.h
 atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/math.h /usr/include/sys/time.h ../graphics/Util.h
 atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
-atof.o: ../graphics/Exit.h
+atof.o: /usr/include/values.h ../graphics/DevStatus.h
+atof.o: /usr/include/sys/types.h ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 http_url.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/string.h
 http_url.o: /usr/include/errno.h ../graphics.new/machdep.h
@@ -51,5 +52,7 @@ http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 http_url.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
 http_url.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
 http_url.o: /usr/include/netinet/in.h
+mk3dstruct.o: /usr/include/math.h /usr/include/ansi_compat.h
+mk3dstruct.o: /usr/include/time.h /usr/include/stdlib.h
 mkbinfile.o: /usr/include/math.h /usr/include/ansi_compat.h
 mkbinfile.o: /usr/include/time.h /usr/include/stdlib.h

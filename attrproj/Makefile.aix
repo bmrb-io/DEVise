@@ -5,33 +5,36 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 ApInit: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
-ApInit: ../graphics/BufPolicy.h ../graphics/Time.h ../graphics/Journal.h
-ApInit: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ApInit: ../graphics/Timer.h ../graphics/Util.h
-ApParseCat: ApParseCat.h ../graphics/DeviseTypes.h ../graphics.new/TData.h
-ApParseCat: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-ApParseCat: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
-ApParseCat: ../graphics/Exit.h ../graphics.new/GroupDir.h
+ApInit: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Time.h
+ApInit: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ApInit: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
+ApParseCat: ApParseCat.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+ApParseCat: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApParseCat: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat: ../graphics/Exit.h ../graphics/AttrList.h ../graphics/Config.h
+ApParseCat: ../graphics/DList.h ../graphics.new/GroupDir.h
 ApParseCat: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
 ApParseCat: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
 ApParseCat: ../graphics/Parse.h ApInit.h ../graphics/BufPolicy.h
 ApParseCat: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
 ApParseCat: ../graphics/Dispatcher.h ../graphics/Journal.h
-ApParseCat: ../graphics.new/DataSource.h ../graphics.new/TDataBinaryInterp.h
-ApParseCat: ../graphics.new/TDataBinary.h ../graphics/Util.h
-AttrProj: AttrProj.h ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-AttrProj: VectorArray.h vector.h ProjectionList.h ApParseCat.h
-AttrProj: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-AttrProj: ../graphics/Util.h ../graphics/Exit.h ../graphics/AttrList.h
-AttrProj: ../graphics/Config.h ../graphics/DList.h ../graphics.new/DataSeg.h
+ApParseCat: ../graphics.new/TDataBinaryInterp.h ../graphics.new/TDataBinary.h
+ApParseCat: ../graphics/Util.h
+AttrProj: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+AttrProj: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+AttrProj: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
+AttrProj: ../graphics.new/DataSource.h ../graphics/Exit.h ../graphics/Util.h
+AttrProj: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
+AttrProj: ../graphics.new/DataSeg.h
 ProjectionList: ProjectionList.h ../graphics/DeviseTypes.h
-VectorArray: VectorArray.h ../graphics/DeviseTypes.h vector.h
-VectorArray: ../graphics/Util.h ../graphics/Exit.h
-aptest: AttrProj.h ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-aptest: VectorArray.h vector.h ProjectionList.h ApInit.h
-aptest: ../graphics/BufPolicy.h
-show: AttrProj.h ../graphics/DeviseTypes.h ../graphics.new/RecId.h
-show: VectorArray.h vector.h ProjectionList.h ApInit.h
-show: ../graphics/BufPolicy.h
+ProjectionList: ../graphics/DevStatus.h
+VectorArray: VectorArray.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+VectorArray: vector.h ../graphics/Util.h ../graphics/Exit.h
+aptest: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+aptest: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest: ApInit.h ../graphics/BufPolicy.h
+show: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+show: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+show: ApInit.h ../graphics/BufPolicy.h
 vector: global.h vector.h

@@ -5,34 +5,37 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 CompDate: CompDate.h
-generic: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-generic: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-generic: ../graphics/Display.h ../graphics/Geom.h ../graphics/ColorMgr.h
-generic: ../graphics/WindowRep.h ../graphics/Transform.h
-generic: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
-generic: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-generic: ../graphics.new/MapInterpClassInfo.h
+generic: ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+generic: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+generic: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+generic: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
+generic: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+generic: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic: ../graphics/Compress.h ../graphics/Control.h ../graphics/ClassDir.h
+generic: ../graphics/Init.h ../graphics/BufPolicy.h
+generic: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 generic: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 generic: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 generic: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 generic: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-generic: ../graphics.new/ViewStats.h ../graphics.new/DerivedDataSource.h
+generic: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+generic: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
+generic: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+generic: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 generic: ../graphics.new/Action.h ../graphics.new/RecId.h
-generic: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
-generic: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
-generic: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-generic: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
-generic: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-generic: ../tape/SortedTable.h ../graphics.new/GData.h
-generic: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-generic: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-generic: ../graphics.new/BufferPolicy.h ../graphics.new/TDataMap.h
-generic: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
-generic: ../graphics.new/ParseCat.h
+generic: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
+generic: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
+generic: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+generic: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
+generic: ../graphics.new/ViewScatter.h ../graphics.new/CompositeParser.h
+generic: ../graphics.new/RecInterp.h ../tape/QueryProcTape.h
+generic: ../graphics.new/QPRange.h ../tape/SortedTable.h
+generic: ../graphics.new/GData.h ../graphics.new/TData.h
+generic: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+generic: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+generic: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
+generic: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
 devise: ../graphics.new/ClientAPI.h ../graphics.new/ParseAPI.h
 devise: ../graphics.new/Version.h
 deviseb: ../graphics.new/ClientAPI.h ../graphics.new/ParseAPI.h
