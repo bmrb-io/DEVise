@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.76  1996/06/27 19:11:44  jussi
+#	Removed Block and 3DVector shapes from DEViseShapes list.
+#
 #	Revision 1.75  1996/06/20 17:12:30  guangshu
 #	Statistics is now a separate window instead of a cascaded menu.
 #
@@ -288,7 +291,7 @@
 ############################################################
 
 set DEViseColors \
-	{{0 black} {1 white} {2 red} {3 blue} {4 orange} \
+	{{1000 XOR} {0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
 	{11 tomato} {12 pink} {13 plum} {14 azure1} {15 cyan1} {16 SeaGreen1} \
 	{17 khaki1} {18 goldenrod1} {19 yellow} {20 sienna1} \
@@ -831,12 +834,6 @@ proc DoEditMapping {} {
     set shapeAttr1 [lindex [lindex $params 12] 1]
     set shapeAttr2 [lindex [lindex $params 13] 1]
     set shapeAttr3 [lindex [lindex $params 14] 1]
-    set shapeAttr4 [lindex [lindex $params 15] 1]
-    set shapeAttr5 [lindex [lindex $params 16] 1]
-    set shapeAttr6 [lindex [lindex $params 17] 1]
-    set shapeAttr7 [lindex [lindex $params 18] 1]
-    set shapeAttr8 [lindex [lindex $params 19] 1]
-    set shapeAttr9 [lindex [lindex $params 20] 1]
 
     set tdata [lindex [lindex $params 0] 1]
 
@@ -863,12 +860,6 @@ proc DoEditMapping {} {
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2} $shapeAttr1] \
 	    [list "ShapeAttr2" {0 0.1 0.5 1 2} $shapeAttr2] \
 	    [list "ShapeAttr3" {0 0.1 0.5 1 2} $shapeAttr3] \
-	    [list "ShapeAttr4" {0 0.1 0.5 1 2} $shapeAttr4] \
-	    [list "ShapeAttr5" {0 0.1 0.5 1 2} $shapeAttr5] \
-	    [list "ShapeAttr6" {0 0.1 0.5 1 2} $shapeAttr6] \
-	    [list "ShapeAttr7" {0 0.1 0.5 1 2} $shapeAttr7] \
-	    [list "ShapeAttr8" {0 0.1 0.5 1 2} $shapeAttr8] \
-	    [list "ShapeAttr9" {0 0.1 0.5 1 2} $shapeAttr9] \
 	    ] 0 ]
     
     if {$parm == ""} {
@@ -889,9 +880,6 @@ proc DoEditMapping {} {
 	    [findNumericValue $DEViseShapes [lindex $parm 7]] \
 	    [lindex $parm 8] [lindex $parm 9] \
 	    [lindex $parm 10] [lindex $parm 11] \
-	    [lindex $parm 12] [lindex $parm 13] \
-	    [lindex $parm 14] [lindex $parm 15] \
-	    [lindex $parm 16] [lindex $parm 17] \
 	]
 
     # Change parameter
