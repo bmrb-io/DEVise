@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/19 23:24:18  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.3  1998/02/12 17:15:26  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -54,7 +62,12 @@
 
 #include "Client.h"
 #include "ClientAPI.h"
-
+#define DOASSERT(cond, str)\
+	if ((cond))\
+	{\
+		fprintf(stderr,str);\
+	}
+//#include "Exit.h"
 //#define DEBUG
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
