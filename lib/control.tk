@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.67  1996/05/16 21:39:05  wenger
+#	implemented saving schemas ans session file for importing tdata
+#
 #	Revision 1.66  1996/05/11 19:08:37  jussi
 #	Added replica management.
 #
@@ -268,7 +271,7 @@ set DEViseColors \
 
 set DEViseShapes \
 	{{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} {5 Vector} \
-	{6 Block} {7 3DVector} {8 HorLine} {9 Segment}}
+	{6 Block} {7 3DVector} {8 HorLine} {9 Segment} {10 HighLow}}
 
 # global variables:
 # restoring: true if restoring session or template
