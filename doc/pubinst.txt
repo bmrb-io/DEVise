@@ -6,13 +6,21 @@ Execute the following commands:
   % cd ~
   % mkdir devise
   % cd devise
-  % cp /p/devise/public/run.script---copy.and.customize devise
-  % cp devise devisepub
+  % mkdir dat cache session
   % cp -r /p/devise/public/schema schema
+  % cp /p/devise/public/devisepub .
+  % cp /p/devise/public/run.script---copy.and.customize devise
 
-Edit the devise script and make DEVISE_DAT, DEVISE_CACHE, and
-DEVISE_SESSION point to ~/devise. Make DEVISE_SCHEMA point to
-~/devise/schema/schema. Leave devisepub unchanged.
+By default, the devise script sets the environment variables
+DEVISE_DAT, DEVISE_CACHE, DEVISE_SESSION, and DEVISE_SCHEMA
+to point to the dat, cache, session, and schema subdirectories
+in the CURRENT directory. You may want to fix the path names
+by editing the script and replacing the values with ~/devise/dat,
+~/devise/cache, ~/devise/session, and ~/devise/schema. If you then
+add ~/devise to your $PATH, you can run Devise from any directory
+and always see your data files and session files in the same location.
+
+Leave the devisepub script unchanged.
 
 A tutorial can be found in /p/devise/public/doc/userman.ps which
 is a user manual being developed. Run Devise using 'devisepub'
@@ -22,6 +30,6 @@ When you want to visualize your own data, run Devise using
 'devise' not 'devisepub', and follow the instructions in
 userman.ps.
 
-The supported platforms are Solaris/Intel, SunOS/Sparc, and
-HPUX/HPPA. The devise/devisepub script will invoke the
+The supported platforms are Solaris/Intel, Solaris/Sparc, SunOS/Sparc,
+and HPUX/HPPA. The devise/devisepub script will invoke the
 appropriate binaries depending on the machine you're logged on.
