@@ -1,4 +1,5 @@
-CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
+CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -Wno-unused \
+	-fexternal-templates
 
 LIBSRC = binconv.C extract.C rectape.C
 

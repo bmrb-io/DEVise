@@ -1,5 +1,5 @@
-CC = g++
-CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
+CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -Wno-unused \
+	-fexternal-templates
 
 LIBSRC	= sec.C cal.C crsp_extract.C
 
