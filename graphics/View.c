@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1996/08/08 20:59:11  beyer
+  changed some #ifdefs #if defined
+
   Revision 1.66  1996/08/05 17:28:59  beyer
   Added is_safe() which checks to see if a double is safe value (ie, not
   NaN or Infinity).  Made SetVisualFilter check the new filter for safety.
@@ -1364,7 +1367,7 @@ void View::Run()
   }
 
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
-#if defined(DEBUG)xxx
+#if defined(DEBUG)
   if (mode == ControlPanel::LayoutMode)
     printf("layout mode ");
   else

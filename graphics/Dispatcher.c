@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/08/09 14:55:59  guangshu
+  Fixed bugs when dumping the window in batch mode.
+
   Revision 1.24  1996/08/04 21:00:41  beyer
   Reorganized and simplified the dispatcher.  Multiple dispatchers are no
   longer allowed.  Inserting and removing callbacks uses one list.
@@ -195,15 +198,17 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
     FD_SET(fd, &fdset);
   }
 
+  Boolean inserted = false;
   int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *current = _callbacks.Next(index);
     if (current->priority > info->priority) {
       _callbacks.InsertBeforeCurrent(index, info);
+      inserted = true;
       break;
     }
   }
-  if( ! _callbacks.More(index) ) {
+  if( !inserted ) {
     // ran off the end of the list - new record has the highest priority
     // index is now at the end of the list, so this is 
     // equivalent to an append
@@ -211,7 +216,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   }
   _callbacks.DoneIterator(index);
 
-#if defined(DEBUG_CALLBACK_ORDER) 
+#if defined(DEBUG_CALLBACK_ORDER)
   printf("check count & order of callback list: count = %d\n", 
 	 _callbacks.Size());
   int i = 0;

@@ -78,6 +78,9 @@ Num Date        Status  Description
 026 08/07/96	OPEN	On HP and SPARC/SunOS, keypad keys only work when
 			num lock is on. (rkw)
 
+027 08/09/96	FIXED	Load demo/colors.tk, scroll; load demo/3d_test.tk,
+			scroll -> core dump (only on SPARC/Solaris?). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
