@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2001/09/12 20:34:29  wenger
+// Incremented JS version to 4.4; various fixes because of install problems
+// on pumori.
+//
 // Revision 1.56  2001/08/20 18:20:08  wenger
 // Fixes to various font problems: XDisplay calculates point sizes correctly
 // and uses screen resolution in specifying font; JS passes *its* screen
@@ -221,8 +225,8 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("4.4");
-    public static final String PROTOCOL_VERSION = new String("7.0");
-    public static final int DEFAULTID = 0;
+    public static final String PROTOCOL_VERSION = new String("8.0");
+    public static final long DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
@@ -391,6 +395,24 @@ public final class DEViseGlobals
     public static int toUshort(byte[] data)
     {
         return DEViseGlobals.toUshort(data, 0);
+    }
+
+    public static long toUlong(byte[] data, int offset)
+    {
+        if (data == null || data.length < 8 + offset)
+            return 0;
+
+        long v1 = (long)data[0 + offset] & 0x00000000000000FF;
+        long v2 = (long)data[1 + offset] & 0x00000000000000FF;
+        long v3 = (long)data[2 + offset] & 0x00000000000000FF;
+        long v4 = (long)data[3 + offset] & 0x00000000000000FF;
+        long v5 = (long)data[4 + offset] & 0x00000000000000FF;
+        long v6 = (long)data[5 + offset] & 0x00000000000000FF;
+        long v7 = (long)data[6 + offset] & 0x00000000000000FF;
+        long v8 = (long)data[7 + offset] & 0x00000000000000FF;
+
+        return ((v1 << 56) + (v2 << 48) + (v3 << 40) + (v4 << 32) +
+		(v5 << 24) + (v6 << 16) +  (v7 << 8) + (v8 << 0));
     }
 
     public static long getCurrentTime()
