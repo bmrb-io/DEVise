@@ -110,11 +110,10 @@ class Catalog {
 			}
 			String indexStr;
 			in >> indexStr;
-			assert(in);
-			if(indexStr == "index"){
+			if(in && indexStr == "index"){
 				TRY(interface->readIndex(in), in);
 			}
-			else if(indexStr == ";") {
+			else if(in && indexStr == ";") {
 			}
 			else {
 				String msg = 
@@ -170,7 +169,7 @@ public:
 	}
 	Interface* toInterface(String directEntry){	// throws exception
 		strstream entryStream;
-		entryStream << directEntry;
+		entryStream << directEntry << " ;";
 		Entry* entry = new Entry("dummy");
 		TRY(entry->read(entryStream), NULL); 
 		Interface* retVal = entry->interface;
