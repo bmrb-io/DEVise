@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.18  1995/11/10 21:45:05  jussi
+#	Changed interface to ISSM and Compustat to be through
+#	sources.tcl.
+#
 #	Revision 1.17  1995/11/02 16:45:59  jussi
 #	Removed confirmation message when removing a view from a window.
 #	When moving a view from one window to another, current selection

@@ -6,6 +6,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5  1995/11/10 21:45:08  jussi
+#	Changed type of text message from 'text' to 'message'.
+#
 #	Revision 1.4  1995/09/22 17:33:16  jussi
 #	Added ownership message.
 #
