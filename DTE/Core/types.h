@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/03/17 17:19:11  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.46  1998/03/13 04:02:20  donjerko
   *** empty log message ***
 
@@ -741,6 +744,9 @@ public:
 			return NULL;
 		}
      }
+	static const Type* getTypePtr(const double* c){
+		return (const Type*) c;
+	}
 };
 
 class IString {
