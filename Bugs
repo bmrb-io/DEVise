@@ -255,7 +255,7 @@ Num Date        Status  Description
 			session test/miron_new_wdata.tk.) (rkw)
 			Assigned: Kent
 
-069 11/14/96	CD	Load session test/dbc2.tk; most views are initially
+069 11/14/96	OPEN	Load session test/dbc2.tk; most views are initially
 			drawn with incorrect colors.  This somehow fixes
 			itself if you force a redraw (resize windows, etc.).
 			Problem does not seem to exist any longer.  Perhaps
@@ -560,6 +560,13 @@ Num Date        Status  Description
 			up the 'Edit Mapping' dialog -> you cannot get any
 			attributes to show up in the 'Variable' menu for
 			changing a GData attribute. (rkw)
+
+135 01/23/97	OPEN	Saved pixmaps are not restore properly. The views
+			are cleared soon after pixmap is displayed on screen.
+			Problem is in View::DrawAxesLabel() which clears
+			view *after* pixmap is restored. Also see bug #069.
+                        (jpm)
+			Deferred (storing of pixmaps disabled).
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
