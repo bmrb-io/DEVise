@@ -1,7 +1,10 @@
 #! /bin/csh -f
+#rm *.class
+#javac QuickLoader.java
+#jar cf QuickLoader.jar *.class
 rm *.class
-javac QuickLoader.java
-jar cf QuickLoader.jar *.class *.gif
+javac jsa.java
+jar cf jsa.jar *.class *.gif
 #rm /var/home/www/public/jsa.jar
 #mv jsa.jar /var/home/www/public
 #chmod 755 /var/home/www/public/jsa.jar

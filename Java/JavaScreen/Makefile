@@ -25,16 +25,16 @@ jspop: jspop.class
 jss: jss.class
 
 js.class: *.java
-	javac js.java
+	javac *.java
 
 jsa.class: *.java
-	javac jsa.java
+	javac *.java
 
 jspop.class: *.java
-	javac jspop.java
+	javac *.java
 
 jss.class: *.java
-	javac jss.java
+	javac *.java
 
 jar: js jsa
 	jar cf jsa.jar *.class *.gif

@@ -2391,7 +2391,7 @@ Num Date        Status  Description
 606 8/3/00	OPEN	JavaScreen: JS can't draw text with orientation
 			other than 0 deg. (rkw)
 
-607 8/7/00	OPEN	JavaScreen: if you do control-drag, and release
+607 8/7/00	WORK	JavaScreen: if you do control-drag, and release
 			the control key *after* the mouse button the JS
 			never gets the key release event (unless you wait
 			until it has finished receiving all commands from

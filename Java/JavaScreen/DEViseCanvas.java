@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2000/08/07 04:45:23  venkatan
+// YError that occurs when mouse-clicked in misc/FamMed_visits.tk is fixed.
+//
 // Revision 1.63  2000/08/07 03:28:51  venkatan
 // Zoom for X - only direction is now available - done with CTRL + Rubberband
 //
@@ -157,6 +160,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.64  2000/08/07 04:45:23  venkatan
+// YError that occurs when mouse-clicked in misc/FamMed_visits.tk is fixed.
+//
 // Revision 1.63  2000/08/07 03:28:51  venkatan
 // Zoom for X - only direction is now available - done with CTRL + Rubberband
 //
@@ -1273,14 +1279,12 @@ public class DEViseCanvas extends Container
 
                     cursor.image = null;
 
-                    if (DEViseCanvas.lastKey != KeyEvent.VK_CONTROL) {
-                        cmd = cmd + DEViseCommands.CURSOR_CHANGED + " {" +
-			  cursor.name + "} " + cursor.x + " " + cursor.y +
-			  " " + cursor.width + " " + cursor.height;
+                    cmd = cmd + DEViseCommands.CURSOR_CHANGED + " {" +
+		      cursor.name + "} " + cursor.x + " " + cursor.y +
+		      " " + cursor.width + " " + cursor.height;
 
-                        jscreen.guiAction = true;
-                        dispatcher.start(cmd);
-                    }
+                    jscreen.guiAction = true;
+                    dispatcher.start(cmd);
                 } else { // rubber band
                     ep.x = activeView.translateX(p.x, 1);
                     ep.y = activeView.translateY(p.y, 1);
@@ -1328,6 +1332,12 @@ public class DEViseCanvas extends Container
                 isMouseDragged = false;
 
                 repaint();
+
+		// Workaround for bug 607.  Note that this means that things
+		// will *not* work correctly if you do two consecutive drags
+		// while holding down the control key the whole time.
+		// RKW 2000-08-07.
+		lastKey = KeyEvent.VK_UNDEFINED;
             }
         }
 
@@ -1355,9 +1365,9 @@ public class DEViseCanvas extends Container
 			  activeView.translateY(p.y, 2);
 		    }
                 } else {
-		       DEViseCursor cursor = null;
+		    DEViseCursor cursor = null;
 
-                      cursor = activeView.getFirstCursor();
+                    cursor = activeView.getFirstCursor();
 
                     if (cursor != null && (cursor.isXMovable ||
 		      cursor.isYMovable)) {

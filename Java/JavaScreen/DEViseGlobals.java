@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2000/07/27 14:46:33  wenger
+// Updated JS end of protocol version to 4.2.
+//
 // Revision 1.42  2000/07/20 15:42:59  wenger
 // Fixed bug 603 (GData errors caused by problems in new parser); eliminated
 // old parser.
@@ -116,8 +119,8 @@ public final class DEViseGlobals
                               API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("3.3");
-    public static final String PROTOCOL_VERSION = new String("4.2");
+    public static final String VERSION = new String("3.4");
+    public static final String PROTOCOL_VERSION = new String("4.3");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
