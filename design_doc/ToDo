@@ -4,8 +4,6 @@
 
 ACTIVE
 ------
-Improve control of fonts. (ml/rkw 11/19/96)
-
 Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
 
 Remove sourceList() dependencies from the front-end.  Right now, the
@@ -637,6 +635,8 @@ Move opening and saving of session files to back end. (rkw 10/3/97)
 
 Disable Layout Manager menu selection until the layout manager is
 fully integrated. (devel 12/4/97)
+
+Improve control of fonts. (ml/rkw 11/19/96)
 
 
 CANCELLED
