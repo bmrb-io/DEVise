@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/06/18 15:33:17  wenger
+  Fixed bug 177; improved workaround of bug 137; incremented version
+  number (because of Unidata being added).
+
   Revision 1.31  1997/04/30 21:45:39  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
   no longer gives warning message on blank data lines; added makefile
@@ -190,7 +194,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.4.5";
+static const char *	version = "1.4.6";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";
