@@ -2456,6 +2456,15 @@ Num Date        Status  Description
 			F1 key to hide it also brings up the help dialog.
 			(rkw)
 
+622 10/14/00	FIXED	Negative record links are not saved correctly in
+			sessions (they come up as positive links when the
+			session is re-opened). (rkw)
+			(Fixed by rkw, 10/14/00.)
+
+623 10/14/00	FIXED	Unsetting the master view of a record link doesn't
+			cause the follower views to redraw. (rkw)
+			(Fixed by rkw, 10/16/00.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

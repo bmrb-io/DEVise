@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  2000/02/23 21:30:59  wenger
+  Re-implemented session description capability.
+
   Revision 1.22  2000/02/08 22:11:48  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -253,6 +256,7 @@ private:
       char *instance, SaveData *saveData);
   static DevStatus SaveStringTables(char *category, char *devClass,
       char *instance, SaveData *saveData);
+  static DevStatus SaveRecLinkTypes(SaveData *saveData);
 
   static DevStatus SaveParams(SaveData *saveData, char *getCommand,
       char *setCommand, const char *arg0, const char *arg1 = NULL,

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/12/15 20:03:58  wenger
+  Command log now includes information about how many times we went through
+  the dispatcher, to try to allow reproducing timing-dependent bugs.
+
   Revision 1.38  1999/11/19 21:29:15  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -213,6 +217,7 @@ const unsigned AllState  = 0xffffffff;
 class DispatcherInfo {
 protected:
   friend class Dispatcher;
+  friend class Scheduler;
 
   DispatcherCallback *callBack;
   StateFlag flag;		// if flag is zero, this info will be deleted

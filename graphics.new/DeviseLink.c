@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  2000/02/16 18:51:38  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.5  1999/03/01 23:09:09  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -178,6 +181,17 @@ DeviseLink::IsPileLinkName(const char *name)
   Boolean result = !strncmp(name, pileStr, strlen(pileStr));
 
   return result;
+}
+
+void
+DeviseLink::RefreshAll()
+{
+  int index = InitIterator();
+  while (More(index)) {
+    View *view = Next(index);
+    view->Refresh();
+  }
+  DoneIterator(index);
 }
 
 /*============================================================================*/

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.109  2000/09/14 19:39:07  wenger
+  Added GUI to view and change cursor type (X, Y, or XY).
+
   Revision 1.108  2000/08/30 20:09:04  wenger
   Added the option of forcing a cursor to be entirely within its destination
   view; added control for whether a cursor must be at least partially within
@@ -1949,22 +1952,29 @@ DeviseCommand_getLinkMaster::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getLinkType::Run(int argc, char** argv)
 {
-    {
-        {
-          RecordLink *link = (RecordLink *)_classDir->FindInstance(argv[1]);
-          if (!link) {
-    	ReturnVal(API_NAK, "Cannot find link");
-    	return -1;
-          }
-          ReturnVal(API_ACK, (link->GetLinkType() == Positive)? "1" : "0");
-          return 1;
-        }
+    // Arguments: <link name>
+    // Returns: link type (-1 = negative, 1 = positive)
+	// Note: this command applies only to record links
+
+    DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
+    if (!link) {
+        ReturnVal(API_NAK, "Cannot find link");
+        return -1;
     }
-    return true;
+	RecordLinkType linkType = link->GetLinkType();
+	if (linkType == NotRecordLink) {
+        ReturnVal(API_NAK, "Not a record link");
+        return -1;
+	} else {
+        ReturnVal(API_ACK, (linkType == Positive)? "1" : "-1");
+        return 1;
+	}
 }
+
 int
 DeviseCommand_setBatchMode::Run(int argc, char** argv)
 {
@@ -3355,19 +3365,34 @@ DeviseCommand_setLinkMaster::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setLinkType::Run(int argc, char** argv)
 {
+    // Arguments: <link name> <link type (-1 = negative, 1 = positive)>
+    // Returns: "done"
+	// Note: this command applies only to record links
+
     RecordLink *link = (RecordLink *)_classDir->FindInstance(argv[1]);
     if (!link) {
         ReturnVal(API_NAK, "Cannot find link");
         return -1;
     }
-    if(atoi(argv[2]) == 0) {
-        link->SetLinkType(Positive);
-    } else if(atoi(argv[2]) == 1) {
+
+	RecordLinkType linkType = link->GetLinkType();
+	if (linkType == NotRecordLink) {
+        ReturnVal(API_NAK, "Not a record link");
+        return -1;
+	}
+
+    if(atoi(argv[2]) == -1) {
         link->SetLinkType(Negative);
-    }
+    } else if(atoi(argv[2]) == 1) {
+        link->SetLinkType(Positive);
+    } else {
+        ReturnVal(API_ACK, "Invalid link type");
+        return -1;
+	}
     ReturnVal(API_ACK, "done");
     return 1;
 }

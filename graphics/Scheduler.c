@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/05/02 09:02:28  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.2  1998/03/08 01:10:43  wenger
   Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
   CPU usage bug (308)).
@@ -96,7 +100,7 @@ void
 Scheduler::RequestCallback(DispatcherID info, void *preconditions)
 {
 #if defined(DEBUG)
-  printf("Scheduler::RequestCallback()\n");
+  printf("Scheduler::RequestCallback(%s)\n", info->callBack->DispatchedName());
 #endif
 
   Dispatcher::Current()->RequestCallback(info);
@@ -106,7 +110,8 @@ void
 Scheduler::RequestTimedCallback(DispatcherID info, long time)
 {
 #if defined(DEBUG)
-  printf("Scheduler::RequestTimedCallback() %ld\n", time);
+  printf("Scheduler::RequestTimedCallback(%s, %ld)\n",
+      info->callBack->DispatchedName(), time);
 #endif
 
   Dispatcher::Current()->RequestTimedCallback(info, time);
@@ -119,7 +124,7 @@ void
 Scheduler::CancelCallback(DispatcherID info)
 {
 #if defined(DEBUG)
-  printf("Scheduler::CancelCallback()\n");
+  printf("Scheduler::CancelCallback(%s)\n", info->callBack->DispatchedName());
 #endif
 
   Dispatcher::Current()->CancelCallback(info);

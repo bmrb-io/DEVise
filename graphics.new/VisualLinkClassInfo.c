@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2000/03/14 17:05:38  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.8  2000/02/16 18:51:49  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -191,6 +195,10 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
   }
 
   if (flag & VISUAL_TATTR) {
+#if 1
+    reportErrNosys("TData attribute links are no longer supported");
+    return NULL;
+#else
     DOASSERT(argc == 4, "Invalid arguments");
     if (flag & ~VISUAL_TATTR) {
       reportErrNosys("Warning: TData attribute link also has other link "
@@ -198,6 +206,7 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
     }
     TAttrLink *link = new TAttrLink(name, argv[2], argv[3]);
     return new VisualLinkClassInfo(name, flag, link);
+#endif
   }
 
   VisualLink *link = new VisualLink(name, flag);

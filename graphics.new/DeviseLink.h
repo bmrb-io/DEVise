@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  2000/02/16 18:51:39  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.5  1999/02/11 19:54:58  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -104,6 +107,8 @@ public:
 
   // Find out whether the given name is the name of a pile link.
   static Boolean IsPileLinkName(const char *name);
+
+  void RefreshAll();
 
 protected:
   const char *_name;

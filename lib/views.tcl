@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.60  1999/11/17 15:08:47  wenger
+#  Fixed bug 531 (copying view doesn't copy JavaScreen GData params); also
+#  added copying of other missing values.
+#
 #  Revision 1.59  1999/07/27 15:53:07  wenger
 #  Fixed bug 504.
 #
@@ -905,60 +909,65 @@ proc DoLinkCreate { isRec } {
 
     while { 1 } {
 	if { $isRec} {
-	    set flag 128
+	    # Record link (positive).
+	    set flag 4
 	} else {
+	    # XY visual link.
 	    set flag 3
 	}
 	set but [CreateLink $flag]
-	#set but [dialogCkBut .createLink "Create Link" \
-	#	"Enter parameters for creating a new link" "" \
-	#	0 { OK Info Cancel } name \
-	#	{x y record {set (tdata attribute)}} $flag]
 	
 	if { $but == 2 } {
+	    # Cancel.
 	    return ""
 	} elseif  { $but == 1 } {
+	    # Info.
 	    DoDisplayLinkInfo
 	} else {
+	    # OK.
 	    set flag $dialogCkButVar(selected)
 
 	    # Convert flag values from what graphics understands to what
 	    # C++ code understands.
+	    set negative_record 0
 	    if { $flag == 4 } {
+		# Record link, postive.
 		set flag 128
 	    } elseif { $flag == 8 } {
-		set flag 1024
+		# Record link, negative.
+		set flag 128
+		set negative_record 1
 	    }
 
+	    # Make sure the user specified a link name.
 	    set name $dialogCkButVar(entry)
 	    if {$name == ""} {
 		set but [dialog .noName "No Link Name" \
 			"No Link Name Specified" "" 0 OK]
 		continue
 	    }
+	    
+	    # Make sure the link name didn't start with "Pile:" (reserved).
 	    if {[string range $name 0 4] == "Pile:"} {
 		set but [dialog .noName "No Link Name" \
 			"Link name cannot start with 'Pile:'" "" 0 OK]
 		continue
 	    }
 	
+	    # Make sure an object with the given name doesn't already
+	    # exist.
 	    if { [DEVise exists $name ] } {
 		set but [dialog .linkExists "Link Exists" \
 			"Link $name already exists" "" 0 OK]
 		continue
 	    }
 	    
-            if {[ expr ($flag & 128) ] }  {
-              puts " link type + " 
-            }
-            if {[ expr ($flag & 1024) ] }  {
-	      # TData attribute link -- needs attribute name.
-	      set attrName ""
-	      set result [DEVise create link Visual_Link $name $flag \
-		$attrName $attrName]
-	    } else {
-	      set result [DEVise create link Visual_Link $name $flag]
+	    # Create the link.
+	    set result [DEVise create link Visual_Link $name $flag]
+	    if {$negative_record} {
+	      DEVise setLinkType $name -1
 	    }
+
 	    if {$result == ""} {
 		set but [ dialog .linkError "Link Error" \
 			"Cannot create link $name" "" 0 OK]
@@ -1169,9 +1178,11 @@ proc DoSetLinkType {} {
 	    { + - Cancel} $linkSet ]		
     set linkname $dialogListVar(selected)
     if { $answer == 0} {
-	DEVise setLinkType $linkname 0
-    } elseif { $answer == 1} {
+	# Positive.
 	DEVise setLinkType $linkname 1
+    } elseif { $answer == 1} {
+	# Negative.
+	DEVise setLinkType $linkname -1
     } elseif { $answer == 2} {
 	return
     }

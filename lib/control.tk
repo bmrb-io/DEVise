@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.219  2000/09/14 19:39:24  wenger
+#	Added GUI to view and change cursor type (X, Y, or XY).
+#	
 #	Revision 1.218  2000/08/30 20:09:11  wenger
 #	Added the option of forcing a cursor to be entirely within its destination
 #	view; added control for whether a cursor must be at least partially within
@@ -1657,12 +1660,12 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu.linkMenu add separator
 .mbar.view.menu.linkMenu add command -label "Set Leader..." \
 	-command { DoSetLinkMaster }
-.mbar.view.menu.linkMenu add command -label "Reset Leader..." \
+.mbar.view.menu.linkMenu add command -label "Unset Leader..." \
 	-command { DoResetLinkMaster}
 .mbar.view.menu.linkMenu add command -label "Set Record Link Type..." \
 	-command { DoSetLinkType }
-.mbar.view.menu.linkMenu add command -label "Set TData Attr Link Attribute..." \
-	-command { DoSetLinkAttr }
+#.mbar.view.menu.linkMenu add command -label "Set TData Attr Link Attribute..." \
+#	-command { DoSetLinkAttr }
 # this line is probably a mistake??? DD
 #	-command { DoResetLinkMaster }
 .mbar.view.menu.linkMenu add separator

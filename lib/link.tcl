@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1999/11/15 23:08:08  wenger
+#	Removed set link GUI, since this is no longer an option.
+#	
 #	Revision 1.1  1998/07/17 15:33:50  wenger
 #	Improved link creation GUI as per request from Raghu; started on
 #	DataReader schema GUI; changed version to 1.5.4.
@@ -22,6 +25,11 @@
 
 ############################################################
 
+# Flag is a bitwise or of the following:
+#   1: X link
+#   2: Y link
+#   4: Record link, positive
+#   8: Record link, negative
 proc CreateLink { flag } {
 	global button dialogCkButVar dialogCkButInternalVar
 
@@ -50,44 +58,59 @@ proc CreateLink { flag } {
 	pack .createLinkGUI.top.msg -side right -expand 1 -fill both\
 			-padx 3m -pady 3m
 
-	# Create entry.
+	# Create entry for link name.
 	frame .createLinkGUI.entries
 	label .createLinkGUI.entries.label -text "name"
 	entry .createLinkGUI.entries.entry -relief sunken -width 60
 	pack .createLinkGUI.entries.label .createLinkGUI.entries.entry -side left
 
 	# Create a checkbutton for each of the items
-	set items {x y record}
+	# First element of each is name, second is text to show in GUI.
+	set items {{x x} {y y} {record_positive "record (positive)"} \
+	  {record_negative "record (negative)"}}
 	set butNames ""
 	set varNames ""
 	set cnt 0
 
 	foreach i $items {
-		set butName .createLinkGUI.but_$i
-		set varName dialogCkButInternalVar(var_$i)
+		set itemName [lindex $i 0]
+		set itemText [lindex $i 1]
+		set butName .createLinkGUI.but_$itemName
+		set varName dialogCkButInternalVar(var_$itemName)
+
+		# Turn on the selection(s) indicated by the given flag value.
 		if { [expr (1 << $cnt) & $flag] == 0 } {
 			set $varName 0
 		} else {
 			set $varName 1 
 		}
+
 		lappend butNames $butName
 		lappend varNames $varName
 		set cnt [incr cnt]
 
-		checkbutton $butName -text $i -variable $varName -anchor w
+		checkbutton $butName -text $itemText -variable $varName -anchor w
 	}
 
 	# This little section is the point of this whole business -- it
 	# disallows illegal combinations.
 	.createLinkGUI.but_x configure -command { \
-	  set dialogCkButInternalVar(var_record) 0; \
+	  set dialogCkButInternalVar(var_record_positive) 0; \
+	  set dialogCkButInternalVar(var_record_negative) 0; \
 	}
 	.createLinkGUI.but_y configure -command { \
-	  set dialogCkButInternalVar(var_record) 0; \
+	  set dialogCkButInternalVar(var_record_positive) 0; \
+	  set dialogCkButInternalVar(var_record_negative) 0; \
 	}
-	.createLinkGUI.but_record configure -command {
+	.createLinkGUI.but_record_positive configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
+	  set dialogCkButInternalVar(var_record_negative) 0; \
+	}
+	.createLinkGUI.but_record_negative configure -command {
+	  set dialogCkButInternalVar(var_x) 0; \
+	  set dialogCkButInternalVar(var_y) 0; \
+	  set dialogCkButInternalVar(var_record_positive) 0; \
 	}
 
 	eval pack .createLinkGUI.entries $butNames -in .createLinkGUI.listFrame -side top \

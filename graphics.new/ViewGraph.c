@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.144  2000/10/13 19:58:31  wenger
+  Got rid of GDataSocket creation errors in JavaScreen support.
+
   Revision 1.143  2000/07/12 20:53:42  wenger
   Added more debug code.
 
@@ -961,7 +964,7 @@ void ViewGraph::AddAsMasterView(MasterSlaveLink *link)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     // add the link as one of the links whose master this view is
     if (!_masterLink.Find(link)) {
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("View %s becomes master of record link %s\n", GetName(),
                link->GetName());
 #endif
@@ -975,7 +978,11 @@ void ViewGraph::DropAsMasterView(MasterSlaveLink *link)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     if (_masterLink.Find(link)) {
         _masterLink.Delete(link);
-#ifdef DEBUG
+
+		// Refresh the link's followers.
+		link->RefreshAll();
+
+#if defined(DEBUG)
         printf("View %s no longer master of record link %s\n", GetName(),
                link->GetName());
 #endif

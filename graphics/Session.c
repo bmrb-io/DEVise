@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.88  2000/08/30 20:08:56  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.87  2000/08/07 16:23:14  wenger
   Added comment about why a command is not written to session files if
   the string length of the corresponding info is zero.
@@ -437,6 +443,7 @@
 #include "ArgList.h"
 #include "CompositeParser.h"
 #include "ControlPanelSimple.h"
+#include "VisualLinkClassInfo.h"
 
 //#define DEBUG
 #define SESSION_TIMER
@@ -647,6 +654,7 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
 
     fprintf(saveData.fp, "\n# Create links\n");
     status += SaveCategory(&saveData, "link");
+    status += SaveRecLinkTypes(&saveData);
 
     fprintf(saveData.fp, "\n# Create cursors\n");
     status += SaveCategory(&saveData, "cursor");
@@ -1992,6 +2000,38 @@ Session::SaveStringTables(char *category, char *devClass, char *instance,
       instance, "gen");
 
   if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SaveRecLinkTypes
+ * Save the types (positive or negative) of all record links.
+ */
+DevStatus
+Session::SaveRecLinkTypes(SaveData *saveData)
+{
+#if defined(DEBUG)
+  printf("Session::SaveRecLinkTypes()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  int index = DevLink::InitIterator();
+  while (DevLink::More(index)) {
+    VisualLinkClassInfo *info = DevLink::Next(index);
+    if (info != NULL) {
+      DeviseLink *link = (DeviseLink *)info->GetInstance();
+      if (link != NULL) {
+        if (link->GetFlag() & VISUAL_RECORD) {
+	  status += SaveParams(saveData, "getLinkType", "setLinkType",
+	    link->GetName());
+	}
+      }
+    }
+  }
+  DevLink::DoneIterator(index);
+
+
   return status;
 }
 
