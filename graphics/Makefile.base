@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1996/10/18 20:34:05  wenger
+#  Transforms and clip masks now work for PostScript output; changed
+#  WindowRep::Text() member functions to ScaledText() to make things
+#  more clear; added WindowRep::SetDaliServer() member functions to make
+#  Dali stuff more compatible with client/server library.
+#
 #  Revision 1.28  1996/08/23 16:55:37  wenger
 #  First version that allows the use of Dali to display images (more work
 #  needs to be done on this); changed DevStatus to a class to make it work
@@ -37,7 +43,7 @@
 
 include ../../Makefile.common
 
-CFLAGS = $(ARCH_FLAGS)  -I../../graphics.new -I../../generic \
+CFLAGS = -gstabs $(ARCH_FLAGS)  -I../../graphics.new -I../../generic \
 	-I../../util -I../../tape \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS
 

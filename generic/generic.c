@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/10/23 14:55:20  wenger
+  Renamed LandsendDateDiffComposite composite parser to
+  MailorderDateDiffComposite as part of getting rid of the "Land's
+  End" name in visible places; schema types changed from "LANDSEND..."
+  to "MAILORDER...".
+
   Revision 1.36  1996/10/04 18:07:35  guangshu
   Some improvement in openning composite.ini.
 
@@ -1182,7 +1188,9 @@ int main(int argc, char **argv)
   String env,schemaStr,parserName;	
   char dummy;
   char * schemaChar;
-
+	
+ // Reads the composite file from the DEVISE_LIB directory
+  
   env = getenv("DEVISE_LIB");
   if (env.chars() == 0 )
 	env = ".";
@@ -1200,6 +1208,7 @@ int main(int argc, char **argv)
 	
 	fin >> dummy;
 	fin.putback(dummy);
+	// Ignore comments
 	if (dummy == '#'){
 		readline(fin,schemaStr); // Read line and ignore
 	 	continue;
@@ -1208,6 +1217,7 @@ int main(int argc, char **argv)
 
 	schemaChar = strdup(schemaStr.chars());
 	
+	// Register the corresponding composite attribs with their parsers.
 	if (parserName.matches("YyMmDdComposite"))
   		CompositeParser::Register(schemaChar ,new YyMmDdComposite);
   	else if (parserName.matches("ObsDateComposite"))

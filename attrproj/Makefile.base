@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  1996/10/04 17:24:45  wenger
+#  Moved handling of indices from TDataAscii and TDataBinary to new
+#  FileIndex class.
+#
 #  Revision 1.22  1996/09/25 18:36:10  wenger
 #  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
 #
@@ -60,7 +64,8 @@ LOCALSRC = AttrProj.c ApInit.c ApParseCat.c VectorArray.c ProjectionList.c
 #The following sources are in other directories, but must be specially
 #compiled for attrproj.
 LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
-	TDataBinaryInterp.c DataSourceSegment.c
+	TDataDQL.c TDataDQLInterp.c DataSourceDQL.c TDataBinaryInterp.c \
+	DataSourceSegment.c
 
 SRCc = $(filter %.c,$(LOCALSRC))
 SRCC = $(filter %.C,$(LOCALSRC))

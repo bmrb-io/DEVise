@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/10/04 17:24:54  wenger
+#  Moved handling of indices from TDataAscii and TDataBinary to new
+#  FileIndex class.
+#
 #  Revision 1.4  1996/08/23 16:55:18  wenger
 #  First version that allows the use of Dali to display images (more work
 #  needs to be done on this); changed DevStatus to a class to make it work
@@ -71,7 +75,9 @@ LIBOBJ = \
 	../attrproj/TDataAscii.o \
 	../attrproj/TDataAsciiInterp.o \
 	../attrproj/TDataBinary.o \
+	../attrproj/TDataDQL.o \
 	../attrproj/TDataBinaryInterp.o \
+	../attrproj/TDataDQLInterp.o \
 	../attrproj/DataSourceSegment.o \
 	../graphics/Parse.o \
 	../graphics/AttrList.o \
@@ -90,6 +96,7 @@ LIBOBJ = \
 	../graphics.new/DataSourceFileStream.o \
 	../graphics.new/DataSourceTape.o \
 	../graphics.new/DataSourceBuf.o \
+	../graphics.new/DataSourceDQL.o \
 	../graphics.new/DevFileHeader.o \
 	../graphics.new/Version.o \
 	../tape/tapedrive.o \
