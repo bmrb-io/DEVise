@@ -10,11 +10,11 @@ setenv DEVISE_ROOT		/p/devise/demo
 setenv DEVISE_PUB               /p/devise/public
 
 setenv DEVISE_DAT		$DEVISE_ROOT/dat
-setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.dte
-setenv DEVISE_ID_FILE		$DEVISE_ROOT/schema/schema/temp_catalog
-setenv DEVISE_DEF_FILE		$DEVISE_ROOT/schema/schema/def_file
-setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.dte
-setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.dte
+setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.js.dte
+setenv DEVISE_ID_FILE		$DEVISE_ROOT/schema/schema/temp_catalog.js
+setenv DEVISE_DEF_FILE		$DEVISE_ROOT/schema/schema/def_file.js
+setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.js.dte
+setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.js.dte
 setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
 setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
 setenv DEVISE_CACHE		$DEVISE_ROOT/cache
