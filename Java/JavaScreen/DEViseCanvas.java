@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  1999/10/12 22:00:03  hongyu
+// *** empty log message ***
+//
 // Revision 1.17  1999/10/12 00:08:42  hongyu
 // *** empty log message ***
 //
@@ -419,7 +422,7 @@ public class DEViseCanvas extends Container
             cursor = (DEViseCursor)v.viewCursors.elementAt(i);
             loc = cursor.getLocInCanvas();
 
-            if (selectedCursor == cursor) { // draw cursor movement box
+            if (selectedCursor == cursor && isMouseDragged) { // draw cursor movement box
                 if (loc.width < 4)
                     loc.width = 4;
                 if (loc.height < 4)
@@ -717,7 +720,7 @@ public class DEViseCanvas extends Container
                 return;
             }
 
-            checkMousePos(sp, true, true);
+            checkMousePos(sp, true);
         }
 
         public void mouseReleased(MouseEvent event)
@@ -959,14 +962,14 @@ public class DEViseCanvas extends Container
                 return;
             }
 
-            checkMousePos(p, false, true);
+            checkMousePos(p, true);
 
             repaint();
         }
     }
     // end of class ViewMouseMotionListener
 
-    public synchronized void checkMousePos(Point p, boolean flag, boolean checkDispatcher)
+    public synchronized void checkMousePos(Point p, boolean checkDispatcher)
     {
         // initialize value
         whichCursorSide = -1;
@@ -1017,11 +1020,6 @@ public class DEViseCanvas extends Container
             }
 
             setCursor(jsc.lastCursor);
-
-            if (!flag) {
-                selectedCursor = null;
-                whichCursorSide = -1;
-            }
 
             if (activeView.piledView != null) {
                 activeView = activeView.piledView;

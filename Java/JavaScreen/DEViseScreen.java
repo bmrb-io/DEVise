@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  1999/10/12 21:58:14  hongyu
+// *** empty log message ***
+//
 // Revision 1.38  1999/10/12 00:08:43  hongyu
 // *** empty log message ***
 //
@@ -154,7 +157,7 @@ public class DEViseScreen extends Panel
                 Rectangle loc = canvas.getLocInScreen();
                 Point p = new Point(finalMousePosition.x - loc.x, finalMousePosition.y - loc.y);
                 if (p.x >= 0 && p.x <= loc.width && p.y >= 0 && p.y <= loc.height) {
-                    canvas.checkMousePos(p, false, false);
+                    canvas.checkMousePos(p, false);
                     repaint();
                     return;
                 }
