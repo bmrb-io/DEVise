@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/09 18:06:34  jussi
+  Added error checking.
+
   Revision 1.4  1996/04/08 22:13:18  jussi
   Added assertions along the way.
 
@@ -27,12 +30,9 @@
   Added/updated CVS header.
 */
 
-/* doubly linked list */
-
 #ifndef DList_h
 #define DList_h
 
-#include <assert.h>
 #include "Exit.h"
 
 const int MaxIterators = 5;		/* max # of concurrent iterators */
@@ -126,20 +126,14 @@ listName::~listName() { DeleteAll(); delete _head; }\
 int listName::Size() { return _size; }\
 \
 void listName::Insert(valType v){\
-	if (_numIterators > 0){\
-		fprintf(stderr,"DList::Insert: can't insert with iterator\n");\
-		Exit::DoExit(1);\
-	}\
+	DOASSERT(!_numIterators, "Cannot insert with iterator");\
 	ListElement *node = new ListElement;\
 	node->val = v;\
 	_Insert(_head, node);\
 }\
 \
 void listName::Append(valType v){\
-	if (_numIterators > 0){\
-		fprintf(stderr,"DList::Append: can't append with iterator\n");\
-		Exit::DoExit(1);\
-	}\
+	DOASSERT(!_numIterators, "Cannot append with iterator");\
 	ListElement *node = new ListElement;\
 	node->val = v;\
 	_Insert(_head->prev, node);\
@@ -147,21 +141,13 @@ void listName::Append(valType v){\
 \
 /* Return the first element */\
 valType listName::GetFirst() {\
-	if (_head->next == _head){\
-		/* empty list */\
-		fprintf(stderr,"DLIst:GetFirst: empty list\n");\
-		Exit::DoExit(1);\
-	}\
+	DOASSERT(_head->next != _head, "Empty list");\
 	return _head->next->val;\
 }\
 \
 /* Return the last element */\
 valType listName::GetLast() {\
-	if (_head->prev == _head){\
-		/* empty list */\
-		fprintf(stderr,"DLIst:GetLast: empty list\n");\
-		Exit::DoExit(1);\
-	}\
+	DOASSERT(_head->prev != _head, "Empty list");\
 	return _head->prev->val;\
 }\
 \
@@ -176,10 +162,7 @@ void listName::Swap(valType val1, valType val2) {\
 			node2 = node;\
 		}\
 	}\
-	if (node1 == NULL || node2 == NULL){\
-		fprintf(stderr,"DLIst:swap\n");\
-		Exit::DoExit(1);\
-	}\
+	DOASSERT(node1 && node2, "Empty lists");\
 	node1->val = val2;\
 	node2->val = val1;\
 }\
@@ -200,18 +183,13 @@ int listName::InitIterator(int backwards) {\
 			return i;\
 		}\
 	}\
-	fprintf(stderr,"DList::InitIterator: no more space\n");\
-	Exit::DoExit(1);\
+	DOASSERT(0, "No more space for iterators");\
 	return -1; /* to keep compiler happy */\
 }\
 \
 /* Init iterator to return the last N records */\
 int listName::InitIteratorLastN(int n){\
-	if (n < 1){\
-		fprintf(stderr,"DList::InitIteratorLastN: n= %d < 1\n",n);\
-		Exit::DoExit(1);\
-	}\
-\
+	DOASSERT(n >= 1, "Invalid parameter");\
 	/* find an empty slot in the array of active iterators */\
 	for(int i = 0; i < MaxIterators; i++) {\
 		if (_iterators[i].current == NULL){\
@@ -229,18 +207,17 @@ int listName::InitIteratorLastN(int n){\
 			return i;\
 		}\
 	}\
-	fprintf(stderr,"DList::InitIterator: no more space\n");\
-	Exit::DoExit(1);\
+	DOASSERT(0, "No more space for iterators");\
 	return -1; /* to keep compiler happy */\
 }\
 \
 int listName::More(int index) {\
-	assert(index >= 0 && index < MaxIterators);\
+	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
 	return _iterators[index].current != _head;\
 }\
 \
 valType listName::Next(int index) { \
-	assert(index >= 0 && index < MaxIterators);\
+	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
 	IteratorData *iData = &_iterators[index];\
 	valType v = iData->current->val;\
 	if (iData->backwards)\
@@ -250,18 +227,15 @@ valType listName::Next(int index) { \
 }\
 \
 void listName::DeleteCurrent(int index) {\
-	assert(index >= 0 && index < MaxIterators);\
-	if (_numIterators > 1){\
-		fprintf(stderr,"DList::DeleteCurrent: can't delete with iterator\n");\
-		Exit::DoExit(2);\
-	}\
+	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
+	DOASSERT(_numIterators <= 1, "Cannot delete with iterator");\
 	if (_iterators[index].backwards)\
 		_DListDelete(_iterators[index].current->next);\
 	else\
 		_DListDelete(_iterators[index].current->prev);\
 }\
 void listName::InsertAfterCurrent(int index, valType v){ \
-	assert(index >= 0 && index < MaxIterators);\
+	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
 	IteratorData *iData = &_iterators[index];\
 	ListElement *node = new ListElement;\
 	node->val = v;\
@@ -271,7 +245,7 @@ void listName::InsertAfterCurrent(int index, valType v){ \
 		_Insert(iData->current->prev, node);\
 } \
 void listName::InsertBeforeCurrent(int index, valType v){ \
-	assert(index >= 0 && index < MaxIterators);\
+	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
 	IteratorData *iData = &_iterators[index];\
 	ListElement *node = new ListElement;\
 	node->val = v;\
@@ -281,12 +255,10 @@ void listName::InsertBeforeCurrent(int index, valType v){ \
 		_Insert(iData->current->prev->prev, node);\
 } \
 void listName::DoneIterator(int index){\
-	assert(index >= 0 && index < MaxIterators);\
+	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
 	_iterators[index].current = NULL;\
-	if (--_numIterators < 0){\
-		fprintf(stderr,"DList::DoneIterator: count < 0\n");\
-		Exit::DoExit(1);\
-	}\
+	--_numIterators;\
+	DOASSERT(_numIterators >= 0, "Invalid iterator count");\
 }\
 \
 /* insert node2 after node 1 */\
@@ -300,11 +272,7 @@ void listName::_Insert(ListElement *node1, ListElement*node2){\
 \
 /* delete node */\
 void listName::_DListDelete(ListElement *node){\
-	if (node == _head){\
-		fprintf(stderr,"Dlist: trying to delete head\n");\
-		Exit::DoExit(1);\
-	}\
-\
+	DOASSERT(node != _head, "Cannot delete head of list");\
 	node->next->prev = node->prev;\
 	node->prev->next = node->next;\
 	delete node;\
@@ -317,7 +285,6 @@ void listName::ClearIterators(){\
 	_numIterators = 0;\
 }\
 \
-\
 int listName::Find(valType v) {\
 	ListElement *node;\
 	for (node = this->_head->next; node != this->_head; node = node->next){\
@@ -329,11 +296,7 @@ int listName::Find(valType v) {\
 }\
 \
 int listName::Delete(valType v){\
-	if (_numIterators > 0){\
-		fprintf(stderr,"DList::Delete: can't delete with iterator\n");\
-		Exit::DoExit(2);\
-	}\
-\
+	DOASSERT(!_numIterators, "Cannot delete with iterator");\
 	ListElement *node;\
 	for (node = this->_head->next; node != this->_head; node = node->next){\
 		if (node->val == v){\

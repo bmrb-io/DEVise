@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/29 22:42:26  jussi
+  Added support for line connectors.
+
   Revision 1.8  1995/12/28 19:52:02  jussi
   Small fixes to remove compiler warnings.
 
@@ -46,7 +49,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <assert.h>
 
 #include "Exit.h"
 #include "GDataBin.h"
@@ -95,10 +97,7 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
   printf("\n");
 #endif
 
-  if (_returnIndex != 0) {
-    fprintf(stderr,"symbolBin::Init: _returnIndex <> 0\n");
-    Exit::DoExit(2);
-  }
+  DOASSERT(!_returnIndex, "Invalid return index value");
   
   _numSyms = 0;
   _numSymsReturned = 0;
@@ -120,7 +119,8 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
   if (!(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS))
     printf("GDataBin: yhigh %.2f, ylow %.2f, _maxYPixels: %d\n",
 	   yhigh, ylow, _maxYPixels);
-  assert(_maxYPixels >= 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS);
+  DOASSERT(_maxYPixels >= 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS,
+	   "Illegal value for maxYPixels");
 
   _needX = true;
   _callBack = callback;
@@ -188,7 +188,8 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	
 	if (_timestamp[thisPixelY] != _iteration) {
 	  _timestamp[thisPixelY] = _iteration;
-	  assert(_returnIndex < GDATA_BIN_MAX_PIXELS);
+	  DOASSERT(_returnIndex < GDATA_BIN_MAX_PIXELS,
+		   "Illegal value for returnIndex");
 	  _returnSyms[_returnIndex++] = sym;
 	  
 	  // flush cache of symbols to screen?

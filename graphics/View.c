@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/04/09 22:51:44  jussi
+  Added SetOverrideColor() and GetOverrideColor().
+
   Revision 1.29  1996/04/09 20:35:11  jussi
   Minor fixes.
 
@@ -121,7 +124,6 @@
 */
 
 #include <time.h>
-#include <assert.h>
 
 #include "Util.h"
 #include "View.h"
@@ -302,10 +304,7 @@ View *View::FindViewById(int id)
   if (!id)
     return NULL;
   
-  if (!_viewList) {
-    fprintf(stderr,"View::FindViewById: _viewList empty\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(_viewList, "Empty view list");
   
   for(int index = _viewList->InitIterator(); _viewList->More(index); ) {
     View *view = _viewList->Next(index);
@@ -618,7 +617,7 @@ area = x,y,width, height, and startX, as follows:
 void View::GetXAxisArea(int &x, int &y, int &width, int &height,
 			int &startX)
 {
-  assert(_numDimensions == 2);
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   unsigned int windW, winH;
   Geometry(x, y, windW, winH);
@@ -664,7 +663,7 @@ area = x,y,width, height, and startX, as follows:
 
 void View::GetYAxisArea(int &x, int &y, int &width, int &height)
 {
-  assert(_numDimensions == 2);
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   unsigned int winW, winH;
   Geometry(x, y, winW, winH);
@@ -815,7 +814,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   printf("View::DrawXAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
-  assert(_numDimensions == 2);
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   int axisX, axisY, axisWidth, axisHeight, startX;
   GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
@@ -895,7 +894,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   printf("View::DrawYAxis %s %d %d %d %d\n", GetName(), x, y, w, h);
 #endif
   
-  assert(_numDimensions == 2);
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   char buf[30];
 
@@ -1546,10 +1545,7 @@ void View::InsertViewCallback(ViewCallback *callBack)
 
 void View::DeleteViewCallback(ViewCallback *callBack)
 {
-  if (!_viewCallbackList) {
-    fprintf(stderr,"View::DeleteViewCallback: empty list\n");
-    Exit::DoExit(2);
-  }
+  DOASSERT(_viewCallbackList, "Empty view callback list");
   _viewCallbackList->Delete(callBack);
 }
 
@@ -1657,7 +1653,7 @@ void View::DeleteCursor(DeviseCursor *cursor)
 
 void View::GetXCursorArea(int &x, int &y, int &w, int &h)
 {
-  assert(_numDimensions == 2);
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   int startX;
   if (xAxis.inUse) {
@@ -1677,7 +1673,7 @@ void View::GetXCursorArea(int &x, int &y, int &w, int &h)
 
 void View::GetYCursorArea(int &x, int &y, int &w, int &h)
 {
-  assert(_numDimensions == 2);
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
   if (yAxis.inUse) {
     GetYAxisArea(x, y, w, h);
@@ -1857,8 +1853,8 @@ void View::SavePixmaps(FILE *file)
 
   unsigned long int magic = 0xdeadbeef;
   if (fwrite(&magic, sizeof magic, 1, file) != 1) {
-    perror("View::SavePixmaps");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write pixmap file");
   }
   
   /* Disable cursors if currently displayed */
@@ -1892,8 +1888,8 @@ void View::SavePixmaps(FILE *file)
   }
   
   if (fwrite(&saved, sizeof(saved), 1, file) != 1) {
-    perror("View::SavePixmaps");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write pixmap file");
   }
 
   if (!saved) {
@@ -1905,7 +1901,7 @@ void View::SavePixmaps(FILE *file)
     return;
   }
   
-  assert(pixmap);
+  DOASSERT(pixmap, "No pixmap");
 
 #ifdef DEBUG
   printf("Saving Pixmap for %s, data %d bytes\n", GetName(), _bytes);
@@ -1935,12 +1931,12 @@ void View::SavePixmaps(FILE *file)
 #endif
 		
   if (fwrite(pixmap, sizeof(*pixmap), 1, file) != 1) {
-    perror("View::SavePixmaps 1");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write pixmap file");
   }
   if (fwrite(pixmap->data, pixmap->compressedBytes, 1, file) != 1) {
-    perror("View::SavePixmaps 2");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write pixmap file");
   }
 
 #else
@@ -1954,8 +1950,8 @@ void View::SavePixmaps(FILE *file)
   if (!Mapped() || _bytes < 0 * VIEW_BYTES_BEFORE_SAVE || _refresh) {
     num[1] = pos + 2 * sizeof(int);
     if (fwrite(num, sizeof(num), 1, file) != 1) {
-      perror("View::SavePixmaps");
-      Exit::DoExit(1);
+      perror("fwrite");
+      DOASSERT(0, "Cannot write pixmap file");
     }
     /* Return cursors to original state */
     if (cursorState)
@@ -1970,8 +1966,8 @@ void View::SavePixmaps(FILE *file)
 
 #if 0
   if (fwrite(&num, sizeof(num), 1, file) != 1) {
-    perror("View::SavePixmaps num");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write pixmap file");
   }
 #endif
 
@@ -1988,8 +1984,8 @@ void View::SavePixmaps(FILE *file)
   
 #if 0
   if (fwrite(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
-    perror("View::SavePixmaps: pixmap");
-    Exit::DoExit(1);
+    perror("fwrite");
+    DOASSERT(0, "Cannot write pixmap file");
   }
 #endif
   
@@ -2046,8 +2042,8 @@ void View::LoadPixmaps(FILE  *file)
 
   unsigned long int check;
   if (fread(&check, sizeof check, 1, file) != 1) {
-    perror("View::LoadPixmaps");
-    Exit::DoExit(1);
+    perror("fread");
+    DOASSERT(0, "Cannot read pixmap file");
   }
 
   if (check != 0xdeadbeef) {
@@ -2065,8 +2061,8 @@ void View::LoadPixmaps(FILE  *file)
 
   int saved;
   if (fread(&saved, sizeof(saved), 1, file) != 1 ) {
-    perror("View::LoadPixmaps num");
-    Exit::DoExit(1);
+    perror("fread");
+    DOASSERT(0, "Cannot read pixmap file");
   }
   if (!saved) {
 #ifdef DEBUG
@@ -2082,8 +2078,8 @@ void View::LoadPixmaps(FILE  *file)
 
   DevisePixmap *pixmap = new DevisePixmap();
   if (fread(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
-    perror("View::LoadPixmaps 1");
-    Exit::DoExit(1);
+    perror("fread");
+    DOASSERT(0, "Cannot read pixmap file");
   }
 
 #ifdef DEBUG
@@ -2094,12 +2090,12 @@ void View::LoadPixmaps(FILE  *file)
 		
   if (!(pixmap->data = (unsigned char *)malloc(pixmap->compressedBytes))) {
     fprintf(stderr,"View::LoadPixmaps out of memory\n");
-    Exit::DoExit(1);
+    DOASSERT(0, "Cannot read pixmap file");
   }
   
   if (fread(pixmap->data, pixmap->compressedBytes, 1, file) != 1 ) {
-    perror("View::LoadPixmaps 2");
-    Exit::DoExit(1);
+    perror("fread");
+    DOASSERT(0, "Cannot read pixmap file");
   }
   _pixmap = pixmap;
   
@@ -2114,23 +2110,20 @@ void View::LoadPixmaps(FILE  *file)
 
   int num[2];
   if (fread(num, sizeof(num), 1, file) != 1) {
-    perror("View::LoadPixmaps num");
-    Exit::DoExit(1);
+    perror("fread");
+    DOASSERT(0, "Cannot read pixmap file");
   }
   _nextPos = num[1];
   
   if (num[0] <= 0 )
     return;
   
-  if (num[0] > 1) {
-    fprintf(stderr, "View::LoadPixmaps: %d pixmaps > 1\n", num);
-    Exit::DoExit(2);
-  }
+  DOASSERT(num[0] <= 1, "Too many pixmaps");
   
   _pixmap = new DevisePixmap();
   if (fread(_pixmap, sizeof(*_pixmap), 1, file) != 1) {
-    perror("View::LoadPixmap");
-    Exit::DoExit(1);
+    perror("fread");
+    DOASSERT(0, "Cannot read pixmap file");
   }
 
 #ifdef DEBUG
@@ -2157,10 +2150,7 @@ void View::LoadPixmaps(FILE  *file)
 #endif
 
   unsigned char *data = (unsigned char *)malloc(_pixmap->imageBytes);
-  if (!data) {
-    fprintf(stderr,"View::LoadPixmap: no memory\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(data, "Out of memory");
 
   _pixmap->data = data;
   unsigned char *buffer[1];
