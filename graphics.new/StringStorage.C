@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/20 18:11:14  wenger
+  Disabled automatic loading of the devise.strings file to avoid confusion
+  -- load string table explicitly if necessary.
+
   Revision 1.7  1998/03/02 22:30:25  wenger
   Got DEVise to link on SGI (haha) -- had to change things so that all
   templates are implicit (they are still not implicit on other
@@ -62,10 +66,12 @@
 
 //#define DEBUG_STRINGS
 
-#if defined(SGI)
+//kb: changed to implict-templates, so all arch. must declare this class
+//     for gcc 2.7;  egcs 2.9 does not need these two lines.
+// #if defined(SGI)
 template class HashTable<char *, int>;
 template class HashTable<int, char *>;
-#endif
+//#endif
 
 int StringStorage::_stringNum = 0;
 HashTable<char *, int> StringStorage::_strings(100, StringHash, StringComp);

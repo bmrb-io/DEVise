@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.82  1998/06/24 15:15:27  beyer
+  changed !map->IsInterpreted to !map->IsInterpreted()
+
   Revision 1.81  1998/04/29 17:53:54  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -409,9 +412,11 @@ static char* _gdataBuf = (char *)_gdataDoubleBuf;
 static const int TDATA_BUF_SIZE = 40960;
 static char _tdataBuf[TDATA_BUF_SIZE];
 
-#if defined(SGI)
+//kb: changed to implict-templates, so all arch. must declare this class
+//     for gcc 2.7;  egcs 2.9 does not need this line.
+// #if defined(SGI)
 template class SortedTable<Coord, RecId>;
-#endif
+//#endif
 
 /*
    Max number of records retrieved from buffer manager before query
