@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/02 22:45:57  jussi
+  The bounding box of symbols is now correctly computed. Scatter
+  plots sometimes did not have all necessary data displayed in
+  them, as bounding box used to be incorrectly computed.
+
   Revision 1.22  1996/06/27 22:54:26  jussi
   Added support for XOR color value.
 
@@ -104,6 +109,7 @@
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
+#include "StringStorage.h"
 
 //#define DEBUG
 
@@ -900,7 +906,6 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      Color color = GetColor(view, gdata, map, offset);
       if (color == XorColor)
         win->SetXorMode();
       else
@@ -918,8 +923,19 @@ public:
       if (color == XorColor)
         win->SetCopyMode();
 
-      char *file = "/p/devise/dat/defaultimage.gif";
-      // need to figure out how to get file from shape attribute 0
+      char *file = "image.gif";
+
+      if (offset->shapeAttrOffset[0] >= 0) {
+        int key = (int)GetShapeAttr0(gdata, map, offset);
+        int code = StringStorage::Lookup(key, file);
+#ifdef DEBUG
+        printf("Key %d returns \"%s\", code %d\n", key, file, code);
+#endif
+      } else {
+#ifdef DEBUG
+        printf("Using default file \"%s\"\n", file);
+#endif
+      }
 
 #ifdef DEBUG
       printf("Drawing GIF image %s at %.2f,%.2f\n", file, x, y);
@@ -955,28 +971,49 @@ public:
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
-      if (color == XorColor)
-        win->SetXorMode();
-      else
-        win->SetFgColor(color);
-      win->SetPattern(GetPattern(gdata, map, offset));
 
-      char *file = "/p/devise/dat/defaultpoly.dat";
+      char *file = "polyline.dat";
       char *format = "%lf%lf";
-      // need to figure out how to get file and format
-      // from shape attributes 0 and 1
+
+      if (offset->shapeAttrOffset[0] >= 0) {
+        int key = (int)GetShapeAttr0(gdata, map, offset);
+        int code = StringStorage::Lookup(key, file);
+#ifdef DEBUG
+        printf("Key %d returns \"%s\", code %d\n", key, file, code);
+#endif
+      } else {
+#ifdef DEBUG
+        printf("Using default file \"%s\"\n", file);
+#endif
+      }
+
+      if (offset->shapeAttrOffset[1] >= 0) {
+        int key = (int)GetShapeAttr1(gdata, map, offset);
+        int code = StringStorage::Lookup(key, format);
+#ifdef DEBUG
+        printf("Key %d returns \"%s\", code %d\n", key, format, code);
+#endif
+      } else {
+#ifdef DEBUG
+        printf("Using default format \"%s\"\n", format);
+#endif
+      }
 
       FILE *fp = fopen(file, "r");
       if (!fp) {
 	printf("Cannot open polyline file %s\n", file);
-        if (color == XorColor)
-          win->SetCopyMode();
 	continue;
       }
 
 #ifdef DEBUG
       printf("Drawing polyline file %s at %.2f,%.2f\n", file, x, y);
 #endif
+
+      if (color == XorColor)
+        win->SetXorMode();
+      else
+        win->SetFgColor(color);
+      win->SetPattern(GetPattern(gdata, map, offset));
 
       Boolean hasPrev = false;
       Coord x0 = 0, y0 = 0;
@@ -1039,14 +1076,26 @@ public:
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
+
+      char *label = "X";
+
+      if (offset->shapeAttrOffset[0] >= 0) {
+        int key = (int)GetShapeAttr0(gdata, map, offset);
+        int code = StringStorage::Lookup(key, label);
+#ifdef DEBUG
+        printf("Key %d returns \"%s\", code %d\n", key, label, code);
+#endif
+      } else {
+#ifdef DEBUG
+        printf("Using default label \"%s\"\n", label);
+#endif
+      }
+
       if (color == XorColor)
         win->SetXorMode();
       else
         win->SetFgColor(color);
       win->SetPattern(GetPattern(gdata, map, offset));
-
-      char *label = "label";
-      // need to figure out how to get label from shape attribute 0
 
       // Pretend that there's a 500x500 box in which the text has to
       // be drawn; this is done because we don't know the size of the
