@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/23 19:33:52  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.20  1996/07/05 15:19:48  jussi
   The dispatcher now properly destroys all session objects
   (TData, GData, links, etc.)  when it shuts down.
@@ -108,6 +112,7 @@
 #include "Init.h"
 #include "Selection.h"
 #include "Time.h"
+#include "machdep.h"
 
 //#define DEBUG
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/23 20:13:08  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.1  1996/07/09 16:00:24  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -40,7 +43,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.2";
+static const char *	version = "1.1.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/07/25 14:32:55  guangshu
+  Added linked list to keep track of the gstat records so it doesnot need to scann the range from xmin to xmax and fixed bugs for histograms
+
   Revision 1.29  1996/07/23 19:34:50  beyer
   Changed dispatcher so that pipes are not longer used for callback
   requests from other parts of the code.
@@ -539,7 +542,7 @@ void ViewGraph::PrepareStatsBuffer()
         strcat(_statBuffer, line);
     }
     if(_allStats.GetHistWidth()>0){
-	for(int i=0; i<HIST_NUM; i++) {
+	for(i=0; i<HIST_NUM; i++) {
 	    sprintf(line, "%.2f %d\n", 
 		    _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
 		    _allStats.GetHistVal(i));

@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/12 19:38:07  jussi
+  Minor changes to code to improve the messages printed on
+  screen in conjunction with DataSourceWeb.C.
+
   Revision 1.8  1996/07/01 19:23:12  jussi
   The Web data transfer routines are now called from DataSourceWeb.c,
   and not TkControl.c. Removed the Tcl/Tk interface routines.
@@ -485,7 +489,10 @@ int open_http( char *name, size_t * bytes_in_body)
   while (readline(sock_fd, buffer) > 0) {
     tolowcase(buffer);
     if (!strncmp(buffer, HTTP_C_LENGTH, HTTP_C_LENGTH_LEN)) {
-      sscanf(buffer, "%*s %d", bytes_in_body);
+      // Because size_t is long on some architectures and int on others.
+      long tempVar;
+      sscanf(buffer, "%*s %ld", &tempVar);
+      *bytes_in_body = tempVar;
       break;
     }  
   }

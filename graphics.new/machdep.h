@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/18 02:16:42  jussi
+  Added support for Ultrix.
+
   Revision 1.9  1996/07/17 00:47:26  jussi
   Added a redefinition of SIG_ERR/SIG_DFL/SIG_IGN on the Ultrix
   platform.
@@ -210,6 +213,9 @@
   EXTERNC int select(int, fd_set *, fd_set *, fd_set *, struct timeval *);
   EXTERNC int setitimer(int which, struct itimerval *value,
 			   struct itimerval *ovalue);
+  EXTERNC int bcmp(const void *s1, const void *s2, size_t n);
+  EXTERNC void bcopy(const void *s1, void *s2, size_t n);
+  EXTERNC void bzero(void *s, size_t n);
 #endif
 
 #if defined(__ultrix)
@@ -384,14 +390,12 @@ union semun {
 #endif
 
 #if !defined(__hpux) && !defined(__alpha) && !defined(__sgi)
-EXTERNC {
-  extern int socket(int, int, int);
-  extern int bind(int, struct sockaddr *, int);
-  extern int listen(int, int);
-  extern int accept(int, struct sockaddr *, int *);
-  extern int connect(int, struct sockaddr *, int);
-  extern int shutdown(int, int);
-}
+  EXTERNC int socket(int, int, int);
+  EXTERNC int bind(int, struct sockaddr *, int);
+  EXTERNC int listen(int, int);
+  EXTERNC int accept(int, struct sockaddr *, int *);
+  EXTERNC int connect(int, struct sockaddr *, int);
+  EXTERNC int shutdown(int, int);
 #endif
 
 /*

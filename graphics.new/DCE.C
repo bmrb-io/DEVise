@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/18 02:12:52  jussi
+  Added #include <sys/types.h>, needed by <sys/stat.h> in Ultrix.
+
   Revision 1.1  1996/07/12 03:52:27  jussi
   Initial revision.
 */
@@ -229,7 +232,7 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
     cerr << "%%  Attached to existing shared memory (" << sbuf.shm_segsz
          << " bytes, " << sbuf.shm_nattch << " attachments)" << endl;
 #endif
-    if (sbuf.shm_segsz != size) {
+    if ((int) sbuf.shm_segsz != (int) size) {
       cerr << "Existing shared memory segment has incorrect size: "
 	   << sbuf.shm_segsz << " vs. " << size << endl;
       cerr << "Deleting old segment" << endl;
