@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/08/25 14:56:17  wenger
+  More improvements to JavaScreen argument handling; assertion failures are
+  written to debug log.
+
   Revision 1.25  1999/08/24 22:01:19  wenger
   JavaScreen support code deals with argument lists better (partly in
   preparation for JS-side axis drawing).
@@ -161,6 +165,7 @@ class JavaScreenCmd
 			OPENSESSION, 
 			MOUSEACTION_CLICK,
 			SHOW_RECORDS, 
+			SHOW_RECORDS3D, 
 			MOUSEACTION_RUBBERBAND,
 			JAVAEXIT,
 			CLOSECURRENTSESSION,
@@ -225,6 +230,7 @@ class JavaScreenCmd
 		void OpenSession();
 		void MouseAction_Click();
 		void ShowRecords();
+		void ShowRecords3D();
 		void MouseAction_RubberBand();
 		void SetDisplaySize();
 		void KeyAction();

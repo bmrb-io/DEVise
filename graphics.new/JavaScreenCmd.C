@@ -772,17 +772,26 @@ CreateViewLists()
 		    _gifViews.Append(view);
 			if (view->IsInPileMode()) isPiled = true;
 		  }
-
-		  // If a view sends GData, we need to send it whether or not
-		  // the view is in a pile.
-          if (view->GetSendToSocket()) {
-		    _gdataViews.Append(view);
-		  }
 	    }
 		window->DoneIterator(viewIndex);
 	  }
 	}
 	DevWindow::DoneIterator(winIndex);
+
+	//
+	// We must consider *all* views as potential GData views, even if
+	// they're not currently in a window (this fixes bug 525).
+	//
+	{
+        int viewIndex = View::InitViewIterator();
+		while (View::MoreView(viewIndex)) {
+		    ViewGraph *view = (ViewGraph *)View::NextView(viewIndex);
+            if (view->GetSendToSocket()) {
+		      _gdataViews.Append(view);
+		    }
+		}
+	    View::DoneViewIterator(viewIndex);
+	}
 
 #if defined (DEBUG_LOG)
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "Top-level views:");
@@ -977,6 +986,9 @@ JavaScreenCmd::Run()
 			break;
 		case SHOW_RECORDS:
 			ShowRecords();
+			break;
+		case SHOW_RECORDS3D:
+			ShowRecords3D();
 			break;
 		case MOUSEACTION_RUBBERBAND:
 			MouseAction_RubberBand();
@@ -1273,6 +1285,24 @@ JavaScreenCmd::ShowRecords()
 
     if (view->HandlePopUp(NULL, xPix, yPix, 2, msgs, msgCount)) {
 		_status = RequestUpdateRecordValue(msgCount, msgs);
+	}
+}
+
+//====================================================================
+void
+JavaScreenCmd::ShowRecords3D()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::ShowRecords3D(", _argc, _argv, ")\n");
+#endif
+
+	// Note: x, y, and z are the values from the relevant GData record.
+	if (_argc != 3)
+	{
+		errmsg = "Usage: ShowRecords3D <view name> <x> <y> <z>";
+		_status = ERROR;
+		return;
 	}
 }
 
@@ -1756,7 +1786,8 @@ JavaScreenCmd::SendWindowData(const char* fileName)
 	}
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  done sending window image\n  status = %d\n", status);
+    sprintf(logBuf, "  done sending window image or GData\n  status = %d\n",
+	  status);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -1791,8 +1822,15 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	int viewIndex2 = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex2)) {
 		View *view = (View *)_topLevelViews.Next(viewIndex2);
+#if defined(DEBUG_LOG)
+        sprintf(logBuf, "Checking view <%s>; GetGifDirty() = %d\n",
+		  view->GetName(), view->GetGifDirty());
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
         if (view->GetGifDirty()) {
 
+			//TEMP -- is there some way to avoid destroying and re-creating
+			// the same views here?  RKW 1999-10-27.
 		    if (update) {
 			    DeleteChildViews(view);
 		    }
@@ -1893,7 +1931,8 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		// We determine whether the GData is "dirty" by testing whether the
 		// GData file exists -- if the file does exist, the GData is "dirty"
 		// (because the file is deleted after being sent).
-		if (gdParams.file != NULL && access(gdParams.file, F_OK) == 0) {
+		if (gdParams.file != NULL && access(gdParams.file, F_OK) == 0 &&
+		  view->Mapped()) {
 #if defined(DEBUG_LOG)
 	        sprintf(logBuf, "GData of view <%s> is \"dirty\".\n",
 			  view->GetName());

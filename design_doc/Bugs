@@ -2051,6 +2051,9 @@ Num Date        Status  Description
 524 10/25/99	OPEN	Custom-layout windows don't seem to get sized right
 			in the JavaScreen. (rkw)
 
+525 10/27/99	FIXED	Child views cannot send GData to the JavaScreen. (rkw)
+			(Fixed by rkw, 10/27/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
