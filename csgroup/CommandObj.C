@@ -1,5 +1,9 @@
 #include "CommandObj.h"
+#if !defined(SGI)
 #include <sys/varargs.h>
+#else
+#include <stdarg.h>
+#endif
 #include "ServerAPI.h"
 #include <stdio.h>
 

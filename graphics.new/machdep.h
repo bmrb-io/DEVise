@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/02/26 17:19:33  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.20  1998/02/26 00:19:38  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -186,6 +189,15 @@
 
 #include <limits.h>
 #include <sys/types.h>
+
+#ifdef SGI
+  #ifdef MIN
+    #undef MIN
+  #endif
+  #ifdef MAX
+    #undef MAX
+  #endif
+#endif
 #include <sys/param.h>
 
 #ifndef MIN

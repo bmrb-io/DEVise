@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/26 20:35:09  taodb
+  Removed ParaseAPI() interface, and added CommandObject interface
+
  */
 
 #ifndef _CommandObj_h_
@@ -31,7 +34,11 @@
 #include "Exit.h"
 #include "Server.h"
 #include "DeviseServer.h"
+#if !defined(SGI)
 #include <sys/varargs.h>
+#else
+#include <stdarg.h>
+#endif
 
 #define MAX_ARGS 20
 class Server;
