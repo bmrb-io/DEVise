@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/11/08 21:02:29  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.33  1997/11/05 00:19:46  donjerko
   Separated typechecking from optimization.
 
@@ -111,7 +114,8 @@
 #include <iostream.h>
 #include <string>
 #include <assert.h>
-//#include <stdio.h>    erased for sysdep.h
+
+#include <sysdep.h>
 
 extern int yylex();
 extern ParseTree* parseTree;
@@ -125,6 +129,9 @@ static int my_yyaccept();
 BaseSelection* withPredicate;
 BaseSelection* havingPredicate;
 string* sortOrdering;
+
+// #define alloca malloc
+// #define __builtin_memcpy memcpy
 
 %}
 %union{
