@@ -88,6 +88,12 @@ Num Date        Status  Description
 030 08/13/96	FIXED	A view continuously redraws itself while it's
 			iconified. (rkw)
 
+031 08/15/96	OPEN	Rotation of stacked views doesn't seem to work. (rkw)
+
+032 08/15/96	OPEN	After removing a view from a window, the remaining
+			views aren't redrawn until you click in that window.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

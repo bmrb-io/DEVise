@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.2  1996/08/14 20:00:47  flisakow
+        Need a devread directory for each m/c arch.
+
     Revision 1.1  1996/08/14 19:04:29  flisakow
       Checkin of DevRead class, a near duplicate of the AttrProj class,
       it is an interface to reading data from Devise files.
@@ -59,6 +62,11 @@ DevRead::Open(char *schemaFile, char *dataFile)
     // Provision for having the schema in the data file.
     if ((schemaFile == NULL) || !*schemaFile)
         schemaFile = dataFile;
+
+    // strdups because TData destructor will try to free all of these
+    // strings -- make sure they're dynamic.
+    schemaFile = strdup(schemaFile);
+    dataFile = strdup(dataFile);
 
     DataSeg::Set(schemaFile, dataFile, 0, 0);
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/08/02 15:53:36  wenger
+  Added AttrProj member functions for reading entire records (no projection).
+
   Revision 1.9  1996/07/31 19:33:37  wenger
   Added AttrProj member functions for reading entire records (no projection).
 
@@ -90,11 +93,19 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 	DO_DEBUG(printf("AttrProj::AttrProj(%s, %s, %s)\n", schemaFile,
 		attrProjFile, dataFile));
 
+	DOASSERT(dataFile != NULL, "Can't have NULL datafile");
+
 	// Provision for having the schema in the data file.
 	if ((schemaFile == NULL) || !strcmp(schemaFile, ""))
 	{
 		schemaFile = dataFile;
 	}
+
+	// strdups because TData destructor will try to free all of these
+	// strings -- make sure they're dynamic.
+	schemaFile = strdup(schemaFile);
+	attrProjFile = strdup(attrProjFile);
+	dataFile = strdup(dataFile);
 
 	DataSeg::Set(schemaFile, dataFile, 0, 0);
 

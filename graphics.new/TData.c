@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/12 20:49:58  jussi
+  Added missing statement that creates a new DataSourceWeb for
+  WWW data sources.
+
   Revision 1.6  1996/08/05 19:48:57  wenger
   Fixed compile errors caused by some of Kevin's recent changes; changed
   the attrproj stuff to make a .a file instead of a .o; added some more
@@ -81,6 +85,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
     _param = param;
     _recSize = recSize;
     _data = NULL;
+    _version = 0;
 
     // Find out whether the data occupies an entire data source or only
     // a segment of it

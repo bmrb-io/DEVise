@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/08/14 20:00:51  flisakow
+#      Need a devread directory for each m/c arch.
+#
 #  Revision 1.1  1996/08/14 19:04:36  flisakow
 #    Checkin of DevRead class, a near duplicate of the AttrProj class,
 #    it is an interface to reading data from Devise files.
@@ -88,10 +91,16 @@ ALLSHOWOBJ = $(SHOWOBJ)
 
 all: drtest
 lib: $(LIB)
+pure: drtest.pure
+
+DRTEST = $(CC) -o $@ $(ARCH_LDFLAGS) types.o -L. $(ALLTESTOBJ) \
+	-ldevread -ltcl -lm
 
 drtest: $(ALLTESTOBJ) types.o $(LIB) 
-	$(CC) -o $@ $(ARCH_LDFLAGS) types.o -L. $(ALLTESTOBJ) \
-                -ldevread -ltcl -lm $(ARCH_LDPOST)
+	$(DRTEST) $(ARCH_LDPOST)
+
+drtest.pure: $(ALLTESTOBJ) types.o $(LIB) 
+	$(PURIFY) $(PURE_OPT) $(DRTEST) $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
 	$(AR) cr $@ $(LIBOBJ)
@@ -100,7 +109,7 @@ $(LIB): $(LIBOBJ)
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm -f drtest
+	-rm -f drtest drtest.pure
 
 mostlyclean:
 	-rm -f $(TESTOBJ) $(LOCALOBJ) types.o $(LIB)

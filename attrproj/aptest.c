@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/31 19:33:43  wenger
+  Added AttrProj member functions for reading entire records (no projection).
+
   Revision 1.7  1996/05/22 18:50:44  wenger
   Greatly simplified Init::DoInit() to only do what's necessary for
   attribute projection; other minor changes.
@@ -172,6 +175,7 @@ main(
 	}
 
 	delete vecArrayP;
+	delete apP;
 
 	return result;
 }													/* end main */

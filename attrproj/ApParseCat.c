@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/01 20:36:59  jussi
+  Minor changes to reflect the new TDataAscii/TDataBinary constructor
+  interface.
+
   Revision 1.6  1996/06/27 18:11:59  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -733,9 +737,11 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 	}
 	else
 	{
+		// strdups because TData destructor will try to free type
+		// strings -- make sure they're dynamic.
 		if (isAscii) {
 		  printf("default source, recSize %d\n",recSize);
-		  tDataP = new TDataAsciiInterp(catFile, "UNIXFILE", dataFile,
+		  tDataP = new TDataAsciiInterp(catFile, strdup("UNIXFILE"), dataFile,
 			recSize, attrs, sep, numSep, hasSeparator, commentString);
 		}
 		else
@@ -743,7 +749,7 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 		  printf("default binary source, recSize %d\n",recSize);
 		  // Note: the second use of recSize is for the physical
 		  // record size.  This needs to get changed.  RKW 96/06/27.
-		  tDataP = new TDataBinaryInterp(catFile, "UNIXFILE", dataFile,
+		  tDataP = new TDataBinaryInterp(catFile, strdup("UNIXFILE"), dataFile,
 			recSize, recSize/*TEMP*/, attrs);
 		}
 	}

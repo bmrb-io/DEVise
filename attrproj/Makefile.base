@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1996/08/13 17:45:30  flisakow
+#      Make consistently uses C and CC for gcc and g++, respectively.
+#
 #  Revision 1.18  1996/08/12 18:43:21  flisakow
 #    Makefiles changed to use AR and RANLIB vars from Makefile.common.
 #
@@ -82,14 +85,27 @@ ALLSHOWOBJ = $(SHOWOBJ)
 
 all: aptest show
 lib: $(LIB)
+pure: aptest.pure show.pure
+
+
+APTEST = $(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
+	-lattrproj -ltcl -lm
 
 aptest: $(ALLTESTOBJ) $(LIB)
-	$(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
-                -lattrproj -ltcl -lm $(ARCH_LDPOST)
+	$(APTEST) $(ARCH_LDPOST)
+
+aptest.pure: $(ALLTESTOBJ) $(LIB)
+	$(PURIFY) $(PURE_OPT) $(APTEST) $(ARCH_LDPOST)
+
+
+SHOW = $(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
+	-lattrproj -ltcl -lm $(ARCH_LDPOST)
 
 show: $(ALLSHOWOBJ) $(LIB)
-	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
-                -lattrproj -ltcl -lm $(ARCH_LDPOST)
+	$(SHOW) $(ARCH_LDPOST)
+
+show.pure: $(ALLSHOWOBJ) $(LIB)
+	$(PURIFY) $(PURE_OPT) $(SHOW) $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
 	$(AR) cr $@ $(LIBOBJ)
