@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/06/24 19:47:25  jussi
+  Added a destructor.
+
   Revision 1.12  1996/05/15 16:45:10  jussi
   Added support for the new server synchronization mechanism.
   Removed ExecuteScript function.
@@ -133,10 +136,7 @@ protected:
 						Coord w, Coord h) {}
 
 private:
-  virtual void FilterAboutToChange(View *view) {}
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewCreated(View *view) {}
-  virtual void ViewDestroyed(View *view) {}
 
   int _busy;
   static MapInterpClassInfo *_interpProto;

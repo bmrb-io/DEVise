@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/27 16:39:50  jussi
+  With the new dispatching scheme in place, the server uses blocking-mode
+  I/O with interrupts generated from the select() call in the dispatcher.
+  The switching between server-listen and server-connected mode was
+  streamlined.
+
   Revision 1.8  1996/05/20 18:42:30  jussi
   Merged with ClientServer library code.
 
@@ -114,10 +120,7 @@ protected:
 						Coord w, Coord h) {}
 
 private:
-  virtual void FilterAboutToChange(View *view) {}
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewCreated(View *view) {}
-  virtual void ViewDestroyed(View *view) {}
 
   char *DispatchedName() { return "ServerAPI"; }
   virtual void Run();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/31 15:37:42  jussi
+  Moved to the graphics.new directory.
+
   Revision 1.3  1995/12/29 18:28:52  jussi
   Added FilterAboutToChange() method to facilitate the new
   cursor mechanism. Also added the copyright message.
@@ -55,10 +58,8 @@ public:
   /* Return TRUE if view is part of this link */
   virtual Boolean ViewInLink(ViewGraph *view);	
 
-  virtual void FilterAboutToChange(View *view) {}
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
-  virtual void ViewCreated(View *view) {}
-  virtual void ViewDestroyed(View *view) {}
+  virtual void ViewDestroyed(View *view) { DeleteView((ViewGraph *)view); }
   
   /* Iterator for view list */
   int InitIterator();
