@@ -722,12 +722,19 @@ Num Date        Status  Description
                         the removed view, it finds that it is still there but
                         actually it's not. (gc/rkw)
 
-174 04/16/97	OPEN	Each composite parser seems to get instantiated
+174 04/16/97	NB	Each composite parser seems to get instantiated
 			twice. (rkw)
 
 175 04/16/97	OPEN	Saving a session file may reduce the number of file
 			descriptors in use by Devise (this might mean that
 			we're not closing some we should) (bb/rkw)
+
+176 04/16/97	OPEN	If you open two different data sources that both
+			use the same composite parser during a single
+			execution of DEVise, you may run into problems
+			because the attribute offsets of the composite
+			parser will only be set for the first data source.
+			(rkw)
 
 
 OPEN = problem/bug exists and needs to be addressed.
