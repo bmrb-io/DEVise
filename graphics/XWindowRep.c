@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1996/08/04 23:34:01  beyer
+  Devise keys now support both X11R5 and X11R6
+
   Revision 1.54  1996/08/04 22:20:01  jussi
   Moved variable declarations in HandleEvent out of the switch
   statement. Newer compiler issued warnings for these.
@@ -2196,6 +2199,13 @@ void XWindowRep::DoPopup(int x, int y, int button)
 #endif
   if (!savePopup)
     XGrabServer(_display);
+
+  /* Draw the text messages into window */
+  for(i = 0; i < numMsgs; i++) {
+      int startY = charHeight * i;
+      XDrawString(_display, win, popUpGc, 1, startY + charAscent, 
+		  msgs[i], strlen(msgs[i]));
+  }
 
   while(1) {
     XEvent event;
