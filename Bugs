@@ -1000,6 +1000,19 @@ Num Date        Status  Description
 254 12/12/97	OPEN	Devised doesn't seem to notify Tasvir and EmbeddedTk
 			server when it exits. (rkw)
 
+255 12/12/97	OPEN	Trademark notice no longer shows up in DEVise windows.
+			(rkw)
+
+256 12/15/97	OPEN	Drill-down on compiled mappings (multi) causes
+			crash. (rr/rkw)
+
+257 12/15/97	OPEN	GData attributes with recId get goofed up in mappings
+			that have any expresssions in them. (ssl/rkw)
+
+258 12/15/97	OPEN	Linux versions of Devise core dump on search engine
+			demo (fixed by shortening strings from 1024 to 256
+			bytes). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
