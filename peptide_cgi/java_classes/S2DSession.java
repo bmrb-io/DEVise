@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/03/08 20:33:24  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.2.2.1  2001/02/09 16:57:13  wenger
 // Added heteronuclear NOE; made T1 and T2 relaxation errors optional
 // (conversion doesn't fail if they are not found); added an X margin of
@@ -84,6 +88,12 @@ public class S2DSession {
 	    baseName = "percent.base";
 	    dataSuffix = S2DNames.PERCENT_ASSIGN_SUFFIX;
 	    searchString = "4081p1";
+	    break;
+
+	case S2DUtils.TYPE_ALL_CHEM_SHIFTS:
+	    baseName = "allshift.base";
+	    dataSuffix = S2DNames.ALL_CHEM_SHIFT_SUFFIX;
+	    searchString = "4267as1";
 	    break;
 
         case S2DUtils.TYPE_COUPLING:

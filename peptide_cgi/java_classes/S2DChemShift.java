@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/03/08 21:10:34  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.3.2.1  2001/02/22 19:28:30  wenger
 // Fixed problem with reading back deltashift values in exponential format;
 // error messages when checking for a protein are printed only if debug
@@ -480,6 +484,64 @@ public class S2DChemShift {
 	    System.err.println("IOException writing percent assignment data: " +
 	      ex.getMessage());
 	    throw new S2DError("Unable to write percent assignment data for " +
+	      frameIndex);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write all chem shifts for this data.
+    public void writeAllShifts(int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DChemShift.writeAllShifts()");
+	}
+
+        FileWriter asWriter = null;
+	try {
+            asWriter = new FileWriter(_dataDir + "/" +
+	      _accessionNum + S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
+	      S2DNames.DAT_SUFFIX);
+        } catch(IOException ex) {
+	    System.err.println(
+	      "IOException writing all chem shift values: " +
+	      ex.getMessage());
+	    throw new S2DError("Can't write all chem shift values");
+	}
+
+	try {
+            //
+	    // Write the relaxation values to the data file.
+	    //
+	    for (int index = 0; index < _resSeqCodes.length; index++) {
+	        asWriter.write(_resSeqCodes[index] + " " +
+		  _residueLabels[index] + " " + _atomNames[index] + " " +
+		  _atomTypes[index] + " " +  _chemShiftVals[index] + "\n");
+	    }
+
+            asWriter.close();
+
+
+	    //
+	    // Write the session file.
+	    //
+	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ALL_CHEM_SHIFTS,
+	      _accessionNum, frameIndex);
+
+	    //
+	    // Write the session-specific html file.
+	    //
+	    S2DSpecificHtml.write(_dataDir, S2DUtils.TYPE_ALL_CHEM_SHIFTS,
+	      _accessionNum, frameIndex);
+
+	    //
+	    // Write the link in the summary html file.
+	    //
+	    _summary.writeAllShifts(frameIndex, _resSeqCodes.length);
+
+	} catch (IOException ex) {
+	    System.err.println("IOException writing all chem shifts: " +
+	      ex.getMessage());
+	    throw new S2DError("Unable to write all chem shifts for " +
 	      frameIndex);
 	}
     }

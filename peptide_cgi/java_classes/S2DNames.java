@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/01/19 15:39:06  wenger
+// Added T1 and T2 relaxation; removed some unnecessary variables from
+// coupling constants; added schema files to installation, unified T1
+// and T2 relaxation schema.
+//
 // Revision 1.5  2001/01/17 19:55:46  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -115,6 +120,7 @@ public class S2DNames
     //
     // Data type suffixes.
     //
+    public static final String ALL_CHEM_SHIFT_SUFFIX = "as";
     public static final String CSI_SUFFIX = "c";
     public static final String DELTASHIFT_SUFFIX = "d";
     public static final String COUPLING_SUFFIX = "g";

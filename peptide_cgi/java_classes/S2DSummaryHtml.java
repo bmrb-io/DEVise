@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2001/03/13 14:50:10  wenger
+// Added cache invalidation: cache files are not used if peptide-cgi code
+// or NMR-Star file has changed since relevant cache files were generated.
+//
 // Revision 1.4  2001/03/08 21:10:35  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -228,6 +232,17 @@ public class S2DSummaryHtml {
         _writer.write("<li><a href=\"" + _accNum +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
 	  S2DNames.HTML_SUFFIX + "\">" + name + "</a> (" + count + ")\n");
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the all chemical shifts link.
+    public void writeAllShifts(int frameIndex, int count)
+      throws IOException
+    {
+        _writer.write("<li><a href=\"" + _accNum +
+	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">All Chemical Shifts</a> (by amino acid) (" + count +
+	  " shifts)\n");
     }
 
     //===================================================================

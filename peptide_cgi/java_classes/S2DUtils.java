@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/03/08 20:33:25  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.3.2.1  2001/02/09 16:57:13  wenger
 // Added heteronuclear NOE; made T1 and T2 relaxation errors optional
 // (conversion doesn't fail if they are not found); added an X margin of
@@ -48,7 +52,7 @@ public class S2DUtils
     public static final int TYPE_INVALID = 0, TYPE_DELTASHIFT = 1,
       TYPE_CSI = 2, TYPE_PCT_ASSIGN = 3, TYPE_COUPLING = 4,
       TYPE_HXRATES = 5, TYPE_ORDER = 6, TYPE_T1_RELAX = 7, TYPE_T2_RELAX = 8,
-      TYPE_HETNOE = 9;
+      TYPE_HETNOE = 9, TYPE_ALL_CHEM_SHIFTS = 10;
 
     public static final String starPrefix = "bmr";
     public static final String starSuffix = ".str";

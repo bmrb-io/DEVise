@@ -16,3 +16,4 @@ unsetenv LD_LIBRARY_PATH
 
 setenv CLASSPATH ./java_classes:./java_classes/starlibj.jar
 java S2DMain $* data_dir session_dir >& s2d.out
+chmod 644 s2d.out

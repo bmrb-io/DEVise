@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/03/13 14:50:10  wenger
+// Added cache invalidation: cache files are not used if peptide-cgi code
+// or NMR-Star file has changed since relevant cache files were generated.
+//
 // Revision 1.7  2001/03/08 21:10:34  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -73,7 +77,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.1";
+    public static final String PEP_CGI_VERSION = "2.2";
 
     private int _accessionNum;
     private String _dataDir;
@@ -557,6 +561,15 @@ public class S2DMain {
 
 	try {
 	    chemShift.writePctAssign(frameIndex);
+	} catch (S2DException ex) {
+	    // Don't throw a new exception here because we want to write as
+	    // much as we can, even if there's an error somewhere along the
+	    // line.
+	    System.err.println(ex.getMessage());
+	}
+
+	try {
+	    chemShift.writeAllShifts(frameIndex);
 	} catch (S2DException ex) {
 	    // Don't throw a new exception here because we want to write as
 	    // much as we can, even if there's an error somewhere along the
