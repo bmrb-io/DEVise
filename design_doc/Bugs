@@ -2730,6 +2730,9 @@ Num Date        Status  Description
 			DEVise does not detect this because it is newer than
 			the data file. (rkw)
 
+686 08/30/01	OPEN	DEVise should substitute $DEVISE_SESSION into
+			string file paths when saving a session. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
