@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/06/12 19:55:27  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.11  1998/05/29 19:34:36  wenger
   Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
   size.
@@ -82,6 +87,10 @@
 //#define DEBUG
 
 static char* cmdLogBase ="/tmp/cmdLog.";
+
+// Note: the object allocated by each of these macros is leaked, but you
+// can't destroy them easily because a bitwise copy of the object's contents
+// is done, so you'll end up destroying other things the object points to.
 #define REGISTER_COMMAND(objType)\
 {\
 	DeviseCommandOption	cmdOption;\
@@ -94,13 +103,13 @@ static char* cmdLogBase ="/tmp/cmdLog.";
 {\
 	cmdOption.setCmdName(#objType);\
 	DeviseCommand_##objType *obj= new (DeviseCommand_##objType)(cmdOption);\
-	insertCmd(#objType,(DeviseCommand*)obj); \
+	insertCmd(#objType,(DeviseCommand*)obj,sizeof(DeviseCommand_##objType)); \
 }
 
 CmdContainer*	cmdContainerp;
 static const int CMD_HASHSIZE = 4;
 int f(const Datum&,int);
-Htable 	cmdDb(CMD_HASHSIZE, &f);
+static Htable 	cmdDb(CMD_HASHSIZE, &f);
 
 int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
 int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
@@ -334,6 +343,7 @@ CmdContainer::~CmdContainer()
 	unlink(cmdLogFname);
 	free(cmdLogFname);
 	delete cmdLog;
+	//TEMP -- clean out Htable here?
 }
 
 long
@@ -558,7 +568,8 @@ CmdContainer::insertCmd(char* cmdName, DeviseCommand* cmdp, int cmdsize)
 	Datum	*key = new (Datum);
 	Datum	*data = new (Datum);
 	key->set(cmdName, strlen(cmdName) +1);
-	data->set((char*)cmdp, cmdsize);
+	data->set((char*)cmdp, cmdsize); // Note: this copies contents of *cmdp
+
 	cmdDb.insert(key,data);
 	Datum	*datap;
 	datap = cmdDb.get(*key);

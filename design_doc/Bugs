@@ -1403,10 +1403,15 @@ Num Date        Status  Description
 			allocate a color. (dd/rkw)
 
 371 06/28/98	OPEN	Devise leaks loads of memory when running the session
-			beyer/genome.ds. (kb/rkw)
+			beyer/genome.ds. (kb/rkw)  (Leaks on every redraw.)
 
 372 06/29/98	FIXED	Devise on SPARC/Solaris crashes when opening the
 			session beyer/genome.ds. (rkw)
+
+373 07/01/98	OPEN	Even with the redraw leak fixed, opening, closing,
+			and re-opening beyer/genome.ds leaks about 25 MB.
+			(rkw) (It looks like about 20 MB of this is in the
+			DTE.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

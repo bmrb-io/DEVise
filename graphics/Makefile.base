@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.66  1998/05/18 16:02:31  wenger
+#  'make clean' now removes dummy OpenGL files.
+#
 #  Revision 1.65  1998/05/06 22:04:41  wenger
 #  Single-attribute set links are now working except where the slave of
 #  one is the master of another.
@@ -211,8 +214,8 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../LM/C++ \
 	-I../../csgroup/export \
 	$(GLINCLUDE) \
-	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) $(DEBUGFLAGS) -DUNIX -DGRAPHICS \
-	-DNEW_LAYOUT
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(DEBUG_FLAGS) $(OPTFLAG) \
+	$(DEBUGFLAGS) -DUNIX -DGRAPHICS -DNEW_LAYOUT
 
 # -fexternal-templates 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.83  1998/06/28 21:41:42  beyer
+  changed to implicit templates
+
   Revision 1.82  1998/06/24 15:15:27  beyer
   changed !map->IsInterpreted to !map->IsInterpreted()
 
@@ -377,6 +380,10 @@
   Added CVS header.
 */
 
+#if defined(DEBUG_MEM)
+#  include <unistd.h>
+#endif
+
 #include "QueryProcFull.h"
 #include "Display.h"
 #include "Init.h"
@@ -507,6 +514,10 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       QueryCallback *callback, void *userData,
 			       int priority)
 {
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
+
   TData *tdata = map->GetPhysTData();
   QPFullData *query = new QPFullData;//TEMP leaked
   DOASSERT(query, "Out of memory");
@@ -700,6 +711,9 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 #if DEBUGLVL >= 3
   printf("abort query for %s %s\n", map->GetPhysTData()->GetName(),
 	 map->GetName());
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
 #endif
 
   int index;
@@ -1049,6 +1063,10 @@ Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
 
 Boolean QueryProcFull::InitQueries()
 {
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
+
   int index = _queries->InitIterator();
   
   while (_queries->More(index)) {
@@ -1125,6 +1143,10 @@ Boolean QueryProcFull::InitQueries()
 
 void QueryProcFull::ProcessScan(QPFullData *query)
 {
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
+
   DOASSERT(query && query->state == QPFull_ScanState,
            "Query not in a valid state.");
 
@@ -1235,6 +1257,9 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 #if DEBUGLVL >= 3
     printf("Done getting records from buffer manager\n");
 #endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
 }
 
 
@@ -1314,11 +1339,17 @@ void QueryProcFull::ProcessQuery()
   } else {
     _queries->Append(query);
   }
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
 }
 
 
 void QueryProcFull::EndQueries()
 {
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
   /* remove any terminated queries from the query list and clean up */
   QPFullData *query = NULL;
   int index = _queries->InitIterator();
@@ -1343,6 +1374,9 @@ void QueryProcFull::EndQuery(QPFullData *query)
 #if DEBUGLVL >= 5
   printf("End query for tdata %s, map %s\n",
          query->tdata->GetName(), query->map->GetName());
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
 #endif
   if( query->handle != NULL ) {
     _mgr->DoneGetRecs(query->handle);
@@ -1736,9 +1770,11 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
            low, high, _rangeBuf, _rangeStartId,
            _rangeStartId + _rangeNumRecs - 1, _rangeTData);
 #endif
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
 
     if( _rangeQuery->callback == NULL ) {
       recordsProcessed = (int) (high - low + 1);
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
       return;
     }
 
@@ -1759,17 +1795,20 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 	  fprintf(stderr, "Query for master view of TAttrLink doesn't have "
 	      "TData; slave views will not be updated correctly.");
 	}
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, (RecId)low,
                                            ptr, (int)(high - low + 1),
 					   recordsProcessed,
 					   false, recordsDrawn,
 					   drawnList);
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) low,
 	  (int) low + recordsProcessed - 1, (int) low, (int) high);
 	printf("%d records drawn\n", recordsDrawn);
 	if (drawnList != NULL) drawnList->Print();
 #endif
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
         return;
     }
 
@@ -1793,7 +1832,9 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
     recordsProcessed = 0;
     while (recsLeft > 0) {
 	int numToConvert = MIN(numRecsPerBatch, recsLeft);
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
         _rangeQuery->map->ConvertToGData(recId, dbuf, numToConvert, _gdataBuf);
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
 #if DEBUGLVL >= 5
         printf("Returning converted GData [%ld,%ld], map 0x%p, buf 0x%p\n",
                recId, recId + numToConvert - 1, _rangeQuery->map, _gdataBuf);
@@ -1802,11 +1843,13 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
 	int recordsDrawn;
 	Boolean hasTAttrLink = _rangeQuery->callback->HasDerivedTable();
 	BooleanArray *drawnList;
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
                                            _gdataBuf, numToConvert,
 					   tmpRecs,
 					   hasTAttrLink, recordsDrawn,
 					   drawnList);
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) recId,
 	  (int) recId + tmpRecs - 1, (int) recId, (int) low + numToConvert - 1);
@@ -1824,6 +1867,7 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
         recId += tmpRecs;
         dbuf += tRecSize * tmpRecs;
     }
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
 }
 
 /* Distribute TData/GData to all queries that need it */
@@ -1835,6 +1879,9 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
 #if DEBUGLVL >= 5
     printf("DistributeData map %s, [%ld,%ld]\n", query->map->GetName(),
            startRid, startRid + numRecs - 1);
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
 #endif
   
     /* Set up params for QPRangeInserted() */
@@ -1869,12 +1916,17 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
             tempHigh = otherQ->high;
         if (tempHigh >= tempLow) {
             _rangeQuery = otherQ;
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
             otherQ->processed->Insert(tempLow, tempHigh, this, &drawTimedOut);
+  //printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));//TEMPTEMP
 	    if (drawTimedOut) break;
         }
     }
     
     _queries->DoneIterator(index);
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
+#endif
 }
 
 /*********************************************************
@@ -2201,6 +2253,9 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   printf("InitTdataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
 	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh,
 	 approx);
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
 #endif
 
   TData *tdata = map->GetPhysTData();

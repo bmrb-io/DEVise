@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/02/26 17:19:27  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.6  1998/02/26 00:19:30  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -774,6 +777,7 @@ int InitAttrList( void )
   while( pTemp1 != 0 )
   {
     pTemp2 = pTemp1->pNext;
+    free(pTemp1->pszName);
     free( pTemp1 );
     pTemp1 = pTemp2;
   }

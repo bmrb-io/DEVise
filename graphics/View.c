@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.139  1998/06/24 14:49:53  beyer
+  changed #ifdef 0 to #if 0
+
   Revision 1.138  1998/06/12 19:55:18  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -606,6 +609,9 @@
 //******************************************************************************
 
 #include <time.h>
+#if defined(DEBUG_MEM)
+#  include <unistd.h>
+#endif
 
 //#define DEBUG
 
@@ -1774,6 +1780,9 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
 {
 #if defined(DEBUG)
   printf("View(%s)::ReportQueryDone(%d, %d)\n", _name, bytes, aborted);
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
 #endif
 
   _bytes = bytes;
@@ -3258,6 +3267,9 @@ void	View::Run(void)
 {
 #if defined(DEBUG)
 	printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
+#endif
+#if defined(DEBUG_MEM)
+  printf("%s: %d; data seg size = %d\n", __FILE__, __LINE__, (int)sbrk(0));
 #endif
 
 	if (_refresh)

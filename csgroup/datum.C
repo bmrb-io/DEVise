@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/03 20:54:03  wenger
+  Fixed bad free in csgroup code; cleaned up (somewhat) the use of the
+  (highly-dangerous) ERROR macro.
+
   Revision 1.3  1998/02/26 20:35:11  taodb
   Removed ParaseAPI() interface, and added CommandObject interface
 
@@ -110,7 +114,7 @@ Datum::size() const {
 
 void
 Datum::set(char *bytearray, int size) {
-
+//TEMP -- lots of memory used here; at least some is leaked
 	delete [] dataval;
 
 	datasize = size;

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1998/06/28 21:48:53  beyer
+#  changed to implicit templates
+#
 #  Revision 1.28  1998/03/04 18:39:05  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -152,11 +155,20 @@ else
     endif
 endif
 
+
 ifeq ($(IMPLICIT_TEMPLATES),1)
     TEMPLATE_FLAGS =
 else
     TEMPLATE_FLAGS = -fno-implicit-templates
 endif
+
+
+DEBUG_FLAGS =
+ifeq ($(DEBUG_MEM),1)
+    DEBUG_FLAGS += -DDEBUG_MEM
+endif
+
+
 
 # Set up for profiling.
 ifneq ($(DEV_PROFILE),)
