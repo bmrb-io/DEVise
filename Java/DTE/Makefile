@@ -1,10 +1,12 @@
 DEBUG=-g -deprecation
 CLASSES = Classes
 #PACKAGE=Util
-CLASSPATH=/s/java/lib/classes.zip:../$(CLASSES)
+#CLASSPATH=/s/java/lib/classes.zip:../$(CLASSES)
 
 SRC=DTE_Type.java \
     Iterator.java
+
+PACKAGES = Types Iterators Expressions NameToIdMaps DataSources
 
 .SUFFIXES: .java.class 
 
@@ -12,7 +14,7 @@ SRC=DTE_Type.java \
 #	javac $<
 
 all:
-	javac FileScanIteratorTest.java */*.java -d $(CLASSES)
+	javac FileScanIteratorTest.java -d $(CLASSES)
 
 doc:
-	javadoc Types Iterators -d Doc
+	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/
