@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  2000/04/07 17:36:01  wenger
+  String file path in session file is specified with $DEVISE_SESSION.
+
   Revision 1.25  2000/03/14 17:05:10  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -170,6 +173,11 @@ extern int writen(int fd, char *buf, int nbytes);
 enum fgets_result { fgets_invalid, fgets_ok, fgets_eof, fgets_bufoverflow,
   fgets_error };
 fgets_result nice_fgets(char *buf, int bufSize, FILE *fp);
+
+// "Friendly" wrapper around strncpy -- ensures that the destination
+// string is always null-terminated.  Returns StatusWarn if dest buffer
+// is too short to hold entire src string, StatusFailed if other problems.
+DevStatus nice_strncpy(char *dest, const char *src, size_t destSize);
 
 /* Clear contents of directory */
 extern void ClearDir(char *dir);

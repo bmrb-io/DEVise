@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  2000/04/20 16:10:12  wenger
+  Improved RemoveEnvFromPath() function.
+
   Revision 1.37  2000/04/18 16:13:27  wenger
   Environment variables can now be used in data source definitions;
   $DEVISE_DAT and $DEVISE_SCHEMA are added to new definitions as appropriate.
@@ -591,6 +594,37 @@ nice_fgets(char *buf, int bufSize, FILE *fp)
   StripTrailingNewline(buf);
 
   return result;
+}
+
+DevStatus
+nice_strncpy(char *dest, const char *src, size_t destSize)
+{
+  DevStatus status(StatusOk);
+
+  if (src == NULL) {
+    reportErrNosys("NULL src buffer");
+    status += StatusFailed;
+  } else if (dest == NULL) {
+    reportErrNosys("NULL dest buffer");
+    status += StatusFailed;
+  } else if (destSize == 0) {
+    reportErrNosys("Zero-size dest buffer");
+    status += StatusFailed;
+  } else {
+    int index = 0;
+    while (src[index] != '\0' && index < (int)destSize - 1) {
+      dest[index] = src[index];
+      index++;
+    }
+    dest[index] = '\0';
+
+    if (src[index] != '\0') {
+      reportErrNosys("Dest buffer too short");
+      status += StatusWarn;
+    }
+  }
+
+  return status;
 }
 
 void

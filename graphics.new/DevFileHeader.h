@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/01/13 23:07:05  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.7  1999/12/06 18:41:04  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -79,16 +82,31 @@
 #define FILE_TYPE_LINKDESC	"linkDesc"
 #define FILE_TYPE_DEBUGLOG	"debugLog"
 #define FILE_TYPE_CMDLOG	"commandLog"
-
+#define FILE_TYPE_JSCMDCACHE	"javaScreenCmdCache"
 
 class DevFileHeader
 {
 public:
+    // Get the string that's the file header for the given file type.
     static char *Get(const char *fileType);
+
+    struct Info {
+        static const int bufSize = 64;
+        char fileType[bufSize];
+        char fileDate[bufSize];
+        char deviseVersion[bufSize];
+        char deviseDate[bufSize];
+    };
+    // Get the header info from a file.
+    static DevStatus Read(FILE *file, Info &info);
+
     //static DevStatus Write();
-    //static DevStatus Read();
     //static DevStatus Parse();
     //static DevStatus Skip();
+
+protected:
+    static DevStatus GetInfo(FILE *file, const char *prefix, char *infoBuf,
+      int infoBufSize);
 };
 
 

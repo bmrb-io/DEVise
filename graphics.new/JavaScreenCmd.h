@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  2000/04/06 17:53:47  wenger
+  Minor changes for setup on Eldon's laptop.
+
   Revision 1.34  2000/03/28 21:46:25  wenger
   Started implementation of caching commands, GIFs, and GData to speed up
   session opening.
@@ -261,12 +264,14 @@ class JavaScreenCmd
 
 		static Boolean	_postponeCursorCmds;
 
-		Boolean			_recording;
+		Boolean			_recording;	// true iff recording commands and data
 		DevStatus		_recordingStatus;
 		char *			_commandFileName;
 		FILE *			_commandFile;
 		char *			_dataFileName;
 		int				_dataFile;
+
+		Boolean 		_playingBack; // true iff playing back commands and data
 
 		// JavaScreen->Server Requests
 		void GetSessionList();
@@ -312,6 +317,9 @@ class JavaScreenCmd
 		void EraseChangedCursors();
 		void DrawChangedCursors();
 
+		DevStatus StartPlayingBack(const char *sessionFile);
+		DevStatus SendCmd(const char* cmd);
+		DevStatus StopPlayingBack();
 		DevStatus StartRecording(const char *sessionFile);
 		DevStatus StopRecording();
 		DevStatus OpenCacheFiles(const char *sessionFile, Boolean
@@ -319,7 +327,9 @@ class JavaScreenCmd
         DevStatus CloseCacheFiles(Boolean deleteFiles);
 
 	protected:
-		static void DrawCursor(View *view, DeviseCursor *cursor);
+		//TEMPTEMP -- is this the right way to return value?
+		static void DrawCursor(View *view, DeviseCursor *cursor,
+		  JavaScreenCmd *jsc = NULL);
 		static void EraseCursor(View *view, DeviseCursor *cursor);
 };
 

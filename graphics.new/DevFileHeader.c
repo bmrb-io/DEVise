@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  2000/01/13 23:07:04  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.6  1999/12/06 18:41:04  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -59,6 +62,7 @@
 #include "Util.h"
 #include "DevError.h"
 
+//#define DEBUG
 
 /*
  * Static global variables.
@@ -67,15 +71,21 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *_startHeaderPref = "# DEVise startHeader";
+static const char *_fileTypePref = "# file type: ";
+static const char *_fileDatePref = "# file date: ";
+static const char *_deviseVersionPref = "# DEVise version: ";
+static const char *_deviseDatePref = "# DEVise date: ";
+static const char *_endHeaderPref = "# DEVise endHeader";
 
-/*------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------
  * function: DevFileHeader::Get
  * Get the DEVise file header for the given file type.
  */
 char *
 DevFileHeader::Get(const char *fileType)
 {
+	//TEMP -- not reentrant
 	static char		headerBuf[1024];
 
 	// Make sure the file type is legal.
@@ -95,7 +105,8 @@ DevFileHeader::Get(const char *fileType)
 		!strcmp(fileType, FILE_TYPE_SESSIONDESCP) ||
 		!strcmp(fileType, FILE_TYPE_LINKDESC) ||
 		!strcmp(fileType, FILE_TYPE_DEBUGLOG) ||
-		!strcmp(fileType, FILE_TYPE_CMDLOG))
+		!strcmp(fileType, FILE_TYPE_CMDLOG) ||
+		!strcmp(fileType, FILE_TYPE_JSCMDCACHE))
 	{
 		// File type is legal.
 	}
@@ -119,15 +130,90 @@ DevFileHeader::Get(const char *fileType)
 	const char *	date = DateString(tm);
 
 	sprintf(headerBuf,
-		"# DEVise startHeader\n"
-		"# file type: %s\n"
-		"# file date: %s\n"
-		"# DEVise version: %s\n"
-		"# DEVise date: %s\n"
-		"# DEVise endHeader\n",
-		fileType, date, version, devDate);
+		"%s\n" // start header
+		"%s%s\n" // file type
+		"%s%s\n" // file date
+		"%s%s\n" // devise version
+		"%s%s\n" // devise date
+		"%s\n", // end header
+		_startHeaderPref, _fileTypePref, fileType, _fileDatePref, date,
+		_deviseVersionPref, version, _deviseDatePref, devDate,
+		_endHeaderPref);
 
 	return headerBuf;
+}
+
+/*----------------------------------------------------------------------------
+ * function: DevFileHeader::Read
+ * Read the header info from the given file.
+ */
+DevStatus
+DevFileHeader::Read(FILE *file, Info &info)
+{
+    DevStatus result(StatusOk);
+
+    info.fileType[0] = '\0';
+    info.fileDate[0] = '\0';
+    info.deviseVersion[0] = '\0';
+    info.deviseDate[0] = '\0';
+
+    if (result.IsComplete()) result += GetInfo(file, _startHeaderPref, NULL,
+	  0);
+    if (result.IsComplete()) result += GetInfo(file, _fileTypePref,
+	  info.fileType, info.bufSize);
+    if (result.IsComplete()) result += GetInfo(file, _fileDatePref,
+	  info.fileDate, info.bufSize);
+    if (result.IsComplete()) result += GetInfo(file, _deviseVersionPref,
+	  info.deviseVersion, info.bufSize);
+    if (result.IsComplete()) result += GetInfo(file, _deviseDatePref,
+	  info.deviseDate, info.bufSize);
+    if (result.IsComplete()) result += GetInfo(file, _endHeaderPref, NULL, 0);
+
+    if (!result.IsComplete()) {
+	    rewind(file);
+	}
+
+	return result;
+}
+
+/*----------------------------------------------------------------------------
+ * function: DevFileHeader::GetInfo
+ * Get the info with the given prefix from the given file.
+ */
+DevStatus
+DevFileHeader::GetInfo(FILE *file, const char *prefix, char *infoBuf, 
+  int infoBufSize)
+{
+#if defined(DEBUG)
+    printf("DevFileHeader::GetInfo(%s, 0x%p, %d)\n", prefix, infoBuf,
+	  infoBufSize);
+#endif
+
+    DevStatus result(StatusOk);
+
+	int prefixLen = strlen(prefix);
+	int lineBufSize = 1024;
+	char lineBuf[lineBufSize];
+	Boolean foundInfo = false;
+	while (!foundInfo &&
+	  (nice_fgets(lineBuf, lineBufSize, file) == fgets_ok)) {
+	    if (!strncmp(prefix, lineBuf, prefixLen)) {
+			if (infoBuf && infoBufSize > 0) {
+			    result += nice_strncpy(infoBuf, &lineBuf[prefixLen],
+				  infoBufSize);
+			}
+		    foundInfo = true;
+		}
+	}
+
+	if (!foundInfo) {
+		char errBuf[1024];
+		sprintf(errBuf, "Field %s not found in file", prefix);
+		reportErrNosys(errBuf);
+		result += StatusFailed;
+	}
+
+	return result;
 }
 
 /*============================================================================*/
