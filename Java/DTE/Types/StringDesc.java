@@ -3,7 +3,7 @@ package Types;
 import java.io.*;
 import Operators.*;
 
-public class IntDesc implements TypeDesc {
+public class StringDesc implements TypeDesc {
     static final String name = "string";
 
     public String getString( ) {
@@ -19,7 +19,7 @@ public class IntDesc implements TypeDesc {
         if ( opStr.equals("==") ) 
             return new StringEqualOp( );
 
-*/
+/*
         if ( opStr.equals("!=") ) 
             return new IntNotEqualOp( );
 
