@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/05/31 15:48:34  jussi
+#  Added DoSetLinkMaster and DoResetLinkMaster procedures.
+#
 #  Revision 1.7  1996/05/13 18:08:48  jussi
 #  Removed ProcessViewCreated and ProcessViewSelected procedures
 #  because they were empty and not used.
@@ -320,7 +323,7 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
 	set result [eval $cmd]
 	if {$result == ""} {
 	    dialog .copyError "Mapping Error" \
-		    "Can't create mapping." "" 0 OK
+		    "Cannot create mapping." "" 0 OK
 	    return
 	}
     }
@@ -361,9 +364,9 @@ proc DoViewRemove {} {
 
     # Remove view
     set ans [DEVise removeView $viewToRemove]
-    puts $ans
-    if {$ans != ""} {
-	dialog .removeError "Cannot Remove View" "" 0 OK
+    if {$ans != "done"} {
+	dialog .removeError "View Error" \
+		"Cannot Remove View." "" 0 OK
 	return
     }
 }
@@ -506,8 +509,8 @@ proc DoCursorCreate {} {
 
     set result [DEVise create cursor Cursor $name $flag]
     if {$result == ""} {
-	set but [ dialog .cursorError "CursorError" \
-		"Can't create cursor" "" 0 OK ]
+	set but [ dialog .cursorError "Cursor Error" \
+		"Cannot create cursor" "" 0 OK ]
 	return
     }
 
@@ -603,7 +606,7 @@ proc DoLinkCreate {} {
     set flag $dialogCkButVar(selected)
     set name $dialogCkButVar(entry)
     if {$name == ""} {
-	set but [dialog .noName "No Name" \
+	set but [dialog .noName "No Link Name" \
 		"No Link Name Specified" "" 0 OK]
 	return 
     }
@@ -852,8 +855,8 @@ proc DoActualCreateAxisLabel { type } {
     set cmd "DEVise create axisLabel $type $dialogParamVar(params)"
     set result [ eval $cmd ]
     if { $result == "" } {
-	set but [ dialog .axisError "AxisError" \
-		"Can't create axis" "" 0 OK ]
+	set but [ dialog .axisError "Axis Error" \
+		"Cannot create axis" "" 0 OK ]
 	return
     }
 
@@ -873,7 +876,7 @@ proc DoCreateAxisLabel {} {
 	return ""
     }
 
-    set answer [ dialogList .createAxis "CreateAxis"  \
+    set answer [ dialogList .createAxis "Create Axis"  \
 	    "Select type of axis label to create" "" "" \
 	    { Cancel Ok } $axisTypes ]
     if { $answer == 0 || $dialogListVar(selected) == "" } {
@@ -938,8 +941,8 @@ proc DoActualCreateAction { type } {
     set cmd "DEVise create action $type $dialogParamVar(params)"
     set result [eval $cmd ]
     if { $result == "" } {
-	set but [ dialog .actionError "ActionError" \
-		"Can't create action" "" 0 OK ]
+	set but [ dialog .actionError "Action Error" \
+		"Cannot create action" "" 0 OK ]
 	return
     }
     return $result
@@ -951,7 +954,7 @@ proc DoActualCreateAction { type } {
 proc DoCreateAction {} {
     global dialogListVar
     set actionTypes [ DEVise get action]
-    set answer [ dialogList .createAction "CreateAction"  \
+    set answer [ dialogList .createAction "Create Action"  \
 	    "Select type of action to create" "" "" { Cancel Ok } $actionTypes]
     if { $answer == 0 || $dialogListVar(selected) == "" } {
 	return
