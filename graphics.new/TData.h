@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.11  1996/12/03 20:32:09  jussi
+   Improved Init/Get/Done interface.
+
    Revision 1.10  1996/11/23 21:14:22  jussi
    Removed failing support for variable-sized records.
 
@@ -88,12 +91,22 @@ class ReleaseMemoryCallback {
 
 class TDataRequest {
   public:
+    TDataRequest() {
+        nextId = endId = 0;
+        relcb = NULL;
+        iohandle = lastChunkBytes = 0;
+        pipeFlushed = true;
+        lastChunk = lastOrigChunk = NULL;
+    }
+
     Boolean IsDirectIO() { return (iohandle == 0); }
+    Boolean IsActiveIO() { return (iohandle >= 0); }
 
     RecId nextId;                       // next record to return in GetRecs()
     RecId endId;                        // where current GetRecs() should end
     ReleaseMemoryCallback *relcb;       // callback to release pipe memory
     int iohandle;                       // handle for data source I/O
+    Boolean pipeFlushed;                // true if pipe flushed of data
 
     char *lastChunk;                    // beginning of unused pipe data chunk
     char *lastOrigChunk;                // beginning of pipe data chunk
@@ -153,7 +166,7 @@ class TData {
     virtual void InvalidateTData();
 
     /* Get name */
-    char *GetName() { return _name; }
+    virtual char *GetName() { return _name; }
 
     /* convert RecId into index */
     virtual void GetIndex(RecId id, int *&indices) = 0;
