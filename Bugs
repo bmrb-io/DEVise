@@ -911,6 +911,10 @@ Num Date        Status  Description
 226 09/15/97	OPEN	The user should be able to set the title font from
 			the 'Set View Title' dialog. (ml/rkw)
 
+227 09/22/97	OPEN	Select a Table to display, but then cancel in
+			Define Visualization dialog -> DEVise core dumps on
+			exit.  (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
