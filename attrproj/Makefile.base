@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1996/11/23 21:35:51  jussi
+#  Added -I../../DTE/Core which seemed to be missing.
+#
 #  Revision 1.26  1996/11/22 21:15:58  flisakow
 #  An example of how to use the new Sequential (no index) TData class.
 #  You need to set USE_SEQ to "yes" in the Makefile to build to the
@@ -61,7 +64,7 @@
 include ../../Makefile.common
 
 # Should we use the sequential stuff (no indexes)
-USE_SEQ = no
+USE_SEQ = yes
 
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
 	-I../../graphics.new -I../../tape -I../../DTE -I../../DTE/Core \
@@ -147,7 +150,9 @@ APTEST = $(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
 aptest: $(ALLTESTOBJ) $(LIB)
 	$(APTEST) $(ARCH_LDPOST)
 
-aptest2: $(ALLTESTOBJ) $(LIB)
+# Note: ApParseCat.o, etc. are included in the dependencies solely so that they
+# are always compiled, so that devread and DTE will compile.  RKW 11/25/96.
+aptest2: $(ALLTESTOBJ) $(LIB) ApParseCat.o TDataAscii.o TDataAsciiInterp.o
 	$(APTEST) $(ARCH_LDPOST)
 
 aptest.pure: $(ALLTESTOBJ) $(LIB)

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/22 20:41:15  flisakow
+  Made variants of the TDataAscii classes for sequential access,
+  which build no indexes.
+
+  ReadRec() method now returns a status instead of void for every
+  class that has the method.
+
 */
 
 /* Textual data virtual base class */
@@ -84,10 +91,9 @@ public:
 		startRid : starting record ID of this batch 
 		numRecs: number of records.
 		dataSize: # of bytes taken up by data.
-		recPtrs: pointer to records for variable size records.
 	**************************************************************/
 	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-		int &numRecs, int &dataSize, void **recPtrs);
+		int &numRecs, int &dataSize);
 
 	virtual void DoneGetRecs() {}
 

@@ -15,7 +15,14 @@
 /*
   $Id$
 
-  $Log$ 
+  $Log$
+  Revision 1.2  1996/11/22 20:41:14  flisakow
+  Made variants of the TDataAscii classes for sequential access,
+  which build no indexes.
+
+  ReadRec() method now returns a status instead of void for every
+  class that has the method.
+ 
 */
 
 //#define DEBUG
@@ -164,8 +171,7 @@ void TDataSeqAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
 }
 
 Boolean TDataSeqAscii::GetRecs(void *buf, int bufSize, 
-			    RecId &startRid,int &numRecs, int &dataSize,
-			    void **recPtrs)
+			    RecId &startRid,int &numRecs, int &dataSize)
 {
 #ifdef DEBUG
   printf("TDataSeqAscii::GetRecs buf = 0x%p\n", buf);

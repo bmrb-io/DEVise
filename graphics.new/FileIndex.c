@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/11/18 22:51:04  jussi
+  Improved the way the index array is allocated and reallocated.
+
   Revision 1.3  1996/10/08 21:49:08  wenger
   ClassDir now checks for duplicate instance names; fixed bug 047
   (problem with FileIndex class); fixed various other bugs.
@@ -101,7 +104,7 @@ FileIndex::~FileIndex()
 OffsetType
 FileIndex::Get(RecId recId)
 {
-  DO_DEBUG(printf("FileIndex::Get()\n"));
+  DO_DEBUG(printf("FileIndex::Get(%ld)\n", recId));
 
   DOASSERT((int) recId <= _highestValidIndex, "Illegal record ID");
 
