@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/10 18:45:32  jussi
+  Removed bugs and improved code.
+
   Revision 1.4  1995/12/22 20:00:34  jussi
   Fixed time zone item in tm structure.
 
@@ -130,7 +133,7 @@ static char *monthNames[12] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
 static int GetMonth(char *month)
 {
   static int monthHint = -1;
-  if (monthHint >= 0 && !strcmp(monthNames[monthHint], month) == 0)
+  if (monthHint >= 0 && !strcmp(monthNames[monthHint], month))
     return monthHint;
 
   for(int i = 0; i < 12; i++) {
