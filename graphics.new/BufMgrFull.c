@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/12 04:01:02  jussi
+  Clenaed up the code.
+
   Revision 1.8  1996/06/27 15:47:16  jussi
   Replaced method ClearGData() with ClearTData() which allows both
   TData and GData (which derives from TData) to be cleared.
@@ -144,6 +147,10 @@ Boolean BufMgrFull::GetNextRangeInMem(RangeInfo *&rangeInfo)
             /* found one */
             rangeInfo = _nextRangeInMem;
             _nextRangeInMem = _nextRangeInMem->next;
+#if defined(DEBUG)
+	    printf("BufMgrFull found range in memory (%ld, %ld)\n", 
+		   curLow, curHigh);
+#endif
             return true;
         }
         
@@ -294,11 +301,20 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                     /* no more to scan */
                     done = true;
                     _gScanState = GScanDoneState;
+#ifdef DEBUG
+		    printf("BufMgrFull::GDataScan no more ranges (%ld,%ld) (%ld,%ld)\n",
+			   _gScanLow, _gScanHigh, _lowId, _highId);
+#endif
                     return false;
                 }
-                if (_gScanHigh < _lowId)
+                if (_gScanHigh < _lowId) {
                     /* try next one */
+#ifdef DEBUG
+		    printf("BufMgrFull::GDataScan skipping range (%ld,%ld) (%ld,%ld)\n",
+			   _gScanLow, _gScanHigh, _lowId, _highId);
+#endif
                     continue;
+		}
                 
                 /* truncate [_gScanLow,_gScanHigh] to fit inside
                    [_lowId, _highId] */
@@ -309,6 +325,10 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                 
                 _gScanCur = _gScanLow;
                 _gScanState= CheckOverlapState;
+#ifdef DEBUG
+		printf("BufMgrFull::GDataScan moving on to CheckOverlap (%ld,%ld) (%ld,%ld) %ld\n",
+		       _gScanLow, _gScanHigh, _lowId, _highId, _gScanCur);
+#endif
             }
             break;
             
@@ -319,6 +339,10 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                 Boolean noHigh = _recRange->NextUnprocessed(_gScanCur,
                                                             processLow,
                                                             processHigh);
+#if defined(DEBUG)
+		printf("NextUnprocessed: (%ld, %ld) (%ld, %ld)\n",
+		       processLow, processHigh, _gScanLow, _gScanHigh);
+#endif
                 
                 if (processLow > _gScanHigh) {
                     /* [_gScanLow,_gScanHigh] already scanned */
@@ -335,6 +359,11 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                                      processLow, processHigh);
                 _gScanCur = processHigh+1;
                 _gScanState = GScanState;
+#if defined(DEBUG)
+		printf("moving on to GScanState: (%ld, %ld) (%ld, %ld) %ld\n",
+		       processLow, processHigh, _gScanLow, _gScanHigh,
+		       _gScanCur);
+#endif
             }
             break;
             
@@ -342,6 +371,10 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
             /* Get next range in memory */
             if (GetRangeNotInMem(rangeInfo)) {
                 /* Got the next range of buffer */
+#if defined(DEBUG)
+		printf("found range: (%ld, %ld) (%ld, %ld) %ld\n",
+		       _lowId, _highId, _gScanLow, _gScanHigh, _gScanCur);
+#endif
                 CalcRetArgs(false, false, _gdata, rangeInfo, _lowId,
                             _highId, buf, startRecId, numRecs);
                 SetUse(rangeInfo);
@@ -353,6 +386,10 @@ Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf)
                    */
                 DoneGetRangeNotInMem();
                 _gScanState = CheckOverlapState;
+#if defined(DEBUG)
+		printf("moving back to CheckOverlap: (%ld, %ld) %ld\n",
+		       _gScanLow, _gScanHigh, _gScanCur);
+#endif
             }
             break;
             
@@ -383,15 +420,27 @@ Boolean BufMgrFull::TDataScan(RecId &startRecId, int &numRecs, void *&buf)
     Boolean done = false;
     RecId rangeLow, rangeHigh;
     RangeInfo *rangeInfo;
-    
+
+#if defined(DEBUG)
+    printf("BufMgrFull::TDataScan(%ld, %d, 0x%p)\n", startRecId, numRecs, buf);
+#endif    
     while (!done) {
         if (_getTRange) {
             /* Get next tdata range */
             Boolean noHighId = _recRange->NextUnprocessed(_tScanId,rangeLow,
                                                           rangeHigh);
-            if (rangeLow > _highId)
+#if defined(DEBUG)
+	    printf("BufMgrFull::TDataScan NextUnprocessed (%ld, %ld)\n",
+		   rangeLow, rangeHigh);
+#endif    
+            if (rangeLow > _highId) {
                 /* done */
+#if defined(DEBUG)
+		printf("BufMgrFull::TDataScan done (%ld, %ld)\n",
+		       _lowId, _highId);
+#endif    
                 return false;
+	    }
             
             /* Adjust rangeHigh to fit whitin boundary.
                XXX: in the case where [rangeLow,rangeHigh] is smaller than
@@ -411,16 +460,27 @@ Boolean BufMgrFull::TDataScan(RecId &startRecId, int &numRecs, void *&buf)
             _tScanId = rangeHigh + 1; /* update */
             InitGetRangeNotInMem(_tdata,_tRangeList,rangeLow, rangeHigh);
             _getTRange = false;
+#if defined(DEBUG)
+	    printf("BufMgrFull::TDataScan adjusted range (%ld, %ld)\n",
+		   rangeLow, rangeHigh);
+#endif    
         }
         
         if (GetRangeNotInMem(rangeInfo)) {
             CalcRetArgs(true, false, _tdata, rangeInfo, _lowId, _highId,
                         buf, startRecId, numRecs);
             SetUse(rangeInfo);
+#if defined(DEBUG)
+	    printf("BufMgrFull::TDataScan NotInMem (%ld, %ld)\n",
+		   _lowId, _highId);
+#endif    
             return true;
         } else {
             DoneGetRangeNotInMem();
             _getTRange = true;
+#if defined(DEBUG)
+	    printf("BufMgrFull::TDataScan go back for more\n");
+#endif    
         }
     }
     
@@ -816,7 +876,7 @@ Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
     
     DOASSERT(stat, "Invalid status");
 
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Got recs %ld,%ld\n", startRid, startRid + numRecs - 1);
 #endif
 
@@ -826,7 +886,7 @@ Boolean BufMgrFull::GetRangeNotInMem(RangeInfo *&retRangeInfo)
     
     if (_rangeN->bufSize - BufSize(dataSize) >= BUFMGR_FULL_PAGESIZE) {
         /* truncate range */
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("GetRangeNotInMem: truncate %d bytes\n", BufSize(dataSize));
 #endif
         retRangeInfo = _rangeAlloc->Truncate(_rangeN, BufSize(dataSize));
