@@ -15,11 +15,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.9  1995/11/20 22:38:49  jussi
+#	Tape offset received from calling program.
+#
 #	Revision 1.8  1995/11/17 04:41:23  ravim
 #	Changed size of window.
 #
 #	Revision 1.7  1995/11/17 03:58:24  ravim
-#	New form of index file. Also displays cusip number for uniformity with CRSP.
+#	New form of index file. Also displays cusip number for
+#	uniformity with CRSP.
 #
 #	Revision 1.6  1995/11/10 21:56:12  jussi
 #	Minor fix.
@@ -103,7 +107,7 @@ proc cstat_setupFirmList {flist} {
     frame $flist -relief groove -borderwidth 2
     listbox $flist.list -relief raised -borderwidth 2 \
 	    -yscrollcommand "$flist.scroll set" -font 9x15 \
-	    -selectmode extended
+	    -selectmode extended -width 54 -height 30
     scrollbar $flist.scroll -command "$flist.list yview"
     label $flist.msg -text "Database has 0 companies."
     pack $flist.msg -side top -pady 3m
@@ -206,10 +210,8 @@ proc cstatMain {} {
     set cstat_selection ""
 
     toplevel .cstat
-    wm minsize .cstat 530 400
-    wm maxsize .cstat 530 1000
     wm title .cstat "Select Name from Compustat Database"
-    wm geometry .cstat =530x650+50+50
+    wm geometry .cstat +50+50
     selection clear .cstat
 
     frame .cstat.firms -relief groove -borderwidth 2

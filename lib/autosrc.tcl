@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1995/11/15 22:12:09  jussi
+#	Initial revision.
+#
 
 ############################################################
 
@@ -32,15 +35,13 @@ proc autoSourceAdd {source} {
 
     toplevel .autosrc
     wm title .autosrc "Add Data Streams"
-    wm minsize .autosrc 100 100
-    wm maxsize .autosrc 800 600
-    wm geometry .autosrc =600x150+150+150
+    wm geometry .autosrc +150+150
     selection clear .autosrc
 
     frame .autosrc.top -relief groove -borderwidth 2
     frame .autosrc.bot
-    pack .autosrc.top -side top -pady 3m -fill both -expand 1
-    pack .autosrc.bot -side top -pady 3m -fill x
+    pack .autosrc.top -side top -pady 5m -fill both -expand 1
+    pack .autosrc.bot -side top -pady 5m -fill x
     frame .autosrc.bot.but
     pack .autosrc.bot.but -side top
 
@@ -55,7 +56,7 @@ proc autoSourceAdd {source} {
     entry .autosrc.top.e3 -relief sunken -textvariable other -width 10
     pack .autosrc.top.l1 .autosrc.top.e1 .autosrc.top.l2 .autosrc.top.e2 \
 	     .autosrc.top.l3 .autosrc.top.e3 -side left -padx 2m \
-	     -fill x -expand 1
+	     -pady 5m -fill x -expand 1
 
     button .autosrc.bot.but.add -text "Find and Add" -width 15 -command {
 	autoSourceAddCRSP $name $cusip $other

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1995/11/20 22:40:16  jussi
+#	Base tape offset now received from calling program.
+#
 #	Revision 1.5  1995/11/15 19:16:15  ravim
 #	Changed old references to cstat* to crsp*.
 #
@@ -94,7 +97,7 @@ proc crsp_setupFirmList {flist} {
     frame $flist -relief groove -borderwidth 2
     listbox $flist.list -relief raised -borderwidth 2 \
 	    -yscrollcommand "$flist.scroll set" -font 9x15 \
-	    -selectmode single
+	    -selectmode single -width 53 -height 30
     scrollbar $flist.scroll -command "$flist.list yview"
     label $flist.msg -text "Database has 0 securities."
     pack $flist.msg -side top -pady 3m
@@ -196,10 +199,8 @@ proc crspMain {} {
     set crsp_selection ""
 
     toplevel .crsp
-    wm minsize .crsp 515 400
-    wm maxsize .crsp 515 1000
     wm title .crsp "Select Security from CRSP Database"
-    wm geometry .crsp =515x650+50+50
+    wm geometry .crsp +50+50
     selection clear .crsp
 
     frame .crsp.firms -relief groove -borderwidth 2

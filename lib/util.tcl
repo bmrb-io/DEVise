@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/11/28 16:58:25  jussi
+#  Added capability to store window images in a user specified file
+#  instead of printing it.
+#
 # Revision 1.1  1995/11/28  00:02:52  jussi
 # Initial revision.
 #
@@ -30,9 +34,7 @@ proc PrintView {} {
 
     toplevel .printdef
     wm title .printdef "Print View"
-    wm minsize .printdef 200 100
-    wm maxsize .printdef 800 600
-    wm geometry .printdef =500x200+150+150
+    wm geometry .printdef +150+150
     selection clear .printdef
     
     set toprinter 1

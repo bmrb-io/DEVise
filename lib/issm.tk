@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.8  1995/11/20 22:37:48  jussi
+#	Tape offset received from calling program.
+#
 #	Revision 1.7  1995/11/10 21:56:18  jussi
 #	Minor fix.
 #
@@ -128,7 +131,7 @@ proc issm_setupFirmList {flist} {
     frame $flist -relief groove -borderwidth 2
     listbox $flist.list -relief raised -borderwidth 2 \
 	    -yscrollcommand "$flist.scroll set" -font 9x15 \
-	    -selectmode single
+	    -selectmode single -width 52 -height 30
     scrollbar $flist.scroll -command "$flist.list yview"
     label $flist.msg -text "Database has 0 stocks."
     pack $flist.msg -side top -pady 3m
@@ -231,7 +234,7 @@ proc issmMain {} {
     wm minsize .issm 505 400
     wm maxsize .issm 505 1000
     wm title .issm "Select Stock Symbol from ISSM Database"
-    wm geometry .issm =505x650+50+50
+    wm geometry .issm +50+50
     selection clear .issm
 
     frame .issm.firms -relief groove -borderwidth 2
