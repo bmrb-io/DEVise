@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  1996/11/20 16:49:56  jussi
+  Added AbortQuery() and removed AbortAndReexecute().
+
   Revision 1.84  1996/11/18 23:11:19  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -819,6 +822,10 @@ void View::GetLabelArea(int &x, int &y, int &width, int &height)
     width = 1;
   if (height < 0)
     height = 1;
+
+#if defined(DEBUG)
+  printf("View::GetLabelArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+#endif
 }
 
 /********************************************************************
@@ -868,6 +875,10 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
     width = 1;
   if (height < 0)
     height = 1;
+
+#if defined(DEBUG)
+  printf("View::GetXAxisArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+#endif
 }
 
 /********************************************************************
@@ -909,6 +920,10 @@ void View::GetYAxisArea(int &x, int &y, int &width, int &height)
     width = 1;
   if (height <= 0)
     height = 1;
+
+#if defined(DEBUG)
+  printf("View::GetYAxisArea %s %d %d %d %d\n", GetName(), x, y, width, height);
+#endif
 }
 
 void View::GetDataArea(int &x, int &y, int &width,int &height)
@@ -933,8 +948,9 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     height = winHeight - _label.extent;
   } else {
     /* _label occupies left of view */
-    x += _label.extent;
-    width = winWidth - _label.extent;
+    /* Have to add in two pixels here for some reason.  RKW 11/19/96. */
+    x += _label.extent + 2;
+    width = winWidth - (_label.extent + 2);
     height = winHeight;
   }
   
@@ -1005,6 +1021,9 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 void View::DrawLabel()
 {
   WindowRep *win = GetWindowRep();
+
+  win->PushTop();
+  win->MakeIdentity();
   
   if (_label.occupyTop) {
     /* draw label */
@@ -1032,6 +1051,8 @@ void View::DrawLabel()
     win->AbsoluteLine(x, y, x + _label.extent - 1, y + _label.extent - 1, 1);
     win->AbsoluteLine(x + _label.extent - 1, y, x, y + _label.extent - 1, 1);
   }
+
+  win->PopTransform();
 }
 
 void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
@@ -1838,24 +1859,30 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
 {
   delete _label.name;
 
-  if (name) {
-    _label.name = CopyString(name);
-  } else
-    _label.name = 0;
+  /* CopyString() now handles NULL okay. */
+  _label.name = CopyString(name);
 
+  if (!_label.name) {
+    occupyTop = false;
+  }
+
+  Boolean oldOccupyTop = _label.occupyTop;
   _label.occupyTop = occupyTop;
   _label.extent = extent;
 
-  // when title is supposed to appear on the left side of the view,
-  // it doesn't actually appear at all; therefore when there's no
-  // title we force it to go to the left
+  /* If we're just changing the label string, not whether or not we
+   * have a label, we can just re-draw the label.  Otherwise, we have
+   * to re-draw the whole view. */
+  if (occupyTop == oldOccupyTop) {
+    if (_windowRep) {
+      DrawLabel();
+      _windowRep->Flush();
+    }
+  } else {
+    _updateTransform = true;
 
-  if (!_label.name)
-    occupyTop = false;
-
-  _updateTransform = true;
-
-  Refresh();
+    Refresh();
+  }
 }
 
 void View::XAxisDisplayOnOff(Boolean stat)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/09/05 21:31:12  jussi
+  Moved DestroySessionData to Control.c.
+
   Revision 1.16  1996/08/29 22:00:50  guangshu
   Added functions OpenDataChannel and getFd for DEVise Server to open
   data channel and get the fd of that socket.
@@ -226,7 +229,7 @@ protected:
 
   /* display symbols or connectors */
   void DoDisplaySymbols(Boolean state) {}
-  void DoDisplayConnectors(Boolean stat) {}
+  void DoDisplayConnectors(Boolean state) {}
 
   /* display/not display axes for current view. */
   void DoDisplayCurrentAxes(Boolean stat) {}

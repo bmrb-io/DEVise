@@ -2,19 +2,21 @@
 # Makefile for all components of DEVise
 #
 
-MODULES = graphics graphics.new tape issm compustat crsp parser \
-	attrproj devread DTE generic multi
-
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
 	attrproj devread DTE 
+
+MODULES = $(LIBMODULES) parser generic multi
+
+.PHONY: clean mostlyclean date libs generic devise multi attrproj devread
 
 all clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
 
-libs:
-	for i in $(LIBMODULES); do echo -- $$i; cd $$i; make all; cd ..; done
+date:
+	cd generic; make CompDate.o
 
-.PHONY: generic devise multi attrproj devread
+libs: date
+	for i in $(LIBMODULES); do echo -- $$i; cd $$i; make all; cd ..; done
 
 generic: libs
 	cd generic; make generic; cd ..
@@ -36,4 +38,5 @@ pure: libs
 	
 static: libs
 	cd generic; make static; cd ..
+
 # DO NOT DELETE

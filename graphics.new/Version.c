@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/11/18 23:11:32  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.14  1996/10/23 14:57:13  wenger
   Renamed LandsendDateDiffComposite composite parser to
   MailorderDateDiffComposite as part of getting rid of the "Land's
@@ -100,7 +107,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.14";
+static const char *	version = "1.1.15";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

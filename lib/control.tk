@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.95  1996/11/20 16:49:16  jussi
+#	Changed display/layout mode control to be a button. Changed 'Working...'
+#	message to be a Stop button which aborts all queries.
+#
 #	Revision 1.94  1996/11/03 02:41:50  kmurli
 #	Modified to include the query schema level. Also modified to include DQL
 #	processing
@@ -1054,7 +1058,7 @@ proc DoClose {} {
 proc DoOpen { asTemplate } {
     global fsBox sessiondir restoring template sessionName errorInfo
 
-    if {[DEVise get tdata] != "" && ![DoClose]} {
+    if {[DEVise getWinCount] > 1 && ![DoClose]} {
 	# abort opening a new session
 	return
     }

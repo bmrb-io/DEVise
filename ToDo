@@ -6,8 +6,6 @@ ACTIVE
 ------
 Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
 
-Add true PostScript printing capability. (yi/rkw 7/9/96)
-
 
 HIGH PRIORITY
 -------------
@@ -16,6 +14,8 @@ Update examples on Devise web page. (ml/rkw 9/6/96)
 Composite parsers for dates should make sure the dates being converted
 are within the legal range of Unix dates; possible also check that the
 attribute being written to is of type 'date'. (rkw 9/25/96)
+
+Improve control of fonts. (ml/rkw 11/19/96)
 
 
 LOW PRIORITY
@@ -257,6 +257,12 @@ window. (ml/rkw 11/12/96)
 
 Upgrades to PostScript output (see graphics/PostScript.doc). (rkw 11/13/96)
 
+Try to eliminate all references to the 'LocalColor' type outside of the
+X-specific code. (rkw 11/19/96)
+
+If query window is open, it should be updated as you change other things.
+(ml/rkw 11/20/96)
+
 
 COMPLETED
 ---------
@@ -283,6 +289,8 @@ New composite parser for Soil Science (deal with YYDDD HHMM dates). (rkw)
 
 Make a script to easily do a release of Devise to the outside world.
 (rkw 8/14/96)
+
+Add true PostScript printing capability. (yi/rkw 7/9/96)
 
 
 CANCELLED

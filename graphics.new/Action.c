@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/08/07 20:11:41  wenger
+  Fixed various key event-related bugs (see Bugs file); changed
+  direction of camera movement for 3D to be more in agreement
+  with how panning works for 2D views.
+
   Revision 1.14  1996/08/04 21:12:41  beyer
   Added support for devise keys.
   Added 'h' key that changes histogram width.
@@ -90,6 +95,7 @@
 #include "Control.h"
 #include "ViewGraph.h"
 #include "DeviseKey.h"
+#include "GDataBin.h"  // for USE_CONNECTORS
 
 //#define DEBUG
 
@@ -327,16 +333,24 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   }
   case 'c':
   case 'C': {
+#if USE_CONNECTORS
     (void)view->DisplayConnectors(!connectorsOn);
     if (connectorsOn && !symbolsOn)
       (void)view->DisplaySymbols(true);
+#else
+    printf("Connectors currently disabled\n");
+#endif
     break;
   }
   case 's':
   case 'S': {
+#if USE_CONNECTORS
     (void)view->DisplaySymbols(!symbolsOn);
     if (!connectorsOn && symbolsOn)
       (void)view->DisplayConnectors(true);
+#else
+    printf("Connectors currently disabled\n");
+#endif
     break;
   }
   case 'h':

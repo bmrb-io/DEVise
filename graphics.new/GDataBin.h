@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/09/27 15:53:19  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.8  1996/07/19 17:24:40  jussi
   Added canElimRecords parameter to InsertSymbol().
 
@@ -52,6 +55,8 @@
 #include "VisualArg.h"
 #include "Transform.h"
 #include "RecId.h"
+
+#define USE_CONNECTORS 0
 
 class QueryCallback;
 class TData;

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/07 22:40:28  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.13  1996/09/27 21:09:36  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -73,7 +81,6 @@
 #include "Init.h"
 
 //#define DEBUG
-#define USE_CONNECTORS 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
 

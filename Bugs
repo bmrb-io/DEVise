@@ -143,7 +143,7 @@ Num Date        Status  Description
 045 10/07/96	FIXED   User can't enter a tab for a separator in the
 			schema editing window. (rkw)
 
-046 10/07/96	OPEN	Create a window with the same name as a data stream
+046 10/07/96	WORK	Create a window with the same name as a data stream
 			-> crash. (rkw)  (This is a consequence of bug 016.)
 			(Workaround implemented: ClassDir exits if a duplicate
 			name is added. rkw 10/15/96)
@@ -154,9 +154,11 @@ Num Date        Status  Description
 048 10/09/96	OPEN	Devise core dumps if data file named in catalog
 			does not exist. (rkw)
 
-049 10/11/96	OPEN	Load LandsEnd/a2_full.tk session -- DEVISE_TMP
+049 10/11/96	OPEN	Load MailOrder/a2_full.tk session -- DEVISE_TMP
 			directory gets huge amounts of stuff written to it.
 			(Running with '-convert 0' flag prevents this.) (rkw)
+			(Also, DEVise eventually crashes if the partition
+			gets filled up.)
 
 050 10/14/96	FIXED	Setting a GData attribute to recid does not work
 			correctly (if it's already set it's okay, but
@@ -200,13 +202,14 @@ Num Date        Status  Description
                         TData.h: int RecSize() somehow no longer virtual
                         as it should be. (jpm)
 
-062 11/08/96	OPEN	Don't ask whether you want to close a session when
+062 11/08/96	FIXED	Don't ask whether you want to close a session when
 			there is no session open (e.g., immediately after
 			starting devise). (ml/rkw)
 
-063 11/12/96	OPEN	Devise core dumps when trying to parse a schema
+063 11/12/96	WORK	Devise core dumps when trying to parse a schema
 			with a string attribute that's missing the length.
 			(rkw)
+			(Workaround: assertion fails.)
 
 064 11/14/96	OPEN	Load session test/miron_new.tk; pile the views in
 			DEViseWn1, and flip the pile -> the view is drawn
@@ -243,14 +246,25 @@ Num Date        Status  Description
 			views sometimes overdraws the X axis and is drawn
 			to the left of the Y axis. (rkw)
 
-072 11/19/96    OPEN    (With multi) Open test/multidemo2.tk, close it ->
+072 11/19/96	OPEN	(With multi) Open test/multidemo2.tk, close it ->
 			core dump (at least on HP and SPARC/Solaris). (rkw)
 
-073 11/19/96    OPEN    Hit connector key ('c') on a scatter plot ->
+073 11/19/96	FIXED	Hit connector key ('c') on a scatter plot ->
 			internal error. (ml/rkw)
+
+074 11/19/96	FIXED	Data in view shouldn't be redrawn when you change
+			the view title. (ml/rkw)
+
+075 11/19/96	FIXED	If there's no view title, the Y axis (if any) is
+			not displayed correctly. (rkw)
+
+076 11/20/96	OPEN	'Child windows should have been destroyed first' error
+			message (don't know exactly how to reproduce this).
+			(rr/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
+WORK = workaround for bug in place
 NB = not (really) a bug.
 CD = can't duplicate (reproduce).
 DUP = duplicate

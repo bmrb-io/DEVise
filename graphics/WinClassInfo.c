@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/11 02:58:20  jussi
+  Removed dependency on ControlPanel's WinName() method.
+
   Revision 1.7  1996/03/25 23:37:46  jussi
   Changed order in which geometry and absolute position are
   retrieved.
@@ -46,21 +49,29 @@
 
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80];
 
+int DevWindow::_windowCount = 0;
+
 TileLayoutInfo::TileLayoutInfo()
 {
   _name = NULL;
   _win = NULL;
+
+  DevWindow::_windowCount++;
 }
 
 TileLayoutInfo::TileLayoutInfo(char *name, TileLayout *win)
 {
   _name = name;
   _win = win;
+
+  DevWindow::_windowCount++;
 }
 
 TileLayoutInfo::~TileLayoutInfo()
 {
   delete _win;
+
+  DevWindow::_windowCount--;
 }
 
 /* Get names of parameters */
@@ -95,6 +106,9 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
 
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
 {
+#if defined(DEBUG)
+  printf("TileLayoutInfo::CreateWithParams()\n");
+#endif
   if (argc != 5) {
     fprintf(stderr, "TileLayoutInfo::CreateWithParams wrong args %d\n",
 	    argc);

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/11/19 02:42:23  kmurli
+  Changed to include original importFileType parameters..This means that
+  the those using the importFileType with a single parameter cannot use
+  Query interface.
+
   Revision 1.35  1996/11/18 18:10:52  donjerko
   New files and changes to make DTE work with Devise
 
@@ -484,7 +489,10 @@ ParseAttr(
 		attrType = StringAttr;
 		if (numArgs < 4)
 		{
-			fprintf(stderr,"string attr needs length\n");
+			char buf[1024];
+			sprintf(buf, "string attr '%s' needs length", args[1]);
+			DOASSERT(0, buf);
+			fprintf(stderr, "%s", buf);
 			result = StatusFailed;
 			return result;
 		}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/11/19 20:21:08  jussi
+  Overlapping record elimination now done on for BAR shapes.
+
   Revision 1.43  1996/11/18 23:11:32  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -328,6 +331,10 @@ void TDataViewX::DerivedAbortQuery()
 
 Boolean TDataViewX::DisplaySymbols(Boolean state)
 { 
+#if defined(DEBUG)
+  printf("TDataViewX::DisplaySymbols(%d)\n", state);
+#endif
+
   if (state == _dispSymbols)
     return state;
 
@@ -346,6 +353,14 @@ Boolean TDataViewX::DisplaySymbols(Boolean state)
 
 Boolean TDataViewX::DisplayConnectors(Boolean state)
 { 
+#if defined(DEBUG)
+  printf("TDataViewX::DisplayConnectors(%d)\n", state);
+#endif
+
+#if !USE_CONNECTORS
+  return false;
+#endif
+
   if (state == _dispConnectors)
     return state;
 

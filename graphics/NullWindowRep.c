@@ -16,12 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/18 20:34:06  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.1  1996/07/10 16:40:39  jussi
   Initial revision.
 */
 
 #include "NullWindowRep.h"
 #include "NullDisplay.h"
+#include "DevError.h"
 #ifndef LIBCS
 #include "Init.h"
 #endif
@@ -76,7 +83,7 @@ NullWindowRep::~NullWindowRep()
   }
 
   if (_children.Size() > 0)
-    fprintf(stderr, "Child windows should have been destroyed first\n");
+    reportErrNosys("Child windows should have been destroyed first");
 }
 
 /******************************************************************

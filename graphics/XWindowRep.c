@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.74  1996/11/18 23:11:22  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.73  1996/11/13 16:56:21  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -588,7 +595,7 @@ XWindowRep::~XWindowRep()
   }
 
   if (_children.Size() > 0)
-    fprintf(stderr, "Child windows should have been destroyed first\n");
+    reportErrNosys("Child windows should have been destroyed first");
 }
 
 /******************************************************************

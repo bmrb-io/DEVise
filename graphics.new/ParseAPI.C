@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/11/20 16:50:33  jussi
+  Added abortQuery command.
+
   Revision 1.42  1996/11/19 02:42:20  kmurli
   Changed to include original importFileType parameters..This means that
   the those using the importFileType with a single parameter cannot use
@@ -210,6 +213,7 @@
 #include "Display.h"
 #include "TDataAscii.h"
 #include "DevError.h"
+#include "WinClassInfo.h"
 
 #define PURIFY 0
 
@@ -399,6 +403,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
 #endif
+
+    if (!strcmp(argv[0], "getWinCount")) {
+      char buf[100];
+      sprintf(buf, "%d", DevWindow::GetCount());
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
   }
 
   if (argc == 2) {
@@ -1872,6 +1883,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   fprintf(stderr, "Unrecognized command: %s\n", argv[0]);
+  fprintf(stderr, "argc = %d\n", argc);
   control->ReturnVal(API_NAK, "Unrecognized command");
   return -1;
 }

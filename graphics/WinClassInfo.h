@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/14 15:29:54  jussi
+  Replaced WinVertical and WinHorizontal with TileLayout which can
+  do both, depending on run-time, user-settable parameters.
+
   Revision 1.3  1995/12/02 21:26:48  jussi
   Added horizontal view layout and added copyright notice.
 
@@ -29,6 +33,16 @@
 #define WinClassInfo_h
 
 #include "ClassDir.h"
+
+class DevWindow {
+public:
+  static int GetCount() { return _windowCount; }
+
+protected:
+  friend class TileLayoutInfo;
+
+  static int _windowCount;
+};
 
 class TileLayout;
 
