@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/01/24 16:38:25  wenger
+  Fixed bugs 078, 103, 125; also improved X font handling (does a better
+  job of finding fonts).
+
   Revision 1.48  1997/01/17 20:31:49  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -323,6 +327,22 @@ void XDisplay::Register()
 }
 #endif
 
+void XDisplay::SetNormalFont()
+{
+#if defined(DEBUG)
+  printf("XDisplay::SetNormalFont()\n");
+#endif
+
+  if (_fontStruct != _normalFontStruct) {
+#if defined(DEBUG)
+    printf("Freeing font 0x%p\n", _fontStruct);
+#endif
+    XFreeFont(_display, _fontStruct);
+  }
+
+  _fontStruct = _normalFontStruct;
+}
+
 /* Set font and point size */
 
 void XDisplay::SetFont(char *family, char *weight, char *slant,
@@ -358,10 +378,10 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
             printf("Loaded font %s\n", fname);
 #endif
             if (oldFont && oldFont != _normalFontStruct) {
-#ifdef DEBUG
-                printf("Unloading font fid %ld\n", oldFont->fid);
+#if defined(DEBUG)
+                printf("Freeing font 0x%p\n", _fontStruct);
 #endif
-                XUnloadFont(_display, oldFont->fid);
+                XFreeFont(_display, oldFont);
             }
             return;
         }

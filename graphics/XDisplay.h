@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/12/15 20:22:35  wenger
+  Changed pointSize in SetFont() from tenths of points to points.
+
   Revision 1.25  1996/12/03 17:00:26  jussi
   Added SetFont() for generic font support. Removed SetSmallFont().
 
@@ -216,7 +219,7 @@ protected:
     XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
     void SetFont(char *family, char *weight, char *slant,
                  char *width, float pointSize);
-    void SetNormalFont() { _fontStruct = _normalFontStruct; }
+    void SetNormalFont();
 
     /* Get width and height of X window */
     void WinDimensions(Window win, Coord &winWidth, Coord &winHeight);

@@ -20,7 +20,7 @@ x- Histograms: Guangshun
 - Mapping: Kevin
 - Multi: Jussi
 x- Printing: Kent
-a- Purify Devise: Guangshun
+x- Purify Devise: Guangshun/Kent
 x- Stat (incl. statistical part of KGraph stuff): Guangshun
 x- TData (incl. schema parsing code and web sources): Kent
 x- Tk windows: Kent

@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:22  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include "VoidArray.h"
@@ -9,9 +12,22 @@
 
 /* constructor */
 VoidArray::VoidArray(int maxSize){
+#if defined(DEBUG)
+  printf("VoidArray::VoidArray(%d)\n", maxSize);
+#endif
+
 	_maxSize = maxSize;
-	_array = new void *[maxSize];
+	_array = new void *[maxSize];//TEMPTEMP leaked
 	_size = 0;
+}
+
+/* destructor */
+VoidArray::~VoidArray() {
+#if defined(DEBUG)
+  printf("VoidArray::~VoidArray()\n");
+#endif
+
+        delete _array;
 }
 
 /* Iterator */

@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:23  jussi
+  Added CVS header.
+*/
 
 #ifndef VoidArray_h
 #define VoidArray_h
@@ -11,6 +14,9 @@ class VoidArray {
 public:
 	/* constructor */
 	VoidArray(int maxSize);
+
+	/* destructor */
+	~VoidArray();
 
 	/* Clear so array has no element */
 	void Clear();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1997/01/23 19:26:58  jussi
+  Disabled debugging message in ReportQueryElapsedTime().
+
   Revision 1.50  1997/01/23 17:40:57  jussi
   Added distribution of records from GetX().
 
@@ -338,7 +341,7 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 {
   TData *tdata = map->GetTData();
 
-  QPFullData *query = new QPFullData;
+  QPFullData *query = new QPFullData;//TEMPTEMP leaked
   DOASSERT(query, "Out of memory");
 
   query->map = map;
