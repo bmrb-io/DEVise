@@ -19,6 +19,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1998/06/16 16:30:54  wenger
+# Added standard headers to DataReader sources.
+#
 
 ###############################################################################
 
@@ -46,7 +49,7 @@ LEX_FILES = \
 FLEX = flex
 FLEXFLAGS = -t
 
-DATAREAD_INCL = -I../../DataReader -I. -I/s/flex/include
+DATAREAD_INCL = -I../../DataReader -I. -I/s/flex/include -I.. -I../../src/include
 
 CFLAGS = $(ARCH_FLAGS) -Wall $(OPTFLAG) $(DATAREAD_INCL) \
 	-DHAVE_CONFIG_H $(OPTFLAG)

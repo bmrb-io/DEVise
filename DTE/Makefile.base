@@ -48,6 +48,7 @@ DTE_INCLUDES = \
 	-I../../DataReader \
 	-I../unidata \
 	-I.. \
+	-I../../src/include \
 	$(PERL_INCL)
 
 # must include unidata for config.h, otherwise /s/perl/lib/CORE/config.h is used

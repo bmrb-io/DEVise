@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1998/06/24 22:15:40  donjerko
+# *** empty log message ***
+#
 # Revision 1.6  1997/09/17 02:37:54  donjerko
 # There is a problem when multiple perl interpreters are used!
 #
@@ -38,7 +41,8 @@
 ############################################################
 
 depend:
-	makedepend -fMakefile.solaris *.c *.C
+	cd ../../unidata; \
+	makedepend -f Makefile.solaris *.c *.C
 
 # DO NOT DELETE
 
@@ -53,9 +57,8 @@ Attr.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 Attr.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 Attr.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/unistd.h
 Attr.o: Enum.h Comment.h Config.h UniData.h SlideBuf.h getftime.h DateTime.h
-Attr.o: sysdep.h /usr/include/varargs.h /usr/include/assert.h
+Attr.o: /usr/include/assert.h
 Comment.o: Comment.h
-DateTime.o: sysdep.h /usr/include/varargs.h /usr/include/sys/va_list.h
 DateTime.o: DateTime.h
 Enum.o: Enum.h /usr/include/string.h /usr/include/sys/feature_tests.h Attr.h
 Enum.o: /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
@@ -81,8 +84,7 @@ Schema.o: /usr/include/sys/time.h /usr/include/time.h
 Schema.o: /usr/include/sys/unistd.h Attr.h /usr/include/stdlib.h IntStack.h
 Schema.o: Traits.h bitmap.h /usr/include/limits.h
 Schema.o: /usr/include/sys/int_limits.h PerlFrag.h Lexer.h Enum.h Comment.h
-Schema.o: Config.h Token.h getftime.h DateTime.h sysdep.h
-Schema.o: /usr/include/varargs.h /usr/include/assert.h
+Schema.o: Config.h Token.h getftime.h DateTime.h /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 SlideBuf.o: /usr/include/string.h /usr/include/errno.h
 SlideBuf.o: /usr/include/sys/errno.h /usr/include/fcntl.h
@@ -117,13 +119,11 @@ UniData.o: /usr/include/math.h /usr/include/floatingpoint.h
 UniData.o: /usr/include/sys/ieeefp.h Attr.h IntStack.h Traits.h bitmap.h
 UniData.o: /usr/include/limits.h /usr/include/sys/int_limits.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
-UniData.o: getftime.h DateTime.h sysdep.h /usr/include/varargs.h
-UniData.o: /usr/include/assert.h
+UniData.o: getftime.h DateTime.h /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h /usr/include/sys/feature_tests.h
 getftime.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
-getftime.o: /usr/include/time.h DateTime.h sysdep.h /usr/include/varargs.h
-getftime.o: /usr/include/sys/va_list.h
+getftime.o: /usr/include/time.h DateTime.h
 pmain.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 pmain.o: /usr/include/sys/va_list.h /usr/include/math.h
 pmain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h PerlFrag.h
@@ -156,4 +156,3 @@ umain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 umain.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
 umain.o: /usr/include/limits.h /usr/include/sys/int_limits.h PerlFrag.h
 umain.o: Lexer.h Enum.h Comment.h Config.h udParam.h getftime.h DateTime.h
-umain.o: sysdep.h /usr/include/varargs.h
