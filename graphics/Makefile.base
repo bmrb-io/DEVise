@@ -4,10 +4,10 @@ CC = g++
 #	-DUNIX: 
 #	-DRECTX_PIXEL: set this to draw RectXShape as a single point.
 #			file affected: RectShape.h
-#	-DGRAPHICS: set this to draw grpahics. Dont' set if no graphics
+#	-DGRAPHICS: set this to draw grpahics. Don't set if no graphics
 #		is to be sent to xlib. file affected: XWindowRep.c
 
-CFLAGS=  $(ARCH_FLAGS) -O -DUNIX -DGRAPHICS -fexternal-templates
+CFLAGS=  $(ARCH_FLAGS) -Wall -O -DUNIX -DGRAPHICS -fexternal-templates
 
 LD = ld
 
