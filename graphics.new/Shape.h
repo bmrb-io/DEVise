@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/12 23:12:36  jussi
+  Fixed bug in DrawGDataArray().
+
   Revision 1.14  1996/07/02 22:46:00  jussi
   The bounding box of symbols is now correctly computed. Scatter
   plots sometimes did not have all necessary data displayed in
@@ -215,7 +218,7 @@ class Shape {
 	  break;
 	_x[count] = GetX(colorGData, map, offset);
 	_y[count] = GetY(colorGData, map, offset);
-        count++
+        count++;
       }
       
       win->SetFgColor(firstColor);
