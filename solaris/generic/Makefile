@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/05/31 21:36:13  wenger
+#  Fixed core dump in SPARC/Solaris version caused by GData buffer
+#  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+#  version to link correctly and eliminate special Makefile.base.aix.
+#
 #  Revision 1.8  1996/05/20 18:37:57  jussi
 #  Replaced PENTIUM flag with SOLARIS.
 #
@@ -32,7 +37,7 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
+ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../generic
