@@ -500,9 +500,6 @@ should be displayed. (ml/rkw 3/23/98)
 Have GUI to automatically bring up the data source definition editor
 (in read-only mode?) on the data source in the selected view. (rkw 3/30/98)
 
-There should be a way to expand and contract the size of a cursor in its
-destination view (the view the cursor is drawn in). (rkw 5/22/98)
-
 Allow the user to specify which keys cause which actions (zoom, home, etc.).
 (rr/rkw 6/28/98)
 
@@ -637,6 +634,9 @@ Disable Layout Manager menu selection until the layout manager is
 fully integrated. (devel 12/4/97)
 
 Improve control of fonts. (ml/rkw 11/19/96)
+
+There should be a way to expand and contract the size of a cursor in its
+destination view (the view the cursor is drawn in). (rkw 5/22/98)
 
 
 CANCELLED
