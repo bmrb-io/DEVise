@@ -2342,9 +2342,10 @@ Num Date        Status  Description
 			doesn't come out to the same relative size in the
 			JavaScreen as in "regular" DEVise. (rkw)
 
-597 6/14/00	OPEN	Jss doesn't seem to be able to start a devised
+597 6/14/00	FIXED	Jss doesn't seem to be able to start a devised
 			(or maybe the problem is in connecting to the
 			jspop) other than when the jss is started. (rkw)
+			(Fixed by rkw, 6/15/00.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

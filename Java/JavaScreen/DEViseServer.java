@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2000/06/12 22:13:56  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.38  2000/06/05 16:35:07  wenger
 // Added comments and cleaned up the code a little.
 //
@@ -403,6 +408,8 @@ public class DEViseServer implements Runnable
                             removeCurrentClient(false);
                         }
                     }
+
+                    setAction(ACTION_QUIT);
 
                     continue;
                 }
