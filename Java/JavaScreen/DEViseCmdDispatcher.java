@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999
+// (c) Copyright 1999-2000
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2000/02/16 08:53:57  hongyu
+// *** empty log message ***
+//
 // Revision 1.42  1999/12/10 15:30:12  wenger
 // Molecule dragging greatly speeded up by drawing plain (unshaeded) circles
 // during drag; split off protocol version from "main" version.
@@ -591,7 +594,8 @@ public class DEViseCmdDispatcher implements Runnable
                     double gridy = (Double.valueOf(cmd[10])).doubleValue();
                     int isedge = Integer.parseInt(cmd[11]);
                     Color color = DEViseGlobals.convertColor(cmd[12]);
-                    int type = Integer.parseInt(cmd[13]);
+                    //TEMP int type = Integer.parseInt(cmd[13]);
+					int type = 0;//TEMP
 
                     DEViseCursor cursor = null;
                     try {
