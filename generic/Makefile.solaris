@@ -5,23 +5,23 @@ depend:
 
 CompDate.o: CompDate.h
 generic.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-generic.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/time.h
-generic.o: /usr/include/string.h /usr/include/math.h
-generic.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
-generic.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-generic.o: /usr/include/sys/select.h ../graphics/DeviseTypes.h
-generic.o: /usr/include/values.h ../graphics/DevStatus.h
-generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-generic.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ColorMgr.h
-generic.o: ../graphics/WindowRep.h ../graphics/Transform.h
-generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
-generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-generic.o: ../graphics.new/MapInterpClassInfo.h
+generic.o: /usr/include/sys/va_list.h /usr/include/errno.h
+generic.o: /usr/include/sys/errno.h /usr/include/time.h /usr/include/string.h
+generic.o: /usr/include/math.h /usr/include/floatingpoint.h
+generic.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
+generic.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+generic.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
+generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
+generic.o: /usr/include/stdlib.h /usr/include/unistd.h
+generic.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
+generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/Control.h
+generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
@@ -63,20 +63,20 @@ generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
 generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
 generic.o: ../graphics/DevError.h ../graphics/Util.h /usr/include/ctype.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testWindowSpeed.o: /usr/include/time.h /usr/include/sys/time.h
-testWindowSpeed.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-testWindowSpeed.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-testWindowSpeed.o: ../graphics.new/TkControl.h ../graphics/Dispatcher.h
-testWindowSpeed.o: /usr/include/stdlib.h /usr/include/unistd.h
-testWindowSpeed.o: /usr/include/sys/unistd.h /usr/include/string.h
-testWindowSpeed.o: ../graphics/DeviseTypes.h /usr/include/values.h
-testWindowSpeed.o: ../graphics/DevStatus.h ../graphics/DList.h
-testWindowSpeed.o: ../graphics/Exit.h ../graphics/Journal.h
-testWindowSpeed.o: ../graphics/VisualArg.h ../graphics/Color.h
-testWindowSpeed.o: ../graphics/Pattern.h ../graphics/Control.h
-testWindowSpeed.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-testWindowSpeed.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-testWindowSpeed.o: ../graphics.new/Group.h
+testWindowSpeed.o: /usr/include/sys/va_list.h /usr/include/time.h
+testWindowSpeed.o: /usr/include/sys/time.h /usr/include/sys/types.h
+testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+testWindowSpeed.o: /usr/include/sys/select.h ../graphics.new/TkControl.h
+testWindowSpeed.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+testWindowSpeed.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+testWindowSpeed.o: /usr/include/string.h ../graphics/DeviseTypes.h
+testWindowSpeed.o: /usr/include/values.h ../graphics/DevStatus.h
+testWindowSpeed.o: ../graphics/DList.h ../graphics/Exit.h
+testWindowSpeed.o: ../graphics/Journal.h ../graphics/VisualArg.h
+testWindowSpeed.o: ../graphics/Color.h ../graphics/Pattern.h
+testWindowSpeed.o: ../graphics/Control.h ../graphics/ClassDir.h
+testWindowSpeed.o: ../graphics/ViewCallback.h ../graphics.new/GroupDir.h
+testWindowSpeed.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 testWindowSpeed.o: ../graphics.new/MapInterpClassInfo.h
 testWindowSpeed.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
 testWindowSpeed.o: ../graphics.new/ParseAPI.h ../graphics/Display.h

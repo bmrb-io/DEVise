@@ -9,9 +9,9 @@ MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
 MapClassInfo.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
-MapClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
-MapClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
-MapClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
+MapClassInfo.o: /usr/include/sys/va_list.h ../graphics/DeviseTypes.h
+MapClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
+MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
 MapClassInfo.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 MapClassInfo.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
@@ -61,17 +61,18 @@ MapClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 MapClassInfo.o: ../graphics/Selection.h ../graphics.new/ViewScatter.h
 MapClassInfo.o: ../graphics.new/QueryProc.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/sys/time.h /usr/include/stdio.h
-ams.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
-ams.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-ams.o: /usr/include/sys/select.h /usr/include/sys/time.h
-ams.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ams.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h /usr/include/stdlib.h
-ams.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h
-ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
-ams.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ams.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+ams.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ams.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
+ams.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Dispatcher.h
+ams.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/unistd.h
+ams.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
+ams.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+ams.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
+ams.o: /usr/include/math.h /usr/include/floatingpoint.h
+ams.o: /usr/include/sys/ieeefp.h ../graphics/ColorMgr.h
+ams.o: ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ams.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
@@ -116,19 +117,19 @@ ams.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
 ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
 ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h
-amsStat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-amsStat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-amsStat.o: /usr/include/sys/time.h /usr/include/sys/time.h
-amsStat.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-amsStat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-amsStat.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
-amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
-amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
-amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
-amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
-amsStat.o: ../graphics.new/DataSource.h ../graphics/Exit.h
-amsStat.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+amsStat.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+amsStat.o: /usr/include/fcntl.h /usr/include/sys/types.h
+amsStat.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+amsStat.o: /usr/include/sys/select.h /usr/include/sys/time.h
+amsStat.o: /usr/include/sys/time.h /usr/include/sys/fcntl.h
+amsStat.o: /usr/include/limits.h /usr/include/unistd.h
+amsStat.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
+amsStat.o: /usr/include/sys/stat.h ../graphics.new/BufHint.h
+amsStat.o: ../graphics.new/PageSize.h ../graphics.new/TDataAppend.h
+amsStat.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
+amsStat.o: /usr/include/values.h ../graphics/DevStatus.h
+amsStat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
+amsStat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
 amsStat.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
 amsStat.o: /usr/include/sys/shm.h /usr/include/errno.h
 amsStat.o: /usr/include/sys/errno.h /usr/include/assert.h
@@ -151,16 +152,18 @@ amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
 amsStat.o: /usr/include/math.h /usr/include/floatingpoint.h
 amsStat.o: /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-extendAms.o: /usr/include/stdlib.h /usr/include/fcntl.h
-extendAms.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-extendAms.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-extendAms.o: /usr/include/sys/time.h /usr/include/sys/time.h
-extendAms.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-extendAms.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-extendAms.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
-extendAms.o: ../graphics.new/ams.h /usr/include/math.h
-extendAms.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+extendAms.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+extendAms.o: /usr/include/fcntl.h /usr/include/sys/types.h
+extendAms.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+extendAms.o: /usr/include/sys/select.h /usr/include/sys/time.h
+extendAms.o: /usr/include/sys/time.h /usr/include/sys/fcntl.h
+extendAms.o: /usr/include/limits.h /usr/include/unistd.h
+extendAms.o: /usr/include/sys/unistd.h /usr/include/sys/uio.h
+extendAms.o: /usr/include/sys/stat.h ../graphics.new/ams.h
+extendAms.o: /usr/include/math.h /usr/include/floatingpoint.h
+extendAms.o: /usr/include/sys/ieeefp.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testdir.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-testdir.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-testdir.o: /usr/include/sys/time.h /usr/include/sys/time.h
+testdir.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
+testdir.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+testdir.o: /usr/include/sys/select.h /usr/include/sys/time.h
+testdir.o: /usr/include/sys/time.h

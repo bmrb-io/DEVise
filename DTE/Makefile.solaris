@@ -3,12 +3,19 @@ depend:
 	-I../graphics -I../graphics.new -I../atrproj *.c;\
 	cd Core; \
 	makedepend -a -f../Makefile.solaris \
+	-I../RTree -I../RTree/tools \
 	-I../../graphics -I../../graphics.new -I../../atrproj *.c;\
 	cd ..;\
 	cd StandAlone; \
 	makedepend -a -f../Makefile.solaris -I../Core \
 	-I../../graphics -I../../graphics.new -I../../atrproj *.c;\
 	cd ..;\
+	cd RTree; \
+	makedepend -a -f../Makefile.solaris \
+	cd tools; \
+	makedepend -a -f../../Makefile.solaris \
+	cd ..;\
+	cd ..;
 
 
 # DO NOT DELETE
@@ -70,7 +77,8 @@ DqlInclude.o: ../graphics/DeviseTypes.h /usr/include/values.h
 DqlInclude.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
 DqlInclude.o: ../graphics/Init.h ../graphics/BufPolicy.h Core/site.h
 DqlInclude.o: Core/myopt.h Core/queue.h Core/url.h Core/SockStream.h
-DqlInclude.o: Core/listop.h Core/GeneralRead.h Core/StandardRead.h
+DqlInclude.o: Core/listop.h Core/Iterator.h Core/StandardRead.h
+DqlInclude.o: Core/RTreeRead.h
 TuplePtr.Plex.o: TuplePtr.Plex.h /usr/include/std.h TuplePtr.defs.h
 TuplePtr.Plex.o: Core/types.h /usr/include/assert.h /usr/include/string.h
 TuplePtr.Plex.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
@@ -157,8 +165,22 @@ Aggregates.o: /usr/include/values.h ../../graphics/DevStatus.h
 Aggregates.o: ../../graphics/DList.h ../../graphics/Exit.h
 Aggregates.o: ../../graphics/Init.h ../../graphics/BufPolicy.h myopt.h
 Aggregates.o: queue.h url.h /usr/include/stdio.h /usr/include/sys/va_list.h
-Aggregates.o: /usr/include/unistd.h SockStream.h listop.h site.h
-Aggregates.o: GeneralRead.h StandardRead.h
+Aggregates.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
+Aggregates.o: StandardRead.h RTreeRead.h ../RTree/RTree.h ../RTree/genrtree.h
+Aggregates.o: ../RTree/port_genrtree.h ../RTree/type_compat.h
+Aggregates.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
+Aggregates.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
+Aggregates.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
+Aggregates.o: /usr/include/stdlib.h ../RTree/tools/box.h
+Aggregates.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
+Aggregates.o: ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+Aggregates.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+Aggregates.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+Aggregates.o: /usr/include/sys/reg.h /usr/include/math.h
+Aggregates.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+Aggregates.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+Aggregates.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+Aggregates.o: ../RTree/RTreeCommon.h
 DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DevRead.o: /usr/include/sys/va_list.h /usr/include/string.h
 DevRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -186,7 +208,7 @@ DevRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
 DevRead.o: ../../graphics/DevStatus.h ../../graphics.new/RecId.h types.h
 DevRead.o: /usr/include/assert.h exception.h ../../graphics/AttrList.h
 DevRead.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-DevRead.o: ../../graphics/BufPolicy.h GeneralRead.h ../../graphics/Util.h
+DevRead.o: ../../graphics/BufPolicy.h Iterator.h ../../graphics/Util.h
 DevRead.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
 DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 DevRead.o: ../../graphics.new/TData.h ../../graphics.new/DataSource.h
@@ -223,11 +245,25 @@ Engine.o: /usr/include/values.h ../../graphics/DevStatus.h
 Engine.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 Engine.o: ../../graphics/BufPolicy.h url.h /usr/include/stdio.h
 Engine.o: /usr/include/sys/va_list.h /usr/include/unistd.h SockStream.h
-Engine.o: listop.h Engine.h site.h GeneralRead.h StandardRead.h ParseTree.h
+Engine.o: listop.h Engine.h site.h Iterator.h StandardRead.h RTreeRead.h
+Engine.o: ../RTree/RTree.h ../RTree/genrtree.h ../RTree/port_genrtree.h
+Engine.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+Engine.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+Engine.o: ../RTree/tools/pqueue.C ../RTree/tools/pqueue.h
+Engine.o: ../RTree/tools/key.h ../RTree/tools/box.h ../RTree/tools/bit_vec.h
+Engine.o: ../RTree/bulk_data.h ../RTree/hfpage.h ../RTree/solaris_stats.h
+Engine.o: /usr/include/sys/procfs.h /usr/include/sys/signal.h
+Engine.o: /usr/include/sys/fault.h /usr/include/sys/syscall.h
+Engine.o: /usr/include/sys/regset.h /usr/include/sys/reg.h
+Engine.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+Engine.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+Engine.o: ../RTree/RTreeCommon.h ParseTree.h
 IndexParse.o: /usr/include/memory.h /usr/include/string.h
 IndexParse.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
 IndexParse.o: /usr/include/math.h /usr/include/floatingpoint.h
-IndexParse.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h queue.h myopt.h
+IndexParse.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h
+IndexParse.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+IndexParse.o: /usr/include/errno.h /usr/include/sys/errno.h queue.h myopt.h
 IndexParse.o: types.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 IndexParse.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 IndexParse.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -253,9 +289,20 @@ IndexParse.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 IndexParse.o: /usr/include/values.h ../../graphics/DevStatus.h
 IndexParse.o: ../../graphics/DList.h ../../graphics/Exit.h
 IndexParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
-IndexParse.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-IndexParse.o: /usr/include/unistd.h SockStream.h listop.h site.h
-IndexParse.o: GeneralRead.h StandardRead.h catalog.h DevRead.h
+IndexParse.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
+IndexParse.o: StandardRead.h RTreeRead.h ../RTree/RTree.h ../RTree/genrtree.h
+IndexParse.o: ../RTree/port_genrtree.h ../RTree/type_compat.h
+IndexParse.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
+IndexParse.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
+IndexParse.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
+IndexParse.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h
+IndexParse.o: ../RTree/bulk_data.h ../RTree/hfpage.h ../RTree/solaris_stats.h
+IndexParse.o: /usr/include/sys/procfs.h /usr/include/sys/signal.h
+IndexParse.o: /usr/include/sys/fault.h /usr/include/sys/syscall.h
+IndexParse.o: /usr/include/sys/regset.h /usr/include/sys/reg.h
+IndexParse.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+IndexParse.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+IndexParse.o: ../RTree/RTreeCommon.h catalog.h DevRead.h
 IndexParse.o: ../../graphics.new/RecId.h Aggregates.h ParseTree.h
 QueryTree.o: /usr/include/memory.h /usr/include/string.h
 QueryTree.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
@@ -287,11 +334,67 @@ QueryTree.o: /usr/include/values.h ../../graphics/DevStatus.h
 QueryTree.o: ../../graphics/DList.h ../../graphics/Exit.h
 QueryTree.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
 QueryTree.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-QueryTree.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
-QueryTree.o: StandardRead.h catalog.h DevRead.h ../../graphics.new/RecId.h
-QueryTree.o: Aggregates.h ParseTree.h
+QueryTree.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
+QueryTree.o: StandardRead.h RTreeRead.h ../RTree/RTree.h ../RTree/genrtree.h
+QueryTree.o: ../RTree/port_genrtree.h ../RTree/type_compat.h
+QueryTree.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
+QueryTree.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
+QueryTree.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
+QueryTree.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h
+QueryTree.o: ../RTree/bulk_data.h ../RTree/hfpage.h ../RTree/solaris_stats.h
+QueryTree.o: /usr/include/sys/procfs.h /usr/include/sys/signal.h
+QueryTree.o: /usr/include/sys/fault.h /usr/include/sys/syscall.h
+QueryTree.o: /usr/include/sys/regset.h /usr/include/sys/reg.h
+QueryTree.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+QueryTree.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+QueryTree.o: ../RTree/RTreeCommon.h catalog.h DevRead.h
+QueryTree.o: ../../graphics.new/RecId.h Aggregates.h ParseTree.h
+RTreeRead.o: RTreeRead.h StandardRead.h Iterator.h types.h
+RTreeRead.o: /usr/include/assert.h /usr/include/string.h
+RTreeRead.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
+RTreeRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+RTreeRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
+RTreeRead.o: /usr/include/sys/time.h /usr/include/netinet/in.h
+RTreeRead.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+RTreeRead.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+RTreeRead.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+RTreeRead.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+RTreeRead.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+RTreeRead.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+RTreeRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+RTreeRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+RTreeRead.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+RTreeRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+RTreeRead.o: /usr/include/sys/byteorder.h exception.h
+RTreeRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
+RTreeRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+RTreeRead.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+RTreeRead.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+RTreeRead.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+RTreeRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+RTreeRead.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+RTreeRead.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+RTreeRead.o: /usr/include/values.h ../../graphics/DevStatus.h
+RTreeRead.o: ../../graphics/DList.h ../../graphics/Exit.h
+RTreeRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h myopt.h queue.h
+RTreeRead.o: url.h /usr/include/stdio.h /usr/include/sys/va_list.h
+RTreeRead.o: /usr/include/unistd.h SockStream.h listop.h ../RTree/RTree.h
+RTreeRead.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
+RTreeRead.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+RTreeRead.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+RTreeRead.o: ../RTree/tools/pqueue.C ../RTree/tools/pqueue.h
+RTreeRead.o: ../RTree/tools/key.h /usr/include/stdlib.h ../RTree/tools/box.h
+RTreeRead.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
+RTreeRead.o: ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+RTreeRead.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+RTreeRead.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+RTreeRead.o: /usr/include/sys/reg.h /usr/include/math.h
+RTreeRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+RTreeRead.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+RTreeRead.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+RTreeRead.o: ../RTree/RTreeCommon.h
 StandardRead.o: /usr/include/string.h /usr/include/sys/feature_tests.h
-StandardRead.o: StandardRead.h GeneralRead.h types.h /usr/include/assert.h
+StandardRead.o: StandardRead.h Iterator.h types.h /usr/include/assert.h
 StandardRead.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 StandardRead.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 StandardRead.o: /usr/include/sys/time.h /usr/include/sys/time.h
@@ -347,7 +450,21 @@ catalog.o: /usr/include/values.h ../../graphics/DevStatus.h
 catalog.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 catalog.o: ../../graphics/BufPolicy.h url.h /usr/include/stdio.h
 catalog.o: /usr/include/sys/va_list.h /usr/include/unistd.h SockStream.h
-catalog.o: listop.h GeneralRead.h StandardRead.h catalog.h DevRead.h
+catalog.o: listop.h Iterator.h StandardRead.h RTreeRead.h ../RTree/RTree.h
+catalog.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
+catalog.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+catalog.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+catalog.o: ../RTree/tools/pqueue.C ../RTree/tools/pqueue.h
+catalog.o: ../RTree/tools/key.h /usr/include/stdlib.h ../RTree/tools/box.h
+catalog.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
+catalog.o: ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+catalog.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+catalog.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+catalog.o: /usr/include/sys/reg.h /usr/include/math.h
+catalog.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+catalog.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+catalog.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+catalog.o: ../RTree/RTreeCommon.h catalog.h DevRead.h
 catalog.o: ../../graphics.new/RecId.h
 lex.yy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 lex.yy.o: /usr/include/sys/va_list.h /usr/include/string.h
@@ -409,7 +526,19 @@ listop.o: /usr/include/values.h ../../graphics/DevStatus.h
 listop.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 listop.o: ../../graphics/BufPolicy.h url.h /usr/include/stdio.h
 listop.o: /usr/include/sys/va_list.h /usr/include/unistd.h SockStream.h
-listop.o: listop.h site.h GeneralRead.h StandardRead.h catalog.h
+listop.o: listop.h site.h Iterator.h StandardRead.h RTreeRead.h
+listop.o: ../RTree/RTree.h ../RTree/genrtree.h ../RTree/port_genrtree.h
+listop.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+listop.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+listop.o: ../RTree/tools/pqueue.C ../RTree/tools/pqueue.h
+listop.o: ../RTree/tools/key.h /usr/include/stdlib.h ../RTree/tools/box.h
+listop.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
+listop.o: ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+listop.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+listop.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+listop.o: /usr/include/sys/reg.h /usr/include/sys/mman.h
+listop.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+listop.o: /usr/include/sys/fcntl.h ../RTree/RTreeCommon.h catalog.h
 my.yacc.tab.o: myopt.h /usr/include/assert.h queue.h types.h
 my.yacc.tab.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 my.yacc.tab.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -439,7 +568,22 @@ my.yacc.tab.o: ../../graphics/DList.h ../../graphics/Exit.h
 my.yacc.tab.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
 my.yacc.tab.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 my.yacc.tab.o: /usr/include/unistd.h SockStream.h listop.h ParseTree.h site.h
-my.yacc.tab.o: GeneralRead.h StandardRead.h
+my.yacc.tab.o: Iterator.h StandardRead.h RTreeRead.h ../RTree/RTree.h
+my.yacc.tab.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
+my.yacc.tab.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+my.yacc.tab.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+my.yacc.tab.o: ../RTree/tools/pqueue.C ../RTree/tools/pqueue.h
+my.yacc.tab.o: ../RTree/tools/key.h /usr/include/stdlib.h
+my.yacc.tab.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h
+my.yacc.tab.o: ../RTree/bulk_data.h ../RTree/hfpage.h
+my.yacc.tab.o: ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+my.yacc.tab.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+my.yacc.tab.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+my.yacc.tab.o: /usr/include/sys/reg.h /usr/include/math.h
+my.yacc.tab.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+my.yacc.tab.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+my.yacc.tab.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+my.yacc.tab.o: ../RTree/RTreeCommon.h
 resolve.o: myopt.h /usr/include/assert.h queue.h types.h
 resolve.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 resolve.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -468,7 +612,21 @@ resolve.o: /usr/include/values.h ../../graphics/DevStatus.h
 resolve.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 resolve.o: ../../graphics/BufPolicy.h url.h /usr/include/stdio.h
 resolve.o: /usr/include/sys/va_list.h /usr/include/unistd.h SockStream.h
-resolve.o: listop.h site.h GeneralRead.h StandardRead.h
+resolve.o: listop.h site.h Iterator.h StandardRead.h RTreeRead.h
+resolve.o: ../RTree/RTree.h ../RTree/genrtree.h ../RTree/port_genrtree.h
+resolve.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+resolve.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+resolve.o: ../RTree/tools/pqueue.C ../RTree/tools/pqueue.h
+resolve.o: ../RTree/tools/key.h /usr/include/stdlib.h ../RTree/tools/box.h
+resolve.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
+resolve.o: ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+resolve.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+resolve.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+resolve.o: /usr/include/sys/reg.h /usr/include/math.h
+resolve.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+resolve.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
+resolve.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+resolve.o: ../RTree/RTreeCommon.h
 site.o: /usr/include/string.h /usr/include/sys/feature_tests.h site.h
 site.o: /usr/include/assert.h myopt.h queue.h types.h
 site.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -497,7 +655,19 @@ site.o: /usr/include/values.h ../../graphics/DevStatus.h
 site.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 site.o: ../../graphics/BufPolicy.h url.h /usr/include/stdio.h
 site.o: /usr/include/sys/va_list.h /usr/include/unistd.h SockStream.h
-site.o: listop.h GeneralRead.h StandardRead.h
+site.o: listop.h Iterator.h StandardRead.h RTreeRead.h ../RTree/RTree.h
+site.o: ../RTree/genrtree.h ../RTree/port_genrtree.h ../RTree/type_compat.h
+site.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
+site.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
+site.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h /usr/include/stdlib.h
+site.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h ../RTree/bulk_data.h
+site.o: ../RTree/hfpage.h ../RTree/solaris_stats.h /usr/include/sys/procfs.h
+site.o: /usr/include/sys/signal.h /usr/include/sys/fault.h
+site.o: /usr/include/sys/syscall.h /usr/include/sys/regset.h
+site.o: /usr/include/sys/reg.h /usr/include/math.h
+site.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+site.o: /usr/include/sys/mman.h /usr/include/sys/stat.h /usr/include/fcntl.h
+site.o: /usr/include/sys/fcntl.h ../RTree/RTreeCommon.h
 types.o: types.h /usr/include/assert.h /usr/include/string.h
 types.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
 types.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -580,4 +750,5 @@ main.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 main.o: ../../graphics/BufPolicy.h ../Core/Engine.h ../Core/site.h
 main.o: ../Core/myopt.h ../Core/queue.h ../Core/url.h /usr/include/stdio.h
 main.o: /usr/include/sys/va_list.h /usr/include/unistd.h ../Core/SockStream.h
-main.o: ../Core/listop.h ../Core/GeneralRead.h ../Core/StandardRead.h
+main.o: ../Core/listop.h ../Core/Iterator.h ../Core/StandardRead.h
+main.o: ../Core/RTreeRead.h
