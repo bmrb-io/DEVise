@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/15 03:39:56  ravim
+  Added "count" stat.
+
   Revision 1.8  1995/12/08 23:46:01  ravim
   Callbacks added.
 
@@ -63,7 +66,12 @@ void BasicStats::Init(ViewGraph *vw)
 {
   xsum = xsum_sqr = xmax = xmin = 0;
   ysum = ysum_sqr = ymax = ymin = 0;
+  int_x = int_y = 0;
+  avg = std = var = 0;
+  for (int i = 0; i < NUM_Z_VALS; i++)
+    clow[i] = chigh[i] = 0;
 
+  nval = 0;
   nsamples = 0;
   ViewStats::Init(vw);
 
@@ -71,17 +79,33 @@ void BasicStats::Init(ViewGraph *vw)
 
 void BasicStats::Sample(double x, double y)
 {
-  ysum += y;
-  ysum_sqr += y*y;
   if (!nsamples || y > ymax) ymax = y;
   if (!nsamples || y < ymin) ymin = y;
-
-  xsum += x;
-  xsum_sqr += x*x;
   if (x > xmax) xmax = x;
   if (x < xmin) xmin = x;
 
+  // Group samples into batches
+  // For values within a bach, simply add to total - at the end of the
+  // batch, compute the average and add to the sum/sqr_sum counter.
+  int_x += x;
+  int_y += y;
+  nval++;
+  if (nval % num_per_batch)
+    return;
+
+  float tmp = (float) int_y / (float) num_per_batch;
+  ysum += tmp;
+  ysum_sqr += tmp*tmp;
+
+  tmp = (float) int_x / (float) num_per_batch;
+  xsum += tmp;
+  xsum_sqr += tmp*tmp;
+
+  // Increment number of samples
   nsamples++;
+
+  // Reinitialize internal batch counters
+  int_x = int_y = 0;
 }
 
 void BasicStats::Done()
@@ -93,6 +117,28 @@ void BasicStats::Done()
     ((ViewKGraph *)(vkg_list.Next(idx)))->Callback(this);
 
   vkg_list.DoneIterator(idx);
+
+  if (nsamples)
+  {
+    avg = ysum / (float)nsamples;
+    var = ysum_sqr - nsamples*avg*avg;
+    std = sqrt(var);
+    // Compute confidence interval - for now use z85, z90 and z95
+    for (int i = 0; i < NUM_Z_VALS; i++)
+    {
+      clow[i] = avg - (float)(zval[i]*std)/(float)(sqrt(nsamples));
+      chigh[i] = avg + (float)(zval[i]*std)/(float)(sqrt(nsamples)); 
+    }
+  }
+
+  printf("***********Statistics Report***********\n");
+  printf("Max: %f Min: %f Average: %f\n", ymax, ymin, avg);
+  printf("Std.deviation: %f\n", std);
+  printf("Confidence intervals\n");
+  printf("\t 85\%: (%f , %f)\n", clow[0], chigh[0]);
+  printf("\t 90\%: (%f , %f)\n", clow[1], chigh[1]);
+  printf("\t 95\%: (%f , %f)\n", clow[2], chigh[2]);
+
 }
 
 void BasicStats::Report()
@@ -100,12 +146,6 @@ void BasicStats::Report()
   if (!_vw || (atoi(_vw->GetDisplayStats()) == 0))
     return;
 
-  printf("***********Statistics Report***********\n");
-  printf("Sum : %f  Sum of Squares : %f\n", ysum, ysum_sqr);
-  printf("Number of samples : %d\n", nsamples);
-  double avg = ysum / (nsamples ? nsamples : 1);
-  printf("Max: %f Min: %f Average: %f\n", ymax, ymin, avg);
-  
   // Draw a line across the window to depict the min, max and average
   // Get the window
   WindowRep *win = _vw->GetWindowRep();
@@ -114,18 +154,31 @@ void BasicStats::Report()
   
   // Draw line
   Color prev = win->GetFgColor();
-  win->SetFgColor(GreenColor);
+  win->SetFgColor(BlackColor);
   
   // Draw stats depending on the binary string representing the stats to 
   // be displayed
   char *statstr = _vw->GetDisplayStats();
   if (statstr[STAT_MAX] == '1')
-    win->Line(filter->xLow, ymax, filter->xHigh, ymax, 2);
+    win->InvertLine(filter->xLow, ymax, filter->xHigh, ymax, 2);
   if (statstr[STAT_MIN] == '1')
-    win->Line(filter->xLow, ymin, filter->xHigh, ymin, 2);
+    win->InvertLine(filter->xLow, ymin, filter->xHigh, ymin, 2);
   if (statstr[STAT_MEAN] == '1')
-    win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
+    win->InvertLine(filter->xLow, avg, filter->xHigh, avg, 2);
+
+  // Display conf. interval
+  if (statstr[ZVAL85] == '1')
+    win->InvertFillRect(filter->xLow, clow[0], filter->xHigh - filter->xLow, 
+			chigh[0] - clow[0]);
+  if (statstr[ZVAL90] == '1')
+    win->InvertFillRect(filter->xLow, clow[1], filter->xHigh - filter->xLow, 
+			chigh[1] - clow[1]);
+  if (statstr[ZVAL95] == '1')
+    win->InvertFillRect(filter->xLow, clow[2], filter->xHigh - filter->xLow, 
+			chigh[2] - clow[2]);
+
   win->SetFgColor(prev);
+
 }
 
 Coord BasicStats::GetStatVal(int statnum)
@@ -165,4 +218,3 @@ void BasicStats::DeleteCallback(ViewKGraph *vkg)
   vkg_list.Delete((void *)vkg);
 }
 
-      

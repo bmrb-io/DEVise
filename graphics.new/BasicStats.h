@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/15 03:40:16  ravim
+  Added "count" stat.
+
   Revision 1.5  1995/12/08 23:46:12  ravim
   Callbacks added.
 
@@ -45,12 +48,19 @@ class ViewKGraph;
 #define STAT_MAX 1
 #define STAT_MIN 2
 #define STAT_COUNT 3
-#define STAT_NONE 4
+#define ZVAL85 4
+#define ZVAL90 5
+#define ZVAL95 6
+#define STAT_NONE 7
 
 // Total number of stats
-#define STAT_NUM 4
+#define STAT_NUM 7
 // Maximum length of the name of any stat
 #define STATNAMELEN 10
+// Number of confidence intervals
+#define NUM_Z_VALS 3
+const double zval[NUM_Z_VALS] = {1.464, 1.645, 1.960};
+const int num_per_batch = 1;
 
 // The generic stats collection and reporting class
 // For now, computes some simple stats - can be extended later 
@@ -83,7 +93,12 @@ private:
   double ysum, xsum;
   double ysum_sqr, xsum_sqr;
   double ymin, xmin, ymax, xmax;
-  int nsamples;
+  double int_x, int_y;
+  int nsamples, nval;
   VoidList vkg_list;
+
+  // Stat values
+  double avg, var, std;
+  double clow[NUM_Z_VALS], chigh[NUM_Z_VALS];
 };
 #endif

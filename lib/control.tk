@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.38  1995/12/15 03:39:37  ravim
+#	KGraph can display count. Schema browsing capabilities determined by the user
+#	mode.
+#
 #	Revision 1.37  1995/12/14 15:46:35  jussi
 #	Added support for TileLayout view layout with automatic or manual
 #	layout control.
@@ -429,6 +433,15 @@ menu .mbar.view.menu.statmenu -tearoff 1
 .mbar.view.menu.statmenu add checkbutton -label Max -variable statmax
 .mbar.view.menu.statmenu add checkbutton -label Min -variable statmin
 .mbar.view.menu.statmenu add separator
+.mbar.view.menu.statmenu add radiobutton -label "No Conf. Intervals" \
+	-variable statcilevel -value "000"
+.mbar.view.menu.statmenu add radiobutton -label "85% CI" \
+	-variable statcilevel -value "100"
+.mbar.view.menu.statmenu add radiobutton -label "90% CI" \
+	-variable statcilevel -value "010"
+.mbar.view.menu.statmenu add radiobutton -label "95% CI" \
+	-variable statcilevel -value "001"
+.mbar.view.menu.statmenu add separator
 .mbar.view.menu.statmenu add radiobutton -label "Current View" \
 	-variable statcurr -value 1
 .mbar.view.menu.statmenu add radiobutton -label "All Views" \
@@ -441,6 +454,7 @@ set statmean 1
 set statmax 0
 set statmin 0
 set statcurr 1
+set statcilevel "000"
 
 menu .mbar.view.menu.kmenu -tearoff 1
 .mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
@@ -3414,14 +3428,14 @@ proc DoToggleAxisAllViews { axis } {
 }
 
 proc DoToggleStatistics {} {
-    global curView statmean statmax statmin statcurr
+    global curView statmean statmax statmin statcurr statcilevel
 
     # The status is formed by as a binary string xxx where 1 means that the 
     # corr. stat is to be displayed. Further, since "count" which is the 
     # fourth stat cannot currently be displayed meaningfully on the graph
     # always append a 0.
     set statcount 0
-    set stat $statmean$statmax$statmin$statcount
+    set stat $statmean$statmax$statmin$statcount$statcilevel
 
     if {$statcurr == 1} {
 	if {$curView == ""} {
