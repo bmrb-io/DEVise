@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/12 22:02:31  jussi
+  Disabled debugging messages.
+
   Revision 1.12  1996/11/01 19:28:17  kmurli
   Added DQL sources to include access to TDataDQL. This is equivalent to
   TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
@@ -348,6 +351,33 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 
 int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 {
+  int msgsize;
+  char *recBuffer = 0;
+
+  msgsize = NetworkPrepareMsg(flag, bracket, argc, argv, &recBuffer );
+  if (msgsize == -1)
+    return -1;
+
+  if (recBuffer != 0)
+  {
+    int result = send(fd, recBuffer, msgsize, 0);
+    if (result < (int)sizeof (NetworkHeader)) {
+      perror("send");
+      return -1;
+    }
+  }
+  recBuffer = 0;
+
+#ifdef DEBUG
+  printf("Complete message sent\n\n");
+#endif
+
+  return 1;
+}
+
+int NetworkPrepareMsg(u_short flag, 
+    u_short bracket, int argc, char **argv, char** recBufferp)
+{
   static int recBuffSize = 0;
   static char *recBuff = 0;
 
@@ -421,22 +451,12 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
   }
 
   assert(buff - recBuff == msgsize);
-
 #ifdef DEBUG
   printf("Sending message: flag %u, nelem %u, size %u\n", flag, argc, tsize);
 #endif
-	
-  int result = send(fd, recBuff, msgsize, 0);
-  if (result < (int)sizeof hdr) {
-    perror("send");
-    return -1;
-  }
 
-#ifdef DEBUG
-  printf("Complete message sent\n\n");
-#endif
-
-  return 1;
+  *recBufferp = recBuff;
+  return msgsize;
 }
 
 int NetworkClose(int fd)

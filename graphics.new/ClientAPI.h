@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.11  1997/01/21 19:01:41  wenger
+   Minor changes to get Linux compile to work, updated Linux dependencies.
+
    Revision 1.10  1997/01/13 18:08:05  wenger
    Fixed bugs 043, 083, 084, 091, 114.
 
@@ -48,6 +51,8 @@ extern int NetworkReceive(int fd, int block, u_short &flag,
 			  int &argc, char **&argv);
 extern int NetworkSend(int fd, u_short flag, u_short bracket,
 		       int argc, char **argv);
+extern int NetworkPrepareMsg(u_short flag, u_short bracket,
+		       int argc, char **argv, char** recBufferp);
 extern int NetworkClose(int fd);
 
 const int DefaultNetworkPort = 6100;
