@@ -2397,6 +2397,10 @@ Num Date        Status  Description
 			until it has finished receiving all commands from
 			the devised).
 
+608 8/7/00	OPEN	JavaScreen: load Misc/FamMed_pre_post_natal.ds; you
+			get NullPointerExceptions every time you move the mouse
+			in a view. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
