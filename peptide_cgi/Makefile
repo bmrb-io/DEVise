@@ -44,6 +44,7 @@ clean:
 	-rm $(S2D_PROPS_FILE)
 	-rm -rf cgi-bin/bin
 	-rm $(SELECT_HTML_FILE)
+	-rm html/collab.html
 
 .PHONY : testclean
 testclean:
