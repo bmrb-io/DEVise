@@ -2629,12 +2629,13 @@ Num Date        Status  Description
 			is connected to them. (rkw)
 			(Fixed by xuk, 4/21/01.)
 
-661 04/20/01	OPEN	JavaScreen: if the user enables collaboration and
+661 04/20/01	FIXED	JavaScreen: if the user enables collaboration and
 			then becomes a collaboration follower with that
 			JS, the JS is still listed as a possible collaboration
 			leader. (In other words, becoming a collaboration
 			follower should disable being a collaboration
 			leader.) (rkw)
+			(Fixed by xuk, 4/25/01)
 
 662 04/20/01	FIXED	JavaScreen: there is no GUI to *disable* collaboration.
 			(rkw)
