@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/08 15:42:24  jussi
+  Removed IOTask::Initialize() and SetBuffering(). Added support
+  for streaming via ReadStream() and WriteStream().
+
   Revision 1.2  1996/11/07 17:37:39  jussi
   Added -d (direct) command line option.
 
@@ -31,6 +35,10 @@
 
 #include "SBufMgr.h"
 
+#if defined(THREAD_TASK) && defined(SOLARIS)
+#include <thread.h>
+#endif
+
 #define CALL(c) { int res = c; if (res < 0) goto error; }
 
 static int pageSize = 32 * 1024;
@@ -41,6 +49,7 @@ struct FileReq {
     SBufMgr *bufMgr;
     IOTask *task;
     int fileSize;
+    int pipeSize;
 };
 
 // ===================================================================
@@ -60,13 +69,6 @@ void sleepms(int ms)
 
 void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 {
-    if (!bufMgr) {
-        if (task->WriteStream() < 0) {
-            perror("Writer stream");
-            exit(1);
-        }
-    }
-
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
         if (!bufMgr) {
@@ -79,6 +81,10 @@ void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
                 perror("Writer produce");
                 exit(1);
             }
+#if defined(THREAD_TASK) && defined(SOLARIS)
+            // Circumvent stupid scheduling policy in Solaris thread package
+            thr_yield();
+#endif
         } else {
             if (bufMgr->AllocPage(task, i, page) < 0) {
                 perror("Writer pin");
@@ -120,13 +126,6 @@ void *Writer(void *arg)
 
 void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 {
-    if (!bufMgr) {
-        if (task->ReadStream(fileSize * pageSize) < 0) {
-            perror("Reader stream");
-            exit(1);
-        }
-    }
-
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
         if (!bufMgr) {
@@ -141,6 +140,10 @@ void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
                 exit(1);
             }
             assert(!page);
+#if defined(THREAD_TASK) && defined(SOLARIS)
+            // Circumvent stupid scheduling policy in Solaris thread package
+            thr_yield();
+#endif
         } else {
             if (bufMgr->PinPage(task, i, page) < 0) {
                 perror("Reader pin");
@@ -267,10 +270,14 @@ int main(int argc, char **argv)
     printf("Random number seed = %ld\n", now);
     srand(now);
 
+    gettimeofday(&start, 0);
+
     // create files and I/O tasks
 
     IOTask *task[numFiles];
     FILE *fp[numFiles];
+
+    int pipeSize = poolSize / numFiles;
 
 #ifdef THREAD_TASK
     pthread_t child[numFiles];
@@ -285,18 +292,29 @@ int main(int argc, char **argv)
             fprintf(stderr, "Could not create %s\n", files[i]);
             exit(1);
         }
-        task[i] = new UnixFdIOTask(fileno(fp[i]));
+        task[i] = new FdIOTask(fileno(fp[i]));
         assert(task[i]);
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
             exit(1);
         }
+        if (!bufMgr) {
+            if (readOnly) {
+                if (task[i]->ReadStream(fileSize * pageSize, pipeSize) < 0) {
+                    perror("Reader stream");
+                    exit(1);
+                }
+            } else {
+                if (task[i]->WriteStream(pipeSize) < 0) {
+                    perror("Writer stream");
+                    exit(1);
+                }
+            }
+        }
     }
         
     if (!readOnly) {
         printf("\nAllocating pages...\n");
-
-        gettimeofday(&start, 0);
 
         for(f = 0; f < numFiles; f++) {
 #ifdef PROCESS_TASK
@@ -323,9 +341,8 @@ int main(int argc, char **argv)
 #endif
         }
     } else {
-        printf("\nReading pages...\n");
 
-        gettimeofday(&start, 0);
+        printf("\nReading pages...\n");
 
         for(f = 0; f < numFiles; f++) {
 #ifdef PROCESS_TASK
@@ -372,23 +389,21 @@ int main(int argc, char **argv)
         (void)pthread_join(child[f], 0);
         printf("Child completed...\n");
 #endif
+        if (!bufMgr)
+            (void)task[f]->Terminate();
+        delete task[f];
     }
-
-    for(i = 0; i < numFiles; i++) {
-        task[i]->Terminate();
-        delete task[i];
-    }
-
-    gettimeofday(&stop, 0);
-    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
-    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
-           (numFiles * fileSize * pageSize) / 1048576.0 / secs);
 
     for(i = 0; i < numFiles; i++) {
         fclose(fp[i]);
         if (!readOnly)
             (void)unlink(files[i]);
     }
+
+    gettimeofday(&stop, 0);
+    secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
+    printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
+           (numFiles * fileSize * pageSize) / 1048576.0 / secs);
 
     delete bufMgr;
     delete memPool;

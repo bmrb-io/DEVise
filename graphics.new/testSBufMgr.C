@@ -61,7 +61,7 @@ int main()
     printf("\nTesting Web read data access...\n");
 
     char *url = "http://www.cs.wisc.edu/~devise/devise/spie96.ps.gz";
-    task[0] = new UnixWebIOTask(url, true);
+    task[0] = new WebIOTask(url, true);
     assert(task[0]);
     if (status < 0) {
         fprintf(stderr, "Cannot open URL %s\n", url);
@@ -95,7 +95,7 @@ int main()
     printf("\nTesting Web write data access...\n");
 
     url = "http://cgi.cs.wisc.edu/scripts/jussi/echotest";
-    task[0] = new UnixWebIOTask(url, false);
+    task[0] = new WebIOTask(url, false);
     assert(task[0]);
     if (status < 0) {
         fprintf(stderr, "Cannot open URL %s\n", url);
@@ -160,7 +160,7 @@ int main()
             fprintf(stderr, "Could not create %s\n", buf);
             exit(1);
         }
-        task[i] = new UnixFdIOTask(fileno(fp[i]));
+        task[i] = new FdIOTask(fileno(fp[i]));
         assert(task[i]);
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
@@ -310,7 +310,7 @@ int main()
             fprintf(stderr, "Could not create %s\n", buf);
             exit(1);
         }
-        task[i] = new UnixFdIOTask(fileno(fp[i]));
+        task[i] = new FdIOTask(fileno(fp[i]));
         assert(task[i]);
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
