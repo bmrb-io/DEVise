@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/04/21 20:35:17  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.6  1999/04/05 21:09:32  wenger
   Fixed bug 476 ('home' on a visually-linked view now does home on the entire
   link as a unit) (removed the corresponding code from the PileStack class,
@@ -63,6 +69,7 @@
 
 #include "DeviseTypes.h"
 #include "ViewWin.h"
+#include "ObjectValid.h"
 
 class ViewLayout;
 class VisualLink;
@@ -73,6 +80,9 @@ class PileStack {
 public:
   PileStack(const char *name, ViewLayout *window);
   ~PileStack();
+
+  static PileStack *FindByName(const char *name);
+  static void DeleteAll();
 
   const char *GetName() { return _name; }
 
@@ -87,6 +97,14 @@ public:
   void InsertView(ViewWin *view);
   void DeleteView(ViewWin *view);
 
+  ViewWin *GetFirstView();
+  int InitIterator() { return _views.InitIterator(); }
+  int More(int index) { return _views.More(index); }
+  ViewWin *Next(int index) { return _views.Next(index); }
+  void DoneIterator(int index) { _views.DoneIterator(index); }
+
+  void DetachFromWindow() { _window = NULL; }
+
   void EnableXAxis(Boolean enable);
   void EnableYAxis(Boolean enable);
 
@@ -98,8 +116,14 @@ public:
   void SetXAxisDateFormat(const char *format);
   void SetYAxisDateFormat(const char *format);
 
+  void Dump(FILE *fp);
+  static void DumpAll(FILE *fp);
+
+  static const char *StateToStr(State state);
+
 protected:
   ViewWinList *GetViewList();
+  Boolean PileOk();
 
 private:
   char *_name;
@@ -112,6 +136,8 @@ private:
   ViewWinList _views;
 
   Boolean _xAxisOn, _yAxisOn;
+
+  ObjectValid _objectValid;
 
   void SetNormal();
   void SetStacked();

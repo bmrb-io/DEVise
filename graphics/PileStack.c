@@ -26,6 +26,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/04/21 20:35:17  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.7  1999/04/05 21:09:32  wenger
   Fixed bug 476 ('home' on a visually-linked view now does home on the entire
   link as a unit) (removed the corresponding code from the PileStack class,
@@ -75,6 +81,11 @@
 #include "Util.h"
 #include "DevError.h"
 #include "Session.h"
+#include "DList.h"
+
+DefinePtrDList(PileStackList, PileStack *)
+
+static PileStackList _psList;
 
 #define DEBUG 0
 
@@ -88,10 +99,20 @@ PileStack::PileStack(const char *name, ViewLayout *window)
   printf("PileStack::PileStack(%s)\n", name);
 #endif
 
+  if (FindByName(name)) {
+    char errBuf[1024];
+    sprintf(errBuf, "PileStack <%s> already exists", name);
+    reportErrNosys(errBuf);
+    //TEMP -- should probably throw an exception
+    return;
+  }
   _name = CopyString(name);
   _window = window;
   _state = PSNormal;
   _link = NULL;
+  _psList.Append(this);
+
+  _objectValid.Set();
 }
 
 /*------------------------------------------------------------------------------
@@ -104,6 +125,17 @@ PileStack::~PileStack()
   printf("PileStack(%s)::~PileStack()\n", _name);
 #endif
 
+  int index = _views.InitIterator();
+  while (_views.More(index)) {
+    ViewWin *view = _views.Next(index);
+    view->SetParentPileStack(NULL);
+  }
+  _views.DoneIterator(index);
+
+  if (_window) {
+    _window->SetMyPileStack(NULL);
+  }
+
   delete [] _name;
   _name = NULL;
   _window = NULL;
@@ -111,6 +143,48 @@ PileStack::~PileStack()
 
   delete _link;
   _link = NULL;
+  _psList.Delete(this);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::FindByName
+ * Find a pile/stack object by name.
+ */
+PileStack *
+PileStack::FindByName(const char *name)
+{
+#if (DEBUG >= 1)
+  printf("PileStack()::FindByName(%s)\n", name);
+#endif
+
+  PileStack *ps = NULL;
+
+  int index = _psList.InitIterator();
+  while (_psList.More(index) && ps == NULL) {
+    PileStack *tmpPs = _psList.Next(index);
+    if (!strcmp(name, tmpPs->GetName())) {
+      ps = tmpPs;
+    }
+  }
+  _psList.DoneIterator(index);
+
+  return ps;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::DeleteAll
+ * Delete all pile/stack objects.
+ */
+void
+PileStack::DeleteAll()
+{
+#if (DEBUG >= 1)
+  printf("PileStack()::DeleteAll()\n");
+#endif
+
+  while (_psList.Size() > 0) {
+    delete _psList.GetFirst();
+  }
 }
 
 /*------------------------------------------------------------------------------
@@ -120,8 +194,9 @@ PileStack::~PileStack()
 void
 PileStack::SetState(State state)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
-  printf("PileStack(%s)::SetState(%d)\n", _name, state);
+  printf("PileStack(%s)::SetState(%s)\n", _name, StateToStr(state));
 #endif
 
   if (state != _state) {
@@ -156,6 +231,7 @@ PileStack::SetState(State state)
 void
 PileStack::Flip()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
   printf("PileStack(%s)::Flip()\n", _name);
 #endif
@@ -178,6 +254,13 @@ PileStack::Flip()
     GetViewList()->DoneIterator(index);
 
     //
+    // If we're in pile mode, make sure the first view gets refreshed.
+    //
+    if (_state == PSPiledLinked || _state == PSPiledNoLink) {
+      GetFirstView()->Refresh();
+    }
+
+    //
     // If we're in stack mode, raise the new top view.
     //
     if (_state == PSStacked) {
@@ -193,9 +276,49 @@ PileStack::Flip()
 void
 PileStack::InsertView(ViewWin *view)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
   printf("PileStack(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
+
+  char errBuf[1024];
+
+  // Make sure the view isn't already in this PileStack.
+  int index = _views.InitIterator();
+  while (_views.More(index)) {
+    ViewWin *tmpView = _views.Next(index);
+    if (tmpView == view) {
+      sprintf(errBuf, "View <%s> is already in PileStack <%s>\n",
+          view->GetName(), GetName());
+      reportErrNosys(errBuf);
+      _views.DoneIterator(index);
+      return;
+    }
+  }
+  _views.DoneIterator(index);
+
+  // Make sure the view isn't already in another PileStack.
+  if (view->GetParentPileStack()) {
+    sprintf(errBuf, "Inserting view <%s> into PileStack <%s>; but it "
+        "already belongs to PileStack<%s>", view->GetName(), GetName(),
+	view->GetParentPileStack()->GetName());
+    reportErrNosys(errBuf);
+    return;
+  }
+
+  // Make sure this view's parent is the same as the parent of other views
+  // in the PileStack.
+  if (GetFirstView()) {
+    if (view->GetParent() != GetFirstView()->GetParent()) {
+      sprintf(errBuf,
+	  "View <%s> has different parent than other views in PileStack <%s>",
+	  view->GetName(), GetName());
+      reportErrNosys(errBuf);
+      return;
+    }
+  }
+
+  view->SetParentPileStack(this);
 
   if (_state == PSPiledNoLink || _state == PSPiledLinked) {
 
@@ -218,7 +341,32 @@ PileStack::InsertView(ViewWin *view)
     _link->InsertView((ViewGraph *)view);
   }
 
-  _views.Append(view);
+  //
+  // Insert into the view list in the correct order -- views are inserted
+  // in order of increasing Z value; views with no Z value go at the end.
+  // Hopefully, in any given pile, all or none of the views should have
+  // Z values.
+  //
+  if (view->GetZ()) {
+    Coord z = *(view->GetZ());
+    int index = _views.InitIterator();
+    Boolean done = false;
+    while (_views.More(index) && !done) {
+      ViewWin *tmpView = _views.Next(index);
+      if (!tmpView->GetZ() || z < *(tmpView->GetZ())) {
+         _views.InsertBeforeCurrent(index, view);
+	 done = true;
+      }
+    }
+    if (!done) {
+      _views.InsertAfterCurrent(index, view);
+    }
+    _views.DoneIterator(index);
+  } else {
+    _views.Append(view);
+  }
+
+  (void) PileOk();
 }
 
 /*------------------------------------------------------------------------------
@@ -228,6 +376,7 @@ PileStack::InsertView(ViewWin *view)
 void
 PileStack::DeleteView(ViewWin *view)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 1)
   printf("PileStack(%s)::DeleteView(%s)\n", _name, view->GetName());
 #endif
@@ -238,6 +387,8 @@ PileStack::DeleteView(ViewWin *view)
         view->GetName(), GetName());
     reportErrNosys(errBuf);
   }
+
+  view->SetParentPileStack(NULL);
 
   if (_state == PSPiledNoLink || _state == PSPiledLinked) {
     ((View *)view)->SetPileMode(false);
@@ -255,6 +406,7 @@ PileStack::DeleteView(ViewWin *view)
 ViewWinList *
 PileStack::GetViewList()
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 4)
   printf("PileStack(%s)::GetViewList()\n", _name);
 #endif
@@ -286,8 +438,8 @@ PileStack::SetNormal()
   int vert;
   int horiz;
   Boolean stacked;
-  _window->GetPreferredLayout(vert, horiz, stacked);
-  _window->SetPreferredLayout(vert, horiz, false);
+  if (_window) _window->GetPreferredLayout(vert, horiz, stacked);
+  if (_window) _window->SetPreferredLayout(vert, horiz, false);
 
   _state = PSNormal;
 }
@@ -311,8 +463,8 @@ PileStack::SetStacked()
     //
     // Set window layout to stacked and raise the "top" view.
     //
-    _window->SetPreferredLayout(-1, -1, true);
-    GetViewList()->GetFirst()->Raise();
+    if (_window) _window->SetPreferredLayout(-1, -1, true);
+    if (GetViewList()->Size() > 0) GetViewList()->GetFirst()->Raise();
 
     _state = PSStacked;
   }
@@ -371,7 +523,7 @@ PileStack::SetPiled(Boolean doLink)
     //
     // Set window layout to stacked.
     //
-    _window->SetPreferredLayout(-1, -1, true);
+    if (_window) _window->SetPreferredLayout(-1, -1, true);
 
     //
     // Set all views to piled mode.
@@ -575,6 +727,7 @@ PileStack::SynchronizeView(View *view)
 void
 PileStack::EnableXAxis(Boolean enable)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 3)
   printf("PileStack(%s)::EnableXAxis()\n", _name);
 #endif
@@ -596,6 +749,7 @@ PileStack::EnableXAxis(Boolean enable)
 void
 PileStack::EnableYAxis(Boolean enable)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 3)
   printf("PileStack(%s)::EnableYAxis()\n", _name);
 #endif
@@ -618,6 +772,7 @@ void
 PileStack::SetFont(const char *which, int family, float pointSize,
     Boolean bold, Boolean italic)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 3)
   printf("PileStack(%s)::SetFont()\n", _name);
 #endif
@@ -637,6 +792,7 @@ PileStack::SetFont(const char *which, int family, float pointSize,
 void
 PileStack::SetLabelParam(Boolean occupyTop, int extent, const char *name)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 3)
   printf("PileStack(%s)::SetLabelParam()\n", _name);
 #endif
@@ -656,6 +812,7 @@ PileStack::SetLabelParam(Boolean occupyTop, int extent, const char *name)
 void
 PileStack::SetXAxisDateFormat(const char *format)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 3)
   printf("PileStack(%s)::SetXAxisDateFormat()\n", _name);
 #endif
@@ -675,6 +832,7 @@ PileStack::SetXAxisDateFormat(const char *format)
 void
 PileStack::SetYAxisDateFormat(const char *format)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if (DEBUG >= 3)
   printf("PileStack(%s)::SetYAxisDateFormat()\n", _name);
 #endif
@@ -685,6 +843,155 @@ PileStack::SetYAxisDateFormat(const char *format)
     view->SetYAxisDateFormat(format, false);
   }
   GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::Dump
+ * Dump info for this PileStack object.
+ */
+void
+PileStack::Dump(FILE *fp)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+  fprintf(fp, "  <%s>\n", GetName());
+  fprintf(fp, "    state: %s\n", StateToStr(_state));
+  char *winName = "(null)";
+  if (_window) winName = _window->GetName();
+  fprintf(fp, "    window: <%s>\n", winName);
+  fprintf(fp, "    views:\n");
+  
+  int index = _views.InitIterator();
+  while (_views.More(index)) {
+    ViewWin *view = _views.Next(index);
+    fprintf(fp, "     <%s>", view->GetName());
+    if (view->GetZ()) {
+      fprintf(fp, " z = %g", *(view->GetZ()));
+    }
+    fprintf(fp, "\n");
+  }
+  _views.DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::DumpAll
+ * Dump info for all PileStack objects.
+ */
+void
+PileStack::DumpAll(FILE *fp)
+{
+  fprintf(fp, "PileStack objects:\n");
+  int index = _psList.InitIterator();
+  while (_psList.More(index)) {
+    PileStack *ps = _psList.Next(index);
+    ps->Dump(fp);
+  }
+  _psList.DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::PileOk
+ * Checks the consistency of the pile and related objects.
+ */
+Boolean
+PileStack::PileOk()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::PileOk()\n", _name);
+#endif
+
+  Boolean result = true;
+
+  char errBuf[1024];
+
+  ViewWin *parent = NULL;
+  int index = GetViewList()->InitIterator();
+  if (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    parent = view->GetParent();
+    if (view->GetParentPileStack() != this) {
+      sprintf(errBuf,
+          "View <%s> is in PileStack <%s>, but does not point to it",
+	  view->GetName(), GetName());
+      reportErrNosys(errBuf);
+    }
+  }
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    if (view->GetParent() != parent) {
+      sprintf(errBuf, "Pile <%s> has views with different parents", GetName());
+      reportErrNosys(errBuf);
+      result = false;
+    }
+    if (view->GetParentPileStack() != this) {
+      sprintf(errBuf,
+          "View <%s> is in PileStack <%s>, but does not point to it",
+	  view->GetName(), GetName());
+      reportErrNosys(errBuf);
+    }
+  }
+  GetViewList()->DoneIterator(index);
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::StateToStr
+ * Convert a State enum to the corresponding string.
+ */
+const char *
+PileStack::StateToStr(State state)
+{
+  char *result = "";
+
+  switch (state) {
+  case PileStackInvalid:
+    result = "PileStackInvalid";
+    break;
+
+  case PSNormal:
+    result = "PSNormal";
+    break;
+
+  case PSStacked:
+    result = "PSStacked";
+    break;
+
+  case PSPiledNoLink:
+    result = "PSPiledNoLink";
+    break;
+
+  case PSPiledLinked:
+    result = "PSPiledLinked";
+    break;
+
+  default:
+    result = "invalid";
+    break;
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::GetFirstView
+ * Returns the first view in the pile.
+ */
+ViewWin *
+PileStack::GetFirstView()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::GetFirstView()\n", _name);
+#endif
+
+  ViewWin *result = NULL;
+  if (_views.Size() > 0) {
+    result = _views.GetFirst();
+  }
+
+  return result;
 }
 
 /*============================================================================*/

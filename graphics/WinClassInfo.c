@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/02/11 19:54:40  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.19  1999/01/04 15:33:20  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -224,7 +229,7 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
   char buf[256];
   sprintf(buf, "%s_pile", name);
   PileStack *ps = new PileStack(buf, win);
-  win->SetPileStack(ps);
+  win->SetMyPileStack(ps);
 
   return new TileLayoutInfo(name, win, relativeX, relativeY, relativeWidth,
     relativeHeight);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/04/21 20:35:22  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.34  1999/02/22 19:07:37  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -374,13 +380,21 @@ class ViewWin : public Coloring
     void SetPrintPixmap(Boolean pixmap) { _printAsPixmap = pixmap; }
     Boolean GetPrintPixmap() { return _printAsPixmap; }
 
-	PileStack *GetPileStack() { return _pileStack; }
-	void SetPileStack(PileStack *ps);
+	PileStack *GetMyPileStack() { return _myPileStack; }
+	void SetMyPileStack(PileStack *ps);
+
+	PileStack *GetParentPileStack() { return _parentPileStack; }
+	void SetParentPileStack(PileStack *ps);
 
 	virtual void Refresh(Boolean refreshPile = true) {}
 
     virtual void SetFont(const char *which, int family, float pointSize,
       Boolean bold, Boolean italic, Boolean notifyPile = true);
+
+	// Z value for piled view symbols.
+	void SetZ(Coord z) { _zValid = true; _zValue = z; }
+	void UnsetZ() { _zValid = false; }
+	const Coord* GetZ() { return _zValid ? &_zValue : NULL; }
 
 protected:
     /* called by base class when it has been mapped/unmapped */
@@ -435,8 +449,15 @@ private:
     Boolean _excludeFromPrint;
     Boolean _printAsPixmap;
 
-	PileStack *_pileStack;
+	// The PileStack, if any, that "owns" this object.
+	PileStack *_myPileStack;
 
+	// The PileStack, if any, that this object "owns".
+	PileStack *_parentPileStack;
+
+	// Z value for piled view symbols.
+	Boolean _zValid;
+	Coord _zValue;
 
 
 	protected:

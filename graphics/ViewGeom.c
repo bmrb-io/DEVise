@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/03/01 17:47:33  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
  */
 
 #include <stdio.h>
@@ -101,7 +104,7 @@ ViewGeom::Ungroup()
           window->NumChildren());
 #endif
       if (window->NumChildren() > 1 &&
-          window->GetPileStack()->GetState() == PileStack::PSNormal) {
+          window->GetMyPileStack()->GetState() == PileStack::PSNormal) {
         result += SplitWindow(window);
       }
     }

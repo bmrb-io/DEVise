@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/11/11 14:30:27  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.19  1998/09/08 16:07:15  wenger
   Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
   the creation of multiple classes with the same name; fixed session file.
@@ -91,6 +97,7 @@
 #include "Util.h"
 #include "DevError.h"
 #include "MasterSlaveLink.h"
+#include "PileStack.h"
 
 //#define DEBUG
 #define CHECK_CLASS_RECS 0
@@ -439,6 +446,9 @@ void ClassDir::DestroyAllInstances()
       classRec->_numInstances = 0;
     }
   }
+
+  PileStack::DeleteAll();
+
   _destroyingAll = false;
 }
 

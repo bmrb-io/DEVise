@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/04/14 15:30:20  wenger
+  Improved 'switch TData': moved the code from Tcl to C++, functionality
+  is more flexible -- schemas don't have to match exactly as long as the
+  appropriate TData attributes are present; TData can now be specified for
+  view symbols in parent view mapping; updated shape help.
+
   Revision 1.11  1999/03/03 18:22:07  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -43,6 +49,7 @@
 #include "ClassDir.h"
 #include "Control.h"
 #include "StringStorage.h"
+#include "PileStack.h"
 
 #include "Color.h"
 //#define DEBUG
@@ -106,6 +113,14 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     //
     Coord dataX = ShapeGetX(gdata, map, offset);
     Coord dataY = ShapeGetY(gdata, map, offset);
+
+    Boolean hasZ = false;
+    Coord dataZ;
+    if (map->GDataAttrList()->Find("z")) {
+      hasZ = true;
+      dataZ = GetZ(gdata, map, offset);
+    }
+
     Coord dataSize = GetSize(gdata, map, offset);
     dataSize *= pixelSize; // +/- keys in view
     Coord dataWd = GetShapeAttr1(gdata, map, offset) * dataSize;
@@ -194,6 +209,24 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       }
     }
 
+    // Figure out whether anything is specified for shapeAttr_4.
+    PileStack *ps = NULL;
+    info = attrList->Find("shapeAttr_4");
+    if (info && info->type == StringAttr) {
+      key = (int)GetShapeAttr4(gdata, map, offset);
+
+      char *pileName = NULL;
+      code = stringTable->Lookup(key, pileName);
+      if (code < 0) {
+        reportErrNosys("Can't find pile name in string table");
+      } else {
+        ps = PileStack::FindByName(pileName);
+	if (!ps) {
+	  ps = new PileStack(pileName, NULL);
+	  ps->SetState(PileStack::PSPiledLinked);
+	}
+      }
+    }
 
     if (view->GetDisplayDataValues()) {
       win->SetForeground(view->GetForeground());
@@ -205,7 +238,47 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     // Now put the view symbol into its parent view.
     //
     viewsym->AppendToParent(view);
+    if (ps) {
+      ViewWin *firstView = ps->GetFirstView();
+      if (firstView) {
+        int tmpX, tmpY, tmpXP, tmpYP;
+	unsigned tmpW, tmpH;
+	firstView->Geometry(tmpX, tmpY, tmpW, tmpH);
+	firstView->AbsoluteOrigin(tmpX, tmpY);
+	firstView->GetParent()->AbsoluteOrigin(tmpXP, tmpYP);
+	tmpX -= tmpXP;
+	tmpY -= tmpYP;
+	if (pixX != tmpX || pixY != tmpY || pixWd != tmpW || pixHt != tmpH) {
+	  if (false) {
+            // Force all views in pile to the same geometry.
+#if defined(DEBUG)
+            printf("View <%s> has different geometry than first view in pile; "
+	        "geometry changed to match first view\n", viewname);
+#endif
+	    pixX = tmpX;
+	    pixY = tmpY;
+	    pixWd = tmpW;
+	    pixHt = tmpH;
+	  } else {
+            // Don't pile views if geometry differs.
+#if defined(DEBUG)
+            printf("View <%s> has different geometry than first view in pile; "
+	        "view not piled\n", viewname);
+#endif
+            ps = NULL;
+	  }
+	}
+      }
+    }
     viewsym->Map(pixX, pixY, pixWd, pixHt);
     viewsym->Refresh();
+
+    if (hasZ) {
+      viewsym->SetZ(dataZ);
+    }
+
+    if (ps) {
+      ps->InsertView(viewsym);
+    }
   }
 }

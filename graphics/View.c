@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.167  1999/05/04 17:16:59  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.166  1999/04/23 21:08:07  wenger
   Fixed the problem with piles/date formats that caused some of Tim Wilson's
   sessions to crash.
@@ -834,7 +838,9 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 		   AxisLabel *, int weight, Boolean boundary)
 	: ViewWin(name, fgid, bgid, weight, boundary)
 {
-	DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
+#if defined(DEBUG)
+	printf("View::View(%s, this = %p)\n", name, this);
+#endif
 
 	_inDestructor = false;
 
@@ -967,7 +973,9 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 View::~View(void)
 {
-	DO_DEBUG(printf("View::~View(%s, this = %p)\n", GetName(), this));
+#if defined(DEBUG)
+	printf("View::~View(%s, this = %p)\n", GetName(), this);
+#endif
 
 	_inDestructor = true;
 
@@ -1184,12 +1192,12 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
   // the next mouse click in this view will move the cursor
   if (IsInPileMode()) {
 	Boolean pileHighlighted = false;
-    int index = GetParent()->InitIterator();
-	while (GetParent()->More(index)) {
-	  View *tmpView = (View *)GetParent()->Next(index);
+    int index = GetParentPileStack()->InitIterator();
+	while (GetParentPileStack()->More(index)) {
+	  View *tmpView = (View *)GetParentPileStack()->Next(index);
 	  if (tmpView->IsSelected()) pileHighlighted = true;
 	}
-	GetParent()->DoneIterator(index);
+	GetParentPileStack()->DoneIterator(index);
 
     if (!pileHighlighted) {
       return false;
@@ -1283,7 +1291,10 @@ void View::SetPileMode(Boolean mode)
   _pileViewHold = true;
 
   if (mode) {
-    GetWindowRep()->SetOutput(GetFirstSibling()->GetWindowRep());
+	if (GetParentPileStack()->GetFirstView()) {
+      GetWindowRep()->SetOutput(
+	      GetParentPileStack()->GetFirstView()->GetWindowRep());
+	}
   } else {
     GetWindowRep()->ResetOutput();
   }
@@ -1946,17 +1957,17 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
     // Show the names of all views in piled mode, but keep them from
     // overlapping.
     if (_pileMode) {
-      ViewWin *parent = GetParent();
-      int index = parent->InitIterator();
-      while (parent->More(index)) {
-	ViewWin *sibling = parent->Next(index);
+      PileStack *ps = GetParentPileStack();
+      int index = ps->InitIterator();
+      while (ps->More(index)) {
+	ViewWin *sibling = ps->Next(index);
 	if (this == sibling) {
 	  break;
 	} else {
 	  yloc -= 15; // Warning: constant depends on font size.
 	}
       }
-      parent->DoneIterator(index);
+      ps->DoneIterator(index);
     }
 
     win->AbsoluteText(buf, xloc, yloc, width, height,
@@ -1986,15 +1997,15 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
       ViewWin *parent = GetParent();
       DOASSERT(parent, "View has no parent");
 
-      int index = parent->InitIterator();
-      DOASSERT(parent->More(index), "Parent view has no children");
+      int index = GetParentPileStack()->InitIterator();
 
       /* Skip over all views in order up to and including this view. */
-      while (parent->More(index) && (parent->Next(index) != this)) {}
+      while (GetParentPileStack()->More(index) &&
+	      (GetParentPileStack()->Next(index) != this)) {}
 
       /* Now refresh the next view. */
-      if (parent->More(index)) {
-        ViewWin *vw = parent->Next(index);
+      if (GetParentPileStack()->More(index)) {
+        ViewWin *vw = GetParentPileStack()->Next(index);
 
         /* FindViewByName is a type-safe way to convert from a ViewWin to
          * a View, which is necessary to call Refresh(). */
@@ -2009,7 +2020,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
         lastInPile = false;
       }
 
-      parent->DoneIterator(index);
+      GetParentPileStack()->DoneIterator(index);
     }
   }
 
@@ -2032,12 +2043,12 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   // 446.)  RKW 1999-02-22.
   if (IsInPileMode()) {
     if (lastInPile) {
-	  int index = GetParent()->InitIterator();
-	  while (GetParent()->More(index)) {
-	    View *tmpView = (View *)GetParent()->Next(index);
+	  int index = GetParentPileStack()->InitIterator();
+	  while (GetParentPileStack()->More(index)) {
+	    View *tmpView = (View *)GetParentPileStack()->Next(index);
 		tmpView->DrawCursors();
 	  }
-	  GetParent()->DoneIterator(index);
+	  GetParentPileStack()->DoneIterator(index);
 	}
   } else {
     DrawCursors();
@@ -2092,7 +2103,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, const char *name,
     Boolean notifyPile)
 {
   if (_pileMode && notifyPile) {
-    GetParent()->GetPileStack()->SetLabelParam(occupyTop, extent, name);
+    GetParentPileStack()->SetLabelParam(occupyTop, extent, name);
 	return;
   }
 
@@ -2148,7 +2159,7 @@ void View::XAxisDisplayOnOff(Boolean stat, Boolean notifyPile)
 
   if (stat != xAxis.inUse) {
     if (_pileMode && notifyPile) {
-	  GetParent()->GetPileStack()->EnableXAxis(stat);
+	  GetParentPileStack()->EnableXAxis(stat);
 	} else {
       xAxis.inUse = stat;
       _updateTransform = true;
@@ -2167,7 +2178,7 @@ void View::YAxisDisplayOnOff(Boolean stat, Boolean notifyPile)
 
   if (stat != yAxis.inUse) {
     if (_pileMode && notifyPile) {
-	  GetParent()->GetPileStack()->EnableYAxis(stat);
+	  GetParentPileStack()->EnableYAxis(stat);
 	} else {
       yAxis.inUse = stat;
       _updateTransform  = true;
@@ -2331,8 +2342,14 @@ void View::Refresh(Boolean refreshPile)
 #if defined(DEBUG)
   printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
 #endif
-  if (refreshPile && _pileMode && !_isHighlightView && GetFirstSibling()) {
-    GetFirstSibling()->Refresh(false);
+
+  if (_inDestructor) {
+    return;
+  }
+
+  if (refreshPile && _pileMode && !_isHighlightView &&
+      GetParentPileStack()->GetFirstView()) {
+    GetParentPileStack()->GetFirstView()->Refresh(false);
   } else {
     _doneRefresh = false;
     _refresh = true;
@@ -3391,8 +3408,7 @@ View::SetFont(const char *which, int family, float pointSize,
 #endif
 
   if (_pileMode && notifyPile) {
-	GetParent()->GetPileStack()->SetFont(which, family, pointSize, bold,
-	    italic);
+	GetParentPileStack()->SetFont(which, family, pointSize, bold, italic);
   } else {
     if (!strcmp(which, "title")) {
       _titleFont.Set(family, pointSize, bold, italic);
@@ -3568,7 +3584,7 @@ void	View::Run(void)
 		if (parent == NULL)
 			return;
 
-		ViewWin *vw = GetFirstSibling();
+		ViewWin *vw = GetParentPileStack()->GetFirstView();
 
 		if (this != vw)
 		{
@@ -3777,7 +3793,7 @@ void	View::Run(void)
 
 	if (_pileMode)
 	{
-		ViewWin*	firstSibling = GetFirstSibling();
+		ViewWin*	firstSibling = GetParentPileStack()->GetFirstView();
 
 		if (this != firstSibling)
 		{
@@ -3911,8 +3927,18 @@ void	View::Run(void)
 		if (winRep->ETk_WindowCount() > 0)
 			winRep->ETk_MarkAll(false);
 
-		if (NumChildren())				// Clean up embedded views (symbols)
+		if (NumChildren()) {			// Clean up embedded views (symbols)
+			int index = InitIterator();
+			while (More(index)) {
+              ViewWin *view = Next(index);
+			  if (view->GetParentPileStack()) {
+			    view->GetParentPileStack()->DeleteView(view);
+				view->SetParentPileStack(NULL);
+			  }
+			}
+			DoneIterator(index);
 			DetachChildren();
+		}
 
 #if !FILL_WHOLE_BACKGROUND
 		winRep->SetForeground(GetBackground());
@@ -3960,290 +3986,6 @@ void	View::Run(void)
 	printf("after Run %d %d %d %d\n", _hasExposure, _filterChanged, _refresh,
 		   _updateTransform);
 #endif
-}
-
-//******************************************************************************
-
-// This is a pruned version for pedagogical purposes. CEW 971211.
-void	View::Run2(void)
-{
-    if (_pileMode)
-	{
-		ViewWin*	parent = GetParent();
-
-		if (parent == NULL)
-			return;
-
-		int			index = parent->InitIterator();
-
-		DOASSERT(parent->More(index), "Parent view has no children");
-
-		ViewWin*	vw = parent->Next(index);
-
-		parent->DoneIterator(index);
-
-		if (this != vw)
-		{
-			if (_pileViewHold)
-			{
-				AbortQuery();
-				return;
-			}
-
-			_pileViewHold = true;
-		}
-		else
-		{
-			// Assure that the bottom view's window rep (the one used to
-			// draw the pile) is visible.
-			GetWindowRep()->Raise();
-		}
-	}
-
-	ControlPanel::Mode	mode = ControlPanel::Instance()->GetMode();
-
-	// Keep track that events occurred while in LayoutMode, else
-	// refresh in display mode because events occurred in LayoutMode
-	if ((mode == ControlPanel::LayoutMode) && 
-		(_hasExposure || _filterChanged || _refresh || _updateTransform))
-		_modeRefresh = true;
-	else if ((mode == ControlPanel::DisplayMode) && _modeRefresh)
-		_refresh = true;
-
-	if (_querySent)
-	{
-		if (_hasExposure || _filterChanged || _refresh || _updateTransform ||
-			!Mapped())
-		{
-			AbortQuery();
-			_refresh = true;
-		}
-		else
-		{
-			return;
-		}
-	}
-
-	if (!Mapped())
-		return;
-
-	if (Iconified())
-	{
-		_refresh = true;
-		_hasExposure = false;
-	}
-
-	if (!_hasExposure && !_filterChanged && !_refresh)
-		return;
-
-	WindowRep*		winRep = GetWindowRep();
-	int				scrnX, scrnY, scrnWidth, scrnHeight;
-	unsigned int	sW, sH;
-    VisualFilter	newFilter;
-
-	Geometry(scrnX, scrnY, sW, sH);
-
-	scrnWidth = sW;
-	scrnHeight = sH;
-    
-	if (!Iconified() && !_pileMode && (_numDimensions == 2) &&
-		RestorePixmap(_filter, newFilter) == PixmapTotal)
-	{
-		if (_updateTransform)
-		{
-			UpdateTransform(GetWindowRep());
-			_updateTransform = false;
-		}
-
-		winRep->PushTop();
-		winRep->MakeIdentity();			// Set up identity transformation
-		winRep->SetGifDirty(true);
-		DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);	// Draw axes
-	
-		if (viewBorder)					// Draw view border
-		{
-			PColorID	savePColorID = winRep->GetForeground();
-		
-			winRep->SetForeground(GetPColorID(viewBorderColor));
-			DrawHighlight();
-			winRep->SetForeground(savePColorID);
-		}
-
-		Boolean		oldSelected = _selected;
-
-		_selected = false;
-		DoSelect(oldSelected);		// Draw highlight border
-		winRep->PopTransform();			// Pop the transform
-
-		_cursorsOn = false;
-
-		if (_numDimensions == 3)
-			Draw3DAxis();
-		DrawCursors();		// Draw cursors
-
-		_hasExposure = false;
-		_filterChanged = false;
-		_refresh = false;
-		_hasLastFilter = false;
-
-		return;
-	}
-
-	if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged)
-	{
-		UpdateFilterStat	stat;
-
-		stat = UpdateFilterWithScroll();
-
-		if (stat == Scrolled)			// Do scroll, if possible
-		{
-			// Did scrolling. Can keep this filter update so that _hasFilter
-			// is no longer true, and _hasExposure is true.
-			_hasExposure = true;
-			_filterChanged = false;
-			_hasLastFilter = true;
-			_lastFilter = _filter;
-		}
-		else if (stat == SameFilter)
-		{
-			// A sequence of scroll/zoom between updates made the latest
-			// filter the same as the one being displayed
-			_filterChanged = false;
-			_hasLastFilter = true;
-			_lastFilter = _filter;
-			return;
-		}
-	}
-
-	if (_updateTransform)				// Update WindowRep transform matrix
-	{
-		UpdateTransform(GetWindowRep());
-		_updateTransform = false;
-	}
-
-	Boolean		piledDisplay = false;
-
-	if (_pileMode)
-	{
-		ViewWin*	firstSibling = GetFirstSibling();
-
-		if (this != firstSibling)
-			piledDisplay = true;
-	}
-
-	if (piledDisplay || _filterChanged || _refresh)
-	{									// Need to redraw the whole screen
-		_queryFilter = _filter;
-		_hasLastFilter = true;
-		_lastFilter = _queryFilter;
-		_hasExposure = false;
-	}
-
-#if !FILL_WHOLE_BACKGROUND
-	if (_hasExposure)					// Limit exposure to size of window
-	{
-		_exposureRect.xLow = MAX(_exposureRect.xLow, 0);
-		_exposureRect.xLow = MIN(_exposureRect.xLow, scrnWidth - 1);
-		_exposureRect.xHigh = MAX(_exposureRect.xLow, _exposureRect.xHigh);
-		_exposureRect.xHigh = MIN(_exposureRect.xHigh, scrnWidth - 1);
-
-		_exposureRect.yLow = MAX(_exposureRect.yLow, 0);
-		_exposureRect.yLow = MIN(_exposureRect.yLow, scrnHeight - 1);
-		_exposureRect.yHigh = MAX(_exposureRect.yLow, _exposureRect.yHigh);
-		_exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
-	}
-#endif
-    
-	winRep->PushTop();
-	winRep->MakeIdentity();
-
-	if (!piledDisplay)
-	{
-		DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);	// Draw axes
-
-		if (viewBorder)					//	Draw view border
-		{
-			PColorID	savePColorID = winRep->GetBackground();
-
-			winRep->SetForeground(GetPColorID(viewBorderColor));
-			DrawHighlight();
-			winRep->SetForeground(savePColorID);
-		}
-
-		Boolean		oldSelected = _selected;
-
-		_selected = false;
-		DoSelect(oldSelected);		// Draw highlight border
-	}
-
-	// Push clip region using this transform
-	int		dataX, dataY, dataW, dataH;
-
-	GetDataArea(dataX, dataY, dataW, dataH);
-
-#if !FILL_WHOLE_BACKGROUND
-	if (_hasExposure)					// Use exposure rectangle if needed
-	{
-		int		dataX2 = MIN(_exposureRect.xHigh, dataX + dataW - 1);
-		int		dataY2 = MIN(_exposureRect.yHigh, dataY + dataH - 1);
-
-		dataX = MAX(_exposureRect.xLow, dataX);
-		dataY = MAX(_exposureRect.yLow, dataY);
-		dataW = dataX2 - dataX + 1;
-		dataH = dataY2 - dataY + 1;
-	}
-#endif
-
-	winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);	// Clip draw area
-
-	if (!piledDisplay)					// Blank out area to be drawn
-	{
-		if (winRep->DaliImageCount() > 0)
-		{
-			(void)winRep->DaliFreeImages();
-			sleep(1);
-		}
-
-		if (winRep->ETk_WindowCount() > 0)
-			winRep->ETk_MarkAll(false);
-
-		if (NumChildren())				// Clean up embedded views (symbols)
-			DetachChildren();
-
-#if !FILL_WHOLE_BACKGROUND
-		winRep->SetForeground(GetBackground());
-		winRep->SetPattern(Pattern0);
-		winRep->SetLineWidth(0);
-		winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
-#endif
-	}
-
-	winRep->PopTransform();				// Pop the identity transform matrix
-
-	_hasExposure = false;
-	_filterChanged = false;
-	_refresh = false;
-
-	if (mode == ControlPanel::DisplayMode)
-	{
-		// Send query for events that occurred while in layout mode
-		_querySent = true;
-		_modeRefresh = false; 
-
-		ControlPanel::Instance()->SetBusy();
-
-		if (!_hasTimestamp)
-			_timeStamp = TimeStamp::NextTimeStamp();
-
-		_hasTimestamp = false;
-		_bytes = 0;
-
-		DerivedStartQuery(_queryFilter, _timeStamp);
-	}
-	else
-	{
-		winRep->PopClip();
-	}
 }
 
 //******************************************************************************
@@ -4396,7 +4138,7 @@ View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 {
   if (format == NULL) format = "";
   if (_pileMode && notifyPile) {
-    GetParent()->GetPileStack()->SetXAxisDateFormat(format);
+    GetParentPileStack()->SetXAxisDateFormat(format);
   } else {
     if (_xAxisDateFormat == NULL || strcmp(format, _xAxisDateFormat)) {
       delete [] _xAxisDateFormat;
@@ -4411,7 +4153,7 @@ View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
 {
   if (format == NULL) format = "";
   if (_pileMode && notifyPile) {
-    GetParent()->GetPileStack()->SetYAxisDateFormat(format);
+    GetParentPileStack()->SetYAxisDateFormat(format);
   } else {
     if (_yAxisDateFormat == NULL || strcmp(format, _yAxisDateFormat)) {
       delete [] _yAxisDateFormat;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,9 +16,6 @@
   $Id$
 
   $Log$
-  Revision 1.51.4.1  1999/04/29 17:45:58  wenger
-  Minor improvements to debug output.
-
   Revision 1.51  1998/11/24 19:31:18  wenger
   Fixed problem with soil science sessions sometimes locking up the
   JavaScreen by disallowing input from file descriptors while waiting for
@@ -364,6 +361,14 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   LogMessage(_logBuf);
 #endif
 
+  if (flag == 0) {
+    sprintf(_logBuf, "DispatcherCallback %s registers with flag == 0", 
+        c->DispatchedName());
+    LogMessage(_logBuf);
+    reportErrNosys(_logBuf);
+    return NULL;
+  }
+
   DispatcherInfo *info = new DispatcherInfo;
   info->callBack = c;
   info->flag = flag;
@@ -561,12 +566,14 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 #if defined(DEBUG)
       sprintf(_logBuf, "deleting callback 0x%p\n", info->callBack);
       LogMessage(_logBuf);
+#endif
       if (info->callback_requested) {
         sprintf(_logBuf, "Dispatcher internal error: callback to delete"
           " requests callback\n");
         LogMessage(_logBuf);
+		reportErrNosys(_logBuf);
+		CancelCallback(info);
       }
-#endif
       _callbacks.DeleteCurrent(index);
       info->callBack = NULL; // for safety
       delete info;
@@ -970,7 +977,12 @@ Dispatcher::CallbacksPending()
 
 void Dispatcher::RequestCallback(DispatcherID info)
 {
-	RequestTimedCallback (info, 0);
+#if defined(DEBUG)
+    printf("Dispatcher::RequestCallback(0x%p, %s)\n", info,
+	  info->callBack->DispatchedName());
+#endif
+
+	RequestTimedCallback(info, 0);
 }
 
 void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
@@ -978,12 +990,21 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::RequestTimedCallback(0x%p %s %ld)\n", info,
-    info->callBack->DispatchedName(), time);
+  sprintf(_logBuf, "Dispatcher::RequestCallback(0x%p %s)\n", info,
+    info->callBack->DispatchedName());
   DebugLog::DefaultLog()->Message(_logBuf);
 #endif
 
   DOASSERT(info, "bad dispatcher id");
+  if (info->flag == 0) {
+    sprintf(_logBuf,
+	  "Owner of DispatcherID 0x%p has unregistered but requests callback!",
+	  info);
+    LogMessage(_logBuf);
+	reportErrNosys(_logBuf);
+	return;
+  }
+
   if( !(info->callback_requested) ) {
     _callback_requests++;
     info->callback_requested = true;

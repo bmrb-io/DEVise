@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.82  1999/05/04 17:17:01  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.81  1999/04/21 20:35:20  wenger
   Improved interface for changing fonts, titles, etc.:
   * Fonts can now be set on a window-wide basis.
@@ -897,8 +901,6 @@ protected:
 		virtual void	Run(void);
 		virtual void	Cleanup(void)
 		{ DOASSERT(false, "Call in derived class only"); }
-
-		void	Run2(void);		// Pedagogical version of Run()
 
 		// Callback methods (WindowRepCallback)
 		virtual void	HandleExpose(WindowRep* w, int x, int y,

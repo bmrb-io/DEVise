@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/05/03 17:43:47  wenger
+  Fixed some stuff that shouldn't have been committed yet.
+
   Revision 1.60  1999/04/29 17:36:40  wenger
   Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 
@@ -4222,7 +4225,7 @@ DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
 			// views will now end up with the views piled intead of stacked.
 			// RKW 1999-02-10.
 			//
-		    layout->GetPileStack()->SetState(PileStack::PSPiledLinked);
+		    layout->GetMyPileStack()->SetState(PileStack::PSPiledLinked);
 		  } else {
             layout->SetPreferredLayout(atoi(argv[2]), atoi(argv[3]),
     				   (atoi(argv[4]) ? true : false));
@@ -4724,10 +4727,9 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
-		errno = 2;
-		reportError("Testing error handling", 2);
-    	ReturnVal(API_NAK, (char *)DevError::GetLatestError());
-    	return -1;
+		PileStack::DumpAll(stdout);
+    	ReturnVal(API_ACK, "done");
+    	return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
@@ -5336,12 +5338,9 @@ IMPLEMENT_COMMAND_BEGIN(setPileStackState)
 #endif
 
     if (argc == 3) {
-        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
-        if (!window) {
-          ReturnVal(API_NAK, "Cannot find window");
-          return -1;
-        }
-		PileStack *ps = window->GetPileStack();
+		char namebuf[128];
+		sprintf(namebuf, "%s_pile", argv[1]);
+		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5365,12 +5364,9 @@ IMPLEMENT_COMMAND_BEGIN(getPileStackState)
 #endif
 
     if (argc == 2) {
-        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
-        if (!window) {
-          ReturnVal(API_NAK, "Cannot find window");
-          return -1;
-        }
-		PileStack *ps = window->GetPileStack();
+		char namebuf[128];
+		sprintf(namebuf, "%s_pile", argv[1]);
+		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5395,12 +5391,9 @@ IMPLEMENT_COMMAND_BEGIN(flipPileStack)
 #endif
 
     if (argc == 2) {
-        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
-        if (!window) {
-          ReturnVal(API_NAK, "Cannot find window");
-          return -1;
-        }
-		PileStack *ps = window->GetPileStack();
+		char namebuf[128];
+		sprintf(namebuf, "%s_pile", argv[1]);
+		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;

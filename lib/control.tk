@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.187  1999/05/04 17:17:19  wenger
+#	Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+#	protocol that deals better with view symbols).
+#	
 #	Revision 1.186  1999/04/29 17:36:47  wenger
 #	Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 #	
@@ -1131,7 +1135,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
-#.mbar.session.menu add command -label "Test" -command { DEVise test $curView }
+#.mbar.session.menu add command -label "Test" -command { DEVise test }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/04/21 20:35:20  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.54  1999/03/01 17:47:34  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -342,7 +348,10 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 	_excludeFromPrint = false;
 	_printAsPixmap = false;
 
-	_pileStack = NULL;
+	_myPileStack = NULL;
+	_parentPileStack = NULL;
+
+	_zValid = false;
 }
 
 ViewWin::~ViewWin(void)
@@ -357,7 +366,12 @@ ViewWin::~ViewWin(void)
 
 	delete windowRepCallback;
 
-	delete _pileStack;
+	if (_myPileStack) {
+	  _myPileStack->DetachFromWindow();
+	}
+	if (_parentPileStack) {
+	  _parentPileStack->DeleteView(this);
+	}
 }
 
 //******************************************************************************
@@ -502,7 +516,20 @@ void ViewWin::DeleteFromParent()
 
     // Make sure pile gets redrawn if we just removed this view from
     // a pile.
-    if (GetFirstSibling()) GetFirstSibling()->Refresh();
+    if (GetParentPileStack()) {
+      PileStack *ps = GetParentPileStack();
+      int index = ps->InitIterator();
+      while (ps->More(index)) {
+        ViewWin *tmpView = ps->Next(index);
+	if (tmpView != this) {
+	  tmpView->Refresh(false);
+	  break;
+	}
+      }
+      ps->DoneIterator(index);
+    } else if (GetFirstSibling()) {
+      GetFirstSibling()->Refresh();
+    }
 
     _parent = NULL;
   }
@@ -681,19 +708,24 @@ void ViewWin::Append(ViewWin *child)
 #endif
 
   _children.Append(child);
-  if (_pileStack) _pileStack->InsertView(child);
+  if (_myPileStack) _myPileStack->InsertView(child);
 }
 
 /* Delete child */
 
 void ViewWin::Delete(ViewWin *child)
 {
+#if defined(DEBUG)
+  printf("ViewWin(%s)::Delete(%s)\n", GetName(), child->GetName());
+#endif
+
   if (!_children.Delete(child)) {
     fprintf(stderr,"ViewWin::Delete child not found\n");
     Exit::DoExit(2);
   }
-  if (_pileStack) _pileStack->DeleteView(child);
+  if (_myPileStack) _myPileStack->DeleteView(child);
 }
+
 /* Set geometry of view */
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h) 
@@ -842,6 +874,8 @@ void ViewWin::Replace(ViewWin *child1, ViewWin *child2)
 }
 
 /* Swap child1 and child2. Both must be valid children, and child1 != child2.*/
+/* Note that if views are piled, this should only be called from
+ * PileStack::Flip().  RKW 1999-05-06. */
 
 void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
@@ -1225,10 +1259,25 @@ Boolean ViewWin::HandleWindowDestroy(WindowRep* w)
 }
 
 void
-ViewWin::SetPileStack(PileStack *ps)
+ViewWin::SetMyPileStack(PileStack *ps)
 {
-  delete _pileStack;
-  _pileStack = ps;
+#if defined(DEBUG)
+  const char *psName = ps ? ps->GetName() : "(null)";
+  printf("ViewWin(%s)::SetMyPileStack(%s)\n", GetName(), psName);
+#endif
+
+  _myPileStack = ps;
+}
+
+void
+ViewWin::SetParentPileStack(PileStack *ps)
+{
+#if defined(DEBUG)
+  char const *psName = ps ? ps->GetName() : "(null)";
+  printf("ViewWin(%s)::SetParentPileStack(%s)\n", GetName(), psName);
+#endif
+
+  _parentPileStack = ps;
 }
 
 void
