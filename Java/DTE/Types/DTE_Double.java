@@ -16,14 +16,19 @@ public class DTE_Double extends DTE_Type implements Cloneable
     val = i;
   }
   
-  public String get_type( )
+  public TypeDesc getType( )
   {
-    return "double";
+    return new DoubleDesc( );
   }
 
-  public Object get_val( )
+  public double getValue( )
   {
-    return new Double( val );
+    return val;
+  }
+
+  public void setValue( double d)
+  {
+    val = d;
   }
 
   public boolean read(StreamTokenizer st) throws IOException 

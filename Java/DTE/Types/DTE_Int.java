@@ -16,9 +16,9 @@ public class DTE_Int extends DTE_Type implements Cloneable
     val = i;
   }
   
-  public String get_type( )
+  public TypeDesc getType( )
   {
-    return "int";
+    return new IntDesc( );
   }
 
   public Object get_val( )

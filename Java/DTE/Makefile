@@ -23,7 +23,7 @@ Parser/SQLParser.java: Parser/SQLParser.jj
 	cd Parser; javacc SQLParser.jj; cd ..
 
 all:
-	javac ExprTest.java -d $(CLASSES)
+	javac TestExpr.java -d $(CLASSES)
 
 doc:
 	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/

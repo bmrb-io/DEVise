@@ -16,14 +16,19 @@ public class DTE_String extends DTE_Type implements Cloneable
     val = new String(i);
   }
 	
-  public String get_type( )
+  public TypeDesc getType( )
   {
-    return "string";
+    return new StringDesc( );
   }
 
-  public Object get_val( )
+  public String getValue( )
   {
     return val;
+  }
+
+  public void setValue( String str )
+  {
+    val = str;
   }
 
   public boolean read(StreamTokenizer st) throws IOException 

@@ -10,7 +10,9 @@ import Types.*;
  */
 
 public interface Expression {
-	String toString();
+	public String toString();
+
+	public TypeDesc getType( );
 
 	/** Type check this expression, based on the information present in
 	the symbol table. Symbol table contains previously type checked
@@ -23,7 +25,7 @@ public interface Expression {
 	expressions from the query.
 	*/
 
-	Expression typeCheck(SymbolTable st);
+	public Expression typeCheck( SymbolTable st );
 
 	/** Once the expression is correctly typechecked and the query is
 	optimized, this expression will generate an executable version of
@@ -33,9 +35,6 @@ public interface Expression {
 	input streams to this expression and that is why the arguments to
 	this method are one or two OptNodes. */
 
-	ExecExpr createExec(OptNode[] opn);
+	public ExecExpr createExec(OptNode[] opn);
 }
-
-
-
 
