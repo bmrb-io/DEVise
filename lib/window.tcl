@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1999/02/11 19:55:06  wenger
+#  Merged newpile_br through newpile_br_1 (new PileStack class controls
+#  pile and stacks, allows non-linked piles; various other improvements
+#  to pile-related code).
+#
 #  Revision 1.34.2.2  1999/02/11 18:24:31  wenger
 #  PileStack objects are now fully working (allowing non-linked piles) except
 #  for a couple of minor bugs; new PileStack state is saved to session files;
@@ -784,6 +789,25 @@ proc DoToggleAxisWindow { axis } {
 
     foreach viewName $viewList {
         DEVise setAxisDisplay $viewName $axis $stat
+    }
+}
+
+############################################################
+
+proc DoToggleAxisTicksWindow { axis } {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set enabled [DEVise getAxisTicks $curView $axis]
+    set enabled [expr !$enabled]
+
+    set viewList [DEVise getWinViews [DEVise getViewWin $curView]]
+
+    foreach viewName $viewList {
+        DEVise setAxisTicks $viewName $axis $enabled
     }
 }
 

@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/06/04 16:31:59  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.10  1999/05/17 20:55:12  wenger
   Partially-kludged fix for bug 488 (problems with cursors in piled views
   in the JavaScreen).
@@ -124,6 +131,8 @@ public:
 
   void EnableXAxis(Boolean enable);
   void EnableYAxis(Boolean enable);
+  void EnableXTicks(Boolean enable);
+  void EnableYTicks(Boolean enable);
 
   void SetFont(const char *which, int family, float pointSize, Boolean bold,
       Boolean italic);
@@ -166,6 +175,7 @@ private:
   ViewWinList _views;
 
   Boolean _xAxisOn, _yAxisOn;
+  Boolean _xTicksOn, _yTicksOn;
 
   ObjectValid _objectValid;
 

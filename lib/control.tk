@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.197  1999/06/16 17:09:02  wenger
+#	Added raiseAllWindows command and corresponding GUI.
+#	
 #	Revision 1.196  1999/06/11 17:50:19  wenger
 #	Oops!  Wasn't supposed to commit with 'Test' enabled.
 #	
@@ -1530,6 +1533,10 @@ menu .mbar.view.menu -tearoff 0
 	-command { DoToggleAxis X }
 .mbar.view.menu add command -label "Toggle Y Axis" \
 	-command { DoToggleAxis Y }
+.mbar.view.menu add command -label "Toggle X Axis Ticks" \
+	-command { DoToggleAxisTicks X }
+.mbar.view.menu add command -label "Toggle Y Axis Ticks" \
+	-command { DoToggleAxisTicks Y }
 .mbar.view.menu add cascade -label "Nice Axes" \
     -menu .mbar.view.menu.niceaxismenu
 
@@ -1706,6 +1713,10 @@ menu .mbar.window.menu -tearoff 0
     -command { DoToggleAxisWindow X }
 .mbar.window.menu add command -label "Toggle Y Axis" \
     -command { DoToggleAxisWindow Y }
+.mbar.window.menu add command -label "Toggle X Axis Ticks" \
+    -command { DoToggleAxisTicksWindow X }
+.mbar.window.menu add command -label "Toggle Y Axis Ticks" \
+    -command { DoToggleAxisTicksWindow Y }
 
 # We probably should add these functions to the window menu eventually,
 # but I don't want to deal with them right now.  RKW 2/7/97.

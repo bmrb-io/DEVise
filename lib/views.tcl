@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.57  1999/04/07 18:42:18  wenger
+#  Fixed bug 481 and other problems in view copying.
+#
 #  Revision 1.56  1999/02/17 15:10:07  wenger
 #  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
 #  in mapping dialog updating when a view is selected.
@@ -1680,6 +1683,20 @@ proc DoToggleAxis { axis } {
     set stat [DEVise getAxisDisplay $curView $axis]
     set stat [expr !$stat]
     DEVise setAxisDisplay $curView $axis $stat
+}
+
+############################################################
+
+proc DoToggleAxisTicks { axis } {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set enabled [DEVise getAxisTicks $curView $axis]
+    set enabled [expr !$enabled]
+    DEVise setAxisTicks $curView $axis $enabled
 }
 
 ############################################################

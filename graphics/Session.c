@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/06/11 14:46:52  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.53  1999/05/17 18:37:35  wenger
   Views now have GData sending configuration that is only employed when
   connecting to the JavaScreen (eliminates the need for the current kludgey
@@ -1184,6 +1190,11 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
       instance, "X");
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
+      instance, "Y");
+
+  status += SaveParams(saveData, "getAxisTicks", "setAxisTicks",
+      instance, "X");
+  status += SaveParams(saveData, "getAxisTicks", "setAxisTicks",
       instance, "Y");
 
   if (status.IsError()) reportErrNosys("Error or warning");

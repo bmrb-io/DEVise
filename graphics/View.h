@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.88  1999/06/11 14:46:55  wenger
+  Added the capability (mostly for the JavaScreen) to disable rubberband
+  lines, cursor movement, drill down, and key actions in views (the code
+  to send this info to the JS is still conditionaled out until the JS is
+  ready for it).
+
   Revision 1.87  1999/06/04 16:32:01  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -568,8 +574,8 @@ class View : public ViewWin
 	void SetZAxisAttrType(AttrType type);
 	AttrType GetZAxisAttrType() { return _zAxisAttrType; }
 
-	void XAxisDisplayOnOff(Boolean stat, Boolean notifyPile = true);
-	void YAxisDisplayOnOff(Boolean stat, Boolean notifyPile = true);
+	void XAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile = true);
+	void YAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile = true);
 	void AxisDisplay(Boolean &xOnOff, Boolean &yOnOff) {
 	  xOnOff = xAxis.inUse;
 	  yOnOff = yAxis.inUse;
@@ -579,6 +585,20 @@ class View : public ViewWin
 	  yOnOff = yAxis.inUse;
 	  zOnOff = zAxis.inUse;
         }
+	void XAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile = true);
+	void YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile = true);
+
+        static const int _defaultXAxisWidth = 15;
+        static const int _defaultYAxisWidth = 50;
+        static const int _defaultZAxisWidth = 50;
+	static const int _noTicksXAxisWidth = 2;
+	static const int _noTicksYAxisWidth = 2;
+	static const int _noTicksZAxisWidth = 2;
+
+	void TicksEnabled(Boolean &xTicks, Boolean &yTicks) {
+	  xTicks = xAxis.width > _noTicksXAxisWidth;
+	  yTicks = yAxis.width > _noTicksYAxisWidth;
+	}
 
 	/* view locks - lock corners or widths */
 	void SetViewLocks(int locks) { _view_locks |= locks; }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/06/16 18:28:33  wenger
+  Fixed bug 499 (problem with 'Next in Pile' not working for piled view
+  symbols).
+
   Revision 1.41  1999/06/16 17:08:48  wenger
   Added raiseAllWindows command and corresponding GUI.
 
@@ -528,6 +532,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewSetDisabledActions)
 	REGISTER_COMMAND(raiseAllWindows)
 	REGISTER_COMMAND(nextViewInPile)
+	REGISTER_COMMAND(setAxisTicks)
+	REGISTER_COMMAND(getAxisTicks)
 }
 
 CmdContainer::~CmdContainer()

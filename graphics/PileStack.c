@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/06/15 18:50:23  wenger
+  Fixed bug 500 (problem flipping parent views of piled view symbols).
+
   Revision 1.13  1999/06/04 16:31:59  wenger
   Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
   with key presses in piled views in the JavaScreen); made other pile-
@@ -386,6 +389,7 @@ PileStack::InsertView(ViewWin *view)
       // This is the first view in the pile, so find out whether the
       // axes are turned on.
       ((View *)view)->AxisDisplay(_xAxisOn, _yAxisOn);
+      ((View *)view)->TicksEnabled(_xTicksOn, _yTicksOn);
     }
 
     SynchronizeView((View *)view);
@@ -745,6 +749,7 @@ PileStack::SynchronizeAllViews()
   if (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     view->AxisDisplay(_xAxisOn, _yAxisOn);
+    view->TicksEnabled(_xTicksOn, _yTicksOn);
   }
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
@@ -767,6 +772,8 @@ PileStack::SynchronizeView(View *view)
 
   view->XAxisDisplayOnOff(_xAxisOn, false);
   view->YAxisDisplayOnOff(_yAxisOn, false);
+  view->XAxisTicksOnOff(_xTicksOn, false);
+  view->YAxisTicksOnOff(_yTicksOn, false);
 
   if (GetViewList()->Size() >= 1) {
     View *firstView = (View *)GetViewList()->GetFirst();
@@ -847,6 +854,50 @@ PileStack::EnableYAxis(Boolean enable)
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     view->YAxisDisplayOnOff(_yAxisOn, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::EnableXTicks
+ * Enable or disable the X ticks for all views in the pile.
+ */
+void
+PileStack::EnableXTicks(Boolean enable)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::EnableXTicks()\n", _name);
+#endif
+
+  _xTicksOn = enable;
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->XAxisTicksOnOff(_xTicksOn, false);
+  }
+  GetViewList()->DoneIterator(index);
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::EnableYTicks
+ * Enable or disable the Y ticks for all views in the pile.
+ */
+void
+PileStack::EnableYTicks(Boolean enable)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 3)
+  printf("PileStack(%s)::EnableYTicks()\n", _name);
+#endif
+
+  _yTicksOn = enable;
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->YAxisTicksOnOff(_yTicksOn, false);
   }
   GetViewList()->DoneIterator(index);
 }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/06/16 18:28:33  wenger
+  Fixed bug 499 (problem with 'Next in Pile' not working for piled view
+  symbols).
+
   Revision 1.38  1999/06/16 17:08:47  wenger
   Added raiseAllWindows command and corresponding GUI.
 
@@ -1760,5 +1764,19 @@ DECLARE_CLASS_END
 //
 DECLARE_CLASS_DeviseCommand_(nextViewInPile) 
 DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setAxisTicks) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getAxisTicks) 
+DECLARE_CLASS_END
+
+
 
 #endif // _DeviseCommand_h_

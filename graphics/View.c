@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.178  1999/06/25 15:58:13  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.177  1999/06/16 19:26:45  wenger
   Fixed bug 497 (doing 'remove view' on a piled parent view with a piled
   view symbol caused crash).
@@ -919,19 +925,19 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_querySent = false;		// TRUE if query has been sent
 
 	xAxis.inUse = false;
-	xAxis.width = 15;
+	xAxis.width = _defaultXAxisWidth;
 	xAxis.numTicks = 8;
 	xAxis.significantDigits = 6;
 	xAxis.labelWidth = 60;
 
 	yAxis.inUse = false;
-	yAxis.width = 50;
+	yAxis.width = _defaultYAxisWidth;
 	yAxis.numTicks = 8;
 	yAxis.significantDigits = 6;
 	yAxis.labelWidth = 40;
 
 	zAxis.inUse = false;
-	zAxis.width = 50;
+	zAxis.width = _defaultZAxisWidth;
 	zAxis.numTicks = 8;
 	zAxis.significantDigits = 6;
 	zAxis.labelWidth = 40;
@@ -1708,6 +1714,9 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   /* draw a line from startX to the end of the view */
   win->Line(startX - 1, axisY, axisMaxX, axisY, 1);
 
+  // Don't draw ticks and labels if space is too small.
+  if (xAxis.width <= tickLength || xAxis.width <= _noTicksXAxisWidth) return;
+
   Coord drawWidth = axisWidth - (startX - axisX);
   int numTicks = (int)(drawWidth / xAxis.labelWidth);
 
@@ -1808,6 +1817,9 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 
   /* draw a line from startY to the bottom of the view */
   win->Line(axisMaxX, startY, axisMaxX, axisMaxY, 1.0);
+
+  // Don't draw ticks and labels if space is too small.
+  if (yAxis.width <= tickLength || yAxis.width <= _noTicksYAxisWidth) return;
 
   Coord drawHeight = axisHeight - (startY - axisY);
   int numTicks = (int)(drawHeight / yAxis.labelWidth);
@@ -2231,42 +2243,96 @@ void View::SetLabelParam(Boolean occupyTop, int extent, const char *name,
   }
 }
 
-void View::XAxisDisplayOnOff(Boolean stat, Boolean notifyPile)
+void View::XAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
 {
 #if defined(DEBUG)
-  printf("View(%s)::XAxisDisplayOnOff(%d)\n", GetName(), stat);
+  printf("View(%s)::XAxisDisplayOnOff(%d)\n", GetName(), axisOn);
 #endif
 
-  if (stat != xAxis.inUse) {
+  if (axisOn != xAxis.inUse) {
     if (_pileMode && notifyPile) {
-	  GetParentPileStack()->EnableXAxis(stat);
+	  GetParentPileStack()->EnableXAxis(axisOn);
 	} else {
-      xAxis.inUse = stat;
+      xAxis.inUse = axisOn;
       _updateTransform = true;
 	}
-  }
 
-  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewAxesCh);
-  Refresh();
+    DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	    DepMgr::EventViewAxesCh);
+    Refresh();
+  }
 }
 
-void View::YAxisDisplayOnOff(Boolean stat, Boolean notifyPile)
+void View::YAxisDisplayOnOff(Boolean axisOn, Boolean notifyPile)
 {
 #if defined(DEBUG)
-  printf("View(%s)::YAxisDisplayOnOff(%d)\n", GetName(), stat);
+  printf("View(%s)::YAxisDisplayOnOff(%d)\n", GetName(), axisOn);
 #endif
 
-  if (stat != yAxis.inUse) {
+  if (axisOn != yAxis.inUse) {
     if (_pileMode && notifyPile) {
-	  GetParentPileStack()->EnableYAxis(stat);
+	  GetParentPileStack()->EnableYAxis(axisOn);
 	} else {
-      yAxis.inUse = stat;
+      yAxis.inUse = axisOn;
       _updateTransform  = true;
 	}
-  }
 
-  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewAxesCh);
-  Refresh();
+    DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	    DepMgr::EventViewAxesCh);
+    Refresh();
+  }
+}
+
+void View::XAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
+{
+#if defined(DEBUG)
+  printf("View(%s)::XAxisTicksOnOff(%d)\n", GetName(), ticksOn);
+#endif
+
+  Boolean currentTicksOn = xAxis.width > _noTicksXAxisWidth;
+
+  if (ticksOn != currentTicksOn) {
+    if (_pileMode && notifyPile) {
+	  GetParentPileStack()->EnableXTicks(ticksOn);
+	} else {
+	  if (ticksOn) {
+        xAxis.width = _defaultXAxisWidth;
+	  } else {
+        xAxis.width = _noTicksYAxisWidth;
+	  }
+      _updateTransform  = true;
+	}
+
+    DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	    DepMgr::EventViewAxesCh);
+    Refresh();
+  }
+}
+
+void View::YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
+{
+#if defined(DEBUG)
+  printf("View(%s)::YAxisTicksOnOff(%d)\n", GetName(), ticksOn);
+#endif
+
+  Boolean currentTicksOn = yAxis.width > _noTicksYAxisWidth;
+
+  if (ticksOn != currentTicksOn) {
+    if (_pileMode && notifyPile) {
+	  GetParentPileStack()->EnableYTicks(ticksOn);
+	} else {
+	  if (ticksOn) {
+        yAxis.width = _defaultYAxisWidth;
+	  } else {
+        yAxis.width = _noTicksYAxisWidth;
+	  }
+      _updateTransform  = true;
+	}
+
+    DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	    DepMgr::EventViewAxesCh);
+    Refresh();
+  }
 }
 
 /* Find real window coords */

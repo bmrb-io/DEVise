@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  1999/07/13 17:32:29  wenger
+  Parent view can now control attribute(s) in child view's mapping;
+  cleaned up some of the mapping-related code; better command logging.
+
   Revision 1.71  1999/06/29 20:24:01  wenger
   When sending GData to a file or socket, strings including the separator
   character are now surrounded by braces; DEVise color numbers are converted
@@ -6070,5 +6074,68 @@ IMPLEMENT_COMMAND_BEGIN(nextViewInPile)
 	}
 IMPLEMENT_COMMAND_END
 
+IMPLEMENT_COMMAND_BEGIN(setAxisTicks)
+    // Arguments: <viewName> <axis (X|Y)> <enableTicks>
+    // Returns: done
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		Boolean enableTicks = atoi(argv[3]);
+        if (!strcmp(argv[2], "X")) {
+    	  view->XAxisTicksOnOff(enableTicks);
+        } else if (!strcmp(argv[2], "Y")) {
+          view->YAxisTicksOnOff(enableTicks);
+        } else {
+          ReturnVal(API_NAK, "Bad axis selection");
+          return -1;
+	    }
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in setAxisTicks\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getAxisTicks)
+    // Arguments: <viewName> <axis (X|Y)>
+    // Returns: <ticksEnabled>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		Boolean xTicks, yTicks;
+		char buf[100];
+		view->TicksEnabled(xTicks, yTicks);
+        if (!strcmp(argv[2], "X")) {
+		  sprintf(buf, "%d", xTicks);
+        } else if (!strcmp(argv[2], "Y")) {
+		  sprintf(buf, "%d", yTicks);
+        } else {
+          ReturnVal(API_NAK, "Bad axis selection");
+          return -1;
+	    }
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in getAxisTicks\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
 
 /*============================================================================*/
