@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2000
+  (c) Copyright 1999-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/07/20 18:52:53  wenger
+  Added support for blank floating-point format for axes and mouse location.
+
   Revision 1.4  2000/06/20 22:16:53  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -106,6 +109,8 @@ DevAxis::DevAxis(View *view, AxisType type, Boolean inUse,
     reportErrNosys("Illegal axis type");
     break;
   }
+
+  _negativeLabels = false;
 }
 
 //-----------------------------------------------------------------------------
@@ -402,11 +407,17 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
     // Draw the tick mark itself.
     win->Line(info._tickX, info._tickY, info._tickX + _tickdrawX, info._tickY + _tickdrawY, 1);
 
-    char buf[32];
+	const int bufSize = 32;
+    char buf[bufSize];
 	if (!strcmp(_floatFormat, _blankFloatFormat)) {
       strcpy(buf, "");
 	} else {
-      sprintf(buf, _floatFormat, tickMark);
+	  Coord labelValue = tickMark;
+	  if (_negativeLabels) {
+	    labelValue = -1.0 * tickMark;
+	  }
+	  if (labelValue == -0.0) labelValue = 0.0;
+      snprintf(buf, bufSize, _floatFormat, labelValue);
 	}
 
 	*info._labelPixVar = *info._tickPixVar - _labelWidth / 2;

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.93  2001/04/02 16:09:48  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.92  2001/03/23 18:06:31  wenger
   Color palettes are now associated with sessions; added borders to
   color chooser buttons so they're visible even if they're the same
@@ -1865,6 +1870,11 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getAxisTicks", "setAxisTicks",
       instance, "X");
   status += SaveParams(saveData, "getAxisTicks", "setAxisTicks",
+      instance, "Y");
+
+  status += SaveParams(saveData, "getAxisNegLabel", "setAxisNegLabel",
+      instance, "X");
+  status += SaveParams(saveData, "getAxisNegLabel", "setAxisNegLabel",
       instance, "Y");
 
   if (status.IsError()) reportErrNosys("Error or warning");

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.234  2001/04/02 16:09:49  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.233  2001/02/20 20:02:43  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -2393,6 +2398,48 @@ void View::YAxisTicksOnOff(Boolean ticksOn, Boolean notifyPile)
 	} else {
 	  _yAxis.EnableTicks(ticksOn);
       _updateTransform  = true;
+
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewAxesCh);
+      Refresh();
+	}
+  }
+}
+
+void View::SetXAxisNegative(Boolean negative, Boolean notifyPile)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("View(%s)::SetXAxisNegative(%d, %d)\n", GetName(), negative,
+      notifyPile);
+#endif
+
+  if (negative != _xAxis.GetNegativeLabels()) {
+    if (_pileMode && notifyPile) {
+	  GetParentPileStack()->SetXAxisNegative(negative);
+	} else {
+	  _xAxis.SetNegativeLabels(negative);
+
+      DepMgr::Current()->RegisterEvent(dispatcherCallback,
+	      DepMgr::EventViewAxesCh);
+      Refresh();
+	}
+  }
+}
+
+void View::SetYAxisNegative(Boolean negative, Boolean notifyPile)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("View(%s)::SetYAxisNegative(%d, %d)\n", GetName(), negative,
+      notifyPile);
+#endif
+
+  if (negative != _yAxis.GetNegativeLabels()) {
+    if (_pileMode && notifyPile) {
+	  GetParentPileStack()->SetYAxisNegative(negative);
+	} else {
+	  _yAxis.SetNegativeLabels(negative);
 
       DepMgr::Current()->RegisterEvent(dispatcherCallback,
 	      DepMgr::EventViewAxesCh);

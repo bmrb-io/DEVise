@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.65  2001/04/02 16:09:57  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.64  2001/02/20 20:02:53  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -2082,6 +2087,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setJS3dConfig) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setAxisNegLabel) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getAxisNegLabel) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

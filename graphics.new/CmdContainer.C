@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.71  2001/04/02 16:09:56  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.70  2001/02/20 20:02:52  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -704,6 +709,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getJS3dValid)
 	REGISTER_COMMAND(getJS3dConfig)
 	REGISTER_COMMAND(setJS3dConfig)
+	REGISTER_COMMAND(setAxisNegLabel)
+	REGISTER_COMMAND(getAxisNegLabel)
 }
 
 CmdContainer::~CmdContainer()

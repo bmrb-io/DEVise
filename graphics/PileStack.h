@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  2001/01/08 20:32:42  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.21.2.1  2000/12/27 19:38:55  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -219,6 +223,9 @@ public:
   void SetYAxisDateFormat(const char *format);
   void SetXAxisFloatFormat(const char *format);
   void SetYAxisFloatFormat(const char *format);
+
+  void SetXAxisNegative(Boolean negative);
+  void SetYAxisNegative(Boolean negative);
 
   void SetNumDimensions(int dimensions);
 

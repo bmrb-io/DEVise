@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2000
+  (c) Copyright 1999-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  2000/07/20 18:52:53  wenger
+  Added support for blank floating-point format for axes and mouse location.
+
   Revision 1.3  2000/06/20 22:16:54  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -76,6 +79,9 @@ public:
   static const char *_blankFloatFormat;
   const char *GetFloatFormat() { return _floatFormat; }
   void SetFloatFormat(const char *format);
+
+  void SetNegativeLabels(Boolean negative) { _negativeLabels = negative; }
+  Boolean GetNegativeLabels() { return _negativeLabels; }
 
 protected:
   struct AxisInfo {
@@ -137,6 +143,8 @@ private:
   Coord _dateOrientation;
   WindowRep::SymbolAlignment _dateAlignment1;
   WindowRep::SymbolAlignment _dateAlignment2;
+
+  Boolean _negativeLabels;
 };
 
 #endif // _DevAxis_h_

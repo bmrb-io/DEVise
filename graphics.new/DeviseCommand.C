@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.116  2001/04/03 19:57:39  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.115  2001/04/02 16:09:57  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -7019,6 +7023,73 @@ IMPLEMENT_COMMAND_BEGIN(setJS3dConfig)
         ReturnVal(API_NAK, "Wrong # of arguments");
         return -1;
     }
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setAxisNegLabel)
+    // Arguments: <viewName> <axis (X|Y)> <enableNegative>
+    // Returns: done
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean enableNegative = atoi(argv[3]);
+        if (!strcmp(argv[2], "X")) {
+    	  view->SetXAxisNegative(enableNegative);
+        } else if (!strcmp(argv[2], "Y")) {
+          view->SetYAxisNegative(enableNegative);
+        } else {
+          ReturnVal(API_NAK, "Bad axis selection");
+          return -1;
+	    }
+        ReturnVal(API_ACK, "done");
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in setAxisNegLabel\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getAxisNegLabel)
+    // Arguments: <viewName> <axis (X|Y)>
+    // Returns: <negativeLabels>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean negativeLabels;
+        if (!strcmp(argv[2], "X")) {
+		  negativeLabels = view->GetXAxisNegative();
+        } else if (!strcmp(argv[2], "Y")) {
+		  negativeLabels = view->GetYAxisNegative();
+        } else {
+          ReturnVal(API_NAK, "Bad axis selection");
+          return -1;
+	    }
+		const int bufSize = 32;
+		char buf[bufSize];
+		snprintf(buf, bufSize, "%d", negativeLabels);
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in getAxisNegLabel\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
 IMPLEMENT_COMMAND_END
 
 /*============================================================================*/

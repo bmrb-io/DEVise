@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  2001/01/08 20:32:42  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.25.2.1  2000/12/27 19:38:55  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -1290,6 +1294,58 @@ PileStack::SetYAxisFloatFormat(const char *format)
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     view->SetYAxisFloatFormat(format, false);
+  }
+  GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetXAxisNegative
+ * Set the X axis to negative or positive mode for all views in the pile.
+ */
+void
+PileStack::SetXAxisNegative(Boolean negative)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SetXAxisNegative(%d)\n", _name, negative);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetXAxisNegative(negative, false);
+  }
+  GetViewList()->DoneIterator(index);
+
+  // Make sure we start queries in the right order.
+  if (IsPiled() && RefreshPending()) {
+    CancelAllRefreshes();
+    if (GetFirstView()) GetFirstView()->Refresh(false);
+  }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::SetYAxisNegative
+ * Set the Y axis to negative or positive mode for all views in the pile.
+ */
+void
+PileStack::SetYAxisNegative(Boolean negative)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 1)
+  printf("PileStack(%s)::SetYAxisNegative(%d)\n", _name, negative);
+#endif
+
+  int index = GetViewList()->InitIterator();
+  while (GetViewList()->More(index)) {
+    View *view = (View *)GetViewList()->Next(index);
+    view->SetYAxisNegative(negative, false);
   }
   GetViewList()->DoneIterator(index);
 

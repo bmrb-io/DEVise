@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.115  2001/04/02 16:09:49  wenger
+  Devised now saves configuration for 3D JavaScreen views to sessions,
+  and passes it to the JavaScreen when necessary (note: JS protocol
+  version is now 6.0).
+
   Revision 1.114  2001/02/20 20:02:44  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -695,6 +700,11 @@ class View : public ViewWin
 	static const int _noTicksXAxisWidth = 2;
 	static const int _noTicksYAxisWidth = 2;
 	static const int _noTicksZAxisWidth = 2;
+
+	void SetXAxisNegative(Boolean negative, Boolean notifyPile = true);
+	void SetYAxisNegative(Boolean negative, Boolean notifyPile = true);
+	Boolean GetXAxisNegative() { return _xAxis.GetNegativeLabels(); }
+	Boolean GetYAxisNegative() { return _yAxis.GetNegativeLabels(); }
 
 	void TicksEnabled(Boolean &xTicks, Boolean &yTicks) {
 	  xTicks = _xAxis.Width() > _noTicksXAxisWidth;
