@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/03/23 16:26:16  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.5  2000/03/23 16:07:41  wenger
 // Added standard header.
 //
@@ -54,8 +57,9 @@ public class JssHandler implements Runnable
         try {
             jssServerSocket = new ServerSocket(jspopPort);
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             jssServerSocket = null;
-            throw new YException("Can not start jss server sokcet at port " + jspopPort);
+            throw new YException("Can not start jss server socket at port " + jspopPort);
         }
 
     }
@@ -80,6 +84,7 @@ public class JssHandler implements Runnable
                     System.out.println("\nRestarting jss server socket succeed!\n");
                 } catch (IOException e) {
                     System.out.println("\nRestarting jss server socket failed\n");
+                    System.out.println(e.getMessage());
                     jssServerSocket = null;
                     return;
                 }

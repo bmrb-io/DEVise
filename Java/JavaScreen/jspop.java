@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2000/03/23 16:26:19  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.24  2000/02/22 10:00:48  hongyu
 // *** empty log message ***
 //
@@ -186,7 +189,8 @@ public class jspop implements Runnable
         try {
             cmdServerSocket = new ServerSocket(DEViseGlobals.cmdport);
         } catch (IOException e) {
-            System.out.println("Can not start command server sokcet at port " + DEViseGlobals.cmdport);
+            System.out.println("Can not start command server socket at port " + DEViseGlobals.cmdport);
+	    System.out.println(e.getMessage());
             quit(1);
         }
 
@@ -196,6 +200,7 @@ public class jspop implements Runnable
             dataServerSocket.setSoTimeout(5000); // wait for data socket connection for 5 seconds before disconnect
         } catch (IOException e) {
             System.out.println("Can not start data server socket at port " + DEViseGlobals.imgport);
+	    System.out.println(e.getMessage());
             quit(1);
         }
 

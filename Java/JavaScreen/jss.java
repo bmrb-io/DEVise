@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2000/03/23 16:26:19  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.9  2000/02/23 10:44:02  hongyu
 // *** empty log message ***
 //
@@ -121,7 +124,8 @@ public class jss implements Runnable
         try {
             jssServerSocket = new ServerSocket(jssPort);
         } catch (IOException e) {
-            System.out.println("Can not start server sokcet at port " + jssPort);
+            System.out.println("Can not start server socket at port " + jssPort);
+	    System.out.println(e.getMessage());
             quit();
         }
 
@@ -507,6 +511,7 @@ class devised
             imgPort = socket2.getLocalPort();
             switchPort = socket3.getLocalPort();
         } catch (IOException e) {
+            System.out.println(e.getMessage());
             throw new YException("Can not find any free port in local host to start a new devised");
         } finally {
             if (socket1 != null) {
