@@ -25,7 +25,7 @@ public class Selection implements Expression {
 	}
 
 	public Expression typeCheck(SymbolTable st){
-		Expression expr = lookup(toString());
+		Expression expr = st.get(toString());
 		if(expr != null){
 			return expr;
 		}
