@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/12 19:58:44  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.5  1997/06/21 22:48:07  donjerko
   Separated type-checking and execution into different classes.
 
@@ -33,13 +36,14 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
+#include <string>
+
 #include <fstream.h>
 #include <assert.h>
 #include <sys/time.h>
 #include <iomanip.h>
-#include <String.h>
 
-#include "machdep.h"
+// #include "machdep.h"
 
 // #define LOG(A) A
 #define LOG(A)
@@ -47,11 +51,11 @@
 LOG(extern ofstream logFile);
 
 class Exception{
-	String text;
+	string text;
 public:
-	Exception(const String& text) : text(text){}
-	void append(const String& more){
-		text += String("\n") + more;
+	Exception(const string& text) : text(text){}
+	void append(const string& more){
+		text += string("\n") + more;
 	}
 	void display(ostream& out = cout){
 		out << "1 " << text;

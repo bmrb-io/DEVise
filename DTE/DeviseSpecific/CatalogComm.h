@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:35  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef CATALOG_COMM_H
@@ -32,6 +36,8 @@ char* dteShowCatalogEntry(const char* tableName);
 void dteDeleteCatalogEntry(const char* catName, const char* entryName);
 
 void dteDeleteCatalogEntry(const char* tableName);
+
+void dteMaterializeCatalogEntry(const char* tableName);
 
 void dteInsertCatalogEntry(const char* catName, const char* values);
 

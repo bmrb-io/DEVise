@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/06/21 22:47:58  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.4  1997/06/16 16:04:41  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -29,7 +32,7 @@
 #define FUNCTION_READ_H
 
 #include <iostream.h>
-#include <String.h>
+#include <string>
 #include "Iterator.h"
 #include "types.h"
 #include "queue.h"
@@ -37,9 +40,9 @@
 class FunctionRead : public PlanOp {
 protected:
 	PlanOp * iterator;
-	String * function;
+	string * function;
 public:
-     FunctionRead(PlanOp * iterator,String * function,int offset) : 
+     FunctionRead(PlanOp * iterator,string * function,int offset) : 
 		iterator(iterator),function(function),offset(offset){
 			TupleList = new List<Tuple *>;
 			TupleListList = new List<List<Tuple*>*>;
@@ -51,13 +54,13 @@ public:
 	virtual int getNumFlds(){
 		return iterator->getNumFlds();
 	}
-	virtual String *getTypeIDs(){
+	virtual string *getTypeIDs(){
 		return iterator->getTypeIDs();
 	}
-	virtual String *getAttributeNames(){
+	virtual string *getAttributeNames(){
 		return iterator->getAttributeNames();
 	}
-	virtual String * getOrderingAttrib(){
+	virtual string * getOrderingAttrib(){
 		return iterator->getOrderingAttrib();
 	}
 	virtual const Tuple* getNext(){

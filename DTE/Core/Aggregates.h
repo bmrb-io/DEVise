@@ -523,13 +523,13 @@ public:
 	List<BaseSelection*>* filterList(){
 		return filteredSelList;
 	}
-	virtual void typify(const String& name, Site* inputPlanOp);
+	virtual void typify(const string& name, Site* inputPlanOp);
 	
 	virtual TypeID* getTypeIDs(){
 		return typeIDs;
 	}
 
-	virtual String *getOrderingAttrib(){
+	virtual string *getOrderingAttrib(){
 		return iterator->getOrderingAttrib();
 	}
 	Iterator* createExec();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/08/15 00:17:33  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.31  1997/08/14 02:08:52  donjerko
   Index catalog is now an independent file.
 
@@ -79,6 +82,7 @@
 #include "Sort.h"
 #include "TypeCheck.h"
 #include "MinMax.h"
+#include "Interface.h"
 
 #include<iostream.h>
 #include<memory.h>
@@ -98,16 +102,16 @@ LOG(ofstream logFile("log_file.txt");)
 
 void QueryTree::resolveNames(){	// throws exception
      if(tableList->cardinality() > 1){
-          String msg = "cannot resolve attribute referencies";
+          string msg = "cannot resolve attribute referencies";
           THROW(new Exception(msg), );
      }
      else{
           tableList->rewind();
           namesToResolve->rewind();
-          String* replacement = tableList->get()->getAlias();
+          string* replacement = tableList->get()->getAlias();
 		assert(replacement);
           for(int i = 0; i < namesToResolve->cardinality(); i++){
-               String* current = namesToResolve->get();
+               string* current = namesToResolve->get();
 			cout << *current << " " << *replacement << endl;
                *current = *replacement;
                namesToResolve->step();
@@ -184,27 +188,26 @@ Site* QueryTree::createSite(){
 
 	tableList->rewind();
 	int numSites = 0;
-	Catalog* catalog = getRootCatalog();
      List<Site*>* sites = new List<Site*>;
 	while(!tableList->atEnd()){
 		TableAlias* ta = tableList->get();
-		String fullPathNm = ta->getTable()->toString();
+		string fullPathNm = ta->getTable()->toString();
 		Site* site = NULL;
 		if(ta->isQuote()){
 			QuoteAlias* qa = (QuoteAlias*) ta;
-			const String* quote = qa->getQuote();
+			const string* quote = qa->getQuote();
 			cout << "quote is:\n" << *quote << endl;
 			strstream qstr;
 			qstr << *quote;
-			CatEntry entry("");
-			TRY(entry.read(qstr), 0);
+			assert(!"broken");
+			Interface* interf;
+			TRY(interf->read(qstr), 0);
 			cout << "quoute entry read:" << endl;
-			entry.display(cout);
-			TRY(site = entry.getSite(), 0);
+			interf->write(cout);
+			TRY(site = interf->getSite(), 0);
 		}
 		else{
-			assert(catalog);
-			TRY(site = catalog->find(ta->getTable()), 0);
+			TRY(site = ROOT_CATALOG.find(ta->getTable()), 0);
 		}
 		assert(site);
 		site->addTable(ta);
@@ -216,7 +219,6 @@ Site* QueryTree::createSite(){
 		tableList->step();
 	}
 
-	delete catalog;
 	// For the sequenceby clause;
 	// find the sequecing attribute..(Only table name is known initially)
 	BaseSelection * sequenceby = NULL;
@@ -226,14 +228,14 @@ Site* QueryTree::createSite(){
 		
 			Site * check = sites->get();
 			sites->step();
-			if (check->have(sequencebyTable)){
-				String * attrib = check->getOrderingAttrib();
+			if (check->have(*sequencebyTable)){
+				string * attrib = check->getOrderingAttrib();
 				if (!attrib  || *attrib == ""){
-					String msg = "Table "+*sequencebyTable+" is not a sequence";
+					string msg = "Table "+*sequencebyTable+" is not a sequence";
 					THROW(new Exception(msg),NULL);
 				} 
 				sequenceby=new PrimeSelection(
-					sequencebyTable, new String(*attrib));
+					sequencebyTable, new string(*attrib));
 			}	
 		}
 	}
@@ -292,8 +294,8 @@ Site* QueryTree::createSite(){
      LOG(logFile << "\n   where ";)
      LOG(displayList(logFile, predicateList, ", "));
 	LOG(logFile << endl;)
-	String* types;
-	String option = "execute";
+	string* types;
+	string option = "execute";
 	TRY(typifyList(sites, option), 0);
 	sites->rewind();
 	LOG(logFile << "Typified sites\n");
@@ -352,7 +354,7 @@ Site* QueryTree::createSite(){
 	if (sequencebyTable){
 		while(!sites->atEnd()){
 			Site * check = sites->get();
-			if (check->have(sequencebyTable)){
+			if (check->have(*sequencebyTable)){
 				sites->remove();
 				sites->append(check);
 				break;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/14 02:08:51  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.6  1997/08/12 19:58:40  donjerko
   Moved StandardTable headers to catalog.
 
@@ -53,7 +56,9 @@ public:
 		delete [] writePtrs;
 		delete out;
 	}
-	void open(const ISchema& schema, String urlString); // throws
+	void open(const ISchema& schema, string urlstring, int mode = ios::app); 
+		// throws
+
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
 		this->out = out;
 		this->numFlds = numFlds;
@@ -68,5 +73,32 @@ public:
 		*out << endl;
 	}
 };
+
+class Modifier {
+	ISchema schema;
+	string fileName;
+public:
+	Modifier(const ISchema& schema, const string& fileName) :
+		schema(schema), fileName(fileName) {}
+	void replace
+		(const string* key, const Type* object, const string* key2 = NULL);
+	// throws
+
+private:
+	bool predicate(const string* key1, const string* key2, const Tuple* tup);
+};
+
+inline bool Modifier::predicate
+	(const string* key1, const string* key2, const Tuple* tup)
+{
+	assert(key1);
+	if(*key1 != IString::getCStr(tup[0])){
+		return false;
+	}
+	if(key2 == NULL){
+		return true;
+	}
+	return *key2 == IString::getCStr(tup[1]);
+}
 
 #endif

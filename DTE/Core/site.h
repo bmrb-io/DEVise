@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/08/15 00:17:36  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.27  1997/08/14 02:08:57  donjerko
   Index catalog is now an independent file.
 
@@ -74,7 +77,6 @@
 #ifndef SITE_H
 #define SITE_H
 
-#include <assert.h>
 #include "queue.h"
 #include "types.h"
 #include "myopt.h"
@@ -82,108 +84,58 @@
 #include "Iterator.h"
 // #include "FunctionRead.h"	// temporarily broken
 #include "url.h"
+#include <string>
+#include <assert.h>
+
+// #include <set>
+
+
+template<class A, class B> class set;
 
 class RTreeIndex;
 class CGIEntry;
 
-List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator);
+List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterator);
 List<BaseSelection*>* createSelectList(PlanOp* iterator);
-List<BaseSelection*>* createSelectList(String table, List<String*>* attNms);
+List<BaseSelection*>* createSelectList(
+	const string& table, List<string*>* attNms);
+
 // copies over the attNms
 
-istream* contactURL(String url,
-     const String* options, const String* values, int count);
+istream* contactURL(string url,
+     const string* options, const string* values, int count);
 	// throws exception
 
 class Site {
 friend class LocalTable;
 friend class SiteGroup;
 protected:
-	String name;
+	string name;
 	PlanOp* iterator;
 	int numFlds;
-	String tables;
+	set<string, ltstr>* tables;
 	List<BaseSelection*>* mySelect;
 	List<TableAlias*>* myFrom;
 	List<BaseSelection*>* myWhere;
 	friend ostream& operator<<(ostream& out, Site* site);
 	Stats* stats;
-	String fullNm;		// full table name used to retreive index;
-	String* attributeNames;
-	String* typeIDs;
+	string fullNm;		// full table name used to retreive index;
+	string* attributeNames;
+	string* typeIDs;
 public:
-	Site(String nm = "") : name(nm), iterator(NULL) {
-		numFlds = 0;
-		tables = "";
-		mySelect = NULL;
-		myFrom = new List<TableAlias*>;
-		myWhere = new List<BaseSelection*>;
-		stats = NULL;
-		attributeNames = NULL;
-		typeIDs = NULL;
-	}
-	virtual ~Site(){
-//		cerr << "deleting select where lists\n";
-		delete iterator;
-		if(mySelect){
-			for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
-//				mySelect->get()->destroy();
-				delete mySelect->get();
-			}
-		}
-		delete mySelect;	// delete only list
-		delete myFrom;
-		for(myWhere->rewind(); !myWhere->atEnd(); myWhere->step()){
-//			myWhere->get()->destroy();
-			delete myWhere->get();
-		}
-		delete myWhere;	// delete everything
-	//	delete stats;	     // fix this
-		delete [] attributeNames;
-		delete [] typeIDs;
-	}
-	virtual void addTable(TableAlias* tabName){
-		String sep = "+";
-		myFrom->append(tabName);
-		String* alias = tabName->getAlias();
-		assert(alias);
-		if(tables.empty()){
-			tables = *alias;
-			return;
-		}
-		int numSeps = tables.freq(sep);
-		String res[numSeps + 1];
-		int numSplit = split(tables, res, numSeps + 1, sep);
-		assert(numSplit == numSeps + 1);
-		tables = "";
-		bool inserted = false;
-		for(int i = 0; i < numSplit;){
-			if(res[i] < *alias || inserted){
-				tables += res[i++];
-			}
-			else{
-				inserted = true;
-				tables += *alias;
-			}
-			if(i < numSplit){
-				tables += sep;
-			}
-		}
-		if(!inserted){
-			tables += sep + *alias;
-		}
-	}
+	Site(string nm = "");
+	virtual ~Site();
+	virtual void addTable(TableAlias* tabName);
 	// Returns the name of the ordering attribute using the
 	// read iterator.
-	virtual String * getOrderingAttrib(){
+	virtual string * getOrderingAttrib(){
 		if(iterator)
 			return iterator->getOrderingAttrib();
 		else
 			return NULL;
 	}
-	bool have(String* tabName){
-		return (tables.contains(*tabName) > 0);
-	}
+	bool have(const string&);
+	bool have(const set<string, ltstr>& arg);
 	virtual bool have(Site* siteGroup){
 		// return this == siteGroup;
 		return name == siteGroup->getName();
@@ -192,7 +144,7 @@ public:
 		List<BaseSelection*>* where = NULL);
 	void filterAll(List<BaseSelection*>* select);
 	virtual void display(ostream& out, int detail = 0);
-	String getName(){
+	string getName(){
 		return name;
 	}
 	virtual List<Site*>* getList(){
@@ -204,7 +156,7 @@ public:
 		assert(iterator);
 		return iterator->createExec();	// no projections or selections
 	}
-     virtual void typify(String option);	// Throws a exception
+     virtual void typify(string option);	// Throws a exception
 	virtual int getNumFlds(){
 		if(mySelect){
 			assert(numFlds == mySelect->cardinality());
@@ -214,19 +166,19 @@ public:
 			return 0;
 		}
 	}
-     virtual const String* getTypeIDs(){
+     virtual const string* getTypeIDs(){
 		if(!typeIDs){
 			typeIDs = getTypesFromList(mySelect);
 		}
           return typeIDs;
      }
-	virtual const String *getAttributeNames(){
+	virtual const string *getAttributeNames(){
 		if(!attributeNames){
 			attributeNames = getStringsFrom(mySelect);
 		}
 		return attributeNames;
 	}
-	virtual String *getAttNamesOnly(){
+	virtual string *getAttNamesOnly(){
 		return getAttStringsOnly(mySelect);
 	}
 	List<BaseSelection*>* getSelectList(){
@@ -254,7 +206,7 @@ public:
 	virtual void writeClose(){
 		assert(0);
 	}
-	virtual void write(String content){
+	virtual void write(string content){
 		assert(0);
 	}
 	virtual void write(Tuple* tuple){
@@ -265,17 +217,17 @@ public:
 	virtual void addPredicate(BaseSelection* predicate){
 		myWhere->append(predicate);
 	}
-	void setFullNm(String nm){
+	void setFullNm(string nm){
 		fullNm = nm;
 	}
-	String getFullNm(){
+	string getFullNm(){
 		return fullNm;
 	}
 };
 
 class DirectSite : public Site {
 public:
-	DirectSite(String nm, PlanOp* iterator) : Site(nm) {
+	DirectSite(string nm, PlanOp* iterator) : Site(nm) {
 		
 		// Used only for typifying LocalTable
 
@@ -289,18 +241,18 @@ public:
 	virtual ~DirectSite(){
 		iterator = NULL;	// Local table is the owner of this iterator
 	}
-	virtual void typify(String option){}
+	virtual void typify(string option){}
 };
 
 class LocalTable : public Site {
 	void setStats();
-	String fileToWrite;
+	string fileToWrite;
 	ofstream* fout;
 	WritePtr* writePtrs;
 protected:
 	Site* directSite;
 public:
-     LocalTable(String nm, PlanOp* marsh, String fileToWrite = "") : 
+     LocalTable(string nm, PlanOp* marsh, string fileToWrite = "") : 
 		Site(nm), directSite(NULL) {
 		iterator = marsh;
 		directSite = NULL;  // will be set up in typify because it
@@ -309,7 +261,7 @@ public:
 		fout = NULL;
 		writePtrs = NULL;
 	}
-	LocalTable(String nm, List<BaseSelection*>* select, 
+	LocalTable(string nm, List<BaseSelection*>* select, 
 		List<BaseSelection*>* where, PlanOp* iterator) : Site(nm) {
 
 		// Used as a simple filter, not as a real site
@@ -324,7 +276,7 @@ public:
 		fout = NULL;
 		writePtrs = NULL;
 	}
-	LocalTable(String nm, Site* base) : Site(nm) {
+	LocalTable(string nm, Site* base) : Site(nm) {
 
 		// This site is used as a root, on top of all other sites.
 		// It does includes leftover constants, if any.
@@ -340,16 +292,9 @@ public:
 		delete [] writePtrs;
 		delete directSite;
 	}
-	virtual void addTable(TableAlias* tabName){
-		assert(myFrom->isEmpty());
-		myFrom->append(tabName);
-		String* alias = tabName->getAlias();
-		assert(alias);
-		assert(tables.empty());
-		tables = name = *alias;
-	}
+	virtual void addTable(TableAlias* tabName);
 	virtual Iterator* createExec();
-	virtual void typify(String option);	// Throws exception
+	virtual void typify(string option);	// Throws exception
 	virtual List<Site*>* generateAlternatives();
 	virtual void writeOpen(int mode = ios::app);
 	virtual void writeClose(){
@@ -358,7 +303,7 @@ public:
 		delete fout;	
 		fout = NULL;
 	}
-	virtual void write(String content){
+	virtual void write(string content){
 		assert(fout);
 		*fout << content << endl;
 	}
@@ -371,7 +316,7 @@ public:
 		}
 		*fout << endl;
 	}
-	virtual String * getOrderingAttrib(){
+	virtual string * getOrderingAttrib(){
 		if(directSite){
 			return directSite->getOrderingAttrib();
 		}
@@ -385,7 +330,7 @@ class IndexScan : public LocalTable {
 	RTreeIndex* index;
 	int numIndexablePreds;
 public:
-	IndexScan(String name, List<BaseSelection*>* select,
+	IndexScan(string name, List<BaseSelection*>* select,
 		List<BaseSelection*>* where, RTreeIndex* index, PlanOp* iterator) :
 		LocalTable(name, select, where, iterator), index(index) {
 		numIndexablePreds = 0;
@@ -400,15 +345,15 @@ public:
 class CGISite : public LocalTable {
 	CGIEntry* entry;
 	int entryLen;
-	String urlString;
+	string urlString;
 public:
-	CGISite(String url, CGIEntry* entry, int entryLen) : 
+	CGISite(string url, CGIEntry* entry, int entryLen) : 
 		LocalTable("", (PlanOp*) NULL), entry(entry), 
 		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){
 		// do not delete entries, they are deleted in catalog
 	}
-	virtual void typify(String option);
+	virtual void typify(string option);
 };
 
 class SiteGroup : public Site {
@@ -484,8 +429,8 @@ public:
 	virtual int getNumFlds(){
 		return mySelect->cardinality();
 	}
-	virtual void typify(String option);	// Throws exception
-	virtual String * getOrderingAttrib(){
+	virtual void typify(string option);	// Throws exception
+	virtual string * getOrderingAttrib(){
 		return site1->getOrderingAttrib();
 	}
 };
@@ -498,10 +443,10 @@ public:
 	virtual int getNumFlds(){
 		return iter1->getNumFlds();
 	}
-	virtual const String* getAttributeNames(){
+	virtual const string* getAttributeNames(){
 		return iter1->getAttributeNames();
 	}
-	virtual const String* getTypeIDs(){
+	virtual const string* getTypeIDs(){
 		return iter1->getTypeIDs();
 	}
 	virtual Iterator* createExec();
@@ -509,9 +454,9 @@ public:
 		delete iter1;
 		delete iter2;
 	}
-	virtual String * getOrderingAttrib(){
-		String* order1 = iter1->getOrderingAttrib();
-		String* order2 = iter2->getOrderingAttrib();
+	virtual string * getOrderingAttrib(){
+		string* order1 = iter1->getOrderingAttrib();
+		string* order2 = iter2->getOrderingAttrib();
 		if(order1 && order2 && *order1 == *order2){
 			return order1;
 		}

@@ -19,7 +19,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include "DataSeg.h"
-#include <String.h>
+#include <string>
 #include "TDataDQLInterp.h"
 #include "AttrList.h"
 #include "RecInterp.h"
@@ -30,7 +30,6 @@
 #include "DevError.h"
 #include "ParseCat.h"
 #include "DevError.h"
-// #include "StringStorage.h"
 
 #include "types.h"
 #include "exception.h"
@@ -136,11 +135,11 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 	}
 	*/
 
-	String query = "select *";
+	string query = "select *";
 	/*
 	attrList->rewind();
 	while(!attrList->atEnd()){
-		query += String("t.") + attrList->get(); 
+		query += string("t.") + attrList->get(); 
 		attrList->step();
 		if(attrList->atEnd()){
 			break;
@@ -148,8 +147,8 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 		query += ", ";
 	}
 	*/
-	query += String(" from ") + _tableName + " as t";
-	_query = strdup(query.chars());
+	query += string(" from ") + _tableName + " as t";
+	_query = strdup(query.c_str());
 
   #ifdef DEBUG
 	  printf(" Query = %s \n",_query);
@@ -255,7 +254,7 @@ void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 
 TDataDQLInterp::TDataDQLInterp(
 	AttrList attrs,char *name, char *type, 
-	int numFlds, String* types, int recSize, long totalRecs, 
+	int numFlds, string* types, int recSize, long totalRecs, 
 	int* sizes) : 
 	TDataDQL(attrs, name, type, numFlds, types, recSize, totalRecs, sizes)
 {

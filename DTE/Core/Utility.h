@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/14 02:08:54  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.5  1997/07/30 21:39:22  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -32,24 +35,26 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include<String.h>
-#include<iostream.h>
+#include <string>
+#include <iostream.h>
 
-class Catalog;
+// class Catalog;
 
-String selectFileName(const String& env, const String& def);
-Catalog* getRootCatalog();
+string selectFileName(const string& env, const string& def);
+
+// Catalog* getRootCatalog();
+
 istream* getIndexTableStream();
 ostream* getIndexTableOutStream(int mode = ios::out);
 
-String& stripQuotes(char* str);	// can throw excetion
+string stripQuotes(char* str);	// can throw excetion
 
-String& stripQuotes(istream& in);	// obsolete, can throw excetion
+void stripQuotes(istream& in, string& val);	// obsolete, can throw excetion
 
 void stripQuotes(istream& in, char* buf, int bufsz);// can throw excetion
 
-String& addQuotes(String str);
+string addQuotes(const string& in);
 
-String* dupStrArr(const String* inp, int numFlds);
+string* dupStrArr(const string* inp, int numFlds);
 
 #endif

@@ -32,7 +32,7 @@ bool Aggregates::isApplicable(){
 			Method* function = (Method*) curr;
 			List<BaseSelection*>* args = function->getArgs();
 			int numArgs = args->cardinality();
-			const String* name = function->getName();
+			const string* name = function->getName();
 			args->rewind();
 			if(*name == "min" && numArgs == 1){
 				isApplicableValue = true;
@@ -125,7 +125,7 @@ bool Aggregates::isApplicable(){
 	return isApplicableValue;
 }
 
-void Aggregates::typify(const String& name, Site* inputPlanOp){
+void Aggregates::typify(const string& name, Site* inputPlanOp){
 //	this->name = name;
 	this->inputPlanOp = inputPlanOp;
 	int numFlds = inputPlanOp->getNumFlds();

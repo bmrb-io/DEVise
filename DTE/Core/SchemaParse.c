@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/14 02:08:53  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.10  1997/08/12 19:58:42  donjerko
   Moved StandardTable headers to catalog.
 
@@ -44,6 +47,7 @@
 #include "ParseTree.h"
 #include "site.h"
 #include "catalog.h"
+#include "Interface.h"
 
 class ISchemaExec : public Iterator {
 	bool done;
@@ -66,7 +70,7 @@ public:
 	}
 };
 
-const String SCHEMA_STR("schema");
+const string SCHEMA_STR("schema");
 
 class ISchemaSite : public Site {
 	ISchema* schema;	
@@ -81,10 +85,10 @@ public:
 	virtual int getNumFlds(){
 		return 1;
 	}
-     virtual const String* getTypeIDs(){
+     virtual const string* getTypeIDs(){
 		return &SCHEMA_STR;
      }
-     virtual const String *getAttributeNames(){
+     virtual const string *getAttributeNames(){
 		return &SCHEMA_STR;
      }
 	ISchemaExec* createExec(){
@@ -93,11 +97,8 @@ public:
 };
 
 Site* ISchemaParse::createSite(){
-	Catalog* catalog = getRootCatalog();
 	Interface* interf;
-	assert(catalog);
-	TRY(interf = catalog->findInterface(tableName), NULL);
-	delete catalog;
+	TRY(interf = ROOT_CATALOG.createInterface(tableName), NULL);
 	TRY(const ISchema* schema = interf->getISchema(tableName), NULL);
 	ISchemaSite* retVal = new ISchemaSite(schema);
 	delete interf;

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/08/15 21:19:13  donjerko
+  Added / operator for ints and doubles
+
   Revision 1.29  1997/08/14 02:08:57  donjerko
   Index catalog is now an independent file.
 
@@ -76,53 +79,24 @@
   Revision 1.12  1997/03/14 18:36:13  donjerko
   Making space for the SQL UNION operator.
 
-  Revision 1.11  1997/03/06 02:35:31  donjerko
-  Undefined DEBUG
-
   Revision 1.10  1997/02/25 22:14:55  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
-
-  Revision 1.9  1997/02/18 18:06:07  donjerko
-  Added skeleton files for sorting.
-
-  Revision 1.8  1997/02/03 04:11:37  donjerko
-  Catalog management moved to DTE
-
-  Revision 1.7  1996/12/24 21:00:54  kmurli
-  Included FunctionRead to support joinprev and joinnext
-
-  Revision 1.6  1996/12/21 22:21:52  donjerko
-  Added hierarchical namespace.
-
-  Revision 1.5  1996/12/16 11:13:11  kmurli
-  Changes to make the code work for separate TDataDQL etc..and also changes
-  done to make Aggregates more robust
-
-  Revision 1.4  1996/12/15 06:41:11  donjerko
-  Added support for RTree indexes
-
-  Revision 1.3  1996/12/09 10:01:54  kmurli
-  Changed DTe/Core to include the moving aggregate functions. Also included
-  changes to the my.yacc and my.lex to add sequenceby clause.
-
-  Revision 1.2  1996/12/05 16:06:05  wenger
-  Added standard Devise file headers.
 
  */
 
 #include "types.h"
 #include "exception.h"
-//#include "myopt.h"		// for TableName
-#include "catalog.h"	// for Interface
+#include "Interface.h"
 #include "Utility.h"
 #include "DateTime.h"
-#include <String.h>
+#include <string>
 #include <time.h>
 #include <string.h>		// for strdup
 #include <strstream.h>
 #include <stdlib.h>
+#include <limits.h>
 
-ISchema DIR_SCHEMA("1 catentry entry");
+ISchema DIR_SCHEMA("2 string name interface interf");
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	EncodedDTF* val1 = ((EncodedDTF*)arg1);
@@ -223,16 +197,10 @@ void time_tGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
      result = (Type*)(*val1 > *val2);
 }
 
-void catEntryName(const Type* arg1, Type* result){
-	CatEntry* entry = (CatEntry*) arg1;
-	String tmp = entry->getName();
-	strcpy((char*) result, tmp.chars());
-}
-
-void catEntryType(const Type* arg1, Type* result){
-	CatEntry* entry = (CatEntry*) arg1;
-	String tmp = entry->getType();
-	strcpy((char*) result, tmp.chars());
+void interfaceType(const Type* arg1, Type* result){
+	Interface* interf = (Interface*) arg1;
+	string tmp = interf->getTypeNm();
+	strcpy((char*) result, tmp.c_str());
 }
 
 void intAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -430,14 +398,73 @@ void boolRead(istream& in, Type*& adt){
 	adt = (Type*) tmp;
 }
 
-void catEntryRead(istream& in, Type*& adt){
-	String nameStr;
-	TRY(nameStr = stripQuotes(in), );
+void interfaceRead(istream& in, Type*& adt){
 	if(!in){
 		return;
 	}
-	*((CatEntry*) adt) = CatEntry(nameStr);
-	TRY(((CatEntry*) adt)->read(in), );
+	string typeNm;
+	in >> typeNm;
+	if(!in){
+		string msg = "Interface name must be specified";
+		THROW(new Exception(msg), );
+	}
+	((Interface*) adt)->~Interface();	// calls the right destructor
+	Interface* interface;
+	if(typeNm == CatalogInterface::typeName){
+		interface = new (adt) CatalogInterface();
+		TRY(interface->read(in), );
+		string semicolon;
+		in >> semicolon;
+		if(semicolon != ";"){
+			string msg = "Semicolon expected instead of: " + semicolon;
+			THROW(new Exception(msg), );
+		}
+		return;
+	}
+	if(typeNm == DeviseInterface::typeName){
+		interface = new (adt) DeviseInterface();
+		TRY(interface->read(in), );
+	}
+	else if(typeNm == StandardInterface::typeName){
+		interface = new (adt) StandardInterface();
+		TRY(interface->read(in), );
+	}
+	else if(typeNm == QueryInterface::typeName){
+		interface = new (adt) QueryInterface();
+		TRY(interface->read(in), );
+	}
+	else if(typeNm == CGIInterface::typeName){
+		interface = new (adt) CGIInterface();
+		TRY(interface->read(in), );
+	}
+	else if(typeNm == ViewInterface::typeName){
+		interface = new (adt) ViewInterface();
+		TRY(interface->read(in), );
+	}
+	else if(typeNm == DummyInterface::typeName){
+		interface = new (adt) DummyInterface();
+		TRY(interface->read(in), );
+	}
+	else if(typeNm == MaterViewInterface::typeName){
+		interface = (ViewInterface*) new (adt) MaterViewInterface();
+		TRY(interface->read(in), );
+	}
+	else{
+		interface = NULL;
+		string msg = "Interface type: " + typeNm + " not defined";
+		THROW(new Exception(msg), );
+	}
+	string indexStr;
+	in >> indexStr;
+	while(in && indexStr != ";"){
+		string msg = 
+			"Invalid catalog format: \"index\" or \";\" expected";
+		THROW(new Exception(msg), );
+	}
+	if(!in){
+		string msg = "Premature end of catalog";
+		THROW(new Exception(msg), );
+	}
 }
 
 void schemaRead(istream& in, Type*& adt){
@@ -474,9 +501,9 @@ void boolWrite(ostream& out, const Type* adt){
 	}
 }
 
-void catEntryWrite(ostream& out, const Type* adt){
+void interfaceWrite(ostream& out, const Type* adt){
 	assert(adt);
-	((CatEntry*) adt)->display(out);
+	((Interface*) adt)->write(out);
 }
 
 void schemaWrite(ostream& out, const Type* adt){
@@ -531,7 +558,7 @@ double oneOver100(BaseSelection* left, BaseSelection* right){
 	return 0.01;
 }
 
-int packSize(const Type* adt, String type){
+int packSize(const Type* adt, string type){
 	if(type == "int"){
 		return sizeof(int);
 	}
@@ -541,8 +568,8 @@ int packSize(const Type* adt, String type){
 	else if(type == "double"){
 		return ((IDouble*) adt)->packSize();
 	}
-	else if(type.through(5).contains("string")){
-		int len = atoi(type.from(6).chars());
+	else if(type.substr(0, 6) == "string"){
+		int len = atoi(type.substr(6).c_str());
 		return len;
 	}
 	else{
@@ -551,7 +578,7 @@ int packSize(const Type* adt, String type){
 	}
 }
 
-int packSize(String type){	// throws exception
+int packSize(string type){	// throws exception
 	if(type == "int"){
 		return sizeof(int);
 	}
@@ -561,8 +588,8 @@ int packSize(String type){	// throws exception
 	else if(type == "double"){
 		return sizeof(IDouble);
 	}
-	else if(type.through(5).contains("string")){
-		int len = atoi(type.from(6).chars()) + 1;
+	else if(type.substr(0, 6) == "string"){
+		int len = atoi(type.substr(6).c_str()) + 1;
 		return len;
 	}
 	else if(type == "date"){
@@ -575,7 +602,7 @@ int packSize(String type){	// throws exception
 		return sizeof(time_t);
 	}
 	else{
-		String msg = "Don't know size of " + type; 
+		string msg = "Don't know size of " + type; 
 		assert(0);
 		THROW(new Exception(msg), 0);
 	}
@@ -616,7 +643,7 @@ void dateToUnixTime(const Type* adt, char* to){
 	memcpy(to, &ut, sizeof(time_t));
 }
 
-MarshalPtr getMarshalPtr(String type){
+MarshalPtr getMarshalPtr(string type){
 	if(type == "int"){
 		return intMarshal;
 	}
@@ -635,7 +662,7 @@ MarshalPtr getMarshalPtr(String type){
 	else if(type == "time_t"){
 		return time_tMarshal;
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 
 		// length needs to be passed for the binary data
 
@@ -671,7 +698,7 @@ void time_tUnmarshal(char* from, Type*& adt){
 	memcpy(adt, from, sizeof(time_t));
 }
 
-UnmarshalPtr getUnmarshalPtr(String type){
+UnmarshalPtr getUnmarshalPtr(string type){
 	if(type == "int"){
 		return intUnmarshal;
 	}
@@ -690,7 +717,7 @@ UnmarshalPtr getUnmarshalPtr(String type){
 	else if(type == "time_t"){
 		return time_tUnmarshal;
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 
 		// length needs to be passed for the binary data
 
@@ -703,11 +730,11 @@ UnmarshalPtr getUnmarshalPtr(String type){
 }
 
 GeneralPtr* getOperatorPtr(
-	String name, TypeID root, TypeID arg, TypeID& retType){
+	string name, TypeID root, TypeID arg, TypeID& retType){
 	if(root == "int"){
 		return IInt::getOperatorPtr(name, arg, retType);
 	}
-	else if(root.through(5).contains("string")){
+	else if(root.substr(0, 6) == "string"){
 		return IString::getOperatorPtr(name, root, arg, retType);
 	}
 	else if(root == "bool"){
@@ -726,21 +753,21 @@ GeneralPtr* getOperatorPtr(
 		return ITime_t::getOperatorPtr(name, root, arg, retType);
 	}
 	else{
-		String msg = "Cannot find OperatorPtr for type: " + root;
+		string msg = "Cannot find OperatorPtr for type: " + root;
 		THROW(new Exception(msg), NULL);
 	}
 }
 
-GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType){
-	String err;
-	if(root == "int" || root.through(5).contains("string") || 
+GeneralMemberPtr* getMemberPtr(string name, TypeID root, TypeID& retType){
+	string err;
+	if(root == "int" || root.substr(0, 6) == "string" || 
 		root == "bool" || root == "double"){
 		err = "Type " + root + " does not have a member \"" + name + "\"";
 		THROW(new Exception(err), NULL);
 	}
-	else if(root == "catentry"){
+	else if(root == "interface"){
 		GeneralMemberPtr* retVal;
-		TRY(retVal = CatEntry::getMemberPtr(name, retType), NULL);
+		TRY(retVal = InterfWrapper::getMemberPtr(name, retType), NULL);
 		return retVal;
 	}
 	else{
@@ -753,7 +780,7 @@ ReadPtr getReadPtr(TypeID root){
 	if(root == "int"){
 		return intRead;
 	}
-	else if(root.through(5).contains("string")){
+	else if(root.substr(0, 6) == "string"){
 		return stringRead;
 	}
 	else if(root == "bool"){
@@ -762,8 +789,8 @@ ReadPtr getReadPtr(TypeID root){
 	else if(root == "double"){
 		return doubleRead;
 	}
-	else if(root == "catentry"){
-		return catEntryRead;
+	else if(root == "interface"){
+		return interfaceRead;
 	}
 	else if(root == "schema"){
 		return schemaRead;
@@ -781,7 +808,7 @@ WritePtr getWritePtr(TypeID root){
 	if(root == "int"){
 		return intWrite;
 	}
-	else if(root.through(5).contains("string")){
+	else if(root.substr(0, 6) == "string"){
 		return stringWrite;
 	}
 	else if(root == "bool"){
@@ -790,8 +817,8 @@ WritePtr getWritePtr(TypeID root){
 	else if(root == "double"){
 		return doubleWrite;
 	}
-	else if(root == "catentry"){
-		return catEntryWrite;
+	else if(root == "interface"){
+		return interfaceWrite;
 	}
 	else if(root == "schema"){
 		return schemaWrite;
@@ -809,7 +836,7 @@ WritePtr getWritePtr(TypeID root){
 		return time_tWrite;
 	}
 	else{
-		String msg = "Cannot find WritePtr for type: " + root;
+		string msg = "Cannot find WritePtr for type: " + root;
 		THROW(new Exception(msg), NULL);
 	}
 }
@@ -818,7 +845,7 @@ void zeroOut(Type*& arg, TypeID &root){
 	if(root == "int"){
 		arg = (Type*) 0;
 	}
-	else if(root.through(5).contains("string")){
+	else if(root.substr(0, 6) == "string"){
 		*((char*) arg) = '\0';
 	}
 	else if(root == "bool"){
@@ -833,7 +860,7 @@ void zeroOut(Type*& arg, TypeID &root){
 	}
 }
 
-String rTreeEncode(String type){
+string rTreeEncode(string type){
 	if(type == "int"){
 		return "i";
 	}
@@ -843,16 +870,16 @@ String rTreeEncode(String type){
 	else if(type == "double"){
 		return "d";
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 		ostrstream tmp;
 		tmp << "s[" << packSize(type) << "]" << ends;
 		char* tmpc = tmp.str();
-		String retVal(tmpc);
+		string retVal(tmpc);
 		delete tmpc;
 		return retVal;
 	}
 	else{
-		String msg = "Don't know how to build index on type: " + type;
+		string msg = "Don't know how to build index on type: " + type;
 		THROW(new Exception(msg), "");
 	}
 }
@@ -889,11 +916,11 @@ Type* createNegInf(TypeID type){
 	else if(type == "double"){
 		return new IDouble(-DBL_MAX);
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 		return strdup("");
 	}
 	else{
-		String msg = "Don't know what is -Infinity for type: " + type;
+		string msg = "Don't know what is -Infinity for type: " + type;
 		THROW(new Exception(msg), "");
 	}
 }
@@ -905,127 +932,28 @@ Type* createPosInf(TypeID type){
 	else if(type == "double"){
 		return new IDouble(DBL_MAX);
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 		return strdup("zzzzzzzzzzzz");
 	}
 	else{
-		String msg = "Don't know what is +Infinity for type: " + type;
+		string msg = "Don't know what is +Infinity for type: " + type;
 		THROW(new Exception(msg), "");
 	}
 }
 
-GeneralMemberPtr* CatEntry::getMemberPtr(String name, TypeID& retType){
-	if(name == "name"){
+GeneralMemberPtr* InterfWrapper::getMemberPtr(string name, TypeID& retType){
+	if(name == "type"){
 		retType = "string";
-		return new GeneralMemberPtr(catEntryName);
-	}
-	else if(name == "type"){
-		retType = "string";
-		return new GeneralMemberPtr(catEntryType);
+		return new GeneralMemberPtr(interfaceType);
 	}
 	else{
-		String msg = "Type catentry does not have member \"" + name + "\"";
+		string msg = "Type interface does not have member \"" + name + "\"";
 		THROW(new Exception(msg), NULL);
 	}
 }
 
-Site* CatEntry::getSite(){
-	return interface->getSite();
-}
-
-Interface* CatEntry::getInterface(){
-	assert(interface);
-	Interface* retVal = interface;
-	interface = NULL;
-	return retVal;
-}
-
-CatEntry::~CatEntry(){
-	delete interface;
-}
-
-CatEntry& CatEntry::operator=(const CatEntry& a){
-	if(this == &a){
-		return (*this);
-	}
-	singleName = a.singleName;
-//	assert(interface != a.interface);
-	delete interface;
-	interface = NULL;
-	if(a.interface){
-		interface = a.interface->duplicate();
-	}
-	typeNm = a.typeNm;
-	return *this;
-}
-
-void CatEntry::display(ostream& out){
-     out << addQuotes(singleName) << " " << typeNm;
-     interface->write(out);
-     out << " ;";
-}
-
-istream& CatEntry::read(istream& in){ // Throws Exception
-	in >> typeNm;
-	if(!in){
-		String msg = "Interface for table " + singleName + 
-			" must be specified";
-		THROW(new Exception(msg), in);
-	}
-	delete interface;
-	if(typeNm == "Directory"){
-		interface = new CatalogInterface();
-		TRY(interface->read(in), in);
-		String semicolon;
-		in >> semicolon;
-		if(semicolon != ";"){
-			String msg = "Semicolon expected instead of: " + semicolon;
-			THROW(new Exception(msg), in);
-		}
-		return in;
-	}
-	if(typeNm == "Table"){
-		interface = new DeviseInterface(singleName);
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "StandardTable"){
-		interface = new StandardInterface();
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "DEVise"){
-		interface = new QueryInterface();
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "CGIInterface"){
-		interface = new CGIInterface(singleName);
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "SQLView"){
-		interface = new ViewInterface(singleName);
-		TRY(interface->read(in), in);
-	}
-	else if(typeNm == "UNIXFILE"){
-		interface = new DummyInterface();
-		TRY(interface->read(in), in);
-	}
-	else{
-		interface = NULL;
-		String msg = "Table " + singleName + " interface: " + 
-			typeNm + ", not defined";
-		THROW(new Exception(msg), in);
-	}
-	String indexStr;
-	in >> indexStr;
-	while(in && indexStr != ";"){
-		String msg = 
-			"Invalid catalog format: \"index\" or \";\" expected";
-		THROW(new Exception(msg), in);
-	}
-	if(!in){
-		String msg = "Premature end of catalog";
-		THROW(new Exception(msg), in);
-	}
-	return in;
+const Interface* InterfWrapper::getInterface(const Type* object){
+	return (const Interface*) object;
 }
 
 istream& IndexDesc::read(istream& in){
@@ -1037,7 +965,7 @@ istream& IndexDesc::read(istream& in){
 		return in;
 	}
 	keyTypes = new TypeID[numKeyFlds];
-	keyFlds = new String[numKeyFlds];
+	keyFlds = new string[numKeyFlds];
 	for(int i = 0; i < numKeyFlds; i++){
 		in >> keyTypes[i];
 	}
@@ -1048,7 +976,7 @@ istream& IndexDesc::read(istream& in){
 	if(!in){
 		return in;
 	}
-	addFlds = new String[numAddFlds];
+	addFlds = new string[numAddFlds];
 	addTypes = new TypeID[numAddFlds];
 	for(int i = 0; i < numAddFlds; i++){
 		in >> addTypes[i];
@@ -1087,6 +1015,74 @@ istream& ISchema::read(istream& in){ // Throws Exception
 
 void ISchema::write(ostream& out){
 	out << *this;
+}
+
+ISchema::ISchema
+	(int numFlds, const TypeID* typeIDs, const string* attributeNames)
+{
+	this->numFlds = numFlds;
+	this->typeIDs = new TypeID[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		this->typeIDs[i] = typeIDs[i];
+	}
+	this->attributeNames = new string[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		this->attributeNames[i] = attributeNames[i];
+	}
+}
+
+ISchema& ISchema::operator=(const ISchema& x){
+	if(this == &x){
+		return *this;
+	}
+	numFlds = x.numFlds;
+	if(attributeNames != x.attributeNames){
+		delete attributeNames;
+	}
+	if(x.attributeNames){
+		attributeNames = new string[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			attributeNames[i] = x.attributeNames[i];
+		}
+	}
+	else{
+		attributeNames = NULL;
+	}
+	if(typeIDs != x.typeIDs){
+		delete typeIDs;
+	}
+	if(x.typeIDs){
+		typeIDs = new TypeID[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			typeIDs[i] = x.typeIDs[i];
+		}
+	}
+	else{
+		typeIDs = NULL;
+	}
+	return *this;
+}
+
+ISchema::ISchema(const ISchema& x){
+	numFlds = x.numFlds;
+	if(x.attributeNames){
+		attributeNames = new string[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			attributeNames[i] = x.attributeNames[i];
+		}
+	}
+	else{
+		attributeNames = NULL;
+	}
+	if(x.typeIDs){
+		typeIDs = new TypeID[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			typeIDs[i] = x.typeIDs[i];
+		}
+	}
+	else{
+		typeIDs = NULL;
+	}
 }
 
 void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers){ // throws
@@ -1137,7 +1133,7 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	if(root == "int"){
 		return intDestroy;
 	}
-	else if(root.through(5).contains("string")){
+	else if(root.substr(0, 6) == "string"){
 		return stringDestroy;
 	}
 	else if(root == "bool"){
@@ -1146,8 +1142,8 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 	else if(root == "double"){
 		return doubleDestroy;
 	}
-	else if(root == "catentry"){
-		return catEntryDestroy;
+	else if(root == "interface"){
+		return interfaceDestroy;
 	}
 	else if(root == "indexdesc"){
 		return indexDescDestroy;
@@ -1159,7 +1155,7 @@ DestroyPtr getDestroyPtr(TypeID root){ // throws
 		return dateDestroy;
 	}
 	else{
-		String msg = "Don't know how to destroy type: " + root;
+		string msg = "Don't know how to destroy type: " + root;
 		cout << msg << endl;
 		exit(1);
 		THROW(new Exception(msg), NULL);
@@ -1190,8 +1186,8 @@ void stringDestroy(Type* adt){
 	delete [] (char*) adt;
 }
 
-void catEntryDestroy(Type* adt){
-	delete (CatEntry*) adt;
+void interfaceDestroy(Type* adt){
+	delete (Interface*) adt;
 }
 
 void indexDescDestroy(Type* adt){
@@ -1229,17 +1225,17 @@ PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
 	else if(from == "double" && to == "double"){
 		return doubleToDouble;
 	}
-	else if(from.through(5).contains(STRING_TP) && to == STRING_TP){
+	else if(from.substr(0, 6) == "string" && to == STRING_TP){
 		return stringLToString;
 	}
-	else if(from == STRING_TP && to.through(5).contains(STRING_TP)){
+	else if(from == STRING_TP && to.substr(0, 6) == "string"){
 		return stringToStringL;
 	}
 	if(from == INT_TP && to == INT_TP){
 		return intToInt;
 	}
 	else{
-		String msg = String("Cannot promote ") + from + " to " + to;
+		string msg = string("Cannot promote ") + from + " to " + to;
 		THROW(new Exception(msg), NULL);
 	}
 }
@@ -1284,7 +1280,7 @@ ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
 	else if(adt == "time_t"){
 		return time_tCopy;
 	}
-	else if(adt.through(5).contains("string")){
+	else if(adt.substr(0, 6) == "string"){
 		return stringCopy;
 	}
 	else{
@@ -1314,8 +1310,8 @@ bool sameType(TypeID t1, TypeID t2){
 	if(t1 == t2){
 		return true;
 	}
-	else if(t1.through(5).contains(STRING_TP) && 
-		t1.through(5).contains(STRING_TP)){
+	else if(t1.substr(0, 6) == "string" && 
+		t1.substr(0, 6) == "string"){
 
 		return true;
 	}
@@ -1325,7 +1321,7 @@ bool sameType(TypeID t1, TypeID t2){
 };
 
 int domain(TypeID adt){	// throws exception
-	if(adt.through(5).contains(STRING_TP) && adt != STRING_TP){
+	if(adt.substr(0, 6) == "string" && adt != STRING_TP){
 		return 0;
 	}
 	else if(adt == STRING_TP){
@@ -1350,7 +1346,7 @@ int domain(TypeID adt){	// throws exception
 		return 7;
 	}
 	else{
-		String msg = String("Type \"") + adt + 
+		string msg = string("Type \"") + adt + 
 			"\" is not listed in fn domain";
 		THROW(new Exception(msg), 0);
 	}
@@ -1392,7 +1388,7 @@ Type* duplicateObject(TypeID type, Type* obj){
 		double val = *((double*) obj);
 		return new double(val);
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 		return strdup((char*) obj);
 	}
 	else if(type == "date"){
@@ -1403,9 +1399,8 @@ Type* duplicateObject(TypeID type, Type* obj){
 		time_t val = *((time_t*) obj);
 		return new time_t(val);
 	}
-	else if(type == "catentry"){
-		CatEntry val = *((CatEntry*) obj);
-		return  new CatEntry(val);
+	else if(type == "interface"){
+		return ((Interface*) obj)->duplicate();
 	}
 	else if(type == "schema"){
 		ISchema* val = ((ISchema*) obj);
@@ -1433,7 +1428,7 @@ char* allocateSpace(TypeID type, size_t& size){
 	else if(type == "double"){
 		return (char*) new double;
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 		size = packSize(type);
 		return new char[size];
 	}
@@ -1446,8 +1441,10 @@ char* allocateSpace(TypeID type, size_t& size){
 	else if(type == "time_t"){
 		return (char*) new time_t;
 	}
-	else if(type == "catentry"){
-		return (char*) new CatEntry();
+	else if(type == "interface"){
+		size = INITIAL_INTERFACE_SIZE;
+		char* space = new char[size];
+		return (char*) new (space) StandardInterface;
 	}
 	else if(type == "schema"){
 		return (char*) new ISchema();
@@ -1471,10 +1468,10 @@ MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
 		else if(types[i] == DOUBLE_TP){
 			retVal[i] = new DoubleLoader();
 		}
-		else if(types[i] == CAT_ENTRY_TP){
-			retVal[i] = new MemoryLoaderTemplate<CatEntry>();
+		else if(types[i] == INTERFACE_TP){
+			retVal[i] = new InterfaceLoader;
 		}
-		else if(strncmp(types[i].chars(), "string", 6) == 0){
+		else if(strncmp(types[i].c_str(), "string", 6) == 0){
 			retVal[i] = new StringLoader();
 		}
 		else{
@@ -1494,8 +1491,8 @@ istream& operator>>(istream& in, ISchema& s){
 	delete [] s.typeIDs;
 	delete [] s.attributeNames;
 	s.typeIDs = new TypeID[s.numFlds];
-	s.attributeNames = new String[s.numFlds];
-	String typeName;
+	s.attributeNames = new string[s.numFlds];
+	string typeName;
 	for(int i = 0; i < s.numFlds; i++){
 		in >> typeName;
 		// s.typeIDs[i] = TypeWrapper::create(typeName);
@@ -1505,18 +1502,28 @@ istream& operator>>(istream& in, ISchema& s){
 	return in;
 }
 
-ISchema::ISchema(const String& str) :
+ISchema::ISchema(const string& str) :
 	typeIDs(NULL), attributeNames(NULL) {
-//	istrstream in(strdup(str.chars()));
-	istrstream in(str.chars());	// trying to free the string??
+//	istrstream in(strdup(str.c_str()));
+	istrstream in(str.c_str());	// trying to free the string??
 	in >> *this;
 }
 
 ostream& operator<<(ostream& out, const ISchema& s){
 	out << s.numFlds;
 	for(int i = 0; i < s.numFlds; i++){
-		out << " " << s.typeIDs[i];
+		if(s.typeIDs){
+			out << " " << s.typeIDs[i];
+		}
+		else{
+			out << " " << "unknown";
+		}
 		out << " " << s.attributeNames[i];
 	}
 	return out;
+}
+
+Type* InterfaceLoader::load(const Type* arg){
+	char* space = (char*) allocate(INITIAL_INTERFACE_SIZE);
+	return ((Interface*) arg)->copyTo(space);
 }

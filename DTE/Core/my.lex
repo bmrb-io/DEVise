@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/04/08 01:47:35  donjerko
+  Set up the basis for ORDER BY clause implementation.
+
   Revision 1.15  1997/03/28 16:07:30  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -56,7 +59,7 @@
  */
 
 %{
-#include <String.h>
+#include <string>
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -117,16 +120,17 @@ LessGreat    ">="|">"|"<="|"<"
 [Ii][Nn][Tt][Oo]			{return INTO;}
 [Dd][Ee][Ll][Ee][Tt][Ee]		{return DELETE;}
 [Ss][Cc][Hh][Ee][Mm][Aa]		{return SCHEMA;}
+[Mm][Aa][Tt][Ee][Rr][Ii][Aa][Ll][Ii][Zz][Ee]	{return MATERIALIZE;}
 [Aa][Dd][Dd]				{return ADD;}
 [Uu][Nn][Ii][Oo][Nn]		{return UNION;}
 
-{String}     {yylval.string = new String(yytext); return STRING;}
+{String}     {yylval.stringLit = new string(yytext); return STRING;}
 {IntLit}     {yylval.integer = atoi(yytext); return INT;}
 {DecLit}     {yylval.real = atof(yytext); return DOUBLE;}
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INT;}
-{LessGreat}  {yylval.string = new String(yytext); return LESSGREATER;}
+{LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
 \"([^\"]|\\\")*\" {
-             yylval.string = new String(stripQuotes(yytext)); 
+             yylval.stringLit = new string(stripQuotes(yytext)); 
 		   return STRING_CONST;
 		   }
 .            {return yytext[0];}

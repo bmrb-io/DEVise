@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/14 02:08:52  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.13  1997/06/21 22:47:59  donjerko
   Separated type-checking and execution into different classes.
 
@@ -49,22 +52,22 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>* tableList;
 	BaseSelection* predicates;
-	String* sequencebyTable;
+	string* sequencebyTable;
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* groupBy;
 	List<BaseSelection*>* orderBy;
-	List<String*>* namesToResolve;
+	List<string*>* namesToResolve;
 	void resolveNames();	// throws exception
 public:	
 	QueryTree(
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
-		String *sequencebyTable,
+		string *sequencebyTable,
 		BaseSelection* withPredicate,
 		List<BaseSelection *>*groupBy,
 		List<BaseSelection*>* orderBy,
-		List<String*>* namesToResolve) :
+		List<string*>* namesToResolve) :
 		selectList(selectList), tableList(tableList), 
 		predicates(predicates), sequencebyTable(sequencebyTable),
 		withPredicate(withPredicate),groupBy(groupBy), orderBy(orderBy),
@@ -81,18 +84,18 @@ public:
 };
 
 class IndexParse : public ParseTree {
-	String* indexName;
+	string* indexName;
 	TableName* tableName;
-	List<String*>* keyAttrs;
-	List<String*>* additionalAttrs;
+	List<string*>* keyAttrs;
+	List<string*>* additionalAttrs;
 	bool standAlone;
 public:	
 	IndexParse(
-		String* indexType,
-		String* indexName,
-		List<String*>* tableName,
-		List<String*>* keyAttrs,
-		List<String*>* additionalAttrs) :
+		string* indexType,
+		string* indexName,
+		List<string*>* tableName,
+		List<string*>* keyAttrs,
+		List<string*>* additionalAttrs) :
 		indexName(indexName), tableName(new TableName(tableName)),
 		keyAttrs(keyAttrs), additionalAttrs(additionalAttrs) {
 		standAlone = false;
@@ -114,7 +117,7 @@ class InsertParse : public ParseTree {
 	List<ConstantSelection*>* fieldList;
 public:	
 	InsertParse(
-		List<String*>* tableName,
+		List<string*>* tableName,
 		List<ConstantSelection*>* fieldList) :
 		tableName(new TableName(tableName)),
 		fieldList(fieldList) {}
@@ -127,11 +130,11 @@ public:
 
 class DeleteParse : public ParseTree {
 	TableName* tableName;
-	String* alias;
+	string* alias;
 	BaseSelection* predicate;
 public:	
 	DeleteParse(
-		List<String*>* tableName, String* alias,
+		List<string*>* tableName, string* alias,
 		BaseSelection* predicate) :
 		tableName(new TableName(tableName)),
 		alias(alias), predicate(predicate) {}
@@ -144,9 +147,9 @@ public:
 
 class DropIndexParse : public ParseTree {
 	TableName* tableName;
-	String* indexName;
+	string* indexName;
 public:
-	DropIndexParse(List<String*>* tableName, String* indexName) :
+	DropIndexParse(List<string*>* tableName, string* indexName) :
 		tableName(new TableName(tableName)), indexName(indexName) {}
 	virtual Site* createSite();	// throws exception
 	virtual ~DropIndexParse(){
@@ -158,7 +161,7 @@ public:
 class ISchemaParse : public ParseTree {
 	TableName* tableName;
 public:
-	ISchemaParse(List<String*>* tableName) :
+	ISchemaParse(List<string*>* tableName) :
 		tableName(new TableName(tableName)) {}
 	virtual Site* createSite();	// throws exception
 	virtual ~ISchemaParse(){
@@ -176,6 +179,17 @@ public:
 	virtual ~UnionParse(){
 		delete query1;
 		delete query2;
+	}
+};
+
+class MaterializeParse : public ParseTree {
+	TableName* tableName;
+public:
+	MaterializeParse(List<string*>* tableName) :
+		tableName(new TableName(tableName)) {}
+	virtual Site* createSite();	// throws exception
+	virtual ~MaterializeParse(){
+		delete tableName;	// destroy too
 	}
 };
 

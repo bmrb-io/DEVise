@@ -26,7 +26,7 @@ TypeID translateUDType(Attr* at){
        ostrstream tmp;
        tmp << "string" << size << ends;
        char* tmp2 = tmp.str();
-       String retVal(tmp2);
+       string retVal(tmp2);
        delete [] tmp2;
        return retVal;
      } 
@@ -48,20 +48,20 @@ TypeID translateUDType(Attr* at){
 void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 	ud = new UniData(dataFile, schemaFile);
 	if(!ud || !ud->isOk()){
-		String msg = String("Cannot create table(") +
+		string msg = string("Cannot create table(") +
 			dataFile + ", " + schemaFile + ")";
 		THROW(new Exception(msg), );
 	}
 	numFlds = ud->schema()->NumFlatAttrs() + 1;	// for recId
 	typeIDs = new TypeID[numFlds];
-	attributeNames = new String[numFlds];
+	attributeNames = new string[numFlds];
 	AttrStk *stk = ud->schema()->GetFlatAttrs();
 	typeIDs[0] = INT_TP;
-	attributeNames[0] = String("recId"); 
+	attributeNames[0] = string("recId"); 
 	for(int i = 1; i < numFlds; i++){
 		Attr *at = stk->ith(i - 1);
 		typeIDs[i] = translateUDType(at);
-		attributeNames[i] = String(at->flat_name()); 
+		attributeNames[i] = string(at->flat_name()); 
 	}
 }
 

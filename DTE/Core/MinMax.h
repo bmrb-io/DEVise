@@ -9,7 +9,7 @@ class MinMax {
 public:
 	static bool isApplicable(List<BaseSelection*>* selectList);
 	static TableAlias* createReplacement(TableAlias* table);
-	static void insert(const String& tableName, const String& fileName);
+	static void insert(const string& tableName, const string& fileName);
 };
 
 #endif

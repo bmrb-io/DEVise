@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:23  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "ParseTree.h"
@@ -23,7 +27,7 @@
 #include "Engine.h"
 
 Site* DropIndexParse::createSite(){
-	String query = String("delete .sysind as t where t.table = \"") +
+	string query = string("delete .sysind as t where t.table = \"") +
 		tableName->toString() + "\" and t.name = \"" + *indexName + "\"";
 	cout << "in drop index with query:\n" << query << endl;
 	Engine engine(query);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/08/15 21:19:11  donjerko
+  Added / operator for ints and doubles
+
   Revision 1.25  1997/07/22 15:00:56  donjerko
   *** empty log message ***
 
@@ -85,26 +88,26 @@
 #include "ParseTree.h"
 #include "joins.h"
 #include <iostream.h>
-#include <String.h>
+#include <string>
 #include <assert.h>
 #include <stdio.h>
 
 extern int yylex();
 extern ParseTree* parseTree;
-extern List<String*>* namesToResolve;
+extern List<string*>* namesToResolve;
 extern List<JoinTable*>* joinList;
 extern JoinTable * joinTable;
 extern JoinTable * jTable;
 extern BaseSelection* withPredicate;
 /* extern BaseSelection * sequencebyTable;*/
-extern String *sequencebyTable; 
+extern string *sequencebyTable; 
 int yyerror(char* msg);
 extern char* queryString;
 static int my_yyaccept();
 
 %}
 %union{
-     String* string;
+     string* stringLit;
 	int integer;
 	double real;
 	BaseSelection* sel;
@@ -113,7 +116,7 @@ static int my_yyaccept();
 	List<ConstantSelection*>* constList;
 	List<TableAlias*>* tableList;
 	TableAlias* tabAlias;
-	List<String*>* listOfStrings;
+	List<string*>* listOfStrings;
 	ParseTree* parseTree;
 }
 %token <integer> INT
@@ -139,18 +142,19 @@ static int my_yyaccept();
 %token VALUES
 %token DELETE
 %token SCHEMA
+%token MATERIALIZE
 %token ADD
-%token <string> STRING_CONST
+%token <stringLit> STRING_CONST
 %left UNION
 %left '.'
 %left OR
 %left AND
 %left '='
-%left <string> LESSGREATER
+%left <stringLit> LESSGREATER
 %left '-' '+'
 %left '*' '/'
-%left <string> STRING 
-%type <string> JoinString 
+%left <stringLit> STRING 
+%type <stringLit> JoinString 
 %type <sel> selection
 %type <integer> optShiftVal 
 %type <selList> listOfSelections
@@ -166,10 +170,10 @@ static int my_yyaccept();
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <constantSel> constant
-%type <string> optSequenceByClause
-%type <string> index_name
+%type <stringLit> optSequenceByClause
+%type <stringLit> index_name
 %type <listOfStrings> table_name
-%type <string> optIndType
+%type <stringLit> optIndType
 %type <listOfStrings> keyAttrs
 %type <listOfStrings> optIndAdd 
 %type <listOfStrings> listOfStrings 
@@ -204,6 +208,10 @@ definition: CREATE optIndType INDEX index_name ON table_name
 		parseTree = new ISchemaParse($2);
 		YYACCEPT;
 	}
+	| MATERIALIZE table_name {
+		parseTree = new MaterializeParse($2);
+		YYACCEPT;
+	}
 	;
 keyAttrs : listOfStrings
 	;
@@ -218,12 +226,12 @@ optIndAdd: ADD '(' listOfStrings ')' {
 		$$ = $3;
 	}
 	| {
-		$$ = new List<String*>;
+		$$ = new List<string*>;
 	}
 	;
 constant :
 	STRING_CONST {
-		$$ = new ConstantSelection("string", strdup($1->chars()));
+		$$ = new ConstantSelection("string", strdup($1->c_str()));
 	}
 	| INT {
 		$$ = new ConstantSelection("int", (Type*) $1);
@@ -239,11 +247,11 @@ table_name : table_name '.' STRING {
 		$$ = $1;
 	}
 	| '.' STRING {
-		$$ = new List<String*>;
+		$$ = new List<string*>;
 		$$->append($2);
 	}
 	| '.' {
-		$$ = new List<String*>;
+		$$ = new List<string*>;
 	}
 	;
 query : SELECT listOfSelectionsOrStar 
@@ -288,11 +296,11 @@ listOfStrings : listOfStrings ',' STRING {
 		$$ = $1;
 	}
 	| STRING {
-		$$ = new List<String*>;
+		$$ = new List<string*>;
 		$$->append($1);
 	}
 	| {
-		$$ = new List<String*>;
+		$$ = new List<string*>;
 	}
      ;
 listOfTables : 
@@ -441,10 +449,10 @@ JoinList: JoinList JoinString tableAlias{
 	;
 
 JoinString : JOINPREV {
-		$$ = new String("joinprev");
+		$$ = new string("joinprev");
 	}
 	| JOINNEXT {
-		$$ = new String("joinnext");
+		$$ = new string("joinnext");
 	}
 	;
 
@@ -457,11 +465,11 @@ tableAlias : STRING '(' table_name optShiftVal ')' AS STRING {
 	| table_name {
         if($1->cardinality() == 1){
             $1->rewind();
-            String* tmp = new String(*$1->get());
+            string* tmp = new string(*$1->get());
             $$ = new TableAlias(new TableName($1), tmp);
         }
         else{
-            String msg = "Sorry, you need to specify alias";
+            string msg = "Sorry, you need to specify alias";
             THROW(new Exception(msg), 0);
         }
 	}

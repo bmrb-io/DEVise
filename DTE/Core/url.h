@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/06/16 16:04:56  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.5  1997/04/26 13:59:04  donjerko
   Fixed the extraction of header.
 
@@ -35,12 +38,12 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/uio.h>
+// #include <sys/uio.h> // why is this here? (DD)
 #include <netinet/in.h>
 #ifndef SUN
 #include <netdb.h>
 #endif
-#include <String.h>
+#include <string>
 #include <string.h>
 #include <assert.h>
 #include <iostream.h>
@@ -59,7 +62,7 @@ private:
      char* url;
 	char* host;
 	char* file;
-	String protocol;
+	string protocol;
 	Cor_sockbuf* sockBuf;
 	int sock;
 	bool outputRequested;
@@ -88,7 +91,7 @@ private:
 		}
 	}
 public:
-	URL(String url) : url(strdup((char*) url.chars())) {
+	URL(string url) : url(strdup((char*) url.c_str())) {
 		outputRequested = false;
 		inputRequested = false;
 		host = file = NULL;
@@ -98,12 +101,12 @@ public:
 			sockBuf = new Cor_sockbuf(host, httpport);
 		}
 	}
-	URL(URL* baseURL, String relativeURL){
+	URL(URL* baseURL, string relativeURL){
 		outputRequested = false;
 		host = file = NULL;
 		sockBuf = NULL;
-		String tmp = String(baseURL->url) + relativeURL;
-		url = strdup((char*)tmp.chars());
+		string tmp = string(baseURL->url) + relativeURL;
+		url = strdup((char*)tmp.c_str());
 		parseURL();
 		if(protocol == "http"){
 			sockBuf = new Cor_sockbuf(host, httpport);
@@ -132,7 +135,7 @@ public:
 		if(protocol == "file"){
 			ostream* retVal =  new ofstream(file, mode);
 			if(!retVal->good()){
-				String msg = "Cannot open file: " + String(file);
+				string msg = "Cannot open file: " + string(file);
 				THROW(new Exception(msg), NULL);
 			}
 			return retVal;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/08/14 02:08:55  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.28  1997/07/30 21:39:25  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -101,7 +104,7 @@
 #define MYOPT_H
 
 #include <assert.h>
-#include <String.h>
+#include <string>
 #include <iostream.h>
 #include <fstream.h>
 #include <strstream.h>
@@ -124,12 +127,12 @@ public:
      BaseSelection() {}
 	virtual ~BaseSelection(){}
 	virtual void destroy(){}
-	String toString(){
+	string toString(){
 		ostrstream os;
 		display(os);
 		os << ends;
 		char* tmp = os.str();
-		String retVal(tmp);
+		string retVal(tmp);
 		delete tmp;
 		return retVal;
 	}
@@ -140,8 +143,8 @@ public:
 	}
 	virtual BaseSelection* filter(Site* site) = 0;
 	virtual bool exclusive(Site* site) = 0;
-	virtual bool exclusive(String* attributeNames, int numFlds) = 0;
-	virtual String* siteName(){
+	virtual bool exclusive(string* attributeNames, int numFlds) = 0;
+	virtual string* siteName(){
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
@@ -162,8 +165,8 @@ public:
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
      virtual ExecExpr* createExec(
-		String site1, List<BaseSelection*>* list1,
-		String site2, List<BaseSelection*>* list2){
+		string site1, List<BaseSelection*>* list1,
+		string site2, List<BaseSelection*>* list2){
 
 		return NULL;
      }
@@ -214,14 +217,14 @@ public:
 		return false;
 	}
 	virtual bool isIndexable(
-		String& attrName, String& opName, BaseSelection*& value){
+		string& attrName, string& opName, BaseSelection*& value){
 
 		// Introduced to recognize the indexable predicates.
 		// Only OperatorSelection can be indexable
 
 		return false;
 	}
-	virtual String toStringAttOnly(){
+	virtual string toStringAttOnly(){
 		cout << "toStringAttOnly not definded for: " << selectID() << endl;
 		assert(0);
 		return ""; // avoid compiler warning
@@ -251,7 +254,7 @@ public:
 	}
 	virtual BaseSelection* filter(Site* siteGroup);
 	virtual bool exclusive(Site* s);
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		assert(!"not implemented");
 		return false;
 	}
@@ -265,8 +268,8 @@ public:
 		}
 	}
 	virtual ExecExpr* createExec(
-		String site1, List<BaseSelection*>* list1,
-		String site2, List<BaseSelection*>* list2);
+		string site1, List<BaseSelection*>* list1,
+		string site2, List<BaseSelection*>* list2);
      virtual SelectID selectID(){
           return GLOBAL_ID;
      }
@@ -348,7 +351,7 @@ public:
 	virtual bool exclusive(Site* site){
 		return true;
 	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		return true;
 	}
 	virtual BaseSelection* duplicate();
@@ -372,8 +375,8 @@ public:
 		return bool(result);
 	}
      virtual ExecExpr* createExec(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2);
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2);
      virtual TypeID typify(List<Site*>* sites){
 		return typeID;
 	}
@@ -429,7 +432,7 @@ public:
 	virtual bool exclusive(Site* site){
 		return input->exclusive(site);
 	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		return input->exclusive(attributeNames, numFlds);
 	}
 	virtual BaseSelection* duplicate(){
@@ -445,7 +448,7 @@ public:
                return false;
           }
 		TypeCast* y = (TypeCast*) x;
-		if(typeID != y->typeID){
+		if(!(typeID == y->typeID)){
 			return false;
 		}
 		if(!input->match(y->input)){
@@ -454,8 +457,8 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2);
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2);
      virtual TypeID typify(List<Site*>* sites){
 		if(promotePtr){
 
@@ -481,23 +484,23 @@ public:
 class Member : public BaseSelection {
 friend class Method;
 protected:
-	String* name;
+	string* name;
 	TypeID typeID;
 	BaseSelection* input;
 	MemberPtr memberPtr;
 	int avgSize;	// to estimate result sizes
 public:
-	Member(String* name, BaseSelection* input) : 
+	Member(string* name, BaseSelection* input) : 
 		BaseSelection(), name(name), typeID(UNKN_TYPE), input(input), 
 		memberPtr(NULL) {
 	}
-	Member(String* name, BaseSelection* input, MemberPtr memberPtr,
+	Member(string* name, BaseSelection* input, MemberPtr memberPtr,
 			TypeID typeID) : 
 		BaseSelection(), name(name), typeID(typeID), input(input), 
 		memberPtr(memberPtr) {
 	}
 	Member(const Member& x){
-		name = new String(*x.name);
+		name = new string(*x.name);
 		typeID = x.typeID;
 		input = x.input->duplicate();
 		memberPtr = x.memberPtr;
@@ -515,7 +518,7 @@ public:
 		out << "." << *name;
 		BaseSelection::display(out, detail);
 	}
-	const String* getName(){
+	const string* getName(){
 		return name;
 	}
 	virtual BaseSelection* filter(Site* site){
@@ -531,7 +534,7 @@ public:
 	virtual bool exclusive(Site* site){
 		return input->exclusive(site);
 	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		return input->exclusive(attributeNames, numFlds);
 	}
 	virtual BaseSelection* duplicate(){
@@ -548,7 +551,7 @@ public:
                return false;
           }
 		Member* y = (Member*) x;
-          if(*name != *y->name){
+          if(!(*name == *y->name)){
                return false;
           }
 		if(!input->match(y->input)){
@@ -563,8 +566,8 @@ public:
 		return input->matchNoMember(x);
 	}
      virtual ExecExpr* createExec(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2);
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2);
      virtual TypeID typify(List<Site*>* sites){
 		TRY(TypeID parentType = input->typify(sites), "unknown");
 		GeneralMemberPtr* genPtr;
@@ -594,7 +597,7 @@ public:
 class Method : public Member {
 	List<BaseSelection*>* args;
 public:
-	Method(String* name, List<BaseSelection*>* args, BaseSelection* input) :
+	Method(string* name, List<BaseSelection*>* args, BaseSelection* input) :
 		Member(name, input), args(args) {}
 	virtual ~Method(){
 	}
@@ -631,13 +634,13 @@ public:
 		assert(0);
 		return input->exclusive(site);
 	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		assert(0);
 		return input->exclusive(attributeNames, numFlds);
 	}
 	virtual BaseSelection* duplicate(){
 		assert(0);
-		return new Member(new String(*name), input->duplicate());
+		return new Member(new string(*name), input->duplicate());
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		assert(0);
@@ -652,7 +655,7 @@ public:
                return false;
           }
 		Member* y = (Member*) x;
-          if(*name != *y->name){
+          if(!(*name == *y->name)){
                return false;
           }
 		if(!input->match(y->input)){
@@ -668,8 +671,8 @@ public:
 		return input->matchNoMember(x);
 	}
      virtual ExecExpr* createExec(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2){
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2){
 		assert(!"methods not implemented yet");
 		return NULL;
      }
@@ -709,8 +712,8 @@ public:
 		return typeID;
 	}
      virtual ExecExpr* createExec(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2);
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2);
      virtual SelectID selectID(){
           return ENUM_SELECT_ID;
      }
@@ -722,7 +725,7 @@ public:
 		assert(0);
 		return false;
 	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		assert(0);
 		return false;
 	}
@@ -740,19 +743,19 @@ public:
 };
 
 class PrimeSelection : public BaseSelection{
-	String* alias;
-	String* fieldNm;
+	string* alias;
+	string* fieldNm;
 	TypeID typeID;
 	int avgSize;	// to estimate result sizes
 public:
-	PrimeSelection(String a, String attr) : BaseSelection() {
-		alias = new String(a);
-		fieldNm = new String(attr);
+	PrimeSelection(string a, string attr) : BaseSelection() {
+		alias = new string(a);
+		fieldNm = new string(attr);
 		typeID = "Unknown";
 		avgSize = 0;
 	}
 	PrimeSelection(
-		String* a, String* fieldNm = NULL, TypeID typeID = "Unknown",
+		string* a, string* fieldNm = NULL, TypeID typeID = "Unknown",
 		int avgSize = 0): 
           BaseSelection(), alias(a), fieldNm(fieldNm), typeID(typeID), 
 		avgSize(avgSize){}
@@ -760,7 +763,7 @@ public:
 		delete alias;
 		delete fieldNm;
 	}
-	const String* getFieldNm(){
+	const string* getFieldNm(){
 		return fieldNm;
 	}
      virtual void display(ostream& out, int detail = 0){
@@ -777,18 +780,18 @@ public:
 	}
 	virtual BaseSelection* filter(Site* site);
 	virtual bool exclusive(Site* site);
-	virtual bool exclusive(String* attributeNames, int numFlds);
+	virtual bool exclusive(string* attributeNames, int numFlds);
 	virtual BaseSelection* duplicate(){
-		String* dupAlias = (alias ? new String(*alias) : (String*) NULL);
-		String* dupFieldNm = 
-			(fieldNm ? new String(*fieldNm) : (String*) NULL);
+		string* dupAlias = (alias ? new string(*alias) : (string*) NULL);
+		string* dupFieldNm = 
+			(fieldNm ? new string(*fieldNm) : (string*) NULL);
 		return new PrimeSelection(dupAlias, dupFieldNm);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 	}
      virtual ExecExpr* createExec(
-          String site1, List<BaseSelection*>* list1,
-          String site2, List<BaseSelection*>* list2);
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2);
 	virtual TypeID typify(List<Site*>* sites);
      virtual SelectID selectID(){
           return SELECT_ID;
@@ -808,13 +811,13 @@ public:
 	}
 	virtual bool checkOrphan(){
 		assert(alias);
-		String msg = "Table " + *alias + " is not listed in FROM clause";
+		string msg = "Table " + *alias + " is not listed in FROM clause";
 		THROW(new Exception(msg), false);
 	}
 	virtual BaseSelection* distributeWrapper(Site* site){
 		return new GlobalSelect(site, this); 
 	}
-	virtual String toStringAttOnly(){
+	virtual string toStringAttOnly(){
 		return *fieldNm;
 	}
 };
@@ -822,7 +825,7 @@ public:
 class Operator : public BaseSelection {
 friend BaseSelection* distrib(BaseSelection* l, BaseSelection* r);
 protected:
-     String name;
+     string name;
      BaseSelection* left;
 	BaseSelection* right;
 	TypeID typeID;
@@ -830,7 +833,7 @@ protected:
 	int avgSize;	// to estimate result sizes
 	double selectivity;
 public:
-	Operator(String n, BaseSelection* l, BaseSelection* r)
+	Operator(string n, BaseSelection* l, BaseSelection* r)
 		: BaseSelection(), name(n), left(l), right(r) {
 		typeID = "Unknown";
 		opPtr = NULL;
@@ -868,9 +871,9 @@ public:
 		// BaseSelection::displayFlat(out, detail);
 	}
 	virtual bool isIndexable(
-		String& attrName, String& opName, BaseSelection*& value);
-	String getAttribute(){
-		String attrNm;
+		string& attrName, string& opName, BaseSelection*& value);
+	string getAttribute(){
+		string attrNm;
 		ostrstream os;
 		if(left->selectID() == SELECT_ID){
 			attrNm = *(((PrimeSelection*) left)->getFieldNm());
@@ -883,7 +886,7 @@ public:
 		}
 		return attrNm;
 	}
-	String getValue(){
+	string getValue(){
 		ostrstream os;
 		if(left->selectID() == SELECT_ID){
 			right->display(os);
@@ -895,7 +898,7 @@ public:
 			assert(!"selection expected");
 		}
 		os << ends;
-		return String(os.str());
+		return string(os.str());
 	}
 	virtual BaseSelection* filter(Site* site){
 		if(exclusive(site)){
@@ -924,7 +927,7 @@ public:
 			return true;
 		}
 	}
-	virtual bool exclusive(String* attributeNames, int numFlds){
+	virtual bool exclusive(string* attributeNames, int numFlds){
 		if(!left->exclusive(attributeNames, numFlds)){
 			return false;
 		}
@@ -943,27 +946,12 @@ public:
 		right->collect(s, to);
 	}
 	virtual ExecExpr* createExec(
-		String site1, List<BaseSelection*>* list1,
-		String site2, List<BaseSelection*>* list2);
+		string site1, List<BaseSelection*>* list1,
+		string site2, List<BaseSelection*>* list2);
      virtual SelectID selectID(){
           return OP_ID;
      }
-	virtual bool match(BaseSelection* x){
-          if(!(selectID() == x->selectID())){
-               return false;
-          }
-		Operator* y = (Operator*) x;
-		if(name != y->name){
-			return false;
-		}
-		if(!left->match(y->left)){
-			return false;
-		}
-		if(!right->match(y->right)){
-			return false;
-		}
-		return true;
-	}
+	virtual bool match(BaseSelection* x);
 	virtual TypeID typify(List<Site*>* sites);	// throws
      virtual TypeID getTypeID(){
           return typeID;
@@ -999,7 +987,7 @@ public:
 
 class ArithmeticOp : public Operator {
 public:
-	ArithmeticOp(String o, BaseSelection* l, BaseSelection* r)
+	ArithmeticOp(string o, BaseSelection* l, BaseSelection* r)
 		: Operator(o, l, r){}
 	virtual BaseSelection* duplicate(){
 		return new ArithmeticOp(name, left->duplicate(), right->duplicate());
@@ -1008,7 +996,7 @@ public:
 
 class BoolOperator : public Operator {
 protected:
-     BoolOperator(String s, BaseSelection* l, BaseSelection* r)
+     BoolOperator(string s, BaseSelection* l, BaseSelection* r)
           : Operator(s, l, r) {}
 	void propagateCnf(){
 		BaseSelection* newLeft = left->cnf();
@@ -1073,34 +1061,40 @@ public:
 	}
 };
 
-const int MAX_PATH_LEN = 10;
-
 class TableName {
-	List<String*>* tableName;
+	List<string*>* tableName;
 public:
 	TableName() {
-		tableName = new List<String*>;
+		tableName = new List<string*>;
 	}
-	TableName(List<String*>* tableName) : tableName(tableName) {}
-	TableName(String* str){	// deletes str when done
-		tableName = new List<String*>;
+	TableName(List<string*>* tableName) : tableName(tableName) {}
+	TableName(string* str){	// deletes str when done
+		tableName = new List<string*>;
 		tableName->append(str);
 	}
 	TableName(const char* path){
-		String tmp(path);
-		String* res = new String[MAX_PATH_LEN];
-		int len = split(tmp, res, MAX_PATH_LEN, String(".")); 
-		assert(len < MAX_PATH_LEN);
-		tableName = new List<String*>;
-		for(int i = 1; i < len; i++){
-			tableName->append(new String(res[i]));
+		int len = strlen(path);
+		char tmp[len + 1];
+		tmp[len] = '\0';
+		tableName = new List<string*>;
+		for(int i = len - 1; i >= 0; i--){
+			if(path[i] == '.'){
+				tableName->prepend(new string(&tmp[i + 1]));
+				tmp[i] = '\0';
+			}
+			else{
+				tmp[i] = path[i];
+			}
 		}
-		delete [] res;
+		cerr << "path " << path << " resolved as: ";
+		displayList(cerr, tableName, ".");
 	}
+	TableName dirName();
+	string fileName();
 	~TableName(){
 		delete tableName;
 	}
-	String* getFirst(){
+	string* getFirst(){
 		assert(tableName);
 		assert(!tableName->isEmpty());
 		tableName->rewind();
@@ -1110,7 +1104,7 @@ public:
 		assert(tableName);
 		assert(!tableName->isEmpty());
 		tableName->rewind();
-		String* firstPath = tableName->remove();
+		string* firstPath = tableName->remove();
 		delete firstPath;
 	}
 	bool isEmpty() const {
@@ -1122,13 +1116,13 @@ public:
 		out << ".";
 		displayList(out, tableName, ".");
 	}
-	String toString(){
+	string toString(){
 		ostrstream tmp;
 		tmp << ".";
 		displayList(tmp, tableName, ".");
 		tmp << ends;
 		char* tmps = tmp.str();
-		String retVal(tmps);
+		string retVal(tmps);
 		// delete tmps; // should use free instead?
 		return retVal;
 	}
@@ -1141,16 +1135,16 @@ public:
 class TableAlias {
 protected:
 	TableName* table;
-	String* alias;
-	String *function;
+	string* alias;
+	string *function;
 	int shiftVal;
 public:
-	TableAlias(TableName *t, String* a = NULL,String *func = NULL,
+	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
 		shiftVal(optShiftVal) {}
-	TableAlias(String tableNm, String aliasNm){
-		table = new TableName(tableNm.chars());
-		alias = new String(aliasNm);
+	TableAlias(string tableNm, string aliasNm){
+		table = new TableName(tableNm.c_str());
+		alias = new string(aliasNm);
 		function = NULL;
 		shiftVal = 0;
 	}
@@ -1158,10 +1152,10 @@ public:
 	virtual TableName* getTable(){
 		return table;
 	}
-	String* getAlias(){
+	string* getAlias(){
 		return alias;
 	}
-	String * getFunction(){
+	string * getFunction(){
 		return function;
 	}
 	int getShiftVal(){
@@ -1187,9 +1181,9 @@ public:
 };
 
 class QuoteAlias : public TableAlias {
-	String* quote;
+	string* quote;
 public:
-	QuoteAlias(String* quote, String* alias = NULL) :
+	QuoteAlias(string* quote, string* alias = NULL) :
 		TableAlias(new TableName(), alias), quote(quote) {}
 	virtual ~QuoteAlias(){
 		delete quote;
@@ -1208,7 +1202,7 @@ public:
 
 		return new TableName();
 	}
-	const String* getQuote(){
+	const string* getQuote(){
 		return quote;
 	}
 	virtual bool isQuote(){

@@ -15,8 +15,8 @@
 /*
  */
 
-#ifndef ITERATOR_H
-#define ITERATOR_H
+#ifndef DTE_ITERATOR_H
+#define DTE_ITERATOR_H
 
 #include "types.h"
 
@@ -37,7 +37,7 @@ public:
           return Offset();
      }
      virtual void reset(int lowRid, int highRid){
-          String msg = "reset not implemented for this reader";
+          string msg = "reset not implemented for this reader";
           THROW(new Exception(msg), );
      }
 	virtual void finalize(){}
@@ -48,9 +48,9 @@ class PlanOp {
 public:
 	virtual ~PlanOp() {}
 	virtual int getNumFlds() = 0;
-	virtual const String *getTypeIDs() = 0;
-	virtual const String *getAttributeNames() = 0;
-	virtual String *getOrderingAttrib(){
+	virtual const TypeID* getTypeIDs() = 0;
+	virtual const string* getAttributeNames() = 0;
+	virtual string *getOrderingAttrib(){
 		assert(0);
 		return NULL;
 	}

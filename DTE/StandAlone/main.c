@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/08/12 19:58:58  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.12  1997/08/10 20:31:06  donjerko
   Fixed the NO_RTREE option.
 
@@ -32,23 +35,23 @@
 
  */
 
-#include<iostream.h>
-#include<memory.h>
-#include<string.h>
-#include<assert.h>
-#include<math.h>
+#include <iostream.h>
+#include <memory.h>
+#include <string.h>
+#include <assert.h>
+#include <math.h>
 #include "types.h"
 #include "exception.h"
 #include "Engine.h"
-// #include "ApInit.h" /* for DoInit */
 #include "RTreeCommon.h"
+#include <string>
 
 const int DETAIL = 1;
 
 int main(int argc, char** argv){
 
 //	Init::DoInit();	// to initialize Devise reading stuff
-	String query;
+	string query;
 	char c = '\0';
 	while(1){
 		cin.get(c);
@@ -58,7 +61,7 @@ int main(int argc, char** argv){
 				break;
 			}
 			else{
-				query += String(';') + String(c);
+				query += string(";") + c;
 			}
 		}
 		else{
@@ -76,7 +79,7 @@ int main(int argc, char** argv){
 	if(numFlds > 0){
 		const TypeID* typeIDs = engine.getTypeIDs();
 		TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), 0);
-		const String* attrs = engine.getAttributeNames();
+		const string* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
 			cout << attrs[i] << " ";
 		}

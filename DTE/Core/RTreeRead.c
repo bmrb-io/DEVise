@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/08/15 00:17:34  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.12  1997/08/12 19:58:41  donjerko
   Moved StandardTable headers to catalog.
 
@@ -104,12 +107,12 @@ Iterator* RTreeIndex::createExec(){
 	page_id_t* Root = new page_id_t;
 	Root->pid = indexDesc->getRootPg();
 //	cerr << "Root->pid = " << Root->pid << endl;
-	String typeEncS;
+	string typeEncS;
 	for(int i = 0; i < numKeyFlds; i++){
 		typeEncS += rTreeEncode(typeIDs[i]);
 	}
 
-	char* typeEnc = strdup(typeEncS.chars());
+	char* typeEnc = strdup(typeEncS.c_str());
 	queryBox = new gen_key_t(
 		(char *)bounds, 	// binary representation of the search key
 		numKeyFlds,			// dimensionality 
@@ -151,7 +154,7 @@ Iterator* RTreeIndex::createExec(){
 	}
 	int ridIndex;
 	for(ridIndex = 0; ridIndex < numFlds; ridIndex++){
-		if(attributeNames[ridIndex] == String("recId")){
+		if(attributeNames[ridIndex] == string("recId")){
 			break;
 		}
 	}
@@ -247,8 +250,8 @@ RecId RTreeReadExec::getRecId(){
 }
 
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
-	String attr;
-	String opName;
+	string attr;
+	string opName;
 	BaseSelection* constant;
 	if(predicate->isIndexable(attr, opName, constant)){
 		int numKeyFlds = getNumKeyFlds();
@@ -288,23 +291,23 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 	}
 
 	if(!catalogStr){
-		String msg = "Number of index attributes expected";
+		string msg = "Number of index attributes expected";
 		THROW(new Exception(msg), catalogStr);
 	}
-	attributeNames = new String[numFlds];
+	attributeNames = new string[numFlds];
 	typeIDs = new TypeID[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		catalogStr >> typeIDs[i];
 		catalogStr >> attributeNames[i];
 		if(!catalogStr){
-			String msg = 
+			string msg = 
 				"Type and name of the index attribute expected";
 			THROW(new Exception(msg), catalogStr);
 		}
 	}
 //	catalogStr >> pageId;
 	if(!catalogStr){
-		String msg = "PageId expected in RTree index";
+		string msg = "PageId expected in RTree index";
 		THROW(new Exception(msg), catalogStr);
 	}
 	rTreeQuery = new RTreePred[numFlds];

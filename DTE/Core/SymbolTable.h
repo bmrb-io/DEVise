@@ -2,7 +2,7 @@
 #define SYMBOLTABLE_H
 
 #include "myopt.h"
-#include <String.h>
+#include <string>
 #include <map.h>
 
 struct StringLess {

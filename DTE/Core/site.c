@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/08/14 02:08:56  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.21  1997/08/12 19:58:45  donjerko
   Moved StandardTable headers to catalog.
 
@@ -70,39 +73,109 @@
 
  */
 
-#include <string.h>
-#include <ctype.h>
-#include "Iterator.h"
+// #include <string.h>
+// #include <ctype.h>
+
+
+// #include "Iterator.h"
+
 #include "site.h"
-#include "catalog.h"
-#include "ParseTree.h" 	// for getRootCatalog
+#include "Interface.h"
 #include "ExecOp.h"
 #include "RTreeRead.h"
 
-List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator){
+#include <string.h>		// for strtok
+#include <string>
+#include <set>
+#include <algo.h>	// for includes
+
+class Iterator;
+
+Site::Site(string nm = "") : name(nm), iterator(NULL) {
+	numFlds = 0;
+	tables = new set<string, ltstr>;
+	mySelect = NULL;
+	myFrom = new List<TableAlias*>;
+	myWhere = new List<BaseSelection*>;
+	stats = NULL;
+	attributeNames = NULL;
+	typeIDs = NULL;
+}
+
+Site::~Site(){
+//	cerr << "deleting select where lists\n";
+	delete tables;
+	delete iterator;
+	if(mySelect){
+		for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
+//			mySelect->get()->destroy();
+			delete mySelect->get();
+		}
+	}
+	delete mySelect;	// delete only list
+	delete myFrom;
+	for(myWhere->rewind(); !myWhere->atEnd(); myWhere->step()){
+//		myWhere->get()->destroy();
+		delete myWhere->get();
+	}
+	delete myWhere;	// delete everything
+//	delete stats;	     // fix this
+	delete [] attributeNames;
+	delete [] typeIDs;
+}
+
+void Site::addTable(TableAlias* tabName){
+	myFrom->append(tabName);
+	string* alias = tabName->getAlias();
+	assert(alias);
+	tables->insert(*alias);
+}
+
+bool Site::have(const string& arg){
+	set<string, ltstr> tmp;
+	tmp.insert(arg);
+	return includes(tables->begin(), tables->end(), tmp.begin(), tmp.end());
+}
+
+bool Site::have(const set<string, ltstr>& arg){
+	return includes(tables->begin(), tables->end(), arg.begin(), arg.end());
+}
+
+void LocalTable::addTable(TableAlias* tabName){
+	assert(myFrom->isEmpty());
+	myFrom->append(tabName);
+	string* alias = tabName->getAlias();
+	assert(alias);
+	tables->insert(*alias);
+	name = *alias;
+}
+
+List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
-	const String* attNms = iterator->getAttributeNames();
-	const String* types = iterator->getTypeIDs();
+	const string* attNms = iterator->getAttributeNames();
+	const string* types = iterator->getTypeIDs();
 	Stats* stats = iterator->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	for(int i = 0; i < numFlds; i++){
 		retVal->append(new PrimeSelection(
-			new String(nm), new String(attNms[i]), types[i], sizes[i]));
+			new string(nm), new string(attNms[i]), types[i], sizes[i]));
 	}
 	return retVal;
 }
 
-List<BaseSelection*>* createSelectList(String table, List<String*>* attNms){
+List<BaseSelection*>* createSelectList(
+	const string& table, List<string*>* attNms)
+{
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	if(!attNms){
 		return retVal;
 	}
 	for(attNms->rewind(); !attNms->atEnd(); attNms->step()){
 		retVal->append(new 
-			PrimeSelection(new String(table), new String(*attNms->get())));
+			PrimeSelection(new string(table), new string(*attNms->get())));
 	}
 	return retVal;
 }
@@ -110,23 +183,28 @@ List<BaseSelection*>* createSelectList(String table, List<String*>* attNms){
 List<BaseSelection*>* createSelectList(PlanOp* iterator){
 	assert(iterator);
 	int numFlds = iterator->getNumFlds();
-	const String* attNms = iterator->getAttributeNames();
-	const String* types = iterator->getTypeIDs();
+	const string* attNms = iterator->getAttributeNames();
+	const string* types = iterator->getTypeIDs();
 	Stats* stats = iterator->getStats();
 	assert(stats);
 	int* sizes = stats->fldSizes;
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	for(int i = 0; i < numFlds; i++){
-		String res[3];
-		int numSplit = split(attNms[i], res, 3, String("."));
-		assert(numSplit == 2);
+		cerr << "Breaking " << attNms[i] << " into ";
+		char tmp[attNms[i].length() + 1];
+		strcpy(tmp, attNms[i].c_str());
+		char* alias = strtok(tmp, ".");
+		assert(alias);
+		char* field = strtok(NULL, ".");
+		assert(field);
+		cerr << alias << " + " << field << endl;
 		retVal->append(new 
-			PrimeSelection(new String(res[0]), new String(res[1]), types[i], sizes[i]));
+			PrimeSelection(new string(alias), new string(field), types[i], sizes[i]));
 	}
 	return retVal;
 }
 
-void LocalTable::typify(String option){	// Throws exception
+void LocalTable::typify(string option){	// Throws exception
 	
 	// option is ignored since the execution = profile + getNext
 
@@ -153,7 +231,7 @@ void LocalTable::typify(String option){	// Throws exception
 	myFrom->rewind();
 	TableAlias* ta = myFrom->get();
 	if(ta && ta->getFunction()){
-		String* function = ta->getFunction();
+		string* function = ta->getFunction();
 		int shiftVal = ta->getShiftVal();
 		assert(!"Need to convert iterator to site");
 		assert(iterator);
@@ -197,8 +275,8 @@ void Site::filterAll(List<BaseSelection*>* select){
 	filterList(select, this);
 }
 
-istream* contactURL(String name, 
-	const String* options, const String* values, int count){
+istream* contactURL(string name, 
+	const string* options, const string* values, int count){
 
 	// throws exception
 
@@ -220,18 +298,18 @@ istream* contactURL(String name,
 	assert(in);
 	assert(in->good());
 	delete url;
-	String code;
+	string code;
 	*in >> code;
 	int codeVal;
 	if(code.length() == 0){
-		String msg = "No response from DTE (it probably crashed)";
+		string msg = "No response from DTE (it probably crashed)";
 		THROW(new Exception(msg), NULL);
 	}
 	if(!isdigit(code[0])){
 		codeVal = -1;
 	}
 	else{
-		codeVal = atoi(code.chars());
+		codeVal = atoi(code.c_str());
 	}
 	char buff[100];
 	if(codeVal != 0){
@@ -242,24 +320,24 @@ istream* contactURL(String name,
 			err.write(buff, in->gcount());
 		} 
 		err << ends;
-		String msg = "Wrong code: " + String(err.str());
+		string msg = "Wrong code: " + string(err.str());
 		THROW(new Exception(msg), NULL);
 	}
 	in->getline(buff, 100);	// ignore OK msg
 	return in;
 }
 
-void Site::typify(String option){	// Throws an exception
+void Site::typify(string option){	// Throws an exception
 	int count = 2;
-	String* options = new String[count];
-	String* values = new String[count];
+	string* options = new string[count];
+	string* values = new string[count];
 	options[0] = "query";
 	options[1] = option;
 	strstream tmp;
 	display(tmp);
 	tmp << ends;
 	char* tmpstr = tmp.str();
-	values[0] = String(tmpstr);
+	values[0] = string(tmpstr);
 	delete tmpstr;
 	values[1] = "true";
 	istream* in;
@@ -307,7 +385,7 @@ void Site::display(ostream& out, int detail = 0){
 	}
 }
 
-void CGISite::typify(String option){	// Throws a exception
+void CGISite::typify(string option){	// Throws a exception
 	TRY(URL* url = new URL(urlString), );
 	ostream* out = url->getOutputStream();
 	assert(myWhere);
@@ -316,8 +394,8 @@ void CGISite::typify(String option){	// Throws a exception
 		BaseSelection* current = myWhere->get();
 		assert(current->selectID() == OP_ID);
 		Operator* currOp = (Operator*) current;
-		String option = currOp->getAttribute();
-		String value = currOp->getValue();
+		string option = currOp->getAttribute();
+		string value = currOp->getValue();
 		int i = 0;
 		while(1){
 			if(i == entryLen){
@@ -335,7 +413,7 @@ void CGISite::typify(String option){	// Throws a exception
 
 	for(int i = 0; i < entryLen; i++){
 		if(entry[i].value.empty()){
-			String err = "Option " + name + "." + entry[i].option + 
+			string err = "Option " + name + "." + entry[i].option + 
 				" has to be specified";
 			THROW(new Exception(err), );
 		}
@@ -371,7 +449,7 @@ void LocalTable::writeOpen(int mode = ios::app){
 	if(fout){
 		THROW(new Exception("Already opened"), );
 	}
-	fout = new ofstream(fileToWrite.chars(), mode);
+	fout = new ofstream(fileToWrite.c_str(), mode);
 	assert(fout);
 	int numFlds = getNumFlds();
 	writePtrs = new WritePtr[numFlds];
@@ -395,7 +473,7 @@ void LocalTable::setStats(){
 }
 
 Iterator* createIteratorFor(
-	const ISchema& schema, istream* in, const String& tableStr)
+	const ISchema& schema, istream* in, const string& tableStr)
 {
 	assert(in && in->good());
 	StandReadExec* fs = new StandReadExec(schema, in);
@@ -407,13 +485,13 @@ Iterator* createIteratorFor(
 
 	BaseSelection* name = new EnumSelection(0, "string");
 	BaseSelection* value = new ConstantSelection(
-		"string", strdup(tableStr.chars()));
+		"string", strdup(tableStr.c_str()));
 	BaseSelection* predicate = new Operator("=", name, value);
 	assert(predicate);
 	predicate->typify(NULL);
 
 	Array<ExecExpr*>* where = new Array<ExecExpr*>(1);
-	(*where)[0] = predicate->createExec("", NULL, "", NULL);
+	TRY((*where)[0] = predicate->createExec("", NULL, "", NULL), NULL);
 	assert((*where)[0]);
 	return new SelProjExec(fs, select, where);
 }
@@ -423,13 +501,13 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	int totalNumPreds = myWhere->cardinality();
 	assert(myFrom);
 	assert(myFrom->cardinality() == 1);
-	String tableNm = getFullNm();
+	string tableNm = getFullNm();
 	Iterator* indexIt;
 	istream* indexStream = getIndexTableStream();
 	if(!indexStream || !indexStream->good()){
 		return retVal;
 	}
-	indexIt = createIteratorFor(INDEX_SCHEMA, indexStream, tableNm);
+	TRY(indexIt = createIteratorFor(INDEX_SCHEMA, indexStream, tableNm), NULL);
 	assert(INDEX_SCHEMA.getNumFlds() == 3);
 	indexIt->initialize();
 	const Tuple* tup;
@@ -442,7 +520,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		cout << endl;
 #endif
 		int totNumIndFlds = indexDesc->getTotNumFlds();
-		String* allAttrNms = indexDesc->getAllAttrNms();
+		string* allAttrNms = indexDesc->getAllAttrNms();
 		RTreeIndex* currInd = new RTreeIndex(indexDesc);
 		myWhere->rewind();
 		int usablePredCnt = 0;
@@ -500,7 +578,7 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 }
 
 
-void SiteGroup::typify(String option){	// Throws exception
+void SiteGroup::typify(string option){	// Throws exception
 	
 	List<Site*>* tmpL = new List<Site*>;
 	tmpL->append(site1);

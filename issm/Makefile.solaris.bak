@@ -1,0 +1,87 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+# $Log$
+# Revision 1.22  1997/05/21 22:12:53  andyt
+# *** empty log message ***
+#
+# Revision 1.21  1997/03/28 16:11:14  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
+
+############################################################
+
+depend:
+	makedepend -fMakefile.solaris -I../issm -I../graphics.new -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.C
+# DO NOT DELETE
+
+binconv.o: /usr/include/math.h /usr/include/floatingpoint.h
+binconv.o: /usr/include/sys/ieeefp.h binconv.h /usr/include/string.h
+binconv.o: /usr/include/sys/feature_tests.h
+extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+extract.o: /usr/include/sys/va_list.h /usr/include/string.h
+extract.o: /usr/include/stdlib.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+extract.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+extract.o: /usr/include/sys/select.h /usr/include/sys/time.h
+extract.o: /usr/include/time.h /s/X11/include/X11/X.h
+extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
+extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+extract.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+extract.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+extract.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+extract.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+extract.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+extract.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+extract.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+extract.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+extract.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+extract.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+extract.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+extract.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+extract.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+extract.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+extract.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+extract.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h binconv.h
+extract.o: issmdata.h
+rectape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h rectape.h
+rectape.o: ../tape/tapedrive.h /usr/include/stdio.h
+rectape.o: /usr/include/sys/va_list.h ../graphics.new/machdep.h
+rectape.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+rectape.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
+rectape.o: /usr/include/sys/select.h /usr/include/sys/time.h
+rectape.o: /usr/include/time.h /usr/include/sys/param.h
+rectape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
+rectape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+rectape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/netdb.h /usr/include/sys/socket.h
+rectape.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+rectape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+rectape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+rectape.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+rectape.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+rectape.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+rectape.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+rectape.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+rectape.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+rectape.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+rectape.o: /usr/include/sys/byteorder.h binconv.h /usr/include/string.h

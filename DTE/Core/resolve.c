@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/08/14 02:08:56  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.20  1997/08/12 19:58:45  donjerko
   Moved StandardTable headers to catalog.
 
@@ -93,13 +96,15 @@
 
  */
 
+#include "types.h"
 #include "myopt.h"
 #include "site.h"
 #include "machdep.h"
 #include "ExecExpr.h"
 
 BaseSelection* PrimeSelection::filter(Site* site){
-	if(*alias != "" && !site->have(alias)){
+	assert(alias);
+	if(*alias != "" && !site->have(*alias)){
 		return NULL;
 	}
 	else if(*alias == ""){
@@ -111,7 +116,8 @@ BaseSelection* PrimeSelection::filter(Site* site){
 }
 
 bool PrimeSelection::exclusive(Site* site){
-	if(site->have(alias)){
+	assert(alias);
+	if(site->have(*alias)){
 		return true;
 	}
 	else{
@@ -119,8 +125,8 @@ bool PrimeSelection::exclusive(Site* site){
 	}
 }
 
-bool PrimeSelection::exclusive(String* attributeNames, int numFlds){
-	String me = toStringAttOnly();
+bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
+	string me = toStringAttOnly();
 	for(int i = 0; i < numFlds; i++){
 		// cout << "attr = " << attributeNames[i] << endl;
 		if(me == attributeNames[i]){
@@ -156,8 +162,8 @@ bool GlobalSelect::exclusive(Site* s){
 }
 
 ExecExpr* GlobalSelect::createExec(
-     String site1, List<BaseSelection*>* list1,
-     String site2, List<BaseSelection*>* list2){
+     string site1, List<BaseSelection*>* list1,
+     string site2, List<BaseSelection*>* list2){
 
      List<BaseSelection*>* selList;
      int leftRight = 0;
@@ -190,7 +196,7 @@ ExecExpr* GlobalSelect::createExec(
 }
 
 TypeID GlobalSelect::typify(List<Site*>* sites){
-	String myName = site->getName();
+	string myName = site->getName();
 	sites->rewind();
 	Site* currSite = NULL;
 	while(true){
@@ -249,8 +255,8 @@ bool GlobalSelect::match(BaseSelection* x){
 }
 
 ExecExpr* Operator::createExec(
-	String site1, List<BaseSelection*>* list1,
-     String site2, List<BaseSelection*>* list2){
+	string site1, List<BaseSelection*>* list1,
+     string site2, List<BaseSelection*>* list2){
 	ExecExpr* l;
      TRY(l = left->createExec(site1, list1, site2, list2), NULL);
 	ExecExpr* r;
@@ -273,7 +279,7 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
      sites->rewind();
      Site* current = sites->get();
 	List<BaseSelection*>* selList = current->getSelectList();
-	String siteNm = current->getName();
+	string siteNm = current->getName();
 	selList->rewind();
 	int i = 0;
 	while(!selList->atEnd()){
@@ -289,22 +295,22 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 	displayList(tmp, selList);
 	tmp << ends;
 	char* tmpc = tmp.str();
-	String msg = "Table " + siteNm + "(" + String(tmpc) + ")" +
+	string msg = string("Table ") + siteNm + "(" + string(tmpc) + ")" +
 		" does not have attribute \"" + *fieldNm + "\"";
 	delete tmpc;
-	THROW(new Exception(msg), (char *) NULL);
+	THROW(new Exception(msg), "PrimeSelection::typify");
 }
 
 ExecExpr* EnumSelection::createExec(
-	String site1, List<BaseSelection*>* list1,
-	String site2, List<BaseSelection*>* list2)
+	string site1, List<BaseSelection*>* list1,
+	string site2, List<BaseSelection*>* list2)
 {
 	return new ExecSelect(0, position);
 }
 
 ExecExpr* PrimeSelection::createExec(
-	String site1, List<BaseSelection*>* list1,
-	String site2, List<BaseSelection*>* list2){
+	string site1, List<BaseSelection*>* list1,
+	string site2, List<BaseSelection*>* list2){
 
 	assert(site2 == "" && list2 == NULL);
 	int leftRight = 0;
@@ -319,7 +325,7 @@ ExecExpr* PrimeSelection::createExec(
 		selList->step();
 		i++;
 	}
-	String msg = "Table " + *alias + " does not have attribute " +
+	string msg = "Table " + *alias + " does not have attribute " +
 		*fieldNm;
 	THROW(new Exception(msg), NULL);
 }
@@ -339,7 +345,7 @@ BaseSelection* Operator::distributeWrapper(Site* site){
 
 
 bool Operator::isIndexable(
-	String& attrName, String& opName, BaseSelection*& value){
+	string& attrName, string& opName, BaseSelection*& value){
 	SelectID ls = left->selectID();
 	SelectID rs = right->selectID();
 	if(ls == SELECT_ID && rs == CONST_ID){
@@ -375,8 +381,8 @@ BaseSelection* ConstantSelection::duplicate() {
 }
 
 ExecExpr* ConstantSelection::createExec(
-		String site1, List<BaseSelection*>* list1,
-		String site2, List<BaseSelection*>* list2){
+		string site1, List<BaseSelection*>* list1,
+		string site2, List<BaseSelection*>* list2){
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
 	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
 	return new ExecConst(newvalue, destroyPtr);
@@ -433,7 +439,7 @@ TypeID Operator::typify(List<Site*>* sites){
 		TRY(genPtr = getOperatorPtr(name, root, arg, typeID), "unknown");
 	}
 	if(!genPtr){
-		String msg = "No operator " + name + "(" + root + ", " +
+		string msg = "No operator " + name + "(" + root + ", " +
 			arg + ") defined";
 		THROW(new Exception(msg), "Unknown");
 	}
@@ -442,7 +448,7 @@ TypeID Operator::typify(List<Site*>* sites){
 	if(typeID == "bool"){
 		SelectyPtr selectyPtr = genPtr->selectyPtr;
 		if(!selectyPtr){
-			String msg = "Undefined selectiviy for operator " + name;
+			string msg = "Undefined selectiviy for operator " + name;
 			THROW(new Exception(msg), "Unknown");
 		}
 		else{
@@ -453,8 +459,8 @@ TypeID Operator::typify(List<Site*>* sites){
 }
 
 ExecExpr* TypeCast::createExec(
-	String site1, List<BaseSelection*>* list1,
-	String site2, List<BaseSelection*>* list2){
+	string site1, List<BaseSelection*>* list1,
+	string site2, List<BaseSelection*>* list2){
 	ExecExpr* execInp;
 	TRY(execInp = input->createExec(site1, list1, site2, list2), NULL);
 	size_t valueSize;
@@ -464,8 +470,8 @@ ExecExpr* TypeCast::createExec(
 }
 
 ExecExpr* Member::createExec(
-	String site1, List<BaseSelection*>* list1,
-	String site2, List<BaseSelection*>* list2){
+	string site1, List<BaseSelection*>* list1,
+	string site2, List<BaseSelection*>* list2){
 	ExecExpr* execInp;
 	TRY(execInp = input->createExec(site1, list1, site2, list2), NULL);
 	size_t valueSize;
@@ -475,3 +481,45 @@ ExecExpr* Member::createExec(
 		execInp, memberPtr, value, valueSize, destroyPtr);
 }
 
+bool Operator::match(BaseSelection* x){
+	if(!(selectID() == x->selectID())){
+		return false;
+	}
+	Operator* y = (Operator*) x;
+	if(name != y->name){
+		return false;
+	}
+	if(!left->match(y->left)){
+		return false;
+	}
+	if(!right->match(y->right)){
+		return false;
+	}
+	return true;
+}
+
+TableName TableName::dirName(){
+	List<string*>* tmp = new List<string*>;
+	tableName->rewind();
+	while(!tableName->atEnd()){
+		string* s = tableName->get();
+		tableName->step();
+		if(tableName->atEnd()){
+			break;
+		}
+		else{
+			tmp->append(s);
+		}
+	}
+	return TableName(tmp);
+}
+
+string TableName::fileName(){
+	string* tmp = tableName->getTail();
+	if(tmp){
+		return *tmp;
+	}
+	else{
+		return "";
+	}
+}

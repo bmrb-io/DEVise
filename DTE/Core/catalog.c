@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/08/14 02:08:54  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.23  1997/08/12 19:58:43  donjerko
   Moved StandardTable headers to catalog.
 
@@ -56,24 +59,6 @@
   Revision 1.10  1997/02/25 22:14:52  donjerko
   Enabled RTree to store data attributes in addition to key attributes.
 
-  Revision 1.9  1997/02/18 18:06:03  donjerko
-  Added skeleton files for sorting.
-
-  Revision 1.8  1997/02/03 04:11:33  donjerko
-  Catalog management moved to DTE
-
-  Revision 1.7  1996/12/24 21:00:52  kmurli
-  Included FunctionRead to support joinprev and joinnext
-
-  Revision 1.6  1996/12/21 22:21:47  donjerko
-  Added hierarchical namespace.
-
-  Revision 1.5  1996/12/15 06:41:07  donjerko
-  Added support for RTree indexes
-
-  Revision 1.4  1996/12/05 16:06:01  wenger
-  Added standard Devise file headers.
-
  */
 
 #include <string.h>
@@ -82,390 +67,103 @@
 #include "StandardRead.h"
 #include "catalog.h"
 #include "Iterator.h"
-#include "DevRead.h"
+// #include "DevRead.h"
 #include "url.h"
 #include "site.h"
 #include "Utility.h"
-#include "Engine.h"
+// #include "Engine.h"
 #include "Inserter.h"
+#include "Interface.h"
 
-void readFilter(String viewNm, String& select, 
-		String*& attributeNames, int& numFlds, String& where){
-	ifstream vin(viewNm);
+void readFilter(string viewNm, string& select, 
+		string*& attributeNames, int& numFlds, string& where){
+	ifstream vin(viewNm.c_str());
 	if(!vin){
-		String msg = "Could not open view file \"" + viewNm + "\"";
+		string msg = "Could not open view file \"" + viewNm + "\"";
 		THROW(new Exception(msg), );
 	}
 	vin >> numFlds;
 	if(!vin){
-		String msg = "Number of fieds expected in file \"" + viewNm + "\"";
+		string msg = "Number of fieds expected in file \"" + viewNm + "\"";
 		THROW(new Exception(msg), );
 	}
-	attributeNames = new String[numFlds];
+	attributeNames = new string[numFlds];
      for(int i = 0; i < numFlds; i++){
           vin >> attributeNames[i];
      }
-     TRY(select = stripQuotes(vin), );
-     TRY(where = stripQuotes(vin), );
+     TRY(stripQuotes(vin, select), );
+     TRY(stripQuotes(vin, where), );
 }
 
-Site* DeviseInterface::getSite(){
-	char* schemaFile = strdup(schemaNm.chars());
-	char* data = strdup(dataNm.chars());
-	DevRead* unmarshal = new DevRead();
-	TRY(unmarshal->Open(schemaFile, data), NULL);
-	if(viewNm == ""){
-		return new LocalTable("", unmarshal);	
-	}
-
-	// Need to apply view
-
-	String select;
-	String* attributeNames;
-	String where;
-	int numFlds;
-
-	TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
-
-	String from = "Table " + schemaNm +  " " + dataNm + " \"\" ;";
-	String query = "select " + select + " from " + addQuotes(from) + " as t";
-	if(!where.empty()){
-		query += " where " + where;
-	}
-	ViewInterface tmpView(numFlds, attributeNames, query);
-
-	// attributeNames are deleted in ViewInterface destructor
-
-	TRY(Site* retVal = tmpView.getSite(), NULL);
-	return retVal;
-}
-
-const ISchema* DeviseInterface::getISchema(TableName* table){
-	if(schema){
-		return schema;
-	}
-	assert(table);
-	assert(table->isEmpty());
-	int numFlds;
-	String* attributeNames;
-	TypeID* typeIDs;
-	if(viewNm.empty()){
-		char* schemaFile = strdup(schemaNm.chars());
-		char* data = strdup(dataNm.chars());
-		DevRead tmp;
-		TRY(tmp.Open(schemaFile, data), NULL);
-		numFlds = tmp.getNumFlds();
-		attributeNames = tmp.stealAttributeNames();
-		typeIDs = tmp.stealTypeIDs();
-	}
-	else {
-		assert(!"single table views not implemented");
-		String select;
-		String where;
-		TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
-	}
-	schema = new ISchema(typeIDs, attributeNames, numFlds);
-	return schema;
-}
-
-Site* StandardInterface::getSite(){ // Throws a exception
-
-	TRY(URL* url = new URL(urlString), NULL);
-	TRY(istream* in = url->getInputStream(), NULL);
-	StandardRead* unmarshal = new StandardRead();
-	TRY(unmarshal->open(schema, in), NULL);
-
-	delete url;
-     return new LocalTable("", unmarshal, urlString);	
-}
-
-Inserter* StandardInterface::getInserter(TableName* table){ // Throws 
-	assert(table);
-	assert(table->isEmpty());
-
-	LOG(logFile << "Inserting into " << urlString << endl);
-
-	Inserter* inserter = new Inserter();
-	TRY(inserter->open(schema, urlString), NULL);
-
-     return inserter;
-}
-
-Site* CatalogInterface::getSite(){ // Throws a exception
-	Interface* interf = new StandardInterface(DIR_SCHEMA, fileName);
+Site* Catalog::find(TableName* path) const { // Throws Exception
+	TRY(Interface* interf = createInterface(path), NULL);	
 	Site* retVal = interf->getSite();
 	delete interf;
 	return retVal;
 }
 
-const ISchema* CatalogInterface::getISchema(TableName* table){
-	assert(table);
-	assert(table->isEmpty());
-	return &DIR_SCHEMA;
+void Directory::replace(const string& entry, const Interface* interf)
+{
+	Modifier modifier(DIR_SCHEMA, fileName);
+
+	TRY(modifier.replace(&entry, interf), );
 }
 
-istream& CGIInterface::read(istream& in){  // throws
-	in >> urlString;
-	in >> entryLen;
-	if(!in){
-		String e = "Catalog error: number of entries expected";
-		THROW(new Exception(e), in);
-	}
+Interface* Directory::createInterface(const string& entry)
+{ 
 
-	entries = new CGIEntry[entryLen];
-	for(int i = 0; i < entryLen; i++){
-		TRY(entries[i].read(in), in);
-	}
-	return in;
-}
+// Throws Exception
 
-istream& ViewInterface::read(istream& in){ // throws
-	in >> numFlds;
-	if(!in){
-		String e = "Number of attributes expected";
-		THROW(new Exception(e), in);
-	}
-	attributeNames = new String[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		in >> attributeNames[i];
-	}
-	TRY(query = stripQuotes(in), in);
-	return in;
-}
+//	cerr << "searching for " << entry << " in " << fileName << endl;
 
-void ViewInterface::write(ostream& out){
-	out << " " << numFlds;
-	for(int i = 0; i < numFlds; i++){
-		out << " " << attributeNames[i];
-	}
-	out << " " << addQuotes(query);
-	Interface::write(out);
-}
- 
-Site* ViewInterface::getSite(){ 
-	// Throws a exception
-	
-	// This is just a temporary hack because it does not provide
-	// any optimization. View is executed unmodified.
-
-	Engine* engine = new ViewEngine(query, 
-		(const String *) attributeNames, numFlds);
-	TRY(engine->optimize(), NULL);
-	int numEngFlds = engine->getNumFlds();
-	if(numEngFlds != numFlds + 1){
-		ostrstream estr;
-		estr << "Number of fields in the view (" << numFlds << ") ";
-		estr << "is not equal to the number in the query ";
-		estr << "(" << numEngFlds << ")" << ends;
-		char* e = estr.str();
-		String except(e);
-		delete e;
-		THROW(new Exception(except), NULL);
-	}
-	return new LocalTable("", engine); 
-}
-
-const ISchema* QueryInterface::getISchema(TableName* table){
-
-	// throws exception
-
-	if(schema){
-		return schema;
-	}
-	int count = 2;
-	String* options = new String[count];
-	String* values = new String[count];
-	options[0] = "query";
-	options[1] = "execute";
-	strstream tmp;
-	tmp << "schema ";
-	table->display(tmp);
-	tmp << ends;
-	char* tmpstr = tmp.str();
-	values[0] = String(tmpstr);
-	values[1] = "true";
-	delete tmpstr;
-	istream* in;
-	TRY(in = contactURL(urlString, options, values, count), NULL);
-	delete [] options;
-	delete [] values;
-	schema = new ISchema();
-	*in >> *schema;
-	return schema;
-}
-
-Site* Catalog::find(TableName* path){ // Throws Exception
-	TRY(Interface* interf = findInterface(path), NULL);	
-	Site* retVal = interf->getSite();
-	delete interf;
-	return retVal;
-}
-
-Interface* Catalog::findInterface(TableName* path){ // Throws Exception
-	if(path->isEmpty()){
-		return new StandardInterface(DIR_SCHEMA, fileName);
-	}
-	ifstream* in = new ifstream(fileName);
+	ifstream* in = new ifstream(fileName.c_str());
 	Iterator* iterator = new StandReadExec(DIR_SCHEMA, in);
 	assert(iterator);
 	iterator->initialize();
 
-	String firstPathNm = *path->getFirst();
-	path->deleteFirst();
 	const Tuple* tuple;
-//	cerr << "searching for " << firstPathNm << " in " << fileName << endl;
-
 	tuple = iterator->getNext();
 	CHECK("Illegal catalog format", NULL);
 	while(tuple){
-		CatEntry* entry = (CatEntry*) tuple[0];
-		assert(entry);
-		String tableNm = entry->getName();
-		if(tableNm == firstPathNm){
-			delete in;
-			TRY(Interface* interf = entry->getInterface(), NULL);
-			if(interf->getType() == Interface::CATALOG){
-				CatalogInterface* tmp = (CatalogInterface*) interf;
-				TRY(String newFileNm = tmp->getCatalogName(), NULL);
-				Catalog tmpCat(newFileNm);
-				return tmpCat.findInterface(path);
-			}
-			else if(interf->getType() != Interface::QUERY &&
-					path->cardinality() > 0){
-				String msg = "Table " + firstPathNm + " is not a catalog";
-				THROW(new Exception(msg), NULL);
-			}
-			else{
-				return interf;	// should be return interf->duplicate()
-			}
+		const char* tableNm = IString::getCStr(tuple[0]);
+		if(entry == tableNm){
+			const Interface* tmp = InterfWrapper::getInterface(tuple[1]);
+			Interface* retVal = tmp->duplicate();
+			delete iterator;
+			return retVal;
 		}
 		tuple = iterator->getNext();
 		CHECK("Illegal catalog format", NULL);
 	}
-	delete in;
-	String msg = "Table " + firstPathNm + " not defined in file: " +
+	delete iterator;
+	string msg = "Table " + entry + " not defined in file: " +
 		fileName;
 	THROW(new Exception(msg), NULL);
 }
 
-Site* QueryInterface::getSite(){
-	return new Site(urlString);
-}
+Interface* Catalog::createInterface(TableName* path) const { 
 
-Site* CGIInterface::getSite(){
-	assert(entries);
-	Site* site = new CGISite(urlString, entries, entryLen);
-	// CGISite is the owner of the entries
-	return site;
-}
+// Throws Exception
 
-CGIInterface::~CGIInterface(){
-	delete [] entries;
-}
-
-CGIInterface::CGIInterface(const CGIInterface& a){
-	tableNm = a.tableNm;
-	urlString = a.urlString;
-	entryLen = a.entryLen;
-	entries = new CGIEntry[entryLen];
-	for(int i = 0; i < entryLen; i++){
-		entries[i] = a.entries[i];
+	if(path->isEmpty()){
+		// return new StandardInterface(DIR_SCHEMA, fileName);
+		return new CatalogInterface(fileName);
 	}
-}
-
-void CGIInterface::write(ostream& out){
-	assert(entries);
-	out << " " << urlString << " " << entryLen;
-	for(int i = 0; i < entryLen; i++){
-		out << endl;
-		out << "\t";
-		entries[i].write(out);
+	string firstPathNm = *path->getFirst();
+	path->deleteFirst();
+	Directory dir(fileName);
+	TRY(Interface* interf = dir.createInterface(firstPathNm), NULL);
+	if(interf->getType() == Interface::CATALOG){
+		CatalogInterface* tmp = (CatalogInterface*) interf;
+		TRY(string newFileNm = tmp->getCatalogName(), NULL);
+		Catalog tmpCat(newFileNm);
+		return tmpCat.createInterface(path);
 	}
-	Interface::write(out);
-}
-
-const ISchema* ViewInterface::getISchema(TableName* table){
-	if(schema){
-		return schema;
+	else if(interf->getType() != Interface::QUERY &&
+			path->cardinality() > 0){
+		string msg = "Table " + firstPathNm + " is not a catalog";
+		THROW(new Exception(msg), NULL);
 	}
-	assert(table);
-	assert(table->isEmpty());
-	assert(attributeNames);
-	String* retVal = new String[numFlds + 1];
-	retVal[0] = "recId";
-	for(int i = 0; i < numFlds; i++){
-		retVal[i + 1] = attributeNames[i];
-	}
-	// to do: typecheck the query
-
-	schema = new ISchema(NULL, retVal, numFlds + 1);
-	return schema;
+	return interf;
 }
 
-istream& CGIEntry::read(istream& in){	// throws
-	in >> option;
-	char tmp;
-	in >> tmp;
-	if(tmp != '"'){
-		THROW(new Exception(
-			"Wrong format in the CGIInterface"), in);
-	}
-	bool escape = false;
-	while(1){
-		in.get(tmp);
-		if(!in){
-			String e = "Catalog ends while reading CGIInterface";
-			THROW(new Exception(e), in);
-		}
-		if(tmp == '\\'){
-			if(escape){
-				value += '\\';
-				escape = false;
-			}
-			else{
-				escape = true;
-			}
-		}
-		else if(tmp == '"'){
-			if(escape){
-				value += '"';
-				escape = false;
-			}
-			else{
-				break;
-			}
-		}
-		else{
-			if(escape){
-				value += '\\' + tmp;
-				escape = false;
-			}
-			else{
-				value += tmp;
-			}
-		}
-	}
-	return in;
-}
-
-void CGIEntry::write(ostream& out){
-	assert(!value.contains('"'));		// encode these characters!
-	assert(!value.contains('\\'));
-	out << option << " " << "\"" << value << "\"";
-}
-
-void insert(String tableStr, Tuple* tuple){	// throws exception
-	Catalog* catalog = getRootCatalog();
-	assert(catalog);
-	TableName tableName(tableStr.chars());
-	TRY(Interface* interf = catalog->findInterface(&tableName), );
-	delete catalog;
-	TRY(Inserter* inserter = interf->getInserter(&tableName), );
-	delete interf;
-	inserter->insert(tuple);
-	delete inserter;
-}
-
-CatalogInterface* CatalogInterface::duplicate() const {
-	return new CatalogInterface(*this);
-}

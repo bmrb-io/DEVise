@@ -127,19 +127,19 @@ public:
 	virtual const Tuple* getNext();
 };
 
-class ViewEngineExec : public Iterator {
+class RidAdderExec : public Iterator {
 	Iterator* inp;
 	int numFlds;
 	Tuple* tuple;
 	int counter;
 public:
-	ViewEngineExec(Iterator* inp, int numFlds) :
+	RidAdderExec(Iterator* inp, int numFlds) :
 		inp(inp), numFlds(numFlds) {
 
 		tuple = new Tuple[numFlds];
 		counter = 0;
 	}
-	~ViewEngineExec(){
+	~RidAdderExec(){
 		delete inp;
 		delete [] tuple;
 	}
@@ -159,7 +159,7 @@ public:
 	}
      virtual Offset getOffset(){
           assert(inp);
-		// cerr << "Passed ViewEngineExec\n";
+		// cerr << "Passed RidAdderExec\n";
           return inp->getOffset();
      }
      virtual const Tuple* getThis(Offset offset, RecId recId){

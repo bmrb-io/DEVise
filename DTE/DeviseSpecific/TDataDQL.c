@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/08/09 00:55:03  donjerko
+  Added indexing of select-project unmaterialized views.
+
   Revision 1.18  1997/07/22 15:01:31  donjerko
   Moved querying in InitGetRec
 
@@ -45,7 +48,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <String.h>
+#include <string>
 #include "AttrList.h"
 #include "Timer.h"
 
@@ -76,7 +79,7 @@
 
 # define  _STREAM_COMPAT
 
-AttrType getDeviseType(String type){
+AttrType getDeviseType(string type){
 	if(type == "int"){
 		return IntAttr;
 	}
@@ -86,7 +89,7 @@ AttrType getDeviseType(String type){
 	else if(type == "double"){
 		return DoubleAttr;
 	}
-	else if(type.through(5).contains("string")){
+	else if(type.substr(0, 6) == "string"){
 		return StringAttr;
 	}
 	else if(type == "date"){
@@ -103,7 +106,7 @@ AttrType getDeviseType(String type){
 
 TDataDQL::TDataDQL(
 	AttrList attrs,char *name, char *type, 
-	int numFlds, String* types, int recSize, long totalRecs,
+	int numFlds, string* types, int recSize, long totalRecs,
 	int* sizes) : 
 	TData(name, type, strdup("query"), 0), // query <- name
 	_attrs(attrs),
@@ -179,7 +182,7 @@ void TDataDQL::runQuery(){
 		bool hasHighLow = false;
 		AttrVal* hiVal = new AttrVal;
 		AttrVal* loVal = new AttrVal;
-		if(_types[i].through(5).contains("string")){
+		if(_types[i].substr(0, 6) == "string"){
 
 			// Devise will not take high and low values for strings
 
@@ -195,7 +198,7 @@ void TDataDQL::runQuery(){
 			hasHighLow = false;
 		}
 
-		_attrs.InsertAttr(i, strdup(_attributeNames[i].chars()), 
+		_attrs.InsertAttr(i, strdup(_attributeNames[i].c_str()), 
 			offset, deviseSize, 
 			deviseType, false, 0, false, false, hasHighLow, hiVal, 
 			hasHighLow, loVal); 
@@ -230,14 +233,14 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	_marshalPtrs = NULL;
 	char* attNames = dteListAttributes(_tableName);
 	char* attName = strtok(attNames, " ");
-	String minmaxQ("select ");
+	string minmaxQ("select ");
 	const int MAX_NUM_ATTRS = 100;
-	_attributeNames = new String[MAX_NUM_ATTRS];
+	_attributeNames = new string[MAX_NUM_ATTRS];
 	int i = 0;
 	while(attName){
 		assert(i < MAX_NUM_ATTRS);	
-		_attributeNames[i] = String(attName);
-		minmaxQ += String("min(t.") + attName + "), max(t." + attName + ")";
+		_attributeNames[i] = string(attName);
+		minmaxQ += string("min(t.") + attName + "), max(t." + attName + ")";
 		attName = strtok(NULL, " "); 	
 		if(attName){
 			minmaxQ += ", ";
@@ -245,8 +248,8 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 		i++;
 	}
 	_numFlds = i;
-	minmaxQ += String(" from ") + _tableName + " as t";
-	_query = strdup(minmaxQ.chars());
+	minmaxQ += string(" from ") + _tableName + " as t";
+	_query = strdup(minmaxQ.c_str());
 	this->attrList = attrList;
 	runQuery();
 	CATCH(
@@ -323,7 +326,7 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
 
   _nextToFetch = lowId;
 //  Issue a query to the engine;
-  String SQLquery;
+  string SQLquery;
   SQLquery="select ";
   SQLquery+="* ";
   SQLquery+="from ";
@@ -332,7 +335,7 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
   char whereClause[29+sizeof(unsigned long)*2];
   sprintf(whereClause, "t.recId>=%ld and t.recId<=%ld", lowId, highId);
   SQLquery+=whereClause;
-  String query(SQLquery);
+  string query(SQLquery);
 
 #if defined(DEBUG)
 	cout << "Running: " << query << endl;

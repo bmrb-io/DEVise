@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/04/30 21:45:07  wenger
+  Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
+  no longer gives warning message on blank data lines; added makefile
+  targets to make a Purify'd version of multi; fixed uninitialized memory
+  read in the DList code; fixed bug that caused 1.4 version of multi to
+  always crash; better error messages in DTE command parser; version is
+  now 1.4.4.
+
   Revision 1.4  1997/03/28 16:07:37  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -56,6 +64,12 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 	if (argc == 2) {
     if(!strcmp(argv[0], "dteDeleteCatalogEntry")){
       dteDeleteCatalogEntry(argv[1]);
+      control->ReturnVal(API_ACK, "");
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteMaterializeCatalogEntry")){
+      dteMaterializeCatalogEntry(argv[1]);
       control->ReturnVal(API_ACK, "");
       return 1;
     }

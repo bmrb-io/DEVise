@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/06/16 16:04:40  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.6  1997/04/21 16:37:00  wenger
   Removed lex.yy.c from CVS to fix compile problems; fixed some compile
   warnings in the DTE; default is now to compile with neither -O nor
@@ -42,15 +45,15 @@
 
 void FunctionRead::initialize(){	// Throws exception
 	
-	String * seqAttr = iterator->getOrderingAttrib();
+	string * seqAttr = iterator->getOrderingAttrib();
 	if (!seqAttr){
-		String temp = " Table is not a sequence for using " + *function + " ";
+		string temp = " Table is not a sequence for using " + *function + " ";
 		THROW(new Exception(temp.chars()),);
 	}
 
 	// Now get the position of the ordering attribute..
 
-	String * attributeNames = iterator->getAttributeNames();
+	string * attributeNames = iterator->getAttributeNames();
 	TypeID * typeIDs = iterator->getTypeIDs();
     numFlds = iterator->getNumFlds();
     inputNumFlds = numFlds;
@@ -61,7 +64,7 @@ void FunctionRead::initialize(){	// Throws exception
 			seqAttrPos = i;
 			type = typeIDs[i];
 			if (type != "int" && *function != "pos_offset"){
-    			String temp = "Shift operators not implemented ";
+    			string temp = "Shift operators not implemented ";
 				temp += "for non-discreate (" +  typeIDs[i] + ")";
 				temp += " ordering attributes ";
 				THROW(new Exception(temp.chars()),);
@@ -84,7 +87,7 @@ void FunctionRead::initialize(){	// Throws exception
 			funcPtr = neg_value_offset;
 		else 
 			funcPtr= pos_value_offset;
-		String retType;
+		string retType;
 		TRY(comparePtr = getOperatorPtr("=",type,type,retType),)
 	}
 	else if (*function == "pos_offset"){
@@ -92,7 +95,7 @@ void FunctionRead::initialize(){	// Throws exception
 			funcPtr = pos_pos_offset;
 		else 
 			funcPtr = neg_pos_offset;
-		String retType;
+		string retType;
 		TRY(comparePtr = getOperatorPtr("=",type,type,retType),)
 	}
 }

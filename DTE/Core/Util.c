@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/08/14 02:08:54  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.6  1997/07/30 21:39:22  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -36,31 +39,36 @@
 
 #include "Utility.h"
 
-#include <String.h>
+#include <string>
 #include <fstream.h>
 #include <strstream.h>
 #include <stdlib.h>
 
-String selectFileName(const String& env, const String& def){
-	char* nm = getenv(env);
+string selectFileName(const string& env, const string& def){
+	char* nm = getenv(env.c_str());
 	if(nm){
-		return String(nm);
+		return string(nm);
 	}
 	else{
 		return def;
 	}
 }
 
-Catalog* getRootCatalog(){
-	String catalogName;
+const Catalog ROOT_CATALOG(
+	selectFileName("DEVISE_HOME_TABLE", "./catalog.dte").c_str());
+
+/*
+const Catalog* getRootCatalog(){
+	string catalogName;
 	catalogName = selectFileName("DEVISE_HOME_TABLE", "./catalog.dte");
-	return new Catalog(catalogName);
+	return &ROOT_CATALOG;
 }
+*/
 
 istream* getIndexTableStream(){
-	String catalogName;
+	string catalogName;
 	catalogName = selectFileName("DEVISE_INDEX_TABLE", "./sysind.dte");
-	istream* in = new ifstream(catalogName);
+	istream* in = new ifstream(catalogName.c_str());
 	if(!in || !in->good()){
 		cerr << "Warning: could not open index file \"" << catalogName
 			<< "\"\n";
@@ -69,9 +77,9 @@ istream* getIndexTableStream(){
 }
 
 ostream* getIndexTableOutStream(int mode){
-	String catalogName;
+	string catalogName;
 	catalogName = selectFileName("DEVISE_INDEX_TABLE", "./sysind.dte");
-	ostream* in = new ofstream(catalogName, mode);
+	ostream* in = new ofstream(catalogName.c_str(), mode);
 	if(!in || !in->good()){
 		cerr << "Warning: could not open index file \"" << catalogName
 			<< "\"\n";
@@ -79,33 +87,35 @@ ostream* getIndexTableOutStream(int mode){
 	return in;
 }
 
-String& stripQuotes(char* str){
+string stripQuotes(char* str){
 	strstream tmp;
 	tmp << str << ends;
-	return stripQuotes(tmp);
+	string tmpstr;
+	stripQuotes(tmp, tmpstr);
+	return tmpstr;
 }
 
-String& stripQuotes(istream& in){	// can throw excetion
+void stripQuotes(istream& in, string& value){	// can throw excetion
 
 	// use the other version
 
 	// strips backslashes from the string (and outer quotes)
 
-	String& value = *(new String);
+	value = "";
 	char tmp;
 	in >> tmp;
 	if(!in){
-		return value;
+		return;
 	}
 	if(tmp != '"'){
-		THROW(new Exception("Leading \" expected"), value);
+		THROW(new Exception("Leading \" expected"), );
 	}
 	bool escape = false;
 	while(1){
 		in.get(tmp);
 		if(!in){
-			String e = "Closing \" expected";
-			THROW(new Exception(e), value);
+			string e = "Closing \" expected";
+			THROW(new Exception(e), );
 		}
 		if(escape){
 			escape = false;
@@ -130,14 +140,12 @@ String& stripQuotes(istream& in){	// can throw excetion
 			value += tmp;
 		}
 	}
-	return value;
 }
 
 void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 
 	// strips backslashes from the string (and outer quotes)
 
-	String& value = *(new String);
 	char tmp;
 	in >> tmp;
 	int length = 0;
@@ -153,7 +161,7 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 		assert(length < bufsz);
 		in.get(tmp);
 		if(!in){
-			String e = "Closing \" expected";
+			string e = "Closing \" expected";
 			buf[length] = '\0';
 			THROW(new Exception(e), );
 		}
@@ -183,13 +191,12 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 	buf[length] = '\0';
 }
 
-String& addQuotes(String in){	// can throw excetion
+string addQuotes(const string& in){	// can throw excetion
 
 	// adds backslashes from the string (and outer quotes)
 
-	String& value = *(new String);
 	char tmp;
-	value += '"';
+	string value = "\"";
 	for(unsigned int i = 0; i < in.length(); i++){
 		tmp = in[i];
 		switch(tmp){
@@ -207,8 +214,8 @@ String& addQuotes(String in){	// can throw excetion
 	return value;
 }
 
-String* dupStrArr(const String* inp, int numFlds){
-	String* retVal = new String[numFlds];
+string* dupStrArr(const string* inp, int numFlds){
+	string* retVal = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		retVal[i] = inp[i];
 	}

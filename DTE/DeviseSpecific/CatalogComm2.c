@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/04/22 15:25:25  wenger
+  Conditionaled out lots of debug code; fixed data source visualization
+  window so the window for the data again defaults to 'New' if there are
+  no windows.
+
   Revision 1.2  1997/03/28 16:07:35  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -36,12 +41,12 @@ char* dteImportFileType(char* name){
 #if defined(DEBUG)
 	cout << "in dteImportFileType(" << name << ")\n";
 #endif
-	// String query = "select * from " + String(name) + " as t";
-	String query = "dummy";
+	// string query = "select * from " + string(name) + " as t";
+	string query = "dummy";
 
 	gdir->add_entry(name);
 	TDataDQLInterpClassInfo* DQLclass;
-	DQLclass = new TDataDQLInterpClassInfo(name, query.chars());
+	DQLclass = new TDataDQLInterpClassInfo(name, query.c_str());
 	
 	ControlPanel::RegisterClass(DQLclass,true);
 	InsertCatFile(strdup(name));

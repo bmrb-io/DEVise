@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/08/04 14:50:46  donjerko
+  Fixed the bug in insert and delete queries.
+
   Revision 1.7  1997/07/30 21:39:14  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -61,10 +64,7 @@ Site* DeleteParse::createSite(){
 	LOG(predicate->display(logFile));
 	LOG(logFile << endl;)
 
-	Catalog* catalog = getRootCatalog();
-	assert(catalog);
-	TRY(Site* site = catalog->find(tableName), NULL);
-	delete catalog;
+	TRY(Site* site = ROOT_CATALOG.find(tableName), NULL);
 	assert(site);
 	TableAlias ta(tableName, alias);
 	site->addTable(&ta);
@@ -75,7 +75,7 @@ Site* DeleteParse::createSite(){
 	sites.append(site);
 	TRY(TypeID type = predicate->typify(&sites), NULL);
 	if(type != "bool"){
-		String msg = "Predicate has type " +  type + " (bool expected)";
+		string msg = "Predicate has type " +  type + " (bool expected)";
 		THROW(new Exception(msg), NULL);
 	}
 	List<BaseSelection*>* siteISchema = site->getSelectList();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/08/09 00:54:42  donjerko
+  Added indexing of select-project unmaterialized views.
+
   Revision 1.14  1997/03/20 20:42:18  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -73,7 +76,7 @@ extern int yydebug;
 Exception* currExcept;
 
 ParseTree* parseTree = NULL;
-List<String*>* namesToResolve = NULL;
+List<string*>* namesToResolve = NULL;
 BaseSelection * sequenceby;
 const char* queryString;
 bool rescan;
@@ -85,12 +88,12 @@ JoinTable * jTable = NULL;
 ITimer iTimer;
 
 int Engine::optimize(){
-	queryString = query.chars();
+	queryString = query.c_str();
 	rescan = true;
-	namesToResolve = new List<String*>;
+	namesToResolve = new List<string*>;
 	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
-		String msg = "parse error in: " + String(queryString);
+		string msg = "parse error in: " + string(queryString);
 		THROW(new Exception(msg), 0);
 	}
 	assert(parseTree);
@@ -101,5 +104,5 @@ int Engine::optimize(){
 }
 
 Iterator* ViewEngine::createExec(){
-	return new ViewEngineExec(topNode->createExec(), numFlds);
+	return new RidAdderExec(topNode->createExec(), numFlds);
 }

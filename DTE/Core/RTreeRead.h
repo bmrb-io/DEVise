@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/10 20:30:56  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.10  1997/07/22 15:00:53  donjerko
   *** empty log message ***
 
@@ -56,7 +59,7 @@ struct RTreePred {
 		closed[0] = closed[1] = true;
 		values[0] = values[1] = NULL;
 	}
-	RTreePred(String opName, ConstantSelection* constant){
+	RTreePred(string opName, ConstantSelection* constant){
 		bounded[0] = bounded[1] = false;
 		closed[0] = closed[1] = true;
 		values[0] = values[1] = NULL;
@@ -98,7 +101,7 @@ struct RTreePred {
 		values[0] = new ConstantSelection(typeID, negInf);
 		values[1] = new ConstantSelection(typeID, posInf);
 	}
-	void update(String opName, BaseSelection* constant){ // throws
+	void update(string opName, BaseSelection* constant){ // throws
 		assert(constant->selectID() == CONST_ID);
 		ConstantSelection* cconstant = (ConstantSelection*) constant;
 		TRY(cconstant = cconstant->promote(typeID), );
@@ -145,8 +148,8 @@ struct RTreePred {
 			}
 		}
 	}
-	String toString() const {
-		String retVal;
+	string toString() const {
+		string retVal;
 		if(closed[0]){
 			retVal += "[";
 		}
@@ -233,7 +236,7 @@ public:
 		}
 	}
      virtual ostream& display(ostream& out){
-          String tmp;
+          string tmp;
 		int numKeyFlds = getNumKeyFlds();
           for(int i = 0; i < numKeyFlds; i++){
                tmp += "Attr " + attributeNames[i] + ": ";

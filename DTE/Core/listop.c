@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/07/30 21:39:24  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.11  1997/07/22 15:00:55  donjerko
   *** empty log message ***
 
@@ -65,7 +68,7 @@ int* findPositions(List<BaseSelection*>* list,
 	for(i = 0, elements->rewind(); !elements->atEnd(); elements->step(), i++){
 		for(j = 0, list->rewind(); true; list->step(), j++){
 			if(list->atEnd()){
-				String msg = String("Cannot match a selection from") +
+				string msg = string("Cannot match a selection from") +
 					" ORDER BY to any of the SELECT clause";
 				THROW(new Exception(msg), NULL);
 			}
@@ -89,7 +92,7 @@ bool exclusiveF(List<BaseSelection*>* list, Site* site){
 	return true;
 }
 
-bool exclusiveList(List<BaseSelection*>* list, String* attNms, int n){
+bool exclusiveList(List<BaseSelection*>* list, string* attNms, int n){
 	list->rewind();
 	while(!list->atEnd()){
 		if(!list->get()->exclusive(attNms, n)){
@@ -111,7 +114,7 @@ List<BaseSelection*>* duplicateF(List<BaseSelection*>* list){
 }
 
 void displayList(
-	ostream& out, List<BaseSelection*>* list, String sep, int detail){
+	ostream& out, List<BaseSelection*>* list, string sep, int detail){
 	if(list == NULL){
 		out << '*';
 		return;
@@ -126,7 +129,7 @@ void displayList(
 	}
 }
 
-void displayList(ostream& out, List<TableAlias*>* list, String sep){
+void displayList(ostream& out, List<TableAlias*>* list, string sep){
      list->rewind();
      while(!list->atEnd()){
 		list->get()->display(out);
@@ -137,7 +140,7 @@ void displayList(ostream& out, List<TableAlias*>* list, String sep){
 	}
 }
 
-void displayList(ostream& out, List<Site*>* list, String sep){
+void displayList(ostream& out, List<Site*>* list, string sep){
      list->rewind();
      while(!list->atEnd()){
 		list->get()->display(out);
@@ -148,7 +151,7 @@ void displayList(ostream& out, List<Site*>* list, String sep){
 	}
 }
 
-void displayList(ostream& out, List<String*>* list, String sep){
+void displayList(ostream& out, List<string*>* list, string sep){
      list->rewind();
      while(!list->atEnd()){
 		out << *list->get();
@@ -175,8 +178,8 @@ void filterList(List<BaseSelection*>* list, Site* site){
 }
 
 Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
-     String site1, List<BaseSelection*>* list1,
-	String site2, List<BaseSelection*>* list2){
+     string site1, List<BaseSelection*>* list1,
+	string site2, List<BaseSelection*>* list2){
 
 	Array<ExecExpr*>* retVal = new Array<ExecExpr*>(list->cardinality());
 	list->rewind();
@@ -203,7 +206,7 @@ TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites){
 	return retVal;
 }
 
-void typifyList(List<Site*>* list, String option){
+void typifyList(List<Site*>* list, string option){
 	assert(list);
 	list->rewind();
 	while(!list->atEnd()){
@@ -234,7 +237,7 @@ bool boolCheckList(List<BaseSelection*>* list){
 			current->display(msg);
 			msg << ends;
 			char* msgc = msg.str();
-			String msgs = "Predicate " + String(msgc) + " is not boolean";
+			string msgs = "Predicate " + string(msgc) + " is not boolean";
 			delete msgc;
 			THROW(new Exception(msgs), false);
 		}
@@ -305,23 +308,23 @@ void checkOrphanInList(List<BaseSelection*>* list){
 	}
 }
 
-String* getStringsFrom(List<BaseSelection*>* list){
-	String* retVal = new String[list->cardinality()];
+string* getStringsFrom(List<BaseSelection*>* list){
+	string* retVal = new string[list->cardinality()];
 	list->rewind();
 	int i = 0;
 	while(!list->atEnd()){
 		ostrstream tmp;
 		list->get()->displayFlat(tmp);
 		tmp << ends;
-		retVal[i] = String(tmp.str());
+		retVal[i] = string(tmp.str());
 		i++;
 		list->step();
 	}
 	return retVal;
 }
 
-String* getAttStringsOnly(List<BaseSelection*>* list){
-	String* retVal = new String[list->cardinality()];
+string* getAttStringsOnly(List<BaseSelection*>* list){
+	string* retVal = new string[list->cardinality()];
 	list->rewind();
 	int i = 0;
 	while(!list->atEnd()){

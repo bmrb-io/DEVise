@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/08/04 14:50:47  donjerko
+  Fixed the bug in insert and delete queries.
+
   Revision 1.3  1997/07/30 21:39:17  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -55,10 +58,7 @@ Site* InsertParse::createSite(){
 	LOG(displayList(logFile, (List<BaseSelection*>*) fieldList, ", ");)
 	LOG(logFile << ")" << endl;)
 
-     Catalog* catalog = getRootCatalog();
-     assert(catalog);
-     TRY(Site* site = catalog->find(tableName), NULL);
-     delete catalog;
+     TRY(Site* site = ROOT_CATALOG.find(tableName), NULL);
 
 	assert(site);
 
@@ -67,7 +67,7 @@ Site* InsertParse::createSite(){
 	if(numFlds != fieldList->cardinality()){
 		THROW(new Exception("Number of fields do not match"), NULL);
 	}
-	const String* types = site->getTypeIDs();
+	const string* types = site->getTypeIDs();
 
 // What follows is just a temporary kludge. 
 // One should construct a tuple and inset it
@@ -77,7 +77,8 @@ Site* InsertParse::createSite(){
 	ConstantSelection* sel = fieldList->get();
 	strstream tmp;
 	sel->display(tmp);
-	String inStr = stripQuotes(tmp);
+	string inStr;
+	stripQuotes(tmp, inStr);
 #if defined(DEBUG)
 	cerr << "Appending to the file: " << inStr << endl;
 #endif

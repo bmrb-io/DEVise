@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/07/30 21:39:24  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.8  1997/06/16 16:04:50  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -40,7 +43,7 @@
 #define LISTOP_H
 
 #include <assert.h>
-#include <String.h>
+#include <string>
 #include <iostream.h>
 #include <fstream.h>
 #include <strstream.h>
@@ -74,32 +77,32 @@ class ExecExpr;
 int* findPositions(List<BaseSelection*>* list, 
 	List<BaseSelection*>* elements);	// throws
 bool exclusiveF(List<BaseSelection*>* list, Site* site);
-bool exclusiveList(List<BaseSelection*>* list, String* attNms, int n);
+bool exclusiveList(List<BaseSelection*>* list, string* attNms, int n);
 List<BaseSelection*>* duplicateF(List<BaseSelection*>* list);
 void filterList(List<BaseSelection*>* list, Site* site);
-void displayList(ostream& out, List<TableAlias*>* list, String sep = ", ");
+void displayList(ostream& out, List<TableAlias*>* list, string sep = ", ");
 void displayList(ostream& out, List<BaseSelection*>* list, 
-	String sep = ", ", int detail = 0); 
-void displayList(ostream& out, List<Site*>* list, String sep);
-void displayList(ostream& out, List<String*>* list, String sep);
+	string sep = ", ", int detail = 0); 
+void displayList(ostream& out, List<Site*>* list, string sep);
+void displayList(ostream& out, List<string*>* list, string sep);
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
 Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list,
-     String site1, List<BaseSelection*>* list1,
-     String site2 = "", List<BaseSelection*>* list2 = NULL);
+     string site1, List<BaseSelection*>* list1,
+     string site2 = "", List<BaseSelection*>* list2 = NULL);
 TypeID* typifyList(List<BaseSelection*>* list, List<Site*>* sites);
 bool boolCheckList(List<BaseSelection*>* list);
 bool evaluateList(
 	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right = NULL);
 void tupleFromList(Tuple* next,
 	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right = NULL);
-void typifyList(List<Site*>* sites, String option);
+void typifyList(List<Site*>* sites, string option);
 TypeID* getTypesFromList(List<BaseSelection*>* list);
 double listSelectivity(List<BaseSelection*>* list);
 int* sizesFromList(List<BaseSelection*>* list);
 void checkOrphanInList(List<BaseSelection*>* list);
-String* getStringsFrom(List<BaseSelection*>* list);
+string* getStringsFrom(List<BaseSelection*>* list);
 List<BaseSelection*>* createGlobalSelectList(List<Site*>* sites);
-String* getAttStringsOnly(List<BaseSelection*>* list);
+string* getAttStringsOnly(List<BaseSelection*>* list);
 
 #endif

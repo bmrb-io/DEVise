@@ -9,5 +9,5 @@ TableAlias* MinMax::createReplacement(TableAlias* table){
 	return NULL;
 }
 
-void MinMax::insert(const String& tableName, const String& fileName){
+void MinMax::insert(const string& tableName, const string& fileName){
 }

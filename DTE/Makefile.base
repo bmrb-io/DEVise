@@ -41,7 +41,7 @@ DTE_INCLUDES = \
 
 #no-comment is for the perl files
 
-CFLAGS = $(ARCH_FLAGS) $(ARCH_ENDIAN) $(DTE_INCLUDES)\
+CFLAGS = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
 	-Wall -Wno-unused -Wno-comment $(OPTFLAG) \
 	-DUNIX -DLIBCS
 #	-fexternal-templates \
@@ -52,10 +52,11 @@ endif
 
 CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c \
-	Engine.c Aggregates.c joins.c QueryTree.c Util.c \
+	Engine.c Aggregates.c QueryTree.c Util.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
-	ExecOp.c Inserter.c TypeCheck.c
+	ExecOp.c Inserter.c TypeCheck.c joins.c \
+	Interface.c MaterializeParse.c
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 

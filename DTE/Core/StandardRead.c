@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/08/12 19:58:42  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.12  1997/06/30 23:05:03  donjerko
   CVS:
 
@@ -58,6 +61,7 @@
 #include "exception.h"
 #include "assert.h"
 #include "url.h"
+#include "ExecOp.h"
 
 StandReadExec::StandReadExec(const ISchema& schema, istream* in) :
 	in(in)
@@ -76,56 +80,6 @@ StandReadExec::StandReadExec(const ISchema& schema, istream* in) :
 	}
 }
 
-/*
-void StandardRead::open(istream* in){	// Throws exception
-	assert(in && in->good());
-	this->in = in;
-	(*in) >> numFlds;
-	if(!in->good()){
-		String msg = "Number of fields expected";
-		THROW(new Exception(msg), );
-	}
-	if(numFlds > 1000){
-		ostrstream tmp;
-		tmp << "Number of fields (" <<  numFlds << ") too big" << ends;
-		THROW(new Exception(tmp.str()), );
-	}
-	typeIDs = new String[numFlds];
-	attributeNames = new String[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		(*in) >> typeIDs[i];
-		assert(in->good());
-	}
-	for(int i = 0; i < numFlds; i++){
-		(*in) >> attributeNames[i];
-		assert(in->good());
-	}
-
-	String inputStr;
-	(*in) >> inputStr;
-	stats = new Stats(numFlds);
-	while(inputStr != ";"){
-		if (inputStr == "order"){
-			assert(in->good());
-			order = new String();
-			(*in) >> *order;
-		}
-		else if (inputStr == "stats"){
-			stats->read(in);
-		}
-		else {
-			String msg = "Unrecognized option in the header: " + inputStr;
-			THROW(new Exception(msg), );
-		}
-		(*in) >> inputStr;
-	}
-	if(!in->good()){
-		String msg = "Incorrect header format";
-		THROW(new Exception(msg), );
-	}
-}
-*/
-
 void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	this->numFlds = numFlds;
 	this->typeIDs = new TypeID[numFlds];
@@ -139,13 +93,18 @@ void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 void StandardRead::open(const ISchema& schema, istream* in){
 	this->numFlds = schema.getNumFlds();
 	this->typeIDs = new TypeID[numFlds];
-	this->attributeNames = new String[numFlds];
+	this->attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
 		typeIDs[i] = schema.getTypeIDs()[i];
 		attributeNames[i] = schema.getAttributeNames()[i];
 	}
 	assert(in && in->good());
 	this->in = in;
+}
+
+Iterator* RidAdder::createExec(){
+	TRY(Iterator* inpIter = input->createExec(), NULL);
+	return new RidAdderExec(inpIter, numFlds);
 }
 
 void NCDCRead::open(istream* in){	// Throws exception
@@ -166,8 +125,8 @@ void NCDCRead::open(istream* in){	// Throws exception
           tmp = tmp + 1;
           tmp = strstr(tmp, "http:");
           if(!tmp){
-               String msg = "Unexpected response from the NCDC server:\n" +
-                    String(response);
+               string msg = "Unexpected response from the NCDC server:\n" +
+                    string(response);
                THROW(new Exception(msg), );
           }
      }
@@ -177,7 +136,7 @@ void NCDCRead::open(istream* in){	// Throws exception
      }
      assert(tmp[j]);
      tmp[j] = '\0';
-     String tableUrlStr = String(tmp);
+     string tableUrlStr = string(tmp);
      delete response;
      URL* tableUrl = new URL(tableUrlStr);
 	istream* tablein = NULL;
@@ -192,10 +151,10 @@ void NCDCRead::open(istream* in){	// Throws exception
      }
 
      numFlds = 2;
-	typeIDs = new String[numFlds];
+	typeIDs = new string[numFlds];
      typeIDs[0] = "int";
      typeIDs[1] = "int";
-	attributeNames = new String[numFlds];
+	attributeNames = new string[numFlds];
 	attributeNames[0] = "day";
 	attributeNames[1] = "temp";
 	stats = new Stats(numFlds);

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/08/15 21:19:14  donjerko
+  Added / operator for ints and doubles
+
   Revision 1.30  1997/08/15 00:17:37  donjerko
   Completed the Iterator destructor code.
 
@@ -110,9 +113,10 @@
 #ifndef DTE_TYPES_H
 #define DTE_TYPES_H
 
+#include <string>
+
 #include <iostream.h>
 #include <assert.h>
-#include <String.h>
 #include <string.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -121,21 +125,37 @@
 #include "exception.h"
 #include "Utility.h"
 #include "queue.h"
-#include "RecId.h"	// just the typedef for RecId
+
+#ifndef RecId_h
+#define RecId_h
+
+typedef unsigned long RecId;
+
+#endif
+
+struct ltstr { 
+	bool operator()(const string& s1, const string& s2) const { 
+		return s1 < s2;
+	}
+};
 
 class BaseSelection;
 
 const int INITIAL_STRING_SIZE = 2000;
+extern const int INITIAL_INTERFACE_SIZE;	// defined in Interface.c
+
 // const char* ISO_TM = "%Y-%m-%d %H:%M:%S";
 
 static size_t dummySz;	// used only as a place holder
-const String UNKN_TYPE = "unknown";
-const String INT_TP = "int";
-const String DOUBLE_TP = "double";
-const String DATE_TP = "date";
-const String INTERVAL_TP = "interval" ;
-const String STRING_TP = "string";
-const String CAT_ENTRY_TP = "catentry";
+const string UNKN_TYPE = "unknown";
+const string INT_TP = "int";
+const string DOUBLE_TP = "double";
+const string DATE_TP = "date";
+const string INTERVAL_TP = "interval" ;
+const string STRING_TP = "string";
+const string INTERFACE_TP = "interface";
+
+const string RID_STRING = "recId";
 
 struct Stats{
 	int* fldSizes;
@@ -189,8 +209,9 @@ inline ostream& operator<<(ostream& out, Offset off){
 }
 
 typedef void Type;
-typedef String TypeID;
+typedef string TypeID;
 typedef Type* Tuple;
+typedef const Type* ConstTuple;
 typedef void (*OperatorPtr)(const Type*, const Type*, Type*&, size_t& = dummySz);
 typedef void (*PromotePtr)(const Type*, Type*&, size_t& = dummySz);
 typedef void (*ADTCopyPtr)(const Type*, Type*&, size_t& = dummySz);
@@ -204,7 +225,7 @@ typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
 typedef void (*MarshalPtr)(const Type* adt, char* to);
 typedef void (*UnmarshalPtr)(char* from, Type*& adt);
  
-void insert(String tableStr, Tuple* tuple);	// throws exception
+void insert(string tableStr, Tuple* tuple);	// throws exception
 
 int domain(const TypeID adt);	// throws exception
 
@@ -245,7 +266,7 @@ void dateDestroy(Type* adt);
 void stringDestroy(Type* adt);
 void boolDestroy(Type* adt);
 void doubleDestroy(Type* adt);
-void catEntryDestroy(Type* adt);
+void interfaceDestroy(Type* adt);
 void indexDescDestroy(Type* adt);
 
 struct GeneralPtr{
@@ -277,8 +298,7 @@ double oneOver3(BaseSelection* left, BaseSelection* right);
 double oneOver10(BaseSelection* left, BaseSelection* right);
 double oneOver100(BaseSelection* left, BaseSelection* right);
 
-void catEntryName(const Type* arg1, Type* result);
-void catEntryType(const Type* arg1, Type* result);
+void interfaceType(const Type* arg1, Type* result);
 
 void intAdd(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
 void intSub(const Type* arg1, const Type* arg2, Type*& result, size_t& = dummySz);
@@ -338,7 +358,7 @@ void intRead(istream&, Type*&);
 void stringRead(istream&, Type*&);
 void doubleRead(istream&, Type*&);
 void boolRead(istream&, Type*&);
-void catEntryRead(istream&, Type*&);
+void interfaceRead(istream&, Type*&);
 void schemaRead(istream&, Type*&);
 void indexDescRead(istream&, Type*&);
 
@@ -346,7 +366,7 @@ void intWrite(ostream&, const Type*);
 void stringWrite(ostream&, const Type*);
 void doubleWrite(ostream&, const Type*);
 void boolWrite(ostream&, const Type*);
-void catEntryWrite(ostream&, const Type*);
+void interfaceWrite(ostream&, const Type*);
 void schemaWrite(ostream&, const Type*);
 void indexDescWrite(ostream&, const Type*);
 void dateWrite(ostream& out, const Type* adt);
@@ -395,7 +415,7 @@ public:
 
 public:
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID arg, TypeID& retType){
+		string name, TypeID arg, TypeID& retType){
 		if(arg != "int"){
 			return NULL;
 		}
@@ -454,7 +474,7 @@ class IBool {
 
 public:
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID arg, TypeID& retType){
+		string name, TypeID arg, TypeID& retType){
 		retType = "bool";
 		if(arg != "bool"){
 			return NULL;
@@ -505,7 +525,7 @@ public:
 		memcpy(&value, from, sizeof(double));
 	}
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID arg, TypeID& retType){
+		string name, TypeID arg, TypeID& retType){
 		if(arg == "double"){
 			if(name == "+"){
 				retType = "double";
@@ -546,7 +566,7 @@ public:
 };
 
 class IString {
-	char string[0];
+//	char string[0];
 public:
 /*
 	void setValue(char *s){
@@ -574,10 +594,10 @@ public:
 	}
 */
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID root, TypeID arg, TypeID& retType){
-		String msg = "No operator " + name + " (" + root + 
+		string name, TypeID root, TypeID arg, TypeID& retType){
+		string msg = "No operator " + name + " (" + root + 
 			", " + arg + ") defined";
-		if(!arg.through(5).contains("string")){
+		if(!(arg.substr(0, 6) == "string")){
 			THROW(new Exception(msg), NULL);
 		}
 		else if(name == "="){
@@ -600,13 +620,16 @@ public:
 			THROW(new Exception(msg), NULL);
 		}
 	}
+	static const char* getCStr(const Type* object){
+		return (const char*)object;
+	}
 };
 
 class IDate {
 public:
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID root, TypeID arg, TypeID& retType){
-		String msg = 
+		string name, TypeID root, TypeID arg, TypeID& retType){
+		string msg = 
 			"No operator " + name + " (" + root + ", " + arg + ") defined";
           if(name == "-") {
                if (arg == "date") {
@@ -658,8 +681,8 @@ public:
 class IInterval {
 public:
 	static GeneralPtr* getOperatorPtr (
-		String name, TypeID root, TypeID arg, TypeID& retType) {
-		String msg =
+		string name, TypeID root, TypeID arg, TypeID& retType) {
+		string msg =
 			"No operator " + name + " (" + root + ", " + arg + ") defined" ;
 		if (arg != "interval") {
 			THROW(new Exception(msg), NULL);
@@ -693,8 +716,8 @@ public:
 class ITime_t {
 public:
 	static GeneralPtr* getOperatorPtr(
-		String name, TypeID root, TypeID arg, TypeID& retType){
-		String msg = 
+		string name, TypeID root, TypeID arg, TypeID& retType){
+		string msg = 
 			"No operator " + name + " (" + root + ", " + arg + ") defined";
 		if(arg != "time_t"){
 			THROW(new Exception(msg), NULL);
@@ -726,34 +749,18 @@ public:
 class Site;
 class Interface;
 
-class CatEntry {
-	String singleName;
-	Interface* interface;
-	String typeNm;
+class InterfWrapper {
 public:
-	CatEntry(String singleName = "") : 
-		singleName(singleName), interface(NULL) {}
-	~CatEntry();
-	CatEntry& operator=(const CatEntry& a);
-	istream& read(istream& in); // Throws Exception
-	void display(ostream& out);
-	Site* getSite();
-	Interface* getInterface();	// Throws Exception
-	static GeneralMemberPtr* getMemberPtr(String name, TypeID& retType);
+	static GeneralMemberPtr* getMemberPtr(string name, TypeID& retType);
 		// throws exception
-	String getName(){
-		return singleName;
-	}
-	String getType(){
-		return typeNm;
-	}
+	static const Interface* getInterface(const Type* object);
 };
 
 class IndexDesc {
 	int numKeyFlds;
-	String* keyFlds;
+	string* keyFlds;
 	int numAddFlds;
-	String* addFlds;
+	string* addFlds;
 	bool pointer;
 	int rootPg;
 	TypeID* keyTypes;
@@ -767,8 +774,8 @@ public:
 		keyTypes = NULL;
 		addTypes = NULL;
 	}
-	IndexDesc(int numKeyFlds, String* keyFlds, 
-		int numAddFlds, String* addFlds, 
+	IndexDesc(int numKeyFlds, string* keyFlds, 
+		int numAddFlds, string* addFlds, 
 		bool pointer, int rootPg,
 		TypeID* keyTypes, TypeID* addTypes) :
 		numKeyFlds(numKeyFlds), keyFlds(keyFlds),
@@ -789,13 +796,13 @@ public:
 	int getRootPg(){
 		return rootPg;
 	}
-	const String* getKeyFlds(){
+	const string* getKeyFlds(){
 		return keyFlds;
 	}
 	int getNumAddFlds(){
 		return numAddFlds;
 	}
-	const String* getAddFlds(){
+	const string* getAddFlds(){
 		return addFlds;
 	}
 	int getTotNumFlds(){
@@ -804,9 +811,9 @@ public:
 	bool isStandAlone(){
 		return !pointer;
 	}
-	String* getAllAttrNms(){
+	string* getAllAttrNms(){
 		int totFlds = getTotNumFlds();
-		String* retVal = new String[totFlds];
+		string* retVal = new string[totFlds];
 		for(int i = 0; i < numKeyFlds; i++){
 			retVal[i] = keyFlds[i];
 		}
@@ -817,7 +824,7 @@ public:
 	}
 	TypeID* getAllTypeIDs(){
 		int totFlds = getTotNumFlds();
-		String* retVal = new TypeID[totFlds];
+		string* retVal = new TypeID[totFlds];
 		for(int i = 0; i < numKeyFlds; i++){
 			retVal[i] = keyTypes[i];
 		}
@@ -830,36 +837,19 @@ public:
 
 class ISchema {
 	TypeID* typeIDs;
-	String* attributeNames;
+	string* attributeNames;
 	int numFlds;
 public:
 	ISchema() : typeIDs(NULL), attributeNames(NULL), numFlds(0) {}
-	ISchema(const String& str); 
-	ISchema(TypeID* typeIDs, String* attributeNames, int numFlds) :
+	ISchema(const string& str); 
+	ISchema(TypeID* typeIDs, string* attributeNames, int numFlds) :
 		typeIDs(typeIDs),
 		attributeNames(attributeNames), 
 		numFlds(numFlds) {}
-	ISchema(const ISchema& x){
-		numFlds = x.numFlds;
-		if(x.attributeNames){
-			attributeNames = new String[numFlds];
-			for(int i = 0; i < numFlds; i++){
-				attributeNames[i] = x.attributeNames[i];
-			}
-		}
-		else{
-			attributeNames = NULL;
-		}
-		if(x.typeIDs){
-			typeIDs = new TypeID[numFlds];
-			for(int i = 0; i < numFlds; i++){
-				typeIDs[i] = x.typeIDs[i];
-			}
-		}
-		else{
-			typeIDs = NULL;
-		}
-	}
+	ISchema(int numFlds, const TypeID* typeIDs, const string* attributeNames); 
+	ISchema(const ISchema& x);
+	ISchema& operator=(const ISchema& x);
+	ISchema operator+(const ISchema& x) const;
 	~ISchema(){
 		delete [] typeIDs;
 		delete [] attributeNames;
@@ -869,7 +859,7 @@ public:
 	int getNumFlds() const {
 		return numFlds;
 	}
-	const String* getAttributeNames() const {
+	const string* getAttributeNames() const {
 		assert(attributeNames);
 		return attributeNames;
 	}
@@ -955,6 +945,11 @@ public:
 	}
 };
 
+class InterfaceLoader : public MemoryLoader {
+public:
+	virtual Type* load(const Type* arg);
+};
+
 template <class T>
 class MemoryLoaderTemplate : public MemoryLoader {
 public:
@@ -997,7 +992,7 @@ public:
 		this->numFlds = numFlds;
 		TRY(typeLoaders = newTypeLoaders(typeIDs, numFlds), );
 	}
-	Tuple* insert(const Tuple* tuple){ // throws
+	Tuple* insert(const ConstTuple* tuple){ // throws
 		size_t spaceNeed = numFlds * sizeof(Type*);
 		Tuple* retVal = (Tuple*) allocate(spaceNeed);
 		for(int i = 0; i < numFlds; i++){
@@ -1013,28 +1008,28 @@ public:
 	}
 };
 
-int packSize(String type);    // throws exception
+int packSize(string type);    // throws exception
 
 int packSize(const TypeID* types, int numFlds);    // throws exception
 
-int packSize(const Type* adt, String type);
+int packSize(const Type* adt, string type);
 
 int packSize(const Tuple* tup, TypeID* types, int numFlds);
 
-String rTreeEncode(String type);
+string rTreeEncode(string type);
 
-MarshalPtr getMarshalPtr(String type);
+MarshalPtr getMarshalPtr(string type);
 
-UnmarshalPtr getUnmarshalPtr(String type);
+UnmarshalPtr getUnmarshalPtr(string type);
 
 void marshal(const Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
 	int* sizes, int numFlds);
 
 GeneralPtr* getOperatorPtr(
-	String name, TypeID root, TypeID arg, TypeID& retType);
+	string name, TypeID root, TypeID arg, TypeID& retType);
 	// throws exception
 
-GeneralMemberPtr* getMemberPtr(String name, TypeID root, TypeID& retType);
+GeneralMemberPtr* getMemberPtr(string name, TypeID root, TypeID& retType);
 	// throws exception
 
 ReadPtr getReadPtr(TypeID root);

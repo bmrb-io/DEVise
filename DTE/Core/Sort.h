@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/14 02:08:53  donjerko
+  Index catalog is now an independent file.
+
   Revision 1.10  1997/07/30 21:39:19  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -109,7 +112,7 @@ private:
 
 public:
 
-    Sort(String nm, List<BaseSelection*>* orderBy, Site* input): /*SortOrder*/
+    Sort(string nm, List<BaseSelection*>* orderBy, Site* input): /*SortOrder*/
        Site(nm), orderBy(orderBy), input(input),
 	  order(Ascending)
        {}
@@ -120,20 +123,20 @@ public:
      virtual int getNumFlds(){
 		return numFlds;
      }
-     virtual const String *getTypeIDs(){
+     virtual const string *getTypeIDs(){
                 return attrTypes;
      }  
-     virtual const String *getAttributeNames(){
+     virtual const string *getAttributeNames(){
                 return input->getAttributeNames();
      }
-     virtual String *getOrderingAttrib(){
+     virtual string *getOrderingAttrib(){
           assert(0);
      }
 
 	virtual Stats* getStats(){
 		return input->getStats();
 	}
-	virtual void typify(String option){
+	virtual void typify(string option){
 		mySelect = new List<BaseSelection*>;
 		mySelect->addList(input->getSelectList());
 		numFlds = mySelect->cardinality();

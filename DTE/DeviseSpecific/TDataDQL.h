@@ -46,7 +46,7 @@
 class TDataDQL: public TData, private DispatcherCallback {
 public:
 	TDataDQL(AttrList attrs,char *name,char *type,
-	int numFlds, String* types, int recSize, long totalRecs, 
+	int numFlds, string* types, int recSize, long totalRecs, 
 	int* sizes);
 
 	TDataDQL(char* tableName, List<char*>* attrList, char* query);
@@ -175,11 +175,11 @@ private:
 	int _bytesFetched;              // total # of bytes fetched
 	AttrList _attrs;
 	int _numFlds;
-	String* _types;
+	string* _types;
 	int* _sizes;
 	char* _query;
 	List<char*>* attrList;
-	String* _attributeNames;
+	string* _attributeNames;
 	MarshalPtr* _marshalPtrs;
 	char* _tableName;
 	RecId _nextToFetch;

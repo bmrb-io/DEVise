@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/07/30 21:39:23  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.8  1997/06/16 16:04:48  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -28,7 +31,7 @@
 
 #include"joins.h"
 
-void Joins::typify(String  option){
+void Joins::typify(string  option){
 	
 	//SiteGroup::typify(option);
 		List<Site*>* tmpL = new List<Site*>;
@@ -50,16 +53,16 @@ void Joins::typify(String  option){
         stats = new Stats(numFlds, sizes, cardinality);
         TRY(boolCheckList(myWhere), );
 
-	String * leftorder = left->getOrderingAttrib();
-	String * rightorder = right->getOrderingAttrib();
+	string * leftorder = left->getOrderingAttrib();
+	string * rightorder = right->getOrderingAttrib();
 	const TypeID * leftIDs = left->getTypeIDs();
 	const TypeID * rightIDs = right->getTypeIDs();
 	
 	if (!leftorder || !rightorder){
 		THROW(new Exception("Cannot do composition on non sequences"),);
 	}
-	String *  leftAttribNameList = left->getAttNamesOnly();
-	String *  rightAttribNameList = right->getAttNamesOnly();
+	string *  leftAttribNameList = left->getAttNamesOnly();
+	string *  rightAttribNameList = right->getAttNamesOnly();
 	
 	rightCountFlds = right->getNumFlds();
 	leftCountFlds = left->getNumFlds();
@@ -83,7 +86,7 @@ void Joins::typify(String  option){
 		THROW(new Exception(" Ordering attribute not projected "),);
 	}
 	
-	String retVal;
+	string retVal;
 	TRY(leftequalPtr = getOperatorPtr("=",leftIDs[leftSeqAttrPos],
 			leftIDs[leftSeqAttrPos],retVal),);
 	TRY(rightequalPtr = getOperatorPtr("=",rightIDs[leftSeqAttrPos],
@@ -245,14 +248,14 @@ Site* JoinTable::Plan(List<Site*>*siteList,List<BaseSelection*>*selectList,
 		Site * site = siteList->get();
 		bool rem = false;
 		if (left && !leftSite){
-			if (site->have(left->getAlias())){
+			if (site->have(*(left->getAlias()))){
 				leftSite = site;
 				siteList->remove();
 				rem = true;
 			}
 		}
 		if (right && !rightSite){
-			if (site->have(right->getAlias())){
+			if (site->have(*(right->getAlias()))){
 				rightSite = site;
 				siteList->remove();	
 				rem = true;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/08/15 00:17:32  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.15  1997/08/14 02:08:51  donjerko
   Index catalog is now an independent file.
 
@@ -87,21 +90,19 @@ Site* IndexParse::createSite(){
 	}
 	LOG(logFile << endl;)
 
-	String tablename = tableName->toString();
-     Catalog* catalog = getRootCatalog();
-     assert(catalog);
-     TRY(Site* site = catalog->find(tableName), 0);
+	string tablename = tableName->toString();
+     TRY(Site* site = ROOT_CATALOG.find(tableName), 0);
 
 	assert(site);
-	site->addTable(new TableAlias(tableName, new String(*indexName)));
+	site->addTable(new TableAlias(tableName, new string(*indexName)));
 
 	site->filter(NULL);
 
 	int numKeyFlds = keyAttrs->cardinality();
 	int numAddFlds = additionalAttrs->cardinality();
 
-	String* keyFlds = new String[numKeyFlds];
-	String* addFlds = new String[numAddFlds];
+	string* keyFlds = new string[numKeyFlds];
+	string* addFlds = new string[numAddFlds];
 	keyAttrs->rewind();
 	for(int i = 0; !keyAttrs->atEnd(); i++, keyAttrs->step()){
 		assert(i < numKeyFlds);
@@ -113,7 +114,7 @@ Site* IndexParse::createSite(){
 		addFlds[i] = *additionalAttrs->get();
 	}
 
-	String option = "execute";
+	string option = "execute";
 	TRY(site->typify(option), 0);
 	LOG(logFile << "Typified sites\n");
 	LOG(logFile << site->getName());
@@ -121,7 +122,7 @@ Site* IndexParse::createSite(){
 	LOG(logFile << endl);
 
 	int numTFlds = site->getNumFlds();
-	const String* attrNms = site->getAttNamesOnly();
+	const string* attrNms = site->getAttNamesOnly();
 
 	int indirect[numTFlds];
 	for(int i = 0; i < numKeyFlds; i++){
@@ -150,7 +151,7 @@ Site* IndexParse::createSite(){
 	}
 
 	int numFlds = numKeyFlds + numAddFlds;
-	const String* types = site->getTypeIDs();
+	const string* types = site->getTypeIDs();
 	MarshalPtr marshalPtrs[numFlds];
 	int sizes[numFlds];
 	int fixedSize = 0; 
@@ -159,7 +160,7 @@ Site* IndexParse::createSite(){
 		sizes[i] = packSize(types[indirect[i]]);
 		fixedSize += sizes[i];
 	}
-	String rtreeISchema;
+	string rtreeISchema;
 	for(int i = 0; i < numKeyFlds; i++){
 		rtreeISchema += rTreeEncode(types[indirect[i]]);
 	}
@@ -180,8 +181,8 @@ Site* IndexParse::createSite(){
 		line1 << " ";
 	}
 	line1 << endl;
-	String bulkfile = *indexName + ".bulk";
-	ofstream ind(bulkfile);
+	string bulkfile = *indexName + ".bulk";
+	ofstream ind(bulkfile.c_str());
 	assert(ind);
 	ind << line1.rdbuf();
 	int tupSize;
@@ -254,16 +255,16 @@ Site* IndexParse::createSite(){
 		}
 	}
 	ind.close();
-	String convBulk = bulkfile + ".conv";
-	String cmd = "convert_bulk < " + bulkfile + " > " + convBulk;
-	if(system(cmd) == -1){
+	string convBulk = bulkfile + ".conv";
+	string cmd = "convert_bulk < " + bulkfile + " > " + convBulk;
+	if(system(cmd.c_str()) == -1){
 		perror("system:");
-		String msg = "Failed to convert bulk data";
+		string msg = "Failed to convert bulk data";
 		THROW(new Exception(msg), NULL);
 	}
 
 	page_id_t root1;
-	int bulk_file = open(convBulk.chars(), O_RDWR, 0600);
+	int bulk_file = open(convBulk.c_str(), O_RDWR, 0600);
 
 	genrtree_m rtree_m;
 	rtree_m.bulk_load(bulk_file, root1, false); // example bulkload
@@ -272,14 +273,14 @@ Site* IndexParse::createSite(){
 	printf("Created index with root page: %d\n", root1.pid);
 
 	close(bulk_file);
-	if(remove(bulkfile.chars()) < 0){
+	if(remove(bulkfile.c_str()) < 0){
 		perror("remove:");
-		String msg = String("Failed to remove tmp file: ") + bulkfile;
+		string msg = string("Failed to remove tmp file: ") + bulkfile;
 		THROW(new Exception(msg), NULL);
 	}
-	if(remove(convBulk.chars()) < 0){
+	if(remove(convBulk.c_str()) < 0){
 		perror("remove:");
-		String msg = String("Failed to remove tmp file: ") + convBulk;
+		string msg = string("Failed to remove tmp file: ") + convBulk;
 		THROW(new Exception(msg), NULL);
 	}
 //	printf("Dump follows:\n");
@@ -296,8 +297,8 @@ Site* IndexParse::createSite(){
 	}
 
 	Tuple tuple[3];
-	tuple[0] = (Type*) tablename.chars();
-	tuple[1] = (Type*) indexName->chars();
+	tuple[0] = (Type*) tablename.c_str();
+	tuple[1] = (Type*) indexName->c_str();
 	IndexDesc tmpid(numKeyFlds, keyFlds, numAddFlds, addFlds,
 			!standAlone, root1.pid, keyTypes, addTypes);	
 	tuple[2] = &tmpid;
@@ -306,10 +307,8 @@ Site* IndexParse::createSite(){
 	inserter.open(out, INDEX_SCHEMA.getNumFlds(), INDEX_SCHEMA.getTypeIDs());
 	inserter.insert(tuple);
 
-	delete catalog;
-
 	Tuple tupleM[2];
-	tupleM[0] = (Type*) tablename.chars();
+	tupleM[0] = (Type*) tablename.c_str();
 //	tupleM[1] = (Type*) 
 
 	for(int i = 0; i < numFlds; i++){

@@ -20,7 +20,7 @@
 #define UNIDATA_READ_H
 
 #include <iostream.h>
-#include <String.h>
+#include <string>
 #include "types.h"
 #include "Iterator.h"
 
@@ -75,9 +75,9 @@ class DevRead : public PlanOp {
 	UniData* ud;
 	int numFlds;
 protected:
-	String* typeIDs;
-	String* attributeNames;
-	String* order;
+	string* typeIDs;
+	string* attributeNames;
+	string* order;
 public:
      DevRead() : 
 		ud(NULL), numFlds(0), typeIDs(NULL), 
@@ -108,16 +108,16 @@ public:
 		typeIDs = NULL;
 		return retVal;
 	}
-	virtual const String* getAttributeNames(){
+	virtual const string* getAttributeNames(){
 		assert(attributeNames);
 		return attributeNames;
 	}
-	virtual String* stealAttributeNames(){
-		String* retVal = attributeNames;
+	virtual string* stealAttributeNames(){
+		string* retVal = attributeNames;
 		attributeNames = NULL;
 		return retVal;
 	}
-	virtual String* getOrderingAttrib(){
+	virtual string* getOrderingAttrib(){
 		return order;
 	}
 	virtual ostream& display(ostream& out){

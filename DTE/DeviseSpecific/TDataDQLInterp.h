@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/16 16:05:12  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.9  1997/04/21 22:45:41  guangshu
   Added function CreateWithParametersNew to do group by in DTE.
 
@@ -108,7 +111,7 @@ private:
   TData *_tdata;
   int _recSize;
   int _numFlds;
-  String* _types;
+  string* _types;
   AttrList _attrs;
   int* _sizes;
   int _counter;
@@ -118,7 +121,7 @@ class RecInterp;
 class TDataDQLInterp: public TDataDQL {
 public:
   TDataDQLInterp(AttrList attrs,char *name,char *type,
-	int numFlds, String* types, int recSize, long totalRecs,
+	int numFlds, string* types, int recSize, long totalRecs,
 	int* sizes);
   TDataDQLInterp(char* tableName, List<char*>* attrList, char* query);
   virtual ~TDataDQLInterp();

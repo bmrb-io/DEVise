@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/08/12 19:58:38  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.15  1997/08/09 00:54:43  donjerko
   Added indexing of select-project unmaterialized views.
 
@@ -65,19 +68,19 @@
 
 class Engine : public PlanOp {
 protected:
-	String query;
+	string query;
 	Site* topNode;
 	Iterator* topNodeIt;
 public:
 	Engine() :  topNode(NULL), topNodeIt(NULL) {}
-	Engine(String query) : query(query), topNode(NULL),
+	Engine(string query) : query(query), topNode(NULL),
 		topNodeIt(NULL) {}
 	virtual ~Engine(){
 		delete topNode;	// should delete all the sites
 		delete topNodeIt;
 	}
 	int optimize();	// throws
-	int optimize(String query){	// throws
+	int optimize(string query){	// throws
 		delete topNode;	// should delete all the sites
 		topNode = NULL;
 		delete topNodeIt;
@@ -88,17 +91,17 @@ public:
      virtual int getNumFlds(){
 		return topNode->getNumFlds();
      }
-     virtual const String* getTypeIDs(){
+     virtual const string* getTypeIDs(){
           return topNode->getTypeIDs();
      }
 	const Tuple* getNext(){
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
 	}
-	virtual const String* getAttributeNames(){
+	virtual const string* getAttributeNames(){
 		return topNode->getAttributeNames();
 	}
-     String* getOrderingAttrib(){
+     string* getOrderingAttrib(){
 		assert(topNode);
 		return topNode->getOrderingAttrib();
      }
@@ -125,16 +128,16 @@ public:
 };
 
 class ViewEngine : public Engine {
-	String* attributeNames;
+	string* attributeNames;
 	TypeID* typeIDs;
 	int numFlds;
 public:
-	ViewEngine(String query, const String* attrs, int numInpFlds) : 
+	ViewEngine(string query, const string* attrs, int numInpFlds) : 
 		Engine(query), attributeNames(NULL), typeIDs(NULL) {
 
 		numFlds = numInpFlds + 1;
-		attributeNames = new String[numFlds];
-		attributeNames[0] = "recId";
+		attributeNames = new string[numFlds];
+		attributeNames[0] = RID_STRING;
 		for(int i = 1; i < numFlds; i++){
 			assert(attrs[i - 1] != "recId");
 			attributeNames[i] = attrs[i - 1];
@@ -158,7 +161,7 @@ public:
 		}
 		return typeIDs;
      }
-	const String* getAttributeNames(){
+	const string* getAttributeNames(){
 		return attributeNames;
 	}
      int getNumFlds(){

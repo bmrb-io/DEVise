@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/08/15 00:17:36  donjerko
+  Completed the Iterator destructor code.
+
   Revision 1.16  1997/08/12 19:58:43  donjerko
   Moved StandardTable headers to catalog.
 
@@ -65,7 +68,7 @@
 #define STANDARD_READ_H
 
 #include <iostream.h>
-#include <String.h>
+#include <string>
 #include "types.h"
 #include "Iterator.h"
 
@@ -114,9 +117,9 @@ class StandardRead : public PlanOp {
 protected:
 	istream* in;
 	int numFlds;
-	String* typeIDs;
-	String* attributeNames;
-	String* order;
+	string* typeIDs;
+	string* attributeNames;
+	string* order;
 	Stats* stats;
 public:
      StandardRead() : 
@@ -129,7 +132,6 @@ public:
 		delete [] attributeNames;
 		delete stats;
 	}
-//	virtual void open(istream* in);	// Throws exception
 	void open(istream* in, int numFlds, const TypeID* typeIDs); 
 		// throws, used for tmp tables
 
@@ -139,15 +141,15 @@ public:
 	virtual int getNumFlds(){
 		return numFlds;
 	}
-	virtual const String *getTypeIDs(){
+	virtual const string *getTypeIDs(){
 		assert(typeIDs);
 		return typeIDs;
 	}
-	virtual const String* getAttributeNames(){
+	virtual const string* getAttributeNames(){
 		assert(attributeNames);
 		return attributeNames;
 	}
-	virtual String * getOrderingAttrib(){
+	virtual string * getOrderingAttrib(){
 		return order;
 	}
      virtual Stats* getStats(){
@@ -196,6 +198,41 @@ public:
 	}
 };
 
+class RidAdder : public PlanOp {
+	PlanOp* input;
+	int numFlds;
+	TypeID* typeIDs;
+	string* attributeNames;
+public:
+	RidAdder(PlanOp* input) : input(input) {
+		numFlds = input->getNumFlds() + 1;
+		typeIDs = new TypeID[numFlds];
+		attributeNames = new string[numFlds];
+		const TypeID* inpTypes = input->getTypeIDs();
+		const string* inpAttrs = input->getAttributeNames();
+		typeIDs[0] = INT_TP;
+		attributeNames[0] = RID_STRING;
+		for(int i = 1; i < numFlds; i++){
+			typeIDs[i] = inpTypes[i - 1];
+			attributeNames[i] = inpAttrs[i - 1];
+		}
+	}
+	virtual ~RidAdder(){
+		delete input;
+		delete [] typeIDs;
+		delete [] attributeNames;
+	}
+	virtual int getNumFlds(){
+		return numFlds;
+	}
+	virtual const TypeID* getTypeIDs(){
+		return typeIDs;
+	}
+	virtual const string* getAttributeNames(){
+		return attributeNames;
+	}
+	virtual Iterator* createExec();
+};
 
 class NCDCRead : public StandardRead {
 public:

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/04/26 13:59:03  donjerko
+  Fixed the extraction of header.
+
   Revision 1.4  1997/02/03 04:11:38  donjerko
   Catalog management moved to DTE
 
@@ -45,7 +48,7 @@ istream* URL::getInputStream(){
 		assert(!outputRequested);
 		retVal = new ifstream(file);
 		if(!retVal->good()){
-			String msg = "Cannot open file: " + String(file);
+			string msg = "Cannot open file: " + string(file);
 			THROW(new Exception(msg), NULL);
 		}
 		return retVal;
@@ -70,7 +73,7 @@ istream* URL::getInputStream(){
 	retVal = new istream(sockBuf);
 	removeHeader(retVal);
 	if(strncmp(header, "HTTP/1.0 200", 12)){
-		String msg = "HTTP error:\n" + String(header);
+		string msg = "HTTP error:\n" + string(header);
 		THROW(new Exception(msg), NULL);
 	}
 	return retVal;
@@ -101,7 +104,7 @@ void URL::parseURL(){	// Throws: unknown URL protocol
 		delete tmp;
 	}
 	else{
-		String msg = "Unknow protocol: " + String(url);
+		string msg = "Unknow protocol: " + string(url);
 		THROW(new Exception(msg), );
 	}
 }
