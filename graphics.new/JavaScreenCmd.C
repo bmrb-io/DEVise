@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/12/11 17:21:36  wenger
+  Fixed problem with size and location of Java buttons (GData offset was
+  not fixed for per-view GIFs).
+
   Revision 1.42  1998/12/10 21:53:26  wenger
   Devised now sends GIFs to JavaScreen on a per-view rather than per-window
   basis; GIF "dirty" flags are now also referenced by view rather than by
@@ -497,6 +501,114 @@ JSSessionInit()
 }
 
 //====================================================================
+// Adjust the size and location of all DEVise windows to fill the virtual
+// screen as much as possible while maintaining window aspect ratios.
+static void
+FillScreen()
+{
+#if defined(DEBUG)
+    printf("FillScreen()\n");
+#endif
+
+	//
+	// Figure out how much of the virtual display is used up by the
+	// DEVise windows.
+	//
+	int left = -1;
+	int right = -1;
+	int top = -1;
+	int bottom = -1;
+
+	int winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex)) {
+	  ClassInfo *info = DevWindow::Next(winIndex);
+	  ViewWin *window = (ViewWin *)info->GetInstance();
+	  if (window != NULL && !window->GetPrintExclude()) {
+	    int winX, winY;
+	    unsigned winW, winH;
+	    window->RealGeometry(winX, winY, winW, winH);
+#if defined(DEBUG)
+        printf("window %s RealGeometry = %d, %d, %d, %d\n", window->GetName(),
+		  winX, winY, winW, winH);
+#endif
+
+	    window->AbsoluteOrigin(winX, winY);
+#if defined(DEBUG)
+        printf("window %s AbsoluteOrigin = %d, %d\n", window->GetName(),
+		  winX, winY);
+#endif
+
+        if (left < 0 || winX < left) {
+		  left = winX;
+		}
+
+		if (right < 0 || winX + (int)winW > right) {
+		  right = winX + winW;
+		}
+
+		if (top < 0 || winY < top) {
+		  top = winY;
+		}
+
+		if (bottom < 0 || winY + (int)winH > bottom) {
+		  bottom = winY + winH;
+		}
+	  }
+	}
+	DevWindow::DoneIterator(winIndex);
+
+#if defined(DEBUG)
+    printf("top = %d\n", top);
+    printf("bottom = %d\n", bottom);
+    printf("left = %d\n", left);
+    printf("right = %d\n", right);
+#endif
+
+	Coord displayWidth, displayHeight;
+	DeviseDisplay::DefaultDisplay()->Dimensions(displayWidth, displayHeight);
+
+	//
+	// Now figure out how to resize the windows to make maxiumum use of
+	// the display area.
+	//
+	Coord xMult = displayWidth / (right - left + 1);
+	Coord yMult = displayHeight / (bottom - top + 1);
+	Coord mult = MIN(xMult, yMult);
+
+	Coord xOffset = -left * mult;
+	Coord yOffset = -top * mult;
+
+	//
+	// Resize each window.
+	//
+	winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex)) {
+	  ClassInfo *info = DevWindow::Next(winIndex);
+	  ViewWin *window = (ViewWin *)info->GetInstance();
+	  if (window != NULL && !window->GetPrintExclude()) {
+	    int winX, winY;
+	    unsigned winW, winH;
+	    window->RealGeometry(winX, winY, winW, winH);
+	    window->AbsoluteOrigin(winX, winY);
+
+		winX = (int)(winX * mult + xOffset);
+		winY = (int)(winY * mult + yOffset);
+		winW = (int)(winW * mult);
+		winH = (int)(winH * mult);
+
+#if defined(DEBUG)
+        printf("window %s geometry changed to = %d, %d, %d, %d\n",
+		  window->GetName(), winX, winY, winW, winH);
+#endif
+
+        window->MoveResize(winX, winY, winW, winH);
+
+	  }
+	}
+	DevWindow::DoneIterator(winIndex);
+}
+
+//====================================================================
 // Create lists of the views for which GIFs and GData will be sent.
 static void
 CreateViewLists()
@@ -863,6 +975,10 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 		_status = ERROR;
 		return;
 	}
+
+	// Resize the windows to use as much of the JavaScreen real estate
+	// as possible.
+    FillScreen();
 
 	//
 	// Figure out which views need to generate GIFs and which views need
