@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.20  1995/11/14 22:53:17  jussi
+#	Moved stream selection dialog to be part of macro definition
+#	utility (DefSource in macrodef.tk). Elimininated 'Source'
+#	menu bar and moved remaining menu option (Define Source)
+#	to the Visualize menu (Sources... option).
+#
 #	Revision 1.19  1995/11/10 21:56:54  jussi
 #	Minor fix.
 #
@@ -331,8 +337,8 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 
 menu .mbar.schema.menu -tearoff 0
-.mbar.schema.menu add command -label "New" -command newschema
-.mbar.schema.menu add command -label "Open" -command openschema
+.mbar.schema.menu add command -label "User" -command SchemaUser
+.mbar.schema.menu add command -label "Superuser" -command SchemaSuperuser
 
 pack .mbar.session .mbar.file .mbar.view .mbar.cursor \
 	.mbar.window .mbar.schema -side left -fill x
