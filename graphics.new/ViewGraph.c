@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/07 02:20:51  ravim
+  The set of stats to be displayed is given as a binary string. The
+  data is refreshed only if necessary.
+
   Revision 1.3  1995/12/05 17:04:16  jussi
   Moved _stats from View (subclass) so that statistics can be turned
   on and displayed without having to redisplay the data itself.
@@ -82,12 +86,12 @@ void ViewGraph::SetDisplayStats(char *stat)
 {
   if (ToRemoveStats(_DisplayStats, stat) == true)
   {
-    strncpy(_DisplayStats,stat, STAT_NUM);
+    strncpy(_DisplayStats, stat, STAT_NUM);
     Refresh();
   }
   else 
   {
-    strncpy(_DisplayStats,stat, STAT_NUM);
+    strncpy(_DisplayStats, stat, STAT_NUM);
     _stats.Report();
   }
 }
@@ -99,4 +103,5 @@ Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
   for (int i = 0; i < STAT_NUM; i++)
     if ((oldset[i] == '1') && (newset[i] == '0'))
       return true;
+  return false;
 }
