@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.165  1999/04/21 20:35:17  wenger
+  Improved interface for changing fonts, titles, etc.:
+  * Fonts can now be set on a window-wide basis.
+  * Setting fonts, title, or axis date format in a piled view automatically
+  changes all views in the pile accordingly.
+
   Revision 1.164  1999/04/20 19:44:46  wenger
   Improved axis drawing:
   * Tick mark spacing is better.
@@ -4373,6 +4379,7 @@ View::SetShowNames(Boolean showNames)
 void
 View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 {
+  if (format == NULL) format = "";
   if (_pileMode && notifyPile) {
     GetParent()->GetPileStack()->SetXAxisDateFormat(format);
   } else {
@@ -4387,6 +4394,7 @@ View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 void
 View::SetYAxisDateFormat(const char *format, Boolean notifyPile)
 {
+  if (format == NULL) format = "";
   if (_pileMode && notifyPile) {
     GetParent()->GetPileStack()->SetYAxisDateFormat(format);
   } else {
