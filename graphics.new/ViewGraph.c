@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.122  1999/08/12 16:03:56  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.121  1999/08/10 20:13:03  wenger
   Added code for "inverse" zoom (currently disabled).
 
@@ -2913,15 +2916,34 @@ ViewGraph::SwitchTData(char *tdName)
 
       // This is kind of a kludgey way to check for errors in the constructor.
       // RKW 1999-04-13.
-      DevError::ResetError();
+	  // Note: we're no longer checking DevError::GetLatestError() here
+	  // because we may get an 'index file invalid' error, but things
+	  // actually work.  RKW 1999-08-17.
 	  char *instName = classDir->CreateWithParams(oldInfo->CategoryName(),
 	      oldInfo->ClassName(), argc, argv);
-      if (!instName || strcmp("", DevError::GetLatestError())) {
+
+	  Boolean failed = false;
+      if (!instName || strcmp(instName, newName)) {
+	    failed = true;
+	  } else {
+        newMapping = (MappingInterp *)classDir->FindInstance(instName);
+		if (!newMapping) {
+	      failed = true;
+		} else if (!newMapping->GetLogTData()) {
+	      failed = true;
+		} else if (strcmp(tdName, newMapping->GetLogTData()->GetName())) {
+	      failed = true;
+		}
+	  }
+
+	  if (failed) {
+		char errBuf[1024];
+		sprintf(errBuf, "Unable to create mapping %s; not switching TData "
+		    "of view <%s>", newName, GetName());
 	    classDir->DestroyInstance(newName);
 	    result = StatusFailed;
       } else {
 	    oldMapping = (MappingInterp *)oldInfo->GetInstance();
-        newMapping = (MappingInterp *)classDir->FindInstance(instName);
 
 		newMapping->SetStringTable(TDataMap::TableX, _stringXTableName);
 		newMapping->SetStringTable(TDataMap::TableY, _stringYTableName);
@@ -2950,6 +2972,10 @@ ViewGraph::SwitchTData(char *tdName)
       }
     }
   }
+
+#if defined(DEBUG)
+      printf("  Returning %s\n", result.Value());
+#endif
 
   return result;
 }

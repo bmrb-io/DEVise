@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/08/05 21:42:34  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.21  1999/07/30 21:27:02  wenger
   Partway to cursor dragging: code to change mouse cursor when on a DEVise
   cursor is in place (but disabled).
@@ -205,6 +210,10 @@ class DeviseCursor : private ViewCallback
   Boolean GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
       Coord dataYHigh, int &pixX1, int &pixY1, int &pixX2, int &pixY2);
 
+  void SetOldDestPixels(int pixX1, int pixY1, int pixX2, int pixY2);
+  Boolean GetOldDestPixels(int &pixX1, int &pixY1, int &pixX2, int &pixY2);
+  void InvalidateOldDestPixels();
+
 private:
   virtual void FilterAboutToChange(View *view);
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
@@ -222,6 +231,12 @@ private:
   CursorStore _cursor_store[12];
   PColorID _cursorColor;
   Boolean _fixedSize;
+
+  Boolean _oldPixelsValid;
+  int _oldPixX1;
+  int _oldPixY1;
+  int _oldPixX2;
+  int _oldPixY2;
 };
 
 //******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.188  1999/08/13 19:43:13  wenger
+  DoIsOnCursor now makes sure the mouse is within the data area.
+
   Revision 1.187  1999/08/09 21:52:40  wenger
   Now does a better job of avoiding having overlaps of Y axis tick labels.
 
@@ -2218,8 +2221,6 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
       }
   }
   
-  _cursorsOn = false;
-
   if (_numDimensions == 3)
     Draw3DAxis();
 
@@ -2932,8 +2933,19 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
   printf("DoDrawCursor(%s)\n", cursor->GetName());
 #endif
 
+  Boolean pixelsValid;
   int pixX1, pixY1, pixX2, pixY2;
-  if (cursor->GetDestPixels(pixX1, pixY1, pixX2, pixY2)) {
+  char *action;
+
+  if (_cursorsOn) {
+    pixelsValid = cursor->GetOldDestPixels(pixX1, pixY1, pixX2, pixY2);
+	action = "Erasing";
+  } else {
+    pixelsValid = cursor->GetDestPixels(pixX1, pixY1, pixX2, pixY2);
+	action = "Drawing";
+  }
+
+  if (pixelsValid) {
     Coord pixXLow = MIN(pixX1, pixX2);
     Coord pixXHigh = MAX(pixX1, pixX2);
     Coord pixYLow = MIN(pixY1, pixY2);
@@ -2944,6 +2956,11 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
     winRep->SetLineWidth(0);
     winRep->SetXorMode();
     winRep->SetForeground(cursor->GetCursorColor());
+
+#if defined(DEBUG)
+    printf("%s cursor <%s> in view <%s> at (%g, %g), (%g, %g)\n", action,
+	    cursor->GetName(), GetName(), pixXLow, pixYLow, pixXHigh, pixYHigh);
+#endif
 
     // Fill in the cursor area, leaving space for the border.
     winRep->FillPixelRect(pixXLow, pixYLow,
@@ -2958,6 +2975,12 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 
     // Reset the window rep.
     winRep->SetCopyMode();
+
+    if (_cursorsOn) {
+      cursor->InvalidateOldDestPixels();
+    } else {
+      cursor->SetOldDestPixels(pixX1, pixY1, pixX2, pixY2);
+    }
   }
 }
 
@@ -4169,6 +4192,29 @@ void	View::Run(void)
 		winRep->SetLineWidth(0);
 		winRep->ClearBackground(dataX, dataY, dataW - 1, dataH - 1);
 #endif
+
+		//
+		// Since we've just cleared the whole view background, we've erased
+		// all cursors in this view and any views piled with this view.
+		//
+	    _cursorsOn = false;
+		PileStack *ps = GetParentPileStack();
+		if (ps) {
+		    int viewIndex = ps->InitIterator();
+			while (ps->More(viewIndex)) {
+			    View *tmpView = (View *)ps->Next(viewIndex);
+				tmpView->_cursorsOn = false;
+
+                int cursorIndex;
+                for (cursorIndex = tmpView->_cursors->InitIterator();
+				    tmpView->_cursors->More(cursorIndex);) {
+                  DeviseCursor *cursor = tmpView->_cursors->Next(cursorIndex);
+				  cursor->InvalidateOldDestPixels();
+                }
+	            tmpView->_cursors->DoneIterator(cursorIndex);
+			}
+			ps->DoneIterator(viewIndex);
+		}
 	}
 
 	winRep->PopTransform();				// Pop the identity transform matrix

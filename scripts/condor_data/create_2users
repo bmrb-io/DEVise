@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1999/08/10 18:30:18  wenger
+#  Reduced font size for user names; user names now drawn by the JavaScreen;
+#  reduced size of user name window.
+#
 #  Revision 1.9  1999/08/06 17:59:53  wenger
 #  Changed data font from Courier to New Century Schoolbook.
 #
@@ -173,9 +177,10 @@ sub CreateSession {
   print SES_OUT "DEVise updateFilters\n";
 
   # Initialize views to show the full X range of data.
-  print SES_OUT "DEVise viewGoHome Total_viewsym\n";
+  print SES_OUT "DEVise viewGoHome Total_viewsymA\n";
   print SES_OUT "DEVise waitForQueries\n";
-  print SES_OUT "DEVise viewGoHome User1_viewsym\n";
+  print SES_OUT "DEVise viewGoHome User1_viewsymA\n";
+  print SES_OUT "DEVise viewGoHome Total_viewsymA\n";
 
   close(SES_OUT);
 }
@@ -248,32 +253,60 @@ sub CreateViews {
   print SES_OUT "DEVise viewSetDisabledActions Select2_view 1 0 0 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} User1_view 0 1 -1 -2 36 2\n";
+  print SES_OUT "DEVise create {view} {Scatter} User1_viewA 0 1 -1 -2 36 2\n";
   $top = $usercount - 0.5;
   $bottom = $usercount - 1.5;
-  print SES_OUT "DEVise viewSetImplicitHome {User1_view} 1 1 2 1 0.5 0.5 -0.5 ",
+  print SES_OUT "DEVise viewSetImplicitHome {User1_viewA} 1 1 2 1 0.5 0.5 -0.5 ",
       "$bottom 0.5 $top\n";
-  print SES_OUT "DEVise setViewAutoFilter User1_view 1\n";
-  print SES_OUT "DEVise viewSetDisabledActions User1_view 1 1 1 1\n";
+  print SES_OUT "DEVise setViewAutoFilter User1_viewA 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions User1_viewA 1 1 1 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} User2_view 0 1 -1 -2 36 9\n";
+  print SES_OUT "DEVise create {view} {Scatter} User1_viewB 0 1 -1 -2 36 2\n";
+  $top = $usercount - 0.5;
+  $bottom = $usercount - 1.5;
+  print SES_OUT "DEVise viewSetImplicitHome {User1_viewB} 1 1 2 1 0.5 0.5 -0.5 ",
+      "$bottom 0.5 $top\n";
+  print SES_OUT "DEVise setViewAutoFilter User1_viewB 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions User1_viewB 1 1 1 1\n";
+  print SES_OUT "\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} User2_viewA 0 1 -1 -2 36 9\n";
   $top = $usercount - 1.5;
   $bottom = $usercount - 2.5;
-  print SES_OUT "DEVise viewSetImplicitHome {User2_view} 1 1 2 1 0.5 0.5 -0.5 ",
+  print SES_OUT "DEVise viewSetImplicitHome {User2_viewA} 1 1 2 1 0.5 0.5 -0.5 ",
       "$bottom 0.5 $top\n";
-  print SES_OUT "DEVise setViewAutoFilter User2_view 1\n";
-  print SES_OUT "DEVise viewSetDisabledActions User2_view 1 1 1 1\n";
+  print SES_OUT "DEVise setViewAutoFilter User2_viewA 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions User2_viewA 1 1 1 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} TotalLinked_view ",
-      "-0.5 0.5 -0.5 0.5 36 9\n";
-  print SES_OUT "DEVise viewSetDisabledActions TotalLinked_view 1 1 1 1\n";
+  print SES_OUT "DEVise create {view} {Scatter} User2_viewB 0 1 -1 -2 36 9\n";
+  $top = $usercount - 1.5;
+  $bottom = $usercount - 2.5;
+  print SES_OUT "DEVise viewSetImplicitHome {User2_viewB} 1 1 2 1 0.5 0.5 -0.5 ",
+      "$bottom 0.5 $top\n";
+  print SES_OUT "DEVise setViewAutoFilter User2_viewB 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions User2_viewB 1 1 1 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} Total_view ",
+  print SES_OUT "DEVise create {view} {Scatter} TotalLinked_viewA ",
       "-0.5 0.5 -0.5 0.5 36 9\n";
-  print SES_OUT "DEVise viewSetDisabledActions Total_view 1 1 1 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions TotalLinked_viewA 1 1 1 1\n";
+  print SES_OUT "\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} TotalLinked_viewB ",
+      "-0.5 0.5 -0.5 0.5 36 9\n";
+  print SES_OUT "DEVise viewSetDisabledActions TotalLinked_viewB 1 1 1 1\n";
+  print SES_OUT "\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} Total_viewA ",
+      "-0.5 0.5 -0.5 0.5 36 9\n";
+  print SES_OUT "DEVise viewSetDisabledActions Total_viewA 1 1 1 1\n";
+  print SES_OUT "\n";
+
+  print SES_OUT "DEVise create {view} {Scatter} Total_viewB ",
+      "-0.5 0.5 -0.5 0.5 36 9\n";
+  print SES_OUT "DEVise viewSetDisabledActions Total_viewB 1 1 1 1\n";
   print SES_OUT "\n";
 
   my @users;
@@ -289,32 +322,58 @@ sub CreateViews {
   my $user;
   foreach $user (@users) {
     # Create the view.
-    print SES_OUT "DEVise create {view} {Scatter} ${user}_viewsym 0 1 0 1 36 $bgColor{$user}\n";
+    print SES_OUT "DEVise create {view} {Scatter} ${user}_viewsymA 0 1 0 1 36 $bgColor{$user}\n";
 
     # Force the bottom of the visual filter to be set to 0 on home.
-    print SES_OUT "DEVise viewSetImplicitHome {${user}_viewsym} ",
+    print SES_OUT "DEVise viewSetImplicitHome {${user}_viewsymA} ",
       "0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0\n";
-    print SES_OUT "DEVise viewSetHome {${user}_viewsym} ",
+    print SES_OUT "DEVise viewSetHome {${user}_viewsymA} ",
       "1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0\n";
 
     # Set this view for automatic filter updating.
-    print SES_OUT "DEVise setViewAutoFilter ${user}_viewsym 1\n";
+    print SES_OUT "DEVise setViewAutoFilter ${user}_viewsymA 1\n";
 
     # Turn on the X and Y axes.
     if ($user ne "User1" && $user ne "User2") {
-      print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {X} 1\n";
+      print SES_OUT "DEVise setAxisDisplay ${user}_viewsymA {X} 1\n";
     }
-    print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {Y} 1\n";
+    print SES_OUT "DEVise setAxisDisplay ${user}_viewsymA {Y} 1\n";
 
-    print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsym {%b %d %H:%M}\n";
+    print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsymA {%b %d %H:%M}\n";
 
-    print SES_OUT "DEVise setFont ${user}_viewsym {x axis} 0 10 0 0\n";
-    print SES_OUT "DEVise setFont ${user}_viewsym {y axis} 0 10 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymA {x axis} 0 10 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymA {y axis} 0 10 0 0\n";
+
+    print SES_OUT "\n";
+
+
+    # Create the view.
+    print SES_OUT "DEVise create {view} {Scatter} ${user}_viewsymB 0 1 0 1 36 $bgColor{$user}\n";
+
+    # Force the bottom of the visual filter to be set to 0 on home.
+    print SES_OUT "DEVise viewSetImplicitHome {${user}_viewsymB} ",
+      "0 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0\n";
+    print SES_OUT "DEVise viewSetHome {${user}_viewsymB} ",
+      "1 1 1 1 0.0 0.0 0.0 0.0 100.0 100.0\n";
+
+    # Set this view for automatic filter updating.
+    print SES_OUT "DEVise setViewAutoFilter ${user}_viewsymB 1\n";
+
+    # Turn on the X and Y axes.
+    if ($user ne "User1" && $user ne "User2") {
+      print SES_OUT "DEVise setAxisDisplay ${user}_viewsymB {X} 1\n";
+    }
+    print SES_OUT "DEVise setAxisDisplay ${user}_viewsymB {Y} 1\n";
+
+    print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsymB {%b %d %H:%M}\n";
+
+    print SES_OUT "DEVise setFont ${user}_viewsymB {x axis} 0 10 0 0\n";
+    print SES_OUT "DEVise setFont ${user}_viewsymB {y axis} 0 10 0 0\n";
 
     print SES_OUT "\n";
   }
 
-  print SES_OUT "DEVise viewSetDisabledActions Total_viewsym 1 0 0 1\n";
+  print SES_OUT "DEVise viewSetDisabledActions Total_viewsymA 1 0 0 1\n";
 }
 
 #-----------------------------------------------------------
@@ -348,35 +407,63 @@ sub CreateMappings {
       "{} {} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 {\"User1_viewsym\"} 1 ",
-      "1 {\$TDataName} {} {} {} {} {} {}\n";
+      "User1A#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+      "{\"User1_viewsymA\"} 1 1 {\$TDataName} {\"User1Pile\"} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
-      "1 {\$TDataName} {} {} {} {} {} {}\n";
+      "User1B#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+      "{\"User1_viewsymB\"} 1 1 {\$TDataName} {\"User1Pile\"} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Total#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
-	  "{\"Total_viewsym\"} 1 1 {} {} {} {} {} {} {}\n";
+      "User2A#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+      "{\"User2_viewsymA\"} 1 1 {\$TDataName} {\"User2Pile\"} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "User2B#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+      "{\"User2_viewsymB\"} 1 1 {\$TDataName} {\"User2Pile\"} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "TotalLinked#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
-	  "{\"TotalLinked_viewsym\"} 1 1 {} {} {} {} {} {} {}\n";
+      "TotalA#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+	  "{\"Total_viewsymA\"} 1 1 {} {\"TotalPile\"} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalB#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+	  "{\"Total_viewsymB\"} 1 1 {} {\"TotalPile\"} {} {} {} {} {}\n";
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalLinkedA#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+	  "{\"TotalLinked_viewsymA\"} 1 1 {} {\"TotalLinkedPile\"} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalLinkedB#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
+	  "{\"TotalLinked_viewsymB\"} 1 1 {} {\"TotalLinkedPile\"} {} {} {} {} {}\n";
 
   # Note: this is really a "dummy" TData for the User1 and User2 views --
   # it will get switched when the view symbol is drawn.
   $dataName = ".Condor_Total";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1sym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
-      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
+      "User1symA#$mappingClass {} {\$time} {\$total_jobs} {} 36 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2sym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
-      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
+      "User1symB#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
+
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Totalsym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
-      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
+      "User2symA#$mappingClass {} {\$time} {\$total_jobs} {} 36 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "TotalLinkedsym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
-      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
+      "User2symB#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalsymA#$mappingClass {} {\$time} {\$total_jobs} {} 36 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalsymB#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
+
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalLinkedsymA#$mappingClass {} {\$time} {\$total_jobs} {} 36 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalLinkedsymB#$mappingClass {} {\$time} {\$jobs_running} {} 31 1 0 0 2 1 ",
+      "{} {} {} {3} {} {} {} {} {}\n";
 
   return $mappingClass;
 }
@@ -396,25 +483,45 @@ sub InsertMappings {
   print SES_OUT "DEVise insertMapping {Select2_view} ",
       "{Select2#$mappingClass}\n";
 
-  print SES_OUT "DEVise insertMapping {User1_view} ",
-      "{User1#$mappingClass}\n";
-  print SES_OUT "DEVise insertMapping {User2_view} ",
-      "{User2#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User1_viewA} ",
+      "{User1A#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User1_viewB} ",
+      "{User1B#$mappingClass}\n";
 
-  print SES_OUT "DEVise insertMapping {User1_viewsym} ",
-      "{User1sym#$mappingClass}\n";
-  print SES_OUT "DEVise insertMapping {User2_viewsym} ",
-      "{User2sym#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User2_viewA} ",
+      "{User2A#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User2_viewB} ",
+      "{User2B#$mappingClass}\n";
 
-  print SES_OUT "DEVise insertMapping {Total_viewsym} ",
-      "{Totalsym#$mappingClass}\n";
-  print SES_OUT "DEVise insertMapping {TotalLinked_viewsym} ",
-      "{TotalLinkedsym#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User1_viewsymA} ",
+      "{User1symA#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User1_viewsymB} ",
+      "{User1symB#$mappingClass}\n";
 
-  print SES_OUT "DEVise insertMapping {Total_view} ",
-      "{Total#$mappingClass}\n";
-  print SES_OUT "DEVise insertMapping {TotalLinked_view} ",
-      "{TotalLinked#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User2_viewsymA} ",
+      "{User2symA#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {User2_viewsymB} ",
+      "{User2symB#$mappingClass}\n";
+
+  print SES_OUT "DEVise insertMapping {Total_viewsymA} ",
+      "{TotalsymA#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {Total_viewsymB} ",
+      "{TotalsymB#$mappingClass}\n";
+
+  print SES_OUT "DEVise insertMapping {TotalLinked_viewsymA} ",
+      "{TotalLinkedsymA#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {TotalLinked_viewsymB} ",
+      "{TotalLinkedsymB#$mappingClass}\n";
+
+  print SES_OUT "DEVise insertMapping {Total_viewA} ",
+      "{TotalA#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {Total_viewB} ",
+      "{TotalB#$mappingClass}\n";
+
+  print SES_OUT "DEVise insertMapping {TotalLinked_viewA} ",
+      "{TotalLinkedA#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {TotalLinked_viewB} ",
+      "{TotalLinkedB#$mappingClass}\n";
 }
 
 #-----------------------------------------------------------
@@ -425,26 +532,26 @@ sub CreateLinksCursors {
   print SES_OUT "DEVise create {cursor} {Cursor} UserCursor1 2 1 1.000000 ",
       "1.000000\n";
   print SES_OUT "DEVise setCursorFixedSize UserCursor1 1\n";
-  print SES_OUT "DEVise setCursorSrc {UserCursor1} {User1_view}\n";
+  print SES_OUT "DEVise setCursorSrc {UserCursor1} {User1_viewA}\n";
   print SES_OUT "DEVise setCursorDst {UserCursor1} {Select1_view}\n";
 
   # Cursor to select second user to view.
   print SES_OUT "DEVise create {cursor} {Cursor} UserCursor2 2 1 1.000000 ",
       "1.000000\n";
   print SES_OUT "DEVise setCursorFixedSize UserCursor2 1\n";
-  print SES_OUT "DEVise setCursorSrc {UserCursor2} {User2_view}\n";
+  print SES_OUT "DEVise setCursorSrc {UserCursor2} {User2_viewA}\n";
   print SES_OUT "DEVise setCursorDst {UserCursor2} {Select2_view}\n";
 
   print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
-  print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsym}\n";
-  print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsym}\n";
-  print SES_OUT "DEVise insertLink {TimeLink} {TotalLinked_viewsym}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsymA}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsymA}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {TotalLinked_viewsymA}\n";
 
   # Cursor to select time range for user data.
   print SES_OUT "DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 ",
       "1.000000\n";
-  print SES_OUT "DEVise setCursorSrc {TimeCursor} {User1_viewsym}\n";
-  print SES_OUT "DEVise setCursorDst {TimeCursor} {Total_viewsym}\n";
+  print SES_OUT "DEVise setCursorSrc {TimeCursor} {User1_viewsymA}\n";
+  print SES_OUT "DEVise setCursorDst {TimeCursor} {Total_viewsymA}\n";
 }
 
 #-----------------------------------------------------------
@@ -459,7 +566,8 @@ sub CreateWindows {
 
   print SES_OUT "DEVise create {window} {TileLayout} Total 0.25 0.87 0.73 ",
       "0.07 0 0\n";
-  print SES_OUT "DEVise insertWindow {Total_view} {Total}\n";
+  print SES_OUT "DEVise insertWindow {Total_viewA} {Total}\n";
+  print SES_OUT "DEVise insertWindow {Total_viewB} {Total}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} Select1 0.02 0.20 ",
       "0.04 0.74 0 0\n";
@@ -471,15 +579,23 @@ sub CreateWindows {
 
   print SES_OUT "DEVise create {window} {TileLayout} User1 0.25 0.20 0.73 ",
       "0.22 0 0\n";
-  print SES_OUT "DEVise insertWindow {User1_view} {User1}\n";
+  print SES_OUT "DEVise insertWindow {User1_viewA} {User1}\n";
+  print SES_OUT "DEVise insertWindow {User1_viewB} {User1}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} User2 0.25 0.42 0.73 ",
       "0.22 0 0\n";
-  print SES_OUT "DEVise insertWindow {User2_view} {User2}\n";
+  print SES_OUT "DEVise insertWindow {User2_viewA} {User2}\n";
+  print SES_OUT "DEVise insertWindow {User2_viewB} {User2}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} TotalLinked ",
       "0.25 0.64 0.73 0.23 0 0\n";
-  print SES_OUT "DEVise insertWindow {TotalLinked_view} {TotalLinked}\n";
+  print SES_OUT "DEVise insertWindow {TotalLinked_viewA} {TotalLinked}\n";
+  print SES_OUT "DEVise insertWindow {TotalLinked_viewB} {TotalLinked}\n";
+
+  print SES_OUT "DEVise setPileStackState {User1} 4\n";
+  print SES_OUT "DEVise setPileStackState {User2} 4\n";
+  print SES_OUT "DEVise setPileStackState {TotalLinked} 4\n";
+  print SES_OUT "DEVise setPileStackState {Total} 4\n";
 }
 
 #-----------------------------------------------------------

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.29  1999/08/06 15:22:42  wenger
+  DeviseCursor::MoveSource() now ensures that size does not change for
+  fixed-size cursors -- fixes problem in Condor/UserMonth.ds session in
+  JavaScreen.
+
   Revision 1.28  1999/08/05 21:42:33  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -190,6 +195,7 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _gridY = gridY;
   _cursorColor = GetPColorID(whiteColor);
   _fixedSize = false;
+  _oldPixelsValid = false;
 
   View::InsertViewCallback(this);
 }
@@ -875,6 +881,11 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
   cFilter.xHigh = dataXHigh;
   cFilter.yHigh = dataYHigh;
 
+#if defined(DEBUG)
+  printf("  cFilter = (%g, %g), (%g, %g)\n", cFilter.xLow, cFilter.yLow,
+      cFilter.xHigh, cFilter.yHigh);
+#endif
+
   if (_dst) {
     _dst->GetVisualFilter(vFilter);
   } else {
@@ -884,15 +895,22 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
     result = false;
   }
 
+#if defined(DEBUG)
+  printf("  vFilter = (%g, %g), (%g, %g)\n", vFilter.xLow, vFilter.yLow,
+      vFilter.xHigh, vFilter.yHigh);
+#endif
+
   // Make sure at least part of the cursor is within the destination view.
-  if (GetFlag() & VISUAL_X) {
-    if (cFilter.xHigh < vFilter.xLow || cFilter.xLow > vFilter.xHigh) {
-      result = false;
+  if (result) {
+    if (GetFlag() & VISUAL_X) {
+      if (cFilter.xHigh < vFilter.xLow || cFilter.xLow > vFilter.xHigh) {
+        result = false;
+      }
     }
-  }
-  if (GetFlag() & VISUAL_Y) {
-    if (cFilter.yHigh < vFilter.yLow || cFilter.yLow > vFilter.yHigh) {
-      result = false;
+    if (GetFlag() & VISUAL_Y) {
+      if (cFilter.yHigh < vFilter.yLow || cFilter.yLow > vFilter.yHigh) {
+        result = false;
+      }
     }
   }
 
@@ -912,6 +930,11 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
       dataYHigh = vFilter.yHigh;
     }
 
+#if defined(DEBUG)
+  printf("  cursor data = (%g, %g), (%g, %g)\n", dataXLow, dataYLow,
+      dataXHigh, dataYHigh);
+#endif
+
     WindowRep *winRep = _dst->GetWindowRep();
     Coord pixX1C, pixY1C, pixX2C, pixY2C;
     winRep->Transform(dataXLow, dataYLow, pixX1C, pixY1C);
@@ -920,6 +943,21 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
     pixY1 = (int)floor(pixY1C + 0.5);
     pixX2 = (int)floor(pixX2C + 0.5);
     pixY2 = (int)floor(pixY2C + 0.5);
+
+	int dstX, dstY;
+	unsigned dstWidth, dstHeight;
+	_dst->Geometry(dstX, dstY, dstWidth, dstHeight);
+	if (MAX(pixX1, pixX2) < 0 || MIN(pixX1, pixX2) > (int)dstWidth ||
+	    MAX(pixY1, pixY2) < 0 || MIN(pixY1, pixY2) > (int)dstHeight) {
+#if defined(DEBUG)
+	  char errBuf[1024];
+	  sprintf(errBuf, "Cursor <%s> is in view <%s> according to visual "
+	      "filters but not according to pixels -- WindowRep transform may "
+		  "be incorrect", GetName(), _dst->GetName());
+	  reportErrNosys(errBuf);
+#endif
+	  result = false;
+	}
 
 #if defined(DEBUG)
     printf("  Pixels: (%d, %d), (%d, %d)\n", pixX1, pixY1, pixX2, pixY2);
@@ -964,6 +1002,48 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
     filter.yLow = newYLow;
     filter.yHigh = newYLow + height;
   }
+}
+
+void
+DeviseCursor::SetOldDestPixels(int pixX1, int pixY1, int pixX2, int pixY2)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SetOldDestPixels(%d, %d, %d, %d)\n", GetName(),
+      pixX1, pixY1, pixX2, pixY2);
+#endif
+
+  _oldPixX1 = pixX1;
+  _oldPixY1 = pixY1;
+  _oldPixX2 = pixX2;
+  _oldPixY2 = pixY2;
+  _oldPixelsValid = true;
+}
+
+Boolean
+DeviseCursor::GetOldDestPixels(int &pixX1, int &pixY1, int &pixX2, int &pixY2)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::GetOldDestPixels()\n", GetName());
+#endif
+
+  if (_oldPixelsValid) {
+    pixX1 = _oldPixX1;
+    pixY1 = _oldPixY1;
+    pixX2 = _oldPixX2;
+    pixY2 = _oldPixY2;
+  }
+
+  return _oldPixelsValid;
+}
+
+void
+DeviseCursor::InvalidateOldDestPixels()
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::InvalidateOldDestPixels()\n", GetName());
+#endif
+
+  _oldPixelsValid = false;
 }
 
 //******************************************************************************
