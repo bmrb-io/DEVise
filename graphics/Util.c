@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/12/02 18:44:35  wenger
+  Fixed problems dealing with DST in dates (including all date composite
+  parsers); added more error checking to date composite parsers.
+
   Revision 1.18  1996/11/19 15:23:28  wenger
   Minor changes to fix compiles on HP, etc.
 
@@ -89,6 +93,14 @@
   #define STAT_STRUCT statvfs
   #define STAT_FUNC statvfs
   #define STAT_FRSIZE f_frsize
+#elif defined(AIX)
+  #define _KERNEL
+  #define _VOPS
+  #include <sys/vfs.h>
+  #include <sys/statfs.h>
+  #define STAT_STRUCT statfs
+  #define STAT_FUNC VFS_STATFS
+  #define STAT_FRSIZE f_bsize
 #else
   #include <sys/vfs.h>
   #define STAT_STRUCT statfs
@@ -313,3 +325,47 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
   return;
 }
 
+//
+// Read specified number of bytes. Recover from interrupted system calls.
+//
+
+int readn(int fd, char *buf, int nbytes)
+{
+    int nleft = nbytes;
+    while (nleft > 0) {
+        int nread = read(fd, buf, nleft);
+        if (nread < 0) {
+            if (errno == EINTR)
+                continue;
+            perror("read");
+            return nread;
+        }
+        if (nread == 0)                 // EOF?
+            break;
+        nleft -= nread;
+        buf   += nread;
+    }
+    
+    return nbytes - nleft;
+}
+  
+//
+// Write specified number of bytes. Recover from interrupted system calls.
+//
+
+int writen(int fd, char *buf, int nbytes)
+{
+    int nleft = nbytes;
+    while (nleft > 0) {
+        int nwritten = write(fd, buf, nleft);
+        if (nwritten < 0) {
+            if (errno == EINTR)
+                continue;
+            return nwritten;
+        }
+        nleft -= nwritten;
+        buf   += nwritten;
+    }
+
+    return nbytes - nleft;
+}

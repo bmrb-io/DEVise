@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/10/07 22:53:51  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.11  1996/08/23 16:55:45  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -83,12 +87,20 @@ extern char *CopyString(char *str);
 #define strdup(s) CopyString(s)
 #endif
 
+/*
+   Read/write specified number of bytes. Recover from interruped system calls.
+*/
+
+extern int readn(int fd, char *buf, int nbytes);
+extern int writen(int fd, char *buf, int nbytes);
+
 /* Clear contents of directory */
-void ClearDir(char *dir);
-void CheckAndMakeDirectory(char *dir, int clear = 0);
+extern void ClearDir(char *dir);
+extern void CheckAndMakeDirectory(char *dir, int clear = 0);
 
 /* Check space available in a directory. */
-void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize);
+extern void CheckDirSpace(char *dirname, char *envVar,
+                          int warnSize, int exitSize);
 
 /* strip file of path name */
 inline char *StripPath(char *name) {
