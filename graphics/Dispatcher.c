@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/08/29 21:32:20  guangshu
+  Refixed the bugs when dumping the gif files in batch mode.
+
   Revision 1.26  1996/08/09 22:38:53  wenger
   Fixed bug 027 (error in dispatcher code sometimes put callback into
   list twice); fixed error in View.c that caused compile failure.
@@ -130,6 +133,7 @@
 #include "Init.h"
 #include "Selection.h"
 #include "Time.h"
+#include "Display.h"
 
 //#define DEBUG
 
@@ -356,6 +360,12 @@ void Dispatcher::Run1()
     Cleanup();
     Exit::DoExit(0);
   }
+
+  // kb 11/26/96
+  // hack: X might have read messages from our connection and stored them
+  // in memory, so our select will not find them.  To correct this, we can
+  // check for messages every time!
+  DeviseDisplay::DefaultDisplay()->Run();
 
   /*
      Wait for something to happen using select().
