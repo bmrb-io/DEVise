@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/11/26 16:51:33  ssl
+  Added support for piled viws
+
   Revision 1.24  1996/11/20 19:04:30  jussi
   Changed DrawPixelArray() call again.
 
@@ -1596,6 +1599,9 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
+        Coord pointSize = GetSize(gdata, map, offset);
+        if (pointSize <= 1)
+            pointSize = 12;
 	GlobalColor color = GetColor(view, gdata, map, offset);
 
 	char *label = "X";
@@ -1617,6 +1623,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+        win->SetFont("Helvetica", "Bold", "r", "Normal",
+                     (int)(10 * pointSize));
 
 	// Pretend that there's a large box in which the text has to
 	// be drawn; this is done because we don't know the size of the
