@@ -17,13 +17,15 @@
 #include "Common.h"
 #include "sysdep.h"
 #include "exception.h"
-
-const unsigned short PORT = 6571;
+#include "types.h"
 
 int main(int argc, char** argv){
 
 	initialize_system();
 	
+	string portStr = DTE_ENV_VARS.valueOf("DEVISE_SERVER_PORT");
+	const unsigned short PORT = (unsigned short) atoi(portStr.c_str());
+
 	Cor_sockbuf listener(PORT);
 
 	while(true){
