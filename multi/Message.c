@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/03 20:44:08  jussi
+  Removed reference to unneeded file Snapshot.h.
+
   Revision 1.2  1996/11/23 21:31:47  jussi
   Removed failing support for variable-sized records.
 */
@@ -34,13 +37,13 @@ int binarySearch = false;
 /* Get a record from TData */
 void GetRec(TData *tdata, RecId id, MultiRec &rec)
 {
-    tdata->InitGetRecs(id,id);
+    TData::TDHandle handle = tdata->InitGetRecs(id,id);
     RecId startRid; int numRecs, dataSize;
-    if(!tdata->GetRecs(&rec,sizeof(MultiRec),startRid,numRecs,dataSize)) {
+    if(!tdata->GetRecs(handle,&rec,sizeof(MultiRec),startRid,numRecs,dataSize)) {
         fprintf(stderr,"GetRec: no record\n");
         Exit::DoExit(1);
     }
-    tdata->DoneGetRecs();
+    tdata->DoneGetRecs(handle);
 }
 
 /* Find the record whose id overlaps with the time. Return the
