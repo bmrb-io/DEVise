@@ -226,15 +226,11 @@ SOURCE=..\..\DTE\Core\Interface.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\Core\Iterator.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\DTE\Core\Iterator.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\DTE\Core\joins.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\DTE\Core\joins.h
 # End Source File
 # Begin Source File
 
@@ -290,6 +286,10 @@ SOURCE=..\..\DTE\ODBC\ODBC.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\DTE\Core\ODBCCatalogParse.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\DTE\Core\ODBCInfo.c
 # End Source File
 # Begin Source File
@@ -318,7 +318,11 @@ SOURCE=..\..\DTE\Core\ODBCList.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\DTE\Core\ODBCParse.c
+SOURCE=..\..\DTE\ODBC\ODBCList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\DTE\ODBC\ODBCParse.c
 # End Source File
 # Begin Source File
 
