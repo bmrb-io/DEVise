@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.50  1996/07/08 17:08:02  jussi
+#	Small fix in OpenDataSource.
+#
 #	Revision 1.49  1996/07/01 19:37:33  jussi
 #	Made changes to reflect new TData constructor interface. Web
 #	data caching is now handled in the server, not in the client.
@@ -1371,7 +1374,7 @@ proc OpenNewDataSource {derivedOnly} {
         # make sure data is cached on disk
         set sourcedef [OpenDataSource $sname]
         if {$sourcedef == ""} {
-            continue ""
+            return ""
         }
 
         set sname [lindex $sourcedef 0]
