@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/11/18 16:46:05  donjerko
+#  Removed DevRead.c from the libdevread.a.
+#  DTE and devread should have a single version of DevRead.c.
+#
 #  Revision 1.6  1996/11/01 19:03:37  kmurli
 #  Makefile changed to include DQL sources
 #
@@ -110,7 +114,8 @@ LIB = libdevread.a
 ALLTESTOBJ = $(TESTOBJ)
 ALLSHOWOBJ = $(SHOWOBJ)
 
-all: drtest
+# all: drtest
+all:
 lib: $(LIB)
 pure: drtest.pure
 
