@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/06/12 19:55:29  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.8  1998/05/29 19:34:39  wenger
   Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
   size.
@@ -51,7 +56,6 @@
 #include "ClassDir.h"
 #include "Control.h"
 #include "ExtStack.h"
-#define PURIFY 0
 
 #define DECLARE_CLASS_DeviseCommand_(command_name)\
 class DeviseCommand_##command_name: public DeviseCommand\

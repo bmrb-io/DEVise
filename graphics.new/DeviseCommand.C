@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/07/06 21:06:53  wenger
+  More memory leak hunting -- partly tracked down some in the DTE.
+
   Revision 1.17  1998/06/12 19:55:28  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -123,6 +126,7 @@
 #define LINESIZE 1024
 
 //#define DEBUG
+#define PURIFY 0
 
 #define IMPLEMENT_COMMAND_BEGIN(command) \
 int DeviseCommand_##command::Run(int argc, char** argv)\
