@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.110  1997/01/22 20:13:57  wenger
+#	Removed other non-functional user interface components (includes workaround
+#	for bug 127); fixed a number of OK/Cancel button positions.
+#
 #	Revision 1.109  1997/01/09 18:37:30  wenger
 #	Removed some leftover debug code.
 #
@@ -444,11 +448,6 @@ set DEViseShapes \
 # sessionName: name of current session
 # curView: current view selected
 # lastView: last view selected
-# historyWinOpened: true if history window has been opened
-# queryWinOpened: true if query window has been opened
-# query3DWinOpened: true if 3D query window has been opened
-# stackWinOpened: true if stack window has been opened
-# helpWindowCreated: true if help window has been created.
 # UserMode: 1 for end-user mode (logical schemas), 0 for
 #           administrator mode (physical schemas)
 
@@ -457,14 +456,8 @@ set template 0
 set sessionName "session.tk"
 set curView ""
 set lastView ""
-set historyWinOpened 0
-set queryWinOpened 0
-set query3DWinOpened 0
-set stackWinOpened 0
-set helpWindowCreated 0
 set UserMode 1
 set templateMode 0
-set mappingWinOpened 0
 # set statistics defaults
 set statmean 0 
 set statmax 1
@@ -1002,17 +995,16 @@ proc FindDefaultXAttr { attrs } {
 
 # Do editing for mapping
 proc DoEditMapping {} {
-    global curView mappingWinOpened
+    global curView
 
     if {![CurrentView]} {
 	return
     }
     
-    if {$mappingWinOpened == 1}  {
+    if {[WindowVisible .editMapping]}  {
 	return
     }
     
-    set mappingWinOpened 1
     # Get mapping for the view (first one)
     set map [lindex [DEVise getViewMappings $curView] 0]
     
@@ -1031,7 +1023,6 @@ proc DoEditMapping {} {
     }
     
     EditMapping $map     
-    set mappingWinOpened 0
 }
 
 
