@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/03/26 17:20:03  jussi
+  Streamlined DEVise getSchema command.
+
   Revision 1.35  1996/03/25 22:59:46  jussi
   Reverted back to the state where maps are inserted to views but
   views are not inserted to maps. Currently TDataMap only stores
@@ -160,7 +163,7 @@
 #include "ViewLayout.h"
 #include "ViewKGraph.h"
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef TK_WINDOW
 Tcl_Interp *ControlPanelTclInterp = 0;
