@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/12 17:15:28  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.5  1998/01/30 02:16:23  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -213,7 +216,12 @@ void Server::WaitForConnection()
     printf("%s server waiting for client connection on port %d\n",
       _name, _port);
     struct sockaddr_in tempaddr;
-    int len = sizeof(tempaddr);
+#if defined(LINUX)
+    socklen_t
+#else
+    int
+#endif
+        len = sizeof(tempaddr);
     clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
     if (clientfd < 0)
     {
