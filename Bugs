@@ -1154,6 +1154,11 @@ Num Date        Status  Description
 302 02/20/98	OPEN	Histograms don't work in client/server form of
 			DEVise. (rkw)
 
+303 02/24/98    OPEN    Empty files cause a crash.  Display table 'empty'
+                        and query with middle button.  This also caused
+                        problems for histograms (see ViewGraph.c search for
+                        BUG 303.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
