@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/03 20:35:38  jussi
+  Added debugging message.
+
   Revision 1.5  1996/09/26 20:28:44  jussi
   Made code compile in Linux.
 
@@ -67,11 +70,31 @@
 
 #include "machdep.h"
 
+// Choose to either use private (per-process) keys, in which case
+// processes (except forked ones) cannot share semaphores and memory.
+// Or, use shared keys, in which case the system allocates keys
+// through a table which is stored in shared memory. This approach
+// may fail at run-time if several copies of the application are
+// running at the same time.
+
+#define PRIVATE_KEYS
+//#define SHARED_KEYS
+
+#if defined(PRIVATE_KEYS) && defined(SHARED_KEYS)
+#error "Cannot use both private and shared keys"
+#endif
+
+#if !defined(PRIVATE_KEYS) && !defined(SHARED_KEYS)
+#define PRIVATE_KEYS
+#endif
+
 class Semaphore {
 public:
   Semaphore(key_t key, int &status, int nsem = 1);
   int destroy();                        // destroy semaphore
+#if defined(SHARED_KEYS)
   static int destroyAll();              // destroy all semaphores
+#endif
 
   int acquire(int num = 1,
 	      int sem = 0) {            // acquire num units of resource
@@ -160,9 +183,11 @@ public:
     return _sem->destroy();
   }
 
+#if defined(SHARED_KEYS)
   static int destroyAll() {             // destroy all semaphores
     return Semaphore::destroyAll();
   }
+#endif
 
   static int create(int maxSems);       // create real semaphore
 
@@ -211,7 +236,9 @@ class SharedMemory {
 public:
   SharedMemory(key_t key, int size, char *&addr, int &created);
   ~SharedMemory();
+#if defined(SHARED_KEYS)
   static int destroyAll();              // destroy all shared mem segments
+#endif
 
   int getSize() { return size; }        // return size of segment
   operator char*() { return addr; }     // return local address

@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/03 20:35:37  jussi
+  Added debugging message.
+
   Revision 1.5  1996/09/26 19:00:20  jussi
   Added virtual semaphore class SemaphoreV which tries to get
   around the limited number of semaphore vectors allowed by
@@ -50,12 +53,15 @@
 
 #include "DCE.h"
 
+//#define DEBUG
+
 #ifdef MODIFIED
 #include "Exit.h"
 #define UXCALL(c,s) {if ((c) < 0) { perror(s); \
                                     DOASSERT(0, "Unix call failed"); }}
 #endif
 
+#ifdef SHARED_KEYS
 struct ShmKeyTable {
   int semNextKey;
   int shmNextKey;
@@ -65,6 +71,8 @@ static const key_t ShmKeyTableKey = 1999;
 static const key_t SemaphoreBase = 1000;
 static const key_t SharedMemoryBase = 2000;
 static struct ShmKeyTable *shmKeyTable = 0;
+#endif
+
 #ifdef __linux
 static const union semun NullSemUnion = { 0 };
 #endif
@@ -117,6 +125,7 @@ int Semaphore::destroy()
   return 0;
 }
 
+#if defined(SHARED_KEYS)
 int Semaphore::destroyAll()
 {
   key_t maxKey = SemaphoreBase + 500;
@@ -145,6 +154,7 @@ int Semaphore::destroyAll()
 
   return 0;
 }
+#endif
 
 int Semaphore::setValue(int num, int sem)
 {
@@ -171,6 +181,7 @@ int Semaphore::setValue(int num, int sem)
   return num;
 }
 
+#if defined(SHARED_KEYS)
 static void attachTable()
 {
   char *segment = 0;
@@ -178,7 +189,8 @@ static void attachTable()
   SharedMemory *shm = new SharedMemory(ShmKeyTableKey,
 				       sizeof(struct ShmKeyTable),
 				       segment, created);
-  shm = shm;                            // avoid compiler warnings (unused var)
+  // avoid compiler warnings (unused var)
+  shm = shm;
   if (!segment)
     cerr << "Cannot attach to shared memory key table" << endl;
   assert(segment);
@@ -200,6 +212,14 @@ key_t Semaphore::newKey()
 #endif
   return key;
 }
+#endif
+
+#if defined(PRIVATE_KEYS)
+key_t Semaphore::newKey()
+{
+  return IPC_PRIVATE;
+}
+#endif
 
 SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
 {
@@ -242,23 +262,20 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
 
   address = 0;
   created = 0;
+  id = -1;
 
-  // possibly create and then attach to shared memory segment
+  // see if we can attach to an existing shared memory segment
 
-  if ((id = shmget(key, 0, SHM_R | SHM_W)) < 0) {
-    if (errno != ENOENT)
-      perror("shmget");
-    assert(errno == ENOENT);
-#ifdef DEBUG
-    cerr << "%%  Creating shared memory segment (" << size << " bytes)"
-         << endl;
-#endif
-    id = shmget(key, size, SHM_R | SHM_W | IPC_CREAT);
-    if (id < 0)
-      perror("shmget");
-    assert(id >= 0);
-    created = 1;
-  } else {
+  if (key != IPC_PRIVATE) {
+    if ((id = shmget(key, 0, SHM_R | SHM_W)) < 0) {
+      if (errno != ENOENT)
+        perror("shmget");
+      assert(errno == ENOENT);
+    }
+  }
+
+  if (id >= 0) {
+      // successfully attached -- now do a consistency check
     struct shmid_ds sbuf;
     int result = shmctl(id, IPC_STAT, &sbuf);
     if (result < 0)
@@ -274,19 +291,28 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
     if ((int)sbuf.shm_segsz != size) {
 #endif
       cerr << "Existing shared memory segment has incorrect size: "
-	   << sbuf.shm_segsz << " vs. " << size << endl;
+           << sbuf.shm_segsz << " vs. " << size << endl;
       cerr << "Deleting old segment" << endl;
       result = shmctl(id, IPC_RMID, 0);
       if (result < 0)
-	perror("shmctl");
+        perror("shmctl");
       assert(result >= 0);
-      cerr << "Creating new segment" << endl;
-      id = shmget(key, size, SHM_R | SHM_W | IPC_CREAT);
-      if (id < 0)
-	perror("shmget");
-      assert(id >= 0);
+      id = -1;
     }
   }
+
+  if (id < 0) {
+#ifdef DEBUG
+    cerr << "%%  Creating shared memory segment (" << size << " bytes)"
+         << endl;
+#endif
+    id = shmget(key, size, SHM_R | SHM_W | IPC_CREAT);
+    created = 1;
+  }
+
+  if (id < 0)
+    perror("shmget");
+  assert(id >= 0);
 
 #ifdef DEBUG
   cerr << "%%  Shared memory id " << id << endl;
@@ -323,6 +349,7 @@ SharedMemory::~SharedMemory()
     perror("shmctl");
 }
 
+#if defined(SHARED_KEYS)
 int SharedMemory::destroyAll()
 {
   key_t maxKey = ShmKeyTableKey + 500;
@@ -364,6 +391,14 @@ key_t SharedMemory::newKey()
 #endif
   return key;
 }
+#endif
+
+#if defined(PRIVATE_KEYS)
+key_t SharedMemory::newKey()
+{
+  return IPC_PRIVATE;
+}
+#endif
 
 #define RELEASE(sem) sems->release(1, sem)
 #define ACQUIRE(sem) sems->acquire(1, sem)
