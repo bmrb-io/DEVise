@@ -18,4 +18,5 @@ Tuple* Sort::getNext(){
 	// To read temp file use StandardRead ...
 	// use heap to get max/min
 	// return tuple
+	return NULL;
 }

@@ -19,6 +19,7 @@ public:
      virtual String *getOrderingAttrib(){
           assert(0);
      }
+	virtual void initialize();
      virtual Tuple  *getNext();
 };
 
