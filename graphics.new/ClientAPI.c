@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/11 17:24:09  jussi
+  Removed DeviseHost() function which used to read host name and
+  port number information from a file. These parameters are
+  typically read from the command line instead.
+
   Revision 1.3  1996/05/11 01:52:17  jussi
   Initial revision.
 */
@@ -32,9 +37,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#ifdef SUN
-#include "missing.h"
-#endif
+#include "ClientAPI.h"
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
@@ -301,11 +304,33 @@ int DeviseSend(char **argv, int num)
     return 1;
 
 #ifdef DEBUG
+  printf("Sending error flag\n");
+#endif
+
+  u_short errflag = htons(0);
+  int result = send(_socketFd, (char *)&errflag, sizeof errflag, 0);
+  if (result < (int)sizeof errflag) {
+    perror("send");
+    return -1;
+  }
+
+#ifdef DEBUG
+  printf("Sending bracket flag\n");
+#endif
+
+  u_short bracket = htons(0);
+  result = send(_socketFd, (char *)&bracket, sizeof bracket, 0);
+  if (result < (int)sizeof bracket) {
+    perror("send");
+    return -1;
+  }
+
+#ifdef DEBUG
   printf("Sending number of elements %d\n", num);
 #endif
 
   u_short size = htons((u_short)num);
-  int result = send(_socketFd, (char *)&size, sizeof size, 0);
+  result = send(_socketFd, (char *)&size, sizeof size, 0);
   if (result < (int)sizeof size) {
     perror("send");
     return -1;
