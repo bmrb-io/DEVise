@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/29 15:11:15  jussi
+  Minor fix to really #ifdef out WritePostscript debugging output.
+
   Revision 1.5  1995/11/28 00:00:43  jussi
   Added WritePostscript() method.
 
@@ -30,13 +33,15 @@
   Added/updated CVS header.
 */
 
+#include <assert.h>
+
 #include "Init.h"
 #include "XWindowRep.h"
 #include "XDisplay.h"
 #include "Compress.h"
 
 //#define DEBUG
-#define MAXPIXELDUMP 200
+#define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
 
@@ -44,7 +49,7 @@
 Initializer
 ***********************************************************************/
 
-XWindowRep:: XWindowRep(Display *display,Window window, XDisplay * DVDisp,
+XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 			Color fgndColor, Color bgndColor,
 			Boolean backingStore) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
@@ -76,7 +81,7 @@ XWindowRep:: XWindowRep(Display *display,Window window, XDisplay * DVDisp,
   
   /* load font */
   XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
-  XSetFont(_display,_gc, fontStruct->fid);
+  XSetFont(_display, _gc, fontStruct->fid);
   
   /* create pixmaps for character manipulation */
   _srcBitmap.inUse = false;
@@ -87,6 +92,11 @@ XWindowRep:: XWindowRep(Display *display,Window window, XDisplay * DVDisp,
                      fontStruct->max_bounds.descent;
   AllocBitmap(_srcBitmap, bitmapWidth, bitmapHeight);
   AllocBitmap(_dstBitmap, 3 * bitmapWidth, 3 * bitmapHeight);
+
+#ifdef TK_WINDOW_old
+  _tkPathName[0] = 0;
+  _tkWindow = 0;
+#endif
 }
 
 /**************************************************************
@@ -107,9 +117,32 @@ XWindowRep::~XWindowRep()
   */
 }
 
+/******************************************************************
+  If child == true, make window pointed to by 'other' a new child of
+  this window.
+  If child == false, make window pointed to by 'other' a new parent of
+  this window.
+*/
+
+void XWindowRep::Reparent(Boolean child, void *other, int x, int y)
+{
+  Window newParent = (child ? _win : (Window)other);
+  Window newChild = (child ? (Window)other : _win);
+
+  if (!newParent)
+    newParent = DefaultRootWindow(_display);
+
+#ifdef DEBUG
+  printf("XWindowRep::Reparent 0x%x to 0x%x at %d,%d\n",
+	 newChild, newParent, x, y);
+#endif
+
+  XReparentWindow(_display, newChild, newParent, x, y);
+}
+
 /******************************************************************/
 
-virtual void XWindowRep::PushClip(Coord x,Coord y,Coord w,Coord h)
+void XWindowRep::PushClip(Coord x,Coord y,Coord w,Coord h)
 {
 #ifdef DEBUG
   printf("XWindowRep::PushClip(%.2f,%.2f,%.2f,%.2f)\n",x,y,w,h);
@@ -761,9 +794,8 @@ void XWindowRep::HandleEvent(XEvent &event)
   case KeyPress:
     KeySym keysym;
     XComposeStatus compose;
-    int count;
-    count= XLookupString((XKeyEvent *)&event,buf,40,&keysym,&compose);
-    if (count ==1) {
+    int count = XLookupString((XKeyEvent *)&event,buf,40,&keysym,&compose);
+    if (count == 1) {
       /* regular key */
       WindowRep::HandleKey(buf[0],event.xkey.x,event.xkey.y);
     }
@@ -772,36 +804,45 @@ void XWindowRep::HandleEvent(XEvent &event)
   case ButtonPress:
     int buttonXlow, buttonYlow,buttonXhigh,buttonYhigh;
     if (event.xbutton.button == 2) {
-      /* hand popup */
+      /* handle popup */
       DoPopup(event.xbutton.x,event.xbutton.y, event.xbutton.button);
-    }
-    else if (event.xbutton.button <= 3) {
+    } else if (event.xbutton.button <= 3) {
       DoButtonPress(event.xbutton.x, event.xbutton.y,
-		    buttonXlow, buttonYlow,buttonXhigh, buttonYhigh,
+		    buttonXlow, buttonYlow, buttonXhigh, buttonYhigh,
 		    event.xbutton.button);
       
       /*
 	 if (buttonXhigh > buttonXlow && buttonYhigh > buttonYlow) {
-	 */
+      */
       WindowRep::HandleButtonPress(buttonXlow, buttonYlow,
-				   buttonXhigh, buttonYhigh, event.xbutton.button);
+				   buttonXhigh, buttonYhigh,
+				   event.xbutton.button);
     }
     break;
 
   case Expose:
     Coord minX, minY, maxX, maxY;
-    minX= (Coord)event.xexpose.x;
+    minX = (Coord)event.xexpose.x;
     minY = (Coord)event.xexpose.y;
-    maxX= minX+ (Coord)event.xexpose.width-1;
-    maxY= minY+ (Coord)event.xexpose.height-1;
-    while (XCheckIfEvent(_display,&ev,check_expose,
-			 (char *)&this->_win)) {
+    maxX = minX + (Coord)event.xexpose.width - 1;
+    maxY = minY + (Coord)event.xexpose.height - 1;
+#ifdef DEBUG
+    printf("XWindowRep 0x%x Exposed %d,%d to %d,%d\n", this,
+	   (int)minX, (int)minY, (int)maxX, (int)maxY);
+#endif
+    while (XCheckIfEvent(_display, &ev, check_expose, (char *)&_win)) {
       /* merge next expose event with current one to form
 	 a bigger expose region */
-      Geom::MergeRects(minX,minY, maxX, maxY,
+#ifdef DEBUG
+      printf("Merging expose with other exposure: %d,%d,%d,%d\n",
+	     (int)ev.xexpose.x, (int)ev.xexpose.y,
+	     (int)(ev.xexpose.x + ev.xexpose.width - 1),
+	     (int)(ev.xexpose.y + ev.xexpose.height - 1));
+#endif
+      Geom::MergeRects(minX, minY, maxX, maxY,
 		       (Coord)ev.xexpose.x, (Coord)ev.xexpose.y,
-		       (Coord)(ev.xexpose.x+ev.xexpose.width),
-		       (Coord)(ev.xexpose.y+ev.xexpose.height));
+		       (Coord)(ev.xexpose.x + ev.xexpose.width - 1),
+		       (Coord)(ev.xexpose.y + ev.xexpose.height - 1));
     }
     WindowRep::HandleExpose((int)minX, (int)minY,
 			    (unsigned)(maxX - minX + 1), 
@@ -810,6 +851,9 @@ void XWindowRep::HandleEvent(XEvent &event)
 
   case ConfigureNotify:
     /* resize event */
+#ifdef DEBUG
+    printf("XWindowRep 0x%x ConfigureNotify\n", this);
+#endif
     int saveX, saveY; 
     unsigned int saveWidth, saveHeight;
     saveX = _x;
@@ -818,9 +862,10 @@ void XWindowRep::HandleEvent(XEvent &event)
     saveHeight = _height;
     UpdateWinDimensions();
     if (_x != saveX || _y != saveY || _width != saveWidth
-	|| _height != saveHeight)
-      /* There is a real change in szie */
-      WindowRep::HandleResize(_x,_y,_width,_height);
+	|| _height != saveHeight) {
+      /* There is a real change in size */
+      WindowRep::HandleResize(_x, _y, _width, _height);
+    }
     break;
 
   case VisibilityNotify:
@@ -1222,9 +1267,14 @@ void XWindowRep::AbsoluteOrigin(int &x, int &y)
 
 void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 {
+#ifdef DEBUG
+  printf("Moving XWindowRep 0x%x to %d,%d, size %u,%u\n", this,
+	 x, y, w, h);
+#endif
+
   /* Tell X to move/resize window. We will be notify by an event
      when it's done */
-  XMoveResizeWindow(_display,_win, x, y, w, h);
+  XMoveResizeWindow(_display, _win, x, y, w, h);
 }
 
 /* Iconify window. Not guaranteed to succeed. */
@@ -1238,7 +1288,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
 {
   char **msgs;
   int numMsgs;
-  if (!HandlePopUp(x,y,button, msgs,numMsgs) || numMsgs <= 0)
+  if (!HandlePopUp(x, y, button, msgs, numMsgs) || numMsgs <= 0)
     /* no message for pop-up */
     return;
   
@@ -1356,15 +1406,14 @@ void XWindowRep::DoPopup(int x, int y, int button)
     if (savePopup) {
       if (XCheckWindowEvent(_display,win,ButtonPressMask,&event)) {
 	/* done */
-	XDestroyWindow(_display,win);
+	XDestroyWindow(_display, win);
 	break;
       }
-    }
-    else {
+    } else {
       if (XCheckWindowEvent(_display,_win,ButtonReleaseMask,&event)) {
 	if (event.xbutton.button == button) {
 	  /* done */
-	  XDestroyWindow(_display,win);
+	  XDestroyWindow(_display, win);
 	  break;
 	}
       }
@@ -1404,21 +1453,22 @@ void XWindowRep::Scroll(Coord x, Coord y, Coord w, Coord h,
 {
 #ifdef DEBUG
   printf("XwindowRep::Scroll(%.2f,%.2f,%.2f,%.2f,%.2f,%.2f)\n",
-	 x,y,w,h,dstX,dstY);
+	 x, y, w, h, dstX, dstY);
 #endif
 
-  Coord xlow,ylow,xhi,yhi,width,height;
-  Coord x1, y1, x2,y2;
-  WindowRep::Transform(x,y, x1, y1);
-  WindowRep::Transform(x+w,y+h, x2,y2);
-  xlow = MinMax::min(x1,x2);
-  xhi = MinMax::max(x1,x2);
-  ylow = MinMax::min(y1,y2);
-  yhi = MinMax::max(y1,y2);
-  width = xhi-xlow+1; height = yhi-ylow+1;
+  Coord xlow, ylow, xhi, yhi, width, height;
+  Coord x1, y1, x2, y2;
+  WindowRep::Transform(x, y, x1, y1);
+  WindowRep::Transform(x + w, y + h, x2, y2);
+  xlow = MinMax::min(x1, x2);
+  xhi = MinMax::max(x1, x2);
+  ylow = MinMax::min(y1, y2);
+  yhi = MinMax::max(y1, y2);
+  width = xhi - xlow + 1;
+  height = yhi - ylow + 1;
   
   Coord tdx, tdy;
-  WindowRep::Transform(dstX,dstY+h, tdx, tdy);
+  WindowRep::Transform(dstX, dstY + h, tdx, tdy);
   
 #ifdef DEBUG
   printf("XWindowRep::Scroll after xform x:%d,y:%d,w:%d,h:%d to x:%d, y%d\n",
@@ -1436,7 +1486,7 @@ void XWindowRep::ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 {
 #ifdef DEBUG
   printf("XWindowRep::ScrollABsolute(x:%d,y:%d,w:%d,h:%d,dx:%d,dy:%d)\n",
-	 x,y,width,height,dstX,dstY);
+	 x, y, width, height, dstX, dstY);
 #endif
 
   XCopyArea(_display, _win, _win, _gc, x, y, width, height,
@@ -1563,3 +1613,214 @@ void XWindowRep::FreePixmap(DevisePixmap *pixmap)
   free(pixmap->data);
   delete pixmap;
 }
+
+#ifdef TK_WINDOW_old
+void XWindowRep::Decorate(WindowRep *parent, char *name,
+			  unsigned int min_width, unsigned int min_height)
+{
+  assert(!isInTkWindow());
+  EmbedInTkWindow((XWindowRep *)parent, name, min_width, min_height);
+}
+
+void XWindowRep::Undecorate()
+{
+  if (isInTkWindow())
+    DetachFromTkWindow();
+}
+
+static void HandleTkEvents(ClientData win, XEvent *eventPtr)
+{
+#ifdef DEBUG
+  printf("HandleTkEvents: received event %d\n", eventPtr->type);
+#endif
+
+  if (eventPtr->type != ConfigureNotify)
+    return;
+
+  ((XWindowRep *)win)->TkWindowSizeChanged();
+}
+
+void XWindowRep::TkWindowSizeChanged()
+{
+  extern Tcl_Interp *ControlPanelTclInterp;
+
+  // first find out new size of Tk window
+
+  assert(_tkWindow != 0);
+  unsigned int w = (unsigned int)Tk_Width(_tkWindow);
+  unsigned int h = (unsigned int)Tk_Height(_tkWindow);
+
+  // adjust with margins
+
+  int x = _leftMargin;
+  w -= _leftMargin + _rightMargin;
+  int y = _topMargin;
+  h -= _topMargin + _bottomMargin;
+
+  MoveResize(x, y, w, h);
+  UpdateWinDimensions();
+  WindowRep::HandleResize(x, y, w, h);
+
+  char cmd[256];
+  sprintf(cmd, "ResizeTkDataWindow %s %u %u", _tkPathName, w, h);
+#ifdef DEBUG
+  printf("Executing: %s\n", cmd);
+#endif
+  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
+  if (status != TCL_OK) {
+    fprintf(stderr, "Cannot resize Tk window %s: %s\n",
+	    _tkPathName, ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+}
+
+static const unsigned int TkRootLeftMargin   = 0;
+static const unsigned int TkRootRightMargin  = 0;
+static const unsigned int TkRootTopMargin    = 0;
+static const unsigned int TkRootBottomMargin = 20;
+
+static const unsigned int TkViewLeftMargin   = 40;
+static const unsigned int TkViewRightMargin  = 0;
+static const unsigned int TkViewTopMargin    = 0;
+static const unsigned int TkViewBottomMargin = 20;
+
+void XWindowRep::EmbedInTkWindow(XWindowRep *parent,
+				 char *name,
+				 unsigned int min_width,
+				 unsigned int min_height)
+{
+  extern Tcl_Interp *ControlPanelTclInterp;
+  extern Tk_Window ControlPanelMainWindow;
+
+  // get location and size of window
+
+  int x, y;
+  unsigned int w, h;
+  Origin(x, y);
+  Dimensions(w, h);
+
+  // figure out the correct margins for this type of window
+
+  // default: root data display window
+
+  _leftMargin   = TkRootLeftMargin;
+  _rightMargin  = TkRootRightMargin;
+  _topMargin    = TkRootTopMargin;
+  _bottomMargin = TkRootBottomMargin;
+
+  // for views: left and bottom margin
+
+  if (parent) {
+    _leftMargin   = TkViewLeftMargin;
+    _rightMargin  = TkViewRightMargin;
+    _topMargin    = TkViewTopMargin;
+    _bottomMargin = TkViewBottomMargin;
+  }
+
+  static int tkWinCount = 1;
+  char cmd[256];
+  sprintf(_tkPathName, ".devisewin%d", tkWinCount++);
+  sprintf(cmd, "CreateTkDataWindow %s {%s} %d %d %u %u %u %u %u %u %u %u",
+	  _tkPathName, name, x, y, w, h, _leftMargin,
+	  _rightMargin, _topMargin, _bottomMargin,
+	  min_width, min_height);
+#ifdef DEBUG
+  printf("Executing: %s\n", cmd);
+#endif
+  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
+  if (status != TCL_OK) {
+    fprintf(stderr, "Cannot create Tk window %s: %s\n", _tkPathName,
+	    ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+
+  _tkWindow = Tk_NameToWindow(ControlPanelTclInterp,
+			      _tkPathName,
+			      ControlPanelMainWindow);
+  if (!_tkWindow) {
+    fprintf(stderr, "Cannot convert name to window: %s\n",
+	    ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+
+#ifdef DEBUG
+  printf("Created %s, id 0x%x, X id 0x%x, at %d,%d size %u,%u\n",
+	 _tkPathName, _tkWindow, Tk_WindowId(_tkWindow),
+	 x, y, w, h);
+#endif
+
+  unsigned long mask = StructureNotifyMask;
+  Tk_CreateEventHandler(_tkWindow, mask, HandleTkEvents, this);
+
+  // first make this window a child of the new Tk window
+
+#ifdef DEBUG
+  printf("XWindowRep::Reparenting 0x%x to 0x%x at %d,%d\n",
+	 _win, Tk_WindowId(_tkWindow), _leftMargin, _topMargin);
+#endif
+  XReparentWindow(_display, _win, Tk_WindowId(_tkWindow),
+		  _leftMargin, _topMargin);
+
+  // make this window smaller so that margins have space inside Tk window
+
+  w -= _leftMargin + _rightMargin;
+  h -= _topMargin + _bottomMargin;
+  MoveResize(_leftMargin, _topMargin, w, h);
+  UpdateWinDimensions();
+
+  // then optionally make the Tk window a child of this window's parent
+  // i.e. the Tk window gets inserted between this window and its parent
+  
+  if (parent) {
+#ifdef DEBUG
+    printf("XWindowRep::Reparenting 0x%x to 0x%x at %d,%d\n",
+	   Tk_WindowId(_tkWindow), parent->_win, x, y);
+#endif
+    XReparentWindow(_display, Tk_WindowId(_tkWindow), parent->_win, x, y);
+  }
+}
+
+void XWindowRep::DetachFromTkWindow()
+{
+  extern Tcl_Interp *ControlPanelTclInterp;
+
+#ifdef DEBUG
+  printf("ViewWin::Detaching 0x%x from 0x%0x\n", this, _tkWindow);
+#endif
+
+  assert(_tkWindow != 0);
+  unsigned long mask = StructureNotifyMask;
+  Tk_DeleteEventHandler(_tkWindow, mask, HandleTkEvents, this);
+
+  // get location and size of window
+
+  int x, y;
+  unsigned int w, h;
+  Origin(x, y);
+  Dimensions(w, h);
+
+  // adjust location and size since margins are disappearing
+
+  x -= _leftMargin;
+  w += _leftMargin + _rightMargin;
+  y -= _topMargin;
+  h += _topMargin + _bottomMargin;
+  MoveResize(x, y, w, h);
+
+  XReparentWindow(_display, _win, DefaultRootWindow(_display), x, y);
+
+  // destroy Tk window
+
+  char cmd[256];
+  sprintf(cmd, "destroy %s", _tkPathName);
+  int status = Tcl_Eval(ControlPanelTclInterp, cmd);
+  if (status != TCL_OK) {
+    fprintf(stderr, "Cannot destroy Tk window %s: %s\n", _tkPathName,
+	    ControlPanelTclInterp->result);
+    Exit::DoExit(2);
+  }
+
+  _tkPathName[0] = 0;
+  _tkWindow = 0;
+}
+#endif
