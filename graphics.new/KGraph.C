@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/29 23:56:42  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.6  1995/12/28 20:07:34  jussi
   Small fixes to remove compiler warnings.
 
@@ -59,9 +63,10 @@ KGraph::~KGraph()
 {
   delete [] _pts;
   delete [] _xyarr;
-  if (msgBuf)
+  if (msgBuf) {
     for(int i = 0; i < _naxes+3; i++)
       delete msgBuf[i];
+  }
   delete [] msgBuf;
 }
 
@@ -111,7 +116,8 @@ void KGraph::setPoints(Coord *pts, int num)
 
 void KGraph::Display()
 {
-  if (!_naxes) return;
+  if (!_naxes)
+    return;
 
   // Draw the circle
   DrawCircle();
@@ -120,7 +126,6 @@ void KGraph::Display()
   // Draw Axes
   DrawAxes();
 }
-
 
 void KGraph::DrawCircle()
 {
@@ -133,52 +138,54 @@ void KGraph::DrawCircle()
 
   h = (w > h)? h : w;
   // Compute center of circle
-  cy = y0 + h/2;
-  cx = x0 + h/2;
+  cy = y0 + h / 2;
+  cx = x0 + h / 2;
 
   rad = h - 10;
   // Draw Circle
-  _win->Arc(cx, -cy+9, rad, rad, 0, 2*PI);
+  _win->Arc(cx, -cy + 9, rad, rad, 0, 2 * PI);
 
 }    
 
 void KGraph::DrawAxes()
 {
-  _win->SetFgColor(RedColor);
+  _win->SetXorMode();
+  _win->SetFgColor(HighlightColor);
 
   Coord x, y;
   int theta = 360 / _naxes;
 
   // Draw axes
-  for(int i = 0; i < _naxes; i++)
-  {
-    Rotate(rad/2, i * theta, x, y);
+  for(int i = 0; i < _naxes; i++) {
+    Rotate(rad / 2, i * theta, x, y);
     _win->Line(cx, cy, x, y, 1);
   }
 
+#if 0
   // Generate origin label
-  Rotate(rad/2, 0, x, y);
+  Rotate(rad / 2, 0, x, y);
   _win->AbsoluteText("O ", x + 4, y - 6 , 50, 10, WindowRep::AlignWest);
+#endif
 
+  _win->SetCopyMode();
 }
 
 void KGraph::PlotPoints()
 {
   _win->SetFgColor(GreenColor);
-  int theta = 360/_naxes;
+  int theta = 360 / _naxes;
 
   // Find max of all the points to be plotted
   Coord max = _pts[0];
   int i;
   for(i = 1; i < _naxes; i++)
-    max = (_pts[i] > max)? _pts[i] : max;
+    max = (_pts[i] > max) ? _pts[i] : max;
 
   // Plot all points by drawing lines between them in order
   Coord x1, y1, x2, y2;
-  Rotate(Scale(_pts[_naxes - 1], max), (_naxes-1) * theta, x1, y1);
+  Rotate(Scale(_pts[_naxes - 1], max), (_naxes - 1) * theta, x1, y1);
 
-  for(i = 0; i < _naxes ; i++)
-  {
+  for(i = 0; i < _naxes ; i++) {
     Rotate(Scale(_pts[i], max), i*theta, x2, y2);
     // store this point in a x-y array - need to fill polygon later
     _xyarr[i].x = x2;
@@ -221,8 +228,7 @@ void KGraph::ShowVal()
 
   starty += 17;
   // For each axes display value
-  for(int i = 0; i < _naxes; i++)
-  {
+  for(int i = 0; i < _naxes; i++) {
     char buf[15];
     sprintf(buf, "%4.2f", _pts[i]);
     _win->AbsoluteText(buf, startx, starty, 500, 13, WindowRep::AlignWest);
