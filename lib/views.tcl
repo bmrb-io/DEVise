@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/04/11 18:23:03  jussi
+#  Major changes in the organization of the user interface.
+#
 #  Revision 1.4  1996/03/07 16:55:39  jussi
 #  Added support for changing number of dimensions in view.
 #
@@ -177,7 +180,6 @@ proc DoViewCopy {} {
     }
 
     set view $curView
-    set newView [UniqueName $view]
 
     set gdataSet [GdataSet]
     set tdataSet [TdataSet]
@@ -221,10 +223,8 @@ proc DoViewCopy {} {
     pack .copy.top.old.tdata .copy.top.old.gdata .copy.top.old.window \
 	    -pady 3m -side top -fill x -expand 1
 
-    frame .copy.top.new.view
     frame .copy.top.new.gdata
-    pack .copy.top.new.view .copy.top.new.gdata -pady 3m -side top \
-	    -fill x -expand 1
+    pack .copy.top.new.gdata -pady 3m -side top -fill x -expand 1
 
     label .copy.top.old.tdata.label -text "Source Data:" -width 13
     menubutton .copy.top.old.tdata.menu -relief raised -textvariable tdata \
@@ -243,12 +243,6 @@ proc DoViewCopy {} {
 	    -menu .copy.top.old.window.menu.list
     pack .copy.top.old.window.label -padx 2m -side left
     pack .copy.top.old.window.menu -padx 2m -side left -fill x -expand 1
-
-    label .copy.top.new.view.label -text "View Name:" -width 13
-    entry .copy.top.new.view.entry -relief sunken
-    .copy.top.new.view.entry insert 0 $newView
-    pack .copy.top.new.view.label -padx 2m -side left
-    pack .copy.top.new.view.entry -padx 2m -side left -fill x -expand 1
 
     label .copy.top.new.gdata.label -text "Mapping Name:" -width 13
     entry .copy.top.new.gdata.entry -relief sunken
@@ -296,14 +290,13 @@ proc DoViewCopy {} {
     pack .copy.bot.but -side top
 
     button .copy.bot.but.ok -text OK -width 10 -command {
-	set newView [.copy.top.new.view.entry get]
 	set newGdata [.copy.top.new.gdata.entry get]
-	if {$newView == "" || $newGdata == ""} {
-	    dialog .noViewName "No View or Mapping Name" \
-		    "Please specify view and mapping names." "" 0 OK
+	if {$newGdata == ""} {
+	    dialog .noViewName "No Mapping Name" \
+		    "Please specify mapping name." "" 0 OK
 	    return
 	}
-	DoActualViewCopy $view $newView $tdata $gdata $newGdata $window
+	DoActualViewCopy $view $tdata $gdata $newGdata $window
 	destroy .copy
     }
     button .copy.bot.but.cancel -text Cancel -width 10 -command {
@@ -315,7 +308,7 @@ proc DoViewCopy {} {
 
 ############################################################
 
-proc DoActualViewCopy {view newView tdata gdata newGdata window} {
+proc DoActualViewCopy {view tdata gdata newGdata window} {
 
     # need to add check that tdata(view) is same type as tdata
 
@@ -336,6 +329,7 @@ proc DoActualViewCopy {view newView tdata gdata newGdata window} {
 
     set class [GetClass view $view]
     set params [DEVise getCreateParam view $class $view]
+    set newView [UniqueName $view]
     set newParams [linsert [lrange $params 1 end] 0 $newView]
     eval DEVise create view $class $newParams
 
