@@ -32,6 +32,12 @@ public class DTE {
 			System.out.println(e);
 			System.exit(1);
 		}
+		catch(IOException e)
+		  {
+		    System.out.println(e);
+		    System.exit(1);
+		  }
+
 		System.out.println("Type checked Query is: " + query.printTypes());
 		PlanNode plan = query.optimize();
 		
