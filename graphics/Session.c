@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/05/05 15:14:47  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.23  1998/05/02 09:02:29  taodb
   Added support for command logging
   Added support for registering events with delay
@@ -1232,22 +1237,6 @@ Session::CallParseAPI(ControlPanelSimple *control, char *&result,
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
-}
-
-/*------------------------------------------------------------------------------
- * function: Session::PrintArgs
- * Print a set of arguments.
- */
-void
-Session::PrintArgs(FILE *fp, int argc, char **argv)
-{
-  int index;
-  char *prefix = "";
-  for (index = 0; index < argc; index++) {
-    fprintf(fp, "%s{%s}", prefix, argv[index]);
-    prefix = " ";
-  }
-  fprintf(fp, "\n");
 }
 
 /*------------------------------------------------------------------------------

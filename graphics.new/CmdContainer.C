@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/02 09:00:38  taodb
+  Added support for JAVA Screen and command logging
+
   Revision 1.7  1998/04/07 14:30:05  wenger
   Reduced unnecessary include dependencies.
 
@@ -61,6 +64,9 @@
 #include "Csprotocols.h"
 #include "CmdLog.h"
 #include "DeviseCommand.h"
+#include "Util.h"
+
+//#define DEBUG
 
 static char* cmdLogBase ="/tmp/cmdLog.";
 #define REGISTER_COMMAND(objType)\
@@ -388,10 +394,7 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 
 #if defined(DEBUG)
     printf("CmdContainer::Run(");
-	for (int index = 0; index < argc; index++) {
-	  printf("<%s>", argv[index]);
-	  if (index < argc - 1) printf(", ");
-	}
+	PrintArgs(stdout, argc, argv, false);
     printf(")\n");
 #endif
 	
@@ -519,19 +522,13 @@ CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control)
 	{
 		fprintf(stderr, "Unrecognized command (%s)\n", argv[0]);
 		fprintf(stderr, "Command is: ");
-		int index;
-		char *prefix = "";
-		for (index = 0; index < argc; index++) {
-			  fprintf(stderr, "%s{%s}", prefix, argv[index]);
-			  prefix = " ";
-		}
-		fprintf(stderr, "\n");
+        PrintArgs(stderr, argc, argv, true);
 		control->ReturnVal(API_NAK, "Unrecognized command");
 		retval = -1;
 	}
 	else
 	{
-		retval = cmd->Run(argc, argv,control);
+		retval = cmd->Run(argc, argv, control);
 	}
 	return retval;
 }

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/04/28 18:02:40  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.7  1997/10/03 14:37:04  wenger
   Various fixes to get session opening/saving to work with client/server
   version; reading old-style (Tcl) session files now works in back end;
@@ -127,8 +132,6 @@ private:
   static DevStatus CallParseAPI(ControlPanelSimple *control, char *&result,
       Boolean splitResult, int &argcOut, char **&argvOut, char *arg0,
       char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
-
-  static void PrintArgs(FILE *fp, int argc, char **argv);
 };
 
 #endif /* _Session_h_ */

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/05/08 17:16:23  taodb
+  Added stripping functions for "{}"
+
   Revision 1.3  1998/05/05 17:07:25  wenger
   Minor improvements to JavaScreenCmd.[Ch].
 
@@ -81,7 +84,7 @@ class JavaWindowInfo
 {
 	public:
 		JavaWindowInfo(JavaRectangle& winRec, string& winName,
-			string& imageName, int views, ...);
+			string& imageName, int viewCount, JavaViewInfo **views);
 		~JavaWindowInfo();
 		string			_winName;
 		string			_imageName;

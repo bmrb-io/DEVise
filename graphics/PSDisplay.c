@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/02/16 15:41:19  wenger
+  Fixed (I believe) bug 287.
+
   Revision 1.23  1997/11/24 23:14:28  weaver
   Changes for the new ColorManager.
 
@@ -225,7 +228,7 @@ Open the print file.
 **************************************************************/
 
 DevStatus
-PSDisplay::OpenPrintFile(char *filename)
+PSDisplay::OpenPrintFile(const char *filename)
 {
   DevStatus result(StatusOk);
 

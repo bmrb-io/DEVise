@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.109  1998/04/16 21:50:57  wenger
+  Committed Sanjay's text code.
+
   Revision 1.108  1998/04/13 22:25:02  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -932,12 +935,12 @@ void XWindowRep::PopClip()
 /* Changing how this works -- always export to GIF; then if we need
  * PostScript, translate from GIF to PostScript.  RKW June 3, 1997. */
 
-void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
+void XWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
 {
   DO_DEBUG(printf("XWindowRep::ExportImage(this = %p)\n", this));
 
   /* Generate the GIF file. */
-  char *gifFile;
+  const char *gifFile;
   if (format == GIF) {
     gifFile = filename;
   } else if (format == POSTSCRIPT || format == EPS) {
@@ -3339,6 +3342,10 @@ void XWindowRep::AbsoluteOrigin(int &x, int &y)
     x += winX;
     y += winY;
     
+    //
+    // I don't understand at all what this code (looking at the children)
+    // is for, but if we don't have it some sessions cannot be successfully
+    // opened(!).  RKW May 14, 1998.
     Window *children;
     unsigned int nchildren;
     if (!XQueryTree(_display, current, &root, &parent,

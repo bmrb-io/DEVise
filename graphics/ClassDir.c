@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/05/06 22:04:40  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.16  1998/04/14 21:03:05  wenger
   TData attribute links (aka set links) are working except for actually
   creating the join table, and some cleanup when unlinking, etc.
@@ -302,7 +306,7 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 
 /* Find instance with given name */
 
-void *ClassDir::FindInstance(char *name)
+void *ClassDir::FindInstance(const char *name)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 #if defined(DEBUG)
@@ -652,7 +656,7 @@ void ClassDir::Print()
 
 /* Find name of instance */
 
-char *ClassDir::FindInstanceName(void *inst)
+char *ClassDir::FindInstanceName(const void *inst)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {

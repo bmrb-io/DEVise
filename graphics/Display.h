@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/11/24 23:14:20  weaver
+  Changes for the new ColorManager.
+
   Revision 1.28  1997/11/12 15:45:12  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -211,7 +214,7 @@ public:
 #endif
 
 
-  virtual DevStatus OpenPrintFile(char *filename) { return StatusFailed; }
+  virtual DevStatus OpenPrintFile(const char *filename) { return StatusFailed; }
   virtual DevStatus ClosePrintFile() { return StatusFailed; }
   virtual FILE *GetPrintFile() { return NULL; }
 #ifndef LIBCS

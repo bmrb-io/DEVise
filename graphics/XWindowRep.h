@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/04/16 21:51:00  wenger
+  Committed Sanjay's text code.
+
   Revision 1.53  1998/04/13 22:25:03  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -352,7 +355,8 @@ class XWindowRep : public WindowRep
 	virtual void PopClip();
 
 	/* export window image to other graphics formats */
-	virtual void ExportImage(DisplayExportFormat format, char *filename);
+	virtual void ExportImage(DisplayExportFormat format,
+	    const char *filename);
 
 	/* import graphics via Dali */
 	virtual void SetDaliServer(const char *serverName)

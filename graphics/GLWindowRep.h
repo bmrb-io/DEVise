@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/05/05 15:14:44  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.11  1998/04/16 21:50:17  wenger
   Committed Sanjay's text code.
 
@@ -150,7 +155,7 @@ public:
   virtual void PopClip();
 
   /* export window image to other graphics formats */
-  virtual void ExportImage(DisplayExportFormat format, char *filename);
+  virtual void ExportImage(DisplayExportFormat format, const char *filename);
 
   /* import graphics via Dali */
   virtual void SetDaliServer(const char *serverName)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/04/16 21:50:50  wenger
+  Committed Sanjay's text code.
+
   Revision 1.28  1998/04/13 22:24:53  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -245,7 +248,7 @@ class PSWindowRep : public WindowRep
                              DisplayExportFormat format, char *filename);
 
     /* export window image to other graphics formats */
-    virtual void ExportImage(DisplayExportFormat format, char *filename);
+    virtual void ExportImage(DisplayExportFormat format, const char *filename);
 
     /* import graphics via Dali */
     virtual void SetDaliServer(const char *serverName) { _daliServer =

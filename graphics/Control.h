@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/05/02 09:02:25  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.23  1998/02/02 18:25:53  wenger
   Strings file can now be loaded manually; name of strings file is now
   stored in session file; added 'serverExit' command and kill_devised
@@ -161,7 +165,7 @@ public:
   virtual void SelectView(View *view) = 0;
 
   /* Find pointer to instance with given name */
-  static void *FindInstance(char *name) {
+  static void *FindInstance(const char *name) {
     return GetClassDir()->FindInstance(name);
   }
 

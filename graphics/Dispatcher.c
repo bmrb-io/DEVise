@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/05/02 09:02:26  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.42  1998/04/13 22:24:45  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -421,10 +425,6 @@ void Dispatcher::Terminate(int sig)
   if (dispatcher._firstIntr) {
     printf("\nReceived interrupt. Terminating program.\n");
     dispatcher._quit = true;
-#if 1 //TEMP
-    Cleanup();
-    Exit::DoExit(0);
-#endif
   } else {
     printf("\nReceived interrupt. Hit interrupt once more to quit.\n");
     dispatcher._firstIntr = true;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/24 23:14:28  weaver
+  Changes for the new ColorManager.
+
   Revision 1.16  1997/07/22 19:44:28  wenger
   Removed extra dependencies that broke cslib link.
 
@@ -153,7 +156,7 @@ public:
     virtual void ExportToPS(DisplayExportFormat format, char *filename) {}
 #endif
 
-    virtual DevStatus OpenPrintFile(char *filename);
+    virtual DevStatus OpenPrintFile(const char *filename);
     virtual DevStatus ClosePrintFile();
     virtual FILE *GetPrintFile() { return _printFile; }
 #ifndef LIBCS

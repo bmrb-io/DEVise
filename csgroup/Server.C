@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/05/13 13:36:45  wenger
+  Fixed some dynamic memory errors in the csgroup code; cleaned up
+  DeviseCommand class somewhat -- simplified the calling of Run()
+  functions in subclasses.
+
   Revision 1.10  1998/05/02 08:38:58  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -112,6 +117,7 @@
 #include "serverInterface.h"
 #include "keys.h"
 #include "Csprotocols.h"
+#include "Util.h"
 
 Server* _ThisServer;
 
@@ -1113,6 +1119,15 @@ int
 Server::ReturnVal(ClientID clientID, u_short flag, int argc, char **argv,
     int addBraces)
 {
+#if defined(DEBUG)
+    printf("Server::ReturnVal(");
+	printf("%d, %d, ", clientID, flag);
+	PrintArgs(stdout, argc, argv, false);
+	printf(", %d", addBraces);
+	printf(")\n");
+	fflush(stdout);
+#endif
+
 	if (clientID == CLIENT_INVALID)
 		return -1;
 

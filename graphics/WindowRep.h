@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  1998/05/04 17:49:02  wenger
+  Fixed error in declaration of ETk_MoveResizeWindow.
+
   Revision 1.70  1998/04/16 21:50:51  wenger
   Committed Sanjay's text code.
 
@@ -519,7 +522,7 @@ public:
 			   DisplayExportFormat format, char *filename) {}
 
   /* export window image to other graphics formats */
-  virtual void ExportImage(DisplayExportFormat format, char *filename) {}
+  virtual void ExportImage(DisplayExportFormat format, const char *filename) {}
   virtual void ExportGIF(FILE *fp, int isView = 0) {}
 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/05/07 19:11:03  wenger
+  Upper-case E now allowed for exponents in doubles and floats.
+
   Revision 1.16  1997/09/23 19:57:28  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -307,6 +310,7 @@ inline double UtilAtof(char *str)
   return value;
 }
 
+void PrintArgs(FILE *fp, int argc, char **argv, Boolean printNewline = true);
 void CopyArgs(int argc, const char * const * argvOld, char **&argvNew);
 void FreeArgs(int argc, char **argv);
 

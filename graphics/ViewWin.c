@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/05/05 15:14:52  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.43  1998/03/13 18:10:39  wenger
   Fixed bug 327 (gaps in view background colors).
 
@@ -313,10 +318,10 @@ void ViewWin::Iconify()
 }
 
 DevStatus
-ViewWin::ExportImage(DisplayExportFormat format, char *filename)
+ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
 {
-  DO_DEBUG(printf("ViewWin::ExportImage(_parent = %p, filename = %s)\n",
-    _parent, filename));
+  DO_DEBUG(printf("ViewWin(%s)::ExportImage(_parent = %p, filename = %s)\n",
+    GetName(), _parent, filename));
   DevStatus result = StatusOk;
 
 #if DIRECT_POSTSCRIPT
@@ -451,7 +456,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   screenWinRep->SetForeground(fgid);
   screenWinRep->SetBackground(bgid);
   
-  //TEMPTEMP -- is this callback ever deleted?  RKW 5/7/97.
+  //TEMP -- is this callback ever deleted?  RKW 5/7/97.
   screenWinRep->RegisterCallback(windowRepCallback);
   screenWinRep->SetDaliServer(Init::DaliServer());
   screenWinRep->SetETkServer((char *)ETkIfc::GetServer());
@@ -531,7 +536,7 @@ void ViewWin::Unmap()
 #endif
 
   SubClassUnmapped();
-  //TEMPTEMP?_winReps.GetScreenWinRep()->DeleteCallback(windowRepCallback);
+  //TEMP?_winReps.GetScreenWinRep()->DeleteCallback(windowRepCallback);
 
   if (!WindowRep::IsDestroyPending())
   {

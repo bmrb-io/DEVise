@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/03/09 15:13:58  wenger
+  Fixed compile warning.
+
   Revision 1.24  1998/02/23 23:22:30  wenger
   Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
 
@@ -393,6 +396,18 @@ int writen(int fd, char *buf, int nbytes)
     }
 
     return nbytes - nleft;
+}
+
+void
+PrintArgs(FILE *fp, int argc, char **argv, Boolean printNewline)
+{
+  int index;
+  char *prefix = "";
+  for (index = 0; index < argc; index++) {
+    fprintf(fp, "%s<%s>", prefix, argv[index]);
+    prefix = ", ";
+  }
+  if (printNewline) fprintf(fp, "\n");
 }
 
 void

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/05/06 22:04:40  wenger
+  Single-attribute set links are now working except where the slave of
+  one is the master of another.
+
   Revision 1.7  1998/04/14 21:03:06  wenger
   TData attribute links (aka set links) are working except for actually
   creating the join table, and some cleanup when unlinking, etc.
@@ -160,10 +164,10 @@ public:
 		int &num, char **&instancePointers);
 
 	/* Find instance with given name */
-	void *FindInstance(char *name);
+	void *FindInstance(const char *name);
 
 	/* Find name for instance */
-	char *FindInstanceName(void *instance);
+	char *FindInstanceName(const void *instance);
 
 	/* Find ClassInfo object for a given instance */
 	ClassInfo *FindClassInfo(char *instanceName);

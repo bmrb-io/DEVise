@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/05/08 17:16:23  taodb
+  Added stripping functions for "{}"
+
   Revision 1.3  1998/05/05 17:07:24  wenger
   Minor improvements to JavaScreenCmd.[Ch].
 
@@ -48,29 +51,56 @@
 #include "CmdContainer.h"
 #include "ClientAPI.h"
 #include "Control.h"
+#include "Util.h"
+#include "Session.h"
+#include "WinClassInfo.h"
+#include "ViewWin.h"
+#include "Init.h"
+#include "Timer.h"
+#include "QueryProc.h"
+
+//#define DEBUG
 
 off_t getFileSize(const char* filename);
+
 void
 JavaScreenCmd::GetSessionList()
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::GetSessionList(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
 	// ADD---begin
-	char* argv[4] =
+	char* argv[] =
 	{
 		_controlCmdName[UPDATESESSIONLIST],
 		"/p/devise/session/AAAcolor2.ds",
 		"/p/devise/session/AAAcolor3.ds",
-		"/p/devise/session/JFK2.ds"
+		"/p/devise/session/JFK2.ds",
+		"/p/devise/session/demo/colors.ds",
+		"/p/devise/session/test/js_test.ds",// no spaces in names
+		"dummy_session"
 	};
 
 
 
 	// ADD---end
-	_status = RequestUpdateSessionList(4, argv);	
+	_status = RequestUpdateSessionList(sizeof(argv)/sizeof(argv[0]), argv);	
 }
 
 void
 JavaScreenCmd::OpenSession()
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::OpenSession(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
 	if (_argc != 1)
 	{
 		errmsg = "{Usage: OpenSession <session name>}";
@@ -78,38 +108,136 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
-	// Add---begin
+	// Set batch mode so the server makes pixmaps instead of windows.
+	ControlPanel::Instance()->SetBatchMode(true);
 
+	// Open the session.
+    DevStatus result = Session::Open(_argv[0]);
+	if (!result.IsComplete())
+	{
+		errmsg = "{Error opening session}";
+		_status = ERROR;
+		return;
+	}
+
+	// Wait for all queries to finish before continuing.
+    QueryProc *qp = QueryProc::Instance();
+    do {
+      Dispatcher::SingleStepCurrent();
+    } while (!qp->Idle());
 
 
 	// Dump all window images to files: e.g. window1.gif, window2.gif...
 	printf("Session:%s requested!\n", _argv[0]);
-	JavaRectangle winRec(0,0,400,300);
-	JavaRectangle viewRec1(0,0,200,300);
-	JavaRectangle viewRec2(200,0,400,300);
 
-	string	winName("Testwindow");
-	string	imageName("window1.gif");
-	string	viewName1("View1");
-	string	viewName2("View2");
-
-	JavaViewInfo viewInfo1(viewRec1, viewName1);
-	JavaViewInfo viewInfo2(viewRec2, viewName2);
-
-	JavaWindowInfo winInfo(
-					winRec,
-					winName,
-					imageName,
-					2, (void*)&viewInfo1, (void*)&viewInfo2);
-
-	// send one image to JAVA_Screen 
-	_status = RequestCreateWindow(winInfo);
-	if (_status != DONE)
-		return;
-	else
+	int winIndex = DevWindow::InitIterator();
+	while (DevWindow::More(winIndex))
 	{
-		//.... You can send more window images here....
+	  ClassInfo *info = DevWindow::Next(winIndex);
+	  ViewWin *window = (ViewWin *)info->GetInstance();
+	  if (window != NULL)
+	  {
+#if defined(DEBUG)
+        printf("window name: %s\n", window->GetName());
+		printf("%d children\n", window->NumChildren());
+	    fflush(stdout);
+#endif
+
+        JavaViewInfo **views = new JavaViewInfo*[window->NumChildren()];
+
+
+
+
+		int winX, winY;
+		unsigned winW, winH;
+		window->RealGeometry(winX, winY, winW, winH);
+#if defined(DEBUG)
+        printf("window RealGeometry = %d, %d, %d, %d\n", winX, winY, winW,
+			winH);
+#endif
+
+		window->AbsoluteOrigin(winX, winY);
+#if defined(DEBUG)
+        printf("window AbsoluteOrigin = %d, %d\n", winX, winY);
+#endif
+
+		JavaRectangle winRect(0, 0, winW-1, winH-1);
+#if defined(DEBUG)
+        printf("window JavaRectangle: (%g, %g), (%g, %g)\n", winRect._x1,
+			winRect._y1, winRect._x2, winRect._y2);
+#endif
+
+        string winName(window->GetName());
+        string imageName(Init::TmpDir());
+        imageName += "/" + winName + ".gif";
+#if defined(DEBUG)
+        cout << "imageName = " << imageName << endl;
+#endif
+
+
+
+
+	    int viewNum = 0;
+		int viewIndex = window->InitIterator();
+		while (window->More(viewIndex))
+		{
+		  ViewWin *view = window->Next(viewIndex);
+#if defined(DEBUG)
+          printf("  view name: %s\n", view->GetName());
+#endif
+
+
+		  int viewX, viewY;
+		  unsigned viewW, viewH;
+		  view->RealGeometry(viewX, viewY, viewW, viewH);
+#if defined(DEBUG)
+          printf("  view RealGeometry = %d, %d, %d, %d\n", viewX, viewY,
+			  viewW, viewH);
+#endif
+
+		  view->AbsoluteOrigin(viewX, viewY);
+#if defined(DEBUG)
+          printf("  view AbsoluteOrigin = %d, %d\n", viewX, viewY);
+#endif
+
+		  JavaRectangle viewRect(viewX, viewY, viewX + viewW - 1,
+			  viewY + viewH - 1);
+#if defined(DEBUG)
+          printf("  view JavaRectangle: (%g, %g), (%g, %g)\n", viewRect._x1,
+			  viewRect._y1, viewRect._x2, viewRect._y2);
+#endif
+
+		  string viewName(view->GetName());
+
+		  JavaViewInfo *viewInfo = new JavaViewInfo(viewRect, viewName);
+		  views[viewNum] = viewInfo;
+
+		  viewNum++;
+		}
+		window->DoneIterator(viewIndex);
+
+        JavaWindowInfo winInfo(winRect, winName, imageName,
+			window->NumChildren(), views);
+
+
+
+	    _status = RequestCreateWindow(winInfo);
+
+        delete [] views;
+	  }
 	}
+	DevWindow::DoneIterator(winIndex);
+
+
+
+
+
+
+
+
+
+
+
 
 	// Add---end
 }
@@ -117,6 +245,13 @@ JavaScreenCmd::OpenSession()
 void
 JavaScreenCmd::MouseAction_Click()
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::MouseAction_Click(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
 	if (_argc != 3)
 	{
 		errmsg = "{Usage: MouseAction_Click <view name> <x> <y>}";
@@ -138,6 +273,13 @@ JavaScreenCmd::MouseAction_Click()
 void
 JavaScreenCmd::MouseAction_DoubleClick()
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::MouseAction_DoubleClick(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
 	if (_argc != 3)
 	{
 		errmsg = "{Usage: MouseAction_DoubleClick <view name> <x> <y>}";
@@ -160,6 +302,13 @@ JavaScreenCmd::MouseAction_DoubleClick()
 void
 JavaScreenCmd::MouseAction_RubberBand()
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::MouseAction_RubberBand(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
+
 	if (_argc != 5)
 	{
 		errmsg = "{Usage: MouseAction_RubberBand <view name>}"
@@ -196,14 +345,15 @@ JavaScreenCmd::MouseAction_RubberBand()
 void
 JavaScreenCmd::CloseCurrentSession()
 {
-	// ADD---Begin
+#if defined (DEBUG)
+    printf("JavaScreenCmd::CloseCurrentSession(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+	fflush(stdout);
+#endif
 
+	ControlPanel::Instance()->DestroySessionData();
 
-
-
-
-
-	// ADD---End
 	_status = DONE;
 	return;
 }
@@ -212,6 +362,11 @@ JavaScreenCmd::CloseCurrentSession()
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateGData(GDataVal gval)
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::RequestUpdateGData()\n");
+	fflush(stdout);
+#endif
+
 	// Add---begin
 	char* argv[7] =
 	{
@@ -232,6 +387,11 @@ JavaScreenCmd::RequestUpdateGData(GDataVal gval)
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(TDataVal tval)
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::RequestUpdateRecordValue()\n");
+	fflush(stdout);
+#endif
+
 	// Add--begin
 	char buf[128];
 	sprintf(buf, "%f", tval);
@@ -259,24 +419,19 @@ getFileSize(const char* filename)
 }
 
 JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
-	string& imageName, int views, ...)
+	string& imageName, int viewCount, JavaViewInfo **views)
 {
 	_winRec = winRec;
 	_winName = winName;
 	_imageName = imageName;
-	_views 	= views;
-	_viewList = new JavaViewInfo[views];
+	_views 	= viewCount;
+	_viewList = new JavaViewInfo[viewCount];
 
-	va_list		pvar;
-	va_start(pvar, views);
 	int i;
-	for (i=0; i< views; ++i)
+	for (i=0; i< viewCount; ++i)
 	{
-		void* cmd;
-		cmd = va_arg(pvar, void*);
-		_viewList[i] = *(JavaViewInfo*)cmd;
+		_viewList[i] = *views[i];
 	}
-	va_end(pvar);
 }
 
 JavaWindowInfo::~JavaWindowInfo()
@@ -298,6 +453,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_Error",
 	"JAVAC_Fail"
 };
+
 JavaScreenCmd::~JavaScreenCmd()
 {
 	int	i;
@@ -311,6 +467,7 @@ JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 {
 	return JavaScreenCmd::_controlCmdName[(int)ctype];
 }
+
 JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
@@ -366,6 +523,11 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 int
 JavaScreenCmd::Run()
 {
+#if defined(DEBUG)
+    printf("JavaScreenCmd::Run(%d)\n", _ctype);
+	fflush(stdout);
+#endif
+
 	_status = DONE;
 	if (_ctype == JAVAEXIT)
 	{
@@ -397,6 +559,7 @@ JavaScreenCmd::Run()
 	}
 	return ControlCmd(_status);
 }
+
 int
 JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 {
@@ -459,6 +622,11 @@ JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::SendWindowImage(%s)\n", fileName);
+	fflush(stdout);
+#endif
+
 	ControlCmdType	status = DONE;
 
 	// send the dumped image file to the JAVA_SCREEN client
@@ -488,6 +656,12 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 		}
 		close(fd);
 	}
+
+#if defined(DEBUG)
+    printf("  done sending window image\n");
+	fflush(stdout);
+#endif
+
 	return status;
 }
 
@@ -501,11 +675,34 @@ JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::RequestCreateWindow()\n");
+	fflush(stdout);
+#endif
+
 	const char*	fileName = winInfo._imageName.c_str();
 	ControlCmdType	status = DONE;
 	int		filesize = 0;
 
+// TEMP maybe the dumping, getting file size, etc., should be put into
+// a single function
+
+    ViewWin *viewWin = (ViewWin *)ControlPanel::FindInstance(
+		winInfo._winName.c_str());
+    if (!viewWin) {
+      reportErrNosys("Cannot find window");
+      return ERROR;
+    }
+    
+    viewWin->ExportImage(GIF, fileName);
+
+
+
+
 	filesize = getFileSize(fileName);
+#if defined(DEBUG)
+        printf("filesize = %d\n", filesize);
+#endif
 	if (filesize >0)
 	{
 		//
@@ -562,10 +759,14 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 }
 
 
-
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 {
+#if defined (DEBUG)
+    printf("JavaScreenCmd::RequestUpdateWindow(%s, %d)\n", winName, imageSize);
+	fflush(stdout);
+#endif
+
 	char* argv[3];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[UPDATEWINDOW];
@@ -575,6 +776,7 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 	free(argv[2]);
 	return DONE;
 }
+
 void
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
@@ -602,6 +804,11 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 	nargv[argc-1]= buf;
 
 	// send the command out
+	// TEMP There's a problem here -- if we don't add braces, things fail
+	// if a window name, view name, etc., contains spaces.  On the other
+	// hand, if we do add braces, the JavaScreen sometimes seems to get
+	// mixed up and not know when it has finished reading stuff from the
+	// server.
 	_control->ReturnVal(API_JAVACMD, argc, nargv, false);
 	delete []nargv;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1998/04/16 21:50:48  wenger
+  Committed Sanjay's text code.
+
   Revision 1.37  1998/04/13 22:24:52  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -505,7 +508,7 @@ void PSWindowRep::ImportImage(Coord x, Coord y,
 /*---------------------------------------------------------------------------*/
 /* export window image */
 
-void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
+void PSWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
 {
   reportErrNosys("PSWindowRep::ExportImage() not yet implemented");
     /* do something */

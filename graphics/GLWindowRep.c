@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/05/05 15:14:43  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.15  1998/04/16 21:50:15  wenger
   Committed Sanjay's text code.
 
@@ -468,7 +473,7 @@ void GLWindowRep::PopClip()
 }
 
 /* export window image to other graphics formats */
-void GLWindowRep::ExportImage(DisplayExportFormat format, char *filename)
+void GLWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
 {
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::ExportImage()\n",this);

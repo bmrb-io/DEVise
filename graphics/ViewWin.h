@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/02/04 20:22:04  zhenhai
+  Fixed bugs of displaying date and customized text at axis.
+
   Revision 1.26  1997/12/12 05:50:23  weaver
   *** empty log message ***
 
@@ -217,7 +220,7 @@ class ViewWin : public Coloring
     /* Iconify window, if top level. Not guaranteed to succeed */
     void Iconify();
 
-    DevStatus ExportImage(DisplayExportFormat format, char *filename);
+    DevStatus ExportImage(DisplayExportFormat format, const char *filename);
 
     /* Insert ViewWin into a parent */
     void AppendToParent(ViewWin *parent);
