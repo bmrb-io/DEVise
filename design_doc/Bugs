@@ -1593,6 +1593,37 @@ Num Date        Status  Description
 417 10/12/98	OPEN	DTE should not exit if DataReader schema cannot be
 			parsed. (rkw)
 
+418 10/14/98	OPEN	If mapping dialog is shown and you open a new session,
+			the mapping dialog doesn't get properly updated
+			until you select a view in the new session. (rkw)
+
+419 10/14/98	OPEN	When selecting a piled view, the mapping dialog selects
+			the "top" (drawn last) view, while everything else
+			selects the "bottom" (drawn first) view. (rkw)
+			(I think this could be fixed by having piled views
+			draw into the WindowRep of the "top" view instead of
+			the "bottom" view.  rkw)
+
+420 10/14/98	OPEN	If you pile and stack the same views, the opposite
+			view is on top of the pile vs. the stack. (rkw)
+
+421 10/19/98	OPEN	Closing any of the test/setlink*.ds sessions causes
+			DEVise to crash. (rkw)
+
+422 10/19/98	OPEN	Setting a cursor destination without setting the
+			source causes a crash. (rkw)
+
+423 10/20/98	OPEN	Don't allow user to (accidentally) save a session
+			to the full path $DEVISE_SESSION (destroys session
+			directory). (rkw)
+
+424 10/20/98	OPEN	Create an SQLView -- it doesn't get added to the
+			data source catalog. (rr/rkw)
+
+425 10/20/98	OPEN	Creating an SQLView -- "Select All" and "Mirror"
+			put recId in the AS clause, but this query is
+			then rejected because recId is a reserved name. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
