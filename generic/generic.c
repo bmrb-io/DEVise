@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/06/06 21:43:25  wenger
+  Added composite attributes for each type of miss in IBM trace 4 composite
+  parser.
+
   Revision 1.24  1996/06/06 16:59:06  wenger
   Added a new composite parser for the fourth set of IBM traces.
 
@@ -746,7 +750,7 @@ public:
 
       char *primAttrs[] = { "Address", "Ref", "RecNum", "Tag", "X", "Y",
         "Color", "Misses", "L2miss", "ICmiss", "DCmiss", "ITmiss", "DTmiss",
-		"COmiss", "TotalMisses" };
+		"COmiss", "TotalMisses", "HasMisses" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -778,6 +782,7 @@ public:
     int *DTmissP = (int *) (buf + attrOffset[12]);
     int *COmissP = (int *) (buf + attrOffset[13]);
     int *totalMissesP = (int *) (buf + attrOffset[14]);
+    int *hasMissesP = (int *) (buf + attrOffset[15]);
 
     // Record number is passed to us via the record interpreter
     *recPtr = recInterp->GetRecPos();
@@ -829,6 +834,7 @@ public:
     *DTmissP = 0;
     *COmissP = 0;
     *totalMissesP = 0;
+    *hasMissesP = 0;
 
     if (*missesP & SIM_ITLB_IR_MISS)
     {
@@ -884,6 +890,8 @@ public:
 	(*totalMissesP)++;
     }
 
+    if (*totalMissesP > 0) *hasMissesP = 1;
+
     //printf("%d: %02x %02x  %02x %04x\n", *recPtr, address[0], address[1], *tagPtr, *missesP);
   }
 
@@ -922,6 +930,7 @@ int main(int argc, char **argv)
   CompositeParser::Register("IBMTRACE.2.ir", new IBMAddressTraceComposite2);
   CompositeParser::Register("IBMTRACE.2.ld", new IBMAddressTraceComposite2);
   CompositeParser::Register("IBMTRACE.2.st", new IBMAddressTraceComposite2);
+  CompositeParser::Register("IBMTRACE.2.miss", new IBMAddressTraceComposite2);
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);

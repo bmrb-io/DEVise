@@ -35,6 +35,12 @@ Num Date        Status  Description
 						as argument may not be work correctly (alignment of
 						_tmpPtr). (rkw)
 
+011	06/06/96	OPEN	DEVise doesn't deal well with bar charts where data
+						is all zeros -- sometimes crashes. (rkw)
+
+012	06/06/96	OPEN	All TData's ever used in a session get saved, even
+						if they're no longer used. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
