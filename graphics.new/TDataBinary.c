@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/01 19:28:09  jussi
+  Added support for typed data sources (WWW and UNIXFILE). Renamed
+  'cache' references to 'index' (cache file is really an index).
+  Added support for asynchronous interface to data sources.
+
   Revision 1.10  1996/06/27 18:12:41  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -75,18 +80,19 @@
 #include "TDataBinary.h"
 #include "Exit.h"
 #include "Util.h"
+#include "DataSourceFileStream.h"
+#include "DataSourceSegment.h"
+#include "DataSourceTape.h"
+#include "DevError.h"
+#include "DataSeg.h"
+#include "QueryProc.h"
+
 #ifdef ATTRPROJ
 #   include "ApInit.h"
 #else
 #   include "Init.h"
+#   include "DataSourceWeb.h"
 #endif
-#include "DataSourceFileStream.h"
-#include "DataSourceSegment.h"
-#include "DataSourceTape.h"
-#include "DataSourceWeb.h"
-#include "DevError.h"
-#include "DataSeg.h"
-#include "QueryProc.h"
 
 static char fileContent[BIN_CONTENT_COMPARE_BYTES];
 static char indexFileContent[BIN_CONTENT_COMPARE_BYTES];
@@ -103,8 +109,10 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
 
   if (!strcmp(_type, "UNIXFILE")) {
     _file = CopyString(_param);
+#ifndef ATTRPROJ
   } else if (!strcmp(_type, "WWW")) {
     _file = MakeCacheFileName(_name, _type);
+#endif
   } else {
     fprintf(stderr, "Invalid TData type: %s\n", _type);
     DOASSERT(0, "Invalid TData type");
@@ -125,7 +133,9 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
   // whether this is a tape, disk file, or Web resource, and whether
   // or not the data occupies the entire file.
 
-  if (!strcmp(_type, "WWW")) {
+#ifndef ATTRPROJ
+  if (!strcmp(_type, "WWW"))
+  {
     if (strcmp(_name, segLabel))
     {
       DOASSERT(false, "Data segment does not match tdata");
@@ -139,7 +149,10 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
       _data = new DataSourceSegment<DataSourceWeb>(_param, NULL, _file,
                                                    segOffset, segLength);
     }
-  } else {
+  }
+  else
+#endif
+  {
     if (strcmp(_file, segFile) || strcmp(_name, segLabel))
     {
       DOASSERT(false, "Data segment does not match tdata");

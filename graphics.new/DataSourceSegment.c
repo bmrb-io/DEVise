@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/01 19:31:34  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.2  1996/06/04 19:58:45  wenger
   Added the data segment option to TDataBinary; various minor cleanups.
 
@@ -47,11 +53,13 @@
 
 #include "DataSourceFileStream.h"
 #include "DataSourceTape.h"
-#include "DataSourceWeb.h"
 #include "DataSourceSegment.h"
 #include "Util.h"
 #include "DevError.h"
 
+#ifndef ATTRPROJ
+#   include "DataSourceWeb.h"
+#endif
 
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
@@ -61,7 +69,9 @@ static char *	srcFile = __FILE__;
 
 template class DataSourceSegment<DataSourceFileStream>;
 template class DataSourceSegment<DataSourceTape>;
+#ifndef ATTRPROJ
 template class DataSourceSegment<DataSourceWeb>;
+#endif
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::DataSourceSegment
