@@ -25,6 +25,7 @@ public:
 	virtual int getNumFlds() = 0;
 	virtual String *getTypeIDs() = 0;
 	virtual String *getAttributeNames() = 0;
+	virtual String *getOrderingAttrib() = 0;
 	virtual Tuple  *getNext() = 0;
 	virtual Stats* getStats(){
 
