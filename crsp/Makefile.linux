@@ -1,0 +1,117 @@
+depend:
+	makedepend -fMakefile.linux -I../crsp -I../graphics.new -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+cal.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+cal.o: /usr/include/stdlib.h /usr/include/features.h /usr/include/sys/cdefs.h
+cal.o: /usr/include/errno.h /usr/include/linux/errno.h /usr/include/alloca.h
+cal.o: cal.h /usr/include/sys/types.h /usr/include/linux/types.h
+cal.o: /usr/include/asm/types.h /usr/include/sys/uio.h /usr/include/unistd.h
+cal.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+cal.o: /usr/include/confname.h
+crsp_extract.o: /usr/include/assert.h /usr/include/stdlib.h
+crsp_extract.o: /usr/include/features.h /usr/include/sys/cdefs.h
+crsp_extract.o: /usr/include/errno.h /usr/include/linux/errno.h
+crsp_extract.o: /usr/include/alloca.h /usr/include/string.h sec.h
+crsp_extract.o: /usr/include/sys/types.h /usr/include/linux/types.h
+crsp_extract.o: /usr/include/asm/types.h /usr/include/sys/uio.h
+crsp_extract.o: /usr/include/unistd.h /usr/include/posix_opt.h
+crsp_extract.o: /usr/include/gnu/types.h /usr/include/confname.h
+crsp_extract.o: ../tape/tapedrive.h /usr/include/stdio.h /usr/include/libio.h
+crsp_extract.o: /usr/include/_G_config.h /usr/include/tar.h
+crsp_extract.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_extract.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+crsp_extract.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+crsp_extract.o: /usr/include/linux/param.h /usr/include/asm/param.h
+crsp_extract.o: /usr/include/sys/time.h /usr/include/linux/time.h
+crsp_extract.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+crsp_extract.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+crsp_extract.o: /usr/include/endian.h /usr/include/bytesex.h
+crsp_extract.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+crsp_extract.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+crsp_extract.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+crsp_extract.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+crsp_extract.o: /usr/include/linux/ioctl.h /usr/include/sys/termios.h
+crsp_extract.o: /usr/include/netdb.h /usr/include/paths.h
+crsp_extract.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+crsp_extract.o: /usr/include/linux/sockios.h /usr/include/netinet/in.h
+crsp_extract.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+crsp_extract.o: /usr/include/arpa/inet.h /usr/include/sys/bitypes.h
+crsp_index.o: /usr/include/string.h /usr/include/features.h
+crsp_index.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+crsp_index.o: /usr/include/errno.h /usr/include/linux/errno.h
+crsp_index.o: /usr/include/alloca.h sec.h /usr/include/sys/types.h
+crsp_index.o: /usr/include/linux/types.h /usr/include/asm/types.h
+crsp_index.o: /usr/include/sys/uio.h /usr/include/unistd.h
+crsp_index.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+crsp_index.o: /usr/include/confname.h ../tape/tapedrive.h
+crsp_index.o: /usr/include/stdio.h /usr/include/libio.h
+crsp_index.o: /usr/include/_G_config.h /usr/include/tar.h
+crsp_index.o: ../graphics.new/machdep.h /usr/include/limits.h
+crsp_index.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+crsp_index.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+crsp_index.o: /usr/include/linux/param.h /usr/include/asm/param.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/linux/time.h
+crsp_index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+crsp_index.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+crsp_index.o: /usr/include/endian.h /usr/include/bytesex.h
+crsp_index.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+crsp_index.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+crsp_index.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+crsp_index.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+crsp_index.o: /usr/include/linux/ioctl.h /usr/include/sys/termios.h
+crsp_index.o: /usr/include/netdb.h /usr/include/paths.h
+crsp_index.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+crsp_index.o: /usr/include/linux/sockios.h /usr/include/netinet/in.h
+crsp_index.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+crsp_index.o: /usr/include/arpa/inet.h /usr/include/sys/bitypes.h
+main.o: sec.h /usr/include/sys/types.h /usr/include/linux/types.h
+main.o: /usr/include/asm/types.h /usr/include/sys/uio.h
+main.o: /usr/include/features.h /usr/include/sys/cdefs.h
+main.o: /usr/include/unistd.h /usr/include/posix_opt.h
+main.o: /usr/include/gnu/types.h /usr/include/confname.h ../tape/tapedrive.h
+main.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+main.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+main.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+main.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+main.o: /usr/include/linux/param.h /usr/include/asm/param.h
+main.o: /usr/include/sys/time.h /usr/include/linux/time.h
+main.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+main.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+main.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/sys/ipc.h
+main.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+main.o: /usr/include/linux/shm.h /usr/include/sys/sem.h
+main.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+main.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+main.o: /usr/include/sys/termios.h /usr/include/netdb.h /usr/include/paths.h
+main.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+main.o: /usr/include/linux/sockios.h /usr/include/netinet/in.h
+main.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+main.o: /usr/include/arpa/inet.h /usr/include/sys/bitypes.h
+sec.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+sec.o: /usr/include/stdlib.h /usr/include/features.h /usr/include/sys/cdefs.h
+sec.o: /usr/include/errno.h /usr/include/linux/errno.h /usr/include/alloca.h
+sec.o: /usr/include/assert.h /usr/include/ctype.h sec.h
+sec.o: /usr/include/sys/types.h /usr/include/linux/types.h
+sec.o: /usr/include/asm/types.h /usr/include/sys/uio.h /usr/include/unistd.h
+sec.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+sec.o: /usr/include/confname.h ../tape/tapedrive.h /usr/include/tar.h
+sec.o: ../graphics.new/machdep.h /usr/include/limits.h
+sec.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+sec.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+sec.o: /usr/include/linux/param.h /usr/include/asm/param.h
+sec.o: /usr/include/sys/time.h /usr/include/linux/time.h
+sec.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+sec.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+sec.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/sys/ipc.h
+sec.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+sec.o: /usr/include/linux/shm.h /usr/include/sys/sem.h
+sec.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+sec.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+sec.o: /usr/include/sys/termios.h /usr/include/netdb.h /usr/include/paths.h
+sec.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+sec.o: /usr/include/linux/sockios.h /usr/include/netinet/in.h
+sec.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+sec.o: /usr/include/arpa/inet.h /usr/include/sys/bitypes.h
