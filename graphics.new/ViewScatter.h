@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/10 02:24:31  jussi
+  Added support for > 1 mappings in a view.
+
   Revision 1.5  1996/04/05 20:13:35  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -77,6 +80,7 @@ private:
   int          _timestamp;
   QueryProc    *_queryProc;
   TDataMap     *_map;
-  void          *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
+  int          _index;
+  void         *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
 };
 #endif

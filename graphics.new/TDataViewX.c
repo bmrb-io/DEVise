@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/16 20:50:13  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.16  1996/04/15 16:07:45  jussi
   Improved the way x and y attributes are extracted from a GData
   record in ReturnGData(). Also added code for extracting shape
@@ -91,6 +94,7 @@ TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp,
 {
   _dataBin = new GDataBin();
   _map = 0;
+  _index = -1;
   _queryProc = qp;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
@@ -131,9 +135,9 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   _queryFilter = filter;
   _timestamp = timestamp;
 
-  InitMappingIterator(true);            // open iterator backwards
-  if (MoreMapping()) {
-    _map = NextMapping()->map;
+  _index = InitMappingIterator(true);   // open iterator backwards
+  if (MoreMapping(_index)) {
+    _map = NextMapping(_index)->map;
 #ifdef DEBUG
     printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
 #endif
@@ -143,8 +147,9 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
     printf("View has no mappings; reporting query as done\n");
 #endif
     ReportQueryDone(0);
-    DoneMappingIterator();
+    DoneMappingIterator(_index);
     _map = 0;
+    _index = -1;
   }
 }
 
@@ -152,8 +157,10 @@ void TDataViewX::DerivedAbortQuery()
 {
   if (_map) {
     _queryProc->AbortQuery(_map, this);
-    DoneMappingIterator();
+    DOASSERT(_index >= 0, "Invalid iterator index");
+    DoneMappingIterator(_index);
     _map = 0;
+    _index = -1;
   }
 
   _dataBin->Final();
@@ -217,12 +224,14 @@ void TDataViewX::QueryInit(void *userData)
 void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 			     void *gdata, int numGData)
 {
+  DOASSERT(_index >= 0, "Invalid iterator index");
+
   _totalGData += numGData;
   _numBatches++;
   int gRecSize = mapping->GDataRecordSize();
 
   // Collect statistics only for last mapping
-  if (!MoreMapping()) {
+  if (!MoreMapping(_index)) {
 
     // Update stats based on gdata
     char *tp = (char *)gdata;
@@ -267,8 +276,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
-  if (MoreMapping()) {
-    _map = NextMapping()->map;
+  DOASSERT(_index >= 0, "Invalid iterator index");
+
+  if (MoreMapping(_index)) {
+    _map = NextMapping(_index)->map;
 #ifdef DEBUG
     printf("Submitting next query 0x%p\n", _map);
 #endif
@@ -276,8 +287,9 @@ void TDataViewX::QueryDone(int bytes, void *userData)
     return;
   }
 
-  DoneMappingIterator();
+  DoneMappingIterator(_index);
   _map = 0;
+  _index = -1;
 
   _stats.Done();
   _stats.Report();

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/20 19:56:34  kmurli
+  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
+  needed instead of being continuosly polled by the Dispatcher.
+
   Revision 1.9  1996/04/15 15:06:47  jussi
   Interface to ViewGraph's mapping iterator has changed.
 
@@ -72,29 +76,33 @@ void ActionDefault::KeySelected(View *view, char key, Coord x, Coord y)
   if (key == '+') {
     /* increase pixel size */
     Boolean changed = false;
-    for(vg->InitMappingIterator(); vg->MoreMapping();) {
-      TDataMap *map = vg->NextMapping()->map;
+    int index = vg->InitMappingIterator();
+    while(vg->MoreMapping(index)) {
+      TDataMap *map = vg->NextMapping(index)->map;
       if (map->GetPixelWidth() < 30) {
 	changed = true;
-	map->SetPixelWidth(map->GetPixelWidth()+1);
+	map->SetPixelWidth(map->GetPixelWidth() + 1);
       }
     }
-    vg->DoneMappingIterator();
-    if (changed) view->Refresh();
+    vg->DoneMappingIterator(index);
+    if (changed)
+      view->Refresh();
   }
 
   else if (key == '-') {
     /* decrease pixel size */
     Boolean changed = false;
-    for(vg->InitMappingIterator(); vg->MoreMapping();) {
-      TDataMap *map = vg->NextMapping()->map;
-      if (map->GetPixelWidth() >1) { 
+    int index = vg->InitMappingIterator();
+    while(vg->MoreMapping(index)) {
+      TDataMap *map = vg->NextMapping(index)->map;
+      if (map->GetPixelWidth() > 1) { 
 	changed = true;
-	map->SetPixelWidth(map->GetPixelWidth()-1);
+	map->SetPixelWidth(map->GetPixelWidth() - 1);
       }
     }
-    vg->DoneMappingIterator();
-    if (changed) view->Refresh();
+    vg->DoneMappingIterator(index);
+    if (changed)
+      view->Refresh();
   }
 
   else if (key == '<' || key == ',' || key == '4') {
@@ -239,15 +247,15 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
   
   /* get mapping */
   ViewGraph *vg = (ViewGraph *)view;
-  vg->InitMappingIterator();
-  if (!vg->MoreMapping()) {
+ int index = vg->InitMappingIterator();
+  if (!vg->MoreMapping(index)) {
     errorMsg = "No mapping found!";
-    vg->DoneMappingIterator();
+    vg->DoneMappingIterator(index);
     return false;
   }
 
-  TDataMap *map = vg->NextMapping()->map;
-  vg->DoneMappingIterator();
+  TDataMap *map = vg->NextMapping(index)->map;
+  vg->DoneMappingIterator(index);
   
   RecId startRid;
   int numRecs;

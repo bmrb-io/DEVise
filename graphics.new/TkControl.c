@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/04/19 17:22:22  wenger
+  Put the GenClassInfo code back in -- this is needed for tape data;
+  started adding the tape-related code back in (it was previously
+  deleted for some reason; I'm not yet done adding it back); added
+  the 'DEVise parseSchema' command and the first parts of the code
+  related to it.
+
   Revision 1.44  1996/04/18 18:14:20  jussi
   The Tcl/Tk file interpreted in batch mode is now batch.tcl.
 
@@ -830,11 +837,12 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				interp->result = "can't find view";
 				goto error;
 			}
-			for (view->InitMappingIterator(); view->MoreMapping(); ) {
-				TDataMap *map = view->NextMapping()->map;
-				Tcl_AppendElement(interp,map->GetGDataName());
+			int index = view->InitMappingIterator();
+			while(view->MoreMapping(index)) {
+			  TDataMap *map = view->NextMapping(index)->map;
+			  Tcl_AppendElement(interp,map->GetGDataName());
 			}
-			view->DoneMappingIterator();
+			view->DoneMappingIterator(index);
 		}
 		else if (strcmp(argv[1],"refreshView") == 0) {
 			/*

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/15 16:08:36  jussi
+  Improved the way x and y attributes are extracted from a GData
+  record in ReturnGData(). Also added code for extracting shape
+  and color which will be used for statistics collection later
+  on.
+
   Revision 1.10  1996/04/15 15:08:36  jussi
   Interface to ViewGraph's mapping iterator has changed.
 
@@ -66,6 +72,7 @@ ViewScatter::ViewScatter(char *name,
 {
   _queryProc = qp;
   _map = 0;
+  _index = -1;
 }
 
 ViewScatter::~ViewScatter()
@@ -81,15 +88,14 @@ void ViewScatter::InsertMapping(TDataMap *map)
   ViewGraph::InsertMapping(map);
 }
 
-
 void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
   _queryFilter = filter;
   _timestamp = timestamp;
 
-  InitMappingIterator(true);            // open iterator backwards
-  if (MoreMapping()) {
-    _map = NextMapping()->map;
+  _index = InitMappingIterator(true);   // open iterator backwards
+  if (MoreMapping(_index)) {
+    _map = NextMapping(_index)->map;
 #ifdef DEBUG
     printf("Submitting first query\n");
 #endif
@@ -99,15 +105,21 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
     printf("View has no mappings; reporting query as done\n");
 #endif
     ReportQueryDone(0);
-    DoneMappingIterator();
+    DoneMappingIterator(_index);
     _map = 0;
+    _index = -1;
   }
 }
 
 void ViewScatter::DerivedAbortQuery()
 {
-  if (_map)
+  if (_map) {
     _queryProc->AbortQuery(_map, this);
+    DOASSERT(_index >= 0, "Invalid iterator index");
+    DoneMappingIterator(_index);
+    _map = 0;
+    _index = -1;
+  }
 }
 
 /* Query data ready to be returned. Do initialization here. */
@@ -168,17 +180,20 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 /* Done with query */
 void ViewScatter::QueryDone(int bytes, void *userData)
 {
-  if (MoreMapping()) {
+  DOASSERT(_index >= 0, "Invalid iterator index");
+
+  if (MoreMapping(_index)) {
 #ifdef DEBUG
     printf("Submitting next query\n");
 #endif
-    _map = NextMapping()->map;
+    _map = NextMapping(_index)->map;
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
     return;
   }
 
-  DoneMappingIterator();
+  DoneMappingIterator(_index);
   _map = 0;
+  _index = -1;
 
   DrawLegend();
 

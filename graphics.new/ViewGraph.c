@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/20 19:56:59  kmurli
+  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
+  needed instead of being continuosly polled by the Dispatcher.
+
   Revision 1.13  1996/04/16 20:39:54  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -81,8 +85,6 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
   // add terminating null
   _DisplayStats[STAT_NUM] = 0;
-
-  _index = -1;
 }
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
@@ -109,12 +111,12 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 
 void ViewGraph::RemoveMapping(TDataMap *map)
 {
-  InitMappingIterator();
+  int index = InitMappingIterator();
 
-  while(MoreMapping()) {
-    MappingInfo *info = NextMapping();
+  while(MoreMapping(index )) {
+    MappingInfo *info = NextMapping(index);
     if (info->map == map) {
-      DoneMappingIterator();
+      DoneMappingIterator(index);
       _mappings.Delete(info);
       delete info->label;
       delete info;
@@ -122,50 +124,24 @@ void ViewGraph::RemoveMapping(TDataMap *map)
     }
   }
 
-  DoneMappingIterator();
+  DoneMappingIterator(index);
 }
 
 char *ViewGraph::GetMappingLegend(TDataMap *map)
 {
-  InitMappingIterator();
-  while(MoreMapping()) {
-    MappingInfo *info = NextMapping();
+  int index = InitMappingIterator();
+
+  while(MoreMapping(index)) {
+    MappingInfo *info = NextMapping(index);
     if (info->map == map) {
-      DoneMappingIterator();
+      DoneMappingIterator(index);
       return info->label;
     }
   }
-  DoneMappingIterator();
+
+  DoneMappingIterator(index);
 
   return "";
-}
-
-void ViewGraph::InitMappingIterator(Boolean backwards)
-{
-  DOASSERT(_index < 0, "Unexpected iterator index");
- // printf("Index = %d\n",_index);
- // assert(_index < 0 );
-  _index = _mappings.InitIterator((backwards ? 1 : 0));
-}
-
-Boolean ViewGraph::MoreMapping()
-{
-  DOASSERT(_index >= 0, "Invalid iterator index");
-  return _mappings.More(_index);
-}
-
-MappingInfo *ViewGraph::NextMapping()
-{
-  DOASSERT(_index >= 0, "Invalid iterator index");
-  return _mappings.Next(_index);
-}
-
-void ViewGraph::DoneMappingIterator()
-{
-  DOASSERT(_index >= 0, "Invalid iterator index");
-  _mappings.DoneIterator(_index);
-  _index = -1;
-  //printf("Done mapping Index = %d\n",_index);
 }
 
 void ViewGraph::DrawLegend()
@@ -182,10 +158,10 @@ void ViewGraph::DrawLegend()
   y += (int)(0.2 * h);
   int yInc = 12;
 
-  InitMappingIterator();
+  int index = InitMappingIterator();
 
-  while(MoreMapping()) {
-    MappingInfo *info = NextMapping();
+  while(MoreMapping(index)) {
+    MappingInfo *info = NextMapping(index);
     char *label = info->label;
     if (!strlen(label))
       continue;
@@ -199,7 +175,7 @@ void ViewGraph::DrawLegend()
     y += yInc;
   }
 
-  DoneMappingIterator();
+  DoneMappingIterator(index);
 
   win->PopTransform();
 }

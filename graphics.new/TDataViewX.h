@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/10 02:24:39  jussi
+  Added support for > 1 mappings in a view.
+
   Revision 1.8  1996/04/05 20:13:31  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -100,6 +103,7 @@ private:
   QueryProc    *_queryProc;
   TDataMap     *_map;
   GDataBin     *_dataBin;
+  int          _index;
   int          _totalGData;
   int          _numBatches;
   Boolean      _batchRecs;
@@ -108,4 +112,5 @@ private:
   Boolean      _dispConnectors;
   TDataCMap    *_cMap;
 };
+
 #endif

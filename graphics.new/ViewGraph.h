@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/15 15:14:05  jussi
+  A mapping label is now stored as part of the mapping list data
+  structure. Added GetMappingLegend() accessor method.
+
   Revision 1.10  1996/04/10 15:27:09  jussi
   Added RemoveMapping() method.
 
@@ -77,10 +81,21 @@ public:
   virtual void RemoveMapping(TDataMap *map);
   virtual char *GetMappingLegend(TDataMap *map);
 
-  void InitMappingIterator(Boolean backwards = false);
-  Boolean MoreMapping();
-  MappingInfo *NextMapping();
-  void DoneMappingIterator();
+  int InitMappingIterator(Boolean backwards = false) {
+    return _mappings.InitIterator((backwards ? 1 : 0));
+  }
+
+  Boolean MoreMapping(int index) {
+    return _mappings.More(index);
+  }
+
+  MappingInfo *NextMapping(int index) {
+    return _mappings.Next(index);
+  }
+
+  void DoneMappingIterator(int index) {
+    _mappings.DoneIterator(index);
+  }
 
   /* Draw legend */
   virtual void DrawLegend();
@@ -92,7 +107,6 @@ public:
 
 protected:
   MappingInfoList _mappings;
-  int _index;
 
   /* TRUE if Statistics need to be displayed along with data */
   char _DisplayStats[STAT_NUM + 1];
