@@ -46,7 +46,6 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Util.h /usr/include/string.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/DispQueryProc.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProc.h
@@ -98,7 +97,6 @@ CycleEffMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleEffMappingClassInfo.o: ../graphics/Util.h /usr/include/string.h
 CycleEffMappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
 CycleEffMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleEffMappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
 CycleEffMappingClassInfo.o: ../graphics.new/DispQueryProc.h
 CycleEffMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 CycleEffMappingClassInfo.o: ../graphics.new/QueryProc.h
@@ -150,7 +148,6 @@ CycleOccMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleOccMappingClassInfo.o: ../graphics/Util.h /usr/include/string.h
 CycleOccMappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
 CycleOccMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleOccMappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
 CycleOccMappingClassInfo.o: ../graphics.new/DispQueryProc.h
 CycleOccMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 CycleOccMappingClassInfo.o: ../graphics.new/QueryProc.h
@@ -213,7 +210,6 @@ CycleSuspendedMappingClassInfo.o: ../graphics/Util.h /usr/include/string.h
 CycleSuspendedMappingClassInfo.o: /usr/include/ctype.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
 CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/DispQueryProc.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProc.h
@@ -272,7 +268,6 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleWorkingMappingClassInfo.o: ../graphics/Util.h /usr/include/string.h
 CycleWorkingMappingClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
 CycleWorkingMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/DispQueryProc.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProc.h
@@ -320,7 +315,6 @@ HostMappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 HostMappingClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 HostMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
 HostMappingClassInfo.o: ../graphics/BufPolicy.h
-HostMappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
 HostMappingClassInfo.o: ../graphics.new/DispQueryProc.h
 HostMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 HostMappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics.new/BufHint.h
@@ -362,9 +356,7 @@ MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MappingClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 MappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-MappingClassInfo.o: ../graphics/BufPolicy.h
-MappingClassInfo.o: ../graphics.new/TDataMapDispatch.h
-MappingClassInfo.o: ../graphics.new/DispQueryProc.h
+MappingClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/DispQueryProc.h
 MappingClassInfo.o: ../graphics.new/QueryProcSimple.h
 MappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics.new/BufHint.h
 MappingClassInfo.o: ../graphics.new/QueryProcFull.h ../graphics.new/QPRange.h

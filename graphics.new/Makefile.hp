@@ -241,6 +241,12 @@ DataSourceWeb.o: DataSource.h ../graphics/DeviseTypes.h ../graphics/Timer.h
 DataSourceWeb.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
 DataSourceWeb.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 DataSourceWeb.o: Web.h ../graphics/DevError.h
+DevFileHeader.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+DevFileHeader.o: DevFileHeader.h ../graphics/DeviseTypes.h Version.h
+DevFileHeader.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
+DevFileHeader.o: /usr/include/sys/time.h /usr/include/string.h
+DevFileHeader.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
+DevFileHeader.o: ../graphics/DevError.h
 DictGroup.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h DictGroup.h
 DictGroup.o: ../graphics/DeviseTypes.h ../graphics/DList.h ../graphics/Exit.h
 DiskFile.o: UnixDiskFile.h /usr/include/errno.h /usr/include/sys/errno.h
@@ -315,21 +321,20 @@ MapInterpClassInfo.o: /usr/include/sys/stdsyms.h ../graphics/VisualArg.h
 MapInterpClassInfo.o: ../graphics/Color.h ../graphics/Pattern.h
 MapInterpClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 MapInterpClassInfo.o: ../graphics/ClassDir.h MappingInterp.h
-MapInterpClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
-MapInterpClassInfo.o: TDataMapDispatch.h TDataMap.h ShapeID.h RecId.h
-MapInterpClassInfo.o: GDataRec.h ViewGraph.h ../graphics/View.h
-MapInterpClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-MapInterpClassInfo.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-MapInterpClassInfo.o: ../graphics/Journal.h ../graphics/ViewWin.h
-MapInterpClassInfo.o: ../graphics/WindowRep.h ../graphics/Geom.h
-MapInterpClassInfo.o: /usr/include/math.h ../graphics/Transform.h
-MapInterpClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MapInterpClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-MapInterpClassInfo.o: /usr/include/sys/time.h ../graphics/Config.h
-MapInterpClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-MapInterpClassInfo.o: Bitmap.h TData.h RecOrder.h MapInterpClassInfo.h
-MapInterpClassInfo.o: ../graphics/Util.h /usr/include/time.h
-MapInterpClassInfo.o: /usr/include/string.h
+MapInterpClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h TDataMap.h
+MapInterpClassInfo.o: ShapeID.h RecId.h GDataRec.h ViewGraph.h
+MapInterpClassInfo.o: ../graphics/View.h ../graphics/Dispatcher.h
+MapInterpClassInfo.o: /usr/include/stdlib.h /usr/include/unistd.h
+MapInterpClassInfo.o: /usr/include/sys/unistd.h ../graphics/Journal.h
+MapInterpClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+MapInterpClassInfo.o: ../graphics/Geom.h /usr/include/math.h
+MapInterpClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MapInterpClassInfo.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+MapInterpClassInfo.o: ../graphics/AttrList.h /usr/include/sys/time.h
+MapInterpClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
+MapInterpClassInfo.o: ViewStats.h Action.h Bitmap.h TData.h RecOrder.h
+MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/Util.h
+MapInterpClassInfo.o: /usr/include/time.h /usr/include/string.h
 MappingInterp.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 MappingInterp.o: /s/tcl/include/tcl.h ../graphics/DeviseTypes.h Bitmap.h
 MappingInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
@@ -340,8 +345,8 @@ MappingInterp.o: /usr/include/stdlib.h ../graphics/Geom.h /usr/include/math.h
 MappingInterp.o: ../graphics/Transform.h ../graphics/VisualArg.h
 MappingInterp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MappingInterp.o: ../graphics/Temp.h ../graphics/Map3D.h MappingInterp.h
-MappingInterp.o: TDataMapDispatch.h TDataMap.h ShapeID.h GDataRec.h
-MappingInterp.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
+MappingInterp.o: TDataMap.h ShapeID.h GDataRec.h ViewGraph.h
+MappingInterp.o: ../graphics/View.h ../graphics/Dispatcher.h
 MappingInterp.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 MappingInterp.o: /usr/include/sys/types.h ../graphics/Journal.h
 MappingInterp.o: ../graphics/ViewWin.h ../graphics/Control.h
@@ -491,7 +496,7 @@ ServerAPI.o: ../graphics/Config.h ../graphics/View.h ../graphics/ViewWin.h
 ServerAPI.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 ServerAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ServerAPI.o: ../graphics/Compress.h ../graphics/Cursor.h ../graphics/Util.h
-ServerAPI.o: /usr/include/time.h /usr/include/ctype.h
+ServerAPI.o: /usr/include/time.h /usr/include/ctype.h Version.h
 Snapshot.o: Snapshot.h ../graphics/DeviseTypes.h TDataMap.h
 Snapshot.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 Snapshot.o: ../graphics/Exit.h ../graphics/DList.h ../graphics/Color.h
@@ -604,23 +609,6 @@ TDataMap.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 TDataMap.o: /usr/include/sys/time.h ../graphics/Cursor.h BasicStats.h
 TDataMap.o: ViewStats.h Action.h GData.h TData.h RecOrder.h GDataBin.h
 TDataMap.o: QueryProc.h
-TDataMapDispatch.o: TDataMapDispatch.h TDataMap.h /usr/include/stdio.h
-TDataMapDispatch.o: /usr/include/sys/stdsyms.h ../graphics/DeviseTypes.h
-TDataMapDispatch.o: ../graphics/Exit.h ../graphics/DList.h
-TDataMapDispatch.o: ../graphics/Color.h ../graphics/Pattern.h ShapeID.h
-TDataMapDispatch.o: ../graphics/VisualArg.h RecId.h GDataRec.h ViewGraph.h
-TDataMapDispatch.o: ../graphics/View.h ../graphics/Dispatcher.h
-TDataMapDispatch.o: /usr/include/stdlib.h /usr/include/unistd.h
-TDataMapDispatch.o: /usr/include/sys/unistd.h /usr/include/sys/types.h
-TDataMapDispatch.o: ../graphics/Journal.h ../graphics/ViewWin.h
-TDataMapDispatch.o: ../graphics/WindowRep.h ../graphics/Geom.h
-TDataMapDispatch.o: /usr/include/math.h ../graphics/Transform.h
-TDataMapDispatch.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-TDataMapDispatch.o: ../graphics/Control.h ../graphics/ClassDir.h
-TDataMapDispatch.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-TDataMapDispatch.o: /usr/include/sys/time.h ../graphics/Config.h
-TDataMapDispatch.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-TDataMapDispatch.o: TData.h RecOrder.h GData.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 TDataMmap.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 TDataMmap.o: /usr/include/sys/fcntl.h /usr/include/limits.h
@@ -678,7 +666,7 @@ TkControl.o: /usr/include/math.h ../graphics/Transform.h
 TkControl.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 TkControl.o: ../graphics/Cursor.h ../graphics/Util.h /usr/include/time.h
 TkControl.o: /usr/include/string.h /usr/include/ctype.h ../graphics/Init.h
-TkControl.o: ../graphics/BufPolicy.h
+TkControl.o: ../graphics/BufPolicy.h Version.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 UnixDiskFile.o: /usr/include/stdlib.h /usr/include/fcntl.h
 UnixDiskFile.o: /usr/include/sys/fcntl.h /usr/include/limits.h
@@ -700,6 +688,7 @@ UnixRecFile.o: /usr/include/sys/stat.h UnixRecFile.h /usr/include/errno.h
 UnixRecFile.o: /usr/include/sys/errno.h RecFile.h ../graphics/DeviseTypes.h
 UnixRecFile.o: ../graphics/Util.h /usr/include/time.h /usr/include/string.h
 UnixRecFile.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
+Version.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Version.h
 ViewClassInfo.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ViewClassInfo.o: /usr/include/time.h /usr/include/sys/time.h
 ViewClassInfo.o: /usr/include/sys/types.h ../graphics/VisualArg.h
@@ -1072,7 +1061,8 @@ ParseAPI.o: ../graphics/ColorMgr.h ../graphics/Util.h /usr/include/time.h
 ParseAPI.o: /usr/include/string.h ParseCat.h TData.h RecOrder.h TDataMap.h
 ParseAPI.o: ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h
 ParseAPI.o: Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: VisualLink.h ../graphics/FilterQueue.h DataSeg.h
+ParseAPI.o: VisualLink.h ../graphics/FilterQueue.h DataSeg.h Version.h
+ParseAPI.o: DevFileHeader.h
 RecordLink.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 RecordLink.o: /usr/include/stdlib.h RecordLink.h RecId.h RecFile.h
 RecordLink.o: ../graphics/DeviseTypes.h VisualLink.h ViewGraph.h
