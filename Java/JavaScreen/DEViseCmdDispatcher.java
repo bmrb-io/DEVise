@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2000/06/26 16:48:31  wenger
+// Added client-side JavaScreen debug logging.
+//
 // Revision 1.57  2000/06/12 22:13:55  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -801,8 +804,15 @@ public class DEViseCmdDispatcher implements Runnable
                 if (cmd == null || cmd.length != 3) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
+//ven
+                if(!DEViseGlobals.helpBox){
+                   jsc.jscreen.showHelpMsg(cmd[1], cmd[2]);
+                }
+		else{
+                   jsc.showViewDialogHelp(cmd[2]);
+		   DEViseGlobals.helpBox = false ;
+                }
 
-                jsc.jscreen.showHelpMsg(cmd[1], cmd[2]);
             } else {
                 throw new YException("Unsupported command received from server", "DEViseCmdDispatcher::processCmd()", 2);
             }

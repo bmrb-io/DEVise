@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2000/06/26 16:48:32  wenger
+// Added client-side JavaScreen debug logging.
+//
 // Revision 1.38  2000/04/24 20:22:00  hongyu
 // remove UI dependency of jspop and js
 //
@@ -112,6 +115,7 @@ public final class DEViseGlobals
     public static int connectionID = -1;
     public static String username = null, password = null, hostname = null;
     public static boolean debugLog = false;
+    public static boolean helpBox = false;
 
     // global functions
     public static String[] parseString(String inputStr, char startChar,

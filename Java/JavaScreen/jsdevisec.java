@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2000/06/26 16:48:33  wenger
+// Added client-side JavaScreen debug logging.
+//
 // Revision 1.65  2000/06/22 20:51:25  wenger
 // Changed colors and font in drill-down dialog to make text more
 // readable.
@@ -524,6 +527,10 @@ public class jsdevisec extends Panel
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg);
         recorddlg.open();
         recorddlg = null;
+    }
+
+    public String showViewDialogHelp(String msg){
+        return showMsg(msg, "Help", YMsgBox.YMBXOK);
     }
 
     public void showServerState(String msg)

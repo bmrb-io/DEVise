@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2000/06/27 16:44:34  wenger
+// Considerably cleaned up and simplified the cursor-related code; moved
+// cursor grid implementation from the DEViseCanvas class to the DEViseCursor
+// class.
+//
 // Revision 1.51  2000/06/21 18:37:29  wenger
 // Removed a bunch of unused code (previously just commented out).
 //
@@ -114,6 +119,11 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.52  2000/06/27 16:44:34  wenger
+// Considerably cleaned up and simplified the cursor-related code; moved
+// cursor grid implementation from the DEViseCanvas class to the DEViseCursor
+// class.
+//
 // Revision 1.51  2000/06/21 18:37:29  wenger
 // Removed a bunch of unused code (previously just commented out).
 //
@@ -472,22 +482,49 @@ public class DEViseCanvas extends Container
         if (helpMsgY < 0) {
             helpMsgY = 0;
         }
-
+ 
         Toolkit tk = Toolkit.getDefaultToolkit();
         FontMetrics fm = tk.getFontMetrics(DEViseUIGlobals.textFont);
         int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
         int width = fm.stringWidth(helpMsg) + 12;
-
-        gc.setColor(Color.black);
-        gc.drawRect(helpMsgX, helpMsgY, width - 1, height - 1);
-        gc.setColor(new Color(255, 255, 192));
-        gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
-        gc.setColor(Color.black);
-        gc.setFont(DEViseUIGlobals.textFont);
-        gc.drawString(helpMsg, helpMsgX + 6, helpMsgY + height - dc - 6);
+	int charInCol = width/100  * 12;
+        int scrWidth = 	this.getLocInScreen().width;
+	int scrHeight = this.getLocInScreen().height;
+	if(helpMsg.length()/12 * height >  scrHeight){ 
+		return; 
+	}
+        if(scrWidth > width ||( scrWidth > 200  &&  scrHeight > 60)){ 			 
+            StringTokenizer helper = new StringTokenizer(helpMsg, "\n");
+	    while(helper.hasMoreTokens()){
+	        String smallhelp = helper.nextToken();
+	        String sh1 = smallhelp;
+                if((fm.stringWidth(sh1)+12) > scrWidth){ 
+	            sh1= smallhelp.substring(0, smallhelp.length()/2);
+                    gc.setColor(Color.black);
+                    gc.drawRect(helpMsgX, helpMsgY, width - 1, height - 1);
+                    gc.setColor(new Color(255, 255, 192));
+                    gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
+                    gc.setColor(Color.black);
+                    gc.setFont(DEViseUIGlobals.textFont);
+                    gc.drawString(sh1, helpMsgX + 6, helpMsgY + height - dc - 6);
+	            helpMsgY += 30;
+	            smallhelp= smallhelp.substring(smallhelp.length()/2, smallhelp.length());
+	  }
+          gc.setColor(Color.black);
+          gc.drawRect(helpMsgX, helpMsgY, width - 1, height - 1);
+          gc.setColor(new Color(255, 255, 192));
+          gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
+          gc.setColor(Color.black);
+          gc.setFont(DEViseUIGlobals.textFont);
+          gc.drawString(smallhelp, helpMsgX + 6, helpMsgY + height - dc - 6);
+	  helpMsgY += 30;
+	  }
+	}
+        helpMsgX = 0; helpMsgY = 0;
 
         //helpMsg = null;
-    }
+    } 
+
 
     private synchronized void paintBackground(Graphics gc)
     {
@@ -1064,8 +1101,9 @@ public class DEViseCanvas extends Container
                     if (helpMsg != null) {
                         helpMsg = null;
                     } else {
-                        helpMsgX = activeView.translateX(p.x, 2);
-                        helpMsgY = activeView.translateY(p.y, 2);
+                        DEViseGlobals.helpBox = true;
+                       //  helpMsgX = activeView.translateX(p.x, 2);
+                       //  helpMsgY = activeView.translateY(p.y, 2);
                         cmd = DEViseCommands.GET_VIEW_HELP + " " +
 			  activeView.getCurlyName() + " " + helpMsgX + " "
 			  + helpMsgY;
