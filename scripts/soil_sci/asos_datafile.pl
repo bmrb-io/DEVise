@@ -8,6 +8,18 @@
 
 ############################################################
 
+die "usage: asos_datafile.pl [year day_of_year]\n" if ($#ARGV != -1 and $#ARGV != 1);
+
+my ($year, $day_of_year);
+
+if ($#ARGV == 1) {
+  $year = shift(@ARGV);
+  $day_of_year = shift(@ARGV);
+} else {
+  $day_of_year = -1; # invalid
+}
+
+
 $asosdir = "/p/devise/ftp/soil_data";
 $asosdat = "/local.pumori/devise/dat/Asos";
 $homedir = "/local.pumori/devise/dat/Asos/scripts";
@@ -18,16 +30,18 @@ $homedir = "/local.pumori/devise/dat/Asos/scripts";
 # most recent data.
 #
 
-# Seconds in a day.
-my $day = 60 * 60 * 24;
+if ($day_of_year == -1) {
+  # Seconds in a day.
+  my $day = 60 * 60 * 24;
 
-# The file we get today has yesterday's data in it, so go back one day.
-@timeinfo = localtime(time() - $day);
+  # The file we get today has yesterday's data in it, so go back one day.
+  @timeinfo = localtime(time() - $day);
 
-my $year = $timeinfo[5] + 1900;
+  $year = $timeinfo[5] + 1900;
 
-# Days in filename go from 1 - 366; localtime returns 0 - 365.
-my $day_of_year = $timeinfo[7] + 1;
+  # Days in filename go from 1 - 366; localtime returns 0 - 365.
+  $day_of_year = $timeinfo[7] + 1;
+}
 
 my $yr = $year * 1000;
 
