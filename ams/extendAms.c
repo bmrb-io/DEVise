@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/10/02 15:23:16  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.6  1996/01/12 15:49:14  jussi
   #include <unistd.h>
 
@@ -49,7 +53,6 @@
 #include <sys/stat.h>
 
 #include "ams.h"
-#include "DevError.h"
 
 void Usage(char *name)
 {
@@ -122,7 +125,7 @@ main(int argc, char **argv)
       
       /* put it through */
       if (write(outfd,(char *)&rec,sizeof(rec))!= sizeof(AmsData)){
-	reportErrSys("write failed");
+	perror("write failed");
 	exit(1);
       }
     }
