@@ -4,6 +4,13 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+Templates: ../graphics.new/QueryProcFull.h ../graphics.new/QueryProc.h
+Templates: ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+Templates: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+Templates: ../graphics.new/RecId.h ../graphics.new/QPRange.h
+Templates: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
+Templates: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
+Templates: ../graphics/Timer.h
 tapedrive: tapedrive.h ../graphics.new/machdep.h ../graphics.new/DCE.h
 tapedrive: ../graphics/Exit.h ../graphics/DevError.h
 tapedrive: ../graphics/DeviseTypes.h ../graphics/DevStatus.h

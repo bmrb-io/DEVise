@@ -1,12 +1,12 @@
 depend:
-	makedepend -fMakefile.solaris -ICore \
+	makedepend -fMakefile.linux -ICore \
 	-I../graphics -I../graphics.new -I../atrproj *.c;\
 	cd Core; \
-	makedepend -a -f../Makefile.solaris \
+	makedepend -a -f../Makefile.linux \
 	-I../../graphics -I../../graphics.new -I../../atrproj *.c;\
 	cd ..;\
 	cd StandAlone; \
-	makedepend -a -f../Makefile.solaris -I../Core \
+	makedepend -a -f../Makefile.linux -I../Core \
 	-I../../graphics -I../../graphics.new -I../../atrproj *.c;\
 	cd ..;\
 

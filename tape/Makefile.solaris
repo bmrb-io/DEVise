@@ -4,6 +4,19 @@ depend:
 		*.C
 # DO NOT DELETE
 
+Templates.o: ../graphics.new/QueryProcFull.h ../graphics.new/QueryProc.h
+Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+Templates.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
+Templates.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+Templates.o: /usr/include/sys/time.h /usr/include/sys/time.h
+Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
+Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
+Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
+Templates.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/unistd.h
+Templates.o: /usr/include/sys/unistd.h /usr/include/string.h
+Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

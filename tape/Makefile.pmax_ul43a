@@ -5,10 +5,21 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-devtype.o: /usr/include/stdlib.h /usr/include/ansi_compat.h
+Templates.o: ../graphics.new/QueryProcFull.h ../graphics.new/QueryProc.h
+Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+Templates.o: /usr/include/sys/ansi_compat.h ../graphics/VisualArg.h
+Templates.o: ../graphics/Color.h ../graphics/Pattern.h
+Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
+Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/BufPolicy.h
+Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+Templates.o: /usr/include/stdlib.h /usr/include/unistd.h
+Templates.o: /usr/include/string.h ../graphics/Journal.h SortedTable.h
+Templates.o: ../graphics/Timer.h
+devtype.o: /usr/include/stdlib.h /usr/include/sys/ansi_compat.h
 devtype.o: /usr/include/sys/stat.h
 tapedrive.o: /usr/include/unistd.h /usr/include/string.h tapedrive.h
-tapedrive.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+tapedrive.o: /usr/include/stdio.h /usr/include/sys/ansi_compat.h
 tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
 tapedrive.o: /usr/include/sys/types.h /usr/include/sys/param.h
 tapedrive.o: /usr/include/machine/param.h /usr/include/sys/signal.h
@@ -22,7 +33,7 @@ tapedrive.o: ../graphics.new/DCE.h /usr/include/errno.h /usr/include/assert.h
 tapedrive.o: /usr/include/sys/stat.h ../graphics/Exit.h
 tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
 tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
-testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/ansi_compat.h
+testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/ansi_compat.h
 testtape.o: ../graphics.new/machdep.h /usr/include/limits.h
 testtape.o: /usr/include/sys/types.h /usr/include/sys/param.h
 testtape.o: /usr/include/machine/param.h /usr/include/sys/signal.h
@@ -32,7 +43,7 @@ testtape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 testtape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttydev.h
 testtape.o: /usr/include/netdb.h /usr/include/sys/cdefs.h
 testtape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/ansi_compat.h
+vertape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/ansi_compat.h
 vertape.o: ../graphics.new/machdep.h /usr/include/limits.h
 vertape.o: /usr/include/sys/types.h /usr/include/sys/param.h
 vertape.o: /usr/include/machine/param.h /usr/include/sys/signal.h
