@@ -314,6 +314,14 @@ Num Date        Status  Description
 			Y axis is a very small number instead of zero.
 			(ml/rkw)
 
+093 12/04/96	OPEN	Opening a statistics view from any other view causes
+                        a core dump.  (Load session demo/colors.tk, and then
+                        open the histogram view).  The believed cause is the
+                        TData detects a change in the data and then cancels
+                        all queries on it, but the QP still has a pointer
+                        to the current qdata (which was deleted by the cancel)
+                        and tries to continue processing the query.
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
