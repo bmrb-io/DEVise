@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/02/27 02:12:52  jussi
+  TopMargin depends on height of small font.
+
   Revision 1.9  1996/02/06 19:32:10  jussi
   Added top margin with Devise logo to root windows.
 
@@ -83,13 +86,13 @@ ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
 
 void ViewWin::Iconify()
 {
-  if (_windowRep != NULL)
+  if (_windowRep)
     _windowRep->Iconify();
 }
 
 void ViewWin::AppendToParent(ViewWin *parent)
 {
-  if ( _parent != NULL) {
+  if ( _parent) {
     _parent->Delete(this);
   }
   if (_mapped)
@@ -100,7 +103,7 @@ void ViewWin::AppendToParent(ViewWin *parent)
 
 void ViewWin::DeleteFromParent()
 {
-  if (_parent != NULL) {
+  if (_parent) {
     _parent->Delete(this);
     if (_mapped)
       Unmap();
@@ -121,7 +124,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   Coord min_width = 170;
   Coord min_height = 100;
 
-  if (_parent != NULL) {
+  if (_parent) {
 #ifdef DEBUG
     printf("ViewWin 0x%p mapping to parent 0x%p\n", this,
 	   _parent->GetWindowRep());
@@ -165,6 +168,8 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 #endif
 
   _mapped = true;
+  _iconified = false;
+
   SubClassMapped();
 }
 
@@ -233,7 +238,7 @@ void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
 {
-  if (_windowRep == NULL) {
+  if (!_windowRep) {
     fprintf(stderr,"ViewWin::Geometry: not mapped\n");
     Exit::DoExit(2);
   }
@@ -284,7 +289,7 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 
 void ViewWin::AbsoluteOrigin(int &x, int &y)
 {
-  if (_windowRep == NULL) {
+  if (!_windowRep) {
     fprintf(stderr,"ViewWin::AbsoluteOrigin: not mapped\n");
     Exit::DoExit(2);
   }
@@ -345,22 +350,26 @@ void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
 
 void ViewWin::HandleWindowMappedInfo(WindowRep *, Boolean mapped)
 {
+#ifdef DEBUG
+  printf("ViewWin::HandleWindowMappedInfo 0x%p %d\n", this, mapped);
+#endif
+
   _iconified = !mapped;
   Iconify(_iconified);
 }
 
 Boolean ViewWin::Iconified()
 {
-  if (_parent != NULL) {
+  if (_parent) {
     /* subwindow must query parent */
     return _parent->Iconified();
-  } else {
-    /* no parent: this is a top level window. */
-    if (Mapped() && !_iconified)
-      return false;
-    else
-      return true;
   }
+
+  /* no parent: this is a top level window. */
+  if (Mapped() && !_iconified)
+    return false;
+
+  return true;
 }
 
 /* Replace child1 by child2. child1 must be a valid child.

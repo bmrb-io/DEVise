@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/04/09 18:05:28  jussi
+  Minor improvements.
+
   Revision 1.27  1996/04/05 20:12:34  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -194,12 +197,12 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
   
   _id = ++_nextId;
   
-  if (_viewList == NULL)
+  if (!_viewList)
     _viewList = new ViewList;
   _viewList->Insert(this);
   
   _action = action;
-  if (_action == NULL)
+  if (!_action)
     _action = new Action("");
   
   _displaySymbol = true;
@@ -243,11 +246,11 @@ void View::Init(char *name,Action *action, VisualFilter &filter,
 
 View::~View()
 {
-  if (_querySent)
-  {
-	fprintf(stderr, "Destructor of subclass of View did not abort query"
-	  " (%s: %d)\n", __FILE__, __LINE__);
-	exit(1);
+  if (_querySent) {
+    fprintf(stderr,
+	    "Destructor of subclass of View did not abort query (%s: %d)\n",
+	    __FILE__, __LINE__);
+    exit(1);
   }
 
   delete _label.name;
@@ -265,7 +268,7 @@ Find view by name. Return NULL if not found.
 
 View *View::FindViewByName(char *name)
 {
-  if (_viewList == NULL) {
+  if (!_viewList) {
     fprintf(stderr,"View::FindViewByName: _viewList empty\n");
     return NULL;
   }
@@ -290,10 +293,10 @@ Find view by id
 
 View *View::FindViewById(int id)
 {
-  if (id == 0)
+  if (!id)
     return NULL;
   
-  if (_viewList == NULL) {
+  if (!_viewList) {
     fprintf(stderr,"View::FindViewById: _viewList empty\n");
     Exit::DoExit(1);
   }
@@ -312,10 +315,10 @@ View *View::FindViewById(int id)
 
 int View::FindViewId(View *view)
 {
-  if (view == NULL)
+  if (!view)
     return 0;
-  else
-    return view->GetId();
+
+  return view->GetId();
 }
 
 void View::SubClassMapped()
@@ -441,7 +444,7 @@ void View::HandlePress(WindowRep *w, int xlow, int ylow,
       return;
   }
   
-  if (_action != NULL) {
+  if (_action) {
     /* transform from screen to world coordinates */
     Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
     FindWorld(xlow, ylow, xhigh, yhigh,
@@ -458,7 +461,7 @@ void View::HandleKey(WindowRep *w, char key, int x, int y)
 {
   ControlPanel::Instance()->SelectView(this);
 
-  if (_action != NULL) {
+  if (_action) {
     /* xform from screen to world coord */
     Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
     FindWorld(x, y, x, y,
@@ -527,7 +530,7 @@ Boolean View::HandlePopUp(WindowRep *win, int x, int y, int button,
     return true;
   }
   
-  if (_action != NULL) {
+  if (_action) {
     /* transform from screen x/y into world x/y */
     FindWorld(x, y, x + 1, y - 1,
 	      worldXLow,worldYLow, worldXHigh, worldYHigh);
@@ -827,7 +830,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     /* draw the text */
     Coord drawWidth = axisWidth - (startX - axisX);
 
-    if (_xAxisLabel != NULL)
+    if (_xAxisLabel)
       label = _xAxisLabel->GenerateLabel( _filter.xLow);
     else {
       if (_xAxisAttrType == DateAttr) {
@@ -843,7 +846,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1, axisHeight - 1,
 		      WindowRep::AlignWest, true);
     
-    if (_xAxisLabel != NULL)
+    if (_xAxisLabel)
       label = _xAxisLabel->GenerateLabel(_filter.xHigh);
     else {
       if (_xAxisAttrType == DateAttr) {
@@ -904,7 +907,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   if (yAxis.numTicks == 2) {
     /* draw lower Y coord */
     Coord drawHeight = axisHeight - (startY - axisY);
-    if (_yAxisLabel != NULL)
+    if (_yAxisLabel)
       label = _yAxisLabel->GenerateLabel(_filter.yLow);
     else {
       if (_yAxisAttrType == DateAttr) {
@@ -921,7 +924,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
     
     /* draw upper Y coord */
-    if (_yAxisLabel != NULL)
+    if (_yAxisLabel)
       label = _yAxisLabel->GenerateLabel(_filter.yHigh);
     else {
       if (_yAxisAttrType == DateAttr) {
@@ -1022,13 +1025,13 @@ XXX: need to crop exposure against _filter before sending query.
 void View::Run()
 {
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
-#ifdef DEBUGxxx
+#ifdef DEBUG
   if (mode == ControlPanel::LayoutMode)
     printf("layout mode ");
   else
     printf("disp mode ");
-  printf("%d %d %d %d\n", _hasExposure, _filterChanged, _refresh,
-	 _updateTransform);
+  printf("exp %d flt %d ref %d upd %d\n", _hasExposure, _filterChanged,
+	 _refresh, _updateTransform);
 #endif
   
   if (mode == ControlPanel::LayoutMode && 
@@ -1057,8 +1060,12 @@ void View::Run()
       return;
   }
   
-  if (notMapped || iconified)
+  if (notMapped || iconified) {
+#ifdef DEBUG
+    printf("not mapped %d, iconified %d\n", notMapped, iconified);
+#endif
     return;
+  }
 
   if (!_hasExposure && !_filterChanged && !_refresh)
     return;
@@ -1457,7 +1464,7 @@ void View::Refresh()
 
 void View::ReportViewCreated()
 {
-  if (_viewCallbackList == NULL)
+  if (!_viewCallbackList)
     return;
   
   int index;
@@ -1471,7 +1478,7 @@ void View::ReportViewCreated()
 
 void View::ReportViewDestroyed()
 {
-  if (_viewCallbackList == NULL)
+  if (!_viewCallbackList)
     return;
   
   int index;
@@ -1485,7 +1492,7 @@ void View::ReportViewDestroyed()
 
 void View::ReportFilterAboutToChange()
 {
-  if (_viewCallbackList == NULL)
+  if (!_viewCallbackList)
     return;
   
   int index;
@@ -1499,7 +1506,7 @@ void View::ReportFilterAboutToChange()
 
 void View::ReportFilterChanged(VisualFilter &filter, int flushed)
 {
-  if (_viewCallbackList == NULL)
+  if (!_viewCallbackList)
     return;
   
   int index;
@@ -1513,7 +1520,7 @@ void View::ReportFilterChanged(VisualFilter &filter, int flushed)
 
 void View::InsertViewCallback(ViewCallback *callBack)
 {
-  if (_viewCallbackList == NULL)
+  if (!_viewCallbackList)
     _viewCallbackList = new ViewCallbackList;
   
   _viewCallbackList->Append(callBack);
@@ -1521,7 +1528,7 @@ void View::InsertViewCallback(ViewCallback *callBack)
 
 void View::DeleteViewCallback(ViewCallback *callBack)
 {
-  if (_viewCallbackList == NULL) {
+  if (!_viewCallbackList) {
     fprintf(stderr,"View::DeleteViewCallback: empty list\n");
     Exit::DoExit(2);
   }
@@ -1784,7 +1791,7 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
   Geometry(x, y, width, height);
 
 #ifdef DEBUG
-  if (_pixmap != NULL) {
+  if (_pixmap) {
     printf("RestorePixmap %s\n", GetName());
     printf("cur filter: %f,%f,%f,%f\n", filter.xLow, filter.xHigh,
 	   filter.yLow, filter.yHigh);
@@ -1796,7 +1803,7 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
   }
 #endif
 
-  if (Mapped() && _pixmap != NULL && 
+  if (Mapped() && _pixmap && 
       filter.xLow ==  _pixmap->filter.xLow &&
       filter.yLow == _pixmap->filter.yLow &&
       filter.xHigh == _pixmap->filter.xHigh &&
@@ -1849,8 +1856,8 @@ void View::SavePixmaps(FILE *file)
 
   int saved = 0;
   DevisePixmap *pixmap = 0;
-  if (Iconified()|| !Mapped() ||_refresh || _bytes < VIEW_BYTES_BEFORE_SAVE) {
-    if (_pixmap != NULL) {
+  if (Iconified() || !Mapped() ||_refresh || _bytes < VIEW_BYTES_BEFORE_SAVE) {
+    if (_pixmap) {
       /* save old pixmap */
       saved = 1;
       pixmap = _pixmap;
