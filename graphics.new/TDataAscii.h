@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/22 17:52:02  jussi
+  Added copyright notice and cleaned up the code. Added some
+  optimizations a la TDataTape.h.
+
   Revision 1.2  1995/09/05 22:15:50  jussi
   Added CVS header.
 */
@@ -192,6 +196,7 @@ private:
 	int _indexSize;                 // size of index
 
 	long _lastPos;                  // position of last record in file
+	long _currPos;                  // current file position
 
 	char *_recBuf;                  // record buffer
 
