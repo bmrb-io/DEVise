@@ -178,7 +178,7 @@ $(DTE_DIR)/Core/my.yacc.tab.c: $(DTE_DIR)/Core/my.yacc
 $(DTE_DIR)/Core/my.yacc.tab.h: $(DTE_DIR)/Core/my.yacc
 	bison -d -v -o $(DTE_DIR)/Core/my.yacc.tab.c $(DTE_DIR)/Core/my.yacc
 
-$(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex
+$(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex $(DTE_DIR)/Core/my.yacc.tab.h
 	flex -o$@ $(DTE_DIR)/Core/my.lex
 
 .PHONY: clean mostlyclean
