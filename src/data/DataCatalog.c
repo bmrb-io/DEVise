@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/11/20 21:39:10  wenger
+  Made non-DTE catalog code work for entries that span multiple lines.
+
   Revision 1.1  1998/11/19 21:13:07  wenger
   Implemented non-DTE version of DEVise (new code handles data source catalog
   functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -424,6 +427,10 @@ DataCatalog::ListCatalog(char *catName)
       }
     }
   }
+
+#if DEBUG >= 3
+  printf("Data source catalog:\n%s\n", list);
+#endif
 
   return list;
 }
