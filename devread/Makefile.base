@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/11/20 02:24:27  donjerko
+#  Does not make the test program any more.
+#  This is because it was failing to compile.
+#
 #  Revision 1.7  1996/11/18 16:46:05  donjerko
 #  Removed DevRead.c from the libdevread.a.
 #  DTE and devread should have a single version of DevRead.c.
@@ -115,7 +119,7 @@ ALLTESTOBJ = $(TESTOBJ)
 ALLSHOWOBJ = $(SHOWOBJ)
 
 # all: drtest
-all:
+all: lib
 lib: $(LIB)
 pure: drtest.pure
 
