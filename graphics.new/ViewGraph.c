@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.52  1997/04/11 18:49:16  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.51  1997/03/28 16:10:28  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -277,6 +283,7 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
     _gdataStatBufferY->SetControllingView(this);
 
     _gstatInMem = true;
+    histViewName = NULL;
 }
 
 ViewGraph::~ViewGraph()
@@ -395,11 +402,11 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 	double yMax = _allStats.GetStatVal(STAT_MAX);
 	double yMin = _allStats.GetStatVal(STAT_MIN);
 	double hi = (yMax > filter.yHigh) ? yMax:filter.yHigh; 
-	double lo = (yMin < filter.yLow) ? yMin:filter.yLow;
+	double lo = (yMin > filter.yLow) ? yMin:filter.yLow;
 	_allStats.SetHistWidth(lo, hi);
-#if defined(DEBUG) 
-	printf("yMax=%g, yMin=%g, filter.yHigh=%g, filter.yLow=%g\n", 
-		yMax, yMin, filter.yHigh, filter.yLow);
+#if defined(DEBUG) || 0
+	printf("ViewGraph::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n", 
+		yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
 #endif
 //	_allStats.SetHistWidth(filter.yLow, filter.yHigh);
 //      }
@@ -431,6 +438,14 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
         if (info && info->type == DateAttr)
           SetYAxisAttrType(DateAttr);
     }
+
+//    if(IsXDateType()) {
+//    	PrepareStatsBuffer(GetFirstMap());
+#if defined(DEBUG) || 1
+//	printf("Need to re-prepare stat buffer in Insertmapping()\n");
+#endif
+//    	PrepareStatsBuffer(map);
+//    }
 //    UpdateAutoScale();
 
     Refresh();
@@ -755,6 +770,11 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     _gdataStatBufferX->Clear();
     _gdataStatBufferY->Clear();
 
+    VisualFilter filter;
+    GetVisualFilter(filter);
+    char *date_string;
+    char **date;
+
     /* put the statistics in the stat buffer */
     char line[1024];
     int i;
@@ -786,20 +806,43 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	    }
 //	  }
       }
+    Boolean y_is_date = false;
+    if(map) {
+        AttrList *gAttrList = map->GDataAttrList();
+        gAttrList->InitIterator();
+        while(gAttrList->More()) {
+                AttrInfo *info = gAttrList->Next();
+                if(!strcmp(info->name, "y") && info->type==DateAttr) {
+                        y_is_date = true;
+                }
+        }
+        gAttrList->DoneIterator();
+    }
 
     double width = _allStats.GetHistWidth();
 #if defined(DEBUG) || 0
     printf("histogram width: %g\n", width);
 #endif
-    if( width > 0 ) {
+    if( width == 0 ) {
+        printf("Hist width should have been set at this point\n");
+/*        _allStats.SetHistWidth(filter.yLow, filter.yHigh);
+#if defined(DEBUG) || 0
+        printf("Hist width in ViewGraph after set is %g\n", _allStats.GetHistWidth());
+#endif
+*/    }
 	int size = 32 * _allStats.GetnumBuckets(); // 24 is the max size for each line
 	_histBuffer->Resize(size);
 	double pos = _allStats.GetHistMin() + width / 2.0;
 #if defined(DEBUG) || 0
-	printf("Histogram min is %g\n", _allStats.GetHistMin());
+	printf("Histogram min is %g, max is %g\n", _allStats.GetHistMin(), _allStats.GetHistMax());
 #endif
 	for(i = 0; i < _allStats.GetnumBuckets(); i++) {
-	    sprintf(line, "%.4e %d\n", pos, _allStats.GetHistVal(i));
+	    if (y_is_date) {
+		date_string = DateString(pos);
+		date = ExtractDate(date_string);
+		sprintf(line, "%d %s %s %d\n", findMonth(date[0]),
+                 	date[1], date[2], _allStats.GetHistVal(i));
+	    } else sprintf(line, "%.4e %d\n", pos, _allStats.GetHistVal(i));
 	    int len = strlen(line);
 	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 	    if( (int) _histBuffer->Write(line, len) != len ) {
@@ -807,61 +850,57 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	        break;
 	    }
 #if defined(DEBUG) || 0
-	    printf("Hist buf line is %s\n", line);
+	    printf("Hist buf line is %s, pos is %g\n", line, pos);
 #endif
 	    pos += width;
 	}
 #if defined(DEBUG) || 0
 	printf("Buf has %d lines\n", i);
 #endif
-    }
 
     BasicStats *bs;
     Boolean x_is_date = false;
-    AttrList *gAttrList = map->GDataAttrList();
-    gAttrList->InitIterator();
-    while(gAttrList->More()) {
-	AttrInfo *info = gAttrList->Next();
-	if(!strcmp(info->name, "x") && info->type==DateAttr) {
-		x_is_date = true;
-	}
+    if(map){
+    	AttrList *gAttrList = map->GDataAttrList();
+    	gAttrList->InitIterator();
+    	while(gAttrList->More()) {
+		AttrInfo *info = gAttrList->Next();
+		if(!strcmp(info->name, "x") && info->type==DateAttr) {
+			x_is_date = true;
+		}
+    	}
+        gAttrList->DoneIterator();
     }
-    gAttrList->DoneIterator();
 
     int getXRecs = 0;
-    VisualFilter filter;
-    GetVisualFilter(filter);
-    char *date_string;
-    char **date;
     int len;
+    int total = 0;
 
     int index = _glistX.InitIterator();
     while(_glistX.More(index)) {
 	double i = _glistX.Next(index); 
-	char *date_string;
-	char **date = NULL;
-	if(x_is_date) {
-		date_string = DateString(i);
-		date = ExtractDate(date_string);
-	}
 	if (_gstatX.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
-	   if (x_is_date) sprintf(line, "%d %s %s %d %g %g %g %g\n",
-			     findMonth(date[0]), date[1], date[2], (int)bs->GetStatVal(STAT_COUNT),
+	   if (x_is_date) {
+		date_string = DateString(i);
+		date = ExtractDate(date_string);
+		sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]), 
+			     date[1], date[2], (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
-	   else sprintf(line, "%g %d %g %g %g %g\n",
+	   } else sprintf(line, "%g %d %g %g %g %g\n",
 			     i, (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
 	   len = strlen(line);
+	   total += len;
 	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 #if defined(DEBUG) || 0
-	    printf("_gstatX buf line is %s\n", line);
+	    	printf("_gstatX buf line is %s\n", line);
 #endif
            getXRecs = 1;
 	   if( (int) _gdataStatBufferX->Write(line, len) != len ) {
@@ -871,21 +910,24 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	       break;
 	   }
        }
-    }	
+    }
     _glistX.DoneIterator(index);
 
-    if(getXRecs == 0) {
+    if(getXRecs == 0 ) {
         double low = filter.xLow;
 	double high = filter.xHigh;
 
-    	if(x_is_date) {
-		date_string = DateString(low);
-		date = ExtractDate(date_string);
-		sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
-			 date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
-	} else {
-		sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
-	}
+	date_string = DateString(low);
+	date = ExtractDate(date_string);
+	sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+		 date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+       	len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+	if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+    		fprintf(stderr, "******Out of GData Stat Buffer space\n");
+// 	printf("_gstatX buf line is %s\n", line);
+
+	sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 
@@ -894,20 +936,24 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #endif 
 	if( (int) _gdataStatBufferX->Write(line, len) != len ) 
 	    fprintf(stderr, "******Out of GData Stat Buffer space\n");
+//        printf("_gstatX buf line is %s\n", line);
 
-        if(x_is_date) {
-                date_string = DateString(high);
-                date = ExtractDate(date_string); 
-                sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
-                         date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
-        } else {
-                sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
-        }
+        date_string = DateString(high);
+        date = ExtractDate(date_string); 
+        sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+                   date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+        if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+        	fprintf(stderr, "******Out of GData Stat Buffer space\n");
+//           printf("_gstatX buf line is %s\n", line);
+
+        sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 
 #if defined(DEBUG) || 0
-        printf("_gstatX buf line is %s\n", line);
+           printf("_gstatX buf line is %s\n", line);
 #endif
         if( (int) _gdataStatBufferX->Write(line, len) != len ) 
             fprintf(stderr, "******Out of GData Stat Buffer space\n");
@@ -919,7 +965,16 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	double i = _glistY.Next(index); 
 	if (_gstatY.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
-	   sprintf(line, "%g %d %g %g %g %g\n",
+	   if (y_is_date) {
+        	date_string = DateString(i);
+        	date = ExtractDate(date_string);
+		sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]), 
+                             date[1], date[2], (int)bs->GetStatVal(STAT_COUNT),
+                             bs->GetStatVal(STAT_YSUM),
+                             bs->GetStatVal(STAT_MIN),
+                             bs->GetStatVal(STAT_MEAN),
+                             bs->GetStatVal(STAT_MAX));
+	   } else sprintf(line, "%g %d %g %g %g %g\n",
 			     i, (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MIN),
@@ -945,6 +1000,15 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
         double low = filter.yLow;
         double high = filter.yHigh;
 
+	date_string = DateString(low);
+        date = ExtractDate(date_string);
+        sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+                 date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) 
+                fprintf(stderr, "******Out of GData Stat Buffer space\n");
+
         sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
         DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
@@ -954,6 +1018,15 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #endif
         if( (int) _gdataStatBufferY->Write(line, len) != len ) 
             fprintf(stderr, "******Out of GData Stat Buffer space\n");
+
+        date_string = DateString(high);
+        date = ExtractDate(date_string); 
+        sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+                   date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) 
+                fprintf(stderr, "******Out of GData Stat Buffer space\n");
 
         sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
         len = strlen(line);
@@ -965,8 +1038,6 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
         if( (int) _gdataStatBufferY->Write(line, len) != len )
             fprintf(stderr, "******Out of GData Stat Buffer space\n");
     }
-
-
 }
 
 /* Check if the X attr of GData is DateAttr */
@@ -976,6 +1047,18 @@ Boolean ViewGraph::IsXDateType(){
 	while(gAttrList->More()) {
 		AttrInfo *info = gAttrList->Next();
 		if(!strcmp(info->name, "x") && info->type==DateAttr) 
+			return true;
+	}
+	return false;
+}
+
+/* Check if the Y attr of GData is DateAttr */
+Boolean ViewGraph::IsYDateType(){
+	AttrList *gAttrList = GetFirstMap()->GDataAttrList();
+	gAttrList->InitIterator();
+	while(gAttrList->More()) {
+		AttrInfo *info = gAttrList->Next();
+		if(!strcmp(info->name, "y") && info->type==DateAttr) 
 			return true;
 	}
 	return false;
