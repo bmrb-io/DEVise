@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "AttrList.h"
 #include "Timer.h"
 
@@ -61,7 +62,9 @@ TDataDQL::TDataDQL(
 	_numFlds(numFlds),
 	_types(types),
 	_result(result),
-	_sizes(sizes)
+	_sizes(sizes),
+	_attributeNames(NULL),
+	_marshalPtrs(NULL)
 {
   
 #ifdef DEBUG
@@ -84,6 +87,11 @@ void TDataDQL::runQuery(){
      TRY(engine.optimize(), );
      _numFlds = engine.getNumFlds();
      _types = engine.getTypeIDs();
+	_attributeNames = engine.getAttributeNames();
+	_marshalPtrs = new MarshalPtr[_numFlds];
+	for(int i = 0; i < _numFlds; i++){
+		_marshalPtrs[i] = getMarshalPtr(_types[i]);
+	}
      Tuple* tup;
 	Tuple* highTup = new Tuple[_numFlds];
 	memset(highTup, 0, _numFlds * sizeof(Tuple));
@@ -140,9 +148,13 @@ void TDataDQL::runQuery(){
 	attrList->rewind();
 	_attrs.Clear();
 	for(int i = 0; i < _numFlds; i++){
-		assert(!attrList->atEnd());
-		char* atname = attrList->get();
-		attrList->step();
+		// assert(!attrList->atEnd());
+
+		// char* atname = attrList->get();
+		const char* atname = strchr(_attributeNames[i].chars(), '.') + 
+			sizeof(char);
+		cout << "atname = " << atname << endl;
+		// attrList->step();
 		TRY(int deviseSize = packSize(_types[i]), );
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
@@ -158,8 +170,8 @@ void TDataDQL::runQuery(){
 		else if(highTup[i] && lowTup[i]){
 			assert((unsigned) _sizes[i] <= sizeof(AttrVal));
 			hasHighLow = true;
-			memcpy(hiVal, highTup[i], _sizes[i]);
-			memcpy(loVal, lowTup[i], _sizes[i]);
+			_marshalPtrs[i](highTup[i], (char*) hiVal);
+			_marshalPtrs[i](lowTup[i], (char*) loVal);
 		}
 
 		_attrs.InsertAttr(i, strdup(atname), offset, deviseSize, 
@@ -180,8 +192,12 @@ void TDataDQL::runQuery(){
 	Timer::StartTimer();
 }
 
-TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) : _attrs(tableName), TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {
+TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) : 
+	_attrs(tableName), 
+	_attributeNames(NULL),
+	TData(strdup(tableName), strdup("DQL"), strdup("query"), 0) {
 	_tableName = strdup(tableName);
+	_marshalPtrs = NULL;
 	_query = strdup(query);
 	this->attrList = attrList;
 	runQuery();
@@ -204,7 +220,7 @@ TDataDQL::~TDataDQL()
 #ifdef DEBUG
   printf("TDataDQL destructor\n");
 #endif
-
+	delete [] _marshalPtrs;
 }
 
 Boolean TDataDQL::CheckFileStatus()
@@ -359,7 +375,7 @@ TD_Status TDataDQL::ReadRec(RecId id, int numRecs, void *buf){
 	char *ptr = (char *)buf;
 	for(long unsigned int i = id  ; i < numRecs + id; i++){
 		for(int j = 0; j < _numFlds; j++){
-			marshal(_result[i][j], (char*) ptr, _types[j]);
+			_marshalPtrs[j](_result[i][j], (char*) ptr);
 			ptr += _sizes[j];
 		}
 	}

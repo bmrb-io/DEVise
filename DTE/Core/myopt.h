@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/04/14 20:44:14  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.22  1997/04/10 21:50:29  donjerko
   Made integers inlined, added type cast operator.
 
@@ -356,7 +359,8 @@ public:
 	}
 	ConstantSelection* promote(TypeID typeToPromote) const; // throws
 	int toBinary(char* to){
-		marshal(value, to, typeID);
+		MarshalPtr marshalPtr = getMarshalPtr(typeID);
+		marshalPtr(value, to);
 		return packSize(value, typeID);
 	}
 	int binarySize(){

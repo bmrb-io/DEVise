@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/04/18 15:42:30  arvind
+  Modified stringLT so it returns (cmp < 0) instead of (cmp == -1).
+  Similarly for stringGT
+
   Revision 1.16  1997/04/14 20:44:17  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -139,6 +143,7 @@ typedef void (*WritePtr)(ostream&, Type*);
 typedef int (*SizePtr)(int, int);
 typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
+typedef void (*MarshalPtr)(Type* adt, char* to);
  
 void insert(String tableStr, Tuple* tuple);	// throws exception
 
@@ -149,6 +154,11 @@ int typeCompare(TypeID arg1, TypeID arg2);	// throws
 Type* intCopy(const Type* arg);
 Type* doubleCopy(const Type* arg);
 Type* stringCopy(const Type* arg);
+
+void intMarshal(Type* adt, char* to);
+void doubleMarshal(Type* adt, char* to);
+void stringMarshal(Type* adt, char* to);
+void dateMarshal(Type* adt, char* to);
 
 int boolSize(int a, int b);
 int sameSize(int a, int b);
@@ -362,13 +372,6 @@ public:
 	int packSize(){
 		return sizeof(double);
 	}
-	void marshal(char* to){
-
-		// int tmp = htonl(value);
-		// memcpy(to, &tmp, sizeof(int));
-
-		memcpy(to, &value, sizeof(double));
-	}
 	void unmarshal(const char* from){
 		memcpy(&value, from, sizeof(double));
 	}
@@ -495,7 +498,7 @@ public:
 */
 
 class IString {
-	char* string;
+	char* string;		// should be changed to char string[0]
 public:
      IString() : string(NULL){}
 	IString(const char* s) {
@@ -533,13 +536,12 @@ public:
 	int packSize(){
 		return strlen(string) + 1;
 	}
-	void marshal(char* to){
-		strcpy(to, string);
-	}
+	/*
 	void marshal(char* to, int len){
 		strncpy(to, string, len);
 		to[len - 1] = '\0';
 	}
+	*/
 	void unmarshal(char* from){
 		strcpy(string, from);
 	}
@@ -590,14 +592,11 @@ public:
 		date = arg.date;
 		return *this;
 	}
+     void unmarshal(char* from){
+          memcpy(&date, from, sizeof(time_t));
+     }
 	int packSize(){
 		return sizeof(time_t);
-	}
-	void marshal(char* to){
-		memcpy(to, &date, sizeof(time_t));
-	}
-	void unmarshal(char* from){
-		memcpy(&date, from, sizeof(time_t));
 	}
 	static GeneralPtr* getOperatorPtr(
 		String name, TypeID root, TypeID arg, TypeID& retType){
@@ -763,9 +762,10 @@ int packSize(Tuple* tup, TypeID* types, int numFlds);
 
 String rTreeEncode(String type);
 
-void marshal(Type* adt, char* to, String type);
+MarshalPtr getMarshalPtr(String type);
 
-void marshal(Tuple* tup, char* to, TypeID* types, int numFlds);
+void marshal(Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
+	int* sizes, int numFlds);
 
 Type* unmarshal(char* from, String type);
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/04/18 15:42:29  arvind
+  Modified stringLT so it returns (cmp < 0) instead of (cmp == -1).
+  Similarly for stringGT
+
   Revision 1.15  1997/04/14 20:44:17  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -395,22 +399,42 @@ int packSize(String type){	// throws exception
 	}
 }
 
-void marshal(Type* adt, char* to, String type){
+void intMarshal(Type* adt, char* to){
+	memcpy(to, &adt, sizeof(int));
+}
+
+void stringMarshal(Type* adt, char* to){
+	strcpy(to, ((IString*) adt)->getValue());
+}
+
+void doubleMarshal(Type* adt, char* to){
+	memcpy(to, adt, sizeof(double));
+}
+
+void dateMarshal(Type* adt, char* to){
+	memcpy(to, adt, sizeof(time_t));
+}
+
+MarshalPtr getMarshalPtr(String type){
 	if(type == "int"){
-		memcpy(to, adt, sizeof(int));
+		return intMarshal;
 	}
 	else if(type == "string"){
-		((IString*) adt)->marshal(to);
+		return stringMarshal;
 	}
 	else if(type == "double"){
-		((IDouble*) adt)->marshal(to);
+		return doubleMarshal;
 	}
 	else if(type == "date"){
-		((IDate*) adt)->marshal(to);
+		return dateMarshal;
 	}
 	else if(type.through(5).contains("string")){
-		int len = atoi(type.from(6).chars());
-		((IString*) adt)->marshal(to, len);
+
+		// length needs to be passed for the binary data
+		// int len = atoi(type.from(6).chars());
+		// ((IString*) adt)->marshal(to, len);
+
+		return stringMarshal;
 	}
 	else{
 		cout << "Don't know how to marshal type: " << type << endl;
@@ -619,11 +643,12 @@ int packSize(const TypeID* types, int numFlds){	// throws exception
 	return retVal;
 }
 
-void marshal(Tuple* tup, char* to, TypeID* types, int numFlds){
+void marshal(Tuple* tup, char* to, MarshalPtr* marshalPtrs, 
+	int* sizes, int numFlds){
 	int offset = 0;
 	for(int i = 0; i < numFlds; i++){
-		marshal(tup[i], to + offset, types[i]);
-		offset += packSize(tup[i], types[i]);
+		marshalPtrs[i](tup[i], to + offset);
+		offset += sizes[i];
 	}
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/04/08 01:47:36  donjerko
+  Set up the basis for ORDER BY clause implementation.
+
   Revision 1.17  1997/04/04 23:10:31  donjerko
   Changed the getNext interface:
   	from: Tuple* getNext()
@@ -302,14 +305,13 @@ public:
 		writePtrs = NULL;
 		input = NULL;
 	}
-	LocalTable(String nm, Site* base) : Site(nm) {
+	LocalTable(String nm, Site* base, List<BaseSelection*>* sel) : Site(nm) {
 
 		// This site is used as a root, on top of all other sites.
 		// It does includes leftover constants, if any.
 
 		mySelect = new List<BaseSelection*>;
-		// mySelect->addList(select);
-		// myWhere->addList(where);
+		mySelect->addList(sel);
 		this->iterator = NULL;
 		numFlds = mySelect->cardinality();
 		directSite = base;

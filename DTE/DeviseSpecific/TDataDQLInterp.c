@@ -128,7 +128,8 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 					currAtt = strtok(NULL, " ")){
 		attrList->append(strdup(currAtt));
 	}
-	String query = "select ";
+	String query = "select *";
+	/*
 	attrList->rewind();
 	while(!attrList->atEnd()){
 		query += String("t.") + attrList->get(); 
@@ -138,6 +139,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 		}
 		query += ", ";
 	}
+	*/
 	query += String(" from ") + _tableName + " as t";
 	_query = strdup(query.chars());
 
@@ -148,9 +150,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 
 	ostrstream name;
 	name << argv[0];
-//	if(_counter){
-		name << _counter;
-//	}
+//	name << _counter;
 	_counter++;
 	name << ends;
 	_name = name.str();

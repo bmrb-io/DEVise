@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/04/04 23:10:23  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.7  1997/03/28 16:07:24  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -106,6 +112,12 @@ Site* IndexParse::createSite(){
 	int numFlds = site->getNumFlds();
 	assert(numFlds == numKeyFlds + numAddFlds);
 	String* types = site->getTypeIDs();
+	MarshalPtr* marshalPtrs = new MarshalPtr[numFlds];
+	int sizes = new int[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		marshalPtrs[i] = getMarshalPtr(types[i]);
+		sizes[i] = packSize(types[i]);
+	}
 	String rtreeSchema;
 	for(int i = 0; i < numKeyFlds; i++){
 		rtreeSchema += rTreeEncode(types[i]);
@@ -142,7 +154,7 @@ Site* IndexParse::createSite(){
 	if(more){ // make sure this is not empty
 		TRY(fixedSize = packSize(types, numFlds), NULL);
 		flatTup = new char[fixedSize];
-		marshal(tup, flatTup, types, numFlds);
+		marshal(tup, flatTup, marshalPtrs, sizes, numFlds);
 		ind.write(flatTup, fixedSize);
 		if(!standAlone){
 			ind.write((char*) &offset, sizeof(Offset));
@@ -154,7 +166,7 @@ Site* IndexParse::createSite(){
 			if(tupSize != fixedSize){
 				assert(0);
 			}
-			marshal(tup, flatTup, types, numFlds);
+			marshal(tup, flatTup, marshalPtrs, numFlds);
 			ind.write(flatTup, fixedSize);
 			if(!standAlone){
 				ind.write((char*) &offset, sizeof(Offset));
@@ -216,6 +228,8 @@ Site* IndexParse::createSite(){
 	TRY(insert(".sysind", tuple), NULL);
 	delete tuple;
 	delete catalog;
+	delete [] marshalPtrs;
+	delete [] sizes;
 
 #endif
 	return new Site();

@@ -168,6 +168,8 @@ private:
 	int* _sizes;
 	char* _query;
 	List<char*>* attrList;
+	String* _attributeNames;
+	MarshalPtr* _marshalPtrs;
 	char* _tableName;
 };
 

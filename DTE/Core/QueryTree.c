@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/04/14 20:44:12  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.20  1997/04/08 01:47:33  donjerko
   Set up the basis for ORDER BY clause implementation.
 
@@ -306,8 +309,7 @@ Site* QueryTree::createSite(){
 	// Create top site that takes everything left over (constants or nothing)
 
 	assert(predicateList->isEmpty());
-	siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
-	siteGroup->filter(selectList);
+	siteGroup = new LocalTable(siteGroup->getName(), siteGroup, selectList);
 	TRY(siteGroup->typify(option), NULL);
 
 	for(int k = count; k >= 0;k--){
