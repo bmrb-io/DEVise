@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/06/20 17:10:25  guangshu
+  Added support for color statistics.
+
   Revision 1.19  1996/06/15 13:51:27  jussi
   Added SetMappingLegend() method.
 
@@ -353,6 +356,11 @@ void ViewGraph::SetDisplayStats(char *stat)
 
   // use memcpy to avoid copying the terminating null in stat
   memcpy(_DisplayStats, stat, strlen(stat));
+
+  // flush new statistics to the screen
+  WindowRep *win = GetWindowRep();
+  if (win)
+    win->Flush();
 }
 
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
@@ -469,9 +477,6 @@ Boolean ViewGraph::HandlePopUp(WindowRep *win, int x, int y, int button,
 #endif
 
   ControlPanel::Instance()->SelectView(this);
-
-  if (GetNumDimensions() != 2)
-    return false;
 
   int labelX, labelY, labelW, labelH;
   GetLabelArea(labelX, labelY, labelW, labelH);
