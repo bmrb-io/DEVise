@@ -1,0 +1,129 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.6  1996/06/27 22:43:36  jussi
+#  Added 3D and AttrProj categories.
+#
+#  Revision 1.5  1996/05/22 21:41:16  jussi
+#  This script now uses Eben Haber's line count program if available.
+#
+#  Revision 1.4  1996/02/01 19:50:58  jussi
+#  Added categorized display of source code line count.
+#
+#  Revision 1.3  1996/01/23 22:08:03  jussi
+#  Added copyright notice.
+#
+
+############################################################
+
+pushd ..
+
+set PROG = wc
+set TAIL = 'tail -1'
+set SEPARATOR = 'echo -------------------------------------------------------'
+
+if (-f stats/lc) then
+  set PROG = stats/lc
+  set TAIL = cat
+endif
+
+$SEPARATOR
+echo Buffer Manager:
+$PROG graphics/Buf*.[Cch] graphics.new/Buf*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Query Processor:
+$PROG graphics.new/Query*.[Cch] | $TAIL
+
+$SEPARATOR
+echo View Support:
+$PROG graphics/View*.[Cch] | $TAIL
+
+$SEPARATOR
+echo TData and GData Support:
+$PROG graphics.new/[GT]Data*.[Cch] graphics.new/Map*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Mapping Support:
+$PROG graphics.new/Map*.[Cch] | $TAIL
+
+$SEPARATOR
+echo 3D Support:
+$PROG graphics/Map3D*.[Cch] | $TAIL
+
+$SEPARATOR
+echo XWindows and Generic Display Support:
+$PROG graphics/*Win*.[Cch] graphics/*Display*.[Cch] graphics/X*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Visual Links and Cursors:
+$PROG graphics/*Link*.[Cch] graphics/*Cursor*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Ams, Generic, and Multi Applications:
+$PROG ams/*.[Cch] generic/*.[Cch] multi/*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Attribute Projection:
+$PROG attrproj/*.[Cch] | $TAIL
+
+$SEPARATOR
+echo CompuStat, CRSP, and ISSM Interfaces:
+$PROG compustat/*.[Cch] crsp/*.[Cch] issm/*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Statistics Support:
+$PROG graphics.new/*Stat*.[Cch] graphics.new/*KGraph*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Control Panel and Dispatcher:
+$PROG graphics/Control*.[Cch] graphics.new/TkControl*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Parser for Compiled Mapping:
+$PROG parser/*.[Cch] parser/*.y parser/*.lex | $TAIL
+
+$SEPARATOR
+echo Tape Interface:
+$PROG tape/*.[Cch] | $TAIL
+
+$SEPARATOR
+echo User Interface:
+$PROG lib/*.tk lib/*.tcl lib/*.txt | $TAIL
+
+$SEPARATOR
+echo Documentation:
+$PROG doc/*.tex doc/Agreement doc/Copyright doc/Disclaimer | $TAIL
+
+$SEPARATOR
+echo Utilities:
+$PROG util/*.[Cch] | $TAIL
+
+$SEPARATOR
+echo Makefiles:
+echo -n "  "
+wc */Makefile.base */*/Makefile | tail -1
+
+$SEPARATOR
+echo All Files:
+echo -n "  "
+wc */*.[Cch] */*/Makefile */Makefile.base */*.lex */*.y \
+	*/*.tk */*.tcl | tail -1
+
+popd
