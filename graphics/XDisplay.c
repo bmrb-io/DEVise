@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1997/07/22 19:44:29  wenger
+  Removed extra dependencies that broke cslib link.
+
   Revision 1.58  1997/07/17 21:10:59  wenger
   Fixed bugs 204 and 205 (GIF printing problems).
 
@@ -626,6 +629,9 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
   } 
 }
 
+// Whether or not to print window manager decorations to GIF output.
+#define PRINT_WM_DECORATIONS 0
+
 void XDisplay::ExportGIF(FILE *fp, int isView)
 {
 #if defined(DEBUG)
@@ -651,7 +657,12 @@ void XDisplay::ExportGIF(FILE *fp, int isView)
       XWindowRep *win = (XWindowRep *) windowP->GetWindowRep();
       int wx, wy;
       unsigned int ww, wh;
+#if PRINT_WM_DECORATIONS
       win->GetRootGeometry(wx, wy, ww, wh);
+#else
+      win->Dimensions(ww, wh);
+      win->AbsoluteOrigin(wx, wy);
+#endif
       if (!w && !h) {
         /* this is the first window */
         x = wx;
@@ -717,7 +728,12 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
       XWindowRep *win = (XWindowRep *) windowP->GetWindowRep();
       int wx, wy;
       unsigned int ww, wh;
+#if PRINT_WM_DECORATIONS
       win->GetRootGeometry(wx, wy, ww, wh);
+#else
+      win->Dimensions(ww, wh);
+      win->AbsoluteOrigin(wx, wy);
+#endif
       int dx = wx - x;
       int dy = wy - y;
 #ifdef DEBUG
@@ -725,11 +741,15 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
              win->GetWinId(), dx, dy, ww, wh);
 #endif
       DOASSERT(dx >= 0 && dy >= 0, "Invalid window coordinates");
-      Pixmap src = win->GetPixmapId();
-      if (src)
+      Drawable src = win->GetPixmapId();
+      if (src) {
         XWindowRep::CoalescePixmaps(win);
-      else {
+      } else {
+#if PRINT_WM_DECORATIONS
         src = win->FindTopWindow(win->GetWinId());
+#else
+	src = win->GetWinId();
+#endif
         XRaiseWindow(_display, src);
       }
       XImage *image = XGetImage(_display, src, 0, 0, ww, wh, AllPlanes,
