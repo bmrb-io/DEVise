@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/14 04:02:57  jussi
+  HandleWindowDestroy() now destroys the window, conditionally.
+  Moved the destructor from the header file to the .c file.
+
   Revision 1.13  1996/07/14 02:19:39  jussi
   Added HandleWindowDestroy() method. Removed some unnecessary,
   old code.
@@ -63,6 +67,8 @@
 #include "Display.h"
 
 //#define DEBUG
+
+Boolean WindowRep::_destroyPending = false;
 
 WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor, 
 		     Pattern p)
@@ -196,9 +202,13 @@ void WindowRep::HandleWindowMappedInfo(Boolean mapped)
 
 void WindowRep::HandleWindowDestroy()
 {
-  Boolean canDestroy = true;
+  /* everyone must know that a window destroy is already pending
+     so while we're inside the iterator loop below, they must not
+     try to destroy the window again */
+  _destroyPending = true;
 
   /* first tell everyone that the window is going away */
+  Boolean canDestroy = true;
   int index;
   for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);
@@ -206,6 +216,8 @@ void WindowRep::HandleWindowDestroy()
     
   }
   DoneIterator(index);
+
+  _destroyPending = false;
 
   /* now destroy the window if everyone
      returned a positive acknowledgement */
