@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/08/29 22:03:31  guangshu
+  Changed ExportGIF argument to FILE *
+
   Revision 1.28  1996/08/28 00:19:38  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -264,6 +267,7 @@ public:
     Coord height, char *filename, int imageLen, char *image)
     { return StatusOk; }
   virtual DevStatus DaliFreeImages() { return StatusOk; }
+  virtual int DaliImageCount() { return 0; }
 
   /* drawing primitives */
 

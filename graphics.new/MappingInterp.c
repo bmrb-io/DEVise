@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/08/04 21:59:49  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.37  1996/07/19 02:53:40  jussi
   Increase number of shapes to 15 (LineShape and LineShadeShape
   were added). RecId is now the first GData attribute in all
@@ -347,8 +354,10 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
-  if (info->isSorted)
-    SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+  if (info != NULL) {
+    if (info->isSorted)
+      SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
+  }
 
   TDataMap::ResetGData(FindGDataSize(cmd, _attrList, flag, attrFlag));
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:44:59  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/05/20 17:47:37  jussi
   Had to undo some previous changes.
 
@@ -43,6 +46,7 @@
 #ifndef LIBCS
 #include "Init.h"
 #include "Control.h"
+#include "DaliIfc.h"
 #endif
 
 void Exit::DoExit(int code)
@@ -52,6 +56,10 @@ void Exit::DoExit(int code)
     fflush(stdout);
     fflush(stderr);
     abort();
+  }
+
+  if (Init::DaliQuit()) {
+    (void) DaliIfc::Quit(Init::DaliServer());
   }
 #endif
   exit(code);
@@ -67,6 +75,10 @@ void Exit::DoAbort(char *reason, char *file, int line)
 
 #ifndef LIBCS
   ControlPanel::Instance()->DoAbort(fulltext);
+
+  if (Init::DaliQuit()) {
+    (void) DaliIfc::Quit(Init::DaliServer());
+  }
 #endif
   
   DoExit(2);

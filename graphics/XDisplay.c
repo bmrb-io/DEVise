@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/08/29 22:10:49  guangshu
+  Changed arguments of ConvertAndWriteGIF.
+
   Revision 1.29  1996/07/23 19:34:08  beyer
   Changed dispatcher so that pipes are not longer used for callback
   requests from other parts of the code.
@@ -841,6 +844,14 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   if (!_winList.Delete(xwin)) {
     fprintf(stderr, "XDisplay:Window to be deleted not found\n");
     Exit::DoExit(1);
+  }
+
+  // Free the Dali images and sleep before destroying the X window so
+  // Dali doesn't get 'bad window' errors.
+  if (xwin->DaliImageCount() > 0)
+  {
+    (void) xwin->DaliFreeImages();
+    sleep(1);
   }
 
   if (xwin->GetWinId()) {

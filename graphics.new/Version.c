@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/30 15:56:11  wenger
+  Modified View and QueryProcessor code to work correctly with current
+  dispatcher semantics (call back forever unless cancelled).
+
   Revision 1.6  1996/08/28 00:19:51  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -59,7 +63,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.7";
+static const char *	version = "1.1.8";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

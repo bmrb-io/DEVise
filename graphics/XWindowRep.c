@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1996/08/29 22:13:24  guangshu
+  Changed arguments of ConvertAndWriteGIF and ExportGIF.
+
   Revision 1.62  1996/08/29 18:24:32  wenger
   A number of Dali-related improvements: ShapeAttr1 now specifies image
   type when shape is 'image'; added new '-bytes' flag to Dali commands
@@ -505,7 +508,10 @@ XWindowRep::~XWindowRep()
   
   /* _win or _pixmap is destroyed by XDisplay */
 
-  DaliFreeImages();
+  // This should have already been done by XDisplay::DestroyWindowRep(),
+  // but do it again here just in case...  If it's already been done,
+  // this won't actually do anything.
+  (void) DaliFreeImages();
 
   if (_parent) {
     if (!_parent->_children.Delete(this))

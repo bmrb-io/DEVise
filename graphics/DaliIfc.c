@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/08/29 18:24:31  wenger
+  A number of Dali-related improvements: ShapeAttr1 now specifies image
+  type when shape is 'image'; added new '-bytes' flag to Dali commands
+  when sending images; TDataBinaryInterp now uses StringStorage so GData
+  can access strings; fixed hash function for StringStorage so having the
+  high bit set in a byte in the string doesn't crash the hash table;
+  improved the error checking in some of the Dali code.
+
   Revision 1.2  1996/08/28 00:19:35  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -167,6 +175,22 @@ DaliIfc::Reset(char *daliServer)
   SendCommand(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
   printf("Dali status: %s\n", replyBuf);
 #endif
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DaliIfc::Quit
+ * Kill the Dali server.
+ */
+DevStatus
+DaliIfc::Quit(char *daliServer)
+{
+  DO_DEBUG(printf("DaliIfc::Quit(%s)\n", daliServer));
+  DevStatus result = StatusOk;
+
+  char replyBuf[DALI_MAX_STR_LENGTH];
+  result += SendCommand(daliServer, "quit\n", 0, NULL, replyBuf, 5.0);
 
   return result;
 }

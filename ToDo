@@ -4,16 +4,13 @@
 
 ACTIVE
 ------
-Set up makefiles and release script to make and release statically-linked
-versions of the monolithic executable. (jpm/rkw 8/5/96)
-
 Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
+
+Add true PostScript printing capability. (yi/rkw 7/9/96)
 
 
 HIGH PRIORITY
 -------------
-
-Add true PostScript printing capability. (yi/rkw 7/9/96)
 
 
 LOW PRIORITY
@@ -157,6 +154,9 @@ Make a script to easily do a release of Devise to the outside world.
 
 Handle images in data better (don't treat them as strings).  (rkw 8/29/96)
 
+Put the /p/devise/run files into CVS and install them with the release
+script.  (rkw 9/4/96)
+
 
 COMPLETED
 ---------
@@ -165,8 +165,16 @@ Add attrproj member function to read entire record. (tz/rkw 7/31/96)
 Set up makefiles to easily be able to compile with debugging or Purify.
 (kb/rkw 7/31/96)
 
+Set up makefiles and release script to make and release statically-linked
+versions of the monolithic executable. (jpm/rkw 8/5/96)
+
 Interface to Dali.  Allow images to be shown in Devise views, using Dali
 to draw the images. (ml/rkw 8/6/96)
+
+Allow user to control size of Dali images. (ml/rkw 9/3/96)
+
+Make a script that automatically starts up Dali along with Devise.
+(ml/rkw 9/3/96)
 
 
 CANCELLED

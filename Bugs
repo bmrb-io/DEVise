@@ -108,6 +108,8 @@ Num Date        Status  Description
 036 08/30/96	FIXED	Run LandsEnd/a2.tk session with client/server
 			Devise -> crashes (assertion fails in View.c). (rkw)
 
+037 09/04/96	FIXED	Set X in mapping to a constant -> core dump. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

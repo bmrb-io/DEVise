@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/08/28 00:19:36  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.1  1996/08/23 16:55:29  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -43,6 +47,7 @@ public:
     char *image, int &handle);
   static DevStatus FreeImage(char *daliServer, int handle);
   static DevStatus Reset(char *daliServer);
+  static DevStatus Quit(char *daliServer);
 };
 
 

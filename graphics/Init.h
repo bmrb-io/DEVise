@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/08/23 16:55:36  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.5  1996/04/18 18:12:59  jussi
   Replaced 'postScript' member variable and method with more appropriate
   name 'batchFile.'
@@ -97,7 +102,8 @@ public:
   */
   static char *BatchFile() { return _batchFile; }
 
-  static char *DaliServer() {return _daliServer; }
+  static char *DaliServer() { return _daliServer; }
+  static Boolean DaliQuit() {return _daliQuit; }
 
 private:
 
@@ -136,6 +142,7 @@ private:
   static Boolean _printViewStat;
 
   static char *_daliServer;
+  static Boolean _daliQuit;
 };
 
 #endif

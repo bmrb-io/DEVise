@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/08/23 16:55:34  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.14  1996/07/12 15:21:00  jussi
   Removed references to Timer.
 
@@ -145,6 +150,7 @@ Boolean Init::_dispGraphics = true; /* true to display graphics */
 Boolean Init::_batchRecs = true; /* true if batching records */
 Boolean Init::_printViewStat = false;  /* true to print view statistics */
 char * Init::_daliServer = NULL;
+Boolean Init::_daliQuit = false;
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -199,6 +205,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-xhigh <value>: not yet implemented\n");
   fprintf(stderr, "\t-yhigh <value>: not yet implemented\n");
   fprintf(stderr, "\t-dali <name>: specify name of dali server\n");
+  fprintf(stderr, "\t-daliquit: kills dali server when Devise exits\n");
 
   Exit::DoExit(1);
 }
@@ -253,45 +260,57 @@ void Init::DoInit(int &argc, char **argv)
     if (argv[i][0] == '-') {
 
       if (strcmp(&argv[i][1], "queryProc") == 0) {
-	if (i >= argc-1)
+	if (i >= argc-1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_qpName = CopyString(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "batch") == 0) {
-	if (i >= argc - 1)
+	if (i >= argc - 1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_batchFile = CopyString(argv[i + 1]);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "session") == 0) {
-	if (i >= argc-1)
+	if (i >= argc-1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_sessionName = CopyString(argv[i + 1]);
 	_restore = true;
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "playback") == 0) {
-	if (i >= argc-1)
+	if (i >= argc-1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_playbackFile = CopyString(argv[i+1]);
 	_doPlayback = true;
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "journal") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	journalName = CopyString(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "buffer") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_bufferSize = atoi(argv[i+1]);
 	if (_bufferSize <= 0) {
 	  fprintf(stderr, "invalid buffer size %d\n", _bufferSize);
@@ -301,8 +320,10 @@ void Init::DoInit(int &argc, char **argv)
       }
 
       else if (strcmp(&argv[i][1], "pagesize") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_pageSize = atoi(argv[i+1]);
 	if (_pageSize <= 0) {
 	  fprintf(stderr, "invalid buffer size %d\n", _pageSize);
@@ -316,8 +337,10 @@ void Init::DoInit(int &argc, char **argv)
       }
 
       else if (strcmp(&argv[i][1], "policy") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	if (strcmp(argv[i+1], "lru") == 0)
 	  _policy = BufPolicy::LRU;
 	else if (strcmp(argv[i+1], "fifo") == 0)
@@ -336,85 +359,109 @@ void Init::DoInit(int &argc, char **argv)
       }
 
       else if (strcmp(&argv[i][1], "prefetch") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_prefetch = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "printViewStat") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_printViewStat = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "batchRecs") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_batchRecs = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "dispGraphics") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_dispGraphics = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "elimOverlap") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_elimOverlap = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "existing") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_existing = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "gdata") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_tdataQuery = (atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "gdatapages") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_gdataPages = atoi(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "convert") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_convertGData = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "iconify") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_iconify = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "printTDataAttr") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_printTDataAttr = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "simpleInterpreter") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_simpleInterpreter = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
@@ -449,45 +496,58 @@ void Init::DoInit(int &argc, char **argv)
       }
 
       else if (strcmp(&argv[i][1], "xlow") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_xLow = atof(argv[i+1]);
 	_hasXLow = true;
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "ylow") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_yLow = atof(argv[i+1]);
 	_hasYLow = true;
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "xhigh") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_xHigh = atof(argv[i+1]);
 	_hasXHigh = true;
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "yhigh") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_yHigh = atof(argv[i+1]);
 	_hasYHigh = true;
 	MoveArg(argc,argv,i,2);
       }
 
       else if (strcmp(&argv[i][1], "dali") == 0) {
-	if (i >= argc -1)
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);
+	}
 	_daliServer = CopyString(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
-
+      else if (strcmp(&argv[i][1], "daliquit") == 0) {
+	_daliQuit = true;
+	MoveArg(argc,argv,i,1);
+      }
 
       else {
 	i++;

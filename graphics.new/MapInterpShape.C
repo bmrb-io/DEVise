@@ -17,6 +17,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/08/29 18:24:41  wenger
+  A number of Dali-related improvements: ShapeAttr1 now specifies image
+  type when shape is 'image'; added new '-bytes' flag to Dali commands
+  when sending images; TDataBinaryInterp now uses StringStorage so GData
+  can access strings; fixed hash function for StringStorage so having the
+  high bit set in a byte in the string doesn't crash the hash table;
+  improved the error checking in some of the Dali code.
+
   Revision 1.14  1996/08/28 00:19:51  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -1257,7 +1265,8 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	// Display the image.
 	if (dali)
 	{
-	  win->DaliShowImage(tx, ty, 100.0, 100.0, file, imageSize, image);
+	  Coord size = GetSize(gdata, map, offset);
+	  win->DaliShowImage(tx, ty, size, size, file, imageSize, image);
 	}
 	else
 	{
