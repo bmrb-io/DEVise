@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.47  1997/08/09 00:52:54  donjerko
+# *** empty log message ***
+#
 # Revision 1.46  1997/07/30 21:38:04  donjerko
 # Removed manual template instantiation
 #
@@ -688,6 +691,44 @@ DevRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
 DevRead.o: /usr/include/sys/netconfig.h Utility.h queue.h DevRead.h
 DevRead.o: Iterator.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/strfile.h /usr/include/assert.h
+DevRead.dummy.o: types.h /s/gcc-2.7.2/lib/g++-include/String.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
+DevRead.dummy.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
+DevRead.dummy.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DevRead.dummy.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DevRead.dummy.o: /usr/include/time.h /usr/include/netinet/in.h
+DevRead.dummy.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+DevRead.dummy.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+DevRead.dummy.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+DevRead.dummy.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+DevRead.dummy.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+DevRead.dummy.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+DevRead.dummy.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DevRead.dummy.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DevRead.dummy.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DevRead.dummy.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DevRead.dummy.o: /usr/include/sys/byteorder.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+DevRead.dummy.o: /usr/include/stddef.h exception.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+DevRead.dummy.o: ../../graphics.new/machdep.h /usr/include/limits.h
+DevRead.dummy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+DevRead.dummy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+DevRead.dummy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DevRead.dummy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DevRead.dummy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DevRead.dummy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DevRead.dummy.o: Utility.h queue.h /usr/include/stdio.h
+DevRead.dummy.o: /usr/include/sys/va_list.h ../../graphics.new/RecId.h
+DevRead.dummy.o: DevRead.h Iterator.h
 DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h
 DropIndexParse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DropIndexParse.o: /usr/include/sys/va_list.h
@@ -805,17 +846,7 @@ ExecOp.o: /usr/include/netdb.h /usr/include/sys/socket.h
 ExecOp.o: /usr/include/sys/netconfig.h Utility.h ../../graphics.new/RecId.h
 ExecOp.o: Iterator.h listop.h /s/gcc-2.7.2/lib/g++-include/strstream.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/strfile.h RTreeRead.h myopt.h url.h
-ExecOp.o: /usr/include/unistd.h SockStream.h ../RTree/RTree.h
-ExecOp.o: ../RTree/genrtree.h ../RTree/port_genrtree.h ../RTree/type_compat.h
-ExecOp.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
-ExecOp.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
-ExecOp.o: /s/gcc-2.7.2/lib/g++-include/stream.h ../RTree/tools/pqueue.h
-ExecOp.o: ../RTree/tools/key.h /usr/include/stdlib.h ../RTree/tools/box.h
-ExecOp.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
-ExecOp.o: /usr/include/math.h /usr/include/floatingpoint.h
-ExecOp.o: /usr/include/sys/ieeefp.h /usr/include/sys/mman.h
-ExecOp.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-ExecOp.o: /usr/include/sys/fcntl.h ../RTree/RTreeCommon.h StandardRead.h
+ExecOp.o: /usr/include/unistd.h SockStream.h StandardRead.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -897,7 +928,59 @@ IndexParse.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 IndexParse.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 IndexParse.o: Utility.h ../../graphics.new/RecId.h url.h
 IndexParse.o: /usr/include/unistd.h SockStream.h listop.h Array.h site.h
-IndexParse.o: Iterator.h catalog.h ParseTree.h Aggregates.h
+IndexParse.o: Iterator.h catalog.h ParseTree.h Aggregates.h ../RTree/RTree.h
+IndexParse.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
+IndexParse.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+IndexParse.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+IndexParse.o: ../RTree/tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
+IndexParse.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
+IndexParse.o: ../RTree/tools/box.h ../RTree/tools/bit_vec.h
+IndexParse.o: ../RTree/bulk_data.h ../RTree/hfpage.h /usr/include/sys/mman.h
+IndexParse.o: /usr/include/sys/stat.h /usr/include/fcntl.h
+IndexParse.o: /usr/include/sys/fcntl.h ../RTree/RTreeCommon.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+IndexParse.dummy.o: /usr/include/memory.h /usr/include/string.h
+IndexParse.dummy.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
+IndexParse.dummy.o: /usr/include/math.h /usr/include/floatingpoint.h
+IndexParse.dummy.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h
+IndexParse.dummy.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+IndexParse.dummy.o: /usr/include/errno.h /usr/include/sys/errno.h queue.h
+IndexParse.dummy.o: myopt.h /s/gcc-2.7.2/lib/g++-include/String.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/strfile.h types.h
+IndexParse.dummy.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+IndexParse.dummy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+IndexParse.dummy.o: /usr/include/sys/time.h /usr/include/time.h
+IndexParse.dummy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+IndexParse.dummy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+IndexParse.dummy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+IndexParse.dummy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+IndexParse.dummy.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+IndexParse.dummy.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+IndexParse.dummy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+IndexParse.dummy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+IndexParse.dummy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+IndexParse.dummy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+IndexParse.dummy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+IndexParse.dummy.o: /usr/include/stddef.h exception.h
+IndexParse.dummy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+IndexParse.dummy.o: ../../graphics.new/machdep.h /usr/include/limits.h
+IndexParse.dummy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+IndexParse.dummy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+IndexParse.dummy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+IndexParse.dummy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+IndexParse.dummy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+IndexParse.dummy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+IndexParse.dummy.o: Utility.h ../../graphics.new/RecId.h url.h
+IndexParse.dummy.o: /usr/include/unistd.h SockStream.h listop.h Array.h
+IndexParse.dummy.o: site.h Iterator.h catalog.h ParseTree.h Aggregates.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -1052,6 +1135,9 @@ QueryTree.o: DevRead.h Aggregates.h ParseTree.h joins.h Sort.h StandardRead.h
 QueryTree.o: PQueue.h TypeCheck.h /usr/include/memory.h /usr/include/math.h
 QueryTree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 QueryTree.o: /usr/include/stdlib.h
+RTreeInit.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+RTreeInit.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+RTreeInit.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 RTreeRead.o: RTreeRead.h myopt.h /usr/include/assert.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/String.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1089,8 +1175,8 @@ RTreeRead.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 RTreeRead.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 RTreeRead.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
 RTreeRead.o: ../../graphics.new/RecId.h url.h /usr/include/unistd.h
-RTreeRead.o: SockStream.h listop.h Array.h ../RTree/RTree.h
-RTreeRead.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
+RTreeRead.o: SockStream.h listop.h Array.h Iterator.h StandardRead.h
+RTreeRead.o: ../RTree/RTree.h ../RTree/genrtree.h ../RTree/port_genrtree.h
 RTreeRead.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
 RTreeRead.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
 RTreeRead.o: ../RTree/tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
@@ -1100,11 +1186,47 @@ RTreeRead.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
 RTreeRead.o: /usr/include/math.h /usr/include/floatingpoint.h
 RTreeRead.o: /usr/include/sys/ieeefp.h /usr/include/sys/mman.h
 RTreeRead.o: /usr/include/sys/stat.h /usr/include/fcntl.h
-RTreeRead.o: /usr/include/sys/fcntl.h ../RTree/RTreeCommon.h Iterator.h
-RTreeRead.o: StandardRead.h
+RTreeRead.o: /usr/include/sys/fcntl.h ../RTree/RTreeCommon.h
+RTreeRead.dummy.o: RTreeRead.h myopt.h /usr/include/assert.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/String.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/strfile.h queue.h
+RTreeRead.dummy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+RTreeRead.dummy.o: /usr/include/sys/va_list.h types.h /usr/include/string.h
+RTreeRead.dummy.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+RTreeRead.dummy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+RTreeRead.dummy.o: /usr/include/sys/time.h /usr/include/time.h
+RTreeRead.dummy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+RTreeRead.dummy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+RTreeRead.dummy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+RTreeRead.dummy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+RTreeRead.dummy.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+RTreeRead.dummy.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+RTreeRead.dummy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+RTreeRead.dummy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+RTreeRead.dummy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+RTreeRead.dummy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+RTreeRead.dummy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/new.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+RTreeRead.dummy.o: /usr/include/stddef.h exception.h
+RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+RTreeRead.dummy.o: ../../graphics.new/machdep.h /usr/include/limits.h
+RTreeRead.dummy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+RTreeRead.dummy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+RTreeRead.dummy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+RTreeRead.dummy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+RTreeRead.dummy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+RTreeRead.dummy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+RTreeRead.dummy.o: Utility.h ../../graphics.new/RecId.h url.h
+RTreeRead.dummy.o: /usr/include/unistd.h SockStream.h listop.h Array.h
+RTreeRead.dummy.o: Iterator.h StandardRead.h
 SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h /usr/include/stdio.h
 SchemaParse.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1596,7 +1718,7 @@ site.o: ../../graphics.new/RecId.h site.h myopt.h
 site.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 site.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/unistd.h
 site.o: SockStream.h listop.h Array.h catalog.h ParseTree.h ExecOp.h
-site.o: ExecExpr.h
+site.o: ExecExpr.h RTreeRead.h StandardRead.h
 types.o: types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 types.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 types.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
