@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1995/12/14 17:14:56  jussi
+  Small fixes.
+
   Revision 1.12  1995/12/06 21:18:12  jussi
   Minor improvements: X high label no longer gets overdrawn by the highlight
   rectangle when label is at top; erasing data area erases top pixel line
@@ -61,6 +64,8 @@
 */
 
 #include <time.h>
+#include <assert.h>
+
 #include "Util.h"
 #include "View.h"
 #include "Geom.h"
@@ -1249,9 +1254,9 @@ void View::YAxisDisplayOnOff(Boolean stat)
 
 /* Find real window coords */
 
-inline FindRealCoord(WindowRep *winRep, Coord xlow, Coord ylow, 
-		     Coord xhigh, Coord yhigh, int &txlow, int &tylow,
-		     int &txhigh, int &tyhigh)
+inline int FindRealCoord(WindowRep *winRep, Coord xlow, Coord ylow, 
+			 Coord xhigh, Coord yhigh, int &txlow, int &tylow,
+			 int &txhigh, int &tyhigh)
 {
   Coord xl,yl, xh, yh;
   winRep->Transform(xlow, ylow, xl, yl);
@@ -1332,7 +1337,6 @@ View::UpdateFilterStat View::UpdateFilterWithScroll()
 			oxl-fxl+lxl, oyl-fyl+lyl);
     
     /* Find exposed region for redraw */
-    Coord exposeXLow, exposeYLow, exposeWidth, exposeHeight;
     if (_filter.xLow > _lastFilter.xLow) {
       /* scrolling data left */
       _exposureRect.xLow = lxh-overlapWidth;
@@ -1776,14 +1780,6 @@ void View::InvalidatePixmaps()
   }
 }
 
-static void PrintLine(unsigned char *line, int len)
-{
-  for (int i=0; i < len ; i++) {
-    printf("%x ", line[i]);
-  }
-  printf("\n");
-}
-
 void View::SavePixmaps(FILE *file)
 {
 #ifdef DEBUG
@@ -1808,7 +1804,7 @@ void View::SavePixmaps(FILE *file)
   //
 
   int saved = 0;
-  DevisePixmap *pixmap;
+  DevisePixmap *pixmap = 0;
   if (Iconified()|| !Mapped() ||_refresh ||_bytes < VIEW_BYTES_BEFORE_SAVE) {
     if (_pixmap != NULL) {
       /* save old pixmap */
@@ -1834,6 +1830,8 @@ void View::SavePixmaps(FILE *file)
   if (!saved)
     return;
   
+  assert(pixmap);
+
 #ifdef DEBUG
   printf("Saving Pixmap for %s, data %d bytes\n", GetName(), _bytes);
 #endif
