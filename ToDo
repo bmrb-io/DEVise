@@ -317,6 +317,14 @@ Tasvir image (somehow request Tasvir to draw only the visible portion of
 the image, rather than asking for a huge image size as it does now).
 (rkw 1/9/97)
 
+Put sessions into the Devise catalog. [rr/rkw 1/14/97]
+
+In the 'Define Visualization' dialog, the 'Create Window' dialog should
+be shown automatically if there are no windows existing. (ma/rkw 1/15/97)
+
+The Devise documentation should have an explicit list of the steps needed
+to go from a raw data file to a Devise visualization. (ma/rkw 1/15/97)
+
 
 COMPLETED
 ---------
@@ -370,6 +378,7 @@ ff =
 gc = 
 jpm = jussi@cs.wisc.edu = Jussi Myllymaki
 kb = beyer@cs.wisc.edu = Kevin Beyer
+ma = anderson@bob.soils.wisc.edu = Martha Anderson
 ml = miron@cs.wisc.edu = Miron Livny
 na = narayana@cs.wisc.edu = Narayanan Anand
 rkw = wenger@cs.wisc.edu = R. Kent Wenger

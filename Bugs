@@ -449,6 +449,10 @@ Num Date        Status  Description
 			DEVise in dir like /p/devise/guangshu/test/solsparc
 			(gc)
 
+119 01/15/97	OPEN	If you have too many attributes, the 'Select X'
+			menu in the 'Define Visualization' dialog goes
+			off the bottom of the screen (ma/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
