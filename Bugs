@@ -208,6 +208,37 @@ Num Date        Status  Description
 			with a string attribute that's missing the length.
 			(rkw)
 
+064 11/14/96	OPEN	Load session test/miron_new.tk; pile the views in
+			DEViseWn1, and flip the pile -> the view is drawn
+			only when one of the three views is on top. (ml/
+			rkw)
+
+065 11/14/96	OPEN	Load session test/dcb1.tk; the data in the 'Log
+			Display' window is not drawn, even though a point
+			query indicates that the data is there. (rkw)
+
+066 11/14/96	OPEN	Load session test/dbc1.tk; decrease the size of
+			the symbols in the 'RunTime vs. ExecTime' view
+			with the '-' key -> symbols change to single pixels
+			much too soon. (rkw)
+
+067 11/14/96	OPEN	Load session test/DBC.tk; in view 'Restarts vs.
+			ExecTime', the whole view within the axes is filled
+			in with a kind of maroon color. (rkw)
+
+068 11/14/96	OPEN	Exporting a session with data doesn't seem to work
+			if there is more than one data source (export
+			appears to work, but subsequent open fails).  (See
+			session test/miron_new_wdata.tk.) (rkw)
+
+069 11/14/96	OPEN	Load session test/dbc2.tk; most views are initially
+			drawn with incorrect colors.  This somehow fixes
+			itself if you force a redraw (resize windows, etc.).
+			(rkw)
+
+070 11/14/96	OPEN	Load session test/dbc2.tk; toggling axes does not
+			work correctly.
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
