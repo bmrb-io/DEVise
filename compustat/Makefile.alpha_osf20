@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/03/28 16:08:27  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -28,75 +32,83 @@ compustat.o: /usr/include/stdio.h /usr/include/standards.h
 compustat.o: /usr/include/sys/seek.h /usr/include/va_list.h
 compustat.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 compustat.o: /usr/include/sys/select.h /usr/include/getopt.h
-compustat.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-compustat.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+compustat.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+compustat.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 compustat.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
-compustat.o: /usr/include/string.h /usr/include/ctype.h
-compustat.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-compustat.o: /usr/include/unistd.h /usr/include/sys/access.h
-compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
-compustat.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
-compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
-compustat.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
+compustat.o: /usr/include/string.h /usr/include/strings.h
+compustat.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+compustat.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+compustat.o: /usr/include/nl_types.h /usr/include/mesg.h
+compustat.o: /usr/include/limits.h /usr/include/unistd.h
+compustat.o: /usr/include/sys/access.h /s/tcl/include/tcl.h
+compustat.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+compustat.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
+compustat.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+compustat.o: /usr/include/sys/param.h /usr/include/machine/machparam.h
 compustat.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+compustat.o: /usr/include/machine/signal.h /usr/include/machine/context.h
 compustat.o: /usr/include/sys/procset.h /usr/include/sys/time.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-compustat.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
-compustat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
-compustat.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
-compustat.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-compustat.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-compustat.o: /usr/include/netinet/in.h
+compustat.o: /usr/include/time.h /usr/include/sys/timers.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+compustat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+compustat.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+compustat.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+compustat.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+compustat.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+compustat.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+compustat.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
 index.o: /usr/include/stdio.h /usr/include/standards.h
 index.o: /usr/include/sys/seek.h /usr/include/va_list.h
 index.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 index.o: /usr/include/sys/select.h /usr/include/getopt.h
-index.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-index.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+index.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+index.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 index.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
-index.o: /usr/include/string.h /usr/include/ctype.h
+index.o: /usr/include/string.h /usr/include/strings.h /usr/include/ctype.h
 index.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-index.o: /usr/include/unistd.h /usr/include/sys/access.h index.h
-index.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
-index.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
-index.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-index.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
-index.o: /usr/include/sys/procset.h /usr/include/sys/time.h
-index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+index.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+index.o: /usr/include/limits.h /usr/include/unistd.h
+index.o: /usr/include/sys/access.h index.h ../tape/tapedrive.h
+index.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+index.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+index.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+index.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+index.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+index.o: /usr/include/sys/time.h /usr/include/time.h
+index.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
 index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 index.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
 index.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
 index.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 index.o: /usr/include/io/common/devio.h /usr/include/netdb.h
-index.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-index.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+index.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+index.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
 project.o: /usr/include/stdio.h /usr/include/standards.h
 project.o: /usr/include/sys/seek.h /usr/include/va_list.h
 project.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 project.o: /usr/include/sys/select.h /usr/include/getopt.h
-project.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-project.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+project.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+project.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 project.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
-project.o: /usr/include/string.h /usr/include/ctype.h
+project.o: /usr/include/string.h /usr/include/strings.h /usr/include/ctype.h
 project.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-project.o: /usr/include/unistd.h /usr/include/sys/access.h
-project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
-project.o: ../graphics.new/machdep.h /usr/include/limits.h
-project.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
+project.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+project.o: /usr/include/limits.h /usr/include/unistd.h
+project.o: /usr/include/sys/access.h /usr/include/assert.h compustat.h
+project.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
+project.o: /usr/include/sys/param.h /usr/include/machine/machparam.h
 project.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-project.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+project.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+project.o: /usr/include/machine/signal.h /usr/include/machine/context.h
 project.o: /usr/include/sys/procset.h /usr/include/sys/time.h
-project.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-project.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-project.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
-project.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
-project.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
-project.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-project.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-project.o: /usr/include/netinet/in.h
+project.o: /usr/include/time.h /usr/include/sys/timers.h
+project.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+project.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+project.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+project.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+project.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+project.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+project.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+project.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h

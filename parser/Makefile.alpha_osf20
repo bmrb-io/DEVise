@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/03/28 16:11:58  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -27,22 +31,22 @@ codegen.o: /usr/include/stdio.h /usr/include/standards.h
 codegen.o: /usr/include/sys/seek.h /usr/include/va_list.h
 codegen.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 codegen.o: /usr/include/sys/select.h /usr/include/getopt.h
-codegen.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-codegen.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+codegen.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+codegen.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 codegen.o: /usr/include/sys/rt_limits.h /usr/include/string.h
-codegen.o: /usr/include/stdlib.h parse.h codegen.h
+codegen.o: /usr/include/strings.h /usr/include/stdlib.h parse.h codegen.h
 main.o: parse.h /usr/include/stdio.h /usr/include/standards.h
 main.o: /usr/include/sys/seek.h /usr/include/va_list.h
 main.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 main.o: /usr/include/sys/select.h /usr/include/getopt.h
-main.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-main.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+main.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+main.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 main.o: /usr/include/sys/rt_limits.h
 parse.o: /usr/include/stdio.h /usr/include/standards.h
 parse.o: /usr/include/sys/seek.h /usr/include/va_list.h
 parse.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 parse.o: /usr/include/sys/select.h /usr/include/getopt.h
-parse.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-parse.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+parse.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+parse.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 parse.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h parse.h tokens.h
 parse.o: /usr/include/malloc.h codegen.h

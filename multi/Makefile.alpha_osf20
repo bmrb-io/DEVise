@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/03/28 16:11:36  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -27,60 +31,57 @@ depend:
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/standards.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/limits.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/machlimits.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/syslimits.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machine/machtime.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/machtime.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/rt_limits.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/types.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/select.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/signal.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machine/signal.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sysmisc.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/signal.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/context.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/procset.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/stdlib.h /usr/include/getopt.h
-CycleCpuTimeMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/seek.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/time.h /usr/include/sys/timers.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/math.h /usr/include/stdlib.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/getopt.h /s/tcl/include/tcl.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/seek.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/va_list.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Dispatcher.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/unistd.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/access.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/ColorMgr.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/strings.h ../graphics/ViewWin.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/WindowRep.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DevisePixmap.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/errno.h ../graphics/ETkIfc.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xosdefs.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/stddef.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Shape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecId.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/GDataRec.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Map3D.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewGraph.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/ViewCallback.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Cursor.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/BasicStats.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewStats.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/GdataStat.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/UpdateLink.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Action.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/PointStorage.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/Connector.h
@@ -89,227 +90,263 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/localedef.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/lc_core.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DispQueryProc.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProc.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/BufHint.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/QueryProcFull.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/BufMgr.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/BufferPolicy.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/locale.h /usr/include/nl_types.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/mesg.h ../graphics/Selection.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/View.h TDataCycle.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TData.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/Snapshot.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewScatter.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSource.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/MemMgr.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/mode.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/param.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/machparam.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/machine/endian.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/wait.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/secdefines.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ttychars.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ttydefaults.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ttydev.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/io/common/devio.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/netdb.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/socket.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/uio.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/rpc/netdb.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
-CycleCpuTimeMappingClassInfo.o: map_cycle_cpu_time.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/Session.h map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h /usr/include/standards.h
 CycleEffMappingClassInfo.o: /usr/include/sys/limits.h
-CycleEffMappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+CycleEffMappingClassInfo.o: /usr/include/machine/machlimits.h
 CycleEffMappingClassInfo.o: /usr/include/sys/syslimits.h
-CycleEffMappingClassInfo.o: /usr/include/sys/machine/machtime.h
+CycleEffMappingClassInfo.o: /usr/include/machine/machtime.h
 CycleEffMappingClassInfo.o: /usr/include/sys/rt_limits.h
 CycleEffMappingClassInfo.o: /usr/include/sys/types.h
 CycleEffMappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 CycleEffMappingClassInfo.o: /usr/include/sys/select.h
 CycleEffMappingClassInfo.o: /usr/include/sys/signal.h
 CycleEffMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleEffMappingClassInfo.o: /usr/include/sys/machine/signal.h
-CycleEffMappingClassInfo.o: /usr/include/sys/procset.h
-CycleEffMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+CycleEffMappingClassInfo.o: /usr/include/sys/sysmisc.h
+CycleEffMappingClassInfo.o: /usr/include/machine/signal.h
+CycleEffMappingClassInfo.o: /usr/include/machine/context.h
+CycleEffMappingClassInfo.o: /usr/include/sys/procset.h /usr/include/time.h
+CycleEffMappingClassInfo.o: /usr/include/sys/timers.h /usr/include/math.h
 CycleEffMappingClassInfo.o: /usr/include/stdlib.h /usr/include/getopt.h
 CycleEffMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleEffMappingClassInfo.o: /usr/include/sys/seek.h /usr/include/va_list.h
 CycleEffMappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
 CycleEffMappingClassInfo.o: /usr/include/limits.h ../graphics/DevStatus.h
 CycleEffMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
-CycleEffMappingClassInfo.o: ../graphics/Color.h ../graphics/Dispatcher.h
-CycleEffMappingClassInfo.o: /usr/include/unistd.h /usr/include/sys/access.h
-CycleEffMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
+CycleEffMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
 CycleEffMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleEffMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-CycleEffMappingClassInfo.o: ../graphics/Transform.h
+CycleEffMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+CycleEffMappingClassInfo.o: /usr/include/string.h /usr/include/strings.h
+CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+CycleEffMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
 CycleEffMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+CycleEffMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleEffMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+CycleEffMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
+CycleEffMappingClassInfo.o: /usr/include/X11/X.h
+CycleEffMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
+CycleEffMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+CycleEffMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleEffMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleEffMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Shape.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-CycleEffMappingClassInfo.o: ../graphics.new/GDataRec.h
-CycleEffMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-CycleEffMappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-CycleEffMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleEffMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-CycleEffMappingClassInfo.o: ../graphics.new/ViewStats.h
-CycleEffMappingClassInfo.o: ../graphics.new/GdataStat.h
-CycleEffMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-CycleEffMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-CycleEffMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleEffMappingClassInfo.o: ../graphics.new/UpdateLink.h
-CycleEffMappingClassInfo.o: ../graphics.new/VisualLink.h
+CycleEffMappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+CycleEffMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+CycleEffMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+CycleEffMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleEffMappingClassInfo.o: ../graphics.new/Action.h
-CycleEffMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
-CycleEffMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+CycleEffMappingClassInfo.o: ../graphics.new/PointStorage.h
+CycleEffMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+CycleEffMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleEffMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleEffMappingClassInfo.o: ../graphics.new/Connector.h
 CycleEffMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleEffMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleEffMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 CycleEffMappingClassInfo.o: /usr/include/sys/localedef.h
-CycleEffMappingClassInfo.o: /usr/include/sys/lc_core.h
-CycleEffMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-CycleEffMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleEffMappingClassInfo.o: ../graphics.new/DispQueryProc.h
-CycleEffMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-CycleEffMappingClassInfo.o: ../graphics.new/QueryProc.h
-CycleEffMappingClassInfo.o: ../graphics.new/BufHint.h
-CycleEffMappingClassInfo.o: ../graphics.new/QueryProcFull.h
-CycleEffMappingClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-CycleEffMappingClassInfo.o: ../graphics.new/BufMgr.h
-CycleEffMappingClassInfo.o: ../graphics.new/BufferPolicy.h
-CycleEffMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
-CycleEffMappingClassInfo.o: ../graphics.new/TDataAscii.h
+CycleEffMappingClassInfo.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+CycleEffMappingClassInfo.o: /usr/include/nl_types.h /usr/include/mesg.h
+CycleEffMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
+CycleEffMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleEffMappingClassInfo.o: ../graphics.new/TData.h
-CycleEffMappingClassInfo.o: ../graphics.new/Snapshot.h
-CycleEffMappingClassInfo.o: ../graphics.new/ViewScatter.h
+CycleEffMappingClassInfo.o: ../graphics.new/DataSource.h
+CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+CycleEffMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+CycleEffMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+CycleEffMappingClassInfo.o: ../graphics.new/machdep.h
+CycleEffMappingClassInfo.o: /usr/include/sys/param.h
+CycleEffMappingClassInfo.o: /usr/include/machine/machparam.h
+CycleEffMappingClassInfo.o: /usr/include/machine/endian.h
+CycleEffMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+CycleEffMappingClassInfo.o: /usr/include/sys/secdefines.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ttychars.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ttydefaults.h
+CycleEffMappingClassInfo.o: /usr/include/sys/ttydev.h
+CycleEffMappingClassInfo.o: /usr/include/io/common/devio.h
+CycleEffMappingClassInfo.o: /usr/include/netdb.h /usr/include/netinet/in.h
+CycleEffMappingClassInfo.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+CycleEffMappingClassInfo.o: /usr/include/rpc/netdb.h
+CycleEffMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
-CycleEffMappingClassInfo.o: map_cycle_eff.h
+CycleEffMappingClassInfo.o: ../graphics/Session.h map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h /usr/include/standards.h
 CycleOccMappingClassInfo.o: /usr/include/sys/limits.h
-CycleOccMappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+CycleOccMappingClassInfo.o: /usr/include/machine/machlimits.h
 CycleOccMappingClassInfo.o: /usr/include/sys/syslimits.h
-CycleOccMappingClassInfo.o: /usr/include/sys/machine/machtime.h
+CycleOccMappingClassInfo.o: /usr/include/machine/machtime.h
 CycleOccMappingClassInfo.o: /usr/include/sys/rt_limits.h
 CycleOccMappingClassInfo.o: /usr/include/sys/types.h
 CycleOccMappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 CycleOccMappingClassInfo.o: /usr/include/sys/select.h
 CycleOccMappingClassInfo.o: /usr/include/sys/signal.h
 CycleOccMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleOccMappingClassInfo.o: /usr/include/sys/machine/signal.h
-CycleOccMappingClassInfo.o: /usr/include/sys/procset.h
-CycleOccMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
+CycleOccMappingClassInfo.o: /usr/include/sys/sysmisc.h
+CycleOccMappingClassInfo.o: /usr/include/machine/signal.h
+CycleOccMappingClassInfo.o: /usr/include/machine/context.h
+CycleOccMappingClassInfo.o: /usr/include/sys/procset.h /usr/include/time.h
+CycleOccMappingClassInfo.o: /usr/include/sys/timers.h /usr/include/math.h
 CycleOccMappingClassInfo.o: /usr/include/stdlib.h /usr/include/getopt.h
 CycleOccMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleOccMappingClassInfo.o: /usr/include/sys/seek.h /usr/include/va_list.h
 CycleOccMappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
 CycleOccMappingClassInfo.o: /usr/include/limits.h ../graphics/DevStatus.h
 CycleOccMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
-CycleOccMappingClassInfo.o: ../graphics/Color.h ../graphics/Dispatcher.h
-CycleOccMappingClassInfo.o: /usr/include/unistd.h /usr/include/sys/access.h
-CycleOccMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
+CycleOccMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
 CycleOccMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleOccMappingClassInfo.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
-CycleOccMappingClassInfo.o: ../graphics/Transform.h
+CycleOccMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+CycleOccMappingClassInfo.o: /usr/include/string.h /usr/include/strings.h
+CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+CycleOccMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
 CycleOccMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+CycleOccMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleOccMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+CycleOccMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
+CycleOccMappingClassInfo.o: /usr/include/X11/X.h
+CycleOccMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
+CycleOccMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+CycleOccMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleOccMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleOccMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Shape.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-CycleOccMappingClassInfo.o: ../graphics.new/GDataRec.h
-CycleOccMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-CycleOccMappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-CycleOccMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleOccMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-CycleOccMappingClassInfo.o: ../graphics.new/ViewStats.h
-CycleOccMappingClassInfo.o: ../graphics.new/GdataStat.h
-CycleOccMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-CycleOccMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-CycleOccMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleOccMappingClassInfo.o: ../graphics.new/UpdateLink.h
-CycleOccMappingClassInfo.o: ../graphics.new/VisualLink.h
+CycleOccMappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+CycleOccMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+CycleOccMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+CycleOccMappingClassInfo.o: ../graphics.new/ViewGraph.h
 CycleOccMappingClassInfo.o: ../graphics.new/Action.h
-CycleOccMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
-CycleOccMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+CycleOccMappingClassInfo.o: ../graphics.new/PointStorage.h
+CycleOccMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+CycleOccMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleOccMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleOccMappingClassInfo.o: ../graphics.new/Connector.h
 CycleOccMappingClassInfo.o: ../graphics.new/GDataBin.h
 CycleOccMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleOccMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 CycleOccMappingClassInfo.o: /usr/include/sys/localedef.h
-CycleOccMappingClassInfo.o: /usr/include/sys/lc_core.h
-CycleOccMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-CycleOccMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleOccMappingClassInfo.o: ../graphics.new/DispQueryProc.h
-CycleOccMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-CycleOccMappingClassInfo.o: ../graphics.new/QueryProc.h
-CycleOccMappingClassInfo.o: ../graphics.new/BufHint.h
-CycleOccMappingClassInfo.o: ../graphics.new/QueryProcFull.h
-CycleOccMappingClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-CycleOccMappingClassInfo.o: ../graphics.new/BufMgr.h
-CycleOccMappingClassInfo.o: ../graphics.new/BufferPolicy.h
-CycleOccMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
-CycleOccMappingClassInfo.o: ../graphics.new/TDataAscii.h
+CycleOccMappingClassInfo.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+CycleOccMappingClassInfo.o: /usr/include/nl_types.h /usr/include/mesg.h
+CycleOccMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
+CycleOccMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleOccMappingClassInfo.o: ../graphics.new/TData.h
-CycleOccMappingClassInfo.o: ../graphics.new/Snapshot.h
-CycleOccMappingClassInfo.o: ../graphics.new/ViewScatter.h
+CycleOccMappingClassInfo.o: ../graphics.new/DataSource.h
+CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+CycleOccMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+CycleOccMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+CycleOccMappingClassInfo.o: ../graphics.new/machdep.h
+CycleOccMappingClassInfo.o: /usr/include/sys/param.h
+CycleOccMappingClassInfo.o: /usr/include/machine/machparam.h
+CycleOccMappingClassInfo.o: /usr/include/machine/endian.h
+CycleOccMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+CycleOccMappingClassInfo.o: /usr/include/sys/secdefines.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ttychars.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ttydefaults.h
+CycleOccMappingClassInfo.o: /usr/include/sys/ttydev.h
+CycleOccMappingClassInfo.o: /usr/include/io/common/devio.h
+CycleOccMappingClassInfo.o: /usr/include/netdb.h /usr/include/netinet/in.h
+CycleOccMappingClassInfo.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+CycleOccMappingClassInfo.o: /usr/include/rpc/netdb.h
+CycleOccMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleOccMappingClassInfo.o: CycleOccMappingClassInfo.h CycleRec.h
-CycleOccMappingClassInfo.o: map_cycle_occ.h
+CycleOccMappingClassInfo.o: ../graphics/Session.h map_cycle_occ.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
 CycleSuspendedMappingClassInfo.o: /usr/include/standards.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/limits.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/machlimits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/syslimits.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/machine/machtime.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/machtime.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/rt_limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/types.h
 CycleSuspendedMappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/select.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/signal.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/machine/signal.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/sysmisc.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/signal.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/context.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/procset.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-CycleSuspendedMappingClassInfo.o: /usr/include/stdlib.h /usr/include/getopt.h
-CycleSuspendedMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
+CycleSuspendedMappingClassInfo.o: /usr/include/time.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/timers.h
+CycleSuspendedMappingClassInfo.o: /usr/include/math.h /usr/include/stdlib.h
+CycleSuspendedMappingClassInfo.o: /usr/include/getopt.h /s/tcl/include/tcl.h
+CycleSuspendedMappingClassInfo.o: /usr/include/stdio.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/seek.h
 CycleSuspendedMappingClassInfo.o: /usr/include/va_list.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleSuspendedMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevStatus.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Color.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Dispatcher.h
-CycleSuspendedMappingClassInfo.o: /usr/include/unistd.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/access.h
-CycleSuspendedMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
+CycleSuspendedMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Journal.h
 CycleSuspendedMappingClassInfo.o: ../graphics/VisualArg.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Pattern.h
-CycleSuspendedMappingClassInfo.o: ../graphics/ColorMgr.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
+CycleSuspendedMappingClassInfo.o: /usr/include/strings.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ViewWin.h
 CycleSuspendedMappingClassInfo.o: ../graphics/WindowRep.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Transform.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Pattern.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DevisePixmap.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Compress.h
+CycleSuspendedMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
+CycleSuspendedMappingClassInfo.o: /usr/include/X11/X.h
+CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
+CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xosdefs.h
+CycleSuspendedMappingClassInfo.o: /usr/include/stddef.h
+CycleSuspendedMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleSuspendedMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Shape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/RecId.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/GDataRec.h
+CycleSuspendedMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Map3D.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewGraph.h
-CycleSuspendedMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Control.h
-CycleSuspendedMappingClassInfo.o: ../graphics/ClassDir.h
-CycleSuspendedMappingClassInfo.o: ../graphics/ViewCallback.h
-CycleSuspendedMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Cursor.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/BasicStats.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewStats.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/GdataStat.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/UpdateLink.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Action.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/PointStorage.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Control.h
+CycleSuspendedMappingClassInfo.o: ../graphics/ClassDir.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/Connector.h
@@ -318,81 +355,94 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/localedef.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/lc_core.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DispQueryProc.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProc.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/BufHint.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/QueryProcFull.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/QPRange.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Timer.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/BufMgr.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/BufferPolicy.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataAscii.h
+CycleSuspendedMappingClassInfo.o: /usr/include/locale.h
+CycleSuspendedMappingClassInfo.o: /usr/include/nl_types.h /usr/include/mesg.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
+CycleSuspendedMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TData.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/Snapshot.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewScatter.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSource.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/MemMgr.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/DCE.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ipc.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/sem.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
+CycleSuspendedMappingClassInfo.o: /usr/include/assert.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/mode.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/param.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/machparam.h
+CycleSuspendedMappingClassInfo.o: /usr/include/machine/endian.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/wait.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/secdefines.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ttychars.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ttydefaults.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/ttydev.h
+CycleSuspendedMappingClassInfo.o: /usr/include/io/common/devio.h
+CycleSuspendedMappingClassInfo.o: /usr/include/netdb.h
+CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/socket.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/uio.h
+CycleSuspendedMappingClassInfo.o: /usr/include/rpc/netdb.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleSuspendedMappingClassInfo.o: CycleSuspendedMappingClassInfo.h CycleRec.h
-CycleSuspendedMappingClassInfo.o: map_cycle_suspended.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Session.h map_cycle_suspended.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
 CycleWorkingMappingClassInfo.o: /usr/include/standards.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/limits.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/machlimits.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/syslimits.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/machine/machtime.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/machtime.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/rt_limits.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/types.h
 CycleWorkingMappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/select.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/signal.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/machine/signal.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/sysmisc.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/signal.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/context.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/procset.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-CycleWorkingMappingClassInfo.o: /usr/include/stdlib.h /usr/include/getopt.h
-CycleWorkingMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/seek.h
+CycleWorkingMappingClassInfo.o: /usr/include/time.h /usr/include/sys/timers.h
+CycleWorkingMappingClassInfo.o: /usr/include/math.h /usr/include/stdlib.h
+CycleWorkingMappingClassInfo.o: /usr/include/getopt.h /s/tcl/include/tcl.h
+CycleWorkingMappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/seek.h
 CycleWorkingMappingClassInfo.o: /usr/include/va_list.h
 CycleWorkingMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleWorkingMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
-CycleWorkingMappingClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
-CycleWorkingMappingClassInfo.o: ../graphics/Dispatcher.h
-CycleWorkingMappingClassInfo.o: /usr/include/unistd.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/access.h
-CycleWorkingMappingClassInfo.o: /usr/include/string.h ../graphics/DList.h
-CycleWorkingMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-CycleWorkingMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-CycleWorkingMappingClassInfo.o: ../graphics/ColorMgr.h
+CycleWorkingMappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
+CycleWorkingMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
+CycleWorkingMappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
+CycleWorkingMappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
+CycleWorkingMappingClassInfo.o: /usr/include/strings.h ../graphics/ViewWin.h
 CycleWorkingMappingClassInfo.o: ../graphics/WindowRep.h
-CycleWorkingMappingClassInfo.o: ../graphics/Transform.h
+CycleWorkingMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
 CycleWorkingMappingClassInfo.o: ../graphics/DevisePixmap.h
-CycleWorkingMappingClassInfo.o: ../graphics/Compress.h
+CycleWorkingMappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+CycleWorkingMappingClassInfo.o: /usr/include/errno.h ../graphics/ETkIfc.h
+CycleWorkingMappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+CycleWorkingMappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+CycleWorkingMappingClassInfo.o: /usr/include/X11/Xfuncproto.h
+CycleWorkingMappingClassInfo.o: /usr/include/X11/Xosdefs.h
+CycleWorkingMappingClassInfo.o: /usr/include/stddef.h
+CycleWorkingMappingClassInfo.o: /usr/include/X11/Xutil.h
+CycleWorkingMappingClassInfo.o: ../graphics/GraphicsDebug.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RectShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Shape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataMap.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ShapeID.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/RecId.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/GDataRec.h
+CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+CycleWorkingMappingClassInfo.o: ../graphics/Map3D.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewGraph.h
-CycleWorkingMappingClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-CycleWorkingMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-CycleWorkingMappingClassInfo.o: ../graphics/ViewCallback.h
-CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-CycleWorkingMappingClassInfo.o: ../graphics/Cursor.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/BasicStats.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/ViewStats.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/GdataStat.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/UpdateLink.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/VisualLink.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Action.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/PointStorage.h
-CycleWorkingMappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+CycleWorkingMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataCMap.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/Connector.h
@@ -401,264 +451,364 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/ActionDefault.h
 CycleWorkingMappingClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/localedef.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/lc_core.h
-CycleWorkingMappingClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
-CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DispQueryProc.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProc.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/BufHint.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/QueryProcFull.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/BufMgr.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/BufferPolicy.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/RecOrder.h TDataCycle.h
+CycleWorkingMappingClassInfo.o: /usr/include/locale.h /usr/include/nl_types.h
+CycleWorkingMappingClassInfo.o: /usr/include/mesg.h ../graphics/Selection.h
+CycleWorkingMappingClassInfo.o: ../graphics/View.h TDataCycle.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TData.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/Snapshot.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/ViewScatter.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/DataSource.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/MemMgr.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/mode.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/param.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/machparam.h
+CycleWorkingMappingClassInfo.o: /usr/include/machine/endian.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/wait.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/secdefines.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/ttychars.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/ttydefaults.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/ttydev.h
+CycleWorkingMappingClassInfo.o: /usr/include/io/common/devio.h
+CycleWorkingMappingClassInfo.o: /usr/include/netdb.h
+CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/socket.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/uio.h
+CycleWorkingMappingClassInfo.o: /usr/include/rpc/netdb.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/FileIndex.h
 CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
-CycleWorkingMappingClassInfo.o: map_cycle_working.h
+CycleWorkingMappingClassInfo.o: ../graphics/Session.h map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h /usr/include/standards.h
 HostMappingClassInfo.o: /usr/include/sys/limits.h
-HostMappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+HostMappingClassInfo.o: /usr/include/machine/machlimits.h
 HostMappingClassInfo.o: /usr/include/sys/syslimits.h
-HostMappingClassInfo.o: /usr/include/sys/machine/machtime.h
+HostMappingClassInfo.o: /usr/include/machine/machtime.h
 HostMappingClassInfo.o: /usr/include/sys/rt_limits.h /usr/include/sys/types.h
 HostMappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 HostMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/signal.h
-HostMappingClassInfo.o: /usr/include/sys/siginfo.h
-HostMappingClassInfo.o: /usr/include/sys/machine/signal.h
-HostMappingClassInfo.o: /usr/include/sys/procset.h /usr/include/sys/time.h
-HostMappingClassInfo.o: /usr/include/math.h /usr/include/stdlib.h
-HostMappingClassInfo.o: /usr/include/getopt.h /s/tcl/include/tcl.h
-HostMappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/seek.h
-HostMappingClassInfo.o: /usr/include/va_list.h ../graphics/DeviseTypes.h
-HostMappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
-HostMappingClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
-HostMappingClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
-HostMappingClassInfo.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-HostMappingClassInfo.o: /usr/include/sys/access.h /usr/include/string.h
-HostMappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
-HostMappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
-HostMappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
-HostMappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+HostMappingClassInfo.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+HostMappingClassInfo.o: /usr/include/machine/signal.h
+HostMappingClassInfo.o: /usr/include/machine/context.h
+HostMappingClassInfo.o: /usr/include/sys/procset.h /usr/include/time.h
+HostMappingClassInfo.o: /usr/include/sys/timers.h /usr/include/math.h
+HostMappingClassInfo.o: /usr/include/stdlib.h /usr/include/getopt.h
+HostMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
+HostMappingClassInfo.o: /usr/include/sys/seek.h /usr/include/va_list.h
+HostMappingClassInfo.o: ../graphics/DeviseTypes.h /usr/include/values.h
+HostMappingClassInfo.o: /usr/include/limits.h ../graphics/DevStatus.h
+HostMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
+HostMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
+HostMappingClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
+HostMappingClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+HostMappingClassInfo.o: /usr/include/string.h /usr/include/strings.h
+HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+HostMappingClassInfo.o: ../graphics/Transform.h ../graphics/Pattern.h
 HostMappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+HostMappingClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
+HostMappingClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h
+HostMappingClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
+HostMappingClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+HostMappingClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
+HostMappingClassInfo.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 HostMappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
 HostMappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 HostMappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-HostMappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-HostMappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-HostMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-HostMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-HostMappingClassInfo.o: ../graphics.new/ViewStats.h
-HostMappingClassInfo.o: ../graphics.new/GdataStat.h
-HostMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-HostMappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-HostMappingClassInfo.o: ../graphics.new/DataSource.h
-HostMappingClassInfo.o: ../graphics.new/UpdateLink.h
-HostMappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-HostMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
-HostMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+HostMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+HostMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+HostMappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
+HostMappingClassInfo.o: ../graphics.new/Action.h
+HostMappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
+HostMappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
 HostMappingClassInfo.o: ../graphics.new/ConnectorShape.h
 HostMappingClassInfo.o: ../graphics.new/Connector.h
 HostMappingClassInfo.o: ../graphics.new/GDataBin.h
 HostMappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 HostMappingClassInfo.o: /usr/include/ctype.h /usr/include/sys/localedef.h
-HostMappingClassInfo.o: /usr/include/sys/lc_core.h ../graphics/Selection.h
-HostMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-HostMappingClassInfo.o: ../graphics.new/DispQueryProc.h
-HostMappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-HostMappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics.new/BufHint.h
-HostMappingClassInfo.o: ../graphics.new/QueryProcFull.h
-HostMappingClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-HostMappingClassInfo.o: ../graphics.new/BufMgr.h
-HostMappingClassInfo.o: ../graphics.new/BufferPolicy.h
-HostMappingClassInfo.o: ../graphics.new/RecOrder.h TDataHost.h
-HostMappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
-HostMappingClassInfo.o: ../graphics.new/Snapshot.h
-HostMappingClassInfo.o: ../graphics.new/ViewScatter.h HostMappingClassInfo.h
-HostMappingClassInfo.o: HostRec.h map_host.h
+HostMappingClassInfo.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+HostMappingClassInfo.o: /usr/include/nl_types.h /usr/include/mesg.h
+HostMappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h
+HostMappingClassInfo.o: TDataHost.h ../graphics.new/TDataAscii.h
+HostMappingClassInfo.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+HostMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+HostMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+HostMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
+HostMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+HostMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+HostMappingClassInfo.o: /usr/include/machine/machparam.h
+HostMappingClassInfo.o: /usr/include/machine/endian.h /usr/include/sys/wait.h
+HostMappingClassInfo.o: /usr/include/sys/ioctl.h
+HostMappingClassInfo.o: /usr/include/sys/secdefines.h
+HostMappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+HostMappingClassInfo.o: /usr/include/sys/ttychars.h
+HostMappingClassInfo.o: /usr/include/sys/ttydefaults.h
+HostMappingClassInfo.o: /usr/include/sys/ttydev.h
+HostMappingClassInfo.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+HostMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+HostMappingClassInfo.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
+HostMappingClassInfo.o: ../graphics.new/FileIndex.h HostMappingClassInfo.h
+HostMappingClassInfo.o: HostRec.h ../graphics/Session.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/standards.h
 MappingClassInfo.o: /usr/include/sys/limits.h
-MappingClassInfo.o: /usr/include/sys/machine/machlimits.h
+MappingClassInfo.o: /usr/include/machine/machlimits.h
 MappingClassInfo.o: /usr/include/sys/syslimits.h
-MappingClassInfo.o: /usr/include/sys/machine/machtime.h
+MappingClassInfo.o: /usr/include/machine/machtime.h
 MappingClassInfo.o: /usr/include/sys/rt_limits.h /usr/include/sys/types.h
 MappingClassInfo.o: /usr/include/mach/machine/vm_types.h
 MappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/signal.h
-MappingClassInfo.o: /usr/include/sys/siginfo.h
-MappingClassInfo.o: /usr/include/sys/machine/signal.h
-MappingClassInfo.o: /usr/include/sys/procset.h /usr/include/sys/time.h
+MappingClassInfo.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+MappingClassInfo.o: /usr/include/machine/signal.h
+MappingClassInfo.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+MappingClassInfo.o: /usr/include/time.h /usr/include/sys/timers.h
 MappingClassInfo.o: /usr/include/math.h /usr/include/stdlib.h
 MappingClassInfo.o: /usr/include/getopt.h /s/tcl/include/tcl.h
 MappingClassInfo.o: /usr/include/stdio.h /usr/include/sys/seek.h
 MappingClassInfo.o: /usr/include/va_list.h ../graphics/DeviseTypes.h
 MappingClassInfo.o: /usr/include/values.h /usr/include/limits.h
 MappingClassInfo.o: ../graphics/DevStatus.h ../graphics/Display.h
-MappingClassInfo.o: ../graphics/Geom.h ../graphics/Color.h
-MappingClassInfo.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-MappingClassInfo.o: /usr/include/sys/access.h /usr/include/string.h
+MappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
 MappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
 MappingClassInfo.o: ../graphics/Journal.h ../graphics/VisualArg.h
-MappingClassInfo.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
+MappingClassInfo.o: ../graphics/ViewDir.h /usr/include/string.h
+MappingClassInfo.o: /usr/include/strings.h ../graphics/ViewWin.h
 MappingClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
-MappingClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MappingClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MappingClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-MappingClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics/View.h
-MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/Control.h
-MappingClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MappingClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-MappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MappingClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
-MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
-MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/UpdateLink.h
-MappingClassInfo.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Temp.h
-MappingClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+MappingClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+MappingClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
+MappingClassInfo.o: /usr/include/errno.h ../graphics/ETkIfc.h
+MappingClassInfo.o: ../graphics/ETk.h ../graphics/Xdef.h
+MappingClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+MappingClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+MappingClassInfo.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+MappingClassInfo.o: ../graphics/GraphicsDebug.h ../graphics.new/RectShape.h
+MappingClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MappingClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+MappingClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+MappingClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
+MappingClassInfo.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h
+MappingClassInfo.o: ../graphics.new/PointStorage.h ../graphics/Control.h
+MappingClassInfo.o: ../graphics/ClassDir.h ../graphics.new/TDataCMap.h
 MappingClassInfo.o: ../graphics.new/ConnectorShape.h
 MappingClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MappingClassInfo.o: /usr/include/ctype.h /usr/include/sys/localedef.h
-MappingClassInfo.o: /usr/include/sys/lc_core.h ../graphics/Selection.h
-MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MappingClassInfo.o: ../graphics.new/DispQueryProc.h
-MappingClassInfo.o: ../graphics.new/QueryProcSimple.h
-MappingClassInfo.o: ../graphics.new/QueryProc.h ../graphics.new/BufHint.h
-MappingClassInfo.o: ../graphics.new/QueryProcFull.h ../graphics.new/QPRange.h
-MappingClassInfo.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
-MappingClassInfo.o: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
-MappingClassInfo.o: TDataMulti.h ../graphics.new/TDataAscii.h
-MappingClassInfo.o: ../graphics.new/TData.h ../graphics.new/Snapshot.h
-MappingClassInfo.o: ../graphics.new/ViewScatter.h MappingClassInfo.h
-MappingClassInfo.o: MultiRec.h mapfile.h
+MappingClassInfo.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+MappingClassInfo.o: /usr/include/nl_types.h /usr/include/mesg.h
+MappingClassInfo.o: ../graphics/Selection.h ../graphics/View.h TDataMulti.h
+MappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
+MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+MappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+MappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+MappingClassInfo.o: /usr/include/sys/mode.h ../graphics.new/machdep.h
+MappingClassInfo.o: /usr/include/sys/param.h /usr/include/machine/machparam.h
+MappingClassInfo.o: /usr/include/machine/endian.h /usr/include/sys/wait.h
+MappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+MappingClassInfo.o: /usr/include/sys/ioctl_compat.h
+MappingClassInfo.o: /usr/include/sys/ttychars.h
+MappingClassInfo.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+MappingClassInfo.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+MappingClassInfo.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+MappingClassInfo.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
+MappingClassInfo.o: ../graphics.new/FileIndex.h MappingClassInfo.h MultiRec.h
+MappingClassInfo.o: ../graphics/Session.h mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/standards.h
 Message.o: /usr/include/sys/seek.h /usr/include/va_list.h
 Message.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 Message.o: /usr/include/sys/select.h /usr/include/getopt.h
-Message.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-Message.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+Message.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+Message.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 Message.o: /usr/include/sys/rt_limits.h /usr/include/sys/time.h
 Message.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-Message.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
-Message.o: /usr/include/sys/time.h /usr/include/math.h /usr/include/stdlib.h
-Message.o: MultiRec.h ../graphics.new/TData.h ../graphics/DeviseTypes.h
-Message.o: /usr/include/values.h /usr/include/limits.h
-Message.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
-Message.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-Message.o: ../graphics/Exit.h
+Message.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+Message.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+Message.o: /usr/include/time.h /usr/include/sys/timers.h /usr/include/math.h
+Message.o: /usr/include/stdlib.h MultiRec.h ../graphics.new/TData.h
+Message.o: ../graphics/DeviseTypes.h /usr/include/values.h
+Message.o: /usr/include/limits.h ../graphics/DevStatus.h
+Message.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
+Message.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+Message.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+Message.o: /usr/include/sys/shm.h /usr/include/errno.h /usr/include/assert.h
+Message.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+Message.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+Message.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+Message.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+Message.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
+Message.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
+Message.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
+Message.o: /usr/include/netdb.h /usr/include/netinet/in.h
+Message.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+Message.o: /usr/include/rpc/netdb.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/standards.h
 TDataCycle.o: /usr/include/sys/seek.h /usr/include/va_list.h
 TDataCycle.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 TDataCycle.o: /usr/include/sys/select.h /usr/include/getopt.h
-TDataCycle.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-TDataCycle.o: /usr/include/sys/syslimits.h
-TDataCycle.o: /usr/include/sys/machine/machtime.h
+TDataCycle.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TDataCycle.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 TDataCycle.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h TDataCycle.h
 TDataCycle.o: ../graphics.new/TDataAscii.h ../graphics/DeviseTypes.h
 TDataCycle.o: /usr/include/values.h /usr/include/limits.h
 TDataCycle.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-TDataCycle.o: /usr/include/unistd.h /usr/include/sys/access.h
-TDataCycle.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
-TDataCycle.o: ../graphics/Journal.h ../graphics/VisualArg.h
-TDataCycle.o: ../graphics/Color.h ../graphics/Pattern.h
+TDataCycle.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+TDataCycle.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataCycle.o: /usr/include/string.h /usr/include/strings.h
 TDataCycle.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-TDataCycle.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-TDataCycle.o: ../graphics/ClassDir.h CycleRec.h ../graphics/Parse.h
-TDataCycle.o: /usr/include/sys/time.h ../graphics/Control.h
-TDataCycle.o: ../graphics/Util.h /usr/include/ctype.h
-TDataCycle.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-TDataCycle.o: /usr/include/math.h ../graphics.new/DataSeg.h
+TDataCycle.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+TDataCycle.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+TDataCycle.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+TDataCycle.o: /usr/include/errno.h /usr/include/assert.h
+TDataCycle.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+TDataCycle.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+TDataCycle.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+TDataCycle.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+TDataCycle.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+TDataCycle.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+TDataCycle.o: /usr/include/sys/time.h /usr/include/time.h
+TDataCycle.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
+TDataCycle.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+TDataCycle.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+TDataCycle.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+TDataCycle.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+TDataCycle.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+TDataCycle.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
+TDataCycle.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h CycleRec.h
+TDataCycle.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataCycle.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+TDataCycle.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+TDataCycle.o: /usr/include/nl_types.h /usr/include/mesg.h /usr/include/math.h
+TDataCycle.o: ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/standards.h
 TDataHost.o: /usr/include/sys/seek.h /usr/include/va_list.h
 TDataHost.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 TDataHost.o: /usr/include/sys/select.h /usr/include/getopt.h
-TDataHost.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-TDataHost.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+TDataHost.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TDataHost.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 TDataHost.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h TDataHost.h
 TDataHost.o: ../graphics.new/TDataAscii.h ../graphics/DeviseTypes.h
 TDataHost.o: /usr/include/values.h /usr/include/limits.h
 TDataHost.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-TDataHost.o: /usr/include/unistd.h /usr/include/sys/access.h
-TDataHost.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
-TDataHost.o: ../graphics/Journal.h ../graphics/VisualArg.h
-TDataHost.o: ../graphics/Color.h ../graphics/Pattern.h
+TDataHost.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+TDataHost.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataHost.o: /usr/include/string.h /usr/include/strings.h
 TDataHost.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-TDataHost.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-TDataHost.o: ../graphics/ClassDir.h HostRec.h ../graphics/Parse.h
-TDataHost.o: /usr/include/sys/time.h ../graphics/Control.h ../graphics/Util.h
+TDataHost.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+TDataHost.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+TDataHost.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+TDataHost.o: /usr/include/errno.h /usr/include/assert.h
+TDataHost.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+TDataHost.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+TDataHost.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+TDataHost.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+TDataHost.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+TDataHost.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+TDataHost.o: /usr/include/sys/time.h /usr/include/time.h
+TDataHost.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
+TDataHost.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+TDataHost.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+TDataHost.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+TDataHost.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+TDataHost.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+TDataHost.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
+TDataHost.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h HostRec.h
+TDataHost.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
 TDataHost.o: /usr/include/ctype.h /usr/include/sys/localedef.h
-TDataHost.o: /usr/include/sys/lc_core.h /usr/include/math.h
+TDataHost.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+TDataHost.o: /usr/include/nl_types.h /usr/include/mesg.h /usr/include/math.h
 TDataHost.o: ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/standards.h
 TDataMulti.o: /usr/include/sys/seek.h /usr/include/va_list.h
 TDataMulti.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 TDataMulti.o: /usr/include/sys/select.h /usr/include/getopt.h
-TDataMulti.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-TDataMulti.o: /usr/include/sys/syslimits.h
-TDataMulti.o: /usr/include/sys/machine/machtime.h
+TDataMulti.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TDataMulti.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 TDataMulti.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h TDataMulti.h
 TDataMulti.o: ../graphics.new/TDataAscii.h ../graphics/DeviseTypes.h
 TDataMulti.o: /usr/include/values.h /usr/include/limits.h
 TDataMulti.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-TDataMulti.o: /usr/include/unistd.h /usr/include/sys/access.h
-TDataMulti.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
-TDataMulti.o: ../graphics/Journal.h ../graphics/VisualArg.h
-TDataMulti.o: ../graphics/Color.h ../graphics/Pattern.h
+TDataMulti.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+TDataMulti.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataMulti.o: /usr/include/string.h /usr/include/strings.h
 TDataMulti.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-TDataMulti.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-TDataMulti.o: ../graphics/ClassDir.h MultiRec.h ../graphics/Parse.h
-TDataMulti.o: /usr/include/sys/time.h ../graphics/Control.h
-TDataMulti.o: ../graphics/Util.h /usr/include/ctype.h
-TDataMulti.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-TDataMulti.o: /usr/include/math.h ../graphics.new/DataSeg.h
+TDataMulti.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+TDataMulti.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+TDataMulti.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+TDataMulti.o: /usr/include/errno.h /usr/include/assert.h
+TDataMulti.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+TDataMulti.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+TDataMulti.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+TDataMulti.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+TDataMulti.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+TDataMulti.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+TDataMulti.o: /usr/include/sys/time.h /usr/include/time.h
+TDataMulti.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
+TDataMulti.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+TDataMulti.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+TDataMulti.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+TDataMulti.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+TDataMulti.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+TDataMulti.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
+TDataMulti.o: ../graphics.new/FileIndex.h ../graphics/ClassDir.h MultiRec.h
+TDataMulti.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
+TDataMulti.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+TDataMulti.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+TDataMulti.o: /usr/include/nl_types.h /usr/include/mesg.h /usr/include/math.h
+TDataMulti.o: ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/standards.h /usr/include/stdlib.h
 disp.o: /usr/include/getopt.h /usr/include/sys/types.h
 disp.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
-disp.o: /usr/include/sys/time.h /usr/include/sys/time.h
-disp.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-disp.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+disp.o: /usr/include/time.h /usr/include/machine/machtime.h
+disp.o: /usr/include/sys/timers.h /usr/include/sys/sysmisc.h
+disp.o: /usr/include/sys/time.h /usr/include/sys/limits.h
+disp.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
 disp.o: /usr/include/sys/rt_limits.h /usr/include/sys/signal.h
-disp.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
-disp.o: /usr/include/sys/procset.h ../graphics/DeviseTypes.h
+disp.o: /usr/include/sys/siginfo.h /usr/include/machine/signal.h
+disp.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+disp.o: ../graphics.new/TDataMap.h ../graphics/DeviseTypes.h
 disp.o: /usr/include/values.h /usr/include/limits.h ../graphics/DevStatus.h
-disp.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/stdio.h
-disp.o: /usr/include/sys/seek.h /usr/include/va_list.h ../graphics/Color.h
-disp.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-disp.o: /usr/include/sys/access.h /usr/include/string.h ../graphics/DList.h
-disp.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-disp.o: ../graphics/Pattern.h ../graphics/ColorMgr.h ../graphics/WindowRep.h
-disp.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-disp.o: ../graphics/Compress.h ../graphics.new/RectShape.h
-disp.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
-disp.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
-disp.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-disp.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/Control.h
-disp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-disp.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
-disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-disp.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
-disp.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
-disp.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/Init.h
-disp.o: ../graphics/BufPolicy.h ../graphics.new/VisualLinkClassInfo.h
-disp.o: TDataMulti.h ../graphics.new/TDataAscii.h ../graphics.new/TData.h
-disp.o: ../graphics.new/RecOrder.h TDataHost.h TDataCycle.h
-disp.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
-disp.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
-disp.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
-disp.o: ../graphics.new/Snapshot.h ../graphics.new/ViewClassInfo.h
-disp.o: ../graphics.new/ViewScatter.h MappingClassInfo.h
-disp.o: ../graphics.new/MapInterpClassInfo.h HostMappingClassInfo.h
-disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
-disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h
-disp.o: CycleCpuTimeMappingClassInfo.h ../graphics/WinClassInfo.h
-disp.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-disp.o: /usr/include/ctype.h /usr/include/sys/localedef.h
-disp.o: /usr/include/sys/lc_core.h Message.h
-disp.o: ../graphics.new/ActionClassInfo.h ../graphics/AxisLabelClassInfo.h
-disp.o: ../graphics/CursorClassInfo.h
+disp.o: ../graphics/Pattern.h ../graphics.new/ShapeID.h
+disp.o: ../graphics/VisualArg.h /usr/include/stdio.h /usr/include/sys/seek.h
+disp.o: /usr/include/va_list.h ../graphics/ViewDir.h /usr/include/string.h
+disp.o: /usr/include/strings.h ../graphics.new/RecId.h
+disp.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h ../graphics/DList.h
+disp.o: ../graphics/Exit.h ../graphics/Init.h ../graphics/BufPolicy.h
+disp.o: ../graphics.new/ActionDefault.h ../graphics.new/Action.h
+disp.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/sys/localedef.h
+disp.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+disp.o: /usr/include/nl_types.h /usr/include/mesg.h
+disp.o: ../graphics/AxisLabelClassInfo.h ../graphics/ClassDir.h
+disp.o: ../graphics/View.h ../graphics.new/ViewGraph.h
+disp.o: ../graphics.new/PointStorage.h Message.h ../graphics/WinClassInfo.h
+disp.o: ../graphics.new/ActionClassInfo.h TDataMulti.h
+disp.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
+disp.o: ../graphics/Journal.h ../graphics.new/TData.h
+disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
+disp.o: /usr/include/sys/shm.h /usr/include/errno.h /usr/include/assert.h
+disp.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+disp.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+disp.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+disp.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+disp.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
+disp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
+disp.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
+disp.o: /usr/include/netdb.h /usr/include/netinet/in.h
+disp.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+disp.o: /usr/include/rpc/netdb.h ../graphics.new/FileIndex.h
+disp.o: MappingClassInfo.h HostMappingClassInfo.h CycleOccMappingClassInfo.h
+disp.o: CycleEffMappingClassInfo.h CycleWorkingMappingClassInfo.h
+disp.o: CycleSuspendedMappingClassInfo.h CycleCpuTimeMappingClassInfo.h
+disp.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/CursorClassInfo.h
+disp.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewData.h
+disp.o: ../graphics.new/ViewLens.h TDataHost.h TDataCycle.h
+disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
+disp.o: ../graphics/WindowRep.h ../graphics/Transform.h
+disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+disp.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+disp.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+disp.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+disp.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+disp.o: ../graphics/GraphicsDebug.h

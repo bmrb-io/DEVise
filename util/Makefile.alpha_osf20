@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/03/28 16:12:58  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -28,29 +32,33 @@ atof.o: /usr/include/stdlib.h /usr/include/standards.h /usr/include/getopt.h
 atof.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 atof.o: /usr/include/sys/select.h /usr/include/assert.h /usr/include/ctype.h
 atof.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-atof.o: /usr/include/time.h /usr/include/machine/machtime.h
-atof.o: /usr/include/sys/timers.h /usr/include/sys/signal.h
-atof.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
-atof.o: /usr/include/sys/procset.h /usr/include/math.h
-atof.o: /usr/include/sys/time.h /usr/include/sys/limits.h
-atof.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
-atof.o: /usr/include/sys/rt_limits.h ../graphics/Util.h /usr/include/stdio.h
-atof.o: /usr/include/sys/seek.h /usr/include/va_list.h /usr/include/string.h
-atof.o: ../graphics/DeviseTypes.h /usr/include/values.h /usr/include/limits.h
+atof.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+atof.o: /usr/include/stdio.h /usr/include/sys/seek.h /usr/include/va_list.h
+atof.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+atof.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+atof.o: /usr/include/sys/rt_limits.h /usr/include/limits.h
+atof.o: /usr/include/time.h /usr/include/sys/timers.h
+atof.o: /usr/include/sys/sysmisc.h /usr/include/math.h
+atof.o: /usr/include/sys/time.h /usr/include/sys/signal.h
+atof.o: /usr/include/sys/siginfo.h /usr/include/machine/signal.h
+atof.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+atof.o: ../graphics/Util.h /usr/include/string.h /usr/include/strings.h
+atof.o: ../graphics/DeviseTypes.h /usr/include/values.h
 atof.o: ../graphics/DevStatus.h ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/standards.h
 http_url.o: /usr/include/sys/seek.h /usr/include/va_list.h
 http_url.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 http_url.o: /usr/include/sys/select.h /usr/include/getopt.h
-http_url.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
+http_url.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
 http_url.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 http_url.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
 http_url.o: /usr/include/unistd.h /usr/include/sys/access.h
-http_url.o: /usr/include/string.h /usr/include/errno.h
+http_url.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
 http_url.o: ../graphics.new/machdep.h /usr/include/limits.h
-http_url.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
+http_url.o: /usr/include/sys/param.h /usr/include/machine/machparam.h
 http_url.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-http_url.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
+http_url.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+http_url.o: /usr/include/machine/signal.h /usr/include/machine/context.h
 http_url.o: /usr/include/sys/procset.h /usr/include/sys/time.h
 http_url.o: /usr/include/time.h /usr/include/sys/timers.h
 http_url.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
@@ -59,19 +67,23 @@ http_url.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
 http_url.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
 http_url.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
 http_url.o: /usr/include/io/common/devio.h /usr/include/netdb.h
-http_url.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-http_url.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+http_url.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+http_url.o: /usr/include/sys/uio.h /usr/include/rpc/netdb.h
 mk3dstruct.o: /usr/include/math.h /usr/include/standards.h
 mk3dstruct.o: /usr/include/stdlib.h /usr/include/getopt.h
 mk3dstruct.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 mk3dstruct.o: /usr/include/sys/select.h /usr/include/time.h
 mk3dstruct.o: /usr/include/machine/machtime.h /usr/include/sys/timers.h
-mk3dstruct.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-mk3dstruct.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
+mk3dstruct.o: /usr/include/sys/sysmisc.h
 mkbinfile.o: /usr/include/math.h /usr/include/standards.h
 mkbinfile.o: /usr/include/stdlib.h /usr/include/getopt.h
 mkbinfile.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 mkbinfile.o: /usr/include/sys/select.h /usr/include/time.h
 mkbinfile.o: /usr/include/machine/machtime.h /usr/include/sys/timers.h
-mkbinfile.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-mkbinfile.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
+mkbinfile.o: /usr/include/sys/sysmisc.h
+mkparfile.o: /usr/include/math.h /usr/include/standards.h
+mkparfile.o: /usr/include/stdlib.h /usr/include/getopt.h
+mkparfile.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+mkparfile.o: /usr/include/sys/select.h /usr/include/time.h
+mkparfile.o: /usr/include/machine/machtime.h /usr/include/sys/timers.h
+mkparfile.o: /usr/include/sys/sysmisc.h

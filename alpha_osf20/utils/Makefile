@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-1998
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,14 +15,14 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.1  1996/07/14 20:34:39  jussi
-#  Initial revision.
-#
 
 ############################################################
 
 include ../Makefile.config
 
-VPATH = ../../crsp
+ARCH_LDFLAGS = 
+ARCH_LDPOST  =
+
+VPATH = ../../src/utils
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.alpha_osf20
+include Makefile.depend

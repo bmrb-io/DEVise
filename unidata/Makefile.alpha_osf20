@@ -1,0 +1,177 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1998
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+############################################################
+
+depend:
+	cd ../../unidata; \
+	makedepend -f Makefile.alpha_osf20 *.c *.C
+
+# DO NOT DELETE
+
+Attr.o: Attr.h /usr/include/stdlib.h /usr/include/standards.h
+Attr.o: /usr/include/getopt.h /usr/include/sys/types.h
+Attr.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Attr.o: IntStack.h Traits.h /usr/include/string.h /usr/include/strings.h
+Attr.o: bitmap.h /usr/include/limits.h /usr/include/machine/machlimits.h
+Attr.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Attr.o: /usr/include/sys/rt_limits.h PerlFrag.h /usr/include/stdio.h
+Attr.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Attr.o: /usr/include/sys/limits.h /usr/include/math.h Lexer.h udParam.h
+Attr.o: RecId.h Schema.h /usr/include/unistd.h /usr/include/sys/access.h
+Attr.o: Enum.h Comment.h Config.h /usr/include/time.h
+Attr.o: /usr/include/sys/timers.h /usr/include/sys/sysmisc.h UniData.h
+Attr.o: SlideBuf.h getftime.h DateTime.h /usr/include/assert.h
+Comment.o: Comment.h
+DateTime.o: DateTime.h
+Enum.o: Enum.h /usr/include/string.h /usr/include/standards.h
+Enum.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Enum.o: /usr/include/sys/select.h /usr/include/strings.h Attr.h
+Enum.o: /usr/include/stdlib.h /usr/include/getopt.h IntStack.h Traits.h
+Enum.o: bitmap.h /usr/include/limits.h /usr/include/machine/machlimits.h
+Enum.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Enum.o: /usr/include/sys/rt_limits.h PerlFrag.h /usr/include/stdio.h
+Enum.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Enum.o: /usr/include/sys/limits.h /usr/include/math.h Lexer.h
+IntStack.o: /usr/include/stdlib.h /usr/include/standards.h
+IntStack.o: /usr/include/getopt.h /usr/include/sys/types.h
+IntStack.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+IntStack.o: IntStack.h
+PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/standards.h
+PerlFrag.o: /usr/include/sys/seek.h /usr/include/va_list.h
+PerlFrag.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+PerlFrag.o: /usr/include/sys/select.h /usr/include/getopt.h
+PerlFrag.o: /usr/include/sys/limits.h /usr/include/string.h
+PerlFrag.o: /usr/include/strings.h /usr/include/math.h /usr/include/stdlib.h
+PerlFrag.o: Lexer.h Attr.h IntStack.h Traits.h bitmap.h /usr/include/limits.h
+PerlFrag.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+PerlFrag.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+PerlFrag.o: /usr/include/assert.h
+Schema.o: /usr/include/string.h /usr/include/standards.h
+Schema.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Schema.o: /usr/include/sys/select.h /usr/include/strings.h Schema.h
+Schema.o: /usr/include/stdio.h /usr/include/sys/seek.h /usr/include/va_list.h
+Schema.o: /usr/include/getopt.h /usr/include/sys/limits.h /usr/include/math.h
+Schema.o: /usr/include/stdlib.h /usr/include/unistd.h
+Schema.o: /usr/include/sys/access.h Attr.h IntStack.h Traits.h bitmap.h
+Schema.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+Schema.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Schema.o: /usr/include/sys/rt_limits.h PerlFrag.h Lexer.h Enum.h Comment.h
+Schema.o: Config.h /usr/include/time.h /usr/include/sys/timers.h
+Schema.o: /usr/include/sys/sysmisc.h Token.h getftime.h DateTime.h
+Schema.o: /usr/include/assert.h
+SlideBuf.o: /usr/include/stdlib.h /usr/include/standards.h
+SlideBuf.o: /usr/include/getopt.h /usr/include/sys/types.h
+SlideBuf.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+SlideBuf.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
+SlideBuf.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+SlideBuf.o: /usr/include/sys/seek.h /usr/include/sys/mode.h
+SlideBuf.o: /usr/include/sys/stat.h Config.h /usr/include/time.h
+SlideBuf.o: /usr/include/machine/machtime.h /usr/include/sys/timers.h
+SlideBuf.o: /usr/include/sys/sysmisc.h SlideBuf.h /usr/include/unistd.h
+SlideBuf.o: /usr/include/sys/access.h Comment.h
+SlideRead.o: SlideRead.h /usr/include/unistd.h /usr/include/standards.h
+SlideRead.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+SlideRead.o: /usr/include/sys/select.h /usr/include/sys/access.h
+SlideRead.o: /usr/include/sys/seek.h /usr/include/getopt.h SlideBuf.h
+Token.o: /usr/include/stdio.h /usr/include/standards.h
+Token.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Token.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Token.o: /usr/include/sys/select.h /usr/include/getopt.h
+Token.o: /usr/include/sys/limits.h Lexer.h Token.h
+Traits.o: Traits.h /usr/include/stdlib.h /usr/include/standards.h
+Traits.o: /usr/include/getopt.h /usr/include/sys/types.h
+Traits.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Traits.o: /usr/include/string.h /usr/include/strings.h bitmap.h
+Traits.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+Traits.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Traits.o: /usr/include/sys/rt_limits.h
+UniData.o: /usr/include/stdlib.h /usr/include/standards.h
+UniData.o: /usr/include/getopt.h /usr/include/sys/types.h
+UniData.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+UniData.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
+UniData.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+UniData.o: /usr/include/sys/seek.h /usr/include/sys/mode.h
+UniData.o: /usr/include/sys/stat.h Config.h /usr/include/time.h
+UniData.o: /usr/include/machine/machtime.h /usr/include/sys/timers.h
+UniData.o: /usr/include/sys/sysmisc.h UniData.h /usr/include/unistd.h
+UniData.o: /usr/include/sys/access.h RecId.h SlideBuf.h Schema.h
+UniData.o: /usr/include/stdio.h /usr/include/va_list.h
+UniData.o: /usr/include/sys/limits.h /usr/include/math.h Attr.h IntStack.h
+UniData.o: Traits.h bitmap.h /usr/include/limits.h
+UniData.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+UniData.o: /usr/include/sys/rt_limits.h PerlFrag.h Lexer.h Enum.h Comment.h
+UniData.o: udParam.h udIndex.h fast_atof.h getftime.h DateTime.h
+UniData.o: /usr/include/assert.h
+fast_atof.o: /usr/include/ctype.h /usr/include/standards.h
+fast_atof.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+fast_atof.o: /usr/include/sys/select.h /usr/include/sys/localedef.h
+fast_atof.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+fast_atof.o: /usr/include/nl_types.h /usr/include/mesg.h /usr/include/stdio.h
+fast_atof.o: /usr/include/sys/seek.h /usr/include/va_list.h
+fast_atof.o: /usr/include/getopt.h /usr/include/sys/limits.h
+fast_atof.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+fast_atof.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+fast_atof.o: /usr/include/sys/rt_limits.h
+getftime.o: /usr/include/stdlib.h /usr/include/standards.h
+getftime.o: /usr/include/getopt.h /usr/include/sys/types.h
+getftime.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+getftime.o: /usr/include/string.h /usr/include/strings.h /usr/include/ctype.h
+getftime.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+getftime.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+getftime.o: /usr/include/stdio.h /usr/include/sys/seek.h
+getftime.o: /usr/include/va_list.h /usr/include/sys/limits.h
+getftime.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+getftime.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+getftime.o: /usr/include/sys/rt_limits.h getftime.h /usr/include/time.h
+getftime.o: /usr/include/sys/timers.h /usr/include/sys/sysmisc.h DateTime.h
+pmain.o: /usr/include/stdio.h /usr/include/standards.h
+pmain.o: /usr/include/sys/seek.h /usr/include/va_list.h
+pmain.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+pmain.o: /usr/include/sys/select.h /usr/include/getopt.h
+pmain.o: /usr/include/sys/limits.h /usr/include/math.h /usr/include/stdlib.h
+pmain.o: PerlFrag.h /usr/include/string.h /usr/include/strings.h Lexer.h
+udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/standards.h
+udIndex.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+udIndex.o: /usr/include/sys/select.h /usr/include/sys/access.h
+udIndex.o: /usr/include/sys/seek.h /usr/include/getopt.h RecId.h
+udParam.o: udParam.h /usr/include/stdlib.h /usr/include/standards.h
+udParam.o: /usr/include/getopt.h /usr/include/sys/types.h
+udParam.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+udParam.o: RecId.h Schema.h /usr/include/stdio.h /usr/include/sys/seek.h
+udParam.o: /usr/include/va_list.h /usr/include/sys/limits.h
+udParam.o: /usr/include/math.h /usr/include/unistd.h
+udParam.o: /usr/include/sys/access.h Attr.h IntStack.h Traits.h
+udParam.o: /usr/include/string.h /usr/include/strings.h bitmap.h
+udParam.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+udParam.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+udParam.o: /usr/include/sys/rt_limits.h PerlFrag.h Lexer.h Enum.h Comment.h
+udParam.o: Config.h /usr/include/time.h /usr/include/sys/timers.h
+udParam.o: /usr/include/sys/sysmisc.h
+umain.o: /usr/include/stdlib.h /usr/include/standards.h /usr/include/getopt.h
+umain.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+umain.o: /usr/include/sys/select.h /usr/include/unistd.h
+umain.o: /usr/include/sys/access.h /usr/include/sys/seek.h
+umain.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+umain.o: /usr/include/sys/mode.h /usr/include/time.h
+umain.o: /usr/include/machine/machtime.h /usr/include/sys/timers.h
+umain.o: /usr/include/sys/sysmisc.h UniData.h RecId.h SlideBuf.h Schema.h
+umain.o: /usr/include/stdio.h /usr/include/va_list.h
+umain.o: /usr/include/sys/limits.h /usr/include/math.h Attr.h IntStack.h
+umain.o: Traits.h /usr/include/string.h /usr/include/strings.h bitmap.h
+umain.o: /usr/include/limits.h /usr/include/machine/machlimits.h
+umain.o: /usr/include/sys/syslimits.h /usr/include/sys/rt_limits.h PerlFrag.h
+umain.o: Lexer.h Enum.h Comment.h Config.h udParam.h getftime.h DateTime.h

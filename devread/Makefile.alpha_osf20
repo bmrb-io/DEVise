@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/03/28 16:08:52  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -23,3 +27,57 @@ depend:
 		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+DevRead.o: /usr/include/stdio.h /usr/include/standards.h
+DevRead.o: /usr/include/sys/seek.h /usr/include/va_list.h
+DevRead.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+DevRead.o: /usr/include/sys/select.h /usr/include/getopt.h
+DevRead.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+DevRead.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+DevRead.o: /usr/include/sys/rt_limits.h /usr/include/string.h
+DevRead.o: /usr/include/strings.h DevRead.h ../graphics/DeviseTypes.h
+DevRead.o: /usr/include/values.h /usr/include/limits.h
+DevRead.o: ../graphics/DevStatus.h ../graphics.new/RecId.h types.h
+DevRead.o: /usr/include/assert.h /usr/include/netinet/in.h
+DevRead.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+DevRead.o: /usr/include/machine/endian.h marshal.h ../graphics/Util.h
+DevRead.o: /usr/include/stdlib.h /usr/include/time.h
+DevRead.o: /usr/include/sys/timers.h /usr/include/sys/sysmisc.h
+DevRead.o: /usr/include/ctype.h /usr/include/sys/localedef.h
+DevRead.o: /usr/include/sys/lc_core.h /usr/include/locale.h
+DevRead.o: /usr/include/nl_types.h /usr/include/mesg.h /usr/include/math.h
+DevRead.o: ../graphics/Exit.h ../graphics.new/TData.h
+DevRead.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+DevRead.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+DevRead.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
+DevRead.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+DevRead.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+DevRead.o: /usr/include/machine/machparam.h /usr/include/sys/signal.h
+DevRead.o: /usr/include/sys/siginfo.h /usr/include/machine/signal.h
+DevRead.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+DevRead.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+DevRead.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+DevRead.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+DevRead.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+DevRead.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+DevRead.o: /usr/include/rpc/netdb.h ../graphics/AttrList.h
+DevRead.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+DevRead.o: ../graphics.new/DataSeg.h
+drtest.o: /usr/include/stdio.h /usr/include/standards.h
+drtest.o: /usr/include/sys/seek.h /usr/include/va_list.h
+drtest.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+drtest.o: /usr/include/sys/select.h /usr/include/getopt.h
+drtest.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+drtest.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+drtest.o: /usr/include/sys/rt_limits.h DevRead.h ../graphics/DeviseTypes.h
+drtest.o: /usr/include/values.h /usr/include/limits.h ../graphics/DevStatus.h
+drtest.o: ../graphics.new/RecId.h types.h /usr/include/assert.h
+drtest.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+drtest.o: /usr/include/sys/uio.h /usr/include/machine/endian.h marshal.h
+types.o: types.h /usr/include/assert.h /usr/include/standards.h
+types.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+types.o: /usr/include/sys/select.h /usr/include/netinet/in.h
+types.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+types.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+types.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+types.o: /usr/include/sys/rt_limits.h /usr/include/machine/endian.h

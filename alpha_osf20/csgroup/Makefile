@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-1998
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,14 +15,16 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.1  1996/07/14 20:34:39  jussi
-#  Initial revision.
-#
 
 ############################################################
 
 include ../Makefile.config
 
-VPATH = ../../crsp
+#ARCH_FLAGS += -DDEBUG
+ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
+ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_LDPOST = -lsocket -lnsl
+
+VPATH = ../../csgroup
 include $(VPATH)/Makefile.base
 include $(VPATH)/Makefile.alpha_osf20

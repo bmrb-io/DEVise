@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/03/28 16:08:43  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -23,3 +27,126 @@ depend:
 		-I/s/X11/include -I/s/tcl/include *.c *.C
 
 # DO NOT DELETE
+
+Client.o: /usr/include/stdio.h /usr/include/standards.h
+Client.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Client.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Client.o: /usr/include/sys/select.h /usr/include/getopt.h
+Client.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+Client.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Client.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+Client.o: /usr/include/string.h /usr/include/strings.h /usr/include/unistd.h
+Client.o: /usr/include/sys/access.h /usr/include/sys/socket.h
+Client.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+Client.o: /usr/include/machine/endian.h Client.h
+Server.o: /usr/include/stdio.h /usr/include/standards.h
+Server.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Server.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Server.o: /usr/include/sys/select.h /usr/include/getopt.h
+Server.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+Server.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Server.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+Server.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
+Server.o: /usr/include/unistd.h /usr/include/sys/access.h
+Server.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+Server.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+Server.o: /usr/include/sys/param.h /usr/include/machine/machparam.h
+Server.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+Server.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+Server.o: /usr/include/machine/context.h /usr/include/sys/procset.h Server.h
+Server.o: ../graphics/Exit.h
+TclClient.o: /usr/include/stdio.h /usr/include/standards.h
+TclClient.o: /usr/include/sys/seek.h /usr/include/va_list.h
+TclClient.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+TclClient.o: /usr/include/sys/select.h /usr/include/getopt.h
+TclClient.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TclClient.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+TclClient.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h TclClient.h
+TclClient.o: /s/tcl/include/tcl.h Client.h
+TestClient.o: /usr/include/stdio.h /usr/include/standards.h
+TestClient.o: /usr/include/sys/seek.h /usr/include/va_list.h
+TestClient.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+TestClient.o: /usr/include/sys/select.h /usr/include/getopt.h
+TestClient.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TestClient.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+TestClient.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+TestClient.o: /usr/include/string.h /usr/include/strings.h
+TestClient.o: /usr/include/errno.h /usr/include/unistd.h
+TestClient.o: /usr/include/sys/access.h /usr/include/sys/socket.h
+TestClient.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+TestClient.o: /usr/include/machine/endian.h Client.h
+TkClient.o: /usr/include/stdio.h /usr/include/standards.h
+TkClient.o: /usr/include/sys/seek.h /usr/include/va_list.h
+TkClient.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+TkClient.o: /usr/include/sys/select.h /usr/include/getopt.h
+TkClient.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TkClient.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+TkClient.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+TkClient.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
+TkClient.o: /usr/include/unistd.h /usr/include/sys/access.h
+TkClient.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+TkClient.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+TkClient.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
+TkClient.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+TkClient.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+TkClient.o: /usr/include/stddef.h TkClient.h TclClient.h Client.h
+WinServer.o: /usr/include/sys/param.h /usr/include/sys/types.h
+WinServer.o: /usr/include/standards.h /usr/include/mach/machine/vm_types.h
+WinServer.o: /usr/include/sys/select.h /usr/include/sys/limits.h
+WinServer.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+WinServer.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+WinServer.o: /usr/include/machine/machparam.h /usr/include/sys/signal.h
+WinServer.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+WinServer.o: /usr/include/machine/signal.h /usr/include/machine/context.h
+WinServer.o: /usr/include/sys/procset.h WinServer.h Server.h
+WinServer.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+WinServer.o: /usr/include/values.h /usr/include/limits.h
+WinServer.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/stdio.h
+WinServer.o: /usr/include/sys/seek.h /usr/include/va_list.h
+WinServer.o: /usr/include/getopt.h /usr/include/math.h /usr/include/stdlib.h
+WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/ViewDir.h /usr/include/string.h
+WinServer.o: /usr/include/strings.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+WinServer.o: ../graphics/Compress.h ../graphics/DevError.h
+WinServer.o: /usr/include/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+WinServer.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
+WinServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+WinServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+WinServer.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+client.o: /usr/include/stdio.h /usr/include/standards.h
+client.o: /usr/include/sys/seek.h /usr/include/va_list.h
+client.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+client.o: /usr/include/sys/select.h /usr/include/getopt.h
+client.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+client.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+client.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+client.o: /usr/include/string.h /usr/include/strings.h TkClient.h
+client.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+client.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+client.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h TclClient.h
+client.o: /s/tcl/include/tcl.h Client.h
+server.o: /usr/include/stdio.h /usr/include/standards.h
+server.o: /usr/include/sys/seek.h /usr/include/va_list.h
+server.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+server.o: /usr/include/sys/select.h /usr/include/getopt.h
+server.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+server.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+server.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+server.o: /usr/include/string.h /usr/include/strings.h /usr/include/assert.h
+server.o: WinServer.h Server.h ../graphics/Display.h
+server.o: ../graphics/DeviseTypes.h /usr/include/values.h
+server.o: /usr/include/limits.h ../graphics/DevStatus.h ../graphics/Geom.h
+server.o: /usr/include/math.h ../graphics/Dispatcher.h ../graphics/DList.h
+server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+server.o: ../graphics/ViewDir.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+server.o: ../graphics/Transform.h ../graphics/Pattern.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h ../graphics/ETkIfc.h
+server.o: ../graphics/ETk.h ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
+server.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+server.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+server.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+server.o: ../graphics/DualWindowRep.h

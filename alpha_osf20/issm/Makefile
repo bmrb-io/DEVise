@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/14 20:34:42  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DOSF -I/s/gcc/lib/g++-include -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
 
 VPATH = ../../issm
 include $(VPATH)/Makefile.base

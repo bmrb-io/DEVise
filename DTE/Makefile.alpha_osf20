@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1997/03/28 16:07:07  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -33,497 +37,401 @@ depend:
 
 # DO NOT DELETE
 
-Dql.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-Dql.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/unistd.h
-Dql.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-Dql.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Dql.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Dql.o: /usr/include/sys/unistd.h /usr/include/ctype.h
-Dql.o: ../graphics.new/machdep.h /usr/include/limits.h
-Dql.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-Dql.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Dql.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Dql.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
-Dql.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Dql.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Dql.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Dql.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Dql.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Dql.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Dql.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-Dql.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Dql.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Dql.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Dql.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Dql.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-Dql.o: ../graphics/Util.h /usr/include/math.h /usr/include/floatingpoint.h
-Dql.o: /usr/include/sys/ieeefp.h ../graphics/DeviseTypes.h
-Dql.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
-Dql.o: ../graphics/Parse.h ../graphics/Timer.h
-DqlInclude.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DqlInclude.o: /usr/include/stdlib.h /usr/include/string.h
-DqlInclude.o: /usr/include/unistd.h /usr/include/sys/types.h
-DqlInclude.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-DqlInclude.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DqlInclude.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
-DqlInclude.o: /usr/include/ctype.h Core/Engine.h Core/types.h
-DqlInclude.o: /usr/include/assert.h /usr/include/netinet/in.h
-DqlInclude.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DqlInclude.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DqlInclude.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-DqlInclude.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-DqlInclude.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
-DqlInclude.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DqlInclude.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DqlInclude.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DqlInclude.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DqlInclude.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-DqlInclude.o: Core/exception.h ../graphics.new/machdep.h
-DqlInclude.o: /usr/include/limits.h /usr/include/sys/wait.h
-DqlInclude.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DqlInclude.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DqlInclude.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DqlInclude.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DqlInclude.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DqlInclude.o: /usr/include/sys/netconfig.h ../graphics/AttrList.h
-DqlInclude.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DqlInclude.o: ../graphics/DevStatus.h ../graphics/Config.h
-DqlInclude.o: ../graphics/DList.h ../graphics/Exit.h Core/site.h Core/myopt.h
-DqlInclude.o: Core/queue.h Core/url.h Core/SockStream.h Core/listop.h
-DqlInclude.o: Core/GeneralRead.h Core/StandardRead.h
-TuplePtr.Plex.o: TuplePtr.Plex.h /usr/include/std.h TuplePtr.defs.h
-TuplePtr.Plex.o: Core/types.h /usr/include/assert.h /usr/include/sys/types.h
-TuplePtr.Plex.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-TuplePtr.Plex.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-TuplePtr.Plex.o: /usr/include/sys/time.h /usr/include/sys/time.h
-TuplePtr.Plex.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TuplePtr.Plex.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TuplePtr.Plex.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-TuplePtr.Plex.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-TuplePtr.Plex.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-TuplePtr.Plex.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-TuplePtr.Plex.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TuplePtr.Plex.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TuplePtr.Plex.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TuplePtr.Plex.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TuplePtr.Plex.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-TuplePtr.Plex.o: Core/exception.h ../graphics.new/machdep.h
-TuplePtr.Plex.o: /usr/include/limits.h /usr/include/sys/wait.h
-TuplePtr.Plex.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TuplePtr.Plex.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TuplePtr.Plex.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TuplePtr.Plex.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-TuplePtr.Plex.o: /usr/include/netdb.h /usr/include/sys/socket.h
-TuplePtr.Plex.o: /usr/include/sys/netconfig.h ../graphics/AttrList.h
-TuplePtr.Plex.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TuplePtr.Plex.o: ../graphics/DevStatus.h ../graphics/Config.h
-TuplePtr.Plex.o: ../graphics/DList.h ../graphics/Exit.h /usr/include/stddef.h
-TuplePtr.XPlex.o: TuplePtr.XPlex.h TuplePtr.Plex.h /usr/include/std.h
-TuplePtr.XPlex.o: TuplePtr.defs.h Core/types.h /usr/include/assert.h
-TuplePtr.XPlex.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-TuplePtr.XPlex.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-TuplePtr.XPlex.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TuplePtr.XPlex.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-TuplePtr.XPlex.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TuplePtr.XPlex.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TuplePtr.XPlex.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-TuplePtr.XPlex.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-TuplePtr.XPlex.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-TuplePtr.XPlex.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-TuplePtr.XPlex.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TuplePtr.XPlex.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TuplePtr.XPlex.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TuplePtr.XPlex.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TuplePtr.XPlex.o: /usr/include/sys/byteorder.h Core/exception.h
-TuplePtr.XPlex.o: ../graphics.new/machdep.h /usr/include/limits.h
-TuplePtr.XPlex.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-TuplePtr.XPlex.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TuplePtr.XPlex.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-TuplePtr.XPlex.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-TuplePtr.XPlex.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TuplePtr.XPlex.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TuplePtr.XPlex.o: ../graphics/AttrList.h ../graphics/DeviseTypes.h
-TuplePtr.XPlex.o: /usr/include/values.h ../graphics/DevStatus.h
-TuplePtr.XPlex.o: ../graphics/Config.h ../graphics/DList.h ../graphics/Exit.h
-TuplePtr.XPlex.o: /usr/include/stddef.h
+Aggregates.o: Aggregates.h types.h /usr/include/assert.h
+Aggregates.o: /usr/include/standards.h exception.h Utility.h queue.h Array.h
+Aggregates.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+Aggregates.o: /usr/include/getopt.h /usr/include/sys/types.h
+Aggregates.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Aggregates.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h
+Aggregates.o: Stats.h site.h Iterator.h MemoryMgr.h TypeCheck.h StringLess.h
+Aggregates.o: FixedLenQueue.h SeqSimVecAggregate.h
+CreateTableParse.o: /usr/include/stdlib.h /usr/include/standards.h
+CreateTableParse.o: /usr/include/getopt.h /usr/include/sys/types.h
+CreateTableParse.o: /usr/include/mach/machine/vm_types.h
+CreateTableParse.o: /usr/include/sys/select.h ParseTree.h queue.h
+CreateTableParse.o: /usr/include/assert.h myopt.h types.h exception.h
+CreateTableParse.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+CreateTableParse.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+CreateTableParse.o: Stats.h TypeCheck.h StringLess.h ExecOp.h ExecExpr.h
+CreateTableParse.o: Iterator.h MemoryMgr.h Interface.h RelationManager.h
+DataRead.o: types.h /usr/include/assert.h /usr/include/standards.h
+DataRead.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+DataRead.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+DataRead.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+DataRead.o: /usr/include/sys/select.h DataRead.h Iterator.h
+DataRead.o: /usr/include/stdio.h /usr/include/sys/seek.h
+DataRead.o: /usr/include/va_list.h /usr/include/sys/limits.h
+DataRead.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+DataRead.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+DataRead.dummy.o: types.h /usr/include/assert.h /usr/include/standards.h
+DataRead.dummy.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+DataRead.dummy.o: /usr/include/math.h /usr/include/stdlib.h
+DataRead.dummy.o: /usr/include/getopt.h /usr/include/sys/types.h
+DataRead.dummy.o: /usr/include/mach/machine/vm_types.h
+DataRead.dummy.o: /usr/include/sys/select.h DataRead.h Iterator.h
+DeleteParse.o: /usr/include/assert.h /usr/include/standards.h
+DeleteParse.o: /usr/include/math.h /usr/include/stdlib.h
+DeleteParse.o: /usr/include/getopt.h /usr/include/sys/types.h
+DeleteParse.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+DeleteParse.o: queue.h myopt.h types.h exception.h Utility.h Array.h
+DeleteParse.o: SeqSimVec.h TableUtils.h url.h SockStream.h RelationId.h
+DeleteParse.o: listop.h Stats.h site.h Iterator.h catalog.h ParseTree.h
+DeleteParse.o: TypeCheck.h StringLess.h ExecExpr.h MemoryMgr.h
+DevRead.o: types.h /usr/include/assert.h /usr/include/standards.h exception.h
+DevRead.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+DevRead.o: /usr/include/stdlib.h /usr/include/getopt.h
+DevRead.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+DevRead.o: /usr/include/sys/select.h DevRead.h Iterator.h
+DevRead.dummy.o: /usr/include/assert.h /usr/include/standards.h types.h
+DevRead.dummy.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+DevRead.dummy.o: /usr/include/math.h /usr/include/stdlib.h
+DevRead.dummy.o: /usr/include/getopt.h /usr/include/sys/types.h
+DevRead.dummy.o: /usr/include/mach/machine/vm_types.h
+DevRead.dummy.o: /usr/include/sys/select.h DevRead.h Iterator.h
+DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h
+DropIndexParse.o: /usr/include/standards.h myopt.h types.h exception.h
+DropIndexParse.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+DropIndexParse.o: /usr/include/stdlib.h /usr/include/getopt.h
+DropIndexParse.o: /usr/include/sys/types.h
+DropIndexParse.o: /usr/include/mach/machine/vm_types.h
+DropIndexParse.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+DropIndexParse.o: RelationId.h listop.h Stats.h TypeCheck.h StringLess.h
+DropIndexParse.o: Engine.h site.h Iterator.h
+Engine.o: /usr/include/assert.h /usr/include/standards.h /usr/include/math.h
+Engine.o: /usr/include/stdlib.h /usr/include/getopt.h
+Engine.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Engine.o: /usr/include/sys/select.h queue.h myopt.h types.h exception.h
+Engine.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+Engine.o: RelationId.h listop.h Stats.h Engine.h site.h Iterator.h
+Engine.o: ParseTree.h TypeCheck.h StringLess.h ExecOp.h ExecExpr.h
+Engine.o: MemoryMgr.h
+ExecExpr.o: ExecExpr.h /usr/include/assert.h /usr/include/standards.h types.h
+ExecExpr.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+ExecExpr.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+ExecExpr.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+ExecExpr.o: /usr/include/sys/select.h /usr/include/ctype.h
+ExecExpr.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+ExecExpr.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+ExecExpr.o: /usr/include/stdio.h /usr/include/sys/seek.h
+ExecExpr.o: /usr/include/va_list.h /usr/include/sys/limits.h
+ExecExpr.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+ExecExpr.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+ExecExpr.o: /usr/include/limits.h
+ExecOp.o: ExecOp.h ExecExpr.h /usr/include/assert.h /usr/include/standards.h
+ExecOp.o: types.h exception.h Utility.h queue.h Array.h SeqSimVec.h
+ExecOp.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+ExecOp.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+ExecOp.o: /usr/include/sys/select.h Iterator.h MemoryMgr.h listop.h
+ExecOp.o: RTreeRead.h myopt.h TableUtils.h url.h SockStream.h RelationId.h
+ExecOp.o: Stats.h StandardRead.h BoundingBox.h
+FunctionRead.o: FunctionRead.h Iterator.h /usr/include/assert.h
+FunctionRead.o: /usr/include/standards.h types.h exception.h Utility.h
+FunctionRead.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+FunctionRead.o: /usr/include/stdlib.h /usr/include/getopt.h
+FunctionRead.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+FunctionRead.o: /usr/include/sys/select.h url.h SockStream.h
+GlobalConstructors.o: types.h /usr/include/assert.h /usr/include/standards.h
+GlobalConstructors.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+GlobalConstructors.o: /usr/include/math.h /usr/include/stdlib.h
+GlobalConstructors.o: /usr/include/getopt.h /usr/include/sys/types.h
+GlobalConstructors.o: /usr/include/mach/machine/vm_types.h
+GlobalConstructors.o: /usr/include/sys/select.h catalog.h RelationManager.h
+GlobalConstructors.o: Interface.h RelationId.h
+IndexParse.o: /usr/include/memory.h /usr/include/string.h
+IndexParse.o: /usr/include/standards.h /usr/include/sys/types.h
+IndexParse.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+IndexParse.o: /usr/include/strings.h /usr/include/assert.h
+IndexParse.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+IndexParse.o: /usr/include/stdio.h /usr/include/sys/seek.h
+IndexParse.o: /usr/include/va_list.h /usr/include/sys/limits.h
+IndexParse.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+IndexParse.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+IndexParse.o: /usr/include/errno.h queue.h myopt.h types.h exception.h
+IndexParse.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+IndexParse.o: RelationId.h listop.h Stats.h site.h Iterator.h catalog.h
+IndexParse.o: ParseTree.h TypeCheck.h StringLess.h Aggregates.h MemoryMgr.h
+IndexParse.o: FixedLenQueue.h Inserter.h MinMax.h StandardRead.h Interface.h
+IndexParse.dummy.o: /usr/include/assert.h /usr/include/standards.h
+IndexParse.dummy.o: /usr/include/math.h /usr/include/stdlib.h
+IndexParse.dummy.o: /usr/include/getopt.h /usr/include/sys/types.h
+IndexParse.dummy.o: /usr/include/mach/machine/vm_types.h
+IndexParse.dummy.o: /usr/include/sys/select.h queue.h myopt.h types.h
+IndexParse.dummy.o: exception.h Utility.h Array.h SeqSimVec.h TableUtils.h
+IndexParse.dummy.o: url.h SockStream.h RelationId.h listop.h Stats.h site.h
+IndexParse.dummy.o: Iterator.h catalog.h ParseTree.h TypeCheck.h StringLess.h
+IndexParse.dummy.o: Aggregates.h MemoryMgr.h FixedLenQueue.h
+InsertParse.o: /usr/include/assert.h /usr/include/standards.h
+InsertParse.o: /usr/include/math.h /usr/include/stdlib.h
+InsertParse.o: /usr/include/getopt.h /usr/include/sys/types.h
+InsertParse.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+InsertParse.o: queue.h myopt.h types.h exception.h Utility.h Array.h
+InsertParse.o: SeqSimVec.h TableUtils.h url.h SockStream.h RelationId.h
+InsertParse.o: listop.h Stats.h site.h Iterator.h catalog.h ParseTree.h
+InsertParse.o: TypeCheck.h StringLess.h
+Inserter.o: url.h /usr/include/assert.h /usr/include/standards.h SockStream.h
+Inserter.o: exception.h Inserter.h types.h Utility.h queue.h Array.h
+Inserter.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+Inserter.o: /usr/include/getopt.h /usr/include/sys/types.h
+Inserter.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Inserter.o: StandardRead.h Iterator.h Stats.h MemoryMgr.h Sort.h site.h
+Inserter.o: myopt.h TableUtils.h RelationId.h listop.h PQueue.h
+Interface.o: types.h /usr/include/assert.h /usr/include/standards.h
+Interface.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+Interface.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+Interface.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Interface.o: /usr/include/sys/select.h Interface.h site.h myopt.h
+Interface.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+Interface.o: Iterator.h DevRead.h DataRead.h StandardRead.h Inserter.h
+Interface.o: Engine.h catalog.h ParseTree.h TypeCheck.h StringLess.h
+Iterator.o: Iterator.h /usr/include/assert.h /usr/include/standards.h types.h
+Iterator.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+Iterator.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+Iterator.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Iterator.o: /usr/include/sys/select.h Stats.h
+MaterializeParse.o: ParseTree.h queue.h /usr/include/assert.h
+MaterializeParse.o: /usr/include/standards.h myopt.h types.h exception.h
+MaterializeParse.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+MaterializeParse.o: /usr/include/stdlib.h /usr/include/getopt.h
+MaterializeParse.o: /usr/include/sys/types.h
+MaterializeParse.o: /usr/include/mach/machine/vm_types.h
+MaterializeParse.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+MaterializeParse.o: RelationId.h listop.h Stats.h TypeCheck.h StringLess.h
+MaterializeParse.o: site.h Iterator.h catalog.h Engine.h Interface.h
+MaterializeParse.o: Inserter.h
+MemoryMgr.o: types.h /usr/include/assert.h /usr/include/standards.h
+MemoryMgr.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+MemoryMgr.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+MemoryMgr.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+MemoryMgr.o: /usr/include/sys/select.h Interface.h MemoryMgr.h
+MinMax.o: MinMax.h myopt.h /usr/include/assert.h /usr/include/standards.h
+MinMax.o: queue.h types.h exception.h Utility.h Array.h SeqSimVec.h
+MinMax.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+MinMax.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+MinMax.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+MinMax.o: RelationId.h listop.h Stats.h StandardRead.h Iterator.h catalog.h
+ODBCCatalogParse.o: ParseTree.h queue.h /usr/include/assert.h
+ODBCCatalogParse.o: /usr/include/standards.h myopt.h types.h exception.h
+ODBCCatalogParse.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+ODBCCatalogParse.o: /usr/include/stdlib.h /usr/include/getopt.h
+ODBCCatalogParse.o: /usr/include/sys/types.h
+ODBCCatalogParse.o: /usr/include/mach/machine/vm_types.h
+ODBCCatalogParse.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+ODBCCatalogParse.o: RelationId.h listop.h Stats.h TypeCheck.h StringLess.h
+ODBCCatalogParse.o: Engine.h site.h Iterator.h ODBCInfo.h
+ODBCInfo.o: ODBCInfo.h Engine.h types.h /usr/include/assert.h
+ODBCInfo.o: /usr/include/standards.h exception.h Utility.h queue.h Array.h
+ODBCInfo.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+ODBCInfo.o: /usr/include/getopt.h /usr/include/sys/types.h
+ODBCInfo.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+ODBCInfo.o: site.h myopt.h TableUtils.h url.h SockStream.h RelationId.h
+ODBCInfo.o: listop.h Stats.h Iterator.h
+ODBCInterface.dummy.o: types.h /usr/include/assert.h /usr/include/standards.h
+ODBCInterface.dummy.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+ODBCInterface.dummy.o: /usr/include/math.h /usr/include/stdlib.h
+ODBCInterface.dummy.o: /usr/include/getopt.h /usr/include/sys/types.h
+ODBCInterface.dummy.o: /usr/include/mach/machine/vm_types.h
+ODBCInterface.dummy.o: /usr/include/sys/select.h Interface.h site.h myopt.h
+ODBCInterface.dummy.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+ODBCInterface.dummy.o: Stats.h Iterator.h DevRead.h StandardRead.h Inserter.h
+ODBCInterface.dummy.o: Engine.h catalog.h
+ODBCParse.dummy.o: ParseTree.h queue.h /usr/include/assert.h
+ODBCParse.dummy.o: /usr/include/standards.h myopt.h types.h exception.h
+ODBCParse.dummy.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+ODBCParse.dummy.o: /usr/include/stdlib.h /usr/include/getopt.h
+ODBCParse.dummy.o: /usr/include/sys/types.h
+ODBCParse.dummy.o: /usr/include/mach/machine/vm_types.h
+ODBCParse.dummy.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+ODBCParse.dummy.o: RelationId.h listop.h Stats.h TypeCheck.h StringLess.h
+Optimizer.o: TableUtils.h types.h /usr/include/assert.h
+Optimizer.o: /usr/include/standards.h exception.h Utility.h queue.h Array.h
+Optimizer.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+Optimizer.o: /usr/include/getopt.h /usr/include/sys/types.h
+Optimizer.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Optimizer.o: myopt.h url.h SockStream.h RelationId.h listop.h Stats.h
+Optimizer.o: Iterator.h Optimizer.h StringLess.h
+PQueue.o: PQueue.h types.h /usr/include/assert.h /usr/include/standards.h
+PQueue.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+PQueue.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+PQueue.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+PQueue.o: /usr/include/sys/select.h
+QueryTree.o: queue.h /usr/include/assert.h /usr/include/standards.h myopt.h
+QueryTree.o: types.h exception.h Utility.h Array.h SeqSimVec.h
+QueryTree.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+QueryTree.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+QueryTree.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+QueryTree.o: RelationId.h listop.h Stats.h site.h Iterator.h catalog.h
+QueryTree.o: DevRead.h Aggregates.h MemoryMgr.h TypeCheck.h StringLess.h
+QueryTree.o: FixedLenQueue.h ParseTree.h Sort.h StandardRead.h PQueue.h
+QueryTree.o: MinMax.h Interface.h Optimizer.h
+RTreeRead.o: RTreeRead.h myopt.h /usr/include/assert.h
+RTreeRead.o: /usr/include/standards.h queue.h types.h exception.h Utility.h
+RTreeRead.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+RTreeRead.o: /usr/include/getopt.h /usr/include/sys/types.h
+RTreeRead.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+RTreeRead.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+RTreeRead.o: Iterator.h StandardRead.h BoundingBox.h
+RTreeRead.dummy.o: RTreeRead.h myopt.h /usr/include/assert.h
+RTreeRead.dummy.o: /usr/include/standards.h queue.h types.h exception.h
+RTreeRead.dummy.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+RTreeRead.dummy.o: /usr/include/stdlib.h /usr/include/getopt.h
+RTreeRead.dummy.o: /usr/include/sys/types.h
+RTreeRead.dummy.o: /usr/include/mach/machine/vm_types.h
+RTreeRead.dummy.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+RTreeRead.dummy.o: RelationId.h listop.h Stats.h Iterator.h StandardRead.h
+RTreeRead.dummy.o: BoundingBox.h
+RelationId.o: RelationId.h
+RelationManager.o: RelationManager.h Interface.h types.h
+RelationManager.o: /usr/include/assert.h /usr/include/standards.h exception.h
+RelationManager.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+RelationManager.o: /usr/include/stdlib.h /usr/include/getopt.h
+RelationManager.o: /usr/include/sys/types.h
+RelationManager.o: /usr/include/mach/machine/vm_types.h
+RelationManager.o: /usr/include/sys/select.h RelationId.h
+SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h
+SchemaParse.o: /usr/include/standards.h myopt.h types.h exception.h Utility.h
+SchemaParse.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+SchemaParse.o: /usr/include/getopt.h /usr/include/sys/types.h
+SchemaParse.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+SchemaParse.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+SchemaParse.o: TypeCheck.h StringLess.h site.h Iterator.h catalog.h
+SchemaParse.o: Interface.h
+SeqSimVecAggregate.o: SeqSimVecAggregate.h Aggregates.h types.h
+SeqSimVecAggregate.o: /usr/include/assert.h /usr/include/standards.h
+SeqSimVecAggregate.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
+SeqSimVecAggregate.o: /usr/include/math.h /usr/include/stdlib.h
+SeqSimVecAggregate.o: /usr/include/getopt.h /usr/include/sys/types.h
+SeqSimVecAggregate.o: /usr/include/mach/machine/vm_types.h
+SeqSimVecAggregate.o: /usr/include/sys/select.h myopt.h TableUtils.h url.h
+SeqSimVecAggregate.o: SockStream.h RelationId.h listop.h Stats.h site.h
+SeqSimVecAggregate.o: Iterator.h MemoryMgr.h TypeCheck.h StringLess.h
+SeqSimVecAggregate.o: FixedLenQueue.h
+Sort.o: /usr/include/assert.h /usr/include/standards.h Sort.h site.h queue.h
+Sort.o: types.h exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+Sort.o: /usr/include/stdlib.h /usr/include/getopt.h /usr/include/sys/types.h
+Sort.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Sort.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+Sort.o: Iterator.h StandardRead.h PQueue.h Inserter.h MemoryMgr.h
+StandardRead.o: StandardRead.h types.h /usr/include/assert.h
+StandardRead.o: /usr/include/standards.h exception.h Utility.h queue.h
+StandardRead.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+StandardRead.o: /usr/include/getopt.h /usr/include/sys/types.h
+StandardRead.o: /usr/include/mach/machine/vm_types.h
+StandardRead.o: /usr/include/sys/select.h Iterator.h Stats.h url.h
+StandardRead.o: SockStream.h ExecOp.h ExecExpr.h MemoryMgr.h
+TableUtils.o: TableUtils.h types.h /usr/include/assert.h
+TableUtils.o: /usr/include/standards.h exception.h Utility.h queue.h Array.h
+TableUtils.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+TableUtils.o: /usr/include/getopt.h /usr/include/sys/types.h
+TableUtils.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+TableUtils.o: ExecOp.h ExecExpr.h Iterator.h MemoryMgr.h StandardRead.h
+TableUtils.o: Stats.h myopt.h url.h SockStream.h RelationId.h listop.h
+TypeCheck.o: myopt.h /usr/include/assert.h /usr/include/standards.h queue.h
+TypeCheck.o: types.h exception.h Utility.h Array.h SeqSimVec.h
+TypeCheck.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/getopt.h
+TypeCheck.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+TypeCheck.o: /usr/include/sys/select.h TableUtils.h url.h SockStream.h
+TypeCheck.o: RelationId.h listop.h Stats.h TypeCheck.h StringLess.h catalog.h
+TypeCheck.o: Interface.h
+UnionParse.o: ParseTree.h queue.h /usr/include/assert.h
+UnionParse.o: /usr/include/standards.h myopt.h types.h exception.h Utility.h
+UnionParse.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+UnionParse.o: /usr/include/getopt.h /usr/include/sys/types.h
+UnionParse.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+UnionParse.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+UnionParse.o: TypeCheck.h StringLess.h site.h Iterator.h
+Util.o: types.h /usr/include/assert.h /usr/include/standards.h exception.h
+Util.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+Util.o: /usr/include/stdlib.h /usr/include/getopt.h /usr/include/sys/types.h
+Util.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Util.o: Inserter.h
+catalog.o: StandardRead.h types.h /usr/include/assert.h
+catalog.o: /usr/include/standards.h exception.h Utility.h queue.h Array.h
+catalog.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+catalog.o: /usr/include/getopt.h /usr/include/sys/types.h
+catalog.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+catalog.o: Iterator.h Stats.h catalog.h url.h SockStream.h site.h myopt.h
+catalog.o: TableUtils.h RelationId.h listop.h Inserter.h Interface.h
+joins.o: joins.h site.h queue.h /usr/include/assert.h
+joins.o: /usr/include/standards.h types.h exception.h Utility.h Array.h
+joins.o: SeqSimVec.h /usr/include/math.h /usr/include/stdlib.h
+joins.o: /usr/include/getopt.h /usr/include/sys/types.h
+joins.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+joins.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h
+joins.o: Stats.h Iterator.h
+lex.yy.o: /usr/include/stdio.h /usr/include/standards.h
+lex.yy.o: /usr/include/sys/seek.h /usr/include/va_list.h
+lex.yy.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+lex.yy.o: /usr/include/sys/select.h /usr/include/getopt.h
+lex.yy.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+lex.yy.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+lex.yy.o: /usr/include/sys/rt_limits.h /usr/include/assert.h myopt.h queue.h
+lex.yy.o: types.h exception.h Utility.h Array.h SeqSimVec.h
+lex.yy.o: /usr/include/math.h /usr/include/stdlib.h TableUtils.h url.h
+lex.yy.o: SockStream.h RelationId.h listop.h Stats.h ParseTree.h TypeCheck.h
+lex.yy.o: StringLess.h
+listop.o: /usr/include/assert.h /usr/include/standards.h /usr/include/math.h
+listop.o: /usr/include/stdlib.h /usr/include/getopt.h
+listop.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+listop.o: /usr/include/sys/select.h queue.h myopt.h types.h exception.h
+listop.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+listop.o: RelationId.h listop.h Stats.h site.h Iterator.h catalog.h
+listop.o: ExecExpr.h
+resolve.o: types.h /usr/include/assert.h /usr/include/standards.h exception.h
+resolve.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+resolve.o: /usr/include/stdlib.h /usr/include/getopt.h
+resolve.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+resolve.o: /usr/include/sys/select.h myopt.h TableUtils.h url.h SockStream.h
+resolve.o: RelationId.h listop.h Stats.h site.h Iterator.h ExecExpr.h
+resolve.o: catalog.h Interface.h RelationManager.h
+site.o: site.h queue.h /usr/include/assert.h /usr/include/standards.h types.h
+site.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
+site.o: /usr/include/stdlib.h /usr/include/getopt.h /usr/include/sys/types.h
+site.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+site.o: myopt.h TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+site.o: Iterator.h Interface.h ExecOp.h ExecExpr.h MemoryMgr.h RTreeRead.h
+site.o: StandardRead.h BoundingBox.h
+types.o: types.h /usr/include/assert.h /usr/include/standards.h exception.h
+types.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+types.o: /usr/include/stdlib.h /usr/include/getopt.h /usr/include/sys/types.h
+types.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+types.o: Interface.h catalog.h
+url.o: url.h /usr/include/assert.h /usr/include/standards.h SockStream.h
+url.o: exception.h
 
-DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevRead.o: /usr/include/string.h ../../graphics.new/machdep.h
-DevRead.o: /usr/include/limits.h /usr/include/sys/types.h
-DevRead.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-DevRead.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DevRead.o: /usr/include/sys/time.h /usr/include/sys/param.h
-DevRead.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-DevRead.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DevRead.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DevRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-DevRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DevRead.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-DevRead.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DevRead.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DevRead.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-DevRead.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-DevRead.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-DevRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DevRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DevRead.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DevRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DevRead.o: /usr/include/sys/byteorder.h DevRead.h
-DevRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-DevRead.o: ../../graphics/DevStatus.h ../../graphics.new/RecId.h types.h
-DevRead.o: /usr/include/assert.h exception.h ../../graphics/AttrList.h
-DevRead.o: ../../graphics/Config.h ../../graphics/DList.h
-DevRead.o: ../../graphics/Exit.h GeneralRead.h ../../graphics/Util.h
-DevRead.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-DevRead.o: ../../graphics.new/TData.h ../../graphics.new/RecOrder.h
-DevRead.o: ../../graphics.new/DataSource.h ../../graphics.new/DataSeg.h
-Engine.o: /usr/include/memory.h /usr/include/string.h
-Engine.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-Engine.o: /usr/include/math.h /usr/include/floatingpoint.h
-Engine.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h queue.h myopt.h
-Engine.o: types.h /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-Engine.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Engine.o: /usr/include/sys/time.h /usr/include/sys/time.h
-Engine.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Engine.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Engine.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Engine.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Engine.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-Engine.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-Engine.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-Engine.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Engine.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-Engine.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Engine.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-Engine.o: ../../graphics.new/machdep.h /usr/include/limits.h
-Engine.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-Engine.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-Engine.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-Engine.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-Engine.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Engine.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Engine.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-Engine.o: /usr/include/values.h ../../graphics/DevStatus.h
-Engine.o: ../../graphics/Config.h ../../graphics/DList.h
-Engine.o: ../../graphics/Exit.h url.h /usr/include/stdio.h
-Engine.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
-Engine.o: StandardRead.h catalog.h DevRead.h ../../graphics.new/RecId.h
-Engine.o: Engine.h
-StandardRead.o: /usr/include/string.h /usr/include/sys/feature_tests.h
-StandardRead.o: StandardRead.h GeneralRead.h types.h /usr/include/assert.h
-StandardRead.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-StandardRead.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-StandardRead.o: /usr/include/sys/time.h /usr/include/sys/time.h
-StandardRead.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-StandardRead.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-StandardRead.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-StandardRead.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-StandardRead.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-StandardRead.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-StandardRead.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-StandardRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-StandardRead.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-StandardRead.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-StandardRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-StandardRead.o: exception.h ../../graphics.new/machdep.h
-StandardRead.o: /usr/include/limits.h /usr/include/sys/wait.h
-StandardRead.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-StandardRead.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-StandardRead.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-StandardRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-StandardRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-StandardRead.o: /usr/include/sys/netconfig.h ../../graphics/AttrList.h
-StandardRead.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-StandardRead.o: ../../graphics/DevStatus.h ../../graphics/Config.h
-StandardRead.o: ../../graphics/DList.h ../../graphics/Exit.h url.h
-StandardRead.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h
-catalog.o: site.h /usr/include/assert.h myopt.h queue.h types.h
-catalog.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-catalog.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-catalog.o: /usr/include/sys/select.h /usr/include/sys/time.h
-catalog.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-catalog.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-catalog.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-catalog.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-catalog.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-catalog.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-catalog.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-catalog.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-catalog.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-catalog.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-catalog.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-catalog.o: /usr/include/sys/byteorder.h exception.h
-catalog.o: ../../graphics.new/machdep.h /usr/include/limits.h
-catalog.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-catalog.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-catalog.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-catalog.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-catalog.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-catalog.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-catalog.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-catalog.o: /usr/include/values.h ../../graphics/DevStatus.h
-catalog.o: ../../graphics/Config.h ../../graphics/DList.h
-catalog.o: ../../graphics/Exit.h url.h /usr/include/string.h
-catalog.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h listop.h
-catalog.o: GeneralRead.h StandardRead.h catalog.h DevRead.h
-catalog.o: ../../graphics.new/RecId.h
-lex.yy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-lex.yy.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/assert.h
-lex.yy.o: /usr/include/memory.h myopt.h queue.h types.h
-lex.yy.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-lex.yy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-lex.yy.o: /usr/include/sys/time.h /usr/include/sys/time.h
-lex.yy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-lex.yy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-lex.yy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-lex.yy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-lex.yy.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-lex.yy.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-lex.yy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-lex.yy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-lex.yy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-lex.yy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-lex.yy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-lex.yy.o: ../../graphics.new/machdep.h /usr/include/limits.h
-lex.yy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-lex.yy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-lex.yy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-lex.yy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-lex.yy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-lex.yy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-lex.yy.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-lex.yy.o: /usr/include/values.h ../../graphics/DevStatus.h
-lex.yy.o: ../../graphics/Config.h ../../graphics/DList.h
-lex.yy.o: ../../graphics/Exit.h url.h /usr/include/unistd.h SockStream.h
-lex.yy.o: listop.h my.yacc.tab.h
-listop.o: /usr/include/memory.h /usr/include/string.h
-listop.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-listop.o: /usr/include/math.h /usr/include/floatingpoint.h
-listop.o: /usr/include/sys/ieeefp.h queue.h myopt.h types.h
-listop.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-listop.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-listop.o: /usr/include/sys/time.h /usr/include/sys/time.h
-listop.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-listop.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-listop.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-listop.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-listop.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-listop.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-listop.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-listop.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-listop.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-listop.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-listop.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-listop.o: ../../graphics.new/machdep.h /usr/include/limits.h
-listop.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-listop.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-listop.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-listop.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-listop.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-listop.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-listop.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-listop.o: /usr/include/values.h ../../graphics/DevStatus.h
-listop.o: ../../graphics/Config.h ../../graphics/DList.h
-listop.o: ../../graphics/Exit.h url.h /usr/include/stdio.h
-listop.o: /usr/include/unistd.h SockStream.h listop.h site.h GeneralRead.h
-listop.o: StandardRead.h catalog.h
-my.yacc.tab.o: myopt.h /usr/include/assert.h queue.h types.h
-my.yacc.tab.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-my.yacc.tab.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-my.yacc.tab.o: /usr/include/sys/select.h /usr/include/sys/time.h
-my.yacc.tab.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-my.yacc.tab.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-my.yacc.tab.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-my.yacc.tab.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-my.yacc.tab.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-my.yacc.tab.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-my.yacc.tab.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-my.yacc.tab.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-my.yacc.tab.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-my.yacc.tab.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-my.yacc.tab.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-my.yacc.tab.o: /usr/include/sys/byteorder.h exception.h
-my.yacc.tab.o: ../../graphics.new/machdep.h /usr/include/limits.h
-my.yacc.tab.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-my.yacc.tab.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-my.yacc.tab.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-my.yacc.tab.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-my.yacc.tab.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-my.yacc.tab.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-my.yacc.tab.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-my.yacc.tab.o: /usr/include/values.h ../../graphics/DevStatus.h
-my.yacc.tab.o: ../../graphics/Config.h ../../graphics/DList.h
-my.yacc.tab.o: ../../graphics/Exit.h url.h /usr/include/string.h
-my.yacc.tab.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h
-my.yacc.tab.o: listop.h
-myopt.o: /usr/include/memory.h /usr/include/string.h
-myopt.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-myopt.o: /usr/include/math.h /usr/include/floatingpoint.h
-myopt.o: /usr/include/sys/ieeefp.h types.h /usr/include/sys/types.h
-myopt.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-myopt.o: /usr/include/sys/select.h /usr/include/sys/time.h
-myopt.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-myopt.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-myopt.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-myopt.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-myopt.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-myopt.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-myopt.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-myopt.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-myopt.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-myopt.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-myopt.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-myopt.o: /usr/include/sys/byteorder.h exception.h
-myopt.o: ../../graphics.new/machdep.h /usr/include/limits.h
-myopt.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-myopt.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-myopt.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-myopt.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-myopt.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-myopt.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-myopt.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-myopt.o: /usr/include/values.h ../../graphics/DevStatus.h
-myopt.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-myopt.o: Engine.h site.h myopt.h queue.h url.h /usr/include/stdio.h
-myopt.o: /usr/include/unistd.h SockStream.h listop.h GeneralRead.h
-myopt.o: StandardRead.h
-resolve.o: myopt.h /usr/include/assert.h queue.h types.h
-resolve.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-resolve.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-resolve.o: /usr/include/sys/select.h /usr/include/sys/time.h
-resolve.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-resolve.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-resolve.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-resolve.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-resolve.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-resolve.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-resolve.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-resolve.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-resolve.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-resolve.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-resolve.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-resolve.o: /usr/include/sys/byteorder.h exception.h
-resolve.o: ../../graphics.new/machdep.h /usr/include/limits.h
-resolve.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-resolve.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-resolve.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-resolve.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-resolve.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-resolve.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-resolve.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-resolve.o: /usr/include/values.h ../../graphics/DevStatus.h
-resolve.o: ../../graphics/Config.h ../../graphics/DList.h
-resolve.o: ../../graphics/Exit.h url.h /usr/include/string.h
-resolve.o: /usr/include/stdio.h /usr/include/unistd.h SockStream.h listop.h
-resolve.o: site.h GeneralRead.h StandardRead.h
-site.o: /usr/include/string.h /usr/include/sys/feature_tests.h site.h
-site.o: /usr/include/assert.h myopt.h queue.h types.h
-site.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-site.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-site.o: /usr/include/sys/time.h /usr/include/sys/time.h
-site.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-site.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-site.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-site.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-site.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-site.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-site.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-site.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-site.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-site.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-site.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-site.o: ../../graphics.new/machdep.h /usr/include/limits.h
-site.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-site.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-site.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-site.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-site.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-site.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-site.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-site.o: /usr/include/values.h ../../graphics/DevStatus.h
-site.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-site.o: url.h /usr/include/stdio.h /usr/include/unistd.h SockStream.h
-site.o: listop.h GeneralRead.h StandardRead.h
-types.o: types.h /usr/include/assert.h /usr/include/sys/types.h
-types.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-types.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-types.o: /usr/include/sys/time.h /usr/include/sys/time.h
-types.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-types.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-types.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-types.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-types.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-types.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-types.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-types.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-types.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-types.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-types.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-types.o: ../../graphics.new/machdep.h /usr/include/limits.h
-types.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-types.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-types.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-types.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-types.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-types.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-types.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-types.o: /usr/include/values.h ../../graphics/DevStatus.h
-types.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-url.o: url.h /usr/include/sys/types.h /usr/include/sys/feature_tests.h
-url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-url.o: /usr/include/sys/select.h /usr/include/sys/time.h
-url.o: /usr/include/sys/time.h /usr/include/sys/socket.h
-url.o: /usr/include/sys/netconfig.h /usr/include/sys/uio.h
-url.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-url.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-url.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-url.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-url.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-url.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
-url.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-url.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-url.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-url.o: /usr/include/sys/byteorder.h /usr/include/netdb.h
-url.o: /usr/include/string.h /usr/include/assert.h /usr/include/stdio.h
-url.o: /usr/include/unistd.h SockStream.h exception.h
-url.o: ../../graphics.new/machdep.h /usr/include/limits.h
-url.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-url.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-url.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-
-main.o: /usr/include/memory.h /usr/include/string.h
-main.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
-main.o: /usr/include/math.h /usr/include/floatingpoint.h
-main.o: /usr/include/sys/ieeefp.h ../Core/types.h /usr/include/sys/types.h
-main.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-main.o: /usr/include/sys/select.h /usr/include/sys/time.h
-main.o: /usr/include/sys/time.h /usr/include/netinet/in.h
-main.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-main.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-main.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-main.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-main.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-main.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-main.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-main.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-main.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-main.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-main.o: /usr/include/sys/byteorder.h ../Core/exception.h
-main.o: ../../graphics.new/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-main.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-main.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-main.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-main.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-main.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-main.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
-main.o: /usr/include/values.h ../../graphics/DevStatus.h
-main.o: ../../graphics/Config.h ../../graphics/DList.h ../../graphics/Exit.h
-main.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h ../Core/queue.h
-main.o: ../Core/url.h /usr/include/stdio.h /usr/include/unistd.h
-main.o: ../Core/SockStream.h ../Core/listop.h ../Core/GeneralRead.h
-main.o: ../Core/StandardRead.h
+SBMInit.o: SBMInit.h ../../graphics.new/SBufMgr.h /usr/include/sys/types.h
+SBMInit.o: /usr/include/standards.h /usr/include/mach/machine/vm_types.h
+SBMInit.o: /usr/include/sys/select.h /usr/include/sys/uio.h
+SBMInit.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+SBMInit.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+SBMInit.o: /usr/include/sys/rt_limits.h /usr/include/unistd.h
+SBMInit.o: /usr/include/sys/access.h /usr/include/sys/seek.h
+SBMInit.o: /usr/include/getopt.h ../../graphics/DeviseTypes.h
+SBMInit.o: /usr/include/values.h /usr/include/limits.h
+SBMInit.o: ../../graphics/DevStatus.h ../../graphics.new/MemMgr.h
+SBMInit.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
+SBMInit.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
+SBMInit.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/va_list.h
+SBMInit.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+SBMInit.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
+SBMInit.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+SBMInit.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+SBMInit.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+SBMInit.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+SBMInit.o: /usr/include/sys/time.h /usr/include/time.h
+SBMInit.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
+SBMInit.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
+SBMInit.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
+SBMInit.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
+SBMInit.o: /usr/include/io/common/devio.h /usr/include/netdb.h
+SBMInit.o: /usr/include/netinet/in.h /usr/include/sys/socket.h
+SBMInit.o: /usr/include/rpc/netdb.h InitShut.h
+SBMInit.dummy.o: InitShut.h
+TableCreate.o: ../Core/RelationManager.h ../Core/Interface.h ../Core/types.h
+TableCreate.o: /usr/include/assert.h /usr/include/standards.h
+TableCreate.o: ../Core/exception.h ../Core/Utility.h ../Core/queue.h
+TableCreate.o: ../Core/Array.h ../Core/SeqSimVec.h /usr/include/math.h
+TableCreate.o: /usr/include/stdlib.h /usr/include/getopt.h
+TableCreate.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+TableCreate.o: /usr/include/sys/select.h ../Core/RelationId.h
+TableCreate.o: ../Core/Inserter.h
+main.o: InitShut.h Common.h

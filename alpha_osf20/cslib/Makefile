@@ -15,13 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1997/01/18 20:49:03  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.1  1996/10/17 20:50:35  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS   = -DOSF -I/s/gcc/lib/g++-include -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -L/s/gcc/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  =

@@ -15,10 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/14 20:34:45  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DOSF -I/s/gcc/lib/g++-include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/gcc/lib
 ARCH_LDPOST =
 

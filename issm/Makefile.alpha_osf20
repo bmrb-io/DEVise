@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/03/28 16:11:12  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -27,51 +31,55 @@ depend:
 binconv.o: /usr/include/math.h /usr/include/standards.h /usr/include/stdlib.h
 binconv.o: /usr/include/getopt.h /usr/include/sys/types.h
 binconv.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
-binconv.o: binconv.h /usr/include/string.h
+binconv.o: binconv.h /usr/include/string.h /usr/include/strings.h
 extract.o: /usr/include/stdio.h /usr/include/standards.h
 extract.o: /usr/include/sys/seek.h /usr/include/va_list.h
 extract.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
 extract.o: /usr/include/sys/select.h /usr/include/getopt.h
-extract.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-extract.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+extract.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+extract.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 extract.o: /usr/include/sys/rt_limits.h /usr/include/string.h
-extract.o: /usr/include/stdlib.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
-extract.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-extract.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
-extract.o: ../graphics.new/machdep.h /usr/include/limits.h
-extract.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
-extract.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-extract.o: /usr/include/sys/siginfo.h /usr/include/sys/machine/signal.h
-extract.o: /usr/include/sys/procset.h /usr/include/sys/time.h
-extract.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+extract.o: /usr/include/strings.h /usr/include/stdlib.h /s/tcl/include/tcl.h
+extract.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+extract.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+extract.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h rectape.h
+extract.o: ../tape/tapedrive.h ../graphics.new/machdep.h
+extract.o: /usr/include/limits.h /usr/include/sys/param.h
+extract.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
+extract.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+extract.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+extract.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+extract.o: /usr/include/sys/time.h /usr/include/time.h
+extract.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
 extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 extract.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 extract.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
 extract.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
 extract.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
-extract.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+extract.o: /usr/include/netdb.h /usr/include/netinet/in.h
 extract.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
-extract.o: /usr/include/netinet/in.h binconv.h issmdata.h
+extract.o: /usr/include/rpc/netdb.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h /usr/include/standards.h
 rectape.o: /usr/include/getopt.h /usr/include/sys/types.h
 rectape.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
 rectape.o: rectape.h ../tape/tapedrive.h /usr/include/stdio.h
 rectape.o: /usr/include/sys/seek.h /usr/include/va_list.h
-rectape.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-rectape.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
+rectape.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+rectape.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
 rectape.o: /usr/include/sys/rt_limits.h ../graphics.new/machdep.h
 rectape.o: /usr/include/limits.h /usr/include/sys/param.h
-rectape.o: /usr/include/sys/machine/machparam.h /usr/include/machine/endian.h
+rectape.o: /usr/include/machine/machparam.h /usr/include/machine/endian.h
 rectape.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-rectape.o: /usr/include/sys/machine/signal.h /usr/include/sys/procset.h
-rectape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-rectape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/secdefines.h
-rectape.o: /usr/include/sys/ioctl_compat.h /usr/include/sys/ttychars.h
-rectape.o: /usr/include/sys/ttydefaults.h /usr/include/sys/ttydev.h
-rectape.o: /usr/include/io/common/devio.h /usr/include/netdb.h
-rectape.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-rectape.o: /usr/include/sys/uio.h /usr/include/netinet/in.h binconv.h
-rectape.o: /usr/include/string.h
+rectape.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+rectape.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+rectape.o: /usr/include/sys/time.h /usr/include/time.h
+rectape.o: /usr/include/sys/timers.h /usr/include/sys/wait.h
+rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+rectape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/sys/secdefines.h /usr/include/sys/ioctl_compat.h
+rectape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
+rectape.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
+rectape.o: /usr/include/netdb.h /usr/include/netinet/in.h
+rectape.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+rectape.o: /usr/include/rpc/netdb.h binconv.h /usr/include/string.h
+rectape.o: /usr/include/strings.h

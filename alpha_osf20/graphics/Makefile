@@ -15,13 +15,18 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1998/02/20 17:00:30  wenger
+#  Updated all architectures to use new dependency scheme in graphics and
+#  graphics.new directories.
+#
 #  Revision 1.1  1996/07/14 20:34:40  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DOSF -I/s/gcc/lib/g++-include -I/s/X11/include -I/s/tcl/include
+include ../Makefile.config
+
 ARCH_LDFLAGS = -L/s/tcl/lib -L/s/gcc/lib
 ARCH_LDPOST  =
 

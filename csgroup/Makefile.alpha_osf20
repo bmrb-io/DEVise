@@ -14,15 +14,6 @@
 
 # $Id$
 
-# $Log$
-# Revision 1.2.2.1  1998/01/28 22:42:14  taodb
-# Added support for group communicatoin
-#
-# Revision 1.2  1997/03/28 16:08:43  wenger
-# Added headers to all source files that didn't have them; updated
-# solaris, solsparc, and hp dependencies.
-#
-
 ############################################################
 
 depend:
@@ -30,3 +21,377 @@ depend:
 		-I/s/X11/include -I/s/tcl/include *.c *.C
 
 # DO NOT DELETE
+
+Csprotocols.o: /usr/include/string.h /usr/include/standards.h
+Csprotocols.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Csprotocols.o: /usr/include/sys/select.h /usr/include/strings.h
+Csprotocols.o: /usr/include/stdlib.h /usr/include/getopt.h
+Csprotocols.o: /usr/include/stdio.h /usr/include/sys/seek.h
+Csprotocols.o: /usr/include/va_list.h /usr/include/sys/limits.h
+Csprotocols.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+Csprotocols.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+Csprotocols.o: Csprotocols.h /usr/include/sys/socket.h /usr/include/sys/uio.h
+Csprotocols.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+Csprotocols.o: /usr/include/arpa/inet.h /usr/include/netdb.h
+Csprotocols.o: /usr/include/rpc/netdb.h
+callBks.o: callBks.h error.h CollabTypes.h /usr/include/sys/types.h
+callBks.o: /usr/include/standards.h /usr/include/mach/machine/vm_types.h
+callBks.o: /usr/include/sys/select.h /usr/include/sys/socket.h
+callBks.o: /usr/include/sys/uio.h /usr/include/sys/limits.h
+callBks.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+callBks.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+callBks.o: /usr/include/netinet/in.h /usr/include/machine/endian.h ctrlMsg.h
+codec.o: /usr/include/sys/uio.h /usr/include/standards.h
+codec.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+codec.o: /usr/include/sys/select.h /usr/include/sys/limits.h
+codec.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+codec.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+codec.o: /usr/include/unistd.h /usr/include/sys/access.h
+codec.o: /usr/include/sys/seek.h /usr/include/getopt.h /usr/include/errno.h
+codec.o: codec.h /usr/include/assert.h
+colbr.o: /usr/include/stdio.h /usr/include/standards.h
+colbr.o: /usr/include/sys/seek.h /usr/include/va_list.h
+colbr.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+colbr.o: /usr/include/sys/select.h /usr/include/getopt.h
+colbr.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+colbr.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+colbr.o: /usr/include/sys/rt_limits.h /usr/include/strings.h
+colbr.o: /usr/include/string.h /usr/include/stdlib.h /usr/include/errno.h
+colbr.o: /usr/include/sys/time.h /usr/include/sys/signal.h
+colbr.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+colbr.o: /usr/include/machine/signal.h /usr/include/machine/context.h
+colbr.o: /usr/include/sys/procset.h /usr/include/time.h
+colbr.o: /usr/include/sys/timers.h /usr/include/sys/socket.h
+colbr.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+colbr.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h
+colbr.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+colbr.o: /usr/include/sys/param.h /usr/include/machine/machparam.h error.h
+colbr.o: colbr.h dbase.h htable.h bucket.h entry.h datum.h queue.h
+colbr.o: queueElem.h CollabTypes.h logfns.h log.h colbrLog.h sndMsg.h
+colbr.o: timeOut.h netfns.h /usr/include/unistd.h /usr/include/sys/access.h
+colbr.o: serverInterface.h prnfns.h ctrlMsg.h Csprotocols.h
+error.o: /usr/include/stdio.h /usr/include/standards.h
+error.o: /usr/include/sys/seek.h /usr/include/va_list.h
+error.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+error.o: /usr/include/sys/select.h /usr/include/getopt.h
+error.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+error.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+error.o: /usr/include/sys/rt_limits.h error.h
+logfns.o: /usr/include/sys/types.h /usr/include/standards.h
+logfns.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+logfns.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+logfns.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+logfns.o: /usr/include/sys/seek.h /usr/include/stdarg.h
+logfns.o: /usr/include/va_list.h /usr/include/unistd.h
+logfns.o: /usr/include/sys/access.h /usr/include/getopt.h colbrLog.h log.h
+logfns.o: /usr/include/stdio.h /usr/include/sys/limits.h
+logfns.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+logfns.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+logfns.o: /usr/include/string.h /usr/include/strings.h colbr.h
+logfns.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+logfns.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+logfns.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
+logfns.o: queue.h queueElem.h CollabTypes.h logfns.h
+netfns.o: /usr/include/stdio.h /usr/include/standards.h
+netfns.o: /usr/include/sys/seek.h /usr/include/va_list.h
+netfns.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+netfns.o: /usr/include/sys/select.h /usr/include/getopt.h
+netfns.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+netfns.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+netfns.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+netfns.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
+netfns.o: /usr/include/sys/time.h /usr/include/sys/signal.h
+netfns.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+netfns.o: /usr/include/machine/signal.h /usr/include/machine/context.h
+netfns.o: /usr/include/sys/procset.h /usr/include/time.h
+netfns.o: /usr/include/sys/timers.h /usr/include/netinet/in.h
+netfns.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+netfns.o: /usr/include/machine/endian.h /usr/include/netdb.h
+netfns.o: /usr/include/rpc/netdb.h netfns.h /usr/include/unistd.h
+netfns.o: /usr/include/sys/access.h error.h
+prnfns.o: /usr/include/stdlib.h /usr/include/standards.h
+prnfns.o: /usr/include/getopt.h /usr/include/sys/types.h
+prnfns.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+prnfns.o: prnfns.h CollabTypes.h /usr/include/sys/socket.h
+prnfns.o: /usr/include/sys/uio.h /usr/include/sys/limits.h
+prnfns.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+prnfns.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+prnfns.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+prnfns.o: serverInterface.h colbr.h /usr/include/string.h
+prnfns.o: /usr/include/strings.h /usr/include/arpa/inet.h dbase.h htable.h
+prnfns.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
+prnfns.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+rcvMsg.o: /usr/include/sys/types.h /usr/include/standards.h
+rcvMsg.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+rcvMsg.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+rcvMsg.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+rcvMsg.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+rcvMsg.o: /usr/include/sys/rt_limits.h /usr/include/netinet/in.h
+rcvMsg.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h
+rcvMsg.o: /usr/include/strings.h /usr/include/string.h /usr/include/math.h
+rcvMsg.o: /usr/include/stdlib.h /usr/include/getopt.h /usr/include/unistd.h
+rcvMsg.o: /usr/include/sys/access.h /usr/include/sys/seek.h
+rcvMsg.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
+rcvMsg.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+rcvMsg.o: /usr/include/sys/time.h /usr/include/sys/signal.h
+rcvMsg.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+rcvMsg.o: /usr/include/machine/signal.h /usr/include/machine/context.h
+rcvMsg.o: /usr/include/sys/procset.h /usr/include/time.h
+rcvMsg.o: /usr/include/sys/timers.h rcvMsg.h codec.h serverInterface.h
+rcvMsg.o: colbr.h dbase.h htable.h bucket.h entry.h datum.h queue.h
+rcvMsg.o: queueElem.h CollabTypes.h callBks.h error.h ctrlMsg.h netfns.h
+rcvMsg.o: timeOut.h ckptfile.h /usr/include/stdio.h /usr/include/va_list.h
+server_clnt.o: server.h CollabTypes.h /usr/include/sys/types.h
+server_clnt.o: /usr/include/standards.h /usr/include/mach/machine/vm_types.h
+server_clnt.o: /usr/include/sys/select.h /usr/include/sys/socket.h
+server_clnt.o: /usr/include/sys/uio.h /usr/include/sys/limits.h
+server_clnt.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+server_clnt.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+server_clnt.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+server_clnt.o: codec.h
+server_locfns.o: /usr/include/stdio.h /usr/include/standards.h
+server_locfns.o: /usr/include/sys/seek.h /usr/include/va_list.h
+server_locfns.o: /usr/include/sys/types.h
+server_locfns.o: /usr/include/mach/machine/vm_types.h
+server_locfns.o: /usr/include/sys/select.h /usr/include/getopt.h
+server_locfns.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+server_locfns.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+server_locfns.o: /usr/include/sys/rt_limits.h /usr/include/strings.h
+server_locfns.o: /usr/include/string.h /usr/include/sys/socket.h
+server_locfns.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+server_locfns.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h
+server_locfns.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+server_locfns.o: /usr/include/errno.h /usr/include/sys/wait.h
+server_locfns.o: /usr/include/sys/param.h /usr/include/machine/machparam.h
+server_locfns.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+server_locfns.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+server_locfns.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+server_locfns.o: /usr/include/signal.h /usr/include/sys/time.h
+server_locfns.o: /usr/include/time.h /usr/include/sys/timers.h
+server_locfns.o: /usr/include/stdlib.h /usr/include/unistd.h
+server_locfns.o: /usr/include/sys/access.h error.h serverInterface.h colbr.h
+server_locfns.o: dbase.h htable.h bucket.h entry.h datum.h queue.h
+server_locfns.o: queueElem.h CollabTypes.h server.h sigfns.h servdb.h
+server_locfns.o: timeOut.h netfns.h ../graphics/Init.h
+server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
+server_locfns.o: /usr/include/limits.h ../graphics/DevStatus.h
+server_locfns.o: ../graphics/BufPolicy.h Server.h ../graphics/Dispatcher.h
+server_locfns.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+server_locfns.o: CmdDescriptor.h CmdSerialize.h ckptfile.h
+server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/sys/types.h
+server_rmtfns.o: /usr/include/standards.h
+server_rmtfns.o: /usr/include/mach/machine/vm_types.h
+server_rmtfns.o: /usr/include/sys/select.h /usr/include/sys/secdefines.h
+server_rmtfns.o: /usr/include/sys/param.h /usr/include/sys/limits.h
+server_rmtfns.o: /usr/include/machine/machlimits.h
+server_rmtfns.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+server_rmtfns.o: /usr/include/sys/rt_limits.h
+server_rmtfns.o: /usr/include/machine/machparam.h /usr/include/sys/signal.h
+server_rmtfns.o: /usr/include/sys/siginfo.h /usr/include/sys/sysmisc.h
+server_rmtfns.o: /usr/include/machine/signal.h /usr/include/machine/context.h
+server_rmtfns.o: /usr/include/sys/procset.h /usr/include/sys/ioctl_compat.h
+server_rmtfns.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydefaults.h
+server_rmtfns.o: /usr/include/sys/ttydev.h /usr/include/io/common/devio.h
+server_rmtfns.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+server_rmtfns.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+server_rmtfns.o: /usr/include/arpa/inet.h /usr/include/errno.h
+server_rmtfns.o: /usr/include/sys/time.h /usr/include/time.h
+server_rmtfns.o: /usr/include/sys/timers.h /usr/include/string.h
+server_rmtfns.o: /usr/include/strings.h /usr/include/unistd.h
+server_rmtfns.o: /usr/include/sys/access.h /usr/include/sys/seek.h
+server_rmtfns.o: /usr/include/getopt.h error.h queue.h queueElem.h datum.h
+server_rmtfns.o: server.h CollabTypes.h colbr.h dbase.h htable.h bucket.h
+server_rmtfns.o: entry.h colbrLog.h log.h /usr/include/stdio.h
+server_rmtfns.o: /usr/include/va_list.h serverInterface.h sndMsg.h prnfns.h
+server_rmtfns.o: Csprotocols.h /usr/include/netdb.h /usr/include/rpc/netdb.h
+server_rmtfns.o: ctrlMsg.h
+server_serv.o: server.h CollabTypes.h /usr/include/sys/types.h
+server_serv.o: /usr/include/standards.h /usr/include/mach/machine/vm_types.h
+server_serv.o: /usr/include/sys/select.h /usr/include/sys/socket.h
+server_serv.o: /usr/include/sys/uio.h /usr/include/sys/limits.h
+server_serv.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+server_serv.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+server_serv.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+server_serv.o: codec.h sndMsg.h ctrlMsg.h /usr/include/stdio.h
+server_serv.o: /usr/include/sys/seek.h /usr/include/va_list.h
+server_serv.o: /usr/include/getopt.h /usr/include/stdlib.h
+server_serv.o: /usr/include/string.h /usr/include/strings.h
+server_serv.o: /usr/include/signal.h /usr/include/sys/stat.h
+server_serv.o: /usr/include/sys/mode.h /usr/include/fcntl.h
+server_serv.o: /usr/include/sys/fcntl.h /usr/include/unistd.h
+server_serv.o: /usr/include/sys/access.h /usr/include/memory.h
+server_serv.o: /usr/include/sys/resource.h /usr/include/sys/time.h
+server_serv.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+server_serv.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+server_serv.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+server_serv.o: /usr/include/time.h /usr/include/sys/timers.h
+server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog_pri.h colbr.h
+server_serv.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
+server_serv.o: datum.h queue.h queueElem.h
+sigfns.o: sigfns.h /usr/include/signal.h error.h
+sndMsg.o: /usr/include/sys/types.h /usr/include/standards.h
+sndMsg.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+sndMsg.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+sndMsg.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+sndMsg.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+sndMsg.o: /usr/include/sys/rt_limits.h /usr/include/netinet/in.h
+sndMsg.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h
+sndMsg.o: /usr/include/unistd.h /usr/include/sys/access.h
+sndMsg.o: /usr/include/sys/seek.h /usr/include/getopt.h sndMsg.h
+sndMsg.o: CollabTypes.h codec.h prnfns.h serverInterface.h colbr.h
+sndMsg.o: /usr/include/string.h /usr/include/strings.h dbase.h htable.h
+sndMsg.o: bucket.h entry.h datum.h queue.h queueElem.h Csprotocols.h
+sndMsg.o: /usr/include/netdb.h /usr/include/rpc/netdb.h ctrlMsg.h error.h
+Client.o: /usr/include/stdio.h /usr/include/standards.h
+Client.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Client.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Client.o: /usr/include/sys/select.h /usr/include/getopt.h
+Client.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+Client.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Client.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+Client.o: /usr/include/string.h /usr/include/strings.h /usr/include/unistd.h
+Client.o: /usr/include/sys/access.h /usr/include/sys/socket.h
+Client.o: /usr/include/sys/uio.h /usr/include/netinet/in.h
+Client.o: /usr/include/machine/endian.h /usr/include/netdb.h
+Client.o: /usr/include/rpc/netdb.h Client.h Csprotocols.h
+Client.o: /usr/include/arpa/inet.h keys.h CollabTypes.h
+CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
+CmdLog.o: /usr/include/stdio.h /usr/include/standards.h
+CmdLog.o: /usr/include/sys/seek.h /usr/include/va_list.h
+CmdLog.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+CmdLog.o: /usr/include/sys/select.h /usr/include/getopt.h
+CmdLog.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+CmdLog.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+CmdLog.o: /usr/include/sys/rt_limits.h /usr/include/ctype.h
+CmdLog.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+CmdLog.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+CmdLog.o: /usr/include/limits.h /usr/include/unistd.h
+CmdLog.o: /usr/include/sys/access.h /usr/include/fcntl.h
+CmdLog.o: /usr/include/sys/fcntl.h /usr/include/sys/mode.h
+CmdLog.o: /usr/include/sys/stat.h /usr/include/sys/time.h
+CmdLog.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+CmdLog.o: /usr/include/sys/sysmisc.h /usr/include/machine/signal.h
+CmdLog.o: /usr/include/machine/context.h /usr/include/sys/procset.h
+CmdLog.o: /usr/include/time.h /usr/include/sys/timers.h CmdLog.h
+CmdLog.o: CmdSerialize.h ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+CmdLog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
+CmdLog.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+CmdLog.o: ../graphics/ViewDir.h /usr/include/string.h /usr/include/strings.h
+CmdLog.o: ../graphics/Scheduler.h
+CmdSerialize.o: /usr/include/stdlib.h /usr/include/standards.h
+CmdSerialize.o: /usr/include/getopt.h /usr/include/sys/types.h
+CmdSerialize.o: /usr/include/mach/machine/vm_types.h
+CmdSerialize.o: /usr/include/sys/select.h /usr/include/stdio.h
+CmdSerialize.o: /usr/include/sys/seek.h /usr/include/va_list.h
+CmdSerialize.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+CmdSerialize.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+CmdSerialize.o: /usr/include/sys/rt_limits.h CmdSerialize.h
+CommandObj.o: CommandObj.h CmdDescriptor.h CmdSerialize.h Csprotocols.h
+CommandObj.o: /usr/include/sys/types.h /usr/include/standards.h
+CommandObj.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+CommandObj.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+CommandObj.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+CommandObj.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+CommandObj.o: /usr/include/sys/rt_limits.h /usr/include/netinet/in.h
+CommandObj.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h
+CommandObj.o: /usr/include/netdb.h /usr/include/rpc/netdb.h codec.h
+CommandObj.o: /usr/include/stdio.h /usr/include/sys/seek.h
+CommandObj.o: /usr/include/va_list.h /usr/include/getopt.h ../graphics/View.h
+Keys.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sys/seek.h
+Keys.o: /usr/include/va_list.h /usr/include/sys/types.h
+Keys.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+Keys.o: /usr/include/getopt.h /usr/include/sys/limits.h
+Keys.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+Keys.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+Keys.o: /usr/include/string.h /usr/include/strings.h keys.h CollabTypes.h
+Keys.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+Keys.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+Server.o: /usr/include/stdio.h /usr/include/standards.h
+Server.o: /usr/include/sys/seek.h /usr/include/va_list.h
+Server.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+Server.o: /usr/include/sys/select.h /usr/include/getopt.h
+Server.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+Server.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+Server.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
+Server.o: /usr/include/string.h /usr/include/strings.h /usr/include/errno.h
+Server.o: /usr/include/unistd.h /usr/include/sys/access.h
+Server.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+Server.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+Server.o: /usr/include/math.h /usr/include/signal.h Server.h CollabTypes.h
+Server.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+Server.o: /usr/include/values.h /usr/include/limits.h ../graphics/DevStatus.h
+Server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+Server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h CmdDescriptor.h
+Server.o: CmdSerialize.h ../graphics/Control.h ../graphics/ClassDir.h
+Server.o: callBks.h error.h ctrlMsg.h rcvMsg.h CommandObj.h serverInterface.h
+Server.o: colbr.h /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
+Server.o: datum.h queue.h queueElem.h keys.h Csprotocols.h
+Server.o: /usr/include/netdb.h /usr/include/rpc/netdb.h ../graphics/Util.h
+Server.o: /usr/include/time.h /usr/include/sys/timers.h
+Server.o: /usr/include/sys/sysmisc.h /usr/include/ctype.h
+Server.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
+Server.o: /usr/include/locale.h /usr/include/nl_types.h /usr/include/mesg.h
+Server.o: ../graphics/Init.h ../graphics/BufPolicy.h
+TclClient.o: /usr/include/stdio.h /usr/include/standards.h
+TclClient.o: /usr/include/sys/seek.h /usr/include/va_list.h
+TclClient.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+TclClient.o: /usr/include/sys/select.h /usr/include/getopt.h
+TclClient.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+TclClient.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+TclClient.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h TclClient.h
+TclClient.o: /s/tcl/include/tcl.h Client.h
+bucket.o: bucket.h entry.h datum.h
+colbrLog.o: /usr/include/stdlib.h /usr/include/standards.h
+colbrLog.o: /usr/include/getopt.h /usr/include/sys/types.h
+colbrLog.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/select.h
+colbrLog.o: /usr/include/sys/uio.h /usr/include/sys/limits.h
+colbrLog.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+colbrLog.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+colbrLog.o: /usr/include/unistd.h /usr/include/sys/access.h
+colbrLog.o: /usr/include/sys/seek.h colbr.h /usr/include/string.h
+colbrLog.o: /usr/include/strings.h /usr/include/sys/socket.h
+colbrLog.o: /usr/include/netinet/in.h /usr/include/machine/endian.h
+colbrLog.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
+colbrLog.o: datum.h queue.h queueElem.h CollabTypes.h colbrLog.h log.h
+colbrLog.o: /usr/include/stdio.h /usr/include/va_list.h prnfns.h
+colbrLog.o: serverInterface.h
+datum.o: /usr/include/stdlib.h /usr/include/standards.h /usr/include/getopt.h
+datum.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+datum.o: /usr/include/sys/select.h /usr/include/string.h
+datum.o: /usr/include/strings.h /usr/include/errno.h error.h datum.h
+dbase.o: colbr.h /usr/include/string.h /usr/include/standards.h
+dbase.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+dbase.o: /usr/include/sys/select.h /usr/include/strings.h
+dbase.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+dbase.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+dbase.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+dbase.o: /usr/include/sys/rt_limits.h /usr/include/netinet/in.h
+dbase.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h dbase.h
+dbase.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h
+dbase.o: error.h sndMsg.h /usr/include/assert.h
+entry.o: entry.h datum.h
+htable.o: htable.h bucket.h entry.h datum.h
+log.o: /usr/include/sys/uio.h /usr/include/standards.h
+log.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+log.o: /usr/include/sys/select.h /usr/include/sys/limits.h
+log.o: /usr/include/machine/machlimits.h /usr/include/sys/syslimits.h
+log.o: /usr/include/machine/machtime.h /usr/include/sys/rt_limits.h
+log.o: /usr/include/unistd.h /usr/include/sys/access.h
+log.o: /usr/include/sys/seek.h /usr/include/getopt.h log.h
+log.o: /usr/include/stdio.h /usr/include/va_list.h /usr/include/string.h
+log.o: /usr/include/strings.h
+parseConfig.o: /usr/include/string.h /usr/include/standards.h
+parseConfig.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+parseConfig.o: /usr/include/sys/select.h /usr/include/strings.h parseConfig.h
+queue.o: error.h queue.h queueElem.h datum.h
+queueElem.o: queueElem.h datum.h
+servdb.o: servdb.h /usr/include/string.h /usr/include/standards.h
+servdb.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+servdb.o: /usr/include/sys/select.h /usr/include/strings.h
+servdb.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
+servdb.o: /usr/include/sys/limits.h /usr/include/machine/machlimits.h
+servdb.o: /usr/include/sys/syslimits.h /usr/include/machine/machtime.h
+servdb.o: /usr/include/sys/rt_limits.h /usr/include/netinet/in.h
+servdb.o: /usr/include/machine/endian.h /usr/include/arpa/inet.h error.h
+servdb.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h CollabTypes.h

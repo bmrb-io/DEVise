@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1997/08/12 18:46:25  wenger
+#  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
+#  makefiles; various other makefile cleanups.
+#
 #  Revision 1.4  1997/04/11 18:45:52  wenger
 #  Added proper static flags to generic Makefiles for various architectures.
 #
@@ -29,12 +33,15 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
+include ../Makefile.config
 
-ARCH_FLAGS   = -DOSF -I/s/gcc/lib/g++-include -I/s/X11/include -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -L/s/gcc/lib
-ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
-ARCH_LDPOST  =
+ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl7.4/lib -L/s/gcc/lib
+#ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
+#	-L/s/X11/lib -L/s/tcl7.4/lib -L/s/gcc/lib
+ARCH_SYSLIBS = -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
+#ARCH_SYSLIBS = -lMesaGLU -lMesaGL -ltk4.0 -ltcl7.4 -lX11 -lm
+# TEMP? -- note 'static' here
+ARCH_LDPOST  = -static
 ARCH_STATIC_LDPOST  = -static
 
 VPATH = ../../generic
