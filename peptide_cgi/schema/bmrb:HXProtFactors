@@ -10,7 +10,7 @@ comment #
 whitespace ' '
 sorted attr Residue_seq_code int lo 0
 attr Residue_label string 4
-attr Atom_name string 2
+attr Atom_name string 5
 attr H_exchange_calculated_intrinsic_rate float
 attr H_exchange_protection_factor_value float
 attr H_ex_prot_fact_error float

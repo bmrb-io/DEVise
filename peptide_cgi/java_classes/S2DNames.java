@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/07/25 19:56:23  wenger
+// Started adding configuration setup stuff; s2d gets URLs from properties
+// file.
+//
 // Revision 1.10  2001/05/14 18:08:26  wenger
 // Parameterized all star file tag names, etc.
 //
@@ -82,6 +86,11 @@ public class S2DNames
     public static final String ATOM_2_RES_LABEL = "_Atom_two_residue_label";
     public static final String ATOM_2_RES_SEQ_CODE =
       "_Atom_two_residue_seq_code";
+    public static final String ATOM_COORD_SAVE_FRAME =
+      "representative_structure";//TEMP?
+    public static final String ATOM_COORD_X = "_Atom_coord_x";
+    public static final String ATOM_COORD_Y = "_Atom_coord_y";
+    public static final String ATOM_COORD_Z = "_Atom_coord_z";
     public static final String ATOM_NAME = "_Atom_name";
     public static final String ATOM_TYPE = "_Atom_type";
     public static final String CHEM_SHIFT_VALUE = "_Chem_shift_value";
@@ -179,6 +188,7 @@ public class S2DNames
     //
     // Data type suffixes.
     //
+    public static final String ATOMIC_COORD_SUFFIX = "ac";
     public static final String ALL_CHEM_SHIFT_SUFFIX = "as";
     public static final String CSI_SUFFIX = "c";
     public static final String DELTASHIFT_SUFFIX = "d";

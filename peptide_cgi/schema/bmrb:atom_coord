@@ -1,0 +1,13 @@
+#Schema for selecting variable to show in BMRB peptide sessions.
+
+type bmrb:atom_coord ascii
+comment #
+whitespace ' '
+
+attr Residue_seq_code int
+attr Residue_label string 4
+attr Atom_name string 5
+attr Atom_type string 3
+attr Atom_coord_x float
+attr Atom_coord_y float
+attr Atom_coord_z float

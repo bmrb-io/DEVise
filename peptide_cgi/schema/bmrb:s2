@@ -10,7 +10,7 @@ comment #
 whitespace ' '
 sorted attr Residue_seq_code int lo 0
 attr Residue_label string 4
-attr Atom_name string 2
+attr Atom_name string 5
 attr S2_value float
 attr S2_value_fit_error float
 attr Tau_e_value float

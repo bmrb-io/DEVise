@@ -13,5 +13,5 @@ whitespace ' '
 attr ResSeqCode int
 attr ResLabel string 4
 attr AtomName string 5
-attr AtomType string 2
+attr AtomType string 3
 attr ChemShiftVal float

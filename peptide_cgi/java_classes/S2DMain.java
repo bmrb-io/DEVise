@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2001/09/21 15:25:57  wenger
+// Updated session templates to match DEVise font scaling fix; changed
+// peptide-cgi version to 2.13.
+//
 // Revision 1.21  2001/07/25 21:32:53  wenger
 // Various distribution-related cleanups and fixes; added a few missing
 // help files.
@@ -131,7 +135,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.13";
+    public static final String PEP_CGI_VERSION = "2.14";
 
     private int _accessionNum;
     private String _dataDir;
@@ -378,6 +382,7 @@ public class S2DMain {
 	saveCoupling(star);
 	saveHExchangeProtFact(star);
 	saveS2Params(star);
+	saveAtomicCoords(star);
 
 	_summary.close();
 	_summary = null;
@@ -574,6 +579,30 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    private void saveAtomicCoords(S2DStarIfc star) throws S2DException
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("  S2DMain.saveAtomicCoords()");
+	}
+
+	Enumeration frameList = star.getDataFramesByCat(
+	  S2DNames.ATOM_COORD_SAVE_FRAME);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    try {
+	        saveFrameAtomicCoords(star, frame, frameIndex);
+	    } catch(S2DException ex) {
+		System.err.println("Exception saving atomic coordinates for " +
+		  "frame " + star.getFrameName(frame) + ": " +
+		  ex.getMessage());
+	    }
+	    frameIndex++;
+        }
+    }
+
+    //-------------------------------------------------------------------
     // Save residue counts for the given save frame.
     private void saveFrameResCounts(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
@@ -724,6 +753,9 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
+	//
+	// Get the values we need from the Star file.
+	//
 	String[] resSeqCodes = star.getFrameValues(frame,
 	  S2DNames.T1_VALUE, S2DNames.RESIDUE_SEQ_CODE);
 
@@ -740,16 +772,24 @@ public class S2DMain {
 	String[] relaxErrors = star.getOptionalFrameValues(frame,
 	  S2DNames.T1_VALUE, S2DNames.T1_VALUE_ERR, relaxValues.length, "0");
 
-	_summary.startFrame(star.getFrameDetails(frame));
-
-	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
-	  _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
+	//
+	// Create an S2DRelaxation object with the values we just got.
+	//
+	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum,
+	  _dataDir, _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
 	  star.getOneFrameValue(frame, S2DNames.SPEC_FREQ_1H),
 	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
 
-	relaxation.writeRelaxation(frameIndex);
+	//
+	// Now go ahead and calculate and write out the relaxation values.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
 
-	_summary.endFrame();
+	try {
+	    relaxation.writeRelaxation(frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
     }
 
     //-------------------------------------------------------------------
@@ -762,6 +802,9 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
+	//
+	// Get the values we need from the Star file.
+	//
 	String[] resSeqCodes = star.getFrameValues(frame,
 	  S2DNames.T2_VALUE, S2DNames.RESIDUE_SEQ_CODE);
 
@@ -778,16 +821,24 @@ public class S2DMain {
 	String[] relaxErrors = star.getOptionalFrameValues(frame,
 	  S2DNames.T2_VALUE, S2DNames.T2_VALUE_ERR, relaxValues.length, "0");
 
-	_summary.startFrame(star.getFrameDetails(frame));
-
-	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
-	  _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
+	//
+	// Create an S2DRelaxation object with the values we just got.
+	//
+	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum,
+	  _dataDir, _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
 	  star.getOneFrameValue(frame, S2DNames.SPEC_FREQ_1H),
 	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
 
-	relaxation.writeRelaxation(frameIndex);
+	//
+	// Now go ahead and calculate and write out the relaxation values.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
 
-	_summary.endFrame();
+	try {
+	    relaxation.writeRelaxation(frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
     }
 
     //-------------------------------------------------------------------
@@ -836,16 +887,24 @@ public class S2DMain {
 	  S2DNames.COUPLING_CONSTANT_VALUE,
 	  S2DNames.COUPLING_CONSTANT_VALUE_ERR, atom1ResSeqs.length, "0");
 
-	_summary.startFrame(star.getFrameDetails(frame));
-
+	//
+	// Create an S2DCoupling object with the values we just got.
+	//
         S2DCoupling coupling = new S2DCoupling(_accessionNum, _dataDir,
 	  _sessionDir, _summary, couplingConstCodes, atom1ResSeqs,
 	  atom1ResLabels, atom1Names, atom2ResSeqs, atom2ResLabels,
 	  atom2Names, couplingConstValues, couplingConstErrors);
 
-	coupling.writeCoupling(frameIndex);
+	//
+	// Now go ahead and calculate and write out the coupling contants.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
 
-	_summary.endFrame();
+	try {
+	    coupling.writeCoupling(frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
     }
 
     //-------------------------------------------------------------------
@@ -858,6 +917,9 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
+	//
+	// Get the values we need from the Star file.
+	//
 	String[] resSeqCodes = star.getFrameValues(frame,
 	  S2DNames.HET_NOE_VALUE, S2DNames.RESIDUE_SEQ_CODE);
 
@@ -870,8 +932,9 @@ public class S2DMain {
 	String[] hetNOEErrors = star.getFrameValues(frame,
 	  S2DNames.HET_NOE_VALUE, S2DNames.HET_NOE_VALUE_ERR);
 
-	_summary.startFrame(star.getFrameDetails(frame));
-
+	//
+	// Create an S2DHetNOE object with the values we just got.
+	//
 	S2DHetNOE hetNOE = new S2DHetNOE(_accessionNum, _dataDir,
 	  _sessionDir, _summary,
 	  star.getOneFrameValue(frame, S2DNames.SPEC_FREQ_1H),
@@ -879,9 +942,80 @@ public class S2DMain {
 	  star.getOneFrameValue(frame, S2DNames.ATOM_2_ATOM_NAME),
 	  resSeqCodes, resLabels, hetNOEValues, hetNOEErrors);
 
-	hetNOE.writeHetNOE(frameIndex);
+	//
+	// Now go ahead and calculate and write out the heteronuclear NOE
+	// values.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
 
-	_summary.endFrame();
+	try {
+	    hetNOE.writeHetNOE(frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Save atomic coordinates for one save frame.
+    private void saveFrameAtomicCoords(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 3) {
+	    System.out.println("    S2DMain.saveFrameAtomicCoords(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	//
+	// Get the values we need from the Star file.
+	//
+	String[] resSeqCodes = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_X, S2DNames.RESIDUE_SEQ_CODE);
+
+	String[] resLabels = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_X, S2DNames.RESIDUE_LABEL);
+
+	String[] atomNames = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_X, S2DNames.ATOM_NAME);
+
+	String[] atomTypes = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_X, S2DNames.ATOM_TYPE);
+
+	String[] atomCoordXTmp = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_X, S2DNames.ATOM_COORD_X);
+        double[] atomCoordX = S2DUtils.arrayStr2Double(atomCoordXTmp);
+        atomCoordXTmp = null;
+
+	String[] atomCoordYTmp = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_Y, S2DNames.ATOM_COORD_Y);
+        double[] atomCoordY = S2DUtils.arrayStr2Double(atomCoordYTmp);
+        atomCoordYTmp = null;
+
+	String[] atomCoordZTmp = star.getFrameValues(frame,
+	  S2DNames.ATOM_COORD_Z, S2DNames.ATOM_COORD_Z);
+        double[] atomCoordZ = S2DUtils.arrayStr2Double(atomCoordZTmp);
+        atomCoordZTmp = null;
+
+	//
+	// Create an S2DAtomicCoords object with the values we just got.
+	//
+	S2DAtomicCoords atomicCoords = new S2DAtomicCoords(_accessionNum,
+	  _dataDir, _sessionDir, _summary, resSeqCodes, resLabels,
+	  atomNames, atomTypes, atomCoordX, atomCoordY, atomCoordZ);
+
+	//
+	// Now go ahead and calculate and write out the atmoic coordinates.
+	//
+	String details = star.getFrameDetails(frame);
+	if (details == null) {
+	    details = "Representative structure";
+        }
+	_summary.startFrame(details);
+
+	try {
+	    atomicCoords.writeAtomicCoords(frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
     }
 }
 

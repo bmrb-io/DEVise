@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/07/25 17:46:49  wenger
+// Added -usage and -version args to S2DMain, changed version to 2.12;
+// slightly improved s2d error messages; install script now uses find
+// to change the mode of html/data files to avoid argument overflow;
+// distribution now generates tar file name with version number.
+//
 // Revision 1.5  2001/04/17 17:09:10  wenger
 // Added display of H vs. N chem shifts.
 //
@@ -116,6 +122,10 @@ TEMP*/
 
         case S2DUtils.TYPE_HETNOE:
 	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_ATOMIC_COORDS:
+	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
 	    break;
 
 	default:

@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/05/08 18:24:18  wenger
+// Fixed problem getting residue count if a star file contains info for
+// more than one protein; added residue counts to 'all shifts' and 'H
+// vs. N' visualizations.
+//
 // Revision 1.5  2001/04/17 17:09:10  wenger
 // Added display of H vs. N chem shifts.
 //
@@ -152,6 +157,14 @@ TEMP*/
 	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
 	    searchString1 = "4267n1";
 	    break;
+
+
+        case S2DUtils.TYPE_ATOMIC_COORDS:
+	    baseName = "atom_coord.base";
+	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
+	    searchString1 = "4096ac1";
+	    break;
+
 
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);

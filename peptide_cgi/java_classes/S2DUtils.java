@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/04/17 17:09:10  wenger
+// Added display of H vs. N chem shifts.
+//
 // Revision 1.5  2001/04/16 19:49:11  wenger
 // Added display of all chem shifts by amino acid.
 //
@@ -55,7 +58,8 @@ public class S2DUtils
     public static final int TYPE_INVALID = 0, TYPE_DELTASHIFT = 1,
       TYPE_CSI = 2, TYPE_PCT_ASSIGN = 3, TYPE_COUPLING = 4,
       TYPE_HXRATES = 5, TYPE_ORDER = 6, TYPE_T1_RELAX = 7, TYPE_T2_RELAX = 8,
-      TYPE_HETNOE = 9, TYPE_ALL_CHEM_SHIFTS = 10, TYPE_HVSN_CHEM_SHIFTS = 11;
+      TYPE_HETNOE = 9, TYPE_ALL_CHEM_SHIFTS = 10, TYPE_HVSN_CHEM_SHIFTS = 11,
+      TYPE_ATOMIC_COORDS = 12;
 
     public static final String starPrefix = "bmr";
     public static final String starSuffix = ".str";

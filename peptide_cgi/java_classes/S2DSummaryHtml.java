@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2001/07/25 19:56:23  wenger
+// Started adding configuration setup stuff; s2d gets URLs from properties
+// file.
+//
 // Revision 1.9  2001/05/08 18:24:18  wenger
 // Fixed problem getting residue count if a star file contains info for
 // more than one protein; added residue counts to 'all shifts' and 'H
@@ -92,6 +96,9 @@ public class S2DSummaryHtml {
 
     private FileWriter _writer = null;
 
+    // This is set to true if any link is written to the summary html file;
+    // if we don't write any links, a note is inserted that no data is
+    // available.
     private boolean _wroteLink = false;
 
     //===================================================================
@@ -197,7 +204,8 @@ public class S2DSummaryHtml {
     public void startFrame(String frameDetails) throws S2DException
     {
         if (DEBUG >= 1) {
-	    System.out.println("S2DSummaryHtml.startFrame()");
+	    System.out.println("S2DSummaryHtml.startFrame(" +
+	      frameDetails + ")");
 	}
 
 	try {
@@ -352,6 +360,23 @@ public class S2DSummaryHtml {
 	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + count +
 	  " shifts)\n");
+
+        _wroteLink = true;
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the atomic coordinates link.
+    public void writeAtomicCoords(int frameIndex, int resCount, int atomCount)
+      throws IOException
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeAtomicCoords()");
+	}
+
+        _writer.write("<li><a href=\"" + _accNum +
+	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">3D structure</a> (" + resCount + " residues, "
+	  + atomCount + " atoms)\n");
 
         _wroteLink = true;
     }

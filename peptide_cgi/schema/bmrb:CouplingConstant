@@ -11,9 +11,9 @@ whitespace ' '
 attr Coupling_constant_code string 7
 attr Atom_one_residue_seq_code int
 attr Atom_one_residue_label string 4
-attr Atom_one_name string 4
+attr Atom_one_name string 5
 attr Atom_two_residue_seq_code int
 attr Atom_two_residue_label string 4
-attr Atom_two_name string 4
+attr Atom_two_name string 5
 attr Coupling_constant_value float
 attr Coupling_constant_value_error float
