@@ -2568,6 +2568,24 @@ Num Date        Status  Description
 648 03/15/01	OPEN	Duplicating a window doesn't work right if the
 			window has views containing view symbols. (rkw)
 
+649 03/16/01	OPEN	If you change from a larger to a smaller color
+			palette, PM_GetRGB() may fail (if an existing
+			PColorID is greater than the size of the new
+			palette). This can cause a session open to fail
+			in the JavaScreen. (rkw)
+
+650 03/19/01	OPEN	JavaScreen: jun "leader" JS on Win2k/IE,
+			"collaborator" on Solaris/Netscape, "leader" has
+			waveletidr/1d_example1b.ds open -- "follower" hangs
+			on command 38 when it attempts to collaborate. (ml/rkw)
+
+651 03/19/01	OPEN	JavaScreen: attempting to start collaboration with no
+			session open in the "leader" causes problems. (rkw)
+
+652 03/19/01	OPEN	JavaScreen: if collaborating JS exits while still
+			in collaboration mode, the "leader" JS and the jspop
+			may lock up. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
