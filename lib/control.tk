@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.78  1996/07/01 19:35:39  jussi
+#	Added View/Cursor/Set Record Cursor menu option. Updated code
+#	to reflect the new tdata constructor interface.
+#
 #	Revision 1.77  1996/06/27 22:53:48  jussi
 #	Added XOR color support. Reduced number of shape attributes
 #	in EditMapping from 10 to 4. The additional attributes should
@@ -1203,7 +1207,7 @@ proc GetTDataTemplate {type total num} {
     statusWindow .info "Status" \
 	    "Creating an index on $sname.\n\n\
 	    This may take a while."
-    DEVise create tdata $type $stype $sname $param
+    DEVise create tdata $type $sname $stype $param
     catch {destroy .info}
 
     return $sname
