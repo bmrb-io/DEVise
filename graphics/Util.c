@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/05 14:39:47  jussi
+  Fixed minor problem with null-termination in DateString().
+
   Revision 1.10  1996/05/20 18:44:42  jussi
   Replaced PENTIUM flag with SOLARIS.
 
@@ -106,13 +109,15 @@ void ClearDir(char *dir)
 
   DIR *dirp = opendir(dir);
   if (dirp != NULL){
-#if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX)
+#if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX) \
+      || defined(OSF)
     struct dirent *dp;
 #else
     struct direct *dp;
 #endif
     for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)){
-#if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX)
+#if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX) \
+      || defined(OSF)
       struct dirent *realdp = (struct dirent *)dp;
 #else
       struct direct *realdp = dp;
