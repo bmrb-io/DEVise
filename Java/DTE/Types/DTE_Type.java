@@ -24,20 +24,23 @@ public abstract class DTE_Type {
 	return null;
     }
 
-  /** Read a DTE_Type from a StreamTokenizer object "st". */    
+    /** Read a DTE_Type from a StreamTokenizer object "st". */    
     abstract public boolean read(StreamTokenizer st) throws IOException;
 
-  /** Print a DTE_Type to a PrintWriter object "ps".*/
+    /** Print a DTE_Type to a PrintWriter object "ps".*/
     abstract public void print(PrintWriter ps);
 
-  /** Print a DTE_Type to a PrintStream object "ps".*/
+    /** Print a DTE_Type to a PrintStream object "ps".*/
     abstract public void print(PrintStream ps);
 
 
+    /** Return the right type: IntDesc, DoubleDesc, ... */
     abstract public TypeDesc getType( );
+
+    /** Return the String representation of this DTE_Type. */
     abstract public String toString( );
 
-  /** Copy this DTE_Type object to another DTE_Type object 'd'.*/
+    /** Copy this DTE_Type object to another DTE_Type object 'd'.*/
     abstract public void copyTo(DTE_Type d);
 }
 

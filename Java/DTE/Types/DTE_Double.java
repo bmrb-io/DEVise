@@ -3,6 +3,7 @@ package Types;
 import java.io.*;
 import java.lang.*;
 
+/** The DTE_Type for real numbers. */
 public class DTE_Double extends DTE_Type  
 {
   double val;
@@ -32,16 +33,19 @@ public class DTE_Double extends DTE_Type
     val = i;
   }
   
+  /** Return a DoubleDesc object. */
   public TypeDesc getType( )
   {
     return new DoubleDesc( );
   }
 
+  /** Return its real value as a double. */
   public double getValue( )
   {
     return val;
   }
 
+  /** Set its value to be the given number. */
   public void setValue( double d)
   {
     val = d;

@@ -23,6 +23,7 @@ public class DTE_String extends DTE_Type
     i.getChars(0, length, val, 0);
   }
 
+  /** Return a StringDesc object. */
   public TypeDesc getType( )
   {
     return new StringDesc( );
@@ -92,7 +93,6 @@ public class DTE_String extends DTE_Type
       ps.print(" ");
   }
 
-
   public String toString( ) {
       String str = new String( val );
       return str;
@@ -114,6 +114,7 @@ public class DTE_String extends DTE_Type
 	    ((DTE_String)d).length = length;
 	}
 
+    /** Check if two DTE_String objects are equal.*/
     public boolean equals( DTE_String str ) {
 	if ( length != str.length )
 	    return false;
@@ -125,6 +126,8 @@ public class DTE_String extends DTE_Type
         return true;
     }
 
+    /** Compare two DTE_String objects; 0 for equal, 1 for >, 
+	and -1 for <. */
     public int compares( DTE_String str ) {
 	for ( int i=0; i < length && i < str.length; i++ ) {
 	    if ( val[i] < str.val[i] )

@@ -3,15 +3,18 @@ package Types;
 import java.io.*;
 import java.lang.*;
 
+/** The DTE_Type for integers. */
 public class DTE_Int extends DTE_Type 
 {
   int val;
 
+  /** Return its String representation. */
   public String toString()
   {
      return  String.valueOf( val );
   }
   
+     /** Check if two DTE_Int are equal. */
      public boolean equals(Object obj){
           if(! getClass().equals(obj.getClass())){
                return false;
@@ -32,16 +35,19 @@ public class DTE_Int extends DTE_Type
     val = i;
   }
   
+  /** Return an IntDesc object. */
   public TypeDesc getType( )
   {
     return new IntDesc( );
   }
 
+  /** Return its value. */
   public int getValue( )
   {
     return val;
   }
 
+  /** Set its value to be a given number. */
   public void setValue( int i )
   {
     val = i;

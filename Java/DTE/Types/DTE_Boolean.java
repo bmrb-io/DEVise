@@ -2,15 +2,18 @@ package Types;
 
 import java.io.*;
 
+/** The DTE_Type for booleans. */
 public class DTE_Boolean extends DTE_Type 
 {
   boolean val;
   
+  /** Constructor:  create a DTE_Boolean with default value true. */
   public DTE_Boolean( )
   {
     val = true;
   }
   
+     /** Check if two DTE_Boolean are equal. */
      public boolean equals(Object obj){
           if(! getClass().equals(obj.getClass())){
                return false;
@@ -25,20 +28,24 @@ public class DTE_Boolean extends DTE_Type
     val = b;
   }
   
+  /** Return its String representation. */
   public String toString( ){
       return String.valueOf( val );
   }
 
+  /** Return a BooleanDesc object. */
   public TypeDesc getType( )
   {
     return new BooleanDesc( );
   }
 
+  /** Return its value. */
   public boolean getValue( )
   {
     return val;
   }
 
+  /** Set its value to be a given boolean. */
   public void setValue( boolean b )
   {
     val = b;
