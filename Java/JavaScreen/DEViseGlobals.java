@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  1999/12/07 23:24:26  hongyu
+// *** empty log message ***
+//
 // Revision 1.27  1999/10/10 19:59:26  hongyu
 // *** empty log message ***
 //
@@ -59,7 +62,7 @@ public final class DEViseGlobals
                               API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688;
     public static final String JSPOPHOST = new String("biron.cs.wisc.edu");
-    public static final String VERSION = new String("3.0");
+    public static final String VERSION = new String("3.1");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
