@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/13 00:16:30  jussi
+  Added support for views that are slaves of more than one record
+  link. This allows one to express disjunctive queries.
+
   Revision 1.1  1996/05/31 15:37:21  jussi
   Initial revision.
 */
@@ -199,10 +203,27 @@ void RecordLink::Done()
   int index = InitIterator();
   while(More(index)) {
     ViewGraph *view = Next(index);
+    if (view->IsInPileMode()) {
+      /* if slave view is in pile mode, need to refresh ALL
+         views in that pile */
+      ViewWin *parent = view->GetParent();
+      DOASSERT(parent, "View has no parent");
+      int sindex = parent->InitIterator();
+      while(parent->More(sindex)) {
+        ViewWin *vw = parent->Next(sindex);
+        View *slave = View::FindViewByName(vw->GetName());
 #ifdef DEBUG
-    printf("Refreshing slave view %s\n", view->GetName());
+        printf("Refreshing piled view %s\n", slave->GetName());
 #endif
-    view->Refresh();
+        view->Refresh();
+      }
+      parent->DoneIterator(sindex);
+    } else {
+#ifdef DEBUG
+      printf("Refreshing slave view %s\n", view->GetName());
+#endif
+      view->Refresh();
+    }
   }
   DoneIterator(index);
 }
