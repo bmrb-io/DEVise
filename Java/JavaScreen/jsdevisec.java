@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2001/02/08 18:06:12  xuk
+// Merged the "Collaboration" button into "Mode" button to save menu bar space.
+//
 // Revision 1.77  2001/02/08 17:45:02  xuk
 // Added collaboration mode indicator.  collabMode()
 //
@@ -688,6 +691,9 @@ public class jsdevisec extends Panel
         collabdlg.open();
 	collabMode();
         collabdlg = null;
+	if (dispatcher.getOnlineStatus()) {
+	    dispatcher.disconnect();
+	}
 	dispatcher.start(null);
     }
 
@@ -1897,7 +1903,19 @@ class SetModeDlg extends Dialog
                     {
 			jsc.jsValues.connection.cgi = false;
 			jsc.socketMode();
-                        close();
+
+			// switch out off the collaboration mode
+			if (jsc.specialID != 0) {
+			    if (jsc.dispatcher.dispatcherThread != null) {
+				jsc.dispatcher.dispatcherThread.stop();
+				jsc.dispatcher.dispatcherThread = null;
+			    }
+			    jsc.dispatcher.destroy();
+			    jsc.dispatcher.setAbortStatus(false);
+			    jsc.specialID = 0;
+			}
+ 
+			close();
                     }
                 });
 
