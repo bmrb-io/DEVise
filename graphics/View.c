@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1995/12/14 21:11:05  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.14  1995/12/14 17:18:24  jussi
   More small fixes to get rid of g++ -Wall warnings.
 
@@ -82,7 +85,7 @@
 #include "Jpeg.h"
 #endif
 
-//#define DEBUG
+#define DEBUG
 
 int View::_nextPos = 0;
 
@@ -97,7 +100,6 @@ const Coord DELTA_Y = .000000000001;
 int View::_nextId = 0;
 ViewList *View::_viewList = NULL;   /* list of all views */
 
-/* subwindow */
 View::View(char *name, Action *action, 
 	   VisualFilter &initFilter, 
 	   Color fg, Color bg,
@@ -112,19 +114,18 @@ View::View(char *name, Action *action,
   ReportViewCreated();
   
   int flushed = _filterQueue->Enqueue(initFilter);
-  ReportFilterAdded(initFilter, flushed);
+  ReportFilterChanged(initFilter, flushed);
   _highlight = false; 
 
   _xAxisAttrType = FloatAttr;
   _yAxisAttrType = FloatAttr;
 
   _pixmap = NULL;
-
   _pixmapIO = new PixmapIO();
   _compress = new SimpleCompress();
-}
 
-/* Init */
+  _cursorsOn = false;
+}
 
 void View::Init(char *name,Action *action, VisualFilter &filter,
 		AxisLabel *xAxisLabel, AxisLabel *yAxisLabel)
@@ -215,17 +216,18 @@ View *View::FindViewByName(char *name)
     return NULL;
   }
   
-  for(int index = _viewList->InitIterator(); _viewList->More(index); ) {
+  int index;
+  for(index = _viewList->InitIterator(); _viewList->More(index); ) {
     View *view = _viewList->Next(index);
-    if (strcmp(view->GetName(),name)== 0) {
+    if (strcmp(view->GetName(), name)== 0) {
       _viewList->DoneIterator(index);
       return view;
     }
   }
   _viewList->DoneIterator(index);
   
-  fprintf(stderr,"View::FindViewByName: %s not found\n", name);
-  return NULL; /* keep compiler happy */
+  fprintf(stderr, "View::FindViewByName: %s not found\n", name);
+  return NULL;
 }
 
 /***************************************************************
@@ -250,9 +252,8 @@ View *View::FindViewById(int id)
     }
   }
   
-  fprintf(stderr,"View::FindViewById: not found\n");
-  Exit::DoExit(1);
-	return NULL; /* keep compiler happy */
+  fprintf(stderr,"View::FindViewById: %d not found\n", id);
+  return NULL;
 }
 
 int View::FindViewId(View *view)
@@ -296,11 +297,14 @@ void View::SetVisualFilter(VisualFilter &filter)
     _scrollLeft++;
   else if (filter.xLow > _filter.xLow && filter.xHigh > _filter.xHigh)
     _scrollRight++;
-  else _unknown++;
+  else
+    _unknown++;
   
+  ReportFilterAboutToChange();
+
+  /* ignore new filter if same as current one */
   if (_filter.xLow != filter.xLow || _filter.xHigh != filter.xHigh
       || _filter.yLow != filter.yLow || _filter.yHigh != filter.yHigh) {
-    /* really update the filter */
 #ifdef DEBUG
     printf("filter changed\n");
 #endif
@@ -314,7 +318,7 @@ void View::SetVisualFilter(VisualFilter &filter)
   }
 
   int flushed = _filterQueue->Enqueue(filter);
-  ReportFilterAdded(filter, flushed);
+  ReportFilterChanged(filter, flushed);
 }
 
 void View::GetVisualFilter(VisualFilter &filter)
@@ -327,9 +331,9 @@ VisualFilter *View::GetVisualFilter()
   return &_filter;
 }
 
-void View::Mark(int index, Boolean true_false)
+void View::Mark(int index, Boolean marked)
 {
-  _filterQueue->Mark(index, true_false);
+  _filterQueue->Mark(index, marked);
 }
 
 void View::HandleExpose(WindowRep *w, int x, int y, unsigned width, 
@@ -432,8 +436,6 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
   return false;
 }
 
-/* handle pop-up */
-
 Boolean View::HandlePopUp(WindowRep *win, int x, int y, int button,
 			  char **&msgs, int &numMsgs)
 {
@@ -522,23 +524,15 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   width = windW;
   height = xAxis.width;
   
-  // if label is at top, view is highlighted by a rectangle that is
-  // 3 pixels wide; make width of X axis label area a little narrower
-  // so that X high label doesn't get overdrawn (and erased) by the
-  // highlight rectangle
-
-  if (_label.occupyTop)
-    width -= 2;
+  if (!_label.occupyTop) {
+    x += _label.extent;
+    width -= _label.extent;
+  }
 
   if (yAxis.inUse)
     startX = x + yAxis.width;
   else
     startX = x + 3 * VIEW_CURSOR_WIDTH;
-  
-  if (!_label.occupyTop) {
-    /* make from for label */
-    startX += _label.extent;
-  }
   
   if (width < 0)
     width = 1;
@@ -600,7 +594,8 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
   if (_label.occupyTop) {
     /* _label occupies top of view */
     y +=  _label.extent; 
-    width = winWidth;
+    /* subtract 2 so that data doesn't draw over the highlight border */
+    width = winWidth - 2;
     height = winHeight - _label.extent;
   } else {
     /* _label occupies left of view */
@@ -652,8 +647,20 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   win->PushClip(winX, winY, winW - 1, winH - 1);
   win->PopTransform();
   
-  DoDrawCursors(x, y, w, h);
-  DrawLabel(win, x, y, w, h);
+  DrawLabel();
+
+  win->SetFgColor(win->GetBgColor());
+
+  /* Clear axis areas whether or not axes are actually displayed */
+  int axisX, axisY, axisWidth, axisHeight, startX;
+  GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
+  win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
+  GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
+  win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
+
+  /* Clear highlight area */
+  DrawHighlight();
+
   if (_axisDisplay) {
     if (xAxis.inUse)
       DrawXAxis(win, x, y, w, h);
@@ -664,14 +671,16 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   win->PopClip();
 }
 
-void View::DrawLabel(WindowRep *win, int x, int y, int w, int h)
+void View::DrawLabel()
 {
+  WindowRep *win = GetWindowRep();
+  
   if (_label.occupyTop) {
     /* draw label */
     int labelX, labelY, labelWidth, labelHeight;
     GetLabelArea(labelX, labelY, labelWidth, labelHeight);
     win->SetFgColor(win->GetBgColor());
-    win->FillRect(labelX, labelY, labelWidth, labelHeight);
+    win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
     win->SetFgColor(BlackColor);
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
@@ -741,12 +750,6 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
       }
     }
     
-    /* Don't need this because cursor routine already
-       filled in the background.
-       win->SetFgColor(win->GetBgColor());
-       win->FillRect(startX,axisY,drawWidth/2,axisHeight);
-    */
-
     win->SetFgColor(xAxis.color);
     win->AbsoluteText(label, startX, axisY, drawWidth / 2 - 1, axisHeight - 1,
 		      WindowRep::AlignWest, true);
@@ -764,11 +767,6 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
 	label= buf;
       }
     }
-    /* Don't need this because cursor routine already
-       filled in the background.
-       win->SetFgColor(win->GetBgColor());
-       win->FillRect(startX+drawWidth/2,axisY,drawWidth/2,axisHeight);
-    */
 
     win->SetFgColor(xAxis.color);
     win->AbsoluteText(label, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
@@ -831,12 +829,6 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
       }
     }
 
-    /*
-       win->SetFgColor(win->GetBgColor());
-       win->FillRect( axisX, startY+drawHeight/2, axisWidth,
-       drawHeight/2);
-    */
-
     win->SetFgColor(yAxis.color);
     win->AbsoluteText(label, axisX, startY + drawHeight / 2, axisWidth - 1,
 		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
@@ -855,11 +847,6 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
 	label = buf;
       }
     }
-    /*
-       win->SetFgColor(win->GetBgColor());
-       win->FillRect(axisX, startY, axisWidth,
-       drawHeight/2);
-    */
 
     win->SetFgColor(yAxis.color);
     win->AbsoluteText(label, axisX, startY, axisWidth - 1,
@@ -921,10 +908,6 @@ void View::CalcTransform(Transform2D &transform)
   transform.Translate(-_filter.xLow, -_filter.yLow);
 
   /* scale to size of the screen */
-  /*
-     transform.Scale((Coord)dataWidth/(_filter.xHigh- _filter.xLow+1),
-     (Coord)(dataHeight)/(_filter.yHigh-_filter.yLow+1));
-  */
   transform.Scale((Coord)dataWidth/(_filter.xHigh -  _filter.xLow),
 		  (Coord)(dataHeight)/(_filter.yHigh - _filter.yLow));
 
@@ -946,7 +929,12 @@ void View::ReportQueryDone(int bytes)
 
   _bytes = bytes;
   _querySent = false;
+
+  _cursorsOn = false;
+  (void)DrawCursors();
+
   GetWindowRep()->PopClip();
+
   _hasLastFilter = false;
   
   ControlPanel::Instance()->SetIdle();
@@ -1011,6 +999,10 @@ void View::Run()
   VisualFilter newFilter;
   
   if (RestorePixmap(_filter, newFilter) == PixmapTotal) {
+#ifdef DEBUG
+    printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
+#endif
+
     if (_updateTransform) {
       UpdateTransform(GetWindowRep());
       _updateTransform = false;
@@ -1023,11 +1015,17 @@ void View::Run()
     DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);
     
     /* Draw highlight border */
-    DrawHighlight();
+    Boolean oldHighlight = _highlight;
+    _highlight = false;
+    Highlight(oldHighlight);
     
-    /* pop the transform */
+    /* Pop the transform */
     winRep->PopTransform();
     
+    /* Draw cursors */
+    _cursorsOn = false;
+    (void)DrawCursors();
+
     _hasExposure = false;
     _filterChanged = false;
     _refresh = false;
@@ -1050,7 +1048,6 @@ void View::Run()
 	 and _hasExposure is true. */
       _hasExposure = true;
       _filterChanged = false;
-      
       _hasLastFilter = true;
       _lastFilter = _filter;
     } else if (stat == SameFilter) {
@@ -1081,7 +1078,7 @@ void View::Run()
     _exposureRect.xLow = MinMax::min(_exposureRect.xLow, scrnWidth - 1);
     _exposureRect.xHigh = MinMax::max(_exposureRect.xLow,
 				      _exposureRect.xHigh);
-    _exposureRect.xHigh = MinMax::min(_exposureRect.xHigh, scrnWidth-1);
+    _exposureRect.xHigh = MinMax::min(_exposureRect.xHigh, scrnWidth - 1);
     
     _exposureRect.yLow = MinMax::max(_exposureRect.yLow, 0);
     _exposureRect.yLow = MinMax::min(_exposureRect.yLow, scrnHeight - 1);
@@ -1122,12 +1119,14 @@ void View::Run()
   winRep->PushTop();
   winRep->MakeIdentity();
   
-  /* Draw highlight border */
-  DrawHighlight();
-
   /* Draw axes */
   DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);
   
+  /* Draw highlight border */
+  Boolean oldHighlight = _highlight;
+  _highlight = false;
+  Highlight(oldHighlight);
+
   /* push clip region using this transform */
   int dataX, dataY, dataW, dataH;
   GetDataArea(dataX, dataY, dataW, dataH);
@@ -1135,13 +1134,6 @@ void View::Run()
   
   /* pop the transform */
   winRep->PopTransform();
-  
-#ifdef DEBUG
-  Coord tx, ty;
-  winRep->Transform(100.0, 100.0, tx, ty);
-  printf("scrn w/h = %d,%d after postmultiply 100,100 --> %f,%f\n",
-	 scrnWidth, scrnHeight, tx,ty);
-#endif
   
   /* blank out area to be drawn */
   winRep->SetFgColor(winRep->GetBgColor());
@@ -1257,9 +1249,9 @@ void View::YAxisDisplayOnOff(Boolean stat)
 
 /* Find real window coords */
 
-inline int FindRealCoord(WindowRep *winRep, Coord xlow, Coord ylow, 
-			 Coord xhigh, Coord yhigh, int &txlow, int &tylow,
-			 int &txhigh, int &tyhigh)
+inline void FindRealCoord(WindowRep *winRep, Coord xlow, Coord ylow, 
+			  Coord xhigh, Coord yhigh, int &txlow, int &tylow,
+			  int &txhigh, int &tyhigh)
 {
   Coord xl,yl, xh, yh;
   winRep->Transform(xlow, ylow, xl, yl);
@@ -1395,8 +1387,8 @@ void View::ReportViewCreated()
     return;
   
   int index;
-  for (index = _viewCallbackList->InitIterator(); 
-       _viewCallbackList->More(index); ) {
+  for(index = _viewCallbackList->InitIterator(); 
+      _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
     callBack->ViewCreated(this);
   }
@@ -1409,29 +1401,41 @@ void View::ReportViewDestroyed()
     return;
   
   int index;
-  for (index = _viewCallbackList->InitIterator(); 
-       _viewCallbackList->More(index); ) {
+  for(index = _viewCallbackList->InitIterator(); 
+      _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
     callBack->ViewDestroyed(this);
   }
   _viewCallbackList->DoneIterator(index);
 }
 
-void View::ReportFilterAdded(VisualFilter &filter, int flushed)
+void View::ReportFilterAboutToChange()
 {
   if (_viewCallbackList == NULL)
     return;
   
   int index;
-  for (index = _viewCallbackList->InitIterator(); 
-       _viewCallbackList->More(index); ) {
+  for(index = _viewCallbackList->InitIterator(); 
+      _viewCallbackList->More(index);) {
+    ViewCallback *callBack = _viewCallbackList->Next(index);
+    callBack->FilterAboutToChange(this);
+  }
+  _viewCallbackList->DoneIterator(index);
+}
+
+void View::ReportFilterChanged(VisualFilter &filter, int flushed)
+{
+  if (_viewCallbackList == NULL)
+    return;
+  
+  int index;
+  for(index = _viewCallbackList->InitIterator(); 
+      _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
     callBack->FilterChanged(this, filter, flushed);
   }
   _viewCallbackList->DoneIterator(index);
 }
-
-/* Insert callback */
 
 void View::InsertViewCallback(ViewCallback *callBack)
 {
@@ -1483,21 +1487,24 @@ void View::Highlight(Boolean flag)
   printf("Highlight view %s %d\n", GetName(), flag);
 #endif
 
-  if (_highlight != flag) {
-    _highlight = flag;
-    DrawHighlight();
-  }
+  if (_highlight == flag)
+    return;
+
+  _highlight = flag;
+
+  WindowRep *winRep = GetWindowRep();
+  winRep->SetFgColor(HighlightColor);
+  winRep->SetXorMode();
+  DrawHighlight();
+  winRep->SetCopyMode();
 }
 
 void View::DrawHighlight()
 {
   if (!Mapped())
     return;
+
   WindowRep *winRep = GetWindowRep();
-  if (_highlight) {
-    winRep->SetFgColor(HighlightColor);
-  } else
-    winRep->SetFgColor(ViewWin::GetBgColor());
 
   int x,y;
   unsigned int w,h;
@@ -1582,7 +1589,7 @@ void View::GetYCursorArea(int &x, int &y, int &w, int &h)
 #endif
 }
 
-void View::DrawCursors()
+Boolean View::DrawCursors()
 {
 #ifdef DEBUG
   printf("Drawcursors for %s\n", GetName());
@@ -1592,135 +1599,87 @@ void View::DrawCursors()
 #ifdef DEBUG
     printf("not mapped\n");
 #endif
-    return;
+    return false;
   }
 
-  int x,y;
-  unsigned int w,h;
-  Geometry(x, y, w, h);
+  if (!_cursorsOn) {
+    DoDrawCursors();
+    _cursorsOn = true;
+    return false;
+  }
 
-  DrawAxesLabel(GetWindowRep(), x, y, w, h);
+  return true;
 }
 
-void View::DoDrawCursors(int drawX, int drawY, int drawW,int drawH)
+Boolean View::HideCursors()
 {
+#ifdef DEBUG
+  printf("Hidecursors for %s\n", GetName());
+#endif
+
+  if (!Mapped()) {
+#ifdef DEBUG
+    printf("not mapped\n");
+#endif
+    return false;
+  }
+
+  if (_cursorsOn) {
+    DoDrawCursors();
+    _cursorsOn = false;
+    return true;
+  }
+
+  return false;
+}
+
+void View::DoDrawCursors()
+{
+#ifdef DEBUG
+  printf("DoDrawCursors\n");
+#endif
+
   WindowRep *winRep = GetWindowRep();
   
   int index;
-  int x, y, w, h;
-  GetXCursorArea(x, y, w, h);
-
-#ifdef DEBUG
-  printf("DoDrawCursors XCursorArea (%d,%d), %d %d\n", x, y, w, h);
-#endif
-
-  int yCursorX, yCursorY, yCursorW, yCursorH;
-  GetYCursorArea(yCursorX, yCursorY, yCursorW, yCursorH);
-
-#ifdef DEBUG
-  printf("YCursorArea (%d,%d), %d %d\n", yCursorX, yCursorY,
-	 yCursorW, yCursorH);
-#endif
-
-  Boolean doXCursor = false;
-  if (Geom::RectRectIntersect(drawX, drawY, drawX + drawW - 1,
-			      drawY + drawH - 1,
-			      x, y, x + w - 1, y + h - 1))
-    doXCursor = true;
-  
-  Boolean doYCursor = false;
-  if (Geom::RectRectIntersect(drawX, drawY, drawX + drawW - 1,
-			      drawY + drawH - 1,
-			      yCursorX, yCursorY, yCursorX + yCursorW - 1,
-			      yCursorY + yCursorH - 1))
-    doYCursor = true;
-  
-  if (!doXCursor && !doYCursor)
-    return;
-  
-  Point points[4];
-  
-  // Clear the X label area by painting it with the bg color
-
-  if (doXCursor) {
-    points[0].x = x; points[0].y = y;
-    points[1].x = x + w - 1; points[1].y = y;
-    points[2].x = x + w - 1; points[2].y = y + h - 1;
-    points[3].x = x; points[3].y = y + h - 1;
-    winRep->SetFgColor(GetBgColor());
-    winRep->FillPixelPoly(points, 4);
-  }
-
-  // Clear the Y label area by painting it with the bg color
-
-  if (doYCursor) {
-    points[0].x = yCursorX; points[0].y = yCursorY;
-    points[1].x = yCursorX + yCursorW - 1; points[1].y = yCursorY;
-    points[2].x = yCursorX + yCursorW - 1; points[2].y = yCursorY + yCursorH - 1;
-    points[3].x = yCursorX; points[3].y = yCursorY + yCursorH - 1;
-    winRep->SetFgColor(GetBgColor());
-    winRep->FillPixelPoly(points, 4);
-  }
-
-  Transform2D transform;
-  Coord xl, yl, xh, yh;
-  Coord xLow, yLow, xHigh, yHigh;
-  CalcTransform(transform);
-  int xCursorYCoord = y +h - VIEW_CURSOR_HEIGHT; /* y Coord of X cursor */
-  int yCursorXCoord = yCursorX + VIEW_CURSOR_WIDTH ; /* x Coord of y cursor*/
-  for (index = _cursors->InitIterator(); _cursors->More(index); ) {
+  for(index = _cursors->InitIterator(); _cursors->More(index);) {
+    Coord xLow, yLow, xHigh, yHigh;
     DeviseCursor *cursor = _cursors->Next(index);
     VisualFilter *filter;
     Color color;
     cursor->GetVisualFilter(filter, color);
     winRep->SetFgColor(color);
 
-    /* calculate where to draw the line */
-    if (doXCursor && filter->flag & VISUAL_X ) {
+    if (filter->flag & VISUAL_X) {
+#ifdef DEBUG
+      printf("DoDrawCursors: Drawing X cursor in\n  %s\n", GetName());
+#endif
       if(!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh)) {
 	xLow = MinMax::max(_filter.xLow, filter->xLow);
 	xHigh = MinMax::min(_filter.xHigh, filter->xHigh);
-	
-	transform.Transform(xLow,_filter.yLow, xl, yl);
-	transform.Transform(xHigh,_filter.yLow, xh, yh);
-	if (xh <= xl) xh = xl+1;
-	winRep->AbsoluteLine((int)xl,xCursorYCoord, (int)xh,
-			     xCursorYCoord, VIEW_CURSOR_HEIGHT);
-	winRep->AbsoluteLine((int)xl,xCursorYCoord, (int)xl,
-			     xCursorYCoord-4, VIEW_CURSOR_HEIGHT);
-	winRep->AbsoluteLine((int)xh,xCursorYCoord, (int)xh,
-			     xCursorYCoord-4, VIEW_CURSOR_HEIGHT);
-	
+	winRep->SetXorMode();
+	winRep->FillRect(xLow, _filter.yLow, xHigh - xLow,
+			 _filter.yHigh - _filter.yLow);
+	winRep->SetCopyMode();
       }
     }
 
-    if (doYCursor && filter->flag & VISUAL_Y) {
+    if (filter->flag & VISUAL_Y) {
+#ifdef DEBUG
+      printf("DoDrawCursors: Drawing Y cursor in\n  %s\n", GetName());
+#endif
       if(!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
 	yLow = MinMax::max(_filter.yLow, filter->yLow);
 	yHigh = MinMax::min(_filter.yHigh, filter->yHigh);
-	
-	transform.Transform(_filter.xLow,yLow, xl, yl);
-	transform.Transform(_filter.xLow,yHigh, xh, yh);
-
-#ifdef DEBUG
-	printf("Draw y cursor %d %d %d %d\n",
-	       yCursorXCoord, (int)yl, yCursorXCoord, (int)yh);
-#endif
-
-	winRep->AbsoluteLine(yCursorXCoord, (int)yl, 
-			     yCursorXCoord, (int)yh, VIEW_CURSOR_WIDTH);
-	winRep->AbsoluteLine(yCursorXCoord, (int)yl, 
-			     yCursorXCoord+5, (int)yl, VIEW_CURSOR_WIDTH);
-	winRep->AbsoluteLine(yCursorXCoord, (int)yh, 
-			     yCursorXCoord+5, (int)yh, VIEW_CURSOR_WIDTH);
+	winRep->SetXorMode();
+	winRep->FillRect(_filter.xLow, yLow,
+			 _filter.xHigh - _filter.xLow, yHigh - yLow);
+	winRep->SetCopyMode();
       }
     }
   }
-  _cursors->DoneIterator(index);
 
-#if 0
-  winRep->Flush();
-#endif
+  _cursors->DoneIterator(index);
 }
 
 void View::ClearHistory()
@@ -1741,7 +1700,7 @@ void View::CachePixmap(int bytes)
 }
 
 /* Look into pixmap buffer for pixmap that we can use for drawing
-   filter.  Restore the pixmap, and return a new visual filter. */
+   filter. Restore the pixmap, and return a new visual filter. */
 
 View::PixmapStat View::RestorePixmap(VisualFilter filter,
 				     VisualFilter &newFilter)
@@ -1750,14 +1709,16 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
   unsigned int width, height;
   Geometry(x, y, width, height);
 
-#if 0
+#ifdef DEBUG
   if (_pixmap != NULL) {
     printf("RestorePixmap %s\n", GetName());
-    printf("cur filter: %f,%f %f,%f\n", filter.xLow, filter.xHigh,
+    printf("cur filter: %f,%f,%f,%f\n", filter.xLow, filter.xHigh,
 	   filter.yLow, filter.yHigh);
-    printf("pix filter: %f,%f %f,%f\n",
+    printf("pix filter: %f,%f,%f,%f\n",
 	   _pixmap->filter.xLow, _pixmap->filter.xHigh,
 	   _pixmap->filter.yLow, _pixmap->filter.yHigh);
+    printf("cur width %d, height %d, pix %d, %d\n", width, height,
+	   _pixmap->width, _pixmap->height);
   }
 #endif
 
@@ -1766,7 +1727,7 @@ View::PixmapStat View::RestorePixmap(VisualFilter filter,
       filter.yLow == _pixmap->filter.yLow &&
       filter.xHigh == _pixmap->filter.xHigh &&
       filter.yHigh == _pixmap->filter.yHigh &&
-      _pixmap->width == width && _pixmap->height == height) {
+      _pixmap->width == (int)width && _pixmap->height == (int)height) {
     GetWindowRep()->DisplayPixmap(_pixmap);
     return PixmapTotal;
   }
@@ -1786,7 +1747,7 @@ void View::InvalidatePixmaps()
 void View::SavePixmaps(FILE *file)
 {
 #ifdef DEBUG
-  printf("SavePixmap at bytes %d\n", ftell(file));
+  printf("SavePixmap at bytes %ld\n", ftell(file));
   printf("View SavePixmaps bytes %d\n", _bytes);
 #endif
 
@@ -1800,6 +1761,9 @@ void View::SavePixmaps(FILE *file)
     Exit::DoExit(1);
   }
   
+  /* Disable cursors if currently displayed */
+  Boolean cursorState = HideCursors();
+
 #ifndef JPEG
 
   //
@@ -1808,7 +1772,7 @@ void View::SavePixmaps(FILE *file)
 
   int saved = 0;
   DevisePixmap *pixmap = 0;
-  if (Iconified()|| !Mapped() ||_refresh ||_bytes < VIEW_BYTES_BEFORE_SAVE) {
+  if (Iconified()|| !Mapped() ||_refresh || _bytes < VIEW_BYTES_BEFORE_SAVE) {
     if (_pixmap != NULL) {
       /* save old pixmap */
       saved = 1;
@@ -1830,8 +1794,12 @@ void View::SavePixmaps(FILE *file)
     Exit::DoExit(1);
   }
 
-  if (!saved)
+  if (!saved) {
+    /* Return cursors to original state */
+    if (cursorState)
+      (void)DrawCursors();
     return;
+  }
   
   assert(pixmap);
 
@@ -1885,6 +1853,9 @@ void View::SavePixmaps(FILE *file)
       perror("View::SavePixmaps");
       Exit::DoExit(1);
     }
+    /* Return cursors to original state */
+    if (cursorState)
+      (void)DrawCursors();
     return;
   }
   
@@ -1907,8 +1878,6 @@ void View::SavePixmaps(FILE *file)
   printf("pixMap dataBytes %d, imageBytes %d, width %d, height %d, bpl %d, pad %d\n",
 	 pixmap->dataBytes, pixmap->imageBytes, pixmap->width,
 	 pixmap->height, pixmap->bytes_per_line, pixmap->padding);
-  fwrite(pixmap->data,sizeof(char),pixmap->imageBytes,file);
-  return;
 #endif
   
 #if 0
@@ -1953,6 +1922,10 @@ void View::SavePixmaps(FILE *file)
   printf("after compress, at %d\n", ftell(file));
 #endif
 #endif
+
+  /* Return cursors to original state */
+  if (cursorState)
+    (void)DrawCursors();
 }
 
 /* Restore pixmaps from an open file into pixmap buffer*/
@@ -1989,7 +1962,7 @@ void View::LoadPixmaps(FILE  *file)
   }
   if (!saved) {
 #ifdef DEBUG
-    printf("View::LoadPixmaps: not saved\n");
+    printf("View::LoadPixmaps: %s not saved\n", GetName());
 #endif
     _pixmap = NULL;
     return;
@@ -2004,6 +1977,13 @@ void View::LoadPixmaps(FILE  *file)
     perror("View::LoadPixmaps 1");
     Exit::DoExit(1);
   }
+
+#ifdef DEBUG
+  printf("LoadPixmap filter %f,%f,%f,%f\n",
+	 pixmap->filter.xLow, pixmap->filter.xHigh,
+	 pixmap->filter.yLow, pixmap->filter.yHigh);
+#endif
+		
   if (!(pixmap->data = (unsigned char *)malloc(pixmap->compressedBytes))) {
     fprintf(stderr,"View::LoadPixmaps out of memory\n");
     Exit::DoExit(1);

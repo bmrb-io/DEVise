@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/05 17:02:13  jussi
+  Moved _stats to ViewGraph (superclass) so that statistics can be
+  turned on and displayed without having to redisplay the data itself.
+
   Revision 1.8  1995/12/04 18:06:36  jussi
   Added GetLabelParams and replaced ToggleStatDisplay with SetStatDisplay.
 
@@ -207,7 +211,8 @@ public:
 	/* Cursor manipulations */
 	void AppendCursor(DeviseCursor *cursor);
 	void DeleteCursor(DeviseCursor *cursor);
-	void DrawCursors();
+	Boolean DrawCursors();
+	Boolean HideCursors();
 
 	/******** Pixmap manipulations *********/
 
@@ -260,7 +265,8 @@ private:
 
 	void ReportViewCreated();
 	void ReportViewDestroyed();
-	void ReportFilterAdded(VisualFilter &filter, int flushed);
+	void ReportFilterAboutToChange();
+	void ReportFilterChanged(VisualFilter &filter, int flushed);
 
 	/* from DispatcherCallback */
 	/* when it's our turn to run: Send a query, if there is one. 
@@ -284,15 +290,15 @@ private:
 	/* Get area for displaying label */
 	void GetLabelArea(int &x, int &y, int &w, int &h);
 	void View::GetXAxisArea(int &x, int &y, int &width, int &height,
-		int &startX);
+				int &startX);
 	void GetYAxisArea(int &x, int &y, int &width, int &height);
 
 	/* Drawing axes and label*/
-	void DrawAxesLabel(WindowRep *win,int x, int y, int w, int h);
-	void DrawXAxis(WindowRep *win,int x, int y, int w, int h);
-	void DrawYAxis(WindowRep *win,int x, int y, int w, int h);
-	void DrawLabel(WindowRep *win, int x,int y, int w, int h);
-	void DoDrawCursors(int x, int y, int w, int h);
+	void DrawAxesLabel(WindowRep *win, int x, int y, int w, int h);
+	void DrawXAxis(WindowRep *win, int x, int y, int w, int h);
+	void DrawYAxis(WindowRep *win, int x, int y, int w, int h);
+	void DrawLabel();
+	void DoDrawCursors();
 
 	/* Calculate the transformation for this view */
 	void CalcTransform(Transform2D &transform);
@@ -327,71 +333,73 @@ private:
 
 	/* check Cursor Op. Return cursor operated on */
 	Boolean CheckCursorOp(WindowRep *win, int x, int y, int button);
-Boolean  _displaySymbol; /* true if to be displayed */
-AxisInfo xAxis, yAxis;   /* X and y axis info */
-Boolean _axisDisplay;   /* TRUE if axes should be displayed */
 
-Action *_action;
+	Boolean  _displaySymbol; /* true if to be displayed */
+	AxisInfo xAxis, yAxis;   /* X and y axis info */
+	Boolean _axisDisplay;   /* TRUE if axes should be displayed */
 
-AxisLabel *_xAxisLabel;
-AxisLabel *_yAxisLabel;
+	Action *_action;
 
-/* TRUE if _filter has changed since last time query was sent */
-Boolean _filterChanged; 
-VisualFilter _filter; /* new state of visual filter */
+	AxisLabel *_xAxisLabel;
+	AxisLabel *_yAxisLabel;
 
-Boolean _hasExposure; /* TRUE if _exporsureRect has valid data */
-ViewRect _exposureRect; /* Rect that has been exposed and needs to be redrawn*/
+	/* TRUE if _filter has changed since last time query was sent */
+	Boolean _filterChanged; 
+	VisualFilter _filter; /* new state of visual filter */
+	
+	Boolean _hasExposure; /* TRUE if _exporsureRect has valid data */
+	ViewRect _exposureRect; /* Rect that has been exposed and needs to be redrawn*/
+	
+	Boolean _querySent;	 /* TRUE if query has been snet */
+	VisualFilter _queryFilter; /* filter used for query */
+	ViewRect _queryRect; /* screen coordinates used for query */
 
-Boolean _querySent;	 /* TRUE if query has been snet */
-VisualFilter _queryFilter; /* filter used for query */
-ViewRect _queryRect; /* screen coordinates used for query */
+	int _id;    /* id of this view */
+	static int _nextId; /* id of next view */
+	static ViewList *_viewList; /* list of all views */
 
-int _id;    /* id of this view */
-static int _nextId; /* id of next view */
-static ViewList *_viewList; /* list of all views */
+	LabelInfo _label;	/* info about label */
+	Boolean _updateTransform; /* TRUE if we need to update transform for the 
+				     window */
 
-LabelInfo _label;	/* info about label */
-Boolean _updateTransform; /* TRUE if we need to update transform for the 
-		window */
-
-void UpdateTransform(WindowRep *winRep); /* update transformation */
+	void UpdateTransform(WindowRep *winRep); /* update transformation */
 
 
-Boolean _hasLastFilter; /* TRUE if we have last filter used for query */
-VisualFilter _lastFilter;
+	Boolean _hasLastFilter; /* TRUE if we have last filter used for query */
+	VisualFilter _lastFilter;
 
-Boolean _refresh;	/* TRUE if we are refreshing */
+	Boolean _refresh;	/* TRUE if we are refreshing */
+	
+	FilterQueue *_filterQueue; /* stores history of filter changes */
+	
+	static ViewCallbackList *_viewCallbackList;
+	
+	Boolean _hasTimestamp;
+	int _timeStamp;
+	
+	/* true if events occurs in layout mode that requires refresh when
+	   in display mode. This variable is sent when anything happens during
+	   LayoutMode that requires a refresh. It is resent only when a query
+	   is sent. */
+	Boolean _modeRefresh;
+	Boolean _highlight;
+	AttrType _xAxisAttrType;
+	AttrType _yAxisAttrType;
 
-FilterQueue *_filterQueue; /* stores history of filter changes */
+	Boolean _hasXMin;
+	Coord _xMin;
+	DeviseCursorList *_cursors;
+	DevisePixmap *_pixmap;
+	int _bytes; /* # of data bytes used to draw the current view */
+	static int _nextPos; /* next position in file to read from input file */
+	
+	PixmapIO *_pixmapIO; /* IO for read/write pixmap */
+	Compression *_compress; /* compression class */
 
-static ViewCallbackList *_viewCallbackList;
+	Boolean _cursorsOn;             /* true if cursors displayed */
 
-Boolean _hasTimestamp;
-int _timeStamp;
-
-/* true if events occurs in layout mode that requires refresh when
-in display mode. This variable is sent when anything happens during
-LayoutMode that requires a refresh. It is resent only when a query
-is sent. */
-Boolean _modeRefresh;
-Boolean _highlight;
-AttrType _xAxisAttrType;
-AttrType _yAxisAttrType;
-
-Boolean _hasXMin;
-Coord _xMin;
-DeviseCursorList *_cursors;
-DevisePixmap *_pixmap;
-int _bytes; /* # of data bytes used to draw the current view */
-static int _nextPos; /* next position in file to read from input file */
-
-PixmapIO *_pixmapIO; /* IO for read/write pixmap */
-Compression *_compress; /* compression class */
-
-/* count # of times something happens */
-int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;
+	/* count # of times something happens */
+	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;
 };
-
 
 #endif
