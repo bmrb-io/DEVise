@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1997/11/12 15:49:23  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+#  into the trunk.
+#
 #  Revision 1.4.16.1  1997/10/30 22:20:31  wenger
 #  Updated public data, schemas, sessions, etc., to work with DEVise 1.4.
 #
@@ -54,10 +58,10 @@ if (! -d $dir) then
 endif
 
 cd $dir
-mkdir dat cache session run
+mkdir cache session run
 cp -r $source/schema .
 cp $source/session/* session
-cp $source/dat/* dat
+cp -r $source/dat .
 cp $source/devisepub run
 cp $source/run.script---copy.and.customize run/devise
 
