@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/07/17 16:55:42  wenger
+  Don't try to get view location if view is not mapped (causes crash).
+
   Revision 1.2  2000/07/17 16:07:40  wenger
   Added visual filter info to metavisualization session description.
 
@@ -46,7 +49,7 @@
 
 #define DEBUG 0
 
-static const char *_tableFormat = "%s	%s	%s\n";
+static const char *_tableFormat = "\"%s\" \"%s\" \"%s\"\n";
 
 static const char *_objectTypeStr = "object_type";
 
@@ -82,7 +85,7 @@ static const char *_cursorGridY = "cursor_grid_y";
 static const char *_cursorEdgeGrid = "cursor_edge_grid";
 static const char *_cursorColor = "cursor_color";
 
-static const char *_nullStr = "-";
+static const char *_nullStr = "";
 static const char *_trueStr = "1";
 static const char *_falseStr = "0";
 
