@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.86  2000/06/20 22:16:54  wenger
+  Added floating-point format for axes and mouse location display.
+
   Revision 1.85  2000/06/20 16:57:18  wenger
   Added commands and GUI to enable/disable the display of mouse location
   in various views, and globally.
@@ -2019,7 +2022,7 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
   status += CallParseAPI(saveData->control, result, false, args,
       getCommand, arg0, arg1, arg2);
   if (status.IsComplete()) {
-    if (strlen(result) > 0) {
+    if (strlen(result) > 0) { // Note: session files won't work without this
       fprintf(saveData->fp, "DEVise %s {%s} ", setCommand, arg0);
       if (arg1 != NULL) {
         // Note: arg2 is not passed to 'set' command.
