@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/06/27 15:43:58  jussi
+  Added method AbortAndReexecuteQuery which allows the QueryProc
+  to ask the view to re-issue queries when TData has changed.
+
   Revision 1.25  1996/06/21 19:32:07  jussi
   Moved all 3D-related code to Map3D.C and Map3D.h.
 
@@ -316,6 +320,7 @@ public:
 	void GetDataArea(int &x, int &y, int &width,int &height);
 
 	/* 3D functions */
+        void Draw3DAxis();
 	Camera GetCamera() { return _camera; }
 	void SetCamera(Camera new_camera);
 	void SetViewDir(int H, int V);

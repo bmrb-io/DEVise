@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/06/27 15:43:55  jussi
+  Added method AbortAndReexecuteQuery which allows the QueryProc
+  to ask the view to re-issue queries when TData has changed.
+
   Revision 1.46  1996/06/24 19:35:39  jussi
   Added a win->Flush() call to strategic points so that view
   updates get propagated to the X server.
@@ -555,10 +559,9 @@ void View::SetNumDimensions(int d)
     return;
 
   _numDimensions = d;
-  _filterChanged = true;
   _updateTransform = true;
 
-  Dispatcher::InsertMarker(writeFd);
+  Refresh();
 }
 
 /* set override color */
@@ -767,11 +770,6 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
       DrawYAxis(win, x, y, w, h);
     }
-  }
-
-  if (_numDimensions == 3) {
-    win->SetFgColor(BlackColor);
-    Map3D::DrawRefAxis(win, _camera);
   }
 
   win->PopClip();
@@ -1130,24 +1128,12 @@ void View::CalcTransform(Transform2D &transform)
 
 void View::CalcTransform(Transform3D &transform)
 {
-  transform.MakeIdentity();
-
-  int dataX, dataY, dataWidth, dataHeight;
-  GetDataArea(dataX, dataY, dataWidth, dataHeight);
-
-#ifdef DEBUG
-  printf("transform data: %d,%d,%d,%d\n", dataX, dataY,
-	 dataWidth, dataHeight);
-#endif
-  
   CompRhoPhiTheta();
-  transform.SetViewMatrix(_camera);
+  Map3D::CompViewingTransf(_camera);
 
-#ifdef DEBUG
-  printf ("View.c: rho = %f phi = %f theta = %f\n", 
-	  _camera._rho, _camera._phi, _camera._theta);
-#endif
-
+  int dx, dy, dw, dh;
+  GetDataArea(dx, dy, dw, dh);
+  SetViewDir(dw / 2, dh / 2);
 }
 
 /* For query processing */
@@ -1162,7 +1148,10 @@ void View::ReportQueryDone(int bytes)
   _querySent = false;
 
   _cursorsOn = false;
-  (void)DrawCursors();
+  if (_numDimensions == 2)
+    (void)DrawCursors();
+  else
+    Draw3DAxis();
 
   GetWindowRep()->PopClip();
 
@@ -1266,7 +1255,10 @@ void View::Run()
 
     /* Draw cursors */
     _cursorsOn = false;
-    (void)DrawCursors();
+    if (_numDimensions == 2)
+      (void)DrawCursors();
+    else
+      Draw3DAxis();
 
     _hasExposure = false;
     _filterChanged = false;
@@ -1430,14 +1422,16 @@ void View::UpdateTransform(WindowRep *winRep)
   printf("View::UpdateTransform\n");
 #endif
 
+  winRep->ClearTransformStack();
+
   if (_numDimensions == 2) {
-     winRep->ClearTransformStack();
      Transform2D transform;
      CalcTransform(transform);
      winRep->PostMultiply(&transform);
   } else {
      Transform3D transform;
      CalcTransform(transform);
+     winRep->MakeIdentity();
   }
 }
 
@@ -1834,6 +1828,8 @@ void View::DeleteCursor(DeviseCursor *cursor)
 
 Boolean View::DrawCursors()
 {
+  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
+
 #ifdef DEBUG
   printf("DrawCursors for %s\n", GetName());
 #endif
@@ -2348,17 +2344,19 @@ void View::PrintStat()
 
 void View::CompRhoPhiTheta()
 {
-  double X, Y, Z;
-
 #ifdef DEBUG
-  printf ("*********** begin CompRhoPhiTheta ***********\n");
-  printf ("\n>>>> x = %f y = %f z = %f\n",_camera.x_,_camera.y_,_camera.z_);
+  printf ("<<<< x = %f y = %f z = %f\n",
+          _camera.x_, _camera.y_, _camera.z_);
+  printf ("<<<< fx = %f fy = %f fz = %f\n",
+          _camera.fx, _camera.fy, _camera.fz);
+  printf ("<<<< rho = %f phi = %f theta = %f\n\n",
+          _camera._rho, _camera._phi, _camera._theta);
 #endif
 
   if (!_camera.spherical_coord) {
-    X = _camera.x_ - _camera.fx;
-    Y = _camera.y_ - _camera.fy;
-    Z = -(_camera.z_ - _camera.fz);
+    double X = _camera.x_ - _camera.fx;
+    double Y = _camera.y_ - _camera.fy;
+    double Z = -(_camera.z_ - _camera.fz);
 
     _camera._rho = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
 
@@ -2373,6 +2371,7 @@ void View::CompRhoPhiTheta()
 
     if (_camera._rho == 0)
       _camera._theta = 0.0;
+
     // ------------- on yz-axis
     else if (X == 0 && Z >= 0)  // on +z axis
       _camera._theta = 0.0;
@@ -2383,8 +2382,9 @@ void View::CompRhoPhiTheta()
     else if (Z == 0 && X > 0) // on +x axis
       _camera._theta = M_PI_2;
     else if (Z == 0 && X < 0) // on -x axis
-      _camera._theta = M_PI_2 + M_PI;    // pi / 2 * 3
+      _camera._theta = M_PI_2 + M_PI;    // pi * 2 / 3
     
+    // ------------- four quadrants
     else if (X > 0 && Z > 0)
       _camera._theta = atan(X / Z);
     else if (X > 0 && Z < 0)
@@ -2395,72 +2395,22 @@ void View::CompRhoPhiTheta()
       _camera._theta = (M_PI_2 + M_PI) + fabs(atan(Z / X));
 
     else {
-      printf ("\nERR 1: compute theta cx = %f cy = %f cz = %f\n\n",
-	      X, Y, Z);
-      exit (1);
+      printf ("cx = %f cy = %f cz = %f\n", X, Y, Z);
+      DOASSERT(0, "Invalid coordinates");
     }
   } else {
-    X = _camera.fx;
-    Y = _camera.fy;
-    Z = _camera.fz;
-
-    double rho1 = sqrt(SQUARE(X) + SQUARE(Y) + SQUARE(Z));
-    double phi1, theta1;
-
-    if (rho1 > 0)
-      phi1 = acos(Y / rho1);
-    else {
-      phi1 = 0.0;
-      // printf ("----------- WARNING --------------\n");
-    }
-
-    if (rho1 == 0)
-      theta1 = 0.0;
-    // ------------- on yz-axis
-    else if (X == 0 && Z >= 0)  // on +z axis
-      theta1 = 0.0;
-    else if (X == 0 && Z < 0)   // on -z axis
-      theta1 = M_PI;
-
-    // ------------- on xy-axis
-    else if (Z == 0 && X > 0) // on +x axis
-      theta1 = M_PI_2;
-    else if (Z == 0 && X < 0) // on -x axis
-      theta1 = M_PI_2 + M_PI;    // pi / 2 * 3
-
-    else if (X > 0 && Z > 0)
-      theta1 = atan(X / Z);
-    else if (X > 0 && Z < 0)
-      theta1 = M_PI + atan(X / Z);
-    else if (X < 0 && Z < 0)
-      theta1 = M_PI + atan(X / Z);
-    else if (X < 0 && Z > 0)
-      theta1 = (M_PI_2 + M_PI) + fabs(atan(Z / X));
-    
-    else {
-      printf ("\nERR 2: compute theta cx = %f cy = %f cz = %f\n\n",
-	      X, Y, Z);
-      exit (1);
-    }
-
-    double RHO = _camera._rho - rho1;
-    double PHI = _camera._phi - phi1;
-    double THETA = _camera._theta - theta1;
-    
-    _camera.x_ = _camera._rho*sin(_camera._phi)*sin(_camera._theta);
-    _camera.y_ = _camera._rho*cos(_camera._phi);
-    _camera.z_ = -_camera._rho*sin(_camera._phi)*cos(_camera._theta);
-
-#ifdef DEBUG
-    printf ("rho = %.2f phi = %.2f theta = %.2f\n", _camera._rho,
-	    _camera._phi, _camera._theta);
-    printf ("rho1 = %.2f phi1 = %.2f theta = %.2f\n", rho1, phi1, theta1);
-#endif
+    _camera.x_ = _camera._rho * sin(_camera._phi) * sin(_camera._theta);
+    _camera.y_ = _camera._rho * cos(_camera._phi);
+    _camera.z_ = -_camera._rho * sin(_camera._phi) * cos(_camera._theta);
   }
 
 #ifdef DEBUG
-  printf (">>>> rho = %f phi = %f theta = %f\n\n", _camera._rho,
-	  _camera._phi, _camera._theta);
+  printf (">>>> x = %f y = %f z = %f\n",
+          _camera.x_, _camera.y_, _camera.z_);
+  printf (">>>> fx = %f fy = %f fz = %f\n",
+          _camera.fx, _camera.fy, _camera.fz);
+  printf (">>>> rho = %f phi = %f theta = %f\n\n",
+          _camera._rho, _camera._phi, _camera._theta);
 #endif
 }
 
@@ -2508,18 +2458,22 @@ void View::SetCamera(Camera new_camera)
   _camera.H = new_camera.H;
   _camera.V = new_camera.V;
 
-  CompRhoPhiTheta();
-
-#ifdef DEBUG
-  printf ("_camera fx = %.3f fy = %.3f, fix_focus = %d\n",
-	  _camera.fx, _camera.fy, _camera.fix_focus);
-#endif
-
   /* this call causes the user interface to update the 3D query dialog */
   SetVisualFilter(_filter);
 
   _updateTransform = true;
   Refresh();
+}
+
+void View::Draw3DAxis()
+{
+#ifdef DEBUG
+  printf("Drawing 3D axis\n");
+#endif
+
+  WindowRep *win = GetWindowRep();
+  win->SetFgColor(BlackColor);
+  Map3D::DrawRefAxis(win, _camera);
 }
 
 void View::SetViewDir(int H, int V)
