@@ -366,6 +366,13 @@ Num Date        Status  Description
 			through because the various background areas don't
 			quite touch each other. (rkw)
 
+106 12/30/96	OPEN	Load the session test/a2.tk; you get the following
+			error: DEVise error: RangeList::Insert() recId 4,4
+			already processed at
+			../../graphics.new/RangeList.c: 219. (It doesn't
+			matter whether or not you're using shared memory.) (rkw)
+
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
