@@ -21,7 +21,7 @@ public class BooleanDesc implements TypeDesc {
         String msg2 = "\n\t  boolean " + opStr + " " + arg.getString( );
         String msg3 = "\n  The following operations on booleans are allowed:";
 	String msg4 = "\n\t  boolean [op] boolean,";
-	String msg5 = "\n  where [op] could be ||, &&.\n\n";
+	String msg5 = "\n  where [op] could be ||, &&.\n";
 
         if ( ! arg.getString( ).equals(name) )
 	    throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 

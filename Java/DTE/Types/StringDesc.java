@@ -18,7 +18,7 @@ public class StringDesc implements TypeDesc {
         String msg2 = "\n\t  string " + opStr + " " + arg.getString( );
         String msg3 = "\n  The following operations on strings are allowed:";
 	String msg4 = "\n\t  string [op] string,";
-	String msg5 = "\n  where [op] could be ==, !=, <, <=, >, >=.\n\n";
+	String msg5 = "\n  where [op] could be ==, !=, <, <=, >, >=.\n";
 
         if ( ! arg.getString( ).equals(name) )
 	    throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 

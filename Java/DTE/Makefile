@@ -25,7 +25,7 @@ fileScanTest:
 	javac FileScanIteratorTest.java -d $(CLASSES)
 
 hj:
-	javac test/TestExpr.java -d $(CLASSES)
+	javac CheckType.java -d $(CLASSES)
 
 doc:
 	javadoc $(PACKAGES) -d /u/d/o/donjerko/public/html/Dte/

@@ -45,7 +45,7 @@ public class Selection implements Expression {
         if ( st.containsKey( str ) )
             return st.get( str );
 
-        str="table "+alias+" does not have attr "+attribute;
+        str="\n  Table "+alias+" does not have attribute "+attribute+".\n";
         throw new TypeCheckException( str );
     }
 
