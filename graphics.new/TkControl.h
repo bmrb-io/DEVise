@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/13 17:27:50  jussi
+  Removed unnecessary virtual function prototypes.
+
   Revision 1.13  1996/06/24 19:47:25  jussi
   Added a destructor.
 
@@ -107,6 +110,9 @@ public:
 
   /* Perform sync operation  */
   virtual void SyncNotify();
+
+  /* Raise the control panel */
+  virtual void Raise();
 
   /* Abort program */
   virtual void DoAbort(char *reason);

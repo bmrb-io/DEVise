@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1996/07/18 01:17:47  jussi
+  Added call to DestroySessionData() of base class.
+
   Revision 1.62  1996/07/15 17:02:07  jussi
   Added support for string attributes in GData.
 
@@ -531,4 +534,11 @@ void TkControlPanel::SyncNotify()
   }
 
   ClearSyncNotify();
+}
+
+
+void TkControlPanel::Raise()
+{
+  (void)Tcl_Eval(_interp, "raise .");
+  Run();
 }
