@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  2000/04/18 16:13:27  wenger
+  Environment variables can now be used in data source definitions;
+  $DEVISE_DAT and $DEVISE_SCHEMA are added to new definitions as appropriate.
+
   Revision 1.36  2000/04/07 17:36:01  wenger
   String file path in session file is specified with $DEVISE_SESSION.
 
@@ -307,9 +311,10 @@ RemoveEnvFromPath(const char *path)
       char *envP = envVar;
 
       // Get the name of the environment variable.
-      // Assume var name will end at '/', '"', or ' ' (added '"' and
-      // ' ' to allow data catalog entries to be passed in).
-      while (*inP && *inP != '/' && *inP != '"' && *inP != ' ') {
+      // Assume var name will end at '/', '"', '.' or white space (added '"',
+      // ',', and white space to allow data catalog entries to be passed in).
+      while (*inP && *inP != '/' && *inP != '"' && *inP != '.' &&
+          !isspace(*inP)) {
         *envP++ = *inP++;
       }
       *envP = '\0'; // terminate the string
