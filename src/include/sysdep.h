@@ -947,10 +947,13 @@ typedef int SOCKET_TP;
 #endif
 
 #ifdef HAVE_STRSTREAM_H
+#include "gcc_stringstream.h"
+#if 0
 #include <strstream.h>
 typedef ostrstream ostringstream ;
 typedef istrstream istringstream ;
 typedef strstream stringstream ;
+#endif
 #endif
 
 #ifdef HAVE_IOSTREAM_H
