@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.26  1995/11/27 15:21:12  jussi
+#	Instead of reading a single, host-dependent config file, control.tk now
+#	reads a common, host-independent config file, followed by a smaller
+#	host-dependent config file *if one exists*.
+#
 # Revision 1.25  1995/11/24  07:47:27  ravim
 # Mapping between different types of data sources can be defined. Anything
 # that cannot be resolved automatically can be handled manually.
@@ -129,7 +134,7 @@ set DEViseColors {{0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{22 blue} {23 orange} {24 LightGray} {25 red1} {26 red2} \
 	{27 green1} {28 green2} {29 blue1} {30 blue2} {31 gold1} {32 gold2} \
 	{33 blue1} {34 blue2} {35 blue3} {36 blue4}}
-set DEViseShapes {{0 Rect} {1 RectX} {2 Bar}}
+set DEViseShapes {{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval}}
 
 # global to control.tk: curView: current view selected.
 # lastView: last view selected.
@@ -185,6 +190,7 @@ source $libdir/macrodef.tk
 source $libdir/sources.tcl
 source $libdir/schema.tk
 source $libdir/mapping.tk
+source $libdir/util.tcl
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
@@ -328,13 +334,13 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Save" -command DoSave
 .mbar.session.menu add command -label "Save as" -command {DoSaveAs 0}
 .mbar.session.menu add command -label "Save as Template" -command {DoSaveAs 1}
-.mbar.session.menu add command -label "Demo" -command DoDemo
+.mbar.session.menu add command -label "Print" -command PrintView
 .mbar.session.menu add command -label "Quit" -command DoExit
 
 menu .mbar.file.menu -tearoff 0
 .mbar.file.menu add command -label "Define" -command MacroDefStart
-.mbar.file.menu add separator
-.mbar.file.menu add command -label "Sources..." -command NotImplemented
+#.mbar.file.menu add separator
+#.mbar.file.menu add command -label "Sources..." -command NotImplemented
 .mbar.file.menu add separator
 .mbar.file.menu add command -label "File" -command DoVisualizeFile
 .mbar.file.menu add command -label "TData" -command DoVisualizeTData
@@ -372,6 +378,7 @@ menu .mbar.cursor.menu -tearoff 0
 .mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
 
 menu .mbar.window.menu -tearoff 0
+.mbar.window.menu add command -label "Demo" -command DoDemo
 .mbar.window.menu add command -label "Help" -command DoHelp
 .mbar.window.menu add command -label "History" -command OpenHistory
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
@@ -911,8 +918,9 @@ proc DoGetGData {} {
 		create GData for visualization"  "" 0 { Ok } ]
 	return
     } else {
-	set answer [ dialogList .getGData "GetGData" "Please select GData for \
-		display" "" 0 { New Cancel OK } \
+	set answer [ dialogList .getGData \
+		"GetGData" "Please select GData for display" \
+		"" 0 { New Cancel OK } \
 		$gdataSet ]
 	if { $answer == 0 } {
 	    # Create a new one
@@ -1644,11 +1652,7 @@ proc DoSave {} {
 	return
     }
 
-    set button [ dialog .saveSession "SaveSession" \
-	    "Save session to file\n$sessionName?"  "" 1  {Cancel} OK ]
-    if {$button == 1} {
-	DoActualSave $sessionName 0
-    }
+    DoActualSave $sessionName 0
 }
 
 proc DoSaveAs { asTemplate } {
@@ -2155,8 +2159,8 @@ proc DoEditMapping {} {
 	    [list Size {1 2 3 4} $sizeParm] \
 	    [list Pattern {0} $patternParm] \
 	    [list Shape $DEViseShapes $shapeParm] \
-	    [list "PixelWidth" {0.1 0.5 1 2} $shapeAttr0] \
-	    [list "PixelHeight" {0.1 0.5 1 2} $shapeAttr1] \
+	    [list "SymbolWidth" {0.1 0.5 1 2} $shapeAttr0] \
+	    [list "SymbolHeight" {0.1 0.5 1 2} $shapeAttr1] \
 	    ] 0 ]
     
     # puts "dialogMapping returns $parm"
@@ -3072,20 +3076,20 @@ proc DupWindow {} {
 
 proc DoToggleAxis { axis } {
     global curView
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .toggleWinError "ToggleAxisError" \
 		"Please select a view by clicking in it" "" 0 OK ]
 	return
     }
     
-    set stat [ DEVise getAxisDisplay $curView $axis]
+    set stat [DEVise getAxisDisplay $curView $axis]
     set stat [expr !$stat]
     DEVise setAxisDisplay $curView $axis $stat
 }
 
 proc DoToggleAxisAllViews { axis } {
     global curView
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .toggleWinError "ToggleAxisError" \
 		"Please select a view by clicking in it" "" 0 OK ]
 	return
