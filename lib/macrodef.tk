@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.58  1996/07/22 23:50:45  guangshu
+#	Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
+#
 #	Revision 1.57  1996/07/20 17:11:57  guangshu
 #	Added support for Histogram and put Max Mean Min stats in the same view
 #
@@ -630,11 +633,101 @@ proc MacroImport {mode derivedOnly} {
 	set schemafile [lindex $sourceList($tdata) 3]
     }
 
-    MacroDefAuto $tdata $schemafile
+    if {$mode && $derivedOnly} {
+	StatText $tdata $schemafile
+    } else {
+	MacroDefAuto $tdata $schemafile
+    }
+}
+
+#############################################################
+
+proc StatText {tdata schemafile} {
+    global curView viewselname bgcolor 
+    
+    set pos ""
+    set subder ""
+    set vname ""
+    set pos [string first : $tdata]
+    if {$pos > 0} {
+        set subder [string range  $tdata 0 [expr $pos-1]]
+        set vname  [string range  $tdata [expr $pos+1] end]
+        set subder [string trim $subder]
+        set vname  [string trim $vname]
+        set vname  [string range $vname 0 3]
+        set vname "$subder$vname"
+	set vname [string tolower $vname]
+    }
+
+    if {[WindowVisible .$vname]} {
+	return
+     }
+	 
+     set schema [DEVise getSchema $tdata]
+     set schemaname [file tail $schemafile]
+     set topgrp [SelectTopGroup $schemaname]
+
+     toplevel .$vname
+     wm title .$vname "Text Statistics"
+     wm geometry .$vname +50+50
+
+     frame .$vname.name -relief raised -bd 2 -height 2
+     frame .$vname.text -background LightBlue
+     set namelist [DEVise getItems $schemaname $topgrp $topgrp]
+     set nlist ""
+     foreach entry $namelist {
+	set name [lindex $entry 0]
+	if {$name != "recid"} {
+	    lappend nlist $name
+	    label .$vname.s$name -text $name
+	    listbox .$vname.l$name -yscroll ".$vname.scroll set" \
+		-relief raised 
+	    pack .$vname.s$name -side left -in .$vname.name -expand 1 -fill x
+	    pack .$vname.l$name -side left -in .$vname.text -expand 1 -fill x
+	}
+     }
+     puts "before vname=$vname"
+     scrollbar .$vname.scroll -command "AllList {$vname $nlist}"
+
+     pack .$vname.scroll -side right -in .$vname.text -fill y
+
+     set buffList ""
+     set buffList [DEVise getStatBuffer $tdata]
+     puts "buffList=$buffList"
+
+     foreach line $buffList {
+	 set temp [split $line " "]
+	 set j 0
+         foreach name $nlist {
+	     .$vname.l$name insert end [lindex $temp $j]
+	     incr j 1
+         }
+     }
+
+     button .$vname.close -text Close -command "Close .$vname" -width 10
+     pack .$vname.close -side bottom
+
+     pack .$vname.name .$vname.text -side top -fill x -expand 1
+}
+
+#############################################################
+
+proc Close {name} {
+     destroy $name
 }
 
 ############################################################
 
+proc AllList {list  args} {
+     set viewname [lindex $list 0]
+     foreach name $list {
+        if {$name != $viewname} {
+	    eval .$viewname.l$name yview $args
+        }
+     }
+}
+
+#############################################################
 proc MacroDefAuto {tdata schemafile} {
     global x yvar viewselname bgcolor linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
