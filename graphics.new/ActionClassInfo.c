@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/14 16:39:14  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.2.12.1  1998/01/12 20:34:11  wenger
   Fixed duplicate frees in multi that caused core dump on Linux.
 
@@ -76,7 +79,7 @@ void ActionClassInfo::ParamNames(int &argc, char **&argv){
 
 ClassInfo *ActionClassInfo::CreateWithParams(int argc, char **argv) {
 	if (argc != 1){
-		fprintf(stderr,"ActionClassInfo::CreateWithParams: need 1 params\n");
+		reportErrNosys("ActionClassInfo::CreateWithParams: need 1 params\n");
 		Exit::DoExit(2);
 	}
 	char *name = CopyString(argv[0]);

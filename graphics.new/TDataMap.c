@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/07/21 18:51:14  wenger
+  Moved alignment and data font information from view into mapping.
+
   Revision 1.35  1999/05/26 19:50:54  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -521,6 +524,7 @@ void TDataMap::SetDefaultShapeAttr(int attrNum, Coord shapeAttr)
 {
   if (attrNum < 0 || attrNum >= (int)MAX_SHAPE_ATTRS) {
     fprintf(stderr,"Mapping::SetDefaultShapeAttr: attrNum %d\n", attrNum);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   _defaults._shapeAttrs[attrNum] = shapeAttr;
@@ -531,6 +535,7 @@ void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
 {
   if (numAttr > (int)MAX_SHAPE_ATTRS) {
     fprintf(stderr,"Mapping::SetDefaultShape: too many attrs %d\n", numAttr);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   

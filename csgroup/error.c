@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/07/29 14:19:43  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.3  1998/02/26 18:54:09  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -73,6 +77,7 @@ int errcode=0;
 
 void
 GraceExit(int code) {
+    printf("GraceExit(%d)\n", code);
 
 	exit(code);
 }

@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/06 19:23:06  wenger
+  Added some Timer::StartTimer() calls that were needed to balance
+  Timer::StopTimer() calls.
+
   Revision 1.9  1997/01/14 20:05:47  wenger
   Fixed some compile warnings; fixed relative positions of OK/Cancel
   buttons in link GUI; removed some debug code I accidentally left
@@ -159,6 +163,7 @@ DataSourceWeb::Open(char *mode)
         DevStatus status = ChildProc();
         if (status != StatusOk)
             reportError("Web data transfer failed", errno);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
         _exit(1);
     }
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/03/04 19:11:02  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.17  1998/01/14 16:39:16  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -418,6 +421,7 @@ int DataSource::InitializeProc()
         close(_replyFd[0]);
         close(_replyFd[1]);
 #endif
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
         exit(1);
     }
 #endif

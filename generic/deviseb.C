@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/01/07 19:28:17  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.11.16.1  1997/12/09 19:03:38  wenger
   deviseb now uses client/server library.
 
@@ -272,8 +277,9 @@ int main(int argc, char **argv)
 
   _client = new DeviseBatchClient("DEVise", _hostName, _portNum);
 
-  if (ExecuteCommands() < 0)
+  if (ExecuteCommands() < 0) {
     exit(5);
+  }
 
   printf("Closing connection.\n");
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/12/15 14:55:24  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.36  1997/12/23 23:35:40  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -429,6 +435,7 @@ TData::TDHandle TDataBinary::InitGetRecs(Interval *interval, int &bytesleft,
         else
         {
                 cout << "Only recId is supported by TDataBinary.\n";
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
                 exit(1);
         }
 
@@ -498,6 +505,7 @@ Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
         else
         {
                 cout << "TDataBinary: GetRecs deals with recId only.\n";
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
                 exit(1);
         }
 

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/11/24 15:44:05  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.24  1999/07/16 21:35:25  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -180,6 +185,8 @@
 #include "Csprotocols.h"
 #include "Util.h"
 #include "Init.h"
+#include "DevError.h"
+#include "DebugLog.h"
 
 #if !defined(USE_START_PROTOCOL)
 int _clientSlot = CLIENT_INVALID;
@@ -385,6 +392,7 @@ void Server::DoAbort(char *reason)
     char *args[] = { "AbortProgram", reason };
     Server::SendControl(API_CTL, 2, args, true);
     fprintf(stderr, "Server aborts.\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(0);
 }
 
@@ -494,8 +502,10 @@ void Server::WaitForConnection()
 			perror("select failed: ");
 			return;
 		} else if (fdReadyCount == 0) {
-		    printf("Last client command more than %d minutes ago; "
+			char errBuf[1024];
+		    sprintf(errBuf, "Last client command more than %d minutes ago; "
 			  "server exiting\n", Init::ClientTimeout());
+			reportErrNosys(errBuf);
 			Exit::DoExit(0);
 		}
 	}
@@ -713,6 +723,8 @@ void Server::CloseClient(ClientID clientID)
     _numClients--;
 
     if (Init::QuitOnDisconnect()) {
+		DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+		  "Server quitting on client disconnect\n");
 		Exit::DoExit();
 	}
 }

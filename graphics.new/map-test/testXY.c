@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:10:47  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.1  1995/11/27 16:20:48  jussi
   Moved these files from parent directory.
 
@@ -166,6 +170,7 @@ main(int argc, char **argv){
 				/* new file */
 				if (numFiles >= MAX_FILES){
 					fprintf(stderr,"only %d files allowed", MAX_FILES);
+                    reportErrNosys("Fatal error");//TEMP -- replace with better message
 					Exit::DoExit(2);
 				}
 				fileNames[numFiles++] = argv[arg];
@@ -175,10 +180,12 @@ main(int argc, char **argv){
 
 	if (numFiles == 0){
 		fprintf(stderr,"no file specified\n");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(2);
 	}
 	else if (numFiles >= MAX_COLORS/2){
 		fprintf(stderr,"%d files: too many\n", numFiles);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(2);
 	}
 

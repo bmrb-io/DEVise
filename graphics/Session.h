@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/10/18 15:36:31  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.17  1999/10/04 22:36:08  wenger
   Fixed bug 508 (windows move slightly when repeatedly opening and saving
   a session) -- replaced kludgey (incorrect) way of dealing with window
@@ -145,6 +151,12 @@ public:
 
   static char *ListDataCatalog(const char *catName);
   
+protected:
+  friend class DeviseCommand_setOpeningSession;
+
+  static void SetOpeningSession(Boolean openingSession) {
+      _openingSession = openingSession; }
+
 private:
   static DevStatus ReadSession(ControlPanelSimple *control,
       const char *filename);

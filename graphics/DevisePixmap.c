@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/03/01 23:08:58  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.6  1998/12/15 14:54:53  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -92,6 +95,7 @@ void PixmapIO::Begin()
     unsigned char *data = (unsigned char *)malloc(_pixmap->imageBytes);
     if (!data) {
       fprintf(stderr, "PixmapIO::LoadPixmap: no memory\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
     _pixmap->data = data;
@@ -164,6 +168,7 @@ void PixmapIO::WriteLine(char *line, int length)
   } else {
     if (_line == _pixmap->height) {
       fprintf(stderr,"PixmapIO::LoadPixmap: pixmap buf overflow\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
     char *data = (char *)&_pixmap->data[_line * _pixmap->bytes_per_line];

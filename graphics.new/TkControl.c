@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.94  1999/11/24 15:44:25  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.93  1999/10/18 15:36:43  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -433,6 +438,7 @@ TkControlPanel::TkControlPanel()
   if (Tcl_Init(_interp) == TCL_ERROR) {
     fprintf(stderr, "Cannot initialize Tcl. Is TCL_LIBRARY pointing to\n");
     fprintf(stderr, "the directory with the Tcl initialization files?\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -450,6 +456,7 @@ TkControlPanel::TkControlPanel()
   _mainWindow = Tk_CreateMainWindow(_interp, 0, "DEVise", "DEVise");
   if (!_mainWindow) {
     fprintf(stderr, "%s\n", _interp->result);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(1);
   }
   Tk_MoveWindow(_mainWindow, 0, 0);
@@ -459,6 +466,7 @@ TkControlPanel::TkControlPanel()
   if (Tk_Init(_interp) == TCL_ERROR) {
     fprintf(stderr, "Cannot initialize Tk. Is TK_LIBRARY pointing to\n");
     fprintf(stderr, "the directory with the Tk initialization files?\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -528,6 +536,7 @@ void TkControlPanel::StartSession()
   int code = Tcl_EvalFile(_interp, control);
   if (code != TCL_OK) {
     fprintf(stderr,"%s\n", _interp->result);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -540,6 +549,7 @@ void TkControlPanel::StartSession()
     if (code != TCL_OK) {
       fprintf(stderr, "Can't restore session file %s\n", sessionName);
       fprintf(stderr, "%s\n", _interp->result);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
   }
@@ -679,6 +689,7 @@ void TkControlPanel::SyncNotify()
   if (code != TCL_OK) {
     fprintf(stderr, "Cannot execute batch file %s\n", batchFile);
     fprintf(stderr,"%s\n", _interp->result);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 

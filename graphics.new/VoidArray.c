@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/12/23 23:35:43  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.4  1997/03/28 16:10:29  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -30,6 +39,7 @@
 #include <stdio.h>
 #include "VoidArray.h"
 #include "Exit.h"
+#include "DevError.h"
 
 /* constructor */
 VoidArray::VoidArray(int maxSize){
@@ -69,6 +79,7 @@ void *VoidArray::Next(){
 void VoidArray::CheckPos(int pos){
 	if (pos < 0 || pos >= _size){
 		fprintf(stderr,"VoidArray:invalid index %d\n", pos);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(2);
 	}
 }
@@ -84,6 +95,7 @@ void *VoidArray::Get(int pos){
 void VoidArray::Insert(void *element, int pos){
 	if (_size >= _maxSize){
 		fprintf(stderr,"VoidArray::Insert(): max size = %d\n", _maxSize);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(2);
 	}
 
@@ -124,6 +136,7 @@ void *VoidArray::Delete(int pos){
 
 	if (_size == 0 || pos < 0 || pos >= _size){
 		fprintf(stderr,"VoidArray::Delete: invalid pos %d\n", pos);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(2);
 	}
 	if (pos == 0){

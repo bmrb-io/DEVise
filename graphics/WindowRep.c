@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/10/18 15:36:33  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.38  1999/10/12 17:59:27  wenger
   Fixed bug in code for checking if the mouse is on a cursor that caused
   devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
@@ -194,6 +200,7 @@
 
 #include "WindowRep.h"
 #include "Display.h"
+#include "DebugLog.h"
 
 //#define DEBUG
 
@@ -252,6 +259,11 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 #ifdef DEBUG
   printf("WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
   int index;
   for(index = InitIterator(); More(index);) {
@@ -259,6 +271,11 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
     callBack->HandleResize(this, x, y, width, height);
   }
   DoneIterator(index);
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with WindowRep::HandleResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 #ifdef RAWMOUSEEVENTS

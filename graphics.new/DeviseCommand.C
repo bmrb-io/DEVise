@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.87  1999/11/29 21:08:47  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.86  1999/11/24 15:44:22  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -2309,6 +2313,7 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
     	  break;
     	default:
     	  printf("Unknown attribute type\n");
+          reportErrNosys("Fatal error");//TEMP -- replace with better message
     	  Exit::DoExit(1);
     	}
     //	_args[i + 1] = new char [strlen(attrBuf) + 1];
@@ -5436,6 +5441,10 @@ IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
 		int winX, winY;
 		unsigned winWidth, winHeight;
 		Layout *win = (Layout *)(view->GetParent());
+		if (!win) {
+          ReturnVal(API_NAK, "View has no window");
+          return -1;
+		}
 		win->Geometry(winX, winY, winWidth, winHeight);
 
 		int viewX = (int)(atof(argv[2]) * winWidth);
@@ -5443,7 +5452,7 @@ IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
 		int viewWidth = (int)(atof(argv[4]) * winWidth);
 		int viewHeight = (int)(atof(argv[5]) * winHeight);
 
-		view->MoveResize(viewX, viewY, viewWidth, viewHeight);
+		//TEMP? not needed? view->MoveResize(viewX, viewY, viewWidth, viewHeight);
 		view->SetGeometry(viewX, viewY, viewWidth, viewHeight);
 		// Note: this will probably cause a crash if view is a view
 		// symbol.  RKW 1999-08-13.
@@ -6196,7 +6205,7 @@ IMPLEMENT_COMMAND_BEGIN(getAxisTicks)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(dispatcherRun1)
-    // Arguments: none
+    // Arguments: [number of times thru the dispatcher]
     // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
@@ -6218,6 +6227,55 @@ IMPLEMENT_COMMAND_BEGIN(dispatcherRun1)
         return true;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in dispatcherRun1\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(removeViewFromPile)
+    // Arguments: <viewName>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		PileStack *ps = view->GetParentPileStack();
+		if (!ps) {
+    	    ReturnVal(API_NAK, "View is not piled");
+    	    return -1;
+		}
+
+		ps->DeleteView(view);
+        ReturnVal(API_ACK, "done");
+        return true;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in removeViewFromPile\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setOpeningSession)
+    // Arguments: <openingSession (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        Boolean openingSession = atoi(argv[1]);
+		Session::SetOpeningSession(openingSession);
+        ReturnVal(API_ACK, "done");
+        return true;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in removeViewFromPile\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

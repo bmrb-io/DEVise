@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:10:30  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.3  1996/10/02 15:23:53  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -41,6 +45,7 @@ int fd;
 
 	if ((fd=open(outfile,O_CREAT|O_TRUNC|O_WRONLY, 0666))<0){
 		reportErrSys("open");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		exit(2);
 	}
 	for (i=0; i < NUMRECORDS; i++){

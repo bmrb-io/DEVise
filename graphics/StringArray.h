@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/01/18 18:34:02  jussi
+  Added missing stdio.h to inclusion list.
+
   Revision 1.3  1996/01/11 21:46:59  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -56,6 +59,7 @@ public:
   void Delete(int index) {
     if (index < 0 || index >= _numStrings) {
       fprintf(stderr,"StringArray:Delete invalid index %d\n",index);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       exit(2);
     }
     /* move rest of the array up.*/

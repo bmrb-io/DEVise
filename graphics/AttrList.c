@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/06/30 17:38:26  wenger
+  Data color of parent view's mapping (if specified) now controls the
+  background color of view symbols; defined constant strings for GData
+  attribute values to avoid potential problems.
+
   Revision 1.18  1998/11/25 22:31:00  wenger
   Reduced the amount of memory allocated in the MappingInterp constructor,
   mainly by improving the AttrList class.
@@ -165,6 +170,7 @@ void AttrList::InsertAttr(int attrNum, const char *name, int offset, int length,
 {
   if (attrNum < 0) {
     fprintf(stderr,"AttrList::InsertAttr: invalid attrNum %d\n", attrNum);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -175,6 +181,7 @@ void AttrList::InsertAttr(int attrNum, const char *name, int offset, int length,
   if (_attrs[attrNum] != NULL) {
     fprintf(stderr,"AttrList::InsertAttr: attrNum %d already exists\n",
 	    attrNum);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 

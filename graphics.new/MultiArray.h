@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 21:18:51  jussi
+  Small fixes to remove compiler warnings. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:15:04  jussi
   Added CVS header.
 */
@@ -29,6 +32,7 @@
 #include "DeviseTypes.h"
 #include "VoidArray.h"
 #include "Exit.h"
+#include "DevError.h"
 
 class MultiArray {
 public:
@@ -95,6 +99,7 @@ private:
   void CheckListNum(int listNum) {
     if (listNum < 0 || listNum >= _numArrays) {
       fprintf(stderr,"MultiArray : invalid list %d\n", listNum);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(2);
     }
   }

@@ -7,6 +7,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/10/28 19:22:46  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.18  1998/08/17 18:52:10  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -298,6 +304,7 @@ long long TapeDrive::seek(long long offset)
 
   if (bufferOffset > bufferBytes) {
     cerr << "Seeking past end of file" << endl;
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(1);
   }
 
@@ -622,6 +629,7 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
 
   if (!_child) {
     (void)ProcessCmd(mt_op, mt_count);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(1);
   }
 
@@ -722,6 +730,7 @@ void TapeDrive::fillBuffer()
 #ifdef PARTIAL_BLOCK_ERROR
   if (status < blockSize) {             // partial block read?
     cerr << "Partial block read: " << status << " vs. " << blockSize << endl;
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(1);
   }
 #endif

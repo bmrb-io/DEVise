@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.66  1999/11/29 21:07:53  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.65  1999/10/18 15:36:32  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -348,6 +352,7 @@
 #include "RecordLink.h"
 #include "PileStack.h"
 #include "ElapsedTime.h"
+#include "DebugLog.h"
 
 //******************************************************************************
 
@@ -593,6 +598,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 #endif
   if (_mapped) {
     fprintf(stderr,"ViewWin::Map() already mapped\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -746,6 +752,7 @@ void ViewWin::Delete(ViewWin *child)
 
   if (!_children.Delete(child)) {
     fprintf(stderr,"ViewWin::Delete child not found\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   if (_myPileStack) _myPileStack->DeleteView(child);
@@ -755,10 +762,22 @@ void ViewWin::Delete(ViewWin *child)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h) 
 {
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "ViewWin(%s)::GetGeometry(%d, %d, %d, %d)\n", GetName(),
+	  x, y, w, h);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
+
   _x = x;
   _y = y;
   _width = w;
   _height = h;
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with ViewWin::SetGeometry()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 /* Get current geometry of child w. r. t. parent */
@@ -770,6 +789,7 @@ void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
   if (!GetWindowRep()) {
     fprintf(stderr,"ViewWin(%s)::Geometry: not mapped\n", GetName());
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
 
@@ -819,6 +839,7 @@ void ViewWin::AbsoluteOrigin(int &x, int &y)
 {
   if (!GetWindowRep()) {
     fprintf(stderr,"ViewWin::AbsoluteOrigin: not mapped\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   GetWindowRep()->AbsoluteOrigin(x, y);
@@ -832,15 +853,26 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
   printf("ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n", GetName(),
     this, x, y, w, h);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n",
+	  GetName(), this, x, y, w, h);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
   if (!_mapped) {
-    fprintf(stderr,"ViewWin::MoveResize not mapped\n");
-    Exit::DoExit(1);
+    reportErrNosys("ViewWin::MoveResize() -- view is not mapped\n");
+    return;
   } else {
     _hasGeometry = false;
     GetWindowRep()->MoveResize(x, y, w, h);
     HandleResize(GetWindowRep(), x, y, w, h);
   }
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with ViewWin::MoveResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 int ViewWin::TotalWeight()
@@ -1077,14 +1109,26 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 	printf("ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
 		   GetName(), this, xlow, ylow, width, height);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
+	  GetName(), this, xlow, ylow, width, height);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
 	_hasGeometry = true;
 	_x = _y = 0;			// Why are these forced to zero?  RKW 10/24/96.
 	_width = width;
 	_height = height;
 
-	if (Init::DisplayLogo())
+	if (Init::DisplayLogo()) {
 		DrawMargins();
+    }
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with ViewWin::HandleResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 void ViewWin::HandleWindowMappedInfo(WindowRep*, Boolean mapped)

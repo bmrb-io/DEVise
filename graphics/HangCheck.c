@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/10/05 17:55:37  wenger
+  Added debug log level.
+
   Revision 1.1  1999/07/19 19:46:33  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -101,16 +104,15 @@ HangCheck::DestroyDefault()
 void
 HangCheck::TimerWake(int arg)
 {
-#if defined(DEBUG)
-  printf("HangCheck(0x%p)::TimerWake(%d)\n", this, arg);
-#endif
-
   Timer::StopTimer();
 
   Timer::Queue(_timerMillisec, this);
 
   int tag = Dispatcher::Current()->GetTag();
 
+#if defined(DEBUG)
+  printf("HangCheck(0x%p)::TimerWake(%d)\n", this, arg);
+#endif
 #if defined(DEBUG_LOG)
   char logBuf[256];
   sprintf(logBuf, "HangCheck()::TimerWake(%d)\n", tag);
@@ -128,6 +130,10 @@ HangCheck::TimerWake(int arg)
     _dupTagCount = 0;
   }
 
+#if defined(DEBUG_LOG)
+  sprintf(logBuf, "  Done with HangCheck()::TimerWake()\n");
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
   Timer::StartTimer();
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:32:43  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:24  jussi
   Added CVS header.
 */
@@ -36,6 +39,7 @@ void *VoidHashEntry :: operator new(size_t sz)
 {
   if (sz != sizeof(VoidHashEntry)){
     fprintf(stderr,"VoidHashEntry::new size %d not right\n",sz);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -83,6 +87,7 @@ void VoidHash::Insert(void *val, void *data)
   void *temp;
   if (Find(val,temp)){
     fprintf(stderr,"VoidHash::Insert: buffer already exists\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   
@@ -106,6 +111,7 @@ void VoidHash::Delete(void *val)
   VoidHashEntry *entry;
   if (!Find(val, entry)){
     fprintf(stderr,"VoidHash::Delete: can't find val %x\n", val);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   if (entry->prev== NULL){

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/11/29 21:07:52  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.13  1999/09/02 17:25:50  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -69,6 +73,7 @@
 
 
 #include "ViewLayout.h"
+#include "DebugLog.h"
 
 //#define DEBUG
 
@@ -195,11 +200,23 @@ void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
 		   this, x, y, w, h);
     printf("  name = %s\n", GetName());
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "ViewLayout::HandleResize 0x%p at %d,%d, size %u,%u\n",
+      this, x, y, w, h);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
 	ViewWin::HandleResize(win, x, y, w, h);
 
-	if (Mapped())
+	if (Mapped()) {
 		MapChildren(0, true);
+    }
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with ViewLayout::HandleResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 //******************************************************************************

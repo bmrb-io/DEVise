@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/29 22:43:02  jussi
+  Added the copyright message and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:38  jussi
   Added CVS header.
 */
@@ -50,11 +53,13 @@ void ConnectorShapeRegistrar::DoRegisterConnectorShape(ConnectorShapeID id,
 {
   if (id < 0 || id >= MaxConnectorShapes) {
     fprintf(stderr,"ConnectorShapeRegistrar: id %d invalid\n", id);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
   if (_connectorShapes[id] != NULL) {
     fprintf(stderr,"ConnectorShapeRegistrar: id %d already in use\n", id);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 

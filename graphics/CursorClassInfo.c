@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/06/10 19:59:12  wenger
+  Devised sends axis type info to JS even if axes aren't drawn (so JS can
+  display cursor position properly); added code to send cursor grid info
+  and action disabling info (conditionaled out until the JS is ready for it);
+  fixed bug with cursor Y grid value in cursor creation.
+
   Revision 1.8  1998/10/20 19:39:47  wenger
   Various small code cleanups.
 
@@ -124,6 +130,7 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
 {
   if ((argc != 2) && (argc != 5)) {
     fprintf(stderr,"CursorClassInfo::CreateWithParams: wrong args\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/11/19 21:29:15  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.7  1999/09/02 17:25:48  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -82,6 +86,7 @@ GLDisplay::GLDisplay(char *name)
 #endif
   if (!(_display = XOpenDisplay(name))) {
     fprintf(stderr, "Cannot open GLDisplay\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -91,6 +96,7 @@ GLDisplay::GLDisplay(char *name)
   _normalFontStruct = _fontStruct;
   if (!_normalFontStruct) {
       fprintf(stderr, "Cannot load 12-point Courier font\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
   }
 
@@ -895,6 +901,7 @@ void GLDisplay::DestroyWindowRep(WindowRep *win)
   GLWindowRep *xwin = (GLWindowRep *)win;
   if (!_winList.Delete(xwin)) {
     fprintf(stderr, "GLDisplay:Window to be deleted not found\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/03/04 19:11:02  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.7  1996/12/03 20:39:16  jussi
   Improved error checking.
 
@@ -63,6 +66,7 @@ GDataRangeMap::GDataRangeMap(int recSize, char *fname, Boolean trunc)
   if (recSize > MAX_RANGE_REC_SIZE) {
     fprintf(stderr,"GDataRangeMap::GDataRangeMap: recSize %d > %d\n",
 	    recSize, MAX_RANGE_REC_SIZE);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -164,6 +168,7 @@ void GDataRangeMap::WriteRecords(char *fname)
     /* can't open file */
     printf("GDataRangeMap::WriteRecords(%s), 0x%p",fname, this);
     perror("open file: ");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   
@@ -375,6 +380,7 @@ void GDataRangeMap::InsertRange(RecId tLow, RecId tHigh, RecId gLow,
       /* overlap with 1st range in the list */
       fprintf(stderr,"InsertRange: (%ld,%ld) overlaps with (%ld,%ld)\n",
 	      tLow, tHigh, _head.next->tLow, _head.next->tHigh);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(2);
     }
     insertPt = &_head;
@@ -384,12 +390,14 @@ void GDataRangeMap::InsertRange(RecId tLow, RecId tHigh, RecId gLow,
     fprintf(stderr,
 	    "GDataRangeMap::InsertRange: (%ld,%ld) overlaps (%ld,%ld)\n",
 	    tLow, tHigh, rec->tLow, rec->tHigh);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   else if( rec->next != &_head && tHigh >= rec->next->tLow) {
     /* high page overlaps with next range */
     fprintf(stderr,"InsertRange: (%ld,%ld) overlaps with (%ld,%ld)\n",
 	    tLow, tHigh, rec->next->tLow, rec->next->tHigh);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   else if ( tLow == rec->tHigh+1 && gLow == rec->gHigh+1) {

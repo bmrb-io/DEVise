@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 17:33:52  jussi
+  Fixed comparisons between signed and unsigned integers.
+
   Revision 1.3  1995/11/02 16:52:45  jussi
   Updated copyright message.
 
@@ -30,6 +33,7 @@
 #include <stdlib.h>
 
 #include "rectape.h"
+#include "DevError.h"
 
 /********************************************************************
 * getrecm() - get records containing multiple data types  
@@ -59,6 +63,7 @@ int RecTape::getrecm(char *varptr, int *map)
   int len = getrec(buf);
   if (len > bufSize) {
     cerr << "Record size exceeds getrecm buffer size" << endl;
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(1);
   }
 
@@ -114,6 +119,7 @@ int RecTape::getrecm(char *varptr, int *map)
 
     default:
       cerr << "bad variable type in getrecm" << endl;
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       exit(1);
     }
   }
@@ -146,6 +152,7 @@ int RecTape::getrec(char *buf)
 
   if (size1 != size2) {
     cerr << "Bad record (sizes don't match) in getrec" << endl;
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(1);
   }
   

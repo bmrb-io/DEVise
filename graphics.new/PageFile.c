@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/08/04 21:59:50  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.3  1996/01/12 15:20:27  jussi
   Replaced libc.h with stdlib.h.
 
@@ -64,6 +71,7 @@ PageFile::PageFile(char *name, BufMgr *mgr, int maxAlloc)
 		if (_header.numPages <0 ){
 			fprintf(stderr,"PageFile::PageFile: invalid # of pages %d\n",
 				_header.numPages);
+            reportErrNosys("Fatal error");//TEMP -- replace with better message
 			Exit::DoExit(1);
 		}
 		_mgr->UnfixPage(bpage,Current );
@@ -73,6 +81,7 @@ PageFile::PageFile(char *name, BufMgr *mgr, int maxAlloc)
 		if ((_diskFile = DiskFile::CreateFile(name))== NULL){
 			fprintf(stderr,"PageFile::PageFile(%s,): can't create file\n",
 				name);
+            reportErrNosys("Fatal error");//TEMP -- replace with better message
 			Exit::DoExit(1);
 		}
 		bpage = mgr->CreateAndFixPage(_diskFile,0);
@@ -114,6 +123,7 @@ BufPage *PageFile::GetPage(int pageNum, Boolean isPrefetch){
 	if (pageNum < 1 || pageNum > _header.numPages){
 		fprintf(stderr,"PageFile::GetPage(%d,): invalid page number\n",pageNum);
 		fprintf(stderr,"\tOnly %d pages available\n", _header.numPages);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 
@@ -167,6 +177,7 @@ Read file header
 void PageFile::ReadHeader(void *data, int length){
 	if (length >= DISKFILE_PAGESIZE - sizeof(_header)){
 		fprintf(stderr,"PageFile::ReadHeader: length %d too big\n", length);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 
@@ -185,6 +196,7 @@ Write file header
 void PageFile::WriteHeader(void *data, int length){
 	if (length >= DISKFILE_PAGESIZE - sizeof(_header)){
 		fprintf(stderr,"PageFile::WriteHeader: length %d too big\n", length);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 

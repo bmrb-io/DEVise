@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/10/18 15:36:42  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.42  1999/10/05 17:55:50  wenger
   Added debug log level.
 
@@ -313,6 +319,7 @@ void ServerAPI::DoAbort(const char *reason)
   SendControl(2, args, false);
   fprintf(stderr, "Server aborts.\n");
   delete _server;
+  reportErrNosys("Fatal error");//TEMP -- replace with better message
   exit(0);
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/10/15 17:49:10  wenger
+  Fixed bug 050 (problem with record IDs in mappings).
+
   Revision 1.9  1996/09/27 21:09:36  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -61,6 +64,7 @@
 #include <string.h>
 #include "Group.h"
 #include "ItemList.h"
+#include "DevError.h"
 
 //#define DEBUG
 
@@ -135,6 +139,7 @@ void Group::subitems(char *result)
       strcat(result, " leaf} ");
     } else {
       printf("Error: top level group within group\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       exit(0);
     }
     curr = subgrps->next_item();

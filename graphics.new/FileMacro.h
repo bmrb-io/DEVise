@@ -16,12 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:09:44  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:14:46  jussi
   Added CVS header.
 */
 
 #ifndef FileMacro_h
 #define FileMacro_h
+
+#include "DevError.h"
 
 inline void ReadChunk(int fd, char *buf, int toRead){
 	while (toRead > 0){
@@ -34,12 +40,14 @@ inline void ReadChunk(int fd, char *buf, int toRead){
 		else if (len < 0){
 			if (errno != EINTR){
 				perror("ReacChunk");
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
 				Exit::DoExit(2);
 			}
 		}
 		else{
 			/* len == 0: trying to read beyond EOF */
 			fprintf(stderr,"ReadChunk: read beyond EOF\n");
+            reportErrNosys("Fatal error");//TEMP -- replace with better message
 			Exit::DoExit(2);
 		}
 	}
@@ -57,6 +65,7 @@ inline int ReadChunkStatus(int fd, char *buf, int toRead){
 		else if (len < 0){
 			if (errno != EINTR){
 				perror("ReacChunk");
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
 				Exit::DoExit(2);
 			}
 		}
@@ -80,6 +89,7 @@ inline void WriteChunk(int fd, char *buf, int toWrite){
 		else {
 			if (errno != EINTR){
 				perror("WriteChunk:");
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
 				Exit::DoExit(2);
 			}
 		}

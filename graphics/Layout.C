@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/04/20 14:13:31  wenger
+  Improved debug output.
+
   Revision 1.9  1999/03/01 17:47:32  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -63,6 +66,7 @@
 #include "Display.h"
 #include "Control.h"
 #include "View.h"
+#include "DebugLog.h"
 
 //#define DEBUG
 
@@ -146,6 +150,12 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
   printf("Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n", GetName(),
     this, mode, rows, columns);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n",
+      GetName(), this, mode, rows, columns);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
   _mode = mode;
   if (_mode == HORIZONTAL) {
@@ -159,6 +169,11 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
       MapChildren(0, true);
     }
   }
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with Layout::SetLayoutProperties()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 
@@ -217,8 +232,18 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
   printf("Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
     this, single, resize);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
+      this, single, resize);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
   
   if ( _mode == CUSTOM) {
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with Layout::MapChildren()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
     return;
   }
   int totalWeight = TotalWeight() + extraWeight; 
@@ -248,6 +273,10 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
       *w = _w;
       *h = _h;
     }
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with Layout::MapChildren()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
     return;
   }
   
@@ -319,6 +348,10 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     else
       *w = width;
   }
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with Layout::MapChildren()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 
@@ -499,6 +532,13 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 	printf("Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
 		   GetName(), this, x, y, w, h);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+	sprintf(logBuf, "Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
+      GetName(), this, x, y, w, h);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
+
 	int			oldX, oldY, oldX0, oldY0;
 	unsigned	oldH, oldW;
 	
@@ -521,6 +561,10 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 #endif
 		ControlPanel::Instance()->NotifyFrontEnd(buf);
 	}
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with Layout::HandleResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 void	Layout::HandleWindowMappedInfo(WindowRep* win, Boolean mapped)

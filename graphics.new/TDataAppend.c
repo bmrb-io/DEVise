@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/21 19:33:20  jussi
+  Replaced MinMax calls with MIN() and MAX().
+
   Revision 1.3  1996/01/12 15:24:21  jussi
   Replaced libc.h with stdlib.h.
 
@@ -69,6 +72,7 @@ void TDataAppend::Initialize(char *name, BufMgr *mgr, int recSize){
 		_pfile->ReadHeader(&_header, sizeof(_header));
 		if (_header.recSize != recSize){
 			fprintf(stderr,"TDataAppend::TDataAppend(%s,,%d):recSize shoudl be %d\n", name, recSize, _header.recSize);
+            reportErrNosys("Fatal error");//TEMP -- replace with better message
 			Exit::DoExit(1);
 		}
 	}
@@ -132,6 +136,7 @@ void TDataAppend::GetPage(int pageNum, int &numRecs, RecId &startRid,
 	if (pageNum < 1 || pageNum > NumPages()){
 		fprintf(stderr,
 			"TDataAppend::GetPage: invalid page number %d\n", pageNum);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 	BufPage *bpage = _pfile->GetPage(pageNum, isPrefetch);
@@ -254,6 +259,7 @@ void TDataAppend::CheckRecId(RecId id){
 	if (id < 0 ||id >= _header.numRecs){
 		fprintf(stderr,"TDataAppend::invalid recId %d, only %d recs\n",
 				id, _header.numRecs);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 }

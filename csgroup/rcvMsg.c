@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/08/21 22:16:10  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.4  1998/03/30 22:32:56  wenger
   Merged fixes from collab_debug_br through collab_debug_br2 (not all
   changes from branch were merged -- some were for debug only)
@@ -91,6 +95,7 @@
 #include "netfns.h"
 #include "timeOut.h"
 #include "ckptfile.h"
+#include "DevError.h"
 
 extern int MySocketfd;
 char *MasterCkptFile;
@@ -147,15 +152,18 @@ SpawnCkptXfer(CallBackHandler ckptfn, char *ckptfile, ConnectInfo *cInfo) {
 	}
 	
 	if ((netfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		exit(ER_CONNECTFAILED);
 	}
 
 	if (ConnectWithTimeout(netfd, (struct sockaddr *)cInfo, 
 			       sizeof(*cInfo), &timeout) < 0) {
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		exit(ER_CONNECTFAILED);
 	}
 
 	if ((ckptfd = open(ckptfile, O_RDONLY, 0600)) < 0) {
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		exit(ER_OPENFAILED);
 	}
 	
@@ -170,6 +178,7 @@ SpawnCkptXfer(CallBackHandler ckptfn, char *ckptfile, ConnectInfo *cInfo) {
 	}
 	close(netfd);
 	close(ckptfd);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	exit(0);
 }
 	

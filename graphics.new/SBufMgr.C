@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/06/01 17:37:43  wenger
+  Fixed various compiler warnings.
+
   Revision 1.20  1998/10/14 14:30:15  wenger
   Configured Jussi's buffer manager to use pthreads on SPARC/Solaris and
   Intel/Solaris.
@@ -129,6 +132,7 @@
 #include "Exit.h"
 #include "DevError.h"
 #include "Util.h"
+#include "DevError.h"
 
 #ifndef ATTRPROJ
 #include "Web.h"
@@ -199,6 +203,7 @@ int IOTask::StartChild(int pipeSize)
 
     if (!_child) {
         (void)DoStream(this);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
         exit(1);
     }
 #endif
@@ -351,6 +356,7 @@ void *IOTask::DoStream()
     struct sched_param sparam;
     if (pthread_getschedparam(pthread_self(), &policy, &sparam) < 0) {
         perror("pthread_getschedparam");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
         exit(1);
     }
 #if DEBUGLVL >= 5

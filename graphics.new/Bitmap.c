@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:12:46  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:14:05  jussi
   Added CVS header.
 */
@@ -25,6 +28,7 @@
 
 #include "Exit.h"
 #include "Bitmap.h"
+#include "DevError.h"
 
 /**************************************************************
 Create a new bitmap
@@ -33,7 +37,9 @@ Create a new bitmap
 Bitmap::Bitmap(int numBits)
 {
   if (numBits <= 0) {
-    fprintf(stderr, "Bitmap::Bitmap: numBits %d <= 0\n", numBits);
+	char errBuf[1024];
+    sprintf(errBuf, "Bitmap::Bitmap: numBits %d <= 0\n", numBits);
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
   
@@ -49,7 +55,9 @@ Set a bit in the bitmap
 void Bitmap::SetBit(int bitNum)
 {
   if (bitNum < 0 || bitNum >= _numBits) {
-    fprintf(stderr, "Bitmap::SetBit: invalid bit %d\n", bitNum);
+	char errBuf[1024];
+    sprintf(errBuf, "Bitmap::SetBit: invalid bit %d\n", bitNum);
+	reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
   
@@ -66,7 +74,9 @@ Clear a bit in the bitmap
 void Bitmap::ClearBit(int bitNum)
 {
   if (bitNum < 0 || bitNum >= _numBits) {
-    fprintf(stderr, "Bitmap::ClearBit: invalid bit %d\n", bitNum);
+	char errBuf[1024];
+    sprintf(errBuf, "Bitmap::ClearBit: invalid bit %d\n", bitNum);
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
   
@@ -83,7 +93,9 @@ Test if a bit has been set in the bitmap
 Boolean Bitmap::TestBit(int bitNum)
 {
   if (bitNum < 0 || bitNum >= _numBits) {
-    fprintf(stderr, "Bitmap::TestBit: invalid bit %d\n", bitNum);
+	char errBuf[1024];
+    sprintf(errBuf, "Bitmap::TestBit: invalid bit %d\n", bitNum);
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
 

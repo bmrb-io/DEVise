@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:10:30  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:16:36  jussi
   Added CVS header.
 */
@@ -116,6 +120,7 @@ public:
 	virtual void GetRecPointers(RecId startId, int numRecs,
 		void *buf, void **recPtrs){
 		fprintf(stderr,"TestTData::GetRecPointers() not implemented\n");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 

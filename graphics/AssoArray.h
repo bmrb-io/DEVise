@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/11/24 23:14:09  weaver
+  Changes for the new ColorManager.
+
   Revision 1.2.6.1  1997/05/21 20:39:34  weaver
   Changes for new ColorManager
 
@@ -69,6 +72,7 @@ AssoArray<valType>::AssoArray(int size) {
 	vec = new pair[max];
 	if(!vec) {
 		fprintf(stderr, "Insufficient memory for AssoArray\n");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		exit(1);
 	}
 }

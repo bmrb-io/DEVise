@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.65  1998/12/15 14:55:23  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.64  1998/10/28 19:22:29  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -563,6 +569,7 @@ TData::TDHandle TDataAscii::InitGetRecs(Interval *interval, int &bytesleft,
 	else
 	{
 		cout << "Only recId is supported by TDataAscii.\n";
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		exit(1);
 	}
 }
@@ -635,6 +642,7 @@ Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
 	else
 	{
 		cout << "TDataAscii: GetRecs deals with RecId only right now.\n";
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
                 exit(1);
         }
 }

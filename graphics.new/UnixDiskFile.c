@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/02 15:23:53  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.3  1996/01/12 15:27:52  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -54,6 +58,7 @@ UnixDiskFile *UnixDiskFile::CreateFile(char *name)
   if ((fd = open(name, /*O_SYNC|*/O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
     reportErrSys("UnixDiskFile: can't create file");
     fprintf(stderr,"file name is %s\n",name);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -76,12 +81,14 @@ UnixDiskFile *UnixDiskFile::OpenFile(char *name)
   struct stat fileStat;
   if (fstat(fd,&fileStat) != 0) {
     reportErrSys("UnixDiskFile: can't get file stat\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
   if ((fileStat.st_size % DISKFILE_PAGESIZE) != 0) {
     fprintf(stderr, "UnixDiskFile: OpenFile %s not multiple of page size\n",
 	    name);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   return new UnixDiskFile(fd);
@@ -116,6 +123,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
 {
   if (pageNum < 0) {
     fprintf(stderr,"UnixDiskFile::ReadPage: page %d invalid\n", pageNum);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   
@@ -123,6 +131,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
     off_t pos = (off_t) pageNum * DISKFILE_PAGESIZE;
     if (lseek(_fd,pos,SEEK_SET)!= pos) {
       reportErrSys("UnixDiskFile::GetPage: can't seek");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
   }
@@ -134,6 +143,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
     if (len< 0) {
       if ( errno != EINTR) {
 	reportErrSys("UnixDiskFile::GetPage: ");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	Exit::DoExit(1);
       }
     }
@@ -141,6 +151,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
       if (toRead != DISKFILE_PAGESIZE) {
 	/* read partial page, should not happen */
 	fprintf(stderr,"UnixDiskFile::ReadPage: partial read\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	Exit::DoExit(1);
       }
       else {
@@ -150,6 +161,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
 	   return;
 	   */
 	fprintf(stderr,"UnixDiskFile::ReadPage: read beyond eof\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	Exit::DoExit(2);
       }
     }
@@ -170,6 +182,7 @@ void UnixDiskFile::WritePage(int pageNum, void *buf)
 {
   if (pageNum < 0) {
     fprintf(stderr,"UnixDiskFile::WritePage: page %d invalid\n", pageNum);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   
@@ -177,6 +190,7 @@ void UnixDiskFile::WritePage(int pageNum, void *buf)
     off_t pos = (off_t) pageNum * DISKFILE_PAGESIZE;
     if (lseek(_fd,pos,SEEK_SET)!= pos) {
       reportErrSys("UnixDiskFile::GetPage: can't seek");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
   }
@@ -188,6 +202,7 @@ void UnixDiskFile::WritePage(int pageNum, void *buf)
     if (len< 0) {
       if (errno != EINTR) {
 	reportErrSys("UnixDiskFile::WritePage: ");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	Exit::DoExit(1);
       }
     }

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/11/16 17:02:07  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.49  1999/01/29 15:19:16  wenger
   Minor improvements to error messages.
 
@@ -295,6 +300,7 @@ SetVal(AttrVal *aval, char *valstr, AttrType valtype)
       break;
     default:
       fprintf(stderr,"unknown attr value\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(2);
       break;
     }
@@ -361,6 +367,7 @@ RegisterGenClassInfo(char *source, GenClassInfo *gen)
 {
   if (_numGenClass == MAX_GENCLASSINFO) {
     fprintf(stderr, "too many interpreted TData class generator\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   _genClasses[_numGenClass].source = source;
@@ -380,6 +387,7 @@ FindGenClass(char *source)
   }
 
   fprintf(stderr,"Can't find TData generator for input source %s\n",source);
+  reportErrNosys("Fatal error");//TEMP -- replace with better message
   Exit::DoExit(1);
   
   // keep compiler happy
@@ -661,6 +669,7 @@ ParseAttr(
 	    break;
 	  default:
 	    fprintf(stderr,"ParseCat: don't know type\n");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 	    Exit::DoExit(2);
 	}
 
@@ -1010,6 +1019,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,
 			true);
 #else
 		fprintf(stderr, "Illegal token 'source' in schema\n");
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 #endif
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/07/12 19:01:58  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.18  1998/02/12 17:15:46  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -135,6 +138,7 @@
 #include "ClientAPI.h"
 #include "DeviseClient.h"
 #include "Version.h"
+
 #define  DOASSERT(c,r) {if (!(c)) DoAbort(r); } 
 #undef	DEBUG
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/11/24 15:43:54  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.61  1999/11/19 21:29:14  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -576,6 +581,9 @@ void Dispatcher::ImmediateTerminate(int sig)
      In the future, perhaps print a stack trace.
   */
 
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+    "Dispatcher::ImmediateTerminate()\n");
+
   fprintf(stderr, "\n");
   fprintf(stderr, "An unrecoverable system error (code %d) occurred.\n",
           sig);
@@ -593,6 +601,7 @@ void Dispatcher::CheckUserInterrupt()
   if (dispatcher._quit) {
     errno = 0;
     Cleanup();
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "DEVise exiting\n");
     Exit::DoExit(0);
   }
 }
@@ -744,6 +753,7 @@ void Dispatcher::Run1()
 
 #if defined(DEBUG_CALLBACK_LIST)
   if (!CallbacksOk()) {
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 #endif
@@ -828,6 +838,7 @@ void Dispatcher::Run1()
       if (minSinceLastCmd > Init::ClientTimeout()) {
 	    printf("Last client command more than %d minutes ago; "
 	    "server exiting\n", Init::ClientTimeout());
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
         Exit::DoExit(0);
       }
     }

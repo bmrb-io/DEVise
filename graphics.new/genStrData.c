@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/06/16 18:21:18  wenger
+  Got DEVise to compile on Solaris 2.6.
+
   Revision 1.5  1996/10/02 15:23:54  wenger
   Improved error handling (modified a number of places in the code to use
   the DevError class).
@@ -58,6 +61,7 @@ main(int argc, char **argv)
     NumRecords = atoi(argv[1]);
     if (NumRecords <= 0){
       printf("can't generated %d records\n", NumRecords);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       exit(2);
     }
   }
@@ -66,6 +70,7 @@ main(int argc, char **argv)
   if ((fd=open(fileName, O_RDWR|O_CREAT|O_TRUNC,S_IRUSR|S_IWUSR))<0){
     perror("can't create file");
     fprintf(stderr,"file name is %s\n",fileName);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     exit(2);
   }
   
@@ -89,6 +94,7 @@ main(int argc, char **argv)
 
     if (write(fd,(char *)&rec, sizeof(rec))!= sizeof(rec)){
       reportErrSys("write");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       exit(2);
     }
   }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/12/15 14:54:53  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.6  1998/08/17 18:51:41  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -36,6 +42,7 @@
 #include <stdio.h>
 #include "Compress.h"
 #include "Exit.h"
+#include "DevError.h"
 
 static const int COMPRESS_BUF_SIZE = 2048;
 // Note: this buffer must be static.  RKW 1998-12-15.
@@ -87,6 +94,7 @@ char *SimpleCompress::CompressLine(char *line, int count, int &outCount)
     while (num > 0 ) {
       if (outIndex + 1 >= COMPRESS_BUF_SIZE) {
 	fprintf(stderr,"SimpleCompress::Compress:buf overflow\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	Exit::DoExit(1);
       }
       int amount = num;
@@ -107,6 +115,7 @@ char *SimpleCompress::DecompressLine(char *line, int count, int &outCount)
   if (count & 1) {
     /* count should be odd */
     fprintf(stderr, "SimpleCompress::DecompressLine: error in input\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   
@@ -117,6 +126,7 @@ char *SimpleCompress::DecompressLine(char *line, int count, int &outCount)
     if (outIndex + num > (unsigned int)COMPRESS_BUF_SIZE){
       fprintf(stderr, "SimpleCompress::Decompress:buf overflow %d\n",
 	      outIndex + num);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
     for(unsigned int j = 0; j < num; j++) {

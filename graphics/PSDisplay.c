@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/11/19 21:29:15  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.25  1998/05/14 18:21:04  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -220,6 +224,7 @@ void PSDisplay::DestroyWindowRep(WindowRep *win)
   PSWindowRep *psWin = (PSWindowRep *) win;
   if (!_winList.Delete(psWin)) {
     reportErrNosys("Window to be deleted not found");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 

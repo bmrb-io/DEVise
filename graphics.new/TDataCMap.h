@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/08/17 18:51:54  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.7  1997/11/24 23:15:19  weaver
   Changes for the new ColorManager.
 
@@ -107,6 +111,7 @@ class TDataCMap
     if (numAttrs > (int)MAX_CONNECTOR_SHAPE_ATTRS) {
       fprintf(stderr, "ConnectorMapping::SetDefaultShape:too many attrs %d\n",
 	      numAttrs);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
     _shapeId = shapeId;

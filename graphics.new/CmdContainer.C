@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/11/29 21:08:47  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.54  1999/11/24 15:44:21  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -588,6 +592,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setAxisTicks)
 	REGISTER_COMMAND(getAxisTicks)
 	REGISTER_COMMAND(dispatcherRun1)
+	REGISTER_COMMAND(removeViewFromPile)
+	REGISTER_COMMAND(setOpeningSession)
 }
 
 CmdContainer::~CmdContainer()
@@ -796,9 +802,10 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 			retval = RunOneCommand(argc, argv, control);
 		    //TEMP -- remove typecast on argv
 			logCommand(argc, (char **)argv, cmdDes);
+			break;
 
 		default:
-			errmsg = "Illegal command source type";
+			errmsg = "Illegal command source type\n";
 			break;
 	}
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/12 15:20:50  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.3  1995/12/14 18:04:44  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -35,6 +38,7 @@
 #include "Exit.h"
 #include "FileMacro.h"
 #include "PageRange.h"
+#include "DevError.h"
 
 static RangeData *_rangeFreeList = NULL;
 int PageRange::_numSearch = 0;
@@ -77,6 +81,7 @@ void PageRange::Init(int recSize){
 	if (recSize > PAGE_RANGE_REC_SIZE){
 		fprintf(stderr,"PageRange::Init record size %d > %d\n",
 			recSize, PAGE_RANGE_REC_SIZE);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 
@@ -182,6 +187,7 @@ return next unprocessed page number
 int PageRange::NextUnprocessed(int currentPageNum){
 	if (currentPageNum < 1){
 		fprintf(stderr,"PageRange::NextUnprocessed(%d): < 1\n", currentPageNum);
+        reportErrNosys("Fatal error");//TEMP -- replace with better message
 		Exit::DoExit(1);
 	}
 
@@ -264,6 +270,7 @@ void PageRange::InsertPage(int pageNum, void *firstInPage, void *lastInPage,
 				printf("current: %d %d\n", current->lowPage, current->highPage);
 				Print();
 				fprintf(stderr,"PageRange::InsertPage() pageNum %d already processed\n", pageNum);
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
 				Exit::DoExit(1);
 		}
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/06/01 17:37:40  wenger
+  Fixed various compiler warnings.
+
   Revision 1.20  1999/05/21 14:52:25  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -344,6 +347,7 @@ Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
 	else
         {
                 cout << "GData: GetRecs deals with recId only right now.\n";
+                reportErrNosys("Fatal error");//TEMP -- replace with better message
                 exit(1);
         }
 }

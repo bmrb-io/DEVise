@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/07/16 21:35:52  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.32  1999/07/12 19:02:03  wenger
   Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 
@@ -188,6 +196,7 @@ long ModTime(char *fname)
   struct stat sbuf;
   if (stat(fname, &sbuf) < 0) {
     fprintf(stderr, "Cannot get modtime of %s\n", fname);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   return (long)sbuf.st_mtime;
@@ -251,6 +260,7 @@ char *CopyString(const char *str)
   char *result = (char *)malloc(strlen(str) + 1);
   if (!result) {
     fprintf(stderr, "Insufficient memory for new string\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   strcpy(result, str);
@@ -328,6 +338,7 @@ void CheckAndMakeDirectory(char *dir, int clear )
   if (ret >=  0 ) {
     if (!(sbuf.st_mode & S_IFDIR)){
       fprintf(stderr,"Init:: %s not a directory\n", dir);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
     if (clear){
@@ -339,6 +350,7 @@ void CheckAndMakeDirectory(char *dir, int clear )
     if (code < 0 ){
       printf("Init::can't make directory %s\n",dir);
       perror("");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
   }
@@ -368,6 +380,7 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
       char errBuf[1024];
       sprintf(errBuf, "%s directory (%s) has less than %d bytes free\n",
 	envVar, dirname, exitSize);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
     }
     else if (((int)stats.STAT_BAVAIL) < warnBlocksFree)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.82  1999/11/19 21:29:16  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.81  1999/10/08 19:57:47  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -427,6 +431,7 @@ XDisplay::XDisplay(char *name)
 #endif
   if (!(_display = XOpenDisplay(name))) {
     fprintf(stderr, "Cannot open XDisplay\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -436,6 +441,7 @@ XDisplay::XDisplay(char *name)
   _normalFontStruct = _fontStruct;
   if (!_normalFontStruct) {
       fprintf(stderr, "Cannot load 12-point Courier font\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
   }
 
@@ -1205,6 +1211,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   XWindowRep *xwin = (XWindowRep *)win;
   if (!_winList.Delete(xwin)) {
     fprintf(stderr, "XDisplay:Window to be deleted not found\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/21 19:33:22  jussi
+  Replaced MinMax calls with MIN() and MAX().
+
   Revision 1.3  1996/03/05 21:25:32  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -39,17 +42,20 @@ TDataMmap::TDataMmap(char *name, int recSize)
   /* open the file */
   if ((_fd = open(name, O_RDONLY, 0666)) < 0) {
     perror("TDataMmap: open file");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
 
   struct stat sbuf;
   if (fstat(_fd, &sbuf) < 0) {
     perror("TDataMmap: fstat");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   _len = sbuf.st_size;
   if ((_len % DISKFILE_PAGESIZE) != 0) {
     fprintf(stderr, "file size %d not multiple of page size\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   _numPages = _len / DISKFILE_PAGESIZE;
@@ -57,12 +63,14 @@ TDataMmap::TDataMmap(char *name, int recSize)
   _addr = mmap(0, _len, PROT_READ, MAP_FIXED, _fd, 0);
   if (_addr == (caddr_d)-1) {
     perror("TDataMmap: mmap");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
   _start = (Page *)_addr;
   _header = (FileHeader *)_addr;
   if (_header->recSize != recSize) {
     fprintf(stderr, "TDataMap: wrong record size\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(2);
   }
 }
@@ -110,6 +118,7 @@ virtual void TDataMmap::GetPage(int pageNum, int &numRecs, RecId &startRid,
 {
   if (pageNum < 1 || pageNum > _numPages) {
     fprintf(stderr, "TDataMMap::GetPage: invalid page number %d\n", pageNum);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
 
@@ -158,6 +167,7 @@ int TDataMmap::RecSize()
 void TDataMmap::InsertRec(void *rec)
 {
   fprintf(stderr, "TDataMmap::InsertRec not implemented\n");
+  reportErrNosys("Fatal error");//TEMP -- replace with better message
   Exit::DoExit(2);
 }
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/10/08 19:57:43  wenger
+  Fixed bugs 470 and 513 (crashes when closing a session while a query
+  is running), 510 (disabling actions in piles), and 511 (problem in
+  saving sessions); also fixed various problems related to cursors on
+  piled views.
+
   Revision 1.23  1999/09/24 22:02:18  wenger
   C++ code no longer allows a session to be opened while one is already
   open.
@@ -141,6 +147,7 @@ void ClassDir::InsertCategory(char *name)
       char errBuf[1024];
       sprintf(errBuf, "Attempt to add duplicate category name '%s'\n",
         name);
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
     }
   }
@@ -345,6 +352,7 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 	      char errBuf[1024];
 	      sprintf(errBuf, "Attempt to add duplicate instance name '%s'\n",
 		iInfo->InstanceName());
+          reportErrNosys("Fatal error");//TEMP -- replace with better message
 	      Exit::DoAbort(errBuf, __FILE__, __LINE__);
 	    }
 	    classRec->_instances[classRec->_numInstances++] = iInfo;

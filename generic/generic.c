@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/10/26 16:29:52  wenger
+  Fixed bug 519 (problems with opening various sequences of soil science
+  sessions, caused by stupid composite parsers not getting reset when a
+  session is closed).
+
   Revision 1.62  1999/07/19 19:46:09  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -1701,6 +1706,7 @@ int main(int argc, char **argv)
   if(!fin) {
 	fprintf(stderr, "Cannot open %s for read: %s\n", 
 			env.c_str(), strerror(errno));
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	exit(1);
   }
   fprintf(stderr, "\nReading composite file %s\n", env.c_str());

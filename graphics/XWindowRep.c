@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.139  1999/11/12 20:20:15  wenger
+  Fixed? bug 023.
+
   Revision 1.138  1999/10/18 17:32:35  wenger
   Fixed bug 515 (small problem with cursor dragging) and bug 516 (we now
   eliminate any extraneous control-D's in GData strings).
@@ -655,6 +658,7 @@ extern "C" {
 //#define DEBUG_ETK
 
 #include "Util.h"
+#include "DebugLog.h"
 
 #define MAXPIXELDUMP 0
 
@@ -3498,6 +3502,12 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
   printf("Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
 	 x, y, w, h);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
+	  x, y, w, h);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
   if (_win) {
     /* Tell X to move/resize window. We will be notified by an event
@@ -3530,6 +3540,11 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
   }
 
   UpdateWinDimensions();
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with XWindowRep::MoveResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 /* Iconify window. Not guaranteed to succeed. */

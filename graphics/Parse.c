@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/07/16 21:35:52  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.13  1996/12/16 11:14:34  kmurli
   No change
 
@@ -64,6 +72,7 @@
 
 #include "Init.h"
 #include "Exit.h"
+#include "DevError.h"
 
 //#define DEBUG
 
@@ -132,6 +141,7 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
 
       if (numArgs >= MAXARGS - 1) {
 	fprintf(stderr, "parse: too many arguments\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
 	Exit::DoExit(1);
       }
       args[numArgs++] = start;
@@ -160,6 +170,7 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
 
     if (numArgs >= MAXARGS - 1) {
       fprintf(stderr, "parse: too many arguments\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
     }
     args[numArgs++] = start;
@@ -186,6 +197,7 @@ static int GetMonth(char *month)
   }
 
   fprintf(stderr, "unknown month %s\n", month);
+  reportErrNosys("Fatal error");//TEMP -- replace with better message
   Exit::DoExit(2);
 
   // make compiler happy

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/11/16 17:01:44  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.27  1999/10/26 16:29:32  wenger
   Fixed bug 519 (problems with opening various sequences of soil science
   sessions, caused by stupid composite parsers not getting reset when a
@@ -153,6 +158,7 @@ void Exit::DoExit(int code)
 #if defined(DEBUG)
     printf("Exit::DoExit(%d)\n", code);
 #endif
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "Exit::DoExit()\n");
 
 #if !defined(LIBCS)
     /* Clean out temp directory.  This code was moved here from Control.c,

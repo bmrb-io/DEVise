@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.207  1999/11/24 15:43:56  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.206  1999/11/22 18:11:59  wenger
   Fixed 'command buffer conflict' errors, other command-related cleanup.
 
@@ -1546,6 +1551,13 @@ void View::SetPileMode(Boolean mode)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void View::SetGeometry(int x, int y, unsigned wd, unsigned ht) 
 {
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(),
+      x, y, wd, ht);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
+
   /*ViewWin::SetGeometry(x,y,wd,ht); */
   ViewWin::MoveResize(x,y,wd,ht);
   _updateTransform = true;
@@ -1558,6 +1570,11 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
 
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewGeomCh);
   Refresh();
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with View::SetGeometry()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 /* get area for displaying label */
@@ -4131,20 +4148,36 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 		   width, height);
     printf("  Old size: %d, %d, %d, %d\n", _x, _y, _width, _height);
 #endif
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    char logBuf[1024];
+    sprintf(logBuf, "View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(),
+	  xlow, ylow, width, height);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 
 	// In case record links didn't get re-enabled after printing.
 	RecordLink::EnableUpdates();
   
 	// Is this a real size change?
 	if (_hasGeometry && (_x == xlow) && (_y == ylow) &&
-		(_width == width) && (_height == height))
+		(_width == width) && (_height == height)) {
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with View::HandleResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 		return;
+    }
 
 	ViewWin::HandleResize(w, xlow, ylow, width, height);
 	_updateTransform = true;// Update the transformation
 	DepMgr::Current()->RegisterEvent(dispatcherCallback, 
 									 DepMgr::EventViewResize);
     Refresh(true);
+
+#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+    sprintf(logBuf, "  Done with View::HandleResize()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
+#endif
 }
 
 void

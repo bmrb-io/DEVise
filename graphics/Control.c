@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1999/11/19 21:29:13  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.19  1998/11/04 20:33:44  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -101,6 +105,7 @@
 #include "ParseCat.h"
 #include "StringStorage.h"
 #include "GroupDir.h"
+#include "DebugLog.h"
 
 extern GroupDir *gdir;
 
@@ -204,6 +209,9 @@ ControlPanel *ControlPanel::Instance()
 
 void ControlPanel::DoQuit()
 {
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+    "ControlPanel::DoQuit()\n");
+
   Dispatcher::Cleanup();
   
   Exit::DoExit(0);

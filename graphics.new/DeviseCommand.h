@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/11/29 21:08:49  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.47  1999/11/22 18:13:18  wenger
   Fixed 'command buffer conflict' errors, other command-related cleanup.
 
@@ -1825,6 +1829,16 @@ DECLARE_CLASS_END
 DECLARE_CLASS_DeviseCommand_(dispatcherRun1)
 DECLARE_CLASS_END
 
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(removeViewFromPile)
+DECLARE_CLASS_END
 
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setOpeningSession)
+DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

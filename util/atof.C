@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/05/07 19:11:17  wenger
+  Upper-case E now allowed for exponents in doubles and floats.
+
   Revision 1.4  1998/02/26 00:21:10  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -52,6 +55,7 @@
 #include <sys/time.h>
 
 #include "Util.h"
+#include "DevError.h"
 
 void Exit::DoAbort(char *reason, char *file, int line)
 {
@@ -61,6 +65,7 @@ void Exit::DoAbort(char *reason, char *file, int line)
   fprintf(stderr, "An internal error has occurred. The reason is:\n");
   fprintf(stderr, "  %s\n", fulltext);
 
+  reportErrNosys("Fatal error");//TEMP -- replace with better message
   exit(2);
 }
 
@@ -117,6 +122,7 @@ int main(int argc, char **argv)
       cout << "UtilAtof(" << strings[i] << ") == " << UtilAtof(strings[i]) <<
       ", should be " << atof(strings[i]) << " (error is " << error << ")" <<
       endl;
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
       exit(1);
     }
   }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/29 18:29:57  jussi
+  Added the copyright message and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:12:48  jussi
   Added/updated CVS header.
 */
@@ -23,6 +26,7 @@
 #include <stdio.h>
 #include "Exit.h"
 #include "FilterQueue.h"
+#include "DevError.h"
 
 FilterQueue::FilterQueue()
 {
@@ -81,6 +85,7 @@ void FilterQueue::Get(int n, VisualFilter &filter)
 {
   if (n < 0 || n >= _size) {
     fprintf(stderr, "FilterQueue::Get: invalid index %d\n", n);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   filter = _filterArray[Index(n)];
@@ -90,6 +95,7 @@ void FilterQueue::Mark(int index, Boolean true_false)
 {
   if (index < 0 || index >= _size){
     fprintf(stderr, "FilterQueue::Mark: invalid index %d\n", index);
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   _filterArray[Index(index)].marked = true_false;

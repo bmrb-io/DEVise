@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/10/07 17:06:05  liping
+  RecId to Coord(double) changes of the BufMgr/QureyProc interface
+
   Revision 1.3  1996/01/12 15:23:31  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -52,6 +55,7 @@ void RangeHash::Insert(RangeInfo *rangeInfo)
   RangeInfo *temp;
   if (Find(tdata,id, temp)) {
     fprintf(stderr,"RangeHash::Insert: buffer already exists\n");
+    reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
   
