@@ -13,10 +13,8 @@ public class MemoryLoader implements Iterator
   Iterator reln;
   int size, curr = 0;
 
-  /** Argument:*/
-  /**         size1: integer, specify how many outer relation tuples can be store in memory.*/
-  /**         r: Iterator on outer relation.*/
-  /**         types: TypeDesc array, specify the type of attributes of the outer relation tuple.*/
+  /** Argument:
+         size1: integer, specify how many outer relation tuples can be store in memory;  r: Iterator on outer relation;  types: TypeDesc array, specify the type of attributes of the outer relation tuple.*/
 
   public MemoryLoader(int size1, Iterator r, TypeDesc[] types)
   {

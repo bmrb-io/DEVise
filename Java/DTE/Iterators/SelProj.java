@@ -15,11 +15,7 @@ public class SelProj implements Iterator
   ExecExpr[]   myWhere;
   Tuple        next;
 
-  /** Argument:*/ 
-  /**          inputit:  iterator on input relation. */
-  /**          myselect: ExecExpr array, to test if the tuple satisfy the join condition.*/
-  /**          mywhere:  ExecExpr array, after testing the tuple belong to the result, use this to pick out fields in returned tuple, so the number of elements of this array should be the same as that of the returned tuple.*/
-  /**     typeStrings: TypeDesc array, specify the type of attributes of the returned tuple.*/
+  /** Argument:         inputit:  iterator on input relation;        myselect: ExecExpr array, to test if the tuple satisfy the join condition;          mywhere:  ExecExpr array, after testing the tuple belong to the result, use this to pick out fields in returned tuple, so the number of elements of this array should be the same as that of the returned tuple;     typeStrings: TypeDesc array, specify the type of attributes of the returned tuple.*/
  	       
   public SelProj(Iterator inputit, ExecExpr[] myselect, 
 		     ExecExpr[] mywhere, TypeDesc[] typeStrings ) 
