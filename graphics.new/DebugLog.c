@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/03/08 01:10:54  wenger
+  Merged cleanup_1_4_7_br_9 through cleanup_1_4_7_br_10 (fix to idle
+  CPU usage bug (308)).
+
   Revision 1.1.2.1  1998/03/05 16:10:52  wenger
   Added DebugLog class for use in extensive logging of debug information.
 
@@ -28,8 +32,10 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "DebugLog.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -71,7 +77,15 @@ void
 DebugLog::Message(char *msg)
 {
   if (_stream != NULL) {
-    fprintf(_stream, "%d: %s", _logNum++, msg);
+    char *timeStr;
+    struct timeval logTime;
+    if (gettimeofday(&logTime, NULL) >= 0) {
+      timeStr = DateString(logTime.tv_sec);
+    } else {
+      timeStr = "";
+    }
+    
+    fprintf(_stream, "%d (%s): %s", _logNum++, timeStr, msg);
     fflush(_stream);
     if (ftell(_stream) > _maxSize) {
       rewind(_stream);
@@ -87,7 +101,9 @@ DebugLog *
 DebugLog::DefaultLog()
 {
   if (_defaultLog == NULL) {
-    _defaultLog = new DebugLog();
+    char filename[128];
+    sprintf(filename, "devise_debug_log_%ld", getpid());
+    _defaultLog = new DebugLog(filename);
   }
 
   return _defaultLog;
