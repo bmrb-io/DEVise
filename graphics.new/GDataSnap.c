@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 16:06:14  jussi
+  Added copyright notice and cleaned up code a bit.
+
   Revision 1.2  1995/09/05 22:14:56  jussi
   Added CVS header.
 */
@@ -41,7 +44,7 @@ public:
   GDataSnapMapping() {
     double attrs[2];
     attrs[0] = attrs[1] = 1.0;
-    Mapping::SetDefaultShape(RectXShapeID, 2, attrs);
+    Mapping::SetDefaultShape(1, 2, attrs);
     Mapping::SetDefaultColor(BlackColor);
   }
   
