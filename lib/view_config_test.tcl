@@ -21,6 +21,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/05/30 15:41:38  wenger
+# Most of the way to user-configurable '4', '5', and '6' keys -- committing
+# this stuff now so it doesn't get mixed up with special stuff for printing
+# Mitre demo.
+#
 
 ############################################################
 
@@ -29,6 +34,12 @@ source view_config.tcl
 
 set curView "View 1"
 global curView
+
+global viewHome
+set viewHome {1 0.0 5.0 -1.0 -2.0 100.0 10.0}
+
+global viewHorPan
+set viewHorPan {1 0.5 2}
 
 wm geometry . 200x50
 
@@ -63,7 +74,8 @@ menu .mbar.view.menu.configmenu -tearoff false
 ##########################################################################
 
 proc DEVise { command args } {
-  global testFonts
+  global viewHome
+  global viewHorPan
 
   puts -nonewline "DEVise $command"
   foreach arg $args {
@@ -71,23 +83,30 @@ proc DEVise { command args } {
   }
   puts ""
 
-  if { $command == "setFont" } {
-    set view [lindex $args 0]
-    set which [lindex $args 1]
-
-    set family [lindex $args 2]
-    set size [lindex $args 3]
-    set bold [lindex $args 4]
-    set italic [lindex $args 5]
-
-    set "testFonts($which)" [list $family $size $bold $italic]
+  if { $command == "viewSetHome" } {
+    set viewHome [lrange $args 1 7]
+    puts "DIAG viewHome = $viewHome"
+    return
   }
 
-  if { $command == "getFont" } {
-    set view [lindex $args 0]
-    set which [lindex $args 1]
+  if { $command == "viewSetHorPan" } {
+    set viewHorPan [lrange $args 1 3]
+    puts "DIAG viewHorPan = $viewHorPan"
+    return
+  }
 
-    return $testFonts($which)
+  if { $command == "viewGetHome" } {
+    puts "DIAG viewHome = $viewHome"
+    return $viewHome
+  }
+
+  if { $command == "viewGetHorPan" } {
+    puts "DIAG viewHorPan = $viewHorPan"
+    return $viewHorPan
+  }
+
+  if { $command == "getVisualFilters" } {
+    return {{{9.00} {5.00} {20.00} {11.00} 0}}
   }
 }
 
