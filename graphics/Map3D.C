@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/05/28 15:04:58  wenger
+  OpenGL cursors now drawn in view foreground color;
+  fixes to OpenGL crashes with some sessions (bugs 342, 356?).
+
   Revision 1.15  1998/05/05 15:14:45  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -376,7 +380,7 @@ void Map3D::ClipOvals(WindowRep *win,
                        Object3D *block, int numSyms,
                        Camera camera, int H, int V)
 {
-#ifdef 0
+#if 0
   double x1 = 0.0, y1 = 0.0, z1 = 0.0;
 
   for(int i = 0; i < numSyms; i++) {
@@ -578,7 +582,7 @@ void Map3D::MapOvalPlanes(WindowRep *win,
                            Object3D *block, int numSyms,
 			   Camera camera, int H, int V)
 {
-#ifdef 0
+#if 0
   Point3D cameraPoint;
   cameraPoint.x_ = camera.x_;
   cameraPoint.y_ = camera.y_;
