@@ -11,22 +11,43 @@ ApInit: ../graphics/Pattern.h ../graphics/Timer.h ../graphics/Util.h
 ApParseCat: ApParseCat.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
 ApParseCat: ../graphics.new/TData.h ../graphics.new/RecId.h
 ApParseCat: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-ApParseCat: ../graphics/Exit.h ../graphics/AttrList.h ../graphics/Config.h
-ApParseCat: ../graphics/DList.h ../graphics.new/GroupDir.h
-ApParseCat: ../graphics.new/ItemList.h ../graphics.new/Group.h
-ApParseCat: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
-ApParseCat: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-ApParseCat: ../graphics/Parse.h ApInit.h ../graphics/BufPolicy.h
-ApParseCat: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
-ApParseCat: ../graphics/Dispatcher.h ../graphics/Journal.h
+ApParseCat: ../graphics/Exit.h ../graphics/AttrList.h ../graphics/DList.h
+ApParseCat: ../graphics/Init.h ../graphics/BufPolicy.h
+ApParseCat: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
+ApParseCat: ../graphics.new/Group.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat: ApInit.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
+ApParseCat: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat: ../graphics.new/TDataBinaryInterp.h ../graphics.new/TDataBinary.h
 ApParseCat: ../graphics/Util.h
+ApParseCat2: ApParseCat.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+ApParseCat2: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApParseCat2: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat2: ../graphics/Exit.h ../graphics/AttrList.h ../graphics/DList.h
+ApParseCat2: ../graphics/Init.h ../graphics/BufPolicy.h
+ApParseCat2: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
+ApParseCat2: ../graphics.new/Group.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat2: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat2: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat2: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
+ApParseCat2: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
+ApParseCat2: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat2: ../graphics.new/TDataBinaryInterp.h
+ApParseCat2: ../graphics.new/TDataBinary.h ../graphics/Util.h
 AttrProj: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
 AttrProj: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 AttrProj: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
 AttrProj: ../graphics.new/DataSource.h ../graphics/Exit.h ../graphics/Util.h
-AttrProj: ../graphics/AttrList.h ../graphics/Config.h ../graphics/DList.h
-AttrProj: ../graphics.new/DataSeg.h
+AttrProj: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+AttrProj: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+AttrProj2: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+AttrProj2: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+AttrProj2: ApParseCat.h ../graphics.new/TData.h ../graphics.new/RecOrder.h
+AttrProj2: ../graphics.new/DataSource.h ../graphics/Exit.h ../graphics/Util.h
+AttrProj2: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+AttrProj2: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 ProjectionList: ProjectionList.h ../graphics/DeviseTypes.h
 ProjectionList: ../graphics/DevStatus.h
 VectorArray: VectorArray.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
@@ -34,6 +55,9 @@ VectorArray: vector.h ../graphics/Util.h ../graphics/Exit.h
 aptest: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
 aptest: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 aptest: ApInit.h ../graphics/BufPolicy.h
+aptest2: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+aptest2: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest2: ApInit.h ../graphics/BufPolicy.h
 show: AttrProj.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
 show: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 show: ApInit.h ../graphics/BufPolicy.h

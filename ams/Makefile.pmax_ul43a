@@ -21,9 +21,10 @@ MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
 MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
 MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
 MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
-MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
-MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-MapClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
+MapClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+MapClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
 MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
 MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -35,14 +36,8 @@ MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
-MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MapClassInfo.o: ../graphics.new/DispQueryProc.h
-MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
-MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
-MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
-MapClassInfo.o: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
-MapClassInfo.o: ../graphics.new/RecOrder.h ../graphics.new/Snapshot.h
-MapClassInfo.o: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
+MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
+MapClassInfo.o: ../graphics.new/QueryProc.h MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/time.h /usr/include/stdio.h
 ams.o: /usr/include/sys/ansi_compat.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -57,8 +52,8 @@ ams.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
 ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
-ams.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
-ams.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+ams.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
+ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Cursor.h
 ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
 ams.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
@@ -71,14 +66,11 @@ ams.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
 ams.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 ams.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/ViewScatter.h ../graphics.new/CompositeParser.h
-ams.o: ../graphics.new/RecInterp.h ../tape/QueryProcTape.h
-ams.o: ../graphics.new/QPRange.h ../tape/SortedTable.h
-ams.o: ../graphics.new/GData.h ../graphics.new/TData.h
-ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
-ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
-ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics.new/RecInterp.h ../graphics.new/TDataMap.h
+ams.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
+ams.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
+ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/ansi_compat.h
 amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h /usr/include/sys/file.h
 amsStat.o: /usr/include/limits.h /usr/include/unistd.h /usr/include/sys/uio.h

@@ -3,3 +3,13 @@ depend:
 		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+DevRead: DevRead.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+DevRead: ../graphics.new/RecId.h types.h marshal.h ../graphics/Util.h
+DevRead: ../graphics/Exit.h ../graphics.new/TData.h
+DevRead: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+DevRead: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
+DevRead: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+drtest: DevRead.h ../graphics/DeviseTypes.h ../graphics/DevStatus.h
+drtest: ../graphics.new/RecId.h types.h marshal.h
+types: types.h

@@ -20,19 +20,39 @@ ApParseCat.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 ApParseCat.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 ApParseCat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 ApParseCat.o: ../graphics/Exit.h ../graphics/AttrList.h
-ApParseCat.o: /usr/include/sys/time.h ../graphics/Config.h
-ApParseCat.o: ../graphics/DList.h ../graphics.new/GroupDir.h
+ApParseCat.o: /usr/include/sys/time.h ../graphics/DList.h ../graphics/Init.h
+ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
 ApParseCat.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
-ApParseCat.o: /usr/include/time.h ApInit.h ../graphics/BufPolicy.h
-ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
-ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
-ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: /usr/include/time.h ApInit.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
+ApParseCat.o: /usr/include/unistd.h /usr/include/string.h
+ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
+ApParseCat2.o: /usr/include/stdio.h /usr/include/ansi_compat.h ApParseCat.h
+ApParseCat2.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ApParseCat2.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+ApParseCat2.o: ../graphics.new/TData.h ../graphics.new/RecId.h
+ApParseCat2.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+ApParseCat2.o: ../graphics/Exit.h ../graphics/AttrList.h
+ApParseCat2.o: /usr/include/sys/time.h ../graphics/DList.h ../graphics/Init.h
+ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat2.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
+ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
+ApParseCat2.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Parse.h
+ApParseCat2.o: /usr/include/time.h ApInit.h
+ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
+ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
+ApParseCat2.o: /usr/include/unistd.h /usr/include/string.h
+ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
+ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -42,8 +62,19 @@ AttrProj.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
 AttrProj.o: ../graphics/Exit.h ../graphics/Util.h /usr/include/stdlib.h
 AttrProj.o: /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
-AttrProj.o: ../graphics/Config.h ../graphics/DList.h
+AttrProj.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 AttrProj.o: ../graphics.new/DataSeg.h
+AttrProj2.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+AttrProj2.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
+AttrProj2.o: /usr/include/values.h ../graphics/DevStatus.h
+AttrProj2.o: /usr/include/sys/types.h ../graphics.new/RecId.h VectorArray.h
+AttrProj2.o: vector.h ProjectionList.h ApParseCat.h ../graphics.new/TData.h
+AttrProj2.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
+AttrProj2.o: ../graphics/Exit.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj2.o: /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
+AttrProj2.o: ../graphics/AttrList.h /usr/include/sys/time.h
+AttrProj2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+AttrProj2.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 ProjectionList.o: ProjectionList.h ../graphics/DeviseTypes.h
 ProjectionList.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -59,6 +90,11 @@ aptest.o: /usr/include/sys/types.h AttrProj.h ../graphics/DeviseTypes.h
 aptest.o: /usr/include/values.h ../graphics/DevStatus.h
 aptest.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
 aptest.o: ApInit.h ../graphics/BufPolicy.h
+aptest2.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+aptest2.o: /usr/include/sys/types.h AttrProj.h ../graphics/DeviseTypes.h
+aptest2.o: /usr/include/values.h ../graphics/DevStatus.h
+aptest2.o: ../graphics.new/RecId.h VectorArray.h vector.h ProjectionList.h
+aptest2.o: ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/ansi_compat.h
 show.o: /usr/include/sys/types.h /usr/include/unistd.h AttrProj.h
 show.o: ../graphics/DeviseTypes.h /usr/include/values.h
