@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/05/04 17:17:07  wenger
+  Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
+  protocol that deals better with view symbols).
+
   Revision 1.53  1999/04/22 19:29:52  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -1932,9 +1936,19 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	}
 
 	//
+	// Figure out whether the cursor is fixed-size.
+	//
+	char *fixedSize;
+	if (cursor->GetFixedSize()) {
+	  fixedSize = "XY";
+	} else {
+	  fixedSize = "none";
+	}
+
+	//
     // Generate the command to send.
 	//
-	const int argCount = 8;
+	const int argCount = 9;
 	char *argv[argCount];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[DRAWCURSOR];
@@ -1945,6 +1959,7 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	FillInt(argv, pos, width);
 	FillInt(argv, pos, height);
 	argv[pos++] = movement;
+	argv[pos++] = fixedSize;
 	DOASSERT(pos == argCount, "Incorrect argCount");
 
 	//
