@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/10 19:00:18  jussi
+  Added toggle switch for perspective.
+
   Revision 1.8  1996/06/21 19:16:41  jussi
   Added a check for negative rho when zooming in in radial coordinate
   mode.
@@ -117,6 +120,11 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
       zoomInX = zoomInY = true;
     if (zoomOutX || zoomOutY)
       zoomOutX = zoomOutY = true;
+  }
+
+  if (key == 'w') {
+    Boolean solid = view->GetSolid3D();
+    view->SetSolid3D(!solid);
   }
 
   if (key == 'c') {
