@@ -70,9 +70,9 @@ correct_math.o: /usr/include/huge_val.h /usr/include/endian.h
 correct_math.o: /usr/include/bytesex.h /usr/include/nan.h
 correct_math.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 correct_math.o: /usr/include/values.h /usr/include/ieee754.h
-correct_math.o: /usr/include/ieee854.h heap.h
+correct_math.o: /usr/include/ieee854.h Heap.h
 heap.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-heap.o: /usr/include/sys/cdefs.h heap.h
+heap.o: /usr/include/sys/cdefs.h Heap.h
 int_key.o: int_key.h .././setup.h /usr/include/assert.h
 int_key.o: /usr/include/features.h /usr/include/sys/cdefs.h
 int_key.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
