@@ -275,7 +275,8 @@ const Tuple* StandAggsExec::getNext(){
 	}
 
 	for(i = 0; i < numFlds; i++){
-		retTuple[i] = aggExecs[i]->getValue();
+		// Cast below gets rid of const.
+		retTuple[i] = (void *) aggExecs[i]->getValue();
 	}
 	return retTuple;
 }
@@ -304,7 +305,8 @@ const Tuple* StandGroupByExec::getNext(){
 	}
 
 	for(i = 0; i < numFlds; i++){
-		retTuple[i] = aggExecs[i]->getValue();
+		// Cast below gets rid of const.
+		retTuple[i] = (void *) aggExecs[i]->getValue();
 	}
 	return retTuple;
 }
@@ -405,7 +407,8 @@ void MovAggsExec::setupFirst() {
   }
 
   for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = aggExecs[i]->getValue();
+    // Cast below gets rid of const.
+    retTuple[i] = (void *) aggExecs[i]->getValue();
   }
   
   // if window is greater than num of tuples, 
@@ -437,7 +440,8 @@ const Tuple* MovAggsExec::flushWindow(){
   nextDrop = (nextDrop+1) % fullWindowHeight;
   
   for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = aggExecs[i]->getValue();
+    // Cast below gets rid of const.
+    retTuple[i] = (void *) aggExecs[i]->getValue();
   }
   
   return retTuple;
@@ -495,7 +499,8 @@ const Tuple* MovAggsExec::getNext(){
 	nextDrop = (nextDrop+1) % fullWindowHeight;
 
 	for(i = 0; i < numFlds; i++){ 
-		retTuple[i] = aggExecs[i]->getValue();
+		// Cast below gets rid of const.
+		retTuple[i] = (void *) aggExecs[i]->getValue();
 	}
 
 	return retTuple;
@@ -569,13 +574,14 @@ const Tuple* MovGroupByExec::flushWindow(){
     aggExecs[aggPos[i]]->dequeue(toDeque);  
   }
   for (i = 0; i < seqByPosLen; i++){
+    // Cast below gets rid of const.
     aggExecs[seqByPos[i]]->dequeue(1); // values in seqby Q are unique
   }    
 
   nextDrop = (nextDrop+1) % fullWindowHeight;
   
   for(i = 0; i < numFlds; i++){ 
-    retTuple[i] = aggExecs[i]->getValue();
+    retTuple[i] = (void *) aggExecs[i]->getValue();
   }
 
   return retTuple;
