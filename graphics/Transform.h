@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/10 18:59:37  jussi
+  Fixed Transform3D::SetViewMatrix().
+
   Revision 1.8  1996/06/21 19:28:31  jussi
   Cleaned up 3D transformation code.
 
@@ -453,14 +456,14 @@ public:
 #endif
   }
 
-  void SetVector(POINT3D pt) {
+  void SetVector(Point3D pt) {
     _a00 = pt.x_;
     _a11 = pt.y_;
     _a22 = pt.z_;
     _a33 = 1.0; 
   }
 	
-  void GetVector(POINT3D &pt) {
+  void GetVector(Point3D &pt) {
 #ifdef DEBUG
     printf("   OLD ------- a00 = %f a01 = %f a02 = %f \n",_a00,_a01,_a02);
 #endif

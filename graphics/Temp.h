@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/06/21 19:25:38  jussi
+  Moved file from graphics.new to graphics.
+
   Revision 1.5  1996/02/28 17:33:22  yuc
   Make block_data an extern variable.
 
@@ -45,11 +48,10 @@ extern Coord _height[];
 extern Coord _depth[];
 
 /* data structures for 3D */
-extern BLOCK block_data[];
-extern SEGMENT _segment[];
-extern PLANE _plane[];
-extern int _numSegments;
-extern int _numPlanes;
+extern Object3D  _object3D[];
+extern Segment   _segment[];
+extern Plane     _plane[];
+extern int       _numSegments;
+extern int       _numPlanes;
 
 #endif
-

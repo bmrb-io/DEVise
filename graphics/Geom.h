@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/10 16:22:44  jussi
+  Added copyright notice.
+
   Revision 1.6  1996/06/21 19:27:37  jussi
   Cleaned up and moved BLOCK data structures to Map3D.h.
 
@@ -51,25 +54,26 @@ public:
   Coord x, y;               // coordinates of point
 };
 
-// ---------------------------------------------------------- 
-// 3D data structures
-// ---------------------------------------------------------- 
-
-class POINT3D {             // point in 3D space
-public:
-  Coord x_, y_, z_;         // coordinates of point
-};
-
-class SEGMENT {             // line segment in 2D space
+class Segment {             // line segment in 2D space
 public:
   Point pt[2];              // two ends of the segment
+  Color color;              // color of segment
 };
 
-class PLANE {               // triangular plane in 2D space
+class Plane {               // triangular plane in 2D space
 public:
   Point pt[3];              // three corners of the triangle
   Color color;              // color of triangle
   Coord dist;               // distance from camera (for sorting)
+};
+
+// ---------------------------------------------------------- 
+// 3D data structures
+// ---------------------------------------------------------- 
+
+class Point3D {             // point in 3D space
+public:
+  Coord x_, y_, z_;         // coordinates of point
 };
 
 // ---------------------------------------------------------- 
@@ -79,7 +83,7 @@ public:
 class Geom {
 public:
   /* Return true if pont (x,y) intersects with 
-     rectangle (minX,minY)(maxX,maxY)*/
+     rectangle (minX,minY) (maxX,maxY) */
   static Boolean PointRectIntersect(Coord x, Coord y,
 				    Coord minX, Coord minY,
 				    Coord maxX, Coord maxY) {

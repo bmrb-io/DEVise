@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/13 17:24:44  jussi
+  Diagonal line across the side of a block is not drawn.
+
   Revision 1.5  1996/07/10 18:59:18  jussi
   Moved 3D transform variables to WindowRep.
 
@@ -45,8 +48,8 @@
 
 static int _reversePlaneSortFunction(const void *p1, const void *p2)
 {
-  const PLANE *pp1 = (PLANE *)p1;
-  const PLANE *pp2 = (PLANE *)p2;
+  const Plane *pp1 = (Plane *)p1;
+  const Plane *pp2 = (Plane *)p2;
   Coord dist1 = pp1->dist;
   Coord dist2 = pp2->dist;
   if (dist1 < dist2)
@@ -67,7 +70,7 @@ static int _reversePlaneSortFunction(const void *p1, const void *p2)
 //    pt4 (-0.5,  0.5,  0.5)       pt5( 0.5,  0.5,  0.5)
 //    pt6 ( 0.5,  0.5, -0.5)       pt7(-0.5,  0.5, -0.5)
 
-void Map3D::AssignBlockVertices(BLOCK &block)
+void Map3D::AssignBlockVertices(Object3D &block)
 {
   Coord W = block.W / 2;
   Coord H = block.H / 2;
@@ -110,7 +113,7 @@ void Map3D::AssignBlockVertices(BLOCK &block)
 // assign block data to edges of the block
 // ---------------------------------------------------------- 
 
-void Map3D::AssignBlockEdges(BLOCK &block)
+void Map3D::AssignBlockEdges(Object3D &block)
 {
   block.ed[0].p  = 0; block.ed[0].q  = 1;
   block.ed[1].p  = 1; block.ed[1].q  = 2;
@@ -130,7 +133,7 @@ void Map3D::AssignBlockEdges(BLOCK &block)
 // assign block data to sides of the block
 // ---------------------------------------------------------- 
 
-void Map3D::AssignBlockSides(BLOCK &block)
+void Map3D::AssignBlockSides(Object3D &block)
 {
   block.sd[0].pt[0] = 0; block.sd[0].pt[1] = 1;
   block.sd[0].pt[2] = 2; block.sd[0].pt[3] = 3;
@@ -147,69 +150,69 @@ void Map3D::AssignBlockSides(BLOCK &block)
 }
 
 // ---------------------------------------------------------- 
-// map vertices of blocks to 2D data points
+// clip blocks
 // ---------------------------------------------------------- 
 
-void Map3D::MapBlockPoints(WindowRep *win,
-                           BLOCK *block_data, int numSyms,
-			   Camera camera, int H, int V)
+void Map3D::ClipBlocks(WindowRep *win,
+                       Object3D *block, int numSyms,
+                       Camera camera, int H, int V)
 {
   double x1 = 0.0, y1 = 0.0, z1 = 0.0;
 
   for(int i = 0; i < numSyms; i++) {
 
-    block_data[i].clipout = false;  // default is no clip
+    block[i].clipout = false;  // default is no clip
 
-    if (fabs(block_data[i].pt.x_ - camera.x_) <= block_data[i].W / 2
-	&& fabs(block_data[i].pt.y_ - camera.y_) <= block_data[i].D / 2
-	&& fabs(block_data[i].pt.z_ - camera.z_) <= block_data[i].H / 2) {
+    if (fabs(block[i].pt.x_ - camera.x_) <= block[i].W / 2
+	&& fabs(block[i].pt.y_ - camera.y_) <= block[i].D / 2
+	&& fabs(block[i].pt.z_ - camera.z_) <= block[i].H / 2) {
 #ifdef DEBUG
       printf("Block %d clipped because camera is inside block\n", i);
 #endif
-      block_data[i].clipout = true;
+      block[i].clipout = true;
       continue;
     }
 
 #define _closeness_ 1.3
 
-    if ((block_data[i].pt.x_ > 0 && camera.x_ > 0 && 
-	 camera.x_ < block_data[i].pt.x_ && 
-	 block_data[i].pt.x_ * _closeness_ > camera._rho) ||
-	(block_data[i].pt.x_ < 0 && camera.x_ < 0 && 
-	 camera.x_ > block_data[i].pt.x_ &&
-	 block_data[i].pt.x_ * _closeness_ < -camera._rho) ||
-	(block_data[i].pt.y_ > 0 && camera.y_ > 0 && 
-	 camera.y_ < block_data[i].pt.y_ &&
-	 block_data[i].pt.y_ * _closeness_ > camera._rho) ||
-	(block_data[i].pt.y_ < 0 && camera.y_ < 0 && 
-	 camera.y_ > block_data[i].pt.y_ &&
-	 block_data[i].pt.y_ * _closeness_ < -camera._rho) ||
-	(block_data[i].pt.z_ > 0 && camera.z_ > 0 && 
-	 camera.z_ < block_data[i].pt.z_ &&
-	 block_data[i].pt.z_ * _closeness_ > camera._rho) ||
-	(block_data[i].pt.z_ < 0 && camera.z_ < 0 && 
-	 camera.z_ > block_data[i].pt.z_ &&
-	 block_data[i].pt.z_ * _closeness_ < -camera._rho)) {
+    if ((block[i].pt.x_ > 0 && camera.x_ > 0 && 
+	 camera.x_ < block[i].pt.x_ && 
+	 block[i].pt.x_ * _closeness_ > camera._rho) ||
+	(block[i].pt.x_ < 0 && camera.x_ < 0 && 
+	 camera.x_ > block[i].pt.x_ &&
+	 block[i].pt.x_ * _closeness_ < -camera._rho) ||
+	(block[i].pt.y_ > 0 && camera.y_ > 0 && 
+	 camera.y_ < block[i].pt.y_ &&
+	 block[i].pt.y_ * _closeness_ > camera._rho) ||
+	(block[i].pt.y_ < 0 && camera.y_ < 0 && 
+	 camera.y_ > block[i].pt.y_ &&
+	 block[i].pt.y_ * _closeness_ < -camera._rho) ||
+	(block[i].pt.z_ > 0 && camera.z_ > 0 && 
+	 camera.z_ < block[i].pt.z_ &&
+	 block[i].pt.z_ * _closeness_ > camera._rho) ||
+	(block[i].pt.z_ < 0 && camera.z_ < 0 && 
+	 camera.z_ > block[i].pt.z_ &&
+	 block[i].pt.z_ * _closeness_ < -camera._rho)) {
 #ifdef DEBUG
       printf("Block %d clipped because it's behind the camera\n", i);
 #endif
-      block_data[i].clipout = true;
+      block[i].clipout = true;
       continue;
     }
 
     // If any of the vertices of the block appear on screen,
     // the block is not clipped, otherwise it is clipped
-    block_data[i].clipout = true;
+    block[i].clipout = true;
     for(int j = 0; j < BLOCK_VERTEX; j++) {
-      POINT3D tmppt = CompLocationOnViewingSpace(win, block_data[i].vt[j]);
+      Point3D tmppt = CompLocationOnViewingSpace(win, block[i].vt[j]);
       Point pt = CompProjectionOnViewingPlane(tmppt, camera);
       if (fabs(pt.x) <= H && fabs(pt.y) <= V) {
-        block_data[i].clipout = false;
+        block[i].clipout = false;
         break;
       }
     }
           
-    if (block_data[i].clipout) {
+    if (block[i].clipout) {
 #ifdef DEBUG
       printf("Block %d clipped because it's outside of screen\n", i);
 #endif
@@ -222,28 +225,29 @@ void Map3D::MapBlockPoints(WindowRep *win,
 // ---------------------------------------------------------- 
 
 void Map3D::MapBlockSegments(WindowRep *win,
-                             BLOCK *block_data, int numSyms,
+                             Object3D *block, int numSyms,
 			     Camera camera, int H, int V)
 {
   _numSegments = 0;
 
   for(int i = 0; i < numSyms; i++) {
-    if (block_data[i].clipout)
+    if (block[i].clipout)
       continue;
 
     Point pts[BLOCK_VERTEX];
 
     int j;
     for(j = 0; j < BLOCK_VERTEX; j++) {
-      POINT3D tmppt = CompLocationOnViewingSpace(win, block_data[i].vt[j]);
+      Point3D tmppt = CompLocationOnViewingSpace(win, block[i].vt[j]);
       pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
     }
     
     for(j = 0; j < BLOCK_EDGES; j++) {
-      _segment[_numSegments].pt[0].x = pts[block_data[i].ed[j].p].x;
-      _segment[_numSegments].pt[0].y = pts[block_data[i].ed[j].p].y;
-      _segment[_numSegments].pt[1].x = pts[block_data[i].ed[j].q].x;
-      _segment[_numSegments].pt[1].y = pts[block_data[i].ed[j].q].y;
+      _segment[_numSegments].pt[0].x = pts[block[i].ed[j].p].x;
+      _segment[_numSegments].pt[0].y = pts[block[i].ed[j].p].y;
+      _segment[_numSegments].pt[1].x = pts[block[i].ed[j].q].x;
+      _segment[_numSegments].pt[1].y = pts[block[i].ed[j].q].y;
+      _segment[_numSegments].color = block[i].color;
       _numSegments++;
     }
   }
@@ -254,10 +258,10 @@ void Map3D::MapBlockSegments(WindowRep *win,
 // ---------------------------------------------------------- 
 
 void Map3D::MapBlockPlanes(WindowRep *win,
-                           BLOCK *block_data, int numSyms,
+                           Object3D *block, int numSyms,
 			   Camera camera, int H, int V)
 {
-  POINT3D cameraPoint;
+  Point3D cameraPoint;
   cameraPoint.x_ = camera.x_;
   cameraPoint.y_ = camera.y_;
   cameraPoint.z_ = camera.z_;
@@ -269,58 +273,154 @@ void Map3D::MapBlockPlanes(WindowRep *win,
   _numPlanes = 0;
 
   for(int i = 0; i < numSyms; i++) {
-    if (block_data[i].clipout)
+    if (block[i].clipout)
       continue;
 
     Point pts[BLOCK_VERTEX];
 
     int j;
     for(j = 0; j < BLOCK_VERTEX; j++) {
-      POINT3D tmppt = CompLocationOnViewingSpace(win, block_data[i].vt[j]);
+      Point3D tmppt = CompLocationOnViewingSpace(win, block[i].vt[j]);
       pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
     }
     
     for(j = 0; j < BLOCK_SIDES; j++) {
-      _plane[_numPlanes].pt[0].x = pts[block_data[i].sd[j].pt[0]].x;
-      _plane[_numPlanes].pt[0].y = pts[block_data[i].sd[j].pt[0]].y;
-      _plane[_numPlanes].pt[1].x = pts[block_data[i].sd[j].pt[1]].x;
-      _plane[_numPlanes].pt[1].y = pts[block_data[i].sd[j].pt[1]].y;
-      _plane[_numPlanes].pt[2].x = pts[block_data[i].sd[j].pt[2]].x;
-      _plane[_numPlanes].pt[2].y = pts[block_data[i].sd[j].pt[2]].y;
-      _plane[_numPlanes].dist = TriDistSq(block_data[i],
-					  block_data[i].sd[j].pt[0],
-					  block_data[i].sd[j].pt[1],
-					  block_data[i].sd[j].pt[2],
+      _plane[_numPlanes].pt[0].x = pts[block[i].sd[j].pt[0]].x;
+      _plane[_numPlanes].pt[0].y = pts[block[i].sd[j].pt[0]].y;
+      _plane[_numPlanes].pt[1].x = pts[block[i].sd[j].pt[1]].x;
+      _plane[_numPlanes].pt[1].y = pts[block[i].sd[j].pt[1]].y;
+      _plane[_numPlanes].pt[2].x = pts[block[i].sd[j].pt[2]].x;
+      _plane[_numPlanes].pt[2].y = pts[block[i].sd[j].pt[2]].y;
+      _plane[_numPlanes].dist = TriDistSq(block[i],
+					  block[i].sd[j].pt[0],
+					  block[i].sd[j].pt[1],
+					  block[i].sd[j].pt[2],
 					  cameraPoint);
-      _plane[_numPlanes].color = block_data[i].color;
+      _plane[_numPlanes].color = block[i].color;
       _numPlanes++;
-      _plane[_numPlanes].pt[0].x = pts[block_data[i].sd[j].pt[2]].x;
-      _plane[_numPlanes].pt[0].y = pts[block_data[i].sd[j].pt[2]].y;
-      _plane[_numPlanes].pt[1].x = pts[block_data[i].sd[j].pt[3]].x;
-      _plane[_numPlanes].pt[1].y = pts[block_data[i].sd[j].pt[3]].y;
-      _plane[_numPlanes].pt[2].x = pts[block_data[i].sd[j].pt[0]].x;
-      _plane[_numPlanes].pt[2].y = pts[block_data[i].sd[j].pt[0]].y;
-      _plane[_numPlanes].dist = TriDistSq(block_data[i],
-					  block_data[i].sd[j].pt[0],
-					  block_data[i].sd[j].pt[2],
-					  block_data[i].sd[j].pt[3],
+      _plane[_numPlanes].pt[0].x = pts[block[i].sd[j].pt[2]].x;
+      _plane[_numPlanes].pt[0].y = pts[block[i].sd[j].pt[2]].y;
+      _plane[_numPlanes].pt[1].x = pts[block[i].sd[j].pt[3]].x;
+      _plane[_numPlanes].pt[1].y = pts[block[i].sd[j].pt[3]].y;
+      _plane[_numPlanes].pt[2].x = pts[block[i].sd[j].pt[0]].x;
+      _plane[_numPlanes].pt[2].y = pts[block[i].sd[j].pt[0]].y;
+      _plane[_numPlanes].dist = TriDistSq(block[i],
+					  block[i].sd[j].pt[0],
+					  block[i].sd[j].pt[2],
+					  block[i].sd[j].pt[3],
 					  cameraPoint);
-      _plane[_numPlanes].color = block_data[i].color;
+      _plane[_numPlanes].color = block[i].color;
       _numPlanes++;
     }
   }
 
   // sort the triangular planes back to front, based on their distance
   // from the camera
-  qsort(_plane, _numPlanes, sizeof(PLANE), _reversePlaneSortFunction);
+  qsort(_plane, _numPlanes, sizeof(Plane), _reversePlaneSortFunction);
+}
+
+// ---------------------------------------------------------- 
+// clip segments
+// ---------------------------------------------------------- 
+
+void Map3D::ClipLineSegments(WindowRep *win,
+                             Object3D *segment, int numSyms,
+                             Camera camera, int H, int V)
+{
+  double x1 = 0.0, y1 = 0.0, z1 = 0.0;
+
+  for(int i = 0; i < numSyms; i++) {
+
+    segment[i].clipout = false;  // default is no clip
+
+#define _closeness_ 1.3
+
+    if ((segment[i].pt.x_ > 0 && camera.x_ > 0 && 
+	 camera.x_ < segment[i].pt.x_ && 
+	 segment[i].pt.x_ * _closeness_ > camera._rho) ||
+	(segment[i].pt.x_ < 0 && camera.x_ < 0 && 
+	 camera.x_ > segment[i].pt.x_ &&
+	 segment[i].pt.x_ * _closeness_ < -camera._rho) ||
+	(segment[i].pt.y_ > 0 && camera.y_ > 0 && 
+	 camera.y_ < segment[i].pt.y_ &&
+	 segment[i].pt.y_ * _closeness_ > camera._rho) ||
+	(segment[i].pt.y_ < 0 && camera.y_ < 0 && 
+	 camera.y_ > segment[i].pt.y_ &&
+	 segment[i].pt.y_ * _closeness_ < -camera._rho) ||
+	(segment[i].pt.z_ > 0 && camera.z_ > 0 && 
+	 camera.z_ < segment[i].pt.z_ &&
+	 segment[i].pt.z_ * _closeness_ > camera._rho) ||
+	(segment[i].pt.z_ < 0 && camera.z_ < 0 && 
+	 camera.z_ > segment[i].pt.z_ &&
+	 segment[i].pt.z_ * _closeness_ < -camera._rho)) {
+#ifdef DEBUG
+      printf("Segment %d clipped because it's behind the camera\n", i);
+#endif
+      segment[i].clipout = true;
+      continue;
+    }
+
+    // If the center of the segment appears on screen,
+    // the segment is not clipped, otherwise it is clipped.
+    segment[i].clipout = true;
+    Point3D tmppt = CompLocationOnViewingSpace(win, segment[i].pt);
+    Point pt = CompProjectionOnViewingPlane(tmppt, camera);
+    if (fabs(pt.x) <= H && fabs(pt.y) <= V) {
+        segment[i].clipout = false;
+    }
+          
+    if (segment[i].clipout) {
+#ifdef DEBUG
+      printf("Segment %d clipped because it's outside of screen\n", i);
+#endif
+    }
+  }
+}
+
+// ---------------------------------------------------------- 
+// map 3D segments to 2D segments
+// ---------------------------------------------------------- 
+
+void Map3D::MapLineSegments(WindowRep *win,
+                            Object3D *segment, int numSyms,
+                            Camera camera, int H, int V)
+{
+  _numSegments = 0;
+
+  for(int i = 0; i < numSyms; i++) {
+    if (segment[i].clipout)
+      continue;
+
+    Point3D pt1, pt2;
+    pt1.x_ = segment[i].pt.x_ - segment[i].W / 2;
+    pt2.x_ = segment[i].pt.x_ + segment[i].W / 2;
+    pt1.y_ = segment[i].pt.y_ - segment[i].H / 2;
+    pt2.y_ = segment[i].pt.y_ + segment[i].H / 2;
+    pt1.z_ = segment[i].pt.z_ - segment[i].D / 2;
+    pt2.z_ = segment[i].pt.z_ + segment[i].D / 2;
+
+    Point3D tmppt = CompLocationOnViewingSpace(win, pt1);
+    Point pt = CompProjectionOnViewingPlane(tmppt, camera);
+    _segment[_numSegments].pt[0].x = pt.x;
+    _segment[_numSegments].pt[0].y = pt.y;
+
+    tmppt = CompLocationOnViewingSpace(win, pt2);
+    pt = CompProjectionOnViewingPlane(tmppt, camera);
+    _segment[_numSegments].pt[1].x = pt.x;
+    _segment[_numSegments].pt[1].y = pt.y;
+
+    _segment[_numSegments].color = segment[i].color;
+
+    _numSegments++;
+  }
 }
 
 // ----------------------------------------------------------
 
-POINT3D Map3D::CompLocationOnViewingSpace(WindowRep *win, POINT3D &pt)
+Point3D Map3D::CompLocationOnViewingSpace(WindowRep *win, Point3D &pt)
 {
   Transform3D tmpVec, tmpTransf;
-  POINT3D NewPt;
+  Point3D NewPt;
 
   tmpVec.SetVector(pt);
   tmpTransf.Copy(*win->TopTransform3());
@@ -331,7 +431,7 @@ POINT3D Map3D::CompLocationOnViewingSpace(WindowRep *win, POINT3D &pt)
 
 // ----------------------------------------------------------
 
-Point Map3D::CompProjectionOnViewingPlane(POINT3D &viewPt, Camera camera)
+Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
 {
   Point screenPt;
   double z_over_dvs = viewPt.z_ / camera._dvs;
@@ -361,8 +461,15 @@ Point Map3D::CompProjectionOnViewingPlane(POINT3D &viewPt, Camera camera)
 void Map3D::DrawSegments(WindowRep *win)
 {
   for(int i = 0; i < _numSegments; i++) {
+    Color color = _segment[i].color;
+    if (color == XorColor)
+      win->SetXorMode();
+    else
+      win->SetFgColor(color);
     win->Line(_segment[i].pt[0].x, _segment[i].pt[0].y,
 	      _segment[i].pt[1].x, _segment[i].pt[1].y, 1);
+    if (color == XorColor)
+      win->SetCopyMode();
   }
 }
 
@@ -399,8 +506,8 @@ void Map3D::DrawPlanes(WindowRep *win)
 
 void Map3D::DrawRefAxis(WindowRep *win, Camera camera)
 {
-  POINT3D axisPt[4]; // 0 == origin, 1 == on x, 2 = on y, 3 == on z
-  EDGE axis[3];      // 0 == x, 1 == y, 2 = z
+  Point3D axisPt[4]; // 0 == origin, 1 == on x, 2 = on y, 3 == on z
+  Edge3D axis[3];    // 0 == x, 1 == y, 2 = z
 
   // draw the reference axis
   axisPt[0].x_ = 0.0;
@@ -441,8 +548,8 @@ void Map3D::DrawRefAxis(WindowRep *win, Camera camera)
 
 // ---------------------------------------------------------- 
 
-void Map3D::DrawAxis(WindowRep *win, POINT3D axisPt[4],
-		     EDGE axis[3], Camera camera)
+void Map3D::DrawAxis(WindowRep *win, Point3D axisPt[4],
+		     Edge3D axis[3], Camera camera)
 {
 #ifdef DEBUG
   printf("Begin DrawAxis\n");
@@ -450,7 +557,7 @@ void Map3D::DrawAxis(WindowRep *win, POINT3D axisPt[4],
 
   Point pt[4];
   for(int j = 0; j < 4; j++) {
-    POINT3D sa_pts = CompLocationOnViewingSpace(win, axisPt[j]);
+    Point3D sa_pts = CompLocationOnViewingSpace(win, axisPt[j]);
     pt[j] = CompProjectionOnViewingPlane(sa_pts, camera);
   }
 

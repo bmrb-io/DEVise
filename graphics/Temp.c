@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/06/21 19:25:37  jussi
+  Moved file from graphics.new to graphics.
+
   Revision 1.4  1996/02/28 17:32:39  yuc
   Add global block_data for 3D Block Shape.
 
@@ -35,8 +38,8 @@ Coord _width[WINDOWREP_BATCH_SIZE];
 Coord _height[WINDOWREP_BATCH_SIZE];
 Coord _depth[WINDOWREP_BATCH_SIZE];
 
-BLOCK block_data[WINDOWREP_BATCH_SIZE]; 
-SEGMENT _segment[WINDOWREP_BATCH_SIZE * BLOCK_EDGES];
-PLANE _plane[WINDOWREP_BATCH_SIZE * 2 * BLOCK_SIDES];
-int _numSegments = 0;
-int _numPlanes = 0;
+Object3D _object3D[WINDOWREP_BATCH_SIZE]; 
+Segment  _segment[WINDOWREP_BATCH_SIZE * BLOCK_EDGES];
+Plane    _plane[WINDOWREP_BATCH_SIZE * 2 * BLOCK_SIDES];
+int      _numSegments = 0;
+int      _numPlanes = 0;
