@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/09/10 23:24:29  wenger
+  Fixed JavaScreen client switch GIF geometry problem.
+
   Revision 1.29  1998/05/21 18:18:32  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -340,8 +343,6 @@ class ViewWin : public Coloring
     void SetPrintPixmap(Boolean pixmap) { _printAsPixmap = pixmap; }
     Boolean GetPrintPixmap() { return _printAsPixmap; }
 
-	Boolean WasResized() { return _wasResized; }
-
 protected:
     /* called by base class when it has been mapped/unmapped */
     virtual void SubClassMapped() = 0;
@@ -395,7 +396,6 @@ private:
     Boolean _excludeFromPrint;
     Boolean _printAsPixmap;
 
-	Boolean _wasResized;
 
 
 	protected:

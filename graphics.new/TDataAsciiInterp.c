@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/01/07 19:29:56  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.34.2.1  1997/12/29 21:23:22  wenger
   A given TDataAscii no longer reports more than 10 decode errors.
 
@@ -489,6 +494,10 @@ Boolean TDataAsciiInterp::ReadIndex(int fd)
 
 Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 {
+#if defined(DEBUG)
+  printf("TDataAsciiInterp::Decode(%s)\n", line);
+#endif
+
   /* set buffer for interpreted record */
   _recInterp->SetBuf(recordBuf);
   _recInterp->SetRecPos(recPos);
@@ -516,6 +525,11 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
     isError = true;
   }
 
+#if defined(DEBUG)
+  printf("isBlank = %d, isComment = %d, isError = %d\n", isBlank, isComment,
+    isError);
+#endif
+
   if (isBlank || isComment || isError) {
     _decodeErrCount++;
 
@@ -539,10 +553,12 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
   for(i = 0; i < _numPhysAttrs; i++) {
     AttrInfo *info = _attrList.Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
-      if (!isdigit(args[i][0]) && args[i][0] != '-' && args[i][0] != '+') {
+      if (!IsBlank(args[i]) && !isdigit(args[i][0]) && args[i][0] != '-' &&
+	  args[i][0] != '+') {
         _decodeErrCount++;
         if (_decodeErrCount <= MAX_ERRS_REPORTED) {
 	  printf("Invalid integer/date value: <%s>\n", args[i]);
+	  printf("  at attr %d (%s)\n", i, info->name);
 	  printf("  Record parsed as: ");
           PrintRec(numArgs, args);
           MaxErrWarn(_decodeErrCount, GetName());
@@ -550,11 +566,12 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
 	return false;
       }
     } else if (info->type == FloatAttr || info->type == DoubleAttr) {
-      if (!isdigit(args[i][0]) && args[i][0] != '.'
-	  && args[i][0] != '-' && args[i][0] != '+') {
+      if (!IsBlank(args[i]) && !isdigit(args[i][0]) && args[i][0] != '.' &&
+	  args[i][0] != '-' && args[i][0] != '+') {
         _decodeErrCount++;
         if (_decodeErrCount <= MAX_ERRS_REPORTED) {
 	  printf("Invalid float/double value: <%s>\n", args[i]);
+	  printf("  at attr %d (%s)\n", i, info->name);
 	  printf("  Record parsed as: ");
           PrintRec(numArgs, args);
           MaxErrWarn(_decodeErrCount, GetName());
@@ -594,6 +611,7 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
         if (_decodeErrCount <= MAX_ERRS_REPORTED) {
 	  reportErrNosys("String is too long for available space"
 	    " (truncated to fit)");
+printf("  Attr: %s\n", info->name);
 	  printf("  String: <%s>\n", args[i]);
 	  printf("  Length: %d (includes terminating NULL)\n", info->length);
 	  printf("  Record:");

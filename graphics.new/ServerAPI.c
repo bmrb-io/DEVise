@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/09/28 20:05:53  wenger
+  Fixed bug 383 (unnecessary creation of QueryProc); moved all
+  DestroySessionData() code from subclasses of ControlPanel into base class,
+  because it was all the same; found and fixed bug 398 (caused by a change
+  in the propagation of view selections).
+
   Revision 1.36  1998/05/02 09:00:50  taodb
   Added support for JAVA Screen and command logging
 
@@ -207,6 +213,7 @@
 #include "Version.h"
 #include "StringStorage.h"
 #include "DCE.h"
+#include "Session.h"
 
 #ifdef SUN
 #include "missing.h"
@@ -263,7 +270,7 @@ ServerAPI::~ServerAPI()
   printf("ServerAPI(0x%p)::~ServerAPI()\n", this);
 #endif
 
-  DestroySessionData();
+  Session::Close();
   delete _server;
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/09/10 23:24:30  wenger
+  Fixed JavaScreen client switch GIF geometry problem.
+
   Revision 1.16  1998/03/05 20:36:13  wenger
   Fixed bugs 304 and 309 (problems with view colors); fixed a few other
   problems related to *ClassInfo classes.
@@ -90,6 +93,7 @@
 #include "Layout.h"
 #endif
 #include "Util.h"
+#include "Session.h"
 
 //#define DEBUG
 
@@ -266,24 +270,25 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
   Coord dispWidth, dispHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(dispWidth, dispHeight);
   
-  // Avoid roundoff problems in creation params if window has not been
-  // resized.
-  if (_win->WasResized()) {
+  // Avoid roundoff problems in creation params if session was opened by
+  // the JavaScreen (no chance of the window being moved or resized).
+  if (Session::GetIsJsSession()) {
 #if defined(DEBUG)
+    printf("Session opened by JavaScreen; window cannot have been resized.\n");
+#endif
+    sprintf(buf2, "%f", _relativeX);
+    sprintf(buf3, "%f", _relativeY);
+    sprintf(buf4, "%f", _relativeWidth);
+    sprintf(buf5, "%f", _relativeHeight);
+  } else {
+#if defined(DEBUG)
+    printf("Session not opened JavaScreen; window may have been resized.\n");
     printf("Window was resized\n");
 #endif
     sprintf(buf2, "%f", (double)x / dispWidth);
     sprintf(buf3, "%f", (double)y / dispHeight);
     sprintf(buf4, "%f", (double)w / dispWidth);
     sprintf(buf5, "%f", (double)h / dispHeight);
-  } else {
-#if defined(DEBUG)
-    printf("Window was NOT resized\n");
-#endif
-    sprintf(buf2, "%f", _relativeX);
-    sprintf(buf3, "%f", _relativeY);
-    sprintf(buf4, "%f", _relativeWidth);
-    sprintf(buf5, "%f", _relativeHeight);
   }
 
   sprintf(buf6, "%d", _win->GetPrintExclude());

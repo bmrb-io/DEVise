@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/09/22 17:23:42  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.29  1998/09/08 20:25:58  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -213,7 +221,7 @@ public:
   virtual void SetIdle() { ControlPanel::Instance()->SetIdle(); }
 
   virtual void DestroySessionData() {
-      ControlPanel::Instance()-> DestroySessionData(); }
+      ControlPanel::Instance()->DestroySessionData(); }
   virtual void RestartSession() { ControlPanel::Instance()->RestartSession(); }
 
   virtual void SetBatchMode(Boolean mode) {
@@ -250,6 +258,7 @@ static unsigned int classNameListLen;
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
+Boolean Session::_isJsSession = false;
 
 /*------------------------------------------------------------------------------
  * function: Session::Open
@@ -263,6 +272,10 @@ Session::Open(char *filename)
 #endif
 
   DevStatus status = StatusOk;
+
+  // This will get set later in JavaScreenCmd::Open if this function is
+  // being called from there.
+  _isJsSession = false;
 
   ControlPanelSimple control(status);
 
@@ -297,6 +310,23 @@ Session::Open(char *filename)
 #endif
 
   if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::Close
+ * Close the current session.
+ */
+DevStatus
+Session::Close()
+{
+#if defined(DEBUG)
+  printf("Session::Close()\n");
+#endif
+
+  DevStatus status = StatusOk;
+  ControlPanel::Instance()->DestroySessionData();
+  _isJsSession = false;
   return status;
 }
 

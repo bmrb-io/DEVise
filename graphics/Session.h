@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/09/08 20:25:59  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.9  1998/05/14 18:21:09  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -74,9 +78,15 @@ class ControlPanelSimple;
 class Session {
 public:
   static DevStatus Open(char *filename);
+  static DevStatus Close();
   static DevStatus Save(char *filename, Boolean asTemplate, Boolean asExport,
       Boolean withData, Boolean selectedView = false);
   static DevStatus CreateTData(char *name);
+
+  // Whether current session (if any) was opened by JavaScreen.
+  static Boolean GetIsJsSession() { return _isJsSession; }
+  static void SetIsJsSession(Boolean isJsSession) {
+      _isJsSession = isJsSession; }
 
 private:
   static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
@@ -136,6 +146,8 @@ private:
   static DevStatus CallParseAPI(ControlPanelSimple *control, char *&result,
       Boolean splitResult, int &argcOut, char **&argvOut, char *arg0,
       char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
+
+  static Boolean _isJsSession;
 };
 
 #endif /* _Session_h_ */

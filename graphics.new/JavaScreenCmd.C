@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/09/25 20:53:04  wenger
+  Fixed bug 390 (cursor drawn in slightly wrong location) (partly caused
+  by problems in JavaScreenCmd code and partly by problems in XWindowRep).
+
   Revision 1.35  1998/09/22 19:13:41  wenger
   Fixed bug 393 (consumption of file descriptors in JavaScreen support
   code).
@@ -717,6 +721,8 @@ JavaScreenCmd::OpenSession()
 #endif
 		DoCloseSession();
 	}
+
+	Session::SetIsJsSession(true);
 
 #if 0
     struct timeval stopTime;

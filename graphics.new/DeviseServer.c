@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/09/10 23:25:10  wenger
+  Added more error reporting.
+
   Revision 1.9  1998/08/13 18:14:45  wenger
   More updates to JavaScreen support.
 
@@ -79,6 +82,7 @@
 #include "CmdContainer.h"
 #include "CmdDescriptor.h"
 #include "Csprotocols.h"
+#include "Session.h"
 
 //#define DEBUG
 
@@ -275,7 +279,7 @@ DeviseServer::EndConnection(ClientID clientID)
   // Note: Server class decrements _numClients *after* this function is
   // called.
   if (_numClients <= 1) {
-    ControlPanel::Instance()->DestroySessionData();
+    Session::Close();
   }
 
   if (_currentClient == clientID) _currentClient = CLIENT_INVALID;

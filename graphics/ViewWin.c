@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/09/22 17:23:42  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.47  1998/09/10 23:24:29  wenger
   Fixed JavaScreen client switch GIF geometry problem.
 
@@ -294,8 +302,6 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 
 	_excludeFromPrint = false;
 	_printAsPixmap = false;
-
-	_wasResized = false;
 }
 
 ViewWin::~ViewWin(void)
@@ -1109,8 +1115,6 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 	printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
 		   this, xlow, ylow, width, height);
 #endif
-
-	if (_width != 0 || _height != 0) _wasResized = true;
 
 	_hasGeometry = true;
 	_x = _y = 0;			// Why are these forced to zero?  RKW 10/24/96.

@@ -1526,6 +1526,27 @@ Num Date        Status  Description
 			the link. (rkw)
 			(Fixed by rkw, 9/28/98.)
 
+399 09/29/98	FIXED	TDataAsciiInterp does not accept a zero-length field
+			as a valid input for float, double, int, or date. (rkw)
+			(Fixed by rkw, 9/29/98.)
+
+400 09/29/98	OPEN	Displaying a UNIXFILE data source from scratch with
+			recId on both axes does not work (doesn't even produce
+			a view that can be selected). (rkw)
+
+401 09/29/98	FIXED	Open a session, move windows, save session -- windows
+			are not saved in new positions unless you also resize
+			them. (rkw)
+
+402 09/30/98	OPEN	DataReader cannot parse a schema containing any
+			attribute named 'y'. (rkw)
+
+403 09/30/98	OPEN	DataReader error messages are almost useless. (rkw)
+
+404 09/30/98	OPEN	DataReader can get out-of-synch with the beginnings
+			of records if the number of attributes it finds in
+			a record is different than it expects. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
