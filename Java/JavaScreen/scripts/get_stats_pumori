@@ -21,4 +21,4 @@
 
 ############################################################
 
-get_stats | mail -s 'JavaScreen usage on pumori' devise miron amos
+scripts/get_stats | mail -s 'JavaScreen usage on pumori' devise miron amos
