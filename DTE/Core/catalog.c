@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.39  1999/01/20 22:46:30  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.38  1998/11/23 19:18:53  donjerko
   Added support for gestalts
 
@@ -115,6 +121,10 @@
 #include "Interface.h"
 #include "sysdep.h"
 #include "DTE/types/DteStringAdt.h"
+#include "DTE/util/Del.h"
+#include "Deleter.h"
+#include "ExecExpr.h"
+
 
 //kb: SQLFilter not used anymore?
 void readFilter(string viewNm, string& select, 
@@ -150,20 +160,33 @@ Site* Catalog::find(TableName* path) const { // Throws Exception
 }
 #endif
 
-#if 0
-//kb: Directory::replace not used -- yes it is...
-void Directory::replace(const string& entry, const Interface* interf) const
-{
-	Modifier modifier(DIR_SCHEMA, fileName);
 
-	TRY(modifier.replace(&entry, interf), NVOID );
+void Directory::remove(const string& entry) const
+{
+    Del<ExecExpr> field1 = ExecExpr::createField(DteStringAdt(100), 0, 0);
+    Del<ExecExpr> value = ExecExpr::createConstant(DteStringAdt(100),
+                                                   strdup(entry.c_str()));
+    Del<ExecExpr> pred = ExecExpr::createFunction("=", field1.steal(),
+                                                  value.steal());
+    Deleter deleter(fileName, DIR_SCHEMA.getAdt());
+    deleter.deleteWhere(pred.steal());
 }
-#else
+
+void Directory::insert(const string& entry, const Interface* interf) const
+{
+    //kb: should Directory::insert use Inserter?
+    ofstream f(fileName.c_str(), ios::app);
+    f << '"' << entry << '"' << ' ';
+    interf->write(f);
+    f << '\n';
+}
+
 void Directory::replace(const string& entry, const Interface* interf) const
 {
-  assert(!"Directory::replace is broken");
+    remove(entry);
+    insert(entry, interf);
 }
-#endif
+
 
 Interface* Directory::createInterface(const string& entry) const
 { 

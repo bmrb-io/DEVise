@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/01/20 22:46:30  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.25  1998/03/17 17:19:06  donjerko
   Added new namespace management through relation ids.
 
@@ -107,7 +113,9 @@ public:
 	Interface* createInterface(const string& entry) const;
 	// throws
 
-        void replace(const string& entry, const Interface* interf) const;
+    void insert(const string& entry, const Interface* interf) const;
+    void remove(const string& entry) const;
+    void replace(const string& entry, const Interface* interf) const;
 	// throws
 };
 
