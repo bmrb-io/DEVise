@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/07/30 21:39:18  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.26  1997/07/22 15:00:52  donjerko
   *** empty log message ***
 
@@ -206,13 +209,17 @@ Site* QueryTree::createSite(){
     aggregates[count] = 
     	new Aggregates(selectList,sequenceby,withPredicate,groupBy);
 
-	while(aggregates[count]->isApplicable()){
+	// while(aggregates[count]->isApplicable())
+	if(aggregates[count]->isApplicable()){
 			   
 	   	// Change the select list
 		TRY(selectList = aggregates[count]->filterList(),NULL);
-		LOG( logFile << " Removing aggregates from the list\n" );
-		LOG(displayList(logFile, selectList, ", "));
-		LOG(logFile << endl);
+
+#if defined(DEBUG)
+		cerr << " Removing aggregates from the list\n";
+		displayList(cerr, selectList, ", ");
+		cerr << endl;
+#endif
 		count ++;
 		if (count == MAX_AGG){
 			THROW(new Exception(" Numbr of nesting levels too high "),NULL);
@@ -353,6 +360,16 @@ Site* QueryTree::createSite(){
 		// (constants or nothing)
 
 		siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
+		siteGroup->filterAll(selectList);
+		TRY(siteGroup->typify(option), NULL);
+	}
+
+	assert(groupBy);
+	if(!groupBy->isEmpty()){
+
+		// group by requires sorted input 
+
+		siteGroup = new Sort(siteGroup->getName(), groupBy, siteGroup);
 		siteGroup->filterAll(selectList);
 		TRY(siteGroup->typify(option), NULL);
 	}

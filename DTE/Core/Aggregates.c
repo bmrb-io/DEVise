@@ -18,7 +18,12 @@ bool Aggregates::isApplicable(){
 	selList->rewind();
 	filteredSelList = new List<BaseSelection*>();
 
+	if(groupBy && !groupBy->isEmpty()){
+		positions = new int[groupBy->cardinality()];
+	}
+
 	int i = 0;
+	numGrpByFlds = 0;
 	while(!selList->atEnd()){
 		
 		BaseSelection* curr = selList->get();
@@ -55,10 +60,39 @@ bool Aggregates::isApplicable(){
 				aggFuncs[i] = new AvgAggregate();
 			}
 		}
+		else if(groupBy && !groupBy->isEmpty()){
+
+			// must be grouping field
+
+			isApplicableValue = true;
+			assert(numGrpByFlds < groupBy->cardinality());
+			positions[numGrpByFlds++] = i;
+			aggFuncs[i] = new GroupAttribute();
+		}
 		filteredSelList->append(curr);
 		selList->step();
 		i++;
 	}
+
+	if(!groupBy || groupBy->isEmpty()){
+		return isApplicable;
+	}
+
+	assert(numGrpByFlds > 0);
+	numAggs = 0;
+	int tmp = 0;
+	aggPos = new int[numFlds - numGrpByFlds];
+	for(int k = 0; k < numFlds; k++){
+		if(tmp >= numGrpByFlds || positions[tmp] != k){
+			assert(numAggs < numFlds - numGrpByFlds);
+			aggPos[numAggs++] = k;
+		}
+		else{
+			tmp++;
+		}
+	}
+	assert(numAggs + numGrpByFlds == numFlds);
+
 	// Check if groupbys are there - find out positions and num of flds
 	// Create a new GroupAttribute object
 	// Error checking should include matching of select & groupby clauses
@@ -79,8 +113,7 @@ bool Aggregates::isApplicable(){
 		}	
 		assert(match);
 		
-		grpByFuncs[i] = new GroupAttribute();
-		positions[i] = j; // position in the select list
+		assert(positions[i] == j); // position in the select list
 		i++;
 		groupBy->step();
 	}
@@ -96,12 +129,6 @@ void Aggregates::typify(Site* inputPlanOp){
 	for(int i = 0; i < numFlds; i++){
 		typeIDs[i] = aggFuncs[i]->typify(inptypes[i]);
 	}
-
-	if (numGrpByFlds >0){
-	  assert(numGrpByFlds == groupBy->cardinality());
-	  for (int i = 0; i < numGrpByFlds; i++)
-	    grpByFuncs[i]->typify(inptypes[positions[i]]);
-	}
 }
 
 Iterator* Aggregates::createExec(){
@@ -109,19 +136,18 @@ Iterator* Aggregates::createExec(){
 	Iterator* inputIter = inputPlanOp->createExec();
 	ExecAggregate** aggExecs = new (ExecAggregate*)[numFlds];
 	for(int i = 0; i < numFlds; i++){
+		assert(aggFuncs[i]);
 		aggExecs[i] = aggFuncs[i]->createExec();
 	}
-	
-        if(numGrpByFlds > 0){
-	  ExecGroupAttr** grpByExecs = new (ExecGroupAttr*)[numGrpByFlds];
-	  for(int i = 0; i < numGrpByFlds; i++){
-	    grpByExecs[i] = grpByFuncs[i]->createExec();
-	  }		
-	  return new StandGroupByExec(inputIter, aggExecs, grpByExecs, numFlds,
-				      positions, numGrpByFlds);
+
+	if(numGrpByFlds > 0){
+		return new StandGroupByExec(inputIter, aggExecs, numFlds,
+			positions, numGrpByFlds, aggPos, numAggs);
 	}
-	// No group by 
-	return new StandAggsExec(inputIter, aggExecs, numFlds);
+	else{ 
+		// No group by 
+		return new StandAggsExec(inputIter, aggExecs, numFlds);
+	}
 }
 
 void StandAggsExec::initialize(){
@@ -152,104 +178,27 @@ const Tuple* StandAggsExec::getNext(){
 void StandGroupByExec::initialize(){
 	assert(inputIter);
 	inputIter->initialize();
-	isFirstGroup = true;
+	currInTup = inputIter->getNext();
 }
 
 const Tuple* StandGroupByExec::getNext(){
 
-  const Tuple* currt = inputIter->getNext();
-  if(!currt){
-    if (isFirstGroup)
-      return NULL;
-    else{ // the last tuple forms a group of its own
-      for(int i = 0; i < numFlds; i++)
-	retTuple[i] = aggExecs[i]->getValue();
-      return retTuple;
-    }
-  }
-  
-  if (isFirstGroup){
-    isFirstGroup = false;
-    for(int i = 0; i < numFlds; i++)
-      aggExecs[i]->initialize(currt[i]);
+	if(!currInTup){
+		return NULL;
+	}
+	for(int i = 0; i < numFlds; i++){
+		aggExecs[i]->initialize(currInTup[i]);
+	}
+	currInTup = inputIter->getNext();
+	while(currInTup && !isNewGroup(currInTup)){
+		for(int i = 0; i < numAggs; i++){
+			aggExecs[aggPos[i]]->update(currInTup[aggPos[i]]);
+		}
+		currInTup = inputIter->getNext();
+	}
 
-    for (int i = 0; i < grpByPosLen; i++)
-      grpByExecs[i]->initialize(currt[grpByPos[i]]);
-    
-    while((currt = inputIter->getNext())){
-      bool isdiff = false;
-      for (int i = 0; i < grpByPosLen && !isdiff; i++){
-	isdiff = isdiff || grpByExecs[i]->isdifferent(currt[grpByPos[i]]);
-      }
-      if (isdiff) // new group is encountered
-	break;
-
-      for(int i = 0; i < numFlds; i++){
-	aggExecs[i]->update(currt[i]);
-      }
-    }
-    
-    if (currt){ // New group needs to be formed
-      // Reset the values for aggExecs and grpByExecs with new tuple
-      for(int i = 0; i < numFlds; i++)
-	aggExecs[i]->initialize(currt[i]);
-
-      for (int i = 0; i < grpByPosLen; i++)
-	grpByExecs[i]->initialize(currt[grpByPos[i]]);
-    }
-    
-    for(int i = 0; i < numFlds; i++)
-      retTuple[i] = aggExecs[i]->getValue();
-    
-    return retTuple;
-  }
-
-  // Is not the first group
-  // Check if the new tuple differs from the first tuple of group
-  bool isdiff = false;
-  for (int i = 0; i < grpByPosLen && !isdiff; i++){
-    isdiff = isdiff || grpByExecs[i]->isdifferent(currt[grpByPos[i]]);
-  }
-
-  if (isdiff){ // Prev tuple forms a group of its own
-    for(int i = 0; i < numFlds; i++)
-      aggExecs[i]->initialize(currt[i]);
-
-    for (int i = 0; i < grpByPosLen; i++)
-      grpByExecs[i]->initialize(currt[grpByPos[i]]);
-    
-    for(int i = 0; i < numFlds; i++)
-      retTuple[i] = aggExecs[i]->getValue();
-    
-    return retTuple;
-  }
-  
-  // Else New tuple is added to the group
-  while((currt = inputIter->getNext())){
-    bool isdiff = false;
-    for (int i = 0; i < grpByPosLen && !isdiff; i++){
-      isdiff = isdiff || grpByExecs[i]->isdifferent(currt[grpByPos[i]]);
-    } 
-    if (isdiff) // new group is encountered
-      break;
-    
-    for(int i = 0; i < numFlds; i++){
-      aggExecs[i]->update(currt[i]);
-    }
-  }
-    
-  if (currt){ // New group needs to be formed
-    // Reset the values for aggExecs and grpByExecs with new tuple
-    for(int i = 0; i < numFlds; i++)
-      aggExecs[i]->initialize(currt[i]);
-    
-    for (int i = 0; i < grpByPosLen; i++)
-      grpByExecs[i]->initialize(currt[grpByPos[i]]);
-  }
-    
-  for(int i = 0; i < numFlds; i++)
-    retTuple[i] = aggExecs[i]->getValue();
-  
-  return retTuple;
+	for(int i = 0; i < numFlds; i++){
+		retTuple[i] = aggExecs[i]->getValue();
+	}
+	return retTuple;
 }
-

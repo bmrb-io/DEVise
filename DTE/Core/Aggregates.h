@@ -12,39 +12,35 @@ public:
   virtual Type* getValue() = 0;
 };
 
-class ExecGroupAttr {
-  ADTCopyPtr copyPtr;
-  GeneralPtr* comparePtr;
-  Type* prevGroup;
-  size_t valueSize;
+class ExecGroupAttr : public ExecAggregate {
+	ADTCopyPtr copyPtr;
+	OperatorPtr eqPtr;
+	Type* prevGroup;
+	size_t valueSize;
 
 public:
-  ExecGroupAttr(ADTCopyPtr copyPtr, GeneralPtr* comparePtr, Type* value, 
+	ExecGroupAttr(ADTCopyPtr copyPtr, OperatorPtr eqPtr, Type* value, 
 		size_t valueSize) :
-    copyPtr(copyPtr), comparePtr(comparePtr), prevGroup(value), 
-    valueSize(valueSize) {}
+		copyPtr(copyPtr), eqPtr(eqPtr), prevGroup(value), 
+		valueSize(valueSize) {}
 
-  bool isdifferent(const Type* newVal){
-    Type* cmp;
-    comparePtr->opPtr(prevGroup, newVal, cmp);
+	bool isDifferent(const Type* newVal){
+		Type* cmp;
+		eqPtr(prevGroup, newVal, cmp);
+		return !((bool) cmp);
+	}
 
-    if (int(cmp) == 0) 
-      return true;
-    else
-      return false;
-  }
+	virtual void initialize(const Type* input){
+		copyPtr(input, prevGroup, valueSize);	    
+	}
 
-  virtual void initialize(const Type* input){
-    copyPtr(input, prevGroup, valueSize);	    
-  }
+	virtual void update(const Type* input){
+		assert(0);
+	}
 
-  virtual void update(const Type* input){
-    copyPtr(input, prevGroup, valueSize);	    
-  }
-
-  virtual Type* getValue(){
-    return prevGroup;
-  }
+	virtual Type* getValue(){
+		return prevGroup;
+	}
 };
 
 class ExecMinMax : public ExecAggregate {
@@ -336,33 +332,35 @@ public:
 
 };
 
-class GroupAttribute {
+class GroupAttribute : public Aggregate {
 protected:
   TypeID typeID;
-  GeneralPtr* comparePtr;
+  OperatorPtr eqPtr;
   
 public:
   GroupAttribute() {}
 
-  TypeID typify(TypeID inputT){	// throws
+  virtual TypeID typify(TypeID inputT){	// throws
     TypeID boolT;
     typeID = inputT;
 
     TypeID retVal;  // is a dummy	       
-    TRY(comparePtr = getOperatorPtr("comp", inputT, inputT, retVal), NULL); 
-    assert(comparePtr);
+    GeneralPtr* genPtr;
+    TRY(genPtr = getOperatorPtr("=", inputT, inputT, retVal), NULL); 
+    assert(genPtr);
+    eqPtr = genPtr->opPtr;
     
     return typeID;
   }
 
-  ExecGroupAttr* createExec(){
+  virtual ExecGroupAttr* createExec(){
     ADTCopyPtr copyPtr;
     TRY(copyPtr = getADTCopyPtr(typeID), NULL);
     
     size_t valueSize;
     Type *value = allocateSpace(typeID, valueSize);
 
-    return new ExecGroupAttr(copyPtr, comparePtr, value, valueSize);
+    return new ExecGroupAttr(copyPtr, eqPtr, value, valueSize);
   }
 
 };
@@ -394,40 +392,60 @@ public:
 class StandGroupByExec : public Iterator {
   Iterator* inputIter; // Assumes is sorted on grouping attributes by optimizer
   ExecAggregate** aggExecs;
-  ExecGroupAttr** grpByExecs;
   int numFlds;
   Tuple* retTuple;
   int* grpByPos;		// positions of group by attributes
   int grpByPosLen;
-  bool isFirstGroup; 
+  int* aggPos;
+  int numAggs;
+  const Tuple* currInTup;
   
 public:
   
-  StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
-		   ExecGroupAttr** grpByExecs, int numFlds, int* grpByPos, 
-		   int grpByPosLen) :
-    inputIter(inputIter), aggExecs(aggExecs), grpByExecs(grpByExecs),
-    numFlds(numFlds),  grpByPos(grpByPos), grpByPosLen(grpByPosLen) {
-      retTuple = new Tuple[numFlds];
-  }
+	StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
+		int numFlds, int* grpByPos, 
+		int grpByPosLen,
+		int* aggPos, int numAggs) :
 
-  virtual ~StandGroupByExec(){
-    
-    // should destroy all of its members
-    
-    delete inputIter;
-    delete [] retTuple;	// destroy too
-    // ...
-  }
+		inputIter(inputIter), aggExecs(aggExecs),
+		numFlds(numFlds),  grpByPos(grpByPos), grpByPosLen(grpByPosLen),
+		aggPos(aggPos), numAggs(numAggs) {
 
-  virtual void initialize();
-  
-  virtual const Tuple* getNext();
+		retTuple = new Tuple[numFlds];
+		currInTup = NULL;
+		assert(numAggs + grpByPosLen == numFlds);
+	}
+
+	virtual ~StandGroupByExec(){
+		for(int i = 0; i < numFlds; i++){
+			delete aggExecs[i];
+		}
+		delete [] aggExecs;
+		delete [] grpByPos;
+		delete [] aggPos;
+		delete [] retTuple;
+		delete inputIter;
+	}
+
+	virtual void initialize();
+
+	virtual const Tuple* getNext();
   
   // Need to check this..
   virtual void reset(int lowRid, int highRid){
     TRY(inputIter->reset(lowRid, highRid), );
   }
+
+private:
+	bool isNewGroup(const Tuple* tup){
+		for (int i = 0; i < grpByPosLen; i++){
+			ExecGroupAttr* curr = (ExecGroupAttr*) aggExecs[grpByPos[i]];
+			if(curr->isDifferent(tup[grpByPos[i]])){
+			 	return true;
+			}
+		}
+		return false;
+	}
 };
 
 class Aggregates : public Site {
@@ -441,12 +459,13 @@ class Aggregates : public Site {
 	BaseSelection* withPredicate;	
 	Site* inputPlanOp;
 	int withPredicatePos;	
-  List<BaseSelection*>* groupBy;
-  int *positions; // positions of groupBy fields
-  int numGrpByFlds;
-  TypeID* typeIDs;
-  Aggregate** aggFuncs;
-  GroupAttribute** grpByFuncs;
+	List<BaseSelection*>* groupBy;
+	int* positions; // positions of groupBy fields
+	int* aggPos;		// positions of aggregate fields
+	TypeID* typeIDs;
+	Aggregate** aggFuncs;
+	int numGrpByFlds;
+	int numAggs;
 public:
 	Aggregates(
 		List<BaseSelection*>* selectClause,	// queries select clause
@@ -466,30 +485,26 @@ public:
 			  aggFuncs[i] = NULL;
 			  typeIDs[i] = UNKN_TYPE;
 			}
-			if (groupBy){
-			  numGrpByFlds = groupBy->cardinality();
-			  positions = new int[numGrpByFlds];
-			  grpByFuncs = new (GroupAttribute*)[numGrpByFlds];
-			  for (int i = 0; i < numGrpByFlds; i++)
-			    grpByFuncs[i] = NULL;
-			}
 		}
 		else {
 			numFlds = 0;
 			aggFuncs = NULL;
-			grpByFuncs = NULL;
 		}
 		isApplicableValue = false;
 		alreadyChecked = false;
 		inputPlanOp = NULL;
 		filteredSelList = NULL;
+		positions = NULL;
+		aggPos = NULL;
+		numGrpByFlds = numAggs = 0;
 	}
 	
 	virtual ~Aggregates(){
 		// do not delete selList;
-		delete sequenceAttr;
-		delete inputPlanOp;
-		delete filteredSelList;		// do not destroy
+		// couses problems
+		// delete sequenceAttr;
+		// delete inputPlanOp;
+		// delete filteredSelList;		// do not destroy
 	}
 	
 	bool isApplicable();
