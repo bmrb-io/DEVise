@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2001/07/19 17:19:49  wenger
+  Fixed bug in home on linked/piled views.
+
   Revision 1.27  2001/07/13 22:17:14  wenger
   Automatic view home now takes symbol bounding boxes into account (fixes
   bugs 547 and 557).
@@ -147,8 +150,9 @@
 #include "CountMapping.h"
 #include "DerivedTable.h"
 #include "DupElim.h"
+#include "MappingInterp.h"
 
-//#define DEBUG
+//#define DEBUG 0
 //#define TEST_FILTER_LINK // TEMP -- remove later. RKW 1998-10-29.
 
 struct SymbolInfo {
@@ -180,18 +184,19 @@ ViewData::ViewData(char* name, VisualFilter& initFilter, QueryProc* qp,
 						 AxisLabel* xAxis, AxisLabel* yAxis, Action* action)
 	:	ViewGraph(name, initFilter, qp, xAxis, yAxis, fgid, bgid, action)
 {
-#if defined(DEBUG)
+#if (DEBUG >= 1)
 	printf("ViewData::ViewData(0x%p, %s)\n", this, name);
 #endif
 
     _objectValid.Set();
+	_passTwoGData = NULL;
 }
 
 //******************************************************************************
 ViewData::~ViewData()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
 	printf("ViewData::~ViewData(0x%p, %s)\n", this, _name);
 #endif
 
@@ -217,7 +222,7 @@ void
 ViewData::QueryInit(void* userData)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
   printf("ViewData(%s)::QueryInit()\n", GetName());
 #endif
 
@@ -234,6 +239,7 @@ ViewData::QueryInit(void* userData)
 
   _dataRangesValid = false;
   _dataRangeFirst = true;
+  _twoPass = false;
 
   ViewGraph::QueryInit(userData);
 }
@@ -243,7 +249,7 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
   TDataMap* map)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
   printf("ViewData(%s)::QueryDone(%d)\n", GetName(), bytes);
 #endif
 
@@ -258,9 +264,13 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
   }
   _derivedTables.DoneIterator(index);
 
+  if (_twoPass) {
+    DrawPassTwo(map);
+  }
+
   if (allDataReturned) {
     _dataRangesValid = true;
-#if defined(DEBUG)
+#if (DEBUG >= 1)
     printf("View <%s>: X: %g, %g; Y: %g, %g\n", GetName(), _dataXMin,
       _dataXMax, _dataYMin, _dataYMax);
 #endif
@@ -276,7 +286,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 								 BooleanArray*& drawnList)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
 	printf("ViewData(%s)::ReturnGData(%d, 0x%p, %d)\n", GetName(), (int)recId,
 	  gdata, numGData);
     printf("Visual filter: (%g, %g), (%g, %g)\n", _queryFilter.xLow,
@@ -285,6 +295,16 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 
 	DOASSERT(numGData <= WINDOWREP_BATCH_SIZE,
 	  "Too many records in one batch");
+
+	// Note: the whole business for making Lines and LineShades work won't
+	// work right if the shape is variable. RKW 2001-12-28.
+    ShapeID shape = mapping->GetShape((char *)gdata);
+	if ((shape == SHAPE_LINE) || (shape == SHAPE_LINE_SHADE)) {
+	  if (!_twoPass) {
+	    _twoPass = true;
+		InitPassTwo(mapping);
+	  }
+	}
 
 	// If window is iconified, say that we "processed" all records, even if
 	// they didn't actually get drawn.
@@ -298,7 +318,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 		return;
 	}
   
-#if defined(DEBUG) || 0
+#if (DEBUG >= 1) || 0
 	printf("ViewData %d recs buf start 0x%p\n", numGData, gdata);
 #endif
 
@@ -356,7 +376,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	  LRx += x;
 	  LRy += y;
 
-#if defined(DEBUG)
+#if (DEBUG >= 3)
       printf("  Record %ld bounding box: UL: %g, %g; LR: %g, %g\n",
 	    recId + recNum, ULx, ULy, LRx, LRy);
 #endif
@@ -403,14 +423,14 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	// we don't want to waste time actually drawing or doing statistics
 	// on the data.
 	if (_homeAfterQueryDone) {
-#if defined(DEBUG)
+#if (DEBUG >= 1)
         printf("View %s returning without drawing because _homeAfterQueryDone "
 		  "is set\n", GetName());
 #endif
 	    return;
     }
 
-#if defined(DEBUG)
+#if (DEBUG >= 2)
     printf("View %s data range: (%g, %g), (%g, %g)\n", GetName(), _dataXMin,
 	    _dataXMax, _dataYMin, _dataYMax);
 #endif
@@ -445,13 +465,16 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 					int		tmpRecs;
 
 					mapping->DrawGDataArray(this, win, recs, recIndex,
-					  tmpRecs, timeoutAllowed);
+					  tmpRecs, timeoutAllowed, _twoPass);
+                    if (_twoPass) {
+					  _passTwoGData->AddRecords(recIndex, recs);
+					}
 
 					// Note: if first records are outside filter, might
 					// have _processed_ some records even if didn't draw any.
 					recordsProcessed = reverseIndex[tmpRecs];
 
-#if defined(DEBUG)
+#if (DEBUG >= 2)
 					printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
 						   recordsProcessed);
 #endif
@@ -493,10 +516,13 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 		int		tmpRecs;
 
 		mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs,
-		  timeoutAllowed);
+		  timeoutAllowed, _twoPass);
+        if (_twoPass) {
+		  _passTwoGData->AddRecords(recIndex, recs);
+		}
 		recordsProcessed = reverseIndex[tmpRecs];
 
-#if defined(DEBUG)
+#if (DEBUG >= 2)
 		printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
 			   recordsProcessed);
 #endif
@@ -624,7 +650,7 @@ Boolean
 ViewData::HasDerivedTable()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
 	printf("ViewData::HasDerivedTable()\n");
 #endif
 
@@ -638,7 +664,7 @@ void
 ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
 	printf("ViewData::InsertValues(%d)\n", recCount);
 #endif
 
@@ -660,7 +686,7 @@ char *
 ViewData::CreateDerivedTable(char *namePrefix, char *masterAttrName)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
 	printf("ViewData::CreateDerivedTable(%s)\n", masterAttrName);
 #endif
 
@@ -693,7 +719,7 @@ void
 ViewData::DestroyDerivedTable(char *tableName)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
   printf("ViewData::DestroyDerivedTable(%s)\n", tableName);
 #endif
 
@@ -722,7 +748,7 @@ DerivedTable *
 ViewData::GetDerivedTable(char *tableName)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if (DEBUG >= 1)
   printf("ViewData::GetDerivedTable(%s)\n", tableName);
 #endif
 
@@ -738,6 +764,165 @@ ViewData::GetDerivedTable(char *tableName)
   _derivedTables.DoneIterator(index);
 
   return table;
+}
+
+void
+ViewData::InitPassTwo(TDataMap *map)
+{
+#if (DEBUG >= 1)
+  printf("ViewData::InitPassTwo()\n");
+#endif
+
+  _passTwoGData = new GDataStore(map);
+}
+
+void
+ViewData::DrawPassTwo(TDataMap *map)
+{
+#if (DEBUG >= 1)
+  printf("ViewData::DrawPassTwo()\n");
+#endif
+
+  int recCount = _passTwoGData->GetRecCount();
+  void **gdata = _passTwoGData->GetGData();
+
+
+  int tmpRecs;
+  map->DrawGDataArray(this, GetWindowRep(), gdata, recCount, tmpRecs,
+      false, false);
+  DOASSERT(tmpRecs == recCount, "Not all records drawn/processed");
+
+  _passTwoGData->ReleaseGData();
+
+  delete _passTwoGData;
+  _passTwoGData = NULL;
+}
+
+GDataStore::GDataStore(TDataMap *map)
+{
+#if (DEBUG >= 2)
+  printf("GDataStore::GDataStore()\n");
+#endif
+
+  _map = map;
+  _recordSize = map->GDataRecordSize();
+
+  _recordCount = 0;
+  _gdataList._next = NULL;
+  _gdataList._gdataChunk = NULL;
+  _gdataList._recCount = 0;
+  _lastNode = &_gdataList;
+  _gdata = NULL;
+}
+
+GDataStore::~GDataStore()
+{
+#if (DEBUG >= 2)
+  printf("GDataStore::~GDataStore()\n");
+#endif
+
+  _recordCount = 0;
+
+  GDataNode *node = _gdataList._next;
+  while (node != NULL) {
+    GDataNode *oldNode = node;
+    node = node->_next;
+    delete [] oldNode->_gdataChunk;
+    delete oldNode;
+  }
+
+  ReleaseGData();
+}
+
+void
+GDataStore::AddRecords(int recordCount, void **gdata)
+{
+#if (DEBUG >= 2)
+  printf("GDataStore::AddRecords(%d)\n", recordCount);
+#endif
+
+  _recordCount += recordCount;
+
+  GDataNode *node = new GDataNode();
+  node->_next = NULL;
+  node->_gdataChunk = new char[recordCount * _recordSize];
+  memcpy(node->_gdataChunk, *gdata, recordCount * _recordSize);
+  node->_recCount = recordCount;
+
+  _lastNode->_next = node;
+  _lastNode = node;
+}
+
+void **
+GDataStore::GetGData()
+{
+#if (DEBUG >= 2)
+  printf("GDataStore::GetGData()\n");
+  printf("  returning %d records\n", _recordCount);
+#endif
+
+  //
+  // Set up an array of GDataSort objects so we can sort the GData records
+  // (really the pointers to them) by X value.
+  //
+  GDataSort *recs = new GDataSort[_recordCount];
+  int indTot = 0;
+
+  GDataNode *node = _gdataList._next;
+  while (node != NULL) {
+	for (int indChunk = 0; indChunk < node->_recCount; indChunk++) {
+	  char *gdataRec = node->_gdataChunk + indChunk * _recordSize;
+	  recs[indTot]._x = _map->GetX(gdataRec);
+	  recs[indTot]._gdataRec = gdataRec;
+	  indTot++;
+	}
+    node = node->_next;
+  }
+  DOASSERT(indTot == _recordCount, "Incorrect number of records");
+
+  //
+  // Okay, now go ahead and do the actual sort.
+  //
+  qsort(recs, _recordCount, sizeof(GDataSort), Compare);
+
+  //
+  // Now make a new array of pointers to the GData records (without the
+  // X values) in sorted order.
+  //
+  _gdata = new (void *)[_recordCount];
+  for (int index = 0; index < _recordCount; index++) {
+    _gdata[index] = recs[index]._gdataRec;
+  }
+
+  delete [] recs;
+
+  return _gdata;
+}
+
+void
+GDataStore::ReleaseGData()
+{
+#if (DEBUG >= 2)
+  printf("GDataStore::ReleaseGData()\n");
+#endif
+
+  delete [] _gdata;
+  _gdata = NULL;
+}
+
+int
+GDataStore::Compare(const void *rec1, const void *rec2)
+{
+  GDataSort *r1 = (GDataSort *)rec1;
+  GDataSort *r2 = (GDataSort *)rec2;
+
+  if (r1->_x < r2->_x) {
+    return -1;
+  } else if (r1->_x > r2->_x) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 //******************************************************************************

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/12/23 23:35:35  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.6  1997/10/07 17:06:06  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -43,6 +52,9 @@
 #include "TData.h"
 #include "AttrList.h"
 
+// Note: this value determines how many records the query processor
+// returns in each "batch".  It must be no larger than the value of
+// WINDOWREP_BATCH_SIZE in WindowRep.h.  RKW 2001-12-28.
 static const int BMFULL_RECS_PER_BATCH = 1024;
 
 class TData;

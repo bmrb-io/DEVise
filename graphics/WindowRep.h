@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.87  2001/09/26 16:31:30  wenger
+  Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
+
   Revision 1.86  2000/02/16 18:23:17  wenger
   Added ClipDepth() function for debugging.
 
@@ -516,6 +519,8 @@ DefinePtrDList(WindowRepCallbackList, WindowRepCallback *);
 DefinePtrDList(ClipRectList, ClipRect *);
 
 /* # of symbols that can be sent at once in a batched call */
+// Note: this value must be AT LEAST as large as BMFULL_RECS_PER_BATCH
+// in RangeInfo.h.  RKW 2001-12-28.
 const int WINDOWREP_BATCH_SIZE = 1024;
 
 //

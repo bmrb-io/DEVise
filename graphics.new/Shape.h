@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  2001/04/03 19:57:40  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.37  1999/08/23 21:23:31  wenger
   Removed Shape::NumShapeAttrs() method -- not used.
 
@@ -197,9 +201,6 @@ class TDataMap;
 
 class Shape {
  public:
-  /* Initialize shape every time a view is refreshed */
-  virtual void Init() {}
-
   virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
     Boolean result = false;
     // This is the most common case...
@@ -266,6 +267,12 @@ class Shape {
                               ViewGraph *view, int pixelSize,
 			      int &recordsProcessed,
 			      Boolean timeoutAllowed) {}
+
+  // Force only dots to be drawn, even though the GData record has a
+  // different shape type.  Used for first pass for Line and LineShade.
+  virtual void ForceToDots(Boolean dotsOnly) {
+    fprintf(stderr, "ForceToDots() is not implemented for this class");
+  }
 
  protected:
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/03/14 21:51:49  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.7  1999/03/03 18:22:04  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -65,6 +69,43 @@ class DerivedTable;
 
 DefinePtrDList(DerivedTableList, DerivedTable *);
 
+struct GDataSort
+{
+    Coord _x;
+	char *_gdataRec;
+};
+
+struct GDataNode
+{
+    GDataNode *_next;
+	char *_gdataChunk;
+	int _recCount; // number of records in _gdataChunk
+};
+
+class GDataStore
+{
+public:
+    GDataStore(TDataMap *map);
+	~GDataStore();
+
+	void AddRecords(int recordCount, void **gdata);
+
+	int GetRecSize() { return _recordSize; }
+	int GetRecCount() { return _recordCount; }
+	void **GetGData();
+	void ReleaseGData(); // call after consuming GData
+
+private:
+	static int Compare(const void *rec1, const void *rec2);
+
+	TDataMap *_map;
+	int _recordSize;
+	GDataNode _gdataList;
+	GDataNode *_lastNode;
+	int _recordCount;
+	void **_gdata; // GData to return in GetGData
+};
+
 //******************************************************************************
 // class ViewData
 //******************************************************************************
@@ -113,6 +154,14 @@ class ViewData : public ViewGraph
 
     private:
 	    ObjectValid _objectValid;
+		
+		// Whether we need two passes to draw the data (lines, for example).
+		Boolean _twoPass;
+
+		void InitPassTwo(TDataMap *map);
+		void DrawPassTwo(TDataMap *map);
+
+		GDataStore *_passTwoGData;
 };
 
 //******************************************************************************

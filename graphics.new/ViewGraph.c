@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.150  2001/04/03 19:57:41  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.149  2001/02/20 20:02:55  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -2308,7 +2312,6 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
     printf("Submitting query 1 of %d: 0x%p (view <%s>)\n", _mappings.Size(),
 	    _map, GetName());
 #endif
-    _pstorage.Clear();
     _map->ResetMaxSymSize();
     _queryProc->BatchQuery(_map, _queryFilter, queryCallback, 0, _timestamp);
     if (GetParentPileStack()) GetParentPileStack()->QueryStarted(this);
@@ -2505,8 +2508,6 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 #if defined(REPORT_QUERY_TIME)
     printf("  elapsed time: %g sec.\n", elapsedTime);
 #endif
-
-	_pstorage.Clear();
 
 	// Note: _index is index of mapping iterator.
 	if (_index < 0) {

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.24  2001/10/17 17:52:32  wenger
+# Updated Linux and Solaris dependencies.
+#
 # Revision 1.23  2001/08/03 18:12:53  wenger
 # Removed all OpenGL-related code.
 #
@@ -216,12 +219,12 @@ generic.o: ../graphics.new/MemMgr.h ../graphics.new/UpdateLink.h
 generic.o: ../graphics.new/DeviseLink.h ../graphics.new/QueryProc.h
 generic.o: ../graphics.new/RecId.h ../graphics/GDataSock.h ../graphics/Util.h
 generic.o: /usr/include/ctype.h ../graphics.new/Action.h
-generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataMap.h
-generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/ViewData.h ../graphics.new/GDataBin.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics/CursorClassInfo.h StateMap.h ../graphics/HangCheck.h
-generic.o: ../graphics/Timer.h ../graphics.new/DebugLog.h
+generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/GDataRec.h ../graphics.new/ViewData.h
+generic.o: ../graphics.new/GDataBin.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../graphics/CursorClassInfo.h
+generic.o: StateMap.h ../graphics/HangCheck.h ../graphics/Timer.h
+generic.o: ../graphics.new/DebugLog.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/features.h
 testWindowSpeed.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 testWindowSpeed.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h

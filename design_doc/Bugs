@@ -2912,8 +2912,9 @@ Num Date        Status  Description
 			return an error message to the client, rather than
 			just leaving it hanging. (rkw)
 
-727 11/20/01	OPEN	Line graphs don't work in DEVise if the records are
+727 11/20/01	FIXED	Line graphs don't work in DEVise if the records are
 			not in order of the X axis attribute. (rkw)
+			(Fixed by rkw, 12/28/01.)
 
 728 11/21/01	OPEN	Automatic filter updates (if enabled) should probably
 			be retriggered for a child view every time the parent
@@ -2924,8 +2925,9 @@ Num Date        Status  Description
 			for views with date on the X axis. (ml/rkw)
 			(Fixed by rkw, 11/21/01.)
 
-730 11/26/01	OPEN	Line graphs don't work in DEVise if the view is a
+730 11/26/01	FIXED	Line graphs don't work in DEVise if the view is a
 			record link follower. (rkw)
+			(Fixed by rkw, 12/28/01.)
 
 731 11/27/01	OPEN	Automatic filter updates don't seem to work right in
 			piled child views -- the whole thing seems to do a
@@ -2987,6 +2989,15 @@ Num Date        Status  Description
 742 12/18/01	OPEN	JavaScreen: change of mouse location causes
 			irritating flickering of the mouse location display
 			area even if display is disabled. (rkw)
+
+743 12/28/01	OPEN	Visual filter does not select records for line and
+			line shade (all records are passed to drawing
+			methods). (rkw)  (Note: this is done so that lines
+			that cross the filter but have a point outside the
+			filter are drawn.)
+
+744 12/28/01	OPEN	Dragging with mouse sometimes doesn't zoom when
+			it should. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

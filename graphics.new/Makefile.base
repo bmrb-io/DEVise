@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.102  2001/08/03 18:13:12  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.101  2001/05/18 19:25:35  wenger
 #  Implemented the DEVise end of 3D drill-down; changed DEVise version to
 #  1.7.3.
@@ -348,7 +351,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DataSourceDQL.c  \
-        StringStorage.C PointStorage.C MapIntToInt.C MemMgr.C \
+        StringStorage.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
 	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c DrillDown3D.c

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  2001/05/18 21:15:00  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.43  2001/04/12 20:15:14  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -436,7 +439,8 @@ class TDataMap
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num,
 			      int &recordsProcessed,
-			      Boolean timeoutAllowed) = 0;
+			      Boolean timeoutAllowed,
+			      Boolean forceToDots) = 0;
 
   // Get the AttrInfo for a GData attribute. The argument should be
   // one of the MappingCmd_??? constants defined in MappingInterp.h.

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  2001/07/19 20:08:26  wenger
+  Added X Offset attribute to Line shape (for NRG examples).
+
   Revision 1.76  2001/04/12 20:15:13  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -2806,7 +2809,9 @@ FullMapping_LineShape::FindBoundingBoxes(void *gdataArray,
   maxHeight = 0.0;
 }
   
-
+// Note: this method is a special case -- if _drawDotsOnly is false,
+// it expects to get *all* GData records in one batch, sorted by the
+// X attribute.  (See special code in ViewData class.)  RKW 2001-12-27.
 void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize,
@@ -2826,76 +2831,55 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	ComputeDataLabelFrame(view);
 
-	const GDataAttrOffset *offset = map->GetGDataOffset();
+    Boolean hasOld = false;
+	Coord oldX;
+	Coord oldY;
+	PColorID oldColor;
 
-	/* get coordinates of first data point in this batch */
-
-	char*		gdata = (char *)gdataArray[0];
-	RecId		recId = map->GetRecId(gdata);
-	Coord		x0 = map->GetX(gdata);
-	Coord		y0 = map->GetY(gdata);
-	PColorID	c0 = map->GetColor(gdata);
-	if (map->HasShapeAttr(3)) {
-		x0 += map->GetShapeAttr(gdata, 3);
-	}
-
-	// How should line width be handled for line types?
-	int width = map->GetLineWidth(gdata);
-
-	/* draw line connecting last point of previous batch to
-	   first point of this batch */
-
-	if (recId > 0)
-	{
-		Coord		xp, yp;
-		PColorID	cp;
-
-		if (view->GetPointStorage()->Find(recId - 1, xp, yp, cp)) {
-			DrawConnectingLine(win, view,
-							   map->GetPattern(gdata), width,
-							   xp, yp, cp, x0, y0, c0);
-			if (view->GetDisplayDataValues())
-			  DisplayDataLabel(win, x0, y0, y0);
-			(void)view->GetPointStorage()->Remove(recId - 1);
-		} else {
-			view->GetPointStorage()->Insert(recId, x0, y0, c0);
-		}
-	}
-
-	/* now draw line connecting rest of points */
-
-	for(int i = 1; i < numSyms; i++)
-	{
-		char*		gdata = (char *)gdataArray[i];
-		Coord		x = map->GetX(gdata);
-		Coord		y = map->GetY(gdata);
-		PColorID	color = map->GetColor(gdata);
+    for (int index = 0; index < numSyms; index++) {
+		// Get values for this point.
+		char* gdata = (char *)gdataArray[index];
+		Coord ptX = map->GetX(gdata);
+		Coord ptY = map->GetY(gdata);
+		PColorID color = map->GetColor(gdata);
+		Pattern pattern = map->GetPattern(gdata);
 	    if (map->HasShapeAttr(3)) {
-		    x += map->GetShapeAttr(gdata, 3);
+		    ptX += map->GetShapeAttr(gdata, 3);
 	    }
 
-		width = map->GetLineWidth(gdata);
-		DrawConnectingLine(win, view,
-						   map->GetPattern(gdata), width,
-						   x0, y0, c0, x, y, color);
-		if (view->GetDisplayDataValues())
-		  DisplayDataLabel(win, x, y, y);
-		x0 = x;
-		y0 = y;
-		c0 = color;
-	}
+	    if (_drawDotsOnly) {
+			// First pass (unordered data) -- we just draw a dot at
+			// each point.
 
-	// Draw line connecting last point of this batch to first point of next
+			// Note: checking the visual filter here is a workaround
+			// for bug 743.  RKW 2001-12-28.
+			if (view->InVisualFilter2(ptX, ptY, ptX, ptY)) {
+				// Note: we don't have to set the pattern here, since
+				// we're only drawing one pixel.
+	            win->SetForeground(color);
 
-	Coord		xn, yn;
-	PColorID	cn;
+				win->DrawPixel(ptX, ptY);
+		    }
+		} else {
+			// Second pass (complete, ordered data) -- we draw the connecting
+			// lines.
+		    if (hasOld) {
+			    // Note: checking the visual filter here is a workaround
+			    // for bug 743.  RKW 2001-12-28.
+				Coord top = MAX(oldY, ptY);
+				Coord bottom = MIN(oldY, ptY);
+				if (view->InVisualFilter2(oldX, top, ptX, bottom)) {
+	                int width = map->GetLineWidth(gdata);
+		            DrawConnectingLine(win, view, pattern, width,
+				      oldX, oldY, oldColor, ptX, ptY, color);
+			    }
+			}
 
-	if (view->GetPointStorage()->Find(recId + numSyms, xn, yn, cn)) {
-		DrawConnectingLine(win, view,
-						   Pattern0, width, x0, y0, c0, xn, yn, cn);
-		(void)view->GetPointStorage()->Remove(recId + numSyms);
-	} else {
-		view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
+		    hasOld = true;
+			oldX = ptX;
+			oldY = ptY;
+			oldColor = color;
+		}
 	}
 
 	recordsProcessed = numSyms;
@@ -2933,6 +2917,9 @@ void FullMapping_LineShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 }
 
 
+// Note: we're obviously using the same pattern and line with for the
+// whole line, even if they change from one point to the next.
+// Maybe that's what we want?  RKW 2001-12-27.
 void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
 					   Pattern pattern, int line_width,
 					   Coord x0, Coord y0, PColorID c0,
@@ -2998,6 +2985,9 @@ FullMapping_LineShadeShape::FindBoundingBoxes(void *gdataArray,
 }
   
 
+// Note: we're obviously using the same pattern and line with for the
+// whole line, even if they change from one point to the next.
+// Maybe that's what we want?  RKW 2001-12-27.
 void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 							ViewGraph *view, Pattern pattern, int line_width,
 							Coord x0, Coord y0, PColorID c0,

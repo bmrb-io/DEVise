@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  2001/07/19 20:08:26  wenger
+  Added X Offset attribute to Line shape (for NRG examples).
+
   Revision 1.49  1999/08/23 21:23:31  wenger
   Removed Shape::NumShapeAttrs() method -- not used.
 
@@ -574,6 +577,10 @@ class FullMapping_LineShape
 {
   public:
 
+    FullMapping_LineShape() {
+      _drawDotsOnly = false;
+    }
+
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
       if (offsets->_shapeAttrOffset[3] >= 0) {
@@ -591,25 +598,36 @@ class FullMapping_LineShape
 				int &recordsProcessed,
 				Boolean timeoutAllowed);
 
+    virtual void ForceToDots(Boolean dotsOnly) { _drawDotsOnly = dotsOnly; }
+
+  protected:
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
 				    Coord x0, Coord y0, PColorID c0,
 				    Coord x1, Coord y1, PColorID c1);
 
-  protected:
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
 				  int numSyms, TDataMap *map,
 				  ViewGraph *view, int pixelSize,
 				  int &recordsProcessed,
 				  Boolean timeoutAllowed);
+
+    Boolean _drawDotsOnly;
 };
 
 // -----------------------------------------------------------------
 
+// Note: this class is a special case, in that it's derived from
+// FullMapping_LineShape, rather than from a class in RectShape.h,
+// like all of the other classes here are.  RKW 2001-12-28.
 class FullMapping_LineShadeShape
 : public FullMapping_LineShape
 {
   public:
+
+    FullMapping_LineShadeShape() {
+      _drawDotsOnly = false;
+    }
 
     virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
       Boolean result = false;
@@ -622,6 +640,7 @@ class FullMapping_LineShadeShape
     virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
         TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
     
+  protected:
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
 				    Coord x0, Coord y0, PColorID c0,

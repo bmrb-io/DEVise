@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.100  2001/05/18 21:14:59  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.99  2001/04/10 17:13:31  wenger
   Minor cleanups and additions of debug code to string table-related stuff.
 
@@ -541,25 +544,25 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
      * DEViseShapes variable in lib/control.tk.  RKW 4/29/97. */
     /* Note: if these values are changed, MappingInterp::IsComplexShape()
      * may also need to be changed. */
-    _shapes[0]  = new FullMapping_RectShape;
-    _shapes[1]  = new FullMapping_RectXShape;
-    _shapes[2]  = new FullMapping_BarShape;
-    _shapes[3]  = new FullMapping_RegularPolygonShape;
-    _shapes[4]  = new FullMapping_OvalShape;
-    _shapes[5]  = new FullMapping_VectorShape;
-    _shapes[6]  = new FullMapping_HorLineShape;
-    _shapes[7]  = new FullMapping_SegmentShape;
-    _shapes[8] = new FullMapping_HighLowShape;
-    _shapes[9] = new FullMapping_PolylineShape;
-    _shapes[10] = new FullMapping_GifImageShape;
-    _shapes[11] = new FullMapping_PolylineFileShape;
-    _shapes[12] = new FullMapping_TextLabelShape;
-    _shapes[13] = new FullMapping_LineShape;
-    _shapes[14] = new FullMapping_LineShadeShape;
-    _shapes[15] = new FullMapping_ETkWindowShape;
-    _shapes[16] = new FullMapping_FixedTextLabelShape;
-    _shapes[17] = new FullMapping_ViewShape;
-    _shapes[18] = new FullMapping_TextDataLabelShape;
+    _shapes[SHAPE_RECT]  = new FullMapping_RectShape;
+    _shapes[SHAPE_RECTX]  = new FullMapping_RectXShape;
+    _shapes[SHAPE_BAR]  = new FullMapping_BarShape;
+    _shapes[SHAPE_REG_POLYGON]  = new FullMapping_RegularPolygonShape;
+    _shapes[SHAPE_OVAL]  = new FullMapping_OvalShape;
+    _shapes[SHAPE_VECTOR]  = new FullMapping_VectorShape;
+    _shapes[SHAPE_HOR_LINE]  = new FullMapping_HorLineShape;
+    _shapes[SHAPE_SEGMENT]  = new FullMapping_SegmentShape;
+    _shapes[SHAPE_HIGH_LOW] = new FullMapping_HighLowShape;
+    _shapes[SHAPE_POLYLINE] = new FullMapping_PolylineShape;
+    _shapes[SHAPE_IMAGE] = new FullMapping_GifImageShape;
+    _shapes[SHAPE_POLYLINE_FILE] = new FullMapping_PolylineFileShape;
+    _shapes[SHAPE_TEXT] = new FullMapping_TextLabelShape;
+    _shapes[SHAPE_LINE] = new FullMapping_LineShape;
+    _shapes[SHAPE_LINE_SHADE] = new FullMapping_LineShadeShape;
+    _shapes[SHAPE_ETK_WINDOW] = new FullMapping_ETkWindowShape;
+    _shapes[SHAPE_FIXED_TEXT] = new FullMapping_FixedTextLabelShape;
+    _shapes[SHAPE_VIEW] = new FullMapping_ViewShape;
+    _shapes[SHAPE_TEXT_DATA] = new FullMapping_TextDataLabelShape;
   }
 
   _tdataFlag = new Bitmap(tdata->GetAttrList()->NumAttrs());
@@ -812,7 +815,8 @@ const AttrInfo *MappingInterp::MapShapeAttr2TAttr(int i)
 void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 				   void **gdataArray, int num,
 				   int &recordsProcessed,
-				   Boolean timeoutAllowed)
+				   Boolean timeoutAllowed,
+				   Boolean forceToDots)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
@@ -827,10 +831,14 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 #if defined(DEBUG)
       printf("Drawing shape %d\n", shape);
 #endif
+      if (forceToDots) _shapes[shape]->ForceToDots(true);
       _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
 				     view, GetPixelWidth(), recordsProcessed,
 				     timeoutAllowed);
+      if (forceToDots) _shapes[shape]->ForceToDots(false);
     } else {
+      // Note: postponing dealing with forceToDots here.  RKW 2001-12-28.
+
       /* dynamic shape */
       recordsProcessed = 0;
       int i = 0;

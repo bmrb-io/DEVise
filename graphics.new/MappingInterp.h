@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  2001/05/18 21:14:59  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.54  2001/04/03 19:57:40  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -276,6 +279,27 @@ const int MappingCmd_Orientation = (1 << 6);
 const int MappingCmd_Shape       = (1 << 7);
 const int MappingInterpAllFlags  = 0xffff;
 
+// Values in the mapping that translate into a given shape.
+#define SHAPE_RECT		0
+#define SHAPE_RECTX		1
+#define SHAPE_BAR		2
+#define SHAPE_REG_POLYGON	3
+#define SHAPE_OVAL		4
+#define SHAPE_VECTOR		5
+#define SHAPE_HOR_LINE		6
+#define SHAPE_SEGMENT		7
+#define SHAPE_HIGH_LOW		8
+#define SHAPE_POLYLINE		9
+#define SHAPE_IMAGE		10
+#define SHAPE_POLYLINE_FILE	11
+#define SHAPE_TEXT		12
+#define SHAPE_LINE		13
+#define SHAPE_LINE_SHADE	14
+#define SHAPE_ETK_WINDOW	15
+#define SHAPE_FIXED_TEXT	16
+#define SHAPE_VIEW		17
+#define SHAPE_TEXT_DATA		18
+
 /* structure used to store the commands for mapping */
 struct MappingInterpCmd {
   char *xCmd;
@@ -342,10 +366,10 @@ public:
   // values.
   virtual Boolean IsComplexShape(ShapeID shape) {
     switch (shape) {
-    // case 9: // Polyline -- bounding box is now correct.  RKW 1999-05-28.
-    case 11: // PolylineFile
-    case 13: // Line
-    case 14: // LineShade
+    // case SHAPE_POLYLINE: // Bounding box is now correct.  RKW 1999-05-28.
+    case SHAPE_POLYLINE_FILE:
+    case SHAPE_LINE:
+    case SHAPE_LINE_SHADE:
       return true;
     }
     return false;
@@ -365,7 +389,8 @@ public:
   
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num,
-			      int &recordsProcessed, Boolean timeoutAllowed);
+			      int &recordsProcessed, Boolean timeoutAllowed,
+			      Boolean forceToDots);
 
   /* Get the AttrInfo for a GData attribute. which_attr should be
      one of the MappingCmd_??? constants defined at the top of 

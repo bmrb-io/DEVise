@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.87  2001/05/24 18:42:02  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.86  2001/04/12 20:15:14  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -477,7 +481,6 @@ const int HIST_BUF_SIZE = MAX_HISTOGRAM_BUCKETS * HISTOGRAM_REC_SIZE;
 
 #include "Action.h"
 #include "RecId.h"
-#include "PointStorage.h"
 #include "TDataMap.h"
 
 DefineDList(GStatList, double)
@@ -721,9 +724,6 @@ public:
   /* Return true if view is a scatter plot */
   Boolean IsScatterPlot();
       
-  /* Return address of point storage */
-  virtual PointStorage *GetPointStorage() { return &_pstorage; }
-
   // the view master has recomputed its view, this view is called if
   // it depends upon master
   void MasterRecomputed(ViewGraph* master);
@@ -852,8 +852,6 @@ public:
   VisLinkList _visualLinks;
 
   Boolean _autoScale;              /* true if auto scaling in effect */
-
-  PointStorage _pstorage;          /* storage for missing data points */
 
   VisualFilter _queryFilter;
   int          _timestamp;
