@@ -1,12 +1,18 @@
 #! /bin/csh -f
 rm -r userdat
 
-rm UserLastMonth.dat
+set dataFile = "UserLastMonth.dat"
+if (-f $dataFile) then
+  rm $dataFile
+endif
+
 /p/condor/home/bin/condor_devise_userdata -lastweek > UserLastMonth.dat
 
 split_user_data UserLastMonth.dat userdat
 
-rm UserLastMonth.dat
+if (-f $dataFile) then
+  rm $dataFile
+endif
 
 create_2users userdat UserMonth.ds \
   /p/devise/demo/schema/schema/physical/Condor:userlist \
