@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/01/20 22:46:38  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.33  1998/06/29 17:18:16  wenger
   Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
 
@@ -376,11 +382,12 @@ TData::TDHandle TDataDQL::InitGetRecs(Interval *interval, int &bytesleft,
   // check to see if current query can be used to answer request.
   if( _recIdAttrPosition < 0 && _nextToFetch <= lowId ) {
 
-    cerr << "not running a new query: " << _nextToFetch << ' ' << lowId << endl;
+    //cerr << "not running a new query: " << _nextToFetch << ' ' << lowId << endl;
+    // skip the starting of a new query
 
   } else {
 
-    cerr << "running a new query: " << _nextToFetch << ' ' << lowId << endl;
+    //cerr << "running a new query: " << _nextToFetch << ' ' << lowId << endl;
 
     //  Issue a query to the engine;
     string query(queryHeader);
