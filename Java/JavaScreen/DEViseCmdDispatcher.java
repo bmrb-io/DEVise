@@ -114,7 +114,9 @@ public class DEViseCmdDispatcher implements Runnable
             setStatus(0);
             return;
         }
-
+        
+        jsc.jscreen.setLastAction();
+                        
         dispatcherThread = new Thread(this);
         dispatcherThread.start();
     }
@@ -444,7 +446,7 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showSession(cmd, true);
             } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 8) {
+                if (cmd == null || cmd.length != 9) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
@@ -456,10 +458,11 @@ public class DEViseCmdDispatcher implements Runnable
                     int w = Integer.parseInt(cmd[5]);
                     int h = Integer.parseInt(cmd[6]);
                     String move = cmd[7];
+                    String resize = cmd[8];
                     Rectangle rect = new Rectangle(x0, y0, w, h);
                     DEViseCursor cursor = null;
                     try {
-                        cursor = new DEViseCursor(cursorName, viewname, rect, move);
+                        cursor = new DEViseCursor(cursorName, viewname, rect, move, resize);
                     } catch (YException e1) {
                         throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                     }

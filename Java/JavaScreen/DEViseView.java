@@ -566,8 +566,10 @@ public class DEViseView
 
             switch (whichSide) {
             case 1: // left side
-                if (!cursor.isXMovable)
+                if (!cursor.isXResizable) {
+                    whichSide = -1;
                     break;
+                }    
 
                 tmpx = cursor.x + cursor.width;
                 cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
@@ -587,8 +589,10 @@ public class DEViseView
 
                 break;
             case 2: // right side
-                if (!cursor.isXMovable)
+                if (!cursor.isXResizable) {
+                    whichSide = -1;
                     break;
+                }    
 
                 tmpx = cursor.x + cursor.width;
                 cx = adjustPosX(x0 + dx + tmpx) - x0;
@@ -608,8 +612,10 @@ public class DEViseView
 
                 break;
             case 3: // top side
-                if (!cursor.isYMovable)
+                if (!cursor.isYResizable) {
+                    whichSide = -1;
                     break;
+                }    
 
                 tmpy = cursor.y + cursor.height;
                 cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
@@ -629,8 +635,10 @@ public class DEViseView
 
                 break;
             case 4: // bottom side
-                if (!cursor.isYMovable)
+                if (!cursor.isYResizable) {
+                    whichSide = -1;                    
                     break;
+                }    
 
                 tmpy = cursor.y + cursor.height;
                 cy = adjustPosY(y0 + dy + tmpy) - y0;
@@ -652,8 +660,12 @@ public class DEViseView
             case 5: // left top corner
                 isXChange = false;
                 isYChange = false;
+                if (!cursor.isXResizable || !cursor.isYResizable) {
+                    whichSide = -1;
+                    break;
+                }
 
-                if (cursor.isXMovable) {
+                if (cursor.isXResizable) {
                     tmpx = cursor.x + cursor.width;
                     cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
 
@@ -671,7 +683,7 @@ public class DEViseView
                     }
                 }
 
-                if (cursor.isYMovable) {
+                if (cursor.isYResizable) {
                     tmpy = cursor.y + cursor.height;
                     cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
 
@@ -705,8 +717,12 @@ public class DEViseView
             case 6: // left bottom corner
                 isXChange = false;
                 isYChange = false;
+                if (!cursor.isXResizable || !cursor.isYResizable) {
+                    whichSide = -1;
+                    break;
+                }
 
-                if (cursor.isXMovable) {
+                if (cursor.isXResizable) {
                     tmpx = cursor.x + cursor.width;
                     cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
 
@@ -724,7 +740,7 @@ public class DEViseView
                     }
                 }
 
-                if (cursor.isYMovable) {
+                if (cursor.isYResizable) {
                     tmpy = cursor.y + cursor.height;
                     cy = adjustPosY(y0 + dy + tmpy) - y0;
 
@@ -758,8 +774,12 @@ public class DEViseView
             case 7: // right top corner
                 isXChange = false;
                 isYChange = false;
+                if (!cursor.isXResizable || !cursor.isYResizable) {
+                    whichSide = -1;
+                    break;
+                }
 
-                if (cursor.isXMovable) {
+                if (cursor.isXResizable) {
                     tmpx = cursor.x + cursor.width;
                     cx = adjustPosX(x0 + dx + tmpx) - x0;
 
@@ -777,7 +797,7 @@ public class DEViseView
                     }
                 }
 
-                if (cursor.isYMovable) {
+                if (cursor.isYResizable) {
                     tmpy = cursor.y + cursor.height;
                     cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
 
@@ -811,8 +831,12 @@ public class DEViseView
             case 8: // right bottom corner
                 isXChange = false;
                 isYChange = false;
+                if (!cursor.isXResizable || !cursor.isYResizable) {
+                    whichSide = -1;
+                    break;
+                }
 
-                if (cursor.isXMovable) {
+                if (cursor.isXResizable) {
                     tmpx = cursor.x + cursor.width;
                     cx = adjustPosX(x0 + dx + tmpx) - x0;
 
@@ -830,7 +854,7 @@ public class DEViseView
                     }
                 }
 
-                if (cursor.isYMovable) {
+                if (cursor.isYResizable) {
                     tmpy = cursor.y + cursor.height;
                     cy = adjustPosY(y0 + dy + tmpy) - y0;
 

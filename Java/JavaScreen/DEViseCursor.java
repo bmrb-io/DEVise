@@ -6,12 +6,12 @@ import java.awt.*;
 public class DEViseCursor
 {
     public int x, y, width, height;
-    public boolean isXMovable, isYMovable;
+    public boolean isXMovable, isYMovable, isXResizable, isYResizable;
     public String name = null, viewname = null;
     public Image image = null;
     public DEViseView parentView = null;
 
-    public DEViseCursor(String cn, String vn, Rectangle rect, String move) throws YException
+    public DEViseCursor(String cn, String vn, Rectangle rect, String move, String resize) throws YException
     {
         if (cn == null || vn == null)
             throw new YException("Invalid view name or cursor name");
@@ -37,9 +37,34 @@ public class DEViseCursor
             } else if (move.equals("Y")) {
                 isXMovable = false;
                 isYMovable = true;
-            } else {
+            } else if (move.equals("XY")) {    
                 isXMovable = true;
                 isYMovable = true;
+            } else {
+                isXMovable = false;
+                isYMovable = false;
+            }
+        }
+
+        if (resize == null) {
+            isXResizable = false;
+            isYResizable = false;
+        } else {
+            if (resize.equals("X")) {
+                isXResizable = false;
+                isYResizable = true;
+            } else if (resize.equals("Y")) {
+                isXResizable = true;
+                isYResizable = false;
+            } else if (resize.equals("XY")) {
+                isXResizable = false;
+                isYResizable = false;
+            } else if (resize.equals("none")) {
+                isXResizable = true;
+                isYResizable = true;                    
+            } else {
+                isXResizable = false;
+                isYResizable = false;
             }
         }
     }
@@ -54,27 +79,87 @@ public class DEViseCursor
 
             if (p.x >= x && p.x < x + edge) {
                 if (p.y >= y && p.y < y + edge) { // left-top corner
-                    return 5;
+                    if (isXResizable && isYResizable) {
+                        return 5;
+                    } else {
+                        if (isXResizable) {
+                            return 1;
+                        } else if (isYResizable) {
+                            return 3;
+                        } else {
+                            return -1;
+                        }
+                    }        
                 } else if (p.y < y + height && p.y >= y + height - edge) { // left-bottom corner
-                    return 6;
-                } else { // left side
-                    return 1;
+                    if (isXResizable && isYResizable) {
+                        return 6;
+                    } else {
+                        if (isXResizable) {
+                            return 1;
+                        } else if (isYResizable) {
+                            return 4;
+                        } else {
+                            return -1;
+                        }
+                    }        
+                } else { // left side 
+                    if (isXResizable) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }    
                 }
             } else if (p.x < x + width && p.x >= x + width - edge) {
                 if (p.y >= y && p.y < y + edge) { // right-top corner
-                    return 7;
+                    if (isXResizable && isYResizable) {
+                        return 7;
+                    } else {
+                        if (isXResizable) {
+                            return 2;
+                        } else if (isYResizable) {
+                            return 3;
+                        } else {
+                            return -1;
+                        }
+                    }        
                 } else if (p.y < y + height && p.y >= y + height - edge) { // right-bottom corner
-                    return 8;
+                    if (isXResizable && isYResizable) {
+                        return 8;
+                    } else {
+                        if (isXResizable) {
+                            return 2;
+                        } else if (isYResizable) {
+                            return 4;
+                        } else {
+                            return -1;
+                        }
+                    }        
                 } else { // right side
-                    return 2;
+                    if (isXResizable) {
+                        return 2;
+                    } else {
+                        return -1;
+                    }    
                 }
             } else {
                 if (p.y >= y && p.y < y + edge) { // top side
-                    return 3;
+                    if (isYResizable) {
+                        return 3;
+                    } else {
+                        return -1;
+                    }    
                 } else if (p.y < y + height && p.y >= y + height - edge) { // bottom side
-                    return 4;
+                    if (isYResizable) {
+                        return 4;
+                    } else {
+                        return -1;
+                    }    
                 } else { // inside cursor
-                    return 0;
+                    if (isXMovable || isYMovable) {
+                        return 0;
+                    } else {
+                        return -1;
+                    }    
                 }
             }
         }
