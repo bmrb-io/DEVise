@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/11 17:23:14  jussi
+  Added command line options for setting host name and port number.
+
   Revision 1.1  1996/05/11 01:52:02  jussi
   Initial revision.
 */
@@ -56,6 +59,8 @@ void DoAbort(char *reason)
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
 {
+  static char result[10 * 1024];
+
 #ifdef DEBUG	
   printf("Function %s, %d args\n", argv[1], argc - 1);
 #endif
@@ -65,8 +70,10 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
     DOASSERT(0, "Server has terminated");
 
   int errorFlag;
-  if (DeviseReceive(interp->result, errorFlag, argv[1]) < 0)
+  if (DeviseReceive(result, errorFlag, argv[1]) < 0)
     DOASSERT(0, "Server has terminated");
+
+  interp->result = result;
 
   if (errorFlag)
     return TCL_ERROR;
