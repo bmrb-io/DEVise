@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/04/30 21:57:08  wenger
+# Updated solaris, sun, and hp dependencies.
+#
 # Revision 1.1  1997/04/09 19:10:34  wenger
 # Got unidata to compile -- but not run -- on solaris, solsparc, sun.
 #
@@ -34,8 +37,9 @@ Attr.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Lexer.h
 Attr.o: udParam.h RecId.h Schema.h /usr/include/unistd.h
 Attr.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h Enum.h
 Attr.o: Comment.h Config.h /usr/include/time.h UniData.h SlideBuf.h
-Attr.o: getftime.h
+Attr.o: getftime.h DateTime.h /usr/include/assert.h
 Comment.o: Comment.h
+DateTime.o: DateTime.h /usr/include/time.h /usr/include/sys/stdtypes.h
 Enum.o: Enum.h /usr/include/string.h /usr/include/sys/stdtypes.h Attr.h
 Enum.o: /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
 Enum.o: /usr/include/limits.h PerlFrag.h /usr/include/stdio.h
@@ -46,7 +50,7 @@ PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/string.h
 PerlFrag.o: /usr/include/sys/stdtypes.h /usr/include/math.h
 PerlFrag.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Lexer.h
 PerlFrag.o: Attr.h /usr/include/stdlib.h IntStack.h Traits.h bitmap.h
-PerlFrag.o: /usr/include/limits.h
+PerlFrag.o: /usr/include/limits.h /usr/include/assert.h
 Schema.o: /usr/include/string.h /usr/include/sys/stdtypes.h Schema.h
 Schema.o: /usr/include/stdio.h /usr/include/math.h
 Schema.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
@@ -54,7 +58,7 @@ Schema.o: /usr/include/unistd.h /usr/include/sys/types.h
 Schema.o: /usr/include/sys/sysmacros.h Attr.h /usr/include/stdlib.h
 Schema.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
 Schema.o: Lexer.h Enum.h Comment.h Config.h /usr/include/time.h Token.h
-Schema.o: /usr/include/assert.h
+Schema.o: getftime.h DateTime.h /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 SlideBuf.o: /usr/include/string.h /usr/include/errno.h
 SlideBuf.o: /usr/include/sys/errno.h /usr/include/fcntl.h
@@ -77,11 +81,11 @@ UniData.o: SlideBuf.h Schema.h /usr/include/stdio.h /usr/include/math.h
 UniData.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 UniData.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
-UniData.o: getftime.h /usr/include/assert.h
+UniData.o: getftime.h DateTime.h /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h
 getftime.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
-getftime.o: /usr/include/time.h
+getftime.o: /usr/include/time.h DateTime.h
 pmain.o: /usr/include/stdio.h /usr/include/math.h
 pmain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h PerlFrag.h
 pmain.o: /usr/include/string.h /usr/include/sys/stdtypes.h Lexer.h
@@ -103,4 +107,4 @@ umain.o: /usr/include/stdio.h /usr/include/math.h
 umain.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Attr.h
 umain.o: IntStack.h Traits.h /usr/include/string.h bitmap.h
 umain.o: /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h Config.h
-umain.o: udParam.h
+umain.o: udParam.h getftime.h DateTime.h

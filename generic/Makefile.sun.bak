@@ -1,4 +1,0 @@
-depend:
-	makedepend -fMakefile.sun \
-		-I../graphics -I../graphics.new -I../tape \
-		*.c

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.35  1997/06/10 18:36:09  wenger
+# Got DEVise to compile on HP again; updated hp, solaris, and sun dependencies.
+#
 # Revision 1.34  1997/06/05 21:31:55  wenger
 # Re-made sun, solaris, and hp dependencies.
 #
@@ -88,7 +91,7 @@ generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
 generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
 generic.o: ../graphics.new/ParseCat.h ../graphics.new/StringStorage.h
-generic.o: StateMap.h ../graphics/Util.h /usr/include/ctype.h
+generic.o: ../graphics/Util.h /usr/include/ctype.h StateMap.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 testWindowSpeed.o: /usr/include/time.h /usr/include/sys/time.h
 testWindowSpeed.o: ../graphics/TestControl.h ../graphics/Control.h

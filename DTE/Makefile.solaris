@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.43  1997/06/27 23:16:26  donjerko
+# Removed ATTRPROJ flag
+#
 # Revision 1.42  1997/06/21 22:47:48  donjerko
 # Separated type-checking and execution into different classes.
 #
@@ -630,49 +633,6 @@ DevRead.o: ../../unidata/IntStack.h ../../unidata/Traits.h
 DevRead.o: ../../unidata/bitmap.h ../../unidata/PerlFrag.h
 DevRead.o: ../../unidata/Lexer.h ../../unidata/Enum.h ../../unidata/Comment.h
 DevRead.o: ../../unidata/Config.h ../../unidata/udParam.h
-DevRead.dummy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevRead.dummy.o: /usr/include/sys/va_list.h /usr/include/string.h
-DevRead.dummy.o: ../../graphics.new/machdep.h /usr/include/limits.h
-DevRead.dummy.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
-DevRead.dummy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-DevRead.dummy.o: /usr/include/sys/time.h /usr/include/time.h
-DevRead.dummy.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-DevRead.dummy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-DevRead.dummy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DevRead.dummy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-DevRead.dummy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-DevRead.dummy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DevRead.dummy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-DevRead.dummy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DevRead.dummy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DevRead.dummy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-DevRead.dummy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-DevRead.dummy.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-DevRead.dummy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DevRead.dummy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DevRead.dummy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DevRead.dummy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DevRead.dummy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-DevRead.dummy.o: DevRead.h /s/gcc-2.7.2/lib/g++-include/iostream.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/String.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/Regex.h types.h
-DevRead.dummy.o: /usr/include/assert.h exception.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h Utility.h queue.h
-DevRead.dummy.o: Iterator.h ../../graphics/Util.h /usr/include/stdlib.h
-DevRead.dummy.o: /usr/include/ctype.h /usr/include/math.h
-DevRead.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-DevRead.dummy.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-DevRead.dummy.o: ../../graphics/DevStatus.h ../../graphics/Exit.h
-DevRead.dummy.o: ../../graphics.new/TData.h ../../unidata/RecId.h
-DevRead.dummy.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
-DevRead.dummy.o: ../../graphics.new/DCE.h /usr/include/errno.h
-DevRead.dummy.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
-DevRead.dummy.o: ../../graphics/AttrList.h ../../graphics/DList.h
-DevRead.dummy.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-DevRead.dummy.o: ../../graphics.new/DataSeg.h
 DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h
 DropIndexParse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DropIndexParse.o: /usr/include/sys/va_list.h myopt.h

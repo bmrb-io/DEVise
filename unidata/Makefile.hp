@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/04/30 21:57:07  wenger
+# Updated solaris, sun, and hp dependencies.
+#
 # Revision 1.1  1997/04/09 19:10:32  wenger
 # Got unidata to compile -- but not run -- on solaris, solsparc, sun.
 #
@@ -31,8 +34,10 @@ Attr.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
 Attr.o: PerlFrag.h /usr/include/stdio.h /usr/include/math.h Lexer.h udParam.h
 Attr.o: RecId.h Schema.h /usr/include/unistd.h /usr/include/sys/unistd.h
 Attr.o: Enum.h Comment.h Config.h /usr/include/time.h /usr/include/sys/time.h
-Attr.o: UniData.h SlideBuf.h getftime.h
+Attr.o: UniData.h SlideBuf.h getftime.h DateTime.h /usr/include/assert.h
 Comment.o: Comment.h
+DateTime.o: DateTime.h /usr/include/time.h /usr/include/sys/time.h
+DateTime.o: /usr/include/sys/stdsyms.h
 Enum.o: Enum.h /usr/include/string.h Attr.h /usr/include/stdlib.h
 Enum.o: /usr/include/sys/stdsyms.h IntStack.h Traits.h bitmap.h
 Enum.o: /usr/include/limits.h PerlFrag.h /usr/include/stdio.h
@@ -41,13 +46,13 @@ IntStack.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h IntStack.h
 PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/string.h
 PerlFrag.o: /usr/include/math.h Lexer.h Attr.h /usr/include/stdlib.h
 PerlFrag.o: /usr/include/sys/stdsyms.h IntStack.h Traits.h bitmap.h
-PerlFrag.o: /usr/include/limits.h
+PerlFrag.o: /usr/include/limits.h /usr/include/assert.h
 Schema.o: /usr/include/string.h Schema.h /usr/include/stdio.h
 Schema.o: /usr/include/math.h /usr/include/unistd.h /usr/include/sys/unistd.h
 Schema.o: Attr.h /usr/include/stdlib.h /usr/include/sys/stdsyms.h IntStack.h
 Schema.o: Traits.h bitmap.h /usr/include/limits.h PerlFrag.h Lexer.h Enum.h
 Schema.o: Comment.h Config.h /usr/include/time.h /usr/include/sys/time.h
-Schema.o: Token.h /usr/include/assert.h
+Schema.o: Token.h getftime.h DateTime.h /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 SlideBuf.o: /usr/include/string.h /usr/include/errno.h
 SlideBuf.o: /usr/include/sys/errno.h /usr/include/fcntl.h
@@ -68,11 +73,11 @@ UniData.o: /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h SlideBuf.h
 UniData.o: Schema.h /usr/include/stdio.h /usr/include/math.h Attr.h
 UniData.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
 UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
-UniData.o: getftime.h /usr/include/assert.h
+UniData.o: getftime.h DateTime.h /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h /usr/include/sys/stdsyms.h
 getftime.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
-getftime.o: /usr/include/time.h /usr/include/sys/time.h
+getftime.o: /usr/include/time.h /usr/include/sys/time.h DateTime.h
 pmain.o: /usr/include/stdio.h /usr/include/math.h PerlFrag.h
 pmain.o: /usr/include/string.h Lexer.h
 udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h
@@ -88,4 +93,4 @@ umain.o: /usr/include/sys/fcntl.h /usr/include/time.h /usr/include/sys/time.h
 umain.o: UniData.h RecId.h SlideBuf.h Schema.h /usr/include/stdio.h
 umain.o: /usr/include/math.h Attr.h IntStack.h Traits.h /usr/include/string.h
 umain.o: bitmap.h /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h
-umain.o: Config.h udParam.h
+umain.o: Config.h udParam.h getftime.h DateTime.h
