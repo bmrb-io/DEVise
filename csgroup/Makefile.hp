@@ -1,0 +1,97 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+# $Log$
+# Revision 1.7  1997/06/05 21:31:51  wenger
+# Re-made sun, solaris, and hp dependencies.
+#
+# Revision 1.6  1997/05/29 15:21:02  wenger
+# Updated hp, solaris, and sun dependencies; fixes to make new LM stuff
+# compile on linux.
+#
+# Revision 1.5  1997/04/30 21:56:23  wenger
+# Updated solaris, sun, and hp dependencies.
+#
+# Revision 1.4  1997/03/28 16:08:44  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
+
+############################################################
+
+depend:
+	makedepend -fMakefile.hp -I../graphics -I../tape \
+		-I/s/X11/include -I/s/tcl/include *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ClientServer.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+ClientServer.o: /usr/include/stdlib.h /usr/include/string.h
+ClientServer.o: /usr/include/errno.h /usr/include/sys/errno.h
+ClientServer.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+ClientServer.o: /usr/include/sys/types.h /usr/include/sys/socket.h
+ClientServer.o: /usr/include/netinet/in.h /s/tcl/include/tcl.h
+ClientServer.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+ClientServer.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+ClientServer.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+ClientServer.o: ClientServer.h ../graphics/Display.h
+ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
+ClientServer.o: /usr/include/math.h ../graphics/Color.h
+ClientServer.o: ../graphics/Dispatcher.h ../graphics/DList.h
+ClientServer.o: ../graphics/Exit.h ../graphics/Journal.h
+ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
+ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+ClientServer.o: /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+ClientServer.o: ../graphics/DualWindowRep.h
+client.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+client.o: /usr/include/stdlib.h /usr/include/string.h ClientServer.h
+client.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+client.o: /usr/include/sys/types.h /s/X11/include/X11/X.h
+client.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+client.o: /usr/include/stddef.h ../graphics/Display.h
+client.o: ../graphics/DeviseTypes.h /usr/include/values.h
+client.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
+client.o: ../graphics/Color.h ../graphics/Dispatcher.h /usr/include/unistd.h
+client.o: /usr/include/sys/unistd.h ../graphics/DList.h ../graphics/Exit.h
+client.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+client.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+client.o: ../graphics/DualWindowRep.h
+server.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+server.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/assert.h
+server.o: ClientServer.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+server.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+server.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+server.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
+server.o: /usr/include/math.h ../graphics/Color.h ../graphics/Dispatcher.h
+server.o: /usr/include/unistd.h /usr/include/sys/unistd.h ../graphics/DList.h
+server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+server.o: ../graphics/Pattern.h ../graphics/ColorMgr.h
+server.o: ../graphics/WindowRep.h ../graphics/Transform.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
+server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+server.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h ../graphics/ViewWin.h
+server.o: ../graphics/DualWindowRep.h
