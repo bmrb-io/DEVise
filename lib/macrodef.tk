@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.33  1996/01/23 20:48:48  jussi
+#	Added MacroImport which, temporarily, uses almost identical
+#	duplicates of MacroDefAuto and MacroDefAutoActual. When the
+#	old interface is obsoleted, the older versions of these two
+#	procedures will be removed.
+#
 #	Revision 1.32  1996/01/17 19:27:34  jussi
 #	Minor fix.
 #
@@ -2128,10 +2134,10 @@ proc MacroImport {mode} {
 ############################################################
 
 proc MacroDefAutoNew {tdata} {
-    global x yvar viewselname layoutsel linksel winnamesel titlesel
+    global x yvar viewselname bgcolor layoutsel linksel winnamesel titlesel
     global xaxissel yaxissel
     global sourceList macroSelectColor macroMenuSelectColor
-    global cancel
+    global cancel DEViseColors
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
@@ -2171,12 +2177,14 @@ proc MacroDefAutoNew {tdata} {
     pack .auto.viewsel .auto.layoutsel -in .auto.mid \
 	    -side left -ipady 3m -padx 3m -fill x -expand 1
 
+    frame .auto.colorsel -relief groove -borderwidth 2
     frame .auto.titlesel -relief groove -borderwidth 2
     frame .auto.linksel -relief groove -borderwidth 2
     frame .auto.xaxissel -relief groove -borderwidth 2
     frame .auto.yaxissel -relief groove -borderwidth 2
-    pack .auto.titlesel .auto.linksel .auto.xaxissel .auto.yaxissel \
-	    -in .auto.bot -side left -ipady 3m -padx 3m -fill x -expand 1
+    pack  .auto.colorsel .auto.titlesel .auto.linksel .auto.xaxissel \
+	    .auto.yaxissel -in .auto.bot -side left -ipady 3m -padx 3m \
+	    -fill x -expand 1
 
     label .auto.winnamesel.label -text "Window Name:"
     entry .auto.winnamesel.entry -relief sunken -textvariable winnamesel \
@@ -2227,6 +2235,20 @@ proc MacroDefAutoNew {tdata} {
 	    -variable layoutsel -value Horizontal
     set layoutsel Vertical
 
+    label .auto.colorsel.label -text "Background:"
+    menubutton .auto.colorsel.color -relief raised \
+	    -textvariable bgcolor -menu .auto.colorsel.color.menu \
+	    -width 10
+    pack .auto.colorsel.label .auto.colorsel.color -side left -padx 3m
+
+    menu .auto.colorsel.color.menu -tearoff 0
+    foreach color $DEViseColors {
+	set name [lindex $color 1]
+	.auto.colorsel.color.menu add radiobutton -label $name \
+		-variable bgcolor -value $name
+    }
+    set bgcolor white
+
     checkbutton .auto.titlesel.title -text Title -variable titlesel
     pack .auto.titlesel.title -side left -padx 3m
     set titlesel 0
@@ -2273,7 +2295,17 @@ proc MacroDefAutoNew {tdata} {
     set cancel 0
 
     button .auto.but.ok -text OK -width 15 -command {
-	set cancel 0
+	foreach yname [array names yvar] {
+	    if {$yvar($yname) > 0} {
+		set cancel 0
+		return
+	    }
+	}
+	dialog .autoError "Note" \
+		"Please select one or more\n\
+		Y attributes for automatic\n\
+		mapping." "" 0 OK
+	return
     }
     button .auto.but.cancel -text Cancel -width 15 -command {
 	set cancel 1
@@ -2304,14 +2336,14 @@ proc MacroDefAutoNew {tdata} {
     # puts "The value of x is $x"
     # puts "The ylist is $ylist"
     
-    MacroDefAutoActualNew $tdata $viewsel $linksel $winnamesel $layoutsel \
-	    $titlesel $xaxissel $yaxissel $x $ylist
+    MacroDefAutoActualNew $tdata $viewsel $linksel $winnamesel $bgcolor \
+	    $layoutsel $titlesel $xaxissel $yaxissel $x $ylist
 }
 
 ############################################################
 
-proc MacroDefAutoActualNew {tdata viewsel linksel window layout titlesel
-                            xaxissel yaxissel x ylist} {
+proc MacroDefAutoActualNew {tdata viewsel linksel window bgcolor layout
+                            titlesel xaxissel yaxissel x ylist} {
     global viewDefault
 
     set window [UniqueName $window]
@@ -2340,7 +2372,6 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window layout titlesel
     
     set schema [ElimStringAttr [DEVise getSchema $tdata]]
 
-    set bgColor white
     set sortedx 0
     set xlo ""
     set xhi ""
@@ -2480,7 +2511,7 @@ proc MacroDefAutoActualNew {tdata viewsel linksel window layout titlesel
 	    return
 	}
 	set result [DEVise create view $sorted $viewinstance \
-		$xlo $xhi $ylo $yhi $bgColor]
+		$xlo $xhi $ylo $yhi $bgcolor]
 	if {$result == ""} {
 	    dialog .viewError "View Error" \
 		    "Error creating view $viewinstance" "" 0 OK
