@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/08/03 15:19:46  jussi
+  The visual filter is not applied in 3D views.
+
   Revision 1.22  1996/07/23 17:26:09  jussi
   Added support for piled views.
 
@@ -202,8 +205,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   DOASSERT(_index >= 0, "Invalid iterator index");
 
 #ifdef DEBUG
-  printf("ViewScatter %d recs buf start 0x%p, end 0x%p\n", numGData,
-	 gdata, ((char *)gdata) + numGData * gRecSize - 1);
+  printf("ViewScatter %d recs buf start 0x%p\n", numGData, gdata);
 #endif
 
   Coord maxWidth, maxHeight, maxDepth;
