@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/09/18 20:14:43  guangshu
+  Added function ExportView to save each view in a window to a separate gif
+  file. Modified function ExportGIF.
+
   Revision 1.37  1996/09/13 23:04:27  guangshu
   Added methods to save the map files for www when saving display.
 
@@ -307,7 +311,7 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	   int index2 = win->_children.InitIterator();
 	   while(win->_children.More(index2)) {
 	      XWindowRep *winc = win->_children.Next(index2);
-	      char *fn = new char[strlen(filename) + 10];
+	      char fn[strlen(filename) + 10];
 	      sprintf(fn,"%s.%d.gif", filename, i);
 #if defined(DEBUG)|| 1
 	      printf("Saving the view to file %s\n", fn);
@@ -319,7 +323,6 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	      }
 	      winc->ExportGIF(fp, 1);
 	      fclose(fp);
-	      delete fn;
 	      i++;
 	   }
 	   win->_children.DoneIterator(index2);
@@ -343,13 +346,23 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
 	return;
       }
 
+      char prename[strlen(gifFilename) + 1];
+      strcpy(prename, gifFilename);
+      char *p = strstr(prename, ".gif");
+      char *p_start = strrchr(prename, '/');
+      if (p_start) p_start++;
+      else p_start = prename;
+      if (p) *p = '\0';
+      else fprintf(stderr, "Warning: gif file name %s is not ended with .gif\n", 
+				gifFilename);
+#if defined(DEBUG) || 1
+      printf("prename is %s\n", prename);
+#endif
      FILE *fp2 = fopen(mapFileName,"wb");
      if (!fp2) {
         fprintf(stderr, "Cannot open file %s for writing\n", mapFileName);
         return;
       }
-      char line[LINE_SIZE];
-      sprintf(line, "rect %s?", url);
       int x = 0 ,y = 0;
       unsigned int w = 0, h = 0;
 
@@ -416,7 +429,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
 	     winc->Origin(sub_x, sub_y);
 	     winc->Dimensions(sub_w, sub_h);
 	     char temp[LINE_SIZE];
-  	     sprintf(temp, "%s%d %d,%d %u,%u\n", line, i, sub_x+(rx-x), 
+  	     sprintf(temp, "rect %s?%s+%d %d,%d %u,%u\n", url, p_start, i, sub_x+(rx-x), 
 			sub_y+(ry-y)+23, sub_w+sub_x+(rx-x), sub_h+sub_y+(ry-y)+23); 
 	     i++;
 	     fprintf(fp2, temp);
@@ -428,6 +441,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       fclose(fp2);
       MakeAndWriteGif(fp1, x, y, w, h);
       fclose(fp1);
+      *p = '.';
       return;
   }
 
