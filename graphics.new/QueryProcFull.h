@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 16:54:23  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:15:16  jussi
   Added CVS header.
 */
@@ -234,6 +237,8 @@ private:
   void *_tqueryBuf;                /* buffer to tdata records */
   int _tqueryBeginIndex;           /* index of next record to examine */
   Boolean _tqueryApprox;           /* true for approximate match */
+
+  Boolean _needDisplayFlush;       /* display needs to be flushed */
 };
 
 #endif

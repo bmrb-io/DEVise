@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/27 00:19:18  jussi
+  Added hook to execute postscript when all queries have been
+  evaluated (system is idle).
+
   Revision 1.7  1996/01/15 16:54:49  jussi
   Moved some constants to .c from the .h file.
 
@@ -36,6 +40,7 @@
 */
 
 #include "QueryProcFull.h"
+#include "Display.h"
 #include "Init.h"
 #include "Journal.h"
 #include "BufMgrFull.h"
@@ -169,6 +174,8 @@ QueryProcFull::QueryProcFull()
   _mgr = new BufMgrFull(bufSize*4096);
   
   _tqueryQdata = AllocEntry();
+
+  _needDisplayFlush = true;
 }
 
 void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
@@ -573,6 +580,12 @@ Process query
 void QueryProcFull::ProcessQuery()
 {
   if (NoQueries()) {
+
+    if (_needDisplayFlush) {
+      DeviseDisplay::DefaultDisplay()->Flush();
+      _needDisplayFlush = false;
+    }
+
     /*
        If all queries have been executed (system is idle) and
        a postscript has been defined, execute postscript and
@@ -589,6 +602,8 @@ void QueryProcFull::ProcessQuery()
     return;
   }
 
+  _needDisplayFlush = true;
+
   if (InitQueries())
     /* Have initialized queries. Return now */
     return;
@@ -596,32 +611,33 @@ void QueryProcFull::ProcessQuery()
   /* Process the first query */
   QPFullData *first = FirstQuery();
 
-/*
-printf("Processquery for %s %s\n", first->tdata->GetName(),
-						first->map->GetName());
-*/
-	if (first->state == QPFull_EndState) {
-		/* InitQueries could have finished this query */
-		DeleteFirstQuery();
-		return;
-	}
+#ifdef DEBUG
+  printf("Processquery for %s %s\n", first->tdata->GetName(),
+	 first->map->GetName());
+#endif
 
-	switch(first->qType) {
-		case QPFull_X:
-			ProcessQPFullX(first);
-			break;
-		case QPFull_YX:
-			ProcessQPFullYX(first);
-			break;
-		case QPFull_Scatter:
-			ProcessQPFullScatter(first);
-			break;
-	}
+  if (first->state == QPFull_EndState) {
+    /* InitQueries could have finished this query */
+    DeleteFirstQuery();
+    return;
+  }
 
-	if (first->state == QPFull_EndState) {
-		/* finished with this query */
-		DeleteFirstQuery();
-	}
+  switch(first->qType) {
+  case QPFull_X:
+    ProcessQPFullX(first);
+    break;
+  case QPFull_YX:
+    ProcessQPFullYX(first);
+    break;
+  case QPFull_Scatter:
+    ProcessQPFullScatter(first);
+    break;
+  }
+  
+  if (first->state == QPFull_EndState) {
+    /* finished with this query */
+    DeleteFirstQuery();
+  }
 }
 
 void QueryProcFull::EndQPFullX(QPFullData *qData) {
