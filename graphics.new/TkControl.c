@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1995/12/05 17:07:00  jussi
+  View statistics are now part of ViewGraph and not View, its subclass.
+
   Revision 1.16  1995/12/04 18:07:35  jussi
   Added getLabel and getViewStatistics. Replaced ToggleStatistics with
   SetViewStatistics.
@@ -89,6 +92,7 @@
 #include "Cursor.h"
 #include "Group.h"
 #include "GroupDir.h"
+#include "ViewKGraph.h"
 
 #ifdef TK_WINDOW
 Tcl_Interp *ControlPanelTclInterp = 0;
@@ -450,6 +454,33 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			goto error;
 		}
 	}
+	else if (strcmp(argv[1], "showkgraph") == 0) {
+	    /* Create a new ViewKGraph object */
+	    ViewKGraph vkg;
+	    int i = 0;
+	    /* Number of views */
+	    int nview = argc - 3;
+	    ViewGraph **vlist = (ViewGraph **)malloc(nview*sizeof(ViewGraph *));
+	    for (i = 0; i < nview; i++) {
+	      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[3+i]);
+	      if (vlist[i] == NULL) {
+		  interp->result = "Cannot find view";
+		  goto error;
+		}
+	    }
+	    vkg.Init();
+	    /* Add these to the ViewKGraph class and display */
+	    if (vkg.AddViews(vlist, nview) == false) {
+		interp->result = "Could not add views to ViewKGraph";
+		goto error;
+	      }
+		  
+	    if (vkg.Display(atoi(argv[2])) == false) {
+		interp->result = "Could not display the KGraph";
+		goto error;
+	      }
+	    free(vlist);
+	  }
 	else if (argc == 3){
 		if (strcmp(argv[1],"invalidatePixmap") == 0 ) {
 			View *vg = (View *)classDir->FindInstance(argv[2]);
