@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2001/05/11 20:36:12  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.40  2001/05/07 21:53:26  wenger
 // Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
 // Xvfb.
@@ -452,6 +455,12 @@ public class js extends Frame
 	        jsValues.connection.cgi = true;
             } else if (args[i].startsWith("-cgiurl")) {
 		jsValues.connection.cgiURL = args[i].substring(7);
+	    } else if (args[i].startsWith("-clientlog")) {
+		jsValues.session.clientLogName = args[i].substring(10);
+	    } else if (args[i].startsWith("-autoplayback")) {
+		jsValues.session.autoPlayback = true;
+	    } else if (args[i].startsWith("-playbackoriginal")) {
+		jsValues.session.playbackOriginal = true;
             } else {
                 System.out.println("Invalid js option \"" + args[i]
                     + "\" is given!\n");
