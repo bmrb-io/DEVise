@@ -39,9 +39,14 @@ rcsinfo		-i /s/cvs/bin/mkmodules CVSROOT rcsinfo
 
 # Add more modules here 
 #
-dte		-a DTE DataReader unidata graphics graphics.new \
-			Makefile.common setup solaris solsparc
-devise		-a DTE DataReader LM Makefile.common README RTree \
+# Note: for some reason, files listed in a module *MUST* come before
+# directories; if you don't do this, your checkout will appear to work
+# correctly, but in fact will not.  RKW Aug 25, 1998.
+dte		-a Makefile.common \
+			DTE DataReader unidata graphics graphics.new \
+			setup solaris solsparc
+devise		-a Makefile.common README \
+			DTE DataReader LM RTree \
 			aix alpha_osf20 compustat crsp csgroup cslib \
 			design_doc doc generic graphics graphics.new hp \
 			issm lib linux pmax_ul43a public releases run \
