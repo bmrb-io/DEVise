@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/08/07 15:26:21  guangshu
+  Added DEVise commands getStatBuff and getAllStats to get the color statistics
+  gstat histigram and global stats buffer.
+
   Revision 1.25  1996/08/03 15:38:15  jussi
   Flag _solid3D now has three values.
 
@@ -822,10 +826,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Return allStats */
       char *buff[5];
-      for(int i = 0; i < 5; i++) {
+      int i;
+      for(i = 0; i < 5; i++) {
 	  buff[i] = '\0';
       }
-      for (int i = 0; i < 4; i++) {
+      for (i = 0; i < 4; i++) {
           buff[i] = new char[16];  /*16 bytes is enough for double type */
       }
       BasicStats *allStats = vg->GetStatObj();
@@ -834,7 +839,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
       sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
       control->ReturnVal(4, buff);
-      for (int i = 0; i < 4; i++) {
+      for (i = 0; i < 4; i++) {
 	  delete buff[i];
       }
       delete [] buff;
@@ -870,7 +875,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         }
 
         /* Return statistics buffer */
-        DataSourceBuf *buffObj;
+        DataSourceBuf *buffObj = NULL;
         switch( type ) {
           case STAT_TYPE:
             buffObj = vg->GetViewStatistics();
@@ -881,7 +886,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
           case GSTAT_TYPE:
             buffObj = vg->GetGdataStatistics();
 	    break;
-         }
+	}
+       DOASSERT(buffObj != NULL, "didn't find stats buffer\n");
       
          if (buffObj ->Open("r") != StatusOk)
          {
