@@ -1384,6 +1384,8 @@ Num Date        Status  Description
 365 06/15/98	OPEN	Duplicate elimination in UniqueInserter doesn't work
 			(at least for strings). (rkw)
 
+366 06/15/98	OPEN	cslib test client core dumps on Linux. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
