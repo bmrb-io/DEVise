@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2001/01/22 17:08:12  wenger
+// Added DEViseCheckPop to actually connect to the jspop when checking
+// with cron; added JAVAC_CheckPop command to make this possible; cleaned
+// up some of the jspop code dealing with heartbeats, etc.; DEViseCommSocket
+// constructor error messages now go to stderr.
+//
 // Revision 1.12  2001/01/08 20:31:51  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -475,6 +481,10 @@ public class DEViseCommSocket
                 numberOfElement = DEViseGlobals.toUshort(dataRead, 6);
                 totalSize = DEViseGlobals.toUshort(dataRead, 8);
 
+		// for collabration JS
+		if (msgType == DEViseGlobals.API_JAVA_CID)
+		    cgiFlag = -1; //TEMP use cgiFlag=-1 to indicate collab JS
+
                 dataRead = null;
                 isControl = false;
 
@@ -516,7 +526,7 @@ public class DEViseCommSocket
         for (int i = 0; i < numberOfElement; i++) {
             if (totalSize < pastsize + 2) {
                 closeSocket();
-                throw new YException("Inconsistant data received", "DEViseCommSocket:receiveCmd()");
+                throw new YException("Inconsistant data received 1", "DEViseCommSocket:receiveCmd()");
             }
 
             argsize = DEViseGlobals.toUshort(dataRead, pastsize);
@@ -524,7 +534,7 @@ public class DEViseCommSocket
 
             if (totalSize < pastsize + argsize) {
                 closeSocket();
-                throw new YException("Inconsistant data received", "DEViseCommSocket:receiveCmd()");
+                throw new YException("Inconsistant data received 2", "DEViseCommSocket:receiveCmd()");
             }
 
             // use argsize - 1 instead of argsize is to skip the string ending '\0'
