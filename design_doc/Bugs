@@ -2794,9 +2794,10 @@ Num Date        Status  Description
 			with the -clientlog argument, the JS totally locks
 			up. (rkw)
 
-700 10/05/01	OPEN	JavaScreen: if you specify -autoplayback or
+700 10/05/01	FIXED	JavaScreen: if you specify -autoplayback or
 			-playbackoriginal without specifying a log file,
 			the JS should print an error message. (rkw)
+			(Fixed by xuk, 10/05/01.)
 
 701 10/05/01	FIXED	JavaScreen: simple file paths do not work for
 			command log playback. (rkw)
@@ -2815,9 +2816,11 @@ Num Date        Status  Description
 			prevent the JSPoP from accepting other client
 			connections. (rkw)
 
-705 10/05/01	OPEN	JavaScreen: the JSPoP should not create client log
+705 10/05/01	FIXED	JavaScreen: the JSPoP should not create client log
 			files for clients that only send a JAVAC_CheckPop
 			command. (rkw)
+			(Fixed by xuk, 10/05/01.)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
