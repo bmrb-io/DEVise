@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/12/16 07:22:15  donjerko
+#  Fixed some compile problems
+#
 #  Revision 1.5  1996/12/15 06:29:43  donjerko
 #  Added two binary files to support RTrees (temporary fix)
 #
@@ -47,3 +50,4 @@ dte: $(STAND_ALONE_OBJ)
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@
+# DO NOT DELETE

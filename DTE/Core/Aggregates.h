@@ -197,6 +197,20 @@ class GenFunction{
 			assert(lessPtr);
 			retType = attribType;
 		}
+
+		else if (funcName == "positional_avg"){
+			
+			// This is important to call..
+			filler->prepareCompOpr();
+			byPos = true;
+			funcPtr = avg;
+			
+			// Get the < operators..
+			TRY(addPtr = getOperatorPtr("+",attribType,attribType,retType),);
+			TRY(divPtr = getOperatorPtr("/",retType,"double",retType),);
+			assert(addPtr);
+			assert(divPtr);
+		}
 		else if (funcName == "positional_max"){
 			// THis is important to call..
 			filler->prepareCompOpr();

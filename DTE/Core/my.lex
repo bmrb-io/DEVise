@@ -1,6 +1,5 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
+/*  ======================================================================== 
+	DEVise Data Visualization Software
   (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
@@ -16,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/21 22:21:49  donjerko
+  Added hierarchical namespace.
+
   Revision 1.6  1996/12/19 08:25:47  kmurli
   Changes to include the with predicate in sequences.
 
@@ -92,6 +94,8 @@ LessGreat    ">="|">"|"<="|"<"
 [Aa][Ss]				{return AS;}
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE][bB][yY]  {return SEQUENCEBY;}
+[Jj][Oo][Ii][Nn][Pp][Rr][Ee][Vv]  {return JOINPREV;}
+[Jj][Oo][Ii][Nn][Nn][Ee][Xx][Tt]  {return JOINNEXT;}
 [Oo][Vv][Ee][rR]         {return OVER;}
 [Ww][Ii][Tt][Hh]         {return WITH;}
 [Aa][Nn][Dd]          {return AND;}

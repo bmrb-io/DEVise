@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/21 22:21:50  donjerko
+  Added hierarchical namespace.
+
   Revision 1.3  1996/12/09 10:01:54  kmurli
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
@@ -33,7 +36,7 @@
 #endif
 
 #include <assert.h>
-
+#include <stdio.h>
 template <class T>
 class List{
 private:
@@ -84,7 +87,8 @@ public:
 		numElem++;
 	}
 	T remove(){
-		assert(current);
+		if (!current)
+			return NULL;
 		T retVal = current->element;
 		if(previous){
 			previous->next = current->next;
@@ -103,6 +107,20 @@ public:
 			currPos = numElem;
 		}
 		return retVal;
+
+	}
+	void removeAll(){
+		previous = head;
+		while(previous){
+			current = previous->next;
+			delete previous;
+			previous = current;
+		}
+		head = NULL;
+		tail = NULL;
+		currPos = 0;
+		current = NULL;
+		numElem = 0;
 	}
 	void rewind(){
 		current = head;
@@ -120,6 +138,12 @@ public:
 			return NULL;
 		//assert(current);
 		return current->element;
+	}
+	T getTail(){
+		if (!tail)
+			return NULL;
+		//assert(current);
+		return tail->element;
 	}
 	void step(){
 		if (!current){

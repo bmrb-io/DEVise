@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/21 22:21:49  donjerko
+  Added hierarchical namespace.
+
   Revision 1.9  1996/12/19 08:25:47  kmurli
   Changes to include the with predicate in sequences.
 
@@ -44,6 +47,7 @@
 #include "exception.h"
 #include "queue.h"
 #include "ParseTree.h"
+#include "joins.h"
 #include <iostream.h>
 #include <String.h>
 #include <assert.h>
@@ -52,6 +56,9 @@
 extern int yylex();
 extern ParseTree* parseTree;
 extern List<String*>* namesToResolve;
+extern List<JoinTable*>* joinList;
+extern JoinTable * joinTable;
+extern JoinTable * jTable;
 extern BaseSelection* withPredicate;
 /* extern BaseSelection * sequencebyTable;*/
 extern String *sequencebyTable; 
@@ -76,6 +83,8 @@ int yyerror(char* msg);
 %token AS
 %token WHERE
 %token SEQUENCEBY 
+%token JOINNEXT 
+%token JOINPREV 
 %token CREATE
 %token INDEX
 %token ON
@@ -90,13 +99,17 @@ int yyerror(char* msg);
 %left '-' '+'
 %left '*' '/'
 %left <string> STRING 
+%type <string> JoinString 
 %type <sel> selection
+%type <integer> optShiftVal 
 %type <path> expression
 %type <selList> listOfSelections
 %type <selList> optOverClause
+%type <integer> optOffset 
 %type <sel> optWithClause
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
+%type <tableList> JoinList 
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <string> optString
@@ -132,7 +145,7 @@ query : SELECT listOfSelections
 		return 0;
 	}
 	| SELECT '*' FROM listOfTables optWhereClause optSequenceByClause ';' {
-		parseTree = new QueryTree(NULL, $4, $5, $6, withPredicate,namesToResolve);
+	 parseTree = new QueryTree(NULL, $4, $5, $6, withPredicate,namesToResolve);
 		return 0;
 	}
      ;
@@ -148,13 +161,22 @@ listOfSelections : listOfSelections ',' predicate {
 		$$ = new List<BaseSelection*>;
 	}
      ;
-listOfTables : listOfTables ',' tableAlias {
-		$1->append($3);
+listOfTables : 
+		listOfTables ',' JoinList{
+		$1->addList($3);
 		$$ = $1;
+		if (!joinList)
+			joinList = new List<JoinTable*>;
+		joinList->append(joinTable);
+		joinTable = NULL;
 	}
-	| tableAlias {
+	| JoinList {
 		$$ = new List<TableAlias*>;
-		$$->append($1);
+		$$->addList($1);
+		if (!joinList)
+			joinList = new List<JoinTable*>;
+		joinList->append(joinTable);
+		joinTable = NULL;
 	}
 	;
 optWhereClause : WHERE predicate {
@@ -247,22 +269,70 @@ optOverClause:
 	}
 	;
 
-tableAlias : table_name AS STRING {
+JoinList: JoinList JoinString JoinList{
+		$$ = $1;
+		$$->addList($3);
+		//cout << " Calling JoinTable " << jTable << "- " << joinTable << endl;
+		joinTable = new JoinTable(joinTable,jTable,$2);
+		jTable = NULL;
+		//cout << " joinTable created with joinprev "<< endl;
+	}
+	| tableAlias {
+		$$ = new List<TableAlias*>;
+		$$->append($1);
+		if (!joinTable){	
+			joinTable = new JoinTable($1);
+			//cout << " joinTable created with " << *$1->table << endl;
+		}
+		else{
+			jTable = new JoinTable($1);
+			//cout << " jTable created with " << *$1->table << endl;
+		}
+	}
+	;
+
+JoinString : JOINPREV {
+		$$ = new String("joinprev");
+	}
+	| JOINNEXT {
+		$$ = new String("joinnext");
+	}
+	;
+
+optOffset: '(' INT ')' {
+		$$ = $2;
+	}
+	|{
+		$$ = 1;
+	}
+	;
+tableAlias : STRING '(' table_name optShiftVal ')' AS STRING{
+		$$ = new TableAlias(new TableName($3),$7,$1,$4);
+	}
+	|
+	table_name AS STRING {
 		$$ = new TableAlias(new TableName($1), $3);
 	}
 	| table_name {
-		if($1->cardinality() == 1){
-			$1->rewind();
-			String* tmp = new String(*$1->get());
-			$$ = new TableAlias(new TableName($1), tmp);
-		}
-		else{
-			String msg = "Sorry, you need to specify alias";
-			THROW(new Exception(msg), 0);
-		}
-	}
+        if($1->cardinality() == 1){
+            $1->rewind();
+            String* tmp = new String(*$1->get());
+            $$ = new TableAlias(new TableName($1), tmp);
+        }
+        else{
+            String msg = "Sorry, you need to specify alias";
+            THROW(new Exception(msg), 0);
+        }
+    }
 	| STRING_CONST optString {
 		$$ = new QuoteAlias($1, $2);
+	}
+	;
+optShiftVal: ',' INT {
+		$$ = $2;
+	}
+	|{
+		$$ = 0;
 	}
 	;
 optString : STRING {

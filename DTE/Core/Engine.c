@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/21 22:21:43  donjerko
+  Added hierarchical namespace.
+
   Revision 1.8  1996/12/19 08:25:46  kmurli
   Changes to include the with predicate in sequences.
 
@@ -40,13 +43,13 @@
 #include<assert.h>
 #include<math.h>
 #include<stdlib.h>
-
 #include "queue.h"
 #include "myopt.h"
 #include "types.h"
 #include "exception.h"
 #include "Engine.h"
 #include "ParseTree.h"
+#include "joins.h"
 
 extern int yyparse();
 extern int yydebug;
@@ -58,6 +61,9 @@ BaseSelection * sequenceby;
 char* queryString;
 BaseSelection * withPredicate;
 DefaultExceptHndl defaultExceptHndl;
+List<JoinTable*>* joinList = NULL;
+JoinTable * joinTable = NULL;
+JoinTable * jTable = NULL;
 ITimer iTimer;
 
 int Engine::optimize(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/21 22:21:52  donjerko
+  Added hierarchical namespace.
+
   Revision 1.5  1996/12/16 11:13:11  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -486,8 +489,8 @@ Type* createPosInf(TypeID type){
 	}
 }
 
-Site* CatEntry::getSite(){
-	return interface->getSite();
+Site* CatEntry::getSite(String *function,int shiftVal){
+	return interface->getSite(function,shiftVal);
 }
 
 CatEntry::~CatEntry(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/21 22:21:47  donjerko
+  Added hierarchical namespace.
+
   Revision 1.5  1996/12/15 06:41:07  donjerko
   Added support for RTree indexes
 
@@ -34,21 +37,27 @@
 #include "url.h"
 #include "site.h"
 
-Site* DeviseInterface::getSite(){
+Site* DeviseInterface::getSite(String * function,int shiftVal){
 	char* schema = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
 	Iterator* unmarshal = new DevRead(schema, data);
-     return new LocalTable("", unmarshal, &indexes);	
+	// In the case of previous or next it is shoved down to 
+	// the bottom most...
+	if (function)
+		unmarshal = new FunctionRead(unmarshal,function,shiftVal);
+	return new LocalTable("", unmarshal, &indexes);	
 }
 
-Site* StandardInterface::getSite(){ // Throws a exception
+Site* StandardInterface::getSite(String * function,int shiftVal){ // Throws a exception
 
 	LOG(logFile << "Contacting " << urlString << " @ ");
 	LOG(iTimer.display(logFile) << endl);
 
 	TRY(URL* url = new URL(urlString), NULL);
 	TRY(istream* in = url->getInputStream(), NULL);
-	StandardRead* unmarshal = new StandardRead(in);
+	Iterator* unmarshal = new StandardRead(in);
+	if (function)
+		unmarshal = new FunctionRead(unmarshal,function,shiftVal);
 	TRY(unmarshal->open(), NULL);
 
 	LOG(logFile << "Initialized @ ");
@@ -58,7 +67,8 @@ Site* StandardInterface::getSite(){ // Throws a exception
      return new LocalTable("", unmarshal, &indexes);	
 }
 
-Site* CatalogInterface::getSite(){ // Throws a exception
+Site* CatalogInterface::getSite(String * function,int shiftVal){ 
+// Throws a exception
 	Site* retVal = NULL;
 	if(tableName->isEmpty()){
 
@@ -76,7 +86,7 @@ Site* CatalogInterface::getSite(){ // Throws a exception
 	}
 	else {
 		Catalog catalog(fileName);
-		TRY(retVal = catalog.find(tableName), NULL);
+		TRY(retVal = catalog.find(tableName,function,shiftVal), NULL);
 		tableName = NULL;
 	}
 	return retVal;
@@ -98,7 +108,7 @@ istream& CGIInterface::read(istream& in){  // throws
 }
 
 
-Site* Catalog::find(TableName* path){     // Throws Exception
+Site* Catalog::find(TableName* path,String *function,int shiftVal){     // Throws Exception
 	ifstream* in = new ifstream(fileName);
 	if(path->isEmpty()){
 		StandardRead* iterator = new StandardRead(in);
@@ -121,7 +131,7 @@ Site* Catalog::find(TableName* path){     // Throws Exception
 			CatEntry* entry = new CatEntry(path);
 			TRY(entry->read(*in), NULL); 
 			delete in;
-			Site* retVal = entry->getSite();
+			Site* retVal = entry->getSite(function,shiftVal);
 			delete entry;
 			return retVal;
 		}

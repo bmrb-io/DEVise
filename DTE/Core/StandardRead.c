@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/21 22:21:46  donjerko
+  Added hierarchical namespace.
+
   Revision 1.3  1996/12/16 11:13:07  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -68,6 +71,7 @@ void StandardRead::open(){	// Throws exception
 			String msg = "Unrecognized option in the header: " + inputStr;
 			THROW(new Exception(msg), );
 		}
+		(*in) >> inputStr;
 	}
 }
 

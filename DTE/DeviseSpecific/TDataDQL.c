@@ -31,7 +31,6 @@
 #include "Util.h"
 #include "DataSourceFileStream.h"
 #include "DataSourceSegment.h"
-#include "DataSourceTape.h"
 #include "DataSourceBuf.h"
 #include "DevError.h"
 #include "DataSeg.h"

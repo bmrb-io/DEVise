@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/21 22:21:50  donjerko
+  Added hierarchical namespace.
+
   Revision 1.10  1996/12/18 00:55:58  donjerko
   Introduced the Operator* parent into the ExecOperator so that
   getTypeID work.
@@ -1106,18 +1109,33 @@ class TableAlias {
 protected:
 	TableName* table;
 	String* alias;
+	String *function;
+	int shiftVal;
 public:
-	TableAlias(TableName* t, String* a = NULL) : 
-		table(t), alias(a) {
-	}
+	TableAlias(TableName *t, String* a = NULL,String *func = NULL,
+			int optShiftVal = 0) : table(t), alias(a),function(func),
+		shiftVal(optShiftVal) {}
 	virtual TableName* getTable(){
 		return table;
 	}
 	String* getAlias(){
 		return alias;
 	}
+	String * getFunction(){
+		return function;
+	}
+	int getShiftVal(){
+		return shiftVal;
+	}
 	virtual void display(ostream& out, int detail = 0){
 		assert(table);
+		if (function ){
+			out << *function << " (" ;
+			table->display(out) ;
+			cout << ") " ;
+		}
+		else
+			table->display(cout);
 		table->display(out);
 		if(alias){
 			out << " as " << *alias;

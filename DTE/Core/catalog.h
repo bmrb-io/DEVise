@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/21 22:21:47  donjerko
+  Added hierarchical namespace.
+
   Revision 1.6  1996/12/15 06:41:07  donjerko
   Added support for RTree indexes
 
@@ -49,17 +52,17 @@ private:
 public:
 	Catalog(String fileName) : fileName(fileName) {
 	}
-	Site* find(TableName* path);     // Throws Exception
+	Site* find(TableName* path,String*function=0,int shiftVal=0);     // Throws Exception
 	void write(String fileNm){
 		ofstream out(fileNm);
 		assert(!"not implemented");
 	}
-	Site* toSite(String directEntry){	// throws exception
+	Site* toSite(String directEntry,String *function =0,int shiftVal =0){	// throws exception
 		strstream entryStream;
 		entryStream << directEntry << " ;";
 		CatEntry* entry = new CatEntry(new TableName());
 		TRY(entry->read(entryStream), NULL); 
-		Site* retVal = entry->getSite();
+		Site* retVal = entry->getSite(function,shiftVal);
 		delete entry;
 		return retVal;
 	}
@@ -70,7 +73,7 @@ protected:
 	List<RTreeIndex*> indexes;
 public:
 	Interface() {}
-	virtual Site* getSite() = 0;
+	virtual Site* getSite(String *function=NULL,int shiftVal= 0) = 0;
 	virtual istream& read(istream& in) = 0;
 	virtual void write(ostream& out){
 		indexes.rewind();
@@ -98,7 +101,7 @@ class DeviseInterface : public Interface{
 	String dataNm;
 public:
 	DeviseInterface(String tableNm) : tableNm(tableNm){}
-	virtual Site* getSite();
+	virtual Site* getSite(String * function=NULL,int shiftVal = 0);
 	virtual istream& read(istream& in){
 		return in >> schemaNm >> dataNm;
 	}
@@ -115,7 +118,7 @@ class StandardInterface : public Interface{
 	String urlString;
 public:
 	StandardInterface(String tableNm) : tableNm(tableNm){}
-	virtual Site* getSite();
+	virtual Site* getSite(String * function=NULL,int shiftVal = 0);
 	virtual istream& read(istream& in){
 		return in >> urlString;
 	}
@@ -131,7 +134,7 @@ class QueryInterface : public Interface{
 	Site* site;
 public:
 	QueryInterface(TableName* tableNm) : tableNm(tableNm){}
-	virtual Site* getSite(){
+	virtual Site* getSite(String * function=NULL,int shiftVal = 0){
 		return site;
 	}
 	virtual istream& read(istream& in){
@@ -157,7 +160,7 @@ public:
 			delete [] entries;
 		}
 	}
-	virtual Site* getSite(){	// getSite may be called only once
+    virtual Site* getSite(String * function=NULL,int shiftVal = 0){
 		assert(entries);
 		Site* site = new CGISite(urlString, entries, entryLen);
 		entries = NULL;
@@ -181,7 +184,7 @@ class CatalogInterface : public Interface {
 	String fileName;
 public:
 	CatalogInterface(TableName* tableName) : tableName(tableName) {}
-	virtual Site* getSite();
+    virtual Site* getSite(String * function=NULL,int shiftVal = 0);
 	virtual istream& read(istream& in){
 		return in >> fileName;
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/21 22:21:51  donjerko
+  Added hierarchical namespace.
+
   Revision 1.7  1996/12/16 11:13:10  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -41,6 +44,7 @@
 #include "exception.h"
 #include "Iterator.h"
 #include "StandardRead.h"
+#include "FunctionRead.h"
 #ifdef NO_RTREE
      #include "RTreeRead.dummy"
 #else
@@ -359,6 +363,7 @@ public:
 };
 
 class SiteGroup : public Site {
+protected:
 	List<Site*>* sites;
 	Site* site1;
 	Site* site2;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/21 22:21:52  donjerko
+  Added hierarchical namespace.
+
   Revision 1.6  1996/12/16 11:13:12  kmurli
   Changes to make the code work for separate TDataDQL etc..and also changes
   done to make Aggregates more robust
@@ -170,6 +173,9 @@ public:
 	int getValue(){
 		return value;
 	}
+	void setValue(int i){
+		value = i;
+	}
 	void display(ostream& out){
 		out << value;
 	}
@@ -264,6 +270,9 @@ public:
 	bool getValue(){
 		return value;
 	}
+	void setValue(bool i){
+		value = i;
+	}
      ostream& display(ostream& out){
           return out << value;
      }
@@ -295,6 +304,9 @@ public:
 	IDouble(double val = 0) : value(val){}
 	double getValue(){
 		return value;
+	}
+	void setValue(double val){
+		value = val;
 	}
      ostream& display(ostream& out){
           return out << value;
@@ -382,6 +394,12 @@ public:
 	IString(char* s) : length(strlen(s) + 1){
 		string = strdup(s);
 	}
+	void setValue(char *s){
+		if (s)
+			string = strdup(s);
+		else
+			string = NULL;
+	}
 	IString(String* s){
 		length = s->length() + 1; 
 		string = strdup(s->chars());
@@ -461,7 +479,7 @@ public:
 	~CatEntry();
 	istream& read(istream& in); // Throws Exception
 	void display(ostream& out);
-	Site* getSite();
+	Site* getSite(String *function=NULL,int shiftVal=0);
 };
 
 void displayAs(ostream& out, void* adt, String type);

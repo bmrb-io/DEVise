@@ -43,8 +43,8 @@ ifdef NO_RTREE
 endif
 
 CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
-	listop.c catalog.c SockStream.c url.c StandardRead.c Engine.c \
-	Aggregates.c QueryTree.c IndexParse.c 
+	listop.c catalog.c SockStream.c url.c StandardRead.c FunctionRead.c \
+	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c 
 
 ifdef NO_RTREE
 	CORE_SRC += RTreeRead.dummy.c
@@ -116,7 +116,7 @@ STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) dte script FormatVolume
+all: $(LIBNAME) dte FormatVolume
 lib: $(LIBNAME)
 
 devread: 

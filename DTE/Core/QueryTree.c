@@ -19,7 +19,9 @@
 #include "listop.h"
 #include "Aggregates.h"
 #include "ParseTree.h"
+#include "joins.h"
 
+extern List<JoinTable*>*joinList;
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
 
@@ -89,15 +91,15 @@ Site* QueryTree::createSite(){
 		Site* site = NULL;
 		if(ta->isQuote()){
 			QuoteAlias* qa = (QuoteAlias*) ta;
-			// TRY(site = catalog.toSite(*qa->getQuote()), 0);
+			TRY(site = catalog.toSite(*qa->getQuote(),ta->getFunction(),ta->getShiftVal()), 0);
 		}
 		else{
-			TRY(site = catalog.find(ta->getTable()), 0);
+			TRY(site = catalog.find(ta->getTable(),ta->getFunction(),ta->getShiftVal()), 0);
 		}
 		assert(site);
-
-		// To do: check if this site already exists in sites
-
+		// In the case of a function call like previois and next the
+		// proper  iterator class could be called..
+		//TRY(Site* site = interf->getSite(ta->function,ta->shiftVal),0);
 		site->addTable(ta);
 		if(!sites->exists(site)){
 			sites->append(site);
@@ -219,8 +221,20 @@ Site* QueryTree::createSite(){
 		}
 	}	
 	
+	cout << " Near joinList " << endl;
+	if (joinList && !joinList->isEmpty()){
+		List<Site*>* joinGroups = new List<Site *>;
+		while(!joinList->atEnd()){
+			JoinTable * jTable = joinList->get();
+			joinList->step();
+			SiteGroup * st;
+			TRY( st = (SiteGroup*)jTable->Plan(sites,selectList,predicateList),0);
+			joinGroups->append(st);
+		}
+		sites->addList(joinGroups);
+	}	
 	sites->rewind();
-	Site* inner = sites->get();
+	Site * inner = sites->get();
 	sites->step();
 	Site* siteGroup = NULL;
 	while(!sites->atEnd()){

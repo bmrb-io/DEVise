@@ -134,17 +134,15 @@ void Aggregates::typify(Site* inputIterator){
 			// Do a quick loop of the inner checking everything..
 			int j;
 			for(j = 0; j < countFlds ; j++){
-				
+			    int arg1,arg2;	
 				Path *newPath;
 				if (selArgument->toString() == AttribNameList[j]){
 					
 					//	Now that u have set the name..
 					args->step();
-					int arg1 = ((IInt*)(args->get()->evaluate(NULL,NULL)))
-								->getValue();
+			       arg1=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
 					args->step();
-					int arg2 = ((IInt*)(args->get()->evaluate(NULL,NULL)))
-								->getValue();
+			       arg2=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
 					
 					if (arg1 > arg2){
 						THROW(new Exception("Window hi lo values reversed"),);
