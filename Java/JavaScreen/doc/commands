@@ -56,6 +56,11 @@ see comments in DEViseCommSocket.java.
     Purpose: get current collaboration status.
     Arguments: 0
 
+    2.6 JAVAC_SetCollabPass
+    Purpose: Set collaboration password.
+    Arguments: 1
+	<passwd>: the collaboration password.
+
 3. JSPoP to JavaScreen
 
     3.1 JAVAC_User
