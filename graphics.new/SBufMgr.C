@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/02 21:52:36  jussi
+  Switching from HTTP writing to reading is now done in
+  UnixWebIOTask::DeviceIO().
+
   Revision 1.3  1996/10/02 19:48:32  jussi
   Added support for writing data through an HTTP connection.
   Also made it possible to use simple POST/GET transactions
@@ -240,22 +244,12 @@ int UnixIOTask::Read(unsigned long long offset,
         SetDeviceIdle();
         return -1;
     }
-#ifndef PIPE_DATA
     addr = reply.addr;
-#endif
 
     if (reply.result < 0) {
         SetDeviceIdle();
         return reply.result;
     }
-
-#ifdef PIPE_DATA
-    if (readn(_replyFd[0], addr, reply.bytes) < (int)reply.bytes) {
-        perror("UnixIOTask::Read: read");
-        SetDeviceIdle();
-        return -1;
-    }
-#endif
 
     SetDeviceIdle();
 
@@ -274,13 +268,6 @@ int UnixIOTask::Write(unsigned long long offset,
         SetDeviceIdle();
         return -1;
     }
-#ifdef PIPE_DATA
-    if (writen(_reqFd[1], addr, bytes) < (int)bytes) {
-        perror("UnixIOTask::Write: write");
-        SetDeviceIdle();
-        return -1;
-    }
-#endif
 
     Request reply;
     if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
@@ -288,9 +275,7 @@ int UnixIOTask::Write(unsigned long long offset,
         SetDeviceIdle();
         return -1;
     }
-#ifndef PIPE_DATA
     addr = reply.addr;
-#endif
 
     SetDeviceIdle();
 
@@ -498,25 +483,12 @@ void *UnixIOTask::ProcessReq()
         }
 #endif
 
-#ifdef PIPE_DATA
-        char buffer[req.bytes];
-        req.addr = buffer;
-
-        if (req.type == WriteReq) {
-            status = readn(_reqFd[0], req.addr, req.bytes);
-            if (status < (int)req.bytes) {
-                perror("UnixIOTask::ProcessReq: read");
-                break;
-            }
-        }
-#endif
-
         if (!req.addr) {
 #if DEBUGLVL >= 3
             printf("Task 0x%p allocating cache page\n", this);
 #endif
-            int status = MemPool::Instance()->AllocateP(MemPool::Cache,
-                                                           req.addr);
+            int status = MemPool::Instance()->Allocate(MemPool::Cache,
+                                                       req.addr);
             if (status < 0 || !req.addr) {
                 fprintf(stderr, "Failed to allocate cache space\n");
                 break;
@@ -525,7 +497,6 @@ void *UnixIOTask::ProcessReq()
 
         DeviceIO(req, reply);
 
-#ifndef PIPE_DATA
         if (req.type == WriteReq) {
             DOASSERT(req.addr == reply.addr, "Invalid page address");
             // Deallocate page since it was not buffered
@@ -533,22 +504,12 @@ void *UnixIOTask::ProcessReq()
                 break;
             reply.addr = 0;
         }
-#endif
 
         status = writen(_replyFd[1], (char *)&reply, sizeof reply);
         if (status < (int)sizeof reply) {
             perror("UnixIOTask::ProcessReq: write");
             break;
         }
-#ifdef PIPE_DATA
-        if (req.type == ReadReq && reply.result >= 0) {
-            status = writen(_replyFd[1], reply.addr, reply.bytes);
-            if (status < (int)reply.bytes) {
-                perror("UnixIOTask::ProcessReq: write");
-                break;
-            }
-        }
-#endif
 
 #if DEBUGLVL >= 5
         printf("Task 0x%p request completed\n", this);
@@ -595,7 +556,7 @@ int UnixIOTask::Buffer()
 #endif
 
     char *page = 0;
-    int status = MemPool::Instance()->AllocateP(MemPool::Buffer, page);
+    int status = MemPool::Instance()->Allocate(MemPool::Buffer, page);
     if (status < 0 || !page) {
 #if DEBUGLVL >= 3
         printf("Task 0x%p pausing buffering because of lack of space\n",
@@ -794,7 +755,7 @@ int UnixIOTask::BufferConvert(char *page, MemPool::PageType oldType,
     printf("Task 0x%p converting page 0x%p\n", this, page);
 #endif
 
-    int status = MemPool::Instance()->ConvertP(page, oldType, newType);
+    int status = MemPool::Instance()->Convert(page, oldType, newType);
     if (status < 0) {
         fprintf(stderr, "Failed to communicate with buffer pool\n");
         return -1;
@@ -810,7 +771,7 @@ int UnixIOTask::BufferDealloc(MemPool::PageType type, char *page)
     printf("Task 0x%p deallocating page 0x%p\n", this, page);
 #endif
 
-    int status = MemPool::Instance()->DeallocateP(type, page);
+    int status = MemPool::Instance()->Deallocate(type, page);
     if (status < 0) {
         fprintf(stderr, "Failed to communicate with buffer pool\n");
         return -1;
@@ -881,8 +842,10 @@ void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
         printf("Task 0x%p reading %lu bytes\n", this, req.bytes);
 #endif
         reply.result = readn(_fd, req.addr, req.bytes);
-        if (reply.result < 0)
+        if (reply.result < 0) {
+            printf("Cannot read to address 0x%p (%d)\n", req.addr, errno);
             perror("UnixFdIOTask::DeviceIO: read");
+        }
         else
             _readBytes += reply.result;
         break;
@@ -1240,20 +1203,25 @@ MemPool::MemPool(int numPages, int pageSize, int &status) :
 
 int MemPool::Initialize()
 {
-    _cache = new HashTable<char *, int>(103, AddrHash);
-    _buffer = new HashTable<char *, int>(103, AddrHash);
-    if (!_cache || !_buffer) {
-        fprintf(stderr, "Cannot allocate cache/buffer lists\n");
-        return -1;
-    }
-
     int status;
     _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
     DOASSERT(_sem, "Out of memory");
     DOASSERT(status >= 0, "Cannot create semaphore");
     _sem->setValue(1);
 
-#ifdef PROCESS_TASK
+#ifdef SHARED_MEMORY
+    _shmKey = SharedMemory::newKey();
+    int created = 0;
+    _shm = new SharedMemory(_shmKey, _numPages * _pageSize, _buf, created);
+    DOASSERT(_shm, "Out of memory");
+    if (!created)
+        printf("Warning: pre-existing shared memory initialized\n");
+#if DEBUGLVL >= 1
+    printf("Created a %d-byte shared memory segment at 0x%p\n",
+           _numPages * _pageSize, _buf);
+#endif
+#endif
+
     if (pipe(_reqFd) < 0) {
         perror("MemPool::Initialize: pipe");
         return -1;
@@ -1269,75 +1237,99 @@ int MemPool::Initialize()
     }
 #endif
 
-    _pid = getpid();
-    DOASSERT(_pid >= 0, "Invalid process ID");
-    status = (int)signal(SIGUSR1, ProcessReq);
-    DOASSERT(status >= 0, "Cannot set interrupt handler");
-#endif
-
-#ifdef SHARED_MEMORY
-    _shmKey = SharedMemory::newKey();
-    int created = 0;
-    _shm = new SharedMemory(_shmKey, _numPages * _pageSize, _buf, created);
-    DOASSERT(_shm, "Out of memory");
-    if (!created)
-        printf("Warning: pre-existing shared memory initialized\n");
 #if DEBUGLVL >= 1
-    printf("Created a %d-byte shared memory segment at 0x%p\n",
-           _numPages * _pageSize, _buf);
+    printf("Creating memory pool process/thread...\n");
 #endif
-#else
-    _buf = new char [_numPages * _pageSize];
+
+#ifdef PROCESS_TASK
+    _child = fork();
+    if (_child < 0) {
+        perror("MemPool::Initialize: fork");
+        return -1;
+    }
+
+    if (!_child) {
+        (void)ProcessReq(this);
+        close(_reqFd[0]);
+        close(_reqFd[1]);
+#ifndef SOLARIS
+        close(_replyFd[0]);
+        close(_replyFd[1]);
+#endif
+        exit(1);
+    }
+#endif
+
+#ifdef THREAD_TASK
+    if (pthread_create(&_child, 0, ProcessReq, this)) {
+        perror("MemPool::Initialize: pthread_create");
+        return -1;
+    }
+#endif
+
 #if DEBUGLVL >= 1
-    printf("Created a %d-byte local memory area at 0x%p\n",
-           _numPages * _pageSize, _buf);
+    printf("Created memory pool process/thread %ld (fd %d,%d)\n",
+           (long int)_child, _reqFd[1], _replyFd[0]);
 #endif
-#endif
-
-    DOASSERT(_buf, "Out of memory");
-    memset(_buf, 0, _numPages * _pageSize);
-
-    for(int i = 0; i < _numPages; i++)
-        _free.Append(_buf + i * _pageSize);
 
     return 0;
 }
 
 MemPool::~MemPool()
 {
+#if DEBUGLVL >= 1
+    printf("Terminating memory pool process/thread %ld...\n",
+           (long int)_child);
+#endif
+
+    Request req = { TerminateReq, Cache, Cache, 0 };
+    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
+        perror("MemPool::~MemPool: write");
+    } else {
 #ifdef PROCESS_TASK
+        while(1) {
+            int status;
+            pid_t child = wait(&status);
+            if (child < 0) {
+                if (errno == EINTR)
+                    continue;
+                if (errno != ECHILD) {
+                    perror("MemPool::~MemPool: wait");
+                    break;
+                }
+            } else
+                break;
+        }
+#endif
+#ifdef THREAD_TASK
+        (void)pthread_join(_child, 0);
+#endif
+    }
+    
+#ifdef SHARED_MEMORY
+    delete _shm;
+#endif
+
+    _sem->destroy();
+    delete _sem;
+
     close(_reqFd[0]);
     close(_reqFd[1]);
 #ifndef SOLARIS
     close(_replyFd[0]);
     close(_replyFd[1]);
 #endif
-#endif
 
-    if (_cache->num() > 0)
-        fprintf(stderr, "Warning: %d cache pages still in use\n",
-                _cache->num());
-    delete _cache;
-
-    if (_buffer->num() > 0)
-        fprintf(stderr, "Warning: %d buffer pages still in use\n",
-                _buffer->num());
-    delete _buffer;
-
-    delete _sem;
-
-#ifdef SHARED_MEMORY
-    delete _shm;
-#else
-    delete _buf;
+#if DEBUGLVL >= 1
+    printf("Child process/thread terminated\n");
 #endif
 }
 
-#ifdef PROCESS_TASK
 int MemPool::SendReq(Request &req, Request &reply)
 {
 #if DEBUGLVL >= 5
-    printf("Submitting request to memory pool\n");
+    printf("Submitting request to memory pool (fd %d,%d)\n",
+           _reqFd[1], _replyFd[0]);
 #endif
 
     AcquireMutex();
@@ -1347,15 +1339,6 @@ int MemPool::SendReq(Request &req, Request &reply)
         ReleaseMutex();
         return -1;
     }
-    if (kill(_pid, SIGUSR1) < 0) {
-        perror("MemPool::SendReq: kill");
-        ReleaseMutex();
-        return -1;
-    }
-#if DEBUGLVL >= 5
-    printf("Signaled memory pool (pid %ld), waiting for reply\n",
-           (long)_pid);
-#endif
     if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
         perror("MemPool::SendReq: read");
         ReleaseMutex();
@@ -1367,57 +1350,104 @@ int MemPool::SendReq(Request &req, Request &reply)
     return 0;
 }
 
-void MemPool::ProcessReq(int caller)
+void *MemPool::ProcessReq(void *arg)
 {
-    caller = caller;                    // make compiler happy
-    MemPool *me = MemPool::Instance();
-    me->ProcessReq();
+    MemPool &me = *(MemPool *)arg;
+    return me.ProcessReq();
 }
 
-void MemPool::ProcessReq()
+void *MemPool::ProcessReq()
 {
-    int status = (int)signal(SIGUSR1, ProcessReq);
-    if (status < 0) {
-        perror("MemPool::ProcessReq: signal");
-        return;
-    }
+#ifndef SHARED_MEMORY
+    _buf = new char [_numPages * _pageSize];
+#if DEBUGLVL >= 1
+    printf("Created a %d-byte local memory area at 0x%p\n",
+           _numPages * _pageSize, _buf);
+#endif
+#endif
 
-    Request req;
-    status = readn(_reqFd[0], (char *)&req, sizeof req);
-    if (status < (int)sizeof req) {
-        perror("MemPool::ProcessReq: read");
-        return;
+#if DEBUGLVL >= 1
+    printf("Creating cache and buffer lists\n");
+#endif
+
+    _cache = new HashTable<char *, int>(103, AddrHash);
+    _buffer = new HashTable<char *, int>(103, AddrHash);
+    if (!_cache || !_buffer) {
+        fprintf(stderr, "Cannot allocate cache/buffer lists\n");
+        return (void *)-1;
     }
 
 #if DEBUGLVL >= 1
-    printf("Processing memory pool request: %d, %d, %d, 0x%p\n",
-           req.type, req.ptype, req.nptype, req.addr);
+    printf("Initializing memory pool\n");
 #endif
 
-    Request reply = req;
+    DOASSERT(_buf, "Out of memory");
+    memset(_buf, 0, _numPages * _pageSize);
 
-    switch(req.type) {
-      case AllocateReq:
-        status = _Allocate(req.ptype, reply.addr);
-        break;
-      case ReleaseReq:
-        status = _Release(req.ptype, reply.addr);
-        break;
-      case DeallocateReq:
-        status = _Deallocate(req.ptype, reply.addr);
-        break;
-      case ConvertReq:
-        status = _Convert(reply.addr, req.ptype, reply.nptype);
-        break;
+    for(int i = 0; i < _numPages; i++)
+        _free.Append(_buf + i * _pageSize);
+
+    while (1) {
+        Request req;
+        int status = readn(_reqFd[0], (char *)&req, sizeof req);
+        if (status < (int)sizeof req) {
+            perror("MemPool::ProcessReq: read");
+            return (void *)-1;
+        }
+
+#if DEBUGLVL >= 1
+        printf("Processing memory pool request: %d, %d, %d, 0x%p\n",
+               req.type, req.ptype, req.nptype, req.addr);
+#endif
+
+        if (req.type == TerminateReq)
+            break;
+
+        Request reply = req;
+
+        switch(req.type) {
+          case AllocateReq:
+            status = _Allocate(req.ptype, reply.addr);
+            break;
+          case ReleaseReq:
+            status = _Release(req.ptype, reply.addr);
+            break;
+          case DeallocateReq:
+            status = _Deallocate(req.ptype, reply.addr);
+            break;
+          case ConvertReq:
+            status = _Convert(reply.addr, req.ptype, reply.nptype);
+            break;
+          case FreeLeftReq:
+            reply.addr = (char *)_free.Size();
+            break;
+          case TerminateReq:
+            break;
+        }
+        
+        status = writen(_replyFd[1], (char *)&reply, sizeof reply);
+        if (status < (int)sizeof reply) {
+            perror("MemPool::ProcessReq: write");
+            return (void *)-1;
+        }
     }
 
-    status = writen(_replyFd[1], (char *)&reply, sizeof reply);
-    if (status < (int)sizeof reply) {
-        perror("MemPool::ProcessReq: write");
-        return;
-    }
+    if (_cache->num() > 0)
+        fprintf(stderr, "Warning: %d cache pages still in use\n",
+                _cache->num());
+    delete _cache;
+
+    if (_buffer->num() > 0)
+        fprintf(stderr, "Warning: %d buffer pages still in use\n",
+                _buffer->num());
+    delete _buffer;
+
+#ifndef SHARED_MEMORY
+    delete _buf;
+#endif
+
+    return (void *)0;
 }
-#endif
 
 int MemPool::_Allocate(PageType type, char *&page)
 {
@@ -1534,13 +1564,49 @@ int MemPool::AddrHash(char *&addr, int numBuckets)
     return ((unsigned long)addr) % numBuckets;
 }
 
+SBufMgr *SBufMgr::_instance = 0;
+
 SBufMgr::SBufMgr(MemPool &pool, int frames) :
 	_pool(pool), _numFrames(frames),
-        _pageSize(pool.PageSize()), _ht(103, AddrHash)
+        _pageSize(pool.PageSize())
+#ifndef SHARED_MEMORY
+        , _ht(103, AddrHash)
+#endif
 {
+    _instance = this;
+
+    (void)Initialize();
+}
+
+int SBufMgr::Initialize()
+{
+    int status;
+    _mutex = new SemaphoreV(Semaphore::newKey(), status);
+    DOASSERT(_mutex, "Out of memory");
+    DOASSERT(status >= 0, "Cannot create semaphore");
+    _mutex->setValue(1);
+
+#ifdef SHARED_MEMORY
+    printf("Creating buffer manager frame table in shared memory\n");
+    _frmShmKey = SharedMemory::newKey();
+    int created = 0;
+    char *buf;
+    _frmShm = new SharedMemory(_frmShmKey, _numFrames * sizeof(PageFrame),
+                               buf, created);
+    DOASSERT(_frmShm, "Out of memory");
+    if (!created)
+        printf("Warning: pre-existing shared memory initialized\n");
+#if DEBUGLVL >= 1
+    printf("Created a %d-byte shared memory segment at 0x%p\n",
+           _numFrames * sizeof(PageFrame), buf);
+#endif
+    _frames = (PageFrame *)buf;
+#else
+    printf("Creating buffer manager frame table in local memory\n");
     _frames = new PageFrame [_numFrames];
     DOASSERT(_frames, "Out of memory");
-
+#endif
+ 
     int i;
     for(i = 0; i < _numFrames; i++) {
         PageFrame &frame = _frames[i];
@@ -1549,18 +1615,122 @@ SBufMgr::SBufMgr(MemPool &pool, int frames) :
         frame.size = 0;
     }
 
-    int status;
-    _mutex = new SemaphoreV(Semaphore::newKey(), status);
-    DOASSERT(_mutex, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _mutex->setValue(1);
+#ifdef NEWSTUFF
+    if (pipe(_reqFd) < 0) {
+        perror("SBufMgr::Initialize: pipe");
+        return -1;
+    }
+#ifdef SOLARIS
+    // Pipes are bi-directional in Solaris
+    _replyFd[0] = _reqFd[1];
+    _replyFd[1] = _reqFd[0];
+#else
+    if (pipe(_replyFd) < 0) {
+        perror("SBufMgr::Initialize: pipe");
+        return -1;
+    }
+#endif
+
+#if DEBUGLVL >= 1
+    printf("Creating buffer manager process/thread...\n");
+#endif
+
+#ifdef PROCESS_TASK
+    _child = fork();
+    if (_child < 0) {
+        perror("SBufMgr::Initialize: fork");
+        return -1;
+    }
+
+    if (!_child) {
+        (void)ProcessReq(this);
+        close(_reqFd[0]);
+        close(_reqFd[1]);
+#ifndef SOLARIS
+        close(_replyFd[0]);
+        close(_replyFd[1]);
+#endif
+        exit(1);
+    }
+#endif
+
+#ifdef THREAD_TASK
+    if (pthread_create(&_child, 0, ProcessReq, this)) {
+        perror("SBufmgr::Initialize: pthread_create");
+        return -1;
+    }
+#endif
+
+#if DEBUGLVL >= 1
+    printf("Created buffer manager process/thread %ld (fd %d,%d)\n",
+           (long int)_child, _reqFd[1], _replyFd[0]);
+#endif
+#endif
+
+    return 0;
 }
 
 SBufMgr::~SBufMgr()
 {
+#ifdef NEWSTUFF
+#if DEBUGLVL >= 1
+    printf("Terminating buffer manager process/thread %ld...\n",
+           (long int)_child);
+#endif
+
+    Request req = { TerminateReq, 0, 0, 0, 0, false, false, false };
+    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
+        perror("SBufMgr::~SBufMgr: write");
+    } else {
+#ifdef PROCESS_TASK
+        while(1) {
+            int status;
+            pid_t child = wait(&status);
+            if (child < 0) {
+                if (errno == EINTR)
+                    continue;
+                if (errno != ECHILD) {
+                    perror("SBufMgr::~SBufMgr: wait");
+                    break;
+                }
+            } else
+                break;
+        }
+#endif
+#ifdef THREAD_TASK
+        (void)pthread_join(_child, 0);
+#endif
+    }
+    
+    close(_reqFd[0]);
+    close(_reqFd[1]);
+#ifndef SOLARIS
+    close(_replyFd[0]);
+    close(_replyFd[1]);
+#endif
+
+#if DEBUGLVL >= 1
+    printf("Child process/thread terminated\n");
+#endif
+#else
+    _DeallocMemory();
+#endif
+
+#ifdef SHARED_MEMORY
+    delete _frmShm;
+#else
+    delete [] _frames;
+#endif
+
+    _mutex->destroy();
+    delete _mutex;
+}
+
+void SBufMgr::_DeallocMemory()
+{
     // handle pinned pages
 
-    UnPin(0, false);
+    _UnPin(0, false);
 
     // deallocate pages and frames
 
@@ -1569,24 +1739,135 @@ SBufMgr::~SBufMgr()
         if (frame.page)
             _pool.Deallocate(MemPool::Cache, frame.page);
     }
-
-    delete [] _frames;
-
-    delete _mutex;
 }
 
-int SBufMgr::PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
+#ifdef NEWSTUFF
+int SBufMgr::SendReq(Request &req, Request &reply)
+{
+#if DEBUGLVL >= 5
+    printf("Submitting request to buffer manager (fd %d,%d)\n",
+           _reqFd[1], _replyFd[0]);
+#endif
+
+    AcquireMutex();
+
+    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
+        perror("SBufMgr::SendReq: write");
+        ReleaseMutex();
+        return -1;
+    }
+
+    long int handle;
+    if (readn(_replyFd[0], (char *)&handle,
+              sizeof handle) < (int)sizeof handle) {
+        perror("SBufMgr::SendReq: read");
+        ReleaseMutex();
+        return -1;
+    }
+
+    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
+        perror("SBufMgr::SendReq: read");
+        ReleaseMutex();
+        return -1;
+    }
+
+    ReleaseMutex();
+
+    return 0;
+}
+
+void *SBufMgr::ProcessReq(void *arg)
+{
+    SBufMgr &me = *(SBufMgr *)arg;
+    return me.ProcessReq();
+}
+
+void *SBufMgr::ProcessReq()
+{
+    _AllocMemory();
+
+    long int handle = 0;
+    int reqs = 0;
+
+    while (1) {
+        Request req;
+        int status = readn(_reqFd[0], (char *)&req, sizeof req);
+        if (status < (int)sizeof req) {
+            perror("SBufMgr::ProcessReq: read");
+            return (void *)-1;
+        }
+
+#if DEBUGLVL >= 1
+        printf("Processing buffer manager request: %d, 0x%p, %d, %d\n",
+               req.type, req.stream, req.pageNo, req.size);
+#endif
+
+        if (req.type == TerminateReq)
+            break;
+
+        ++reqs;
+
+        status = writen(_replyFd[1], (char *)&handle, sizeof handle);
+        if (status < (int)sizeof handle) {
+            perror("SBufMgr::ProcessReq: write");
+            return (void *)-1;
+        }
+
+        ++handle;
+
+        Request reply = req;
+
+        switch(req.type) {
+          case PinPageReq:
+            status = _PinPage(req.stream, req.pageNo, reply.page, req.read);
+            reply.size = status;
+            break;
+          case UnPinPageReq:
+            status = _UnPinPage(req.stream, req.pageNo, req.dirty,
+                                req.size, req.force);
+            reply.size = status;
+            break;
+          case UnPinReq:
+            status = _UnPin(req.stream, req.dirty);
+            break;
+          case TerminateReq:
+            break;
+        }
+
+        status = writen(_replyFd[1], (char *)&reply, sizeof reply);
+        if (status < (int)sizeof reply) {
+            perror("SBufMgr::ProcessReq: write");
+            return (void *)-1;
+        }
+
+        --reqs;
+    }
+
+    _DeallocMemory();
+
+    return (void *)0;
+}
+#endif
+
+int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
 {
     if (!stream) {
         printf("No stream\n");
         return -1;
     }
 
-    AcquireMutex();
-
     int index;
     PageAddr addr = { stream, pageNo };
+#ifdef SHARED_MEMORY
+    for(index = 0; index < _numFrames; index++) {
+        PageFrame &frame = _frames[index];
+        if (frame.valid && frame.addr == addr)
+            break;
+    }
+    int status = (index < _numFrames ? 0 : -1);
+#else
     int status = _ht.lookup(addr, index);
+#endif
 
     Boolean newPage = false;
 
@@ -1601,17 +1882,17 @@ int SBufMgr::PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     } else {
         if ((index = AllocFrame()) < 0) {
             printf("No free frame\n");
-            ReleaseMutex();
             return index;
         }
         PageFrame &frame = _frames[index];
         assert(!frame.page);
         newPage = true;
+#ifndef SHARED_MEMORY
         if ((status = _ht.insert(addr, index)) < 0) {
             printf("Cannot insert to hash table\n");
-            ReleaseMutex();
             return status;
         }
+#endif
         frame.Set(stream, pageNo);
     }
 
@@ -1624,24 +1905,15 @@ int SBufMgr::PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     // memory, so we have to do it only we're not going to call the
     // I/O task here
 
-#ifndef PIPE_DATA
     if (!read || !newPage) {
-#endif
         if (!frame.page) {
             if ((status = _pool.Allocate(MemPool::Cache, frame.page)) < 0) {
                 printf("Cannot get free page from pool\n");
-                ReleaseMutex();
                 return status;
             }
             frame.size = _pageSize;
         }
-#ifndef PIPE_DATA
     }
-#endif
-
-#ifdef PIPE_DATA
-    DOASSERT(frame.page, "Invalid page address");
-#endif
 
     if (read && newPage) {
         // Cannot allow IOTask->Read() to modify frame.page
@@ -1673,27 +1945,31 @@ int SBufMgr::PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
            stream, pageNo, index, frame.page, frame.pinCnt);
 #endif
 
-    ReleaseMutex();
-
     return frame.size;
 }
 
-int SBufMgr::UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
-                       int size, Boolean force)
+int SBufMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
+                        int size, Boolean force)
 {
     if (!stream) {
         printf("No stream\n");
         return -1;
     }
 
-    AcquireMutex();
-
     int index;
     PageAddr addr = { stream, pageNo };
+#ifdef SHARED_MEMORY
+    for(index = 0; index < _numFrames; index++) {
+        PageFrame &frame = _frames[index];
+        if (frame.valid && frame.addr == addr)
+            break;
+    }
+    int status = (index < _numFrames ? 0 : -1);
+#else
     int status = _ht.lookup(addr, index);
+#endif
     if (status < 0) {
         printf("Page not pinned\n");
-        ReleaseMutex();
         return status;
     }
 
@@ -1702,7 +1978,6 @@ int SBufMgr::UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
 
     if (!frame.pinCnt) {
         printf("Page pin count zero\n");
-        ReleaseMutex();
         return -1;
     }
 
@@ -1748,10 +2023,11 @@ int SBufMgr::UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
             frame.page = page;
             if (frame.page)
                 _pool.Release(MemPool::Cache, frame.page);
+#ifndef SHARED_MEMORY
             if ((status = _ht.remove(frame.addr)) < 0) {
-                ReleaseMutex();
                 return status;
             }
+#endif
             frame.Clear();
         }
     }
@@ -1763,15 +2039,11 @@ int SBufMgr::UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
            stream, pageNo, index, frame.pinCnt);
 #endif
 
-    ReleaseMutex();
-
     return 0;
 }
 
-int SBufMgr::UnPin(IOTask *stream, Boolean dirty)
+int SBufMgr::_UnPin(IOTask *stream, Boolean dirty)
 {
-    AcquireMutex();
-
     for(int i = 0; i < _numFrames; i++) {
         PageFrame &frame = _frames[i];
         if (frame.valid && (!stream || frame.addr.stream == stream)) {
@@ -1779,10 +2051,10 @@ int SBufMgr::UnPin(IOTask *stream, Boolean dirty)
             printf("Releasing frame %d\n", i);
 #endif
             int status;
-            if ((status = _ht.remove(frame.addr)) < 0) {
-                ReleaseMutex();
+#ifndef SHARED_MEMORY
+            if ((status = _ht.remove(frame.addr)) < 0)
                 return status;
-            }
+#endif
             if (dirty)
                 frame.dirty = true;
             if (frame.dirty) {
@@ -1816,13 +2088,11 @@ int SBufMgr::UnPin(IOTask *stream, Boolean dirty)
         }
     }
 
-    ReleaseMutex();
-
     return 0;
 }
 
-int SBufMgr::InMemory(IOTask *stream, int pageStart, int pageEnd,
-                      PageRangeList *&inMemory)
+int SBufMgr::_InMemory(IOTask *stream, int pageStart, int pageEnd,
+                       PageRangeList *&inMemory)
 {
     if (!stream) {
         printf("No stream\n");
@@ -1832,19 +2102,15 @@ int SBufMgr::InMemory(IOTask *stream, int pageStart, int pageEnd,
     inMemory = 0;
     pageStart = pageEnd;
 
-    AcquireMutex();
-
     for(int i = 0; i < _numFrames; i++) {
         PageFrame &frame = _frames[i];
         if (!frame.valid || frame.addr.stream != stream)
             continue;
 #if DEBUGLVL >= 5
-        printf("Adding frame %d, page %d to page list\n",
+        printf("Adding frame %d, page %ld to page list\n",
                i, frame.addr.pageNo);
 #endif
     }
-
-    ReleaseMutex();
 
     return 0;
 }
@@ -1929,9 +2195,11 @@ int SBufMgrLRU::PickVictim()
 
         // found victim page (might be dirty)
 
+#ifndef SHARED_MEMORY
         int status = _ht.remove(frame.addr);
         if (status < 0)
             return status;
+#endif
 
         if (frame.dirty) {              // page has unwritten data on it
             DOASSERT(frame.page, "Invalid page address");

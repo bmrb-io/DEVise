@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/10/02 19:48:33  jussi
+  Added support for writing data through an HTTP connection.
+  Also made it possible to use simple POST/GET transactions
+  using a single IOUnixWebTask.
+
   Revision 1.2  1996/09/26 20:29:07  jussi
   Made code compile in Linux without threads.
 
@@ -41,25 +46,19 @@
 // the corresponding #define's.
 //
 //   Processes, shared memory, with or without buffering
-//   Processes, pipes
-//   Threads, shared memory, with or without buffering
 //   Threads, local memory, with or without buffering
 //
 
 //#define PROCESS_TASK
 //#define THREAD_TASK
 //#define SHARED_MEMORY
-//#define PIPE_DATA
 //#define BUFFER
 
 #if defined(SOLARIS)
 #define THREAD_TASK
-#elif defined(SUN) || defined(HPUX) || defined(LINUX)
-#define PROCESS_TASK
-#define SHARED_MEMORY
 #else
 #define PROCESS_TASK
-#define PIPE_DATA
+#define SHARED_MEMORY
 #endif
 
 #if !defined(PROCESS_TASK) && !defined(THREAD_TASK)
@@ -70,16 +69,8 @@
 #error "Cannot use both process and thread tasks"
 #endif
 
-#if defined(SHARED_MEMORY) && defined(PIPE_DATA)
-#error "Cannot use both shared memory and pipes"
-#endif
-
-#if defined(PIPE_DATA) && defined(BUFFER)
-#error "Cannot use pipes for read-ahead/write-behind buffering"
-#endif
-
-#if defined(PROCESS_TASK) && !defined(SHARED_MEMORY) && !defined(PIPE_DATA)
-#error "Must have shared memory or pipes for process tasks"
+#if defined(PROCESS_TASK) && !defined(SHARED_MEMORY)
+#error "Must have shared memory for process tasks"
 #endif
 
 #include <sys/types.h>
@@ -115,7 +106,8 @@ class MemPool {
     enum PageType { Cache, Buffer };
 
     // Request types
-    enum ReqType { AllocateReq, ReleaseReq, DeallocateReq, ConvertReq };
+    enum ReqType { AllocateReq, ReleaseReq, DeallocateReq, ConvertReq,
+                   FreeLeftReq, TerminateReq };
 
     // Request structure
     struct Request {
@@ -125,35 +117,7 @@ class MemPool {
         char *addr;                     // page address
     };
 
-    // Direct (same process) interface to memory pool
     int Allocate(PageType type, char *&page) {
-        AcquireMutex();
-        int result = _Allocate(type, page);
-        ReleaseMutex();
-        return result;
-    }
-    int Release(PageType type, char *&page) {
-        AcquireMutex();
-        int result = _Release(type, page);
-        ReleaseMutex();
-        return result;
-    }
-    int Deallocate(PageType type, char *page) {
-        AcquireMutex();
-        int result = _Deallocate(type, page);
-        ReleaseMutex();
-        return result;
-    }
-    int Convert(char *page, PageType oldType, PageType &newType) {
-        AcquireMutex();
-        int result = _Convert(page, oldType, newType);
-        ReleaseMutex();
-        return result;
-    }
-
-    // IPC interface to memory pool
-    int AllocateP(PageType type, char *&page) {
-#ifdef PROCESS_TASK
         Request req = { AllocateReq, type, type, page };
         Request reply;
         int status = SendReq(req, reply);
@@ -161,13 +125,8 @@ class MemPool {
             return status;
         page = reply.addr;
         return 0;
-#endif
-#ifdef THREAD_TASK
-        return Allocate(type, page);
-#endif
     }
-    int ReleaseP(PageType type, char *&page) {
-#ifdef PROCESS_TASK
+    int Release(PageType type, char *&page) {
         Request req = { ReleaseReq, type, type, page };
         Request reply;
         int status = SendReq(req, reply);
@@ -175,23 +134,13 @@ class MemPool {
             return status;
         page = reply.addr;
         return 0;
-#endif
-#ifdef THREAD_TASK
-        return Release(type, page);
-#endif
     }
-    int DeallocateP(PageType type, char *page) {
-#ifdef PROCESS_TASK
+    int Deallocate(PageType type, char *page) {
         Request req = { DeallocateReq, type, type, page };
         Request reply;
         return SendReq(req, reply);
-#endif
-#ifdef THREAD_TASK
-        return Deallocate(type, page);
-#endif
     }
-    int ConvertP(char *page, PageType oldType, PageType &newType) {
-#ifdef PROCESS_TASK
+    int Convert(char *page, PageType oldType, PageType &newType) {
         Request req = { ConvertReq, oldType, newType, page };
         Request reply;
         int status = SendReq(req, reply);
@@ -199,15 +148,18 @@ class MemPool {
             return status;
         newType = reply.nptype;
         return 0;
-#endif
-#ifdef THREAD_TASK
-        return Convert(page, oldType, newType);
-#endif
+    }
+    int FreeLeft() {
+        Request req = { FreeLeftReq, Cache, Cache, 0 };
+        Request reply;
+        int status = SendReq(req, reply);
+        if (status < 0)
+            return status;
+        return (int)reply.addr;
     }
 
     int PageSize() { return _pageSize; }
     int NumPages() { return _numPages; }
-    int FreeLeft() { return _free.Size(); }
 
     static MemPool *Instance() { return _instance; }
 
@@ -215,14 +167,12 @@ class MemPool {
     // Initialization
     int Initialize();
 
-#ifdef PROCESS_TASK
     // Request interface
     int SendReq(Request &req, Request &reply);
 
     // Request interrupt handler
-    static void ProcessReq(int caller);
-    void ProcessReq();
-#endif
+    static void *ProcessReq(void *arg);
+    void *ProcessReq();
 
     // Acquire and release mutex
     void AcquireMutex() { _sem->acquire(1); }
@@ -255,11 +205,15 @@ class MemPool {
     // An instance of this class
     static MemPool *_instance;
 
-#ifdef PROCESS_TASK
     // Fd's of pipes for requests
     int _reqFd[2];
     int _replyFd[2];
-    pid_t _pid;
+
+#ifdef PROCESS_TASK
+    pid_t _child;                       // pid of child process
+#endif
+#ifdef THREAD_TASK
+    pthread_t _child;                   // thread id of child
 #endif
 
     // Mutex for synchronization
@@ -566,22 +520,138 @@ class SBufMgr {
     SBufMgr(MemPool &pool, int frames);
     virtual ~SBufMgr();  
 
-    // Allocate, fix and release pages; clear pages
+    // Request types
+    enum ReqType { PinPageReq, UnPinPageReq, UnPinReq, TerminateReq };
+
+    // Request structure
+    struct Request {
+        ReqType type;                   // request type
+        IOTask *stream;                 // I/O stream
+        int pageNo;                     // page number
+        char *page;                     // page address
+        int size;                       // size of page
+        Boolean read;                   // true if allocate new page
+        Boolean dirty;                  // true if page is dirty
+        Boolean force;                  // true if page must be forced out
+    };
+
+#ifdef NEWSTUFF
     int AllocPage(IOTask *stream, int pageNo, char *&page) {
         return PinPage(stream, pageNo, page, false);
     }
-    int PinPage(IOTask *stream, int pageNo, char *&page, Boolean read = true);
+    int PinPage(IOTask *stream, int pageNo,
+                char *&page, Boolean read = true) {
+        Request req = { PinPageReq, stream, pageNo, 0, 0, read, 0, 0 };
+        Request reply;
+        int status = SendReq(req, reply);
+        if (status < 0)
+            return status;
+        page = reply.page;
+        return reply.size;
+    }
     int UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
-                  int size = -1, Boolean force = false);
-    int UnPin(IOTask *stream, Boolean dirty);
-
+                  int size = -1, Boolean force = false) {
+        Request req = { UnPinPageReq, stream, pageNo, 0, size,
+                        false, dirty, force };
+        Request reply;
+        int status = SendReq(req, reply);
+        if (status < 0)
+            return status;
+        return reply.size;
+    }
+    int UnPin(IOTask *stream, Boolean dirty) {
+        Request req = { UnPinReq, stream, 0, 0, 0, false, dirty, false };
+        Request reply;
+        int status = SendReq(req, reply);
+        if (status < 0)
+            return status;
+        return 0;
+    }
     int InMemory(IOTask *stream, int pageStart, int pageEnd,
-                 PageRangeList *&inMemory);
+                 PageRangeList *&inMemory) {
+        stream = stream;
+        pageStart = pageStart;
+        pageEnd = pageEnd;
+        inMemory = 0;
+        return 0;
+    }
+#else
+    // Direct (same process) interface to memory pool
+    int AllocPage(IOTask *stream, int pageNo, char *&page) {
+        return PinPage(stream, pageNo, page, false);
+    }
+    int PinPage(IOTask *stream, int pageNo,
+                char *&page, Boolean read = true) {
+        AcquireMutex();
+        int result = _PinPage(stream, pageNo, page, read);
+        ReleaseMutex();
+        return result;
+    }
+    int UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
+                  int size = -1, Boolean force = false) {
+        AcquireMutex();
+        int result = _UnPinPage(stream, pageNo, dirty, size, force);
+        ReleaseMutex();
+        return result;
+    }
+    int UnPin(IOTask *stream, Boolean dirty) {
+        AcquireMutex();
+        int result = _UnPin(stream, dirty);
+        ReleaseMutex();
+        return result;
+    }
+    int InMemory(IOTask *stream, int pageStart, int pageEnd,
+                 PageRangeList *&inMemory) {
+        AcquireMutex();
+        int result = _InMemory(stream, pageStart, pageEnd, inMemory);
+        ReleaseMutex();
+        return result;
+    }
+#endif
+
+    static SBufMgr *Instance() { return _instance; }
 
  protected:
+    // Initialization
+    virtual int Initialize();
+
     // Acquire and release mutex
     void AcquireMutex() { _mutex->acquire(); }
     void ReleaseMutex() { _mutex->release(); }
+
+    int _PinPage(IOTask *stream, int pageNo,
+                 char *&page, Boolean read = true);
+    int _UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
+                   int size = -1, Boolean force = false);
+    int _UnPin(IOTask *stream, Boolean dirty);
+    int _InMemory(IOTask *stream, int pageStart, int pageEnd,
+                  PageRangeList *&inMemory);
+
+    // An instance of this class
+    static SBufMgr *_instance;
+
+    void _AllocMemory();
+    void _DeallocMemory();
+
+#ifdef NEWSTUFF
+    // Request interface
+    int SendReq(Request &req, Request &reply);
+
+    // Child process for communicating with parent
+    static void *ProcessReq(void *arg);
+    void *ProcessReq();
+
+    // Fd's of pipes for requests
+    int _reqFd[2];
+    int _replyFd[2];
+
+#ifdef PROCESS_TASK
+    pid_t _child;                       // pid of child process
+#endif
+#ifdef THREAD_TASK
+    pthread_t _child;                   // thread id of child
+#endif
+#endif
 
     // Pick a free frame; pick victim page if necessary
     int AllocFrame();
@@ -602,11 +672,15 @@ class SBufMgr {
 
     // Page frames
     PageFrame *_frames;
-
+#ifdef SHARED_MEMORY
+    key_t _frmShmKey;
+    SharedMemory *_frmShm;
+#else
     // Hash table of page addresses
     HashTable<PageAddr, int> _ht;
+#endif
 
-    // Mutex for synchronization
+    // Mutexes for synchronization
     SemaphoreV *_mutex;
 };
 
