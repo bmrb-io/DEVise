@@ -59,9 +59,13 @@ DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
 	TDataDQL.c TDataDQLInterp.c CatalogComm.c CatalogComm2.c \
 	ParseAPIDTE.c
 	
-GUI_SRC = ParseAPIDTE.c ParseAPIParent.c TkControl.c CatalogComm.c
+GUI_SRC = ParseAPIParent.c TkControl.c CatalogComm.c
 
-GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_SRC:.C=.o)
+ParseAPIDTE_SA.o : ParseAPIDTE.c
+	$(CC) -c $(CFLAGS) -DDTE_STANDALONE -o $@ $<
+
+GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_SRC:.C=.o) \
+	ParseAPIDTE_SA.o
 
 DEVREAD_OBJ = \
 	../attrproj/ApInit.o \
