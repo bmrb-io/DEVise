@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/04/02 16:49:05  wenger
+  Added timestamp to error messages.
+
   Revision 1.53  1999/03/24 17:26:10  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -4096,12 +4099,18 @@ DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
     	return -1;
           }
           Boolean stat = atoi(argv[3]);
-          if (!strcmp(argv[2], "X"))
-    	vg->XAxisDisplayOnOff(stat);
-          else
-    	vg->YAxisDisplayOnOff(stat);
-          ReturnVal(API_ACK, "done");
-          return 1;
+          if (!strcmp(argv[2], "X")) {
+    	    vg->XAxisDisplayOnOff(stat);
+            ReturnVal(API_ACK, "done");
+            return 1;
+          } else if (!strcmp(argv[2], "Y")) {
+    	    vg->YAxisDisplayOnOff(stat);
+            ReturnVal(API_ACK, "done");
+            return 1;
+          } else {
+            ReturnVal(API_NAK, "Bad axis selection");
+            return -1;
+	  }
         }
     }
     return true;
