@@ -1,9 +1,27 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:35  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
+
 #include "RecInterp.h"
 #include "CompositeParser.h"
 #include "Exit.h"
@@ -13,37 +31,36 @@ int CompositeParser::_numEntries = 0;
 int CompositeParser::_hintIndex = -1;
 
 void CompositeParser::Register(char *fileType, UserComposite *userComposite){
-	if (_numEntries >= MAX_COMPOSITE_ENTRIES){
-		fprintf(stderr,"CompositeParser:: too many entries\n");
-		Exit::DoExit(2);
-	}
-	_entries[_numEntries].fileType = fileType;
-	_entries[_numEntries].userComposite = userComposite;
-	_numEntries++;
+  if (_numEntries >= MAX_COMPOSITE_ENTRIES) {
+    fprintf(stderr,"CompositeParser:: too many entries\n");
+    Exit::DoExit(2);
+  }
+
+  _entries[_numEntries].fileType = fileType;
+  _entries[_numEntries].userComposite = userComposite;
+  _numEntries++;
 }
 
-void CompositeParser::Decode(char *fileType, RecInterp *recInterp){
-	int i;
-	if (_hintIndex >= 0 && strcmp(fileType,_entries[_hintIndex].fileType) == 0){
-		/* found it */
-		_entries[_hintIndex].userComposite->
-			Decode(recInterp);
-		return;
-	}
-	else {
-		/* search for a matching file type */
-		for (i=0; i < _numEntries; i++){
-			if (strcmp(fileType,_entries[i].fileType) == 0){
-				/* found it */
-				_hintIndex = i;
-				_entries[_hintIndex].userComposite-> Decode(recInterp);
-				return;
-			}
-		}
-	}
+void CompositeParser::Decode(char *fileType, RecInterp *recInterp)
+{
+  if (_hintIndex >= 0 && !strcmp(fileType, _entries[_hintIndex].fileType)) {
+    /* found it */
+    _entries[_hintIndex].userComposite->Decode(recInterp);
+    return;
+  }
 
-	/* not found */
-	fprintf(stderr,"can't find user composite function for file type %s\n",
-		fileType);
-	Exit::DoExit(2);
+  /* search for a matching file type */
+  for(int i = 0; i < _numEntries; i++) {
+    if (!strcmp(fileType,_entries[i].fileType)) {
+      /* found it */
+      _hintIndex = i;
+      _entries[_hintIndex].userComposite->Decode(recInterp);
+      return;
+    }
+  }
+  
+  /* not found */
+  fprintf(stderr, "Can't find user composite function for file type %s\n",
+	  fileType);
+  Exit::DoExit(2);
 }
