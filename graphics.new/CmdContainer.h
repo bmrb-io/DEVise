@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/12/02 15:06:57  wenger
+  Fixed bug 538 (slow session saving).
+
   Revision 1.8  1999/11/24 15:44:21  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -52,7 +55,6 @@
 
 class ControlPanel;
 class DeviseCommand;
-class CmdLogRecord;
 
 class CmdContainer 
 {
@@ -77,9 +79,6 @@ class CmdContainer
 		Make	getMake(){return make;}
 		void	setMake(Make newMake) {make = newMake;}
 
-		char*	getLogName(){ return cmdLogFname;}
-		CmdLogRecord* getCmdLog() const 
-			{ return cmdLog;}
 		DeviseServer* getDeviseServer(){ return _server;}
 
 	protected:
@@ -92,10 +91,8 @@ class CmdContainer
 		long	logCommand(int argc, char** argv, CmdDescriptor& cmdDes);
 		//bool	playCommand(long logId1, long logId2);
 
-		CmdLogRecord	*cmdLog;
 		Make	make;
 		DeviseServer*	_server;
-		char		*cmdLogFname;
 };
 ostream& operator <<(ostream& os, const CmdContainer& cc);
 

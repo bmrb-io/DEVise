@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/03/27 15:08:54  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.5  1997/07/22 15:36:36  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -68,6 +73,8 @@
 #define FILE_TYPE_SESSIONDESCP	"sessionDescPhys"
 #define FILE_TYPE_SESSIONDESCL	"sessionDescLog"
 #define FILE_TYPE_LINKDESC	"linkDesc"
+#define FILE_TYPE_DEBUGLOG	"debugLog"
+#define FILE_TYPE_CMDLOG	"commandLog"
 
 
 class DevFileHeader

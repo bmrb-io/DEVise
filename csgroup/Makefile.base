@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1999/11/24 15:44:04  wenger
+#  Removed (unnecessary) CommandObj class; commands are now logged for the
+#  monolithic form, not just the client/server form; other command-related
+#  cleanups; added GUI for playing back command logs.
+#
 #  Revision 1.10  1998/07/29 14:19:40  wenger
 #  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
 #  allow static linking on Linux.
@@ -67,7 +72,6 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 LOCALSRC1 = Client.C\
 	CmdDescriptor.C\
 	CmdSerialize.C\
-	CmdLog.C\
 	Keys.C\
 	Server.C\
 	TclClient.C\

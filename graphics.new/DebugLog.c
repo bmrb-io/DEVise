@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/11/16 20:13:00  wenger
+  Improvements to debug logging: the beginning of the log isn't overwritten
+  when the log wraps around; the values of important environment variables
+  are logged at startup.
+
   Revision 1.10  1999/10/14 16:07:31  wenger
   Improvements to debug logging.
 
@@ -77,6 +82,7 @@
 #include "DebugLog.h"
 #include "Util.h"
 #include "Init.h"
+#include "DevFileHeader.h"
 
 //#define DEBUG
 
@@ -103,6 +109,10 @@ DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
       if (lseek(_fd, 0, SEEK_END) == -1) {
         fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
       }
+
+      char *header = DevFileHeader::Get(FILE_TYPE_DEBUGLOG);
+      write(_fd, header, strlen(header));
+
       char logBuf[1024];
       sprintf(logBuf, "BEGINNING OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
       write(_fd, logBuf, strlen(logBuf));

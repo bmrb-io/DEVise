@@ -20,14 +20,19 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/11/22 18:11:47  wenger
+  Fixed 'command buffer conflict' errors, other command-related cleanup.
+
  */
 
 #ifndef _ControlPanelSimple_h_
 #define _ControlPanelSimple_h_
 
 #include <sys/types.h>
+#include <string>
 
 #include "DeviseTypes.h"
+#include "Control.h"
 
 // Note: we're defining this class so we have a ControlPanel * to pass
 // to ParseAPI so it can return its results.

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.207  1999/12/03 22:16:24  wenger
+#	Reduced the number of commands required to update the mapping dialog.
+#	
 #	Revision 1.206  1999/12/02 16:26:52  wenger
 #	Fixed bug 518 (confirm before saving a session the first time); got rid
 #	of error message during normal Tasvir launch.
@@ -2509,12 +2512,8 @@ proc PlayBackLog {} {
 
     # Get a log file name
     set fsBox(path) /tmp
-    #TEMPTEMP?
-    set fsBox(path) .
     # Change for saving sessions as batch scripts only.
     set fsBox(pattern) {cmdLog.*}
-    #TEMPTEMP
-    set fsBox(pattern) {cmdLog*}
     set file [ FSBox "Select log file to play back" ]
     
     if {$file == ""} {

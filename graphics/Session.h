@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/11/30 22:28:04  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.18  1999/10/18 15:36:31  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -157,12 +164,16 @@ protected:
   static void SetOpeningSession(Boolean openingSession) {
       _openingSession = openingSession; }
 
+  friend class CommandLog;
+
+  static Boolean IsBlankOrComment(const char *str);
+  static void RemoveTrailingSemicolons(char str[]);
+  static DevStatus RunCommand(ControlPanelSimple *control, int argc,
+      char *argv[]);
+
 private:
   static DevStatus ReadSession(ControlPanelSimple *control,
       const char *filename);
-  static Boolean IsBlankOrComment(const char *str);
-  static DevStatus RunCommand(ControlPanelSimple *control, int argc,
-      char *argv[]);
 
   static DevStatus DEViseCmd(ControlPanel *control, int argc, char *argv[]);
   static DevStatus OpenDataSourceCmd(ControlPanel * control, int argc,

@@ -2095,8 +2095,9 @@ Num Date        Status  Description
 
 536 11/23/99	OPEN	Collaboration no longer works. (rkw)
 
-537 11/24/99	OPEN	Play back command log, then quit -> DEVise crashes
+537 11/24/99	FIXED	Play back command log, then quit -> DEVise crashes
 			in Dispatcher::DoCleanup(). (rkw)
+			(Fixed by rkw, 12/6/99.)
 
 538 11/29/99	FIXED	Saving a session takes an incredibly long time
 			(try the demo session Misc/MolBio.ds, for example).

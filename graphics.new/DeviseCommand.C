@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.89  1999/11/30 23:52:27  wenger
+  A view can now be successfully inserted into a window which is in custom
+  layout mode (fixes problem Omer had); more error checking in insertWindow
+  command.
+
   Revision 1.88  1999/11/30 22:28:20  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -458,7 +463,6 @@
 #include "Session.h"
 #include "GDataSock.h"
 #include "Timer.h"
-#include "CmdLog.h"
 #include "CmdContainer.h"
 #include "JavaScreenCmd.h"
 #include "TAttrLink.h"
@@ -469,6 +473,7 @@
 #include "ViewGeom.h"
 #include "DRUtils.h"
 #include "DebugLog.h"
+#include "CommandLog.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -556,6 +561,12 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	_control = cntl;
 	pushControl(cntl);
 	_cmdDepth++;
+
+	// Log command if appropriate (don't log commands that are the result
+	// of a higher-level command that we're still running).
+	if (_cmdDepth <= 1) {
+	  CommandLog::Log(argc, argv);
+	}
 
 	_classDir = _control->GetClassDir();
     if (_result == _control->resultBuf) {
@@ -4756,52 +4767,20 @@ DeviseCommand_viewGetImplicitHome::Run(int argc, char** argv)
 }
 
 IMPLEMENT_COMMAND_BEGIN(playLog)
-	char	*logFile;
-	char	*errmsg = NULL;
-
-	static	long	lastLogId = CmdLogRecord::LOG_BEGIN;
-	if (argc != 6)
-	{
-		fprintf(stderr,"Wrong # of arguments:%d in playLog\n", argc);
+    // Arguments: <logFile>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		CommandLog::Playback(argv[1]);
+        ReturnVal(API_ACK, "done");
+        return true;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in playLog\n",
+		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
-	}
-	if (!strcmp(argv[1], "default"))
-	{
-		logFile = CmdContainer::GetCmdContainer()->getLogName();
-	}
-	else
-	{
-		logFile = argv[1];
-	}
-	FILE* fp= fopen(logFile,"r");
-	if (fp == NULL)
-	{
-		errmsg = "Open log file failure";
-		ReturnVal(API_NAK, errmsg);
-		fprintf(stderr,"%s\n", errmsg);
-		return -1;
-	}
-	fclose(fp);
-
-	int	by = atoi(argv[2]);
-	int pause = atoi(argv[3]);
-	long	start = atol(argv[4]);
-	long	end = atol(argv[5]);
-
-	// it is up to the last scheduled Run to garbage-collect this object
-	CmdLogRecord 	*cmdLog= new CmdLogRecord(logFile);
-	bool success = cmdLog->playLog( by, pause, start, end, errmsg);
-	if (success)
-	{
-    	ReturnVal(API_ACK, "done");
-		return 1;
-	}
-	else
-	{
-		fprintf(stderr, "Play log failure:%s\n",errmsg);
-    	ReturnVal(API_NAK, errmsg);
-		return -1;
 	}
 IMPLEMENT_COMMAND_END
 

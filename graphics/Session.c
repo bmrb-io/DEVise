@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  1999/12/02 15:06:49  wenger
+  Fixed bug 538 (slow session saving).
+
   Revision 1.72  1999/11/24 15:43:55  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -368,7 +371,6 @@
 #include "CmdContainer.h"
 #include "DeviseCommand.h"
 #include "DeviseServer.h"
-#include "CmdLog.h"
 #include "View.h"
 #include "DataCatalog.h"
 #include "DataSeg.h"
@@ -425,15 +427,7 @@ Session::Open(const char *filename)
 
     ControlPanelSimple control;
 
-	// disable logging while evaluating the file
-	CmdLogRecord* cmdLog = CmdContainer::GetCmdContainer()->getCmdLog();
-	int oldStatus = cmdLog->getLogStatus();
-	cmdLog->setLogStatus(false);
-
     status += ReadSession(&control, filename);
-
-	// resume original logging status
-	cmdLog->setLogStatus(oldStatus);
 
     _openingSession = false;
   }
@@ -1022,18 +1016,7 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename)
       printf("  read line: %s", lineBuf);
 #endif
 
-      // Note: Tcl uses semicolons as command separators; we're not currently
-	  // implementing this.  However, we need to get rid of any trailing
-	  // semicolons so they're not parsed as arguments.  RKW 1999-09-20.
-	  char *tmpC = &lineBuf[strlen(lineBuf) - 1];
-	  while (tmpC >= lineBuf) {
-	    if (*tmpC == ';') {
-	      *tmpC = ' ';
-	    } else if (!isspace(*tmpC)) {
-	      break;
-	    }
-	    tmpC--;
-	  }
+      RemoveTrailingSemicolons(lineBuf);
 
 #if defined(DEBUG)
       printf("  semicolons removed: %s", lineBuf);
@@ -1090,8 +1073,35 @@ Session::IsBlankOrComment(const char *str)
 }
 
 /*------------------------------------------------------------------------------
+ * function: Session::RemoveTrailingSemicolons
+ * Removes trailing semicolons from the given string.
+ */
+void
+Session::RemoveTrailingSemicolons(char *str)
+{
+#if defined(DEBUG)
+  printf("Session::RemoveTrailingSemicolons(%s)\n", str);
+#endif
+
+  // Note: Tcl uses semicolons as command separators; we're not currently
+  // implementing this.  However, we need to get rid of any trailing
+  // semicolons so they're not parsed as arguments.  RKW 1999-09-20.
+  char *tmpC = &str[strlen(str) - 1];
+  while (tmpC >= str) {
+    if (*tmpC == ';') {
+      *tmpC = ' ';
+    } else if (!isspace(*tmpC)) {
+      break;
+    }
+    tmpC--;
+  }
+}
+
+/*------------------------------------------------------------------------------
  * function: Session::RunCommand
  * Run the appropriate command.
+ * Note: this function needs a ControlPanelSimple object because it uses
+ * the GetResult() method not found in ControlPanel.
  */
 DevStatus
 Session::RunCommand(ControlPanelSimple *control, int argc, char *argv[])
@@ -1779,6 +1789,8 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
  * function: Session::CallParseAPI
  * Run the given command; parse the result into individual arguments if
  * requested.
+ * Note: this function needs a ControlPanelSimple object because it uses
+ * the GetResult() method not found in ControlPanel.
  */
 DevStatus
 Session::CallParseAPI(ControlPanelSimple *control, const char *&result,

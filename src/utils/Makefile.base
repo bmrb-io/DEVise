@@ -7,6 +7,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1999/09/01 19:27:44  wenger
+#  Debug logging improved -- directory of log file can now be specified
+#  with the DEVISE_LOG_DIR environment variable (changed most startup scripts
+#  to put it in the DEVise tmp directory); added logging of a bunch of elapsed
+#  times to help figure out JavaScreen performance bottlenecks.
+#
 #  Revision 1.12  1998/06/17 17:20:50  wenger
 #  Devised now sends "real" session file list to JavaScreen.
 #
@@ -84,7 +90,7 @@ CFLAGS_T = $(ARCH_FLAGS) $(UTILS_INCLUDES) $(OPTFLAG) \
 	-Wall -Wno-unused -DHAVE_CONFIG_H
 CFLAGS = $(CFLAGS_T) $(TEMPLATE_FLAGS)
 
-UTILS_SRC = BooleanArray.c ArgList.c ElapsedTime.c
+UTILS_SRC = BooleanArray.c ArgList.c ElapsedTime.c CommandLog.c
 ifneq ($(IMPLICIT_TEMPLATES),1)
     UTILS_SRC += templates.C
 endif

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/11/16 20:13:01  wenger
+  Improvements to debug logging: the beginning of the log isn't overwritten
+  when the log wraps around; the values of important environment variables
+  are logged at startup.
+
   Revision 1.55  1999/11/16 17:02:09  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -369,28 +374,28 @@ Version::PrintInfo(LogFunc logFunc)
 {
   char *msg = "DEVise Data Visualization Software\n";
   printf("%s", msg);
-  if (logFunc) logFunc(msg);
+  // if (logFunc) logFunc(msg);
 
   char buf[256];
   sprintf(buf, "%s\n", copyright);
   printf("%s", buf);
-  if (logFunc) logFunc(buf);
+  // if (logFunc) logFunc(buf);
 
   msg = "By the DEVise Development Group\n";
   printf("%s", msg);
-  if (logFunc) logFunc(msg);
+  // if (logFunc) logFunc(msg);
 
   msg = "All Rights Reserved.\n";
   printf("%s", msg);
-  if (logFunc) logFunc(msg);
+  // if (logFunc) logFunc(msg);
 
   sprintf(buf, "Version %s (%s)\n", version, ARCH_NAME);
   printf("%s", buf);
-  if (logFunc) logFunc(buf);
+  // if (logFunc) logFunc(buf);
 
   sprintf(buf, "Compile date: %s\n", CompDate::Get());
   printf("%s", buf);
-  if (logFunc) logFunc(buf);
+  // if (logFunc) logFunc(buf);
 
   if (logFunc) {
     char *envVars[] = { "DEVISE_DAT", "DEVISE_HOME_TABLE", "DEVISE_CACHE",

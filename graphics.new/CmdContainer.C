@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/11/30 22:28:19  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.55  1999/11/29 21:08:47  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -280,7 +287,6 @@
 #include "CmdContainer.h"
 #include "DeviseServer.h"
 #include "Csprotocols.h"
-#include "CmdLog.h"
 #include "DeviseCommand.h"
 #include "Util.h"
 #include "DevError.h"
@@ -288,8 +294,6 @@
 
 //#define DEBUG
 #define DEBUG_LOG
-
-static char* cmdLogBase ="/tmp/cmdLog.";
 
 // Note: the object allocated by each of these macros is leaked, but you
 // can't destroy them easily because a bitwise copy of the object's contents
@@ -331,12 +335,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	cmdContainerP = this;
 
 	_server = server;
-
-	char	tempFileName[128];
-	sprintf(tempFileName, "%s%ld", cmdLogBase, (long)getpid());
-	unlink(tempFileName);
-    printf("Initializing command log file: %s\n", tempFileName);
-	cmdLog = new CmdLogRecord(tempFileName);
 
 	// JAVA Screen commands
 	REGISTER_COMMAND(JAVAC_GetSessionList)
@@ -599,80 +597,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 CmdContainer::~CmdContainer()
 {
 	// clean logfile upon completion
-	unlink(cmdLogFname);
-	free(cmdLogFname);
-	delete cmdLog;
 	//TEMP -- clean out Htable here?
 }
-
-long
-CmdContainer::logCommand(int argc, char** argv, CmdDescriptor& cmdDes)
-{
-#if defined(DEBUG)
-	printf("CmdContainer::logCommand(%s ...)\n", argv[0]);
-#endif
-
-	char**	nargv= new (char*)[argc +1];
-	int		i;
-	long	logId;
-
-	for (i=0 ; i< argc; ++i)
-		nargv[i] = argv[i];
-	nargv[argc]= (char*)cmdDes.Serialize().c_str();
-
-	//append one command to log tail
-	logId = cmdLog->logCommand(argc+1, nargv);
-	delete []nargv;
-	return logId;
-}
-
-/* 
-// play the log within a certain range
-obosolete, command container is not supposed to do this
-bool
-CmdContainer::playCommand(long logId1, long logId2)
-{
-	long	logId;
-	long	savelogId;
-
-	logId =	cmdLog->seekLog(logId1);
-
-	if (logId != logId1)
-	{
-		cerr << "Specified log record:"<<logId1<<" not found"<<endl;
-		return false;
-	}
-	else
-	{
-		do
-		{
-			// fetch a command
-			vector <string> vec;
-			cmdLog->getCommand(vec);
-			int args = vec.size();
-
-			// deserialize the same command descriptor
-			CmdDescriptor	cmdDes(vec[args-1]);
-
-			// add fromLog flag
-			CmdSource*	cmdSrcp;
-			cmdSrcp = cmdDes.getCmdsource();
-			cmdSrcp->setFromLog();
-
-			// play one command from the log
-			char** argv = new (char*)[args-1];
-			Run(args-1, argv, DeviseCommand::getDefaultControl(), cmdDes);
-			delete []argv;
-
-			savelogId = logId;
-			logId = cmdLog->seekLog(CmdLogRecord::LOG_NEXT);
-		}while ((savelogId != logId)&&
-				(logId <= logId2));
-	}
-	return true;
-}
-*/
-
 
 int
 CmdContainer::RunInternal(int argc, const char* const *argv,
@@ -727,9 +653,6 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 			{
 				retval = RunOneCommand(argc, argv, control);
 			}
-
-			//we do not log network commands at this stage
-			//logCommand(argc, argv, cmdDes);
 			break;
 
 		case CmdSource::JAVACLIENT:
@@ -763,13 +686,6 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 			{
 				// always allowed
 				retval = RunOneCommand(argc, argv, control);
-
-				// we do not log a 'playLog' command
-				if (strcmp(argv[0],"playLog"))
-				{
-					//TEMP -- remove typecast on argv
-					logCommand(argc, (char **)argv, cmdDes);
-				}
 			}
 			else 
 			if (!activeGroup)
@@ -791,17 +707,11 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 				if (retval <= 0)
 					cerr <<"Error in groupcast:"<<errmsg<<endl;
 				retval = RunOneCommand(argc, argv, control);
-				if (retval > 0) {
-				    //TEMP -- remove typecast on argv
-					logCommand(argc, (char **)argv, cmdDes);
-			    }
 			}
 			break;
 
 		case CmdSource::INTERNAL:
 			retval = RunOneCommand(argc, argv, control);
-		    //TEMP -- remove typecast on argv
-			logCommand(argc, (char **)argv, cmdDes);
 			break;
 
 		default:

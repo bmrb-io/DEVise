@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/27 15:08:53  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.4  1997/07/22 15:36:35  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -84,7 +89,9 @@ DevFileHeader::Get(char *fileType)
 		!strcmp(fileType, FILE_TYPE_SCHEMACAT) ||
 		!strcmp(fileType, FILE_TYPE_SESSIONDESCL) ||
 		!strcmp(fileType, FILE_TYPE_SESSIONDESCP) ||
-		!strcmp(fileType, FILE_TYPE_LINKDESC))
+		!strcmp(fileType, FILE_TYPE_LINKDESC) ||
+		!strcmp(fileType, FILE_TYPE_DEBUGLOG) ||
+		!strcmp(fileType, FILE_TYPE_CMDLOG))
 	{
 		// File type is legal.
 	}

@@ -30,6 +30,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/11/15 22:55:20  wenger
+  Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
+  caused by highlight view/pile problems).
+
   Revision 1.15  1999/04/22 19:29:54  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -344,7 +348,7 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
   filter.yLow = yMin;
   filter.xHigh = xMax;
   filter.yHigh = yMax;
-  view->SetVisualFilter(filter);
+  view->SetVisualFilterCommand(filter);
 }
 
 
