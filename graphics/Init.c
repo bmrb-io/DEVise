@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/02 20:54:45  jussi
+  Substituted DeviseTime for Time.
+
   Revision 1.4  1995/11/29 17:22:40  jussi
   Changed default value of _iconify parameter to false.
 
@@ -25,21 +28,17 @@
   image to exit.
 
   Revision 1.2  1995/09/05 21:12:52  jussi
-  Added/update CVS header.
+  Added/updated CVS header.
 */
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <libc.h>
-#if (defined(SUN) || defined(PENTIUM))
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 #include <signal.h>
+
 #include "Dispatcher.h"
 #include "Exit.h"
 #include "Init.h"
@@ -162,7 +161,6 @@ void Init::DoInit(int &argc, char **argv){
 	(void)signal(SIGINT, CatchInt);
 
 	/* Create work directory, if needed */
-	struct stat sbuf;
 	char *workDir= getenv("DEVISE_WORK");
 	if (workDir == NULL)
 		workDir = "work";

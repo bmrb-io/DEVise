@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1995/12/06 21:18:12  jussi
+  Minor improvements: X high label no longer gets overdrawn by the highlight
+  rectangle when label is at top; erasing data area erases top pixel line
+  as well; PushClip() and AbsoluteText() interface changed slightly, so
+  now the caller has to decrement width and height by one if passing pixel
+  coordinates.
+
   Revision 1.11  1995/12/05 22:05:00  jussi
   A constant integer value is saved at the head of a pixmap file
   to make sure that a machine which tries to load the pixmap has
@@ -705,6 +712,9 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   int numMajorTicks = xAxis.numTicks;
   Coord tickIncrement = (endWorldX - startWorldX) / numMajorTicks;
   
+  // keep compiler happy until tickIncrement is used for real
+  tickIncrement = tickIncrement;
+
   if (xAxis.numTicks == 2) {
     /* draw the text */
     Coord drawWidth = axisWidth - (startX - axisX);
@@ -794,7 +804,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   win->PushTop();
   win->MakeIdentity();
 
-   char *label;
+  char *label;
   
   if (yAxis.numTicks == 2) {
     /* draw lower Y coord */
@@ -990,7 +1000,6 @@ void View::Run()
 
   scrnWidth = sW;
   scrnHeight = sH;
-  Boolean scrolled = false;
   VisualFilter newFilter;
   
   if (RestorePixmap(_filter, newFilter) == PixmapTotal) {
@@ -1087,7 +1096,6 @@ void View::Run()
   } else {
     /* _hasExposure only */
     _queryFilter.flag = VISUAL_LOC; 
-    Coord xLow, yLow, xHigh, yHigh;
     FindWorld(_exposureRect.xLow, _exposureRect.yLow,
 	      _exposureRect.xHigh, _exposureRect.yHigh,
 	      _queryFilter.xLow, _queryFilter.yLow, 
