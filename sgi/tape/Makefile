@@ -15,13 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/12/28 20:53:39  jussi
+#  Updated ARCH_FLAGS to reflect SGI platform.
+#
 #  Revision 1.1  1995/12/28 16:12:01  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include -fno-for-scope
+ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
+	-I/usr/include -fno-for-scope
 
 VPATH = ../../tape
 include $(VPATH)/Makefile.base
