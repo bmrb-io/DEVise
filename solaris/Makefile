@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.31  1998/01/23 20:38:25  zhenhai
+# *** empty log message ***
+#
 # Revision 1.30  1998/01/21 17:47:21  wenger
 # Switched csgroup back to cslib pending Dongbin's commits of csgroup.
 #
@@ -45,6 +48,11 @@
 #
 # Revision 1.22  1997/11/05 00:24:09  donjerko
 # *** empty log message ***
+#
+# Revision 1.21.6.2  1998/01/16 23:42:06  wenger
+# Fixed some problems that Tony found with the client/server communication
+# and GIF generation; fixed problem that session files specified on the
+# command line were still opened by the Tcl code.
 #
 # Revision 1.21.6.1  1997/12/23 21:43:31  wenger
 # Disabled layout manager GUI and removed (old) layout manager code
@@ -107,6 +115,9 @@ libs: date
 
 generic: libs
 	cd generic; make generic; cd ..
+
+devised: libs
+	cd generic; make devised; cd ..
 
 devise: libs
 	cd generic; make all; cd ..

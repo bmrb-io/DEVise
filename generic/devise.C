@@ -16,8 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/01/07 19:28:17  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.15  1997/12/16 18:02:04  zhenhai
   Added OpenGL features.
+
+  Revision 1.14.16.5  1998/01/20 18:38:49  wenger
+  Fixed compile on SGI.
+
+  Revision 1.14.16.4  1998/01/16 23:41:13  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.14.16.3  1998/01/07 15:59:10  wenger
   Removed replica cababilities (since this will be replaced by collaboration
@@ -105,6 +118,7 @@
 #include <netinet/in.h>
 #include <tcl.h>
 #include <tk.h>
+#include <sys/param.h>
 
 #include "ClientAPI.h"
 #include "DeviseClient.h"
@@ -346,10 +360,9 @@ void SetupConnection()
     
     if (_restoreFile) {
         if(!_quiet) printf("Restoring session file %s\n", _restoreFile);
-        Tcl_SetVar(_client->Interp(), "restoring", "1", 0);
-        Tcl_SetVar(_client->Interp(), "file", _restoreFile, 0);
-        int code = Tcl_EvalFile(_client->Interp(), _restoreFile);
-        Tcl_SetVar(_client->Interp(), "restoring", "0", 0);
+        char buf[MAXPATHLEN + 256];
+        sprintf(buf, "DEVise openSession %s", _restoreFile);
+        int code = Tcl_Eval(_client->Interp(), buf);
         if (code != TCL_OK) {
             fprintf(stderr, "Cannot restore session file %s\n", _restoreFile);
             fprintf(stderr, "%s\n", _client->Interp()->result);
@@ -412,7 +425,7 @@ int main(int argc, char **argv)
         while(!_client->SyncDone()) {
 	    _client->ReadServer();
         }
-        if (!_quiet) printf("Executing script file %s\n", _idleScript);
+        if (!_quiet) printf("Executing batch file %s\n", _idleScript);
         int code = Tcl_EvalFile(_client->Interp(), _idleScript);
         if (code != TCL_OK) {
             fprintf(stderr, "Cannot execute script file %s\n", _idleScript);

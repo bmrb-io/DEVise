@@ -16,9 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.79  1998/01/07 19:29:58  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.78  1997/12/11 04:25:46  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
+
+  Revision 1.77.12.2  1998/01/16 23:41:46  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.77.12.1  1998/01/07 16:00:22  wenger
   Removed replica cababilities (since this will be replaced by collaboration
@@ -470,11 +480,10 @@ void TkControlPanel::StartSession()
 
   if (Init::Restore()) {
     /* restore session */
-    Tcl_SetVar(_interp, "restoring", "1", 0);
     char *sessionName = Init::SessionName();
-    Tcl_SetVar(_interp, "file", sessionName, 0);
-    int code = Tcl_EvalFile(_interp, sessionName);
-    Tcl_SetVar(_interp, "restoring", "0", 0);
+    char buf[MAXPATHLEN + 256];
+    sprintf(buf, "DEVise openSession %s", sessionName);
+    int code = Tcl_Eval(_interp, buf);
     if (code != TCL_OK) {
       fprintf(stderr, "Can't restore session file %s\n", sessionName);
       fprintf(stderr, "%s\n", _interp->result);
@@ -624,6 +633,7 @@ void TkControlPanel::SyncNotify()
   if (!batchFile)
     return;
 
+  printf("Executing batch file %s\n", batchFile);
   char cmd[256];
   int code = Tcl_EvalFile(_interp, batchFile);
   if (code != TCL_OK) {

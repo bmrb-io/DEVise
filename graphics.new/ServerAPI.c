@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/01/07 19:29:54  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.32  1997/12/11 04:25:44  beyer
   Shared memory and semaphores are now released properly when devise
   terminates normally.
@@ -26,6 +31,11 @@
 
   Revision 1.30  1997/11/19 17:02:11  wenger
   Fixed error in OpenDataChannel().
+
+  Revision 1.29.12.3  1998/01/16 23:41:44  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.29.12.2  1998/01/07 16:00:18  wenger
   Removed replica cababilities (since this will be replaced by collaboration
@@ -282,10 +292,11 @@ void ServerAPI::DestroySessionData()
 
 void ServerAPI::RestartSession()
 {
-  // Note: we don't want to destroy the session data here, because there
-  // may be another client connected.  The DeviseServer class will
-  // destroy the session data when the last client disconnects.
-  // RKW Jan. 7, 1998.
+#if defined(DEBUG)
+  printf("ServerAPI(0x%p)::RestartSession()\n", this);
+#endif
+
+  _server->CloseClient();
 }
 
 void ServerAPI::OpenDataChannel(int port)

@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.86  1998/01/07 19:29:52  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.85  1997/12/23 21:00:11  wenger
   Got the latest version of DEVise to compile and link on SPARC/Solaris;
   removed (old) layout manager code from DEVise link.
@@ -52,6 +57,11 @@
   Revision 1.78  1997/11/12 15:46:38  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
+
+  Revision 1.77.2.6  1998/01/16 23:41:42  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.77.2.5  1998/01/07 16:00:16  wenger
   Removed replica cababilities (since this will be replaced by collaboration
@@ -853,12 +863,10 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 
       // Always go once thru the dispatcher, in case there's a view that
       // has requested a callback but hasn't started a query yet.
-      Dispatcher::SingleStepCurrent();
-
       QueryProc *qp = QueryProc::Instance();
-      while (!qp->Idle()) {
+      do {
 	Dispatcher::SingleStepCurrent();
-      }
+      } while (!qp->Idle());
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

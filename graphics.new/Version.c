@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/01/14 16:39:22  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.39  1998/01/09 20:45:39  wenger
   Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
   previous merge.
@@ -29,6 +32,11 @@
 
   Revision 1.37  1997/11/06 20:30:29  wenger
   Changed version to 1.4.8.
+
+  Revision 1.36.2.3  1998/01/16 23:41:47  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.36.2.2  1998/01/12 20:35:59  wenger
   Incremented version to 1.4.7.2.

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.101  1998/01/23 20:37:57  zhenhai
+  Fixed a bug on transformation which was caused by inconsistency between origins
+  or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
+  incorrect labelling of axis.
+
   Revision 1.100  1998/01/14 16:38:59  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -27,6 +32,11 @@
 
   Revision 1.97  1997/11/24 23:14:42  weaver
   Changes for the new ColorManager.
+
+  Revision 1.96.6.2  1998/01/16 23:41:27  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.96.6.1  1998/01/13 18:27:47  wenger
   Printing display now works in batch mode (pixmaps);  cleaned up
@@ -617,21 +627,15 @@ XWindowRep::XWindowRep(Display* display, Window window, XDisplay* DVDisp,
 					   XWindowRep* parent, Boolean backingStore)
 	:	WindowRep(DVDisp), _parent(parent)
 {
-	DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p, window = 0x%lx)\n", this, parent, window));
+#if defined(DEBUG)
+  printf("XWindowRep::XWindowRep(this = 0x%p, parent = %p,
+    window = 0x%lx)\n", this, parent, window);
+#endif
 
 	_display = display;
 	_win = window;
 	_pixmap = 0;
 
-	if (_parent)
-		_parent->_children.Append(this);
-
-	_backingStore = false;
-	_lineStyle = LineSolid;
-
-	_daliServer = NULL;
-	_etkServer = NULL;
-  
 	Init();
 }
 
@@ -639,14 +643,14 @@ XWindowRep::XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp,
 					   XWindowRep* parent, int x, int y)
 	:	WindowRep(DVDisp), _x(x), _y(y), _parent(parent)
 {
-  DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
-    pixmap = 0x%lx)\n", this, parent, pixmap));
+#if defined(DEBUG)
+  printf("XWindowRep::XWindowRep(this = 0x%p, parent = %p,
+    pixmap = 0x%lx)\n", this, parent, pixmap);
+#endif
+
   _display = display;
   _win = 0;
   _pixmap = pixmap;
-  if (_parent)
-    _parent->_children.Append(this);
-  _backingStore = false;
 
   Init();
 //  ClearPixmap();
@@ -654,7 +658,10 @@ XWindowRep::XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp,
 
 XWindowRep::~XWindowRep(void)
 {
-  DO_DEBUG(printf("XWindowRep::~XWindowRep(this = %p)\n", this));
+#if defined(DEBUG)
+  printf("XWindowRep::~XWindowRep(this = 0x%p)\n", this);
+#endif
+
   XFreeGC(_display, _gc);
   XFreeGC(_display, _rectGc);
   
@@ -737,6 +744,14 @@ void	XWindowRep::ClearPixmap(void)
 
 void XWindowRep::Init()
 {
+  if (_parent)
+    _parent->_children.Append(this);
+  _backingStore = false;
+  _lineStyle = LineSolid;
+
+  _daliServer = NULL;
+  _etkServer = NULL;
+
 #if defined(LIBCS)
   _dispGraphics = true;
 #else
@@ -2066,7 +2081,7 @@ void XWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
 
 #ifdef DEBUG
   printf("After transformation: x %d, y %d, width %d, height %d\n",
-	 ROUND(int, txlow), ROUND(int, tylow), pixelWidth, pixelHeight);
+         ROUND(int, x1), ROUND(int, y1), pixelWidth, pixelHeight);
 #endif
 
 #ifdef GRAPHICS
@@ -2097,7 +2112,7 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 
 #if defined(DEBUG)
   printf("After transformation: x %d, y %d, width %d, height %d\n",
-	 pixelX, pixelY, pixelWidth, pixelHeight);
+         ROUND(int, x), ROUND(int, y), pixelWidth, pixelHeight);
 #endif
 
 #ifdef GRAPHICS
@@ -2305,7 +2320,7 @@ void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   
 #ifdef GRAPHICS
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
+    XSetLineAttributes(_display, _gc, width, _lineStyle, CapButt,
 		       JoinRound);
     XDrawLine(_display, DRAWABLE, _gc, x1, y1, x2, y2);
     XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);

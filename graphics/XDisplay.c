@@ -16,11 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.63  1997/12/28 16:40:13  beyer
+  Can select scalable fonts now.
+
   Revision 1.62  1997/12/16 17:53:55  zhenhai
   Added OpenGL features to graphics.
 
   Revision 1.61  1997/11/24 23:14:40  weaver
   Changes for the new ColorManager.
+
+  Revision 1.60.4.1  1998/01/16 23:41:23  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.60  1997/09/22 15:57:30  wenger
   Printing display to GIF no longer prints window manager decorations.
@@ -307,6 +315,7 @@ extern "C" {
 #undef String
 
 //#define DEBUG
+//#define DEBUG_MORE
 
 #include "Util.h"
 #ifndef LIBCS
@@ -1144,7 +1153,7 @@ void XDisplay::InternalProcessing()
   return;
 #endif
 
-#if defined(DEBUG)
+#if defined(DEBUG_MORE)
   printf("XDisplay:: Received callback\n");
 #endif
 
@@ -1185,7 +1194,7 @@ void XDisplay::InternalProcessing()
     }
   }
 
-#ifdef DEBUG
+#ifdef DEBUG_MORE
   printf("X event queue length = %d\n", XQLength(_display));
 #endif
 }

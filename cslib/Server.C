@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/01/14 16:38:33  wenger
+  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
   Revision 1.3  1998/01/09 20:45:09  wenger
   Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
   previous merge.
@@ -28,6 +31,11 @@
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
   dependencies.
+
+  Revision 1.1.2.7  1998/01/16 23:41:02  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
 
   Revision 1.1.2.6  1998/01/13 18:27:33  wenger
   Printing display now works in batch mode (pixmaps);  cleaned up
@@ -254,7 +262,7 @@ void Server::CloseClient(ClientID clientID)
     if (_clients[clientID].fd >= 0)
     {
 	EndConnection(clientID);
-	printf("Closing client connection.\n");
+	printf("Closing client %d connection.\n", clientID);
 	(void)NetworkClose(_clients[clientID].fd);
     }
     _clients[clientID].fd = -1;

@@ -25,6 +25,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/01/07 19:28:57  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
+  Revision 1.1.2.2  1998/01/16 23:41:39  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
+
   Revision 1.1.2.1  1998/01/07 15:59:43  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -58,6 +68,7 @@ public:
     return ReturnVal(API_ACK, argc, argv, true); }
 
   virtual void WaitForConnection();
+  virtual void CloseClient();
 
   virtual int CurrentClientFd() { return _currentClient != CLIENT_INVALID ?
       _clients[_currentClient].fd : CLIENT_INVALID; }
@@ -73,6 +84,7 @@ protected:
 
 private:
   ClientID _currentClient;
+  ClientID _previousClient;
   ControlPanel *_control;
   DispatcherID *_clientDispIDs;
 };

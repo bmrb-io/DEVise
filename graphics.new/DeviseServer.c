@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/01/07 19:28:56  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
+  Revision 1.1.2.2  1998/01/16 23:41:38  wenger
+  Fixed some problems that Tony found with the client/server communication
+  and GIF generation; fixed problem that session files specified on the
+  command line were still opened by the Tcl code.
+
   Revision 1.1.2.1  1998/01/07 15:59:42  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -51,6 +61,7 @@ DeviseServer::DeviseServer(char *name, int port, ControlPanel *control) :
 #endif
 
   _currentClient = CLIENT_INVALID;
+  _previousClient = CLIENT_INVALID;
   _control = control;
 
   _clientDispIDs = new DispatcherID[_maxClients];
@@ -122,6 +133,28 @@ DeviseServer::WaitForConnection()
   Server::WaitForConnection();
 }
 
+
+/*------------------------------------------------------------------------------
+ * function: DeviseServer::CloseClient
+ * Closes a client connection (of the current client or the one that
+ * most recently executed a command).
+ */
+void
+DeviseServer::CloseClient()
+{
+#if defined(DEBUG)
+  printf("DeviseServer(0x%p)::CloseClient()\n", this);
+#endif
+
+  if (_currentClient != CLIENT_INVALID) {
+    Server::CloseClient(_currentClient);
+  } else if (_previousClient != CLIENT_INVALID) {
+    Server::CloseClient(_previousClient);
+  } else {
+    reportErrNosys("No client to close");
+  }
+}
+
 /*------------------------------------------------------------------------------
  * function: DeviseServer::BeginConnection
  * Begin the connection for a given client.
@@ -162,6 +195,9 @@ DeviseServer::EndConnection(ClientID clientID)
   if (_numClients <= 1) {
     ControlPanel::Instance()->DestroySessionData();
   }
+
+  if (_currentClient == clientID) _currentClient = CLIENT_INVALID;
+  if (_previousClient == clientID) _previousClient = CLIENT_INVALID;
 }
 
 /*------------------------------------------------------------------------------
@@ -173,11 +209,11 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 {
 #if defined(DEBUG)
   printf("DeviseServer(0x%p)::ProcessCmd(%d)\n", this, clientID);
-  printf("  Command: command %s \n", argv[0]);
-  for(int i = 0; i < argc; i++) {
-    printf("    Arg %d - %s \n",i,argv[i]);
+  printf("  Command: ");
+  for (int num = 0; num < argc; num++) {
+    printf("<%s> ", argv[num]);
   }
-  printf("  --- \n");
+  printf("\n");
 #endif
 
 #if defined(DEBUG)
@@ -222,6 +258,7 @@ DeviseServer::ReturnVal(u_short flag, int argc, char **argv, Boolean addBraces)
 
   if (_currentClient != CLIENT_INVALID) {
     status = Server::ReturnVal(_currentClient, flag, argc, argv, addBraces);
+    _previousClient = _currentClient; // For CloseClient().
     _currentClient = CLIENT_INVALID;
   } else {
     reportErrNosys("No current client");
