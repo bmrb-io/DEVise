@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.56  1996/07/15 17:20:32  jussi
+#	Fixed minor bug when opening a new non-UNIXFILE, non-WWW
+#	data source.
+#
 #	Revision 1.55  1996/07/15 17:00:26  jussi
 #	String attributes can now be "visualized" i.e. used as labels.
 #
@@ -260,8 +264,6 @@ proc SelectTopGroup {schemaname} {
 proc OpenDataSource {sname} {
     global sourceList derivedSourceList
 
-    # first see if sname is a derived source
-    # and if the cache disk file exists
     set err [catch {set exists $derivedSourceList($sname)}]
     if {!$err} {
 	set fname [isCached $sname -1 -1]
@@ -271,7 +273,7 @@ proc OpenDataSource {sname} {
 		    "" 0 Ok
 	    return ""
 	}
-        set stype [lindex $derivedSourceList($sname) 0]
+	set stype [lindex $derivedSourceList($sname) 0]
 	DEVise dataSegment $sname $fname 0 0
 	return [list $sname $fname $stype]
     }
@@ -402,9 +404,9 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
         set param [lindex $sourcedef 1]
         set stype [lindex $sourcedef 2]
         
-        if {$derivedOnly} {
-            set schema [lindex $derivedSourceList($sname) 2]
-            set schemafile [lindex $derivedSourceList($sname) 3]
+	if {$derivedOnly} {
+	    set schema [lindex $derivedSourceList($sname) 2]
+	    set schemafile [lindex $derivedSourceList($sname) 3]
         } else {
             set schema [lindex $sourceList($sname) 2]
             set schemafile [lindex $sourceList($sname) 3]
@@ -448,7 +450,6 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
             return ""
         }
     }
-
     return [lindex $snames 0]
 }
 
@@ -617,7 +618,7 @@ proc MacroImport {mode derivedOnly} {
     if {$tdata == ""} {
 	set tdata [OpenNewDataSource $derivedOnly]
     }
-
+    
     if {$tdata == ""} { return }
 
     if {$derivedOnly} {
@@ -752,7 +753,7 @@ proc MacroDefAuto {tdata schemafile} {
 
     checkbutton .auto.titlesel.title -text Title -variable titlesel
     pack .auto.titlesel.title -side left -padx 3m
-    set titlesel 0
+    set titlesel 1
 
     checkbutton .auto.linksel.link -text "Link X" -variable linksel
     pack .auto.linksel.link -side left -padx 3m
@@ -760,7 +761,7 @@ proc MacroDefAuto {tdata schemafile} {
 
     checkbutton .auto.xaxissel.xaxis -text "X Axis" -variable xaxissel
     pack .auto.xaxissel.xaxis -side left -padx 3m
-    set xaxissel 0
+    set xaxissel 1
 
     checkbutton .auto.yaxissel.yaxis -text "Y Axis" -variable yaxissel
     pack .auto.yaxissel.yaxis -side left -padx 3m
@@ -848,6 +849,17 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          newgdata} {
     global viewDefault
 
+    set pos ""
+    set subder ""
+    set vname ""
+    set pos [string first : $tdata]
+    if {$pos > 0} {
+        set subder [string range  $tdata 0 [expr $pos-1]]
+	set vname  [string range  $tdata [expr $pos+1] end]
+	set subder [string trim $subder]
+	set vname  [string trim $vname]
+    } 
+
     set schema [DEVise getSchema $tdata]
 
     set colorAttr ""
@@ -858,71 +870,70 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
     # Find out type of X and whether it is sorted or not.
     # Also find out if there is a 'color' attribute.
     foreach attr $schema {
-	set name [lindex $attr 0]
-	set type [lindex $attr 1]
+        set name [lindex $attr 0]
+        set type [lindex $attr 1]
         if {[string tolower $name] == "color" && $type == "int"} {
             set colorAttr $name
         }
-	if {$name != $x} {continue}
-	set xtype [lindex $attr 1]
-	set sortedx [lindex $attr 2]
-	set hasxhi [lindex $attr 3]
-	if {$hasxhi} {
-	    set xhi [lindex $attr 4]
-	}
-	set hasxlo [lindex $attr 5]
-	if {$hasxlo} {
-	    set xlo [lindex $attr 6]
-	}
-	break
+        if {$name != $x} {continue}
+        set xtype [lindex $attr 1]
+        set sortedx [lindex $attr 2]
+        set hasxhi [lindex $attr 3]
+        if {$hasxhi} {
+            set xhi [lindex $attr 4]
+        }
+        set hasxlo [lindex $attr 5]
+        if {$hasxlo} {
+            set xlo [lindex $attr 6]
+        }
+        break
     }
 
     # Also consult lo/hi values defined in .rc file
     set viewParams ""
     catch { set viewParams $viewDefault($xtype) }
     foreach param $viewParams {
-	set pname [lindex $param 0]
-	set value [lindex $param 1]
-	if {$xlo == "" && $pname == "xlow"} {
-	    set xlo $value
-	}
-	if {$xhi == "" && $pname == "xhigh"} {
-	    set xhi $value
-	}
+        set pname [lindex $param 0]
+        set value [lindex $param 1]
+        if {$xlo == "" && $pname == "xlow"} {
+            set xlo $value
+        }
+        if {$xhi == "" && $pname == "xhigh"} {
+            set xhi $value
+        }
     }
 
     # if no defaults specified anywhere, resort to these defaults
     if {$xhi == ""} {
-	set xhi 0
+        set xhi 0
     }
     if {$xlo == ""} {
-	set xlo 100
+        set xlo 100
     }
 
     if {$xlo == $xhi} {
-	incr xlo -1
-	incr xhi +1
+        incr xlo -1
+        incr xhi +1
     }
 
     # puts "Mapping will have xlo $xlo and xhi $xhi"
-
     if {$sortedx > 0} {
-	set sortedx SortedX
+        set sortedx SortedX
     } else {
-	set sortedx Scatter
+        set sortedx Scatter
     }
 
     if {$linksel} {
-	set linkname [format "%s Link" $x]
-	if {![DEVise exists $linkname]} {
-	    # ask DEVise to create link
-	    set result [DEVise create link Visual_Link $linkname 1]
-	    if {$result == ""} {
-		dialog .linkError "Link Error" \
-			"Error creating link $linkname" "" 0 OK
-		return
-	    }
-	}
+        set linkname [format "%s Link" $x]
+        if {![DEVise exists $linkname]} {
+            # ask DEVise to create link
+            set result [DEVise create link Visual_Link $linkname 1]
+            if {$result == ""} {
+                dialog .linkError "Link Error" \
+                        "Error creating link $linkname" "" 0 OK
+                return
+            }
+        }
     }
 
     set color 2
@@ -933,109 +944,152 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
     set shapeAttr0 ""
     set shapeAttr1 ""
 
+    set view_exist 0
+    set titletext ""
+    set mmmtext ""
+
     if {$shape == 1} {
-	# set pixel width and height to one for image displays
-	set shape 0
-	set shapeAttr0 1
-	set shapeAttr1 1
+        # set pixel width and height to one for image displays
+        set shape 0
+        set shapeAttr0 1
+        set shapeAttr1 1
     }
 
     foreach attr $schema {
-	set name [lindex $attr 0]
-	if {[lsearch $ylist $name] < 0} { continue }
+        set name [lindex $attr 0]
+        if {[lsearch $ylist $name] < 0} { continue }
 
-	set type [lindex $attr 1]
-	set sorted [lindex $attr 2]
-	set yhi ""
-	set hasyhi [lindex $attr 3]
-	if {$hasyhi} {
-	    set yhi [lindex $attr 4]
-	    if {$viewsel == 2} {
-		set yhi [ScaleUpper $yhi]
-	    }
-	}
-	set ylo ""
-	set hasylo [lindex $attr 5]
-	if {$hasylo} {
-	    set ylo [lindex $attr 6]
-	    if {$viewsel == 2} {
-		set ylo [ScaleLower $ylo]
-	    }
-	}
+        set type [lindex $attr 1]
+        set sorted [lindex $attr 2]
+        set yhi ""
+        set hasyhi [lindex $attr 3]
+        if {$hasyhi} {
+            set yhi [lindex $attr 4]
+            if {$viewsel == 2} {
+                set yhi [ScaleUpper $yhi]
+            }
+        }
+        set ylo ""
+        set hasylo [lindex $attr 5]
+        if {$hasylo} {
+            set ylo [lindex $attr 6]
+            if {$viewsel == 2} {
+                set ylo [ScaleLower $ylo]
+            }
+        }
 
-	# also consult lo/hi values defined in .rc file
-	set viewParams ""
-	catch { set viewParams $viewDefault($type) }
-	foreach param $viewParams {
-	    set pname [lindex $param 0]
-	    set value [lindex $param 1]
-	    if {$ylo == "" && $pname == "ylow"} {
-		set ylo $value
-	    }
-	    if {$yhi == "" && $pname == "yhigh"} {
-		set yhi $value
-	    }
-	}
+        # also consult lo/hi values defined in .rc file
+        set viewParams ""
+        catch { set viewParams $viewDefault($type) }
+        foreach param $viewParams {
+            set pname [lindex $param 0]
+            set value [lindex $param 1]
+            if {$ylo == "" && $pname == "ylow"} {
+                set ylo $value
+            }
+            if {$yhi == "" && $pname == "yhigh"} {
+                set yhi $value
+            }
+        }
 
-	# if no defaults specified anywhere, resort to these defaults
-	if {$yhi == ""} {
-	    set yhi 0
-	}
-	if {$ylo == ""} {
-	    set ylo 100
-	}
+        # if no defaults specified anywhere, resort to these defaults
+        if {$yhi == ""} {
+            set yhi 0
+        }
+        if {$ylo == ""} {
+            set ylo 100
+        }
 
-	# for bar shape, make ylo zero
-	if {$shape == 2} {
-	    set ylo 0
-	}
+        # for bar shape, make ylo zero
+        if {$shape == 2} {
+            set ylo 0
+        }
 
-	if {$ylo == $yhi} {
-	    incr ylo -1
-	    incr yhi +1
-	}
+        if {$ylo == $yhi} {
+            incr ylo -1
+            incr yhi +1
+        }
 
-	# puts "Mapping will have ylo $ylo and yhi $yhi"
-
-	# ask DEVise to create view instance
-	set sorted $sortedx
-	set viewbasename "View"
-	set viewinstance [UniqueName $viewbasename]
-	if {[lsearch [ViewSet] $viewinstance] >= 0} {
-	    dialog .viewError "View Error" \
-		    "View $viewinstance exists already." "" 0 OK
-	    return
-	}
-	set result [DEVise create view $sorted $viewinstance \
-		$xlo $xhi $ylo $yhi $bgcolor]
-	if {$result == ""} {
-	    dialog .viewError "View Error" \
-		    "Error creating view $viewinstance" "" 0 OK
-	    return
-	}
+        # puts "Mapping will have ylo $ylo and yhi $yhi"
 	
-	# ask DEVise to turn on/off label
-	set titletext "$name vs. $x"
-	if {[llength $ylist] == 1} {
-	    set titletext $tdata
-	}
-	if {$titlesel} {
-	    DEVise setLabel $viewinstance 1 16 $titletext
+        if {$subder == "Stat"} {
+            if {$name=="Max"} {
+                 set shapeAttr0 0.1
+            }
+            if {$name=="Mean"} {
+                 set shapeAttr0 0.5
+            }
+            if {$name=="Min"||$name=="Count"} {
+                 set shapeAttr0 1
+            }
+    	} elseif {$subder == "Hist"} {
+            set shapeAttr0 1 
+        }
+
+	
+
+        # ask DEVise to create view instance
+        set sorted $sortedx
+        set viewbasename "View"
+
+	set mmm_list {Max Mean Min}	
+	if {$subder != "Stat" || !$view_exist || [lsearch $mmm_list $name] < 0} {
+	    set viewinstance [UniqueName $viewbasename]
+	    if {[lsearch [ViewSet] $viewinstance] >= 0} {
+		dialog .viewError "View Error" \
+			"View $viewinstance exists already." "" 0 OK
+		return
+	    }
+	    set result [DEVise create view $sorted $viewinstance \
+		    $xlo $xhi $ylo $yhi $bgcolor]
+	    if {$result == ""} {
+		dialog .viewError "View Error" \
+			"Error creating view $viewinstance" "" 0 OK
+		return
+	    }
+	    if {$name == "Max" || $name == "Mean" || $name == "Min" } {
+		set view_exist 1 
+	    	set mmm_view $viewinstance 
+	    }
 	} else {
-	    DEVise setLabel $viewinstance 0 12 $titletext
+	    set viewinstance $mmm_view
+	}
+	     
+        # ask DEVise to turn on/off label
+	if {$subder == "Stat"} {
+	    if {$name == "Max" || $name == "Mean" || $name == "Min"} {
+		if {$mmmtext==""} {
+		    set titletext "$name vs. $x"
+		    set mmmtext $titletext
+		} else { 
+		    lappend mmmtext "$name vs. $x"
+		    set titletext $mmmtext
+	   	}
+	    } else { set titletext "$name vs. $x" }
+	} else {
+	   set titletext "$name vs. $x"
 	}
 
-	# ask DEVise to turn on/off X axis
-	DEVise setAxisDisplay $viewinstance X $xaxissel
+        if {[llength $ylist] == 1} {
+            set titletext $tdata
+        }
+        if {$titlesel} {
+            DEVise setLabel $viewinstance 1 16 $titletext
+        } else {
+            DEVise setLabel $viewinstance 0 12 $titletext
+        }
 
-	# ask DEVise to turn on/off Y axis
-	DEVise setAxisDisplay $viewinstance Y $yaxissel
+        # ask DEVise to turn on/off X axis
+        DEVise setAxisDisplay $viewinstance X $xaxissel
 
-	# if new mappings are requested, associate color with mapping,
-	# otherwise associate color with view
-	if {0 && !$newgdata} {
-	    DEVise setViewOverrideColor $viewinstance $color 1
-	}
+        # ask DEVise to turn on/off Y axis
+        DEVise setAxisDisplay $viewinstance Y $yaxissel
+
+        # if new mappings are requested, associate color with mapping,
+        # otherwise associate color with view
+        if {0 && !$newgdata} {
+            DEVise setViewOverrideColor $viewinstance $color 1
+        }
 
         # for map color, either use constant color, or variable
         # if defined in the schema
@@ -1044,45 +1098,45 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
             set mapColor \$$colorAttr
         }
 
-	set mapname [format "%s_vs_%s" $name $x]
+        set mapname [format "%s_vs_%s" $name $x]
 
-	if {[lsearch [DEVise get mapping] $mapname] < 0} {
-	    # ask DEVise to create interpreted mapping class
-	    set result [DEVise createMappingClass $mapname]
-	}
+        if {[lsearch [DEVise get mapping] $mapname] < 0} {
+            # ask DEVise to create interpreted mapping class
+            set result [DEVise createMappingClass $mapname]
+        }
 
-	set mapinstance "$tdata#$mapname"
-	if {$newgdata} {
-	    # new mappings are requested
-	    set mapinstance [UniqueName $mapinstance]
-	}
-	if {[lsearch [GdataSet] $mapinstance] < 0} {
-	    # ask DEVise to create an instance of mapping
-	    set result [DEVise create mapping $mapname $tdata $mapinstance \
-		    "" \$$x \$$name $mapColor $size $pattern $orient $shape \
-		    $shapeAttr0 $shapeAttr1]
-	    DEVise setPixelWidth $mapinstance 1
-	}
+        set mapinstance "$tdata#$mapname"
+        if {$newgdata} {
+            # new mappings are requested
+            set mapinstance [UniqueName $mapinstance]
+        }
+        if {[lsearch [GdataSet] $mapinstance] < 0} {
+            # ask DEVise to create an instance of mapping
+            set result [DEVise create mapping $mapname $tdata $mapinstance \
+                    "" \$$x \$$name $mapColor $size $pattern $orient $shape \
+                    $shapeAttr0 $shapeAttr1]
+            DEVise setPixelWidth $mapinstance 1
+        }
 
-	# ask DEVise to insert $mapinstance into $viewinstance
-	set result [DEVise insertMapping $viewinstance $mapinstance]
-	# seems that there's no error code returned
+        # ask DEVise to insert $mapinstance into $viewinstance
+        set result [DEVise insertMapping $viewinstance $mapinstance]
+        # seems that there's no error code returned
 
-	# ask DEVise to insert $viewinstance into $window
-	set result [DEVise insertWindow $viewinstance $window]
-	# seems that there's no error code returned
+        # ask DEVise to insert $viewinstance into $window
+        set result [DEVise insertWindow $viewinstance $window]
+        # seems that there's no error code returned
 
-	if {$linksel} {
-	    # ask DEVise to link $viewinstance to $linkname
-	    set result [DEVise insertLink $linkname $viewinstance]
-	    # seems that there's no error code returned
-	}
+        if {$linksel} {
+            # ask DEVise to link $viewinstance to $linkname
+            set result [DEVise insertLink $linkname $viewinstance]
+            # seems that there's no error code returned
+        }
 
-	DEVise clearViewHistory $viewinstance
-	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
+        DEVise clearViewHistory $viewinstance
+        DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
 
-	ProcessViewSelected $viewinstance
+        ProcessViewSelected $viewinstance
 
-	incr color
+        incr color
     }
 }
