@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2001/02/20 20:02:22  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.17  2001/02/16 17:48:45  xuk
 // *** empty log message ***
 //
@@ -159,7 +163,7 @@ public class DEViseCommSocket
     private static final int DEBUG = 0;
 
     //TEMP -- increased this from 1000 to see if it helps on yola.
-    private static final int DEFAULT_RCV_TIMEOUT = 5000; // millisec
+    private static final int DEFAULT_RCV_TIMEOUT = 10000; // millisec
 
     private Socket socket = null;
     public DataInputStream is = null;

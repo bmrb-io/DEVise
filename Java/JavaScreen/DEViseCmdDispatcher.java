@@ -23,6 +23,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.80  2001/02/22 17:11:56  xuk
+// Close collaboration JSs when "leader" JS exits.
+// In processReceivedCommand(), process JAVAC_CollabExit command.
+// Don't display "open session" dialogue for collaboration JSs.
+// In processReceivedCommand(), changes for JAVAC_UpdateSessionList command.
+//
 // Revision 1.79  2001/02/21 17:50:36  xuk
 // Added the collaboration security features.
 // Changes in run() for setting collaboration password in JAVAC_Connect command.
@@ -366,7 +372,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     private String[] commands = null;
 
-    private DEViseCommSocket commSocket = null;
+    public DEViseCommSocket commSocket = null;
 
     private DEViseHeartbeat _heartbeat = null;
 
@@ -379,7 +385,7 @@ public class DEViseCmdDispatcher implements Runnable
     // isOnline = true, successfully established connection to server, i.e.
     //                  get a valid connection ID
     // isOnline = false, connection to server is not established
-    private boolean isOnline = false;
+    public boolean isOnline = false;
 
     // ADD COMMENT -- what does this mean?
     private boolean isAbort = false;
@@ -393,7 +399,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     //TEMP -- we shouldn't really need this *and* isOnline, but I don't
     // want to sort that out right now.  RKW 2000-10-18.
-    private boolean _connectedAlready = false;
+    public boolean _connectedAlready = false;
 
     public DEViseCmdDispatcher(jsdevisec what)
     {

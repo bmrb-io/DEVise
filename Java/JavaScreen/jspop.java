@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2001/02/23 17:41:41  xuk
+// Added machine name and session name on the client list sent to collaboration JS.
+//
 // Revision 1.43  2001/02/23 16:07:46  xuk
 // Don't display client's ID on the collaboration side, when it disables collaboration.
 // Changes in OnCollab().
@@ -233,7 +236,7 @@ public class jspop implements Runnable
     //      default: No Debug information is written
     //
 
-    private static final int SOCK_REC_TIMEOUT = 5000; // milliseconds
+    private static final int SOCK_REC_TIMEOUT = 10000; // milliseconds
 
     private ServerSocket cmdServerSocket = null;
     //private ServerSocket dataServerSocket = null;
@@ -1346,7 +1349,8 @@ public class jspop implements Runnable
 		    if (client.checkPass(requestPass)) {
 			client.addCollabSocket(socket);
 			DEViseServer server = getNextAvailableServer();
-			if (server != null) {
+			if (server != null && 
+			    server.getCurrentClient() ! = client) {
 			    server.setCurrentClient(client);
 			}
 		    } else { // wrong passwd
