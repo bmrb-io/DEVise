@@ -105,7 +105,7 @@ int main(int ac, char **av)
 //#define SPEEDTEST
 
 #ifdef SPEEDTEST
-    if (ud->isOk()) {
+    if (ud && ud->isOk()) {
 
         off_t off;
         UD_Status stat;
@@ -115,7 +115,7 @@ int main(int ac, char **av)
         }
     }
 #else
-    if (ud->isOk()) {
+    if (ud && ud->isOk()) {
 
         //ud->useRid();
 

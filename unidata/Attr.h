@@ -151,9 +151,9 @@ class Attr {
     int  lpos() { return _lpos; }
     int  rpos() { return _rpos; }
 
-    char *delimiter() { return _delimit; }
-    char *seperator() { return _seper; }
-    char *whitespace() { return _white; }
+    char *delimiter() { return (_delimit != NULL ? _delimit : ""); }
+    char *seperator() { return (_seper != NULL ? _seper : ""); }
+    char *whitespace() { return (_white != NULL ? _white : ""); }
 
     char *date_format() { return _date_frmt; }
 
