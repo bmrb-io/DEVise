@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/05/31 15:49:34  jussi
+#  Fixed problem with tdata dictionary. Added saving of link master.
+#
 #  Revision 1.4  1996/05/16 21:39:06  wenger
 #  implemented saving schemas ans session file for importing tdata
 #
@@ -195,13 +198,16 @@ proc DoActualSave { infile asTemplate asExport } {
     # you can't save an imported file until it has been merged
     if {$templateMode} { 
 	dialog .open "Merge Data" \
-	    "You must merge an imported template before saving it" "" 0 Ok
+	    "You must merge an imported template before saving it" "" 0 OK
 	return
     }
 
-    if { ![file writable $infile] } {
-	dialog .saveError "File $infile not writable" "" 0 OK
-	return
+    if {[file exists $infile]} {
+	if { ![file writable $infile] } {
+	    dialog .saveError "Cannot Save Session" \
+		    "File $infile not writable" "" 0 OK
+	    return
+	}
     }
 
     ChangeStatus 1
@@ -475,8 +481,8 @@ proc DoActualSave { infile asTemplate asExport } {
     set bitmapFile $infile.pixmap
     if { [ file exists $bitmapFile ] } {
 	if { ! [ file writable $bitmapFile ] } {
-	    set but [ dialog .saveError "File $bitmapFile not writable" \
-		    "" 0 OK ]
+	    dialog .saveError "Cannot Save Pixmap" \
+		    "File $bitmapFile not writable" "" 0 OK
 	    ChangeStatus 0
 	    return
 	}
