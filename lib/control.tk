@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.121  1997/03/06 23:52:52  ssl
+#	Added function and option to GraphData menu to flush tdata
+#
 #	Revision 1.120  1997/03/02 00:47:25  donjerko
 #	Tdata used to be created before "Define Visualisation" window.
 #	For DTE types, it is now being created after this window because the
@@ -1361,144 +1364,6 @@ proc FindDefaultXAttr { attrs } {
 	}
     }
 }
-
-#SSL - new mapping box implementation
-# Do editing for mapping
-proc DoEditMapping {} {
-    global curView
-
-    if {![CurrentView]} {
-	return
-    }
-    
-    if {[WindowVisible .editMapping]}  {
-	return
-    }
-
-    # Get mapping for the view (first one)
-    set map [lindex [DEVise getViewMappings $curView] 0]
-    
-    # See if map is interpreted
-    set found 0
-    foreach m [InterpretedGData] {
-	if {$m == $map} {
-	    set found 1
-	    break
-	}
-    }
-    if {!$found} {
-	dialog .editError "Mapping Not Interpreted" \
-		"View has a compiled mapping which cannot be edited." "" 0 OK
-	return
-    }
-    EditMapping $map     
-}
-
-proc EditMapping { map } {
-    global sourceList derivedSourceList
-
-    # Get parameters for the mapping
-    set params [DEVise getInstParam $map]
-    
-    if {$params == ""} {
-	dialog .editError "No Mapping Parameters" \
-		"Mapping has no parameters." "" 0 OK
-	return
-    }
-    
-    set tdata [lindex [lindex $params 0] 1]
-    
-	set catEntry [DEVise dteShowCatalogEntry $tdata]
-	set catEntry [lindex $catEntry 0]
-	set entryType [lindex $catEntry 1]
-	if {$catEntry == ""} {
-		set sfname [lindex $derivedSourceList($tdata) 3]
-		set schemaname [file tail $sfname]
-	} elseif {[isDTEType $entryType]} {
-		set schemaname $tdata
-	} else {
-		set sfname [lindex $catEntry 4]
-		set schemaname [file tail $sfname]
-	}
-
-#   set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
-#   if {$err > 0} {
-#	set sfname [lindex $derivedSourceList($tdata) 3]
-#   }
-#   set schemaname [file tail $sfname]
-
-    # set attrs [DEVise getSchema $tdata]
-    
-    dialogMapping .editMapping "Edit Mapping" \
-	    "Edit Mapping" ""   \
-	    $schemaname \
-	    $params \
-	    $map \
-	    0
-}
-
-#proc DoEditMapping {} {
-#    global curView
-#
-#    if {![CurrentView]} {
-#	 return
-#    }
-#    
-#    if {[WindowVisible .editMapping]}  {
-#	 return
-#    }
-#    
-#    # Get mapping for the view (first one)
-#    set map [lindex [DEVise getViewMappings $curView] 0]
-#    
-#    # See if map is interpreted
-#    set found 0
-#    foreach m [InterpretedGData] {
-#	 if {$m == $map} {
-#	     set found 1
-#	     break
-#	 }
-#    }
-#    if {!$found} {
-#	 dialog .editError "Mapping Not Interpreted" \
-#		 "View has a compiled mapping which cannot be edited." "" 0 OK
-#	 return
-#    }
-#    
-#    EditMapping $map     
-#}
-#
-#
-#proc EditMapping { map } {
-#    global sourceList derivedSourceList
-#
-#    # Get parameters for the mapping
-#    set params [DEVise getInstParam $map]
-#    
-#    if {$params == ""} {
-#	 dialog .editError "No Mapping Parameters" \
-#		 "Mapping has no parameters." "" 0 OK
-#	 return
-#    }
-#    
-#    set tdata [lindex [lindex $params 0] 1]
-#    
-#    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
-#    if {$err > 0} {
-#	 set sfname [lindex $derivedSourceList($tdata) 3]
-#    }
-#    set schemaname [file tail $sfname]
-#
-#    # set attrs [DEVise getSchema $tdata]
-#    
-#    dialogMapping .editMapping "Edit Mapping" \
-#	     "Edit Mapping" ""   \
-#	     $schemaname \
-#	     $params \
-#	     $map \
-#	     0
-#}
-#
 
 # Close current session
 proc DoClose {{askUser 1}} {
