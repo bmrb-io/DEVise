@@ -233,6 +233,7 @@ void Attr::set_interp(PerlInterpreter *perl)
             _subattr->ith(j)->set_interp(perl);
     else {
         // leaf values get a corresponding perl var
+
         _perl_var = perl_get_sv(_flat_name, TRUE);
         assert(_perl_var);
 

@@ -47,7 +47,7 @@ UNI_INCL = -I../../unidata
 
 # Note, the perl header files have mucho '/*' within comments.
 CFLAGS = $(ARCH_FLAGS) -Wall -Wno-comment $(OPTFLAG) $(UNI_INCL) $(PERL_INCL) \
-	-DHAVE_CONFIG_H
+	-DHAVE_CONFIG_H -g
 
 .PHONY: all default clean
 

@@ -593,25 +593,49 @@ ostream& operator <<(ostream& out, const EncodedDTF& arg){
 		year = - year;
 	}
 	if(year){
-		out << year << "-";
+		out << setw(4) << setfill('0') << year << "-";
 	}
 	if(month){
-		out << month << "-";
+		out << setw(2) << setfill('0') << month << "-";
 	}
 	if(day){
-		out << day << " ";
+		out << setw(2) << setfill('0') << day << " ";
 	}
 	if(bc){
 		out << "bc ";
 	}
-	out << arg.getHour() << ":";
-	out << arg.getMin() << ":";
-	out << arg.getSec();
+	out << setw(2) << setfill('0') << arg.getHour() << ":";
+	out << setw(2) << setfill('0') << arg.getMin() << ":";
+	out << setw(2) << setfill('0') << arg.getSec();
 	int nanosec = arg.getNanoSec();
 	if(nanosec){
 		out << "." << nanosec;
 	}
 	return out;
+}
+
+istream& operator >>(istream& in, EncodedDTF& arg){
+	int year, month, day;
+	int hour, min, sec;
+	string date;
+	in >> date;
+	if(!in){
+		return in;
+	}
+	year = atoi(date.substr(0, 4).c_str());
+	month = atoi(date.substr(5, 2).c_str());
+	day = atoi(date.substr(8, 2).c_str());
+	string time;
+	in >> time;
+	if(!in){
+		return in;
+	}
+	hour = atoi(time.substr(0, 2).c_str());
+	min = atoi(time.substr(3, 2).c_str());
+	sec = atoi(time.substr(6, 2).c_str());
+	DateTime dt(false, year, month, day, hour, min, sec, 0);
+	arg = EncodedDTF(dt);
+	return in;
 }
 
 ostream& operator <<(ostream& out, const EncodedIDT& arg) {

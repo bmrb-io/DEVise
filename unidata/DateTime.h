@@ -125,7 +125,6 @@ class EncodedDTF {
 	int date;
 	int time;
 	int nanosec;
-friend ostream& operator <<(ostream& our, const EncodedDTF& edtf);
 public:
      EncodedDTF() {
 		date = 0;
@@ -257,9 +256,12 @@ public:
 		t.tm_sec = getSec();
 		t.tm_isdst = 0;
 	}
+	friend ostream& operator <<(ostream& out, const EncodedDTF& edtf);
+	friend istream& operator >>(istream& in, EncodedDTF& edtf);
 };
 
 ostream& operator <<(ostream& out, const EncodedDTF& arg);
+istream& operator >>(istream& in, EncodedDTF& edtf);
 
 /*
 -- 1 is subtracted from month to supply consistency of arrays and month variable, don't forget to add 1 to month while returning actual date
