@@ -310,6 +310,10 @@ Num Date        Status  Description
 091 12/03/96	OPEN	Print all windows to PostScript with more than one
 			window -> core dump. (ml/rkw)
 
+092 12/04/96	OPEN	Load session test/MM1System.tk -> lowest label on
+			Y axis is a very small number instead of zero.
+			(ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
