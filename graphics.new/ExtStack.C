@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/03/03 05:21:04  taodb
+  Added extendable stack to command object
+
 */
 
 #include <iostream.h>
@@ -50,7 +53,7 @@ ExtStack::setNext(ExtStack* next)
 
 ExtStack::ExtStack(int unitSz, ExtStack* father)
 {
-	db = new (void*)[unitSz](NULL);
+	db = new (void*)[unitSz];
 	this->unitSz = unitSz;
 	emptySz = 0;
 	next = NULL;
