@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1998/07/17 15:33:50  wenger
+#	Improved link creation GUI as per request from Raghu; started on
+#	DataReader schema GUI; changed version to 1.5.4.
+#
 
 ############################################################
 
@@ -53,7 +57,7 @@ proc CreateLink { flag } {
 	pack .createLinkGUI.entries.label .createLinkGUI.entries.entry -side left
 
 	# Create a checkbutton for each of the items
-	set items {x y record {tdata attribute}}
+	set items {x y record}
 	set butNames ""
 	set varNames ""
 	set cnt 0
@@ -77,21 +81,13 @@ proc CreateLink { flag } {
 	# disallows illegal combinations.
 	.createLinkGUI.but_x configure -command { \
 	  set dialogCkButInternalVar(var_record) 0; \
-	  set {dialogCkButInternalVar(var_tdata attribute)} 0 \
 	}
 	.createLinkGUI.but_y configure -command { \
 	  set dialogCkButInternalVar(var_record) 0; \
-	  set {dialogCkButInternalVar(var_tdata attribute)} 0 \
 	}
 	.createLinkGUI.but_record configure -command {
 	  set dialogCkButInternalVar(var_x) 0; \
 	  set dialogCkButInternalVar(var_y) 0; \
-	  set {dialogCkButInternalVar(var_tdata attribute)} 0 \
-	}
-	{.createLinkGUI.but_tdata attribute} configure -command {
-	  set dialogCkButInternalVar(var_x) 0; \
-	  set dialogCkButInternalVar(var_y) 0; \
-	  set dialogCkButInternalVar(var_record) 0; \
 	}
 
 	eval pack .createLinkGUI.entries $butNames -in .createLinkGUI.listFrame -side top \
