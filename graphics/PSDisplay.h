@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/25 17:58:54  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.10.4.1  1997/03/15 00:31:04  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -76,6 +79,7 @@
 
 #include "Display.h"
 #include "WindowRep.h"
+#include "PSWindowRep.h"
 
 class PSDisplay: public DeviseDisplay {
 public:
@@ -154,6 +158,10 @@ public:
     }
 #endif
 
+#ifndef LIBCS
+    virtual void SetTasvirServer(const char *server);
+#endif
+
 protected:
 #ifndef LIBCS
     /* Register with the dispatcher */
@@ -165,6 +173,7 @@ protected:
 
 private:
     FILE *_printFile;
+    PSWindowRepList _winList;
 
     Coord _userWidth, _userHeight;
     Coord _userXMargin, _userYMargin;

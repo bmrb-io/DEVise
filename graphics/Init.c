@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/03/25 17:58:51  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.35  1997/03/20 01:32:07  wenger
   Fixed a bug in color allocation; color chooser for data shows old colors
   (temporarily); background conversion of GData defaults to off.
@@ -690,4 +693,10 @@ void Init::DoInit(int &argc, char **argv)
 #if 0
   Journal::Init(journalName, argc, args);
 #endif
+}
+
+void Init::SetDaliServer(const char *server)
+{
+  if (_daliServer != NULL) delete [] _daliServer;
+  _daliServer = CopyString(server);
 }

@@ -16,11 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:09:12  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -51,6 +56,8 @@ static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 static char *	srcFile = __FILE__;
+static int launchCount = 0;
+
 
 //
 // ETkIfc::CreateWindow()
@@ -114,7 +121,7 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
     
 #if PRINT_ETK_STATUS
     SendCommand(etkServer, "status", 0, NULL, reply, 5.0);
-    printf("ETk status: %s\n", replyBuf);
+    printf("ETk status: %s\n", reply);
 #endif
     
     END_ETK_TRACE(__FUNCTION__);
@@ -272,6 +279,79 @@ ETkIfc::MoveResizeWindow(const char *etkServer, int handle,
     END_ETK_TRACE(__FUNCTION__);
     return result;
 }
+
+
+//
+// ETkIfc::LaunchServer()
+//
+// Attempts to launch an Embedded Tk server
+//
+DevStatus
+ETkIfc::LaunchServer(char *&serverName)
+{
+  DevStatus result = StatusOk;
+  const int maxLaunchTries = 2;
+
+  if (launchCount >= maxLaunchTries) {
+    printf("Lauching EmbeddedTk server failed %d times; not trying again",
+      launchCount);
+    result = StatusCancel;
+  } else {
+    launchCount++;
+
+    printf("Launching EmbeddedTk server\n");
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+      /* Error. */
+      reportErrSys("fork() failed");
+      result = StatusFailed;
+    } else if (pid == 0) {
+      /* Child. */
+      char *args[2];
+      args[0] = "EmbeddedTk";
+      args[1] = NULL;
+      execvp(args[0], args);
+      /* execvp doesn't return if it works. */
+      reportErrSys("execvp() failed");
+      _exit(1);
+    } else {
+      /* Parent. */
+      serverName = "localhost";
+      char replyBuf[ETK_MAX_STR_LENGTH];
+      int count = 0;
+      Boolean done = false;
+
+      (void) DevError::SetEnabled(false);
+      const int maxConnectTries = 10;
+      while (count < maxConnectTries && !done) {
+        sleep(2);
+        DevStatus tmpResult = SendCommand(serverName, "status", 0, NULL,
+          replyBuf, 2.0);
+        if (tmpResult.IsComplete()) {
+	  done = true;
+	} else if (!strcmp(replyBuf, "ERROR Unknown command")) {
+	  /* Embedded Tk server doesn't have 'status' command yet. */
+	  done = true;
+	}
+        count++;
+      }
+      (void) DevError::SetEnabled(true);
+
+      if (!done) {
+        reportErrNosys("Launch of EmbeddedTk server failed");
+        kill(pid, SIGKILL);
+        result += StatusFailed;
+      }
+    }
+  }
+
+  return result;
+}
+
+
+
 
 //
 // static function: SendCommand()

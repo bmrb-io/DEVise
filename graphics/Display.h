@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/03/25 17:58:50  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.21.4.1  1997/03/15 00:31:02  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -218,6 +221,11 @@ public:
   virtual LocalColor FindLocalColor(float r, float g, float b) = 0;
   virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b) = 0;
 #endif
+
+#ifndef LIBCS
+    virtual void SetTasvirServer(const char *server) = 0;
+#endif
+
 
 #ifndef LIBCS
   /* Get/set desired screen size */

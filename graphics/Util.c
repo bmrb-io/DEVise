@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/04/29 17:35:02  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.20  1996/12/03 20:24:22  jussi
   Added readn() and writen().
 
@@ -193,9 +198,9 @@ ReadFile(char *filename, int &size, char *&buffer)
   return result;
 }
 
-char *CopyString(char *str)
+char *CopyString(const char *str)
 {
-  if (str == NULL) return str;
+  if (str == NULL) return NULL;
   char *result = new char[strlen(str) + 1];
   if (!result) {
     fprintf(stderr, "Insufficient memory for new string\n");

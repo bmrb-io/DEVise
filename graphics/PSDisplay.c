@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/04/11 18:48:51  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.14  1997/03/25 17:58:53  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -169,8 +175,12 @@ WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 {
   DO_DEBUG(printf("PSDisplay::CreateWindowRep(%s)\n", name));
 
-  return new PSWindowRep((DeviseDisplay *) this, fgnd, bgnd,
+  PSWindowRep *psWin = new PSWindowRep((DeviseDisplay *) this, fgnd, bgnd,
     (PSWindowRep *) parentRep, (int) x, (int) y, (int) width, (int) height);
+
+  _winList.Insert(psWin);
+
+  return psWin;
 }
 
 /**************************************************************
@@ -428,3 +438,19 @@ void PSDisplay::GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
   xMargin = _outputXMargin * pointsPerInch;
   yMargin = _outputYMargin * pointsPerInch;
 }
+
+#ifndef LIBCS
+/**************************************************************
+Set the hostname of the Tasvir server.
+**************************************************************/
+
+void PSDisplay::SetTasvirServer(const char *server)
+{
+  int index = _winList.InitIterator();
+  while(_winList.More(index)) {
+    PSWindowRep *win = _winList.Next(index);
+    win->SetDaliServer(server);
+  }
+  _winList.DoneIterator(index);
+}
+#endif

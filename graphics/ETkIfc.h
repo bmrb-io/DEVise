@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:09:12  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef _ETKIFC_H_
@@ -116,6 +120,15 @@ class ETkIfc
     {
 	_etkServer = strdup(server);
     }
+
+    //
+    // LaunchServer()
+    //
+    // Attempts to launch an Embedded Tk server.  DevStatus::IsComplete()
+    // will be true if this succeeded.
+    //
+    //
+    static DevStatus LaunchServer(char *&serverName);
 
   protected:
     

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/04/11 18:48:52  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.21  1997/03/25 17:58:56  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -183,7 +189,7 @@ public:
 
 #ifndef LIBCS
     /* import graphics via Dali */
-    virtual void SetDaliServer(char *serverName) { _daliServer =
+    virtual void SetDaliServer(const char *serverName) { _daliServer =
       CopyString(serverName); }
     virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                     Coord width, Coord height,
@@ -196,7 +202,7 @@ public:
 
 #ifndef LIBCS
     /* Display embedded Tk (ETk) windows */
-    virtual void SetETkServer(char *serverName) {
+    virtual void SetETkServer(const char *serverName) {
 	reportError("Can't do SetETkServer() on this WindowRep object",
 		    devNoSyserr);
     }

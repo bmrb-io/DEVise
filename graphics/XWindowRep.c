@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.91  1997/04/25 16:54:02  wenger
+  Text labels are now sized in the same way as Rects; fixed font bug in
+  middle button query popup; removed the dialog that warns you about your
+  table name getting changed when you open an old data source.
+
   Revision 1.90  1997/04/11 18:48:56  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -888,6 +893,19 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   if (_daliServer == NULL)
   {
+    char *serverName;
+    DevStatus tmpResult = DaliIfc::LaunchServer(serverName);
+    result += tmpResult;
+    if (tmpResult.IsComplete()) {
+      GetDisplay()->SetTasvirServer(serverName);
+      DeviseDisplay::GetPSDisplay()->SetTasvirServer(serverName);
+      Init::SetDaliServer(serverName);
+      Init::SetDaliQuit(true);
+    }
+  }
+
+  if (_daliServer == NULL)
+  {
     reportError("No Tasvir server specified", devNoSyserr);
     result = StatusFailed;
   }
@@ -971,6 +989,18 @@ XWindowRep::ETk_CreateWindow(Coord centerX, Coord centerY,
 #endif
     
     DevStatus result = StatusOk;
+
+    if (_etkServer == NULL)
+    {
+      char *serverName;
+      DevStatus tmpResult = ETkIfc::LaunchServer(serverName);
+      result += tmpResult;
+      if (tmpResult.IsComplete()) {
+        GetDisplay()->SetETkServer(serverName);
+        ETkIfc::SetServer(serverName);
+        ETkIfc::SetQuitFlag(true);
+      }
+    }
     
     if (_etkServer == NULL)
     {

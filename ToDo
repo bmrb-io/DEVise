@@ -360,9 +360,6 @@ Allow larger sizes for fonts in text labels. (ml/rkw 3/18/97)
 Improve user interface for selecting font properties for text labels.
 (ml/rkw 3/18/97)
 
-Devise should automatically launch a Tasvir server if one is needed.
-(ml/rkw 3/31/97)
-
 Allow direct importing of GData files. (ml/rkw 4/4/97)
 
 When you bring up the "expression editor" from the mapping window, the
@@ -453,6 +450,9 @@ in addition to strings. (ml/rkw 3/18/97)
 
 Be able to store some kind of comment or explanation in a session file.
 (rkw 12/12/96)
+
+Devise should automatically launch a Tasvir server if one is needed.
+(ml/rkw 3/31/97)
 
 
 CANCELLED

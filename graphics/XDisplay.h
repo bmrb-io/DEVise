@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/01/24 21:18:55  wenger
+  Fixed memory leak in X font handling code; noted other minor leaks.
+
   Revision 1.26  1996/12/15 20:22:35  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -187,6 +190,11 @@ public:
     virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b);
 #endif
     virtual void FindLocalColor(LocalColor c, float &r, float &g, float &b);
+
+#ifndef LIBCS
+    virtual void SetTasvirServer(const char *server);
+    virtual void SetETkServer(const char *server);
+#endif
 
 protected:
 #ifndef LIBCS

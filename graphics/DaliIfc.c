@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/04/11 18:48:49  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.9  1997/03/25 17:58:49  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -89,6 +95,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -120,6 +127,7 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 
 static char *	srcFile = __FILE__;
 static char errBuf[DALI_MAX_STR_LENGTH+100];
+static int launchCount = 0;
 
 /*------------------------------------------------------------------------------
  * function: DaliIfc::ShowImage
@@ -194,8 +202,10 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   }
 
 #if PRINT_DALI_STATUS
-  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Tasvir status: %s\n", replyBuf);
+  if (ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf,
+    5.0).IsComplete()) {
+    printf("Tasvir status: %s\n", replyBuf);
+  }
 #endif
 
   return result;
@@ -255,8 +265,10 @@ DaliIfc::PSShowImage(char *daliServer, int width, int height, char *filename,
   result += CloseConnection(fd);
 
 #if PRINT_DALI_STATUS
-  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Tasvir status: %s\n", replyBuf);
+  if (ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf,
+    5.0).IsComplete()) {
+    printf("Tasvir status: %s\n", replyBuf);
+  }
 #endif
 
   return result;
@@ -281,8 +293,10 @@ DaliIfc::FreeImage(char *daliServer, int handle)
   result += ConnectAndSend(daliServer, commandBuf, 0, NULL, replyBuf, 5.0);
 
 #if PRINT_DALI_STATUS
-  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Tasvir status: %s\n", replyBuf);
+  if (ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf,
+    5.0).IsComplete()) {
+    printf("Tasvir status: %s\n", replyBuf);
+  }
 #endif
 
   return result;
@@ -331,8 +345,10 @@ DaliIfc::FreeWindowImages(char *daliServer, Window win)
   result += CloseConnection(fd);
 
 #if PRINT_DALI_STATUS
-  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Tasvir status: %s\n", replyBuf);
+  if (ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf,
+    5.0).IsComplete()) {
+    printf("Tasvir status: %s\n", replyBuf);
+  }
 #endif
 
   return result;
@@ -352,8 +368,10 @@ DaliIfc::Reset(char *daliServer)
   result += ConnectAndSend(daliServer, "reset\n", 0, NULL, replyBuf, 5.0);
 
 #if PRINT_DALI_STATUS
-  ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf, 5.0);
-  printf("Tasvir status: %s\n", replyBuf);
+  if (ConnectAndSend(daliServer, "status\n", 0, NULL, replyBuf,
+    5.0).IsComplete()) {
+    printf("Tasvir status: %s\n", replyBuf);
+  }
 #endif
 
   return result;
@@ -371,6 +389,69 @@ DaliIfc::Quit(char *daliServer)
 
   char replyBuf[DALI_MAX_STR_LENGTH];
   result += ConnectAndSend(daliServer, "quit\n", 0, NULL, replyBuf, 5.0);
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DaliIfc::LaunchServer
+ * Attempt to launch a Tasvir server.
+ */
+DevStatus
+DaliIfc::LaunchServer(char *&serverName)
+{
+  DevStatus result = StatusOk;
+  const int maxLaunchTries = 2;
+
+  if (launchCount >= maxLaunchTries) {
+    printf("Lauching Tasvir server failed %d times; not trying again",
+      launchCount);
+    result = StatusCancel;
+  } else {
+    launchCount++;
+
+    printf("Launching Tasvir server\n");
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+      /* Error. */
+      reportErrSys("fork() failed");
+      result = StatusFailed;
+    } else if (pid == 0) {
+      /* Child. */
+      char *args[2];
+      args[0] = "TasvirWithPaths";
+      args[1] = NULL;
+      execvp(args[0], args);
+      /* execvp doesn't return if it works. */
+      reportErrSys("execvp() failed");
+      _exit(1);
+    } else {
+      /* Parent. */
+      serverName = "localhost";
+      char replyBuf[DALI_MAX_STR_LENGTH];
+      int count = 0;
+      Boolean done = false;
+
+      (void) DevError::SetEnabled(false);
+      const int maxConnectTries = 10;
+      while (count < maxConnectTries && !done) {
+        sleep(2);
+        DevStatus tmpResult = ConnectAndSend(serverName, "status\n", 0, NULL,
+          replyBuf, 2.0);
+        if (tmpResult.IsComplete()) done = true;
+        count++;
+      }
+      (void) DevError::SetEnabled(true);
+
+      if (!done) {
+        reportErrNosys("Launch of Tasvir server failed");
+        kill(pid, SIGKILL);
+        result += StatusFailed;
+      }
+    }
+  }
 
   return result;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/03/25 17:58:52  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.15.4.1  1997/03/07 20:03:56  wenger
   Tasvir images now work in PostScript output; Tasvir images now freed
   on a per-window basis; Tasvir timeout factor can be set on the command
@@ -136,7 +139,9 @@ class Init {
     static char *BatchFile() { return _batchFile; }
     
     static char *DaliServer() { return _daliServer; }
+    static void SetDaliServer(const char *server);
     static Boolean DaliQuit() { return _daliQuit; }
+    static void SetDaliQuit(const Boolean daliQuit) { _daliQuit = daliQuit; }
     static int ImageDelay() { return _imageDelay; }
     static float TasvirTimeout() { return _tasvirTimeout; }
 

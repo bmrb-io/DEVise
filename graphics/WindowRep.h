@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/04/21 15:02:02  wenger
+  Added DrawRubberband() virtual function to WindowRep class, so that it
+  doesn't have to be called directly through the XWindowRep class;
+  cleaned out unnecessary includes from the cslib example server code and
+  distribution.
+
   Revision 1.46  1997/04/11 18:48:53  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -364,7 +370,7 @@ public:
 
 
   /* import graphics via Dali */
-  virtual void SetDaliServer(char *serverName) { DOASSERT(false,
+  virtual void SetDaliServer(const char *serverName) { DOASSERT(false,
     "Can't do SetDaliServer() on this object"); }
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
     Coord height, char *filename, int imageLen, char *image,
@@ -378,7 +384,7 @@ public:
 
 #ifndef LIBCS
   /* Display embedded Tk (ETk) windows */
-  virtual void SetETkServer(char *serverName) {
+  virtual void SetETkServer(const char *serverName) {
       reportError("Can't do SetETkServer() on this WindowRep object",
 		  devNoSyserr);
   }

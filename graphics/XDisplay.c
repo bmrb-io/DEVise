@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/04/11 18:48:54  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.52  1997/03/25 17:59:01  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -1020,6 +1026,26 @@ void XDisplay::FindLocalColor(LocalColor c, float &r, float &g, float &b)
   g = color.green / (double) MaxColorIntensity;
   b = color.blue / (double) MaxColorIntensity;
 }
+
+#ifndef LIBCS
+void XDisplay::SetTasvirServer(const char *server) {
+  int index = _winList.InitIterator();
+  while(_winList.More(index)) {
+    XWindowRep *win = _winList.Next(index);
+    win->SetDaliServer(server);
+  }
+  _winList.DoneIterator(index);
+}
+
+void XDisplay::SetETkServer(const char *server) {
+  int index = _winList.InitIterator();
+  while(_winList.More(index)) {
+    XWindowRep *win = _winList.Next(index);
+    win->SetETkServer(server);
+  }
+  _winList.DoneIterator(index);
+}
+#endif
 
 void XDisplay::Dimensions(Coord &width, Coord &height)
 {

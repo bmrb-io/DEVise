@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/03 20:24:22  jussi
+  Added readn() and writen().
+
   Revision 1.12  1996/10/07 22:53:51  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -81,7 +84,7 @@ extern long ModTime(char *fname);
  * function). */
 extern DevStatus ReadFile(char *filename, int &size, char *&buffer);
 
-extern char *CopyString(char *str);
+extern char *CopyString(const char *str);
 
 #ifdef ULTRIX
 #define strdup(s) CopyString(s)

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/04/11 18:48:50  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.5  1997/03/25 17:58:49  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -76,6 +82,8 @@ public:
   static DevStatus FreeWindowImages(char *daliServer, Window win);
   static DevStatus Reset(char *daliServer);
   static DevStatus Quit(char *daliServer);
+
+  static DevStatus LaunchServer(char *&serverName);
 };
 
 
