@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2001/10/24 17:46:07  wenger
+// Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
+// the JSPoP now has a separate thread to read from each client.
+//
 // Revision 1.68  2001/10/12 02:07:44  xuk
 // ng timestamp-based client ID.
 //
@@ -576,7 +580,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 			// If a collaborator just connected, initialize
 			// it.
 			//
-			if ( !client.collabSockets.isEmpty() 
+			if ( !client.collabClients.isEmpty() 
 		          && client.collabInit) {
 			    initializeCollaborator();
 			}
@@ -804,9 +808,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	if (!client.isSessionOpened) {
 	    client.isSessionOpened = true;
 	}
-
-	//TEMP -- *why* are we closing the socket here????
-	client.closeSocket();
     }
 
     public void cmdReopenSession() throws YException
@@ -840,9 +841,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
 	// also close the collaboration JSs
 	if (!client.collabInit) {
-	    for (int i = 0; i < client.collabSockets.size(); i++) {
-		DEViseClientSocket clientSock = 
-		    (DEViseClientSocket)client.collabSockets.elementAt(i);			
+	    for (int i = 0; i < client.collabClients.size(); i++) {
+		DEViseClient collabClient = 
+		    (DEViseClient)client.collabClients.elementAt(i);			
+		/*
 		if (clientSock.hasCommand()) {
 		    String clientCmd = clientSock.getCommand();
 		    clientSock.clearCommand();
@@ -851,10 +853,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		        client.removeCollabSocket(clientSock);
 	            }
 		} else {
-		    pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
-			   + " to collabration client" + " " + i);
-		    clientSock.sendCommand(DEViseCommands.CLOSE_SESSION);
-		}			    
+		*/
+		pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
+		       + " to collabration client" + " " + i);
+		collabClient.sendCmd(DEViseCommands.CLOSE_SESSION);
+		//}			    
 	    }
 	} // if (!client.collabInit)
     }
@@ -969,9 +972,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
 	// send config to collaborated JSs
 	//TEMP -- why isn't this handled by the DEViseClient object????
-        for (int i = 0; i < client.collabSockets.size(); i++) {
-	    DEViseClientSocket clientSock =
-	      (DEViseClientSocket)client.collabSockets.elementAt(i);			
+        for (int i = 0; i < client.collabClients.size(); i++) {
+	    DEViseClient collabClient =
+	      (DEViseClient)client.collabClients.elementAt(i);	
+	    /*
 	    if (clientSock.hasCommand()) {
 	        String cmd = clientSock.getCommand();
 	        clientSock.clearCommand();
@@ -985,10 +989,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		    clientSock.sendCommand(DEViseCommands.DONE);
 	        } 
 	    } else {
-	        pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
-	        clientSock.sendCommand(clientCmd);
-	        clientSock.sendCommand(DEViseCommands.DONE);
-	    }			    
+	    */
+	    pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
+	    collabClient.sendCmd(clientCmd);
+	    collabClient.sendCmd(DEViseCommands.DONE);
+	    //}			    
         }
     }
 
