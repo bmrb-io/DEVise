@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2000/05/25 14:47:27  wenger
+// 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
+// in view resets to default coordinates.
+//
 // Revision 1.47  2000/05/24 18:52:28  wenger
 // Fixed problem with grabbing of cursor edges not working well.
 //
@@ -98,6 +102,10 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.48  2000/05/25 14:47:27  wenger
+// 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
+// in view resets to default coordinates.
+//
 // Revision 1.47  2000/05/24 18:52:28  wenger
 // Fixed problem with grabbing of cursor edges not working well.
 //
@@ -925,7 +933,6 @@ public class DEViseCanvas extends Container
             DEViseCanvas.isInterative = false;
 
             if (view.viewDimension == 3) {
-                DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
                 isMouseDragged = false;
                 repaint();
                 return;
@@ -1012,7 +1019,6 @@ public class DEViseCanvas extends Container
                 selectedCursor = null;
                 whichCursorSide = DEViseCursor.sideNone;
                 isMouseDragged = false;
-                DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
 
                 repaint();
             }
@@ -1026,7 +1032,6 @@ public class DEViseCanvas extends Container
             }
 
             if (view.viewDimension == 3) {
-                DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
                 return;
             }
 
@@ -1089,7 +1094,6 @@ public class DEViseCanvas extends Container
                     dispatcher.start(cmd);
                 }
 
-                DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
                 isInViewDataArea = false;
                 selectedCursor = null;
                 whichCursorSide = DEViseCursor.sideNone;

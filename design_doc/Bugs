@@ -2086,7 +2086,7 @@ Num Date        Status  Description
 			the JavaScreen.)
 			(See demo session test/pile_order.ds.)
 
-533 11/11/99	OPEN	'Restart' in the JavaScreen seems to not throw
+533 11/11/99	FIXED?	'Restart' in the JavaScreen seems to not throw
 			away all info and regenerate from scratch. (rkw)
 
 534 11/11/99	FIXED	Drag time cursor in TwoStation5Var.ds -> second
@@ -2300,6 +2300,34 @@ Num Date        Status  Description
 587 05/15/00	FIXED	Clicking to move a cursor changes its size (see
 			4096_side_newselect.ds). (rkw)
 			(Fixed by rkw, 5/16/00.)
+
+588 05/17/00	OPEN	Moving a cursor in the JavaScreen doesn't do the
+			same thing as in "regular" DEVise if part of the
+			cursor extends outside of the destination view. (rkw)
+
+589 05/17/00	OPEN	Automatic filter updating in piled views only works
+			correctly if the top view in the pile is the one
+			with automatic filter updating turned on.   (Otherwise,
+			the filters get updated after only the first view
+			has been drawn once, so the data information in the
+			other views isn't up-to-date.)  (rkw)
+
+590 05/22/00	FIXED	JavaScreen bug: if you do control-drag in a 3D
+			view to zoom, and let off the mouse button and
+			then drag again, all while holding the control
+			key down, the JS "forgets" that you still have
+			the control key down when you do the second drag.
+			(sm/rkw)
+			(Fixed by rkw, 5/25/00.)
+
+591 05/22/00	OPEN	JavaScreen: shouldn't do repaints so often (just
+			moving the mouse, etc.). (rkw)
+
+592 05/22/00	OPEN	JavaScreen: sometimes doesn't catch keystrokes in
+			views. (rkw)
+
+593 05/23/00	OPEN	JavaScreen: no longer asks for confirmation when
+			you click Exit with a session open. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
