@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/05/21 22:09:51  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.17  1997/04/03 16:37:22  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
   statistics code; switched devised back to listening on port 6100
@@ -96,7 +105,7 @@
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
-#include "RTreeCommon.h"
+#include "InitShut.h"
 #endif
 
 void Exit::DoExit(int code)
@@ -107,7 +116,7 @@ void Exit::DoExit(int code)
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
 //    cout << "Calling RTree shutdown\n";
-    shutdown_system(VolumeName, RTreeFile, VolumeSize);
+    shutdown_system();
 #endif
 
 #if !defined(LIBCS)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/08/20 22:10:36  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.38.2.2  1997/08/20 19:32:41  wenger
   Removed/disabled debug output for interruptible drawing.
 
@@ -188,7 +192,7 @@
 #include "Util.h"
 #include "Version.h"
 #include "ETkIfc.h"
-#include "RTreeCommon.h"
+#include "InitShut.h"
 
 static char uniqueFileName[100];
 
@@ -333,7 +337,7 @@ static void Usage(char *prog)
 void Init::DoInit(int &argc, char **argv)
 {
 
-  initialize_system(VolumeName, RTreeFile, VolumeSize);
+  initialize_system();
 
   /* Create work directory, if needed */
   char *workDir = getenv("DEVISE_WORK");
