@@ -1,0 +1,60 @@
+#! /s/std/bin/perl
+#! /usr/freeware/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script removes check_connect.out.* files where the check was
+#  okay.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+die "usage: rm_okay_checks [idStr]\n" if ($#ARGV != -1);
+
+$debug = 0;
+
+opendir THISDIR, "." or die "Can't open this directory!!: $!";
+
+my $dirent;
+
+while ($dirent = readdir THISDIR) {
+  print "dirent = $dirent\n" if ($debug >= 2);
+
+  if ($dirent =~ /check_connect\.out\..*/) {
+    # open file, check for OK
+    # if OK, delete it
+    print "checking: <$dirent>\n" if ($debug >= 1);
+
+    my $fileOkay = 0;
+
+    open INFILE, $dirent or die "Can't open file: $!";
+    while (<INFILE>) {
+      if ($_ eq "OK\n") {
+        $fileOkay = 1;
+      }
+    }
+    close INFILE;
+
+    if ($fileOkay) {
+      print "  $dirent is okay; removing it\n" if ($debug >= 1);
+      unlink $dirent or die "Can't remove $dirent: $!";
+    }
+  }
+}
+
+closedir THISDIR;
