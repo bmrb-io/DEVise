@@ -834,10 +834,10 @@ Num Date        Status  Description
 203 07/17/97	OPEN	The "Choose Attribute Group" window is sometimes
 			obscured when the mapping window is opened. (ma/rkw)
 
-204 07/17/97	OPEN	Print exclusion doesn't work when printing to GIF.
+204 07/17/97	FIXED	Print exclusion doesn't work when printing to GIF.
 			(ml/rkw)
 
-205 07/17/97	OPEN	Printing display to GIF with a window iconified
+205 07/17/97	FIXED	Printing display to GIF with a window iconified
 			causes crash. (ml/rkw)
 
 206 07/17/97	OPEN	Print output should correspond to stacking order on

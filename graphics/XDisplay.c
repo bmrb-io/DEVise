@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/06/10 19:21:41  wenger
+  Removed (some) debug output.
+
   Revision 1.56  1997/05/21 22:10:01  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -282,6 +285,7 @@ extern "C" {
 //#define DEBUG
 
 #include "Util.h"
+#include "WinClassInfo.h"
 
 /* The maximum intensity of red, green, and blue. */
 const int MaxColorIntensity = 65535;
@@ -627,40 +631,53 @@ void XDisplay::ExportGIF(FILE *fp, int isView)
   int x = 0, y = 0;
   unsigned int w = 0, h = 0;
 
-  int index = _winList.InitIterator();
-  while(_winList.More(index)) {
-    XWindowRep *win = _winList.Next(index);
-    if (win->_parent)
-      continue;
-    int wx, wy;
-    unsigned int ww, wh;
-    win->GetRootGeometry(wx, wy, ww, wh);
-    if (!w && !h) {
-      /* this is the first window */
-      x = wx;
-      y = wy;
-      w = ww;
-      h = wh;
-    } else {
-      /* compute combined area */
-      int x2 = MAX(x + w - 1, wx + ww - 1);
-      int y2 = MAX(y + h - 1, wy + wh - 1);
-      x = MIN(x, wx);
-      y = MIN(y, wy);
-      w = x2 - x + 1;
-      h = y2 - y + 1;
+  ClassInfo *windowInfo;
+  ViewWin *windowP;
+  int index = DevWindow::InitIterator();
+  while (DevWindow::More(index)) {
+    windowInfo = DevWindow::Next(index);
+    windowP = (ViewWin *) windowInfo->GetInstance();
+    if ((windowP != NULL) && !windowP->Iconified() &&
+        !windowP->GetPrintExclude()) {
+#if defined(DEBUG)
+    printf("Getting bounding box for window %s\n", windowP->GetName());
+#endif
+      XWindowRep *win = (XWindowRep *) windowP->GetWindowRep();
+      int wx, wy;
+      unsigned int ww, wh;
+      win->GetRootGeometry(wx, wy, ww, wh);
+      if (!w && !h) {
+        /* this is the first window */
+        x = wx;
+        y = wy;
+        w = ww;
+        h = wh;
+      } else {
+        /* compute combined area */
+        int x2 = MAX(x + w - 1, wx + ww - 1);
+        int y2 = MAX(y + h - 1, wy + wh - 1);
+        x = MIN(x, wx);
+        y = MIN(y, wy);
+        w = x2 - x + 1;
+        h = y2 - y + 1;
+      }
     }
   }
-  _winList.DoneIterator(index);
+  DevWindow::DoneIterator(index);
 
 #ifdef DEBUG
   printf("Bounding rectangle of windows is %d,%d,%u,%u\n", x, y, w, h);
 #endif
-  MakeAndWriteGif(fp, x, y, w, h);
+  if ((w != 0) && (h != 0)) {
+    MakeAndWriteGif(fp, x, y, w, h);
+  }
 }
 
 void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
 {
+#if defined(DEBUG)
+    printf("XDisplay::MakeAndWriteGif()\n");
+#endif
   /* Allocate a pixmap large enough to hold all windows */
 
   unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
@@ -680,38 +697,47 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
 
   /* Copy windows to pixmap */
 
-  int index = _winList.InitIterator();
-  while(_winList.More(index)) {
-    XWindowRep *win = _winList.Next(index);
-    if (win->_parent)
-      continue;
-    int wx, wy;
-    unsigned int ww, wh;
-    win->GetRootGeometry(wx, wy, ww, wh);
-    int dx = wx - x;
-    int dy = wy - y;
-#ifdef DEBUG
-    printf("Copying from window 0x%lx to %d,%d,%u,%u\n",
-           win->GetWinId(), dx, dy, ww, wh);
+  ClassInfo *windowInfo;
+  ViewWin *windowP;
+  int index = DevWindow::InitIterator();
+  while (DevWindow::More(index)) {
+    windowInfo = DevWindow::Next(index);
+    windowP = (ViewWin *) windowInfo->GetInstance();
+    if ((windowP != NULL) && !windowP->Iconified() &&
+        !windowP->GetPrintExclude()) {
+#if defined(DEBUG)
+    printf("Printing window %s\n", windowP->GetName());
 #endif
-    DOASSERT(dx >= 0 && dy >= 0, "Invalid window coordinates");
-    Pixmap src = win->GetPixmapId();
-    if (src)
-      XWindowRep::CoalescePixmaps(win);
-    else {
-      src = win->FindTopWindow(win->GetWinId());
-      XRaiseWindow(_display, src);
+      XWindowRep *win = (XWindowRep *) windowP->GetWindowRep();
+      int wx, wy;
+      unsigned int ww, wh;
+      win->GetRootGeometry(wx, wy, ww, wh);
+      int dx = wx - x;
+      int dy = wy - y;
+#ifdef DEBUG
+      printf("Copying from window 0x%lx to %d,%d,%u,%u\n",
+             win->GetWinId(), dx, dy, ww, wh);
+#endif
+      DOASSERT(dx >= 0 && dy >= 0, "Invalid window coordinates");
+      Pixmap src = win->GetPixmapId();
+      if (src)
+        XWindowRep::CoalescePixmaps(win);
+      else {
+        src = win->FindTopWindow(win->GetWinId());
+        XRaiseWindow(_display, src);
+      }
+      XImage *image = XGetImage(_display, src, 0, 0, ww, wh, AllPlanes,
+	ZPixmap);
+      if (!image || !image->data) {
+        fprintf(stderr, "Cannot get image of window or pixmap\n");
+        continue;
+      }
+      XPutImage(_display, pixmap, gc, image, 0, 0, dx, dy, ww, wh);
+      image->data = NULL;
+      XDestroyImage(image);
     }
-    XImage *image = XGetImage(_display, src, 0, 0, ww, wh, AllPlanes, ZPixmap);
-    if (!image || !image->data) {
-      fprintf(stderr, "Cannot get image of window or pixmap\n");
-      continue;
-    }
-    XPutImage(_display, pixmap, gc, image, 0, 0, dx, dy, ww, wh);
-    image->data = NULL;
-    XDestroyImage(image);
   }
-  _winList.DoneIterator(index);
+  DevWindow::DoneIterator(index);
 
   /* Cannot get attributes of pixmap using XGetWindowAttributes
      so let's get the attributes from the root window and then
