@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/20 18:47:59  jussi
+  Added 3D line segment shape and renamed some 3D type names to
+  be more general.
+
   Revision 1.2  1996/07/10 18:59:20  jussi
   Moved 3D transform variables to WindowRep.
 
@@ -55,6 +59,7 @@ class Object3D {             // 3D object
 public:
   Point3D  pt;               // location (center) of object
   Coord    W, H, D;          // size of object
+  Coord    segWidth;         // width of frame segments
   Vertex3D vt[BLOCK_VERTEX]; // shape's vertices
   Edge3D   ed[BLOCK_EDGES];  // shape's edges
   Side3D   sd[BLOCK_SIDES];  // shape's sides
@@ -98,7 +103,7 @@ public:
   static Point CompProjectionOnViewingPlane(Point3D &pt, Camera camera);
 
   static void DrawSegments(WindowRep *win);
-  static void DrawPlanes(WindowRep *win);
+  static void DrawPlanes(WindowRep *win, Boolean frame);
   static void DrawRefAxis(WindowRep *win, Camera camera);
 
   // ---------------------------------------------------------- 

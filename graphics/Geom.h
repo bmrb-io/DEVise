@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/20 18:47:57  jussi
+  Added 3D line segment shape and renamed some 3D type names to
+  be more general.
+
   Revision 1.7  1996/07/10 16:22:44  jussi
   Added copyright notice.
 
@@ -57,6 +61,7 @@ public:
 class Segment {             // line segment in 2D space
 public:
   Point pt[2];              // two ends of the segment
+  Coord width;              // width of line segment
   Color color;              // color of segment
 };
 
