@@ -15,7 +15,12 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1996/05/11 01:53:56  jussi
+  Condensed the code by removing some unnecessary Tcl/Tk parts
+  which are not used by the server. Changed the client-server
+  protocol somewhat.
+*/
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -1440,8 +1445,8 @@ int ServerAPI::ReadSocket()
       }
 #ifdef DEBUG
       printf("Got element \"%s\"\n", buff[i]);
-    }
 #endif
+    }
   }
 
 #ifdef DEBUG
@@ -1465,7 +1470,7 @@ int ServerAPI::ReadSocket()
     // set socket back to non-blocking mode
 
 #ifdef SUN
-      result = fcntl(_socketFd, F_SETFL, FNDELAY);
+    result = fcntl(_socketFd, F_SETFL, FNDELAY);
 #else
     result = fcntl(_socketFd, F_SETFL, O_NDELAY);
 #endif
