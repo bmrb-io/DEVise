@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1996/08/04 21:06:39  beyer
+  Added support for portable devise keys
+
   Revision 1.52  1996/08/03 16:43:41  jussi
   Changed backing_store flag.
 
@@ -346,10 +349,7 @@ XWindowRepInit::XWindowRepInit()
     }
 }
 
-
-static XWindowRepInit xwindowrep_initializier;
-
-
+static XWindowRepInit xwindowrep_initializer;
 
 /**********************************************************************
 Initializer
@@ -1412,12 +1412,19 @@ void XWindowRep::HandleEvent(XEvent &event)
 
   XEvent ev;
   Atom protocol;
+  int d_modifier;
+  int ks;
+  int d_key;
+  int count;
+  char buf[40];
+  KeySym keysym;
+  XComposeStatus compose;
 
   switch(event.xany.type) {
 
   case KeyPress:
 
-    int d_modifier = 0;
+    d_modifier = 0;
     if( event.xkey.state & ControlMask ) {
 	d_modifier |= DeviseKey::CONTROL;
 	event.xkey.state &= ~ControlMask; // avoid conversion by XLookupString
@@ -1429,14 +1436,11 @@ void XWindowRep::HandleEvent(XEvent &event)
 	d_modifier |= DeviseKey::ALT;
     }
 
-    char buf[40];
-    KeySym keysym;
-    XComposeStatus compose;
-    int count = XLookupString((XKeyEvent *)&event, buf, sizeof(buf), 
-			      &keysym, &compose);
+    count = XLookupString((XKeyEvent *)&event, buf, sizeof(buf),
+                          &keysym, &compose);
 
-    int ks = int(keysym);
-    int d_key = 0;
+    ks = int(keysym);
+    d_key = 0;
     if( devise_keymap.lookup(ks, d_key) ) {
 	// not found in xkey->devise_key translation map
 	if( count == 1 ) {		// regular key
