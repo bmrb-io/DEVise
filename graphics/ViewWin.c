@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/02/06 19:32:10  jussi
+  Added top margin with Devise logo to root windows.
+
   Revision 1.8  1996/01/30 00:02:48  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -145,7 +148,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 #ifdef MARGINS
     if (Init::DisplayLogo()) {
       /* Allocate top margin */
-      _topMargin = 9;
+      _topMargin = _windowRep->GetSmallFontHeight() + 2;
       /* Draw margins */
       DrawMargins();
     }
