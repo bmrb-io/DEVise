@@ -217,6 +217,12 @@ so that they could be imported into other software.  (rkw/tom keating
 
 Have control of image contrast, etc., in Devise. (rkw/tom keating 10/15/96)
 
+Add a command-line flag that suppresses the generation of derived TDatas
+(statistics).  (rkw/gc/ml 10/16/96)
+
+Allow environment variables in paths in the data stream catalog.
+(rkw 10/17/96)
+
 
 COMPLETED
 ---------
