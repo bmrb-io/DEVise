@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.31  1995/12/02 21:45:17  jussi
+#	Added support for TK_WINDOW i.e. Tcl/Tk controls surrounding each
+#	view and window.
+#
 #	Revision 1.30  1995/11/29 17:58:39  jussi
 #	Slightly better interface to removing a window.
 #
@@ -32,9 +36,9 @@
 #	reads a common, host-independent config file, followed by a smaller
 #	host-dependent config file *if one exists*.
 #
-# Revision 1.25  1995/11/24  07:47:27  ravim
-# Mapping between different types of data sources can be defined. Anything
-# that cannot be resolved automatically can be handled manually.
+#	Revision 1.25  1995/11/24  07:47:27  ravim
+#	Mapping between different types of data sources can be defined.
+#	Anything that cannot be resolved automatically can be handled manually.
 #
 #	Revision 1.24  1995/11/22 00:33:13  jussi
 #	Fixed bug in function that saves session files; spaces embedded
@@ -371,15 +375,36 @@ menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Unlink" -command DoViewUnlink
 .mbar.view.menu add command -label "XAxis" -command {DoViewAxis x}
 .mbar.view.menu add command -label "YAxis" -command {DoViewAxis y}
-.mbar.view.menu add command -label "Toggle X Axes" \
-	-command {DoToggleAxisAllViews X}
-.mbar.view.menu add command -label "Toggle Y Axes" \
-	-command {DoToggleAxisAllViews Y}
-.mbar.view.menu add command -label "Toggle Statistics" \
-	-command {DoToggleStatistics}
+.mbar.view.menu add cascade -label "Toggle X Axis" \
+	-menu .mbar.view.menu.xaxismenu
+.mbar.view.menu add cascade -label "Toggle Y Axis" \
+	-menu .mbar.view.menu.yaxismenu
+.mbar.view.menu add cascade -label "Toggle Statistics" \
+	-menu .mbar.view.menu.statmenu
+.mbar.view.menu add separator
+.mbar.view.menu add command -label "Title" -command DoSetTitle
+
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
 #.mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
+
+menu .mbar.view.menu.xaxismenu -tearoff 0
+.mbar.view.menu.xaxismenu add command -label "Current View" \
+	-command {DoToggleAxis X}
+.mbar.view.menu.xaxismenu add command -label "All Views" \
+	-command {DoToggleAxisAllViews X}
+
+menu .mbar.view.menu.yaxismenu -tearoff 0
+.mbar.view.menu.yaxismenu add command -label "Current View" \
+	-command {DoToggleAxis Y}
+.mbar.view.menu.yaxismenu add command -label "All Views" \
+	-command {DoToggleAxisAllViews Y}
+
+menu .mbar.view.menu.statmenu -tearoff 0
+.mbar.view.menu.statmenu add command -label "Current View" \
+	-command {DoToggleStatistics}
+.mbar.view.menu.statmenu add command -label "All Views" \
+	-command {DoToggleStatisticsAllViews}
 
 # menu .mbar.link.menu -tearoff 0
 #.mbar.link.menu add command -label "Create" -command DoLinkCreate
@@ -935,7 +960,7 @@ proc DoGetGData {} {
 	return
     } else {
 	set answer [ dialogList .getGData \
-		"GetGData" "Please select GData for display" \
+		"GetGData" "Select GData for display" \
 		"" 0 { New Cancel OK } \
 		$gdataSet ]
 	if { $answer == 0 } {
@@ -1187,7 +1212,7 @@ proc DoViewRemove {} {
     global curView
     if {$curView == ""} {
 	dialog .removeView "Remove View" \
-		"Please select a view by clicking in it first." "" 0 { OK }
+		"Select a view by clicking in it first." "" 0 { OK }
 	return
     }
 
@@ -1208,7 +1233,7 @@ proc DoViewMove {} {
 
     if {$curView == ""} {
 	set answer [ dialogList .removeView "Move View" \
-		"Select view to move to a window" "" 0 { Cancel OK } \
+		"Select view to move." "" 0 { Cancel OK } \
 		[ViewSet] ]
 	if {$answer == 0} {
 	    return
@@ -1531,11 +1556,16 @@ proc DoActualSave { infile asTemplate } {
 		puts $f "set $viewVar \[ format \"$viewExpr\" \$$tdataVar \]"
 	    }
 	    puts $f "DEVise create view $viewClass \$$viewVar [lrange $params 1 end]"
+
+	    set viewLabelParams [DEVise getLabel $inst]
+	    puts $f "DEVise setLabel \$$viewVar $viewLabelParams"
+	    set viewStatParams [DEVise getViewStatistics $inst]
+	    puts $f "DEVise setViewStatistics \$$viewVar $viewStatParams"
+
 	    set viewDict [DictInsert $viewDict $inst $viewVar]
 	    set viewNum [expr $viewNum+1]
 	}
     }
-    #	SaveCategory $f "view" 
     puts $f ""
 
     puts $f "# Create windows"
@@ -1567,7 +1597,7 @@ proc DoActualSave { infile asTemplate } {
     SaveAllViewAxisLabel $f $viewDict
     puts $f ""
 
-    puts $f "# put action into view"
+    puts $f "# Put action into view"
     SaveAllViewAction $f $viewDict
     puts $f ""
 
@@ -2114,7 +2144,7 @@ proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
     if {$curView == ""} {
 	dialog .editMapping "Edit Mapping" \
-		"Please select a view by clicking in it first." "" 0 { OK } 
+		"Select a view by clicking in it first." "" 0 { OK } 
 	return
     }
 
@@ -2287,8 +2317,8 @@ proc DoSetCursorSrc {} {
     global curView dialogListVar
 
     if {$curView == ""} {
-	set but [dialog .cursorError "CursorError " \
-		"Please select a view first by clicking in it" "" 0 OK ]
+	set but [dialog .cursorError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
 
@@ -2304,8 +2334,8 @@ proc DoSetCursorDst {} {
     global curView dialogListVar
 
     if {$curView == ""} {
-	set but [dialog .cursorError "CursorError " \
-		"Please select a view first by clicking in it" "" 0 OK ]
+	set but [dialog .cursorError "No Current View " \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
     
@@ -2368,8 +2398,8 @@ proc DoViewLink {} {
     global curView dialogListVar
 
     if {$curView == ""} {
-	set but [dialog .linkError "LinkViewError" \
-		"Please select a view first by clicking in it" "" 0 OK ]
+	set but [dialog .linkError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
 
@@ -2412,8 +2442,8 @@ proc DoViewLink {} {
 proc DoViewUnlink {} {
     global curView dialogListVar
     if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .unlinkError "UnlinkViewError" \
-		"Please select a view first by clicking in it" "" 0 OK ]
+	set but [dialog .unlinkError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
 
@@ -2479,8 +2509,8 @@ proc DoModifyLink {} {
 proc CheckView {} {
     global curView
     if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .viewError "ViewError" \
-		"Please select a view first by clicking in it" "" 0 OK ]
+	set but [dialog .viewError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return 0
     }
     return 1
@@ -2535,7 +2565,7 @@ proc DoGetAxisLabel {} {
     global curView dialogListVar
     set axisSet [AxisSet]
     if { [llength $axisSet] == 0 } {
-	set axisLabel [ DoCreateAxisLabel]
+	set axisLabel [DoCreateAxisLabel]
     } else {
 	set answer [ dialogList .getAxisLabel "Select Axis Label" \
 		"Select an axis label for current view."\
@@ -2805,7 +2835,7 @@ proc DoSwitchTData {} {
     global curView
     if { [string compare $curView ""] == 0 } {
 	dialog .switchTData "Switch TData" \
-		"Please select a view by clicking in it first." "" 0 { OK } 
+		"Select a view by clicking in it first." "" 0 { OK } 
 	return
     }
     
@@ -3084,7 +3114,7 @@ proc DupWindow {} {
     global curView
     if {$curView == ""} {
 	set but [dialog .dupWinError "DupWindowError" \
-		"Please select a window by clicking any view in it" "" 0 OK ]
+		"Select a window by clicking any view in it." "" 0 OK ]
 	return
     }
     set win [DEVise getViewWin $curView]
@@ -3124,11 +3154,67 @@ proc DupWindow {} {
     }
 }
 
+proc DoSetTitle {} {
+    global curView newTitle
+
+    if {$curView == ""} {
+	set but [dialog .setTitleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+    
+    # see if .setTitle window already exists; if so, just return
+    set err [catch {set exists [wm state .setTitle]}]
+    if {!$err} { wm deiconify .setTitle; return }
+
+    toplevel .setTitle
+    wm title .setTitle "Set View Title"
+    wm geometry .setTitle +50+50
+
+    frame .setTitle.top
+    frame .setTitle.bot
+    pack .setTitle.top -side top -pady 3m -fill both -expand 1
+    pack .setTitle.bot -side top -pady 5m -fill x
+
+    frame .setTitle.bot.but
+    pack .setTitle.bot.but -side top
+
+    set viewLabelParams [DEVise getLabel $curView]
+    set occupyTop [lindex $viewLabelParams 0]
+    set newTitle [lindex $viewLabelParams 2]
+    if {!$occupyTop && $newTitle == ""} {
+	set newTitle $curView
+    }
+
+    label .setTitle.top.l1 -text "Title:"
+    entry .setTitle.top.e1 -relief sunken -width 30 -textvariable newTitle
+    pack .setTitle.top.l1 .setTitle.top.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    button .setTitle.bot.but.ok -text OK -width 10 -command {
+	DEVise setLabel $curView 1 16 $newTitle
+	destroy .setTitle
+    }
+    button .setTitle.bot.but.clear -text Clear -width 10 -command {
+	set newTitle ""
+    }
+    button .setTitle.bot.but.delete -text Delete -width 10 -command {
+	DEVise setLabel $curView 0 12 ""
+	destroy .setTitle
+    }
+    button .setTitle.bot.but.cancel -text Cancel -width 10 -command {
+	destroy .setTitle
+    }
+    pack .setTitle.bot.but.ok .setTitle.bot.but.clear \
+	    .setTitle.bot.but.delete .setTitle.bot.but.cancel \
+	    -side left -padx 3m
+}
+
 proc DoToggleAxis { axis } {
     global curView
     if {$curView == ""} {
-	set but [dialog .toggleWinError "ToggleAxisError" \
-		"Please select a view by clicking in it" "" 0 OK ]
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
     
@@ -3140,12 +3226,12 @@ proc DoToggleAxis { axis } {
 proc DoToggleAxisAllViews { axis } {
     global curView
     if {$curView == ""} {
-	set but [dialog .toggleWinError "ToggleAxisError" \
-		"Please select a view by clicking in it" "" 0 OK ]
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
     
-    set stat [ DEVise getAxisDisplay $curView $axis]
+    set stat [DEVise getAxisDisplay $curView $axis]
     set stat [expr !$stat]
     
     set viewClasses [ DEVise get view ]
@@ -3159,17 +3245,33 @@ proc DoToggleAxisAllViews { axis } {
 
 proc DoToggleStatistics {} {
     global curView
-    if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .toggleWinError "ToggleStatisticsError" \
-		"Please select a view by clicking in it" "" 0 OK ]
+    if {$curView == ""} {
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
 
+    set stat [DEVise getViewStatistics $curView]
+    set stat [expr !$stat]
+    DEVise setViewStatistics $curView $stat
+}
+
+proc DoToggleStatisticsAllViews {} {
+    global curView
+    if {$curView == ""} {
+	set but [dialog .toggleWinError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
+	return
+    }
+
+    set stat [DEVise getViewStatistics $curView]
+    set stat [expr !$stat]
+    
     set viewClasses [ DEVise get view ]
     foreach viewClass $viewClasses {
 	set views [ DEVise get view $viewClass ]
 	foreach v $views {
-	    DEVise ToggleStatistics $v
+	    DEVise setViewStatistics $v $stat
 	}
     }
 }
@@ -3180,7 +3282,7 @@ proc DoSwapView {} {
     [string compare $lastView "" ] == 0 ||
     [string compare $curView $lastView] == 0 } {
 	set but [dialog .swapViewError "SwapViewError" \
-		"Please select two views by clicking in them in order\n\
+		"Select two views by clicking in them in order.\n\
 		The views must be in the same window." "" 0 OK ]
 	return
     }
@@ -3190,7 +3292,7 @@ proc DoSwapView {} {
     set win2 [DEVise getViewWin $lastView]
     if { [string  compare $win1 $win2] != 0 } {
 	set but [dialog .swapViewError "SwapViewError" \
-		"Please select two views by clicking in them in order\n\
+		"Select two views by clicking in them in order.\n\
 		The views must be in the same window." "" 0 OK ]
 	return
     }
@@ -3199,11 +3301,10 @@ proc DoSwapView {} {
 }
 
 proc DoSavePixmap {} {
-    global curView lastView dialogListVar
-    if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .swapViewError "SwapViewError" \
-		"Please select two views by clicking in them in order\n\
-		The views must be in the same window." "" 0 OK ]
+    global curView
+    if {$curView == ""} {
+	set but [dialog .pixmapError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
     
@@ -3213,11 +3314,10 @@ proc DoSavePixmap {} {
 }
 
 proc DoLoadPixmap {} {
-    global curView lastView
-    if { [ string compare $curView "" ] ==  0 } {
-	set but [dialog .swapViewError "LoadPixmapError" \
-		"Please select two views by clicking in them in order\n\
-		The views must be in the same window." "" 0 OK ]
+    global curView
+    if {$curView == ""} {
+	set but [dialog .pixmapError "No Current View" \
+		"Select a view first by clicking in it." "" 0 OK ]
 	return
     }
     
