@@ -15,6 +15,14 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.70  1996/06/12 14:57:56  wenger
+#	Added GUI and some code for saving data to templates; added preliminary
+#	graphical display of TDatas; you now have the option of closing a session
+#	in template mode without merging the template into the main data catalog;
+#	removed some unnecessary interdependencies among include files; updated
+#	the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+#	ParseAPI.C.
+#
 #	Revision 1.69  1996/05/31 15:49:03  jussi
 #	Added menu options for SetLinkMaster and ResetLinkMaster.
 #
@@ -287,6 +295,7 @@ set DEViseShapes \
 # lastView: last view selected
 # historyWinOpened: true if history window has been opened
 # queryWinOpened: true if query window has been opened
+# query3DWinOpened: true if 3D query window has been opened
 # stackWinOpened: true if stack window has been opened
 # helpWindowCreated: true if help window has been created.
 # UserMode: 1 for end-user mode (logical schemas), 0 for
@@ -299,6 +308,7 @@ set curView ""
 set lastView ""
 set historyWinOpened 0
 set queryWinOpened 0
+set query3DWinOpened 0
 set stackWinOpened 0
 set helpWindowCreated 0
 set UserMode 1
@@ -552,6 +562,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 	-menu .mbar.view.menu.dimmenu
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
+.mbar.view.menu add command -label "3D Query" -command Do3DQuery
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
