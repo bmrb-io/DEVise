@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2000/05/24 14:07:09  wenger
+// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
+// DEViseAtomInCrystal, DEVise3DLCS).
+//
 // Revision 1.9  2000/04/07 22:43:13  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -131,57 +135,6 @@ public class DEViseAtomType {
             selectedImage = null;
         }
     }
-
-/* Not used.  RKW 2000-05-23.
-    // r is pixels?
-    public void setRadius(int r)
-    {
-        int oldR = R;
-
-        R = r;
-        if (R < 5) {
-            R = 5;
-        }
-        if (R > 50) {
-            R = 50;
-        }
-
-        D = 2 * R;
-        rangeD = D - minD;
-
-        radius = radius * (float)R / oldR;
-
-        image = null;
-    }
-*/
-
-/* Not used.  RKW 2000-05-23.
-    // r is data units?
-    public void setRadius(float r)
-    {
-        float oldradius = radius;
-
-        if (r > 0) {
-            radius = r;
-        } else {
-            return;
-        }
-
-        R = (int)(R * radius / oldradius);
-        if (R < 5) {
-            R = 5;
-        }
-
-        if (R > 50) {
-            R = 50;
-        }
-
-        D = 2 * R;
-        rangeD = D - minD;
-
-        image = null;
-    }
-*/
 
     // Some kind of restting values to defaults.
     public void reset(float pixelToUnit)
@@ -299,14 +252,6 @@ public class DEViseAtomType {
     {
         return (int)(bg + (fg - bg) * fgfactor);
     }
-
-/* Not used.  RKW 2000-05-22.
-    public static int xorcolor(int rgb)
-    {
-        return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ 0xff0000) |
-	  ((rgb & 0xff00) ^ 0xff00) | ((rgb & 0xff) ^ 0xff));
-    }
-*/
 
     // Values for drawStyle:
     public static final int DRAW_PLAIN_SELECTED = 3;

@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2000/06/15 15:55:22  wenger
+// Fixed bug 597 (problem with devised restarts in jspop).
+//
 // Revision 1.39  2000/06/12 22:13:56  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -762,54 +765,6 @@ public class DEViseServer implements Runnable
     }
 
 // ------------------------------------------------------------------------
-
-/* Not used.  RKW 2000-06-12.
-    private Vector findPath(String p)
-    {
-        Vector ppp = new Vector();
-        if (p != null && p.length() > 0) {
-            String[] pp = DEViseGlobals.parseStr(p, "/");
-            if (pp != null && pp.length > 0) {
-                if (pp[0].equals((String)currentDir.elementAt(0))) {
-                    int i = 1;
-                    for (i = 1; i < pp.length; i++) {
-                        if (i < currentDir.size()) {
-                            if (!pp[i].equals((String)currentDir.elementAt(i))) {
-                                for (int j = i; j < currentDir.size(); j++) {
-                                    ppp.addElement("..");
-                                }
-
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-
-                    if (i < pp.length || i >= currentDir.size()) {
-                        for (int k = i; k < pp.length; k++) {
-                            ppp.addElement(pp[k]);
-                        }
-                    } else {
-                        if (i < currentDir.size()) {
-                            for (int k = i; k < currentDir.size(); k++) {
-                                ppp.addElement("..");
-                            }
-                        }
-                    }
-
-                    return ppp;
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-*/
 
     private synchronized void quit()
     {

@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2000/06/21 18:10:14  wenger
+// Changes to 3D requested by BMRB: removed axes; up/down mouse movement
+// does zooming; molecule doesn't move when changing atoms; 'r' resets
+// location and zoom as well as rotation.
+//
 // Revision 1.17  2000/05/25 14:47:38  wenger
 // 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
 // in view resets to default coordinates.
@@ -458,32 +463,6 @@ public class DEViseCrystal
         return index;
     }
 
-/* Not used. RKW 2000-05-23.
-    public synchronized void removeAtom(int index)
-    {
-        // index is the index in zSortMap
-
-        DEViseAtomInCrystal atom = (DEViseAtomInCrystal)atomList.elementAt(zSortMap[index]);
-        atom.status = false;
-        for (int i = 0; i < atom.bondNumber; i++) {
-            DEViseAtomInCrystal a = (DEViseAtomInCrystal)atomList.elementAt(atom.bond[i]);
-            a.removeBond(zSortMap[index]);
-        }
-        atom.bondNumber = 0;
-
-        oldlcs.point(atom.pos, atom.lcspos);
-        newTotalX -= atom.pos[0];
-        newTotalY -= atom.pos[1];
-        newTotalZ -= atom.pos[2];
-        //newBoxLength = ?
-
-        deletedAtomIndexStack.push(new Integer(zSortMap[index]));
-        zSortMap[index] = -1;
-        deletedAtomNumber++;
-        totalAtomNumber--;
-    }
-*/
-
     public DEViseAtomInCrystal getAtom(int index)
     {
         if (index < 0 || index >= atomList.size()) {
@@ -760,71 +739,6 @@ public class DEViseCrystal
 
         isTransformed = true;
     }
-
-/* Not used.  RKW 2000-05-23.
-    // Find the atom, if any, at the given location (in pixels?); return
-    // the index of the atom.
-    public int find(int x, int y)
-    {
-        int index1 = -1, index2 = -1;
-        int tmp;
-        float r1, r2, dx, dy;
-        DEViseAtomInCrystal atom1 = null, atom2 = null;
-        byte[] flag = new byte[atomList.size()];
-
-        for (int i = zSortMapSize - 1; i >= 0; i--) {
-            index1 = zSortMap[i];
-            if (index1 < 0) { // ignore deleted atom
-                continue;
-            }
-
-            atom1 = (DEViseAtomInCrystal)atomList.elementAt(index1);
-
-            r1 = atom1.drawSize / 2.0f;
-            dx = x - atom1.drawX;
-            dy = y - atom1.drawY;
-            r2 = (float)Math.sqrt(dx * dx + dy * dy);
-            if (r2 < r1) {
-                break;
-            }
-
-            flag[index1] = 1;
-
-            // check the bonds
-            for (int j = 0; j < atom1.bondNumber; j++) {
-                index2 = atom1.bond[j];
-
-                if (flag[index2] != 1) {
-                    index2 = -1;
-                    continue;
-                }
-
-                atom2 = (DEViseAtomInCrystal)atomList.elementAt(index2);
-
-                if ((x >= atom2.drawX - bondWidth && x <= atom1.drawX + bondWidth) || (x >= atom1.drawX - bondWidth && x <= atom2.drawX + bondWidth)) {
-                    tmp = (int)((float)(atom2.drawY - atom1.drawY) / (atom2.drawX - atom1.drawX) * (x - atom1.drawX)) + atom1.drawY;
-
-                    if (y >= (tmp - bondWidth) && y <= (tmp + bondWidth)) {
-                        atom1.lastSelectedBondIndex = index2;
-                        break;
-                    } else {
-                        index2 = -1;
-                    }
-                } else {
-                    index2 = -1;
-                }
-            }
-
-            if (index2 != -1) {
-                break;
-            } else {
-                index1 = -1;
-            }
-        }
-
-        return index1;
-    }
-*/
 
     // Set all atoms to not be selected.
     public void setSelect()

@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2000/06/21 18:10:15  wenger
+// Changes to 3D requested by BMRB: removed axes; up/down mouse movement
+// does zooming; molecule doesn't move when changing atoms; 'r' resets
+// location and zoom as well as rotation.
+//
 // Revision 1.60  2000/06/12 22:13:56  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -658,13 +663,6 @@ public class DEViseScreen extends Panel
             view.updateDataRange(axis, min, max);
         }
     }
-
-/* Not used.  RKW 2000-05-12.
-    public synchronized String getLastAction()
-    {
-        return lastCommand;
-    }
-*/
 
     public synchronized void setLastAction(String cmd)
     {

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2000/06/12 22:11:31  wenger
+// Commented out unused gridx and gridy.
+//
 // Revision 1.45  2000/05/04 15:53:32  wenger
 // Added consistency checking, added comments, commented out unused code
 // in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
@@ -187,36 +190,6 @@ public class DEViseView
         return curlyName;
     }
 
-/* Not used.  RKW 2000-05-03.
-    public DEViseView getChild(int idx)
-    {
-        if (idx < 0 || idx >= viewChilds.size())
-            return null;
-
-        return (DEViseView)viewChilds.elementAt(idx);
-    }
-*/
-
-/* Not used.  RKW 2000-05-03.
-    public DEViseCursor getCursor(int idx)
-    {
-        if (idx < 0 || idx >= viewCursors.size())
-            return null;
-
-        return (DEViseCursor)viewCursors.elementAt(idx);
-    }
-*/
-
-/* Not used.  RKW 2000-05-03.
-    public DEViseGData getGData(int idx)
-    {
-        if (idx < 0 || idx >= viewGDatas.size())
-            return null;
-
-        return (DEViseGData)viewGDatas.elementAt(idx);
-    }
-*/
-
     // Add a child view to this view.
     public void addChild(DEViseView view) throws YError
     {
@@ -359,15 +332,6 @@ public class DEViseView
         }
     }
 
-/* Not used.  RKW 2000-05-01.
-    public void removeGData(DEViseGData gdata)
-    {
-        if (gdata != null) {
-            viewGDatas.removeElement(gdata);
-        }
-    }
-*/
-
     // Remove all GData records from this view.
     public void removeAllGData()
     {
@@ -395,13 +359,6 @@ public class DEViseView
 
         viewChilds.removeAllElements();
     }
-
-/* Not used.  RKW 2000-05-03.
-    public void removeAllPile()
-    {
-        viewPiledViews.removeAllElements();
-    }
-*/
 
     // Get the canvas corresponding to this view (note that if this view
     // is a child view or a non-base piled view, the canvas returned is
