@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1997/01/06 19:12:05  wenger
+#  Fixed the relative positions of 'OK' and 'Cancel' buttons on a number of
+#  windows; view names now start with 'View 1' instead of 'View'; removed
+#  some diagnostic output; added code to test the UniqueName procedure.
+#
 #  Revision 1.27  1996/12/20 16:50:37  wenger
 #  Fonts for view label, x axis, and y axis can now be changed.
 #
@@ -703,9 +708,12 @@ proc SaveDataSources { fileId asExport asTemplate withData
 proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
     upvar $fileDictRef fileDict
 
-    set fileNum 1
-    set totalTData [llength [DEVise get tdata]]
+    set totalTData 0
+    foreach class [DEVise get tdata] {
+	incr totalTData [llength [DEVise get tdata $class]]
+    }
 
+    set fileNum 1
     foreach class [DEVise get tdata] {
 	foreach inst [DEVise get tdata $class] {
 	    set params [DEVise getCreateParam tdata $class $inst]
