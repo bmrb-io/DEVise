@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/02/05 23:55:17  jussi
+  Added support for small fonts.
+
   Revision 1.10  1996/01/13 20:58:38  jussi
   Made system display the name of the base color when another
   color is mapped to it.
@@ -99,14 +102,16 @@ XDisplay::XDisplay(char *name)
   
   /* get normal font */
   if (!(_normalFontStruct = XLoadQueryFont(_display, "7x13"))) {
-    fprintf(stderr, "XDisplay: can not load font 7x13\n");
+    fprintf(stderr, "XDisplay: cannot load font 7x13\n");
     Exit::DoExit(1);
   }
 
   /* get small font */
   if (!(_smallFontStruct = XLoadQueryFont(_display, "5x7"))) {
-    fprintf(stderr, "XDisplay: can not load font 5x7\n");
-    Exit::DoExit(1);
+    if (!(_smallFontStruct = XLoadQueryFont(_display, "5x8"))) {
+      fprintf(stderr, "XDisplay: cannot load font 5x7 nor 5x8\n");
+      Exit::DoExit(1);
+    }
   }
   
   /* set big font to be current font */
