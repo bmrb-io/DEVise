@@ -19,9 +19,6 @@
 // $Id$
 //
 // $Log$
-// Revision 1.7  1998/08/27 15:40:40  hongyu
-// *** empty log message ***
-//
 // Revision 1.6  1998/08/14 17:48:05  hongyu
 // *** empty log message ***
 //
@@ -32,6 +29,7 @@
 // ------------------------------------------------------------------------
 
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
@@ -320,6 +318,8 @@ public class DEViseCmdDispatcher implements Runnable
                             // dialog hanging out there
                             if (command.startsWith("JAVAC_GetSessionList")) {
                                 jsc.updateSessionList(null, e.getMessage());
+                            } else {
+                                YGlobals.Yshowmsg(jsc, e.getMessage());
                             }
                         } else if (id == 3) { // imgSocket.sendImg invalid argument, will not happen
                         } else if (id == 5) { // cmdSocket invalid response received
@@ -331,9 +331,9 @@ public class DEViseCmdDispatcher implements Runnable
                                 }
 
                                 // we need to clear both CMD and IMG sockets
-                                if (!cmdSocket.isEmpty() || isRead)
+                                //if (!cmdSocket.isEmpty() || isRead)
                                     cmdSocket.clearSocket();
-                                if (!imgSocket.isEmpty() || isRead)
+                                //if (!imgSocket.isEmpty() || isRead)
                                     imgSocket.clearSocket();
                             } catch (YException e1) {
                                 YGlobals.Ydebugpn(e1.getMessage());
@@ -343,7 +343,7 @@ public class DEViseCmdDispatcher implements Runnable
                             }
                         } else if (id == 6) { // imgSocket invalid response received
                             try {
-                                if (!imgSocket.isEmpty())
+                                //if (!imgSocket.isEmpty())
                                     imgSocket.clearSocket();
                             } catch (YException e1) {
                                 YGlobals.Ydebugpn(e1.getMessage());
@@ -379,7 +379,7 @@ public class DEViseCmdDispatcher implements Runnable
                             }
                         } else if (id == 8) { // abort on receiving response from imgSocket
                             try {
-                                if (!imgSocket.isEmpty())
+                                //if (!imgSocket.isEmpty())
                                     imgSocket.clearSocket();
                             } catch (YException e1) {
                                 YGlobals.Ydebugpn(e1.getMessage());
@@ -432,7 +432,7 @@ public class DEViseCmdDispatcher implements Runnable
             if (rsp[i].startsWith("JAVAC_Done")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 1 || i != rsp.length - 1) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
                 if (command.startsWith("JAVAC_OpenSession")) {
@@ -445,43 +445,43 @@ public class DEViseCmdDispatcher implements Runnable
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
                     if (!command.startsWith("JAVAC_GetSessionList"))
-                        YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i]);
+                        YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i] + "!");
                     else
                         //YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i], false, false);
                         throw new YException("Server Error: " + rsp[i], 5);
 
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Server Error: " + rsp[i] + "!", 5);
                 } else {
                     if (!command.startsWith("JAVAC_GetSessionList"))
                         YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1]);
                     else
                         //YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1], false, false);
-                        throw new YException("Server Error: " + cmd[1], 5);
+                        throw new YException("Server Error: " + cmd[1] + "!", 5);
 
                     //throw new YException("Server Error: " + cmd[i] + " to command: " + command, 5);
                 }
             } else if (rsp[i].startsWith("JAVAC_Fail")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
-                    if (!command.startsWith("JAVAC_GetSessionList"))
-                        YGlobals.Yshowmsg(jsc, "Server failed: " + rsp[i]);
-                    else
+                    //if (!command.startsWith("JAVAC_GetSessionList"))
+                    //    YGlobals.Yshowmsg(jsc, "Server failed: " + rsp[i]);
+                    //else
                         //YGlobals.Yshowmsg(jsc, "Server Failed: " + rsp[i], false, false);
-                        throw new YException("Server failed: " + rsp[i], 2);
+                        //throw new YException("Server failed: " + rsp[i], 2);
 
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 2);
+                    throw new YException("Server Failed: " + rsp[i] + "!", 2);
                 } else {
-                    if (!command.startsWith("JAVAC_GetSessionList"))
-                        YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[1]);
-                    else
+                    //if (!command.startsWith("JAVAC_GetSessionList"))
+                    //    YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[1]);
+                    //else
                         ;//YGlobals.Yshowmsg(jsc, "Server failed: " + cmd[i], false, false);
 
-                    throw new YException("Server failed: " + cmd[1], 2);
+                    throw new YException("Server failed: " + cmd[1] + "!", 2);
                 }
             } else if (rsp[i].startsWith("JAVAC_CreateWindow")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length < 8) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
                 String winname = cmd[1];
@@ -498,7 +498,7 @@ public class DEViseCmdDispatcher implements Runnable
                     Vector views = new Vector();
                     int numOfV = Integer.parseInt(cmd[7]);
                     if (cmd.length != numOfV * 5 + 8) {
-                        throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                        throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                     } else {
                         for (int j = 0; j < numOfV; j++) {
                             String name = cmd[8 + j * 5];
@@ -514,7 +514,7 @@ public class DEViseCmdDispatcher implements Runnable
                     YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
 
                     if (imageData == null)
-                        throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+                        throw new YException("Null image data received for window " + winname + "!", 6);
 
                     MediaTracker tracker = new MediaTracker(jsc);
                     Toolkit kit = jsc.getToolkit();
@@ -526,34 +526,35 @@ public class DEViseCmdDispatcher implements Runnable
                     }
 
                     if (tracker.isErrorID(0))
-                        throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+                        //throw new YException("Can not create image for window " + winname + " with image size " + imageData.length + "!", 6);
+                        YGlobals.Ydebugpn("Can not create image for window " + winname + " with image size " + imageData.length + "!");
 
                     DEViseWindow win = new DEViseWindow(jsc, winname, winloc, image, views);
 
                     jscreen.addWindow(win);
                 } catch (NumberFormatException e) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Number format error in command " + rsp[i] + "!", 5);
                 }
             } else if (rsp[i].startsWith("JAVAC_UpdateWindow")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 3) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
+                String winname = cmd[1];
                 int imageSize;
                 try {
                     imageSize = Integer.parseInt(cmd[2]);
                 } catch (NumberFormatException e) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Incorrect image size received for window " + winname + "!", 5);
                 }
 
-                String winname = cmd[1];
                 YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
                 byte[] imageData = receiveImg(imageSize);
                 YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
 
                 if (imageData == null)
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+                    throw new YException("Null image data received for window " + winname + "!", 6);
 
                 MediaTracker tracker = new MediaTracker(jsc);
                 Toolkit kit = jsc.getToolkit();
@@ -565,7 +566,7 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 if (tracker.isErrorID(0))
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 6);
+                    throw new YException("Can not create image for window " + winname + "!", 6);
 
                 jscreen.updateWindow(winname, image);
             } else if (rsp[i].startsWith("JAVAC_UpdateSessionList")) {
@@ -573,14 +574,14 @@ public class DEViseCmdDispatcher implements Runnable
 
                 if (cmd == null) {
                     jsc.updateSessionList(null, "Invalid list");
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
                 jsc.updateSessionList(cmd, null);
             } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 6) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
                 try {
@@ -592,22 +593,23 @@ public class DEViseCmdDispatcher implements Runnable
                     Rectangle rect = new Rectangle(x0, y0, w, h);
                     jscreen.drawCursor(viewname, rect);
                 } catch (NumberFormatException e) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Incorrect view coordinate " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5] + "!", 5);
                 }
             } else if (rsp[i].startsWith("JAVAC_EraseCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
                 jscreen.eraseCursor(cmd[1]);
             } else if (rsp[i].startsWith("JAVAC_UpdateRecordValue")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null) {
-                    throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
+                } else {                
+                    RecordDlg dlg = new RecordDlg(jsc, cmd);
+                    dlg.show();
                 }
-
-                jsc.displayRecord(cmd);
             } else if (rsp[i].startsWith("JAVAC_DisplayStat")) {
                 //cmd = DEViseGlobals.parseString(rsp[i]);
                 //if (cmd == null || cmd.length != 1) {
@@ -616,7 +618,7 @@ public class DEViseCmdDispatcher implements Runnable
             } else if (rsp[i].startsWith("JAVAC_User")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
-                    throw new YException("Invalid response for connection request: " + rsp[i]);
+                    throw new YException("Ill-formated command " + rsp[i] + "!");
                 }
 
                 try {
@@ -635,7 +637,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                 throw new YException("Connection request is rejected!\n" + cmd[1]);
             } else {
-                throw new YException("Invalid response: " + rsp[i] + " to command: " + command, 5);
+                throw new YException("Unrecognized command " + rsp[i] + "!", 5);
             }
         }
     }
@@ -686,11 +688,11 @@ public class DEViseCmdDispatcher implements Runnable
             }
 
             if (response == null || response.length() == 0) {
-                throw new YException("Invalid response received for command: " + command, 5);
+                throw new YException("Null response received!", 5);
             } else {
                 String[] cmds = DEViseGlobals.parseString(response);
                 if (cmds == null || cmds.length == 0) {
-                    throw new YException("Invalid response received: " + response + " for command: " + command, 5);
+                    throw new YException("Ill-formated command " + response + "!", 5);
                 } else {
                     String cmd = cmds[0];
                     // Rip off the { and } around the command but not the arguments
@@ -705,7 +707,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                         rspbuf.addElement(cmd);
                     } else {
-                        throw new YException("Invalid response received: " + response + " for command " + command, 5);
+                        throw new YException("Unrecognized command " + response + "!", 5);
                     }
                 }
             }
@@ -718,9 +720,88 @@ public class DEViseCmdDispatcher implements Runnable
 
             return rspstr;
         } else {
-            throw new YException("Null response received for command: " + command, 5);
+            throw new YException("Null response received!", 5);
         }
     }
 }
 
+class RecordDlg extends Dialog
+{
+    jsdevisec jsc = null;
+    String[] attrs = null;
+    Button okButton = new Button("  OK  ");
 
+    public RecordDlg(jsdevisec frame, String[] data)
+    {
+        super(frame, "Record Attributes", true);
+
+        jsc = frame;
+        attrs = data;
+
+        setBackground(DEViseGlobals.uibgcolor);
+        setForeground(DEViseGlobals.uifgcolor);
+        setFont(DEViseGlobals.uifont);
+
+        okButton.setBackground(DEViseGlobals.buttonbgcolor);
+        okButton.setForeground(DEViseGlobals.buttonfgcolor);
+        okButton.setFont(DEViseGlobals.buttonfont);
+
+        int size = attrs.length - 1;
+        Label[] label = null;
+        if (size == 0) {
+            label = new Label[1];
+            label[0] = new Label("No Data Given");
+        } else {
+            label = new Label[size];
+            for (int i = 0; i < size; i++) {
+                label[i] = new Label(attrs[i + 1]);
+                //label[i].setFont(new Font("Serif", Font.BOLD, 16));
+            }
+        }
+
+        ComponentPanel panel = new ComponentPanel(label, "Vertical", 0);
+        for (int i = 0; i < size; i++)
+            label[i].setAlignment(Label.LEFT);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+        //c.gridx = GridBagConstraints.RELATIVE;
+        //c.gridy = GridBagConstraints.RELATIVE;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        //c.gridheight = 1;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(10, 10, 10, 10);
+        //c.ipadx = 0;
+        //c.ipady = 0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+
+        gridbag.setConstraints(panel, c);
+        add(panel);
+        gridbag.setConstraints(okButton, c);
+        add(okButton);
+
+        pack();
+
+        // reposition the dialog
+        Point parentLoc = jsc.getLocation();
+        Dimension mysize = getSize();
+        Dimension parentSize = jsc.getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        okButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        dispose();
+                    }
+                });
+    }
+}

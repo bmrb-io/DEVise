@@ -8,17 +8,15 @@ public class DEViseCmdSocket
     private Socket socket = null;
     private DataInputStream is = null;
     private DataOutputStream os = null;
-    private int bufferSize = 4096; // The java default is 512 bytes
+    private int bufferSize = 1024; // The java default is 512 bytes
     private int timeout = 0;
 
     // The following data are used in receiveRsp to support timeout
-    private boolean isFlag = false, isNumOfElement = false, isSize = false;
-    private int flag = 0, numOfElement = 0;
-    private int size = 0;
-    private String response = null;
-    private byte[] rsp = null;
+    private boolean isFlag = false;
+    private int rspFlag = 0, rspNelem = 0, rspSize = 0;
+    private byte[] rspRead = null;
     // The number of bytes read so far
-    private int number = 0;
+    private int numRead = 0;
 
     // The meaning of 'id' in YException
     // id = 1, incorrect arguments
@@ -139,18 +137,14 @@ public class DEViseCmdSocket
     // stream, isEmpty will return false, otherwise, it will return true.
     public synchronized boolean isEmpty() throws YException
     {
-        if (isFlag || number > 0) {
-            return false;
-        } else {
-            try {
-                if (is.available() > 0)
-                    return false;
-                else
-                    return true;
-            } catch (IOException e) {
-                closeSocket();
-                throw new YException("Can not read from input stream!", "DEViseCmdSocket:isEmpty", 2);
-            }
+        try {
+            if (is.available() > 0)
+                return false;
+            else
+                return true;
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not read from input stream!", "DEViseCmdSocket:isEmpty", 2);
         }
     }
 
@@ -181,7 +175,6 @@ public class DEViseCmdSocket
             }
 
             socket.setSoTimeout(timeout);
-
         } catch (IOException e) {
             closeSocket();
             throw new YException("Can not read from input stream!", "DEViseCmdSocket:clearSocket", 2);
@@ -191,13 +184,11 @@ public class DEViseCmdSocket
     private synchronized void clearBuffer()
     {
         isFlag = false;
-        isNumOfElement = false;
-        isSize = false;
-        flag = 0;
-        numOfElement = 0;
-        size = 0;
-        rsp = null;
-        number = 0;
+        rspFlag = 0;
+        rspNelem = 0;
+        rspSize = 0;
+        rspRead = null;
+        numRead = 0;
     }
 
     public synchronized void sendCmd(String cmd, short flag) throws YException
@@ -214,28 +205,29 @@ public class DEViseCmdSocket
         if (cmdBuffer == null || cmdBuffer.length == 0)
             throw new YException("Invalid command: " + cmd + "!", "DEViseCmdSocket:sendCmd", 1);
 
-        short nelem = 0, size = 0;
-        short i;
+        int nelem = 0, size = 0;
         int flushedSize = 0;
 
         YGlobals.Ydebugpn("Sending: " + cmd);
 
         try {
-            nelem = (short)cmdBuffer.length;
-            for (i = 0; i < nelem; i++)  {
+            nelem = cmdBuffer.length;
+            for (int i = 0; i < nelem; i++)  {
                 cmdBuffer[i] = cmdBuffer[i] + "\u0000";
                 // since DataOutputStream is a Byte oriented Stream, so it will write
                 // each unicode character(16bits) as ISO-Latin-1 8bits character, which
                 // means only the low 8bits of each unicode character is write out, and
                 // the high 8bits has been throwed out.
-                size = (short)(size + 2 + cmdBuffer[i].length());
+                size = size + 2 + cmdBuffer[i].length();
             }
 
             os.writeShort(flag);
+            // if nelem is greater than MAX_VALUE of short, if you use readUnsignedShort
+            // on the other size, you can still get correct value
             os.writeShort(nelem);
             os.writeShort(size);
 
-            for (i = 0; i < nelem; i++) {
+            for (int i = 0; i < nelem; i++) {
                 // Since we are using a BufferedOutputStream as the underlying stream of
                 // our DataOutputStream, so we must make sure that while the buffer is full,
                 // we must flush our stream.
@@ -244,7 +236,7 @@ public class DEViseCmdSocket
                     os.flush();
                 }
 
-                os.writeShort((short)cmdBuffer[i].length());
+                os.writeShort(cmdBuffer[i].length());
                 os.writeBytes(cmdBuffer[i]);
             }
 
@@ -260,6 +252,15 @@ public class DEViseCmdSocket
         sendCmd(cmd, DEViseGlobals.API_JAVA);
     }
 
+    // Java integer(byte, short, int, long) are all signed data and use 2's complement
+    // mechanism, which is, the value of the highest bit (if data is short, then -2^16
+    // for negative sign 1 and 0 for positive sign 0) plus the rest 15 bits's combined
+    // value is the final value of this number. For example, 0xff = -1, 0x7f = 127,
+    // 0x00 = 0 and 0x80 = -128
+
+    // Java widening conversion (such as from byte to int): sign extended
+    // Java narrowing conversion (such as from int to byte): cut off the higher bits
+    //                            so not only will lose value, might also change sign
     public synchronized String receiveRsp() throws YException, InterruptedIOException
     {
         if (is == null) {
@@ -269,62 +270,56 @@ public class DEViseCmdSocket
 
         try {
             if (!isFlag) {
-                socket.setSoTimeout(0);
-                flag = is.readUnsignedShort();
-                numOfElement = is.readUnsignedShort();
-                size = is.readUnsignedShort();
-                socket.setSoTimeout(timeout);
+                if (rspRead == null) {
+                    rspRead = new byte[6];
+                    numRead = 0;
+                }
+
+                int b;
+                for (int i = numRead; i < 6; i++) {
+                    b = is.read();
+                    if (b < 0) {
+                        YGlobals.Ydebugpn("End of stream reached at " + numRead + " out of 6 at DEViseCmdSocket.receiveRsp!");
+                        clearSocket();
+                        return null;
+                    }
+
+                    rspRead[numRead] = (byte)b;
+                    numRead++;
+                }
+
+                rspFlag = YGlobals.YtoUshort(rspRead);
+                rspNelem = YGlobals.YtoUshort(rspRead, 2);
+                rspSize = YGlobals.YtoUshort(rspRead, 4);
+                rspRead = null;
                 isFlag = true;
-                /*
-                if (rsp == null)
-                    rsp = new byte[2];
 
-                if (number < 2)
-                    number = number + is.read(rsp, number, 2 - number);
-                flag = YGlobals.Ytoshort(rsp);
-                isFlag = true;
-                number = 0;
-                rsp = null;
+                if (rspNelem <= 0 || rspSize <= 0) {
+                    YGlobals.Ydebugpn("Invalid rspSize " + rspSize + " or number Of Element " + rspNelem + " at DEViseCmdSocket:receiveRsp!");
+                    clearSocket();
+                    return null;
+                }
             }
 
-            if (!isNumOfElement) {
-                if (rsp == null)
-                    rsp = new byte[2];
-
-                if (number < 2)
-                    number = number + is.read(rsp, number, 2 - number);
-                numOfElement = YGlobals.Ytoshort(rsp);
-                isNumOfElement = true;
-                number = 0;
-                rsp = null;
+            if (rspRead == null) {
+                rspRead = new byte[rspSize];
+                numRead = 0;
             }
 
-            if (!isSize) {
-                if (rsp == null)
-                    rsp = new byte[2];
+            int b;
+            for (int i = numRead; i < rspSize; i++) {
+                b = is.read();
+                if (b < 0) {
+                    YGlobals.Ydebugpn("End of stream reached at " + numRead + " out of " + rspSize + " at DEViseCmdSocket.receiveRsp!");
+                    clearSocket();
+                    return null;
+                }
 
-                if (number < 2)
-                    number = number + is.read(rsp, number, 2 - number);
-                size = YGlobals.YtoUshort(rsp);
-                isSize = true;
-                number = 0;
-                rsp = null;
-                */
+                rspRead[numRead] = (byte)b;
+                numRead++;
             }
-
-            if (numOfElement <= 0 || size <= 0) {
-                YGlobals.Ydebugpn("Invalid response received: size " + size + " or numberOfElement " + numOfElement + " at DEViseCmdSocket:receiveRsp!");
-                clearSocket();
-                return null;
-            }
-
-            if (rsp == null)
-                rsp = new byte[size];
-
-            if (number < size)
-                number = number + is.read(rsp, number, size - number);
         } catch (InterruptedIOException e) {
-            //YGlobals.Ydebugpn("CMD socket time out reached!");
+            //YGlobals.Ydebugpn("CMD socket time out reached at " + numRead + " of " + rspSize + "!");
             throw e;
         } catch (IOException e) {
             closeSocket();
@@ -333,27 +328,26 @@ public class DEViseCmdSocket
 
         int argsize = 0;
         int pastsize = 0;
-        response = new String("");
-        for (int i = 0; i < numOfElement; i++) {
-            if (size < pastsize + 2) {
+        String response = new String("");
+        for (int i = 0; i < rspNelem; i++) {
+            if (rspSize < pastsize + 2) {
                 clearBuffer();
-                YGlobals.Ydebugpn("Invalid response received: size is not right at DEViseCmdSocket:receiveRsp!");
+                YGlobals.Ydebugpn("Incorrect rspSize " + rspSize + " at DEViseCmdSocket:receiveRsp!");
                 return null;
             }
 
-            argsize = YGlobals.YtoUshort(rsp, pastsize);
-            YGlobals.Ydebugpn("argsize is " + argsize);
+            argsize = YGlobals.YtoUshort(rspRead, pastsize);
             pastsize += 2;
 
-            if (size < pastsize + argsize) {
+            if (rspSize < pastsize + argsize) {
                 clearBuffer();
-                YGlobals.Ydebugpn("Invalid response received: size is not right at DEViseCmdSocket:receiveRsp!");
+                YGlobals.Ydebugpn("Incorrect rspSize " + rspSize + " at DEViseCmdSocket:receiveRsp!");
                 return null;
             }
 
             // use argsize - 1 instead of argsize is to skip the string ending '\0'
             // use one space to seperate different parts of the response command
-            response += new String(rsp, pastsize, argsize - 1) + " ";
+            response += new String(rspRead, pastsize, argsize - 1) + " ";
             pastsize += argsize;
         }
 
@@ -364,22 +358,3 @@ public class DEViseCmdSocket
         return response;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

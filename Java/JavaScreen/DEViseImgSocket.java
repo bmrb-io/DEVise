@@ -37,11 +37,13 @@ public class DEViseImgSocket
     private Socket socket = null;
     private DataInputStream is = null;
     private DataOutputStream os = null;
+    //private InputStream is = null;
+    //private OutputStream os = null;
     private int timeout = 0;
 
     // The following data are used in receiveImg to support timeout
-    private byte[] rsp = null;
-    private int number = 0;
+    private byte[] rspRead = null;
+    private int numRead = 0;
 
     // The meaning of 'id' in YException
     // id = 3, incorrect arguments
@@ -61,7 +63,9 @@ public class DEViseImgSocket
 
         try {
             os = new DataOutputStream(socket.getOutputStream());
+            //os = socket.getOutputStream();
             is = new DataInputStream(socket.getInputStream());
+            //is = socket.getInputStream();
             socket.setSoTimeout(timeout);
         } catch (SocketException e) {
             closeSocket();
@@ -104,7 +108,9 @@ public class DEViseImgSocket
 
         try {
             os = new DataOutputStream(socket.getOutputStream());
+            //os = socket.getOutputStream();
             is = new DataInputStream(socket.getInputStream());
+            //is = socket.getInputStream();
             socket.setSoTimeout(timeout);
         } catch (SocketException e) {
             closeSocket();
@@ -158,29 +164,24 @@ public class DEViseImgSocket
     }
 
     // if at the moment of calling, there are something coming from the input stream,
-    // or at the moment of calling, there are already some bytes read from the input
-    // stream, isEmpty will return false, otherwise, it will return true.
+    // isEmpty will return false, otherwise, it will return true.
     public synchronized boolean isEmpty() throws YException
     {
-        if (number > 0) {
-            return false;
-        } else {
-            try {
-                if (is.available() > 0)
-                    return false;
-                else
-                    return true;
-            } catch (IOException e) {
-                closeSocket();
-                throw new YException("Can not read from input stream!", "DEViseImgSocket:isEmpty", 2);
-            }
+        try {
+            if (is.available() > 0)
+                return false;
+            else
+                return true;
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not read from input stream!", "DEViseImgSocket:isEmpty", 2);
         }
     }
 
     public synchronized void clearSocket() throws YException
     {
         clearBuffer();
-        
+
         if (is == null) {
             closeSocket();
             throw new YException("Input stream is closed!", "DEViseImgSocket:clearSocket", 2);
@@ -193,7 +194,7 @@ public class DEViseImgSocket
 
             while (availableSize > 0) {
                 byte[] tmpData = new byte[availableSize];
-                is.readFully(tmpData);
+                is.read(tmpData, 0, availableSize);
 
                 try {
                     Thread.sleep(100);
@@ -212,8 +213,8 @@ public class DEViseImgSocket
 
     public synchronized void clearBuffer()
     {
-        rsp = null;
-        number = 0;
+        rspRead = null;
+        numRead = 0;
     }
 
     public synchronized void sendImg(byte[] imageData) throws YException
@@ -221,7 +222,7 @@ public class DEViseImgSocket
         if (os == null) {
             closeSocket();
             throw new YException("Output stream is closed!", "DEViseImgSocket:sendImg", 4);
-        }    
+        }
 
         if (imageData == null || imageData.length == 0)
             throw new YException("Null image data!", "DEViseImgSocket:sendImg", 3);
@@ -232,6 +233,7 @@ public class DEViseImgSocket
                         // this method will call its underlying outputstream's flush()
                         // method, which would be OutputStream's flush() method, which
                         // actually does nothing
+            //YGlobals.Ydebugpn("Write out image data " + os.size());
         } catch (IOException e) {
             closeSocket();
             throw new YException("Can not write image data to output stream!", "DEViseImgSocket:sendImg", 4);
@@ -252,24 +254,33 @@ public class DEViseImgSocket
         }
 
         try {
-            if (rsp == null)
-                rsp = new byte[imageSize];
-            
-            if (number < imageSize)
-                number = number + is.read(rsp, number, imageSize - number);
+            if (rspRead == null) {
+                rspRead = new byte[imageSize];
+                numRead = 0;
+            }
+
+            int b;
+            for (int i = numRead; i < imageSize; i++) {
+                b = is.read();
+                if (b < 0) {
+                    YGlobals.Ydebugpn("End of stream reached at " + numRead + " out of " + imageSize + " at DEViseImgSocket:receiveImg!");
+                    clearSocket();
+                    return null;
+                }
+
+                rspRead[numRead] = (byte)b;
+                numRead++;
+            }
+
+            byte[] imageData = rspRead;
+            clearBuffer();
+            return imageData;
         } catch (InterruptedIOException e) {
-            //YGlobals.Ydebugpn("IMG socket timeout reached!");
+            //YGlobals.Ydebugpn("IMG socket timeout reached at " + numRead + " of " + imageSize + "!");
             throw e;
         } catch (IOException e) {
             closeSocket();
             throw new YException("Can not receiving image data from input stream!", "DEViseImgSocket:receiveImg", 4);
         }
-
-        byte[] imageData = rsp;
-
-        clearBuffer();
-
-        return imageData;
     }
 }
-

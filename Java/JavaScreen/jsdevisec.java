@@ -227,12 +227,12 @@ public class jsdevisec extends Frame
                             dispatcher.startDispatcher();
                             return;
                         }
-                        
+
                         if (!dispatcher.isOnline()) {
                             dispatcher.goOnline();
                             return;
                         }
-                        
+
                         if (!isSessionOpened) {
                             DEViseOpenDlg dlg = new DEViseOpenDlg(jsc);
                             dlg.show();
@@ -413,8 +413,8 @@ public class jsdevisec extends Frame
         if (data == null)
             return;
 
-        RecordDlg dlg = new RecordDlg(this, data);
-        dlg.show();
+        //RecordDlg dlg = new RecordDlg(this, data);
+        //dlg.show();
     }
 
     public synchronized boolean getQuitStatus()
@@ -656,83 +656,3 @@ class DEViseOpenDlg extends Dialog
     }
 }
 
-class RecordDlg extends Dialog
-{
-    jsdevisec jsc = null;
-    String[] attrs = null;
-    Button okButton = new Button("  OK  ");
-
-    public RecordDlg(jsdevisec frame, String[] data)
-    {
-        super(frame, "Record Attributes", true);
-
-        jsc = frame;
-        attrs = data;
-
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        setFont(DEViseGlobals.uifont);
-
-        okButton.setBackground(DEViseGlobals.buttonbgcolor);
-        okButton.setForeground(DEViseGlobals.buttonfgcolor);
-        okButton.setFont(DEViseGlobals.buttonfont);
-
-        int size = attrs.length - 1;
-        Label[] label = null;
-        if (size == 0) {
-            label = new Label[1];
-            label[0] = new Label("No Data Given");
-        } else {
-            label = new Label[size];
-            for (int i = 0; i < size; i++) {
-                label[i] = new Label(attrs[i + 1]);
-                //label[i].setFont(new Font("Serif", Font.BOLD, 16));
-            }
-        }
-
-        ComponentPanel panel = new ComponentPanel(label, "Vertical", 0);
-        for (int i = 0; i < size; i++)
-            label[i].setAlignment(Label.LEFT);
-
-        // set layout manager
-        GridBagLayout  gridbag = new GridBagLayout();
-        GridBagConstraints  c = new GridBagConstraints();
-        setLayout(gridbag);
-        //c.gridx = GridBagConstraints.RELATIVE;
-        //c.gridy = GridBagConstraints.RELATIVE;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        //c.gridheight = 1;
-        c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(10, 10, 10, 10);
-        //c.ipadx = 0;
-        //c.ipady = 0;
-        c.anchor = GridBagConstraints.CENTER;
-        c.weightx = 1.0;
-        c.weighty = 1.0;
-
-        gridbag.setConstraints(panel, c);
-        add(panel);
-        gridbag.setConstraints(okButton, c);
-        add(okButton);
-
-        pack();
-
-        // reposition the dialog
-        Point parentLoc = jsc.getLocation();
-        Dimension mysize = getSize();
-        Dimension parentSize = jsc.getSize();
-        parentLoc.y += parentSize.height / 2;
-        parentLoc.x += parentSize.width / 2;
-        parentLoc.y -= mysize.height / 2;
-        parentLoc.x -= mysize.width / 2;
-        setLocation(parentLoc);
-
-        okButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        dispose();
-                    }
-                });
-    }
-}

@@ -135,22 +135,8 @@ public final class YGlobals
         if (data == null || data.length < 2 + offset)
             return 0;
 
-        byte b1 = data[0 + offset];
-        byte b2 = data[1 + offset];
-        byte b3 = -128;
-        int v1, v2;
-
-        if (b1 < 0) {
-            v1 = -b1 + 128;
-        } else {
-            v1 = b1;
-        }
-
-        if (b2 < 0) {
-            v2 = -b2 + 128;
-        } else {
-            v2 = b2;
-        }
+        int v1 = (int)data[0 + offset] & 0x000000FF;
+        int v2 = (int)data[1 + offset] & 0x000000FF;
 
         return ((v1 << 8) + (v2 << 0));
     }

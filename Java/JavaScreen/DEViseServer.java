@@ -101,7 +101,7 @@ public class DEViseServer implements Runnable
                 cmdSocket = new DEViseCmdSocket(hostname, cmdPort, 1000);
                 imgSocket = new DEViseImgSocket(hostname, imgPort, 2000);
 
-                YGlobals.Ydebugpn("New DEVise Server successfully started!");
+                YGlobals.Ydebugpn("Successfully connect to sockets ...");
                 return true;
             } catch (YException e) {
                 YGlobals.Ydebugpn(e.getMessage());
@@ -111,7 +111,7 @@ public class DEViseServer implements Runnable
 
         closeSocket();
 
-        YGlobals.Ydebugpn("Can not connect to DEVise server within " + (timeout/1000) + " seconds!");
+        YGlobals.Ydebugpn("Can not connect to sockets within " + (timeout/1000) + " seconds!");
 
         return false;
     }
@@ -147,8 +147,6 @@ public class DEViseServer implements Runnable
         if (isDEViseAlive())
             return true;
 
-        YGlobals.Ydebugpn("Trying to start a new DEVise Server ...");
-
         closeSocket();
 
         cmdPort = DEViseServer.getPort();
@@ -167,6 +165,8 @@ public class DEViseServer implements Runnable
             YGlobals.Ydebugpn("Security Error while trying to start a new DEVise Server!");
             return false;
         }
+
+        YGlobals.Ydebugpn("Successfully start devised ...");
 
         return true;
     }
@@ -187,6 +187,8 @@ public class DEViseServer implements Runnable
 
     public synchronized void startServer() throws YException
     {
+        YGlobals.Ydebugpn("Trying to start DEVise Server ...");
+
         tryTime++;
 
         // start DEVise server if it is dead
@@ -197,8 +199,6 @@ public class DEViseServer implements Runnable
         if (!startSocket())
             throw new YException("Can not connect to DEVise Server!", "DEViseServer:startServer");
 
-        YGlobals.Ydebugpn("Successfully running DEVise server executable ...");
-
         // start server Thread but first check if server thread is active
         if (getStatus() < 0) {
             serverThread = new Thread(this);
@@ -206,6 +206,8 @@ public class DEViseServer implements Runnable
         }
 
         tryTime = 0;
+
+        YGlobals.Ydebugpn("Successfully start DEVise Server ...");
     }
 
     private synchronized void setAction(int a)
@@ -374,6 +376,7 @@ public class DEViseServer implements Runnable
                                     if (image != null && image.length != 0) {
                                         client.imgSocket.sendImg(image);
                                     }
+                                    //YGlobals.Ydebugpn("Sending image size " + image.length);
                                 }
 
                                 client.setImages(null);
@@ -511,10 +514,9 @@ public class DEViseServer implements Runnable
 
                         for (int i = 0; i < (serverCmds.length - 1); i++) {
                             if (serverCmds[i].startsWith("JAVAC_CreateWindow")) {
-                                YGlobals.Ydebugpn("I am here");
                                 String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
                                 if (cmds == null || cmds.length < 8)
-                                    throw new YException("Invalid Response received!", 5);
+                                    throw new YException("Ill-formated command " + serverCmds[i] + "!", 5);
 
                                 try {
                                     int imgSize = Integer.parseInt(cmds[6]);
@@ -525,13 +527,12 @@ public class DEViseServer implements Runnable
 
                                     images.addElement(image);
                                 } catch (NumberFormatException e) {
-                                    throw new YException("Invalid response received!", 5);
+                                    throw new YException("Incorrect image size " + cmds[6] + "!", 5);
                                 }
                             } else if (serverCmds[i].startsWith("JAVAC_UpdateWindow")) {
-			    YGlobals.Ydebugpn("I am in update");
                                 String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
                                 if (cmds == null || cmds.length != 3)
-                                    throw new YException("Invalid Response received!", 5);
+                                    throw new YException("Ill-formated command " + serverCmds[i] + "!", 5);
 
                                 try {
                                     int imgSize = Integer.parseInt(cmds[2]);
@@ -541,7 +542,7 @@ public class DEViseServer implements Runnable
 
                                     images.addElement(image);
                                 } catch (NumberFormatException e) {
-                                    throw new YException("Invalid response received!", 5);
+                                    throw new YException("Incorrect image size " + cmds[2] + "!", 5);
                                 }
                             }
                         }
@@ -560,6 +561,8 @@ public class DEViseServer implements Runnable
                 } catch (YException e) {
                     YGlobals.Ydebugpn(e.getMessage() + " at " + e.getWhere());
 
+                    //cmdSocket.clearSocket();
+                    //imgSocket.clearSocket();
                     closeSocket();
 
                     try {
@@ -641,11 +644,11 @@ public class DEViseServer implements Runnable
             }
 
             if (response == null || response.length() == 0) {
-                throw new YException("Invalid response received for command: " + command, 5);
+                throw new YException("Null response received for client command " + command, 5);
             } else {
                 String[] cmds = DEViseGlobals.parseString(response);
                 if (cmds == null || cmds.length == 0) {
-                    throw new YException("Invalid response received: " + response + " for command: " + command, 5);
+                    throw new YException("Ill-formated command " + response, 5);
                 } else {
                     String cmd = cmds[0];
                     // Rip off the { and } around the command but not the arguments
@@ -660,7 +663,7 @@ public class DEViseServer implements Runnable
 
                         rspbuf.addElement(cmd);
                     } else {
-                        throw new YException("Invalid response received: " + response + " for command " + command, 5);
+                        throw new YException("Unrecognized command " + response, 5);
                     }
                 }
             }
@@ -673,7 +676,7 @@ public class DEViseServer implements Runnable
 
             return rspstr;
         } else {
-            throw new YException("Null response received for command: " + command, 5);
+            throw new YException("Null response received for client command: " + command, 5);
         }
     }
 
