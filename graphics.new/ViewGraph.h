@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/05 17:06:37  jussi
+  Moved _stats from View (subclass) so that statistics can be turned
+  on and displayed without having to redisplay the data itself.
+
   Revision 1.2  1995/09/05 22:16:17  jussi
   Added CVS header.
 */
@@ -48,6 +52,7 @@ public:
   /* Toggle the value of DisplayStats */
   Boolean GetDisplayStats() {return _DisplayStats; }
   void SetDisplayStats(Boolean stat);
+  BasicStats *GetStatObj() { return &_stats; }
 
 protected:
   TDataMapList _mappings;
