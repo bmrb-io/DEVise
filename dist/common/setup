@@ -20,12 +20,9 @@
 
 ############################################################
 
-ln -s ../dist_sw/public/dat .
+ln -s ../dist_sw/public .
 ln -s ../dist_sw/doc .
 ln -s ../dist_sw/lib .
-ln -s ../dist_sw/public/palette .
-ln -s ../dist_sw/public/schema .
-ln -s ../dist_sw/public/session .
 
 mkdir tcl
 cd tcl
@@ -37,4 +34,6 @@ cd tk
 cp -p /s/tcl7.4/lib/tk4.0/* .
 cd ..
 
-#TEMPTEMP? ln -s ../../dist_sw/run/devise.rc run
+cd run
+ln -s ../../dist_sw/run/* .
+cd ..

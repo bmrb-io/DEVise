@@ -23,13 +23,10 @@
 \rm README
 \rm -rf bin/
 \rm -rf cache/
-\rm dat
+\rm public
 \rm doc
 \rm lib
-\rm palette
 \rm run
-\rm schema
-\rm session
 \rm -rf tcl
 \rm -rf tk
 \rm dyn_lib/*.so*

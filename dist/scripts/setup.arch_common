@@ -22,13 +22,10 @@
 ############################################################
 
 ln -s ../common/README .
-ln -s ../common/dat .
+ln -s ../common/public .
 ln -s ../common/doc .
 ln -s ../common/lib .
-ln -s ../common/palette .
 ln -s ../common/run .
-ln -s ../common/schema .
-ln -s ../common/session .
 ln -s ../common/tcl .
 ln -s ../common/tk .
 

@@ -20,14 +20,11 @@
 
 ############################################################
 
-\rm dat
+\rm public
 \rm doc
 \rm lib
-\rm palette
-\rm schema
-\rm session
 
 \rm -rf tcl
 \rm -rf tk
 
-\rm run/devise.rc
+\rm run/*
