@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/15 13:48:39  jussi
+  Added SetWindowBgColor() which allows Devise to change
+  the view background color at runtime.
+
   Revision 1.17  1996/05/31 15:32:10  jussi
   Added 'state' variable to HandleButton(). This tells the callee
   whether the shift/control keys were pressed in conjunction with
@@ -103,6 +107,7 @@
 #include "Pattern.h"
 #include "Exit.h"
 #include "DevisePixmap.h"
+#include "VisualArg.h"
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
@@ -373,7 +378,7 @@ public:
 
 // ---------------------------------------------------------- 
 // 3D
-
+// ---------------------------------------------------------- 
   void MakeIdentity3() {
     _transforms3[_current].MakeIdentity();
   }
@@ -403,19 +408,34 @@ public:
     MakeIdentity3();
   }
 
-  // based on the camera's coordinates, compute rho, phi, theta
-  void CompRhoPhiTheta();
-
   // compute the viewing transformation matrix
-  void CompViewingTransf();
+  void CompViewingTransf(Camera camera) {
+	_transforms3[_current].SetViewMatrix(camera);
+#ifdef YLC
+	printf ("WinR.h: Camera x = %.2f y = %.2f z = %.2f ", 
+		camera.x_, camera.y_, camera.z_);
+	printf ("fx = %.2f fy = %.2f fz = %.2f\n", camera.fx,
+		camera.fy, camera.fz);
+	_transforms3[_current].Print();
+	printf("_______ WindowRep.h: CompViewingTransf, _current =%d\n",
+		_current);
+#endif
+  } // end of CompViewingTransf
 
-  virtual POINT CompLocationOnViewingSpace(POINT) = 0;
+  // compute the location of a "user" point to the viewing
+  // space's coordinates
+  POINT CompLocationOnViewingSpace(POINT);
 
-  virtual void MapAllPoints(BLOCK *block_data, int numSyms) = 0;
-  virtual void MapAllSegments(BLOCK *block_data, int numSyms) = 0;
+  // now the point in the viewing space coordinates, "flatten"
+  // the 3D POINT into a 2D Point
+  Point CompProjectionOnViewingPlane(POINT, Camera camera);
+
+  virtual void MapAllXPoints(BLOCK *block_data, int numSyms, 
+	Camera camera, int H, int V) = 0;
+  virtual void MapAllXSegments(BLOCK *block_data, int numSyms,
+	Camera camera, int H, int V) = 0;
   virtual void DrawXSegments() = 0;
-  virtual void DrawRefAxis() = 0;
-
+  virtual void DrawRefAxis(Camera camera) = 0;
 
 // ---------------------------------------------------------- 
 
@@ -507,19 +527,6 @@ protected:
   WindowRep(DeviseDisplay *disp, Color fgndColor=ForegroundColor,
 	    Color bgndColor=BackgroundColor, Pattern p = Pattern0);
   
-  // ---------------------------------------------------------- 
-  // 3D stuffs
-  double _rho, _phi, _theta;
-  double _twist_angle;
-  int _dvs;
-  POINT _camera;
-  double _TransformViewMatrix[4][4];
-  int _perspective;
-  int _NumXSegs;
-
-  POINT _AxisPt[4]; // 0 == origin, 1 == on x, 2 = on y, 3 == on z
-  EDGE _Axis[3];    // 0 == x, 1 == y, 2 = z
-
 private:
   /* DList<WindowRepCallback *> *_callbackList;*/
   WindowRepCallbackList  *_callbackList;
@@ -539,4 +546,5 @@ private:
 };
 
 #endif
+
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/31 15:32:10  jussi
+  Added 'state' variable to HandleButton(). This tells the callee
+  whether the shift/control keys were pressed in conjunction with
+  the mouse button.
+
   Revision 1.8  1996/05/20 18:45:00  jussi
   Merged with ClientServer library code.
 
@@ -56,31 +61,6 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
   _fgndColor = fgndColor; _bgndColor = bgndColor;
   _display = disp;
   _pattern = p;
-
-  // ---------------------------------------------------------- 
-  // 3D
-//  camera.x_ = 1.6; camera.y_ = -2.0; camera.z_ = 3.5;
-  _camera.x_ = 4.6; _camera.y_ = -3.0; _camera.z_ = 4.0;
-  CompRhoPhiTheta();
-  _dvs = 250;
-  _twist_angle = deg_rad(0.0);
-  int i, j;
-  for (i = 0; i < 4; i++)
-     for (j = 0; j < 4; j++)
-        _TransformViewMatrix[i][j] = 0.0;
-  CompViewingTransf();
-  _perspective = 1;
-  _NumXSegs = 0;
-  // set the reference axis
-  _AxisPt[1].x_ = _AxisPt[3].z_ = 1.5;  _AxisPt[2].y_ = _AxisPt[1].x_ * 1.5;
-  _AxisPt[1].y_ = _AxisPt[1].z_ = 0.0;
-  _AxisPt[2].x_ = _AxisPt[2].z_ = 0.0;
-  _AxisPt[3].x_ = _AxisPt[3].y_ = 0.0;
-  _AxisPt[0].x_ = _AxisPt[0].y_ = _AxisPt[0].z_ = 0.0;
-  _Axis[0].p = 0;  _Axis[0].q = 1;  // x axis
-  _Axis[1].p = 0;  _Axis[1].q = 2;  // y axis
-  _Axis[2].p = 0;  _Axis[2].q = 3;  // z axis
-
 } // end of WindowRep() constructor
 
 /***************************************************************
@@ -302,66 +282,72 @@ Color WindowRep::GetLocalColor(Color globalColor)
   return _display->GetLocalColor(globalColor);
 }
 
+#define YLC
 
-// ---------------------------------------------------------- 
-void
-WindowRep::CompRhoPhiTheta()
+// ----------------------------------------------------------
+POINT WindowRep::CompLocationOnViewingSpace(POINT pt)
 {
-	_rho = sqrt(SQUARE(_camera.x_) + SQUARE(_camera.y_) + 
-		SQUARE(_camera.z_));
+	Transform3D *tmpVec, tmpTransf;
+	POINT  NewPt;
 
-	if (fabs(_camera.x_) == 0 && fabs(_camera.y_) == 0)
-		_phi = 0.0;
-	else
-		_phi = acos(_camera.z_ / _rho);
+#ifdef YLC1
+	printf ("CLOVS (1)-> pt x = %f y = %f z = %f \n", pt.x_,pt.y_,pt.z_);
+#endif
 
-	if (fabs(_camera.x_) == 0 && _camera.y_ > 0)
-		_theta = PI / 2.0;
-	else if (fabs(_camera.x_) == 0 && _camera.y_ < 0)
-		_theta = PI * 3.0 / 2.0;
-	else if (fabs(_camera.x_) == 0 && fabs(_camera.y_) == 0)
-		_theta = 0.0;
-	else if (_camera.x_ > 0 && _camera.y_ > 0)
-		_theta = atan(_camera.y_ / _camera.x_);
-	else if (_camera.x_ < 0 && _camera.y_ > 0)
-		_theta = PI + atan(_camera.y_ / _camera.x_);
-	else if (_camera.x_ < 0 && _camera.y_ < 0)
-		_theta = PI + atan(_camera.y_ / _camera.x_);
-	else
-		_theta = (2 * PI) + atan(_camera.y_ / _camera.x_);
-} // end of CompRhoPhiTheta()
+	tmpVec = new Transform3D; 
+	tmpVec->SetVector (pt);
+#ifdef YLC1
+	printf ("  &&&&&&& tmpVec print _______________\n");
+	tmpVec->Print();
+	_transforms3[_current].Print();
+#endif
+	_transforms3[_current].duplicate(tmpTransf);
+#ifdef YLC1
+	printf("      Before PreMultiply 22222222222222222222222\n");
+	_transforms3[_current].Print();
+	printf("           _current = %d\n", _current);
+	tmpTransf.Print();
+#endif
+	tmpTransf.PreMultiply(tmpVec);
+#ifdef YLC1
+	tmpTransf.Print();
+	printf("      After PreMultiply 44444444444444444444444\n");
+#endif
+	tmpTransf.GetVector (NewPt);
+	return (NewPt);
+} // end of CompLocationOnViewingSpace
 
-// Theory: from Mirocomputer Graphics for the IBM PC
-// by: Roy E. Myers, 1984, pp 156-163
-void
-WindowRep::CompViewingTransf()
+// ----------------------------------------------------------
+Point WindowRep::CompProjectionOnViewingPlane(POINT viewPt,
+	Camera camera)
 {
-     double st = sin(_theta),
-          ct = cos(_theta),
-          sp = sin(_phi),
-          cp = cos(_phi);
+	Point screenPt;
+	double z_over_dvs = viewPt.z_ / camera._dvs;
 
-     _TransformViewMatrix[0][0] = -st;
-     _TransformViewMatrix[0][1] = -ct * cp;
-     _TransformViewMatrix[0][2] = -ct * sp;
-     _TransformViewMatrix[0][3] = 0.0;
+#ifdef YLC1
+	printf ("CPOVP (2)-> vpt x = %f y = %f z = %f\n",
+		viewPt.x_,viewPt.y_,viewPt.z_);
+#endif
+	if (camera._perspective == 1) {
+		screenPt.x = (fabs(viewPt.z_) == 0 ? viewPt.x_ :
+							viewPt.x_ / z_over_dvs);
+		screenPt.y = (fabs(viewPt.z_) == 0 ? viewPt.y_ :
+							viewPt.y_ / z_over_dvs);
+	} else {
+		screenPt.x = viewPt.x_;
+		screenPt.y = viewPt.y_;
+	}
 
-     _TransformViewMatrix[1][0] = ct;
-     _TransformViewMatrix[1][1] = -st * cp;
-     _TransformViewMatrix[1][2] = -st * sp;
-     _TransformViewMatrix[1][3] = 0.0;
+	// upper left-hand corner of the physical screen is the
+	// default origin (0, 0) in the Xlib coordinate system
+	// the following code will move the focus point to whereever
+	// we don't it to be
+	screenPt.x += camera.H;
+	screenPt.y = (screenPt.y < 0 ?
+		camera.V + fabs(screenPt.y) : camera.V - screenPt.y);
 
-     _TransformViewMatrix[2][0] = 0.0;
-     _TransformViewMatrix[2][1] = sp;
-     _TransformViewMatrix[2][2] = -cp;
-     _TransformViewMatrix[2][3] = 0.0;
-
-     _TransformViewMatrix[3][0] = 0.0;
-     _TransformViewMatrix[3][1] = 0.0;
-     _TransformViewMatrix[3][2] = _rho;
-     _TransformViewMatrix[3][3] = 1.0;
-} // end of CompViewingTransf
-
+	return (screenPt);
+}  // end of CompProjectionOnViewingPlane
 
 
 
