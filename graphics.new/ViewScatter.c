@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/11/24 23:15:26  weaver
+  Changes for the new ColorManager.
+
   Revision 1.37  1997/08/28 18:21:15  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
   up into ViewGraph (parent class).
@@ -391,8 +394,6 @@ void	ViewScatter::ReturnGData(TDataMap* mapping, RecId recId,
 
 		if (InVisualFilter(_queryFilter, x, y, 0.0, 0.0))
 		{
-			_allStats.Sample(x, y);
-
 			PColorID	pcid = mapping->GetPColorID(ptr);
 
 			// Palette size variability warning...

@@ -986,9 +986,14 @@ Num Date        Status  Description
 
 249 12/12/97	OPEN	Changing color palette doesn't force a redraw. (rkw)
 
-250 12/12/97	OPEN	colors.tk session doesn't work right with new color
+250 12/12/97	FIXED	colors.tk session doesn't work right with new color
 			manager (most symbols don't show up, two rects are
 			drawn for each symbol). (rkw)
+			(And the Query dialog says there are twice as many
+			records as there really are.)
+250.1		FIXED	Variable colors don't work.
+250.2		FIXED	Double symbols drawn.
+250.3		FIXED	Count in query dialog is doubled.
 
 251 12/12/97	OPEN	In color GUI, OK is to the right of Cancel; it's to
 			the left in the rest of the GUI. (rkw)
@@ -1022,6 +1027,17 @@ Num Date        Status  Description
 
 261 12/17/97	OPEN	3d_test.ds session doesn't work (error in expression
 			analysis, possibly other problems). (rkw)
+
+262 12/18/97	OPEN	All text seems to be drawn in background color.
+			(kb/rkw)
+
+263 12/19/97	OPEN	Different parts of lines are sometimes not connected
+			correctly. (rkw)
+
+264 12/19/97	OPEN	Direct PostScript output doesn't work (it comes out
+			totally blank). (rkw)
+
+265 12/19/97	OPEN	Devise now takes an awfully long time to quit. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

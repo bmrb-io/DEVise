@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1997/12/16 17:57:50  zhenhai
+  Added OpenGL features.
+
   Revision 1.45  1997/11/24 23:15:07  weaver
   Changes for the new ColorManager.
 
@@ -333,6 +336,11 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	ComputeDataLabelFrame(view);
 
 	int			i = 0;
+
+	// This while loop IS!! needed, because we break out of the for loop
+	// below if color, pattern, or orientation is non-constant.
+	while (i < numSyms) {
+
 	PColorID	fgid = GetPColorID(defForeColor);
 	Pattern		firstPattern = Pattern0;
 	int			firstLineWidth = 0;
@@ -364,7 +372,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		_y[count] = GetY(gdata, map, offset);
 
 		count++;
-}
+    }
 
 		// Randomize X,Y coordinates if shape attribute 2 or 3 contains
 		// a constant value of 0.15 or more.
@@ -382,7 +390,6 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		win->SetForeground(fgid);
 		win->SetPattern(firstPattern);
 		win->SetLineWidth(firstLineWidth);
-		win->FillRectArray(_x, _y, _width, _height, count);
 
 	win->FillRectArray(_x, _y, _width, _height, count, WindowRep::AlignCenter,
 	    firstOrientation);
@@ -392,6 +399,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		  DisplayDataLabel(win, _x[s] + _width[s] / 2,
 				   _y[s] + _height[s] / 2,
 				   _y[s] + _height[2] / 2);
+	}
 	}
 
 	recordsProcessed = numSyms;
