@@ -1,8 +1,8 @@
 # Crontab entry for devise user on pumori to automatically restart
 # jspops if necessary.
-6,16,26,36,46,56 * * * * cd /local.pumori/devise/js.regular; ./run_check regular 2
-7,17,27,37,47,57 * * * * cd /local.pumori/devise/js.soil; ./run_check soil 1
-8,18,28,38,48,58 * * * * cd /local.pumori/devise/js.wave; ./run_check wave 2
+* * * * * cd /local.pumori/devise/js.regular; ./run_check regular 2
+* * * * * cd /local.pumori/devise/js.soil; ./run_check soil 1
+* * * * * cd /local.pumori/devise/js.wave; ./run_check wave 2
 47 3,15 * * * /local.pumori/devise/js.regular/run_top
 1 16 * * 1 cd /local.pumori/devise/js.regular; scripts/get_stats_pumori
 2 16 * * 1 cd /local.pumori/devise/js.wave; scripts/get_stats_wave
