@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:52  jussi
+  Added CVS header.
+*/
 
 /* interpreted TData using parsed information */
 
@@ -70,6 +87,9 @@ public:
 
 	AttrList *GetAttrList(){ return _attrList; };
 protected:
+    /* Decode a record; return false if this line is not valid. */
+	virtual Boolean IsValid(char *line);
+
     /* Decode a record and put data into buffer. Return false if
 	this line is not valid. */
 	virtual Boolean Decode(RecId id, void *recordBuf, char *line);
@@ -78,18 +98,19 @@ protected:
 	virtual Boolean ReadCache(int fd){ return true;}
 
 private:
-AttrList *_attrList; /* list of attributes */
-char *_name;
-int _recSize;
-char *_separators;
-Boolean _isSeparator;
-int _numSeparators;
-char *_commentString; /* string for comment, or NULL */
-int _commentStringLength; /* length of comment string */
-int _numAttrs;
-AttrInfo *_matchingAttrs[MAX_MATCHING_ATTRS];
-int _numMatchingAttrs;
-RecInterp *_recInterp;
+	AttrList *_attrList; /* list of attributes */
+	Boolean hasComposite;
+	char *_name;
+	int _recSize;
+	char *_separators;
+	Boolean _isSeparator;
+	int _numSeparators;
+	char *_commentString; /* string for comment, or NULL */
+	int _commentStringLength; /* length of comment string */
+	int _numAttrs;
+	AttrInfo *_matchingAttrs[MAX_MATCHING_ATTRS];
+	int _numMatchingAttrs;
+	RecInterp *_recInterp;
 };
 
 #endif
