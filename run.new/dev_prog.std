@@ -7,9 +7,7 @@
 
 ############################################################
 
-#TEMPTEMP
 setenv DEVISE_PROG    /p/devise/release
-setenv DEVISE_PROG    /u/w/e/wenger/tst/devise_release2/release
 
 setenv DEVISE_MONO_EXEC    $DEVISE_PROG/bin/devise
 setenv DEVISE_CLIENT_EXEC    $DEVISE_PROG/bin/devisec
@@ -21,6 +19,8 @@ setenv DEVISE_LOG_DIR		$DEVISE_TMP
 
 # For latest gcc.
 setenv LD_LIBRARY_PATH /s/gcc/lib
+
+#TEMP -- add dyn_lib, tcl, tk stuff here
 
 # For Tasvir, EmbeddedTk, etc.
 set path = ( $path $DEVISE_PROG/bin )
