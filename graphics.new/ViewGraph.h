@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.80  2000/02/15 16:16:25  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.79  2000/02/09 21:29:47  wenger
   Fixed bug 562 (one problem with pop clip underflow, related to highlight
   views).
@@ -636,6 +640,10 @@ public:
   virtual void GoHome(Boolean explicitRequest);
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);
+
+  // Do home in source views for any cursors for which this view is the
+  // destination view.
+  void CursorHome();
 
   /* Get and set the home and panning info. */
   virtual void GetHomeInfo(ViewHomeInfo &info) { info = _homeInfo; }

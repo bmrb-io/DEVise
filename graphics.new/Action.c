@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-1996
+   (c) Copyright 1992-2000
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/12/17 15:54:40  wenger
+  The actions of the 1, 3, 7, and 9 keys no longer depend on whether the
+  relevant view is a "scatter plot" (each key now only affects the visual
+  filter in one dimension).
+
   Revision 1.36  1999/11/19 17:17:41  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -475,6 +480,8 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
       camera.near+=dist;
       camera.far+=dist;
       view->SetCamera(camera);
+    } else {
+      view->CursorHome();
     }
     break;
   }

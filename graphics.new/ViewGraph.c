@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.136  2000/02/16 18:51:47  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.135  2000/02/15 16:16:24  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -1548,6 +1551,27 @@ void ViewGraph::PanUpOrDown(PanDirection direction)
     }
 }
 
+void
+ViewGraph::CursorHome()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::GoHome()\n", GetName());
+#endif
+
+  int index = _cursors->InitIterator();
+  while (_cursors->More(index)) {
+    DeviseCursor *cursor = _cursors->Next(index);
+    ViewGraph *srcView = (ViewGraph *)cursor->GetSource();
+    if (srcView && !cursor->GetFixedSize()) {
+#if defined(DEBUG)
+      printf("  Doing home on cursor <%s>\n", cursor->GetName());
+#endif
+      srcView->GoHome(true);
+    }
+  }
+  _cursors->DoneIterator(index);
+}
+
 /* Lets view know that something in one of the TAttrLinks it's a slave of
  * has changed (master view changed, for example). */
 void
@@ -2565,7 +2589,10 @@ void	ViewGraph::HandleKey(WindowRep *, int key, int x, int y)
     printf("ViewGraph(%s)::HandleKey(%d, %d, %d)\n", GetName(), key, x, y);
 #endif
 
-  if (GetKeysDisabled()) {
+  // Kludge warning: f/F ("full" cursor) should be allowed even if things
+  // that change this view's visual filter are not.  This is kind of a
+  // kludgey way of allowing that.
+  if (GetKeysDisabled() && key != 'f' && key != 'F') {
     printf("Key actions disabled in view <%s>\n", GetName());
     return;
   }
