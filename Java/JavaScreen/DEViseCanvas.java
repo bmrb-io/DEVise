@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2000/02/22 10:00:38  hongyu
+// *** empty log message ***
+//
 // Revision 1.31  2000/02/16 08:53:48  hongyu
 // *** empty log message ***
 //
@@ -24,6 +27,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.32  2000/02/22 10:00:38  hongyu
+// *** empty log message ***
+//
 // Revision 1.31  2000/02/16 08:53:48  hongyu
 // *** empty log message ***
 //
@@ -1662,7 +1668,7 @@ class XORFilter extends RGBImageFilter
         green = color.getGreen() << 8;
         blue = color.getBlue();
 
-        System.out.println("r = " + red + " g = " + green + " b = " + blue);
+        //System.out.println("r = " + red + " g = " + green + " b = " + blue);
 
         canFilterIndexColorModel = true;
     }
