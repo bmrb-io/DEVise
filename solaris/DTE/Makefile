@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/23 20:54:53  jussi
+#  Removed -lpthread.
+#
 #  Revision 1.2  1996/11/23 01:53:29  donjerko
 #  added standalone option
 #
@@ -32,5 +35,4 @@ include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
-	cd ../devread; make libdevread.a; cd ../DTE;
 	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
