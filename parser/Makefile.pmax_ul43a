@@ -1,0 +1,11 @@
+depend:
+	makedepend -fMakefile.pmax_ul43a -I../parser *.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+codegen.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+codegen.o: /usr/include/string.h /usr/include/stdlib.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/ansi_compat.h
+parse.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+parse.o: /usr/include/stdlib.h parse.h tokens.h /usr/include/malloc.h
+parse.o: codegen.h

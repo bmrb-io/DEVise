@@ -1,0 +1,55 @@
+depend:
+	makedepend -fMakefile.pmax_ul43a -I../graphics.new -I../graphics \
+		-I/s/X11/include -I/s/tcl/include *.C
+
+# DO NOT DELETE
+
+atof.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
+atof.o: /usr/include/math.h /usr/include/floatingpoint.h
+atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
+atof.o: ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/stdlib.h
+http_url.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
+http_url.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+http_url.o: /usr/include/string.h /usr/include/errno.h
+http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
+http_url.o: /usr/include/limits.h /usr/include/sys/param.h
+http_url.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+http_url.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+http_url.o: /usr/include/time.h /usr/include/sys/wait.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+http_url.o: /usr/include/machine/mmu.h /usr/include/debug/debug.h
+http_url.o: /usr/include/mon/sunromvec.h /usr/include/mon/openprom.h
+http_url.o: /usr/include/mon/obpdefs.h /usr/include/sys/sem.h
+http_url.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+http_url.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+http_url.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+http_url.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+http_url.o: /usr/include/netdb.h /usr/include/sys/socket.h
+http_url.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+mkbinfile.o: /usr/include/math.h /usr/include/floatingpoint.h
+mkbinfile.o: /usr/include/sys/ieeefp.h /usr/include/time.h
+mkbinfile.o: /usr/include/sys/stdtypes.h /usr/include/stdlib.h
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+atof.o: /usr/include/stdlib.h /usr/include/ansi_compat.h
+atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
+atof.o: /usr/include/math.h /usr/include/sys/time.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/string.h ../graphics/DeviseTypes.h
+atof.o: ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/ansi_compat.h
+http_url.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/string.h
+http_url.o: /usr/include/errno.h ../graphics.new/machdep.h
+http_url.o: /usr/include/limits.h /usr/include/sys/types.h
+http_url.o: /usr/include/sys/param.h /usr/include/machine/param.h
+http_url.o: /usr/include/sys/signal.h /usr/include/sys/smp_lock.h
+http_url.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/sys/ttydev.h /usr/include/netdb.h
+http_url.o: /usr/include/sys/cdefs.h /usr/include/sys/socket.h
+http_url.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+mkbinfile.o: /usr/include/math.h /usr/include/ansi_compat.h
+mkbinfile.o: /usr/include/time.h /usr/include/stdlib.h

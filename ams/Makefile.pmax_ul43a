@@ -1,0 +1,87 @@
+depend:
+	makedepend -fMakefile.pmax_ul43a -I../graphics -I../graphics.new \
+		-I../tape -I/s/tcl/include *.c
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/ansi_compat.h
+MapClassInfo.o: /usr/include/time.h /usr/include/math.h /s/tcl/include/tcl.h
+MapClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
+MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/Color.h
+MapClassInfo.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+MapClassInfo.o: /usr/include/unistd.h /usr/include/sys/types.h
+MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+MapClassInfo.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
+MapClassInfo.o: ../graphics/View.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
+MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
+MapClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
+MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MapClassInfo.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
+MapClassInfo.o: ../graphics.new/Action.h ../graphics/Temp.h
+MapClassInfo.o: ../graphics/Map3D.h ../graphics.new/TDataCMap.h
+MapClassInfo.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+MapClassInfo.o: ../graphics.new/GDataBin.h ../graphics.new/ActionDefault.h
+MapClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
+MapClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/DispQueryProc.h
+MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
+MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
+MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
+MapClassInfo.o: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
+MapClassInfo.o: ../graphics.new/RecOrder.h ../graphics.new/Snapshot.h
+MapClassInfo.o: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
+ams.o: /usr/include/time.h /usr/include/stdio.h
+ams.o: /usr/include/sys/ansi_compat.h /usr/include/sys/types.h
+ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
+ams.o: ../graphics/Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h
+ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+ams.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/ClassDir.h
+ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+ams.o: ../graphics.new/MapInterpClassInfo.h
+ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
+ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Config.h
+ams.o: ../graphics/Cursor.h ../graphics/AxisLabelClassInfo.h
+ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
+ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ams.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
+ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ams.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+ams.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
+ams.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+ams.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+ams.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+ams.o: ../tape/SortedTable.h ../graphics.new/GData.h ../graphics.new/TData.h
+ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
+ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
+amsStat.o: /usr/include/stdio.h /usr/include/sys/ansi_compat.h
+amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h /usr/include/sys/file.h
+amsStat.o: /usr/include/limits.h /usr/include/unistd.h /usr/include/sys/uio.h
+amsStat.o: /usr/include/sys/types.h /usr/include/sys/stat.h
+amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
+amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
+amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DiskFile.h
+amsStat.o: ../graphics.new/ams.h /usr/include/math.h
+extendAms.o: /usr/include/stdio.h /usr/include/sys/ansi_compat.h
+extendAms.o: /usr/include/stdlib.h /usr/include/fcntl.h
+extendAms.o: /usr/include/sys/file.h /usr/include/limits.h
+extendAms.o: /usr/include/unistd.h /usr/include/sys/uio.h
+extendAms.o: /usr/include/sys/types.h /usr/include/sys/stat.h
+extendAms.o: ../graphics.new/ams.h /usr/include/math.h
+testdir.o: /usr/include/stdio.h /usr/include/sys/ansi_compat.h
+testdir.o: /usr/include/sys/types.h /usr/include/sys/dir.h
