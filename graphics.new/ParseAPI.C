@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.82  1997/12/01 21:21:32  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
+  into the trunk.
+
   Revision 1.81  1997/11/24 23:15:11  weaver
   Changes for the new ColorManager.
 
@@ -404,6 +408,7 @@
 #include "DepMgr.h"
 #include "Session.h"
 #include "GDataSock.h"
+#include "Timer.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -2254,7 +2259,9 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
         return -1;
       }
       FILE *fp = fdopen(control->getFd(), "wb");
+      Timer::StopTimer();
       DeviseDisplay::DefaultDisplay()->ExportGIF(fp, 0);
+      Timer::StartTimer();
       close(control->getFd());
       control->ReturnVal(API_ACK, "done");
       return 1;
@@ -2377,7 +2384,9 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
         return -1;
       }
       FILE *fp = fdopen(control->getFd(), "wb");
+      Timer::StopTimer();
       viewWin->GetWindowRep()->ExportGIF(fp);
+      Timer::StartTimer();
       close(control->getFd());
       control->ReturnVal(API_ACK, "done");
       return 1;
@@ -2765,7 +2774,9 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
     control->ReturnVal(API_NAK, errBuf);
     return -1;
   }
+  Timer::StopTimer();
   DeviseDisplay::DefaultDisplay()->ExportGIF(tmpfp, false);
+  Timer::StartTimer();
   if (fclose(tmpfp) != 0) {
     reportErrSys("fclose error");
   }
@@ -2815,7 +2826,9 @@ GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
     control->ReturnVal(API_NAK, "Can't open temp file");
     return -1;
   }
+  Timer::StopTimer();
   viewWin->GetWindowRep()->ExportGIF(tmpfp);
+  Timer::StartTimer();
   if (fclose(tmpfp) != 0) {
     reportErrSys("fclose error");
   }
@@ -2863,16 +2876,20 @@ WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
   char buf[bufSize];
   sprintf(buf, "%d", (int) filestat.st_size);
   int numBytes = strlen(buf) + 1;
+  Timer::StopTimer();
   if (write(control->getFd(), buf, numBytes) != numBytes) {
     reportErrSys("write error");
     control->ReturnVal(API_NAK, "write error");
     (void) close(control->getFd());
     (void) close(tmpfd);
+    Timer::StartTimer();
     return -1;
   }
+  Timer::StartTimer();
 
   int bytesLeft = (int) filestat.st_size;
   while (bytesLeft > 0) {
+    Timer::StopTimer();
     int bytesToRead = MIN(bytesLeft, bufSize);
     int bytesRead = read(tmpfd, buf, bytesToRead);
     if (bytesRead != bytesToRead) {
@@ -2880,6 +2897,7 @@ WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
       control->ReturnVal(API_NAK, "read error");
       (void) close(control->getFd());
       (void) close(tmpfd);
+      Timer::StartTimer();
       return -1;
     }
     if (write(control->getFd(), buf, bytesRead) != bytesRead) {
@@ -2887,9 +2905,11 @@ WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
       control->ReturnVal(API_NAK, "write error");
       (void) close(control->getFd());
       (void) close(tmpfd);
+      Timer::StartTimer();
       return -1;
     }
     bytesLeft -= bytesRead;
+    Timer::StartTimer();
   }
   if (close(control->getFd()) != 0) {
     reportErrSys("close error");
