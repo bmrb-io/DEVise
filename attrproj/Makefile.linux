@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.16  2000/08/10 16:09:44  wenger
+# Phase 1 of getting rid of shared-memory-related code.
+#
 # Revision 1.15  2000/03/23 19:58:23  wenger
 # Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
 # g++ 2.95.2).
@@ -79,16 +82,16 @@ ApInit.o: /usr/include/sys/sysmacros.h /usr/include/stdlib.h
 ApInit.o: /usr/include/alloca.h /usr/include/string.h /usr/include/signal.h
 ApInit.o: /usr/include/bits/signum.h /usr/include/bits/siginfo.h
 ApInit.o: /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h
-ApInit.o: /usr/include/asm/sigcontext.h /usr/include/bits/sigstack.h
-ApInit.o: ../graphics/Exit.h ApInit.h ../graphics/DeviseTypes.h
-ApInit.o: /usr/include/values.h /usr/include/limits.h
-ApInit.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-ApInit.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+ApInit.o: /usr/include/asm/sigcontext.h /usr/include/bits/sigstack.h ApInit.h
+ApInit.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ApInit.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+ApInit.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+ApInit.o: /usr/include/bits/posix2_lim.h
 ApInit.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Timer.h
 ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
 ApInit.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-ApInit.o: /usr/include/bits/mathcalls.h
+ApInit.o: /usr/include/bits/mathcalls.h ../graphics/Exit.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/features.h
 ApParseCat.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 ApParseCat.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -108,15 +111,14 @@ ApParseCat.o: /usr/include/sys/sysmacros.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
-ApParseCat.o: /usr/include/bits/time.h ../graphics/Init.h
-ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics/AttrList.h ../graphics.new/GroupDir.h
 ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat.o: /usr/include/stdlib.h /usr/include/alloca.h
 ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
 ApParseCat.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 ApParseCat.o: /usr/include/string.h ../graphics/Parse.h ApInit.h
-ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
+ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat.o: ../graphics.new/TDataAscii.h
 ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
@@ -141,73 +143,68 @@ ApParseCat2.o: /usr/include/sys/sysmacros.h ../graphics.new/TData.h
 ApParseCat2.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat2.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ApParseCat2.o: ../graphics/AttrList.h /usr/include/sys/time.h
-ApParseCat2.o: /usr/include/bits/time.h ../graphics/Init.h
-ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat2.o: ../graphics/AttrList.h ../graphics.new/GroupDir.h
 ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat2.o: /usr/include/stdlib.h /usr/include/alloca.h
 ApParseCat2.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
 ApParseCat2.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 ApParseCat2.o: /usr/include/string.h ../graphics/Parse.h ApInit.h
-ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
-ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics.new/FileIndex.h
+ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat2.o: ../graphics.new/TDataAscii.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat2.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 ApParseCat2.o: /usr/include/bits/mathcalls.h
-AttrProj.o: /usr/include/stdio.h /usr/include/features.h
+AttrProj.o: /usr/include/string.h /usr/include/features.h
 AttrProj.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 AttrProj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-AttrProj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-AttrProj.o: /usr/include/bits/types.h /usr/include/libio.h
-AttrProj.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
-AttrProj.o: /usr/include/values.h /usr/include/limits.h
-AttrProj.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-AttrProj.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+AttrProj.o: AttrProj.h ../graphics/DeviseTypes.h /usr/include/values.h
+AttrProj.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+AttrProj.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+AttrProj.o: /usr/include/bits/posix2_lim.h
 AttrProj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 AttrProj.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-AttrProj.o: /usr/include/time.h /usr/include/endian.h
-AttrProj.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-AttrProj.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-AttrProj.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h
-AttrProj.o: VectorArray.h Vector.h ProjectionList.h ApParseCat.h
-AttrProj.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+AttrProj.o: /usr/include/bits/types.h /usr/include/time.h
+AttrProj.o: /usr/include/endian.h /usr/include/bits/endian.h
+AttrProj.o: /usr/include/sys/select.h /usr/include/bits/select.h
+AttrProj.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+AttrProj.o: ../graphics.new/RecId.h VectorArray.h ProjectionList.h
+AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/DataSource.h
 AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 AttrProj.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/stdio.h
+AttrProj.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+AttrProj.o: /usr/include/libio.h /usr/include/_G_config.h
+AttrProj.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
 AttrProj.o: /usr/include/math.h /usr/include/bits/huge_val.h
 AttrProj.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
-AttrProj.o: /usr/include/bits/time.h ../graphics/Init.h
-AttrProj.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
-AttrProj2.o: /usr/include/stdio.h /usr/include/features.h
+AttrProj.o: ../graphics/AttrList.h ../graphics.new/DataSeg.h
+AttrProj2.o: /usr/include/string.h /usr/include/features.h
 AttrProj2.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 AttrProj2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-AttrProj2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-AttrProj2.o: /usr/include/bits/types.h /usr/include/libio.h
-AttrProj2.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
-AttrProj2.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
-AttrProj2.o: /usr/include/values.h /usr/include/limits.h
-AttrProj2.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-AttrProj2.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
+AttrProj2.o: AttrProj.h ../graphics/DeviseTypes.h /usr/include/values.h
+AttrProj2.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
+AttrProj2.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
+AttrProj2.o: /usr/include/bits/posix2_lim.h
 AttrProj2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 AttrProj2.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-AttrProj2.o: /usr/include/time.h /usr/include/endian.h
-AttrProj2.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-AttrProj2.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-AttrProj2.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h
-AttrProj2.o: VectorArray.h Vector.h ProjectionList.h ApParseCat.h
-AttrProj2.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-AttrProj2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-AttrProj2.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
-AttrProj2.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+AttrProj2.o: /usr/include/bits/types.h /usr/include/time.h
+AttrProj2.o: /usr/include/endian.h /usr/include/bits/endian.h
+AttrProj2.o: /usr/include/sys/select.h /usr/include/bits/select.h
+AttrProj2.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+AttrProj2.o: ../graphics.new/RecId.h VectorArray.h ProjectionList.h
+AttrProj2.o: ApParseCat.h ../graphics.new/TData.h
+AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
+AttrProj2.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+AttrProj2.o: ../graphics/DList.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj2.o: /usr/include/alloca.h /usr/include/stdio.h
+AttrProj2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+AttrProj2.o: /usr/include/libio.h /usr/include/_G_config.h
+AttrProj2.o: /usr/include/bits/stdio_lim.h /usr/include/ctype.h
 AttrProj2.o: /usr/include/math.h /usr/include/bits/huge_val.h
 AttrProj2.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-AttrProj2.o: ../graphics/AttrList.h /usr/include/sys/time.h
-AttrProj2.o: /usr/include/bits/time.h ../graphics/Init.h
-AttrProj2.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+AttrProj2.o: ../graphics/AttrList.h ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/features.h
 ProjectionList.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 ProjectionList.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -241,25 +238,26 @@ Vector.o: /usr/include/bits/mathcalls.h
 Vector.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 Vector.o: /usr/include/ctype.h /usr/include/unistd.h
 Vector.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-Vector.o: /usr/include/getopt.h /usr/include/sys/times.h Vector.h
-VectorArray.o: /usr/include/stdio.h /usr/include/features.h
-VectorArray.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
-VectorArray.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-VectorArray.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-VectorArray.o: /usr/include/bits/types.h /usr/include/libio.h
-VectorArray.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
+Vector.o: /usr/include/getopt.h /usr/include/sys/times.h
 VectorArray.o: VectorArray.h ../graphics/DeviseTypes.h /usr/include/values.h
-VectorArray.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-VectorArray.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-VectorArray.o: /usr/include/bits/posix2_lim.h
+VectorArray.o: /usr/include/features.h /usr/include/sys/cdefs.h
+VectorArray.o: /usr/include/gnu/stubs.h /usr/include/limits.h
+VectorArray.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
+VectorArray.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 VectorArray.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 VectorArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+VectorArray.o: /usr/include/bits/types.h
+VectorArray.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
 VectorArray.o: /usr/include/time.h /usr/include/endian.h
 VectorArray.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 VectorArray.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-VectorArray.o: /usr/include/sys/sysmacros.h Vector.h ../graphics/Util.h
+VectorArray.o: /usr/include/sys/sysmacros.h ../graphics/Util.h
 VectorArray.o: /usr/include/stdlib.h /usr/include/alloca.h
-VectorArray.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+VectorArray.o: /usr/include/stdio.h
+VectorArray.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+VectorArray.o: /usr/include/libio.h /usr/include/_G_config.h
+VectorArray.o: /usr/include/bits/stdio_lim.h /usr/include/string.h
+VectorArray.o: /usr/include/ctype.h /usr/include/math.h
 VectorArray.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 VectorArray.o: /usr/include/bits/mathcalls.h ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/features.h
@@ -277,7 +275,7 @@ aptest.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 aptest.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 aptest.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 aptest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
-aptest.o: Vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
+aptest.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h
 aptest2.o: /usr/include/stdio.h /usr/include/features.h
 aptest2.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 aptest2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -293,7 +291,7 @@ aptest2.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 aptest2.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 aptest2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 aptest2.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
-aptest2.o: Vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
+aptest2.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
 show.o: /usr/include/gnu/stubs.h
 show.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -311,4 +309,4 @@ show.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 show.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 show.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 show.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
-show.o: Vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
+show.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h

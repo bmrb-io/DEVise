@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.21  2001/03/09 20:24:52  wenger
+# Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
+# to the trunk; updated linux and solaris dependencies.
+#
 # Revision 1.20  2000/03/23 19:58:31  wenger
 # Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
 # g++ 2.95.2).
@@ -189,20 +193,30 @@ generic.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 generic.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 generic.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
-generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
-generic.o: ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h
 generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
-generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
-generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-generic.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-generic.o: ../graphics.new/ViewData.h ../graphics.new/CompositeParser.h
-generic.o: ../graphics.new/RecInterp.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
-generic.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
-generic.o: ../graphics/HangCheck.h ../graphics/Timer.h
+generic.o: ../graphics/View.h ../graphics/ViewCallback.h
+generic.o: ../graphics/AttrList.h ../graphics/Cursor.h
+generic.o: ../graphics/CursorStore.h ../graphics/DevFont.h
+generic.o: ../graphics/DevAxis.h ../graphics/PileStack.h
+generic.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+generic.o: ../graphics.new/GdataStat.h /usr/include/stdlib.h
+generic.o: /usr/include/alloca.h ../tape/HashTable.h
+generic.o: ../graphics.new/DataSourceFixedBuf.h
+generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+generic.o: ../graphics.new/MemMgr.h ../graphics.new/UpdateLink.h
+generic.o: ../graphics.new/DeviseLink.h ../graphics.new/QueryProc.h
+generic.o: ../graphics.new/RecId.h ../graphics/GDataSock.h ../graphics/Util.h
+generic.o: /usr/include/ctype.h ../graphics.new/Action.h
+generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
+generic.o: ../graphics.new/ViewData.h ../graphics.new/GDataBin.h
+generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic.o: ../graphics/CursorClassInfo.h StateMap.h ../graphics/HangCheck.h
+generic.o: ../graphics/Timer.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/features.h
 testWindowSpeed.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 testWindowSpeed.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -238,3 +252,4 @@ testWindowSpeed.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 testWindowSpeed.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+testWindowSpeed.o: ../graphics/DualWindowRep.h

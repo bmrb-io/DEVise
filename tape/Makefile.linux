@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.19  2001/03/09 20:25:28  wenger
+# Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
+# to the trunk; updated linux and solaris dependencies.
+#
 # Revision 1.18  2000/08/10 16:10:08  wenger
 # Phase 1 of getting rid of shared-memory-related code.
 #
@@ -70,40 +74,11 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-Templates.o: ../graphics.new/QueryProcFull.h /usr/include/time.h
-Templates.o: /usr/include/features.h /usr/include/sys/cdefs.h
-Templates.o: /usr/include/gnu/stubs.h
-Templates.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
-Templates.o: /usr/include/bits/time.h /usr/include/bits/types.h
-Templates.o: /usr/include/sys/time.h /usr/include/sys/select.h
-Templates.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
-Templates.o: /usr/include/values.h /usr/include/limits.h
-Templates.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
-Templates.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-Templates.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-Templates.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-Templates.o: /usr/include/endian.h /usr/include/bits/endian.h
-Templates.o: /usr/include/sys/sysmacros.h ../graphics/VisualArg.h
-Templates.o: /usr/include/stdio.h
-Templates.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
-Templates.o: /usr/include/libio.h /usr/include/_G_config.h
-Templates.o: /usr/include/bits/stdio_lim.h ../graphics/ViewDir.h
-Templates.o: /usr/include/string.h ../graphics.new/RecId.h
-Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/Dispatcher.h SortedTable.h ../graphics/Timer.h
-Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
-Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
-Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-Templates.o: ../graphics.new/MemMgr.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
-Templates.o: ../graphics/AttrList.h ../graphics/Init.h
-Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/features.h
 devtype.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 devtype.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
 devtype.o: /usr/include/sys/types.h /usr/include/bits/types.h
-devtype.o: /usr/include/time.h /usr/include/bits/time.h /usr/include/endian.h
+devtype.o: /usr/include/time.h /usr/include/endian.h
 devtype.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 devtype.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 devtype.o: /usr/include/sys/sysmacros.h /usr/include/alloca.h
@@ -120,12 +95,12 @@ tapedrive.o: /usr/include/bits/stdio_lim.h ../graphics.new/machdep.h
 tapedrive.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
 tapedrive.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
 tapedrive.o: /usr/include/bits/posix2_lim.h /usr/include/sys/types.h
-tapedrive.o: /usr/include/time.h /usr/include/bits/time.h
-tapedrive.o: /usr/include/endian.h /usr/include/bits/endian.h
-tapedrive.o: /usr/include/sys/select.h /usr/include/bits/select.h
-tapedrive.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
-tapedrive.o: /usr/include/sys/param.h /usr/include/linux/param.h
-tapedrive.o: /usr/include/asm/param.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/time.h /usr/include/endian.h
+tapedrive.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+tapedrive.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+tapedrive.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+tapedrive.o: /usr/include/linux/param.h /usr/include/asm/param.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/bits/time.h
 tapedrive.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
 tapedrive.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
 tapedrive.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
@@ -158,12 +133,12 @@ testtape.o: ../graphics.new/machdep.h /usr/include/limits.h
 testtape.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 testtape.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 testtape.o: /usr/include/sys/types.h /usr/include/time.h
-testtape.o: /usr/include/bits/time.h /usr/include/endian.h
-testtape.o: /usr/include/bits/endian.h /usr/include/sys/select.h
-testtape.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
-testtape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-testtape.o: /usr/include/linux/param.h /usr/include/asm/param.h
-testtape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+testtape.o: /usr/include/endian.h /usr/include/bits/endian.h
+testtape.o: /usr/include/sys/select.h /usr/include/bits/select.h
+testtape.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
+testtape.o: /usr/include/sys/param.h /usr/include/linux/param.h
+testtape.o: /usr/include/asm/param.h /usr/include/sys/time.h
+testtape.o: /usr/include/bits/time.h /usr/include/sys/wait.h
 testtape.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
 testtape.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
 testtape.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
@@ -189,26 +164,25 @@ vertape.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 vertape.o: ../graphics.new/machdep.h /usr/include/limits.h
 vertape.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 vertape.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
-vertape.o: /usr/include/sys/types.h /usr/include/time.h
-vertape.o: /usr/include/bits/time.h /usr/include/endian.h
+vertape.o: /usr/include/sys/types.h /usr/include/time.h /usr/include/endian.h
 vertape.o: /usr/include/bits/endian.h /usr/include/sys/select.h
 vertape.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 vertape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
 vertape.o: /usr/include/linux/param.h /usr/include/asm/param.h
-vertape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-vertape.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
-vertape.o: /usr/include/bits/siginfo.h /usr/include/sys/ipc.h
-vertape.o: /usr/include/bits/ipc.h /usr/include/sys/shm.h
-vertape.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-vertape.o: /usr/include/bits/confname.h /usr/include/getopt.h
-vertape.o: /usr/include/bits/shm.h /usr/include/sys/sem.h
-vertape.o: /usr/include/bits/sem.h /usr/include/sys/ioctl.h
-vertape.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-vertape.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
-vertape.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
-vertape.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-vertape.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-vertape.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-vertape.o: /usr/include/netinet/in.h /usr/include/stdint.h
-vertape.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
-vertape.o: /usr/include/bits/byteswap.h
+vertape.o: /usr/include/sys/time.h /usr/include/bits/time.h
+vertape.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
+vertape.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
+vertape.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
+vertape.o: /usr/include/sys/shm.h /usr/include/unistd.h
+vertape.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
+vertape.o: /usr/include/getopt.h /usr/include/bits/shm.h
+vertape.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
+vertape.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
+vertape.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
+vertape.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
+vertape.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
+vertape.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
+vertape.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
+vertape.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
+vertape.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
+vertape.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h

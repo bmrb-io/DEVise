@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.40  2000/08/10 16:09:44  wenger
+# Phase 1 of getting rid of shared-memory-related code.
+#
 # Revision 1.39  2000/03/23 19:51:22  wenger
 # Updated dependencies for Solaris 2.7.
 #
@@ -74,10 +77,10 @@ ApInit.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ApInit.o: /usr/include/time.h /usr/include/sys/unistd.h /usr/include/fcntl.h
 ApInit.o: /usr/include/sys/fcntl.h /usr/include/stdlib.h
 ApInit.o: /usr/include/string.h /usr/include/signal.h
-ApInit.o: /usr/include/sys/signal.h ../graphics/Exit.h ApInit.h
-ApInit.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Timer.h
-ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+ApInit.o: /usr/include/sys/signal.h ApInit.h ../graphics/DeviseTypes.h
+ApInit.o: /usr/include/values.h ../graphics/DevStatus.h
+ApInit.o: ../graphics/BufPolicy.h ../graphics/Timer.h ../graphics/Util.h
+ApInit.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ApParseCat.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 ApParseCat.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h ApParseCat.h
@@ -89,14 +92,13 @@ ApParseCat.o: /usr/include/time.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ApParseCat.o: ../graphics/AttrList.h ../graphics/Init.h
-ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics/AttrList.h ../graphics.new/GroupDir.h
 ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
 ApParseCat.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Parse.h
-ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
-ApParseCat.o: ../graphics.new/TDataAscii.h
+ApParseCat.o: ApInit.h ../graphics/BufPolicy.h
+ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
 ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
@@ -111,48 +113,46 @@ ApParseCat2.o: /usr/include/time.h ../graphics.new/TData.h
 ApParseCat2.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 ApParseCat2.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ApParseCat2.o: ../graphics/AttrList.h ../graphics/Init.h
-ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat2.o: ../graphics/AttrList.h ../graphics.new/GroupDir.h
 ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat2.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
 ApParseCat2.o: ../graphics/ViewDir.h /usr/include/string.h
-ApParseCat2.o: ../graphics/Parse.h ApInit.h
-ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
-ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics.new/FileIndex.h
+ApParseCat2.o: ../graphics/Parse.h ApInit.h ../graphics/BufPolicy.h
+ApParseCat2.o: ../graphics.new/TDataAsciiInterp.h
+ApParseCat2.o: ../graphics.new/TDataAscii.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
-AttrProj.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-AttrProj.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
-AttrProj.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-AttrProj.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
+AttrProj.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+AttrProj.o: /usr/include/sys/isa_defs.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj.o: /usr/include/values.h ../graphics/DevStatus.h
 AttrProj.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 AttrProj.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 AttrProj.o: /usr/include/sys/time.h /usr/include/time.h
-AttrProj.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
+AttrProj.o: ../graphics.new/RecId.h VectorArray.h ProjectionList.h
 AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/DataSource.h
 AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 AttrProj.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
-AttrProj.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-AttrProj.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/stdio.h
+AttrProj.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+AttrProj.o: /usr/include/stdio_impl.h /usr/include/ctype.h
+AttrProj.o: /usr/include/math.h ../graphics/AttrList.h
 AttrProj.o: ../graphics.new/DataSeg.h
-AttrProj2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-AttrProj2.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
-AttrProj2.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-AttrProj2.o: /usr/include/string.h AttrProj.h ../graphics/DeviseTypes.h
+AttrProj2.o: /usr/include/string.h /usr/include/sys/feature_tests.h
+AttrProj2.o: /usr/include/sys/isa_defs.h AttrProj.h ../graphics/DeviseTypes.h
 AttrProj2.o: /usr/include/values.h ../graphics/DevStatus.h
 AttrProj2.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 AttrProj2.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 AttrProj2.o: /usr/include/sys/time.h /usr/include/time.h
-AttrProj2.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
+AttrProj2.o: ../graphics.new/RecId.h VectorArray.h ProjectionList.h
 AttrProj2.o: ApParseCat.h ../graphics.new/TData.h
 AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
 AttrProj2.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
 AttrProj2.o: ../graphics/DList.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj2.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+AttrProj2.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 AttrProj2.o: /usr/include/ctype.h /usr/include/math.h ../graphics/AttrList.h
-AttrProj2.o: ../graphics/Init.h ../graphics/BufPolicy.h
 AttrProj2.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ProjectionList.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -170,17 +170,17 @@ Vector.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h
 Vector.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 Vector.o: /usr/include/sys/select.h /usr/include/sys/time.h
 Vector.o: /usr/include/time.h /usr/include/sys/unistd.h
-Vector.o: /usr/include/sys/times.h Vector.h
-VectorArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-VectorArray.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
-VectorArray.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+Vector.o: /usr/include/sys/times.h
 VectorArray.o: VectorArray.h ../graphics/DeviseTypes.h /usr/include/values.h
-VectorArray.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+VectorArray.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
+VectorArray.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 VectorArray.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 VectorArray.o: /usr/include/sys/select.h /usr/include/sys/time.h
-VectorArray.o: /usr/include/time.h Vector.h ../graphics/Util.h
-VectorArray.o: /usr/include/stdlib.h /usr/include/string.h
-VectorArray.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
+VectorArray.o: /usr/include/time.h ../graphics/Util.h /usr/include/stdlib.h
+VectorArray.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+VectorArray.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+VectorArray.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+VectorArray.o: ../graphics/Exit.h
 aptest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 aptest.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 aptest.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -189,7 +189,7 @@ aptest.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 aptest.o: /usr/include/sys/time.h /usr/include/time.h AttrProj.h
 aptest.o: ../graphics/DeviseTypes.h /usr/include/values.h
 aptest.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
-aptest.o: Vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
+aptest.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h
 aptest2.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 aptest2.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 aptest2.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -198,7 +198,7 @@ aptest2.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 aptest2.o: /usr/include/sys/time.h /usr/include/time.h AttrProj.h
 aptest2.o: ../graphics/DeviseTypes.h /usr/include/values.h
 aptest2.o: ../graphics/DevStatus.h ../graphics.new/RecId.h VectorArray.h
-aptest2.o: Vector.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h
+aptest2.o: ProjectionList.h ApInit.h ../graphics/BufPolicy.h
 show.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 show.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 show.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -207,5 +207,4 @@ show.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 show.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/unistd.h
 show.o: /usr/include/sys/unistd.h AttrProj.h ../graphics/DeviseTypes.h
 show.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics.new/RecId.h
-show.o: VectorArray.h Vector.h ProjectionList.h ApInit.h
-show.o: ../graphics/BufPolicy.h
+show.o: VectorArray.h ProjectionList.h ApInit.h ../graphics/BufPolicy.h

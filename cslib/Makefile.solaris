@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.28  2000/03/23 19:51:30  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.27  2000/03/14 21:56:36  wenger
 # Updated solaris and linux dependencies.
 #
@@ -225,7 +228,7 @@ WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 WinServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 WinServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 WinServer.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-WinServer.o: ../graphics/GraphicsDebug.h
+WinServer.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 client.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 client.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -242,21 +245,3 @@ server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 server.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 server.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 server.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/assert.h
-server.o: WinServer.h Server.h ../graphics/Display.h
-server.o: ../graphics/DeviseTypes.h /usr/include/values.h
-server.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-server.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-server.o: /usr/include/sys/select.h /usr/include/sys/time.h
-server.o: /usr/include/time.h ../graphics/Geom.h /usr/include/math.h
-server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-server.o: ../graphics/Transform.h ../graphics/VisualArg.h
-server.o: ../graphics/ViewDir.h ../graphics/Pattern.h
-server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-server.o: ../graphics/DevError.h /usr/include/errno.h
-server.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-server.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h ../graphics/ETk.h
-server.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-server.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.62  2000/03/23 19:51:33  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.61  1999/11/19 21:29:00  wenger
 # Removed Journal class and related code (no longer works); removed various
 # other unused or unnecessary code.
@@ -162,19 +165,29 @@ generic.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 generic.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 generic.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 generic.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-generic.o: ../graphics/GraphicsDebug.h ../graphics/Control.h
-generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h
+generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics.new/VisualLinkClassInfo.h
 generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
-generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
-generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
-generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-generic.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
-generic.o: ../graphics.new/ViewData.h ../graphics.new/CompositeParser.h
-generic.o: ../graphics.new/RecInterp.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics.new/StringStorage.h StateMap.h ../graphics/Util.h
-generic.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/HangCheck.h
+generic.o: ../graphics/View.h ../graphics/ViewCallback.h
+generic.o: ../graphics/AttrList.h ../graphics/Cursor.h
+generic.o: ../graphics/CursorStore.h ../graphics/DevFont.h
+generic.o: ../graphics/DevAxis.h ../graphics/PileStack.h
+generic.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+generic.o: ../graphics.new/GdataStat.h /usr/include/stdlib.h
+generic.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
+generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+generic.o: ../graphics.new/MemMgr.h ../graphics.new/UpdateLink.h
+generic.o: ../graphics.new/DeviseLink.h ../graphics.new/QueryProc.h
+generic.o: ../graphics.new/RecId.h ../graphics/GDataSock.h ../graphics/Util.h
+generic.o: /usr/include/ctype.h ../graphics.new/Action.h
+generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/ShapeID.h ../graphics.new/GDataRec.h
+generic.o: ../graphics.new/ViewData.h ../graphics.new/GDataBin.h
+generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic.o: ../graphics/CursorClassInfo.h StateMap.h ../graphics/HangCheck.h
 generic.o: ../graphics/Timer.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testWindowSpeed.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -200,4 +213,4 @@ testWindowSpeed.o: ../graphics/ETk.h ../graphics/Xdef.h
 testWindowSpeed.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 testWindowSpeed.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 testWindowSpeed.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-testWindowSpeed.o: ../graphics/GraphicsDebug.h
+testWindowSpeed.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h

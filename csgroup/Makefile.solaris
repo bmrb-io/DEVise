@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.22  2000/03/23 19:51:28  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.21  2000/03/14 21:56:33  wenger
 # Updated solaris and linux dependencies.
 #
@@ -140,22 +143,6 @@ Csprotocols.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Csprotocols.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 Csprotocols.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
 Csprotocols.o: /usr/include/netdb.h
-callBks.o: callBks.h error.h CollabTypes.h /usr/include/sys/types.h
-callBks.o: /usr/include/sys/isa_defs.h /usr/include/sys/feature_tests.h
-callBks.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-callBks.o: /usr/include/sys/select.h /usr/include/sys/time.h
-callBks.o: /usr/include/time.h /usr/include/sys/socket.h
-callBks.o: /usr/include/sys/uio.h /usr/include/sys/netconfig.h
-callBks.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-callBks.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-callBks.o: /usr/include/sys/machlock.h /usr/include/sys/param.h
-callBks.o: /usr/include/sys/unistd.h /usr/include/sys/mutex.h
-callBks.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-callBks.o: /usr/include/sys/condvar.h /usr/include/sys/time_impl.h
-callBks.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
-callBks.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-callBks.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-callBks.o: /usr/include/sys/byteorder.h ctrlMsg.h
 codec.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 codec.o: /usr/include/sys/feature_tests.h /usr/include/sys/machtypes.h
 codec.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
@@ -417,10 +404,7 @@ Client.o: /usr/include/sys/time_impl.h /usr/include/sys/cred.h
 Client.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 Client.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 Client.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-Client.o: /usr/include/netdb.h Client.h Csprotocols.h
-Client.o: /usr/include/arpa/inet.h keys.h CollabTypes.h ../graphics/Util.h
-Client.o: /usr/include/ctype.h /usr/include/math.h ../graphics/DeviseTypes.h
-Client.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
+Client.o: /usr/include/netdb.h
 CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 CmdSerialize.o: /usr/include/sys/isa_defs.h /usr/include/stdio.h
@@ -463,16 +447,6 @@ Server.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 Server.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 Server.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 Server.o: /usr/include/math.h /usr/include/signal.h /usr/include/sys/signal.h
-Server.o: Server.h CollabTypes.h ../graphics/Dispatcher.h
-Server.o: ../graphics/DeviseTypes.h /usr/include/values.h
-Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
-Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
-Server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
-Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h dbase.h htable.h
-Server.o: bucket.h entry.h datum.h queue.h queueElem.h keys.h Csprotocols.h
-Server.o: /usr/include/netdb.h ../graphics/Util.h /usr/include/ctype.h
-Server.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/DevError.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TclClient.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

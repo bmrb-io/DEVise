@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.52  2001/03/09 20:25:28  wenger
+# Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
+# to the trunk; updated linux and solaris dependencies.
+#
 # Revision 1.51  2000/08/10 16:10:08  wenger
 # Phase 1 of getting rid of shared-memory-related code.
 #
@@ -86,26 +90,6 @@ depend:
 		*.C
 # DO NOT DELETE
 
-Templates.o: ../graphics.new/QueryProcFull.h /usr/include/time.h
-Templates.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-Templates.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-Templates.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
-Templates.o: /usr/include/sys/time.h ../graphics.new/QueryProc.h
-Templates.o: ../graphics/DeviseTypes.h /usr/include/values.h
-Templates.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
-Templates.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-Templates.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-Templates.o: ../graphics/ViewDir.h /usr/include/string.h
-Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-Templates.o: ../src/utils/ObjectValid.h SortedTable.h ../graphics/Timer.h
-Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
-Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
-Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-Templates.o: ../graphics.new/MemMgr.h ../graphics.new/GData.h
-Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
-Templates.o: ../graphics/AttrList.h ../graphics/Init.h
-Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/isa_defs.h /usr/include/sys/stat.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h

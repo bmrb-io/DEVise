@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.12  2000/03/23 19:58:28  wenger
+# Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+# g++ 2.95.2).
+#
 # Revision 1.11  2000/01/04 21:17:50  wenger
 # Compiled DEVise on Linux.
 #
@@ -105,7 +109,8 @@ Server.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
 Server.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
 Server.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 Server.o: /usr/include/sys/param.h /usr/include/linux/param.h
-Server.o: /usr/include/asm/param.h Server.h ../graphics/Exit.h
+Server.o: /usr/include/asm/param.h /usr/include/sys/time.h
+Server.o: /usr/include/bits/time.h Server.h ../graphics/Exit.h
 TclClient.o: /usr/include/stdio.h /usr/include/features.h
 TclClient.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TclClient.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -199,6 +204,7 @@ WinServer.o: /usr/include/asm/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 WinServer.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 WinServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 WinServer.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+WinServer.o: ../graphics/DualWindowRep.h
 client.o: /usr/include/stdio.h /usr/include/features.h
 client.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 client.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -224,25 +230,3 @@ server.o: /usr/include/endian.h /usr/include/bits/endian.h
 server.o: /usr/include/sys/select.h /usr/include/bits/select.h
 server.o: /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h
 server.o: /usr/include/alloca.h /usr/include/string.h /usr/include/assert.h
-server.o: WinServer.h Server.h ../graphics/Display.h
-server.o: ../graphics/DeviseTypes.h /usr/include/values.h
-server.o: /usr/include/limits.h /usr/include/bits/posix1_lim.h
-server.o: /usr/include/bits/local_lim.h /usr/include/linux/limits.h
-server.o: /usr/include/bits/posix2_lim.h
-server.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-server.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
-server.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-server.o: /usr/include/bits/mathcalls.h ../graphics/Dispatcher.h
-server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/ViewWin.h
-server.o: ../graphics/WindowRep.h ../graphics/Transform.h
-server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/Pattern.h
-server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-server.o: ../graphics/DevError.h /usr/include/errno.h
-server.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-server.o: /usr/include/asm/errno.h /usr/include/sys/param.h
-server.o: /usr/include/linux/param.h /usr/include/asm/param.h
-server.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
-server.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
-server.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-server.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-server.o: ../graphics/DualWindowRep.h
