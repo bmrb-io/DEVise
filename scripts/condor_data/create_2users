@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1999/08/06 17:59:53  wenger
+#  Changed data font from Courier to New Century Schoolbook.
+#
 #  Revision 1.8  1999/07/23 20:37:50  wenger
 #  Added disabling of user actions in relevant views.
 #
@@ -228,6 +231,7 @@ sub CreateViews {
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
   print SES_OUT "DEVise viewSetDisabledActions UserList_view 1 0 0 1\n";
+  print SES_OUT "DEVise viewSetJSSendP UserList_view 0 1 0 {} 1 { } 1";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} Select1_view 0 1 0 1 36 2\n";
@@ -334,7 +338,7 @@ sub CreateMappings {
       "1 1 {} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
-      "{} {-2} {0.8} {} {-3} {4} {} {} {}\n";
+      "{} {-2} {0.6} {} {-3} {4} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "Select1#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
@@ -450,10 +454,10 @@ sub CreateWindows {
   print SES_OUT "\n# Create windows and insert views\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} UserList 0.10 0.20 ",
-      "0.25 0.74 0 0\n";
+      "0.15 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} Total 0.35 0.87 0.63 ",
+  print SES_OUT "DEVise create {window} {TileLayout} Total 0.25 0.87 0.73 ",
       "0.07 0 0\n";
   print SES_OUT "DEVise insertWindow {Total_view} {Total}\n";
 
@@ -465,16 +469,16 @@ sub CreateWindows {
       "0.04 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {Select2_view} {Select2}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} User1 0.35 0.20 0.63 ",
+  print SES_OUT "DEVise create {window} {TileLayout} User1 0.25 0.20 0.73 ",
       "0.22 0 0\n";
   print SES_OUT "DEVise insertWindow {User1_view} {User1}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} User2 0.35 0.42 0.63 ",
+  print SES_OUT "DEVise create {window} {TileLayout} User2 0.25 0.42 0.73 ",
       "0.22 0 0\n";
   print SES_OUT "DEVise insertWindow {User2_view} {User2}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} TotalLinked ",
-      "0.35 0.64 0.63 0.23 0 0\n";
+      "0.25 0.64 0.73 0.23 0 0\n";
   print SES_OUT "DEVise insertWindow {TotalLinked_view} {TotalLinked}\n";
 }
 
