@@ -1,0 +1,85 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+
+# Makefile.std for xvertext version 5.0
+
+
+#############################################################################
+
+include ../../Makefile.common
+
+CFLAGS = $(ARCH_FLAGS) \
+        -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
+
+# Cache status:
+# ------------
+#  Add one of `-DCACHE_XIMAGES' or `-DCACHE_BITMAPS' to decide what is
+#   cached.
+#
+#  Add `-DCACHE_SIZE_LIMIT=xxxx' where xxxx is the cache size in kilobytes.
+#   A cache size of zero turns caching off.
+#
+#  Add `-DCACHE_FID' if you want to cache font ID's in those instances
+#   when the font name can't be determined. 
+#
+#  You could also add `-DDEBUG', and watch the cache in operation.
+
+
+              CACHE = -DCACHE_BITMAPS -DCACHE_SIZE_LIMIT=300 -DCACHE_FID
+
+
+#############################################################################
+
+
+#  If your X11 is release 3, add -DX11R3 to this line
+#    (you won't be able to use the stipple feature with rotated text)
+
+
+                RELEASE =
+
+
+#############################################################################
+
+
+             CFLAGS+ = $(CACHE) $(RELEASE) 
+               OBJS = rotated.o example.o
+
+# We need to use gcc instead of g++...
+CC = $(C)
+
+all: libXrot.a
+
+example: $(OBJS) rotated.h
+	$(C) $(CFLAGS) -o example $(DEFS) $(OBJS) $(ARCH_LDFLAGS) \
+		-lX11 -lm $(ARCH_LDPOST)
+
+libXrot.a: rotated.o rotated.h
+	rm -f libXrot.a
+	$(AR) cq libXrot.a rotated.o 
+	$(RANLIB) libXrot.a
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	rm -f example example~ libXrot.a
+
+mostlyclean:
+	rm -f $(OBJS)
