@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/01/29 23:57:07  jussi
+  Removed extra printf debugging statement.
+
   Revision 1.19  1996/01/27 00:18:19  jussi
   Made recId be evaluated as a simple command rather than as
   a complex command.
@@ -210,6 +213,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[4] = new FullMapping_OvalShape;
     _shapes[5] = new FullMapping_VectorShape;
     _shapes[6] = new FullMapping_BlockShape;
+    _shapes[7] = new FullMapping_3DVectorShape;
 
     /* Init tcl */
     _interp = Tcl_CreateInterp();
