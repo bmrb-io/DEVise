@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1999/07/22 21:25:01  wenger
+#  Fixed problem with passing args to jspop.
+#
 #  Revision 1.3  1999/07/01 14:48:17  wenger
 #  Added sleep after killing jspop and Xvfb to fix problem with the new Xvfb
 #  sometimes starting before the old one is done being killed.
@@ -78,7 +81,7 @@ if (!$foundJspop) {
 
   # Make sure the first Xvfb done getting killed before we start things up.
   sleep 15;
-  @args = ("jspop" "-server2" "&");
+  @args = ("jspop", "-server2", "&");
   system(@args);
 }
 
