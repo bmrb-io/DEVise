@@ -1,0 +1,21 @@
+CC = g++
+CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -fexternal-templates
+
+LIBSRC	= sec.C cal.C
+
+LIBOBJ	= sec.o cal.o
+
+TESTSRC = crsp_index.C main.C
+
+ALLSRC	= $(LIBSRC) $(TESTSRC) 
+
+LIBOBJS	= $(LIBOBJ) ../tape/tapedrive.o
+
+crspobj.o: $(LIBOBJ)
+	ld -r -o $@ $(LIBOBJ)
+
+main:	main.o $(LIBOBJS)
+	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)
+
+crsp_index: crsp_index.o $(LIBOBJS)
+	$(CC) $(CPPFLAGS) -o $@ $@.o $(LIBOBJS)
