@@ -2825,6 +2825,9 @@ Num Date        Status  Description
 			the server, the JS process doesn't seem to actually
 			exit. (rkw)
 
+707 10/08/01	OPEN	Collaboration (non-JavaScreen-based) no longer works.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
