@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/28 20:46:38  jussi
+  Minor clean up.
+
   Revision 1.8  1995/12/18 03:15:15  ravim
   Data is never refreshed if the only changes are due to draw/undrawing the
   statistics. XOR logic used to accomplish this optimization.
@@ -63,6 +66,8 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
   // add terminating null
   _DisplayStats[STAT_NUM] = 0;
+
+  _index = -1;
 }
 
 void ViewGraph::InsertMapping(TDataMap *map)
@@ -82,24 +87,35 @@ void ViewGraph::InsertMapping(TDataMap *map)
   Refresh();
 }
 
-void ViewGraph::InitMappingIterator()
+void ViewGraph::InitMappingIterator(Boolean backwards)
 {
-  _index = _mappings.InitIterator();
+  assert(_index < 0);
+  _index = _mappings.InitIterator((backwards ? 1 : 0));
 }
 
 Boolean ViewGraph::MoreMapping()
 {
+  assert(_index >= 0);
   return _mappings.More(_index);
 }
 
 TDataMap *ViewGraph::NextMapping()
 {
+  assert(_index >= 0);
   return _mappings.Next(_index);
 }
 
 void ViewGraph::DoneMappingIterator()
 {
+  assert(_index >= 0);
   _mappings.DoneIterator(_index);
+  _index = -1;
+}
+
+void ViewGraph::SwapMappings(TDataMap *map1, TDataMap *map2)
+{
+  assert(_index < 0);
+  _mappings.Swap(map1, map2);
 }
 
 /* Turn On/Off DisplayStats */
