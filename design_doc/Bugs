@@ -1434,6 +1434,12 @@ Num Date        Status  Description
 			established, but DEVise window never shows up.
 			(rkw)
 
+379 07/14/98	OPEN	UniData schema GUI sometimes produces the line:
+			    whitespace = '  '       ' ;
+			when it should be:
+			    whitespace = '  ' ;
+			(mjh/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
