@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/03/07 16:56:06  jussi
+  Added association of TDataMap and ViewGraph.
+
   Revision 1.11  1996/03/05 23:26:49  jussi
   Added destructor which deletes dynamically allocated objects.
 
@@ -137,8 +140,6 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _boundWidth = 9.0; _boundHeight = 9.0;
   
   _hintInitialized = false;
-
-  _view = NULL;
 }
 
 TDataMap::~TDataMap()
