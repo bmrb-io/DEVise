@@ -1,7 +1,24 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/14 20:49:06  jussi
+  Added missing semicolon.
+
   Revision 1.3  1995/09/14 20:32:35  jussi
   Added missing return statement to SetFormat.
 
@@ -211,6 +228,9 @@ protected:
 	/* When a query is done, derived class must inform the base class */
 	void ReportQueryDone(int bytes);
 
+	/* Report size of data display area. */
+	void GetDataArea(int &x, int &y, int &width,int &height);
+
 private:
 	/* Draw highlight */
 	void DrawHighlight();
@@ -246,7 +266,6 @@ private:
 	void View::GetXAxisArea(int &x, int &y, int &width, int &height,
 		int &startX);
 	void GetYAxisArea(int &x, int &y, int &width, int &height);
-	void GetDataArea(int &x, int &y, int &width,int &height);
 
 	/* Drawing axes and label*/
 	void DrawAxesLabel(WindowRep *win,int x, int y, int w, int h);
