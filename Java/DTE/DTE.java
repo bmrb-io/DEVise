@@ -8,7 +8,8 @@ import Parser.*;
 /** This is a main DTE class */
 
 public class DTE {
-	Query query;
+	private Query query;
+
 	void parse(){	// throws parse error
 
 		// Jin has to implement this function and stuff closely related

@@ -9,6 +9,11 @@ public class Selection implements Expression {
     private String attribute;
     private TypeDesc type;
 
+    public Selection(String alias, String attribute){
+        this.alias = alias;
+        this.attribute = attribute;
+    }
+
     public Selection(String alias, String attribute, TypeDesc type){
         this.alias = alias;
         this.attribute = attribute;
