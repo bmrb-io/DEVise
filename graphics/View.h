@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/07/25 14:22:59  jussi
+  Added aborted parameter to ReportQueryDone().
+
   Revision 1.35  1996/07/23 19:34:06  beyer
   Changed dispatcher so that pipes are not longer used for callback
   requests from other parts of the code.
@@ -299,9 +302,9 @@ public:
 	int GetNumDimensions() { return _numDimensions; }
 	void SetNumDimensions(int d);
 
-	/* Get/set wireframe/solid 3D objects */
-	Boolean GetSolid3D() { return _solid3D; }
-	void SetSolid3D(Boolean solid);
+	/* Get/set wireframe/solid/solid+frame 3D objects */
+	int GetSolid3D() { return _solid3D; }
+	void SetSolid3D(int solid);
 
 	/* Get/set XY zoom or X/Y zoom */
 	Boolean IsXYZoom() { return _xyZoom; }
