@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1997/09/04 17:52:57  wenger
+#  Fixed bug 216.
+#
 #  Revision 1.31  1997/08/04 23:37:11  donjerko
 #  Added Mirror button to the AS clause, that mirrors the SELECT clause
 #
@@ -823,16 +826,16 @@ proc unidata_newschemawin {} {
 	    -textvariable issepartext -menu .newschema.separ.button.menu \
 	    -width 12
     menu .newschema.separ.button.menu -tearoff 0
-    .newschema.separ.button.menu add radiobutton -label "Separator" \
-	    -variable issepar -value 1 -command {
-	set issepartext "Separator"
-    }
+# uncomment the following lines to get the separator button (DD)
+#    .newschema.separ.button.menu add radiobutton -label "Separator" \
+#	    -variable issepar -value 1 -command {
+#	set issepartext "Separator"
+#   }
     .newschema.separ.button.menu add radiobutton -label "Whitespace" \
 	    -variable issepar -value 0 -command {
 	set issepartext "Whitespace"
     }
-#   set issepartext "Separator"
-    set issepartext "Whitespace"
+    set issepartext "Separator"
     if {!$issepar} {
 	set issepartext "Whitespace"
     }
@@ -1225,8 +1228,10 @@ proc unidata_newschema {} {
     set sname ""
     set ftype ascii
     set comm "//"
-    set issepar 1
-    set separ "' '"
+#   set issepar 1
+    set issepar 0
+#   set separ "' '"
+    set separ "' \t'"
     set attrlist ""
     set aname ""
     set acomp No
