@@ -59,6 +59,7 @@ public class DEViseWindow extends Container
     int GDataType = 1; // 0: drawing     1: javabutton
     Button[] GDataButton = null;
     Image[] GDataImage = null, cursorImage = null;
+    Component labeledButton = null;
 
     public DEViseWindow(jsdevisec what, String name, Rectangle loc, Image img, Vector views)
     {
@@ -335,30 +336,43 @@ public class DEViseWindow extends Container
                         }
                     }
                 });
+                
             GDataButton[i].addMouseListener(new MouseAdapter() 
                 {              
-                    boolean isDrawn = false;
                     public void mouseEntered(MouseEvent event)
-                    {   
-                        //YGlobals.Ydebugpn("Mouse entered!");
-                                               
+                    {                           
+                        //YGlobals.Ydebugpn("Mouse entered!");                                               
                         Component c = event.getComponent(); 
-                        Point p = event.getPoint();         
-                        isDrawn = true;
-                        jscreen.drawButtonLabel(true, c, p);                        
-                    }
-                    
-                    public void mouseExited(MouseEvent event)
-                    {   
-                        //YGlobals.Ydebugpn("mouse exit!");
-                        
-                        if (isDrawn) {
-                            isDrawn = false;
-                            jscreen.drawButtonLabel(false, null, null);
+                        if (c != labeledButton) {
+                            labeledButton = (Button)c;
+                            Point p = event.getPoint();         
+                            jscreen.drawButtonLabel(true, c, p);                        
                         }
                     }
                 });
-                
+            /*
+            GDataButton[i].addFocusListener(new FocusAdapter()
+                {
+                    boolean isFocus = false;
+                    
+                    public void focusGained(FocusEvent event)
+                    {
+                        if (!isFocus) {
+                            isFocus = true;
+                            Component c = event.getComponent();
+                            jscreen.drawButtonLabel(true, c, new Point(0, 0));
+                        }                        
+                    }
+                    
+                    public void focusLost(FocusEvent event)
+                    { 
+                        if (true) {
+                            isFocus = false;
+                            jscreen.drawButtonLabel(false, null, null);
+                        }                        
+                    }
+                });
+            */        
             add(GDataButton[i]);
         }   
     }
@@ -634,8 +648,7 @@ public class DEViseWindow extends Container
                 }
 
                 if (actualKey != 0) {
-                    //userAction = 0;
-                    //repaint();
+                    repaint();
                     dispatcher.insertCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + actualKey);
                     setCursor(DEViseGlobals.waitcursor);
                 }
@@ -762,9 +775,21 @@ public class DEViseWindow extends Container
                 jscreen.setFocusToCurrentWindow();
             }
             
+            if (labeledButton != null) {
+                labeledButton = null;
+                jscreen.drawButtonLabel(false, null, null);
+            }
+            
             if (currentView != null && currentView.isCurrent(p)) {
                 //isViewFirstTime = false;
                 jsc.viewInfo.updateInfo(p.x, p.y);
+
+                if (jsc.dispatcher.getStatus() != 0) {
+                    setCursor(DEViseGlobals.pointercursor);
+                } else {
+                    setCursor(DEViseGlobals.waitcursor);
+                }
+                    
                 return;
             } else {
                 if (jscreen.getClickWindow() != DEViseWindow.this) {
@@ -775,12 +800,14 @@ public class DEViseWindow extends Container
 
             for (int j = 0; j < allViews.size(); j++) {
                 DEViseView view = (DEViseView)allViews.elementAt(j);
-                if (view.isCurrent(p)) {
-                    if (jsc.dispatcher.getStatus() == 0) {
-                        setCursor(DEViseGlobals.waitcursor);
-                    } else {
+                if (view.isCurrent(p)) {                   
+
+                    if (jsc.dispatcher.getStatus() != 0) {
                         setCursor(DEViseGlobals.pointercursor);
+                    } else {
+                        setCursor(DEViseGlobals.waitcursor);
                     }
+                    
                     jsc.viewInfo.updateInfo(getName(), view.getName(), p.x, p.y);
                     currentView = view;
                     repaint();
@@ -788,11 +815,12 @@ public class DEViseWindow extends Container
                 }                                
             }
             
-            if (jsc.dispatcher.getStatus() == 0) {
-                setCursor(DEViseGlobals.waitcursor);
-            } else {    
+            if (jsc.dispatcher.getStatus() != 0) {
                 setCursor(DEViseGlobals.movecursor);
+            } else {
+                setCursor(DEViseGlobals.waitcursor);
             }
+            
             jsc.viewInfo.updateInfo(getName(), null, p.x, p.y);
             repaint();
         }

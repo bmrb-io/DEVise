@@ -310,7 +310,8 @@ public class DEViseScreen extends Panel
 
             isUpdate = true;
             jsc.isSessionOpened = true;
-            jsc.viewInfo.updateInfo();
+            jsc.viewInfo.updateInfo(); 
+            jsc.viewControl.updateControl(false);
             offScrImg = null;
             repaint();
         } else {
@@ -318,6 +319,7 @@ public class DEViseScreen extends Panel
             currentWindow = null;
             jsc.isSessionOpened = false;
             jsc.viewInfo.updateInfo();
+            jsc.viewControl.updateControl(true);
             offScrImg = null;
             repaint();
         }
@@ -346,7 +348,13 @@ public class DEViseScreen extends Panel
     }
     
     public synchronized void drawButtonLabel(boolean isDraw, Component c, Point pt)
-    {   
+    {           
+        if (buttonLabel != null) {
+            remove(buttonLabel);
+            buttonLabel = null;
+            repaint();
+        }
+        
         if (isDraw) {
             if (c != null && pt != null) {
                 DEViseWindow win = getCurrentWindow();
@@ -369,12 +377,6 @@ public class DEViseScreen extends Panel
                 repaint(); 
             } else { 
                 return;
-            }
-        } else {
-            if (buttonLabel != null) {
-                remove(buttonLabel);
-                buttonLabel = null;
-                repaint();
             }
         }
     }

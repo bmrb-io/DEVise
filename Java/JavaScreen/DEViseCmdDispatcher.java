@@ -312,10 +312,18 @@ public class DEViseCmdDispatcher implements Runnable
                         jsc.animPanel.stop();
 
                         DEViseWindow win = jscreen.getCurrentWindow();
-                        jscreen.setCursor(DEViseGlobals.handcursor);
                         if (win != null) {
-                            win.setCursor(DEViseGlobals.pointercursor);
-                        }
+                            DEViseView view = win.getCurrentView();
+                            if (view != null) {
+                                jscreen.setCursor(DEViseGlobals.pointercursor);
+                                win.setCursor(DEViseGlobals.pointercursor);
+                            } else {
+                                jscreen.setCursor(DEViseGlobals.movecursor);
+                                win.setCursor(DEViseGlobals.pointercursor);
+                            }
+                        } else {
+                            jscreen.setCursor(DEViseGlobals.handcursor);
+                        }                        
 
                         jsc.viewControl.updateImage(0, 0);
                         jsc.viewControl.updateCount(0);
@@ -425,10 +433,18 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.animPanel.stop();
 
                 DEViseWindow win = jscreen.getCurrentWindow();
-                jscreen.setCursor(DEViseGlobals.handcursor);
                 if (win != null) {
-                    win.setCursor(DEViseGlobals.pointercursor);
-                }
+                    DEViseView view = win.getCurrentView();
+                    if (view != null) {
+                        jscreen.setCursor(DEViseGlobals.pointercursor);
+                        win.setCursor(DEViseGlobals.pointercursor);
+                    } else {
+                        jscreen.setCursor(DEViseGlobals.movecursor);
+                        win.setCursor(DEViseGlobals.movecursor);
+                    }
+                } else {
+                    jscreen.setCursor(DEViseGlobals.handcursor);
+                }                        
 
                 jsc.viewControl.updateImage(0, 0);
                 jsc.viewControl.updateCount(0);
