@@ -2,7 +2,7 @@
 
 \rm jspop.out
 echo "launching jspop"
-jspop -debug >& jspop.out &
+jspop -debug &
 
 sleep 15
 

@@ -14,5 +14,5 @@ setenv DISPLAY unix:1.0
 touch devised.out
 touch jspop.out
 
-nohup java jspop $* >! jspop.out
+nohup java jspop $* >>& jspop.out
 setenv DISPLAY unix:0.0
