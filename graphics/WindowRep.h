@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/18 03:14:13  ravim
+  Lines and Rectangles can be drawn with XOR display function.
+
   Revision 1.5  1995/12/02 21:33:14  jussi
   Added support for TK_WINDOW i.e. Tcl/Tk controls surrounding
   each view and window. This implementation was superseded by
@@ -169,7 +172,6 @@ public:
   virtual void SetPattern(Pattern p){_pattern = p; }
   Pattern GetPattern(){ return _pattern;}
   virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height) = 0;
-  virtual void InvertFillRect(Coord xlow, Coord ylow, Coord width, Coord height) = 0;
 
   /* Fill rectangles, variable width/height */
   virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
@@ -190,7 +192,6 @@ public:
 		   Coord startAngle, Coord endAngle)=0;
   /* draw line. end points are in world coord, but the width is in pixels */
   virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width)=0;
-  virtual void InvertLine(Coord x1, Coord y1, Coord x2, Coord y2, Coord width)=0;
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width)=0;
 
   /* draw and scaled text to fit inside box, according to alignment.
@@ -211,6 +212,10 @@ public:
 			    Coord height,
 			    TextAlignment alignment = AlignCenter, 
 			    Boolean skipLeadingSpaces = false)=0;
+
+  /* Set XOR or normal drawing mode on */
+  virtual void SetXorMode() = 0;
+  virtual void SetCopyMode() = 0;
 
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) =0;

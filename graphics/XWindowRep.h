@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/18 03:13:47  ravim
+  Versions for drawing lines and rectangles with XOR logic.
+
   Revision 1.4  1995/12/02 21:34:21  jussi
   Added support for TK_WINDOW i.e. Tcl/Tk controls surrounding each
   view and window, but this implementation was superseded by code
@@ -104,7 +107,6 @@ public:
 	virtual void SetPattern(Pattern p);
 
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
-	virtual void InvertFillRect(Coord xlow, Coord ylow, Coord width, Coord height);
 	/* Fill rectangles, variable width/height */
 	virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
 			Coord *height, int num);
@@ -126,7 +128,6 @@ public:
 			Coord startAngle, Coord endAngle);
 
 	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
-	virtual void InvertLine(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
 
@@ -137,6 +138,10 @@ public:
 	virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
 		Coord height, TextAlignment alignment= AlignCenter,
 		Boolean skipLeadingSpaces = false);
+
+	/* Set XOR or normal drawing mode on */
+	virtual void SetXorMode();
+	virtual void SetCopyMode();
 
 	/* Get window rep dimensions */
 	virtual void Dimensions(unsigned int &width, unsigned int &height );
