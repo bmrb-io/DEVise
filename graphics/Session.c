@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.100  2001/10/04 19:03:36  wenger
+  JavaScreen support allows session files without .ds extension; various
+  improvements to session file processing.
+
   Revision 1.99  2001/10/03 19:09:50  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -2691,7 +2695,16 @@ Session::SaveDataSources(FILE *fp)
 	            tmpC--;
 	          }
 
-			  fprintf(fp, "DEVise dteInsertCatalogEntry . {%s}\n", catEntry);
+			  // Substitute environment variables into the data source
+			  // definition.
+			  char *tmpEntry = AddEnvToPath("DEVISE_DAT", catEntry);
+			  char *realEntry = AddEnvToPath("DEVISE_SCHEMA", tmpEntry);
+
+			  fprintf(fp, "DEVise dteInsertCatalogEntry . {%s}\n", realEntry);
+
+			  FreeString(tmpEntry);
+			  FreeString(realEntry);
+			  FreeString(catEntry);
 			}
 		  }
 		}
