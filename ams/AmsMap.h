@@ -3,7 +3,7 @@ struct SolDnCompiled_GData {
 	double y;
 };
 
-# 1 "/p/devise/parser/proto/RectXShape_proto.h"
+# 1 "../parser/proto/RectXShape_proto.h"
  
 
 
@@ -19,6 +19,9 @@ struct SolDnCompiled_GData {
 
 
  
+
+
+
 
 
 
@@ -88,7 +91,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 98 "/p/devise/parser/proto/RectXShape_proto.h"
+# 101 "../parser/proto/RectXShape_proto.h"
 
   }
 
@@ -200,34 +203,21 @@ public:
 	_shapes[0] = new SolDnCompiled_RectXShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				SolDnCompiled_GData *symbol = (SolDnCompiled_GData *)gBuf;
-				AmsRec *data = (AmsRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			SolDnCompiled_GData *symbol = (SolDnCompiled_GData *)gBuf;
+			AmsRec *data = (AmsRec *)tptr;
+			tptr += tRecSize;
 
     symbol->x = (double)data->DATE;
     symbol->y = (double)data->TOTAL_INCIDENT_RADTN;
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				SolDnCompiled_GData *symbol = (SolDnCompiled_GData *)gBuf;
-				AmsRec *data = (AmsRec *)tRecs[i];
-
-    symbol->x = (double)data->DATE;
-    symbol->y = (double)data->TOTAL_INCIDENT_RADTN;
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 
@@ -252,7 +242,7 @@ struct RainCompiled_GData {
 	double y;
 };
 
-# 1 "/p/devise/parser/proto/BarShape_proto.h"
+# 1 "../parser/proto/BarShape_proto.h"
  
 
 
@@ -334,7 +324,7 @@ public:
 
 
 
-# 95 "/p/devise/parser/proto/BarShape_proto.h"
+# 95 "../parser/proto/BarShape_proto.h"
 
   }
 
@@ -405,34 +395,21 @@ public:
 	_shapes[0] = new RainCompiled_BarShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				RainCompiled_GData *symbol = (RainCompiled_GData *)gBuf;
-				AmsRec *data = (AmsRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			RainCompiled_GData *symbol = (RainCompiled_GData *)gBuf;
+			AmsRec *data = (AmsRec *)tptr;
+			tptr += tRecSize;
 
     symbol->x = (double)data->DATE;
     symbol->y = (double)data->ACCUM_RAINFALL;
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				RainCompiled_GData *symbol = (RainCompiled_GData *)gBuf;
-				AmsRec *data = (AmsRec *)tRecs[i];
-
-    symbol->x = (double)data->DATE;
-    symbol->y = (double)data->ACCUM_RAINFALL;
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 
@@ -457,7 +434,7 @@ struct TempCompiled_GData {
 	double y;
 };
 
-# 1 "/p/devise/parser/proto/RectXShape_proto.h"
+# 1 "../parser/proto/RectXShape_proto.h"
  
 
 
@@ -473,6 +450,9 @@ struct TempCompiled_GData {
 
 
  
+
+
+
 
 
 
@@ -542,7 +522,7 @@ public:
     height = ((map->GetDefaultShapeAttrs())[1]) ;
 
 
-# 98 "/p/devise/parser/proto/RectXShape_proto.h"
+# 101 "../parser/proto/RectXShape_proto.h"
 
   }
 
@@ -653,34 +633,21 @@ public:
 	_shapes[0] = new TempCompiled_RectXShape;
 	}
 
-	virtual void ConvertToGData(RecId recId,void *buf, void **tRecs, int numRecs, void *gdataBuf) {
+	virtual void ConvertToGData(RecId recId,void *buf, int numRecs, void *gdataBuf) {
 		int tRecSize= TDataRecordSize();
 		int gRecSize= GDataRecordSize();
 		char *gBuf= (char *)gdataBuf;
-		if (tRecSize > 0) {
-			char *tptr = (char *)buf;
-			for(int i = 0; i < numRecs; i++) {
-				TempCompiled_GData *symbol = (TempCompiled_GData *)gBuf;
-				AmsRec *data = (AmsRec *)tptr;
-				tptr += tRecSize;
+		char *tptr = (char *)buf;
+		for(int i = 0; i < numRecs; i++) {
+			TempCompiled_GData *symbol = (TempCompiled_GData *)gBuf;
+			AmsRec *data = (AmsRec *)tptr;
+			tptr += tRecSize;
 
     symbol->x = (double)data->DATE;
     symbol->y = (double)data->DOME_TEMP;
   
-				recId++;
-				gBuf += gRecSize;;
-			}
-		} else {
-			for(int i = 0; i < numRecs; i++) {
-				TempCompiled_GData *symbol = (TempCompiled_GData *)gBuf;
-				AmsRec *data = (AmsRec *)tRecs[i];
-
-    symbol->x = (double)data->DATE;
-    symbol->y = (double)data->DOME_TEMP;
-  
-				recId++;
-				gBuf += gRecSize;
-			}
+			recId++;
+			gBuf += gRecSize;;
 		}
 	}
 
