@@ -74,11 +74,13 @@ BBoxEntry *ReplacementPolicyRandom::pickVictimBBox(ObjectDescriptor *&objd)
 		    Coord lv = od->_list->_bbox->_low;
 		    Coord rv = od->_list->_bbox->_high;
 		
-		    printf("-----------------------------------------------\n");
+		    printf("-----------------------------------------------"
+		    "----------------------\n");
 		    printf("Bounding Box %s%f, %f%s of Object %d"
 			   " replaced as a victim.\n",
 			   l, lv, rv, r, od->_obj);
-		    printf("-----------------------------------------------\n");
+		    printf("-----------------------------------------------"
+		    "----------------------\n");
 		    objd = od;
 		    return od->_list;
 		}
