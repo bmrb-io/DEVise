@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/10/18 15:19:32  jussi
+#  Removed CompDate.o.
+#
 #  Revision 1.1  1996/10/17 20:47:03  jussi
 #  Initial revision.
 #
@@ -56,6 +59,7 @@ LIBOBJ = \
         ../graphics/xvgifwr.o \
         ../graphics/xvgrab.o \
         ../graphics/Compress.o \
+        ../graphics/Util.o \
         ../graphics.new/ClientAPI.o \
         ../graphics.new/Version.o \
 	../graphics/xvgif.o \
@@ -94,6 +98,9 @@ Exit.o: ../../graphics/Exit.c
 
 ColorMgr.o: ../../graphics/ColorMgr.c
 	$(CC) -c $(CFLAGS) ../../graphics/ColorMgr.c
+
+Util.o: ../../graphics/Util.c
+	$(CC) -c $(CFLAGS) ../../graphics/Util.c
 
 Display.o: ../../graphics/Display.c
 	$(CC) -c $(CFLAGS) ../../graphics/Display.c
