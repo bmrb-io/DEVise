@@ -556,7 +556,7 @@ my.yacc.tab.o: /usr/include/values.h ../../graphics/DevStatus.h
 my.yacc.tab.o: ../../graphics/DList.h ../../graphics/Exit.h
 my.yacc.tab.o: ../../graphics/Init.h ../../graphics/BufPolicy.h url.h
 my.yacc.tab.o: /usr/include/unistd.h SockStream.h listop.h ParseTree.h site.h
-my.yacc.tab.o: Iterator.h StandardRead.h FunctionRead.h
+my.yacc.tab.o: Iterator.h StandardRead.h FunctionRead.h joins.h
 resolve.o: myopt.h /usr/include/assert.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/String.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
