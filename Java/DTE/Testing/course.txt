@@ -42,7 +42,7 @@ cs 564 dbms
 cs 577 intr-algorithm
 cs 638 undergrad-topics
 cs 640 intr-netwrok
-cs 681 682-senior-thesis
+cs 681 intro-senior-thesis
 cs 699 directed-study
 cs 701 proglangcompiler
 cs 702 computer-construction
