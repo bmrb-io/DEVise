@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/06/09 14:46:41  wenger
+  Added cursor grid; fixed bug 187; a few minor cleanups.
+
   Revision 1.12  1997/05/30 20:42:54  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -149,8 +152,8 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
     sprintf(buf5, "Height 0.5");
   }
 
-  sprintf(buf6, "Exclude from Print");
-  sprintf(buf7, "Print Pixmap");
+  sprintf(buf6, "{Exclude from Print}");
+  sprintf(buf7, "{Print Pixmap}");
 }
 
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
