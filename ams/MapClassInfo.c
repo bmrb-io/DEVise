@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 16:01:07  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/05 20:23:45  jussi
   Updated CVS header.
 
@@ -43,7 +46,6 @@
 #include "DispQueryProc.h"
 #include "BufMgr.h"
 #include "Temp.h"
-#include "ViewWinVer.h"
 #include "Snapshot.h"
 #include "ViewScatter.h"
 #include "MapClassInfo.h"
