@@ -12,7 +12,8 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the distribution area.
+#  Run this script to set up the bin directory for a given architecture-
+#  specific subdirectory. 
 
 ############################################################
 

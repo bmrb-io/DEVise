@@ -23,15 +23,18 @@
 if ($#argv > 0) then
   set version = $1
 else
-  echo "Usage: $0 <version>"
-  exit 1
+  echo -n "Please enter DEVise version: "
+  set version = $<
 endif
 
 set home = `pwd`
 
 set target = /p/devise/ftp/Devise-$version
 
-if (! -d $target) then
+if ( -d $target) then
+  echo "Distribution for DEVise version $version already exists."
+  exit
+else
   mkdir $target
 endif
 

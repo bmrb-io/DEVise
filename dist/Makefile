@@ -17,12 +17,14 @@
 
 ############################################################
 
+.PHONY : setup
 setup:
 	scripts/setup
 
+.PHONY : clean
 clean:
 	scripts/clean
 
-#TEMPTEMP -- how to deal with arg???
+.PHONY : dist
 dist:
 	scripts/gen_dist
