@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1999/07/23 20:37:50  wenger
+#  Added disabling of user actions in relevant views.
+#
 #  Revision 1.6  1999/07/22 14:52:26  wenger
 #  Updated Condor scripts for alignment info in mapping instead of view.
 #
@@ -234,7 +237,7 @@ sub CreateMappings {
       "1 1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
-      "{} {-2} {0.8} {} {-3} {} {} {} {}\n";
+      "{} {-2} {0.8} {} {-3} {4} {} {} {}\n";
 
   $dataName = ".Condor_Total";
   foreach $user (sort keys %userlist) {
