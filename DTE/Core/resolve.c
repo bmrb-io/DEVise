@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/10/08 22:27:13  donjerko
+  *** empty log message ***
+
   Revision 1.40  1998/07/24 04:38:00  donjerko
   *** empty log message ***
 
@@ -186,6 +189,20 @@ bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
 	return false;
 }
 
+ExecExpr* BaseSelection::createExec(const SqlExprLists& inputs) const
+{
+	for(int i = 0; i < inputs.size(); i++){
+		for(int j = 0; j < inputs[i].size(); j++){
+			BaseSelection* curr = inputs[i][j];
+			assert(curr);
+			if(match(curr)){
+				return new ExecSelect(getTypeID(), i, j);
+			}
+		}
+	}
+	return 0;
+}
+		
 ExecExpr* BaseSelection::createExec(Site* site1, Site* site2)
 {
      List<BaseSelection*>* selList;
@@ -228,9 +245,38 @@ ExecExpr* Operator::createExec(Site* site1, Site* site2)
 	return new ExecOperator(l, r, name);
 }
 
+ExecExpr* Operator::createExec(const SqlExprLists& inputs) const
+{
+	ExecExpr* retVal = BaseSelection::createExec(inputs);
+	if(retVal){
+		return retVal;
+	}
+	ExecExpr* l;
+	TRY(l = left->createExec(inputs), NULL);
+	ExecExpr* r;
+	TRY(r = right->createExec(inputs), NULL);
+	return new ExecOperator(l, r, name);
+}
+
 ExecExpr* EnumSelection::createExec(Site* site1, Site* site2)
 {
 	return new ExecSelect(getTypeID(), 0, position);
+}
+
+ExecExpr* EnumSelection::createExec(const SqlExprLists& inputs) const
+{
+	return new ExecSelect(getTypeID(), 0, position);
+}
+
+ExecExpr* PrimeSelection::createExec(const SqlExprLists& inputs) const
+{
+	ExecExpr* retVal = BaseSelection::createExec(inputs);
+	if(retVal){
+		return retVal;
+	}
+	string msg = "Table " + *alias + " does not have attribute " +
+		*fieldNm;
+	THROW(new Exception(msg), NULL);
 }
 
 ExecExpr* PrimeSelection::createExec(Site* site1, Site* site2)
@@ -280,12 +326,17 @@ BaseSelection* ConstantSelection::duplicate() {
 	return new ConstantSelection(typeID, newvalue);
 }
 
+ExecExpr* ConstantSelection::createExec(const SqlExprLists& inputs) const
+{
+	return new ExecConst(typeID, value);
+}
+
 ExecExpr* ConstantSelection::createExec(Site* site1, Site* site2)
 {
 	return new ExecConst(typeID, value);
 }
 
-bool PrimeSelection::match(BaseSelection* x){
+bool PrimeSelection::match(BaseSelection* x) const {
 	assert(x);
 	if(!(selectID() == x->selectID())){
 		return false;
@@ -380,6 +431,17 @@ double Operator::getSelectivity(){
 	}
 }
 
+ExecExpr* TypeCast::createExec(const SqlExprLists& inputs) const
+{
+	ExecExpr* retVal = BaseSelection::createExec(inputs);
+	if(retVal){
+		return retVal;
+	}
+	ExecExpr* execInp;
+	TRY(execInp = input->createExec(inputs), NULL);
+	return new ExecTypeCast(execInp, typeID);
+}
+
 ExecExpr* TypeCast::createExec(Site* site1, Site* site2)
 {
 	ExecExpr* retVal = BaseSelection::createExec(site1, site2);
@@ -389,6 +451,17 @@ ExecExpr* TypeCast::createExec(Site* site1, Site* site2)
 	ExecExpr* execInp;
 	TRY(execInp = input->createExec(site1, site2), NULL);
 	return new ExecTypeCast(execInp, typeID);
+}
+
+ExecExpr* Member::createExec(const SqlExprLists& inputs) const
+{
+	ExecExpr* retVal = BaseSelection::createExec(inputs);
+	if(retVal){
+		return retVal;
+	}
+	ExecExpr* execInp;
+	TRY(execInp = input->createExec(inputs), NULL);
+	return new ExecMember(execInp, *name);
 }
 
 ExecExpr* Member::createExec(Site* site1, Site* site2)
@@ -402,7 +475,7 @@ ExecExpr* Member::createExec(Site* site1, Site* site2)
 	return new ExecMember(execInp, *name);
 }
 
-bool Operator::match(BaseSelection* x){
+bool Operator::match(BaseSelection* x) const {
 	if(!(selectID() == x->selectID())){
 		return false;
 	}
@@ -465,6 +538,24 @@ TypeID Constructor::typeCheck(){
 		getConstructorPtr(*name, inpTypes, numFlds, typeID), UNKN_TYPE);
 	delete [] inpTypes;
 	return typeID;
+}
+
+ExecExpr* Constructor::createExec(const SqlExprLists& inputs) const
+{
+//	cerr << "creating exec for Constructor: " << toString() << endl;
+
+	ExecExpr* retVal = BaseSelection::createExec(inputs);
+	if(retVal){
+		return retVal;
+	}
+	int numFlds = args->cardinality();
+	ExprList* input = new ExprList;
+	args->rewind();
+	for(int i = 0; i < numFlds; i++){
+          TRY(input->push_back(args->get()->createExec(inputs)), NULL);
+          args->step();
+	}
+	return new ExecConstructor(input, *name);
 }
 
 ExecExpr* Constructor::createExec(Site* site1, Site* site2)
@@ -626,6 +717,7 @@ TableAlias::TableAlias(TableName *t, string* a, string *func,
 	}
 	accessMethods = interf->createAccessMethods();
 	isGestaltM = interf->isGestalt();
+	isRemoteM = interf->isRemote();
 	CON_END:
 	;
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/06/28 21:47:44  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.20  1997/11/24 23:13:16  weaver
   Changes for the new ColorManager.
 
@@ -237,6 +241,16 @@ TypeID* getTypesFromList(List<BaseSelection*>* list){
 		retVal[i] = list->get()->getTypeID();
 		list->step();
 		i++;
+	}
+	return retVal;
+}
+
+TypeIDList getTypesFromVec(const vector<BaseSelection*>& list)
+{
+	TypeIDList retVal;
+	vector<BaseSelection*>::const_iterator it;
+	for(it = list.begin(); it != list.end(); ++it){
+		retVal.push_back((*it)->getTypeID());	
 	}
 	return retVal;
 }

@@ -23,10 +23,8 @@ Cost FileScan::getCost() const
 }
 
 StandardAM::StandardAM
-	(const ISchema& schema, const string& url, const Stats& stats)
+	(const ISchema& schema, const string& url, const Stats& stats) : schemaM(schema), url(url)
 {
-	typeIDs = schema.getTypeIDs();
-	this->url = url;
 }
 
 Cost StandardAM::getCost() const
@@ -38,9 +36,21 @@ Cost StandardAM::getCost() const
 
 Iterator* StandardAM::createExec() const
 {
+	TypeIDList typeIDs = schemaM.getTypeIDs();
 	return new StandReadExec(typeIDs, url);
 }
 
+vector<BaseSelection*> StandardAM::getProjectList(const string& alias) const
+{
+	vector<BaseSelection*> retVal;
+	const string* atts = schemaM.getAttributeNames();
+	for(int i = 0; i < schemaM.getNumFlds(); i++){
+		retVal.push_back(new PrimeSelection(alias, atts[i]));
+	}
+	return retVal;
+}
+
+/*
 // *** YL
 GestaltAM::GestaltAM(const ISchema& schema, const string& url, 
 		     vector<string> member, const Stats& stats)
@@ -80,4 +90,5 @@ Iterator* GestaltAM::createExec() const
 	
 	return new UnionExec(vec);
 }
+*/
 

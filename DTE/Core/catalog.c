@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/07/24 04:37:58  donjerko
+  *** empty log message ***
+
   Revision 1.36  1997/11/24 12:45:06  okan
   Added record operationts to ODBC
 
@@ -185,6 +188,7 @@ Interface* Directory::createInterface(const string& entry) const
 	delete iterator;
 	string msg = "Table " + entry + " not defined in file: " +
 		fileName;
+	cerr << "throwing except: " << msg << endl;
 	THROW(new Exception(msg), NULL);
 	// throw Exception(msg);
 }
@@ -215,6 +219,7 @@ Interface* Catalog::createInterface(TableName* path) const {
 		// throw Exception(msg);
 	}
 	*/
+	interf->setRemoteTableName(path->toString());
 	return interf;
 }
 

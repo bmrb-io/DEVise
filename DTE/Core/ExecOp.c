@@ -288,6 +288,7 @@ UnionExec::UnionExec(Iterator* iter1, Iterator* iter2) : runningCurrent (0), n_i
 UnionExec::UnionExec(vector<Iterator*>& _vec) : vec (_vec), runningCurrent (0)
 {
   n_iter = vec.size();
+  assert(vec[0]);
 }
 
 UnionExec::~UnionExec()
@@ -319,7 +320,8 @@ const Tuple* UnionExec::getNext()
 const TypeIDList& UnionExec::getTypes()
 {
   assert (n_iter > 0);
-  return vec[0]->getTypes ();
+  assert(vec[0]);
+  return vec[0]->getTypes();
 }
 
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/06/28 21:47:46  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.35  1998/06/24 22:14:09  donjerko
   *** empty log message ***
 
@@ -205,7 +209,7 @@ Iterator* DBServerSite::createExec(){
 
 void Site::addTable(TableAlias* tabName){
 	myFrom->append(tabName);
-	string* alias = tabName->getAlias();
+	const string* alias = tabName->getAlias();
 	assert(alias);
 	tables->insert(*alias);
 }
@@ -240,7 +244,7 @@ bool Site::have(const set<string, ltstr>& arg){
 void LocalTable::addTable(TableAlias* tabName){
 	assert(myFrom->isEmpty());
 	myFrom->append(tabName);
-	string* alias = tabName->getAlias();
+	const string* alias = tabName->getAlias();
 	assert(alias);
 	tables->insert(*alias);
 	name = *alias;

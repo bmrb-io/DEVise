@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/10/08 22:27:12  donjerko
+  *** empty log message ***
+
   Revision 1.50  1998/10/01 21:00:53  yunrui
   *** empty log message ***
 
@@ -190,6 +193,9 @@ using namespace std;
 #endif
 
 class ExecExpr;
+class BaseSelection;
+
+typedef vector<vector<BaseSelection*> > SqlExprLists;
 
 typedef enum SelectID {
 	BASE_ID, SELECT_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
@@ -236,13 +242,14 @@ public:
 		return false;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
-	virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual ExecExpr* createExec(Site* site1, Site* site2);	// obsolete
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
 	virtual TypeID typeCheck() = 0;
 	virtual vector<BaseSelection*> getChildren() = 0;
 	virtual void setChildren(const vector<BaseSelection*>& children) = 0;
-     virtual bool match(BaseSelection* x) = 0;
-     virtual SelectID selectID() = 0;
-	TypeID getTypeID(){
+     virtual bool match(BaseSelection* x) const = 0;
+     virtual SelectID selectID() const = 0;
+	TypeID getTypeID() const {
 		return typeID;
 	}
 	virtual void setSize(int size){
@@ -349,10 +356,10 @@ public:
 	virtual BaseSelection* duplicate();
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 	}
-     virtual SelectID selectID(){
+     virtual SelectID selectID() const {
           return CONST_ID;
      }
-	virtual bool match(BaseSelection* x){ // throws exception
+	virtual bool match(BaseSelection* x) const { // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -367,6 +374,7 @@ public:
 		return (result ? true : false);
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
   
 	virtual int getSize(){
 		return packSize(value, typeID);
@@ -426,10 +434,10 @@ public:
 		return new TypeCast(*this);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
-     virtual SelectID selectID(){
+     virtual SelectID selectID() const {
           return CAST_ID;
      }
-	virtual bool match(BaseSelection* x){ // throws exception
+	virtual bool match(BaseSelection* x) const { // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -444,6 +452,7 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
 	virtual int getSize(){
 		return packSize(typeID);
 	}
@@ -513,10 +522,10 @@ public:
 		return new Member(*this);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
-     virtual SelectID selectID(){
+     virtual SelectID selectID() const {
           return MEMBER_ID;
      }
-	virtual bool match(BaseSelection* x){ // throws exception
+	virtual bool match(BaseSelection* x) const { // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -531,6 +540,7 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
 	virtual int getSize(){
 		return avgSize;
 	}
@@ -583,10 +593,10 @@ public:
 		assert(0);
 		input->collect(s, to);
 	}
-     virtual SelectID selectID(){
+     virtual SelectID selectID() const {
           return METHOD_ID;
      }
-	virtual bool match(BaseSelection* x){ // throws exception
+	virtual bool match(BaseSelection* x) const { // throws exception
 		assert(0);
           if(!(selectID() == x->selectID())){
                return false;
@@ -606,6 +616,10 @@ public:
 		assert(!"methods not implemented yet");
 		return NULL;
      }
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const {
+		assert(!"methods not implemented yet 1");
+		return 0;
+	}
 	virtual TypeID typeCheck(){
 		assert(!"methods not implemented yet");
 		return typeID;
@@ -670,10 +684,10 @@ public:
 		return NULL;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
-     virtual SelectID selectID(){
+     virtual SelectID selectID() const {
           return CONSTRUCTOR_ID;
      }
-	virtual bool match(BaseSelection* x){ // throws exception
+	virtual bool match(BaseSelection* x) const { // throws exception
           if(!(selectID() == x->selectID())){
                return false;
           }
@@ -695,6 +709,7 @@ public:
 		return true;
 	}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
      virtual TypeID typeCheck();
 	virtual int getSize(){
 		assert(!(typeID == UNKN_TYPE));
@@ -730,7 +745,8 @@ public:
 	}
 	virtual void setChildren(const vector<BaseSelection*>& children){}
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-     virtual SelectID selectID(){
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
+     virtual SelectID selectID() const {
           return ENUM_SELECT_ID;
      }
 	virtual bool exclusive(Site* site){
@@ -748,7 +764,7 @@ public:
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		assert(0);
 	}
-	virtual bool match(BaseSelection* x){
+	virtual bool match(BaseSelection* x) const {
 		assert(0);
 		return false;
 	}
@@ -763,7 +779,7 @@ class PrimeSelection : public BaseSelection{
 	string* fieldNm;
 	const TableAlias* parentTable;
 public:
-	PrimeSelection(string a, string attr) 
+	PrimeSelection(const string& a, const string& attr) 
 		: BaseSelection(), parentTable(0) {
 		alias = new string(a);
 		fieldNm = new string(attr);
@@ -811,12 +827,13 @@ public:
 		return new PrimeSelection(dupAlias, dupFieldNm);
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
      virtual ExecExpr* createExec(Site* site1, Site* site2);
 	virtual TypeID typeCheck();
-     virtual SelectID selectID(){
+     virtual SelectID selectID() const {
           return SELECT_ID;
      }
-	virtual bool match(BaseSelection* x);
+	virtual bool match(BaseSelection* x) const;
 	virtual void setSize(int size){
 		avgSize = size;
 	}
@@ -938,10 +955,11 @@ public:
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-     virtual SelectID selectID(){
+	virtual ExecExpr* createExec(const SqlExprLists& inputs) const;
+     virtual SelectID selectID() const {
           return OP_ID;
      }
-	virtual bool match(BaseSelection* x);
+	virtual bool match(BaseSelection* x) const;
 	virtual TypeID typeCheck();	// throws
 	virtual int getSize(){
 		return avgSize;
@@ -1062,8 +1080,8 @@ public:
 				tableName->append(new string(&tmp[i + 1]));
 			}
 		}
-		cerr << "path " << path << " resolved as: ";
-		displayList(cerr, tableName, ".");
+//		cerr << "path " << path << " resolved as: ";
+//		displayList(cerr, tableName, ".");
 		delete [] tmp;
 	}
 	TableName& operator=(const TableName& t);
@@ -1132,6 +1150,7 @@ protected:
 	ISchema* schema;
 	vector<AccessMethod*> accessMethods;
 	bool isGestaltM;
+	bool isRemoteM;
 	Interface* interf;
 public:
 	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
@@ -1148,6 +1167,9 @@ public:
 	bool isGestalt() const {
 		return isGestaltM;
 	}
+	bool isRemote() const {
+		return isRemoteM;
+	}
 	const Interface* getInterface() const {
 		return interf;
 	}
@@ -1161,7 +1183,7 @@ public:
 	virtual TableName getTable() const {
 		return TableName(*table);
 	}
-	string* getAlias(){
+	const string* getAlias() const {
 		return alias;
 	}
 	string * getFunction(){

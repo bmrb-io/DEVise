@@ -50,13 +50,16 @@ public:
 	}
 	virtual const ISchema* getISchema(TableName* table) = 0;	// throws
 	virtual Inserter* getInserter(TableName* table); // throws
-	virtual string getTypeNm() = 0;
+	virtual const string& getTypeNm() const = 0;
 	virtual Interface* copyTo(void* space) = 0;
 	const Stats* getStats(){
 		return stats;
 	}
 	virtual vector<AccessMethod*> createAccessMethods();
 	virtual bool isGestalt() const {return false;}
+	virtual bool isRemote() const {return false;}
+	virtual void setRemoteTableName(const string& name) {} // noop
+	virtual const string& getRemoteTableName() const {assert(0);}
 };
 
 class DummyInterface : public Interface {
@@ -72,7 +75,7 @@ public:
 	static string typeName;
 	DummyInterface() {}
 	virtual ~DummyInterface(){}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -99,7 +102,7 @@ public:
 	StandardInterface(const StandardInterface& x) :
 		schema(x.schema), urlString(x.urlString) {}
 	virtual ~StandardInterface(){}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -135,7 +138,7 @@ public:
 	GestaltInterface(const GestaltInterface& x) :
 		schema(x.schema), urlString(x.urlString) {}
 	virtual ~GestaltInterface(){}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -184,7 +187,7 @@ public:
 		delete [] attributeNames;
 		delete schema;
 	}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -225,7 +228,7 @@ public:
 		const string& urlStr, const string& query);
 	MaterViewInterface(const MaterViewInterface& a);
 	virtual ~MaterViewInterface(){}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -270,7 +273,7 @@ public:
 	virtual ~DeviseInterface(){
 		delete schema;
 	}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -303,7 +306,7 @@ public:
 	virtual ~QueryInterface(){
 		delete schema;
 	}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -343,7 +346,7 @@ public:
 	CGIInterface() : entries(NULL) {}
 	virtual ~CGIInterface();
 	CGIInterface(const CGIInterface& a);
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -364,7 +367,7 @@ public:
 	CatalogInterface() {}
 	CatalogInterface(const string& fileName) 
 		: StandardInterface(DIR_SCHEMA, fileName) {}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const; 
@@ -392,6 +395,7 @@ class DBServerInterface : public Interface {
 	string host;
 	unsigned short port;
 	ISchema* schema;
+	string remTableName;
 public:
 	static string typeName;
 	DBServerInterface() : schema(0) {}
@@ -403,7 +407,7 @@ public:
 	virtual ~DBServerInterface(){
 		delete schema;
 	}
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
@@ -415,6 +419,19 @@ public:
 	virtual const ISchema* getISchema(TableName* table);
 	virtual Interface* copyTo(void* space){
 		return new (space) DBServerInterface(*this);
+	}
+	virtual bool isRemote() const {return true;}
+	virtual void setRemoteTableName(const string& name){
+		remTableName = name;
+	}
+	virtual const string& getRemoteTableName() const {
+		return remTableName;
+	}
+	const string& getHost() const {
+		return host;
+	}
+	int getPort() const {
+		return port;
 	}
 };
 
@@ -435,7 +452,7 @@ public:
 		ODBC_Exist = 0;
 	}
 	virtual ~ODBCInterface();
-	virtual string getTypeNm(){
+	virtual const string& getTypeNm() const {
 		return typeName;
 	}
 	virtual Interface* duplicate() const {

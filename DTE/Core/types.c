@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1998/11/06 17:25:09  beyer
+  Added a few helper functions
+
   Revision 1.61  1998/10/01 21:03:15  yunrui
   *** empty log message ***
 
@@ -1285,6 +1288,20 @@ void IndexDesc::display(ostream& out){
 	out << rootPg;
 }
 
+void ISchema::addRecId()
+{
+	typeIDs.push_front(INT_TP);
+	numFlds++;
+	string* newAtts = new string[numFlds];
+	newAtts[0] = "recId";
+	for(int i = 1; i < numFlds; i++){
+		newAtts[i] = attributeNames[i - 1];
+	}
+	delete [] attributeNames;
+
+	attributeNames = newAtts;
+}
+
 istream& ISchema::read(istream& in){ // Throws Exception
 	return in >> *this;
 }
@@ -1313,7 +1330,7 @@ ISchema& ISchema::operator=(const ISchema& x){
 	}
 	numFlds = x.numFlds;
 	if(attributeNames != x.attributeNames){
-		delete attributeNames;
+		delete [] attributeNames;
 	}
 	if(x.attributeNames){
 		attributeNames = new string[numFlds];
@@ -1469,7 +1486,13 @@ void stringDestroy(Type* adt){
 }
 
 void interfaceDestroy(Type* adt){
-	delete (Interface*) adt;
+//	delete (Interface*) adt;
+
+	// purify is complaining about above because the interface is
+	// allocated by new char[]
+	// we should probably call destructor explicitely before the next line
+
+	delete [] (char*) adt;
 }
 
 void indexDescDestroy(Type* adt){
@@ -1677,7 +1700,11 @@ Type* duplicateObject(TypeID type, const Type* obj){
 		return (Type*) obj;
 	}
 	else if(type == "string"){
-		return strdup((char*) obj);
+		char* retVal = new char[strlen((char*) obj) + 1];
+		strcpy(retVal, (char*) obj);
+		return retVal;
+
+		// return strdup((char*) obj);  // purify complains
 	}
 	else if(type == "double"){
 		double val = *((double*) obj);
@@ -1921,6 +1948,12 @@ ConstructorPtr getConstructorPtr(
 			return svShiftScaleConstructor; 
 		}
 
+	}
+	else if(name == "min" || name == "max"){
+		if(numFlds == 1){
+			retType = inpTypes[0];
+			return 0;
+		}
 	}
 	string msg = "Constructor " + name + "(";
 	for(int i = 0; i < numFlds; i++){

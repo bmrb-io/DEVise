@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/06/28 21:47:44  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.14  1997/12/04 04:05:18  donjerko
   *** empty log message ***
 
@@ -138,6 +142,8 @@ void displayVec(ostream& out, const vector<T>& vec, string sep = ", "){
 		out << sep;
 	}
 }
+
+TypeIDList getTypesFromVec(const vector<BaseSelection*>& list);
 
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);

@@ -20,6 +20,7 @@ public:
 		return typeID;
 	}
 	static ExecExpr* createExpr(const string& fnname, class ExprList* argp);
+	virtual ostream& display(ostream& out){assert(0);}
 };
 
 
@@ -60,7 +61,7 @@ private:
 inline
 ExprList::~ExprList()
 {
-  for(vector<ExecExpr*>::iterator i = _expr.begin() ; i != _expr.end() ; i++) {
+  for(vector<ExecExpr*>::iterator i = _expr.begin() ; i != _expr.end() ; ++i) {
     delete *i;
   }
 }
@@ -106,6 +107,10 @@ public:
           const Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
           return base;
      }
+	virtual ostream& display(ostream& out){
+		out << "ExecSelect(" << leftRight << ", " << fieldNo << ")";
+		return out;
+	}
 };
 
 class ExecConst : public ExecExpr {

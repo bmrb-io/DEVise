@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/04/14 17:03:25  donjerko
+  *** empty log message ***
+
   Revision 1.11  1998/02/17 23:09:11  donjerko
   *** empty log message ***
 
@@ -71,7 +74,7 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-#define DEBUG
+// #define DEBUG
 
 Iterator* InsertParse::createExec(){
 

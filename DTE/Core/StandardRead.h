@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/07/24 04:37:55  donjerko
+  *** empty log message ***
+
   Revision 1.26  1998/06/28 21:47:43  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -142,6 +145,18 @@ protected:
   int currentLine;
   bool first_pass;
   
+};
+
+class DteProtocol;
+
+class StandReadExec2 : public StandReadExec {
+	DteProtocol* dteProt;
+public:
+	StandReadExec2(const TypeIDList& typeIDs, istream* in, DteProtocol* dteProt)
+		: StandReadExec(typeIDs, in), dteProt(dteProt)
+	{
+	}
+	virtual ~StandReadExec2();
 };
 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/07/24 04:37:54  donjerko
+  *** empty log message ***
+
   Revision 1.22  1998/06/28 21:47:42  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -91,6 +94,7 @@
 #include "assert.h"
 #include "url.h"
 #include "ExecOp.h"
+#include "DteProtocol.h"
 
 StandReadExec::StandReadExec(const TypeIDList& typeIDs, istream* in,
                              const string& url)
@@ -308,4 +312,12 @@ RidAdder::RidAdder(PlanOp* input) : input(input) {
 		typeIDs[i] = inpTypes[i - 1];
 		attributeNames[i] = inpAttrs[i - 1];
 	}
+}
+
+StandReadExec2::~StandReadExec2()
+{
+//	cerr << "Closing connection in StandReadExec2\n";
+	delete dteProt;
+	dteProt = 0;
+	in = 0; // already deleted in DteProtocol destructor
 }

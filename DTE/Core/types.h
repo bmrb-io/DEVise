@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1998/11/06 17:25:10  beyer
+  Added a few helper functions
+
   Revision 1.56  1998/07/24 04:38:05  donjerko
   *** empty log message ***
 
@@ -1038,6 +1041,7 @@ public:
 	*/
 	ISchema(int numFlds, const TypeID* typeIDs, const string* attributeNames); 
 	ISchema(const ISchema& x);
+	void addRecId();
 	ISchema& operator=(const ISchema& x);
 	ISchema operator+(const ISchema& x) const;
 	~ISchema(){

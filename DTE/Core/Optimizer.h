@@ -8,6 +8,7 @@
 #include "StringLess.h"
 #include "TableUtils.h"
 #include "AccessMethod.h"
+#include "Aggregates.h"
 
 #define DEBUG_STAT
 
@@ -38,6 +39,7 @@ class BaseSelection;
 class TableAlias;
 class Iterator;
 class JoinMethod;
+class ExprList;
 
 enum Ordering {ASC, DESC};
 typedef vector<OptNode*> NodeTable;
@@ -60,9 +62,9 @@ public:
 };
 
 class Query {
-     vector<BaseSelection*> selectList;
-     vector<TableAlias*> tableList;
-     vector<BaseSelection*> predList;
+	vector<BaseSelection*> selectList;
+	vector<TableAlias*> tableList;
+	vector<BaseSelection*> predList;
 	vector<SortCriterion> orderBy;
 public:
 /*
@@ -94,6 +96,8 @@ public:
 	const vector<SortCriterion>& getOrderBy() const {
 		return orderBy;
 	}
+	ostream& display(ostream& out) const;
+	bool hasAggregates() const;
 };
 
 class LogPropTable {
@@ -204,9 +208,83 @@ public:
 	virtual int getNumExpandedNodes() const;	// for debugging
 };
 
+class RemQueryProduced : public OptNode {
+	string queryToShip;
+	string host;
+	int port;
+	TypeIDList typeIDs;
+public:
+	RemQueryProduced(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
+	RemQueryProduced::~RemQueryProduced();
+	virtual bool expand(
+		const Query& q, 
+		NodeTable& nodeTab, 
+		const LogPropTable& logPropTab);
+	virtual Iterator* createExec() const;
+	virtual string toString() const {return "Query Shipping";}
+	virtual Cost getCost(const LogPropTable& logPropTab) {
+		return 0;
+	}
+	virtual int getNumOfChilds(){return 0;}
+	virtual vector<OptNode*> getLevel(int level);
+	virtual Cost getCostConst() const {return 0;}
+	virtual int getTotalNumNodes() const {return 0;};  // for debugging
+	virtual int getNumExpandedNodes() const {return 0;};	// for debugging
+};
+
+class QueryNeeded : public OptNode {
+	OptNode* root;
+public:
+	QueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
+	QueryNeeded::~QueryNeeded();
+	virtual bool expand(
+		const Query& q, 
+		NodeTable& nodeTab, 
+		const LogPropTable& logPropTab);
+	virtual Iterator* createExec() const {return root->createExec();}
+	virtual string toString() const {return root->toString();}
+	virtual Cost getCost(const LogPropTable& logPropTab) {
+		return root->getCost(logPropTab);
+	}
+	virtual int getNumOfChilds(){return 1;}
+	virtual vector<OptNode*> getLevel(int level);
+	virtual Cost getCostConst() const {return root->getCostConst();}
+	virtual int getTotalNumNodes() const {return 1;};  // for debugging
+	virtual int getNumExpandedNodes() const {return 1;};	// for debugging
+};
+
+class AggQueryNeeded : public OptNode {
+	Query* aggLessQuery;
+	AggList* aggs;
+	OptNode* root;
+public:
+	AggQueryNeeded(const Query& query, TableMap tableMap, const SiteDesc* siteDesc);
+	AggQueryNeeded::~AggQueryNeeded();
+	virtual bool expand(
+		const Query& q, 
+		NodeTable& nodeTab, 
+		const LogPropTable& logPropTab)
+	{
+		return root->expand(*aggLessQuery, nodeTab, logPropTab);
+	}
+	virtual Iterator* createExec() const;
+	virtual string toString() const {return "aggregates";}
+	virtual Cost getCost(const LogPropTable& logPropTab) {
+		return root->getCost(logPropTab);
+	}
+	virtual int getNumOfChilds(){return 1;}
+	virtual vector<OptNode*> getLevel(int level);
+	virtual Cost getCostConst() const {return root->getCostConst();}
+	virtual int getTotalNumNodes() const {return 1;};  // for debugging
+	virtual int getNumExpandedNodes() const {return 1;};	// for debugging
+};
+
 class SPQueryProduced : public OptNode {
 	AccessMethod* bestAlt;
 	Cost cost;		// temporarily here
+	vector<BaseSelection*> projList;
+	vector<BaseSelection*> predList;
+	string aliasM;
 public:
 	SPQueryProduced(TableMap tableMap, const SiteDesc* siteDesc);
 	SPQueryProduced::~SPQueryProduced();

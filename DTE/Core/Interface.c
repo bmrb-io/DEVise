@@ -13,6 +13,7 @@
 #include "sysdep.h"
 #include "Utility.h"
 #include "AccessMethod.h"
+#include "DteProtocol.h"
 
 string ViewInterface::typeName = "SQLView";
 string MaterViewInterface::typeName = "MaterView";
@@ -606,18 +607,16 @@ const ISchema* DBServerInterface::getISchema(TableName* table){
 		return schema;
 	}
 	schema = new ISchema;
-	Cor_sockbuf sockBuf(host.c_str(), port);
-	if(!sockBuf.valid()){
-		string err = "Connection to the DB Server failed. Make sure the server is running";
+	DteProtocol dteProt(host, port);
+	TRY(ostream& ostr = dteProt.getOutStream(), 0);
+	ostr << "schema " << table->toString() << ";" << flush;
+
+	TRY(istream& istr = dteProt.getInStream(), 0);
+	istr >> *schema;
+	if(!istr){
+		string err = "Illegal schema received from the DB server";
 		THROW(new Exception(err), NULL);
 	}
-	iostream str(&sockBuf);
-	str << "schema " << table->toString() << ";" << flush;
-     str >> *schema;
-     if(!str){
-          string err = "Illegal schema received from the DB server";
-          THROW(new Exception(err), NULL);
-     }
 	return schema;
 }
 
@@ -709,11 +708,15 @@ vector<AccessMethod*> StandardInterface::createAccessMethods()
 vector<AccessMethod*> GestaltInterface::createAccessMethods()
 {
 	vector<AccessMethod*> retVal;
+	return retVal;
+
+/*
 	Stats defStats(schema.getNumFlds());
 	Stats* nonNullStats = (stats ? stats : &defStats);
-	AccessMethod* sr = new GestaltAM(schema, urlString, getMemberNames(), *nonNullStats);
-	retVal.push_back(sr);
+//	AccessMethod* sr = new GestaltAM(schema, urlString, getMemberNames(), *nonNullStats);
+//	retVal.push_back(sr);
 	return retVal; 
+*/
 }
 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/10/08 22:27:10  donjerko
+  *** empty log message ***
+
   Revision 1.53  1998/07/24 04:37:53  donjerko
   *** empty log message ***
 
@@ -232,10 +235,15 @@ const ISchema* QueryTree::getISchema(){
 	}
 	else {
 
+#ifdef USE_OPTIMIZER
+		TRY(typeChecker.resolve(selectVec), 0);
+#else
 		aggregates = new Aggregates(
 			selectVec, sequenceByVec, withPredicate, groupByVec);
 
 		TRY(aggregates->typeCheck(typeChecker), 0);
+#endif
+
 	}
 	TRY(typeChecker.resolve(predicateVec), 0);
 	TRY(typeChecker.resolve(groupByVec), 0);
@@ -297,8 +305,8 @@ Iterator* QueryTree::createExec(){
 	Query query(selectVec, tableVec, predicateVec);
 	Optimizer optimizer(query);
 	optimizer.run();
-	optimizer.display(cerr);
-	cerr << endl;
+//	optimizer.display(cerr);
+//	cerr << endl;
 	return optimizer.createExec();
 
 #endif
