@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/05/28 16:32:47  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.17  1999/05/26 19:50:55  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -77,8 +82,9 @@
 #include "Control.h"
 #include "StringStorage.h"
 #include "PileStack.h"
-
 #include "Color.h"
+#include "Parse.h"
+
 //#define DEBUG
 
 int FullMapping_ViewShape::NumShapeAttrs()
@@ -267,85 +273,28 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       continue;
     }
 
-    // Figure out whether anything is specified for shapeAttr_3.
+    // Set the view's TData if a TData is specified in the mapping.
     AttrList *attrList = map->GDataAttrList();
-    AttrInfo *info = attrList->Find("shapeAttr_3");
-    if (info && info->type == StringAttr) {
-      key = (int)map->GetShapeAttr3(gdata);
+    SetTData(map, attrList, stringTable, gdata, viewsym);
 
-      char *tdName = NULL;
-      code = stringTable->Lookup(key, tdName);
-      if (code < 0) {
-        reportErrNosys("Can't find TData name in string table");
-      } else {
-        viewsym->SwitchTData(tdName);
-      }
-    }
+    // Get the specified PileStack object, if any.
+    PileStack *ps = GetPile(map, attrList, stringTable, gdata);
 
-    // Figure out whether anything is specified for shapeAttr_4.
-    PileStack *ps = NULL;
-    info = attrList->Find("shapeAttr_4");
-    if (info && info->type == StringAttr) {
-      key = (int)map->GetShapeAttr4(gdata);
-
-      char *pileName = NULL;
-      code = stringTable->Lookup(key, pileName);
-      if (code < 0) {
-        reportErrNosys("Can't find pile name in string table");
-      } else {
-        ps = PileStack::FindByName(pileName);
-	if (!ps) {
-	  ps = new PileStack(pileName, NULL);
-	  ps->SetState(PileStack::PSPiledLinked);
-	}
-      }
-    }
+    // Set the view's visual filter if filter values are specified in the
+    // mapping.
+    SetFilter(map, attrList, stringTable, gdata, viewsym);
 
     if (view->GetDisplayDataValues()) {
       win->SetForeground(view->GetForeground());
       DisplayDataLabel(win, dataX, dataY, dataY);
     }
 
-
     //
     // Now put the view symbol into its parent view.
     //
     viewsym->AppendToParent(view);
     if (ps) {
-      ViewWin *firstView = ps->GetFirstView();
-      if (firstView && firstView->Mapped()) {
-        int pileX, pileY, tmpXP, tmpYP;
-	unsigned tmpW, tmpH;
-	firstView->Geometry(pileX, pileY, tmpW, tmpH);
-	firstView->AbsoluteOrigin(pileX, pileY);
-	firstView->GetParent()->AbsoluteOrigin(tmpXP, tmpYP);
-	pileX -= tmpXP;
-	pileY -= tmpYP;
-	if (!PileStack::SameViewOrSamePile(firstView->GetParent(),
-	    viewsym->GetParent()) ||
-	    pixX != pileX || pixY != pileY || pixWd != tmpW || pixHt != tmpH) {
-	  if (false) {
-            // Force all views in pile to the same geometry.
-#if defined(DEBUG)
-            printf("View <%s> has different geometry or parent than first "
-	        "view in pile;\n"
-	        " geometry changed to match first view\n", viewname);
-#endif
-	    pixX = pileX;
-	    pixY = pileY;
-	    pixWd = tmpW;
-	    pixHt = tmpH;
-	  } else {
-            // Don't pile views if geometry differs.
-#if defined(DEBUG)
-            printf("View <%s> has different geometry or parent than first "
-	        "view in pile;\n"
-	        " view not piled\n", viewname);
-#endif
-            ps = NULL;
-	  }
-	}
-      }
+      CheckPile(viewsym, ps, pixX, pixY, pixWd, pixHt);
     }
     viewsym->Map(pixX, pixY, pixWd, pixHt);
     viewsym->Refresh();
@@ -356,6 +305,170 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
 
     if (ps) {
       ps->InsertView(viewsym);
+    }
+  }
+}
+
+void
+FullMapping_ViewShape::SetTData(TDataMap *map, AttrList *attrList,
+    StringStorage *stringTable, char *gdata, ViewGraph *viewsym)
+{
+  AttrInfo *info = attrList->Find("shapeAttr_3");
+  if (info && info->type == StringAttr) {
+    int key = (int)map->GetShapeAttr3(gdata);
+
+    char *tdName = NULL;
+    int code = stringTable->Lookup(key, tdName);
+    if (code < 0) {
+      reportErrNosys("Can't find TData name in string table");
+    } else {
+      viewsym->SwitchTData(tdName);
+    }
+  }
+}
+
+PileStack *
+FullMapping_ViewShape::GetPile(TDataMap *map, AttrList *attrList,
+    StringStorage *stringTable, char *gdata)
+{
+  // Figure out whether anything is specified for shapeAttr_4.
+  PileStack *ps = NULL;
+  AttrInfo *info = attrList->Find("shapeAttr_4");
+  if (info && info->type == StringAttr) {
+    int key = (int)map->GetShapeAttr4(gdata);
+
+    char *pileName = NULL;
+    int code = stringTable->Lookup(key, pileName);
+    if (code < 0) {
+      reportErrNosys("Can't find pile name in string table");
+    } else {
+      ps = PileStack::FindByName(pileName);
+      if (!ps) {
+        ps = new PileStack(pileName, NULL);
+        ps->SetState(PileStack::PSPiledLinked);
+      }
+    }
+  }
+
+  return ps;
+}
+
+void
+FullMapping_ViewShape::SetFilter(TDataMap *map, AttrList *attrList,
+    StringStorage *stringTable, char *gdata, ViewGraph *viewsym)
+{
+#if defined(DEBUG)
+  printf("FullMapping_ViewShape::SetFilter(%s)\n", viewsym->GetName());
+#endif
+
+  VisualFilter filter;
+  viewsym->GetVisualFilter(filter);
+
+  Coord xlo, ylo, xhi, yhi;
+
+  if (ShapeAttrToFilterVal(map, attrList, stringTable, gdata, 5,
+      viewsym->IsXDateType(), xlo)) {
+    filter.xLow = xlo;
+  }
+
+  if (ShapeAttrToFilterVal(map, attrList, stringTable, gdata, 6,
+      viewsym->IsYDateType(), ylo)) {
+    filter.yLow = ylo;
+  }
+
+  if (ShapeAttrToFilterVal(map, attrList, stringTable, gdata, 7,
+      viewsym->IsXDateType(), xhi)) {
+    filter.xHigh = xhi;
+  }
+
+  if (ShapeAttrToFilterVal(map, attrList, stringTable, gdata, 8,
+      viewsym->IsYDateType(), yhi)) {
+    filter.yHigh = yhi;
+  }
+
+  viewsym->SetVisualFilter(filter);
+}
+
+Boolean
+FullMapping_ViewShape::ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
+    StringStorage *stringTable, char *gdata, int attrNum, Boolean isDate,
+    Coord &value)
+{
+#if defined(DEBUG)
+  printf("FullMapping_ViewShape::ShapeAttrToFilterVal(%d)\n", attrNum);
+#endif
+
+  DOASSERT(attrNum < MAX_SHAPE_ATTRS, "Illegal shape attribute number");
+
+  Boolean gotValue = false;
+
+  char attrName[128];
+  sprintf(attrName, "shapeAttr_%d", attrNum);
+  AttrInfo *info = attrList->Find(attrName);
+  if (info) {
+    if (info->type == StringAttr) {
+      char *tmpStr = NULL;
+      int key = (int)map->GetShapeAttr(gdata, attrNum);
+      int code = stringTable->Lookup(key, tmpStr);
+      if (code < 0) {
+        reportErrNosys("Can't find filter value in string table");
+      } else {
+        if (isDate) {
+	  if (ParseFloatDate(tmpStr, value)) {
+            gotValue = true;
+	  }
+	} else {
+          value = atof(tmpStr);
+          gotValue = true;
+	}
+      }
+    } else { // Note: no special case here for date because internally at
+             // date is really just an int.
+      value = map->GetShapeAttr(gdata, attrNum);
+      gotValue = true;
+    }
+  }
+
+  return gotValue;
+}
+ 
+void
+FullMapping_ViewShape::CheckPile(ViewGraph *viewsym, PileStack *&ps, int pixX,
+    int pixY, unsigned pixWd, unsigned pixHt)
+{
+  ViewWin *firstView = ps->GetFirstView();
+  if (firstView && firstView->Mapped()) {
+    int pileX, pileY, tmpXP, tmpYP;
+    unsigned tmpW, tmpH;
+    firstView->Geometry(pileX, pileY, tmpW, tmpH);
+    firstView->AbsoluteOrigin(pileX, pileY);
+    firstView->GetParent()->AbsoluteOrigin(tmpXP, tmpYP);
+    pileX -= tmpXP;
+    pileY -= tmpYP;
+
+    if (!PileStack::SameViewOrSamePile(firstView->GetParent(),
+        viewsym->GetParent()) ||
+        pixX != pileX || pixY != pileY || pixWd != tmpW || pixHt != tmpH) {
+      if (false) {
+        // Force all views in pile to the same geometry.
+#if defined(DEBUG)
+        printf("View <%s> has different geometry or parent than first "
+            "view in pile;\n"
+            " geometry changed to match first view\n", viewsym->GetName());
+#endif
+        pixX = pileX;
+        pixY = pileY;
+        pixWd = tmpW;
+        pixHt = tmpH;
+      } else {
+        // Don't pile views if geometry differs.
+#if defined(DEBUG)
+        printf("View <%s> has different geometry or parent than first "
+            "view in pile;\n"
+            " view not piled\n", viewsym->GetName());
+#endif
+        ps = NULL;
+      }
     }
   }
 }

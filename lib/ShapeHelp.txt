@@ -122,6 +122,10 @@ VIEW - a view displayed as a symbol within the parent view
         2) height
         3) (optional) TData name
         4) (optional) Pile name
+        5) (optional) view sym filter x low
+        6) (optional) view sym filter y low
+        7) (optional) view sym filter x high
+        8) (optional) view sym filter y high
 
 TEXT DATA LABEL - some variation of text
     Attrs:

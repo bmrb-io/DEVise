@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/05/28 16:32:48  wenger
+  Finished cleaning up bounding-box-related code except for PolyLineFile
+  symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
+  drawing of Polyline symbols.
+
   Revision 1.7  1999/05/26 19:50:56  wenger
   Added bounding box info to GData, so that the selection of records by the
   visual filter is more accurate.  (Note that at this time the bounding box
@@ -47,10 +52,12 @@
 #include "RectShape.h"
 
 
+class PileStack;
+
 class FullMapping_ViewShape
 : public ViewShape
 {
-  public :
+public:
   virtual int NumShapeAttrs();
 
   virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
@@ -70,5 +77,21 @@ class FullMapping_ViewShape
 			       int numSyms, TDataMap *map,
 			       ViewGraph *view, int pixelSize,
 			       int &recordsProcessed, Boolean timeoutAllowed);
+private:
+  static void SetTData(TDataMap *map, AttrList *attrList,
+      StringStorage *stringTable, char *gdata, ViewGraph *viewsym);
+
+  static PileStack *GetPile(TDataMap *map, AttrList *attrList,
+      StringStorage *stringTable, char *gdata);
+
+  static void SetFilter(TDataMap *map, AttrList *attrList,
+      StringStorage *stringTable, char *gdata, ViewGraph *viewsym);
+
+  static Boolean ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
+      StringStorage *stringTable, char *gdata, int attrNum, Boolean isDate,
+      Coord &value);
+
+  static void CheckPile(ViewGraph *viewsym, PileStack *&ps, int pixX, int pixY,
+      unsigned pixWd, unsigned pixHt);
 };
 #endif

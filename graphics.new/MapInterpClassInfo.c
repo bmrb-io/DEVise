@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/05/21 14:52:28  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.23  1999/04/26 20:25:10  wenger
   Fixed bug 486.
 
@@ -446,6 +450,12 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
 
 void MapInterpClassInfo::ChangeParams(int argc, char**argv)
 {
+#if defined(DEBUG)
+  printf("MapInterpClassInfo(%s)::ChangeParams(", InstanceName());
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+#endif
+
   if (!_cmd)
     return;
 

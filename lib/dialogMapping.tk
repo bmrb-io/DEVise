@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.50  1999/06/16 18:28:40  wenger
+#       Fixed bug 499 (problem with 'Next in Pile' not working for piled view
+#       symbols).
+#
 #       Revision 1.49  1999/05/10 20:03:06  wenger
 #       Added error indication option (as per request from Eldon) to bar shape;
 #       added "Pile" to the GUI for view symbols.
@@ -267,6 +271,9 @@ proc BringUpMappingDialog { w curview } {
 	set valueWidth 30
 	set colorList [PaletteColors]
     
+	# Note: ShapeAttr5 - ShapeAttr9 are currently treated as a special case
+	# in some parts of the code, because they're only used by view symbols.
+	# RKW 1999-06-22.
     set mappings [list \
 	    [list X {0 1 2 3 4 5 6 7 8 9 10} ] \
 	    [list Y {0 1 2 3 4 5 6 7 8 9 10} ] \
@@ -280,8 +287,13 @@ proc BringUpMappingDialog { w curview } {
 	    [list "ShapeAttr1" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr2" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr3" {0 0.1 0.5 1 2}] \
-	    [list "ShapeAttr4" {0 0.1 0.5 1 2}]]
-#	    [list "ShapePosition" $DEViseShapePositions]
+	    [list "ShapeAttr4" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr5" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr6" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr7" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr8" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr9" {0 0.1 0.5 1 2}] \
+	    ]
 
     set xname  [lindex [lindex $mappings 0] 0]
     set xval mappingValue$xname
@@ -415,8 +427,8 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 		return
 	} else {
 		set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
-				"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4"
-#			"ShapePosition"
+			"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \
+			"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9"
     	]
 
 		foreach item $mappings  {
@@ -501,7 +513,11 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	set shapeAttr2 [lindex [lindex $params 13] 1]
 	set shapeAttr3 [lindex [lindex $params 14] 1]
 	set shapeAttr4 [lindex [lindex $params 15] 1]
-	#	 set shapePosition [lindex [lindex $params 15] 1]
+	set shapeAttr5 [lindex [lindex $params 16] 1]
+	set shapeAttr6 [lindex [lindex $params 17] 1]
+	set shapeAttr7 [lindex [lindex $params 18] 1]
+	set shapeAttr8 [lindex [lindex $params 19] 1]
+	set shapeAttr9 [lindex [lindex $params 20] 1]
 
 	set mappings [list \
 			[list X $xParm] \
@@ -516,8 +532,13 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 			[list "ShapeAttr1" $shapeAttr1] \
 			[list "ShapeAttr2" $shapeAttr2] \
 			[list "ShapeAttr3" $shapeAttr3] \
-			[list "ShapeAttr4" $shapeAttr4]]
-	#	[list "ShapePosition" $shapePosition]
+			[list "ShapeAttr4" $shapeAttr4] \
+			[list "ShapeAttr5" $shapeAttr5] \
+			[list "ShapeAttr6" $shapeAttr6] \
+			[list "ShapeAttr7" $shapeAttr7] \
+			[list "ShapeAttr8" $shapeAttr8] \
+			[list "ShapeAttr9" $shapeAttr9] \
+			]
      
 	#    set topgrp [SelectTopGroup $schemaname]
 
@@ -531,10 +552,6 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	foreach item $mappings {
 		set itemname [lindex $item 0]
 		set itemval [lindex $item 1]
-
-#		if {$itemname == "ShapePosition"} {
-#			continue
-#		}
 
 		global mappingValue$itemname
 
@@ -569,8 +586,8 @@ proc ClearMappingDialog { w } {
 	$w.message2.tdata configure -text "TData:"
 
 	set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
-			"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4"
-#		"ShapePosition"
+		"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \
+		"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9"
     ]
 
 	foreach item $mappings  {
@@ -674,6 +691,11 @@ proc ChangeParams { map oldparams newmap } {
 			[lindex $newmap 8] [lindex $newmap 9] \
 			[lindex $newmap 10] [lindex $newmap 11] \
 			[lindex $newmap 12] \
+			[lindex $newmap 13] \
+			[lindex $newmap 14] \
+			[lindex $newmap 15] \
+			[lindex $newmap 16] \
+			[lindex $newmap 17] \
 			]
     
     # Change parameter
@@ -758,6 +780,43 @@ set DEViseShapeAttrNames { \
 proc UpdateShapeAttrs { w shape } {
 	global DEViseShapeAttrNames
 
+    if {$shape == "View"} {
+		$w.mapping.label.pShapeAttr5 config -text "X Low"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+		$w.mapping.label.pShapeAttr6 config -text "Y Low"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
+
+		$w.mapping.label.pShapeAttr7 config -text "X High"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
+
+		$w.mapping.label.pShapeAttr8 config -text "Y High"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
+
+		$w.mapping.label.pShapeAttr9 config -text ""
+		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+	} else {
+	    pack forget $w.mapping.label.pShapeAttr5
+	    pack forget $w.mapping.value.pShapeAttr5
+
+	    pack forget $w.mapping.label.pShapeAttr6
+	    pack forget $w.mapping.value.pShapeAttr6
+
+	    pack forget $w.mapping.label.pShapeAttr7
+	    pack forget $w.mapping.value.pShapeAttr7
+
+	    pack forget $w.mapping.label.pShapeAttr8
+	    pack forget $w.mapping.value.pShapeAttr8
+
+	    pack forget $w.mapping.label.pShapeAttr9
+	    pack forget $w.mapping.value.pShapeAttr9
+	}
+
 	set i 0
 	set j 1
 
@@ -775,6 +834,7 @@ proc UpdateShapeAttrs { w shape } {
 		return
 	}
 
+	# Note: ShapeAttr5 - ShapeAttr9 handled above.  RKW 1999-06-22.
     foreach item {"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" \
 	  "ShapeAttr4"} {
 		set text [lindex [lindex $DEViseShapeAttrNames $i] $j]
@@ -804,7 +864,8 @@ proc UpdateShapeAttrs { w shape } {
 proc UpdateDefaultShapeAttrs { w } {
 
     foreach item {"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" \
-	  "ShapeAttr4"} {
+	  "ShapeAttr4" "ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" \
+	  "ShapeAttr9"} {
 		$w.mapping.label.p$item config -text $item
 		$w.mapping.value.p$item config -state normal
 	}
