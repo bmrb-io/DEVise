@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/09/22 22:36:26  jussi
+  Added tape block size parameter.
+
   Revision 1.5  1995/09/22 15:49:44  jussi
   Added copyright message.
 
@@ -50,16 +53,6 @@ static Tcl_Interp *globalInterp = 0;
 
 #define UPDATE_TCL { (void)Tcl_Eval(globalInterp, "update"); }
 
-static char *tradePath = 0;
-static char *quotePath = 0;
-
-#else
-
-static char *tapeDrive = "/dev/nrst1";
-static int tapeFile = 5;
-static int tapeBsize = 32768;
-static char *tradePath = "/tmp/nyam1";
-static char *quotePath = "/tmp/nyam2";
 #endif
 
 #include "rectape.h"
@@ -188,26 +181,12 @@ static void genListInfo()
 }
 #endif
 
-static void genExtractData()
+static void genExtractData(char *file)
 {
-  char tradeFile[64];
-  sprintf(tradeFile, "%s/%s-t.dat", tradePath, header1.symbol);
-
-  ofstream trade(tradeFile, ios::out);
+  ofstream trade(file, ios::out);
   if (!trade) {
-    cerr << "Cannot create trade file " << tradeFile << endl;
+    cerr << "Cannot create trade file " << file << endl;
     cerr << "Skipping firm." << endl;
-    return;
-  }
-
-  char quoteFile[64];
-  sprintf(quoteFile, "%s/%s-q.dat", quotePath, header1.symbol);
-
-  ofstream quote(quoteFile, ios::out);
-  if (!quote) {
-    cerr << "Cannot create quote file " << quoteFile << endl;
-    cerr << "Skipping firm." << endl;
-    trade.close();
     return;
   }
 
@@ -352,8 +331,12 @@ static void genExtractData()
       }
 #endif
 
+#ifdef 0
+      // disable quote extraction for now
+
       float aprice = 1.0 * priask[i] / den;
       float bprice = 1.0 * volbid[i] / den;
+
 #ifdef BINARY_OUT
       quote.write(&now, sizeof now);
       quote.write(&oexch[i], sizeof oexch[i]);
@@ -371,6 +354,8 @@ static void genExtractData()
 	    << "," << bprice << "," << bidsiz[qpt]
 	    << "," << condition << endl;
 #endif
+#endif
+
       qpt++;                          // look at next asksiz/bidsiz
     }
   }
@@ -385,7 +370,6 @@ static void genExtractData()
   assert(trades + ignored + quotes == header1.n);
 
   trade.close();
-  quote.close();
 }
 
 static int readStock(RecTape &tape)
@@ -656,6 +640,10 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  char *tapeDrive = "/dev/nrst11";
+  int tapeFile = 4;
+  int tapeBsize = 32768;
+
   RecTape tape(tapeDrive, "r", tapeFile, tapeBsize);
   if (!tape) {
     cerr << "Cannot open " << tapeDrive << " for reading." << endl;
@@ -676,7 +664,11 @@ int main(int argc, char **argv)
     else if (extractCmd && symbolMatch(header1.symbol, argc - 2, &argv[2])) {
       cout << "Extracting " << header1.symbol << " ("
 	   << header1.n << " trades/quotes)" << endl;
-      genExtractData();
+      ostrstream fileName;
+      fileName << header1.symbol << ".dat" << ends;
+      char *file = fileName.str();
+      genExtractData(file);
+      delete file;
     }
     
     freeStockSpace();
@@ -689,8 +681,15 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef X
-static int extract(RecTape &tape, char *stock, long offset)
+static int extract(RecTape &tape, char *stock, long offset, char *file)
 {
+  ostrstream note;
+  note << "Reading " << stock << " from tape..." << ends;
+  char *notestr = note.str();
+  Tcl_SetVar(globalInterp, "issm_status", notestr, TCL_GLOBAL_ONLY);
+  delete notestr;
+  UPDATE_TCL;
+
   if (tape.seek(offset) != offset) {
     cerr << "Cannot seek to offset " << offset << endl;
     return -1;
@@ -706,7 +705,14 @@ static int extract(RecTape &tape, char *stock, long offset)
     return -1;
   }
 
-  genExtractData();
+  ostrstream note2;
+  note2 << "Writing " << stock << " to disk..." << ends;
+  notestr = note2.str();
+  Tcl_SetVar(globalInterp, "issm_status", notestr, TCL_GLOBAL_ONLY);
+  delete notestr;
+  UPDATE_TCL;
+
+  genExtractData(file);
 
   freeStockSpace();
 
@@ -719,23 +725,16 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
+  assert(argc >= 7);
+
   // Get parameter values from TCL script
 
-  char *tapeDrive = Tcl_GetVar(interp, "issm_tapeDrive", TCL_GLOBAL_ONLY);
-  char *tapeFile = Tcl_GetVar(interp, "issm_tapeFile", TCL_GLOBAL_ONLY);
-  char *tapeBsize = Tcl_GetVar(interp, "issm_tapeBsize", TCL_GLOBAL_ONLY);
-  tradePath = Tcl_GetVar(interp, "issm_tradePath", TCL_GLOBAL_ONLY);
-  quotePath = Tcl_GetVar(interp, "issm_quotePath", TCL_GLOBAL_ONLY);
-
-  if (!tapeDrive || !tapeFile || !tapeBsize || !tradePath || !quotePath) {
-    cerr << "One of issm_tapeDrive, issm_tapeFile, issm_tapeBsize," << endl;
-    cerr << "issm_tradePath, or issm_quotePath is undefined." << endl;
-    cerr << "Define these values in $(DEVISE_LIB)/issm.tk." << endl;
-    return TCL_ERROR;
-  }
+  char *tapeDrive = argv[1];
+  char *tapeFile = argv[2];
+  char *tapeBsize = argv[3];
 
   cout << "Reading from " << tapeDrive << ":" << tapeFile
-       << " (" << tapeBsize << ") to " << tradePath << endl;
+       << " (" << tapeBsize << ")" << endl;
 
   RecTape tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
   if (!tape) {
@@ -743,29 +742,13 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
     return TCL_ERROR;
   }
 
-  for(int i = 1; i < argc; i += 2) {
+  for(int i = 4; i < argc; i += 3) {
     char *stock = argv[i];
     long offset = atol(argv[i + 1]);
-
-    ostrstream note;
-    note << "Extracting " << stock << " from tape..." << ends;
-    char *notestr = note.str();
-    Tcl_SetVar(interp, "issm_status", notestr, TCL_GLOBAL_ONLY);
-    delete notestr;
-    UPDATE_TCL;
-
-    int status = extract(tape, stock, offset);
+    char *file = argv[i+2];
+    int status = extract(tape, stock, offset, file);
     if (status <= 0)
       return TCL_ERROR;
-
-    ostrstream note2;
-    note2 << "issm_tapeToDisk " << stock << ends;
-    notestr = note2.str();
-    status = Tcl_Eval(interp, notestr);
-    if (status != TCL_OK)
-      cerr << "Error: " << interp->result << endl;
-    delete notestr;
-    UPDATE_TCL;
   }
 
   return TCL_OK;
