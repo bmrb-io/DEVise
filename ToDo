@@ -304,6 +304,15 @@ Be able to run in batch mode without having to connect to an X server.
 Have a button in the user interface that forces a refresh of all views.
 (ml/rkw 12/23/96)
 
+Knowledge about how piled views work should be removed from code other
+than the View class.  For example, take a look at the places in the code
+that call IsInPileMode().  (rkw 1/8/97)
+
+The software should deal better with zooming in on a small part of a
+Tasvir image (somehow request Tasvir to draw only the visible portion of
+the image, rather than asking for a huge image size as it does now).
+(rkw 1/9/97)
+
 
 COMPLETED
 ---------

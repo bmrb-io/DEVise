@@ -179,7 +179,7 @@ Num Date        Status  Description
                         file that has one record. Reason: incr does not
                         work on floating-point numbers. (jpm)
 
-055 10/22/96	OPEN	You can't find the name (not title) of a view from
+055 10/22/96	FIXED	You can't find the name (not title) of a view from
 			the GUI. (rkw)
 
 056 10/24/96	OPEN	Too hard to hit the middle of boxes to display
@@ -375,6 +375,18 @@ Num Date        Status  Description
 107 01/06/97	OPEN	If you have more than 19 views, those views are
 			named 'View 110', 'View 111', etc., instead of
 			'View 20', etc. (rkw)
+
+108 01/09/97	OPEN	Load the session /p/devise/session/test/jussitape.tk,
+			print to PostScript -> some of the text comes out at
+			the wrong place. (jpm/rkw)
+
+109 01/09/97	OPEN	Load the session /p/devise/test/baa1.tk, select the
+			view in window DEViseWn1, bring up the Query Tool ->
+			the axis limits are not filled in. (rkw)
+
+110 01/09/97	OPEN	Load the session /p/devise/test/baa1.tk, select the
+			view in window DEViseWn1 -> you can't display
+			axes in this view. (rkw)
 
 
 OPEN = problem/bug exists and needs to be addressed.
