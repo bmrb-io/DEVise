@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.27  1999/02/15 09:55:24  hongyu
+// *** empty log message ***
+//
 // Revision 1.6  1998/08/14 17:48:07  hongyu
 // *** empty log message ***
 //
@@ -168,7 +171,7 @@ public class DEViseView
                             if (DEViseGlobals.browser != null) {
                                 try {
                                     URL url = new URL(event.getActionCommand());
-                                    DEViseGlobals.browser.showDocument(url, "_blank");
+                                    DEViseGlobals.browser.showDocument(url, "_parent");
                                 } catch (MalformedURLException e) {
                                 }
                             }
