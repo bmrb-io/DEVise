@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/22 17:37:07  jussi
+  Added FloatAttr to list of supported attribute types in Decode().
+
   Revision 1.3  1995/09/22 15:46:16  jussi
   Added copyright message.
 
@@ -201,9 +204,14 @@ Boolean TDataTapeInterp::Decode(RecId id, void *recordBuf, char *line)
     AttrInfo *info = _attrList->Get(i);
     char *ptr = (char *)recordBuf + info->offset;
 
+    int intVal = 0;
+    float floatVal = 0;
+    double doubleVal = 0;
+    time_t tm = 0;
+
     switch(info->type) {
     case IntAttr:
-      int intVal = atoi(args[i]);
+      intVal = atoi(args[i]);
       if (info->hasMatchVal && intVal != info->matchVal.intVal)
 	return false;
       *(int *)ptr = intVal;
@@ -211,7 +219,7 @@ Boolean TDataTapeInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     case FloatAttr:
-      float floatVal = UtilAtof(args[i]);
+      floatVal = UtilAtof(args[i]);
       if (info->hasMatchVal && floatVal != info->matchVal.floatVal)
 	return false;
       *(float *)ptr = floatVal;
@@ -219,7 +227,7 @@ Boolean TDataTapeInterp::Decode(RecId id, void *recordBuf, char *line)
       break;
 
     case DoubleAttr:
-      double doubleVal = UtilAtof(args[i]);
+      doubleVal = UtilAtof(args[i]);
       if (info->hasMatchVal && doubleVal != info->matchVal.doubleVal)
 	return false;
       *(double *)ptr = doubleVal;
@@ -239,7 +247,7 @@ Boolean TDataTapeInterp::Decode(RecId id, void *recordBuf, char *line)
 	fprintf(stderr,"TDataTapeInterp: date attr match not implemented\n");
 	Exit::DoExit(2);
       }
-      time_t tm = atoi(args[i]);
+      tm = atoi(args[i]);
       *(time_t *)ptr = tm;
       break;
 

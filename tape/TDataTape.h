@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:43:30  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:48  jussi
   Added CVS header.
 */
@@ -169,7 +172,7 @@ private:
 	// Print indices
 	void PrintIndices();
 
-	unsigned _totalRecs;            // total number of records
+	long _totalRecs;                // total number of records
 	char *_name;                    // name of file/dataset
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
@@ -180,7 +183,7 @@ private:
 	RecId _nextId, _endId;          // range of next retrieval
 
 	long *_index;                   // index to records
-	int _indexSize;                 // size of index
+	long _indexSize;                // size of index
 
 	long _lastPos;                  // position of last record in file
 
@@ -188,7 +191,7 @@ private:
 
 	int _cacheFd;                   // file descriptor of cache
 
-	int _initTotalRecs;             // initial # of records in cache
+	long _initTotalRecs;            // initial # of records in cache
 
 	int _initLastPos;               // initial last position in file
 };

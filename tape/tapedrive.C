@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/09 22:23:28  jussi
+  Added debugging statements.
+
   Revision 1.4  1995/10/31 17:13:17  jussi
   Added tar archive handling routines and data structures.
 
@@ -63,7 +66,7 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
 
   atEof = (mode[0] == 'w');
 
-  for(int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
+  for(unsigned int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
     mt_tim[i] = mt_ios[i] = mt_cnt[i] = 0;
   read_time = read_ios = read_cnt = 0;
   write_time = write_ios = write_cnt = 0;
@@ -102,7 +105,7 @@ void TapeDrive::printStats()
 {
   cout << "Tape usage statistics:" << endl;
   cout << "  cmd\tcalls\tcount\tavgtime" << endl;
-  for(int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
+  for(unsigned int i = 0; i < sizeof(mt_ios) / sizeof(mt_ios[0]); i++)
     cout << "  " << i << "\t" << mt_ios[i]
          << "\t" << mt_cnt[i]
 	 << "\t" << mt_tim[i] / (mt_cnt[i] ? mt_cnt[i] : 1) << endl;
@@ -354,7 +357,7 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
   TAPEDBG(cout << "Tape command " << mt_op << ", count " << mt_count
 	  << ", " << flush);
 
-  assert(mt_op >= 0 && mt_op < sizeof(mt_ios) / sizeof(mt_ios[0]));
+  assert(mt_op >= 0 && mt_op < (int)(sizeof(mt_ios) / sizeof(mt_ios[0])));
   mt_ios[mt_op]++;
   mt_cnt[mt_op] += (mt_count >= 0 ? mt_count : -mt_count);
 

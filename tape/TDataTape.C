@@ -1,9 +1,9 @@
 /*
   ========================================================================
-  DEVise Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1995
   By the DEVise Development Group
-  University of Wisconsin at Madison
+  Madison, Wisconsin
   All Rights Reserved.
   ========================================================================
 
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/10/15 18:45:01  jussi
+  Added HPUX-specific code.
+
   Revision 1.3  1995/09/22 15:46:15  jussi
   Added copyright message.
 
@@ -49,9 +52,9 @@ static char cachedFileContent[TAPE_CONTENT_COMPARE_BYTES];
 static char *MakeCacheName(char *file)
 {
   char *fname = StripPath(file);
-  int nameLen = strlen(Init::WorkDir())+strlen(fname)+8;
+  size_t nameLen = strlen(Init::WorkDir()) + strlen(fname) + 8;
   char *name = new char[nameLen];
-  sprintf(name,"%s/%s.cache",Init::WorkDir(),fname);
+  sprintf(name, "%s/%s.cache", Init::WorkDir(), fname);
   assert(strlen(name) < nameLen);
   return name;
 }
@@ -68,8 +71,8 @@ TDataTape::TDataTape(char *name, int recSize)
     Exit::DoExit(1);
 
   _totalRecs = 0;
-  _recBuf = new char[recSize];
-  _index = new long[TAPE_INIT_INDEX_SIZE];
+  _recBuf = new char [recSize];
+  _index = new long [TAPE_INIT_INDEX_SIZE];
   _indexSize = TAPE_INIT_INDEX_SIZE;
   _fileGrown = false;
 }
@@ -102,11 +105,11 @@ Boolean TDataTape::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-void TDataTape::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
+void TDataTape::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
 {
-  if (lowId >= _totalRecs ||	
-      highId >= _totalRecs || highId < lowId) {
-    fprintf(stderr,"TDataTape::GetRecs: invalid recId %ld %ld, total %d\n",
+  if ((long)lowId >= _totalRecs ||	
+      (long)highId >= _totalRecs || highId < lowId) {
+    fprintf(stderr,"TDataTape::GetRecs: invalid recId %ld %ld, total %ld\n",
 	    lowId, highId, _totalRecs);
     Exit::DoExit(1);
   }
@@ -211,8 +214,8 @@ void TDataTape::Initialize()
     _indexSize = _totalRecs + TAPE_INDEX_ALLOC_INC;
   }
   // read the index
-  if (read(cacheFd,_index, _totalRecs*sizeof(long))
-      != _totalRecs*sizeof(long))
+  if (read(cacheFd,_index, _totalRecs * sizeof(long))
+      != (long)(_totalRecs * sizeof(long)))
     goto error;
 
   for(i = 1; i < _totalRecs; i++) {
@@ -256,8 +259,8 @@ void TDataTape::Initialize()
 
 void TDataTape::Checkpoint()
 {
-  printf("Checkpointing %s to file %s, %d existing, %d additional records\n",
-	 _name, _cacheFileName, _initTotalRecs, _totalRecs-_initTotalRecs);
+  printf("Checkpointing %s to file %s, %ld existing, %ld additional records\n",
+	 _name, _cacheFileName, _initTotalRecs, _totalRecs - _initTotalRecs);
 
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
     return;
@@ -306,10 +309,10 @@ void TDataTape::Checkpoint()
       goto error;
 
     // write indices
-    int indexOffset = TAPE_INDEX_OFFSET + _initTotalRecs*sizeof(long);
+    int indexOffset = TAPE_INDEX_OFFSET + _initTotalRecs * sizeof(long);
     if (lseek(cacheFd,indexOffset, SEEK_SET) != indexOffset)
       goto error;
-    int bytes = (_totalRecs-_initTotalRecs)*sizeof(long);
+    int bytes = (_totalRecs - _initTotalRecs) * sizeof(long);
     if (write(cacheFd, &_index[_initTotalRecs], bytes) != bytes)
       goto error;
   }
@@ -326,7 +329,7 @@ error:
 void TDataTape::BuildIndex()
 {
   char buf[TAPE_LINESIZE];
-  int oldTotal = _totalRecs;
+  long oldTotal = _totalRecs;
 
   // File has been appended, extend index
   if (_tape->seek(_lastPos) != _lastPos)
@@ -355,7 +358,7 @@ void TDataTape::BuildIndex()
   _lastPos = _tape->tell();
   _fileGrown = false;
 
-  printf("\nExtend Index for %s, %d records already built, now has %d recs\n", 
+  printf("\nExtend Index for %s from %ld to %ld records\n", 
 	 _name, oldTotal, _totalRecs);
 }
 
