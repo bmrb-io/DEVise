@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/11 19:08:53  jussi
+  Added replica management.
+
   Revision 1.1  1996/05/11 17:26:26  jussi
   Initial revision. Moved all API parsing to this file so that
   ServerAPI.c and TkControl.c would not have to duplicate it.
@@ -157,7 +160,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return API_OK;
     }
     if (!strcmp(argv[0], "exit")) {
-      printf("Client exits. Closing client connection.\n");
       control->ReturnVal(API_OK, "done");
       control->RestartSession();
       return API_OK;
