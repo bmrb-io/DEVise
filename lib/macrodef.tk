@@ -424,14 +424,24 @@ proc MacroDefAuto {tdata} {
     pack .auto.xsel.label -side left
     pack .auto.xsel.attr -side left
 
-    label .auto.ysel.label -text "Select Y" -width 15
+    if {$selgrp == "__default"} {
+	set slabel "Select Y"
+	set swidth 15
+    } else {
+	set slabel "Select Y from $selgrp"
+	set swidth [expr [llength [split $selgrp {}]]+15]
+    }
+    label .auto.ysel.label -text $slabel -width $swidth
     pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
+    frame .auto.ysel.sel -relief groove -borderwidth 2
+    pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
+    setupButtons .auto.ysel.sel $selgrp $selgrp
 
     #  For selecting Y attrs - a button here will pop up a new window
     # containing a list of name from which a selection can be made
-    button .auto.ysel.sel -text "Attributes from Group : $selgrp" \
-           -command {selYAuto $selgrp $selgrp}
-    pack .auto.ysel.sel -side top -padx 3m -pady 1m -ipadx 2m -expand 1
+#    button .auto.ysel.sel -text "Attributes from Group : $selgrp" \
+#           -command {selYAuto $selgrp $selgrp}
+#    pack .auto.ysel.sel -side top -padx 3m -pady 1m -ipadx 2m -expand 1
 
 
     # Have a list containing the name of the selected group.
@@ -1738,76 +1748,106 @@ proc CreateBitmapMenuButton { w file varname } {
 
 # Procedure for displaying Y coordinates in Auto mode
 proc selYAuto {grpname topgrp} {
-	global yvar macroSelectColor schemaname
+    global yvar macroSelectColor schemaname
 
-	#Check if the window already exists
-        set err [catch {set exists [wm state .selY$grpname]}]
-	if {!$err} {wm deiconify .selY$grpname; return}
+    #Check if the window already exists
+    set err [catch {set exists [wm state .selY$grpname]}]
+    if {!$err} {wm deiconify .selY$grpname; return}
 
-	# Create new window
-	toplevel .selY$grpname
-	wm title .selY$grpname "Group : $grpname"
-	wm geometry .selY$grpname +100+100
+    # Create new window
+    toplevel .selY$grpname
+    wm title .selY$grpname "Group : $grpname"
+    wm geometry .selY$grpname +100+100
 	
-	label .selY$grpname.label -text "Select Y parameters"
-	frame .selY$grpname.sel -relief groove -borderwidth 2
-	frame .selY$grpname.but 
-	pack .selY$grpname.label -side top -pady 2m -fill x -expand 1
-	pack .selY$grpname.sel -side top -pady 2m -fill x -expand 1
-	pack .selY$grpname.but -side top -pady 2m -fill x -expand 1
-
-	set row -1
-	set col -1
-	set maxcol 4
-	set varcnt 0
-
-	set grplist [DEVise getItems $schemaname $topgrp $grpname]
-
-	foreach itm $grplist {
-		set subname [lindex $itm 0]
-		set type [lindex $itm 1]
-		if {$col < 0} {
-			incr row
-			set col 0
-			frame .selY$grpname.sel.row$row
-			pack .selY$grpname.sel.row$row -side top -fill x \
-				-expand 1
-		}
-		if {$type != "intr"} {
-			checkbutton .selY$grpname.sel.row$row.col$col \
-				-text $subname -variable yvar($subname) \
-				-width 15 -anchor w -indicatoron 0 \
-				-selectcolor $macroSelectColor
-			set yvar($subname) 0
-		} else {
-			button .selY$grpname.sel.row$row.col$col \
-				-text $subname -width 15 \
-				-command \
-				    [format "selYAuto %s %s" $subname $topgrp] 
-		}
-		pack .selY$grpname.sel.row$row.col$col -side left \
-			-fill x -expand 1
-		incr col
-		if {$col >= $maxcol} {
-			set col -1
-		}
-	}
-
-	#Add empty frames at end of last row
-	for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
-		label .selY$grpname.sel.row$row.col$col -text "" \
-			-width 15 -relief flat -borderwidth 4
-		pack .selY$grpname.sel.row$row.col$col -side left -fill x \
-			-expand 1
-	}
-
-	button .selY$grpname.but.ok -text OK -width 20 -command \
-		[format "destroy .selY%s" $grpname]
-
-	pack .selY$grpname.but.ok -side top -expand 1 -padx 3m
+    label .selY$grpname.label -text "Select Y parameters"
+    frame .selY$grpname.sel -relief groove -borderwidth 2
+    frame .selY$grpname.but 
+    pack .selY$grpname.label -side top -pady 2m -fill x -expand 1
+    pack .selY$grpname.sel -side top -pady 2m -fill x -expand 1
+    pack .selY$grpname.but -side top -pady 2m -fill x -expand 1
+    
+    # Call function to set up buttons
+    setupButtons .selY$grpname.sel $grpname $topgrp
+    
+    button .selY$grpname.but.ok -text OK -width 20 -command \
+	    [format "destroy .selY%s" $grpname]
+    
+    pack .selY$grpname.but.ok -side top -expand 1 -padx 3m
 }
 			
+proc setupButtons {win grpname topgrp} {
+    global yvar macroSelectColor schemaname
 
+    set row -1
+    set col -1
+    set maxcol 1
+    set varcnt 0
+
+    # We will do some preprocessing to figure out how to display the
+    # the attributes - i.e. how many columns per row, size of menu
+    # buttons and the size of the window itself.
+    
+    set grplist [DEVise getItems $schemaname $topgrp $grpname]
+
+    # Find the max width of the attrs and the number of attrs
+    set numattrs 0
+    set maxwidth 0
+    foreach itm $grplist {
+	set subname [lindex $itm 0]
+	set width [llength [split $subname {}]]
+	if {$width > $maxwidth} {
+	    set maxwidth $width
+	}
+	incr numattrs
+    }
+
+    if {$maxwidth > 10} {
+	set maxcol 1
+	set colwidth [expr $maxwidth+5]
+    } else {
+	set maxcol 4
+	set colwidth 15
+    }
+    
+    foreach itm $grplist {
+	set subname [lindex $itm 0]
+	set type [lindex $itm 1]
+	if {$col < 0} {
+	    incr row
+	    set col 0
+	    frame $win.row$row
+	    pack $win.row$row -side top -fill x \
+		    -expand 1
+	}
+	if {$type != "intr"} {
+	    checkbutton $win.row$row.col$col \
+		    -text $subname -variable yvar($subname) \
+		    -width $colwidth -anchor w -indicatoron 0 \
+		    -selectcolor $macroSelectColor
+	    set yvar($subname) 0
+	} else {
+	    button $win.row$row.col$col \
+		    -text $subname -width $colwidth \
+		    -bg darkslategray4  -fg wheat \
+		    -command \
+		    [format "selYAuto %s %s" $subname $topgrp] 
+	}
+	pack $win.row$row.col$col -side left \
+		-fill x -expand 1
+	incr col
+	if {$col >= $maxcol} {
+	    set col -1
+	}
+    }
+
+    #Add empty frames at end of last row
+    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
+	label $win.row$row.col$col -text "" \
+		-width $colwidth -relief flat -borderwidth 4
+	pack $win.row$row.col$col -side left -fill x \
+		-expand 1
+    }
+}
 
 ############################################################
 
