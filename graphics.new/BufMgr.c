@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/15 16:53:58  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:11  jussi
   Added CVS header.
 */
@@ -24,26 +27,25 @@
 
 void BufMgr::RegisterCallback(BufMgrCallback *c)
 {
-  _callbacks.Append(c);
+    _callbacks.Append(c);
 }
 
 void BufMgr::ReportInserted(TData *tdata, RecId low, RecId high)
 {
-  int index;
-  for(index=_callbacks.InitIterator(); _callbacks.More(index);) {
-    BufMgrCallback *c = _callbacks.Next(index);
-    c->Inserted(tdata,low, high);
-  }
-  _callbacks.DoneIterator(index);
-
+    int index = _callbacks.InitIterator();
+    while (_callbacks.More(index)) {
+        BufMgrCallback *c = _callbacks.Next(index);
+        c->Inserted(tdata, low, high);
+    }
+    _callbacks.DoneIterator(index);
 }
 
 void BufMgr::ReportDeleted(TData *tdata, RecId low, RecId high)
 {
-  int index;
-  for(index=_callbacks.InitIterator(); _callbacks.More(index);) {
-    BufMgrCallback *c = _callbacks.Next(index);
-    c->Deleted(tdata,low, high);
-  }
-  _callbacks.DoneIterator(index);
+    int index = _callbacks.InitIterator();
+    while (_callbacks.More(index)) {
+        BufMgrCallback *c = _callbacks.Next(index);
+        c->Deleted(tdata, low, high);
+    }
+    _callbacks.DoneIterator(index);
 }
