@@ -2,6 +2,7 @@ schema test2_schema {
 	delimiter = [\n]+;
 	separator = [ 	]+ ;
 	comment = "#";
+	key = (sci_const);
 	
 	attr sci_const {
 		type = double;

@@ -2,6 +2,7 @@ schema test8_schema {
 	delimiter = [\n]+;
 	separator = [	]+ ;
 	comment = "#";
+	sorted = (int1);
 	
 	attr int1 {
 		type = int;
