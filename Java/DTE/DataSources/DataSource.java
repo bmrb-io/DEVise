@@ -14,6 +14,8 @@ public interface DataSource {
     ASCII file with white-spaces as field separators and is
     stored on a local file system */
 
+/* This is called StandardInterface in C++ source file Interface.h */
+
 public class StandardTable implements DataSource {
 }
 
