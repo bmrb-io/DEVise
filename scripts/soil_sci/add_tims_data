@@ -1,0 +1,29 @@
+#! /s/std/bin/perl
+
+# Append Tim's latest data to the "master" ASOS data.
+
+$debug = 0;
+
+@src_dirs = ("/p/devise/twilson2/devise/dat/asos_data",
+    "/p/devise/twilson2/devise/dat/asos_data/zp/stn_data");
+$dest_dir = "..";
+
+foreach $src_dir (@src_dirs) {
+  $ls_cmd = "ls $src_dir/K*";
+
+  open LS, "$ls_cmd >& 1 |" or die "can't fork: $!";
+
+  while (<LS>) {
+    chomp $_;
+    print "line: $_\n" if ($debug);
+    @elements = split /\//, $_;
+    $filename = @elements[$#elements];
+    print "  filename: $filename\n" if ($debug);
+    system("cat $_ >> $dest_dir/$filename");
+  }
+
+  close LS;
+}
+
+
+
