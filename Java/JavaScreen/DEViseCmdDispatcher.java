@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.74  2001/02/12 02:51:12  xuk
+// JavaScreen can prevent from being collaborated.
+// Changes in run(), adding one collaboration status field for Java_Connect Command
+//
 // Revision 1.73  2001/02/11 20:53:16  xuk
 // Made the JS can switch between collaboration and socket modes.
 //
@@ -1477,7 +1481,7 @@ public class DEViseCmdDispatcher implements Runnable
         return rspstr;
     }
 
-    private synchronized void socketSendCom(String command) throws YException 
+    public synchronized void socketSendCom(String command) throws YException 
     {
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.socketSendCom(" +

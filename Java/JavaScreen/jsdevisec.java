@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2001/02/12 02:46:57  xuk
+// JavaScreen can prevent from collaboration.
+// Added isAbleCollab; Changes in setModeDlg().
+//
 // Revision 1.79  2001/02/12 02:44:06  xuk
 // Made the JavaScreen can switch between collaboration and socket modes.
 //
@@ -697,6 +701,12 @@ public class jsdevisec extends Panel
 	collabMode();
         collabdlg = null;
 	if (dispatcher.getOnlineStatus()) {
+	    try {
+                pn("Sending: \"" + DEViseCommands.EXIT +"\"");
+                dispatcher.socketSendCom(DEViseCommands.EXIT);
+            } catch (YException e) {
+                showMsg(e.getMsg());
+            }
 	    dispatcher.disconnect();
 	}
 	dispatcher.start(null);
