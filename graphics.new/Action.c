@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/05/29 15:18:46  wenger
+  Rubberband lines now work in JavaScreen, at least for single-window
+  sessions.
+
   Revision 1.28  1998/05/05 15:15:10  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -484,7 +488,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case 'O': {
     /* zoom out Z */
     if (view->GetNumDimensions() == 3) {
-#ifdef 0
+#if 0
       Camera camera = view->GetCamera();
       double incr_ = 0.0;
       if (!camera.spherical_coord) {
@@ -537,7 +541,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     /* switch between rectangular and radial coordinates */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
-#ifdef 0
+#if 0
       if (camera.spherical_coord)
 	camera.spherical_coord = 0;
       else {

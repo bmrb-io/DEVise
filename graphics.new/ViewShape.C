@@ -153,7 +153,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     if (view->GetDisplayDataValues())
       DisplayDataLabel(win, x, y, y);
 
-#ifdef 0
+#if 0
     int argc;
     char **argv;
     

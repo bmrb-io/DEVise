@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/02/26 17:19:26  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.19  1998/02/26 00:19:25  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -144,7 +147,7 @@ GDataBin::GDataBin()
 #endif
   int i;
 
-#ifdef 0
+#if 0
   for(i = 0; i < GDATA_BIN_MAX_PIXELS; i++)
     _timestamp[i] = 0;
 #endif
@@ -213,7 +216,7 @@ void GDataBin::Init(TDataMap *mapping, VisualFilter *filter,
 #ifdef DEBUG
   printf("GDataBin: _maxYPixels: %d\n", _maxYPixels);
 #endif
-#ifdef 0
+#if 0
   if (!(_maxYPixels > 0 && _maxYPixels < GDATA_BIN_MAX_PIXELS))
     printf("GDataBin: yhigh %.2f, ylow %.2f, _maxYPixels: %d\n",
 	   yhigh, ylow, _maxYPixels);
@@ -284,7 +287,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	// compute X pixel value for this symbol and see if it differs
 	// from X pixel value for current bin
 	
-#ifdef 0
+#if 0
 	Coord x, y;
 	_transform->Transform(sym->x, sym->y, x, y);
 	int thisPixelX = ROUND(int, x);
@@ -306,7 +309,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	  thisPixelY = _maxYPixels;
 #endif
 	
-#ifdef 0
+#if 0
 	if (_timestamp[thisPixelY] != _iteration) {
 	  _timestamp[thisPixelY] = _iteration;
 #endif
@@ -324,7 +327,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	    if (timedOut) printf("%s: %d: Draw timed out\n", __FILE__, __LINE__);
 	    recordsProcessed += reverseIndex[tmpRecProc];
 	  }
-#ifdef 0
+#if 0
 	} else {
 #ifdef DEBUGx
 //	  printf("Not adding x %f, X pixel %d\n", sym->x, thisPixelX);
@@ -355,7 +358,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   char *ptr = (char *)recs + startIndex * _gRecSize; 
   
   GDataBinRec *lastSym = (GDataBinRec *)ptr;
-#ifdef 0
+#if 0
   Coord x, y;
   _transform->Transform(lastSym->x, lastSym->y, x, y);
   int lastPixelX = ROUND(int, x);
@@ -372,13 +375,13 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
   for(int i = startIndex + 1; i < recordsProcessed; i++) {
     GDataBinRec *sym = (GDataBinRec *)ptr;
     
-#ifdef 0
+#if 0
     _transform->Transform(sym->x, sym->y, x, y);
     int thisPixelX = ROUND(int, x);
     int thisPixelY = ROUND(int, y);
 #endif
     
-#ifdef 0
+#if 0
     if (lastPixelX != thisPixelX || lastPixelY != thisPixelY) {
 #endif
       
@@ -404,12 +407,12 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 	printf("rejected\n");
 #endif
       }
-#ifdef 0
+#if 0
     }
 #endif
     
     lastSym = sym;
-#ifdef 0
+#if 0
     lastPixelX = thisPixelX;
     lastPixelY = thisPixelY;
 #endif
