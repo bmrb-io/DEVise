@@ -102,7 +102,7 @@ if (! -e $summary_page) {
     change_file('Percent','percent');
   }
   
-  if (-e $acc_num.'o.dat') {
+  if (-e $acc_num.'g.dat') {
     chdir ($session_dir)
       or dienice('Could not change to session_directory ($session_dir)');
     change_not_insert('coupling');

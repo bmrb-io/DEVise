@@ -23,7 +23,7 @@ DEVise setFont {View 1} {title} 2 14 0 0
 DEVise setFont {View 1} {x axis} 2 8 0 0
 DEVise setFont {View 1} {y axis} 2 8 0 0
 DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View 1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetImplicitHome {View 1} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
 DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 0
@@ -35,7 +35,7 @@ DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View 1} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View 1} {%.4g}
 DEVise setYAxisFloatFormat {View 1} {%.4g}
-DEVise setViewAutoFilter {View 1} {0}
+DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
@@ -51,7 +51,7 @@ DEVise setFont {View 2} {title} 2 14 0 0
 DEVise setFont {View 2} {x axis} 2 12 0 0
 DEVise setFont {View 2} {y axis} 2 8 0 0
 DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetImplicitHome {View 2} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
 DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 0
@@ -63,7 +63,7 @@ DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View 2} {%.4g}
 DEVise setYAxisFloatFormat {View 2} {%.4g}
-DEVise setViewAutoFilter {View 2} {0}
+DEVise setViewAutoFilter {View 2} {1}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
@@ -79,7 +79,7 @@ DEVise setFont {View 3} {title} 2 14 0 0
 DEVise setFont {View 3} {x axis} 2 8 0 0
 DEVise setFont {View 3} {y axis} 2 8 0 0
 DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetImplicitHome {View 3} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
 DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 0
@@ -91,7 +91,7 @@ DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View 3} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View 3} {%.4g}
 DEVise setYAxisFloatFormat {View 3} {%.4g}
-DEVise setViewAutoFilter {View 3} {0}
+DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
@@ -354,3 +354,7 @@ DEVise set3DLocation {View 6} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5
 DEVise set3DLocation {View 7} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
 
 # Set string tables for each view
+
+DEVise updateFilters
+DEVise waitForQueries
+DEVise updateFilters
