@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.72  1999/11/24 15:43:55  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.71  1999/11/22 18:11:58  wenger
   Fixed 'command buffer conflict' errors, other command-related cleanup.
 
@@ -1153,7 +1158,7 @@ Session::DEViseCmd(ControlPanel *control, int argc, char *argv[])
 	control->ReturnVal(0, "");
   } else {
     // don't pass DEVise command verb (argv[0])
-    if (CmdContainer::GetCmdContainer()->RunInternal(argc-1, &argv[1],
+    if (CmdContainer::GetCmdContainer()->RunOneCommand(argc-1, &argv[1],
 	    control) <= 0) {
       status = StatusFailed;
       fprintf(stderr, "Error in command: ");
@@ -1805,7 +1810,7 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
   argvIn[1] = arg1;
   argvIn[2] = arg2;
   argvIn[3] = arg3;
-  if (CmdContainer::GetCmdContainer()->RunInternal(argcIn, (char **)argvIn,
+  if (CmdContainer::GetCmdContainer()->RunOneCommand(argcIn, (char **)argvIn,
       control) <= 0) {
     reportErrNosys(control->GetResult());
     status = StatusFailed;

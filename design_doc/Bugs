@@ -2097,9 +2097,10 @@ Num Date        Status  Description
 537 11/24/99	OPEN	Play back command log, then quit -> DEVise crashes
 			in Dispatcher::DoCleanup(). (rkw)
 
-538 11/29/99	OPEN	Saving a session takes an incredibly long time
+538 11/29/99	FIXED	Saving a session takes an incredibly long time
 			(try the demo session Misc/MolBio.ds, for example).
 			(rkw)
+			(Fixed by rkw, 12/2/99.)
 
 539 11/30/99	FIXED	Clicking in the "blank" area with improperly-piled
 			views locks up DEVise (load Test/bad_pile1.ds). (rkw)

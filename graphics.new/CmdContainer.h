@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/11/24 15:44:21  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.7  1999/11/19 17:17:41  wenger
   Added View::SetVisualFilterCommand() method to clean up command-related
   code for filter setting.
@@ -77,9 +82,13 @@ class CmdContainer
 			{ return cmdLog;}
 		DeviseServer* getDeviseServer(){ return _server;}
 
-	private:
+	protected:
+	    friend class Session;
+
 		int	RunOneCommand(int argc, const char* const *argv,
 		    ControlPanel* control);
+
+	private:
 		long	logCommand(int argc, char** argv, CmdDescriptor& cmdDes);
 		//bool	playCommand(long logId1, long logId2);
 
