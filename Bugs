@@ -1347,13 +1347,13 @@ Num Date        Status  Description
 			views in a pile without actually forcing the views
 			to be redrawn. (rkw)
 
-356 05/22/98	FIXED?	2D views often don't work when running with OpenGL
+356 05/22/98	FIXED	2D views often don't work when running with OpenGL
 			(particularly when running on the SGI as opposed to
 			the Mesa library on other architectures).  (rkw)
 
-357 05/22/98	OPEN	2D views with OpenGL (Mesa): Rects don't appear to
-			be aligned correctly (not positioned by center)
-			(see the colors.ds session). (rkw)
+357 05/22/98	OPEN	2D views with OpenGL (Mesa but not SGI): Rects don't
+			appear to be aligned correctly (not positioned by
+			center) (see the colors.ds session). (rkw)
 
 358 05/27/98	FIXED	A number of places in the code pass the wrong types
 			to WindowRep::SetForeground() and
