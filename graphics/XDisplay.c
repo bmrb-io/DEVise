@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/18 01:21:59  jussi
+  Added ExportImage() and ConvertAndWriteGIF() methods. XWindowRep's
+  that are actual windows (as opposed to pixmaps) are now inserted
+  into a window tree.
+
   Revision 1.25  1996/07/14 01:36:59  jussi
   Added support for ICCCM (inter-client communication) between
   window manager and the X windows we create. This allows the
@@ -604,7 +609,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.border_pixel  		= realFgnd;
   attr.bit_gravity  		= ForgetGravity;   /* CenterGravity */
   attr.win_gravity  		= NorthWestGravity;
-  attr.backing_store  		= Always;          /* NotUseful*/
+  attr.backing_store  		= WhenMapped;      /* Always/NotUseful */
   attr.backing_planes  		= AllPlanes;
   attr.backing_pixel  		= 0;
   attr.save_under  		= False;
