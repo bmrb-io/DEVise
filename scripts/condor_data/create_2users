@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1999/06/04 20:53:35  wenger
+#  Made total views view symbols so they line up with the other views;
+#  fixed a few other minor problems.
+#
 #  Revision 1.3  1999/05/07 20:39:39  wenger
 #  Made improvements to Condor user session scripts as requested by Miron.
 #
@@ -316,18 +320,18 @@ sub CreateMappings {
       "{} {} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User1_viewsym\"} 1 ",
+      "User1#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 {\"User1_viewsym\"} 1 ",
       "1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
+      "User2#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
       "1 {\$TDataName} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Total#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 ",
+      "Total#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
 	  "{\"Total_viewsym\"} 1 1 {} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "TotalLinked#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 ",
+      "TotalLinked#$mappingClass {} {0} {\$X} {} {} 0.98 0 0 17 ",
 	  "{\"TotalLinked_viewsym\"} 1 1 {} {} {} {} {} {} {}\n";
 
   # Note: this is really a "dummy" TData for the User1 and User2 views --

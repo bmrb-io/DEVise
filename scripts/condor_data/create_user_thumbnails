@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/04/29 15:50:12  wenger
+#  Changed HighLow symbols so that Y is the top rather than the middle (so
+#  visual filter and home work better); changed Condor session scripts
+#  accordingly.
+#
 #  Revision 1.1  1999/04/28 18:30:32  wenger
 #  Split up data-splitting and session-creating parts of Condor session
 #  scripts; made a new script to make a session with thumbnails for each
@@ -207,18 +212,11 @@ sub CreateMappings {
 
   my $dataName = "${data_prefix}UserList";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "AllUser#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} ",
+      "AllUser#$mappingClass {} {0} {\$X} {} {} 0.9 0 0 17 {\$ViewName} ",
       "1 1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
       "{} {-2} {1} {} {} {} {} {} {}\n";
-
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Select1#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
-      "{} {} {} {} {} {} {} {}\n";
-  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "Select2#$mappingClass {} {0} {\$X} {} 8 0.5 0 0 0 1 1 ",
-      "{} {} {} {} {} {} {} {}\n";
 
   $dataName = ".Condor_Total";
   foreach $user (sort keys %userlist) {
