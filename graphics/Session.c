@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  1999/11/01 17:55:13  wenger
+  Fixed compile warning.
+
   Revision 1.67  1999/10/26 16:29:33  wenger
   Fixed bug 519 (problems with opening various sequences of soil science
   sessions, caused by stupid composite parsers not getting reset when a
@@ -343,9 +346,6 @@
 #include "ParseAPI.h"
 #include "DevFileHeader.h"
 #include "Util.h"
-#if !defined(NO_DTE)
-  #include "../../DTE/DeviseSpecific/CatalogComm.h"
-#endif
 #include "ParseCat.h"
 #include "StringStorage.h"
 #include "CmdContainer.h"
@@ -880,11 +880,7 @@ Session::CreateTData(const char *name)
     char *result ;
     if (isDteSource) {
 	  // TEMP -- memory may be leaked in here
-#if !defined(NO_DTE)
-      result = dteImportFileType((char *)name);
-#else
       result = NULL;
-#endif
       if (result == NULL) {
 	char buf[2048];
 	sprintf(buf, "Error parsing schema %s", name);
@@ -985,11 +981,7 @@ Session::ShowDataSource(const char *sourceName)
 
   char *catEntry;
 
-#if !defined(NO_DTE)
-  catEntry = dteShowCatalogEntry(sourceName);
-#else
   catEntry = DataCatalog::Instance()->ShowEntry(sourceName);
-#endif
   if (catEntry == NULL || strlen(catEntry) == 0) {
     catEntry = GetDataCatalog()->ShowEntry(sourceName);
   }
@@ -1013,17 +1005,7 @@ Session::ListDataCatalog(const char *catName)
 #endif
 
   char *catListMain;
-#if !defined(NO_DTE)
-  int errCode;
-  catListMain = dteListCatalog(catName, errCode);
-  if (errCode != 0) {
-	//TEMP -- get error from DTE here
-    reportErrNosys("Error in DTE");
-	catListMain = "";
-  }
-#else
   catListMain = DataCatalog::Instance()->ListCatalog(catName);
-#endif
 
 #if defined(DEBUG)
   printf("  catListMain = <%s>\n", catListMain);

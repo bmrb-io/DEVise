@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.202  1999/10/08 19:58:06  wenger
+#	Fixed bugs 470 and 513 (crashes when closing a session while a query
+#	is running), 510 (disabling actions in piles), and 511 (problem in
+#	saving sessions); also fixed various problems related to cursors on
+#	piled views.
+#	
 #	Revision 1.201  1999/10/04 19:37:17  wenger
 #	Mouse location is displayed in "regular" DEVise.
 #	
@@ -1504,8 +1510,8 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 .mbar.tdata.menu.schemaMenu add separator
 .mbar.tdata.menu.schemaMenu add command -label "Physical UNIXFILE..." \
 	-command {SchemaEdit 0}
-.mbar.tdata.menu.schemaMenu add command -label "Physical DataReader..." \
-	-command {SchemaEdit 3}
+#.mbar.tdata.menu.schemaMenu add command -label "Physical DataReader..." \
+#	-command {SchemaEdit 3}
 .mbar.tdata.menu.schemaMenu add command -label "Logical..." \
 	-command {SchemaEdit 1}
 #.mbar.tdata.menu.schemaMenu add command -label "Query..." \

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1999/11/10 20:23:53  wenger
+#  NO DTE!!
+#
 #  Revision 1.35  1999/01/20 17:44:00  beyer
 #  enabled DTE
 #
@@ -191,9 +194,6 @@ DEBUG_FLAGS =
 ifeq ($(DEBUG_MEM),1)
     DEBUG_FLAGS += -DDEBUG_MEM
 endif
-
-DEBUG_FLAGS += -DNO_DTE
-#DEBUG_FLAGS += -DDTE_WARN
 
 
 # Set up for profiling.

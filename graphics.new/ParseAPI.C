@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.103  1999/06/29 20:24:03  wenger
+  When sending GData to a file or socket, strings including the separator
+  character are now surrounded by braces; DEVise color numbers are converted
+  to RGB values by default (can be changed with the GUI).
+
   Revision 1.102  1999/01/20 22:47:11  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -464,9 +469,6 @@
 #include <assert.h>
 
 #include "ParseAPI.h"
-// #if !defined(NO_DTE)
-//   #include "TDataDQLInterp.h"
-// #endif
 #include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"
@@ -493,9 +495,6 @@
 #include "MappingInterp.h"
 #include "QueryProc.h"
 
-#if !defined(NO_DTE)
-  #include "CatalogComm.h"
-#endif
 #include "SessionDesc.h"
 #include "StringStorage.h"
 #include "DepMgr.h"

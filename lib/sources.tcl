@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.80  1999/06/10 21:17:36  wenger
+#	Added '...' to appropriate menu items; added confirmation before doing
+#	automated data source checking.
+#	
 #	Revision 1.79  1999/01/20 17:44:59  beyer
 #	minor fix
 #	
@@ -339,12 +343,12 @@
 #set sourceTypes(NETWORK) "{Network Server Output} $schemadir/logical/NETWORK"
 #set sourceTypes(SEQ) "{SEQ Query Output} $schemadir/logical/SEQ"
 #set sourceTypes(SQL) "{SQL Query Output} $schemadir/logical/SQL"
-set "sourceTypes(SQLView)" "{SQL View} $schemadir/logical/SQL"
-set "sourceTypes(Table)" "{Table} $schemadir/logical/SQL"
-set "sourceTypes(StandardTable)" "{StandardTable} $schemadir/logical/SQL"
+#set "sourceTypes(SQLView)" "{SQL View} $schemadir/logical/SQL"
+#set "sourceTypes(Table)" "{Table} $schemadir/logical/SQL"
+#set "sourceTypes(StandardTable)" "{StandardTable} $schemadir/logical/SQL"
 set "sourceTypes(Directory)" "{Directory} $schemadir/logical/SQL"
 set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
-set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
+#set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
 #set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 source $libdir/mapdef.tcl

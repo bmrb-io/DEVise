@@ -29,6 +29,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/11/16 18:58:48  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.14  1998/11/11 14:31:02  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -107,12 +111,6 @@
 #include "AttrList.h"
 #include "Session.h"
 #include "DerivedTable.h"
-
-#if !defined(NO_DTE)
-  #include "RelationManager.h"
-  #include "types.h"
-  #include "CatalogComm.h"
-#endif
 
 //#define DEBUG
 

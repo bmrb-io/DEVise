@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1999/09/08 20:56:28  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.53  1999/07/13 17:34:10  wenger
   Changed version to 1.6.4 because of new view symbol features.
 
@@ -301,7 +305,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.6.5";
+static const char *	version = "1.7.0";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1999";

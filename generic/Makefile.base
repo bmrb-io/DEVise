@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.63  1999/04/26 15:26:23  wenger
+#  Makefiles are smarter about not building DTE-related stuff if it's not
+#  necessary.
+#
 #  Revision 1.62  1999/02/18 19:22:53  wenger
 #  Links or doesn't link dte and rtree as necessary.
 #
@@ -226,14 +230,8 @@ BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 # which caused -lgraphicsnew to be listed twice below...
 # dd: dte need stuff from Jussi's SBM which is in graphics.new
 
-ifeq (,$(findstring NO_DTE,$(DEBUG_FLAGS)))
-	DTE_STUFF = -ldte -lrtree -ldatareader
-	DTE_DEPEND = ../DTE/libdte.a ../RTree/librtree.a \
-		../DataReader/libdatareader.a
-else
 	DTE_STUFF =
 	DTE_DEPEND =
-endif
 
 LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-L../color -L../utils -L../issm -L../csgroup\

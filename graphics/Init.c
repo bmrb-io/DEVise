@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1999/10/14 16:07:24  wenger
+  Improvements to debug logging.
+
   Revision 1.54  1999/10/05 17:55:38  wenger
   Added debug log level.
 
@@ -260,9 +263,6 @@
 #include "Util.h"
 #include "Version.h"
 #include "ETkIfc.h"
-#if !defined(NO_DTE)
-  #include "InitShut.h"
-#endif
 #include "ClientAPI.h"
 #include "DebugLog.h"
 
@@ -436,13 +436,6 @@ static void Usage(char *prog)
 void Init::DoInit(int &argc, char **argv)
 {
   char *temp;
-
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-  initialize_system();
-#endif
 
   /* set the collaborator name via the environmental variables */
   temp = getenv ("DEVISE_COLLABORATOR");

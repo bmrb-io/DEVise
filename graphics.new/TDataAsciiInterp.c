@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.38  1999/01/20 22:47:14  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.37  1998/11/16 18:58:49  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -186,9 +192,6 @@
 #include "DevError.h"
 
 #ifndef ATTRPROJ
-// #if !defined(NO_DTE)
-//   #include "TDataDQLInterp.h"
-// #endif
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #endif
@@ -283,46 +286,6 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
 
     if(!strncmp(argv[0], "GstatXDTE:", 10)) {
       cerr << "warning: GstatXDTE feature is disabled\n";
-#if 0
-  #if defined(DTE_WARN)
-    fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-  #endif
-  #if !defined(NO_DTE)
-      char *sourceName = new char[1024];
-      char *query = new char[1024];
-      char **param = new char *[2];
-      param[0] = new char[1024];
-      param[1] = new char[1024];
-
-      strcpy(param[0], argv[0]);
-
-      if (strncmp(argv[0], "GstatXDTE", 9) == 0) {
-      	sourceName = strtok(argv[2], " ");
-        char *byAttr = strtok(NULL, " ");
-        char *onAttr = strtok(NULL, " ");
-	char **categ = new char *[5];
-	int i=0;
-	for (char *curTok=strtok(NULL," ");curTok;curTok=strtok(NULL," ")) {
-		categ[i] = curTok;
-		i++;
-	}
-        sprintf(param[1], "%s Count Sum Min Avg Max", byAttr);
-	sprintf(query, "select t.%s, count(t.%s), sum(t.%s), min(t.%s), avg(t.%s), max(t.%s) from %s as t group by t.%s", byAttr, onAttr, onAttr, onAttr, onAttr, onAttr, sourceName, byAttr);
-      } else if(strncmp(argv[0], "GstatX", 6) == 0 ) {
-        sprintf(param[1], "t.X Count Min Avg Max");
-      	sprintf(query, "select t.X, count(t.Y), max(t.Y), avg(t.Y), min(t.Y) from %s as t group by t.X", sourceName);
-      } else if (strncmp(argv[0], "GstatY", 6) == 0 ) {
-        sprintf(param[1], "t.Y Count Min Avg Max");
-      	sprintf(query, "select t.Y, count(t.X), max(t.X), avg(t.X), min(t.X) from %s as t group by t.Y", sourceName);
-      } 
-
-      TDataDQLInterpClassInfo *queryClass =
-            new TDataDQLInterpClassInfo(sourceName);
-
-      return queryClass->CreateWithParamsNew(0, NULL);
-      //return queryClass->CreateWithParamsNew(param, query);
-  #endif
-#endif
     }
   }
 #endif

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/10/26 16:29:32  wenger
+  Fixed bug 519 (problems with opening various sequences of soil science
+  sessions, caused by stupid composite parsers not getting reset when a
+  session is closed).
+
   Revision 1.26  1999/10/14 16:07:24  wenger
   Improvements to debug logging.
 
@@ -138,9 +143,6 @@
 #include "Control.h"
 #include "DaliIfc.h"
 #include "ETkIfc.h"
-#if !defined(NO_DTE)
-  #include "InitShut.h"
-#endif
 #include "DebugLog.h"
 #include "HangCheck.h"
 #include "CompositeParser.h"
@@ -150,16 +152,6 @@ void Exit::DoExit(int code)
 {
 #if defined(DEBUG)
     printf("Exit::DoExit(%d)\n", code);
-#endif
-
-#if !defined(LIBCS) && !defined(ATTRPROJ)
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-//    cout << "Calling RTree shutdown\n";
-    shutdown_system();
-#endif
 #endif
 
 #if !defined(LIBCS)

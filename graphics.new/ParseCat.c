@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/01/29 15:19:16  wenger
+  Minor improvements to error messages.
+
   Revision 1.48  1999/01/20 22:47:12  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -232,10 +235,6 @@
 
 #include "machdep.h"
 #include "TDataAsciiInterp.h"
-// #if !defined(NO_DTE)
-//   #include "TDataDQLInterp.h"
-//   #include "TDataDQL.h"
-// #endif
 #include "TDataBinaryInterp.h"
 #include "Parse.h"
 #include "Control.h"
@@ -1402,201 +1401,17 @@ ParseCatDQL(char *catFile, string& phySchemaFile, string& list)
 
   int result = false;
   
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-  FILE *fp = fopen(catFile, "r");
-  if (!fp)
-  {
-    fprintf(stderr,"ParseCat: can't open file <%s>\n", catFile);
-  }
-  else
-  {
-    char buf[LINESIZE];
-	// Find the first nonblank, non-comment line.
-    buf[0] = '\0';
-	while (IsBlank(buf) || (buf[0] == '#'))
-	{
-		fgets(buf, LINESIZE, fp);
-		StripTrailingNewline(buf);
-	}
-
-	// Look for the keyword 'physical' to determine whether this is a
-	// logical schema file.
-	
-	char token1[LINESIZE];
-	char token2[LINESIZE];
-	sscanf(buf, "%s %s", token1, token2);
-    
-	fclose(fp);
-	if (strcmp(token1, "physical"))
-	{
-	 phySchemaFile = catFile;
-      DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
-      result = ParseDQLCatPhysical(&schemaSource, list);
-    }
-    else
-    {
-	 phySchemaFile = token2;
-      DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
-      result = ParseDQLCatLogical(&logSchemaSource, list);
-    }
-  }
-#endif
-
   return result;
 }
 
 int
 ParseDQLCatLogical(DataSource *schemaSource, string &list)
 {
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-  char buf[LINESIZE];
-  int numArgs;
-  char **args;
-  list = "";
-  string phySchema;
-
-  if (!(schemaSource->Open("r") == StatusOk))
-  {
-    goto error;
-  }
-  _line = 0;
-  
-  /* Skip past any leading comment or blank lines, and past the line
-   * specifying the physical schema.  Note that the line specifying the
-   * physical schema MUST be the first nonblank, non-comment line. */
-  buf[0] = '\0';
-  while (IsBlank(buf) || (buf[0] == '#'))
-  {
-    schemaSource->Fgets(buf, LINESIZE);
-  }
-  
-  StripTrailingNewline(buf);
-  Parse(buf,numArgs, args);
-  
-  if (strcmp(args[0],"physical") == 0)
-	phySchema = args[1];
-  
-  while (schemaSource->Fgets(buf,LINESIZE) != NULL)
-  {
-	  StripTrailingNewline(buf);
-      _line++;
-      if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
-	continue;
-      
-	  Parse(buf,numArgs, args);
-      
-	  if (numArgs == 0)
-	continue;
-     
-      if (strcmp(args[0], "item") == 0)
-      {
-		if (list.length() != 0)
-			list += " , ";
-		list += args[1];
-      }
-		
-  }
-  schemaSource->Close();
-
-  if (list.length() == 0 ){
-	// Call physical schema Parse
-	cout << " Physchema .chars () = *" << phySchema << "*" << endl;
-    DataSourceFileStream  phySchemaSource((char *)phySchema.c_str(),
-                                          StripPath((char *)phySchema.c_str()));
-    return ParseDQLCatPhysical(&phySchemaSource, list);
-  }	
-  return true;
-
- error:
-  schemaSource->Close();
-  
-  fprintf(stderr,"error at line %d\n", _line);
-#endif
   return false;
 }
 
 int
 ParseDQLCatPhysical(DataSource *schemaSource, string& list)
 {
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-	Boolean hasSource = false;
-	char *source = 0; /* source of data. Which interpreter we use depends
-			     on this */
-	
-	list = "";
-	char buf[LINESIZE];
-	Boolean hasFileType = false;
-	Boolean hasSeparator = false;
-	Boolean hasWhitespace = false;
-	Boolean hasComment = false;
-
-	Boolean isAscii = false;
-	Boolean GLoad = true;
-	char *fileType = 0;
-	int numArgs;
-	char **args;
-	int recSize = 0;
-	char *sep = 0;
-	int numSep = 0;
-	char *commentString = 0;
-	Group *currgrp = NULL;
-
-	attrs = NULL;
-	numAttrs = 0;
-
-	if (!(schemaSource->Open("r") == StatusOk))
-	{
-		reportError("schemaSource->Open() failed", devNoSyserr);
-		goto error;
-	}
-	_line = 0;
-	while (schemaSource->Fgets(buf, LINESIZE) != NULL)
-	{
-		StripTrailingNewline(buf);
-		_line++;
-		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
-			continue;
-		
-		Parse(buf,numArgs, args);
-		if (numArgs == 0)
-			continue;
-		
-		if (strcmp(args[0],"end")== 0)
-		{
-			break;
-		}
-		else if (strcmp(args[0],"attr") == 0 ||
-			   strcmp(args[0],"compattr") == 0 )
-		{
-			if (list.length() != 0 )
-				list += ", ";
-			list += args[1];
-		}
-		else if (strcmp(args[0],"sorted") == 0){
-			if (list.length() != 0 )
-				list += ", ";
-			list += args[2];
-		}
-	}
-
-	/* round record size */
-
-	schemaSource->Close();
-	return true;
-error:
-	schemaSource->Close();
-
-	if (attrs != NULL) delete attrs;
-	fprintf(stderr,"error at line %d\n", _line);
-#endif
 	return false;
 }

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.82  1999/10/05 17:55:47  wenger
+  Added debug log level.
+
   Revision 1.81  1999/09/23 15:46:30  wenger
   Added per-session data source capability:  data sources defined in a
   session file are added to a separate catalog which is delete when the
@@ -395,9 +398,6 @@
 
 #include "DeviseCommand.h"
 #include "ParseAPI.h"
-#if !defined(NO_DTE)
-  #include "TDataDQLInterp.h"
-#endif
 #include "ClassDir.h"
 #include "Control.h"
 #include "ViewKGraph.h"
@@ -478,9 +478,6 @@ extern "C" int purify_new_inuse();
 int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
 int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
 	char *windowName);
-#if !defined(NO_DTE)
-  int ParseAPIDTE(int argc, char** argv, ControlPanel* control);
-#endif
 int ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 
 
@@ -713,11 +710,7 @@ DeviseCommand_dteImportFileType::Run(int argc, char** argv)
 IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
 		if (argc ==2) 
         {
-#if !defined(NO_DTE)
-    		 char * name = dteImportFileType(argv[1]);
-#else
 			 char *name = NULL;
-#endif
     		 if (!name){
     		ReturnVal(API_NAK, (char *)DevError::GetLatestError());
     		return -1;
@@ -725,11 +718,7 @@ IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
     		 ReturnVal(API_ACK, name);
     		 return 1;
     	}
-#if !defined(NO_DTE)
-		return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
 IMPLEMENT_COMMAND_END
 
 /*
@@ -749,11 +738,7 @@ DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
     			return 1;
     		}
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -768,9 +753,6 @@ DeviseCommand_dteDeleteCatalogEntry::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
 		int result = DataCatalog::Instance()->DeleteEntry(argv[1]);
 		if (result == 0) {
           ReturnVal(API_ACK, "");
@@ -779,7 +761,6 @@ TAG*/
           ReturnVal(API_NAK, (char *)DevError::GetLatestError());
     	  return -1;
 		}
-#endif
     }
     return true;
 }
@@ -794,11 +775,7 @@ DeviseCommand_dteMaterializeCatalogEntry::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -813,11 +790,7 @@ DeviseCommand_dteReadSQLFilter::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -867,11 +840,7 @@ DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
     		return 1;
     	}
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -886,11 +855,7 @@ DeviseCommand_dteListAttributes::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -905,11 +870,7 @@ DeviseCommand_dteDeleteIndex::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -924,11 +885,7 @@ DeviseCommand_dteShowIndexDesc::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -943,11 +900,7 @@ DeviseCommand_dteShowAttrNames::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -1017,9 +970,6 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
     	    return -1;
 		  }
         } else {
-#if !defined(NO_DTE)
-          return ParseAPIDTE(argc, argv, _control);
-#else
 		  int result = DataCatalog::Instance()->AddEntry(argv[1], argv[2]);
 		  if (result == 0) {
             ReturnVal(API_ACK, "");
@@ -1028,7 +978,6 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
             ReturnVal(API_NAK, (char *)DevError::GetLatestError());
     	    return -1;
 		  }
-#endif
 	    }
     return true;
 }
@@ -1049,11 +998,7 @@ DeviseCommand_dteCheckSQLViewEntry::Run(int argc, char** argv)
     			return 1;
     		}
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }
@@ -1068,11 +1013,7 @@ DeviseCommand_dteCreateIndex::Run(int argc, char** argv)
               return 1;
          }
 TAG*/
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
         return false;
-#endif
     }
     return true;
 }

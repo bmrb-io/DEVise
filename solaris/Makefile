@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.50  1999/10/12 17:57:59  wenger
+# Added devised.pure target.
+#
 # Revision 1.49  1999/04/26 15:26:49  wenger
 # Makefiles are smarter about not building DTE-related stuff if it's not
 # necessary.
@@ -180,10 +183,6 @@ LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
 
 #devread is obsolete
 #attrproj is broken
-
-ifeq (,$(findstring NO_DTE,$(DEBUG_FLAGS)))
-	LIBMODULES += DataReader RTree DTE
-endif
 
 MODULES = $(LIBMODULES) cslib generic
 
