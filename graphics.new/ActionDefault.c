@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/29 22:43:57  jussi
+  Small fixes.
+
   Revision 1.6  1995/12/28 20:48:04  jussi
   Cleaned up the code a bit.
 
@@ -189,7 +192,7 @@ static void EndPutMessage(int &numMessages, char **&msgs)
 static void PrintMsgBuf()
 {
   for(int i = 0; i < numMsgs; i++)
-    printf("%s\n", msgPtr[i]);
+    puts(msgPtr[i]);
 }
 
 Boolean ActionDefault::PopUp(View *view, Coord x, Coord y, Coord xHigh,
@@ -286,30 +289,29 @@ Boolean ActionDefault::PrintRecords(View *view, Coord x, Coord y,
       recInterp->SetBuf(ptr);
       ptr += tdata->RecSize();
       
-      if (!tooMuch) {
-	/* set up for display inside the window */
+      if (tooMuch)
+	puts("");
+      else
 	PutMessage("");
-	for(int j = 0; j < attrs->NumAttrs(); j++) {
-	  char buf[128];
-	  recInterp->PrintAttr(buf, j, true);
-	  if (!tooMuch) {
-	    if (!PutMessage(buf)) {
-	      PrintMsgBuf();
-	      errorMsg = "see text window";
-	      tooMuch = true;
-	    }
+
+      /* set up for display inside the window */
+
+      for(int j = 0; j < attrs->NumAttrs(); j++) {
+	char buf[128];
+	recInterp->PrintAttr(buf, j, true);
+	if (!tooMuch) {
+	  if (!PutMessage(buf)) {
+	    PrintMsgBuf();
+	    errorMsg = "see text window";
+	    tooMuch = true;
 	  }
-	  else {
-	    printf(buf);
-	  }
+	} else {
+	  puts(buf);
 	}
-	if (tooMuch)
-	  printf("\n");
       }
-      else  /* print in text window */
-	recInterp->Print(true);
     }
   }
   qp->DoneTDataQuery();
+
   return !tooMuch;
 }
