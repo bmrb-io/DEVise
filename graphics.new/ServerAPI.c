@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/12/04 00:12:34  jussi
+  Removed inclusion of netdb.h because it got included from machdep.h
+  also, and netdb.h isn't protected by a pair of ifdef-define's.
+
   Revision 1.23  1996/12/03 20:35:17  jussi
   Added initialization of semaphore structures.
 
@@ -175,10 +179,6 @@ ServerAPI::ServerAPI()
       (void)AddReplica(hostName, port);
     fclose(fp);
   }
-
-  // destroy all semaphores and shared memory segments
-  Semaphore::destroyAll();
-  SharedMemory::destroyAll();
 
   // create space for 16 virtual semaphores
   int status = SemaphoreV::create(16);
@@ -344,10 +344,10 @@ int ServerAPI::ReadCommand()
   int argc;
   char **argv;
   int result = NetworkReceive(_socketFd, 1, flag, argc, argv);
-  //printf("ServerAPI::ReadCommand: result %d, errno %d, argc %d command %s \n",
-  //      result, errno, argc,argv[0]);
-  printf("Command: command %s \n", argv[0]);
 #ifdef DEBUG
+  printf("ServerAPI::ReadCommand: result %d, errno %d, argc %d command %s \n",
+         result, errno, argc,argv[0]);
+  printf("Command: command %s \n", argv[0]);
   for(int i = 0;i<argc;i++)
 		printf("Arg %d - %s \n",i,argv[i]);
 	printf("--- \n");
@@ -474,6 +474,14 @@ void ServerAPI::RestartSession()
   int len = sizeof(clientAddr);
 
   do {
+    // hack: jpm 12/12/96
+    // if we're waiting for a client connection and the server
+    // receives an interrupt from the user (Control-C), we don't
+    // really know about it here because it's handled in the
+    // Dispatcher. The handler just sets a flag which is later inspected
+    // in the Run1() routine. Since we're not going to call Run1() anytime
+    // soon, let's have the flag inspected here just in case.
+    Dispatcher::CheckUserInterrupt();
     _socketFd = accept(_listenFd, (struct sockaddr *)&clientAddr, &len);
   } while (_socketFd < 0 && errno == EINTR);
 
