@@ -978,6 +978,28 @@ Num Date        Status  Description
 247 12/01/97	OPEN	devised must be started from the directory in which
 			the executable resides. (rkw)
 
+248 12/10/97    OPEN    DEVise crashes if you try to generate a GIF with any
+                        part of a DEVise window off of the current part of
+                        the virtual desktop -- we should exclude any such
+                        windows from printing. (ad/rkw)
+
+249 12/12/97	OPEN	Changing color palette doesn't force a redraw. (rkw)
+
+250 12/12/97	OPEN	colors.tk session doesn't work right with new color
+			manager (most symbols don't show up, two rects are
+			drawn for each symbol). (rkw)
+
+251 12/12/97	OPEN	In color GUI, OK is to the right of Cancel; it's to
+			the left in the rest of the GUI. (rkw)
+
+252 12/12/97	OPEN	Changing data color changes color of drill-down
+			results popup. (rkw)
+
+253 12/12/97	OPEN	Axis values don't show up with new color manager. (rkw)
+
+254 12/12/97	OPEN	Devised doesn't seem to notify Tasvir and EmbeddedTk
+			server when it exits. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
