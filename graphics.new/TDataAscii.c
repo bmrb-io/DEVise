@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/11/18 18:10:54  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.43  1996/10/08 21:49:09  wenger
   ClassDir now checks for duplicate instance names; fixed bug 047
   (problem with FileIndex class); fixed various other bugs.
@@ -248,7 +251,24 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
     _totalRecs = 0;
 
-    _indexP = new FileIndex(INDEX_ALLOC_INC);
+    // Read first 10 records from data source and estimate record
+    // size.
+
+    float recSizeSum = 0;
+    int i;
+    for(i = 0; i < 10; i++) {
+        char buf[LINESIZE];
+        if (_data->Fgets(buf, LINESIZE) == NULL)
+            break;
+        recSizeSum += strlen(buf);
+    }
+    
+    float estNumRecs = (i > 0 ? 1.2 * _data->DataSize() / (recSizeSum / i) : 0);
+    _indexP = new FileIndex((unsigned long)estNumRecs);
+
+    _data->Seek(0, SEEK_SET);
+
+    printf("Allocated %lu index entries\n", (unsigned long)estNumRecs);
 
     Dispatcher::Current()->Register(this, 10, AllState, 
 				    false, _data->AsyncFd());
@@ -436,7 +456,7 @@ void TDataAscii::Initialize()
   }
 
   if (!_indexP->Initialize(_indexFileName, _data, this, _lastPos,
-    _totalRecs).IsComplete()) goto error;
+                           _totalRecs).IsComplete()) goto error;
 
   _initTotalRecs = _totalRecs;
   _initLastPos  = _lastPos;
