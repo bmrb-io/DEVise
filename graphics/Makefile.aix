@@ -58,7 +58,7 @@ Temp: Pattern.h DList.h Exit.h DevisePixmap.h Compress.h Map3D.h
 Time: Time.h Journal.h DeviseTypes.h VisualArg.h Color.h Pattern.h
 Time: ../graphics.new/machdep.h
 TimeStamp: TimeStamp.h
-Timer: Timer.h DeviseTypes.h ../graphics.new/machdep.h
+Timer: ../graphics.new/machdep.h Timer.h DeviseTypes.h
 Util: Util.h Exit.h
 View: Util.h Exit.h View.h DeviseTypes.h Dispatcher.h DList.h Journal.h
 View: VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h Geom.h Transform.h

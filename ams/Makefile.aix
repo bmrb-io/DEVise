@@ -29,10 +29,10 @@ MapClassInfo: ../graphics/BufPolicy.h ../graphics.new/TDataMapDispatch.h
 MapClassInfo: ../graphics.new/DispQueryProc.h
 MapClassInfo: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
-MapClassInfo: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
-MapClassInfo: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
-MapClassInfo: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
-MapClassInfo: MapClassInfo.h Soil.h AmsMap.h
+MapClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
+MapClassInfo: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
+MapClassInfo: ../graphics.new/RecOrder.h ../graphics.new/Snapshot.h
+MapClassInfo: ../graphics.new/ViewScatter.h MapClassInfo.h Soil.h AmsMap.h
 ams: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h ../graphics/DList.h
 ams: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
 ams: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h

@@ -122,7 +122,7 @@ DispQueryProc: ../graphics/Exit.h ../graphics/Journal.h
 DispQueryProc: ../graphics/VisualArg.h ../graphics/Color.h
 DispQueryProc: ../graphics/Pattern.h QueryProcSimple.h ../graphics/Config.h
 DispQueryProc: QueryProc.h RecId.h ../graphics/BufPolicy.h BufHint.h
-DispQueryProc: QueryProcFull.h QPRange.h
+DispQueryProc: QueryProcFull.h QPRange.h ../graphics/Timer.h
 GData: ../graphics/Exit.h TDataAttr.h TData.h ../graphics/DeviseTypes.h
 GData: RecId.h RecOrder.h GData.h ../graphics/DList.h GDataRangeMap.h
 GData: GDataRec.h ../graphics/Color.h ShapeID.h ../graphics/Pattern.h
@@ -208,7 +208,7 @@ QueryProc: ../graphics/Color.h ../graphics/Pattern.h RecId.h DispQueryProc.h
 QueryProc: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 QueryProc: ../graphics/Journal.h QueryProcSimple.h ../graphics/Config.h
 QueryProc: ../graphics/BufPolicy.h BufHint.h QueryProcFull.h QPRange.h
-QueryProc: ../graphics/Init.h
+QueryProc: ../graphics/Timer.h ../graphics/Init.h
 QueryProcFull: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h

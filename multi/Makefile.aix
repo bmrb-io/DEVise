@@ -42,7 +42,7 @@ CycleCpuTimeMappingClassInfo: ../graphics.new/QueryProcSimple.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/QueryProc.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/BufHint.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/QueryProcFull.h
-CycleCpuTimeMappingClassInfo: ../graphics.new/QPRange.h
+CycleCpuTimeMappingClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/BufMgr.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/BufferPolicy.h
 CycleCpuTimeMappingClassInfo: ../graphics.new/RecOrder.h TDataCycle.h
@@ -83,7 +83,8 @@ CycleEffMappingClassInfo: ../graphics.new/QueryProcSimple.h
 CycleEffMappingClassInfo: ../graphics.new/QueryProc.h
 CycleEffMappingClassInfo: ../graphics.new/BufHint.h
 CycleEffMappingClassInfo: ../graphics.new/QueryProcFull.h
-CycleEffMappingClassInfo: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
+CycleEffMappingClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
+CycleEffMappingClassInfo: ../graphics.new/BufMgr.h
 CycleEffMappingClassInfo: ../graphics.new/BufferPolicy.h
 CycleEffMappingClassInfo: ../graphics.new/RecOrder.h TDataCycle.h
 CycleEffMappingClassInfo: ../graphics.new/TDataAscii.h
@@ -122,7 +123,8 @@ CycleOccMappingClassInfo: ../graphics.new/QueryProcSimple.h
 CycleOccMappingClassInfo: ../graphics.new/QueryProc.h
 CycleOccMappingClassInfo: ../graphics.new/BufHint.h
 CycleOccMappingClassInfo: ../graphics.new/QueryProcFull.h
-CycleOccMappingClassInfo: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
+CycleOccMappingClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
+CycleOccMappingClassInfo: ../graphics.new/BufMgr.h
 CycleOccMappingClassInfo: ../graphics.new/BufferPolicy.h
 CycleOccMappingClassInfo: ../graphics.new/RecOrder.h TDataCycle.h
 CycleOccMappingClassInfo: ../graphics.new/TDataAscii.h
@@ -170,7 +172,7 @@ CycleSuspendedMappingClassInfo: ../graphics.new/QueryProcSimple.h
 CycleSuspendedMappingClassInfo: ../graphics.new/QueryProc.h
 CycleSuspendedMappingClassInfo: ../graphics.new/BufHint.h
 CycleSuspendedMappingClassInfo: ../graphics.new/QueryProcFull.h
-CycleSuspendedMappingClassInfo: ../graphics.new/QPRange.h
+CycleSuspendedMappingClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
 CycleSuspendedMappingClassInfo: ../graphics.new/BufMgr.h
 CycleSuspendedMappingClassInfo: ../graphics.new/BufferPolicy.h
 CycleSuspendedMappingClassInfo: ../graphics.new/RecOrder.h TDataCycle.h
@@ -218,7 +220,7 @@ CycleWorkingMappingClassInfo: ../graphics.new/QueryProcSimple.h
 CycleWorkingMappingClassInfo: ../graphics.new/QueryProc.h
 CycleWorkingMappingClassInfo: ../graphics.new/BufHint.h
 CycleWorkingMappingClassInfo: ../graphics.new/QueryProcFull.h
-CycleWorkingMappingClassInfo: ../graphics.new/QPRange.h
+CycleWorkingMappingClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
 CycleWorkingMappingClassInfo: ../graphics.new/BufMgr.h
 CycleWorkingMappingClassInfo: ../graphics.new/BufferPolicy.h
 CycleWorkingMappingClassInfo: ../graphics.new/RecOrder.h TDataCycle.h
@@ -257,8 +259,8 @@ HostMappingClassInfo: ../graphics.new/DispQueryProc.h
 HostMappingClassInfo: ../graphics.new/QueryProcSimple.h
 HostMappingClassInfo: ../graphics.new/QueryProc.h ../graphics.new/BufHint.h
 HostMappingClassInfo: ../graphics.new/QueryProcFull.h
-HostMappingClassInfo: ../graphics.new/QPRange.h ../graphics.new/BufMgr.h
-HostMappingClassInfo: ../graphics.new/BufferPolicy.h
+HostMappingClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h
+HostMappingClassInfo: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
 HostMappingClassInfo: ../graphics.new/RecOrder.h TDataHost.h
 HostMappingClassInfo: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 HostMappingClassInfo: ../graphics.new/Snapshot.h
@@ -292,11 +294,12 @@ MappingClassInfo: ../graphics.new/DispQueryProc.h
 MappingClassInfo: ../graphics.new/QueryProcSimple.h
 MappingClassInfo: ../graphics.new/QueryProc.h ../graphics.new/BufHint.h
 MappingClassInfo: ../graphics.new/QueryProcFull.h ../graphics.new/QPRange.h
-MappingClassInfo: ../graphics.new/BufMgr.h ../graphics.new/BufferPolicy.h
-MappingClassInfo: ../graphics.new/RecOrder.h TDataMulti.h
-MappingClassInfo: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
-MappingClassInfo: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
-MappingClassInfo: MappingClassInfo.h MultiRec.h mapfile.h
+MappingClassInfo: ../graphics/Timer.h ../graphics.new/BufMgr.h
+MappingClassInfo: ../graphics.new/BufferPolicy.h ../graphics.new/RecOrder.h
+MappingClassInfo: TDataMulti.h ../graphics.new/TDataAscii.h
+MappingClassInfo: ../graphics.new/TData.h ../graphics.new/Snapshot.h
+MappingClassInfo: ../graphics.new/ViewScatter.h MappingClassInfo.h MultiRec.h
+MappingClassInfo: mapfile.h
 Message: MultiRec.h ../graphics.new/TData.h ../graphics/DeviseTypes.h
 Message: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
 Message: ../graphics/Exit.h
@@ -345,8 +348,9 @@ ViewClassInfo: ../graphics.new/ActionDefault.h ../graphics.new/VisualLink.h
 ViewClassInfo: ../graphics.new/DispQueryProc.h
 ViewClassInfo: ../graphics.new/QueryProcSimple.h ../graphics/BufPolicy.h
 ViewClassInfo: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
-ViewClassInfo: ../graphics.new/QPRange.h Message.h ../graphics.new/TDataMap.h
-ViewClassInfo: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
+ViewClassInfo: ../graphics.new/QPRange.h ../graphics/Timer.h Message.h
+ViewClassInfo: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
+ViewClassInfo: ../graphics.new/GDataRec.h
 disp: ../graphics/DeviseTypes.h ../graphics/Display.h ../graphics/Geom.h
 disp: ../graphics/Color.h ../graphics/Dispatcher.h ../graphics/DList.h
 disp: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
