@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.75  2001/02/15 03:21:35  xuk
+// Fixed bugs for collaboration JavaScreen.
+//
 // Revision 1.74  2001/02/12 02:51:12  xuk
 // JavaScreen can prevent from being collaborated.
 // Changes in run(), adding one collaboration status field for Java_Connect Command
@@ -357,7 +360,7 @@ public class DEViseCmdDispatcher implements Runnable
         return status;
     }
 
-    private synchronized void setStatus(int arg)
+    public synchronized void setStatus(int arg)
     {
         status = arg;
         jsc.jscreen.reEvaluateMousePosition();
@@ -438,7 +441,7 @@ public class DEViseCmdDispatcher implements Runnable
 	}	
 
 	// for collabration JavaScreen	
-	if (jsc.specialID != 0)
+	if (jsc.specialID != -1)
 	    jsc.pn("We entered one collabration JavaScreen.");
  
 	// If we don't have a connection yet, prepend a connection request
@@ -560,7 +563,7 @@ public class DEViseCmdDispatcher implements Runnable
             }
         }
 
-	if (jsc.specialID != 0) {
+	if (jsc.specialID != -1) {
 	    try {
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
                 socketSendCom(DEViseCommands.EXIT);
@@ -624,7 +627,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     public synchronized void run()
     {
-      if (jsc.specialID == 0) { // for formal JS
+      if (jsc.specialID == -1) { // for formal JS
         try {
 	    for (int i = 0; i < commands.length; i++) {
 		if (getAbortStatus()) {
@@ -736,8 +739,9 @@ public class DEViseCmdDispatcher implements Runnable
       else {
 	    try {
 		processCmd(commands[0]); // for the connect command
-		while (true)
-		    processCmd(null);
+		if (jsc.specialID != 0) // not the first connect command
+		    while (true)
+			processCmd(null);
 	    }
 	    catch (YException e) {
 	    }
@@ -819,18 +823,16 @@ public class DEViseCmdDispatcher implements Runnable
 
         } else if (args[0].equals(DEViseCommands.ERROR)) {
             // this command will guaranteed to be the last
-	    if (jsc.specialID != 0) {
+	    if (jsc.specialID != -1) {
 		jsc.showMsg(response);
 		setOnlineStatus(false);
-		jsc.specialID = 0;
+		jsc.specialID = -1;
 
 		disconnect();
-		//_connectedAlready = false;
 
 		jsc.animPanel.stop();
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 		jsc.jscreen.updateScreen(false);
-
 
 		if (getStatus() != 0) {
 		    setAbortStatus(true);
@@ -847,6 +849,9 @@ public class DEViseCmdDispatcher implements Runnable
 		    jsc.showSession(new String[] {response}, false);
 		}
 	    }
+
+        } else if (args[0].equals(DEViseCommands.CLIENTS)) {
+            jsc.showClientList(response);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
@@ -1395,7 +1400,7 @@ public class DEViseCmdDispatcher implements Runnable
         boolean isEnd = false, isFinish = false;
         Vector rspbuf = new Vector();
 
-	if (jsc.specialID == 0 || command != null) { // for formal JS
+	if (jsc.specialID == -1 || command != null) { // for formal JS
 	    // turn on the 'send' light
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, true);
 	    // sending command to server, and expect an immediate response of "JAVAC_Ack"
@@ -1454,7 +1459,8 @@ public class DEViseCmdDispatcher implements Runnable
                         } else {
                             if (cmd.startsWith(DEViseCommands.DONE) ||
 			      cmd.startsWith(DEViseCommands.ERROR) ||
-			      cmd.startsWith(DEViseCommands.FAIL)) {
+			      cmd.startsWith(DEViseCommands.FAIL) ||
+			      cmd.startsWith(DEViseCommands.CLIENTS)) {
                                 isEnd = true;
                             }
 
@@ -1489,11 +1495,11 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
 	// send the command
-	if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID == 0) {
+	if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID == -1) {
             commSocket.sendCmd(command, DEViseGlobals.API_JAVA_WID,
 	      jsc.jsValues.connection.connectionID);
         } else {
-	    if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID != 0) {
+	    if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID != -1) {
 		commSocket.sendCmd(command, DEViseGlobals.API_JAVA_CID, jsc.specialID);
 	    } else {
 		commSocket.sendCmd(command, DEViseGlobals.API_JAVA,
