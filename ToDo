@@ -190,8 +190,6 @@ becomes the parent of all Devise windows). (rr/rkw 9/12/96)
 
 Change name of 'Shape' in GData mapping GUI. (rr/rkw/ 9/12/96)
 
-Add a "dashed line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
-
 Add a "wiggly line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
 
 Display session name somewhere. (rkw 9/26/96)
@@ -388,6 +386,19 @@ them as boxes and don't have Tasvir do anything. (ml/rkw 5/30/97).
 Allow user to select in mapping what the meaning is of X, Y, Z for
 a given shape (center, lower left, upper right, etc.). (ml/rkw 6/13/97)
 
+Links with offsets. (ml/rkw 7/28/97)
+
+When switching TData or opening a session as a template, the data source
+GUI should show only TDatas of the correct type. (rkw 7/28/97)
+
+Have some kind of automatic schema generation based on a "guess" from
+reading the first, say, 100 lines of the data. (rkw/ml 7/28/97)
+
+We need to have propagating and non-propagating redraws (for views with
+links, especially record links).  For example, if a view gets re-drawn
+because its window got resized by the user, the redraw shouldn't get
+propagated to other views it links to. (ml/rkw 7/29/97)
+
 
 COMPLETED
 ---------
@@ -473,6 +484,8 @@ Allow windows to be printed as pixmaps and/or excluded from display printing.
 Include Tasvir images in PostScript output. (ml/rkw 2/27/97)
 
 Have a 'clear' selection in mapping menus. (ml/rkw 5/30/97)
+
+Add a "dashed line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
 
 
 CANCELLED
