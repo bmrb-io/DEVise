@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.134  2001/11/29 17:54:36  xuk
+// Added "Option", "Filter", "Playback" and "Collaboration" buttons for JSB version
+//
 // Revision 1.133  2001/11/28 21:56:21  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -612,7 +615,7 @@ public class jsdevisec extends Panel
 		//
         Component[] button = null;
         if (jsValues.uiglobals.inBrowser) {
-            button = new Component[5];
+            button = new Component[9];
             button[0] = restartButton;
             button[1] = stopButton;
             button[2] = setButton;
