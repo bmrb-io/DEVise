@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/03/25 17:59:27  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.27  1997/03/23 23:46:15  donjerko
   *** empty log message ***
 
@@ -215,36 +218,59 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
   for(int i=0; i<argc; i++) {
 	printf("argv[%d] = %s\n", i, argv[i]);
   }
-  if(_className) printf("_className=%s\n", _className);
+  if(_className) printf("_className=%s argc=%d\n", _className, argc);
 #endif
 
 #ifndef ATTRPROJ
-  if(!strncmp(_className, "GDATASTAT", 9)) {
-    ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(argv[0]+8);
+  if(!strncmp(argv[0], "GstatXDTE", 9)) {
+    char *sname = new char[strlen(argv[0]) + 1];
+    strcpy(sname, argv[0]);
+    char *viewName = strchr(sname, ':');
+    viewName ++;
+    while (*viewName == ' ') viewName++;
+    if (strncmp(argv[0], "GstatXDTE", 9) ) return NULL;
+    char *pos = strrchr(viewName, ':');
+    if (pos) { *pos = '\0'; printf("pos %s\n", pos); }
+    ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(viewName);
     if(!v) {
-      printf("argv[0]=%s argv[1]=%s\n", argv[0]+8, argv[1]+8);
+      printf("viewName=%s, argv[0]=%s argv[1]=%s\n", viewName, argv[0], argv[1]);
       printf("Invalid View Name.\n");
       return NULL;
     }
 
-    if(v->IsGStatInMem() == false) {
-      TDataMap *map = v->GetFirstMap();
-      TData *tdata = map->GetTData();
-      char *sourceName = ctrl->GetClassDir()->FindInstanceName(tdata);
-      if (sourceName[0] != '.') {
-	 printf("DTE doesn't support queries on statistics yet.\n");
-	 return NULL;
-      }
+    if(!strncmp(argv[0], "GstatXDTE:", 10)) {
+      char *sourceName = new char[1024];
       char *query = new char[1024];
-      if(strncmp(argv[0], "GstatX: ", 8) == 0 ) {
+      char **param = new char *[2];
+      param[0] = new char[1024];
+      param[1] = new char[1024];
+
+      strcpy(param[0], argv[0]);
+
+      if (strncmp(argv[0], "GstatXDTE", 9) == 0) {
+      	sourceName = strtok(argv[2], " ");
+        char *byAttr = strtok(NULL, " ");
+        char *onAttr = strtok(NULL, " ");
+	char **categ = new char *[5];
+	int i=0;
+	for (char *curTok=strtok(NULL," ");curTok;curTok=strtok(NULL," ")) {
+		categ[i] = curTok;
+		i++;
+	}
+        sprintf(param[1], "%s Count Sum Min Avg Max", byAttr);
+	sprintf(query, "select t.%s, count(t.%s), sum(t.%s), min(t.%s), avg(t.%s), max(t.%s) from %s as t group by t.%s", byAttr, onAttr, onAttr, onAttr, onAttr, onAttr, sourceName, byAttr);
+      } else if(strncmp(argv[0], "GstatX", 6) == 0 ) {
+        sprintf(param[1], "t.X Count Min Avg Max");
       	sprintf(query, "select t.X, count(t.Y), max(t.Y), avg(t.Y), min(t.Y) from %s as t group by t.X", sourceName);
-      } else if (strncmp(argv[0], "GstatY: ", 8) == 0 ) {
+      } else if (strncmp(argv[0], "GstatY", 6) == 0 ) {
+        sprintf(param[1], "t.Y Count Min Avg Max");
       	sprintf(query, "select t.Y, count(t.X), max(t.X), avg(t.X), min(t.X) from %s as t group by t.Y", sourceName);
-      }
+      } 
+
       TDataDQLInterpClassInfo *queryClass =
             new TDataDQLInterpClassInfo(sourceName, query);
 
-      return queryClass->CreateWithParams(argc, argv);
+      return queryClass->CreateWithParamsNew(param, query);
       }
   }
 #endif
@@ -270,6 +296,7 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
                                                  _numSeparators,
                                                  _isSeparator,
                                                  _commentString);
+printf("tdata=%p\n", tdata);
   return new TDataAsciiInterpClassInfo(_className, name, type, param, tdata);
 }
 
