@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.108  1997/03/25 17:58:57  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.107  1997/03/19 19:41:07  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -942,7 +945,9 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
   /*ViewWin::SetGeometry(x,y,wd,ht); */
   ViewWin::MoveResize(x,y,wd,ht);
   _updateTransform = true;
+#if defined(DEBUG)
   printf("view: setting geometry done....%d %d %u %u\n", x , y, wd, ht);
+#endif
   Refresh();
 }
 
@@ -3305,15 +3310,19 @@ void View::UpdateViewTable()
   _viewTableBuffer->Clear();
   while (_viewList->More(index)) {
     View *v = _viewList->Next(index);
+#if defined(DEBUG)
     printf("View %s \n", v->GetName());
+#endif
     int x, y, x0, y0;
     unsigned w, h;
     v->Geometry(x, y, w, h);
     v->AbsoluteOrigin(x0,y0);
     char *name = v->GetName();
     GlobalColor bgcolor = v->GetBgColor();
+#if defined(DEBUG)
     printf("UpdateViewtable: %g %g %d %s\n", (double)x0, (double)y0, bgcolor, 
 	   name);
+#endif
     sprintf(line, "%g %g %d %s\n", (double)x0, (double)y0, bgcolor, name );
     int len = strlen(line);
     DOASSERT(len < (int)sizeof(line), "too much data in sprintf");

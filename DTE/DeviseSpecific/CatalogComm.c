@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/03/28 16:07:34  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <iostream.h>
@@ -108,7 +112,7 @@ char* dteListCatalog(const char* catName){
 }
 
 char* dteShowCatalogEntry(const char* tableName){
-	cout << "in dteShowCatalogEntry(" << tableName << ")\n";
+//	cout << "in dteShowCatalogEntry(" << tableName << ")\n";
 	char* entryName;
 	char* catName;
 	getDirAndFileNames(tableName, catName, entryName);
@@ -122,7 +126,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 
 	numFlds = 1;
 
-	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
+//	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
 	String query = "select cat.entry from " +
 		String(catName) + " as cat where cat.entry.name = " +
 		addQuotes(entryName);

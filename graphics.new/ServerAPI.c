@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/03/19 19:41:51  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.27  1996/12/20 16:26:28  jussi
   Removed call to SemaphoreV::create().
 
@@ -154,8 +163,8 @@
 #include "missing.h"
 #endif
 
-#define SERV_ANYPORT
-#define DEBUG
+//#define SERV_ANYPORT
+//#define DEBUG
 
 MapInterpClassInfo *ServerAPI::_interpProto = 0;
 

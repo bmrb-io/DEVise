@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/03/23 23:46:01  donjerko
+  *** empty log message ***
+
   Revision 1.15  1997/01/28 19:46:31  wenger
   Fixed bug 139; better testing of ScaledText() in client/server example;
   fixes to Exit class for client/server library.
@@ -98,7 +101,7 @@ void Exit::DoExit(int code)
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
-	cout << "Calling RTree shutdown\n";
+//    cout << "Calling RTree shutdown\n";
     shutdown_system(VolumeName, RTreeFile, VolumeSize);
 #endif
 

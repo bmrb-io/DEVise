@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/03/20 22:25:37  guangshu
+  Enhanced statistics in hitogram, group by.
+
   Revision 1.32  1997/02/14 16:47:48  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -158,9 +161,20 @@
 #include "AssoArray.h"
 
 const int MAXCOLOR = 43;
-const int MAX_GSTAT = 10000;
-//const int MAX_GSTAT = 2;
-const int DERIVED_BUF_SIZE = 800000;
+
+/* Set this to 1 to implement "big" statistics (this was needed for the
+ * March '97 demo in Washington, but at least right now should generally
+ * be turned off). RKW 4/3/97. */
+#define BIG_STATS 0
+
+#if BIG_STATS
+  const int MAX_GSTAT = 10000;
+  const int DERIVED_BUF_SIZE = 800000;
+#else
+  const int MAX_GSTAT = 199;
+  const int DERIVED_BUF_SIZE = 3200;
+#endif
+
 const int HIST_BUF_SIZE = 6144;
 const int STAT2D_BUF_SIZE = 131072;
 

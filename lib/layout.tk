@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/03/28 16:11:23  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -146,7 +150,7 @@ proc DEViseWindowMove   { win } {
 }
 
 proc DEViseWindowMapped { win } {
-    puts  "window $win resized"
+#    puts  "window $win resized"
     if { [ winfo exists .layout ] } {
 	if { [ lsearch [ .layout.root gettags all] $win] == -1 } {
 	    set geom [lindex [DEVise getWinGeometry $win] 0 ]
@@ -156,7 +160,7 @@ proc DEViseWindowMapped { win } {
 }
 
 proc DEViseWindowResize {  win  } {
-    puts  "window $win resized"
+#    puts  "window $win resized"
     if { [ winfo exists .layout ] } {
 	if { [ lsearch [.layout.root gettags all] $win] == -1 } {
 	    return

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/03/20 22:04:00  guangshu
+  Added function SetnumBucks.
+
   Revision 1.25  1996/11/25 22:24:21  beyer
   Minor bug fix in SetWidth
 
@@ -134,6 +137,7 @@ BasicStats::BasicStats()
 
 BasicStats::~BasicStats()
 {
+  if (hist) delete [] hist;
 }
 
 void BasicStats::Init(ViewGraph *vw)
@@ -153,6 +157,7 @@ void BasicStats::Init(ViewGraph *vw)
   if (vw) ViewStats::Init(vw);
 //  numBuckets = DEFAULT_NUM;
   if (numBuckets > 0 ){
+    if (hist) delete [] hist;
     hist = new int[numBuckets];
     for(int j=0; j<numBuckets; j++){
 	hist[j]=0;
@@ -380,10 +385,10 @@ void BasicStats::SetnumBuckets(int num)
      // update the histogram width accordingly
      if(num > 0 && hist_max > hist_min) 
 	width = (hist_max - hist_min)/numBuckets; 
-     if ( hist) delete [] hist;
 #if defined(DEBUG)
      printf("****** Old hist=%p\n", hist);
 #endif
+     if (hist) delete [] hist;
      hist = new int[numBuckets];
      if (!hist) 
      {fprintf(stderr, "Run out of memory. Exitting now\n"); exit(1);}
