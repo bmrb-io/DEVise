@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/10/15 19:12:18  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX
+ARCH_FLAGS = -DHPUX -I/s/gcc/sun4m_412/lib/g++-include
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
