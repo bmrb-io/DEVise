@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/28 19:59:41  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.6  1995/12/14 21:19:31  jussi
   Replaced 0x%x with 0x%p.
 
@@ -293,8 +296,8 @@ void TDataAscii::Initialize()
 /* Do a checkpoint */
 void TDataAscii::Checkpoint()
 {
-  printf("Checkpointing %s, %ld existing, %ld additional records\n", _name,
-	 _initTotalRecs, _totalRecs - _initTotalRecs);
+  printf("Checkpointing %s: %ld total records, %ld new\n", _name,
+	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
     /* no need to checkpoint */
@@ -397,8 +400,8 @@ void TDataAscii::BuildIndex()
   
     /* get rid of '\n' */
     int len = strlen(buf);
-    if (len > 0 && buf[len-1] == '\n') {
-      buf[len-1] = '\0';
+    if (len > 0 && buf[len - 1] == '\n') {
+      buf[len - 1] = '\0';
     }
     
     if (IsValid(buf)) {
@@ -411,12 +414,14 @@ void TDataAscii::BuildIndex()
   }
 
   _lastPos = ftell(_file);
+  if (_lastPos != _currPos)
+    printf("lastPos %ld, currPos %ld\n", _lastPos, _currPos);
   assert(_lastPos == _currPos);
 
   _fileGrown = false;
 
-  printf("Extend Index for %s from %d to %ld records\n", 
-	 _name, oldTotal, _totalRecs);
+  printf("Index for %s: %ld total records, %ld new\n", _name,
+	 _totalRecs, _totalRecs - oldTotal);
 }
 
 void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
