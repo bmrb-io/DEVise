@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 17:57:45  jussi
+  *** empty log message ***
+
   Revision 1.5  1995/11/25 01:24:08  jussi
   Removed #ifdef CALCULATE_DIRECTLY which allowed one to quickly
   switch back to the xPerPixel and yPerPixel method for testing.
@@ -121,7 +124,7 @@ void GDataBin::InsertSymbol(RecId startRid, void *recs, int numRecs,
 			    int startIndex, int incr)
 {
 #ifdef DEBUG
-  printf("GDataBin::InsertSymbol(%d,0x%x,%d,%d,%d)\n",
+  printf("GDataBin::InsertSymbol(%d,0x%p,%d,%d,%d)\n",
 	 startRid, recs, numRecs, startIndex, incr);
 #endif
   
