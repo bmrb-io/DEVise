@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.104  1999/04/16 20:59:24  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.103  1999/04/16 20:21:35  wenger
   Fixed bug 482 (problem with automatic view home).
 
@@ -2087,6 +2092,9 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 		_stats[i].Done();
 #endif
 
+#if defined(DEBUG)
+    printf("_homeAfterQueryDone = %d\n", _homeAfterQueryDone);
+#endif
 	if (_homeAfterQueryDone) {
 		_homeAfterQueryDone = false;
 	    GoHome();

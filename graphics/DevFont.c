@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/12/20 16:50:14  wenger
+  Fonts for view label, x axis, and y axis can now be changed.
+
  */
 
 #define _DevFont_c_
@@ -70,7 +73,8 @@ void
 DevFont::Set(int family, float pointSize, Boolean bold, Boolean italic)
 {
 #if defined(DEBUG)
-  printf("DevFont(0x%p)::Set()\n", this);
+  printf("DevFont(0x%p)::Set(%d, %f, %d, %d)\n", this, family, pointSize,
+      bold, italic);
 #endif
 
   _family = family;

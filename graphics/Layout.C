@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/03/01 17:47:32  wenger
+  Implemented grouping/ungrouping of views to allow custom view geometries.
+
   Revision 1.8  1999/02/11 19:54:31  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -72,7 +75,7 @@ Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
 	: ViewLayout(name)
 {
 #if defined(DEBUG)
-  printf("Layout(0x%p)::Layout(%s)\n", this, name);
+  printf("Layout(0x%p)::Layout(%s, %f, %f, %f, %f)\n", this, name, x, y, w, h);
 #endif
 
   Coord rootWidth, rootHeight;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/01/04 15:33:18  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
   Revision 1.10  1998/02/26 00:19:06  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -81,6 +86,10 @@ ViewLayout::~ViewLayout(void)
 
 void ViewLayout::Map(int x, int y, unsigned w, unsigned h)
 {
+#if defined(DEBUG)
+  printf("ViewLayout(%s)::Map(%d, %d, %d, %d)\n", GetName(), x, y, w, h);
+#endif
+
   ViewWin::Map(x, y, w, h);
   MapChildren();
 }

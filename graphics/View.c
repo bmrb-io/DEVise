@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.162  1999/04/16 20:59:12  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.161  1999/04/05 16:15:38  wenger
   Record- and set-link follower views with auto filter update enabled have
   'home' done on them after they are updated by a record link or set link.
@@ -2526,11 +2531,19 @@ void View::SetZAxisAttrType(AttrType type)
 
 void View::AppendCursor(DeviseCursor *cursor)
 {
+#if defined(DEBUG)
+  printf("View(%s)::AppendCursor(%s)\n", GetName(), cursor->GetName());
+#endif
+
   _cursors->Append(cursor);
 }
 
 void View::DeleteCursor(DeviseCursor *cursor)
 {
+#if defined(DEBUG)
+  printf("View(%s)::DeleteCursor(%s)\n", GetName(), cursor->GetName());
+#endif
+
   _cursors->Delete(cursor);
 }
 
