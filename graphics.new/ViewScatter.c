@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/05 20:13:34  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.6  1995/12/14 21:20:15  jussi
   Replaced 0x%x with 0x%p.
 
@@ -120,14 +126,14 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     
     _recs[recIndex++] = ptr;
     if (recIndex == WINDOWREP_BATCH_SIZE) {
-      mapping->DrawGDataArray(GetWindowRep(), _recs, recIndex);
+      mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
       recIndex = 0;
     }
     ptr += gRecSize;
   }
 
   if (recIndex > 0)
-    mapping->DrawGDataArray(GetWindowRep(), _recs, recIndex);
+    mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
 }
 
 /* Done with query */

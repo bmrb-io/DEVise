@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/05 20:13:30  wenger
+  Fixed error causing pure virtual function to be called
+  if a session was closed during a query; fixed an error
+  in one of the Linux Makefiles; updated other Makefiles
+  to allow testWindowRep to be built on all architectures.
+
   Revision 1.10  1995/12/29 22:41:28  jussi
   Added support for line connectors.
 
@@ -244,7 +250,7 @@ void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs)
   printf("TDataViewX %d recs buf start 0x%p\n", numRecs, recs);
 #endif
 
-  map->DrawGDataArray(GetWindowRep(), recs, numRecs);
+  map->DrawGDataArray(this, GetWindowRep(), recs, numRecs);
 }
 
 void TDataViewX::ReturnGDataBinConnectors(TDataCMap *cmap,
