@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/05/05 16:53:48  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.53  1997/04/11 18:48:54  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -1287,6 +1291,7 @@ Destroy a window. Parameter "win" better be of type XwindowRep *.
 void XDisplay::DestroyWindowRep(WindowRep *win)
 {
   DO_DEBUG(printf("XDisplay::DestroyWindowRep(%p)\n", win));
+
   XWindowRep *xwin = (XWindowRep *)win;
   if (!_winList.Delete(xwin)) {
     fprintf(stderr, "XDisplay:Window to be deleted not found\n");
@@ -1325,6 +1330,11 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     XFreePixmap(_display, xwin->GetPixmapId());
     xwin->_pixmap = 0;
   }
+
+  /* KLUDGE WARNING.  This somehow fixes bug 182.  I think we ended up
+   * getting goofed up by the destroy event on the XWindow we're destroying
+   * here, and somehow processing the events at this point fixes it. */
+  Run();
 
   delete xwin;
 

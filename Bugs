@@ -750,6 +750,18 @@ Num Date        Status  Description
 			"complex" mappings don't work (they are not recognized
 			as strings, and their type is set to 'double'). (rkw)
 
+182 05/05/97	KLUDGED	Load demo session multi1.tk, then close it (not
+			quitting) -> Devise crashes or hangs.  Note: if
+			multi1.tk is not the first session you open, this
+			doesn't happen. (rkw)
+		
+183 05/07/97	OPEN	Load demo session multi2.tk, destroy top view of
+			'Activity and Idle Views' window, click several times
+			in the remaining view in that window, click in the
+			'Activity View Detail' window -> crash. (rkw)
+			Note: this bug seems to happen more reproducibly if
+			you load and close the multi1.tk session first.
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

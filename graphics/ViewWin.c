@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/03/25 17:58:58  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.32  1997/02/03 19:40:02  ssl
   1) Added a new Layout interface which handles user defined layouts
   2) Added functions to set geometry and remap views as changes in the
@@ -348,6 +351,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   WindowRep *screenWinRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(
 	_name, x, y, w, h, foreground, background, parentWinRep, min_width,
 	min_height, relativeMinSize, _winBoundary);
+  //TEMPTEMP -- is this callback ever deleted?  RKW 5/7/97.
   screenWinRep->RegisterCallback(this);
   screenWinRep->SetDaliServer(Init::DaliServer());
   screenWinRep->SetETkServer((char *)ETkIfc::GetServer());
@@ -408,6 +412,7 @@ void ViewWin::Unmap()
 #endif
 
   SubClassUnmapped();
+  //TEMPTEMP?_winReps.GetScreenWinRep()->DeleteCallback(this);
 
   if (!WindowRep::IsDestroyPending())
   {
@@ -425,7 +430,7 @@ void ViewWin::Unmap()
 ViewWin::~ViewWin()
 {
 #ifdef DEBUG
-  printf("ViewWin destructor\n");
+  printf("ViewWin::~ViewWin(%p)\n", this);
 #endif
 
   DetachChildren();
