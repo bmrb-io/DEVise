@@ -1,0 +1,125 @@
+###############################################################################
+#
+#    UniData Makefile
+#
+###############################################################################
+
+CC = g++
+C  = gcc 
+AR = ar
+RM = /bin/rm -f
+
+# Solaris machines are a little queer, leave empty for everything else.
+SOCK_LIB :=
+#SOCK_LIB := -lsocket -lnsl
+
+# Some systems need ranlib, most don't.
+#RANLIB = ranlib
+RANLIB = true
+
+LIB_FILES = \
+    fast_atof.C \
+    Attr.C \
+    Comment.C \
+    Enum.C \
+    getftime.C \
+    IntStack.C \
+    PerlFrag.C \
+    Schema.C \
+    SlideBuf.C \
+    SlideRead.C \
+    Token.C \
+    Traits.C \
+    udIndex.C \
+    udParam.C \
+    UniData.C
+
+CC_FILES = umain.C
+
+C_FILES =
+
+OTHER_FILES = \
+	lex.uni_yy.o \
+
+LEX_FILES = \
+	Lexer.l
+
+FLEX = flex
+FLEXFLAGS = -I -Puni_yy
+
+PERL_CORE = /s/perl/lib/CORE
+#PERL_CORE = ./lib/CORE
+PERL_INCL = -I$(PERL_CORE)
+PERL_LIB  = -L$(PERL_CORE) -lperl -lm
+
+# Note, the perl header files have mucho '/*' within comments.
+CFLAGS = -g -Wall -Wno-comment $(PERL_INCL)
+
+.PHONY: all default clean
+
+PURE_OPTS = -g++=yes -collector=/p/coral/bin/hp_ld -windows=no -chain-length=12 -output-limit=160000 -inuse-at-exit -copy-fd-output-to-logfile=1 -log-file=/u/f/l/flisakow/devise/unidata/try/pure.log -cache-dir=/p/coral/people/tmp -always-use-cache-dir=yes
+
+###############################################################################
+#
+#	Object files
+#
+
+LIB_OBJS = \
+	$(LIB_FILES:.C=.o) \
+	$(OTHER_FILES)
+
+OBJFILES = \
+	$(CC_FILES:.C=.o) \
+	$(C_FILES:.c=.o)
+
+###############################################################################
+#
+#	General compilation rules
+#
+
+.SUFFIXES:	.C .d
+
+.C.o:
+	$(CC) -c $(CFLAGS) $<
+
+.c.o:
+	$(C) -c $(CFLAGS) $<
+
+
+###############################################################################
+
+default: all
+
+all: libunidata.a umain
+
+libunidata.a: $(LIB_OBJS)
+	$(RM) $@
+	$(AR) cr $@ $(LIB_OBJS)
+	$(RANLIB) $@
+	
+umain: $(OBJFILES) libunidata.a
+	$(CC) -o $@ $(OBJFILES) -L. -lunidata $(PERL_LIB) $(SOCK_LIB)
+
+umain.pure: $(OBJFILES) libunidata.a
+	purify $(PURE_OPTS) $(CC) -o $@ $(OBJFILES) -L. -lunidata $(PERL_LIB) $(SOCK_LIB)
+
+pmain.o: pmain.C
+	$(CC) -c $< $(PERL_INCL)
+
+myperl: pmain.o PerlCode.o
+	$(CC) -o $@ $< PerlCode.o $(PERL_LIB) $(SOCK_LIB)
+
+clean:
+	/bin/rm -f *.o lex.uni_yy.c libunidata.a umain myperl
+
+###############################################################################
+#
+#    Special compilation rules
+
+lex.uni_yy.c: Lexer.l
+	$(FLEX) $(FLEXFLAGS) $<
+
+lex.uni_yy.o: lex.uni_yy.c
+	$(CC) -c $(CFLAGS) -I. $<
+
+###############################################################################

@@ -1,0 +1,43 @@
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+//
+// Used for matches in an array context.
+//
+// Returns the number of matches,
+// and fills in **matches with the matching substrings (allocates memory!)
+//
+// o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
+#ifdef NOT_USED
+int matches(char *string, char *pattern, char **matches[])
+{
+  char *command;
+  SV *current_match;
+  AV *array;
+  I32 num_matches;
+  STRLEN length;
+  int i, sze;
+
+  sze = strlen(string) + strlen(pattern) + 39;
+
+  if (sze > CMMD_SZE)
+      command = new char [strlen(string) + strlen(pattern) + 39];
+  else
+      command = my_cmmd;
+
+  sprintf(command, "$UNIstr = '%s'; @UNIarr = ($UNIstr =~ %s)",
+     string, pattern);
+  perl_eval(command);
+
+  if (sze > CMMD_SZE)
+      delete [] command;
+
+  array = perl_get_av("UNIarr", FALSE);
+  num_matches = av_len(array) + 1; /** assume $[ is 0 **/
+  *matches = new char* [num_matches];
+
+  for (i = 0; i <= num_matches; i++) {
+    current_match = av_shift(array);
+    (*matches)[i] = SvPV(current_match, length);
+  }
+  return num_matches;
+}
+#endif

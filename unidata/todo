@@ -1,0 +1,50 @@
+
+  Big To Do's:
+        Enum's 
+        Perl Code sections
+            Format
+            Reader
+            Global
+            etc.
+        Reality Checker (do we have enough info to read data?)
+        "list_of" - (Joins)
+
+    nested seperator's with the same value.
+        (leaf values have no seperator, sentinel only applied 
+         when seperators differ between levels.)
+
+    also, delimiter's with the same value being nested.
+
+---------------------------------- 
+  Testing:
+    Converter's
+    min/max
+    use of Index with and w/o Rids, can we switch between using
+        offsets and rids while remaining consistent?
+
+---------------------------------- 
+    Finding records:
+        binary
+            recsze (should just be length??)
+
+        text
+            recsze (no comments allowed)
+            delimiter
+            default delimitor ('\n')
+
+
+    Whitespace messes up positioning info. Do not remove whitespace
+    between a delimiter and the start of the next record.
+
+    Start writing spliter functions, do them in vertical passes,
+    to make sure you get something working.
+
+        1) position/length :  Get it working assuming everything is
+                              found via these operators.  Keep it
+                              flexible, of course.
+
+        2) seperator / whitespace
+
+        2) whitespace / nothing (depends on types)
+
+        3) generic - slower, but does anything/everything
