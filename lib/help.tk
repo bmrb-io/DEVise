@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.8  1996/04/04 20:59:45  jussi
+#	Minor typographical correction.
+#
 #	Revision 1.7  1995/09/26 23:11:19  jussi
 #	Added copyright, disclaimer, and user agreement notes to
 #	help file.
@@ -44,17 +47,17 @@ proc helpUnit { num } {
 
 set helpWinCreated 0
 proc DoHelp { } {
-	global helpWinCreated libdir regularColor hiliteColor
+	global libdir regularColor hiliteColor
 
-	if { $helpWinCreated } {
+	set w .help
+
+	if {[WindowVisible $w]} {
 		return
 	}
 
 	set hiliteColor red
 	set regularColor blue
 
-	set helpWinCreated 1
-	set w .help
 	toplevel $w
 	wm geometry $w +100+100
 	wm title $w "DEVise help"
@@ -300,10 +303,7 @@ proc DoHelp { } {
 		$textName"
 
 #	create button
-	button .help.button -text "Close" -command {
-		set helpWinCreated 0
-		destroy .help
-	}
+	button .help.button -text "Close" -command { destroy .help }
 
 	foreach attr {DEVise file schema tdata mapping gdata visual view window \
 		link gui } {
