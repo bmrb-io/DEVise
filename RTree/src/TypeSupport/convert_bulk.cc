@@ -114,3 +114,4 @@ main()
       if (feof(stdin))
 	exit(0);
     }
+}
