@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.52  1999/06/25 15:58:25  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.51  1999/05/04 17:17:08  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -292,7 +298,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.6.3";
+static const char *	version = "1.6.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1999";
