@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/02/01 18:04:41  jussi
+  Disabled 'Ignoring invalid record.' because this message shouldn't
+  appear for ignored comments.
+
   Revision 1.10  1996/01/25 20:22:34  jussi
   Improved support for data files that grow while visualization
   is being performed.
@@ -215,8 +219,8 @@ void TDataAscii::GetIndex(RecId id, int *&indices)
 int TDataAscii::GetModTime()
 {
   struct stat sbuf;
-  if (fstat(fileno(_file),&sbuf) < 0) {
-    fprintf(stderr,"UnixRecFile:: can't find stat\n");
+  if (fstat(fileno(_file), &sbuf) < 0) {
+    fprintf(stderr, "TDataAscii::GetModTime: can't find stat\n");
     Exit::DoExit(1);
   }
   return (long)sbuf.st_mtime;
@@ -448,7 +452,7 @@ void TDataAscii::BuildIndex()
 void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 {
 #ifdef DEBUG
-  printf("TDataAscii::ReadRec %d,%d,0x%p\n",id,numRecs,buf);
+  printf("TDataAscii::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif
 
   char line[LINESIZE];
