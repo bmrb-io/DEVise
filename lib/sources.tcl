@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.54  1997/01/30 02:12:36  beyer
+#	sources now listed in alphabetical order, regardless of case.
+#
 #	Revision 1.53  1997/01/22 20:13:58  wenger
 #	Removed other non-functional user interface components (includes workaround
 #	for bug 127); fixed a number of OK/Cancel button positions.
@@ -220,14 +223,15 @@
 
 # Default values for data source types, redefined in sourcedef.tcl.
 
-set sourceTypes(COMMAND) "{Unix Command Output} $schemadir/logical/COMMAND"
-set sourceTypes(COMPUSTAT) "{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx"
-set sourceTypes(CRSP) "{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx"
-set sourceTypes(CRSP_NSDQ) "{Nasdaq Security Data} $schemadir/logical/CRSP crsp_ndsm94.idx"
-set sourceTypes(ISSM) "{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx"
-set sourceTypes(NETWORK) "{Network Server Output} $schemadir/logical/NETWORK"
-set sourceTypes(SEQ) "{SEQ Query Output} $schemadir/logical/SEQ"
-set sourceTypes(SQL) "{SQL Query Output} $schemadir/logical/SQL"
+#set sourceTypes(COMMAND) "{Unix Command Output} $schemadir/logical/COMMAND"
+#set sourceTypes(COMPUSTAT) "{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx"
+#set sourceTypes(CRSP) "{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx"
+#set sourceTypes(CRSP_NSDQ) "{Nasdaq Security Data} $schemadir/logical/CRSP crsp_ndsm94.idx"
+#set "sourceTypes(DQL)" {{DEVise Query language} /p/devise/schema/schema/logical/DQL}
+#set sourceTypes(ISSM) "{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx"
+#set sourceTypes(NETWORK) "{Network Server Output} $schemadir/logical/NETWORK"
+#set sourceTypes(SEQ) "{SEQ Query Output} $schemadir/logical/SEQ"
+#set sourceTypes(SQL) "{SQL Query Output} $schemadir/logical/SQL"
 set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
 set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
