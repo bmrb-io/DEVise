@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/14 15:08:34  jussi
+  Added support for idle scripts, that is, scripts which are
+  executed when the server becomes idle. Typically this means
+  that the server has drawn all views and they are ready to
+  be extracted as images.
+
   Revision 1.4  1996/05/13 18:08:17  jussi
   The code now accepts API_CTL type messages in between API_CMD
   and API_ACK/API_NAK messages. Control channel was merged with
@@ -181,6 +187,9 @@ void SetupConnection()
   printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
   _deviseFd = DeviseOpen(_hostName, _portNum, 1);
+  if (_deviseFd < 0)
+    exit(1);
+
   Tk_CreateFileHandler(_deviseFd, TK_READABLE, ReadServer, 0);
 	
   printf("Connection established.\n\n");
