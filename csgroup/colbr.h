@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.2.2.1  1998/03/25 15:56:47  wenger
+  Committing debug version of collaboration code.
+
+  Revision 1.2  1998/02/12 17:14:46  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:54  liping
   Added CVS header
 
@@ -75,7 +81,6 @@ extern "C" {
 
 extern Dbase GroupDB;
 extern char GroupLog[];
-extern ConnectInfo ServerAddress;
 extern fd_set svc_Fdset;
 extern int svc_Regfd;
 extern int svc_Maxfd;

@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.8.2.2  1998/03/25 23:04:56  wenger
+  Removed all stuff setting internet address to INADDR_ANY (not needed).
+
+  Revision 1.8.2.1  1998/03/25 15:56:43  wenger
+  Committing debug version of collaboration code.
+
+  Revision 1.8  1998/03/12 02:09:06  wenger
+  Fixed dynamic memory errors in collaboration code that caused core dump
+  on Linux; collaboration code now tolerates interruption of accept() and
+  select() in some cases; fixed excessive CPU usage by collaborator
+  (select timeout now non-zero); fixed some other collaboration bugs.
+
   Revision 1.7  1998/03/11 18:25:08  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -127,20 +139,35 @@ Server::Server(char *name, int swt_port, int clnt_port, char* swtname,
 								  
 	switchname = strdup(swtname);
 									   
-	bzero((char *) &address, sizeof(address));
 	bzero((char *) &switchaddr, sizeof(switchaddr));
 	gethostname(hostname, MAXNAMELEN);
 
     hst = gethostbyname(hostname);
+
+#if defined(DEBUG)
+    printf("h_name = %s\n", hst->h_name);
+    printf("h_addrtype = %s\n", hst->h_addrtype == AF_INET ? "AF_INET" :
+      "other");
+    printf("h_length = %d\n", hst->h_length);
+
+    char **p;
+    for (p = hst->h_addr_list; *p != 0; p++) {
+        struct in_addr in;
+        char **q;
+
+        (void) memcpy(&in.s_addr, *p, sizeof (in.s_addr));
+        (void) printf("%s\t%s", inet_ntoa(in), hst->h_name);
+        for (q = hst->h_aliases; *q != 0; q++)
+            (void) printf(" %s", *q);
+        (void) putchar('\n');
+    }
+#endif
 	 
 	switchaddr.sin_family = AF_INET;
 	switchaddr.sin_addr   = *(struct in_addr *) (hst->h_addr_list[0]);
 	switchaddr.sin_port = htons(swt_port);
 				  
 	_port = clnt_port;                   // port for switch, _port for clients
-	address.sin_family = AF_INET;
-	address.sin_addr = *(struct in_addr *) (hst->h_addr_list[0]);
-	address.sin_port = htons(_port);
 								   
 	CBakInstall((int)ceil(log(CTRL_RELINQUISH)/log(2)),
 		(CallBackHandler)&RequestRelinquish);
@@ -431,25 +458,24 @@ void Server::ReadCmd()
 
     // Initialize the fd set
     memset(&fdset, 0, sizeof fdset);
-	if (_listenSwtFd >0)
-    	FD_SET(_listenSwtFd, &fdset);
+	maxFdCheck = 0;
 
 	/*
 		commented out for Miron's purpose
-	if (_listenFd >0)
+	if (_listenFd >0) {
     	FD_SET(_listenFd, &fdset);
+		if (_listenFd > maxFdCheck) maxFdCheck = _listenFd;
+	}
 	*/
 
-	if ((_listenSwtFd >0)&&(_listenFd > _listenSwtFd))
-    	maxFdCheck = _listenFd;
-	else
-		maxFdCheck = _listenSwtFd;
+	if (_listenSwtFd >0) {
+    	FD_SET(_listenSwtFd, &fdset);
+		if (_listenSwtFd > maxFdCheck) maxFdCheck = _listenSwtFd;
+	}
 
 	// add the fds of all groups
-	int	maxfd = -1;
-	maxfd = SetGroupFdset(&fdset);
-	if (maxfd > maxFdCheck)
-		maxFdCheck = maxfd;
+	int	maxfd = SetGroupFdset(&fdset);
+	if (maxfd > maxFdCheck) maxFdCheck = maxfd;
 
 	// add the fds of all local clients
     for (int i = 0; i < _maxClients; i++)

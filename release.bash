@@ -9,6 +9,8 @@ cp -p lib/[a-z]* /p/devise/public/lib
 cp -p lib/[A-Z]* /p/devise/public/lib
 mkdir /p/devise/public/lib/LM
 cp -p lib/LM/*.tk /p/devise/public/lib/LM
+chmod 644 /p/devise/public/lib/*.t*
+chmod 644 /p/devise/public/lib/LM/*.t*
 
 cp run_public/devise /p/devise/run
 cp run_public/devise.tasvir /p/devise/run

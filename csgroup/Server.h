@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.4.2.1  1998/03/25 15:56:44  wenger
+  Committing debug version of collaboration code.
+
+  Revision 1.4  1998/03/11 18:25:09  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.3  1998/02/26 20:35:11  taodb
   Removed ParaseAPI() interface, and added CommandObject interface
 
@@ -123,7 +132,6 @@ protected:
   	enum { STANDALONE = 0, CONNECTED }	serverstate;
     char *_name;                        // name of server
 	char *switchname;					// name of the collaborator
-	ConnectInfo address;				// listen address for the server
 	ConnectInfo	switchaddr;				// listen address for the client
     int _port;                          // port number of server
     int _listenFd;                      // fd of listening socket

@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.3.2.2  1998/03/25 23:04:58  wenger
+  Removed all stuff setting internet address to INADDR_ANY (not needed).
+
+  Revision 1.3.2.1  1998/03/25 15:56:46  wenger
+  Committing debug version of collaboration code.
+
+  Revision 1.3  1998/03/11 18:25:11  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.2  1998/02/12 17:14:45  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -82,7 +94,6 @@
 
 Dbase GroupDB;
 char GroupLog[PATH_MAX] = "/tmp/Group.log";
-ConnectInfo ServerAddress;
 fd_set svc_Fdset;
 int svc_Regfd;
 int svc_Maxfd;
@@ -97,33 +108,63 @@ InitRegPort(void) {
 	FD_ZERO(&svc_Fdset);
 	svc_Maxfd = -1;
 
-	gethostname(switchname, MAXHOSTNAMELEN);
-	bzero((char *)&ServerAddress, sizeof(ServerAddress));
-	hst = gethostbyname(switchname);
-	ServerAddress.sin_family = AF_INET;
-	ServerAddress.sin_addr = *(struct in_addr *) (hst->h_addr_list[0]);
-	ServerAddress.sin_port = SRV_PORT;
-
 	if ((svc_Regfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		perror("Can't create socket");
 		return;
 	}
 
 	if (setsockopt(svc_Regfd, SOL_SOCKET, SO_REUSEADDR, 
 		       (char *)&optcode, sizeof(optcode)) < 0) {
+		perror("Can't set socket options");
 		return;
 	}
 
 	if (setsockopt(svc_Regfd, SOL_SOCKET, SO_LINGER,
 			(char *) &lnopt, sizeof(lnopt)) < 0) {
+		perror("Can't set socket options");
 		return;
 	}
 
+	gethostname(switchname, MAXHOSTNAMELEN);
+    ConnectInfo ServerAddress;
+	bzero((char *)&ServerAddress, sizeof(ServerAddress));
+	hst = gethostbyname(switchname);
+    if (hst == NULL) {
+        fprintf(stderr, "Can't get host info for %s\n", switchname);
+		return;
+    }
+
+#if defined(DEBUG)
+    printf("h_name = %s\n", hst->h_name);
+    printf("h_addrtype = %s\n", hst->h_addrtype == AF_INET ? "AF_INET" :
+      "other");
+    printf("h_length = %d\n", hst->h_length);
+
+    char **p;
+    for (p = hst->h_addr_list; *p != 0; p++) {
+        struct in_addr in;
+        char **q;
+
+        (void) memcpy(&in.s_addr, *p, sizeof (in.s_addr));
+        (void) printf("%s\t%s", inet_ntoa(in), hst->h_name);
+        for (q = hst->h_aliases; *q != 0; q++)
+            (void) printf(" %s", *q);
+        (void) putchar('\n');
+    }
+#endif
+
+	ServerAddress.sin_family = AF_INET;
+	ServerAddress.sin_addr = *(struct in_addr *) (hst->h_addr_list[0]);
+	ServerAddress.sin_port = htons(SRV_PORT);
+
 	if (bind(svc_Regfd, (struct sockaddr *)&ServerAddress, 
 		 sizeof(ServerAddress)) < 0) {
+		perror("Can't bind socket");
 		return;
 	}
 	
 	if (listen(svc_Regfd, 5) < 0) {
+		perror("Can't listen on socket");
 		return;
 	}
 
@@ -154,6 +195,7 @@ AcptNewConnection(int fd) {
 
 	acptfd = accept(fd, (struct sockaddr *) &Address, &size);
 	if (acptfd < 0) {
+		perror("accept() failed");
 		return;
 	}
 	FD_SET(acptfd, &svc_Fdset);
@@ -434,6 +476,7 @@ ConnectServer(ConnectInfo Server) {
 	int retsize = sizeof(retval);
 
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		perror("Can't create socket");
 		return sockfd;
 	}
 	if (setsockopt(sockfd, SOL_SOCKET, SO_KEEPALIVE, 
@@ -448,8 +491,8 @@ ConnectServer(ConnectInfo Server) {
 		prnBuf(PRN_BDG, "SO_KEEPALIVE is set\n");
 	else
 		prnBuf(PRN_BDG, "SO_KEEPALIVE is unset\n"); 
-	if (ConnectWithTimeout(sockfd, (struct sockaddr *) &Server, 
-			       sizeof(Server), &timeout) < 0) {
+	if (ConnectWithTimeout(sockfd, (struct sockaddr *) &Server,
+				   sizeof(Server), &timeout) < 0) {
 		 return -1;
 	}
 	prnBuf(PRN_BDG, "Connected Socket Returned = %d\n", sockfd);

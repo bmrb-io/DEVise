@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.5.2.2  1998/03/27 21:15:41  wenger
+  Committed changes from getting collaboration running on zaphod.
+
+  Revision 1.5.2.1  1998/03/25 15:56:49  wenger
+  Committing debug version of collaboration code.
+
+  Revision 1.5  1998/03/12 02:09:07  wenger
+  Fixed dynamic memory errors in collaboration code that caused core dump
+  on Linux; collaboration code now tolerates interruption of accept() and
+  select() in some cases; fixed excessive CPU usage by collaborator
+  (select timeout now non-zero); fixed some other collaboration bugs.
+
   Revision 1.4  1998/03/11 18:25:15  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -72,11 +84,17 @@
 #include <errno.h>
 #if defined(LINUX)
 #include <sys/ioctl.h>
-#include <asm/ioctls.h>
+  #if 1 // 0 here for zaphod
+    #include <asm/ioctls.h>
+  #else
+    #include <arpa/inet.h>
+  #endif
 #else
 #include <sys/filio.h>
 #endif
 #include <sys/time.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 #include "netfns.h"
 #include "error.h"
@@ -110,10 +128,16 @@ ConnectWithTimeout(int sockfd, struct sockaddr *Address,
 		 // whether or not there's a collaborator running.  If there isn't
 		 // a collaborator running, we crash with a broken pipe later on.
 		 perror("Connect: ");
+#if 1
+// Conditional this out when compiling on zaphod.
+// On zaphod, we get here and perror says 'Operation in progress', but
+// errno is 2 (*not* EINPROGRESS)!!  RKW Mar. 25, 1998.
 	 	 if (errno != EINPROGRESS) {
-		        { ERROR(NON_FATAL, "Connect Failed"); }
+         	fprintf(stderr, "errno = %d\n", errno);
+		    { ERROR(NON_FATAL, "Connect Failed"); }
 			return -1;
 		 }
+#endif
 		 FD_ZERO(&fdset);
 		 FD_SET(sockfd, &fdset);
 		 if (select(sockfd+1, 

@@ -20,6 +20,18 @@
   $Id$
 
   $Log$
+  Revision 1.5.2.2  1998/03/25 23:04:59  wenger
+  Removed all stuff setting internet address to INADDR_ANY (not needed).
+
+  Revision 1.5.2.1  1998/03/25 15:56:52  wenger
+  Committing debug version of collaboration code.
+
+  Revision 1.5  1998/03/12 02:09:08  wenger
+  Fixed dynamic memory errors in collaboration code that caused core dump
+  on Linux; collaboration code now tolerates interruption of accept() and
+  select() in some cases; fixed excessive CPU usage by collaborator
+  (select timeout now non-zero); fixed some other collaboration bugs.
+
   Revision 1.4  1998/03/11 18:25:18  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -127,28 +139,46 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 
 int
 RPCInit(char *server, ConnectInfo Address) {
-	struct hostent *hst;
 	const int code = 1;
-	char	*switchname;
 
 	strcpy(GroupDBServer, server);
 
-	bzero((char *)&SwitchAddress, sizeof(SwitchAddress));
-	switchname =Init::SwitchName();
-	if (!strcmp(switchname,DefaultSwitchName))
-	{
-		cerr << "Environment variable DEVISE_COLLABORATOR not defined\n";
-		return -1;
-	}
-	hst = gethostbyname(switchname);
-	if (h_errno == HOST_NOT_FOUND)
-	{
-		return -1;
-	}
+    char *switchname = Init::SwitchName();
+    if (!strcmp(switchname,DefaultSwitchName))
+    {
+        cerr << "Environment variable DEVISE_COLLABORATOR not defined\n";
+        return -1;
+    }
 
-	SwitchAddress.sin_addr = *(struct in_addr *) (hst->h_addr_list[0]);
-	SwitchAddress.sin_family = AF_INET;
-	SwitchAddress.sin_port = SRV_PORT;
+    struct hostent *hst = gethostbyname(switchname);
+    if (hst == NULL || h_errno == HOST_NOT_FOUND)
+    {
+        perror("gethostbyname()");
+        return -1;
+    }
+#if defined(DEBUG)
+    printf("h_name = %s\n", hst->h_name);
+    printf("h_addrtype = %s\n", hst->h_addrtype == AF_INET ? "AF_INET" :
+      "other");
+    printf("h_length = %d\n", hst->h_length);
+
+    char **p;
+    for (p = hst->h_addr_list; *p != 0; p++) {
+        struct in_addr in;
+        char **q;
+
+        (void) memcpy(&in.s_addr, *p, sizeof (in.s_addr));
+        (void) printf("%s\t%s", inet_ntoa(in), hst->h_name);
+        for (q = hst->h_aliases; *q != 0; q++)
+            (void) printf(" %s", *q);
+        (void) putchar('\n');
+    }
+#endif
+
+    bzero((char *)&SwitchAddress, sizeof(SwitchAddress));
+    SwitchAddress.sin_addr = *(struct in_addr *) (hst->h_addr_list[0]);
+    SwitchAddress.sin_family = AF_INET;
+    SwitchAddress.sin_port = htons(SRV_PORT);
 
 	if ((MySocketfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		{ ERROR(FATAL, "Socket Failed"); }
@@ -161,7 +191,7 @@ RPCInit(char *server, ConnectInfo Address) {
 
 	if (bind(MySocketfd, (struct sockaddr *)&Address, 
 		 sizeof(Address)) < 0) {
-		printf("Error: %d", errno);
+		fprintf(stderr, "Error: %d", errno);
 		perror("Bind: ");
 		{ ERROR(FATAL, "Bind Failed"); }
 	}
@@ -200,9 +230,15 @@ Register(GroupKey *GroupName, ConnectInfo Address, int mode) {
 			return -1;
 		}
 
-		if (ConnectWithTimeout(acptfd, 
-				       (struct sockaddr *) &SwitchAddress,
-			       		sizeof(SwitchAddress), &timeout) < 0) {
+		char *switchname = Init::SwitchName();
+		if (!strcmp(switchname,DefaultSwitchName))
+		{
+			cerr << "Environment variable DEVISE_COLLABORATOR not defined\n";
+			return -1;
+		}
+		if (ConnectWithTimeout(acptfd,
+                       (struct sockaddr *) &SwitchAddress,
+                        sizeof(SwitchAddress), &timeout) < 0) {
 			close(acptfd);
 			SET_ERRCODE(ER_CONNECTFAILED);
 			return -1;
