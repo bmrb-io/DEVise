@@ -272,40 +272,31 @@ public:
 	Aggregates(
 		List<BaseSelection*>* selectClause,	// queries select clause
 		BaseSelection * sequenceby,	// queries select clause
+		BaseSelection* withPredicate,
 		List<BaseSelection*>* groupBy = NULL,	// group by clause
 		BaseSelection* having = NULL			// having clause
-	) : Site(), selList(selectClause),sequenceAttr(sequenceby)
+	) : Site(), selList(selectClause),sequenceAttr(sequenceby),
+			withPredicate(withPredicate)
 	{
 		
 		Site::mySelect = selList;
 		isApplicableValue = false;
 		alreadyChecked = false;
 		iterator = NULL;
-		
-		/*
-		sequenceAttr = NULL;
-		BaseSelection *sequenceby = NULL;
-    	if (sequenceByTable){
-        	Catalog::Interface *interface = catalog.find(*sequenceByTable);
-        	String *attrib = interface->getOrderingAttrib();
-        	if (attrib == "")
-              assert(!"Sequenceby clause has a table with no ordering attrib");
-        	sequenceAttr = new PrimeSelection (sequenceByTable,attrib);
-    	}
-		*/
-
 	}
-	~Aggregates(){
+	
+	virtual ~Aggregates(){
 		// do not delete selList;
 		delete sequenceAttr;
 		delete iterator;
 	}
-	bool isApplicable();
-	List<BaseSelection*>* getSelectList();
-	List<BaseSelection*>* filterList();
-	void typify(Site* inputIterator);
 	
-	void enumerate(){
+	virtual bool isApplicable();
+	virtual List<BaseSelection*>* getSelectList();
+	virtual List<BaseSelection*>* filterList();
+	virtual void typify(Site* inputIterator);
+	
+	virtual void enumerate(){
 
 		iterator->enumerate();
 	}
@@ -313,13 +304,13 @@ public:
 		assert(iterator);
 		iterator->initialize();
 	}
-	Tuple* getNext();
+	virtual Tuple* getNext();
 	
 	virtual String *getOrderingAttrib(){
 		return iterator->getOrderingAttrib();
 	}
 	// Need to check this..
-	void reset(int lowRid, int highRid){
+	virtual void reset(int lowRid, int highRid){
 			TRY(iterator->reset(lowRid, highRid), );
 	}
 
@@ -333,9 +324,10 @@ private:
 	bool alreadyChecked;
 	TypeID seqAttrType;
 	int seqAttrPos;
-	
+	BaseSelection* withPredicate;	
 	Site * iterator;
-	
+	int withPredicatePos;	
+
 	// A list of ptrs to the GeneralFunction class to actually do the 
 	// aggregation.
 	GenFunction **funcPtr;

@@ -98,7 +98,7 @@ Site* QueryTree::createSite(){
 		tableList->step();
 	}
 	// For the sequenceby clause;
-	// find the sequecing attribute..
+	// find the sequecing attribute..(Only table name is known initially)
 	BaseSelection * sequenceby = NULL;
 	if (sequencebyTable){
 		sites->rewind();
@@ -116,7 +116,7 @@ Site* QueryTree::createSite(){
 			}	
 		}
 	}
-	Aggregates *aggregates = new Aggregates(selectList,sequenceby);
+	Aggregates *aggregates =new Aggregates(selectList,sequenceby,withPredicate);
 	if(aggregates->isApplicable()){
 			   
 	   	// Change the select list

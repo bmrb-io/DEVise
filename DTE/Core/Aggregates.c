@@ -74,10 +74,18 @@ List<BaseSelection*>* Aggregates::filterList(){
 		// Get the next select list..
 		selList->step();
 	}		
+	
+	// The with clause is treated as a select condition and passed down.
+	// Then it is treated as a where clause when getting the values.. 
+
+	if (withPredicate){
+		retVal->append(withPredicate);
+	}
 	if (selectMatch == false){
 		selList->prepend(sequenceAttr);
 		retVal->prepend(sequenceAttr);
 	}	
+	withPredicatePos = retVal->getPos(withPredicate);
 	return retVal;
 	
 }
@@ -381,13 +389,6 @@ Tuple *AggWindow::getTupleAtCurrPos(){
 	return TupleList->getVal(presentPos);
 
 }
-/* OUT OF SERVICE..
-Tuple * Scan::getNext()
-{
-	// A BIG hack;;
-		
-}
-*/
 int AggWindow::getLowPos(int windowPos,bool byPosition )
 {
 	
@@ -407,14 +408,12 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 		// valuesBeforePresent  == required Window return;;
 		
 		Tuple *  curr = TupleList->get();
-		
 		TupleList->step();
 
 		if (!curr)
 			return -1;
 
 		int numberUniqueVals = 1;
-		
 		while(numberUniqueVals - valuesBeforePresent <= windowPos ) {
 		
 			bool match = true;
@@ -426,19 +425,16 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 				TupleList->step();	
 				if(!Next)
 					return -1;
-			
+				
 				if(equalAttr(Next,curr)) 
 					;
 				else{
-				
 					match = false;
 					curr = Next;
 					numberUniqueVals ++;
 				}
 			}
-		
 		}
-		
 		if (numberUniqueVals - valuesBeforePresent > windowPos)
 			return TupleList->getPos(curr);
 		else
@@ -448,16 +444,13 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 		
 		// It is by value...
 		Tuple * presentTup = TupleList->getVal(presentPos);
-
 		Tuple *  curr = TupleList->get();
-		
 		TupleList->step();
 
 		if (!curr)
 			return -1;
 		
 		while(compareAttr(presentTup,curr) < windowPos ){
-		
 			bool match = true;
 			// Get rid of duplicates..
 			Tuple * curr = TupleList->get();
@@ -489,18 +482,15 @@ int AggWindow::getHighPos(int windowPos,bool byPosition )
 		// valuesBeforePresent  == required Window return;;
 		
 		Tuple *  curr = TupleList->get();
-		
 		TupleList->step();
 
 		if (!curr)
 			return -1;
 
 		int numberUniqueVals = 1;
-		
 		while(numberUniqueVals - valuesBeforePresent <= windowPos ) {
 		
 			bool match = true;
-			
 			// Get rid of duplicates..
 			while(match){
 			
@@ -517,11 +507,9 @@ int AggWindow::getHighPos(int windowPos,bool byPosition )
 					numberUniqueVals ++;
 				}
 			}
-		
 		}
 		
 		if (numberUniqueVals - valuesBeforePresent > windowPos){
-			
 			// Now get the highest tuple matching it..
 			Tuple * Next = TupleList->get();
 			TupleList->step();
@@ -623,7 +611,6 @@ Type * GenFunction::min()
 	
 	while(next != NULL){
 		
-		
 		if (((IBool * )grtrPtr->opPtr(minimum,next[pos]))->getValue()){
 			minimum = next[pos]; 
 		}
@@ -632,7 +619,6 @@ Type * GenFunction::min()
 	return minimum;
 
 }
-
 
 Type * GenFunction::max()
 {
@@ -664,9 +650,7 @@ Type * GenFunction::count()
 		next = scanNext(); 
 	}
 	return new IInt(count);
-
 }
-
 
 Tuple * GenFunction::scanNew()
 {
@@ -681,11 +665,27 @@ Tuple * GenFunction::scanNext()
 	
 	if (currPos > highPos )
 		return NULL;
+	
+	bool selected = false;	
+	
+	Tuple * curr = NULL;
 
-	Tuple * curr = filler->TupleList->getVal(currPos);
-	if (!curr)
-		return NULL;
-	if (currPos <= highPos)
-		currPos ++;
+	while(!selected){
+		
+		curr = filler->TupleList->getVal(currPos);
+		
+		if (!curr)
+			return NULL;
+		
+		if (!filler->aggregate->withPredicate)
+			selected = true;
+		else 
+			// Evaluate the boolean result..
+		 if (((IBool *)curr[filler->aggregate->withPredicatePos])->getValue())
+				selected = true;
+		
+		if (currPos <= highPos)
+			currPos ++;
+	}
 	return curr;
 }

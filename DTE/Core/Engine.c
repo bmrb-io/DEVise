@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/16 11:13:04  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.6  1996/12/09 10:01:50  kmurli
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
@@ -49,7 +53,7 @@ ParseTree* parseTree = NULL;
 List<String*>* namesToResolve;
 BaseSelection * sequenceby;
 char* queryString;
-
+BaseSelection * withPredicate;
 DefaultExceptHndl defaultExceptHndl;
 ITimer iTimer;
 

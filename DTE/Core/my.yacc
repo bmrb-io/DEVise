@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/16 11:13:09  kmurli
+  Changes to make the code work for separate TDataDQL etc..and also changes
+  done to make Aggregates more robust
+
   Revision 1.7  1996/12/15 06:41:09  donjerko
   Added support for RTree indexes
 
@@ -44,6 +48,7 @@
 extern int yylex();
 extern ParseTree* parseTree;
 extern List<String*>* namesToResolve;
+extern BaseSelection* withPredicate;
 /* extern BaseSelection * sequencebyTable;*/
 extern String *sequencebyTable; 
 int yyerror(char* msg);
@@ -68,6 +73,8 @@ int yyerror(char* msg);
 %token CREATE
 %token INDEX
 %token ON
+%token OVER 
+%token WITH 
 %token <string> STRING_CONST
 %left '.'
 %left OR
@@ -80,13 +87,14 @@ int yyerror(char* msg);
 %type <sel> selection
 %type <path> expression
 %type <selList> listOfSelections
+%type <selList> optOverClause
+%type <sel> optWithClause
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <string> optString
 %type <string> optSequenceByClause
-%type <string> TableName
 %type <sel> attribute
 %type <string> index_name
 %type <string> table_name
@@ -105,11 +113,11 @@ table_name : STRING
 	;
 query : SELECT listOfSelections 
 	   FROM listOfTables optWhereClause optSequenceByClause ';' {
-		parseTree = new QueryTree($2, $4, $5, $6, namesToResolve);
+		parseTree = new QueryTree($2, $4, $5, $6, withPredicate,namesToResolve);
 		return 0;
 	}
 	| SELECT '*' FROM listOfTables optWhereClause optSequenceByClause ';' {
-		parseTree = new QueryTree(NULL, $4, $5, $6, namesToResolve);
+		parseTree = new QueryTree(NULL, $4, $5, $6, withPredicate,namesToResolve);
 		return 0;
 	}
      ;
@@ -142,10 +150,19 @@ optWhereClause : WHERE predicate {
 	}
 	;
 
-optSequenceByClause : SEQUENCEBY TableName{
+optSequenceByClause :SEQUENCEBY STRING optWithClause{
         $$ = $2;
+		withPredicate= $3;
 	}
 	| {
+		$$ = NULL;
+		withPredicate= NULL;
+	}
+	;
+optWithClause: WITH predicate {
+		$$ = $2;
+	}
+	|{
 		$$ = NULL;
 	}
 	;
@@ -155,8 +172,8 @@ predicate : predicate OR predicate {
 	| predicate AND predicate {
 		$$ = new AndOperator($1, $3);
 	}
-     | predicate '=' predicate {
-          $$ = new Operator("=", $1, $3);
+    | predicate '=' predicate {
+        $$ = new Operator("=", $1, $3);
 	}
 	| predicate LESSGREATER predicate {
 		$$ = new Operator(*$2, $1, $3);
@@ -169,14 +186,11 @@ predicate : predicate OR predicate {
 	}
 	| selection
 	;
-TableName: STRING {
-		$$ = $1;
-	}
 attribute:
 	STRING '.' expression {
 		$$ = new PrimeSelection($1, $3);
 	}
-
+	;
 selection :
 	STRING '.' expression {
 		$$ = new PrimeSelection($1, $3);
@@ -186,9 +200,18 @@ selection :
 		namesToResolve->append(dummy); 
 		$$ = new PrimeSelection(dummy, new Path($1, NULL));
 	}
-	| STRING '(' listOfSelections ')' {
+	| STRING '(' selection ')' optOverClause {
 		String* dummy = new String;
-		$$ = new PrimeSelection(dummy, new Method($1, $3, NULL));
+		List <BaseSelection *> * dummylist = new List<BaseSelection*>;
+		if ($5 != NULL){
+			dummylist->addList($5);
+		}
+		dummylist->prepend($3);
+		$$ = new PrimeSelection(dummy, new Method($1, dummylist));
+	}
+	| STRING '(' listOfSelections ')' {
+		String * dummy = new String("");	
+		$$ = new PrimeSelection(dummy, new Method($1,$3));
 	}
 	| STRING_CONST {
 		$$ = new ConstantSelection("string", new IString($1));
@@ -203,6 +226,16 @@ selection :
 		$$ = $2;
 	}
 	;
+
+optOverClause:	
+	OVER '(' listOfSelections ')' {
+			$$ = $3;
+	}
+	| {
+		$$ = NULL;
+	}
+	;
+
 tableAlias : STRING optString {
 		$$ = new TableAlias($1, $2);
 	}
