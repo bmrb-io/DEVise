@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1997/01/18 20:49:21  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.5  1996/07/15 14:20:30  jussi
 #  Updated to reflect new Tcl/Tk library.
 #
@@ -39,6 +42,7 @@ ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib
 ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -lX11 -lm
 ARCH_LDPOST  =
+ARCH_STATIC_LDPOST  = -static
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base
