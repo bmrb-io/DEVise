@@ -1,6 +1,5 @@
-ARCH_FLAGS = -DSUN -I/usr/sup/tcl/include
-ARCH_LDFLAGS = -L/usr/sup/tcl/lib
-#CC = CC
+ARCH_FLAGS = -DSUN
 VPATH = ../../issm
 include $(VPATH)/Makefile.sun
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
