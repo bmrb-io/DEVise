@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/01/30 03:10:25  xuk
+// Change for collaboration JS. cgiFlag = -1 to indicate collaboration JS.
+//
 // Revision 1.13  2001/01/22 17:08:12  wenger
 // Added DEViseCheckPop to actually connect to the jspop when checking
 // with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -119,6 +122,9 @@ import  java.net.*;
 
 public class DEViseCommSocket
 {
+    //===================================================================
+    // VARIABLES
+
     private static final int DEBUG = 0;
 
     private Socket socket = null;
@@ -141,6 +147,10 @@ public class DEViseCommSocket
     public int cmdId = 0;
     public int cgiFlag = 0;
 
+    //===================================================================
+    // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
     public DEViseCommSocket(Socket s, int to)
       throws YException
     {
@@ -159,36 +169,14 @@ public class DEViseCommSocket
 	CreateStreams();
     }
 
-    // Create input and output streams if we already have the sockets.
-    private void CreateStreams() throws YException
-    {
-        try {
-            os = new DataOutputStream(new BufferedOutputStream(
-	      socket.getOutputStream(), bufferSize));
-            is = new DataInputStream(socket.getInputStream());
-            socket.setSoTimeout(timeout);
-        } catch (NoRouteToHostException e) {
-            closeSocket();
-            throw new YException(
-	      "Can not find route to host, may caused by an internal firewall",
-	      "DEViseCommSocket:constructor");
-        } catch (SocketException e) {
-            closeSocket();
-            throw new YException("Can not set timeout for sockets",
-	      "DEViseCommSocket:constructor");
-        } catch (IOException e) {
-            closeSocket();
-            throw new YException("Can not open i/o stream for sockets",
-	      "DEViseCommSocket:constructor");
-        }
-    }
-
+    //-------------------------------------------------------------------
     public DEViseCommSocket(Socket s) throws YException
     {
         // default time out is 1 second
         this(s, 1000);
     }
 
+    //-------------------------------------------------------------------
     public DEViseCommSocket(String hostname, int port, int to)
       throws YException
     {
@@ -236,6 +224,7 @@ public class DEViseCommSocket
 	CreateStreams();
     }
 
+    //-------------------------------------------------------------------
     public DEViseCommSocket(String hostname, int port)
       throws YException
     {
@@ -243,6 +232,7 @@ public class DEViseCommSocket
         this(hostname, port, 1000);
     }
 
+    //-------------------------------------------------------------------
     public synchronized void closeSocket()
     {
         try {
@@ -268,6 +258,7 @@ public class DEViseCommSocket
         socket = null;
     }
 
+    //-------------------------------------------------------------------
     // if at the moment of calling, there is something coming from the input stream,
     // isEmpty will return false, otherwise, it will return true
     public synchronized boolean isEmpty() throws YException
@@ -285,12 +276,14 @@ public class DEViseCommSocket
         }
     }
 
+    //-------------------------------------------------------------------
     // Clear all incoming data off of the sockets.
     public synchronized void clearSocket() throws YException
     {
         clearSocket(-1);
     }
 
+    //-------------------------------------------------------------------
     // Clear all incoming data off of the sockets.
     // imageBytes = -1 if size of image unknown
     public synchronized void clearSocket(int imageBytes) throws YException
@@ -318,36 +311,7 @@ public class DEViseCommSocket
         }
     }
 
-    private static void clearStream(DataInputStream istream, int to)
-      throws IOException
-    {
-        int size = istream.available();
-        boolean isEnd = false;
-        while (size > 0 || !isEnd) {
-            if (size <= 0) {
-                try {
-                    Thread.sleep(to);
-                } catch (InterruptedException e1) {
-                }
-                isEnd = true;
-            } else {
-		istream.skipBytes(size);
-            }
-
-            size = istream.available();
-        }
-    }
-
-    private synchronized void resetData()
-    {
-        isControl = true;
-        msgType = 0;
-        numberOfElement = 0;
-        totalSize = 0;
-        dataRead = null;
-        numberRead = 0;
-    }
-
+    //-------------------------------------------------------------------
     // Note: the format of commands on the socket is as follows:
     // u_short msgType // API_CMD, etc. -- see DEViseGlobals,java,
     //                    graphics.new/ParseAPI.h
@@ -362,6 +326,7 @@ public class DEViseCommSocket
     // char [] arg2String // null terminated
     // ...
 
+    //-------------------------------------------------------------------
     public synchronized void sendCmd(String cmd, short msgType, int ID)
       throws YException
     {
@@ -431,16 +396,19 @@ public class DEViseCommSocket
         }
     }
 
+    //-------------------------------------------------------------------
     public void sendCmd(String cmd, short msgType) throws YException
     {
         sendCmd(cmd, msgType, DEViseGlobals.DEFAULTID);
     }
 
+    //-------------------------------------------------------------------
     public void sendCmd(String cmd) throws YException
     {
         sendCmd(cmd, DEViseGlobals.API_JAVA, DEViseGlobals.DEFAULTID);
     }
 
+    //-------------------------------------------------------------------
     // Receive a command.  Note that this method may be interrupted by
     // the socket timeout.  If so, it can be repeatedly called until
     // an entire command has been received.
@@ -548,6 +516,7 @@ public class DEViseCommSocket
         return response;
     }
 
+    //-------------------------------------------------------------------
     public synchronized void sendData(byte[] data) throws YException
     {
         if (DEBUG >= 1) {
@@ -577,6 +546,7 @@ public class DEViseCommSocket
         }
     }
 
+    //-------------------------------------------------------------------
     // Number of bytes available on data socket.
     public int dataAvailable()
     {
@@ -597,6 +567,7 @@ public class DEViseCommSocket
 	return bytes;
     }
 
+    //-------------------------------------------------------------------
     // Receive data.  This method now does not return until all of the
     // requested data has been read.
     public synchronized byte[] receiveData(int dataSize)
@@ -653,4 +624,66 @@ public class DEViseCommSocket
 	      "DEViseCommSocket:receiveData()");
         }
     }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Create input and output streams if we already have the sockets.
+    private void CreateStreams() throws YException
+    {
+        try {
+            os = new DataOutputStream(new BufferedOutputStream(
+	      socket.getOutputStream(), bufferSize));
+            is = new DataInputStream(socket.getInputStream());
+            socket.setSoTimeout(timeout);
+        } catch (NoRouteToHostException e) {
+            closeSocket();
+            throw new YException(
+	      "Can not find route to host, may caused by an internal firewall",
+	      "DEViseCommSocket:constructor");
+        } catch (SocketException e) {
+            closeSocket();
+            throw new YException("Can not set timeout for sockets",
+	      "DEViseCommSocket:constructor");
+        } catch (IOException e) {
+            closeSocket();
+            throw new YException("Can not open i/o stream for sockets",
+	      "DEViseCommSocket:constructor");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    private static void clearStream(DataInputStream istream, int to)
+      throws IOException
+    {
+        int size = istream.available();
+        boolean isEnd = false;
+        while (size > 0 || !isEnd) {
+            if (size <= 0) {
+                try {
+                    Thread.sleep(to);
+                } catch (InterruptedException e1) {
+                }
+                isEnd = true;
+            } else {
+		istream.skipBytes(size);
+            }
+
+            size = istream.available();
+        }
+    }
+
+    //-------------------------------------------------------------------
+    private synchronized void resetData()
+    {
+        isControl = true;
+        msgType = 0;
+        numberOfElement = 0;
+        totalSize = 0;
+        dataRead = null;
+        numberRead = 0;
+    }
 }
+
+// ========================================================================
