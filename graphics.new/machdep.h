@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/17 00:47:26  jussi
+  Added a redefinition of SIG_ERR/SIG_DFL/SIG_IGN on the Ultrix
+  platform.
+
   Revision 1.8  1996/07/13 04:59:45  jussi
   Added conditional for Linux.
 
@@ -129,7 +133,7 @@
 */
 
 #ifdef LINUX
-#define __LINUX_UIO_H
+  #define __LINUX_UIO_H
 #endif
 
 /*
@@ -138,7 +142,7 @@
 */
 
 #if defined(__hpux) && !defined(_INCLUDE_HPUX_SOURCE)
-#define _INCLUDE_HPUX_SOURCE
+  #define _INCLUDE_HPUX_SOURCE
 #endif
 
 #include <limits.h>
@@ -170,7 +174,7 @@
   #include <time.h>
 #endif
 
-#if defined(__sun) || defined(__aix)
+#if defined(__sun) || defined(__aix) || defined(__ultrix)
   EXTERNC int gettimeofday(struct timeval *,
 			   struct timezone *);
 #endif
@@ -208,6 +212,12 @@
 			   struct itimerval *ovalue);
 #endif
 
+#if defined(__ultrix)
+  EXTERNC int select(int, fd_set *, fd_set *, fd_set *, struct timeval *);
+  EXTERNC int setitimer(int which, struct itimerval *value,
+			   struct itimerval *ovalue);
+#endif
+
 #if defined(__alpha) || defined(__sun)
   EXTERNC int semget(key_t, int, int);
   EXTERNC int semctl(int, int, int, ...);
@@ -216,10 +226,10 @@
 
 #if defined(__alpha) || defined(__sun) || defined(__linux)
   #ifndef SEM_A
-  #define SEM_A 0200                    // alter permission
+    #define SEM_A 0200                  // alter permission
   #endif
   #ifndef SEM_R
-  #define SEM_R 0400                    // read permission
+    #define SEM_R 0400                  // read permission
   #endif
 #endif
 
@@ -251,11 +261,11 @@ union semun {
 #include <sys/ioctl.h>
 
 #ifdef __sun
-#ifdef _cplusplus
-  EXTERNC int aioread(int, char *, int, int, int, struct aio_result_t *);
-  EXTERNC int aiowrite(int, char *, int, int, int, struct aio_result_t *);
-  EXTERNC aio_result_t *aiowait(struct timeval *);
-#endif
+  #ifdef _cplusplus
+    EXTERNC int aioread(int, char *, int, int, int, struct aio_result_t *);
+    EXTERNC int aiowrite(int, char *, int, int, int, struct aio_result_t *);
+    EXTERNC aio_result_t *aiowait(struct timeval *);
+  #endif
 #endif
 
 #ifdef __ultrix
@@ -268,28 +278,28 @@ union semun {
    the signal() definition in the same file!
 */
 
-#ifdef __STDC__
-#  ifdef SIG_ERR
-#    undef SIG_ERR
-#  endif
-#  define SIG_ERR ((void (*)(int))(-1))
-#  ifdef SIG_DFL
-#    undef SIG_DFL
-#  endif
-#  define SIG_DFL ((void (*)(int))( 0))
-#  ifdef SIG_IGN
-#    undef SIG_IGN
-#  endif
-#  define SIG_IGN ((void (*)(int))( 1))
-#endif
+  #ifdef __STDC__
+    #ifdef SIG_ERR
+      #undef SIG_ERR
+    #endif
+    #define SIG_ERR ((void (*)(int))(-1))
+    #ifdef SIG_DFL
+      #undef SIG_DFL
+    #endif
+    #define SIG_DFL ((void (*)(int))( 0))
+    #ifdef SIG_IGN
+      #undef SIG_IGN
+    #endif
+    #define SIG_IGN ((void (*)(int))( 1))
+  #endif
 #endif
 
-#ifndef __aix
-#ifdef __alpha
-  #include "osf_mtio.h"
-#else
-  #include <sys/mtio.h>
-#endif
+#if !defined(__aix)
+  #ifdef __alpha
+    #include "osf_mtio.h"
+  #else
+    #include <sys/mtio.h>
+  #endif
 #endif
 
 #ifdef __aix
@@ -321,11 +331,11 @@ union semun {
 #endif
 
 #ifdef __hpux
-#define FILE2FD(f) (f->__fileL + (f->__fileH << 8))
+  #define FILE2FD(f) (f->__fileL + (f->__fileH << 8))
 #elif defined(__linux__)
-#define FILE2FD(f) (f->_fileno)
+  #define FILE2FD(f) (f->_fileno)
 #else
-#define FILE2FD(f) (f->_file)
+  #define FILE2FD(f) (f->_file)
 #endif
 
 #ifdef __cplusplus
@@ -364,13 +374,13 @@ union semun {
 #include <netinet/in.h>
 
 #ifndef __sun
-#include <arpa/inet.h>
+  #include <arpa/inet.h>
 #else
-EXTERNC char *inet_ntoa(struct in_addr);
+  EXTERNC char *inet_ntoa(struct in_addr);
 #endif
 
-#ifdef __alpha
-EXTERNC struct hostent *gethostbyname(char *);
+#if defined(__alpha)
+  EXTERNC struct hostent *gethostbyname(char *);
 #endif
 
 #if !defined(__hpux) && !defined(__alpha) && !defined(__sgi)
