@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.102  2001/05/18 21:14:59  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.101  2001/04/03 19:57:40  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -489,7 +492,7 @@
 #include "DeviseHistory.h"
 
 //#define DEBUGLVL 3
-//#define DEBUG_NEG_LINKS 0
+#define DEBUG_NEG_LINKS 0
 //#define NEW_RECORD_LINKS 1
 #ifdef NEW_RECORD_LINKS
 void DumpFilter(QPFullData *query);
@@ -533,8 +536,8 @@ QPFullData::QPFullData()
   map = NULL;
   filter.flag = 0;
   callback = NULL;
-  qType = (QPFullType)(-1); // invalid
-  state = (QPFullState)(-1); // invalid
+  qType = QPFull_InvalidType;
+  state = QPFull_InvalidState;
   useCoordMap = false;
   handle = NULL;
   isRandom = false;
@@ -542,6 +545,31 @@ QPFullData::QPFullData()
   processed = NULL;
   bytes = 0;
   userData = NULL;
+}
+
+// Find out whether query is a record link slave, set isRecLinkSlave
+// accordingly.
+void
+QPFullData::IsASlave()
+{
+#if (DEBUGLVL >= 5)
+  printf("QPFullData::IsASlave()");
+#endif
+
+  isRecLinkSlave = false;
+  if (callback != NULL) {
+    MSLinkList *recLinkList = callback->GetRecordLinkList();
+    if (recLinkList) { 
+       int index = recLinkList->InitIterator();
+       if (recLinkList->More(index))
+          isRecLinkSlave = true;
+       recLinkList->DoneIterator(index);
+    }
+  }
+
+#if (DEBUGLVL >= 5)
+  printf("  isRecLinkSlave = %d\n", isRecLinkSlave);
+#endif
 }
 
 QueryProcFull::QueryProcFull()
@@ -631,16 +659,9 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   query->gdata = map->GetGData();
   query->map = map;
   query->userData = userData;
+  query->callback = callback;
 
-  /* Find out if this query is a slave of a record link */
-  query->isRecLinkSlave = false;
-  MSLinkList *recLinkList = callback->GetRecordLinkList();
-  if ( recLinkList) { 
-     int index = recLinkList->InitIterator();
-     if (recLinkList->More(index))
-        query->isRecLinkSlave = true;
-     recLinkList->DoneIterator(index);
-  }
+  query->IsASlave();
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -699,7 +720,6 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 
   query->isRandom = false;
   gettimeofday(&query->started, NULL);
-  query->callback = callback;
   query->priority = priority;
   query->state = QPFull_InitState;
 
@@ -1090,12 +1110,12 @@ void QueryProcFull::PrepareProcessedList(QPFullData *query)
     QPRange unprocessed;
     MasterSlaveLink *msLink = recLinkList->Next(index);
     if (msLink->GetFlag() & VISUAL_RECORD) {
+      RecordLinkType linkType = msLink->GetLinkType();
 #if DEBUG_NEG_LINKS 
       printf("Creating processed list from reclink 0x%p for query 0x%p\n",
 	     msLink, query);
       printf("Link type = %d", linkType);
 #endif
-      RecordLinkType linkType = msLink->GetLinkType();
     
 #if DEBUG_NEG_LINKS 
       printf("Processing record link file %s\n", msLink->GetFileName());
@@ -1202,7 +1222,7 @@ Boolean QueryProcFull::MasterNotCompleted(QPFullData *query)
 
 Boolean QueryProcFull::InitQueries()
 {
-#if DEBUGLVL >= 3
+#if (DEBUGLVL >= 3)
   printf("QueryProcFull::InitQueries()\n");
 #endif
 #if defined(DEBUG_MEM)
@@ -1224,7 +1244,7 @@ Boolean QueryProcFull::InitQueries()
     DOASSERT(query->callback, "No callback");
     /* Call initialization of query */
     query->callback->QueryInit(query->userData);
-#ifdef DEBUG_NEG_LINKS
+#if DEBUG_NEG_LINKS
     printf("****************************InitQuery %p (slave : %d) \n", query,
 	   query->isRecLinkSlave);
 #endif
@@ -1511,7 +1531,7 @@ void QueryProcFull::EndQueries()
   while (_queries->More(index)) {
     query = (QPFullData *)_queries->Next(index);
     if( query->state == QPFull_EndState ) {
-#ifdef DEBUG_NEG_LINKS
+#if DEBUG_NEG_LINKS
       printf("****************************EndQuery %p (slave : %d) \n", query,
 	     query->isRecLinkSlave);
 #endif
@@ -1545,7 +1565,7 @@ void QueryProcFull::EndQuery(QPFullData *query)
     query->callback->QueryDone(query->bytes, query->userData,
       query->qType == QPFull_Scatter, query->map);
   }
-#ifdef DEBUG_NEG_LINKS
+#if DEBUG_NEG_LINKS
   printf("****************************EndQuery %p (slave : %d) \n", query,
 	 query->isRecLinkSlave);
 #endif
@@ -2381,9 +2401,10 @@ void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 }
 
 void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
+				   QueryCallback *callback,
 				   Boolean approx)
 {
-#if DEBUGLVL >= 5
+#if (DEBUGLVL >= 5)
   printf("InitTDataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
 	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh,
 	 approx);
@@ -2391,6 +2412,9 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
 #endif
+
+  DOASSERT(_tdataQuery->state == QPFull_InvalidState ||
+      _tdataQuery->state == QPFull_EndState, "Already in a TData query");
 
   DOASSERT(filter.flag & VISUAL_X, "Invalid TData query filter");
 
@@ -2400,6 +2424,9 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   _tdataQuery->tdata = tdata;
   _tdataQuery->gdata = map->GetGData();
   _tdataQuery->filter = filter;
+  _tdataQuery->callback = callback;
+
+  _tdataQuery->IsASlave();
 
   VisualFlag *dimensionInfo;
   int numDimensions = map->DimensionInfo(dimensionInfo);
@@ -2428,7 +2455,7 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   } else {
     DOASSERT(0, "Unknown TData query type");
   }
-  
+
   /* Initialize scan */
   _tdataQuery->state = QPFull_ScanState;
   switch(_tdataQuery->qType) {
@@ -2468,6 +2495,10 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   case QPFull_YX:
     DOASSERT(0, "Cannot process XY query yet");
     break;
+
+  case QPFull_InvalidType:
+    DOASSERT(0, "Invalid query type");
+    break;
   }
 
   /* Initialize buffer manager scan */
@@ -2483,6 +2514,9 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
                                           true);
 
   _tdataQuery->processed = _mgr->GetProcessedRange(_tdataQuery->handle);
+
+  // For drill-down in views that are record link followers.
+  PrepareProcessedList(_tdataQuery);
 
   _hasTqueryRecs = false;
 }
@@ -2507,8 +2541,6 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
     Boolean isTData;
     Interval interval;
     Boolean result;
-
-    const GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
 
     while (1) {
         if (!_hasTqueryRecs) {

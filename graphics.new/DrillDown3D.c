@@ -24,6 +24,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  2001/05/18 21:14:58  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.1  2001/05/18 19:25:35  wenger
   Implemented the DEVise end of 3D drill-down; changed DEVise version to
   1.7.3.
@@ -95,6 +98,7 @@ DrillDown3D::RunQuery(ViewGraph *view, int count, Point3D coords[])
         _coords = coords;
 
         GetMapping(view);
+	_callback = view->GetQueryCallback();
         SetVisualFilter();
         ExecuteQuery();
     }
@@ -200,7 +204,7 @@ DrillDown3D::ExecuteQuery()
 
     if (_status.IsComplete()) {
         QueryProc *qp = QueryProc::Instance();
-	qp->InitTDataQuery(_tdMap, _filter, false);
+	qp->InitTDataQuery(_tdMap, _filter, _callback, false);
 
 	RecId startRid;
 	int numRecs;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/11/19 21:29:25  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.22  1999/10/08 19:57:56  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -212,7 +216,10 @@ class QueryProc {
     // Note: if approx is true, the visual filter is IGNORED, unless the X
     // axis attribute in sorted, in which case that attr is used for a binary
     // search, and the Y attr is still ignored.
+    // Note: QueryCallback is used only for record link checking, not to
+    // return results.
     virtual void InitTDataQuery(TDataMap *map, VisualFilter &filter,
+				QueryCallback *callback,
                                 Boolean approximate = false) = 0;
     virtual Boolean GetTData(RecId &startRid, int &numRecs, char *&buf) = 0;
     virtual void DoneTDataQuery() = 0;

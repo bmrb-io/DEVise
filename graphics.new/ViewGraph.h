@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.86  2001/04/12 20:15:14  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.85  2001/02/20 20:02:55  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -790,6 +796,9 @@ public:
       return true;
     }
   }
+
+  // For drill-down.
+  QueryCallback *GetQueryCallback() { return (QueryCallback *)queryCallback; }
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};

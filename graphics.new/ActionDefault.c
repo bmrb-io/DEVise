@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  2001/05/23 19:51:35  wenger
+  Fixed bug 675 (axis multiplication factor bug).
+
   Revision 1.48  2001/02/20 20:02:52  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -545,7 +548,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
            approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
 #endif
 
-    qp->InitTDataQuery(map, filter, approxFlag);
+    qp->InitTDataQuery(map, filter, view->GetQueryCallback(), approxFlag);
     Boolean tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
     qp->DoneTDataQuery();
 
@@ -598,7 +601,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
            approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
 #endif
 
-    qp->InitTDataQuery(map, filter, approxFlag);
+    qp->InitTDataQuery(map, filter, view->GetQueryCallback(), approxFlag);
     tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
     qp->DoneTDataQuery();
 

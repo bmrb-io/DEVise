@@ -2680,9 +2680,10 @@ Num Date        Status  Description
 673 05/21/01	OPEN	JavaScreen: 3D drill-down often doesn't work on the
 			first click. (eu/rkw)
 
-674 05/22/01	OPEN	Drill-down on a record link follower view doesn't
+674 05/22/01	FIXED	Drill-down on a record link follower view doesn't
 			work right (records are shown for drill-down that
 			are not selected by the leader view). (rkw)
+			(Fixed by rkw, 5/24/01.)
 
 675 05/23/01	FIXED	Axis mult factor should be applied to value returned
 			in drill-down. (rkw)

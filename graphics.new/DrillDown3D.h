@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  2001/05/18 21:14:59  wenger
+  Fixed bug 671 (potential GData buffer overflow).
+
   Revision 1.1  2001/05/18 19:25:36  wenger
   Implemented the DEVise end of 3D drill-down; changed DEVise version to
   1.7.3.
@@ -39,6 +42,7 @@
 
 class ViewGraph;
 class TDataMap;
+class QueryCallback;
 class AttrList;
 class RecInterp;
 
@@ -70,6 +74,7 @@ private:
     int _recordCount; // number of records found
 
     TDataMap *_tdMap;
+    QueryCallback *_callback;
     VisualFilter _filter;
 
     char* _gdataBuf;
