@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.146  2001/09/26 16:31:30  wenger
+  Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
+
   Revision 1.145  2000/03/14 17:05:17  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -3630,7 +3633,11 @@ void XWindowRep::DoPopup(int x, int y, int button)
   attr.border_pixel		= fgnd;
   attr.bit_gravity		= ForgetGravity /* CenterGravity */;
   attr.win_gravity		= NorthWestGravity;
+#if TEST_NO_BACKING_STORE
+  attr.backing_store		= NotUseful;
+#else
   attr.backing_store		= Always /* NotUseful WhenMapped */;
+#endif
   attr.backing_planes		= AllPlanes;
   attr.backing_pixel		= 0;
   attr.save_under		= True;
@@ -3860,7 +3867,13 @@ Boolean XWindowRep::HasBackingStore()
 
   XWindowAttributes attr;
   XGetWindowAttributes(_display, _win, &attr);
-  return attr.backing_store;
+
+  Boolean result = false;
+  if (attr.backing_store == WhenMapped || attr.backing_store == Always) {
+    result = true;
+  }
+
+  return result;
 }
 
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.32  2001/08/20 18:20:26  wenger
+  Fixes to various font problems: XDisplay calculates point sizes correctly
+  and uses screen resolution in specifying font; JS passes *its* screen
+  resolution to the devised so that fonts show up correctly in the JS
+  (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+
   Revision 1.31  1998/12/15 18:47:11  wenger
   New option in fixed text symbol: if size is <=1, it is assumed to be a
   fraction of the screen height, rather than the font size in points.
@@ -165,6 +171,8 @@
 #endif
 #include "DList.h"
 #include "WindowRep.h"
+
+#define TEST_NO_BACKING_STORE 0
 
 class DeviseDisplay;
 

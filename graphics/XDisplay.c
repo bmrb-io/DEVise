@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.88  2001/11/30 21:20:30  wenger
+  Fixed bug 737 (zero-size visual filter crashes DEVise) and related
+  bugs.
+
   Revision 1.87  2001/08/20 18:20:26  wenger
   Fixes to various font problems: XDisplay calculates point sizes correctly
   and uses screen resolution in specifying font; JS passes *its* screen
@@ -466,6 +470,11 @@ XDisplay::XDisplay(char *name, Boolean fontKludge)
     reportErrNosys("Cannot open XDisplay");
     Exit::DoExit(1);
   }
+
+#if defined(DEBUG)
+  printf("X display has backing store? %d\n",
+      XDoesBackingStore(XScreenOfDisplay(_display, DefaultScreen(_display))));
+#endif
 
   GetScreenRes();
 
@@ -1151,7 +1160,11 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.border_pixel  		= CM_GetXColorID(GetColorID(xWinForeColor));
   attr.bit_gravity  		= ForgetGravity;   /* CenterGravity */
   attr.win_gravity  		= NorthWestGravity;
+#if TEST_NO_BACKING_STORE
+  attr.backing_store  		= NotUseful;
+#else
   attr.backing_store  		= Always;          /* WhenMapped/NotUseful */
+#endif
   attr.backing_planes  		= AllPlanes;
   attr.backing_pixel  		= 0;
   attr.save_under  		= False;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.240  2001/12/13 21:35:46  wenger
+  Added flexibility to enable/disable mouse location display individually
+  for X and Y axes (needed for peptide-cgi session improvements requested
+  by John Markley).
+
   Revision 1.239  2001/09/26 16:31:29  wenger
   Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
 
@@ -4374,9 +4379,14 @@ void	View::HandleExpose(WindowRep* w, int x, int y, unsigned width,
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-	printf("View(%s)::HandleExpose()\n", GetName());
-	printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
+	printf("View(%s)::HandleExpose(%d,%d,%u,%u)\n", GetName(), x, y,
+	    width, height);
 #endif
+
+	// Fix for bug 750.  RKW 2002-02-05.
+    if (IsChildView() && RefreshPending()) {
+	  return;
+	}
 
 	// In case record links didn't get re-enabled after printing.
 	RecordLink::EnableUpdates();
