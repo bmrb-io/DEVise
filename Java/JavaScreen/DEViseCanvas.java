@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2000/07/14 21:13:07  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.55  2000/07/12 16:52:42  wenger
 // F1 key now shows help without clicking mouse button.
 //
@@ -128,6 +134,12 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.56  2000/07/14 21:13:07  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.55  2000/07/12 16:52:42  wenger
 // F1 key now shows help without clicking mouse button.
 //
@@ -579,13 +591,15 @@ public class DEViseCanvas extends Container
 
     private synchronized void paintBorder(Graphics gc)
     {
-        if (activeView != null && activeView == jscreen.getCurrentView()) {
+       // Border for Active view is disabled.
+       /* if (activeView != null && activeView == jscreen.getCurrentView()) {
             Rectangle loc = activeView.viewLocInCanvas;
 
             gc.setColor(Color.red);
             gc.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
             gc.drawRect(loc.x + 1, loc.y + 1, loc.width - 3, loc.height - 3);
         }
+	*/
     }
 
     // only top views get title drawn
@@ -833,13 +847,7 @@ public class DEViseCanvas extends Container
 
 	    // F1 key shows or hides view help.
             if (keyCode == KeyEvent.VK_F1) {
-                if (helpMsg != null) {
-	            //
-	            // Hide existing help message shown within view.
-	            //
                     helpMsg = null;
-	            repaint();
-                } else {
 	            //
 	            // Show this view's help within a dialog box.
 	            //
@@ -847,10 +855,9 @@ public class DEViseCanvas extends Container
                     String cmd = DEViseCommands.GET_VIEW_HELP + " " +
 		      activeView.getCurlyName() + " " + helpMsgX + " "
 		      + helpMsgY;
-                    jscreen.guiAction = true;
+                   //  jscreen.guiAction = true;
                     dispatcher.start(cmd);
-                }
-                return;
+                    return;
             }
 
             if (view.viewDimension == 3) {
@@ -1188,6 +1195,7 @@ public class DEViseCanvas extends Container
 
         public void mouseDragged(MouseEvent event)
         {
+
             if (_debug >= 2) {
                 System.out.println(
 		  "DEViseCanvas.ViewMouseMotionListener.mouseDragged()");
