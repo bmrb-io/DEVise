@@ -1852,6 +1852,10 @@ Num Date        Status  Description
 481 04/06/99	FIXED	Copying a view doesn't copy the state of duplicate
 			elimination. (rkw)
 
+482 04/16/99	OPEN	Changing date format prevents data from coming up
+			properly when session is opened (see jsdemo
+			test/date_format_problem.ds). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
