@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 18:40:21  jussi
+  Minor fixes to remove compiler warnings.
+
   Revision 1.4  1995/12/14 16:55:02  jussi
   Small fix.
 
@@ -211,6 +214,12 @@ void ControlPanel::DoQuit()
   Dispatcher::Cleanup();
   
   Exit::DoExit(2);
+}
+
+/* abort */
+
+void ControlPanel::DoAbort(char *reason)
+{
 }
 
 /* return */

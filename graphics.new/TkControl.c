@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/04/15 15:08:11  jussi
+  Interface to ViewGraph's mapping iterator has changed. Added another
+  version of insertMapping command that takes the label as a parameter.
+
   Revision 1.41  1996/04/14 00:17:15  jussi
   Removed interpMapClassInfo and clearInterp commands. Added
   createMappingClass which will eventually replace createInterp
@@ -155,7 +159,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "TkControl.h"
 #include "ClassDir.h"
@@ -373,6 +376,13 @@ ControlPanel::Mode TkControlPanel::GetMode()
 Boolean TkControlPanel::Restoring()
 {
   return _restoring;
+}
+
+void TkControlPanel::DoAbort(char *reason)
+{
+  char cmd[256];
+  sprintf(cmd, "AbortProgram {%s}", reason);
+  (void)Tcl_Eval(_interp, cmd);
 }
 
 int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
@@ -1529,7 +1539,7 @@ void TkControlPanel::SetBusy()
 
 void TkControlPanel::SetIdle()
 {
-  assert(_busy > 0);
+  DOASSERT(_busy > 0, "Control panel unexpectedly busy");
 
   if (--_busy == 0)
     (void)Tcl_Eval(_interp, "ChangeStatus 0");

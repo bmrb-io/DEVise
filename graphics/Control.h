@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/27 00:21:45  jussi
+  Added ExecuteScript() method.
+
   Revision 1.2  1995/09/05 21:12:32  jussi
   Added/update CVS header.
 */
@@ -103,7 +106,10 @@ public:
 	void ReportModeChange(Mode mode);
 
 	/* quit */
-	void DoQuit();
+	virtual void DoQuit();
+
+	/* abort */
+	virtual void DoAbort(char *reason);
 
 protected:
 

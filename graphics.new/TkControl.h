@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/27 00:21:36  jussi
+  Added ExecuteScript() method.
+
   Revision 1.4  1995/12/29 18:27:00  jussi
   Added FilterAboutToChange() to facilitate new cursor mechanism.
 
@@ -83,6 +86,9 @@ public:
 
 	/* Execute script */
 	virtual void ExecuteScript(char *script);
+
+	/* Abort program */
+	virtual void DoAbort(char *reason);
 
 protected:
     virtual void SubclassInsertDisplay(DeviseDisplay *disp,Coord x, Coord y,
