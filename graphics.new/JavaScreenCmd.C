@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.110  2000/12/14 18:46:16  wenger
+  Devised makes sure JS data cache file is non-zero size.
+
   Revision 1.109  2000/12/14 16:38:46  wenger
   More debug output: JavaScreenCmd constructor and ReturnVal() log command
   name.
@@ -946,9 +949,14 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p)::JavaScreenCmd(%d = %s)\n", this,
+    sprintf(logBuf, "JavaScreenCmd(0x%p)::JavaScreenCmd(%d = %s): ", this,
 	  (int)ctype, _serviceCmdName[(int)ctype]);
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf, argc, argv);
+#endif
+#if defined(DEBUG)
+    printf("JavaScreenCmd(0x%p)::JavaScreenCmd(%d = %s): ", this,
+	  (int)ctype, _serviceCmdName[(int)ctype]);
+    PrintArgs(stdout, argc, argv);
 #endif
 
 	int	i;

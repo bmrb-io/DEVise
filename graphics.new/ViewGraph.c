@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.146  2000/11/17 22:59:06  wenger
+  Fixed problems with command logging of cursor movements and pile/stack
+  flips.
+
   Revision 1.145  2000/10/16 16:11:47  wenger
   Link creation GUI now gives a choice of positive or negative record
   links; fixed bug 622 (record link type not saved in session files);
@@ -2259,7 +2263,9 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
     if (_sendToSocket) {
       if (_gds != NULL) {
-        reportErrNosys("Duplicate GDataSock creation");
+	char buf[512];
+        sprintf(buf, "Duplicate GDataSock creation in view %s", GetName());
+        reportErrNosys(buf);
       } else if ((_gdsParams.file != NULL && strcmp(_gdsParams.file, "")) ||
           (_gdsParams.portNum != 0)) {
 	_gdsPostponed = false;
@@ -2338,6 +2344,13 @@ void ViewGraph::DerivedAbortQuery()
     link->Abort();
   }
   _masterLink.DoneIterator(index);
+
+  // We need to get rid of the GDataSock object here because the query has
+  // finished, and we'll create a new GDataSock next time if we need one.
+  if (_gds != NULL) {
+    delete _gds;
+    _gds = NULL;
+  }
 }
 
 void
