@@ -93,6 +93,9 @@ public:
 
 	virtual void DoneGetRecs(TDHandle handle);
 
+	virtual char *GetTableName() { 
+		cout << "In TDAtaDQL::GetTableName: returns " << _tableName << endl;
+		return _tableName; }
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */
 	virtual int GetModTime();
