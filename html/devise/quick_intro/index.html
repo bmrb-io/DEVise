@@ -1,0 +1,149 @@
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1997
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
+<HTML>
+<HEAD>
+<TITLE>DEVise Quick Introduction</TITLE>
+</HEAD>
+<BODY>
+
+<h2>Overview</h2>
+
+<p>This page gives you a quick introduction on how to import data into
+DEVise.  The assumption is that you have data in a file on local disk or
+a URL.
+
+<p>The following are the steps in importing data into DEVise:
+<ol>
+<li>Create the schema.
+<li>Create the data source.
+<li>Visualize the data source.
+<li>Refine the visualization.
+</ol>
+
+
+<hr>
+<h2>Define the schema</h2>
+
+<p>The first step in importing data into DEVise is to define a schema that
+applies to that data.  Select 'Physical' from the 'Schema' pull-right
+menu of the 'Tables' menu.  You will see this window:
+<p>
+<img src="physical_schemas.gif" align=middle>
+
+<p>Click on 'New', and you will now see the schema description window:
+<p>
+<img src="schema_description.gif" align=middle>
+
+<p>This window allows you to define a schema for your data.  Fill in the
+schema name, select the type (Ascii or Binary), enter the comment
+character(s), and enter the separator or whitespace character(s);
+then define the attributes.  You must define the attributes in the
+order in which they appear in the records in your data file.  (All
+records in a given file must have the same format.  Any records that
+do not match the schema will be ignored.)  Once you've added all of
+the attributes, click on 'Save'.
+
+
+<hr>
+<h2>Define the data source</h2>
+
+<p>Select 'New Table' from the 'Tables' menu to get the 'Define Data
+Stream' window:
+<p>
+<img src="define_data_stream.gif" align=middle>
+
+<p>You can now define a data source by associating the file or URL containing
+the data with the schema for that data.
+
+<p>If your data is in a file, click on the 'Select' button to the right
+of 'Key:'.  This will open the File select box:
+<p>
+<img src="file_select.gif" align=middle>
+
+<p>Select the file containing your data.  Once you've selected the data
+file, the File select box will automatically be shown again in order for
+you to select the schema file.  Select the schema file you just defined
+(the filename will be the same as the schema name you specified).
+
+<p>If you want the display name of the data source to be different from
+the data file name, change it now.  Then click 'OK'.
+
+<p>If your data is accessed via a URL, change the data source type from
+'UNIXFILE' to 'WWW'.  The rest of the procedure is basically
+the same, except that instead of selecting the data with the File select
+box, you must manually enter the URL in the Info/Command area of the
+'Define Data Stream' window.
+
+
+<hr>
+<h2>Visualize the data source</h2>
+
+<p>Select 'Visualize/Edit' from the Tables menu to open the 'Define
+Visualization' window:
+<p>
+<img src="define_visualization.gif" align=middle>
+
+<p>Select the following:
+<ul>
+<li>The window in which to visualize the data.
+<li>The attribute to be graphed on the X axis.
+<li>The type of view (bar chart, image, or scatter plot).
+<li>The background color.
+<li>Whether to use new mappings (in general, you should always do so).
+<li>Whether to display title(s) in the view(s).
+<li>Whether to link the X axes of the views if you create multiple views.
+<li>Whether to display X axes.
+<li>Whether to display Y axes.
+<li>The attribute(s) to be graphed on the Y axis or axes.
+</ul>
+
+<p>Then click on 'OK'.
+
+<p>If you selected two Y attributes, you should see a window
+something like this:
+<p>
+<img src="data_window1.gif" align=middle>
+
+
+<hr>
+<h2>Refine the visualization</h2>
+
+<p>Once you've visualized your data, you can change how it's visualized.
+Select one view by clicking in it, then click the 'Mapping' button in
+the DEVise main window; this shows the 'Edit Mapping' dialog:
+<p>
+<img src="mapping_dialog1.gif" align=middle>
+
+<p>For example, we can change the color of the graph to be dependent on
+the account ID:
+<p>
+<img src="mapping_dialog2.gif" align=middle>
+
+<p>This results in the following visualization:
+<p>
+<img src="data_window2.gif" align=middle>
+
+<p>By changing various attributes in the mapping, you can visualize the
+data in many different ways.  There are also other, more advanced features
+in DEVise, such as links and cursors.  For information on these features,
+see the <a href=../userman.ps.gz> DEVise user manual</a>.
+
+
+</BODY>
+</HTML>
