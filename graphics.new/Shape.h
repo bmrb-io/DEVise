@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/11/21 01:24:39  jussi
+  Changed shape of cloud from oval to rectangular.
+
   Revision 1.24  1996/11/20 01:08:37  jussi
   Changed threshold value for randomization from 0.5 to 0.15.
 
@@ -350,9 +353,9 @@ class Shape {
     // Randomize points in X, Y, or both directions.
     for(int cnt = 0; cnt < count; cnt++) {
       if (cloudWidth == 0.0) {
-        _y[cnt] += (rand() % 1000) / 1000.0 * cloudHeight;
+        _y[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudHeight;
       } else if (cloudHeight == 0.0) {
-        _x[cnt] += (rand() % 1000) / 1000.0 * cloudWidth;
+        _x[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudWidth;
       } else {
 #if defined(OVAL_CLOUD)
         float length = (rand() % 1000) / 1000.0 * cloudWidth;
@@ -360,8 +363,8 @@ class Shape {
         _x[cnt] += length * sin(dir);
         _y[cnt] += length * cos(dir) * cloudHeight / cloudWidth;
 #else
-        _x[cnt] += (rand() % 1000) / 1000.0 * cloudWidth;
-        _y[cnt] += (rand() % 1000) / 1000.0 * cloudHeight;
+        _x[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudWidth;
+        _y[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudHeight;
 #endif
       }
     }
