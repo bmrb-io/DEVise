@@ -72,8 +72,9 @@ ams.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
 ams.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 ams.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 ams.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-ams.o: /usr/include/sys/shm.h /usr/include/sys/sem.h ../graphics/ParseCat.h
-ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
+ams.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
+ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 amsStat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
