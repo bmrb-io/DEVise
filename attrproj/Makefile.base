@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1996/11/18 18:12:33  donjerko
+#  Added DTE make stuff
+#
 #  Revision 1.24  1996/11/01 19:03:31  kmurli
 #  Makefile changed to include DQL sources
 #
@@ -52,23 +55,42 @@
 
 include ../../Makefile.common
 
+# Should we use the sequential stuff (no indexes)
+USE_SEQ = no
+
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
 	-I../../graphics.new -I../../tape -I../../DTE \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DATTRPROJ -DLIBCS
 
+
+ifeq (yes, $(USE_SEQ))
+TESTSRC = aptest2.c vector.c
+else
 TESTSRC = aptest.c vector.c
+endif
 TESTOBJ = $(TESTSRC:.c=.o)
 
 SHOWSRC = show.c vector.c
 SHOWOBJ = $(SHOWSRC:.c=.o)
 
+ifeq (yes, $(USE_SEQ))
+LOCALSRC = AttrProj2.c ApInit.c ApParseCat2.c VectorArray.c ProjectionList.c
+else
 LOCALSRC = AttrProj.c ApInit.c ApParseCat.c VectorArray.c ProjectionList.c
+endif
+
 #The following sources are in other directories, but must be specially
 #compiled for attrproj.
-LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c TDataBinary.c \
-	TDataDQL.c TDataDQLInterp.c DataSourceDQL.c TDataBinaryInterp.c \
-	DataSourceSegment.c
+ifeq (yes, $(USE_SEQ))
+LOCALSRC += Exit.c TData.c TDataSeqAscii.c TDataSeqAsciiInterp.c \
+        TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
+        TDataBinaryInterp.c DataSourceSegment.c
+else
+LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c \
+        TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
+        TDataBinaryInterp.c DataSourceSegment.c
+endif
 
 SRCc = $(filter %.c,$(LOCALSRC))
 SRCC = $(filter %.C,$(LOCALSRC))
@@ -104,7 +126,12 @@ LIB = libattrproj.a
 ALLTESTOBJ = $(TESTOBJ)
 ALLSHOWOBJ = $(SHOWOBJ)
 
+ifeq (yes, $(USE_SEQ))
+all: aptest2 show
+else
 all: aptest show
+endif
+
 lib: $(LIB)
 pure: aptest.pure show.pure
 
@@ -113,6 +140,9 @@ APTEST = $(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
 	-lattrproj
 
 aptest: $(ALLTESTOBJ) $(LIB)
+	$(APTEST) $(ARCH_LDPOST)
+
+aptest2: $(ALLTESTOBJ) $(LIB)
 	$(APTEST) $(ARCH_LDPOST)
 
 aptest.pure: $(ALLTESTOBJ) $(LIB)
