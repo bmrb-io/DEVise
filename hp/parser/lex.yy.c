@@ -398,6 +398,12 @@ char *yytext;
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/14 19:07:59  jussi
+  Changed return code of yywrap().
+
+  Revision 1.7  1995/12/14 18:40:27  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.6  1995/11/25 19:35:37  jussi
   Added copyright notice and CVS header. Cleaned up the code a bit.
 */
@@ -496,7 +502,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-# line 27 "../../parser/scan.lex"
+# line 33 "../../parser/scan.lex"
 
 
 	if ( yy_init )
@@ -578,117 +584,117 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_USER_ACTION
-# line 28 "../../parser/scan.lex"
+# line 34 "../../parser/scan.lex"
 return(TOKEN_X);
 	YY_BREAK
 case 2:
 YY_USER_ACTION
-# line 29 "../../parser/scan.lex"
+# line 35 "../../parser/scan.lex"
 return(TOKEN_Y);
 	YY_BREAK
 case 3:
 YY_USER_ACTION
-# line 30 "../../parser/scan.lex"
+# line 36 "../../parser/scan.lex"
 return(TOKEN_COLOR);
 	YY_BREAK
 case 4:
 YY_USER_ACTION
-# line 31 "../../parser/scan.lex"
+# line 37 "../../parser/scan.lex"
 return(TOKEN_SHAPE);
 	YY_BREAK
 case 5:
 YY_USER_ACTION
-# line 32 "../../parser/scan.lex"
+# line 38 "../../parser/scan.lex"
 return(TOKEN_ORIENTATION);
 	YY_BREAK
 case 6:
 YY_USER_ACTION
-# line 33 "../../parser/scan.lex"
+# line 39 "../../parser/scan.lex"
 return(TOKEN_SHAPEATTR);
 	YY_BREAK
 case 7:
 YY_USER_ACTION
-# line 34 "../../parser/scan.lex"
+# line 40 "../../parser/scan.lex"
 return(TOKEN_LEFT_BRACKET);
 	YY_BREAK
 case 8:
 YY_USER_ACTION
-# line 35 "../../parser/scan.lex"
+# line 41 "../../parser/scan.lex"
 return(TOKEN_RIGHT_BRACKET);
 	YY_BREAK
 case 9:
 YY_USER_ACTION
-# line 36 "../../parser/scan.lex"
+# line 42 "../../parser/scan.lex"
 return(TOKEN_MAPPING);
 	YY_BREAK
 case 10:
 YY_USER_ACTION
-# line 37 "../../parser/scan.lex"
+# line 43 "../../parser/scan.lex"
 return(TOKEN_DYNAMIC);
 	YY_BREAK
 case 11:
 YY_USER_ACTION
-# line 38 "../../parser/scan.lex"
+# line 44 "../../parser/scan.lex"
 return(TOKEN_STATIC);
 	YY_BREAK
 case 12:
 YY_USER_ACTION
-# line 39 "../../parser/scan.lex"
+# line 45 "../../parser/scan.lex"
 return(TOKEN_SEMI_COLON);
 	YY_BREAK
 case 13:
 YY_USER_ACTION
-# line 40 "../../parser/scan.lex"
+# line 46 "../../parser/scan.lex"
 return(TOKEN_COMMA);
 	YY_BREAK
 case 14:
 YY_USER_ACTION
-# line 41 "../../parser/scan.lex"
+# line 47 "../../parser/scan.lex"
 return(TOKEN_LEFT_BRACE);
 	YY_BREAK
 case 15:
 YY_USER_ACTION
-# line 42 "../../parser/scan.lex"
+# line 48 "../../parser/scan.lex"
 return(TOKEN_RIGHT_BRACE);
 	YY_BREAK
 case 16:
 YY_USER_ACTION
-# line 43 "../../parser/scan.lex"
+# line 49 "../../parser/scan.lex"
 return(TOKEN_INT);
 	YY_BREAK
 case 17:
 YY_USER_ACTION
-# line 44 "../../parser/scan.lex"
+# line 50 "../../parser/scan.lex"
 return(TOKEN_INT);
 	YY_BREAK
 case 18:
 YY_USER_ACTION
-# line 45 "../../parser/scan.lex"
+# line 51 "../../parser/scan.lex"
 return(TOKEN_IDENT);
 	YY_BREAK
 case 19:
 YY_USER_ACTION
-# line 46 "../../parser/scan.lex"
+# line 52 "../../parser/scan.lex"
 ;
 	YY_BREAK
 case 20:
 YY_USER_ACTION
-# line 47 "../../parser/scan.lex"
+# line 53 "../../parser/scan.lex"
 ;
 	YY_BREAK
 case 21:
 YY_USER_ACTION
-# line 48 "../../parser/scan.lex"
+# line 54 "../../parser/scan.lex"
 ;
 	YY_BREAK
 case 22:
 YY_USER_ACTION
-# line 49 "../../parser/scan.lex"
+# line 55 "../../parser/scan.lex"
 syntax_error();
 	YY_BREAK
 case 23:
 YY_USER_ACTION
-# line 50 "../../parser/scan.lex"
+# line 56 "../../parser/scan.lex"
 ECHO;
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -1393,7 +1399,7 @@ void *ptr;
 	{
 	free( ptr );
 	}
-# line 50 "../../parser/scan.lex"
+# line 56 "../../parser/scan.lex"
 
 
 /* user subroutines */
@@ -1463,6 +1469,7 @@ char *GetTokenText()
   return text;
 }
 
-yywrap()
+int yywrap()
 {
+  return 1;
 }
