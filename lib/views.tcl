@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1997/03/20 20:46:09  donjerko
+#  DTE Tdata generates unique names by appending sequential numbers to the
+#  end of the table name. This way, same table can be opened multiple times.
+#
 #  Revision 1.29  1997/03/20 01:32:20  wenger
 #  Fixed a bug in color allocation; color chooser for data shows old colors
 #  (temporarily); background conversion of GData defaults to off.
@@ -200,9 +204,9 @@ proc ProcessViewSelected { view } {
  
     set curView $view
 
-	puts "view = $view"
     Update3DLocation
     Update2DQueryWindow
+    Update2DBasicStatWindow
     UpdateHistoryWindow
 
     if {$curView == ""} {
@@ -1554,6 +1558,467 @@ proc DoStat {} {
 	    -command { destroy .statWin }
     pack .statWin.ac.applyAll.but .statWin.ac.applyCur.but \
 	    .statWin.ac.cancel.but -side top
+}
+
+############################################################
+proc flip { digit } {
+    if {$digit == 1} { return 0 
+    } else { return 1 }
+}
+
+############################################################
+
+proc DoBasicStat {} {
+    global curView statcount statmean statmax statmin statline statcilevel
+    set statmean 0
+    set statmax 0
+    set statmin 0
+    set statline 0
+    set statcount 0
+    set statcilevel "000"
+
+    if {[WindowVisible .basicStat]} {
+	return
+    }
+
+    set expand 1
+    set fill both
+
+    toplevel	.basicStat
+    wm title	.basicStat "Basic Statistics"
+    wm geometry .basicStat +100+100
+
+    frame .basicStat.title
+    frame .basicStat.mmmc
+    frame .basicStat.ci
+    frame .basicStat.close
+
+    pack .basicStat.title -side top -pady 1m -expand $expand -fill $fill
+    pack .basicStat.mmmc -side top -pady 1m -expand $expand -fill $fill
+    pack .basicStat.ci -side top -pady 1m -expand $expand -fill $fill
+    pack .basicStat.close -side top -pady 1m -expand $expand -fill $fill
+
+    label .basicStat.title.text -text "No View Selected"
+    pack .basicStat.title.text -side top -pady 1m
+    if {$curView != ""} {
+        .basicStat.title.text configure -text "View: $curView"
+    }
+
+    #set up max mean min count buttons and entries
+
+    frame .basicStat.mmmc.upper
+    frame .basicStat.mmmc.lower
+    pack .basicStat.mmmc.upper .basicStat.mmmc.lower -in .basicStat.mmmc\
+                -side top -pady 1m -expand $expand -fill $fill
+
+    button .basicStat.maxButton -text Max -width 10 -command { \
+			set statmax [flip $statmax] 
+			DoToggleStatistics }
+    entry .basicStat.maxEntry -text "" -relief sunken -width 10 \
+			-fg black -bg LightGray -font 8x13
+    button .basicStat.minButton -text Min -width 10 -command { \
+                        set statmin [flip $statmin] 
+                        DoToggleStatistics }
+    entry .basicStat.minEntry -text "" -relief sunken -width 10 \
+                        -fg black -bg LightGray -font 8x13
+    pack .basicStat.maxButton .basicStat.maxEntry .basicStat.minButton \
+			.basicStat.minEntry -in .basicStat.mmmc.upper  \
+			-side left -expand $expand -fill $fill
+
+    button .basicStat.meanButton -text Mean -width 10 -command { \
+                        set statmean [flip $statmean] 
+                        DoToggleStatistics }
+    entry .basicStat.meanEntry -text "" -relief sunken -width 10 \
+                        -fg black -bg LightGray -font 8x13
+    button .basicStat.countButton -text Count -width 10 -command { \
+                        set statcount [flip $statcount] 
+                        DoToggleStatistics }
+    entry .basicStat.countEntry -text "" -relief sunken -width 10 \
+                        -fg black -bg LightGray -font 8x13
+    pack .basicStat.meanButton .basicStat.meanEntry .basicStat.countButton \
+                        .basicStat.countEntry -in .basicStat.mmmc.lower  \
+                        -side left -expand $expand -fill $fill
+
+    frame .basicStat.ci.left
+    frame .basicStat.ci.right
+
+    pack .basicStat.ci.left .basicStat.ci.right -in .basicStat.ci \
+		-side left -pady 1m -expand $expand -fill $fill
+
+    button .basicStat.ci.left.noci -text "No CIs" -width 10 -command { \
+			if { $statcilevel != "000"} {set statcilevel "000"} 
+			DoToggleStatistics }
+    button .basicStat.ci.left.line -text "Line" -width 10 -command { \
+			set statline [flip $statline] 
+                        DoToggleStatistics }
+    pack .basicStat.ci.left.noci .basicStat.ci.left.line -in .basicStat.ci.left \
+		-side top -pady 1m -expand $expand -fill $fill
+
+    button .basicStat.ci.right.ci1 -text "85% CI" -width 10 -command {\
+			set statcilevel "100" 
+			DoToggleStatistics }
+    button .basicStat.ci.right.ci2 -text "90% CI" -width 10 -command {\
+			set statcilevel "010" 
+			DoToggleStatistics }
+    button .basicStat.ci.right.ci3 -text "95% CI" -width 10 -command {\
+			set statcilevel "001" 
+			DoToggleStatistics }
+    pack .basicStat.ci.right.ci1 .basicStat.ci.right.ci2 .basicStat.ci.right.ci3 \
+	-in .basicStat.ci.right -side top -pady 1m -expand $expand -fill $fill
+
+    button .basicStat.closeButton -text Close -width 10 \
+			-command { destroy .basicStat }
+    pack .basicStat.closeButton -in .basicStat.close -pady 1m \
+			-expand $expand 
+}
+
+############################################################
+proc Update2DBasicStatWindow {} {
+    global curView
+
+    if {![WindowExists .basicStat]} {
+        return
+    }
+    foreach i {maxEntry meanEntry minEntry countEntry} {
+        .basicStat.$i delete 0 end
+    }
+    if {$curView == ""} {
+        .basicStat.title.text configure -text "No View Selected"
+        return
+    }
+
+    .basicStat.title.text configure -text "View: $curView"
+
+    set stat [DEVise getAllStats $curView]
+    .basicStat.maxEntry insert 0 [lindex $stat 0]
+    .basicStat.meanEntry insert 0 [lindex $stat 1]
+    .basicStat.minEntry insert 0 [lindex $stat 2]
+    .basicStat.countEntry insert 0 [lindex $stat 3]
+}
+
+############################################################
+proc DoGroupByStat {} {
+    global curView derivedSourceList schemadir
+    global tdata viewsel linksel windowsel bgcolor
+    global titlesel xaxissel yaxissel byAttr ylist newgdata
+    global cancel aggregate checked 
+
+    if {[WindowVisible .groupBy]} {
+        return
+    }
+
+    toplevel    .groupBy
+    wm title    .groupBy "Group By Select"
+    wm geometry .groupBy +150+150
+
+    frame .groupBy.top -relief groove -bd 1
+    frame .groupBy.top.left
+    frame .groupBy.top.right
+    frame .groupBy.mid -relief groove -bd 1
+    frame .groupBy.bot -relief groove -bd 1
+    frame .groupBy.close_ok
+
+    pack .groupBy.top -side top -pady 3m -expand 1 -fill both
+    pack .groupBy.top.left .groupBy.top.right -side left -pady 3m -expand 1 -fill both
+    pack .groupBy.mid -side top -pady 3m -expand 1 -fill both
+    pack .groupBy.bot -side top -pady 3m -expand 1 -fill both
+    pack .groupBy.close_ok -side top -pady 3m -expand 1 -fill both
+
+    label .groupBy.windowselLabel -text "Window:"
+    menubutton .groupBy.windowsel -relief raised \
+            -textvariable windowsel -menu .groupBy.windowsel.windowMenu \
+            -width 20
+    pack .groupBy.windowselLabel .groupBy.windowsel -in .groupBy.top.left \
+		-side left -pady 1m -expand 1 -fill both
+    set windowsel ""
+    if {$curView != ""} {
+        set windowsel [DEVise getViewWin $curView]
+    }
+    if {$windowsel == ""} {
+        set windowsel "None selected yet"
+    }
+   
+    menu .groupBy.windowsel.windowMenu -tearoff 0
+    foreach w [WinSet] {
+        .groupBy.windowsel.windowMenu add command -label $w \
+                -command "set windowsel {$w}"
+    }
+
+    .groupBy.windowsel.windowMenu add separator
+    .groupBy.windowsel.windowMenu add command -label "New..." -command {
+        set newwin [DoCreateWindow "Select window type"]
+        if {$newwin != ""} {
+            set windowsel $newwin
+            .groupBy.windowsel.windowMenu add command -label $windowsel \
+                    -command "set windowsel {$windowsel}"
+        }
+    }
+
+    set bylist { Y Color}
+    set onlist { X Y Z}
+    set category { Max Min Avg Count Sum }
+
+    label .groupBy.byLabel -text "Group By" 
+    menubutton .groupBy.xsel -relief raised \
+            -textvariable byAttr -menu .groupBy.xsel.xselMenu -width 20
+    menu .groupBy.xsel.xselMenu -tearoff 0
+
+    set t ""
+    set result [DEVise checkGstat $curView]
+    if { $result == "0" } {set t "t."}
+
+    set xDate "0"
+    set xDate [DEVise isXDateType $curView]
+    if { $xDate == "1" } {
+	.groupBy.xsel.xselMenu add radiobutton -label DATE -variable byAttr
+	set byAttr "DATE"
+    } else {
+	.groupBy.xsel.xselMenu add radiobutton -label X -variable byAttr
+	set Xattr "X"
+	set byAttr $t$Xattr
+    }
+    foreach att $bylist {
+        .groupBy.xsel.xselMenu add radiobutton -label $t$att -variable byAttr
+    }
+    pack .groupBy.byLabel .groupBy.xsel \
+		-in .groupBy.top.right  -side left -padx 1m
+
+#    checkbutton .groupBy.byx -text X -width 10 -anchor w \
+#		-variable byx
+#    checkbutton .groupBy.byy -text Y -width 10 -anchor w \
+#		-variable byy
+#    checkbutton .groupBy.bycolor -text Color -width 10 -anchor w \
+#		-variable bycolor
+#    pack .groupBy.byLabel .groupBy.byx .groupBy.byy .groupBy.bycolor \
+#		-in .groupBy.top -side left -expand 1 -fill both
+
+    label .groupBy.mid.onLabel -text "Aggregate On"
+    pack .groupBy.mid.onLabel -side left -fill y
+#    menubutton .groupBy.onAttr -relief raised \
+#            -textvariable onAttr -menu .groupBy.onMenu -width 20
+#    menu .groupBy.onMenu -tearoff 0
+#    foreach att $onlist {
+#        add radiobutton -label $att -variable onAttr
+#    }
+
+    frame .groupBy.mid.fx -relief groove -bd 1
+    frame .groupBy.mid.fy -relief groove -bd 1
+    frame .groupBy.mid.fz -relief groove -bd 1
+    pack .groupBy.mid.fx .groupBy.mid.fy .groupBy.mid.fz \
+		-side left -expand 1 -fill both
+    set aggregate "Y"
+    radiobutton .groupBy.mid.fx.onx -text X -width 10 -anchor w \
+		-variable aggregate -value "X"
+    radiobutton .groupBy.mid.fy.ony -text Y -width 10 -anchor w \
+		-variable aggregate -value "Y"
+#    radiobutton .groupBy.mid.fz.onz -text Z -width 10 -anchor w \
+#		-variable aggregate -value "Z"
+#    pack .groupBy.mid.fx.onx .groupBy.mid.fy.ony .groupBy.mid.fz.onz \
+#		-side top -padx 2m -pady 1m
+    pack .groupBy.mid.fx.onx .groupBy.mid.fy.ony \
+		-side top -padx 2m -pady 1m
+
+    label .groupBy.catLabel -text "Aggregate Category"
+    pack .groupBy.catLabel -in .groupBy.bot -side top -fill x -expand 1
+
+    foreach categ $category {
+	set checked($categ) 0
+	checkbutton .groupBy.cat$categ -text $categ -variable checked($categ) \
+		-width 10 -indicatoron 0 -selectcolor #e6ceb1
+        pack .groupBy.cat$categ -in .groupBy.bot -side left -fill x -expand 1
+    }
+
+    set cancel 0
+    button .groupBy.ok -text OK -width 25 -command {
+	set attr [string trimleft $byAttr "t."]
+	if {$aggregate == $attr} {
+	    dialog .winError "Attribute Selection Error" \
+		"Group By and Aggregate on attributes must be different. Please select again." \
+		"" 0 OK
+	    return
+	}
+	if {$aggregate != "Y" && $attr == "Color"} {
+	    dialog .winError "Attribute Selection Error" \
+		"Group by Color only supports aggregate on Y at this time. Please select again." \
+		"" 0 OK
+	    return
+	}
+        if {![DEVise exists $windowsel]} {
+            dialog .winError "No Window Specified" \
+                    "Please select a window for visualization." \
+            "" 0 OK
+           return
+        }
+	set ylist ""
+        foreach yname [array names checked] {
+            if {$checked($yname) > 0} {
+	        lappend ylist $yname
+            }
+        }
+        foreach yname [array names checked] {
+            if {$checked($yname) > 0} {
+                set cancel 0
+                return
+            }
+        }
+        dialog .autoError "Note" \
+                "Please select one or more\n\
+                Y attributes for automatic\n\
+                mapping." "" 0 OK
+        return
+    }
+	
+    button .groupBy.cancel -text Cancel -width 25 -command {set cancel 1}
+    pack .groupBy.ok .groupBy.cancel -in .groupBy.close_ok -side left -expand 1
+
+    tkwait variable cancel
+    destroy .groupBy
+
+    if {$cancel} {
+        return
+    }
+
+    set tdata ""
+    set pos [string first "Color" $byAttr]
+    if {$pos > 0 || $byAttr == "Color"} {
+	set tdata "{Stat: $curView}"
+	set byAttr [string range $byAttr $pos end]
+    } else {
+	if {$aggregate == "Y"} {
+    		set tdata "{GstatX: $curView}"
+		set sourceName "GstatX: $curView"
+	} elseif {$aggregate == "X" } {
+    		set tdata "{GstatY: $curView}"
+		set sourceName "GstatY: $curView"
+	}
+    }
+    set viewsel 2  
+    # Bar Chart
+    set linksel 1 
+    # Linkk X
+    set bgcolor "AntiqueWhite"
+    set titlesel 1
+    set xaxissel 1
+    set yaxissel 1
+    set newgdata 1
+    set sname $tdata
+
+    scanDerivedSources
+    updateDerivedSources
+
+    if { $xDate == "1" && $byAttr == "Date"} {
+    	set sourceName [string trimleft $sname "{"]
+    	set sourceName [string trimright $sourceName "}"]
+	set schematype GDATASTAT_DATE
+	set schemafile $schemadir/physical/GDATASTAT_DATE
+	set derivedSourceList($sourceName) [lreplace $derivedSourceList($sourceName) 2 3 $schematype $schemafile]
+    }
+
+    set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
+    if {$name_schema_pair == ""} { return }
+    if {$byAttr == "Y" || [string trimleft $byAttr "t."] == "Y"} { 
+	set byAttr "X" 
+	set linksel 0 }
+    #Y attr will be mapped to X in the new mapping
+    MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
+            $titlesel $xaxissel $yaxissel $byAttr $ylist $newgdata 
+
+}
+
+############################################################
+proc DoHistStat {} {
+    global curView derivedSourceList
+    global tdata viewsel linksel windowsel bgcolor
+    global titlesel xaxissel yaxissel byAttr ylist newgdata
+
+    if {[WindowVisible .histStat]} {
+	return 
+    }
+
+    toplevel 	.histStat
+    wm title	.histStat "Histogram Stat"
+    wm geometry .histStat +150+150
+
+    frame .histStat.top
+    frame .histStat.upper
+    frame .histStat.bottom
+    pack .histStat.top -side top -pady 1m -expand 1 -fill both
+    pack .histStat.upper -side top -pady 1m -expand 1 -fill both
+    pack .histStat.bottom -side top -pady 1m -expand 1 -fill both
+
+    label .histStat.windowLabel -text "Window: "
+    menubutton .histStat.windowsel -relief raised \
+		-textvariable windowsel -menu .histStat.windowsel.windowMenu \
+		-width 20
+    pack .histStat.windowLabel .histStat.windowsel -in .histStat.top \
+		-side left -pady 1m
+
+    set windowsel ""
+    if {$curView != ""} {
+        set windowsel [DEVise getViewWin $curView]
+    }
+    if {$windowsel == ""} {
+        set windowsel "None selected yet"
+    }
+   
+    menu .histStat.windowsel.windowMenu -tearoff 0
+    foreach w [WinSet] {
+        .histStat.windowsel.windowMenu add command -label $w \
+                -command "set windowsel {$w}"
+    }
+
+    .histStat.windowsel.windowMenu add separator
+    .histStat.windowsel.windowMenu add command -label "New..." -command {
+        set newwin [DoCreateWindow "Select window type"]
+        if {$newwin != ""} {
+            set windowsel $newwin
+            .histStat.windowsel.windowMenu add command -label $windowsel \
+                    -command "set windowsel {$windowsel}"
+        }
+    }
+
+    label .histStat.histLabel -text "Number of buckets"
+    entry .histStat.buckEntry -text "" -relief  sunken -width 15 \
+		-fg black -bg LightGray -font 8x13
+    .histStat.buckEntry insert 0 50
+
+    pack .histStat.histLabel .histStat.buckEntry -in .histStat.upper \
+		-side left -pady 1m 
+
+    button .histStat.ok -text OK -width 15 -command {
+	set numBucks [.histStat.buckEntry get]
+	DEVise setBuckRefresh $curView $numBucks 
+	set tdata ""
+	set tdata "{Hist: $curView}"
+	set tdata_1 "Hist: $curView"
+	set exist [DEVise exists $tdata_1]
+	if {![DEVise exists $tdata_1]} { 
+	 	set viewsel 2  
+		# Bar Chart
+		set linksel 0
+        	# Linkk X
+    		set bgcolor "AntiqueWhite"
+   		set titlesel 1
+	        set xaxissel 1
+       		set yaxissel 1
+       		set newgdata 1
+		set sname "{Hist: $curView}"
+       		set ylist Value
+        	set x Bucket
+
+		scanDerivedSources
+    		updateDerivedSources
+		set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
+		puts "name_schema_pair + $name_schema_pair"
+
+		MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
+            	   $titlesel $xaxissel $yaxissel $x $ylist $newgdata 
+		}
+		return
+    }
+    button .histStat.cancel -text Cancel -width 15 -command {
+		destroy .histStat }
+    pack .histStat.ok .histStat.cancel -in .histStat.bottom -side left -pady 1m 
 }
 
 ############################################################
