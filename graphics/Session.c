@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/02/26 20:40:53  taodb
+  Replaced ParseAPI calls with Command Container calls
+
   Revision 1.15  1998/02/20 06:16:46  beyer
   resurected histograms
 
@@ -388,7 +391,7 @@ Session::CreateTData(char *name)
     argvIn[2] = "";
     argvIn[3] = "0";
     argvIn[4] = "0";
-  	if (cmdContainerp->Run(5, argvIn)< 0) {
+  	if (cmdContainerp->Run(5, argvIn, &control)< 0) {
       status = StatusFailed;
     }
 
@@ -398,7 +401,7 @@ Session::CreateTData(char *name)
     argvIn[3] = name;
     argvIn[4] = schemaName;
     argvIn[5] = "";
-  	if (cmdContainerp->Run(6, argvIn)< 0) {
+  	if (cmdContainerp->Run(6, argvIn, &control)< 0) {
       status = StatusFailed;
     }
     return status;
@@ -496,7 +499,7 @@ Session::CreateTData(char *name)
     // changed when we re-implement exported templates with data.
     argvIn[3] = "0";
     argvIn[4] = "0";
-    if (cmdContainerp->Run(argcIn, argvIn) < 0) {
+    if (cmdContainerp->Run(argcIn, argvIn, &control) < 0) {
       status = StatusFailed;
     }
   }
@@ -518,7 +521,7 @@ Session::CreateTData(char *name)
       argvIn[4] = sourceType;
       argvIn[5] = param;
     }
-    if (cmdContainerp->Run(argcIn, argvIn) < 0) {
+    if (cmdContainerp->Run(argcIn, argvIn, &control) < 0) {
       status = StatusFailed;
     }
   }
@@ -560,7 +563,7 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
     Tcl_SetResult(interp, "", TCL_VOLATILE);
   } else {
     // don't pass DEVise command verb (argv[0])
-    if (cmdContainerp->Run(argc-1, &argv[1]) < 0) {
+    if (cmdContainerp->Run(argc-1, &argv[1],  (ControlPanel *) clientData) < 0) {
       status = TCL_ERROR;
       fprintf(stderr, "Error in command: ");
       PrintArgs(stderr, argc, argv);
@@ -1147,7 +1150,7 @@ Session::CallParseAPI(ControlPanelSimple *control, char *&result,
   argvIn[1] = arg1;
   argvIn[2] = arg2;
   argvIn[3] = arg3;
-  if (cmdContainerp->Run(argcIn, argvIn) <= 0) {
+  if (cmdContainerp->Run(argcIn, argvIn, control) <= 0) {
     reportErrNosys(control->_interp->result);
     status = StatusFailed;
   } else {
