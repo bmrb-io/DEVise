@@ -2475,6 +2475,17 @@ Num Date        Status  Description
 			dates (doesn't pay attention to the format string).
 			(rkw)
 
+626 12/21/00	OPEN	JavaScreen: JAVAC_ProtocolVersion command is initiated
+			by the jspop, not the client, which makes it basically
+			useless. (rkw)
+
+627 12/21/00	OPEN	JavaScreen: applet in a browser doesn't go away
+			when it sends the Exit command (you can see this
+			because it still generates heartbeats). (rkw)
+
+628 12/21/00	OPEN	JavaScreen: when running as an application under				Linux, redrawing text is incredibly slow when JS
+			window is hidden and then exposed. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
