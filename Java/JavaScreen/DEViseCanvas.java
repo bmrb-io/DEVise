@@ -27,6 +27,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.70  2001/03/25 20:38:22  xuk
+// Send JAVAC_Collab_3DView command for 3D view collaboraion.
+// 1. key 'R' or 'r' pressed;
+// 2. mouse pressed;
+// 3. mouse dragged;
+// 4. mouse released.
+//
 // Revision 1.69  2001/03/20 17:49:45  xuk
 // Added collaboration for 3D Views.
 //
@@ -269,6 +276,7 @@ import  java.awt.image.*;
 import  java.util.*;
 import  java.net.*;
 import  java.io.*;
+import  java.lang.*;
 
 public class DEViseCanvas extends Container
 {
@@ -1004,10 +1012,30 @@ public class DEViseCanvas extends Container
 
 		    // send command to collaborations if necessary
 		    if (jsc.specialID == -1) {
-			String cmd = DEViseCommands.COLLAB_3DVIEW + 
-			    " {1} " + activeView.getCurlyName();
+			String cmd = DEViseCommands.SET_3D_CONFIG 
+			    + activeView.getCurlyName();
+			
+			float[][] data = crystal.lcs.getData();
+			float[] origin = crystal.lcs.getOrigin();
+			Float f = null;
+			
+			for (int i=0; i<3; i++) 
+			    for (int j=0; j<3; j++) {
+				f = new Float(data[i][j]);
+				cmd = cmd + " {" + f.toString() + "}";
+			    }
+			
+			for (int i=0; i<3; i++) {
+			    f = new Float(origin[i]);
+			    cmd = cmd + " {" + f.toString() + "}";
+			    
+			}
+
+			cmd = cmd + " {" + crystal.shiftedX + "}" +
+			    " {" + crystal.shiftedY + "}";
+			
 			dispatcher.start(cmd);	
-		    }		
+		    }	
 		}
                 return;
             }
@@ -1164,15 +1192,6 @@ public class DEViseCanvas extends Container
                     jscreen.setCurrentView(activeView);
                 }
 
-		// send command to collaborations if necessary
-		
-		if (jsc.specialID == -1) {
-		    String cmd = DEViseCommands.COLLAB_3DVIEW + 
-			" {2} " + activeView.getCurlyName() + 
-			" {" + p.x + "}" + " {" + p.y + "}";
-		    dispatcher.start(cmd);	
-		}	
-			
                 return;
             }
 
@@ -1200,30 +1219,34 @@ public class DEViseCanvas extends Container
             if (view.viewDimension == 3) {
                 isMouseDragged = false;
                 repaint();
-
-		// send command to collaborations if necessary
-		Point p = new Point();
-		p.x = op.x;
-		p.y = op.y;
-
-		int action = 0;
-
-                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
-		    action = 1;
-                } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
-		    action = 2;
-                } else {
-		    action = 0;
-                }
 		
+		// send command to collaborations if necessary
 		if (jsc.specialID == -1) {
-		    String cmd = DEViseCommands.COLLAB_3DVIEW + 
-			" {3} " + activeView.getCurlyName() + 
-			" {" + p.x + "}" + " {" + p.y + "}" + 
-			" {" + action + "}";
-		    dispatcher.start(cmd);	
-		}	
+		    String cmd = DEViseCommands.SET_3D_CONFIG
+			+ activeView.getCurlyName();
+		    
+		    float[][] data = crystal.lcs.getData();
+		    float[] origin = crystal.lcs.getOrigin();
+		    Float f = null;
+		    
+		    for (int i=0; i<3; i++) 
+			for (int j=0; j<3; j++) {
+			    f = new Float(data[i][j]);
+			    cmd = cmd + " {" + f.toString() + "}";
+			}
 
+		    for (int i=0; i<3; i++) {
+			f = new Float(origin[i]);
+			cmd = cmd + " {" + f.toString() + "}";
+
+		    }
+
+		    cmd = cmd + " {" + crystal.shiftedX + "}" +
+			" {" + crystal.shiftedY + "}";
+
+		    dispatcher.start(cmd);	
+		}
+		
                 return;
             }
 
@@ -1427,19 +1450,6 @@ public class DEViseCanvas extends Container
                 jsc.jsValues.canvas.sourceCanvas = DEViseCanvas.this;
                 repaint();
 
-		// send command to collaborations if necessary
-		mouseDragCount++;
-
-		if ((mouseDragCount % 20) == 0) {
-		    mouseDragCount = 0;
-		    if (jsc.specialID == -1) {
-			String cmd = DEViseCommands.COLLAB_3DVIEW + 
-			    " {4} " + activeView.getCurlyName() + 
-			    " {" + p.x + "}" + " {" + p.y + "}" +
-			    " {" + action + "}";
-			dispatcher.start(cmd);	
-		    }	
-		}
                 return;
             }
 

@@ -25,6 +25,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2000/07/14 21:13:07  wenger
+// Speeded up 3D GData processing by a factor of 2-3: improved the parser
+// used for GData; eliminated Z sorting for bonds-only 3D views; eliminated
+// DEViseAtomTypes for atoms used only to define bond ends; reduced string-
+// based processing; eliminated various unused variables, etc.
+//
 // Revision 1.19  2000/06/21 18:37:29  wenger
 // Removed a bunch of unused code (previously just commented out).
 //
@@ -114,6 +120,7 @@ public class DEViseCrystal
     private boolean _hasAtoms = false;
     private boolean _hasBonds = false;
 
+    public float hasXRotated = 0, hasYRotated = 0;
     // --------------------------------------------------------------------
     // min and max are minimum and maximum bond length for automatically
     // calculating bonds (no longer used).
@@ -745,9 +752,11 @@ public class DEViseCrystal
             if (dx > 0) {
                 lcs.yrotate(-90);
                 totalYRotation -= 90;
+		hasYRotated -= 90;
             } else {
                 lcs.yrotate(90);
                 totalYRotation += 90;
+		hasYRotated += 90;
             }
         }
         while (dyy > viewArea.width) {
@@ -755,9 +764,11 @@ public class DEViseCrystal
             if (dy > 0) {
                 lcs.xrotate(90);
                 totalXRotation += 90;
+		hasXRotated += 90;
             } else {
                 lcs.xrotate(-90);
                 totalXRotation -= 90;
+		hasXRotated += 90;
             }
         }
 
@@ -774,6 +785,9 @@ public class DEViseCrystal
 
         totalXRotation += anglex;
         totalYRotation += angley;
+
+	hasXRotated += anglex;
+	hasYRotated += angley;
 
         isTransformed = true;
     }

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2001/03/20 20:11:38  wenger
+// Added more debug output to the JS client and jspop.
+//
 // Revision 1.34  2001/03/20 17:49:45  xuk
 // Added collaboration for 3D Views.
 //
@@ -540,11 +543,6 @@ public class DEViseClient
 			pop.pn("We get the collab passwd: " + collabPass);
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
-		    } else if (command.startsWith(DEViseCommands.COLLAB_3DVIEW)) {
-			String[] cmds = DEViseGlobals.parseString(command);
-			sendCmd(DEViseCommands.DONE);
-			cmdBuffer.removeAllElements();		
-			collab3DView(cmds);
 		    } else {
 			//
 			// Send an ACK immediately so that the client
@@ -741,39 +739,6 @@ public class DEViseClient
 	    return true;
 	else
 	    return false;
-    }
-
-    private void collab3DView(String[] args)
-    {
-	String cmd = DEViseCommands.COLLAB_3DVIEW;
-	for (int i=1; i<args.length; i++) 
-	    cmd = cmd + " {" + args[i] + "}";
-
-       	try {	
-	    for (int i = 0; i < collabSockets.size(); i++) {
-		DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(i);			
-		if (!sock.isEmpty()) {
-		    String clientCmd = sock.receiveCmd();
-		    
-		    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-			collabSockets.removeElement(sock);
-			sock.closeSocket();
-			sock = null;
-		    } else {
-			pop.pn("Sending command to collabration client " + i + ": " + cmd);
-			sock.sendCmd(cmd);
-			sock.sendCmd(DEViseCommands.DONE);
-		    } 
-		} else {
-		    pop.pn("Sending command to collabration client " + i + ": " + cmd);
-		    sock.sendCmd(cmd);
-		    sock.sendCmd(DEViseCommands.DONE);
-		}			    
-	    }
-	} catch (InterruptedIOException e) {
-	} catch (YException e) {
-	}
-	
     }
 
 }

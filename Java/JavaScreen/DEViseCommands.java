@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2001/03/20 17:49:45  xuk
+// Added collaboration for 3D Views.
+//
 // Revision 1.9  2001/03/03 20:13:11  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 // 1. Added JAVAC_SaveCurSession command.
@@ -164,7 +167,7 @@ public final class DEViseCommands
     public static final String REOPEN_SESSION = JS_PREFIX + "ReopenSession";
     public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
 
-    public static final String COLLAB_3DVIEW = JS_PREFIX + "Collab3DView";
+    public static final String SET_3D_CONFIG = JS_PREFIX + "Set3DConfig";
 
     // -------------------------------------------------------------------
     // JSS commands.

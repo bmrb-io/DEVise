@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2001/02/21 17:46:39  xuk
+// Deleted DISABLECOLLAB and ENABLECOLLAB.
+//
 // Revision 1.48  2001/02/12 02:49:02  xuk
 // Added DISABLECOLLAB and ENABLECOLLAB. Prevent JS from collaboration.
 //
@@ -187,7 +190,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("4.0");
-    public static final String PROTOCOL_VERSION = new String("5.1");
+    public static final String PROTOCOL_VERSION = new String("6.0");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

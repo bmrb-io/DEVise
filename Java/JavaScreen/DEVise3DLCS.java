@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/05/24 14:06:58  wenger
+// Cleaned up and commented 3D-related classes (DEViseCrystal, DEViseAtomType,
+// DEViseAtomInCrystal, DEVise3DLCS).
+//
 // Revision 1.5  2000/04/07 22:43:12  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -187,6 +191,17 @@ public class DEVise3DLCS
     public float[][] getData()
     {
         return data;
+    }
+
+    public void assign(float d[][], float o[])
+    {
+	int i, j;
+	for (i=0; i<3; i++)
+	    for (j=0; j<3; j++)
+		data[i][j] = d[i][j];
+	
+	for (i=0; i<3; i++)
+	    origin[i] = o[i];
     }
 
     private void assign(float d[])

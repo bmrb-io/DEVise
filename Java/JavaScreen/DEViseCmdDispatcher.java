@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.87  2001/03/20 20:11:38  wenger
+// Added more debug output to the JS client and jspop.
+//
 // Revision 1.86  2001/03/20 17:49:45  xuk
 // Added collaboration for 3D Views.
 //
@@ -1016,7 +1019,7 @@ public class DEViseCmdDispatcher implements Runnable
                jsc.jsValues.connection.helpBox = false ;
             }
 
-        } else if (args[0].equals(DEViseCommands.COLLAB_3DVIEW)) {
+        } else if (args[0].equals(DEViseCommands.SET_3D_CONFIG)) {
             // this command is for collaboration JS
             jsc.jscreen.collab3DView(args);
 

@@ -71,22 +71,13 @@ see comments in DEViseCommSocket.java.
              from collaboration mode
     Arguments: 0
 
-    2.7 JAVAC_Collab3DView
-    Purpose: 3D view collaboration
-    Arguments: 4 or 5
-	<action>: an int indicating the mouse or keyboard action:
-		  1. key 'r' or 'R' pressed;
-		  2. mouse pressed;
-		  3. mouse released;
-		  4. mouse dragged;
+    2.7 JAVAC_Set3DConfig
+    Purpose: Set 3D view configurations, support 3D view collaboration
+    Arguments: 15
 	<view name>: a string indicating the active view name
-	<x_pos>: current x position in the active view
-	<y_pos>: current y position in the active view
-	<key mode>: an int indicating the current key mode, used
-			only for mouse dragged action:
-		  0: normal mode, rotate
-		  1: Ctrl mode, scale
-		  2: Alt mode, translate
+	<data matrix>: 9 floats indicating current data[3][3] matrix
+	<origin>: 3 floats indicating current origin[3] matrix
+	<shifted>: 2 ints indicating current shifted X, Y position
 
 3. JSPoP to JavaScreen
 
@@ -120,22 +111,14 @@ see comments in DEViseCommSocket.java.
     Purpose: Close the collaboration JavaScreens, when the "leader" exits
     Arguments: 0
 
-    3.7 JAVAC_Collab3DView
-    Purpose: 3D view collaboration
-    Arguments: 4 or 5
-	<action>: an int indicating the mouse or keyboard action:
-		  1. key 'r' or 'R' pressed;
-		  2. mouse pressed;
-		  3. mouse released;
-		  4. mouse dragged;
+    3.7 JAVAC_Set3DConfig
+    Purpose: Set 3D view configurations, support 3D view collaboration
+    Arguments: 15
 	<view name>: a string indicating the active view name
-	<x_pos>: current x position in the active view
-	<y_pos>: current y position in the active view
-	<key mode>: an int indicating the current key mode, used
-			only for mouse dragged action:
-		  0: normal mode, rotate
-		  1: Ctrl mode, scale
-		  2: Alt mode, translate	
+	<data matrix>: 9 floats indicating current data[3][3] matrix
+	<origin>: 3 floats indicating current origin[3] matrix
+	<shifted>: 2 ints indicating current shifted X, Y position
+
 
 4. JavaScreen to devised (via JSPoP)
 
@@ -151,8 +134,7 @@ see comments in DEViseCommSocket.java.
     Arguments: 0
 
     4.3 JAVAC_CloseCurrentSession
-    Purpose: tells the devised to close the current session (without saving
-             it).
+    Purpose: tells the devised to close the current session (without saving it).
     Arguments: 0
 
     4.4 JAVAC_OpenSession
