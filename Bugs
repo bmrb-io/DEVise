@@ -6,6 +6,7 @@ Num Date        Status  Description
 001 05/14/96	OPEN	There are a number of memory leaks. (rkw)
 			(Most of these have been fixed -- at least the big
 			ones.  rkw 10/15/96)
+			Assigned: Guangshun
 
 002 05/14/96	FIXED	DEVise hogs an awful lot of CPU cycles even when
 			you are not doing anything. (rkw/kb) (jpm)
@@ -18,9 +19,11 @@ Num Date        Status  Description
 
 005 05/16/96	OPEN	Physical schema editor does not support multi-word
 			high-low values (e.g. 'Jan 1 1990 00:00:00'). (jpm)
+			Deferred
 
 006 05/16/96	OPEN	Date attribute type cannot handle dates before
 			Jan 1 1970 (Unix zero time value). (jpm)
+			Deferred
 
 007 05/16/96	FIXED	Kiviat graph cannot be destroyed once created.
 			Destroying it through the window manager causes
@@ -36,12 +39,14 @@ Num Date        Status  Description
 010 05/31/96	OPEN	In TDataMap.c, call to ConvertToGData with _tmpPtr
 			as argument may not be work correctly (alignment of
 			_tmpPtr). (rkw)
+			Deferred
 
 011 06/06/96	CD	DEVise doesn't deal well with bar charts where data
 			is all zeros -- sometimes crashes. (rkw)
 
 012 06/06/96	OPEN	All TData's ever used in a session get saved, even
 			if they're no longer used. (rkw)
+			Deferred
 
 013 07/10/96	FIXED	Schema editing code doesn't seem to recognize comment
 			lines in the schema files -- tries to interpret them
@@ -54,6 +59,7 @@ Num Date        Status  Description
 			session. (rkw)
 
 016 07/31/96	OPEN	Catalog system is type unsafe. (kb/rkw)
+			Deferred
 
 017 08/05/96	FIXED	Numeric keypad keys now work only if num lock is
 			off. (rkw)
@@ -77,14 +83,18 @@ Num Date        Status  Description
 			See XWindowRep::FillRectArray for one possible
 			solution which works for rectangles, but it won't
 			quite right work for other types (eg lines).
+			Deferred
 
 024 08/06/96	OPEN	Zooming as far as you can in or out can cause 
 			DEVise to fail an assertion. (kb)
+			Deferred
 
 025 08/07/96	OPEN	Keypad '5' doesn't work when num lock is off. (rkw)
+			Deferred
 
 026 08/07/96	OPEN	On HP and SPARC/SunOS, keypad keys only work when
 			num lock is on. (rkw)
+			Deferred
 
 027 08/09/96	FIXED	Load demo/colors.tk, scroll; load demo/3d_test.tk,
 			scroll -> core dump (only on SPARC/Solaris?). (rkw)
@@ -97,6 +107,7 @@ Num Date        Status  Description
 			iconified. (rkw)
 
 031 08/15/96	OPEN	Rotation of stacked views doesn't seem to work. (rkw)
+			Assigned: Jussi
 
 032 08/15/96	FIXED	After removing a view from a window, the remaining
 			views aren't redrawn until you click in that window.
@@ -112,6 +123,7 @@ Num Date        Status  Description
 			cleaned up. (ssl/rkw)
 			(Actually, the temp directory gets cleaned up if
 			Devise exits normally.) (rkw 8/30/96)
+			Deferred
 
 036 08/30/96	FIXED	Run LandsEnd/a2.tk session with client/server
 			Devise -> crashes (assertion fails in View.c). (rkw)
@@ -125,11 +137,13 @@ Num Date        Status  Description
 
 040 09/13/96	OPEN	+/- keys seem to only work on one view of piled/
 			stacked views (see LandsEnd/a2.tk). (rkw)
+			Deferred
 
 041 09/16/96	OPEN	If you change the X mapping between a date attribute
 			and an attribute of another type, the axis labels
 			aren't correctly updated until the session is saved
 			and re-opened. (rkw)
+			Deferred
 
 042 09/19/96	FIXED	Devise doesn't complain if you give an illegal
 			command line option. (rkw)
@@ -159,6 +173,7 @@ Num Date        Status  Description
 			(Running with '-convert 0' flag prevents this.) (rkw)
 			(Also, DEVise eventually crashes if the partition
 			gets filled up.)
+			Deferred
 
 050 10/14/96	FIXED	Setting a GData attribute to recid does not work
 			correctly (if it's already set it's okay, but
@@ -174,6 +189,7 @@ Num Date        Status  Description
 			have too many GDatas. (rkw)
 			(Workaround: doesn't open GData files if '-convert 0'
 			is specified on the command line.)
+			Deferred
 
 054 10/22/96    FIXED   Tcl error when defining visualization on a data
                         file that has one record. Reason: incr does not
@@ -184,6 +200,7 @@ Num Date        Status  Description
 
 056 10/24/96	OPEN	Too hard to hit the middle of boxes to display
 			record data. (rkw)
+			Deferred
 
 057 10/24/96	CD	When you switch the layout of a window (e.g., vertical
 			to horizontal) the window often is not redrawn. (rkw)
@@ -193,10 +210,12 @@ Num Date        Status  Description
 
 059 11/05/96	OPEN	Keyboard callback function for SGI version of client/
 			server library doesn't work. (rkw/na)
+			Deferred
 
 060 11/05/96	OPEN	WinServer's HandleButton(..) callback routine
 			in client/server library can't handle continuous
 			calls (holding down mouse button). (rkw/na)
+			Deferred
 
 061 11/11/96    FIXED   GData is never cached in memory! Found bug in
                         TData.h: int RecSize() somehow no longer virtual
@@ -234,6 +253,7 @@ Num Date        Status  Description
 			if there is more than one data source (export
 			appears to work, but subsequent open fails).  (See
 			session test/miron_new_wdata.tk.) (rkw)
+			Assigned: Kent
 
 069 11/14/96	CD	Load session test/dbc2.tk; most views are initially
 			drawn with incorrect colors.  This somehow fixes
@@ -267,6 +287,7 @@ Num Date        Status  Description
 076 11/20/96	OPEN	'Child windows should have been destroyed first' error
 			message (don't know exactly how to reproduce this).
 			(rr/rkw)
+			Deferred
 
 077 11/21/96	OPEN	Importing data into a window with piled views
 			doesn't work correctly -- new view gets put into
@@ -277,16 +298,20 @@ Num Date        Status  Description
 			a data stream -> some of the (internal) objects for
 			the session are not destroyed (opening the same
 			session again causes duplicate name error). (rkw)
+			Assigned: Kent
 
 079 11/21/96	OPEN	Data shouldn't be erased when switching from display
 			to layout mode. (ml/rkw)
+			Deferred
 
 080 11/21/96	OPEN	'Working' should be shown while drilling down as
 			the result of a middle button click. (ml/rkw)
+			Deferred
 
 081 11/22/96	OPEN	Derived data histograms not always working (see
 			the session test/sales1.tk, must be on tiger to
 			use this). (ml/rkw)
+			Assigned: Guangshun
 
 082 11/25/96	FIXED	Load session test/a2.tk -> core dump. (rkw/jpm)
 
@@ -342,6 +367,7 @@ Num Date        Status  Description
 097 12/16/96	OPEN	'Duplicate window' should make an entirely separate
 			copy of the window -- changing mappings, etc., in
 			one window should not affect the other one. (ml/rkw)
+			Deferred
 
 098 12/16/96	FIXED	Load session test/molbio_demo.tk -> clip mask doesn't
 			work on two of three piled views. (rkw/jpm)
@@ -359,6 +385,7 @@ Num Date        Status  Description
 			that there should be an X link, _all_ views are
 			linked to a single link; it would probably be better
 			to have each window have its own X link. (ml/rkw)
+			Deferred
 
 101 12/16/96	OPEN	'5' key sometimes doesn't work correctly (for example,
 			load the session test/bad5key.tk). (ml/rkw)
@@ -366,13 +393,16 @@ Num Date        Status  Description
                         Technical cause: recIds don't have AttrInfo in
                         the TData, (ie, map->MapGAttr2TAttr(MappingCmd_X)
                         returns NULL when X is mapped to recId).
+			Deferred
 
 102 12/17/96	OPEN	Control-c doesn't seem to be able to terminate
 			Devise if you have an input-grabbing Tk dialog
 			open. (rkw)
+			Deferred
 
 103 12/20/96	OPEN	Bold, italic, and New Century Schoolbook fonts
 			don't work in PostScript. (rkw)
+			Assigned: Kent
 
 104 12/23/96	FIXED	AttrProj::LastRecId should report an error when
 			called on TData that doesn't have an index.  (rkw)
@@ -392,6 +422,7 @@ Num Date        Status  Description
 107 01/06/97	OPEN	If you have more than 19 views, those views are
 			named 'View 110', 'View 111', etc., instead of
 			'View 20', etc. (rkw)
+			Deferred
 
 108 01/09/97	FIXED	Load the session /p/devise/session/test/jussitape.tk,
 			print to PostScript -> some of the text comes out at
@@ -413,6 +444,7 @@ Num Date        Status  Description
 			architecture: An internal error has occurred. The
 			reason is: Inconsistent state
 			(../../graphics.new/TDataAscii.c:824). (rkw)
+			Assigned: Jussi
 
 112 01/10/97	FIXED	If a fatal error occurs while running with shared
 			memory, you need to manually kill off processes
@@ -420,6 +452,7 @@ Num Date        Status  Description
 
 113 01/10/97	OPEN	Devise does not clean up shared memory resources
 			if it crashes. (rkw)
+			Deferred
 
 114 01/10/97	FIXED	Load session /p/devise/session/test/baa1.tk, select
 			view 'Location 1 Visits', print -> the data in the
@@ -434,6 +467,7 @@ Num Date        Status  Description
                         bug, the system needs to understand its links
                         better.  I think Shilpa's work should address this.
                         (kb)
+			Deferred
 
 116 01/13/97	FIXED	Load session /p/devise/session/test/birch.tk ->
 			assertion fails indicating that points array
@@ -444,17 +478,21 @@ Num Date        Status  Description
 			1024.  It looks like these must all be the same
 			size and therefore should be defined in a single
 			place. (rkw)
+			Deferred
 
 118 01/14/97	OPEN    Makefile couldn't find my.yacc.tab.h when making
 			DEVise in dir like /p/devise/guangshu/test/solsparc
 			(gc)
+			Deferred
 
 119 01/15/97	OPEN	If you have too many attributes, the 'Select X'
 			menu in the 'Define Visualization' dialog goes
 			off the bottom of the screen (ma/rkw)
+			Deferred
 
 120 01/15/97	OPEN	DTE/Makefile.base duplicates much of
 			devread/Makefile.base. (rkw)
+			Deferred
 
 121 01/16/97	FIXED	Assertion 'color < Instance()->_numColors' in
 			ColorMgr::GetColorRgb() failed when printing
@@ -476,12 +514,15 @@ Num Date        Status  Description
 
 124 01/17/97	OPEN	Drawing of the selection box gets goofed up if the
 			actual data overdraws it. (rkw)
+			Deferred
 
 125 01/22/97	OPEN	When the help window is shown, the topics do not show
 			up. (rkw)
+			Assigned: Kent
 
 126 01/22/97	OPEN	When views are unstacked, they're not always redrawn
 			correctly. (rkw)
+			Assigned: Jussi
 
 127 01/22/97	WORK	'Attributes' and 'Colors' buttons in Query Tool do
 			nothing. (rkw)
@@ -490,16 +531,19 @@ Num Date        Status  Description
 128 01/22/97	OPEN	If you change both the X and Y values in the Query
 			Tool on a view with X and Y links, only the X change
 			takes effect. (rkw)
+			Deferred
 
 129 01/22/97	OPEN	Date attribute value displayed as a floating
 			point number in Query dialog when filter changed
 			with keypad zoom/pan keys. (jpm)
+			Deferred
 
 130 01/22/97	OPEN	Load the session test/ibmcache2.tk (with or without
 			shared memory) you get the following error:
 			An internal error has occurred. The reason is:
   			Inconsistent state (../../graphics.new/RangeList.c:232)
 			(rkw)
+			Assigned: Jussi
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
