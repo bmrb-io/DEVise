@@ -56,19 +56,22 @@ ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ams.o: ../graphics/ViewCallback.h ../graphics/AttrList.h ../graphics/Config.h
 ams.o: ../graphics/Cursor.h ../graphics/AxisLabelClassInfo.h
-ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/CompositeParser.h
-ams.o: ../graphics.new/RecInterp.h ../graphics.new/QueryProc.h
-ams.o: ../graphics.new/RecId.h ../tape/QueryProcTape.h
-ams.o: ../graphics.new/QPRange.h ../tape/SortedTable.h
-ams.o: ../graphics.new/GData.h ../graphics.new/TData.h
+ams.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
+ams.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ams.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+ams.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
+ams.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+ams.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+ams.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+ams.o: ../tape/SortedTable.h ../graphics.new/GData.h ../graphics.new/TData.h
 ams.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 ams.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
-ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-ams.o: ../graphics.new/ViewStats.h ../graphics.new/Action.h
-ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
+ams.o: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
+ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

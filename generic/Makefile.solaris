@@ -21,15 +21,18 @@ generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 generic.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-generic.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-generic.o: ../tape/SortedTable.h ../graphics.new/GData.h
-generic.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-generic.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-generic.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
-generic.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-generic.o: ../graphics.new/Action.h ../graphics.new/TDataMap.h
-generic.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
+generic.o: ../graphics.new/ViewStats.h ../graphics.new/Action.h
+generic.o: ../graphics.new/RecId.h ../graphics.new/TDataViewX.h
+generic.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
+generic.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+generic.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/ViewScatter.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../tape/QueryProcTape.h
+generic.o: ../graphics.new/QPRange.h ../tape/SortedTable.h
+generic.o: ../graphics.new/GData.h ../graphics.new/TData.h
+generic.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+generic.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+generic.o: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
 generic.o: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
 generic.o: ../graphics.new/ParseCat.h
