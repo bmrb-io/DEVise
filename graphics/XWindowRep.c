@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/04/20 19:52:29  kmurli
+  Changed Viex.c to use a pipe mechanism to call itself if it needs to be
+  done again. The view now is not called contiously by the Dispatcher,instead
+  only of there is some data in the pipe.
+  The pipe mechanism is implemented transparently through static functions
+  in the Dispatcher.c (InsertMarker,CreateMarker,CloseMarker,FlushMarker)
+
   Revision 1.32  1996/04/18 18:17:01  jussi
   Added support for drawing into pixmaps instead of windows.
 
@@ -356,45 +363,14 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
   DOASSERT(_win, "Exporting a pixmap not supported yet");
 
   char cmd[256];
-
-#if defined(SUN) || defined(HPUX) || defined(LINUX)
   if (format == POSTSCRIPT || format == EPS) {
-    sprintf(cmd, "xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
+    sprintf(cmd,
+	"xwd -frame -id %ld | xpr -device ps -portrait -compact -scale 4 > %s",
 	    _win, filename);
   } else {
     printf("Requested export format not supported yet on this platform.\n");
     return;
   }
-#endif
-
-#if defined(PENTIUM)
-  if (format == POSTSCRIPT || format == EPS) {
-    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtops -rle > %s",
-	    _win, filename);
-  } else {
-    printf("Requested export format not supported yet on this platform.\n");
-    return;
-  }
-#endif
-
-#if defined(SGI)
-  if (format == POSTSCRIPT) {
-    sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
-fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
-tops /tmp/devise.rgb > %s; \
-rm /tmp/devise.xwd /tmp/devise.rgb",
-	    _win, filename);
-  } else if (format == EPS) {
-    sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
-fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
-tops /tmp/devise.rgb -eps > %s; \
-rm /tmp/devise.xwd /tmp/devise.rgb",
-	    _win, filename);
-  } else {
-    printf("Requested export format not supported yet on this platform.\n");
-    return;
-  }
-#endif
 
 #ifdef DEBUG
   printf("ExportImage: for window id 0x%lx:\n", _win);
