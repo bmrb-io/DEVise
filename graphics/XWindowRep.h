@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/06/15 07:01:13  yuc
+  Add _AimAxisPt and _AimAxis for drawing the Aim axis.
+
   Revision 1.16  1996/05/22 21:02:49  jussi
   Added ImportImage() method.
 
@@ -145,9 +148,9 @@ public:
 	virtual void ScrollAbsolute(int x, int y, unsigned width,
 				    unsigned height, int dstX, int dstY);
 
-
 	virtual void SetFgColor(Color fg);
 	virtual void SetBgColor(Color bg);
+	virtual void SetWindowBgColor(Color bg);
 
 	virtual void SetPattern(Pattern p);
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/06/15 06:59:43  yuc
+  Add "clipping" to MapAllXpoints, move the code related to perspective
+  view to CompProjectionOnViewingPlane, add aim axis (or focus axis) to
+  DrawRefAxis.
+
   Revision 1.38  1996/05/31 20:54:24  jussi
   Fixed computation in Arc().
 
@@ -605,6 +610,14 @@ void XWindowRep::SetBgColor(Color bg)
 #ifdef GRAPHICS
   if (_dispGraphics)
     XSetBackground(_display, _gc, WindowRep::GetLocalColor(bg));
+#endif
+}
+
+void XWindowRep::SetWindowBgColor(Color bg)
+{
+#ifdef GRAPHICS
+  if (_dispGraphics)
+    XSetWindowBackground(_display, _win, WindowRep::GetLocalColor(bg));
 #endif
 }
 
@@ -2555,7 +2568,7 @@ void XWindowRep::DrawRefAxis(Camera camera)
           xtmp[j].x = (short)pt.x;
           xtmp[j].y = (short)pt.y;
      }
-
+	
 	strcpy(string[0], "x");
 	strcpy(string[1], "y");
 	strcpy(string[2], "z");
@@ -2579,5 +2592,3 @@ void XWindowRep::DrawRefAxis(Camera camera)
 #endif
 
 } // end of DrawRefAxis
-
-

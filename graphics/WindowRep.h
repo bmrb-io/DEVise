@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/05/31 15:32:10  jussi
+  Added 'state' variable to HandleButton(). This tells the callee
+  whether the shift/control keys were pressed in conjunction with
+  the mouse button.
+
   Revision 1.16  1996/05/22 21:02:45  jussi
   Added ImportImage() method.
 
@@ -221,17 +226,21 @@ public:
   virtual void Scroll(Coord x, Coord y, Coord width, Coord height,
 		      Coord dstX, Coord dstY) = 0;
 	
-  /* Scroll absoluate */
+  /* Scroll absolute */
   virtual void ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 			      int dstX, int dstY) = 0;
 
-  virtual void SetFgColor(Color fg){ _fgndColor = fg;}
-  virtual void SetBgColor(Color bg){ _bgndColor = bg; }
+  virtual void SetFgColor(Color fg) { _fgndColor = fg; }
+  virtual void SetBgColor(Color bg) { _bgndColor = bg; }
   Color GetFgColor() { return _fgndColor; }
   Color GetBgColor() { return _bgndColor; }
-  virtual void SetPattern(Pattern p){_pattern = p; }
-  Pattern GetPattern(){ return _pattern;}
-  virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height) = 0;
+  virtual void SetWindowBgColor(Color bg) = 0;
+
+  virtual void SetPattern(Pattern p) { _pattern = p; }
+  Pattern GetPattern(){ return _pattern; }
+
+  virtual void FillRect(Coord xlow, Coord ylow,
+			Coord width, Coord height) = 0;
 
   /* Fill rectangles, variable width/height */
   virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
