@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/19 17:21:21  wenger
+  Put the GenClassInfo code back in -- this is needed for tape data;
+  started adding the tape-related code back in (it was previously
+  deleted for some reason; I'm not yet done adding it back); added
+  the 'DEVise parseSchema' command and the first parts of the code
+  related to it.
+
   Revision 1.11  1996/04/16 20:38:51  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -284,6 +291,10 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
   if (numArgs < _numAttrs || 
       (_commentString != NULL &&
        strncmp(args[0], _commentString, _commentStringLength) == 0)) {
+#ifdef DEBUG
+    printf("Too few arguments (%d < %d) or commented line\n",
+	   numArgs, _numAttrs);
+#endif
     return false;
   }
 	
@@ -291,12 +302,20 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, char *line)
   for(i = 0; i < _numAttrs; i++) {
     AttrInfo *info = _attrList->Get(i);
     if (info->type == IntAttr || info->type == DateAttr) {
-      if (!isdigit(args[i][0]))
+      if (!isdigit(args[i][0]) && args[i][0] != '-' && args[i][0] != '+') {
+#ifdef DEBUG
+	printf("Invalid integer/date value: %s\n", args[i]);
+#endif
 	return false;
+      }
     } else if (info->type == FloatAttr || info->type == DoubleAttr) {
       if (!isdigit(args[i][0]) && args[i][0] != '.'
-	  && args[i][0] != '-' && args[i][0] != '+')
+	  && args[i][0] != '-' && args[i][0] != '+') {
+#ifdef DEBUG
+	printf("Invalid float/double value: %s\n", args[i]);
+#endif
 	return false;
+      }
     }
   }
 
