@@ -5,6 +5,23 @@ mapping HostMapping HostRec {
     attrs[0] = 1; attrs[1] = 0.5;
     TDataMap::SetDefaultShape(HostMapping_RectShapeID,2,attrs);
     TDataMap::SetDefaultColor(ColorMgr::AllocColor("red"));
+
+    /*
+       offsets of GData attributes must correspond to the dynamic
+       GData attributes listed in the next section
+    */
+    GDataAttrOffset *_offsets = new GDataAttrOffset;
+    _offsets->xOffset = 0;
+    _offsets->yOffset = sizeof(double);
+    _offsets->zOffset = -1;
+    _offsets->colorOffset = 2 * sizeof(double);
+    _offsets->sizeOffset = _offsets->shapeOffset = -1;
+    _offsets->patternOffset = _offsets->orientationOffset = -1;
+    _offsets->shapeAttrOffset[0] = 2 * sizeof(double) + sizeof(unsigned long);
+    _offsets->shapeAttrOffset[1] = 3 * sizeof(double) + sizeof(unsigned long);
+    for(int i = 2; i < MAX_GDATA_ATTRS; i++)
+      _offsets->shapeAttrOffset[i] = -1;
+    TDataMap::SetGDataOffset(_offsets);
   }
   dynamic x,y,color, shapeAttr[1], shapeAttr[0] {
     static int last_time = 10000;
