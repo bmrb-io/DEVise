@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/24 21:32:04  jussi
+  Added copyright notice and cleaned up the code. Made GetDataArea
+  a protected method so that TDataViewX and ViewScatter can access
+  the size of the data area.
+
   Revision 1.4  1995/09/14 20:49:06  jussi
   Added missing semicolon.
 
@@ -109,6 +114,10 @@ public:
 
 	/* Highlight a view of depending on flag.*/
 	void Highlight(Boolean flag);
+
+	/* Toggle the value of DisplayStats */
+	void ToggleDisplayStats();
+	Boolean GetDisplayStats() {return _DisplayStats; }
 
 	int GetId() { return _id; }
 
@@ -312,6 +321,8 @@ AxisInfo xAxis, yAxis;   /* X and y axis info */
 Boolean _axisDisplay;   /* TRUE if axes should be displayed */
 
 Action *_action;
+/* TRUE if Statistics need to be displayed along with data */
+Boolean _DisplayStats;
 
 AxisLabel *_xAxisLabel;
 AxisLabel *_yAxisLabel;

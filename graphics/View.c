@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/25 19:55:37  jussi
+  Added debugging statement.
+
   Revision 1.5  1995/11/24 21:30:39  jussi
   Added copyright notice and cleaned up code. Added debugging
   statements.
@@ -83,6 +86,7 @@ View::View(char *name, Action *action,
 
   _pixmapIO = new PixmapIO();
   _compress = new SimpleCompress();
+  _DisplayStats = false;
 }
 
 /* Init */
@@ -1200,6 +1204,18 @@ void View::YAxisDisplayOnOff(Boolean stat)
     _refresh = true;
   }
 }
+
+/* Toggle DisplayStats */
+void View::ToggleDisplayStats() 
+{
+  if (_DisplayStats == true)
+    _DisplayStats = false;
+  else
+    _DisplayStats = true;
+  _updateTransform = true;
+  _refresh = true;
+}
+
 
 /* Find real window coords */
 
