@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/24 19:36:43  jussi
+  Removed unnecessary code that stored a pointer to the
+  dispatcher in a member variable.
+
   Revision 1.9  1996/05/20 18:44:59  jussi
   Merged with ClientServer library code.
 
@@ -57,11 +61,11 @@
 #endif
 #include "DList.h"
 #include "ColorMgr.h"
+#include "WindowRep.h"
 
 const int InitColorMapSize = 512;
 const int AdditionalColorMapSize = 512;
 
-class WindowRep;
 class DeviseDisplay;
 
 DefinePtrDList(DeviseDisplayList, DeviseDisplay *);
@@ -106,7 +110,10 @@ public:
   /* Flush buffered window operations to screen */
   virtual void Flush() = 0;
 
-  /* iterator to go through all displays */
+  /* Export display image to other graphics formats */
+  virtual void ExportImage(DisplayExportFormat format, char *filename) = 0;
+
+  /* Iterator to go through all displays */
   static int InitIterator() { return _displays.InitIterator(); }
   static Boolean More(int index){ return _displays.More(index); }
   static DeviseDisplay *Next(int index) { return _displays.Next(index); }
