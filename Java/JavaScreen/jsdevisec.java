@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2001/01/08 20:31:58  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.70.4.9  2001/01/05 19:15:46  wenger
 // Updated copyright dates.
 //
@@ -180,6 +184,7 @@ public class jsdevisec extends Panel
     private Button filterButton = new Button("Filter");
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
+    private Button modeButton = new Button("Mode");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -193,6 +198,7 @@ public class jsdevisec extends Panel
     private RecordDlg recorddlg = null;
     private ServerStateDlg statedlg = null;
     private SettingDlg settingdlg = null;
+    private SetCgiUrlDlg setcgiurldlg = null;
 
     public boolean isSessionOpened = false;
 
@@ -301,15 +307,16 @@ public class jsdevisec extends Panel
             button[1] = stopButton;
             button[2] = helpButton;
         } else {
-            button = new Component[8];
+            button = new Component[9];
             button[0] = openButton;
             button[1] = closeButton;
             button[2] = stopButton;
             button[3] = restartButton;
             button[4] = setButton;
             button[5] = filterButton;
-            button[6] = helpButton;
-            button[7] = exitButton;
+            button[6] = modeButton;
+            button[7] = helpButton;
+            button[8] = exitButton;
         }
 
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
@@ -459,6 +466,23 @@ public class jsdevisec extends Panel
                     public void actionPerformed(ActionEvent event)
                     {
                         checkQuit();
+                    }
+                });
+
+        modeButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        if (jsValues.connection.cgi == true) {
+			    // change to socket mode
+			    jsValues.connection.cgi = false;
+			    socketMode();
+			} else {
+			    // change to cgi mode
+			    jsValues.connection.cgi = true;
+			    cgiMode();
+			    setCgiUrl();
+			}
                     }
                 });
 
@@ -626,9 +650,16 @@ public class jsdevisec extends Panel
         settingdlg = null;
     }
 
+    public void setCgiUrl()
+    {
+        setcgiurldlg = new SetCgiUrlDlg(this, parentFrame, isCenterScreen);
+        setcgiurldlg.open();
+        setcgiurldlg = null;
+    }
+
     public boolean isShowingMsg()
     {
-        if (sessiondlg != null || settingdlg != null || statedlg != null || recorddlg != null || msgbox != null) {
+        if (sessiondlg != null || settingdlg != null || statedlg != null || recorddlg != null || msgbox != null || setcgiurldlg != null) {
             return true;
         } else {
             return false;
@@ -1543,6 +1574,146 @@ class ServerStateDlg extends Dialog
             status = false;
         }
 	jsc.jsValues.debug.log("Closed ServerStateDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
+
+// ------------------------------------------------------------------------
+
+// Dialog for setting cgi URL.
+class SetCgiUrlDlg extends Dialog
+{
+    jsdevisec jsc = null;
+    public TextField url = new TextField(34);
+    public Button setButton = new Button("   Set   ");
+    private boolean status = false; // true means this dialog is showing
+
+    public SetCgiUrlDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating SetCgiUrlDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Setting CGI URL");
+
+        setButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setButton.setForeground(jsc.jsValues.uiglobals.fg);
+        setButton.setFont(jsc.jsValues.uiglobals.font);
+
+        url.setBackground(jsc.jsValues.uiglobals.textBg);
+	url.setForeground(jsc.jsValues.uiglobals.textFg);
+        url.setFont(jsc.jsValues.uiglobals.textFont);
+
+        url.setText("http://pumori.cs.wisc.edu/cgi-uw/js.cgi");
+
+        if (jsc.jsValues.uiglobals.inBrowser) {
+            url.setEditable(false);
+            setButton.setEnabled(false);
+        }
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label label = new Label("CGI URL:");
+        gridbag.setConstraints(label, c);
+        add(label);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(url, c);
+        add(url);
+
+        c.insets = new Insets(10, 0, 10, 10);
+        c.gridwidth = GridBagConstraints.EAST;
+        gridbag.setConstraints(setButton, c);
+        add(setButton);
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        setButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.jsValues.connection.cgiURL = url.getText();
+                        close();
+                    }
+                });
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    // If this dialog is a modal dialog, the show() or setVisible(true) method
+    // will block current thread(i.e. the thread that access this method, may
+    // be the event dispatcher thread) until setVisible(false) or dispose() is
+    // called
+    // In JDK1.1, any thread that access AWT method is acting as a event
+    // dispatcher thread
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening SetCgiUrlDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed SetCgiUrlDlg");
     }
 
     // true means this dialog is showing
