@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/24 21:29:58  jussi
+  Added copyright notice and cleaned up code. Added Print method
+  to help in debugging.
+
   Revision 1.2  1995/09/05 21:13:11  jussi
   Added/updated CVS header.
 */
@@ -56,16 +60,19 @@ public:
   /* Copy from another matrix */
   Transform2D(Transform2D *t) {
     t->GetCoords(_a00,_a01,_a02,_a10,_a11,_a12);
+    _cartesian = t->_cartesian;
   }
 
   /* Copy from another mattrix */
   void Copy(Transform2D &t) {
     t.GetCoords(_a00,_a01,_a02,_a10,_a11,_a12);
+    _cartesian = t._cartesian;
   }
 
   /* Clear the matrix into an identity matrix */
   void MakeIdentity() {
     _a00 = 1.0; _a01 = 0.0, _a02 = 0.0, _a10 = 0.0; _a11 = 1.0; _a12 = 0.0;
+    _cartesian = true;
   }
 
   /* Translate by dx,dy */
@@ -91,12 +98,33 @@ public:
     temp = _a02;
     _a02 = cos_theta*temp-sin_theta*_a12;
     _a12 = sin_theta*temp+cos_theta*_a12;
+
+    if (_a01 == 0.0 && _a10 == 0.0)
+      _cartesian = true;
+    else
+      _cartesian = false;
   }
 
-  /* Return the transformed x,y coord */
+  /* Return the transformed X,Y coordinates */
   void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
-    newX = _a00*x+_a01*y+_a02;
-    newY = _a10*x+_a11*y+_a12;
+    TransformX(x, y, newX);
+    TransformY(y, y, newY);
+  }
+
+  /* Return the transformed X coordinate, optimized for speed */
+  void TransformX(Coord x, Coord y, Coord &newX) {
+    if (_cartesian)
+      newX = _a00 * x + _a02;
+    else
+      newX = _a00 * x + _a01 * y + _a02;
+  }
+
+  /* Return the transformed Y coordinate, optimized for speed */
+  void TransformY(Coord x, Coord y, Coord &newY) {
+    if (_cartesian)
+      newY = _a11 * y + _a12;
+    else
+      newY = _a10 * x + _a11 * y + _a12;
   }
 
   /* Find the original coord given transformed coordinate x,y.
@@ -126,6 +154,11 @@ public:
     temp = _a11;
     _a11 = _a10*o01+ _a11*o11;
     _a10 = _a10*o00+ temp*o10;
+
+    if (_a01 == 0.0 && _a10 == 0.0)
+      _cartesian = true;
+    else
+      _cartesian = false;
   }
 
   /* Multiply other matrix before this. Store the result in this. */
@@ -144,6 +177,11 @@ public:
     temp = _a02;
     _a02 = o00*_a02+ o01*_a12 + o02;
     _a12 = o10*temp+ o11*_a12 + o12;
+
+    if (_a01 == 0.0 && _a10 == 0.0)
+      _cartesian = true;
+    else
+      _cartesian = false;
   }
   
   void GetCoords(Coord &a00, Coord &a01, Coord &a02, Coord &a10, Coord &a11,
@@ -152,11 +190,13 @@ public:
   }
   
   void Print() {
-    printf("(%.2f,%.2f,%.2f),(%.2f,%.2f,%.2f)", _a00, _a01, _a02,
-	   _a10, _a11, _a12);
+    printf("(%.2f,%.2f,%.2f),(%.2f,%.2f,%.2f),%d", _a00, _a01, _a02,
+	   _a10, _a11, _a12, (_cartesian ? 1 : 0));
   }
 
 private:
-  Coord _a00,_a01,_a02,_a10,_a11,_a12;
+  Coord _a00,_a01,_a02,_a10,_a11,_a12;  // transformation matrix
+  Boolean _cartesian;                   // TRUE if cartesian transformation
+                                        // (a01 == a10 == 0.0)
 };
 #endif
