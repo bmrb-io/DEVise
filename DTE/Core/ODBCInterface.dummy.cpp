@@ -24,10 +24,6 @@ const ISchema* ODBCInterface::getISchema(TableName* table){
 }
 
 Site* ODBCInterface::getSite(){
-#ifdef TEST_ODBC
-	return new ODBCSite(tableName);
-#else
 	cerr << "ODBC driver is not installed" << endl;
 	exit(1);
-#endif
 }
