@@ -1,0 +1,17 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jun 18 1999 13:54:01
+# DEVise version: 1.6.3
+# DEVise date: Jun 11 1999
+# DEVise endHeader
+
+type HXRates ascii
+comment #
+whitespace ' '
+sorted attr Residue_seq_code int lo 0
+attr Residue_label string 4
+attr Atom_name string 2
+attr H_exchange_rate_value float
+attr H_exchange_rate_min_value float
+attr H_exchange_rate_max_value float
+attr H_exchange_rate_value_error float

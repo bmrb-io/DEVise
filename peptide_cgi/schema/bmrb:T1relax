@@ -1,0 +1,15 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jun 11 1999 16:14:09
+# DEVise version: 1.6.3
+# DEVise date: Jun 11 1999
+# DEVise endHeader
+
+type T1relax ascii
+comment #
+whitespace ' '
+sorted attr Residue_seq_code int lo 0
+attr Residue_label string 4
+attr Atom_name string 2
+attr T1_value float
+attr T1_error float

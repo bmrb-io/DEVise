@@ -1,0 +1,19 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Oct 28 1999 05:36:14
+# DEVise version: 1.6.5
+# DEVise date: Oct 26 1999
+# DEVise endHeader
+
+type CouplingConstant ascii
+comment //
+whitespace ' '
+attr Coupling_constant_code string 7
+sorted attr Atom_one_residue_seq_code int
+attr Atom_one_residue_label string 4
+attr Atom_one_name string 4
+attr Atom_two_residue_seq_code int
+attr Atom_two_residue_label string 4
+attr Atom_two_name string 4
+attr Coupling_constant_value float
+#attr Coupling_constant_value_error float

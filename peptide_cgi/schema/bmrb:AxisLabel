@@ -1,0 +1,11 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Dec 06 1999 16:24:09
+# DEVise version: 1.7.0
+# DEVise date: Dec  1 1999
+# DEVise endHeader
+
+type bmrb:AxisLabel ascii
+comment //
+whitespace ' '
+attr Label_text string 20

@@ -1,0 +1,15 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 08 1999 23:02:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+type ChemShiftPercentage ascii
+comment #
+whitespace ' '
+sorted attr CurrSeqNum int lo 0
+attr CurrResidueLabel string 4
+attr assigForH float hi 100 lo 0
+attr assigForC float hi 100 lo 0
+attr assigForN float hi 100 lo 0

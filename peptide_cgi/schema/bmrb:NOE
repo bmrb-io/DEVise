@@ -1,0 +1,15 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 14 1999 15:24:06
+# DEVise version: 1.6.4
+# DEVise date: Jul 13 1999
+# DEVise endHeader
+
+type NOE ascii
+comment #
+whitespace ' '
+sorted attr Residue_seq_code int lo 0
+attr Residue_label string 4
+attr Atom_name string 2
+attr NOE_value float
+attr Error float

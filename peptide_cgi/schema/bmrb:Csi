@@ -1,0 +1,16 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+type Csi ascii
+comment #
+whitespace ' '
+sorted attr SeqNum int lo 0
+attr HA_Csi int hi 1 lo -1
+attr C_Csi int hi 1 lo -1
+attr CA_Csi int hi 1 lo -1
+attr CB_Csi int hi 1 lo -1
+attr Consensus_Csi int hi 1 lo -1

@@ -1,0 +1,17 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 14 1999 14:58:54
+# DEVise version: 1.6.4
+# DEVise date: Jul 13 1999
+# DEVise endHeader
+
+type HXProtFactors ascii
+comment #
+whitespace ' '
+sorted attr Residue_seq_code int lo 0
+attr Residue_label string 4
+attr Atom_name string 2
+attr H_exchange_calculated_intrinsic_rate float
+attr H_exchange_protection_factor_value float
+attr H_ex_prot_fact_error float
+attr log_H_ex_prot_factor_value float
