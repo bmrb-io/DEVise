@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/09/08 20:26:17  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.27  1998/09/08 16:55:13  wenger
   Improved how JavaScreenCmd handles closing sessions -- fixes some problems
   with client switching.
@@ -693,7 +697,7 @@ JavaScreenCmd::SaveSession()
 	} else if (_argc == 2) {
 		saveSelView = atoi(_argv[1]);
 	} else {
-		errmsg = "Usage: SaveSession <file name>";
+		errmsg = "Usage: SaveSession <file name> [save selected view]";
 		_status = ERROR;
 		return;
 	}
