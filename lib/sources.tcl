@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.10  1995/11/29 15:53:29  jussi
+#	Made inclusion of sourcedef.tcl conditional. Provided default values for
+#	sourceTypes. Removed constant window size definitions because they
+#	produce unexpected results on some window managers.
+#
 #	Revision 1.9  1995/11/24 21:39:42  jussi
 #	Changed width of schema filename to 40. Added code to extract the
 #	command (pathname actually) for UNIXFILE source type from a text
@@ -314,6 +319,7 @@ proc defineStream {base edit} {
 ############################################################
 
 proc scanSchema {schemafile} {
+    global schemadir
     if {[catch { set f [open $schemafile "r"] }] > 0} {
 	dialog .noFile "No Schema File" \
 		"Cannot open schema file $schemafile." \
@@ -327,6 +333,8 @@ proc scanSchema {schemafile} {
 	if {[lindex $line 0] == "type"} {
 	    set type [lindex $line 1]
 	    break
+	} elseif {[lindex $line 0] == "physical"} {
+	    return [scanSchema [lindex $line 1]]
 	}
     }
 
