@@ -19,23 +19,21 @@ public class StringDesc implements TypeDesc {
         if ( opStr.equals("==") ) 
             return new StringEqualOp( );
 
-/*
         if ( opStr.equals("!=") ) 
-            return new IntNotEqualOp( );
-
-        if ( opStr.equals(">") ) 
-            return new IntGreaterOp( );
+            return new StringNotEqualOp( );
 
         if ( opStr.equals("<") ) 
-            return new IntLessOp( );
+            return new StringLessOp( );
 
-        if ( opStr.equals(">=") ) 
-            return new IntGeqOp( );
+        if ( opStr.equals(">") ) 
+            return new StringGreaterOp( );
 
         if ( opStr.equals("<=") ) 
-            return new IntLeqOp( );
+            return new StringLeqOp( );
 
-*/
+        if ( opStr.equals(">=") ) 
+            return new StringGeqOp( );
+
 	throw new IllegalArgumentException("Incompatible type!\n"); 
     }
 }

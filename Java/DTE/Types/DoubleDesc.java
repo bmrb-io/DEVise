@@ -14,41 +14,39 @@ public class DoubleDesc implements TypeDesc {
 	throws IllegalArgumentException
     {
         if ( ! arg.getString( ).equals(name) )
-	    throw new IllegalArgumentException("give me an double!\n"); 
+	    throw new IllegalArgumentException("Type incompatible!\n"); 
 
         if ( opStr.equals("==") ) 
             return new DoubleEqualOp( );
 
-/*
         if ( opStr.equals("!=") ) 
-            return new IntNotEqualOp( );
+            return new DoubleNotEqualOp( );
 
         if ( opStr.equals(">") ) 
-            return new IntGreaterOp( );
+            return new DoubleGreaterOp( );
 
         if ( opStr.equals("<") ) 
-            return new IntLessOp( );
+            return new DoubleLessOp( );
 
         if ( opStr.equals(">=") ) 
-            return new IntGeqOp( );
+            return new DoubleGeqOp( );
 
         if ( opStr.equals("<=") ) 
-            return new IntLeqOp( );
+            return new DoubleLeqOp( );
 
         if ( opStr.equals("+") ) 
-            return new IntAddOp( );
+            return new DoubleAddOp( );
 
         if ( opStr.equals("-") ) 
-            return new IntSubOp( );
+            return new DoubleSubOp( );
 
         if ( opStr.equals("*") ) 
-            return new IntMulOp( );
-*/
+            return new DoubleMulOp( );
 
         if ( opStr.equals("/") ) 
             return new DoubleDivOp( );
 
-	throw new IllegalArgumentException("give me an int!\n"); 
+	throw new IllegalArgumentException("Type Incompatible!\n"); 
     }
 }
 

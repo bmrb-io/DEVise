@@ -17,7 +17,7 @@ public class BooleanDesc implements TypeDesc {
 	throws IllegalArgumentException
     {
         if ( ! arg.getString( ).equals(name) )
-	    throw new IllegalArgumentException("give me an boolean!\n"); 
+	    throw new IllegalArgumentException("Type incompatible!"); 
 
         if ( opStr.equals("&&") ) 
             return new BoolAndOp( );
@@ -25,7 +25,7 @@ public class BooleanDesc implements TypeDesc {
         if ( opStr.equals("||") ) 
             return new BoolOrOp( );
 
-	throw new IllegalArgumentException("give me an boolean!\n"); 
+        throw new IllegalArgumentException("Type incompatible!"); 
     }
 }
 

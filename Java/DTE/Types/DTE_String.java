@@ -117,11 +117,8 @@ public class DTE_String extends DTE_Type implements Cloneable
         return true;
     }
 
-    public int compare( DTE_String str ) {
-	int i = 0;
-	int j = 0;
-
-	while ( i < length && j < str.length ) {
+    public int compares( DTE_String str ) {
+	for ( int i=0; i < length && i < str.length; i++ ) {
 	    if ( val[i] < str.val[i] )
 		return -1;
 	    if ( val[i] > str.val[i] )

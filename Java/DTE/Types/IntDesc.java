@@ -17,14 +17,14 @@ public class IntDesc implements TypeDesc {
 	throws IllegalArgumentException
     {
         if ( ! arg.getString( ).equals(name) )
-	    throw new IllegalArgumentException("give me an int!\n"); 
+	    throw new IllegalArgumentException("Type incompatible!"); 
 
         if ( opStr.equals("==") ) 
             return new IntEqualOp( );
 
         if ( opStr.equals("!=") ) 
             return new IntNotEqualOp( );
-/*
+
         if ( opStr.equals(">") ) 
             return new IntGreaterOp( );
 
@@ -46,11 +46,10 @@ public class IntDesc implements TypeDesc {
         if ( opStr.equals("*") ) 
             return new IntMulOp( );
 
-*/
         if ( opStr.equals("/") ) 
             return new IntDivOp( );
 
-	throw new IllegalArgumentException("give me an int!\n"); 
+	throw new IllegalArgumentException("Type incompatible!"); 
     }
 }
 
