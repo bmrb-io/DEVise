@@ -9,6 +9,7 @@
 
 if ($#argv != 2) then
   echo "Usage: update_filter <session> <view>"
+  echo "Note: session must be full absolute path of session file"
 else
   set session = $1
   set view = "$2"
@@ -20,7 +21,7 @@ else
   echo "DEVise saveSession $session 0 0 0" >> $batchfile
   echo "DEVise exit" >> $batchfile
 
-  devisec -q $session $batchfile
+  /p/devise/run/devise -session $session -batch $batchfile
 
   #\rm $batchfile
 endif
