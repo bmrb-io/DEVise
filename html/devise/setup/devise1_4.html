@@ -1,7 +1,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -18,30 +18,28 @@
 
 <HTML>
 <HEAD>
-<TITLE>Running DEVise 1.4</TITLE>
+<TITLE>Running DEVise 1.5</TITLE>
 </HEAD>
 <BODY background="../logo_background.gif">
 
 
 <h1>Architectures</h1>
 
-<p>DEVise 1.4 is currently available for the following architectures:
+<p>DEVise 1.5 is currently available for the following architectures:
 <ul>
 <li>Intel/Solaris
 <li>SPARC/Solaris
-<li>SPARC/SunOS
-<li>HPPA/HPUX
 </ul>
 
 
 <h1>Warning</h1>
 
-<A HREF="1_4_warning.html">DEVise 1.4 warning.</A>
+<A HREF="1_4_warning.html">DEVise 1.5 warning.</A>
 
 
 <h1>Setup Procedure</h1>
 
-<p>If you do decide to run DEVise 1.4, here's how to go about it.
+<p>If you do decide to run DEVise 1.5, here's how to go about it.
 
 <ul>
 <li>Go to the directory in which you want to have your DEVise files (a
@@ -69,11 +67,11 @@ to absolute paths.  You can run <tt>devisepub</tt> from anywhere.
 <h1>Transitioning from 1.3</h1>
 
 <p>If you already have sessions, schemas, and data that you have used in
-DEVise 1.3, you can transition them to DEVise 1.4.  Sessions, schemas, and
+DEVise 1.3, you can transition them to DEVise 1.5.  Sessions, schemas, and
 data files can be used without changes, but the data source catalog must
 be changed.
 
-<p>To translate your 1.3 data source catalog to a 1.4 data source catalog,
+<p>To translate your 1.3 data source catalog to a 1.5 data source catalog,
 follow this procedure:
 
 <ul>
@@ -83,16 +81,25 @@ follow this procedure:
 &lt;temp file&gt;</tt>".
 <li>Edit <tt>&lt;temp file&gt;</tt> and remove the first two lines.
 <li>Go to your <tt>devise/schema/schema directory</tt>.
-<li>Copy <tt>catalog.dte</tt> (the DEVise 1.4 data source catalog file)
+<li>Copy <tt>catalog.dte</tt> (the DEVise 1.5 data source catalog file)
 to <tt>catalog.dte.bak</tt> (it's very easy to corrupt the data catalog
 in such a way that it won't work anymore).
 <li>Edit <tt>catalog.dte</tt> and append <tt>&lt;temp file&gt;</tt> to it.
 </ul>
 
 
+<h1>Transitioning from 1.4</h1>
+
+<p>At this point (July 8, 1998), you shouldn't have to do anything special
+to transition from DEVise 1.4 to DEVise 1.5.  You will notice that the
+colors in your sessions have changed because of the new color manager, but
+they should still work -- you may want to change them for better appearance,
+though.
+
+
 <h1>Devise-sup Mailing List</h1>
 
-<p>If you set yourself up to run DEVise 1.4, you should subscribe to the
+<p>If you set yourself up to run DEVise 1.5, you should subscribe to the
 devise-sup (DEVise support) mailing list.  This is a mailing list intended
 to provide information to DEVise users and to allow them to pose questions
 about using DEVise.  Subscribing to this mailing list will allow you to get
