@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/14 04:04:31  jussi
+  ViewKGraph is now derived from KGraph instead of declaring
+  KGraph as its member variable. This allows ViewKGraph to
+  intercept WindowDestroy events and destroy the graph.
+
   Revision 1.6  1996/07/13 17:27:10  jussi
   ViewKGraph now uses the more general ViewCallback interface.
 
@@ -48,7 +53,7 @@ ViewKGraph::~ViewKGraph()
 {
   View::DeleteViewCallback(this);
   delete _view_list;
-  delete _name;
+  FreeString(_name);
 }
 
 void ViewKGraph::Init()

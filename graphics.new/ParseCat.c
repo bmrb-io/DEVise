@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  2000/02/16 18:51:40  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.51  1999/11/30 22:28:24  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -693,7 +696,7 @@ ParseAttr(
 	numAttrs++;
 	recSize += attrLength;
 
-	delete [] attrName;
+	FreeString(attrName);
 
 	return result;
 }
@@ -1241,8 +1244,8 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
 			StripTrailingNewline(buf);
 		}
 		fclose(fp);
-		char * query = strdup(buf);
-		char * schema = strdup(token2);
+		char * query = CopyString(buf);
+		char * schema = CopyString(token2);
 		// Extract the physical schema name 	
 		fp = fopen(	token2,"r");
 
@@ -1278,9 +1281,9 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
 		//		ParseCatPhysical(&schemaSource,false,true),schema,fileType,dataFile,query);
 			
 			ParseCatPhysical(&schemaSource,false,true);
-			char* temp = strdup(schema);
-			free(query);
-			free(schema);
+			char* temp = CopyString(schema);
+			FreeString(query);
+			FreeString(schema);
 			return temp;
 
 		}

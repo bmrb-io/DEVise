@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  1999/12/01 00:09:37  wenger
+  Disabled extra debug logging for tracking down Omer's crash.
+
   Revision 1.67  1999/11/30 22:28:07  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -604,8 +607,9 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
       x, y, w, h);
 #endif
   if (_mapped) {
-    fprintf(stderr,"ViewWin::Map() already mapped\n");
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    char errBuf[1024];
+    sprintf(errBuf, "ViewWin <%s> already mapped", GetName());
+    reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
 

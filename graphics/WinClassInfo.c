@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  2000/02/16 18:51:25  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.25  1999/12/06 20:03:21  wenger
   Windows are forced to be on-screen when opening or saving a session.
 
@@ -192,8 +195,8 @@ TileLayoutInfo::TileLayoutInfo(const char *name, Layout *win, double relativeX,
 
 TileLayoutInfo::~TileLayoutInfo()
 {
-//TEMP -- does _name need to get deleted??
   delete _win;
+  FreeString((char *)_name);
 
   //TEMP -- check return value
   DevWindow::_windowList.Delete(this);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.95  2000/01/13 23:07:08  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.94  1999/09/02 17:26:04  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -555,10 +558,14 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 //--------------------------------------------------------------------------
 MappingInterp::~MappingInterp()
 {
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::~MappingInterp()\n", GetName());
+#endif
+
   delete _internalCmd;
   delete _tclCmd;
   delete _simpleCmd;
-  delete _parentValue;
+  FreeString(_parentValue);
 
   delete _offsets;
   SetGDataOffset(NULL);
@@ -875,7 +882,7 @@ MappingInterp::SetParentValue(const char *value)
   printf("MappingInterp(%s)::SetParentValue(%s)\n", GetName(), value);
 #endif
 
-  delete _parentValue;
+  FreeString(_parentValue);
   if (!value) value = "0.0";
   _parentValue = CopyString(value);
 
@@ -1529,7 +1536,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
     int strid;
     int code = stringTable->Insert(str, strid);
     DOASSERT(code >= 0, "Cannot insert string");
-    delete [] str;
+    FreeString(str);
 #if defined(DEBUG)
     printf("string constant at %d: %s\n", strid, str != NULL ? str : "NULL");
 #endif

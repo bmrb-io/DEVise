@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/12/01 00:09:37  wenger
+  Disabled extra debug logging for tracking down Omer's crash.
+
   Revision 1.15  1999/11/30 22:28:07  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -122,6 +125,10 @@ void ViewLayout::Unmap()
 
 void ViewLayout::Append(ViewWin *child)
 {
+#if defined(DEBUG)
+  printf("ViewLayout(%s)::Append(%s)\n", GetName(), child->GetName());
+#endif
+
   if (Mapped()) {
     /* Resize existing children, compute left-over space for new child */
     int x, y;

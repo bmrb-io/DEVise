@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/02/16 18:51:39  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.27  1999/08/10 20:15:05  wenger
   Parent views can now control the titles of view symbols.
 
@@ -192,6 +195,10 @@ MapInterpClassInfo::MapInterpClassInfo(const char *className,
 
 MapInterpClassInfo::~MapInterpClassInfo()
 {
+#if defined(DEBUG)
+  printf("MapInterpClassInfo::~MapInterpClassInfo()\n");
+#endif
+
   if (_map) {
     VisualFlag *dimensionInfo;
     (void)_map->DimensionInfo(dimensionInfo);
@@ -200,8 +207,8 @@ MapInterpClassInfo::~MapInterpClassInfo()
 
   delete _map;
   delete _cmd;
-  delete _fileAlias;
-  delete _name;
+  FreeString((char *)_fileAlias);
+  FreeString((char *)_name);
 }
 
 /* Return true if string is not empty. A string is not empty
@@ -508,8 +515,8 @@ void MapInterpClassInfo::ChangeParams(int argc, const char* const *argv)
 		 dimensionInfo, _numDimensions, tdataAlias, tdata,
 		 name).IsComplete()) {
     _map->ChangeCmd(_cmd, _cmdFlag, _attrFlag, dimensionInfo, _numDimensions);
-    delete [] name;
-    delete [] tdataAlias;
+    FreeString(name);
+    FreeString(tdataAlias);
   }
 }
 

@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/05/21 14:52:14  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.2  1998/12/08 20:01:06  wenger
   MQL session description improvements: views list table name and mappings
   for all GData attrs; color palette is now listed.
@@ -87,7 +91,7 @@ public:
       _type = type;
     }
     ~Range() {
-      delete [] _name;
+      FreeString(_name);
       _name = NULL;
       _type = RangeInvalid;
     }

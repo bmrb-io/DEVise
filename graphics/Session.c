@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.81  2000/02/23 21:30:57  wenger
+  Re-implemented session description capability.
+
   Revision 1.80  2000/02/17 17:50:41  wenger
   Fixed bug that caused DEVise to crash when saving a session if session
   file could not be opened.
@@ -454,12 +457,12 @@ Session::Open(const char *filename)
 
   if (status.IsComplete()) {
     if (_sessionFile) {
-      free(_sessionFile);
+      FreeString(_sessionFile);
     }
     _sessionFile = CopyString(filename);
 
     if (_description) {
-      free(_description);
+      FreeString(_description);
     }
     _description = NULL;
 
@@ -498,12 +501,12 @@ Session::Close()
   DevStatus status = StatusOk;
 
   if (_sessionFile) {
-    free(_sessionFile);
+    FreeString(_sessionFile);
   }
   _sessionFile = NULL;
 
   if (_description) {
-    free(_description);
+    FreeString(_description);
   }
   _description = NULL;
 
@@ -682,7 +685,7 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
 
   if (status.IsComplete()) {
     if (_sessionFile) {
-      free(_sessionFile);
+      FreeString(_sessionFile);
     }
     _sessionFile = CopyString(filename);
   }
@@ -945,7 +948,7 @@ Session::CreateTData(const char *name)
     classDir->CreateWithParams("tdata", (char *)arg2, 3, (char **)argvIn);
   }
 
-  if (catEntry != NULL) free(catEntry);
+  if (catEntry != NULL) FreeString(catEntry);
 
 #if defined(SESSION_TIMER)
   char timeBuf[256];
@@ -1038,8 +1041,8 @@ Session::ListDataCatalog(const char *catName)
 	// +2 is for space and terminator.
     catListTotal = new char[strlen(catListMain) + strlen(catListSess) + 2];
 	sprintf(catListTotal, "%s %s", catListMain, catListSess);
-	delete [] catListMain;
-	delete [] catListSess;
+	FreeString(catListMain);
+	FreeString(catListSess);
   } else {
     catListTotal = catListMain;
   }
@@ -1062,7 +1065,7 @@ Session::SetDescription(const char *description)
   printf("Session::SetDescription(%s)\n", description);
 #endif
 
-  if (_description) free(_description);
+  if (_description) FreeString(_description);
   _description = CopyString(description);
 }
 
@@ -2265,7 +2268,7 @@ Session::SaveDataSources(FILE *fp)
 	  }
 	}
 
-    delete [] sourceList;
+    FreeString(sourceList);
   }
 
   return status;
@@ -2293,7 +2296,7 @@ Session::DeleteDataSources()
     if (unlink(_catFile) != 0) {
       reportErrSys("Can't delete session data catalog file");
     }
-    delete [] _catFile;
+    FreeString(_catFile);
     _catFile = NULL;
   }
 

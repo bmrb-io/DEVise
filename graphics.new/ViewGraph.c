@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.138  2000/03/10 16:32:00  wenger
+  Found and fixed bug 572 (problem with switching stations in ASOS and
+  AWON sessions).
+
   Revision 1.137  2000/02/24 18:50:30  wenger
   F/f ("full" cursor) in a view does home on the source views of any cursors
   for which the selected view is the destination view.
@@ -868,8 +872,8 @@ ViewGraph::~ViewGraph(void)
     _glistX.DeleteAll();
     _glistY.DeleteAll();
 
-    delete [] _gdsParams.file;
-	delete [] _jsGdsParams.file;
+    FreeString(_gdsParams.file);
+	FreeString(_jsGdsParams.file);
     delete _gds;
 	delete queryCallback;
 	delete _countMapping;
@@ -880,22 +884,22 @@ ViewGraph::~ViewGraph(void)
 	delete _slaveTable;
 	_slaveTable = NULL;
 
-	delete [] _stringXTableName;
+	FreeString(_stringXTableName);
 	_stringXTableName = NULL;
 
-	delete [] _stringYTableName;
+	FreeString(_stringYTableName);
 	_stringYTableName = NULL;
 
-	delete [] _stringZTableName;
+	FreeString(_stringZTableName);
 	_stringZTableName = NULL;
 
-	delete [] _stringGenTableName;
+	FreeString(_stringGenTableName);
 	_stringGenTableName = NULL;
 
 	delete _viewSymFilterInfo;
 	_viewSymFilterInfo = NULL;
 
-	if (_viewSymParentVal) free(_viewSymParentVal);
+	if (_viewSymParentVal) FreeString(_viewSymParentVal);
 	_viewSymParentVal = NULL;
 }
 
@@ -1119,7 +1123,7 @@ void ViewGraph::RemoveMapping(TDataMap *map)
         if (info->map == map) {
             DoneMappingIterator(index);
             _mappings.Delete(info);
-            delete info->label;
+            FreeString(info->label);
             delete info;
 	    Refresh();
             return;
@@ -1153,7 +1157,7 @@ void ViewGraph::SetMappingLegend(TDataMap *map, char *label)
     while(MoreMapping(index)) {
         MappingInfo *info = NextMapping(index);
         if (info->map == map) {
-            delete info->label;
+            FreeString(info->label);
             info->label = CopyString(label);
             break;
         }
@@ -2803,7 +2807,7 @@ ViewGraph::SetStringTable(TDataMap::TableType type, char *name)
 {
   char **tableNameP = TableType2NameP(type);
 
-  delete [] *tableNameP;
+  FreeString(*tableNameP);
   *tableNameP = CopyString(name);
 
   // Note: this will cause problems if a mapping is shared by multiple
@@ -3164,7 +3168,7 @@ ViewGraph::SetParentValue(const char *parentVal)
 
     map->SetParentValue(parentVal);
 
-    if (_viewSymParentVal) free(_viewSymParentVal);
+    if (_viewSymParentVal) FreeString(_viewSymParentVal);
 	_viewSymParentVal = CopyString(parentVal);
   }
 

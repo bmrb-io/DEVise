@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/11/29 21:07:52  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.6  1997/11/24 23:14:35  weaver
   Changes for the new ColorManager.
 
@@ -55,6 +59,7 @@
 
 #include "ViewWin.h"
 #include "WindowRep.h"
+#include "ObjectValid.h"
 
 //******************************************************************************
 // class ViewLayout

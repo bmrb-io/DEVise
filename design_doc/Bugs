@@ -2226,7 +2226,8 @@ Num Date        Status  Description
 			crashes. (rkw)
 			(Fixed by rkw, 3/8/00.)
 
-569 03/08/00	OPEN	Group/ungroup of views causes crash. (rkw)
+569 03/08/00	FIXED	Group/ungroup of views causes crash. (rkw)
+			(Fixed by rkw, 3/13/00.)
 
 570 03/09/00	OPEN	F1-help to show/hide view help in JavaScreen is
 			unreliable; doesn't work at all in 3D views. (rkw)
@@ -2238,6 +2239,10 @@ Num Date        Status  Description
 572 03/09/00	FIXED	Switching stations in ASOS and AWON sessions causes
 			incorrect display until variable is switched. (rkw)
 			(Fixed by rkw, 3/10/00.)
+
+573 03/13/00	OPEN	Strings copied in
+			TDataAsciiInterpClassInfo::CreateWithParams() are
+			probably leaked. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

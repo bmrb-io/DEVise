@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/02/16 18:51:20  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.11  1999/12/27 19:33:07  wenger
   Cursor grids can now be applied to the edges of a cursor, rather than the
   center, if desired.
@@ -111,8 +114,10 @@ CursorClassInfo::CursorClassInfo(const char *name, VisualFlag flag,
 
 CursorClassInfo::~CursorClassInfo()
 {
-  if (_cursor != NULL)
+  if (_cursor != NULL) {
     delete _cursor;
+  }
+  FreeString((char *)_name);
 
   if (!DevCursor::_cursorList.Delete(this)) {
     reportErrNosys("Unable to delete from cursor list");

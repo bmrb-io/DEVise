@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-1999
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/10/18 15:40:29  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.3  1999/01/18 18:14:54  beyer
   fixed compile warnings and errors for egcs v 1.1.1
 
@@ -98,7 +104,7 @@ ArgList::Cleanup()
     _buf = NULL;
   } else {
     for (int index = 0; index < _argc; index++) {
-      delete [] _argv[index];
+      FreeString(_argv[index]);
       _argv[index] = NULL;
     }
   }

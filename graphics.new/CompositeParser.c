@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  2000/01/13 23:07:02  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.6  1999/11/30 22:28:19  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -46,6 +49,7 @@
 #include "CompositeParser.h"
 #include "Exit.h"
 #include "DevError.h"
+#include "Util.h"
 
 CompositeEntry CompositeParser::_entries[MAX_COMPOSITE_ENTRIES];
 int CompositeParser::_numEntries = 0;
@@ -56,7 +60,7 @@ CompositeParser::DestroyAll()
 {
   for(int i = 0; i < _numEntries; i++) {
     delete _entries[i].userComposite;
-    free(_entries[i].fileType);
+    FreeString(_entries[i].fileType);
   }
 }
 	
@@ -66,7 +70,7 @@ void CompositeParser::Register(char *fileType, UserComposite *userComposite){
     Exit::DoExit(2);
   }
 
-  _entries[_numEntries].fileType = (char * )fileType;
+  _entries[_numEntries].fileType = fileType;
   _entries[_numEntries].userComposite = userComposite;
   _numEntries++;
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/08/30 19:34:24  wenger
+  Unified X and Y axis drawing code; found and fixed bug 505 (changing axis
+  date format didn't force redraw).
+
   Revision 1.1  1999/08/18 20:46:04  wenger
   First step for axis drawing improvement: moved code to new DevAxis
   class with unchanged functionality.
@@ -139,7 +143,7 @@ DevAxis::SetDateFormat(const char *format)
 #endif
 
   if (_dateFormat == NULL || strcmp(format, _dateFormat)) {
-    delete _dateFormat;
+    FreeString(_dateFormat);
     _dateFormat = CopyString(format);
   }
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.144  2000/01/13 23:06:53  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.143  1999/12/02 16:26:45  wenger
   Fixed bug 518 (confirm before saving a session the first time); got rid
   of error message during normal Tasvir launch.
@@ -876,7 +879,7 @@ XWindowRep::~XWindowRep(void)
   // but do it again here just in case...  If it's already been done,
   // this won't actually do anything.
   (void) DaliFreeImages();
-  delete [] _daliServer;
+  FreeString(_daliServer);
 
   (void) ETk_FreeWindows();
   delete [] _etkServer;
@@ -3401,7 +3404,7 @@ void XWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
       }
     }
     XSetDashes(_display, _gc, startOffset, dashList, dashCount);
-    delete [] dashList;
+    FreeString(dashList);
   } else {
     _lineStyle = LineSolid;
   }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/09/21 18:58:27  wenger
+  Devise looks for an already-running Tasvir before launching one; Devise
+  can also launch a new Tasvir at any time if Tasvir has crashed; added
+  warning if you use -gl flag with non-OpenGL linked DEVise.
+
   Revision 1.23  1999/09/02 17:25:48  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -2088,7 +2093,7 @@ GLWindowRep::~GLWindowRep()
   // but do it again here just in case...  If it's already been done,
   // this won't actually do anything.
   (void) DaliFreeImages();
-  delete [] _daliServer;
+  FreeString(_daliServer);
 
   (void) ETk_FreeWindows();
   delete [] _etkServer;

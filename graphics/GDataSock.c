@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/10/18 17:32:35  wenger
+  Fixed bug 515 (small problem with cursor dragging) and bug 516 (we now
+  eliminate any extraneous control-D's in GData strings).
+
   Revision 1.13  1999/08/19 13:54:15  wenger
   Changes for JavaScreen support: all 15 shape attributes now sent in
   GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
@@ -232,7 +236,7 @@ GDataSock::~GDataSock()
     }
   }
 
-  delete _params.file;
+  FreeString(_params.file);
 }
 
 /*------------------------------------------------------------------------------

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  2000/01/13 23:06:53  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.23  1999/07/16 21:35:52  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -136,6 +139,7 @@ extern long ModTime(char *fname);
 extern DevStatus ReadFile(char *filename, int &size, char *&buffer);
 
 extern char *CopyString(const char *str);
+extern void FreeString(char *str);
 
 #ifdef ULTRIX
 #define strdup(s) CopyString(s)

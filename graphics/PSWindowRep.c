@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/07/16 21:35:51  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.41  1999/01/05 20:53:50  wenger
   Fixed bugs 447 and 448 (problems with symbol patterns); cleaned up some
   of the text symbol code.
@@ -312,7 +320,7 @@ PSWindowRep::~PSWindowRep(void)
     reportErrNosys("Child windows should have been destroyed first");
 
 #ifndef LIBCS
-  delete [] _daliServer;
+  FreeString(_daliServer);
 #endif
 }
 

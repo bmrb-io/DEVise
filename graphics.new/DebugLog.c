@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/02/23 23:32:53  wenger
+  Fixed bug 567 (problem with JAVAC_ResetFilters command; added LogFileLine()
+  macro to DebugLog.
+
   Revision 1.12  1999/12/06 18:41:04  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -150,7 +154,7 @@ DebugLog::~DebugLog()
 
     if (_filename) {
       printf("DEVise debug log file is: %s\n", _filename);
-      free(_filename);
+      FreeString(_filename);
     }
   }
 }

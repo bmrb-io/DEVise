@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/10/18 15:36:41  wenger
+  Window destroy events are handled better (DEVise doesn't crash); messages
+  such as window destroy notifications are now passed to the client in
+  client/server form.  (Parsing a string into arguments was moved from the
+  Session class to the ArgList class.)
+
   Revision 1.3  1998/03/04 19:11:01  wenger
   Fixed some more dynamic memory errors.
 
@@ -74,17 +80,17 @@ DataSeg::Set(const char *label, const char *filename, long offset, long length)
 
 	if (_label != NULL)
 	{
-		free(_label);
+		FreeString(_label);
 		_label = NULL;
 	}
-	if (label != NULL) _label = strdup(label);
+	if (label != NULL) _label = CopyString(label);
 
 	if (_filename != NULL)
 	{
-		delete _filename;
+		FreeString(_filename);
 		_filename = NULL;
 	}
-	if (filename != NULL) _filename = strdup(filename);
+	if (filename != NULL) _filename = CopyString(filename);
 
 	_offset = offset;
 	_length = length;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/02/16 18:51:49  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.7  1999/03/01 23:09:11  wenger
   Fixed a number of memory leaks and removed unused code.
 
@@ -128,7 +131,7 @@ VisualLinkClassInfo::~VisualLinkClassInfo()
 #endif
 
   delete _link;
-  delete [] _name;
+  FreeString((char *)_name);
 
   if (!DevLink::_linkList.Delete(this)) {
     reportErrNosys("Unable to delete from link list");

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  2000/01/13 23:06:43  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.26  1999/11/30 22:27:26  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -240,13 +243,13 @@ Server::Server(char *name, int image_port,
 	serverstate = STANDALONE;
 	_ThisServer = this;
 
-	_name = strdup(name);
+	_name = CopyString(name);
 	DO_ASSERT(_name, "Out of memory");
 								 
 	// record the last client who try to create/join a group
 	collabCid = CLIENT_INVALID;
 
-	switchname = strdup(swtname);
+	switchname = CopyString(swtname);
 									   
 	bzero((char *) &switchaddr, sizeof(switchaddr));
 	gethostname(hostname, MAXNAMELEN);
@@ -387,7 +390,7 @@ Server::~Server()
     }
     delete [] _clients;
 	_clients = NULL;
-    free( _name);
+    FreeString( _name);
 	_name = NULL;
     delete _cmd;
 	_cmd = NULL;
@@ -934,9 +937,9 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 		success = ExecInitServer(cid, argv[2], errmsg);
 		if (_clients[cid].cname != NULL)
 		{
-			free( _clients[cid].cname);
+			FreeString( _clients[cid].cname);
 		}
-		_clients[cid].cname = strdup(argv[2]);
+		_clients[cid].cname = CopyString(argv[2]);
 	}
 	else if (!strcmp(argv[0], CS_Query_Req))
 	{

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.96  2000/02/16 18:51:46  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.95  1999/11/30 22:28:30  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -718,6 +721,6 @@ void TkControlPanel::NotifyFrontEnd(const char *script)
     fprintf(stderr, "Cannot execute %s: %s\n",
             script, _interp->result);
   }
-  free(tmpScript);
+  FreeString(tmpScript);
 }
 

@@ -29,6 +29,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/01/11 22:28:31  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.7  1997/05/28 15:39:15  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -125,7 +131,7 @@ FileIndex::~FileIndex()
   _indexArray = NULL;
 
   if (_indexFileName) {
-    free(_indexFileName);
+    FreeString(_indexFileName);
     _indexFileName = NULL;
   }
 }
@@ -204,7 +210,7 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
   DevStatus result(StatusOk);
   int indexFd = -1;
 
-  if (_indexFileName) free(_indexFileName);
+  if (_indexFileName) FreeString(_indexFileName);
   _indexFileName = CopyString(indexFileName);
 
   indexFd = open(indexFileName, O_RDONLY, 0);
@@ -390,7 +396,7 @@ FileIndex::Checkpoint(char *indexFileName, DataSource *dataP, TData *tdataP,
   }
 
   if (_indexFileName && strcmp(_indexFileName, indexFileName)) {
-    free(_indexFileName);
+    FreeString(_indexFileName);
     _indexFileName = CopyString(indexFileName);
   }
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/11/06 17:59:52  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.10  1998/11/04 20:34:00  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -121,7 +125,7 @@ StringStorage::~StringStorage()
   if (this == _defaultTable) _defaultTable = NULL;
 
   Clear();
-  delete [] _tableName;
+  FreeString(_tableName);
 }
 
 StringStorage *
@@ -176,7 +180,7 @@ StringStorage::Insert(char *string, int &key)
   printf("  %d entries in hash table\n", _strings.num());
 #endif
   if (code < 0) {
-    delete [] tmpString;
+    FreeString(tmpString);
     return code;
   }
   code = _keys.insert(key, tmpString);
@@ -201,7 +205,7 @@ StringStorage::Clear()
 #if defined(DEBUG_STRINGS)
     printf("  deleting <%s>\n", *string);
 #endif
-    delete [] *string;
+    FreeString(*string);
   }
 
   int code = _strings.clear();
@@ -234,7 +238,7 @@ StringStorage::ClearAll()
   // Re-create default table.
   GetDefaultTable();
 
-  delete [] _stringFile;
+  FreeString(_stringFile);
   _stringFile = NULL;
 
   return result;
@@ -287,7 +291,7 @@ StringStorage::SaveAll(const char *filename)
   }
 
   if (result == 0) {
-    delete [] _stringFile;
+    FreeString(_stringFile);
     _stringFile = CopyString(filename);
   }
 
@@ -376,7 +380,7 @@ StringStorage::LoadAll(const char *filename)
     reportErrSys("error closing strings file");
   }
 
-  delete [] _stringFile;
+  FreeString(_stringFile);
   _stringFile = CopyString(filename);
 
   return result;

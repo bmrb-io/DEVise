@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/11/29 21:07:53  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.44  1999/10/04 19:36:59  wenger
   Mouse location is displayed in "regular" DEVise.
 
@@ -324,7 +328,7 @@ class ViewWin : public Coloring
     void RealGeometry(int &x, int &y, unsigned &w, unsigned &h);
     
     /* Set geometry of window */
-    void SetGeometry(int x, int y, unsigned w, unsigned h);
+    virtual void SetGeometry(int x, int y, unsigned w, unsigned h);
 
     /* Get current geometry of window */
     void Geometry(int &x, int &y, unsigned &w, unsigned &h);

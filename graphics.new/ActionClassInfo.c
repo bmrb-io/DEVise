@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/02/16 18:51:36  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.4  1999/11/30 22:28:18  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -66,6 +69,7 @@ ActionClassInfo::ActionClassInfo(const char *className, const char *instName,
 
 ActionClassInfo::~ActionClassInfo(){
 	delete _action;
+	FreeString((char *)_instName);
 }
 
 const char *ActionClassInfo::ClassName(){

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/12/15 14:55:24  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.11  1997/05/03 19:53:56  wenger
   Fixed bug in AttrList class that caused Devise to crash on mappings
   that use recId; commented out debug code in UnixRecFile.c..
@@ -150,7 +156,7 @@ Destructor
 
 UnixRecFile::~UnixRecFile()
 {
-  delete _name;
+  FreeString(_name);
   close(_fd);
 }
 

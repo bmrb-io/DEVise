@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  2000/01/13 23:06:50  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.20  1999/11/30 22:28:00  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -103,11 +106,14 @@ AttrList::AttrList(const char *name, int startSize)
   for(int i = 0; i < _arraySize; i++)
     _attrs[i] = NULL;
   _size = 0;
-  _name = name;
+  _name = CopyString(name);
 }
 
 void AttrList::Clear(){
   for(int i = 0; i < _arraySize; i++){
+	// Note: it seems like these strings should be freed here, but
+	// doing so causes DEVise to crash!  RKW 2000-03-13.
+	// FreeString(_attrs[i]->name);
     delete _attrs[i];
     _attrs[i] = NULL;
   }
@@ -119,6 +125,7 @@ AttrList::~AttrList()
   Clear();
   delete [] _attrs;
   _attrs = NULL;
+  FreeString((char *)_name);
 }
 
 /* Copy constructor */

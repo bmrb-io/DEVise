@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  2000/01/13 23:07:02  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.19  1999/11/30 22:28:19  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -140,7 +143,7 @@ DataSource::DataSource(const char *label, ViewGraph* controlling_view)
     _ref_count = 0;
     _label = NULL;
     if (label != NULL)
-	_label = strdup(label);
+	_label = CopyString(label);
 
     _version = 0;
     _controlling_view = NULL;
@@ -161,7 +164,7 @@ DataSource::~DataSource()
 	     "Deleting datasource with dangling references");
     
     if (_label != NULL) {
-	free(_label);
+	FreeString(_label);
     }
 }
 

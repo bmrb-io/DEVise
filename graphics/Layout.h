@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/08/13 17:22:30  wenger
+  Custom view layouts are now saved to session files; removed now unused
+  TileLayout code.
+
   Revision 1.5  1999/03/01 17:47:32  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -45,6 +49,7 @@
 //******************************************************************************
 
 #include "ViewLayout.h"
+#include "ObjectValid.h"
 
 //******************************************************************************
 
@@ -96,14 +101,10 @@ class Layout : public ViewLayout
 									 unsigned w, unsigned h);
 		virtual void	HandleWindowMappedInfo(WindowRep* w, Boolean mapped);
 		virtual Boolean	HandleWindowDestroy(WindowRep* w);
+
+  private:
+    ObjectValid _objectValid;
 };
 
 //******************************************************************************
 #endif			   
-
-
-
-
-
-
-

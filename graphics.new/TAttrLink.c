@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  2000/02/16 18:51:44  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.17  2000/01/13 23:07:11  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -168,9 +171,9 @@ TAttrLink::~TAttrLink()
 #endif
 
   (void) DestroyMasterTable();
-  delete [] _masterAttrName;
+  FreeString(_masterAttrName);
   _masterAttrName = NULL;
-  delete [] _slaveAttrName;
+  FreeString(_slaveAttrName);
   _slaveAttrName = NULL;
 
   _objectCount--;
@@ -437,7 +440,7 @@ TAttrLink::DestroyMasterTable()
 	"Can't have master table without master view");
     _masterView->DestroyDerivedTable(_masterTableName);
   }
-  delete [] _masterTableName;
+  FreeString(_masterTableName);
   _masterTableName = NULL;
 
   return StatusOk;
@@ -500,7 +503,7 @@ TAttrLink::SetMasterAttr(char *masterAttrName)
 #endif
 
   if (strcmp(masterAttrName, _masterAttrName)) {
-    delete [] _masterAttrName;
+    FreeString(_masterAttrName);
     _masterAttrName = CopyString(masterAttrName);
 
     //
@@ -528,7 +531,7 @@ TAttrLink::SetSlaveAttr(char *slaveAttrName)
 #endif
 
   if (strcmp(slaveAttrName, _slaveAttrName)) {
-    delete [] _slaveAttrName;
+    FreeString(_slaveAttrName);
     _slaveAttrName = CopyString(slaveAttrName);
 
     //

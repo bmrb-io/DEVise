@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/11/30 22:28:05  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.33  1999/07/16 21:35:52  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -267,6 +274,15 @@ char *CopyString(const char *str)
   return result;
 }
 
+void FreeString(char *str)
+{
+  if (str) {
+    int length = strlen(str);
+    memset(str, 0, length);
+    free(str);
+  }
+}
+
 const char *DateString(time_t tm, const char *format)
 {
 #if 0
@@ -505,7 +521,7 @@ void FreeArgs(int argc, char **argv)
 {
   int index;
   for (index = 0; index < argc; index++) {
-    delete [] argv[index];
+    FreeString(argv[index]);
   }
 
   delete [] argv;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/05/07 14:13:45  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.1  1999/03/01 17:47:33  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
 
@@ -35,6 +42,7 @@
 #include "Display.h"
 #include "Layout.h"
 #include "DevError.h"
+#include "Util.h"
 
 #define DEBUG 0
 
@@ -81,7 +89,7 @@ ViewGeom::ViewGeom()
 DevStatus
 ViewGeom::Ungroup()
 {
-#if DEBUG >= 1
+#if (DEBUG >= 1)
   printf("ViewGeom::Ungroup()\n");
 #endif
 
@@ -132,7 +140,7 @@ ViewGeom::Ungroup()
 DevStatus
 ViewGeom::Group()
 {
-#if DEBUG >= 1
+#if (DEBUG >= 1)
   printf("ViewGeom::Group()\n");
 #endif
 
@@ -176,17 +184,20 @@ ViewGeom::Group()
       view->RealGeometry(viewX, viewY, viewW, viewH);
       view->AbsoluteOrigin(viewX, viewY);
 
-#if DEBUG >= 3
+#if (DEBUG >= 3)
       printf("View <%s> geometry: x: %d, y: %d, w: %d, h: %d\n",
           view->GetName(), viewX, viewY, viewW, viewH);
 #endif
 
       ViewWin *newWindow = view->GetParent();
       view->DeleteFromParent();
+      char *winName = newWindow->GetName();
       delete newWindow;
+      FreeString(winName);
       view->AppendToParent(info->_window);
-      // Parent doesn't map the view because of CUSTOM layout mode.
-      view->Map(viewX - winX, viewY - winY, viewW, viewH);
+      // Changed code here because parent now *does* map view even in
+      // CUSTOM layout mode.
+      view->SetGeometry(viewX - winX, viewY - winY, viewW, viewH);
 
 #if DEBUG >= 3
       view->RealGeometry(viewX, viewY, viewW, viewH);
@@ -282,9 +293,10 @@ ViewGeom::SplitWindow(ViewWin *window)
     viewY -= adjustY;
 
     // Note that we're bypassing WinClassInfo here.
-    char name[256];
-    sprintf(name, "%s window", view->GetName());
-    newWindows[viewNum] = new Layout(name, viewX, viewY, viewW, viewH, false,
+    char nameBuf[256];
+    sprintf(nameBuf, "%s window", view->GetName());
+    char *tmpName = CopyString(nameBuf);
+    newWindows[viewNum] = new Layout(tmpName, viewX, viewY, viewW, viewH, false,
       false);
   }
     

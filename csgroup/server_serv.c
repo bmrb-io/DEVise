@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/08/21 22:16:11  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.4  1998/06/24 15:49:14  beyer
   changed include for egcs 2.90.27
 
@@ -100,6 +104,7 @@
 #endif
 
 #include "colbr.h"
+#include "Util.h"
 
 /* States a server can be in wrt request */
 
@@ -174,7 +179,7 @@ server_prog_1(int fd)
 			}
 
 			result = groupsend_1_svc(&strArg, cInfoArg, msgArg);
-			free(msgArg.msg);
+			FreeString(msgArg.msg);
 			if (XferRpcReturn(fd, result) <= 0) {
 				ret = -1;
 			}

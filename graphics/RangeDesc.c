@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  2000/02/16 18:51:21  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.3  1999/05/21 14:52:14  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -76,6 +79,7 @@ RangeDesc::~RangeDesc()
 #endif
 
   Clear();
+  FreeString(_paletteColors);
 }
 
 /*------------------------------------------------------------------------------

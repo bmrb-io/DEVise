@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  2000/02/16 18:51:19  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.26  2000/01/13 23:06:50  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -487,6 +490,9 @@ void ClassDir::DestroyAllInstances()
         printf("now destroying %s\n", instRec->InstanceName());
 #endif
 	delete instRec;
+#if defined(DEBUG)
+        printf("  destroyed instance\n");
+#endif
 	_instanceCount--;
       }
       classRec->_numInstances = 0;
@@ -692,7 +698,7 @@ void ClassInfo::SetDefaultParams(int argc, const char * const *argv)
   if (_defaultParams) {
     /* free parameters */
     for(int i = 0; i < _numDefaultParams; i++) {
-      delete _defaultParams[i];
+      FreeString(_defaultParams[i]);
       delete _defaultParams;
     }
   }

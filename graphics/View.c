@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.216  2000/02/16 18:51:22  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.215  2000/02/15 16:16:15  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -1180,10 +1183,10 @@ View::~View(void)
 
 	DOASSERT(!_querySent, "Query still active");
 
-	delete [] _label.name;
+	FreeString(_label.name);
 	delete _cursors;
 	delete _filterQueue;
-	if (_viewHelp) free((char *)_viewHelp);
+	FreeString((char *)_viewHelp);
 
 	Unmap();
 	DeleteFromParent();
@@ -1591,6 +1594,9 @@ void View::SetPileMode(Boolean mode)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void View::SetGeometry(int x, int y, unsigned wd, unsigned ht) 
 {
+#if defined(DEBUG)
+    printf("View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(), x, y, wd, ht);
+#endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(),
@@ -2140,7 +2146,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, const char *name,
 	return;
   }
 
-  delete _label.name;
+  FreeString(_label.name);
 
   /* CopyString() now handles NULL okay. */
   _label.name = CopyString(name);
@@ -4590,7 +4596,7 @@ View::ForceIntoDataArea(int &x, int &y)
 void
 View::SetViewHelp(const char *helpStr)
 {
-  if (_viewHelp) free((char *)_viewHelp);
+  if (_viewHelp) FreeString((char *)_viewHelp);
   _viewHelp = CopyString(helpStr);
 }
 

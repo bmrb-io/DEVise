@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.103  2000/02/15 16:16:16  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.102  2000/02/08 22:11:50  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -735,7 +739,7 @@ class View : public ViewWin
 	  return _XORflag;
 	}
 
-	void SetGeometry(int x, int y, unsigned wd, unsigned ht); 
+	virtual void SetGeometry(int x, int y, unsigned wd, unsigned ht); 
 	/******** Pixmap manipulations *********/
 
 	/* Put current pixmap into buffer. bytes == # of bytes

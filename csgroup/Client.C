@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/01/13 23:06:42  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.11  1999/01/29 15:18:23  wenger
   Fixed egcs 1.1.1 fixes -- taking out array constructor arguments caused
   problems in some places.
@@ -87,10 +90,10 @@
 #include "ClientAPI.h"
 #include "Csprotocols.h"
 #include "keys.h"
+#include "Util.h"
 
 //#define DEBUG
 #undef DEBUG
-#define DOASSERT(c,r) {if (!(c)) DoAbort(r); } 
 static char* errBase[Client::MAX_ERRORS]=
 {
 	"Try to specify more than one group",
@@ -114,8 +117,8 @@ Client::Client(char *name, char *hostname, int port, char* initStr)
 {
 	int retval;
 	
-	_name = strdup(name);
-	_hostname = strdup(hostname);
+	_name = CopyString(name);
+	_hostname = CopyString(hostname);
 	DOASSERT(_name && _hostname, "Out of memory");
 	_port = port;
 	csk = NULL;
@@ -154,8 +157,8 @@ Client::Client(char *name, char *hostname, int port, char* initStr)
 Client::~Client()
 {
   (void)NetworkClose(_serverFd);
-  free( _name);
-  free(_hostname);
+  FreeString( _name);
+  FreeString(_hostname);
   delete _result;
   delete _cmd;
   delete csk;

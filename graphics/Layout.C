@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/12/01 00:09:35  wenger
+  Disabled extra debug logging for tracking down Omer's crash.
+
   Revision 1.12  1999/11/30 23:52:20  wenger
   A view can now be successfully inserted into a window which is in custom
   layout mode (fixes problem Omer had); more error checking in insertWindow
@@ -94,6 +97,7 @@ Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
   printf("Layout(0x%p)::Layout(%s, %f, %f, %f, %f)\n", this, name, x, y, w, h);
 #endif
 
+  _objectValid.Set();
   Coord rootWidth, rootHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(rootWidth, rootHeight);
   Map((int) ( x * rootWidth), (int) (y * rootHeight),
@@ -111,6 +115,7 @@ Layout::Layout(char* name, int x, int y, unsigned w, unsigned h,
   printf("Layout(0x%p)::Layout(%s)\n", this, name);
 #endif
 
+  _objectValid.Set();
   Map(x, y, w, h);
   _mode = AUTOMATIC;
   SetPrintExclude(printExclude);
@@ -122,6 +127,7 @@ Layout::Layout(char* name, int x, int y, unsigned w, unsigned h,
 /* for backward compatibility - to set STACKED, HOR and VERT layouts */
 void Layout::SetPreferredLayout(int v, int h, Boolean stacked)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Layout(%s, 0x%p)::SetPreferredLayout(%d, %d, %d)\n", GetName(),
     this, v, h, stacked);
@@ -158,6 +164,7 @@ void Layout::SetPreferredLayout(int v, int h, Boolean stacked)
 
 void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n", GetName(),
     this, mode, rows, columns);
@@ -191,6 +198,7 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
 
 void Layout::Append(ViewWin *child)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Layout(%s, 0x%p)::Append(%s)\n", GetName(), this, child->GetName());
 #endif
@@ -223,6 +231,7 @@ void Layout::Append(ViewWin *child)
 
 void Layout::Delete(ViewWin *child)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Layout(%s, 0x%p)::Delete(%s)\n", GetName(), this, child->GetName());
 #endif
@@ -247,6 +256,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
 			 int extraWeight, int *x, int *y, 
 			 unsigned int *w, unsigned int *h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
     this, single, resize);
@@ -378,6 +388,7 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
 			   unsigned int numViews,
 			   int &horViews, int &verViews)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("Layout::ComputeLayout(%s, 0x%p)::ComputeLayout(%u %u %u)\n",
     GetName(), this, w, h, numViews);
@@ -465,6 +476,7 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
 void Layout::ScaleChildren(int oldX, int oldY, unsigned oldW, unsigned oldH,
 			   int oldX0, int oldY0)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   int newX, newY, newX0, newY0;
   unsigned newW, newH;
 #ifdef DEBUG
@@ -547,6 +559,7 @@ void Layout::ScaleChildren(int oldX, int oldY, unsigned oldW, unsigned oldH,
 void	Layout::HandleResize(WindowRep* win, int x, int y,
 							 unsigned w, unsigned h)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #ifdef DEBUG
 	printf("Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
 		   GetName(), this, x, y, w, h);
@@ -588,6 +601,7 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 
 void	Layout::HandleWindowMappedInfo(WindowRep* win, Boolean mapped)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	char	buf[100];
 
 	ViewWin::HandleWindowMappedInfo(win, mapped);
@@ -602,6 +616,7 @@ void	Layout::HandleWindowMappedInfo(WindowRep* win, Boolean mapped)
 
 Boolean		Layout::HandleWindowDestroy(WindowRep*	win)
 {
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 	char	buf[100];
 
 	ViewWin::HandleWindowDestroy(win);

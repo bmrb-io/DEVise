@@ -26,6 +26,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/11/29 21:07:41  wenger
+  Fixed bug 535 and partially fixed bug 532 (problems with view order in
+  piles); removed (unused) replaceView command and related ViewWin methods
+
   Revision 1.22  1999/11/15 22:54:52  wenger
   Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
   caused by highlight view/pile problems).
@@ -252,13 +256,18 @@ PileStack::~PileStack()
     _window->SetMyPileStack(NULL);
   }
 
-  delete [] _name;
+  FreeString(_name);
   _name = NULL;
   _window = NULL;
   _state = PileStackInvalid;
 
-  delete _link;
-  _link = NULL;
+  if (_link) {
+    const char *linkName = _link->GetName();
+    delete _link;
+    _link = NULL;
+    FreeString((char *)linkName);
+  }
+
   _psList.Delete(this);
 }
 
@@ -732,7 +741,7 @@ PileStack::SetPiled(Boolean doLink)
       } else {
 	char *tmpStr = CopyString(view->_label.name);
         view->SetLabelParam(title.occupyTop, title.extent, tmpStr);
-	delete [] tmpStr;
+	FreeString(tmpStr);
       }
     }
     GetViewList()->DoneIterator(index);

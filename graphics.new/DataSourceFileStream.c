@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/01/13 23:07:03  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.11  1998/03/04 19:11:00  wenger
   Fixed some more dynamic memory errors.
 
@@ -109,7 +112,7 @@ DataSourceFileStream::DataSourceFileStream(const char *filename, const char *lab
 	DO_DEBUG(printf("DataSourceFileStream::DataSourceFileStream(%s, %s)\n",
 		filename, (label != NULL) ? label : "null"));
 
-	_filename = strdup(filename);
+	_filename = CopyString(filename);
 	_file = NULL;
 }
 
@@ -121,7 +124,7 @@ DataSourceFileStream::~DataSourceFileStream()
 {
 	DO_DEBUG(printf("DataSourceFileStream::~DataSourceFileStream()\n"));
 
-	if (_filename != NULL) free(_filename);
+	if (_filename != NULL) FreeString(_filename);
 	if (_file != NULL) fclose(_file);
 }
 

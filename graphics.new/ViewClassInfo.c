@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  2000/02/16 18:51:47  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.19  1999/02/22 19:07:51  wenger
   Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
   of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
@@ -183,7 +186,7 @@ ViewClassInfo::~ViewClassInfo()
   // Note: _view must be deleted *before* _name is deleted, in case the
   // name is referenced during by any of the view destructors.  RKW 1999-02-22.
   delete _view;
-  delete [] _name;
+  FreeString((char *)_name);
 }
 
 /* Get names of parameters */

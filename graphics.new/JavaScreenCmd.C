@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.95  2000/03/08 21:23:32  wenger
+  Fixed bug 568 (crash when opening some sessions in the JavaScreen):
+  reset devised timeout in jspop to a better value; JavaScreenCmd now
+  deals better with the possibility of a communications failure.
+
   Revision 1.94  2000/02/23 23:32:54  wenger
   Fixed bug 567 (problem with JAVAC_ResetFilters command; added LogFileLine()
   macro to DebugLog.
@@ -567,7 +572,7 @@ JSArgs::~JSArgs()
 {
   for (int index = 0; index < _argc; index++) {
     if (_dynamic[index]) {
-	  delete [] _argv[index];
+	  FreeString((char *)_argv[index]);
 	}
   }
   delete [] _argv;
@@ -860,7 +865,7 @@ SetGDataFiles()
 		GDataSock::Params params;
 		view->GetSendParams(params);
 
-		delete [] params.file;
+		FreeString(params.file);
 		params.file = tempnam(Init::TmpDir(), NULL);
 #if defined(DEBUG_LOG)
 		sprintf(logBuf, "Setting GData file for view %s to %s\n",
@@ -868,7 +873,7 @@ SetGDataFiles()
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		view->SetSendParams(params);
-		delete [] params.file;
+		FreeString(params.file);
 	}
 	_gdataViews.DoneIterator(viewIndex);
 }
@@ -973,7 +978,7 @@ JavaScreenCmd::~JavaScreenCmd()
 
 	int	i;
 	for (i=0; i< _argc; ++i)
-		delete []_argv[i];
+		FreeString(_argv[i]);
 	delete []_argv;
 }
 
@@ -2055,7 +2060,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 					dirtyGifCount++;
 				} else {
 					(void) unlink(fileName);
-					delete [] fileName;
+					FreeString(fileName);
 				}
 			}
 			if (tmpResult != DONE) result = tmpResult;
@@ -2129,7 +2134,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 #endif
 		}
 		(void) unlink(imageNames[winNum]);
-		delete [] imageNames[winNum];
+		FreeString(imageNames[winNum]);
 	}
 	delete [] imageNames;
 	delete [] viewNames;

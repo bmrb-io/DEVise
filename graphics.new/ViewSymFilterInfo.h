@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  2000/02/15 16:16:26  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
  */
 
 #ifndef _ViewSymFilterInfo_h_
@@ -41,8 +45,8 @@ public:
     while (_list.More(index)) {
       ListElement *le = _list.Next(index);
       _list.DeleteCurrent(index);
-      free(le->_tdataName);
-      free(le->_parentVal);
+      FreeString(le->_tdataName);
+      FreeString(le->_parentVal);
       delete le;
     }
     _list.DoneIterator(index);
