@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/20 18:42:03  jussi
+  Replaced PENTIUM flag with SOLARIS.
+
   Revision 1.5  1996/03/27 17:55:11  wenger
   Changes to get DEVise to compile and run on Linux.
 
@@ -112,6 +115,15 @@
 
 #if defined(LINUX) && !defined(__linux__)
 #error "Are you sure this is a Linux machine?"
+#endif
+
+/*
+   Prevent Linux from loading /usr/include/linux/uio.h and
+   conflict with /usr/include/sys/uio.h.
+*/
+
+#ifdef LINUX
+#define __LINUX_UIO_H
 #endif
 
 /*
