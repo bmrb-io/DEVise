@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  2000/02/08 22:11:48  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.21  2000/01/14 18:23:08  wenger
   Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
   filters back to the values defined in the session file, without actually
@@ -167,6 +173,10 @@ public:
   static char *ShowDataSource(const char *sourceName);
 
   static char *ListDataCatalog(const char *catName);
+
+  // Session description.
+  static void SetDescription(const char *description);
+  static const char *GetDescription();
   
 protected:
   friend class DeviseCommand_setOpeningSession;
@@ -265,6 +275,8 @@ private:
   static DataCatalog *_dataCat;
   static char *_catFile;
   static char *_sessionFile;
+
+  static char *_description;
 };
 
 #endif /* _Session_h_ */

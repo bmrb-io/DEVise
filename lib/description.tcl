@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1997
+# (c) Copyright 1992-2000
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -20,42 +20,24 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1997/06/18 21:06:40  wenger
+# Fixed problems saving to batch scripts.
+#
 # Revision 1.1  1997/04/30 18:27:22  wenger
 # Added session text description capability.
 #
 
 ############################################################
-
-set sessionDescription ""
-
-############################################################
 # Clear the session description.
 
 proc ClearDescription {} {
-  global sessionDescription
-
-  set sessionDescription ""
-
-  UpdateDescView
-}
-
-############################################################
-# Set the session description to the given string.
-
-proc SetDescription {description} {
-  global sessionDescription
-
-  set sessionDescription $description
-
-  UpdateDescView
+  UpdateDescView ""
 }
 
 ############################################################
 # Allow the user to view and edit the session description.
 
-proc ViewDescription {} {
-  global sessionDescription
-
+proc EditDescription {} {
   if {![WindowExists .sessDesc]} {
     # Window for session description.
     toplevel .sessDesc
@@ -67,9 +49,9 @@ proc ViewDescription {} {
       -yscrollcommand ".sessDesc.scroll set"
     scrollbar .sessDesc.scroll -command ".sessDesc.text yview"
 
-    # Apply, Clear, and Close buttons
+    # OK, Clear, and Close buttons
     frame .sessDesc.butFrame
-    button .sessDesc.apply -text "Apply" -command {ApplyDescView}
+    button .sessDesc.apply -text "OK" -command {ApplyDescView; CloseDescView}
     button .sessDesc.clear -text "Clear" -command {ClearDescription}
     button .sessDesc.close -text "Close" -command {CloseDescView}
 
@@ -82,35 +64,23 @@ proc ViewDescription {} {
     pack .sessDesc.text -side left
   }
 
-  UpdateDescView
-}
+  UpdateDescView [DEVise getSessionDesc]
 
-############################################################
-# Save the session description to the given fileId.
-proc SaveDescription {fileId asBatchScript} {
-  global sessionDescription
-
-  if {$asBatchScript} {
-    return
-  }
-
-  puts $fileId ""
-  puts $fileId "# Set session description"
-  puts $fileId "SetDescription \"$sessionDescription\""
+  tkwait visibility .sessDesc
+  grab set .sessDesc
+  tkwait window .sessDesc
 }
 
 ############################################################
 # Update the view of the session description.
 
-proc UpdateDescView {} {
-  global sessionDescription
-
+proc UpdateDescView {description} {
   if {[WindowExists .sessDesc]} {
     # Avoid unnecessary changes to the window.
     set tmpDesc [.sessDesc.text get 1.0 end]
-    if {$tmpDesc != $sessionDescription} {
+    if {$tmpDesc != $description} {
       .sessDesc.text delete 1.0 end
-      .sessDesc.text insert end $sessionDescription
+      .sessDesc.text insert end $description
     }
   }
 }
@@ -119,9 +89,12 @@ proc UpdateDescView {} {
 # Apply the current description in the window to the session.
 
 proc ApplyDescView {} {
-  global sessionDescription
+  set description [.sessDesc.text get 1.0 end]
 
-  set sessionDescription [.sessDesc.text get 1.0 end]
+  # Stupid text widget always adds a newline -- get rid of it.
+  set description [string trimright $description]
+
+  DEVise setSessionDesc $description
 }
 
 ############################################################

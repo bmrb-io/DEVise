@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.54  2000/02/16 18:51:38  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.53  2000/02/08 22:11:59  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -1909,6 +1912,16 @@ DECLARE_CLASS_END
 DECLARE_CLASS_DeviseCommand_(setViewHelp)
 DECLARE_CLASS_END
 
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setSessionDesc)
+DECLARE_CLASS_END
 
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getSessionDesc)
+DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.98  2000/02/16 18:51:37  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.97  2000/02/08 22:11:58  wenger
   Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
   edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -889,7 +892,7 @@ int
 DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
 {
 
-	char *catEntry = Session::ShowDataSource(argv[1]);
+	const char *catEntry = Session::ShowDataSource(argv[1]);
 
 	if (catEntry != NULL) {
    	  ReturnVal(API_ACK, catEntry);
@@ -903,7 +906,7 @@ DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
 int
 DeviseCommand_dteListCatalog::Run(int argc, char** argv)
 {
-    char *catListing = Session::ListDataCatalog(argv[1]);
+    const char *catListing = Session::ListDataCatalog(argv[1]);
 	if (catListing != NULL) {
       ReturnVal(API_ACK, catListing);
 	  delete [] catListing;
@@ -1021,7 +1024,7 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 		//
 		// Try to find an entry with this name in the catalog.
 		//
-        char *oldEntry = Session::ShowDataSource(fullName);
+        const char *oldEntry = Session::ShowDataSource(fullName);
 
         if (oldEntry && strlen(oldEntry) > 0) {
 		  //
@@ -6428,6 +6431,41 @@ IMPLEMENT_COMMAND_BEGIN(setViewHelp)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in setViewHelp\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setSessionDesc)
+    // Arguments: <session description>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		Session::SetDescription(argv[1]);
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setSessionDesc\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getSessionDesc)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+        ReturnVal(API_ACK, Session::GetDescription());
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getSessionDesc\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

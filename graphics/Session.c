@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.80  2000/02/17 17:50:41  wenger
+  Fixed bug that caused DEVise to crash when saving a session if session
+  file could not be opened.
+
   Revision 1.79  2000/02/16 18:51:21  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -424,6 +428,7 @@ Boolean Session::_openingSession = false;
 DataCatalog *Session::_dataCat = NULL;
 char *Session::_catFile = NULL;
 char *Session::_sessionFile = NULL;
+char *Session::_description = NULL;
 
 /*------------------------------------------------------------------------------
  * function: Session::Open
@@ -452,6 +457,12 @@ Session::Open(const char *filename)
       free(_sessionFile);
     }
     _sessionFile = CopyString(filename);
+
+    if (_description) {
+      free(_description);
+    }
+    _description = NULL;
+
     _openingSession = true;
 
     ControlPanelSimple control;
@@ -490,6 +501,11 @@ Session::Close()
     free(_sessionFile);
   }
   _sessionFile = NULL;
+
+  if (_description) {
+    free(_description);
+  }
+  _description = NULL;
 
   ViewGeom *vg = ViewGeom::GetViewGeom();
   if (!vg->IsGrouped()) {
@@ -552,6 +568,9 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
   if (status.IsComplete()) {
     char *header = DevFileHeader::Get(FILE_TYPE_SESSION);
     fprintf(saveData.fp, "%s", header);
+
+    fprintf(saveData.fp, "\n# Session description\n");
+    fprintf(saveData.fp, "DEVise setSessionDesc {%s}\n", GetDescription());
 
     const char *stringFile = StringStorage::GetFile();
     if (stringFile != NULL) {
@@ -1031,6 +1050,36 @@ Session::ListDataCatalog(const char *catName)
 
   return catListTotal;
 }
+
+/*------------------------------------------------------------------------------
+ * function: Session::SetDescription
+ * Set session description.
+ */
+void
+Session::SetDescription(const char *description)
+{
+#if defined(DEBUG)
+  printf("Session::SetDescription(%s)\n", description);
+#endif
+
+  if (_description) free(_description);
+  _description = CopyString(description);
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::GetDescription
+ * Get session description.
+ */
+const char *
+Session::GetDescription()
+{
+#if defined(DEBUG)
+  printf("Session::GetDescription()\n");
+#endif
+
+  return _description ? _description : "";
+}
+
 
 /*------------------------------------------------------------------------------
  * function: Session::GetDataCatalog

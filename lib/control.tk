@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.211  2000/02/08 22:31:32  wenger
+#	Oops!  Committed with Test menu selection enabled.
+#	
 #	Revision 1.210  2000/02/08 22:12:12  wenger
 #	Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
 #	edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
@@ -1190,9 +1193,9 @@ menu .mbar.session.menu -tearoff 0
 	-command {DoDelete}
 
 #TEMP -- session descriptions don't work with batch scripts
-#TEMP.mbar.session.menu add separator
-#TEMP.mbar.session.menu add command -label "Session Description..." \
-#TEMP	-command {ViewDescription}
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Session Description..." \
+	-command {EditDescription}
 # ... >>>
 
 # For testing only...

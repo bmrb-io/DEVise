@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.60  2000/02/08 22:11:58  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.59  2000/01/14 18:23:14  wenger
   Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
   filters back to the values defined in the session file, without actually
@@ -612,6 +618,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(resetAllFilters)
 	REGISTER_COMMAND(getViewHelp)
 	REGISTER_COMMAND(setViewHelp)
+	REGISTER_COMMAND(setSessionDesc)
+	REGISTER_COMMAND(getSessionDesc)
 }
 
 CmdContainer::~CmdContainer()
