@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 16:01:12  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/05 20:23:48  jussi
   Updated CVS header.
 
@@ -78,12 +81,13 @@ char *infile, *outfile;
 	}
 
 	/* go through the file */
-	float firstTime; /* time of 1st record */
-	float lastTime; /* time of last record */
-	int numRecs= 0; 	/* # of records encountered */
-	float timeIncr = 0.0; /* Absolute duration of one file */
-	int iter;
-	for (iter=0; iter < numTimes; iter++){
+
+	float firstTime = 0;    /* time of 1st record */
+	float lastTime = 0;     /* time of last record */
+	int numRecs = 0;        /* # of records encountered */
+	float timeIncr = 0.0;   /* Absolute duration of one file */
+
+	for(int iter=0; iter < numTimes; iter++) {
 		/* seek to beginning of file */
 #ifdef SEEK_SET
 		if (lseek(fd,0,SEEK_SET)< 0)
