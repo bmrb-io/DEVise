@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.140  1999/11/30 22:28:09  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.139  1999/11/12 20:20:15  wenger
   Fixed? bug 023.
 
@@ -3502,7 +3509,7 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
   printf("Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
 	 x, y, w, h);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
 	  x, y, w, h);
@@ -3541,7 +3548,7 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 
   UpdateWinDimensions();
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with XWindowRep::MoveResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif

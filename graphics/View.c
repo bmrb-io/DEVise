@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.208  1999/11/30 22:28:05  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.207  1999/11/24 15:43:56  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -1551,7 +1558,7 @@ void View::SetPileMode(Boolean mode)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void View::SetGeometry(int x, int y, unsigned wd, unsigned ht) 
 {
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(),
       x, y, wd, ht);
@@ -1571,7 +1578,7 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewGeomCh);
   Refresh();
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with View::SetGeometry()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -4148,7 +4155,7 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 		   width, height);
     printf("  Old size: %d, %d, %d, %d\n", _x, _y, _width, _height);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(),
 	  xlow, ylow, width, height);
@@ -4161,7 +4168,7 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 	// Is this a real size change?
 	if (_hasGeometry && (_x == xlow) && (_y == ylow) &&
 		(_width == width) && (_height == height)) {
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with View::HandleResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -4174,7 +4181,7 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 									 DepMgr::EventViewResize);
     Refresh(true);
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with View::HandleResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif

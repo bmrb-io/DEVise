@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/11/30 22:28:07  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.14  1999/11/29 21:07:52  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -200,7 +207,7 @@ void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
 		   this, x, y, w, h);
     printf("  name = %s\n", GetName());
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "ViewLayout::HandleResize 0x%p at %d,%d, size %u,%u\n",
       this, x, y, w, h);
@@ -213,7 +220,7 @@ void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
 		MapChildren(0, true);
     }
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with ViewLayout::HandleResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif

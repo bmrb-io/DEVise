@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.40  1999/11/30 22:28:07  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.39  1999/10/18 15:36:33  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -259,7 +266,7 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 #ifdef DEBUG
   printf("WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
@@ -272,7 +279,7 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
   }
   DoneIterator(index);
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with WindowRep::HandleResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif

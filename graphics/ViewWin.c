@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.67  1999/11/30 22:28:07  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.66  1999/11/29 21:07:53  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -762,7 +769,7 @@ void ViewWin::Delete(ViewWin *child)
 // Note: I'm not sure what this really does that MoveResize() doesn't do.
 void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h) 
 {
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "ViewWin(%s)::GetGeometry(%d, %d, %d, %d)\n", GetName(),
 	  x, y, w, h);
@@ -774,7 +781,7 @@ void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h)
   _width = w;
   _height = h;
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with ViewWin::SetGeometry()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -853,7 +860,7 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
   printf("ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n", GetName(),
     this, x, y, w, h);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n",
 	  GetName(), this, x, y, w, h);
@@ -869,7 +876,7 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
     HandleResize(GetWindowRep(), x, y, w, h);
   }
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with ViewWin::MoveResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -1109,7 +1116,7 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 	printf("ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
 		   GetName(), this, xlow, ylow, width, height);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
 	  GetName(), this, xlow, ylow, width, height);
@@ -1125,7 +1132,7 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 		DrawMargins();
     }
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with ViewWin::HandleResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif

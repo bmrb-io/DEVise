@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/11/30 23:52:20  wenger
+  A view can now be successfully inserted into a window which is in custom
+  layout mode (fixes problem Omer had); more error checking in insertWindow
+  command.
+
   Revision 1.11  1999/11/30 22:28:03  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -157,7 +162,7 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
   printf("Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n", GetName(),
     this, mode, rows, columns);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n",
       GetName(), this, mode, rows, columns);
@@ -177,7 +182,7 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
     }
   }
 
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with Layout::SetLayoutProperties()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -246,7 +251,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
   printf("Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
     this, single, resize);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
     sprintf(logBuf, "Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
       this, single, resize);
@@ -254,7 +259,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
 #endif
   
   if ( _mode == CUSTOM) {
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with Layout::MapChildren()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -287,7 +292,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
       *w = _w;
       *h = _h;
     }
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with Layout::MapChildren()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -362,7 +367,7 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     else
       *w = width;
   }
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with Layout::MapChildren()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
@@ -546,7 +551,7 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 	printf("Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
 		   GetName(), this, x, y, w, h);
 #endif
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     char logBuf[1024];
 	sprintf(logBuf, "Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
       GetName(), this, x, y, w, h);
@@ -575,7 +580,7 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 #endif
 		ControlPanel::Instance()->NotifyFrontEnd(buf);
 	}
-#if defined(DEBUG_LOG) || 1 //TEMP -- figure out Omer's crash
+#if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with Layout::HandleResize()\n");
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
