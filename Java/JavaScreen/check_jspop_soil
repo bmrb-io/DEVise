@@ -20,27 +20,6 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.6  1999/07/23 15:06:35  wenger
-#  Okay, finally got args passed to jspop correctly.
-#
-#  Revision 1.5  1999/07/22 21:29:15  wenger
-#  Typo in previous commit.
-#
-#  Revision 1.4  1999/07/22 21:25:01  wenger
-#  Fixed problem with passing args to jspop.
-#
-#  Revision 1.3  1999/07/01 14:48:17  wenger
-#  Added sleep after killing jspop and Xvfb to fix problem with the new Xvfb
-#  sometimes starting before the old one is done being killed.
-#
-#  Revision 1.2  1999/06/30 18:23:10  wenger
-#  check_jspop now causes jspop to run two deviseds; jspop script sleeps
-#  after launching Xvfb.
-#
-#  Revision 1.1  1999/06/17 18:55:27  wenger
-#  Fixed kill_devised2 script for problems with 'ps'; added check_jspop
-#  script for restarting jspop if necessary.
-#
 
 ############################################################
 
@@ -52,10 +31,10 @@ $foundDevised = 0;
 open PS, "/bin/ps -e -o args >& 1 |" or die "can't fork: $!";
 
 while (<PS>) {
-  if ($_ =~ /java *jspop.*-cmdport6666/) {
+  if ($_ =~ /java *jspop.*-cmdport5966/) {
     $foundJspop = 1;
   }
-  if ($_ =~ /devised -port 6/) {
+  if ($_ =~ /devised -port 59/) {
     $foundDevised = 1;
   }
 }
@@ -69,7 +48,7 @@ if (!$foundJspop) {
   print "Restarting jspop\n";
 
   # Make sure we kill off any stray deviseds.
-  system("kill_devised2 6");
+  system("kill_devised2 59");
 
   KillJspop();
   SaveLogs();
@@ -110,7 +89,7 @@ sub KillJspop {
   open PS, "/bin/ps -e -o 'pid args' >& 1 |" or die "can't fork: $!";
 
   while (<PS>) {
-    if ($_ =~ /java *jspop.*-cmdport6666/) {
+    if ($_ =~ /java *jspop.*-cmdport5966/) {
       print "Killing $_";
       $foundJspop = 1;
       @words = split /  */, $_;
@@ -126,5 +105,5 @@ sub KillJspop {
 
 sub StartJspop {
   sleep 15;
-  system("jspop -cmdport6666 -imgport6644 -server2 &");
+  system("jspop -cmdport5966 -imgport5944 &");
 }
