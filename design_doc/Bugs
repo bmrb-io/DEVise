@@ -2146,8 +2146,9 @@ Num Date        Status  Description
 			catalog goof things up. (rkw)
 			(Fixed by rkw, 1999-12-29.)
 
-549 01/04/00	OPEN	Select View->Cursor->Set Fixed Size, then do Cancel;
+549 01/04/00	FIXED?	Select View->Cursor->Set Fixed Size, then do Cancel;
 			this produces an error (cursor not found). (rkw)
+			(Fixed by rkw, 8/8/00.)
 
 550 01/04/00	OPEN	"Check Data Sources" should ask for confirmation
 			before proceeding. (rkw)
@@ -2402,6 +2403,18 @@ Num Date        Status  Description
 			get NullPointerExceptions every time you move the mouse
 			in a view. (rkw)
 			(Fixed by rkw, 8/7/00.)
+
+609 8/8/00	OPEN	JavaScreen: clicking the Help button doesn't
+			display view help in view symbols (F1 in a view
+			symbol *does* display the help). (rkw)
+
+610 8/8/00	OPEN	JavaScreen: in JS at BMRB (on aden), in the
+			4096_full.ds session, the atoms don't show up in
+			the 3D view. (rkw)
+
+611 8/17/00	OPEN	peptide-cgi: for bmr4267.str, the summary file
+			contains links to a number of plots for which no
+			data is actually generated. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
