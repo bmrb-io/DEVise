@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.31  1996/01/16 01:30:16  jussi
+#	Some reorganization of code. Removed duplicate code etc.
+#
 #	Revision 1.30  1996/01/13 23:09:49  jussi
 #	Added support for Z attribute and shape attribute 2.
 #
@@ -1266,6 +1269,7 @@ proc OpenNewDataSource {} {
     
     statusWindow .info "Status" \
 	    "Creating an index on \"$sname\".\n\n\This may take a while."
+    update
 
     # ask DEVise to create tdata
     set result [DEVise create tdata $schema $source $sname]
