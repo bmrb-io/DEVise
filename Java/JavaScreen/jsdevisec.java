@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.110  2001/05/11 20:36:14  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.109  2001/05/07 21:53:26  wenger
 // Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
 // Xvfb.
@@ -1309,103 +1312,113 @@ class SessionDlg extends Frame
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-	//TEMP -- this has too damn many levels of indentation!
         fileList.addMouseListener(new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent event)
                 {
-                    public void mouseClicked(MouseEvent event)
-                    {
-                        if (event.getClickCount() > 1) {
-                            if (fileList.getItemCount() > 0) {
-                                int idx = fileList.getSelectedIndex();
-                                if (idx != -1) {
-                                    sessionName = fileList.getItem(idx);
-                                    if (sessionName.startsWith("[")) {
-                                        String[] name = DEViseGlobals.parseString(sessionName, '[', ']');
-                                        if (name[0].equals("..")) {
-                                            if (jsc.currentDir.equals(jsc.rootDir)) {
-                                                jsc.showMsg("You do not have access to this directory!");
-                                                return;
-                                            }
-
-                                            int index = jsc.currentDir.lastIndexOf('/');
-                                            if (index > 0) {
-                                                jsc.currentDir = jsc.currentDir.substring(0, index);
-                                            } else {
-                                                jsc.showMsg("Invalid current directory \"" + jsc.currentDir + "\"!");
-                                                jsc.currentDir = jsc.rootDir;
-                                                close();
-                                            }
-                                        } else {
-                                            jsc.currentDir = jsc.currentDir + "/" + name[0];
-                                        }
-
-                                        directory.setText("/" + jsc.currentDir);
-                                        validate();
-
-                                        //String dir = (jsc.currentDir).substring(14);
-                                        jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + jsc.currentDir + "}");
-                                    } else {
-                                        jsc.currentSession = sessionName;
-                                        jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + jsc.jsValues.uiglobals.screenSize.width + " " + jsc.jsValues.uiglobals.screenSize.height
-                                                                 + "\n" + DEViseCommands.OPEN_SESSION + " {" + jsc.currentDir + "/" + sessionName + "}");
-                                        close();
-                                    }
+		    int idx;
+                    if ((event.getClickCount() > 1) &&
+		      (fileList.getItemCount() > 0) &&
+		      ((idx = fileList.getSelectedIndex()) != -1)) {
+                        sessionName = fileList.getItem(idx);
+                        if (sessionName.startsWith("[")) {
+                            String[] name = DEViseGlobals.parseString(
+			      sessionName, '[', ']');
+                            if (name[0].equals("..")) {
+                                if (jsc.currentDir.equals(jsc.rootDir)) {
+                                    jsc.showMsg("You do not have access to this directory!");
+                                    return;
                                 }
-                            }
-                        }
-                    }
-                });
 
-        okButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (fileList.getItemCount() > 0) {
-                            int idx = fileList.getSelectedIndex();
-                            if (idx != -1) {
-                                sessionName = fileList.getItem(idx);
-                                if (sessionName.startsWith("[")) {
-                                    String[] name = DEViseGlobals.parseString(sessionName, '[', ']');
-                                    if (name[0].equals("..")) {
-                                        if (jsc.currentDir.equals(jsc.rootDir)) {
-                                            jsc.showMsg("You do not have access to this directory!");
-                                            return;
-                                        }
-
-                                        int index = jsc.currentDir.lastIndexOf('/');
-                                        if (index > 0) {
-                                            jsc.currentDir = jsc.currentDir.substring(0, index);
-                                        } else {
-                                            jsc.showMsg("Invalid current directory \"" + jsc.currentDir + "\"!");
-                                            jsc.currentDir = jsc.rootDir;
-                                            close();
-                                        }
-                                    } else {
-                                        jsc.currentDir = jsc.currentDir + "/" + name[0];
-                                    }
-
-                                    directory.setText("/" + jsc.currentDir);
-                                    validate();
-                                    jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + jsc.currentDir + "}");
+                                int index = jsc.currentDir.lastIndexOf('/');
+                                if (index > 0) {
+                                    jsc.currentDir = jsc.currentDir.substring(0, index);
                                 } else {
-                                    jsc.currentSession = sessionName;
-                                    jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + jsc.jsValues.uiglobals.screenSize.width + " " + jsc.jsValues.uiglobals.screenSize.height
-                                                             + "\n" + DEViseCommands.OPEN_SESSION + " {" + jsc.currentDir + "/" + sessionName + "}");
+                                    jsc.showMsg("Invalid current directory \"" +
+				      jsc.currentDir + "\"!");
+                                    jsc.currentDir = jsc.rootDir;
                                     close();
                                 }
+                            } else {
+                                jsc.currentDir = jsc.currentDir + "/" + name[0];
                             }
+
+                            directory.setText("/" + jsc.currentDir);
+                            validate();
+
+                            //String dir = (jsc.currentDir).substring(14);
+                            jsc.dispatcher.start(
+			      DEViseCommands.GET_SESSION_LIST + " {" +
+			      jsc.currentDir + "}");
+                        } else {
+                            jsc.currentSession = sessionName;
+                            jsc.dispatcher.start(
+			      DEViseCommands.SET_DISPLAY_SIZE + " " +
+			      jsc.jsValues.uiglobals.screenSize.width + " " +
+			      jsc.jsValues.uiglobals.screenSize.height + "\n" +
+			      DEViseCommands.OPEN_SESSION + " {" +
+			      jsc.currentDir + "/" + sessionName + "}");
+                            close();
                         }
                     }
-                });
+                }
+            });
+
+        okButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    int idx;
+                    if ((fileList.getItemCount() > 0) &&
+		      ((idx = fileList.getSelectedIndex()) != -1)) {
+                        sessionName = fileList.getItem(idx);
+                        if (sessionName.startsWith("[")) {
+                            String[] name = DEViseGlobals.parseString(sessionName, '[', ']');
+                            if (name[0].equals("..")) {
+                                if (jsc.currentDir.equals(jsc.rootDir)) {
+                                    jsc.showMsg("You do not have access to this directory!");
+                                    return;
+                                }
+
+                                int index = jsc.currentDir.lastIndexOf('/');
+                                if (index > 0) {
+                                    jsc.currentDir = jsc.currentDir.substring(0, index);
+                                } else {
+                                    jsc.showMsg("Invalid current directory \"" +
+				      jsc.currentDir + "\"!");
+                                    jsc.currentDir = jsc.rootDir;
+                                    close();
+                                }
+                            } else {
+                                jsc.currentDir = jsc.currentDir + "/" + name[0];
+                            }
+
+                            directory.setText("/" + jsc.currentDir);
+                            validate();
+                            jsc.dispatcher.start(
+			      DEViseCommands.GET_SESSION_LIST + " {" +
+			      jsc.currentDir + "}");
+                        } else {
+                            jsc.currentSession = sessionName;
+                            jsc.dispatcher.start(
+			      DEViseCommands.SET_DISPLAY_SIZE + " " +
+			      jsc.jsValues.uiglobals.screenSize.width + " " +
+			      jsc.jsValues.uiglobals.screenSize.height + "\n" +
+			      DEViseCommands.OPEN_SESSION + " {" +
+			      jsc.currentDir + "/" + sessionName + "}");
+                            close();
+                        }
+                    }
+                }
+            });
 
         cancelButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
                 {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        close();
-                    }
-                });
-
+                    close();
+                }
+            });
     }
 
     public void setSessionList(String[] data)
@@ -2430,7 +2443,8 @@ class CollabDlg extends Frame
 
     private boolean status = false; // true means this dialog is showing
 
-    public CollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String data)
+    public CollabDlg(jsdevisec what, Frame owner, boolean isCenterScreen,
+      String data)
     {
 	what.jsValues.debug.log("Creating CollabDlg");
 
@@ -2501,58 +2515,56 @@ class CollabDlg extends Frame
 
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-	//TEMP -- this has too damn many levels of indentation!
         clientList.addMouseListener(new MouseAdapter()
+            {
+                public void mouseClicked(MouseEvent event)
                 {
-                    public void mouseClicked(MouseEvent event)
-                    {
-                        if (event.getClickCount() > 1) {
-                            if (clientList.getItemCount() > 0) {
-                                int idx = clientList.getSelectedIndex();
-                                if (idx != -1) {
-				    String list = clientList.getItem(idx);
-				    int n = list.indexOf(' ');
-				    String clientID = list.substring(0,n);
-				    jsc.specialID = Integer.parseInt(clientID);
-                                    close();
-				    jsc.enterCollabPass();
-                                }
-                            }
+                    if ((event.getClickCount() > 1)  &&
+		      (clientList.getItemCount() > 0)) {
+                        int idx = clientList.getSelectedIndex();
+                        if (idx != -1) {
+	                    String list = clientList.getItem(idx);
+	                    int n = list.indexOf(' ');
+	                    String clientID = list.substring(0,n);
+	                    jsc.specialID = Integer.parseInt(clientID);
+                            close();
+	                    jsc.enterCollabPass();
                         }
                     }
-                });
+                }
+            });
 
         okButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
                 {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (clientList.getItemCount() > 0) {
-                            int idx = clientList.getSelectedIndex();
-                            if (idx != -1) {
-				    String list = clientList.getItem(idx);
-				    int n = list.indexOf(' ');
-				    String clientID = list.substring(0,n);
-				    jsc.specialID = Integer.parseInt(clientID);
+                    if (clientList.getItemCount() > 0) {
+                        int idx = clientList.getSelectedIndex();
+                        if (idx != -1) {
+	                    String list = clientList.getItem(idx);
+	                    int n = list.indexOf(' ');
+	                    String clientID = list.substring(0,n);
+	                    jsc.specialID = Integer.parseInt(clientID);
 
-                                    close();
-				    jsc.enterCollabPass();
-                            }
-                        } else { // no available collaboration leader
-			    // go back to normal mode
-			    jsc.collabQuit();
-			    close(); 
-			}
-                    }
-                });
+                            close();
+                            jsc.enterCollabPass();
+                        }
+                    } else { // no available collaboration leader
+                        // go back to normal mode
+                        jsc.collabQuit();
+                        close(); 
+		    }
+                }
+            });
 
         cancelButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
                 {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			jsc.collabQuit();
-                        close();
-                    }
-                });
+                    jsc.collabQuit();
+                    close();
+                }
+            });
 
     }
 
@@ -2574,8 +2586,9 @@ class CollabDlg extends Frame
 	  
 	  jsc.collabQuit();
 	  close();
-	} else 
+	} else {
 	    validate();
+        }
     }
 
     protected void processEvent(AWTEvent event)
