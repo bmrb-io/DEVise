@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/01/07 19:25:56  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.2.4.1  1997/12/17 17:29:18  wenger
   Fixed bugs 235 and 258 (core dump on Tables with long strings -- caused
   by insufficient buffer size in DTE); added headers to some DTE files
@@ -55,7 +60,7 @@ const Tuple* DevReadExec::getNext(){
 	return NULL;
 }
 
-const Tuple* DevReadExec::getThis(Offset offset, RecId recId){
+const Tuple* DevReadExec::getThis(Offset offset) {
 	return NULL;
 }
 
