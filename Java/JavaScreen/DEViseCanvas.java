@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.84  2001/12/04 18:59:37  wenger
+// Added missing space in JAVAC_Set3DConfig commands; better debug
+// info in DEViseCommSocket.java.
+//
 // Revision 1.83  2001/11/28 21:56:18  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -333,6 +337,7 @@ import  java.util.*;
 import  java.net.*;
 import  java.io.*;
 import  java.lang.*;
+import  java.text.*;
 
 public class DEViseCanvas extends Container
 {
@@ -548,6 +553,8 @@ public class DEViseCanvas extends Container
         paintBorder(gc);
 
         paintHelpMsg(gc);
+
+	paintAxisLable(gc);
     }
 
 /* - untouched
@@ -789,15 +796,254 @@ public class DEViseCanvas extends Container
     private synchronized void paintBorder(Graphics gc)
     {
        // Border for Active view is disabled. - no highlighting
-       /* if (activeView != null && activeView == jscreen.getCurrentView()) {
+	/* if (activeView != null && activeView == jscreen.getCurrentView()) {
             Rectangle loc = activeView.viewLocInCanvas;
 
             gc.setColor(Color.red);
             gc.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
             gc.drawRect(loc.x + 1, loc.y + 1, loc.width - 3, loc.height - 3);
-        }
+	}
 	*/
     }
+
+    private synchronized void paintAxisLable(Graphics gc)
+    {
+	Rectangle loc;
+
+        // handling child view
+        for (int i = 0; i < view.viewChilds.size(); i++) {
+            DEViseView v = (DEViseView)view.viewChilds.elementAt(i);
+
+	    gc.setColor(new Color(v.viewFg));
+	    loc = new Rectangle(v.viewLoc.x+v.viewDataLoc.x, 
+				v.viewLoc.y+v.viewDataLoc.y,
+				v.viewDataLoc.width,
+				v.viewDataLoc.height);
+	 
+	    if (v.labelYDraw == 1) {
+		    int currentYPos = loc.y+loc.height;
+		    float currentY = 0;
+		    String labelY = null;
+		    float step = 0;
+
+		if ((v.viewDataYType.toLowerCase()).equals("real")) {
+		    currentY = v.viewDataYMin;
+
+		    // round up the step
+		    step = 40 * v.dataYStep;
+		    step = v.roundUp(step);
+
+		    // round up the min
+		    if (v.labelFactorY != 0) {
+			if (currentY > 0) {
+			    currentY = (int)((currentY + v.labelFactorY * 0.5) / v.labelFactorY);
+			    currentY = currentY * v.labelFactorY;
+			} else {
+			    currentY = (int)((currentY - v.labelFactorY * 0.5) / v.labelFactorY);
+			    currentY = currentY * v.labelFactorY;
+			}
+		    }
+
+		    while (currentYPos >= loc.y + 20) {
+			currentY *= v.factorY;
+			
+			labelY = v.getYLabel(currentY);
+		    
+			gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
+						       v.fontBoldY, v.fontItalicY));
+			gc.drawString(labelY, loc.x-40, currentYPos+5); 
+			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+			currentYPos -= 40;	    
+			currentY += step;
+		    }
+
+		} else { // for "date"
+		    while (currentYPos >= loc.y + 20) {
+			currentY = v.viewDataYMin + (currentYPos - loc.x) *  v.dataYStep;
+			currentY *= v.factorY;
+			
+			labelY = v.getYLabel(currentY);
+		    
+			gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
+						       v.fontBoldY, v.fontItalicY));
+			gc.drawString(labelY, loc.x-40, currentYPos+5); 
+			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+			currentYPos -= 40;	    
+		    }
+		}    
+	    }   
+
+	    if (v.labelXDraw == 1) {
+		    int currentXPos = loc.x;
+		    float currentX = 0;
+		    String labelX = null;
+		    float step = 0;
+
+		if ((v.viewDataXType.toLowerCase()).equals("real")) {
+		    currentX = v.viewDataXMin;
+
+		    // round up the step
+		    step = 100 * v.dataXStep;
+		    step = v.roundUp(step);
+
+		    // round up the min
+		    if (v.labelFactorX != 0) {
+			if (currentX > 0) {
+			    currentX = (int)((currentX + v.labelFactorX * 0.5) / v.labelFactorX);
+			    currentX = currentX * v.labelFactorX;
+			} else {
+			    currentX = (int)((currentX - v.labelFactorX * 0.5) / v.labelFactorX);
+			    currentX = currentX * v.labelFactorX;
+			}
+		    }
+
+		    while (currentXPos <= loc.x + loc.width) {
+			currentX *= v.factorX;
+			
+			labelX = v.getXLabel(currentX);
+		    
+			gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
+						       v.fontBoldX, v.fontItalicX));
+			gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			gc.drawLine(currentXPos, loc.y+loc.height, 
+				    currentXPos, loc.y+loc.height+5);
+			currentXPos += 100;
+			currentX += step;
+		    }
+
+		} else { // for "date"
+		    while (currentXPos <= loc.x + loc.width) {
+			currentX = v.viewDataXMin + (currentXPos - loc.x) *  v.dataXStep;
+			currentX *= v.factorX;
+			
+			labelX = v.getXLabel(currentX);
+		    
+			gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
+						       v.fontBoldX, v.fontItalicX));
+			gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			gc.drawLine(currentXPos, loc.y+loc.height, 
+				    currentXPos, loc.y+loc.height+5);
+			currentXPos += 400;
+   		    }
+		}    
+	    }   
+	}
+ 
+	gc.setColor(new Color(view.viewFg));
+
+        // handling itself
+	if (view.labelYDraw == 1) {
+	    loc = view.viewDataLoc;
+	    int currentYPos = loc.y+loc.height;
+	    float currentY = 0;
+	    String labelY = null;
+	    float step = 0;
+
+	    if ((view.viewDataYType.toLowerCase()).equals("real")) {
+		currentY = view.viewDataYMin;
+		
+		// round up the step
+		step = 40 * view.dataYStep;
+		step = view.roundUp(step);
+
+		// round up the min
+		if (view.labelFactorY != 0) {
+		    if (currentY > 0) {
+			currentY = (int)((currentY + view.labelFactorY * 0.5) / view.labelFactorY);
+			currentY = currentY * view.labelFactorY;
+		    } else {
+			currentY = (int)((currentY - view.labelFactorY * 0.5) / view.labelFactorY);
+			currentY = currentY * view.labelFactorY;
+		    }
+		}
+
+		while (currentYPos >= loc.y + 20) {
+		    currentY *= view.factorY;
+		    
+		    labelY = view.getYLabel(currentY);
+		    
+		    gc.setFont(DEViseFonts.getFont(view.fontSizeY, view.fontTypeY, 
+						   view.fontBoldY, view.fontItalicY));
+		    gc.drawString(labelY, loc.x-40, currentYPos+5); 
+		    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+		    currentYPos -= 40;	    
+		    currentY += step;
+		}
+		
+	    } else { // for "date"
+		while (currentYPos >= loc.y + 20) {
+		    currentY = view.viewDataYMin + (currentYPos - loc.x) *  view.dataYStep;
+		    currentY *= view.factorY;
+		    
+		    labelY = view.getYLabel(currentY);
+		    
+		    gc.setFont(DEViseFonts.getFont(view.fontSizeY, view.fontTypeY, 
+						   view.fontBoldY, view.fontItalicY));
+		    gc.drawString(labelY, loc.x-40, currentYPos+5); 
+		    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
+		    currentYPos -= 40;	    
+		}
+	    }    
+	}   
+	
+	if (view.labelXDraw == 1) {
+	    loc = view.viewDataLoc;
+	    int currentXPos = loc.x;
+	    float currentX = 0;
+	    String labelX = null;
+	    float step = 0;
+	    
+	    if ((view.viewDataXType.toLowerCase()).equals("real")) {
+		currentX = view.viewDataXMin;
+
+		// round up the step
+		step = 100 * view.dataXStep;
+		step = view.roundUp(step);
+		
+		// round up the min
+		if (view.labelFactorX != 0) {
+		    if (currentX > 0) {
+			currentX = (int)((currentX + view.labelFactorX * 0.5) / view.labelFactorX);
+			currentX = currentX * view.labelFactorX;
+		    } else {
+			currentX = (int)((currentX - view.labelFactorX * 0.5) / view.labelFactorX);
+			currentX = currentX * view.labelFactorX;
+		    }
+		}
+		
+		while (currentXPos <= loc.x + loc.width) {
+		    currentX *= view.factorX;
+		    
+		    labelX = view.getXLabel(currentX);
+		    
+		    gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
+						   view.fontBoldX, view.fontItalicX));
+		    gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+		    gc.drawLine(currentXPos, loc.y+loc.height, 
+				currentXPos, loc.y+loc.height+5);
+		    currentXPos += 100;
+		    currentX += step;
+		}
+
+	    } else { // for "date"
+		while (currentXPos <= loc.x + loc.width) {
+		    currentX = view.viewDataXMin + (currentXPos - loc.x) *  view.dataXStep;
+		    currentX *= view.factorX;
+		    
+		    labelX = view.getXLabel(currentX);
+		    
+		    gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
+						   view.fontBoldX, view.fontItalicX));
+		    gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+		    gc.drawLine(currentXPos, loc.y+loc.height, 
+				currentXPos, loc.y+loc.height+5);
+		    currentXPos += 400;
+		}
+	    }    
+	}   
+	
+    }
+
 
     // only top views get title drawn
     // TEMP -- child views of piled views should probably have titles drawn
