@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.43  1996/11/23 00:24:12  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.42  1996/11/18 23:11:21  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -238,7 +244,7 @@ XDisplay::XDisplay(char *name)
     fprintf(stderr, "Cannot open XDisplay\n");
     Exit::DoExit(1);
   }
-  
+
   /* init base color */
   XColor baseColorDef;
   Colormap cmap = DefaultColormap(_display, DefaultScreen(_display));
@@ -1186,6 +1192,10 @@ void XDisplay::InternalProcessing()
   return;
 #endif
 
+#if defined(DEBUG)
+  printf("XDisplay:: Received callback\n");
+#endif
+
   XFlush(_display);
 
   while (XPending(_display) > 0) {
@@ -1206,7 +1216,7 @@ void XDisplay::InternalProcessing()
 	   when the iterator is active. */
 	_winList.DoneIterator(index);
 	found = true;
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("XDisplay::Dispatching event %d to XWindowRep 0x%p\n",
 	       event.type, win);
 #endif
