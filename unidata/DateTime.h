@@ -3,6 +3,12 @@
 
 #include <time.h>  // just for the definition of struct tm
 
+#if defined(_WINDOWS) || defined(_CONSOLE)
+typedef __int64 bigint ;
+#else
+typedef long long bigint ;
+#endif
+
 class DateTime ;
 class EncodedIDT ;
 
@@ -38,7 +44,7 @@ public:
 	operator EncodedIDT() ;
      bool isValid() ;
 	DateTime Elapsed_2_Date() ;
-	long long Value_2_Sec() const ;
+	bigint Value_2_Sec() const ;
 	int Value_SSec() const ; 
 	char* Write_Data() ;
 };

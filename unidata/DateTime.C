@@ -118,7 +118,7 @@ bool IntervalDT::operator ==(const IntervalDT& arg) {
 }
 
 IntervalDT IntervalDT::operator -(const IntervalDT& arg) {
-	long long DT1,DT2 ;
+	bigint DT1,DT2 ;
 	int DTS1, DTS2,t_day,t_hour,t_min ;
 	bool T_P = 1;
 	DT1 = Value_2_Sec() ;
@@ -157,7 +157,7 @@ IntervalDT IntervalDT::operator -(const IntervalDT& arg) {
 }
 
 IntervalDT IntervalDT::operator +(const IntervalDT& arg) {
-	long long DT1,DT2 ;
+	bigint DT1,DT2 ;
 	int DTS1, DTS2,t_day,t_hour,t_min ;
 	bool T_P = 1;
 	DT1 = Value_2_Sec() ;
@@ -247,7 +247,7 @@ DateTime::DateTime( bool c_isBC, int c_year, int c_month, int c_day, int c_hour,
 }
 
 bool DateTime::isValid() {
-	long long Date_Base = (long long)(year)*10000LL + (long long)(month+1)*100LL + (long long)(day) ;
+	bigint Date_Base = (bigint)(year)*(bigint)(10000) + (bigint)(month+1)*(bigint)(100) + (bigint)(day) ;
 	if (!isBC && (Date_Base>17520902) && (Date_Base<17520914)) return 0 ;
 	if ((month>11) || (month < 0)) return 0 ;
 	if (year>292451) return 0 ;
@@ -315,10 +315,10 @@ IntervalDT DateTime::operator -(const DateTime& arg) {
 }
 
 DateTime DateTime::operator -(const IntervalDT& arg) {
-	long long T_D1,T_I1 ;
+	bigint T_D1,T_I1 ;
 	int T_DM1 , T_IM1, T_Plus = 1, T_day , T_hour, T_min,T_sec ;
 
-	T_D1 = ((long long)(elap_day) * 86400LL + (long long)(hour) * 3600LL + (long long)(min) * 60LL + (long long)(sec)) * (isBC ? -1LL : 1LL) ;
+	T_D1 = ((bigint)(elap_day) * (bigint)(86400) + (bigint)(hour) * (bigint)(3600) + (bigint)(min) * (bigint)(60) + (bigint)(sec)) * (isBC ? (bigint)(-1) : (bigint)(1)) ;
 	T_DM1 = msec ;
 	T_I1 = arg.Value_2_Sec() ;
 	T_IM1 = arg.Value_SSec() ;
@@ -379,10 +379,10 @@ DateTime DateTime::operator -(const IntervalYM& arg) {
 }
 
 DateTime DateTime::operator +(const IntervalDT& arg) {
-	long long T_D1,T_I1 ;
+	bigint T_D1,T_I1 ;
 	int T_DM1 , T_IM1, T_Plus = 1, T_day , T_hour, T_min,T_sec ;
 
-	T_D1 = ((long long)(elap_day) * 86400LL + (long long)(hour) * 3600LL + (long long)(min) * 60LL + (long long)(sec)) * (isBC ? -1LL : 1LL) ;
+	T_D1 = ((bigint)(elap_day) * (bigint)(86400) + (bigint)(hour) * (bigint)(3600) + (bigint)(min) * (bigint)(60) + (bigint)(sec)) * (isBC ? (bigint)(-1) : (bigint)(1)) ;
 	T_DM1 = msec ;
 	T_I1 = arg.Value_2_Sec() ;
 	T_IM1 = arg.Value_SSec() ;
@@ -449,7 +449,7 @@ int DateTime::Find_Elapsed() {
       1st of 1st year, concerns BC AND AD .
 */
 
-	long long Date_Base = (long long)(year)*(long long)(10000) + (long long)(month+1)*(long long)(100) + (long long)(day) ; //converts number to base 100 
+	bigint Date_Base = (bigint)(year)*(bigint)(10000) + (bigint)(month+1)*(bigint)(100) + (bigint)(day) ; //converts number to base 100 
 	int Temp_Days = 0 ;
 
 // calculates total days of previous months
@@ -563,8 +563,8 @@ DateTime IntervalDT::Elapsed_2_Date() {
 	return Ret_D ;
 }
 
-long long IntervalDT::Value_2_Sec() const {
-	return ((long long)(day) * 86400LL + (long long)(hour) * 3600LL + (long long)(min) * 60LL + (long long)(sec)) * (!V_Plus ? -1LL : 1LL) ;
+bigint IntervalDT::Value_2_Sec() const {
+	return ((bigint)(day) * (bigint)(86400) + (bigint)(hour) * (bigint)(3600) + (bigint)(min) * (bigint)(60) + (bigint)(sec)) * (!V_Plus ? (bigint)(-1) : (bigint)(1)) ;
 }
 
 int IntervalDT::Value_SSec () const {
