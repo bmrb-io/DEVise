@@ -1,0 +1,60 @@
+#! /s/std/bin/wish -f
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+# Need for file selection box
+set libdir "."
+if { [info exists env(DEVISE_LIB)] } {
+    set libdir $env(DEVISE_LIB)
+}
+set datadir "."
+if { [info exists env(DEVISE_DAT)] } {
+    set datadir $env(DEVISE_DAT)
+}
+
+source $libdir/FSBox.tk
+source $libdir/schema.tk
+
+toplevel .schema
+wm title .schema "Schema Browser"
+wm iconname .schema "Schema Browser"
+
+frame .schema.msg -relief raised -bd 1 -bg LightBlue
+pack .schema.msg -side top -fill both 
+
+frame .schema.opt -relief raised -bd 1 -bg LightGreen
+pack .schema.opt -side bottom -fill both
+
+message .schema.msg.msg -width 3i -text "New schema files can be created \
+	or existing ones browsed. Make your selection ..." -justify left \
+	-fg black -bg gray75
+
+pack .schema.msg.msg -side right -expand 1 -fill both \
+	-padx 3m -pady 3m
+label .schema.msg.bitmap -bitmap @schema.xbm
+pack .schema.msg.bitmap -side left -padx 3m -pady 3m
+
+button .schema.opt.new -text New -command newschema -fg Red -bg Yellow
+button .schema.opt.open -text Open -command openschema -fg Red -bg Yellow
+button .schema.opt.quit -text Quit -command exit -fg Red -bg Yellow
+pack .schema.opt.new .schema.opt.open .schema.opt.quit -side left \
+	-padx 3m -pady 3m -ipadx 2m -ipady 1 -expand 1
+
+
