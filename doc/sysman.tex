@@ -1,0 +1,232 @@
+\documentstyle[epsf,fullpage,verbatim]{article}
+
+\def\Devise{{\tt DEVise} }
+\def\filename#1{{\tt #1} }
+\def\code#1{{\tt #1} }
+\def\term#1{#1 }
+\def\variable#1{{\tt #1} }
+
+\begin{document}
+\title{\Devise Developer's Manual}
+\author{The \Devise Development Group \\
+\code{devise@cs.wisc.edu}
+}
+\date{\today}
+
+\maketitle
+
+\section{Introduction}
+
+\section{Schema Definition and Browsing}
+
+\subsection{Organization of Schemas - Physical and Logical}
+
+The schema directory consists of two subdirectories ``physical'' and
+``logical''. The ``physical'' directory stores the physical schemas
+defined in the systems.  The physical schema consists of the actual
+list of all the attributes and their types. The high and low values of
+the attributes can also be optionally specified.  The syntax can be
+defined as:
+
+\code{[sorted] attr <name> <type> [hi <val>] [lo <val>]}
+
+where \code{[]} denotes optional and \code{<>} denotes necessary parts
+of the definition.
+
+The ``logical'' schema directory contains all the logical schemas
+defined on the current set of physical schemas in the system.  Each
+logical schema is associated with a physical schema and there may be
+more than one logical schema associated with the same physical
+schema. The logical schema contains the grouping information of the
+attributes.  The attributes of the schema can be arranged in a
+hierarchical structure of groups i.e. there are a set of groups
+containing either attributes or subgroups of attributes. The logical
+schema represents one ``view'' or a way of thinking about the schema
+which is independent of the actual order of attributes in the data
+file.
+
+The association between the physical and logical schemas is captured
+in the special file called \filename{catalog.tcl} in the schema
+directory.  Every physical schema is associated with the list of
+logical schemas defined on it.
+
+\subsection{User Interface for Schema Browsing}
+
+The file \filename{\$LIBDIR/schema.tk} contains the procedures to
+handle schema browsing in both user and superuser mode (see user
+manual for details).  The superuser is presented with the list of all
+physical schemas and can modify them or define new ones. When a new
+physical schema is defined, a default logical schema is automatically
+generated. This default logical schema will have no group structures
+defined.  Further, an entry is added to catalog.tcl to maintain the
+correspondence.
+
+\subsection{Schema Parser and Internals of Schema Storage}
+
+The schema parser is in
+\filename{graphics.new/ParseCat.[ch]}. Currently, it can handle
+schemas defined both in the old and the new formats. In the old
+format, there is only one schema file and there is no distinction
+between physical and logical schema. The function
+\code{ParseCatOriginal} handles this case. In the new format, the
+logical and physical schemas are separate and are parsed by
+\code{ParseCatLogical} and \code{ParseCatPhysical}.
+
+The physical schema is parsed and an attribute list is built up. The
+list consists of \code{AttrInfo} structs for each attribute which
+stores the type, high and low values and a few other things (see
+\filename{graphics/AttrList.h}).
+
+The logical schema is parsed and a group directory is built up. This
+consists of a list of all the groups (top level and sub groups) that
+have been defined (see \filename{GroupDir.[ch]},
+\filename{Group.[ch]}, \filename{ItemList.[ch]}). Each group class has
+links to all the members of the groups (base attrs or subgroups).
+
+\section{Mapping of Data Sources of Different Schemas}
+
+\subsection{Introduction}
+
+For a given schema, if there are a large number of data sources on a
+single media (like thousands of companies on the \term{CompuStat}
+tape), we build an index at the beginning to speed up the access. A
+complete scan is done over the data and the index is built.  This
+index file consists of the offsets for each of the data sources. In
+addition, we also extract a few, chosen attributes that act as
+identifiers for this data source.  All this information forms the
+index file. (see \filename{CompuStat.idx}, \filename{crsp.idx}, etc.).
+
+Given two schemas \code{s1} and \code{s2} and their index files
+\filename{s1.idx} and \filename{s2.idx}, we need to build a mapping
+between the two i.e.\ we need a third file \filename{s1\_s2.table}
+that maps the data sources in \code{s1} to those of \code{s2}.  In
+general, this can be a many-to-many mapping.
+
+We use \term{CORAL} to perform the mappings which are essentially
+joins of large relations.
+
+\subsection{Relation Loader Programs}
+
+The index file contains the records comprising a single relation.
+There are ``loader'' programs that convert the index file entries into
+a coral program that loads the relation. Note that this program
+depends on the structure of the particular index file and so, we need
+separate loader programs for different schemas. However, these are
+extremely simple Tcl scripts.  See \filename{compcreate.tcl} and
+\filename{crspcreate.tcl} for the loaders for \term{CompuStat} and
+\term{CRSP}.
+
+\subsection{The Mapping Program}
+
+The \term{CORAL} mapping program can be actually written by the user
+and executed separately. However, we also provide a easy interface for
+defining the mappings in a fashion that does not assume any knowledge
+of \term{CORAL}.  The file \filename{mapping.tk} contains the user
+interface procedures.  This displays the list of attributes in the
+indexes of the two chosen schemas and lets the user specify the pairs
+that need to joined together. Once the user has specified all these
+pairs, the \term{CORAL} program is automatically generated and
+executed.  It creates the mapping table. However, the rules defined by
+the user may not succeed in mapping all the entries in both the
+schemas. If there are any unresolved entries, these are dumped into
+files whose names are given by the user. Thus at the end of the
+execution of the coral program, we have three files: the file
+containing the mapping table and the two files containing the
+unresolved entries. The user can choose to, at any time, specify
+manual mappings as explained in the next section.
+
+\subsection{Manual Definition of Mappings}
+
+The user can manually specify the data sources to be linked together
+in the form of a mapping. The file \filename{resolve.tk} contains the
+user interface procedure. It presents the user with a list of the
+unresolved entries and new mappings can be defined. If these are
+saved, they beccome a part of the mapping table.
+
+\subsection{Usage of the Mapping Table}
+
+The mapping table is used in following data sources from one schema to
+the other. The list of all the schemas which have been mapped is
+maintained in \filename{mapdef.tcl}. This maintains the name of the
+file containing the mapping table for each pair of schemas.
+
+In the window displaying the list of selected data sources, there is a
+menu button that can be used to {\em follow} the data source to a
+different schema. This action looks through the appropriate mapping
+table and finds the corresponding data source in the other
+schema. Then this data source is loaded in the usual fashion.
+
+\section{Statistics and Kiviat Graphs}
+
+\subsection{Introduction}
+
+\Devise has the capability of computing and displaying
+statistics. These statistics are computed only on the data displayed
+in the current views in the window. For example, mean is the average
+\variable{Y} value of the data being displayed.
+
+Currently, max, min and mean are computed.  However, the current
+framework allows easy addition of new statistics, as needed.
+Confidence intervals are also computed. These statistics are displayed
+on demand by the user.  Click on View-Statistics to see the various
+options.
+
+\subsection{Statistics - Internals}
+
+See \filename{ViewStats.[Ch]} and \filename{BasicStats.[Ch]}.  There
+is a \code{qBasicStats} object associated with every view. Whenever a
+visual query is executed on the view, all the \variable{<X,Y>} values
+are passed through the statistics class too.  Any computation can be
+done at this time of sampling. Finally when all the \variable{<X,Y>}
+values are read, the statistics are actually computed (based on the
+counters maintained like sum and sum of squares). These are displayed
+only on demand.
+
+The statistics are displayed using the bit-XOR option of
+X-Windows. This allows for the toggling of statistics display without
+re-reading the underlying data . Mean, max and min are displayed as
+lines and can be erased by simply drawing them again. Confidence
+intervals are displayed as ``transparent'' bands and can also be
+similarly erased.
+
+Note that the confidence intervals are being computed only for 85\%,
+90\% and 95\% levels. The batch size is assumed to be 1 and the
+corresponding \variable{Z} values have been hard-coded in.
+
+The set of statistics to be displayed is conveyed to the display
+routine through a binary string of length = number of stats. If a
+particular position is 1, it means that the statistic is to be
+displayed.  See \filename{ViewGraph.[Ch]} to see the manipulation of
+this binary string to achieve the right response to removing and
+adding stats from the display.
+
+\subsection{Kiviat Graphs - Internals}
+
+Kiviat graphs display the collective information about a set of views.
+Currently, we can define kiviat graphs on all the views in a single
+window.  The Kiviat graph can be made to display any of the statistics
+(mean, max, min or count).  Further, the same graph can be resued or
+new ones formed. See \filename{KGraph.[Ch]}.
+
+The Kiviat graph keeps track of the changes in the views that comprise
+it.  This is achieved by registering a callback with each of the
+\code{BasicStat} object for the views. Whenever there is a change in
+any of the \code{BasicStat} object (linked to a particular view), it
+calls a routine in each of the \filename{KGraphs} built on it.  This
+routine will refresh the graphs with the new values.
+
+\newpage
+\section{Copyright}
+
+\verbatiminput{Copyright}
+
+\section{Disclaimer}
+
+\verbatiminput{Disclaimer}
+
+\newpage
+\section{Agreement}
+
+\verbatiminput{Agreement}
+
+\end{document}

@@ -1,0 +1,155 @@
+\documentstyle[epsf,fullpage,verbatim]{article}
+
+\def\Devise{{\tt DEVise} }
+\def\filename#1{{\tt #1} }
+\def\code#1{{\tt #1} }
+\def\term#1{#1 }
+\def\variable#1{{\tt #1} }
+
+\begin{document}
+\title{\Devise User Manual}
+\author{The \Devise Development Group \\
+\code{devise@cs.wisc.edu}
+}
+\date{\today}
+
+\maketitle
+
+\section{Introduction}
+
+\section{Schema Definition and Browsing}
+
+\subsection{User and Superuser Modes}
+
+\Devise can be brought up in one of two modes - the user mode or the
+superuser mode.  This is decided by the value of the variable
+\variable{UserMode} defined in the \filename{.rc} file read by
+\Devise.  A value of 1 indicates that it is run in the user mode and 0
+indicates the superuser mode.
+
+The mode determines the capabilities and presentation of the schema
+browser.  In the user mode, the browser can be user to inspect the
+attributes in any of the already defined schemas. Further, the views
+defined on these schemas (through groupings) can be seen and
+modified. New views can also be defined.
+
+In the superuser mode, the browser provides complete control over all
+the schemas. Existing schemas can be opened to display the types of
+the attributes and their high and low values (if defined). The schemas
+can also be modified, new attributes inserted, range values modified,
+etc. Entirely new schemas can also be defined.  This is an operation
+that would be performed by the superuser when a new data source (with
+a new data layout) is to be visualized through \Devise.
+
+\subsection{Schema Browsing in User Mode}
+
+When the schema browser is invoked in the user mode, a list of all the
+schemas defined in the system is presented. The user can see the list
+of attributes in any of these. Further, the set of views defined on
+these can be seen as a list.  The user can either choose an existing
+view and open it up or specify the name of a brand new view to be
+created. In either case, a group browser comes up and the user can
+modify/define the groups and its contents in terms of base attributes
+or subgroups. Finally, if a new view is saved, it becomes a part of
+the list of views on that particular schema.
+
+\subsection{Schema Browsing in Superuser Mode}
+
+When the schema browser is invoked in the superuser mode, the list of
+all the schemas currently defined in the system is displayed as a
+list. Any of them can be chosen to be opened or a brand new schema can
+be specified to be created. In any case, the opened schema is
+displayed in terms of the list of all its attributes. The types of
+these attributes can be one of those shown. Also, the high and low
+values that these attrs can take can be specified.  This will help in
+the automatic selection of scales during display of data. When a new
+schema is saved, it becomes a part of the list of schemas and a
+default view is also defined.  This view will consist of all the
+attributes of the schema and will have no group structures. This can
+be modified or new views defined at any time.
+
+\section{Mapping: Association of Data Sources in Different Schemas}
+
+\subsection{Defining Mappings}
+
+The user can define mappings between data sources of different
+schemas.  For example, associations can be established between
+companies in \term{CompuStat} and \term{CRSP} databases. The user
+interface to define the mappings is extremely simple and
+straightforward. First, the two schemas to be mapped are specified and
+also the names of files used for storing the following:
+
+\begin{itemize}
+\item Mapping table - this will be the list of associations
+\item Unresolved data sources of the first schema 
+\item Unresolved data sources of the second schema
+\end{itemize}
+
+It is necessary for the user to specify the file names since they have
+to be used later to manually resolve the conflicts and unresolved
+sources. The list of key attributes of the two schemas are displayed
+and the user can pick pairs that are to be matched against each other.
+The system will then automatically generate all the mappings based on
+the rules specified by the user.  Any sources that are not resolved
+are dumped into separate files which the user can then manually
+browse.
+
+\subsection{Resolving Conflicts and Unresolved Sources}
+
+After the automatic generation of the mapping table, in addition to
+the file containing the mappings, there are two files containing the
+unresolved sources of the two schemas. By specifying these three file
+names, the user can bring up the list of all the unresolved sources
+and manually define the mappings based on his/her knowledge of the
+sources.
+
+\subsection{Using Mappings}
+
+The mappings generated either automatically or manually are used to
+switch between equivalent data sources in different schemas
+easily. While browsing through a list of data sources in a particular
+schema, say \variable{X}, the equivalent data source in a different
+schema, say \variable{Y} can be loaded with a mouse click if the
+mapping between \variable{X} and \variable{Y} has been defined.
+
+\section{Statistics and Kiviat Graphs}
+
+\subsection{Statistics}
+
+The statistics of the displayed data can be visualized. Specifically,
+the mean (average), minimum and maximum can be seen superimposed on
+the data.  There are options to view the statistics for either the
+current view or all the views.  Further, confidence intervals can also
+be displayed.  The 85\%, 90\% and 95\% confidence intervals can be
+visualized as transparent color bands around the mean line.
+
+\subsection{Kiviat Graphs}
+
+A Kiviat graph is a powerful method for displaying the collective
+information of the data displayed in several views. For example, a
+Kiviat graph used in the context of performance data can be used to
+see how well the system is balanced. The Kiviat graph for the mean,
+maximum, minimum or the count of the data displayed can be created. If
+the underlying data changes (due to zooming or axes change), the
+Kiviat graph keeps track and displays information about the current
+data (We can say that a link exists between the data views and the
+Kiviat graph built on them). The actual values along the various axes
+of the Kiviat graph can be brought up by clicking the middle mouse
+button on the graph. There are options to reuse the same Kiviat graph
+to display different information or create new graphs for each.
+
+\newpage
+\section{Copyright}
+
+\verbatiminput{Copyright}
+
+\section{Disclaimer}
+
+\verbatiminput{Disclaimer}
+
+\newpage
+\section{Agreement}
+
+\verbatiminput{Agreement}
+
+\end{document}
