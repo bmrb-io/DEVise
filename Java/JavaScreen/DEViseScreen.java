@@ -185,13 +185,9 @@ public class DEViseScreen extends Panel
         if (currentWindow != null)
             currentWindow.setCurrent(false);
 
-
         currentWindow = win;
-
         remove(currentWindow);
         add(currentWindow, 0);
-        //repaint();
-
         currentWindow.setCurrent(true);
     }
 
@@ -289,6 +285,7 @@ public class DEViseScreen extends Panel
         }
 
         super.paint(g);
+
         if (currentWindow != null)
             currentWindow.repaint();
 

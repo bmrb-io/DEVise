@@ -15,7 +15,7 @@ public final class YGlobals
                             YMBXRETRYCANCEL = 4, YMBXABORTRETRYIGNORE = 5;
     public static final TimeZone TIMEZONE = TimeZone.getDefault();
     public static final Locale LOCALE = Locale.getDefault();
-    
+
     // global variables
     public static boolean YISGUI = false, YISAPPLET = false;
     public static int YDEBUG = 0, YLOG = 0; // default: no debug or log information is written
@@ -112,12 +112,12 @@ public final class YGlobals
     {
         return Yshowmsg(frame, msg, "Program Message", YMBXOK, isCenterScreen, isModal);
     }
-    
+
     public static long getTime()
     {
         return System.currentTimeMillis();
     }
-    
+
     public static char Ytochar(byte[] data, int offset)
     {
         if (data == null || data.length < 2 + offset)
@@ -559,6 +559,7 @@ final class YMSGDlg extends Dialog
     {
         if (event.getID() == WindowEvent.WINDOW_CLOSING) {
             dispose();
+            return;
         }
 
         super.processEvent(event);

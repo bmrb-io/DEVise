@@ -34,7 +34,7 @@ import  java.awt.image.*;
 import  java.util.*;
 
 // This class represent a image view in DEVise
-public class DEViseWindow extends Canvas
+public class DEViseWindow extends Component
 {
     jsdevisec jsc = null;
     DEViseScreen jscreen = null;
@@ -49,10 +49,7 @@ public class DEViseWindow extends Canvas
     Vector allViews = null;
     DEViseView currentView = null;
 
-    boolean isCurrent = false, isFirstTime = true, isMouseDragged = false,
-            isKeyPressed = false, isViewFirstTime = true;
-    int lastKeyPressed = KeyEvent.VK_UNDEFINED;
-    char lastKeyTyped = KeyEvent.CHAR_UNDEFINED;
+    boolean isCurrent = false, isViewFirstTime = true, isMouseDragged = false;
     int userAction = 0;
     Point sp = new Point(), ep = new Point(), cropP = new Point();
 
@@ -166,13 +163,19 @@ public class DEViseWindow extends Canvas
 
     public synchronized void setCurrentView(Point point)
     {
-        DEViseView old = currentView;
-
-        currentView = null;
         if (point == null) {
             return;
         }
 
+        if (currentView != null && currentView.isCurrent(point)) {
+            isViewFirstTime = false;
+            jsc.viewInfo.updateInfo(point.x, point.y);
+            return;
+        } else {
+            isViewFirstTime = true;
+        }
+
+        currentView = null;
         int number = allViews.size();
         DEViseView view = null;
 
@@ -180,11 +183,6 @@ public class DEViseWindow extends Canvas
             view = (DEViseView)allViews.elementAt(i);
             if (view.isCurrent(point)) {
                 currentView = view;
-                if (currentView == old)
-                    isViewFirstTime = false;
-                else
-                    isViewFirstTime = true;
-
                 break;
             }
         }
@@ -196,13 +194,12 @@ public class DEViseWindow extends Canvas
         }
     }
 
-    protected void processEvent(AWTEvent event)
-    {
-        if (dispatcher.getStatus() == 0)
-            return;
-
-        super.processEvent(event);
-    }
+    //protected void processEvent(AWTEvent event)
+    //{
+    //    if (dispatcher.getStatus() == 0)
+    //        return;
+    //    super.processEvent(event);
+    //}
 
     public void drawCursor(Rectangle loc)
     {
@@ -227,6 +224,17 @@ public class DEViseWindow extends Canvas
         repaint();
     }
 
+    // Enable reliable light weight component paint
+    public void repaint()
+    {
+        Graphics g = getGraphics();
+
+        if (g == null)
+            return;
+        else
+            update(g);
+    }
+
     // Enable double-buffering
     public void update(Graphics g)
     {
@@ -241,7 +249,7 @@ public class DEViseWindow extends Canvas
 
     public void paint(Graphics g)
     {
-        if (winImage != null)  {
+        if (winImage != null) {
             g.drawImage(winImage, 0, 0, this);
 
             if (croppedImage != null) {
@@ -273,8 +281,6 @@ public class DEViseWindow extends Canvas
                         }
 
                         g.drawRect(x0, y0, w, h);
-                    } else {
-                        ;// do nothing
                     }
 
                     Color oldColor = g.getColor();
@@ -345,31 +351,29 @@ public class DEViseWindow extends Canvas
     // start of class ViewKeyListener
     class ViewKeyListener extends KeyAdapter
     {
+        // event sequence: 1. keypressed 2.keytyped 3.keyreleased
         public void keyPressed(KeyEvent event)
         {
-            isKeyPressed = true;
-            lastKeyPressed = event.getKeyCode();
+            //YGlobals.Ydebugpn("Key " + event.getKeyCode() + " pressed!");
+            //YGlobals.Ydebugpn("Character " + event.getKeyChar() + " pressed!");
         }
 
         public void keyReleased(KeyEvent event)
         {
-            isKeyPressed = false;
-        }
+            //YGlobals.Ydebugpn("Key " + event.getKeyCode() + " released!");
+            //YGlobals.Ydebugpn("Character " + event.getKeyChar() + " released!");
 
-        public void keyTyped(KeyEvent event)
-        {
-            lastKeyTyped = event.getKeyChar();
+            char keyChar = event.getKeyChar();
+            int keyCode = event.getKeyCode();
 
-            if (lastKeyTyped != KeyEvent.CHAR_UNDEFINED) {
-                YGlobals.Ydebugpn("Key \'" + lastKeyTyped + "\' is pressed");
-
+            if (keyChar != KeyEvent.CHAR_UNDEFINED) {
                 if (currentView != null) {
                     userAction = 0;
                     repaint();
 
-                    dispatcher.insertCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + (int)lastKeyTyped);
+                    dispatcher.insertCmd("JAVAC_KeyAction {" + currentView.getName() + "} " + (int)keyChar);
                 }
-	        }
+            }
         }
     }
     // end of class ViewKeyListener
@@ -378,8 +382,8 @@ public class DEViseWindow extends Canvas
     class ViewMouseListener extends MouseAdapter
     {
         WaitThread wt = new WaitThread(dispatcher);
-        boolean isConsumed = false;
 
+        // event sequence: 1. mousePressed 2. mouseReleased 3. mouseClicked
         public void mousePressed(MouseEvent event)
         {
             // The starting point will be in this window, otherwise this event
@@ -390,21 +394,15 @@ public class DEViseWindow extends Canvas
             sp = event.getPoint();
             ep = sp;
 
-            //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount());
+            //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount() + "!");
 
             if (!isCurrent) {
-                isFirstTime = true;
                 jscreen.setCurrentWindow(DEViseWindow.this);
-            } else {
-                isFirstTime = false;
-                //requestFocus();
             }
 
             isMouseDragged = false;
 
             setCurrentView(sp);
-            if (currentView != null)
-                isConsumed = false;
 
             userAction = 0;
             repaint();
@@ -415,32 +413,23 @@ public class DEViseWindow extends Canvas
             // Each mouse click will be here once, so double click actually will enter
             // this twice. Also, this event will always reported with each mouse click
             // and before the mouseClick event is reported.
-            if (currentView != null) {// && !isFirstTime) {
-                if (isMouseDragged) {
-                    // clear the mouse drag box
-                    userAction = 0;
-                    repaint();
 
-                    ep = adjustViewPoint(event.getPoint());
-                    if (sp.x == ep.x || sp.y == ep.y) {
-                        if (isViewFirstTime) {
-                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
-                        }
-                    }  else {
-                        if (isViewFirstTime) {
-                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y
-                                                 + "\nJAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
-                        } else {
-                            dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
-                        }
-                    }  
-                    
-                    isConsumed = true;
+            //YGlobals.Ydebugpn("Mouse released!");
+
+            if (currentView != null && isMouseDragged) {
+                // clear the mouse drag box
+                userAction = 0;
+                repaint();
+
+                ep = adjustViewPoint(event.getPoint());
+                if (sp.x == ep.x || sp.y == ep.y) {
+                    dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);
                 } else {
-                    ep = event.getPoint();
                     if (isViewFirstTime) {
-                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);                    
-                        isConsumed = true;
+                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y
+                                             + "\nJAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
+                    } else {
+                        dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
                     }
                 }
             }
@@ -450,25 +439,26 @@ public class DEViseWindow extends Canvas
         {
             // before this event is reported, mousePressed and mouseReleased events
             // will be reported
-            if (currentView != null) {// && !isFirstTime) {
+
+            //YGlobals.Ydebugpn("Mouse Clicked with click count " + event.getClickCount() + "!");
+
+            if (currentView != null && !isMouseDragged) {
                 if (event.getClickCount() > 1) {
-                    wt.setDC(true);
                     Point p = event.getPoint();
-                    if (currentView.isCurrent(p)) {
-                        if (isViewFirstTime)
-                            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + p.x + " " + p.y
-                                                 + "\nJAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
-                        else
-                            dispatcher.insertCmd("JAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
+
+                    wt.setDC(true);
+                    if (isViewFirstTime) {
+                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + p.x + " " + p.y
+                                             + "\nJAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
+                    } else {
+                        dispatcher.insertCmd("JAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
                     }
-                } else { 
-                    if (isConsumed)
-                        return;
-                    //YGlobals.Ydebugpn("single click");
+                } else {
+                    Point p = event.getPoint();
+
                     wt.setDC(false);
-                    wt.setValue(currentView.getName(), sp.x, sp.y);
-                    Thread newwt = new Thread(wt);
-                    newwt.start();
+                    wt.setValue(currentView.getName(), p.x, p.y);
+                    (new Thread(wt)).start();
                 }
             }
         }
@@ -481,7 +471,9 @@ public class DEViseWindow extends Canvas
     {
         public void mouseDragged(MouseEvent event)
         {
-            if (currentView != null) {// && !isFirstTime) {
+            //YGlobals.Ydebugpn("Mouse Dragged!");
+
+            if (currentView != null) {
                 isMouseDragged = true;
 
                 ep = adjustViewPoint(event.getPoint());
@@ -497,7 +489,10 @@ public class DEViseWindow extends Canvas
 
         public void mouseMoved(MouseEvent event)
         {
+            //YGlobals.Ydebugpn("Mouse Moved!");
+
             Point point = adjustPoint(event.getPoint());
+
             if (isCurrent)
                 jsc.viewInfo.updateInfo(point.x, point.y);
         }
@@ -517,22 +512,20 @@ class WaitThread implements Runnable
         dispatcher = dp;
     }
 
-    public synchronized void getDC()
+    public synchronized boolean getDC()
     {
         try {
-            wait(250);
+            wait(300);
         } catch (InterruptedException e) {
         }
 
-        if (dc)
-            dc = false;
-        else
-            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + view + "} " + viewx + " " + viewy);
+        return dc;
     }
 
     public synchronized void setDC(boolean flag)
     {
         dc = flag;
+
         if (dc)
             notifyAll();
     }
@@ -546,7 +539,9 @@ class WaitThread implements Runnable
 
     public void run()
     {
-        getDC();
+        if (!getDC()) {
+            dispatcher.insertCmd("JAVAC_MouseAction_Click {" + view + "} " + viewx + " " + viewy);
+        }
     }
 }
 

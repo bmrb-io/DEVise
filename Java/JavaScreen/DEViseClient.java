@@ -14,6 +14,10 @@ public class DEViseClient
     public boolean isSessionSaved = false;
     public boolean isSessionOpened = false;
     public boolean isSwitched = false;
+    public boolean isSwitchSuccessed = false;
+
+    public int dimx = 640;
+    public int dimy = 480;
 
     private Vector cmdBuffer = new Vector();
 
@@ -34,7 +38,8 @@ public class DEViseClient
         imgSocket = img;
         hostname = h;
         connectID = new Integer(id);
-        savedSessionName = user.getName() + "_" + id;
+
+        savedSessionName = "jstmp_" + id;
 
         lst = YGlobals.getTime();
         lot = lst;
@@ -81,10 +86,11 @@ public class DEViseClient
             pos = cmdBuffer.size();
 
         if (cmd.startsWith("JAVAC_Abort")) {
-            cmdBuffer.removeAllElements();
+            cmdBuffer.removeAllElements();             
+            cmdBuffer.insertElementAt(cmd, 0);            
         } else {
             cmdBuffer.insertElementAt(cmd, pos);
-        }
+        }        
     }
 
     public synchronized void insertCmd(String cmd)
@@ -247,23 +253,25 @@ public class DEViseClient
         status = -1;
     }
 
-    public synchronized boolean isRequest()
+    // 0: not request
+    // 1: request
+    // -1: socket is dead
+    public synchronized int isRequest()
     {
         if (cmdSocket == null)
-            return false;
-
-        if (cmdBuffer.size() > 0)
-            return true;
+            return -1;
 
         try {
             if (!cmdSocket.isEmpty()) {
-                return true;
+                return 1;
             } else {
-                return false;
+                if (cmdBuffer.size() > 0)
+                    return 1;
+                else
+                    return 0;
             }
         } catch (YException e) {
-            closeSocket();
-            return false;
+            return -1;
         }
     }
 }

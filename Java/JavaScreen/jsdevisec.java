@@ -62,7 +62,7 @@ public class jsdevisec extends Frame
     public  DEViseViewControl viewControl = null;
     public  DEViseViewInfo viewInfo = null;
 
-    private boolean isSessionOpened = false;
+    public boolean isSessionOpened = false;
     private boolean isQuit = false;
 
     public jsdevisec(String host, String user, String pass, int port, String sessionName, Vector images)
@@ -184,7 +184,7 @@ public class jsdevisec extends Frame
         }
     }
 
-    public synchronized void setUI(boolean flag)
+    public void setUI(boolean flag)
     {
         isSessionOpened = flag;
 
@@ -262,7 +262,7 @@ public class jsdevisec extends Frame
                         if (dispatcher.getStatus() == 0)
                             return;
 
-                        dispatcher.insertCmd("JAVAC_GetStat");
+                        //dispatcher.insertCmd("JAVAC_GetStat");
                     }
                 });
         stopButton.addActionListener(new ActionListener()
@@ -282,15 +282,18 @@ public class jsdevisec extends Frame
                         if (dispatcher.getStatus() == 0)
                             return;
 
-                        if (isSessionOpened) {
-                            dispatcher.insertCmd("JAVAC_Refresh");
-                        }
+                        //if (isSessionOpened) {
+                        //    dispatcher.insertCmd("JAVAC_Refresh");
+                        //}
                     }
                 });
         exitButton.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+                        if (dispatcher.getStatus() == 0)
+                            return;
+
                         quit();
                     }
                 });
@@ -335,9 +338,9 @@ public class jsdevisec extends Frame
         }
 
         if (isSessionOpened) {
-            jscreen.updateScreen(false);
-            //YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!");
-            //return;
+            //jscreen.updateScreen(false);
+            YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!");
+            return;
         }
 
         String result = YGlobals.Yshowmsg(this, "Do you really want to quit?", "Confirm", YGlobals.YMBXYESNO);

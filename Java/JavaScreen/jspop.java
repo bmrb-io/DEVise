@@ -39,10 +39,10 @@ public class jspop implements Runnable
 
     public int serverStartTimeout = 60 * 1000; // wait for DEVise server to start up for 1 minutes before abort
     public int serverWaitTimeout = 60 * 1000; // wait for DEVise server response for 1 minutes before abort
-    public int jspopWaitTimeout = 5000; // wait client connection for 5 seconds before disconnect
-    public int dispatcherTimestep = 1000; // do scheduling every 1 seconds
-    public int cmdSocketTimeout = 1000; // interrupt cmdSocket every 1 seconds
-    public int imgSocketTimeout = 1000; // interrupt imgSocket every 1 seconds
+    public int jspopWaitTimeout = 5 * 1000; // wait client connection for 5 seconds before disconnect
+    public int dispatcherTimestep = 1 * 1000; // do scheduling every 1 seconds
+    public int cmdSocketTimeout = 1 * 1000; // interrupt cmdSocket every 1 seconds
+    public int imgSocketTimeout = 1 * 1000; // interrupt imgSocket every 1 seconds
     public int logThreadTimestep = 30 * 60 * 1000; // write logfile every 30 minutes
 
     public DEViseClientDispatcher dispatcher = null;

@@ -80,24 +80,26 @@ public class DEViseClientDispatcher implements Runnable
 
         while (getAction() > 0) {
             waitForSignal();
-            
+
             //YGlobals.Ydebugpn("active: " + activeClients.size() + " suspend: " + suspendClients.size());
-            
+
             if (getAction() > 0) {
                 client = getNextClient();
 
                 if (client != null) {
                     server = getNextServer();
                     if (server != null) {
-                        server.setClient(client);
-                        activeClient(client);
+                        if (server.setClient(client)) {
+                            // do we need to wait for finishing switching?
+                            activeClient(client);
+                        }
                     }
                 }
             }
         }
     }
 
-    // To prevent deadlock conflict with pop.removeClient, this funciton is not synchronized
+    // To prevent deadlock with pop.removeClient, this funciton is not synchronized
     public void addClient(DEViseClient client)
     {
         suspendClients.addElement(client.getID());
@@ -109,8 +111,13 @@ public class DEViseClientDispatcher implements Runnable
             Integer id = (Integer)suspendClients.elementAt(i);
             DEViseClient client = (DEViseClient)pop.clients.get(id);
 
-            if (client.isRequest()) {
+            int code = client.isRequest();
+            if (code == 1 ) {
                 return client;
+            } else if (code == -1) {
+                removeClient(client);
+            } else {
+                ; // do nothing
             }
         }
 
@@ -121,6 +128,7 @@ public class DEViseClientDispatcher implements Runnable
     {
         if (client != null) {
             activeClients.removeElement(client.getID());
+            suspendClients.removeElement(client.getID());
             pop.removeClient(client);
         }
     }

@@ -59,7 +59,9 @@ public class DEViseCmdDispatcher implements Runnable
     public DEViseCmdSocket cmdSocket = null;
     public DEViseImgSocket imgSocket = null;
     public int connectID = DEViseGlobals.DEFAULTID;
+
     private DEViseOpenDlg openDlg = null;
+    private RecordDlg recordDlg = null;
 
     public DEViseCmdDispatcher(jsdevisec what, String host, String user, String pass, int port)
     {
@@ -234,6 +236,11 @@ public class DEViseCmdDispatcher implements Runnable
             imgSocket.closeSocket();
             imgSocket = null;
         }
+
+        connectID = DEViseGlobals.DEFAULTID;
+        clearCmdBuffer();
+        if (jsc.isSessionOpened)
+            jscreen.updateScreen(false);
     }
 
     public synchronized void goOnline()
@@ -307,8 +314,6 @@ public class DEViseCmdDispatcher implements Runnable
                             YGlobals.Yshowmsg(jsc, e.getMessage());
 
                             disconnect();
-                            connectID = DEViseGlobals.DEFAULTID;
-                            clearCmdBuffer();
                             setStatus(-1);
                         } else if (id == 1) { // cmdSocket.sendCmd invalid arguments, just go on to next command
                         } else if (id == 2 || id == 4) { // cmdSocket or imgSocket communication error
@@ -342,6 +347,7 @@ public class DEViseCmdDispatcher implements Runnable
 
                                 // communication error on the sockets, must close them
                                 disconnect();
+
                             }
                         } else if (id == 6) { // imgSocket invalid response received
                             try {
@@ -401,7 +407,6 @@ public class DEViseCmdDispatcher implements Runnable
                             }
                         }
                     }
-
                 }
 
                 jsc.animPanel.stop();
@@ -455,17 +460,27 @@ public class DEViseCmdDispatcher implements Runnable
             } else if (rsp[i].startsWith("JAVAC_Error")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
-                    if (!command.startsWith("JAVAC_GetSessionList"))
+                    if (!command.startsWith("JAVAC_GetSessionList")) {
                         YGlobals.Yshowmsg(jsc, "Server Error: " + rsp[i] + "!");
-                    else
+                    } else {
+                        if (openDlg == null) {
+                            openDlg = new DEViseOpenDlg(jsc, null);
+                        }
+
                         YGlobals.Yshowmsg(openDlg, "Server Error: " + rsp[i] + "!");
+                    }
 
                     throw new YException("Server Error: " + rsp[i] + "!", 5);
                 } else {
-                    if (!command.startsWith("JAVAC_GetSessionList"))
+                    if (!command.startsWith("JAVAC_GetSessionList")) {
                         YGlobals.Yshowmsg(jsc, "Server Error: " + cmd[1]);
-                    else
+                    } else {
+                        if (openDlg == null) {
+                            openDlg = new DEViseOpenDlg(jsc, null);
+                        }
+
                         YGlobals.Yshowmsg(openDlg, "Server Error: " + cmd[1] + "!");
+                    }
                 }
             } else if (rsp[i].startsWith("JAVAC_Fail")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
@@ -473,6 +488,23 @@ public class DEViseCmdDispatcher implements Runnable
                     throw new YException("Server Failed: " + rsp[i] + "!", 9);
                 } else {
                     throw new YException("Server failed: " + cmd[1] + "!", 9);
+                }
+            } else if (rsp[i].startsWith("JAVAC_LastSavedState")) {
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd != null || cmd.length == 2) {
+                    jscreen.updateScreen(false);
+                    clearCmdBuffer();
+                    if (cmd[1].equals("1")) {
+                        String result = YGlobals.Yshowmsg(jsc, "Server failed during last client switch!\nDo you wish to open the last saved state of your session?", 0);
+                        if (result.equals(YGlobals.YIDYES)) {
+                            insertCmd("JAVAC_OpenLastSavedState", 0);
+                        }
+                    } else {
+                        YGlobals.Yshowmsg(jsc, "Server failed during last client switching!\nYou do not have a saved state your session!\nYou may re-open any session by pressing OPEN!");
+                    }
+                } else {
+                    jscreen.updateScreen(false);
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
             } else if (rsp[i].startsWith("JAVAC_CreateWindow")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
@@ -606,8 +638,8 @@ public class DEViseCmdDispatcher implements Runnable
                 if (cmd == null) {
                     throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 } else {
-                    RecordDlg dlg = new RecordDlg(jsc, cmd);
-                    dlg.show();
+                    recordDlg = null;
+                    recordDlg = new RecordDlg(jsc, cmd);
                 }
             } else if (rsp[i].startsWith("JAVAC_DisplayStat")) {
                 //cmd = DEViseGlobals.parseString(rsp[i]);
@@ -700,7 +732,8 @@ public class DEViseCmdDispatcher implements Runnable
 
                     if (cmd.startsWith("JAVAC_")) {
                         if (cmd.startsWith("JAVAC_Done") || cmd.startsWith("JAVAC_Error")
-                            || cmd.startsWith("JAVAC_Fail") || cmd.startsWith("JAVAC_Exit")) {
+                            || cmd.startsWith("JAVAC_Fail") || cmd.startsWith("JAVAC_Exit")
+                            || cmd.startsWith("JAVAC_LastSavedState")) {
                             isEnd = true;
                         }
 
@@ -724,17 +757,15 @@ public class DEViseCmdDispatcher implements Runnable
     }
 }
 
-class RecordDlg extends Dialog
+class RecordDlg extends Frame
 {
     jsdevisec jsc = null;
     String[] attrs = null;
     Button okButton = new Button("  OK  ");
 
-    public RecordDlg(jsdevisec frame, String[] data)
+    public RecordDlg(jsdevisec what, String[] data)
     {
-        super(frame, "Record Attributes", true);
-
-        jsc = frame;
+        jsc = what;
         attrs = data;
 
         setBackground(DEViseGlobals.uibgcolor);
@@ -827,6 +858,10 @@ class RecordDlg extends Dialog
                         dispose();
                     }
                 });
+
+
+        setTitle("Record Attributes");
+        show();
     }
 
     protected void processEvent(AWTEvent event)
@@ -974,6 +1009,14 @@ class DEViseOpenDlg extends Frame
 
     public void setSessionList(String[] data)
     {
+        if (data == null) {
+            data = new String[4];
+            data[0] = new String("");
+            data[1] = new String(" ");
+            data[2] = new String("0");
+            data[3] = new String("0");
+        }
+
         sessions = data;
         // need to correct for num < 1
         int number = (sessions.length - 1) / 3;
