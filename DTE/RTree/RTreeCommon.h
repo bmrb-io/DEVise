@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/06/16 16:05:18  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.2  1997/03/28 16:07:47  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -25,7 +28,7 @@
 #ifndef RTREE_COMMON_H
 #define RTREE_COMMON_H
 
-const int VolumeSize = 10*1024*1024;
+const int VolumeSize = 20*1024*1024;
 static const char* VolumeName = "RTREE";
 extern int RTreeFile;
 

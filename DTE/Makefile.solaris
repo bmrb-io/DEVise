@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.46  1997/07/30 21:38:04  donjerko
+# Removed manual template instantiation
+#
 # Revision 1.45  1997/07/22 14:59:11  donjerko
 # *** empty log message ***
 #
@@ -133,7 +136,11 @@ CatalogComm.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 CatalogComm.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 CatalogComm.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 CatalogComm.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-CatalogComm.o: /usr/include/sys/byteorder.h ../Core/exception.h
+CatalogComm.o: /usr/include/sys/byteorder.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/new.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+CatalogComm.o: /usr/include/stddef.h ../Core/exception.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 CatalogComm.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 CatalogComm.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -162,36 +169,39 @@ CatalogComm2.o: /usr/include/sys/unistd.h ../../graphics/DList.h
 CatalogComm2.o: ../../graphics/Exit.h ../../graphics/Journal.h
 CatalogComm2.o: ../../graphics/VisualArg.h ../../graphics/Color.h
 CatalogComm2.o: ../../graphics/Pattern.h ../Core/queue.h
-CatalogComm2.o: /usr/include/assert.h ../../graphics.new/TData.h
-CatalogComm2.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
-CatalogComm2.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
-CatalogComm2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-CatalogComm2.o: /usr/include/sys/shm.h /usr/include/errno.h
-CatalogComm2.o: /usr/include/sys/errno.h /usr/include/limits.h
-CatalogComm2.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
-CatalogComm2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-CatalogComm2.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-CatalogComm2.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-CatalogComm2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CatalogComm2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-CatalogComm2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-CatalogComm2.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-CatalogComm2.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-CatalogComm2.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-CatalogComm2.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-CatalogComm2.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-CatalogComm2.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-CatalogComm2.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-CatalogComm2.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-CatalogComm2.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-CatalogComm2.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
-CatalogComm2.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-CatalogComm2.o: ../Core/Engine.h ../Core/types.h
-CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+CatalogComm2.o: /usr/include/assert.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+CatalogComm2.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
+CatalogComm2.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+CatalogComm2.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
+CatalogComm2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+CatalogComm2.o: /usr/include/errno.h /usr/include/sys/errno.h
+CatalogComm2.o: /usr/include/limits.h /usr/include/sys/stat.h
+CatalogComm2.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
+CatalogComm2.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+CatalogComm2.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+CatalogComm2.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+CatalogComm2.o: /usr/include/netdb.h /usr/include/sys/socket.h
+CatalogComm2.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+CatalogComm2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+CatalogComm2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+CatalogComm2.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+CatalogComm2.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+CatalogComm2.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+CatalogComm2.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+CatalogComm2.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+CatalogComm2.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+CatalogComm2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+CatalogComm2.o: /usr/include/sys/byteorder.h ../../graphics.new/FileIndex.h
+CatalogComm2.o: ../../graphics/AttrList.h ../../graphics/Init.h
+CatalogComm2.o: ../../graphics/BufPolicy.h ../Core/Engine.h ../Core/types.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/String.h
-CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/Regex.h ../Core/exception.h
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/new.h
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+CatalogComm2.o: /usr/include/stddef.h ../Core/exception.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
 CatalogComm2.o: ../Core/site.h ../Core/myopt.h
@@ -202,8 +212,7 @@ CatalogComm2.o: ../Core/Iterator.h TuplePtr.XPlex.h TuplePtr.Plex.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/stddef
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
-CatalogComm2.o: /usr/include/stddef.h /s/gcc-2.7.2/lib/g++-include/cstdlib
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/cstdlib
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/cstdlib.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/cstring
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
@@ -271,7 +280,11 @@ DqlInclude.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 DqlInclude.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 DqlInclude.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 DqlInclude.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-DqlInclude.o: ../Core/exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/new.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+DqlInclude.o: /usr/include/stddef.h ../Core/exception.h
+DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 DqlInclude.o: ../../graphics.new/machdep.h /usr/include/limits.h
 DqlInclude.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 DqlInclude.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -333,8 +346,11 @@ TDataDQL.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 TDataDQL.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TDataDQL.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 TDataDQL.o: /usr/include/sys/byteorder.h ../../graphics.new/FileIndex.h
-TDataDQL.o: ../Core/Engine.h ../Core/types.h ../Core/exception.h
-TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+TDataDQL.o: ../Core/Engine.h ../Core/types.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/new.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+TDataDQL.o: ../Core/exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
 TDataDQL.o: ../Core/site.h ../Core/myopt.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
@@ -351,7 +367,6 @@ TDataDQL.o: TuplePtr.XPlex.h TuplePtr.Plex.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/stddef
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/cstdlib
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/cstdlib.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/cstring
@@ -407,7 +422,11 @@ TDataDQLInterp.o: ../../graphics.new/DCE.h /usr/include/errno.h
 TDataDQLInterp.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
 TDataDQLInterp.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
 TDataDQLInterp.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-TDataDQLInterp.o: ../Core/Engine.h ../Core/types.h ../Core/exception.h
+TDataDQLInterp.o: ../Core/Engine.h ../Core/types.h
+TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/new.h
+TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+TDataDQLInterp.o: /usr/include/stddef.h ../Core/exception.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
 TDataDQLInterp.o: ../Core/site.h ../Core/myopt.h ../Core/url.h
@@ -416,8 +435,7 @@ TDataDQLInterp.o: ../Core/Iterator.h TuplePtr.XPlex.h TuplePtr.Plex.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/stddef
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
-TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
-TDataDQLInterp.o: /usr/include/stddef.h /s/gcc-2.7.2/lib/g++-include/cstdlib
+TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/cstdlib
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/cstdlib.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/cstring
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/cstring.h
@@ -477,7 +495,9 @@ TuplePtr.Plex.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 TuplePtr.Plex.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 TuplePtr.Plex.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TuplePtr.Plex.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TuplePtr.Plex.o: /usr/include/sys/byteorder.h ../Core/exception.h
+TuplePtr.Plex.o: /usr/include/sys/byteorder.h
+TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/new.h
+TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
 TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 TuplePtr.Plex.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -526,7 +546,9 @@ TuplePtr.XPlex.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 TuplePtr.XPlex.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 TuplePtr.XPlex.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TuplePtr.XPlex.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TuplePtr.XPlex.o: /usr/include/sys/byteorder.h ../Core/exception.h
+TuplePtr.XPlex.o: /usr/include/sys/byteorder.h
+TuplePtr.XPlex.o: /s/gcc-2.7.2/lib/g++-include/new.h
+TuplePtr.XPlex.o: /s/gcc-2.7.2/lib/g++-include/std/new.h ../Core/exception.h
 TuplePtr.XPlex.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 TuplePtr.XPlex.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 TuplePtr.XPlex.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -558,7 +580,10 @@ Aggregates.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 Aggregates.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 Aggregates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 Aggregates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Aggregates.o: /usr/include/sys/byteorder.h exception.h
+Aggregates.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+Aggregates.o: /usr/include/stddef.h exception.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 Aggregates.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -602,7 +627,11 @@ DeleteParse.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 DeleteParse.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 DeleteParse.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 DeleteParse.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-DeleteParse.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+DeleteParse.o: /usr/include/stddef.h exception.h
+DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 DeleteParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
 DeleteParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 DeleteParse.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -646,6 +675,9 @@ DevRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 DevRead.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 DevRead.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 DevRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+DevRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
+DevRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+DevRead.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 DevRead.o: exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 DevRead.o: ../../graphics.new/machdep.h /usr/include/sys/wait.h
@@ -656,56 +688,13 @@ DevRead.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
 DevRead.o: /usr/include/sys/netconfig.h Utility.h queue.h DevRead.h
 DevRead.o: Iterator.h
-DevRead.dummy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DevRead.dummy.o: /usr/include/sys/va_list.h /usr/include/string.h
-DevRead.dummy.o: ../../graphics.new/machdep.h /usr/include/limits.h
-DevRead.dummy.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
-DevRead.dummy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-DevRead.dummy.o: /usr/include/sys/time.h /usr/include/time.h
-DevRead.dummy.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
-DevRead.dummy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-DevRead.dummy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DevRead.dummy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-DevRead.dummy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-DevRead.dummy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DevRead.dummy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-DevRead.dummy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DevRead.dummy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DevRead.dummy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-DevRead.dummy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-DevRead.dummy.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-DevRead.dummy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DevRead.dummy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DevRead.dummy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DevRead.dummy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DevRead.dummy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-DevRead.dummy.o: DevRead.h /s/gcc-2.7.2/lib/g++-include/iostream.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/String.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/Regex.h types.h
-DevRead.dummy.o: /usr/include/assert.h exception.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
-DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h Utility.h queue.h
-DevRead.dummy.o: ../../graphics.new/RecId.h Iterator.h ../../graphics/Util.h
-DevRead.dummy.o: /usr/include/stdlib.h /usr/include/ctype.h
-DevRead.dummy.o: /usr/include/math.h /usr/include/floatingpoint.h
-DevRead.dummy.o: /usr/include/sys/ieeefp.h ../../graphics/DeviseTypes.h
-DevRead.dummy.o: /usr/include/values.h ../../graphics/DevStatus.h
-DevRead.dummy.o: ../../graphics/Exit.h ../../graphics.new/TData.h
-DevRead.dummy.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
-DevRead.dummy.o: ../../graphics.new/DCE.h /usr/include/errno.h
-DevRead.dummy.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
-DevRead.dummy.o: ../../graphics/AttrList.h ../../graphics/DList.h
-DevRead.dummy.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-DevRead.dummy.o: ../../graphics.new/DataSeg.h
 DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h
 DropIndexParse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DropIndexParse.o: /usr/include/sys/va_list.h myopt.h
-DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/String.h
+DropIndexParse.o: /usr/include/sys/va_list.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h myopt.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/String.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
@@ -724,7 +713,11 @@ DropIndexParse.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 DropIndexParse.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 DropIndexParse.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 DropIndexParse.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DropIndexParse.o: /usr/include/sys/byteorder.h exception.h
+DropIndexParse.o: /usr/include/sys/byteorder.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+DropIndexParse.o: /usr/include/stddef.h exception.h
 DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 DropIndexParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
 DropIndexParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
@@ -740,11 +733,11 @@ Engine.o: /usr/include/memory.h /usr/include/string.h
 Engine.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
 Engine.o: /usr/include/math.h /usr/include/floatingpoint.h
 Engine.o: /usr/include/sys/ieeefp.h /usr/include/stdlib.h queue.h
-Engine.o: /usr/include/stdio.h /usr/include/sys/va_list.h myopt.h
-Engine.o: /s/gcc-2.7.2/lib/g++-include/String.h
+Engine.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-Engine.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/libio.h myopt.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/String.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 Engine.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
@@ -762,22 +755,26 @@ Engine.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 Engine.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 Engine.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 Engine.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Engine.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-Engine.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
-Engine.o: /usr/include/limits.h /usr/include/sys/wait.h
-Engine.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Engine.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Engine.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-Engine.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-Engine.o: /usr/include/netdb.h /usr/include/sys/socket.h
-Engine.o: /usr/include/sys/netconfig.h Utility.h ../../graphics.new/RecId.h
-Engine.o: url.h /usr/include/unistd.h SockStream.h listop.h Array.h Engine.h
-Engine.o: site.h Iterator.h ParseTree.h joins.h
+Engine.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/new.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+Engine.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+Engine.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+Engine.o: ../../graphics.new/machdep.h /usr/include/limits.h
+Engine.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+Engine.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+Engine.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+Engine.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+Engine.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Engine.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
+Engine.o: ../../graphics.new/RecId.h url.h /usr/include/unistd.h SockStream.h
+Engine.o: listop.h Array.h Engine.h site.h Iterator.h ParseTree.h joins.h
+Engine.o: ExecOp.h ExecExpr.h
 ExecOp.o: ExecOp.h queue.h /usr/include/assert.h /usr/include/stdio.h
-ExecOp.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h Array.h
-ExecOp.o: ExecExpr.h types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+ExecOp.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-ExecOp.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/libio.h Array.h ExecExpr.h types.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/String.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
 ExecOp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -793,8 +790,11 @@ ExecOp.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 ExecOp.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 ExecOp.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 ExecOp.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ExecOp.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-ExecOp.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+ExecOp.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/new.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+ExecOp.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+ExecOp.o: exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 ExecOp.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 ExecOp.o: /usr/include/limits.h /usr/include/sys/wait.h
 ExecOp.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
@@ -838,7 +838,11 @@ FunctionRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 FunctionRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 FunctionRead.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 FunctionRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-FunctionRead.o: /usr/include/sys/byteorder.h exception.h
+FunctionRead.o: /usr/include/sys/byteorder.h
+FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
+FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+FunctionRead.o: /usr/include/stddef.h exception.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 FunctionRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -879,7 +883,11 @@ IndexParse.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 IndexParse.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 IndexParse.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 IndexParse.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-IndexParse.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+IndexParse.o: /usr/include/stddef.h exception.h
+IndexParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 IndexParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
 IndexParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 IndexParse.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -918,7 +926,11 @@ InsertParse.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 InsertParse.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 InsertParse.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 InsertParse.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-InsertParse.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+InsertParse.o: /usr/include/stddef.h exception.h
+InsertParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 InsertParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
 InsertParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 InsertParse.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -960,8 +972,12 @@ Inserter.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 Inserter.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 Inserter.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
 Inserter.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-Inserter.o: /usr/include/sys/ioctl.h Inserter.h types.h Utility.h queue.h
-Inserter.o: ../../graphics.new/RecId.h StandardRead.h Iterator.h
+Inserter.o: /usr/include/sys/ioctl.h Inserter.h types.h
+Inserter.o: /s/gcc-2.7.2/lib/g++-include/new.h
+Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+Inserter.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+Inserter.o: Utility.h queue.h ../../graphics.new/RecId.h StandardRead.h
+Inserter.o: Iterator.h
 PQueue.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h PQueue.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -981,8 +997,11 @@ PQueue.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 PQueue.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 PQueue.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 PQueue.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-PQueue.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-PQueue.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+PQueue.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/new.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+PQueue.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+PQueue.o: exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 PQueue.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 PQueue.o: /usr/include/limits.h /usr/include/sys/wait.h
 PQueue.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
@@ -994,10 +1013,10 @@ PQueue.o: /usr/include/sys/netconfig.h Utility.h queue.h /usr/include/stdio.h
 PQueue.o: /usr/include/sys/va_list.h ../../graphics.new/RecId.h
 QueryTree.o: queue.h /usr/include/assert.h /usr/include/stdio.h
 QueryTree.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
-QueryTree.o: myopt.h /s/gcc-2.7.2/lib/g++-include/String.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h myopt.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/String.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
@@ -1016,8 +1035,10 @@ QueryTree.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 QueryTree.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 QueryTree.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 QueryTree.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-QueryTree.o: /usr/include/sys/byteorder.h exception.h
-QueryTree.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+QueryTree.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+QueryTree.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+QueryTree.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
 QueryTree.o: ../../graphics.new/machdep.h /usr/include/limits.h
 QueryTree.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 QueryTree.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -1056,6 +1077,9 @@ RTreeRead.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 RTreeRead.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 RTreeRead.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 RTreeRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 RTreeRead.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
 RTreeRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
 RTreeRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
@@ -1083,10 +1107,10 @@ RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 RTreeRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h /usr/include/stdio.h
 SchemaParse.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
-SchemaParse.o: myopt.h /s/gcc-2.7.2/lib/g++-include/String.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h myopt.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/String.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
@@ -1105,7 +1129,11 @@ SchemaParse.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 SchemaParse.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 SchemaParse.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 SchemaParse.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-SchemaParse.o: /usr/include/sys/byteorder.h exception.h
+SchemaParse.o: /usr/include/sys/byteorder.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/new.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+SchemaParse.o: /usr/include/stddef.h exception.h
 SchemaParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 SchemaParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
 SchemaParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
@@ -1138,12 +1166,15 @@ Sort.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 Sort.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 Sort.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 Sort.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Sort.o: /usr/include/sys/byteorder.h exception.h
-Sort.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
-Sort.o: /usr/include/limits.h /usr/include/sys/wait.h
-Sort.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Sort.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Sort.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+Sort.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+Sort.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+Sort.o: ../../graphics.new/machdep.h /usr/include/limits.h
+Sort.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+Sort.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+Sort.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+Sort.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 Sort.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 Sort.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
 Sort.o: ../../graphics.new/RecId.h myopt.h
@@ -1173,7 +1204,11 @@ StandardRead.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 StandardRead.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 StandardRead.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 StandardRead.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-StandardRead.o: /usr/include/sys/byteorder.h exception.h
+StandardRead.o: /usr/include/sys/byteorder.h
+StandardRead.o: /s/gcc-2.7.2/lib/g++-include/new.h
+StandardRead.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+StandardRead.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+StandardRead.o: /usr/include/stddef.h exception.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 StandardRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -1188,10 +1223,10 @@ StandardRead.o: /usr/include/sys/va_list.h ../../graphics.new/RecId.h
 StandardRead.o: Iterator.h url.h /usr/include/unistd.h SockStream.h
 TypeCheck.o: TypeCheck.h queue.h /usr/include/assert.h /usr/include/stdio.h
 TypeCheck.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
-TypeCheck.o: myopt.h /s/gcc-2.7.2/lib/g++-include/String.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/libio.h myopt.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/String.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
@@ -1210,8 +1245,10 @@ TypeCheck.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 TypeCheck.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 TypeCheck.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TypeCheck.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TypeCheck.o: /usr/include/sys/byteorder.h exception.h
-TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+TypeCheck.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+TypeCheck.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+TypeCheck.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
 TypeCheck.o: ../../graphics.new/machdep.h /usr/include/limits.h
 TypeCheck.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 TypeCheck.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -1245,7 +1282,10 @@ UnionParse.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 UnionParse.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 UnionParse.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 UnionParse.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-UnionParse.o: /usr/include/sys/byteorder.h exception.h
+UnionParse.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+UnionParse.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+UnionParse.o: /usr/include/stddef.h exception.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 UnionParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
 UnionParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
@@ -1288,9 +1328,11 @@ Util.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 Util.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Util.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h ParseTree.h
 Util.o: queue.h /usr/include/stdio.h /usr/include/sys/va_list.h myopt.h
-Util.o: types.h /usr/include/string.h Utility.h ../../graphics.new/RecId.h
-Util.o: url.h /usr/include/unistd.h SockStream.h listop.h Array.h catalog.h
-Util.o: site.h Iterator.h Inserter.h
+Util.o: types.h /usr/include/string.h /s/gcc-2.7.2/lib/g++-include/new.h
+Util.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+Util.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+Util.o: Utility.h ../../graphics.new/RecId.h url.h /usr/include/unistd.h
+Util.o: SockStream.h listop.h Array.h catalog.h site.h Iterator.h Inserter.h
 catalog.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1312,6 +1354,9 @@ catalog.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 catalog.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 catalog.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 catalog.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/new.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+catalog.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 catalog.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
 catalog.o: ../../graphics.new/machdep.h /usr/include/limits.h
 catalog.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
@@ -1326,10 +1371,10 @@ catalog.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/unistd.h
 catalog.o: SockStream.h listop.h Array.h DevRead.h Engine.h Inserter.h
 joins.o: joins.h site.h /usr/include/assert.h queue.h /usr/include/stdio.h
-joins.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h types.h
+joins.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-joins.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/libio.h types.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/String.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
 joins.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -1345,8 +1390,11 @@ joins.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 joins.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 joins.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 joins.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-joins.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-joins.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+joins.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/new.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+joins.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+joins.o: exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 joins.o: /usr/include/limits.h /usr/include/sys/wait.h
 joins.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
@@ -1381,17 +1429,20 @@ lex.yy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 lex.yy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 lex.yy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 lex.yy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-lex.yy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-lex.yy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
-lex.yy.o: /usr/include/limits.h /usr/include/sys/wait.h
-lex.yy.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-lex.yy.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-lex.yy.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-lex.yy.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-lex.yy.o: /usr/include/netdb.h /usr/include/sys/socket.h
-lex.yy.o: /usr/include/sys/netconfig.h Utility.h ../../graphics.new/RecId.h
-lex.yy.o: url.h /usr/include/unistd.h SockStream.h listop.h Array.h
-lex.yy.o: ParseTree.h my.yacc.tab.h
+lex.yy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/new.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+lex.yy.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+lex.yy.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+lex.yy.o: ../../graphics.new/machdep.h /usr/include/limits.h
+lex.yy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+lex.yy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+lex.yy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+lex.yy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+lex.yy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+lex.yy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
+lex.yy.o: ../../graphics.new/RecId.h url.h /usr/include/unistd.h SockStream.h
+lex.yy.o: listop.h Array.h ParseTree.h my.yacc.tab.h
 listop.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 listop.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 listop.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -1417,17 +1468,20 @@ listop.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 listop.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 listop.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 listop.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-listop.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-listop.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
-listop.o: /usr/include/limits.h /usr/include/sys/wait.h
-listop.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-listop.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-listop.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-listop.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-listop.o: /usr/include/netdb.h /usr/include/sys/socket.h
-listop.o: /usr/include/sys/netconfig.h Utility.h ../../graphics.new/RecId.h
-listop.o: url.h /usr/include/unistd.h SockStream.h listop.h Array.h site.h
-listop.o: Iterator.h catalog.h ExecExpr.h
+listop.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/new.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+listop.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+listop.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+listop.o: ../../graphics.new/machdep.h /usr/include/limits.h
+listop.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+listop.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+listop.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+listop.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+listop.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+listop.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h Utility.h
+listop.o: ../../graphics.new/RecId.h url.h /usr/include/unistd.h SockStream.h
+listop.o: listop.h Array.h site.h Iterator.h catalog.h ExecExpr.h
 my.yacc.tab.o: myopt.h /usr/include/assert.h
 my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/String.h
 my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1453,7 +1507,11 @@ my.yacc.tab.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 my.yacc.tab.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 my.yacc.tab.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 my.yacc.tab.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-my.yacc.tab.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
+my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/new.h
+my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+my.yacc.tab.o: /usr/include/stddef.h exception.h
+my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 my.yacc.tab.o: ../../graphics.new/machdep.h /usr/include/limits.h
 my.yacc.tab.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 my.yacc.tab.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
@@ -1489,6 +1547,9 @@ resolve.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 resolve.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 resolve.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 resolve.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/new.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+resolve.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 resolve.o: exception.h /s/gcc-2.7.2/lib/g++-include/iomanip.h
 resolve.o: ../../graphics.new/machdep.h /usr/include/limits.h
 resolve.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
@@ -1518,8 +1579,11 @@ site.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 site.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 site.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 site.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-site.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h exception.h
-site.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+site.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+site.o: /s/gcc-2.7.2/lib/g++-include/new.h
+site.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+site.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+site.o: exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 site.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 site.o: /usr/include/limits.h /usr/include/sys/wait.h
 site.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
@@ -1552,8 +1616,10 @@ types.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 types.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 types.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 types.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-types.o: /usr/include/sys/byteorder.h exception.h
-types.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+types.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+types.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+types.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+types.o: exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 types.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 types.o: /usr/include/limits.h /usr/include/sys/wait.h
 types.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
@@ -1619,6 +1685,9 @@ main.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 main.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 main.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 main.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+main.o: /s/gcc-2.7.2/lib/g++-include/new.h
+main.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+main.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
 main.o: ../Core/exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 main.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 main.o: /usr/include/limits.h /usr/include/sys/wait.h
@@ -1658,8 +1727,10 @@ script.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 script.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 script.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 script.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-script.o: /usr/include/sys/byteorder.h ../Core/exception.h
-script.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+script.o: /usr/include/sys/byteorder.h /s/gcc-2.7.2/lib/g++-include/new.h
+script.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+script.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+script.o: ../Core/exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
 script.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
 script.o: /usr/include/limits.h /usr/include/sys/wait.h
 script.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
@@ -1718,7 +1789,11 @@ scriptServer.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 scriptServer.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 scriptServer.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 scriptServer.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-scriptServer.o: /usr/include/sys/byteorder.h ../Core/exception.h
+scriptServer.o: /usr/include/sys/byteorder.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/new.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/std/new.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/std/cstddef.h
+scriptServer.o: /usr/include/stddef.h ../Core/exception.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 scriptServer.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
 scriptServer.o: ../../graphics.new/machdep.h /usr/include/limits.h
