@@ -2907,11 +2907,10 @@ Num Date        Status  Description
 			in client. (rkw)
 			(Fixed by rkw, 11/07/01.)
 
-726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
+726 11/01/01	OPEN	JavaScreen: if the jspop is running, but there is
 			no devised, and a client connects, the JSPoP should
 			return an error message to the client, rather than
 			just leaving it hanging. (rkw)
-			(Fixed by xuk, 11/27/01.)
 
 727 11/20/01	OPEN	Line graphs don't work in DEVise if the records are
 			not in order of the X axis attribute. (rkw)
@@ -2944,7 +2943,27 @@ Num Date        Status  Description
 
 733 11/27/01	OPEN	JavaScreen: in the JS demo session PaulB/sample3.ds,
 			the "100k Files" and "5k Files" views show only one
-			view in the child view piles. (rkw)
+			view in the child view piles. (rkw)  (Seems to be
+			fixed by putting each parent view in its own window.
+			See PaulB/sample3_bug733.ds for version that fails.)
+
+734 11/27/01	OPEN	Creation of debug log file fails if the
+			/tmp/<usr>-devise-tmp directory doesn't already
+			exist. (rkw)
+
+735 11/28/01	OPEN	'Home' (5) doesn't work right in the JS demo session
+			PaulB/sample3.ds (in the child views).  If you do
+			home twice in a row, you get a different filter value.
+			(rkw)
+
+736 11/28/01	OPEN	JavaScreen: dragging one side of a cursor past the
+			other ("flipping" the cursor) doesn't work right.
+			(rkw)
+
+737 11/28/01	OPEN	Creating a view with a visual filter in which the low
+			and high values are the same crashes DEVise (only
+			relevant for non-DEVise-generated session files).
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
