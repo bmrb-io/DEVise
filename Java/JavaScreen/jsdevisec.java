@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.86  2001/02/20 20:02:26  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.85  2001/02/19 20:30:23  xuk
 // Added command(s) and GUI so that a collaboration leader can find out who is
 // collaborating with it.
@@ -252,6 +256,8 @@ public class jsdevisec extends Panel
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetModeDlg setmodedlg = null;
     public CollabDlg collabdlg = null;
+    public CollabPassDlg collabpassdlg = null;
+    public EnterCollabPassDlg entercollabpassdlg = null;
 
     public boolean isSessionOpened = false;
 
@@ -273,8 +279,9 @@ public class jsdevisec extends Panel
     // 0: before the first round connection
     // >0: collaborated JS ID
     public int specialID = -1;
-    // enable collaboration defaultly
-    public boolean isAbleCollab = true;
+    // disable collaboration defaultly
+    // public boolean isAbleCollab = false;
+    public String collabPass = new String(DEViseGlobals.DEFAULTPASS);
 
 
 	// images[0-9] are the gears; 10 and 11 are "traffic lights"
@@ -542,18 +549,6 @@ System.out.println("Creating new debug window");
                     }
                 });
 
-        //collabButton.addActionListener(new ActionListener()
-	//      {
-	//          public void actionPerformed(ActionEvent event)
-	//          {
-	//              if (isSessionOpened) {
-	//                  showMsg("You already have a session opened!\nPlease close current session first!");
-	//                  return;
-	//              }
-	//
-	//              showCollab();
-	//          }
-	//      });
 
         filterButton.addActionListener(new ActionListener()
                 {
@@ -705,6 +700,20 @@ System.out.println("Creating new debug window");
         collabdlg = new CollabDlg(this, parentFrame, isCenterScreen, msg);
         collabdlg.open();
 	collabdlg = null;
+    }
+
+    public void showCollabPass()
+    {
+        collabpassdlg = new CollabPassDlg(this, parentFrame, isCenterScreen);
+        collabpassdlg.open();
+	collabpassdlg = null;
+    }
+
+    public void enterCollabPass()
+    {
+        entercollabpassdlg = new EnterCollabPassDlg(this, parentFrame, isCenterScreen);
+        entercollabpassdlg.open();
+	entercollabpassdlg = null;
     }
 
     public void showCollabState(String msg)
@@ -1922,7 +1931,7 @@ class SetModeDlg extends Dialog
     public Button socketButton = new Button("Socket");
     public Button cgiButton = new Button("CGI");
     public Button collabButton = new Button("Start Collaboration");
-    public Button disCollabButton = new Button("Disable Collaboration");
+    public Button disCollabButton = new Button("Enable Collaboration");
     public Button cancelButton = new Button("Cancel");
     private boolean status = false; // true means this dialog is showing
 
@@ -2061,8 +2070,9 @@ class SetModeDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.isAbleCollab = false;
+			//jsc.isAbleCollab = true;
 			close();
+			jsc.showCollabPass();
                     }
                 });
 
@@ -2123,15 +2133,11 @@ class CollabDlg extends Frame
 {
     private jsdevisec jsc = null;
 
-    //private String sessionName = null;
     private java.awt.List clientList = null;
     private Label label = new Label("Current active clients: ");
-    //private Label directory = new Label("");
     private Button okButton = new Button("OK");
     private Button cancelButton = new Button("Cancel");
     private String[] clients = null;
-    //private boolean[] sessionTypes = null;
-    //private String[] sessionNames = null;
 
     private boolean status = false; // true means this dialog is showing
 
@@ -2218,6 +2224,7 @@ class CollabDlg extends Frame
 				    String clientID = clientList.getItem(idx);
 				    jsc.specialID = Integer.parseInt(clientID);
 
+				    /*
 				    if (jsc.dispatcher.dispatcherThread != null) {
 					jsc.dispatcher.dispatcherThread.stop();
 					jsc.dispatcher.dispatcherThread = null;
@@ -2234,7 +2241,9 @@ class CollabDlg extends Frame
 				    jsc.dispatcher.setStatus(0);
 
                                     jsc.dispatcher.start(null);
+				    */
                                     close();
+				    jsc.enterCollabPass();
                                 }
                             }
                         }
@@ -2250,7 +2259,7 @@ class CollabDlg extends Frame
                             if (idx != -1) {
                                     String clientID = clientList.getItem(idx);
 				    jsc.specialID = Integer.parseInt(clientID);
-
+				    /*
 				    if (jsc.dispatcher.dispatcherThread != null) {
 					jsc.dispatcher.dispatcherThread.stop();
 					jsc.dispatcher.dispatcherThread = null;
@@ -2267,7 +2276,9 @@ class CollabDlg extends Frame
 				    jsc.dispatcher.setStatus(0);
 
 				    jsc.dispatcher.start(null);
+				    */
                                     close();
+				    jsc.enterCollabPass();
                             }
                         }
                     }
@@ -2329,4 +2340,312 @@ class CollabDlg extends Frame
     }
 }
 
+// ------------------------------------------------------------------------
+
+// Dialog for setting password for collaboration.
+class CollabPassDlg extends Dialog
+{
+    jsdevisec jsc = null;
+
+    public TextField pass = new TextField(20);
+    public Button setButton = new Button("Set");
+    public Button cancelButton = new Button("Cancel");
+    private boolean status = false; // true means this dialog is showing
+
+    public CollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating CollabPassDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Setting Collaboration Password");
+
+        setButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setButton.setForeground(jsc.jsValues.uiglobals.fg);
+        setButton.setFont(jsc.jsValues.uiglobals.font);
+
+        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
+        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
+        cancelButton.setFont(jsc.jsValues.uiglobals.font);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.insets = new Insets(10, 10, 10, 10);
+
+	pass.setText(jsc.collabPass);
+
+        Button [] button = new Button[2];
+        button[0] = setButton;
+        button[1] = cancelButton;
+        DEViseComponentPanel panel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+
+
+        c.gridwidth = 1;
+        Label label = new Label("Set Collaboration Password:");
+        gridbag.setConstraints(label, c);
+        add(label);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(pass, c);
+        add(pass);
+        gridbag.setConstraints(panel, c);
+        add(panel);
+
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        setButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			jsc.collabPass = pass.getText();
+
+			String command = new String();
+			command = DEViseCommands.SET_COLLAB_PASS + " {" + jsc.collabPass + "}";
+			jsc.dispatcher.start(command);
+			
+			close();
+                    }
+                });
+
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        close();
+                    }
+                });
+
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening CollabPassDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed CollabPassDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
+
+// ------------------------------------------------------------------------
+
+// Dialog for setting password for collaboration.
+class EnterCollabPassDlg extends Dialog
+{
+    jsdevisec jsc = null;
+
+    public TextField pass = new TextField(20);
+    public Button setButton = new Button("Set");
+    public Button cancelButton = new Button("Cancel");
+    private boolean status = false; // true means this dialog is showing
+
+    public EnterCollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating EnterCollabPassDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Reading Collaboration Password");
+
+        setButton.setBackground(jsc.jsValues.uiglobals.bg);
+        setButton.setForeground(jsc.jsValues.uiglobals.fg);
+        setButton.setFont(jsc.jsValues.uiglobals.font);
+
+        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
+        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
+        cancelButton.setFont(jsc.jsValues.uiglobals.font);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.insets = new Insets(10, 10, 10, 10);
+
+	pass.setText(DEViseGlobals.DEFAULTPASS);
+
+        Button [] button = new Button[2];
+        button[0] = setButton;
+        button[1] = cancelButton;
+        DEViseComponentPanel panel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+
+
+        c.gridwidth = 1;
+        Label label = new Label("Enter Collaboration Password:");
+        gridbag.setConstraints(label, c);
+        add(label);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        gridbag.setConstraints(pass, c);
+        add(pass);
+        gridbag.setConstraints(panel, c);
+        add(panel);
+
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        setButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+
+			jsc.collabPass = pass.getText();
+
+			if (jsc.dispatcher.dispatcherThread != null) {
+			    jsc.dispatcher.dispatcherThread.stop();
+			    jsc.dispatcher.dispatcherThread = null;
+			}
+			jsc.dispatcher.disconnect();
+
+			jsc.animPanel.stop();
+			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			jsc.jscreen.updateScreen(false);
+
+			if (jsc.dispatcher.getStatus() != 0) {
+			    jsc.dispatcher.setAbortStatus(true);
+			}
+			jsc.dispatcher.setStatus(0);
+
+                        jsc.dispatcher.start(null);
+			close();
+                    }
+                });
+
+        cancelButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+                        close();
+                    }
+                });
+
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening CollabPassDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed CollabPassDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
 
