@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/14 19:18:41  jussi
+  Changed memory allocation in ReadSocket(). Rather than
+  malloc a chunk of memory for each element every time
+  a new command arrives, new memory is allocated only
+  when the number of elements increases. Also ReadSocket()
+  is called successively until no more commands exist
+  rather than just a single time and then returning to
+  the dispatcher.
+
   Revision 1.9  1996/05/13 21:55:43  jussi
   Moved initialization of _mode to Control.c.
 
@@ -52,11 +61,15 @@
 */
 
 #include <stdio.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
 
 #include "ServerAPI.h"
 #include "QueryProc.h"
@@ -111,9 +124,8 @@ ServerAPI::ServerAPI()
 void ServerAPI::DoAbort(char *reason)
 {
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
-  char cmd[256];
-  sprintf(cmd, "AbortProgram {%s}", reason);
-  SendControl(API_CTL, reason);
+  char *args[] = { "AbortProgram", reason };
+  SendControl(2, args);
   fprintf(stderr, "Server aborts.\n");
   exit(0);
 }
@@ -138,49 +150,13 @@ int ServerAPI::AddReplica(char *hostName, int port)
     return -1;
   }
 
-  struct hostent *hostEnt = gethostbyname(hostName);
-  if (!hostEnt) {
-    perror("Cannot translate replica host name");
-    return -1;
-  }
-  if (hostEnt->h_addrtype != AF_INET) {
-    fprintf(stderr, "Unsupported replica address type\n");
-    return -1;
-  }
-
-  int fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (fd < 0){
-    perror("Cannot create socket");
-    return -1;
-  }
-
-  struct in_addr *ptr = (struct in_addr *)*hostEnt->h_addr_list;
-
-  struct sockaddr_in servAddr;
-  memset(&servAddr, 0, sizeof(servAddr));
-	
-  servAddr.sin_family = AF_INET;
-  servAddr.sin_port   = htons(port);
-  servAddr.sin_addr   = *ptr;
-
-  int result = connect(fd,(struct sockaddr *)&servAddr,
-		       sizeof(struct sockaddr));
-  if (result < 0) {
+  int fd = DeviseOpen(hostName, port);
+  if (fd < 0) {
     fprintf(stderr, "Cannot connect to replica server %s:%d.\n",
 	    hostName, port);
-    perror("connect");
-    close(fd);
     return -1;
   }
   
-  u_short size = htons(0);
-  result = send(fd, (char *)&size, sizeof size, 0);
-  if (result < (int)sizeof size) {
-    perror("Cannot send DISPLAY size to replica server");
-    close(fd);
-    return -1;
-  }
-
   _replicas[_replicate].host = CopyString(hostName);
   _replicas[_replicate].port = port;
   _replicas[_replicate].fd = fd;
@@ -206,7 +182,7 @@ int ServerAPI::RemoveReplica(char *hostName, int port)
     return -1;
   }
 
-  close(_replicas[i].fd);
+  DeviseClose(_replicas[i].fd);
 
   for(int j = i + 1; j < _replicate; j++) {
     _replicas[j - 1].host = _replicas[j].host;
@@ -236,7 +212,7 @@ void ServerAPI::Replicate(int argc, char **argv)
 #endif
 
   for(int i = 0; i < _replicate; i++) {
-    if (Send(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
+    if (DeviseSend(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
       fprintf(stderr,
 	      "Failed to replicate command to %s:%d. Disconnecting.\n",
 	      _replicas[i].host, _replicas[i].port);
@@ -282,7 +258,7 @@ void ServerAPI::Run()
   if (_socketFd >= 0) {
     // We are connected so just keep reading from the socket
     while(_socketFd >= 0) {
-      int result = ReadSocket();
+      int result = ReadCommand();
       if (!result)
 	break;
       if (result < 0) {
@@ -297,8 +273,9 @@ void ServerAPI::Run()
   printf("\n");
   printf("Server waiting for client connection.\n");
 
-  int len = sizeof(_client_addr);
-  _socketFd = accept(_listenFd, (struct sockaddr *)&_client_addr, &len);
+  struct sockaddr_in tempaddr;
+  int len = sizeof(tempaddr);
+  _socketFd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
   if (_socketFd < 0) {
     perror("accept");
     if (errno == EINTR) {
@@ -321,48 +298,18 @@ void ServerAPI::Run()
   Dispatcher::Current()->Register(this, 10, AllState, true, _socketFd);
 }
 
-int ServerAPI::NonBlockingMode(int fd)
-{
-#ifdef SUN
-  int result = fcntl(fd, F_SETFL, FNDELAY);
-#else
-  int result = fcntl(fd, F_SETFL, O_NDELAY);
-#endif
-  if (result < 0)
-    return -1;
-
-  return 1;
-}
-
-int ServerAPI::BlockingMode(int fd)
-{
-  int result = fcntl(fd, F_SETFL, 0);
-  if (result < 0)
-    return -1;
-
-  return 1;
-}
-
-int ServerAPI::ReadSocket()
+int ServerAPI::ReadCommand()
 {
   DOASSERT(_socketFd >= 0, "Invalid socket");
 
-  static u_short maxSize = 0;
-  static char **buff = 0;
-  const int maxElemSize = 64;
-
-#ifdef DEBUG9
-  printf("Getting flag\n");
-#endif
-
   u_short flag;
-  int result = recv(_socketFd, (char *)&flag, sizeof flag, 0);
-  if (result < (int)sizeof flag) {
-#ifdef DEBUG9
-    perror("recv");
-#endif
+  int argc;
+  char **argv;
+  int result = DeviseReceive(_socketFd, 0, flag, argc, argv);
+  if (result < 0) {
     if (errno == EAGAIN)
       return 0;
+    perror("recv");
     return -1;
   }
 
@@ -371,81 +318,6 @@ int ServerAPI::ReadSocket()
     printf("End of client data.\n");
 #endif
     return -1;
-  }
-
-  flag = ntohs(flag);
-
-  // set socket to blocking mode
-  (void)BlockingMode(_socketFd);
-
-#ifdef DEBUG
-  printf("Getting bracket\n");
-#endif
-
-  u_short bracket;
-  result = recv(_socketFd, (char *)&bracket, sizeof bracket, 0);
-  if (result < (int)sizeof bracket) {
-    perror("recv");
-    goto error;
-  }
-  bracket = ntohs(bracket);
-
-#ifdef DEBUG
-  printf("Getting numElements\n");
-#endif
-
-  u_short numElements;
-  result = recv(_socketFd, (char *)&numElements, sizeof numElements, 0);
-  if (result < (int)sizeof numElements) {
-    perror("recv");
-    goto error;
-  }
-  numElements = ntohs(numElements);
-
-#ifdef DEBUG
-  printf("\nGot numElements = %d\n", numElements);
-#endif
-
-  if (numElements > maxSize) {
-    int i;
-    for(i = 0; i < maxSize; i++)
-      delete buff[i];
-    delete buff;
-    buff = new char * [numElements];
-    DOASSERT(buff, "Out of memory");
-    maxSize = numElements;
-    for(i = 0; i < maxSize; i++) {
-      buff[i] = new char [maxElemSize];
-      DOASSERT(buff[i], "Out of memory");
-    }
-  }
-
-  int i;
-  for(i = 0; i < numElements;i++) {
-#ifdef DEBUG
-    printf("Getting size of element %d\n", i);
-#endif
-    u_short size;
-    result = recv(_socketFd, (char *)&size, sizeof size, 0);
-    if (result < (int)sizeof size) {
-      perror("recv");
-      goto error;
-    }
-    size = ntohs(size);
-#ifdef DEBUG
-    printf("Getting element %d (%d bytes)\n", i, size);
-#endif
-    DOASSERT(size <= maxElemSize, "Protocol element too large");
-    if (size > 0) {
-      result = recv(_socketFd, buff[i], size, 0);
-      if (result < size) {
-	perror("recv");
-	goto error;
-      }
-#ifdef DEBUG
-      printf("Got element \"%s\"\n", buff[i]);
-#endif
-    }
   }
 
   if (flag != API_CMD) {
@@ -462,13 +334,13 @@ int ServerAPI::ReadSocket()
   // have already executed the "create view" command before the
   // "setFilter" command is sent
 
-  Replicate(numElements, buff);
+  Replicate(argc, argv);
 
 #ifdef DEBUG
   printf("Executing command\n");
 #endif
 
-  if (ParseAPI(numElements, buff, this) < 0)
+  if (ParseAPI(argc, argv, this) < 0)
     fprintf(stderr, "Devise API command error\n");
 
 #ifdef DEBUG
@@ -476,13 +348,13 @@ int ServerAPI::ReadSocket()
 #endif
 
   // go back to non-blocking mode
-  (void)NonBlockingMode(_socketFd);
+  (void)DeviseNonBlockMode(_socketFd);
 
   return 1;
 
  error:
   // go back to non-blocking mode
-  (void)NonBlockingMode(_socketFd);
+  (void)DeviseNonBlockMode(_socketFd);
   return -1;
 }
 
@@ -492,31 +364,7 @@ int ServerAPI::GotoConnectedMode()
 
   printf("Setting up client connection.\n");
     
-  // first we receive the name of the display at the client (DISPLAY)
-
-  u_short size;
-  int result = recv(_socketFd, (char *)&size, sizeof size, 0);
-  if (result < (int)sizeof size) {
-    perror("recv");
-    return -1;
-  }
-  size = ntohs(size);
-
-  char displayName[size];
-  result = recv(_socketFd, displayName, size, 0);
-  if (result < size) {
-    perror("recv");
-    return -1;
-  }
-  
-#ifdef DEBUG
-  printf("Client sent display name: %s\n", displayName);
-#endif
-
-  // set socket to non-blocking mode
-
-  if (NonBlockingMode(_socketFd) < 0)
-    return -1;
+  // no action needed at this time
 
   printf("Client connection established.\n");
     
@@ -531,14 +379,14 @@ void ServerAPI::RestartSession()
 
   if (_socketFd >= 0) {
     printf("Closing client connection.\n");
-    close(_socketFd);
+    DeviseClose(_socketFd);
     _socketFd = -1;
   }
 
   for(int i = 0; i < _replicate; i++) {
     printf("Closing replica connection to %s:%d\n", _replicas[i].host,
 	   _replicas[i].port);
-    close(_replicas[i].fd);
+    DeviseClose(_replicas[i].fd);
   }
   _replicate = 0;
 
@@ -597,89 +445,22 @@ void ServerAPI::RestartSession()
   Dispatcher::Current()->Register(this, 10, AllState, true, _listenFd);
 }
 
-int ServerAPI::Send(int fd, u_short flag, int bracket,
-		    int numArgs, char **argv)
-{
-#ifdef DEBUG
-  printf("Sending flag %d\n", flag);
-#endif
-
-  flag = htons(flag);
-  int result = send(fd, (char *)&flag, sizeof flag, 0);
-  if (result < (int)sizeof flag) {
-    perror("send");
-    return -1;
-  }
- 
-#ifdef DEBUG
-  printf("Sending bracket flag %d\n", bracket);
-#endif
-
-  u_short nbracket = htons(bracket);
-  result = send(fd, (char *)&nbracket, sizeof nbracket, 0);
-  if (result < (int)sizeof nbracket) {
-    perror("send");
-    return -1;
-  }
-
-#ifdef DEBUG
-  printf("Sending number of elements %d\n", numArgs);
-#endif
-
-  u_short num = htons((u_short)numArgs);
-  result = send(fd, (char *)&num, sizeof num, 0);
-  if (result < (int)sizeof num) {
-    perror("send");
-    return -1;
-  }
-
-  for(int i = 0; i < numArgs; i++) {
-    u_short size;
-    if (!argv[i])
-      size = 0;
-    else
-      size = (u_short)(strlen(argv[i]) + 1);
-#ifdef DEBUG
-    printf("Sending size of element %d: %d\n", i, size);
-#endif
-    size = htons(size);
-    result = send(fd, (char *)&size, sizeof size, 0);
-    if (result < (int)sizeof size) {
-      perror("send");
-      return -1;
-    }
-    size = ntohs(size);
-    if (size > 0) {
-#ifdef DEBUG
-      printf("Sending element %d: \"%s\"\n", i, argv[i]);
-#endif
-      result = send(fd, argv[i], size, 0);
-      if (result < 0) {
-	perror("send");
-	return -1;
-      }
-    }
-  }
-
-#ifdef DEBUG
-  printf("Complete message sent\n");
-#endif
-
-  return 1;
-}
-
 void ServerAPI::SetBusy()
 {
-  if (++_busy == 1)
-    SendControl(API_CTL, "ChangeStatus 1");
+  if (++_busy == 1) {
+    char *args[] = { "ChangeStatus", "1" };
+    SendControl(2, args);
+  }
 }
 
 void ServerAPI::SetIdle()
 {
   DOASSERT(_busy > 0, "Control panel unexpectedly busy");
 
-  if (--_busy == 0)
-    SendControl(API_CTL, "ChangeStatus 0");
+  if (--_busy == 0) {
+    char *args[] = { "ChangeStatus", "0" };
+    SendControl(2, args);
+  }
 }
 
 Boolean ServerAPI::IsBusy()
@@ -687,21 +468,9 @@ Boolean ServerAPI::IsBusy()
   return (_busy > 0);
 }
 
-void ServerAPI::ExecuteScript(char *script)
-{
-  char cmd[256];
-  sprintf(cmd, "ExecuteScript %s", script);
-  SendControl(API_CTL, cmd);
-}
-
 void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
 				   int flushed)
 {
-#ifdef DEBUG
-  printf("TkControl: filter changed\n");
-#endif
-
-  char cmd[256];
   char xLowBuf[80], yLowBuf[80], xHighBuf[80], yHighBuf[80];
   if (view->GetXAxisAttrType() == DateAttr) {
     sprintf(xLowBuf, "%s", DateString(filter.xLow));
@@ -719,18 +488,24 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
     sprintf(yHighBuf, "%.2f", filter.yHigh);
   }
   
-  sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
-	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
-  SendControl(API_CTL, cmd);
+  char *args[] = { "ProcessViewFilterChange", view->GetName(),
+		   (flushed ? "1" : "0"), xLowBuf, yLowBuf,
+		   xHighBuf, yHighBuf, "0" };
+  SendControl(8, args);
 
-  char *args[] = { "setFilter", view->GetName(), xLowBuf,
-		   yLowBuf, xHighBuf, yHighBuf };
-  Replicate(6, args);
+  char *rep[] = { "setFilter", view->GetName(), xLowBuf,
+		  yLowBuf, xHighBuf, yHighBuf };
+  Replicate(6, rep);
 }
 
 void ServerAPI::SelectView(View *view)
 {
-  char cmd[256];
-  sprintf(cmd, "ProcessViewSelected {%s}", view->GetName());
-  SendControl(API_CTL, cmd);
+  char *args[] = { "ProcessViewSelected", view->GetName() };
+  SendControl(2, args);
+}
+
+void ServerAPI::SyncNotify()
+{
+  SendControl(API_CTL, "SyncDone");
+  ClearSyncNotify();
 }

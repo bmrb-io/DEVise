@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/13 18:13:39  jussi
+  Changed type of "flag" argument to ReturnVal(). Merged control
+  channel with regular socket pair. Emptied ViewCreated and
+  ViewDestroyed and moved them to the header file.
+
   Revision 1.5  1996/05/11 20:52:57  jussi
   Removed tcl.h and tk.h header file inclusion.
 
@@ -39,17 +44,11 @@
 #ifndef ServerAPI_h
 #define ServerAPI_h
 
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
-
 #include "Dispatcher.h"
 #include "Control.h"
 #include "ViewCallback.h"
 #include "GroupDir.h"
-#include "ParseAPI.h"
+#include "ClientAPI.h"
 
 class View;
 class MapInterpClassInfo;
@@ -74,8 +73,8 @@ public:
   virtual void DestroySessionData();
   virtual void RestartSession();
 
-  /* Execute script */
-  virtual void ExecuteScript(char *script);
+  /* Perform sync operation  */
+  virtual void SyncNotify();
 
   /* Abort program */
   virtual void DoAbort(char *reason);
@@ -119,29 +118,23 @@ private:
   static MapInterpClassInfo *_interpProto;
 
   int GotoConnectedMode();
-  int ReadSocket();
-  int NonBlockingMode(int fd);
-  int BlockingMode(int fd);
+  int ReadCommand();
 
-  virtual int Send(int fd, u_short flag, int bracket,
-		   int argc, char **argv);
   virtual int ReturnVal(u_short flag, char *result) {
-    return Send(_socketFd, flag, 0, 1, &result);
+    return DeviseSend(_socketFd, flag, 0, 1, &result);
   }
   virtual int ReturnVal(int argc, char **argv) {
-    return Send(_socketFd, API_ACK, 1, argc, argv);
+    return DeviseSend(_socketFd, API_ACK, 1, argc, argv);
   }
   virtual int SendControl(u_short flag, char *result) {
-    return Send(_socketFd, flag, 0, 1, &result);
+    return DeviseSend(_socketFd, flag, 0, 1, &result);
   }
   virtual int SendControl(int argc, char **argv) {
-    return Send(_socketFd, API_ACK, 1, argc, argv);
+    return DeviseSend(_socketFd, API_CTL, 1, argc, argv);
   }
 
   int _listenFd;                        // socket for listening for clients
-
   int _socketFd;                        // socket for client connection
-  struct sockaddr_in _client_addr;      // address of client
 
   int _replicate;                       // number of servers to replicate to
   const int _maxReplicas = 10;
@@ -151,7 +144,5 @@ private:
     int fd;
   } _replicas[_maxReplicas];
 };
-
-const int DefaultDevisePort = 6100;
 
 #endif

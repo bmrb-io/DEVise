@@ -23,9 +23,14 @@
 
 #include "ParseAPI.h"
 
-extern int DeviseOpen(char *hostName, int port, int control);
-extern int DeviseReceive(int fd, char *result, u_short &flag, char *errorMsg);
-extern int DeviseSend(int fd, char **argv, int num);
+extern char *DevisePaste(int argc, char **argv);
+extern int DeviseNonBlockMode(int fd);
+extern int DeviseBlockMode(int fd);
+extern int DeviseOpen(char *hostName, int port);
+extern int DeviseReceive(int fd, int block, u_short &flag,
+			 int &argc, char **&argv);
+extern int DeviseSend(int fd, u_short flag, u_short bracket,
+		      int argc, char **argv);
 extern int DeviseClose(int fd);
 
 const int DefaultDevisePort = 6100;
