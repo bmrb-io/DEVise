@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/11/30 02:47:01  ravim
+  X and Y values are tracked. Max and Min computed too.
+
   Revision 1.1  1995/11/28 05:26:07  ravim
   Support for statistics.
 */
@@ -24,6 +27,12 @@
 #define BasicStats_h
 
 #include "ViewStats.h"
+
+// List of stats collected here
+#define STAT_NONE 0
+#define STAT_MEAN 1
+#define STAT_MAX 2
+#define STAT_MIN 3
 
 // The generic stats collection and reporting class
 // For now, computes some simple stats - can be extended later 
@@ -41,6 +50,8 @@ public:
   virtual void Done();
 
   virtual void Report();
+  
+  virtual Coord GetStatVal(int statnum);
 
 private:
   double ysum, xsum;
