@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2002/03/01 19:58:53  xuk
+// Added new command DEViseCommands.UpdateJS to update JavaScreen after
+// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
+//
 // Revision 1.17  2001/11/28 21:56:18  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -227,6 +231,9 @@ public final class DEViseCommands
     public static final String VIEW_DATA_AREA = JS_PREFIX + "ViewDataArea";
 
     public static final String UPDATEJS = JS_PREFIX + "UpdateJS";
+    
+    public static final String RESET_COLLAB_NAME = JS_PREFIX + 
+	"Reset_Collab_Name";
     // -------------------------------------------------------------------
     // JSS commands.
 

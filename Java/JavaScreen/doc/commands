@@ -59,7 +59,8 @@ see comments in DEViseCommSocket.java.
 
     2.6 JAVAC_SetCollabPass
     Purpose: Set collaboration password.
-    Arguments: 1
+    Arguments: 2
+	<name>: the collaboration name.
 	<passwd>: the collaboration password.
 
     2.7 JAVAC_SaveCurSession
@@ -74,8 +75,10 @@ see comments in DEViseCommSocket.java.
 
     2.9 JAVAC_Collaborate
     Purpose: Client starts to collaborate.
-    Arguments: 2
+    Arguments: 4
+	<flag>: use id or collaboration name to identify leader
         <ID>: id of leader client
+	<name>: collaboration name of leader
         <password>: password of leader client
 
     2.10 JAVAC_AskCollabLeader
@@ -114,9 +117,11 @@ see comments in DEViseCommSocket.java.
              client that wants to collaborate
     Arguments: variable number of IDs of active clients.
 	<client 1 ID>: the ID of client 1
+	<client 1 collab-name>: collaboration name of client 1
 	<client 1 host>: the host of client 1
 	<client 1 session>: the session of client 1
-	<client 1 ID>: the ID of client 2
+	<client 2 ID>: the ID of client 2
+	<client 2 collab-name>: collaboration name of client 2
 	<client 2 host>: the host of client 2
 	<client 2 session>: the session of client 2
 	...
@@ -146,6 +151,10 @@ see comments in DEViseCommSocket.java.
 	     discard all session-related state on the client end.)
     Arguments: 0
 
+    3.10 JAVAC_Reset_Collab_Name
+    Purpose: notify the user to reset collaboration name, due to
+	     same name has already existed.
+    Arguments: 0
 
 4. JavaScreen to devised (via JSPoP)
 
