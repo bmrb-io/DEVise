@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.64  1999/11/30 22:27:53  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.63  1999/10/26 16:29:52  wenger
   Fixed bug 519 (problems with opening various sequences of soil science
   sessions, caused by stupid composite parsers not getting reset when a
@@ -289,7 +296,6 @@
 #include "CompositeParser.h"
 #include "RecInterp.h"
 #include "CursorClassInfo.h"
-#include "StringStorage.h"
 #include "DevError.h"
 #include "StateMap.h"
 #include "Util.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/01/13 23:07:11  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.11  1998/11/06 17:59:53  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -111,6 +114,8 @@ class StringStorage {
     int Sort();
 
     static const char *GetFile() { return _stringFile; }
+
+    const char *GetName() { return _tableName; }
 
   protected:
     static int StringHash(char *&string, int numBuckets);

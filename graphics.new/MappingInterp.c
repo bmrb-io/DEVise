@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.98  2001/04/03 19:57:39  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.97  2000/03/14 21:51:47  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -929,13 +933,20 @@ InsertAttr(AttrList *attrList, int &attrNum, const char *name, int &offset,
 AttrList *MappingInterp::InitCmd(const char *name, int &gRecSize)
 {
 #if defined(DEBUG)
-  printf("MappingInterp::InitCmd(%s)\n", name);
+  printf("MappingInterp()::InitCmd(%s)\n", name);
 #endif
 
   StringStorage *xStringTable = GetStringTable(TableX);
   StringStorage *yStringTable = GetStringTable(TableY);
   StringStorage *zStringTable = GetStringTable(TableZ);
   StringStorage *genStringTable = GetStringTable(TableGen);
+
+#if defined(DEBUG)
+  printf("xStringTable: %s\n", xStringTable->GetName());
+  printf("yStringTable: %s\n", yStringTable->GetName());
+  printf("zStringTable: %s\n", zStringTable->GetName());
+  printf("genStringTable: %s\n", genStringTable->GetName());
+#endif
 
   AttrList *attrList = new AttrList(name);
 
@@ -1883,7 +1894,8 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 					 int numRecs, void *gdataPtr)
 {
 #if defined(DEBUG)
-  printf("ConvertToGDataSimple\n");
+  printf("MappingInterp(%s)::ConvertToGDataSimple(%ld, %d)\n", GetName(),
+      startRecId, numRecs);
 #endif
 
   int tRecSize = TDataRecordSize();
@@ -1896,6 +1908,13 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   StringStorage *yStringTable = GetStringTable(TableY);
   StringStorage *zStringTable = GetStringTable(TableZ);
   StringStorage *genStringTable = GetStringTable(TableGen);
+
+#if defined(DEBUG)
+  printf("xStringTable: %s\n", xStringTable->GetName());
+  printf("yStringTable: %s\n", yStringTable->GetName());
+  printf("zStringTable: %s\n", zStringTable->GetName());
+  printf("genStringTable: %s\n", genStringTable->GetName());
+#endif
 
   for(int i = 0; i < numRecs; i++) {
     DOASSERT((int)gPtr % sizeof(double) == 0, "Unaligned GData record");
@@ -1988,6 +2007,13 @@ void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
   StringStorage *yStringTable = GetStringTable(TableY);
   StringStorage *zStringTable = GetStringTable(TableZ);
   StringStorage *genStringTable = GetStringTable(TableGen);
+
+#if defined(DEBUG)
+  printf("xStringTable: %s\n", xStringTable->GetName());
+  printf("yStringTable: %s\n", yStringTable->GetName());
+  printf("zStringTable: %s\n", zStringTable->GetName());
+  printf("genStringTable: %s\n", genStringTable->GetName());
+#endif
 
   for(int i = 0; i < numRecs; i++) {
     DOASSERT((int)gPtr % sizeof(double) == 0, "Unaligned GData record");
