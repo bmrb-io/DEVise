@@ -388,7 +388,7 @@ DataSourceSegment.o: /usr/include/stdlib.h /usr/include/sys/time.h
 DataSourceSegment.o: /usr/include/ctype.h /usr/include/sys/localedef.h
 DataSourceSegment.o: /usr/include/sys/lc_core.h /usr/include/math.h
 DataSourceSegment.o: ../graphics/Exit.h ../graphics/DevError.h
-DataSourceSegment.o: DataSourceWeb.h DataSourceFileDesc.h ../graphics/Timer.h
+DataSourceSegment.o: DataSourceWeb.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/standards.h
 DataSourceTape.o: /usr/include/sys/seek.h /usr/include/va_list.h
 DataSourceTape.o: /usr/include/sys/types.h
@@ -417,13 +417,14 @@ DataSourceWeb.o: /usr/include/sys/machine/machlimits.h
 DataSourceWeb.o: /usr/include/sys/syslimits.h
 DataSourceWeb.o: /usr/include/sys/machine/machtime.h
 DataSourceWeb.o: /usr/include/sys/rt_limits.h /usr/include/string.h
-DataSourceWeb.o: /usr/include/errno.h /usr/include/unistd.h
-DataSourceWeb.o: /usr/include/sys/access.h /usr/include/sys/param.h
+DataSourceWeb.o: /usr/include/errno.h /usr/include/signal.h
+DataSourceWeb.o: /usr/include/unistd.h /usr/include/sys/access.h
+DataSourceWeb.o: /usr/include/sys/param.h
 DataSourceWeb.o: /usr/include/sys/machine/machparam.h
 DataSourceWeb.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
 DataSourceWeb.o: /usr/include/sys/stat.h /usr/include/sys/mode.h
-DataSourceWeb.o: DataSourceWeb.h DataSourceFileDesc.h DataSourceFileStream.h
-DataSourceWeb.o: DataSource.h ../graphics/DeviseTypes.h ../graphics/Timer.h
+DataSourceWeb.o: DataSourceWeb.h DataSourceFileStream.h DataSource.h
+DataSourceWeb.o: ../graphics/DeviseTypes.h ../graphics/Timer.h
 DataSourceWeb.o: ../graphics/Util.h /usr/include/stdlib.h
 DataSourceWeb.o: /usr/include/sys/time.h /usr/include/ctype.h
 DataSourceWeb.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
@@ -605,7 +606,7 @@ MappingInterp.o: ../graphics/Control.h ../graphics/ClassDir.h
 MappingInterp.o: ../graphics/ViewCallback.h ../graphics/Cursor.h BasicStats.h
 MappingInterp.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
 MappingInterp.o: Action.h MapInterpShape.h RectShape.h Shape.h
-MappingInterp.o: ../graphics/Util.h /usr/include/ctype.h
+MappingInterp.o: StringStorage.h ../graphics/Util.h /usr/include/ctype.h
 MappingInterp.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
 MappingInterp.o: ../graphics/Init.h ../graphics/BufPolicy.h
 MultiArray.o: MultiArray.h /usr/include/stdio.h /usr/include/standards.h
@@ -841,7 +842,7 @@ ServerAPI.o: /usr/include/math.h ../graphics/Transform.h
 ServerAPI.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 ServerAPI.o: ../graphics/Cursor.h ../graphics/Util.h /usr/include/ctype.h
 ServerAPI.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-ServerAPI.o: Version.h
+ServerAPI.o: Version.h StringStorage.h
 Snapshot.o: Snapshot.h ../graphics/DeviseTypes.h TDataMap.h
 Snapshot.o: /usr/include/stdio.h /usr/include/standards.h
 Snapshot.o: /usr/include/sys/seek.h /usr/include/va_list.h
@@ -927,8 +928,7 @@ TDataAscii.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
 TDataAscii.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
 TDataAscii.o: DataSourceTape.h DataSourceBuf.h ../graphics/DevError.h
 TDataAscii.o: DataSeg.h QueryProc.h ../graphics/Init.h
-TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
-TDataAscii.o: ../graphics/Timer.h DerivedDataSource.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DerivedDataSource.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/standards.h
 TDataAsciiInterp.o: /usr/include/sys/types.h
 TDataAsciiInterp.o: /usr/include/mach/machine/vm_types.h /usr/include/ctype.h
@@ -951,7 +951,7 @@ TDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/signal.h
 TDataAsciiInterp.o: /usr/include/sys/time.h ../graphics/Config.h RecInterp.h
 TDataAsciiInterp.o: CompositeParser.h ../graphics/Parse.h
 TDataAsciiInterp.o: ../graphics/Control.h ../graphics/Util.h
-TDataAsciiInterp.o: /usr/include/math.h
+TDataAsciiInterp.o: /usr/include/math.h StringStorage.h
 TDataBinary.o: /usr/include/stdio.h /usr/include/standards.h
 TDataBinary.o: /usr/include/sys/seek.h /usr/include/va_list.h
 TDataBinary.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
@@ -974,7 +974,6 @@ TDataBinary.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
 TDataBinary.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
 TDataBinary.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataBinary.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
-TDataBinary.o: DataSourceFileDesc.h ../graphics/Timer.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/standards.h
 TDataBinaryInterp.o: /usr/include/sys/types.h
 TDataBinaryInterp.o: /usr/include/mach/machine/vm_types.h
@@ -1106,7 +1105,7 @@ TkControl.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 TkControl.o: ../graphics/Cursor.h ../graphics/Util.h /usr/include/string.h
 TkControl.o: /usr/include/ctype.h /usr/include/sys/localedef.h
 TkControl.o: /usr/include/sys/lc_core.h ../graphics/Init.h
-TkControl.o: ../graphics/BufPolicy.h Version.h
+TkControl.o: ../graphics/BufPolicy.h Version.h StringStorage.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/standards.h
 UnixDiskFile.o: /usr/include/sys/seek.h /usr/include/va_list.h
 UnixDiskFile.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
@@ -1314,21 +1313,6 @@ VoidHash.o: /usr/include/sys/machine/machlimits.h
 VoidHash.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
 VoidHash.o: /usr/include/sys/rt_limits.h /usr/include/stdlib.h
 VoidHash.o: ../graphics/Exit.h VoidHash.h ../graphics/DeviseTypes.h
-dsw.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sys/seek.h
-dsw.o: /usr/include/va_list.h /usr/include/sys/types.h
-dsw.o: /usr/include/mach/machine/vm_types.h /usr/include/getopt.h
-dsw.o: /usr/include/sys/limits.h /usr/include/sys/machine/machlimits.h
-dsw.o: /usr/include/sys/syslimits.h /usr/include/sys/machine/machtime.h
-dsw.o: /usr/include/sys/rt_limits.h /usr/include/string.h
-dsw.o: /usr/include/errno.h /usr/include/unistd.h /usr/include/sys/access.h
-dsw.o: /usr/include/sys/param.h /usr/include/sys/machine/machparam.h
-dsw.o: /usr/include/machine/endian.h /usr/include/sys/signal.h
-dsw.o: /usr/include/sys/stat.h /usr/include/sys/mode.h DataSourceWeb.h
-dsw.o: DataSourceFileDesc.h DataSourceFileStream.h DataSource.h
-dsw.o: ../graphics/DeviseTypes.h ../graphics/Timer.h ../graphics/Util.h
-dsw.o: /usr/include/stdlib.h /usr/include/sys/time.h /usr/include/ctype.h
-dsw.o: /usr/include/sys/localedef.h /usr/include/sys/lc_core.h
-dsw.o: /usr/include/math.h ../graphics/Exit.h Web.h ../graphics/DevError.h
 genAms.o: /usr/include/sys/types.h /usr/include/standards.h
 genAms.o: /usr/include/mach/machine/vm_types.h /usr/include/sys/stat.h
 genAms.o: /usr/include/sys/mode.h /usr/include/fcntl.h
@@ -1844,7 +1828,7 @@ MapInterpShape.o: /usr/include/sys/time.h /usr/include/sys/signal.h
 MapInterpShape.o: /usr/include/sys/time.h ../graphics/Config.h
 MapInterpShape.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
 MapInterpShape.o: DerivedDataSource.h /usr/include/string.h Action.h
-MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h
+MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h StringStorage.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/standards.h
 ParseAPI.o: /usr/include/sys/seek.h /usr/include/va_list.h
 ParseAPI.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
@@ -1923,6 +1907,9 @@ Seq.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
 Seq.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h ../graphics/Util.h
 Seq.o: /usr/include/math.h ../graphics/DeviseTypes.h ../graphics/Exit.h
 Seq.o: ../graphics/Parse.h
+StringStorage.o: /usr/include/string.h /usr/include/standards.h
+StringStorage.o: /usr/include/sys/types.h
+StringStorage.o: /usr/include/mach/machine/vm_types.h StringStorage.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h ViewGraph.h
 ViewKGraph.o: ../graphics/View.h ../graphics/Dispatcher.h
 ViewKGraph.o: /usr/include/stdio.h /usr/include/standards.h

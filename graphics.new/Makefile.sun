@@ -379,8 +379,8 @@ MappingInterp.o: ../graphics/ViewWin.h ../graphics/Control.h
 MappingInterp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 MappingInterp.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
 MappingInterp.o: DerivedDataSource.h /usr/include/string.h Action.h
-MappingInterp.o: MapInterpShape.h RectShape.h Shape.h ../graphics/Util.h
-MappingInterp.o: /usr/include/ctype.h ../graphics/Init.h
+MappingInterp.o: MapInterpShape.h RectShape.h Shape.h StringStorage.h
+MappingInterp.o: ../graphics/Util.h /usr/include/ctype.h ../graphics/Init.h
 MappingInterp.o: ../graphics/BufPolicy.h
 MultiArray.o: MultiArray.h /usr/include/stdio.h ../graphics/DeviseTypes.h
 MultiArray.o: VoidArray.h ../graphics/Exit.h
@@ -530,7 +530,7 @@ ServerAPI.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 ServerAPI.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 ServerAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ServerAPI.o: ../graphics/Compress.h ../graphics/Cursor.h ../graphics/Util.h
-ServerAPI.o: /usr/include/ctype.h Version.h
+ServerAPI.o: /usr/include/ctype.h Version.h StringStorage.h
 Snapshot.o: Snapshot.h ../graphics/DeviseTypes.h TDataMap.h
 Snapshot.o: /usr/include/stdio.h ../graphics/Exit.h ../graphics/DList.h
 Snapshot.o: ../graphics/Color.h ../graphics/Pattern.h ShapeID.h
@@ -594,6 +594,7 @@ TDataAsciiInterp.o: ../graphics/Config.h RecInterp.h CompositeParser.h
 TDataAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
 TDataAsciiInterp.o: ../graphics/Util.h /usr/include/math.h
 TDataAsciiInterp.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+TDataAsciiInterp.o: StringStorage.h
 TDataBinary.o: /usr/include/stdio.h /usr/include/stdlib.h
 TDataBinary.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 TDataBinary.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
@@ -702,7 +703,7 @@ TkControl.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TkControl.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 TkControl.o: ../graphics/Compress.h ../graphics/Cursor.h ../graphics/Util.h
 TkControl.o: /usr/include/string.h /usr/include/ctype.h ../graphics/Init.h
-TkControl.o: ../graphics/BufPolicy.h Version.h
+TkControl.o: ../graphics/BufPolicy.h Version.h StringStorage.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/stdlib.h
 UnixDiskFile.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 UnixDiskFile.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
@@ -841,17 +842,6 @@ VoidArray.o: ../graphics/Exit.h
 VoidHash.o: /usr/include/stdio.h /usr/include/stdlib.h
 VoidHash.o: /usr/include/sys/stdtypes.h ../graphics/Exit.h VoidHash.h
 VoidHash.o: ../graphics/DeviseTypes.h
-dsw.o: /usr/include/stdio.h /usr/include/string.h /usr/include/sys/stdtypes.h
-dsw.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/unistd.h
-dsw.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-dsw.o: /usr/include/sys/param.h /usr/include/machine/param.h
-dsw.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-dsw.o: /usr/include/sys/stat.h DataSourceWeb.h DataSourceFileStream.h
-dsw.o: DataSource.h ../graphics/DeviseTypes.h ../graphics/Timer.h
-dsw.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/sys/time.h
-dsw.o: /usr/include/ctype.h /usr/include/math.h /usr/include/floatingpoint.h
-dsw.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h Web.h
-dsw.o: ../graphics/DevError.h
 genAms.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 genAms.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 genAms.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h ams.h
@@ -1129,7 +1119,7 @@ MapInterpShape.o: ../graphics/AttrList.h /usr/include/sys/time.h
 MapInterpShape.o: /usr/include/sys/time.h ../graphics/Config.h
 MapInterpShape.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
 MapInterpShape.o: DerivedDataSource.h /usr/include/string.h Action.h
-MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h
+MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h StringStorage.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/ctype.h /usr/include/assert.h
 ParseAPI.o: ParseAPI.h ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 ParseAPI.o: ../graphics/Control.h /usr/include/sys/types.h
@@ -1193,6 +1183,8 @@ Seq.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h ../graphics/Util.h
 Seq.o: /usr/include/math.h /usr/include/floatingpoint.h
 Seq.o: /usr/include/sys/ieeefp.h ../graphics/DeviseTypes.h ../graphics/Exit.h
 Seq.o: ../graphics/Parse.h
+StringStorage.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+StringStorage.o: StringStorage.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h ViewGraph.h
 ViewKGraph.o: ../graphics/View.h ../graphics/Dispatcher.h
 ViewKGraph.o: /usr/include/stdio.h /usr/include/stdlib.h
