@@ -2719,6 +2719,10 @@ Num Date        Status  Description
 683 07/19/01	OPEN	X offset for line shape doesn't work for variables.
 			(rkw)
 
+684 07/27/01	FIXED	Home doesn't work right on views with X-only or Y-only
+			links. (rkw)
+			(Fixed by rkw, 7/27/01.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

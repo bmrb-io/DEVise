@@ -30,6 +30,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  2001/07/19 17:19:50  wenger
+  Fixed bug in home on linked/piled views.
+
   Revision 1.20  2001/04/23 19:28:59  wenger
   Fixed bug in home on linked views.
 
@@ -361,11 +364,15 @@ VisualLink::GoHome(ViewGraph *view, Boolean explicitRequest)
   // matter which view in the link we set the filter for, because of the
   // link).
   VisualFilter filter;
-  view->GetVisualFilter(filter);
-  filter.xLow = xMin;
-  filter.yLow = yMin;
-  filter.xHigh = xMax;
-  filter.yHigh = yMax;
+  view->GetHome2D(explicitRequest, filter);
+  if (_linkAttrs & VISUAL_X) {
+    filter.xLow = xMin;
+    filter.xHigh = xMax;
+  }
+  if (_linkAttrs & VISUAL_Y) {
+    filter.yLow = yMin;
+    filter.yHigh = yMax;
+  }
   view->SetVisualFilter(filter);
 }
 
