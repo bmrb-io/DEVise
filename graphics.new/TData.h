@@ -1,12 +1,30 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:45  jussi
+  Added CVS header.
+*/
 
 /* Textual data virtual base class */
 
 #ifndef TData_h
 #define TData_h
+
 #include "DeviseTypes.h"
 #include "RecId.h"
 #include "RecOrder.h"
@@ -101,4 +119,5 @@ public:
 	/* Do a checkpoint */
 	virtual void Checkpoint()=0;
 };
+
 #endif
