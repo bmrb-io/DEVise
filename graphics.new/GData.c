@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/08/28 00:19:50  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.9  1996/08/04 21:59:48  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -61,32 +65,42 @@ GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
 
   _recSize = recSize;
   Boolean trunc = true;       /* TRUE if we need to truncate file */
-  _recFile = UnixRecFile::OpenFile(fname, recSize, trunc);
+
+  /* Don't use up a file descriptor if we really don't need to.  Note
+   * that this is a very simplistic means of conserving file descriptors.
+   * We really should come up with something better.  (See bug 053.)
+   * RKW 10/22/96. */
+  if (Init::ConvertGData()) {
+    _recFile = UnixRecFile::OpenFile(fname, recSize, trunc);
 
 #if 0
-  if (_recFile) {
-    if (_recFile->GetModTime() < Init::ProgModTime() ||
-	_recFile->GetModTime() < tdata->GetModTime()) {
-      delete _recFile;
-      trunc = true;
-      _recFile = UnixRecFile::OpenFile(fname, recSize, trunc);
+    if (_recFile) {
+      if (_recFile->GetModTime() < Init::ProgModTime() ||
+	  _recFile->GetModTime() < tdata->GetModTime()) {
+        delete _recFile;
+        trunc = true;
+        _recFile = UnixRecFile::OpenFile(fname, recSize, trunc);
+      }
     }
-  }
 #endif
 
-  if (!_recFile) {
-    trunc = true;
-    _recFile = UnixRecFile::CreateFile(fname, recSize);
-  }
-  DOASSERT(_recFile, "Cannot create GData file");
+    if (!_recFile) {
+      trunc = true;
+      _recFile = UnixRecFile::CreateFile(fname, recSize);
+    }
+    DOASSERT(_recFile, "Cannot create GData file");
 
-  _data = _recFile;
-  _data->AddRef();
+    _data = _recFile;
+    _data->AddRef();
+    _totalRecs = _recFile->NumRecs();
+  } else {
+    _data = _recFile = NULL;
+    _totalRecs = 0;
+  }
 
   char buf[256];
   sprintf(buf, "%s.Range", fname);
   _rangeMap = new GDataRangeMap(recSize, buf, trunc);
-  _totalRecs = _recFile->NumRecs();
   if (maxBuf < 0)
     _recsLeft = -1;
   else
@@ -156,7 +170,7 @@ Boolean GData::LastID(RecId &recId)
 
 char *GData::GetName()
 {
-  return _recFile->GetName();
+  return _recFile != NULL ? _recFile->GetName() : "None";
 }
 
 /**************************************************************
@@ -187,6 +201,7 @@ Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
   printf("GData::GetRecs bufSize %d, %ld recs left, nex Id %ld\n", 
 	 bufSize, _numRecs, _nextId);
 #endif
+  DOASSERT(_recFile != NULL, "No file for GData");
 
   if (_numRecs <= 0)
     return false;
@@ -250,6 +265,8 @@ void GData::DoneGetRecs()
 /* For writing records. Default: not implemented. */
 void GData::WriteRecs(RecId startId, int numRecs, void *buf)
 {
+  DOASSERT(_recFile != NULL, "No file for GData");
+
   GDataRangeMapRec *rec = _rangeMap->FindMaxLower(startId);
   RecId nextId = startId;
   char *curBuf = (char *)buf;
@@ -378,7 +395,7 @@ void GData::Cleanup()
 
 int GData::GetModTime()
 {
-  return _recFile->GetModTime();
+  return _recFile != NULL ? _recFile->GetModTime() : 0;
 }
 
 AttrList *GData::GetAttrList()

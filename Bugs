@@ -170,10 +170,15 @@ Num Date        Status  Description
 
 053 10/21/96	OPEN	You run out of available file descriptors if you
 			have too many GDatas. (rkw)
+			(Workaround: doesn't open GData files if '-convert 0'
+			is specified on the command line.)
 
 054 10/22/96    FIXED   Tcl error when defining visualization on a data
                         file that has one record. Reason: incr does not
                         work on floating-point numbers. (jpm)
+
+055 10/22/96	OPEN	You can't find the name (not title) of a view from
+			the GUI. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
