@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2001/05/11 20:36:15  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.52  2001/04/25 19:41:50  xuk
 // Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
 // It will not become an available collaboration leader.
@@ -1112,6 +1115,12 @@ public class jspop implements Runnable
 
         state = state + "}";
         return state;
+    }
+
+    //----------------------------------------------------------------------
+    public int getServerCount()
+    {
+        return servers.size();
     }
 
     //----------------------------------------------------------------------

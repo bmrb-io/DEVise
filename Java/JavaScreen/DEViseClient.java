@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2001/08/20 18:20:07  wenger
+// Fixes to various font problems: XDisplay calculates point sizes correctly
+// and uses screen resolution in specifying font; JS passes *its* screen
+// resolution to the devised so that fonts show up correctly in the JS
+// (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+//
 // Revision 1.42  2001/05/11 20:36:04  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -339,7 +345,12 @@ public class DEViseClient
 	    }
 	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
 	    try {
-	        sendCmd(DEViseCommands.DONE);
+		if (pop.getServerCount() >= 1) {
+	            sendCmd(DEViseCommands.DONE);
+		} else {
+		    System.err.println("No servers connected");
+	            sendCmd(DEViseCommands.ERROR);
+		}
 	    } catch (YException ex) {
 	        System.err.println("Error sending " + DEViseCommands.DONE +
 		  " command in response to " + DEViseCommands.CHECK_POP);

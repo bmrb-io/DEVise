@@ -56,7 +56,7 @@ touch $outfile
 # Fire up the jspop, creating the appropriate pid file, and
 # deleting the pid file when the jspop exits.
 #
-java JavaScreen.jspop -debug $* 2>&1 >> $outfile &
+java JavaScreen.jspop -debug $* >> $outfile 2>&1 &
 
 host=`hostname`
 pidfile="jspop_pid:$idStr:$host:$!"

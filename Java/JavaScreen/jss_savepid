@@ -75,7 +75,7 @@ touch $doutfile
 # pid file when the jss exits.
 #
 
-java JavaScreen.jss -debug $* 2>&1 >> $joutfile &
+java JavaScreen.jss -debug $* >> $joutfile 2>&1 &
 
 host=`hostname`
 pidfile="jss_pid:$idStr:$host:$!"
