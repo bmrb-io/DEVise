@@ -15,7 +15,7 @@ LD = ld
 .C.o: 
 	$(CC) -c $(CFLAGS) $<
 
-LIBSRC = Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
+LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
