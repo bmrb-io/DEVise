@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/02/04 20:04:25  wenger
+  Implemented simplified DataReader schema format; field separators
+  now propagate to quoted string attributes; fixed some bugs in some
+  special cases; updated documentation (still needs some work).
+
   Revision 1.21  1999/02/01 19:18:37  wenger
   Added DataReader functions to set and get file offset.
 
@@ -119,6 +124,7 @@ FlexiBuf::Put(char tmpC)
 		Expand();
 	}
 	_buf[_curIndex++] = tmpC;
+	_buf[_curIndex] = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -126,6 +132,7 @@ void
 FlexiBuf::UnPut()
 {
 	if (_curIndex > 0) _curIndex--;
+	_buf[_curIndex] = 0;
 }
 
 //---------------------------------------------------------------------------
