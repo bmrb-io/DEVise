@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/15 21:57:10  jussi
+  Minor fixes.
+
   Revision 1.5  1995/12/14 21:09:07  jussi
   Replaced 0x%x with 0x%p.
 
@@ -55,58 +58,65 @@ static int _rangeHistSize[RANGE_ALLOC_HIST_SIZE] = {
   131072, 65536, 32768, 16384, 8192, 0
 };
 
-BufMgrFull::BufMgrFull(int bufSize) {
-	_tReturned = _tHits = _gReturned = _gHits = 
-	_totalRanges = _totalBuf = _totalData = 
-	_totalGetRecBytes = _numGetRecs = 
+BufMgrFull::BufMgrFull(int bufSize)
+{
+  _tReturned = _tHits = _gReturned = _gHits = 
+    _totalRanges = _totalBuf = _totalData = 
+      _totalGetRecBytes = _numGetRecs = 
 	_totalGetRecBufSize = 0;
+  
+  int i;
+  for(i = 0;i < RANGE_ALLOC_HIST_SIZE; i++) {
+    _totalAllocRange[i] = _totalAllocRangeBytes[i] = 0;
+  }
 
-	int i;
-	for (i=0;i < RANGE_ALLOC_HIST_SIZE; i++) {
-		_totalAllocRange[i] = _totalAllocRangeBytes[i] = 0;
-	}
+  if (Init::Randomize())
+    _tdataFetchOrder = Randomize;
+  else
+    _tdataFetchOrder = AnyOrder;
 
-	if (Init::Randomize())
-		_tdataFetchOrder = Randomize;
-	else _tdataFetchOrder = AnyOrder;
+  BUFMGR_FULL_PAGESIZE = Init::PageSize();
+  _recPtrs = new void * [BUFMGR_FULL_PAGESIZE];
+  DOASSERT(_recPtrs, "Out of memory");
+  
+  if (Init::Policy() == BufPolicy::FOCAL) {
+    printf("focal policy\n");
+    _policy = new BufferFocal();
+  } else if (Init::Policy() == BufPolicy::LIFO) {
+    printf("Lifo policy\n");
+    _policy = new BufferLifo();
+  } else if (Init::Policy() == BufPolicy::RND) {
+    printf("Rnd policy\n");
+    _policy = new BufferRnd();
+  } else {
+    printf("Fifo policy\n");
+    _policy = new BufferFifo();
+  }
+  DOASSERT(_policy, "Out of memory");
 
-	BUFMGR_FULL_PAGESIZE = Init::PageSize();
-	_recPtrs = new void *[BUFMGR_FULL_PAGESIZE];
+  _policy->Info(_numArrays, _policyFlag);
+  
+  _maxPages = bufSize / BUFMGR_FULL_PAGESIZE;
+  if (_maxPages < 1)
+    _maxPages = 1;
+  _bufSize = _maxPages * BUFMGR_FULL_PAGESIZE;
 
-	if (Init::Policy() == BufPolicy::FOCAL) {
-		printf("focal policy\n");
-		_policy = new BufferFocal();
-	} else if (Init::Policy() == BufPolicy::LIFO) {
-		printf("Lifo policy\n");
-		_policy = new BufferLifo();
-	} else if (Init::Policy() == BufPolicy::RND) {
-		printf("Rnd policy\n");
-		_policy = new BufferRnd();
-	} else {
-		printf("Fifo policy\n");
-		_policy = new BufferFifo();
-	}
-
-	_policy->Info(_numArrays, _policyFlag);
-
-	_maxPages = bufSize / BUFMGR_FULL_PAGESIZE;
-	if (_maxPages < 1)
-	  _maxPages = 1;
-	_bufSize = _maxPages * BUFMGR_FULL_PAGESIZE;
-
-	_rangeAlloc = new RangeInfoAlloc(_bufSize);
-	_rangeArrays = new RangeInfoArrays(_numArrays, _maxPages);
-
-	_tdataRangeList = new TDataRangeList();
-	_recRange = new RecRange(0);	
-
-	for (i=0; i < MaxReturnRanges; i++)
-		_returnRanges[i] = NULL;
-
-	/* head of buffer allocation list */
-	_allocHead.next = _allocHead.prev = &_allocHead;
-
-	_defaultPolicy = new BufferFifo();
+  _rangeAlloc = new RangeInfoAlloc(_bufSize);
+  _rangeArrays = new RangeInfoArrays(_numArrays, _maxPages);
+  DOASSERT(_rangeAlloc && _rangeArrays, "Out of memory");
+  
+  _tdataRangeList = new TDataRangeList();
+  _recRange = new RecRange(0);	
+  DOASSERT(_tdataRangeList && _recRange, "Out of memory");
+  
+  for(i = 0; i < MaxReturnRanges; i++)
+    _returnRanges[i] = NULL;
+  
+  /* head of buffer allocation list */
+  _allocHead.next = _allocHead.prev = &_allocHead;
+  
+  _defaultPolicy = new BufferFifo();
+  DOASSERT(_defaultPolicy, "Out of memory");
 }
 
 void BufMgrFull::InitNextRangeInMem(RangeInfo *listHead)
