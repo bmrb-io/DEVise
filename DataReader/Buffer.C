@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/16 16:30:51  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #include "Buffer.h"
@@ -149,11 +152,6 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 
 Buffer::~Buffer() {
 	int i ;
-	if (_EOL != NULL) {
-		if (_EOL->data !=NULL)
-			delete [] _EOL->data;
-		delete _EOL;
-	}
 
 	if (_EOLCheck != NULL)
 		delete [] _EOLCheck;
@@ -167,10 +165,7 @@ Buffer::~Buffer() {
 	}
 	delete [] extFunc;
 	delete [] valFunc;
-	for (i = 0 ; i < 12 ; i++) {
-		delete _months[i];
-		delete _monthAbbr[i];
-	}
+
 	delete [] _months;
 	delete [] _monthAbbr;
 

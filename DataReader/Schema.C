@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/06/16 16:30:54  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #include "DRSchema.h"
@@ -54,16 +57,18 @@ Attribute::~Attribute() {
 	if (_dateFormat != NULL)
 		delete [] _dateFormat;
 
-	if (_separator != NULL) {
-		if (_separator->data != NULL)
-			delete [] _separator->data;
-	}
-
 }
 
 DRSchema::~DRSchema() {
 	int i;
 	tAttr = 0;
+
+	if (_separator != NULL) {
+		if (_separator->data != NULL) {
+			delete [] _separator->data;
+		}
+		delete _separator;
+	}
 
 	if (tableAttr != NULL) {
 		for (i = 0; i < (int)(qAttr); i++) {
@@ -71,22 +76,20 @@ DRSchema::~DRSchema() {
 				if (tableAttr[i]->getSeparator()->data != NULL)
 					delete [] tableAttr[i]->getSeparator()->data;
 				delete tableAttr[i]->getSeparator();
+
 			}
 			delete tableAttr[i];
 		}
 	}
 	delete [] tableAttr;
+
 	if (_delimiter != NULL) {
-		if (_delimiter->data != NULL) 
+		if (_delimiter->data != NULL) {
 			delete [] _delimiter->data;
-		delete _delimiter;
+		}
+		 delete _delimiter;
 	}
 
-	if (_separator != NULL) {
-		if (_separator->data != NULL)
-			delete [] _separator->data;
-		delete _separator;
-	}
 	if (_nullIf != NULL)
 		delete [] _nullIf;
 	delete [] _schemaName;

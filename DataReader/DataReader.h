@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/16 16:30:52  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #ifndef DATAREADER_DATAREADER_H
@@ -37,6 +40,7 @@ private:
 public:
 	DRSchema* myDRSchema; // DRSchema Object associated with this Reader
 	DataReader(const char* dataFile, const char* schemaFile);
+	~DataReader();
 	Status getRecord(char* dest); // Function to read next record
 	Status getRndRec(char* dest,int fileOffset); // Function to read a random record
 	bool isOk() {return _uStat == OK;} // Check the Status of Reader
