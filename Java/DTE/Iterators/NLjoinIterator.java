@@ -39,7 +39,7 @@ public class NLjoinIterator implements Iterator
 
 
   public NLjoinIterator(Iterator left1, Iterator right1, ExecExpr[] mySelect1, 
-		ExecExpr[] myWhere1,TypeDesc[] typeStrings, 
+			ExecExpr[] myWhere1,TypeDesc[] typeStrings, 
 			TypeDesc[] typeStrings1, TypeDesc[] typeStrings2,
 			int bucketsize)
        throws IOException
@@ -73,7 +73,7 @@ public class NLjoinIterator implements Iterator
       fw = new FileWriter(temp_file);
       bw = new BufferedWriter(fw);
       pw = new PrintWriter(bw);
-      
+
       innerRel = new FileScanIterator(temp_file, typeStrings2);
       outerRel = new MemoryLoader(bucketsize, left, typeStrings1);
       
