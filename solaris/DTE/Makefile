@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/11/25 04:22:02  donjerko
+#  Removed "make libdevread.a"
+#
 #  Revision 1.3  1996/11/23 20:54:53  jussi
 #  Removed -lpthread.
 #
@@ -30,9 +33,14 @@ ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
-VPATH = $(DTE_DIR)/Core $(DTE_DIR) $(DTE_DIR)/StandAlone
+VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools
+
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
-	$(CC) -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+
+FormatVolume: FormatVolume.c
+	$(CC) $< -o $@
