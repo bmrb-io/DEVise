@@ -75,7 +75,7 @@ SBMLIBNAME = libsbm.a
 RTREETEST = rtreetest
 
 all: librarysbm $(LIBNAME) $(RTREETEST) convert_bulk
-lib: $(LIBNAME)
+lib: $(LIBNAME) convert_bulk
 
 $(RTREETEST): librarysbm $(LIBNAME) $(RTREETEST_OBJ)
 	$(CC) -o $@ $(RTREETEST_OBJ) -L . -lrtree -lsbm $(ARCH_LDFLAGS) \

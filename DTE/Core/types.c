@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/03/12 18:23:36  donjerko
+  *** empty log message ***
+
   Revision 1.50  1998/02/09 21:12:25  donjerko
   Added Bin by clause and implementation.
 
@@ -173,7 +176,7 @@ extern const Catalog ROOT_CATALOG(DTE_ENV_VARS.rootCatalog);
 
 extern const Directory MINMAX_DIR(DTE_ENV_VARS.minmaxCatalog);
 
-string DteEnvVars::getDirectory(const string& envVar){
+string DteEnvVars::getDirectory(const string& envVar) const {
 	const char* dmd = NULL;
 	if((dmd = getenv(envVar.c_str()))){
 	}
@@ -189,7 +192,7 @@ string DteEnvVars::getDirectory(const string& envVar){
 	return dmd;
 }
 
-string DteEnvVars::getFile(const string& env, const string& def){
+string DteEnvVars::getFile(const string& env, const string& def) const {
 	char* nm = getenv(env.c_str());
 	if(nm){
 		return string(nm);
@@ -207,6 +210,7 @@ DteEnvVars::DteEnvVars(){
 	minmaxCatalogN = "DEVISE_MINMAX_TABLE";
 	definitionFileN = "DEVISE_DEF_FILE";
 	idFileN = "DEVISE_ID_FILE";
+	convert_bulk = "DEVISE_CONVERT_BULK";
 
 	materViewDir = getDirectory(materViewDirN);
 	minmaxDir = getDirectory(minmaxDirN);
@@ -215,6 +219,15 @@ DteEnvVars::DteEnvVars(){
 	minmaxCatalog = getFile(minmaxCatalogN, "./minmax.dte");
 	definitionFile = getFile(definitionFileN);
 	idFile = getFile(idFileN);
+}
+
+string DteEnvVars::valueOf(const string& envVar) const {
+	if(envVar == convert_bulk){
+		return getFile(envVar, "./RTree/convert_bulk");
+	}
+	else{
+		return getFile(envVar);
+	}
 }
 
 void dateEq(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){

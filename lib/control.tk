@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.161  1998/03/12 22:57:51  wenger
+#	Minor user interface improvements.
+#
 #	Revision 1.160  1998/03/12 18:25:50  donjerko
 #	*** empty log message ***
 #
@@ -1140,8 +1143,14 @@ menu .mbar.tdata.menu.indexMenu -tearoff 0
 	set standAlone No
 	indexUpdate $attrs
 	if {$indexName != ""} {
-		DEVise dteCreateIndex \
-			$table $indexName $keyAttrs $dataAttrs $standAlone
+		set errCode [catch {DEVise dteCreateIndex \
+			$table $indexName $keyAttrs $dataAttrs $standAlone} errStr]
+
+		if {$errCode != 0} {
+			dialog .noName "DTE Error" $errStr "" 0 OK
+			return
+		}
+
 	}
 }
 

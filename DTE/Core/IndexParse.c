@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/12/04 04:05:10  donjerko
+  *** empty log message ***
+
   Revision 1.22  1997/11/12 23:17:23  donjerko
   Improved error checking.
 
@@ -278,15 +281,34 @@ Iterator* IndexParse::createExec(){
 	}
 	ind.close();
 	string convBulk = bulkfile + ".conv";
-	string cmd = "convert_bulk < " + bulkfile + " > " + convBulk;
-	if(system(cmd.c_str()) == -1){
-		perror("system:");
-		string msg = "Failed to convert bulk data";
+
+	string convert_bulk = DTE_ENV_VARS.valueOf(DTE_ENV_VARS.convert_bulk);
+
+	if(convert_bulk.empty()){
+		string msg = "Please set the env var \"" + 
+			DTE_ENV_VARS.convert_bulk + 
+			"\" to point to the convert_bulk executable";
+		THROW(new Exception(msg), NULL);
+	}
+
+	string cmd = convert_bulk + " < " + bulkfile + " > " + convBulk;
+	if(system(cmd.c_str()) != 0){
+		perror("system");
+		string msg = "Failed to execute: " + cmd;
+		msg += "\n Please set the env var \"" + 
+				DTE_ENV_VARS.convert_bulk +  
+				"\" to point to the convert_bulk executable";
 		THROW(new Exception(msg), NULL);
 		// throw Exception(msg);
 	}
 
 	int bulk_file = open(convBulk.c_str(), O_RDWR, 0600);
+
+	if(!bulk_file){
+		string msg = "Failed to open conv bulk data file:" + convBulk;
+		THROW(new Exception(msg), NULL);
+		// throw Exception(msg);
+	}
 
 	page_id_t root1;
 

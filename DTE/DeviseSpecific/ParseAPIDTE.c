@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/03/12 18:23:45  donjerko
+  *** empty log message ***
+
   Revision 1.12  1997/12/04 04:05:31  donjerko
   *** empty log message ***
 
@@ -205,11 +208,20 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 	}
 
 	if (argc == 6) {
-     if (!strcmp(argv[0],"dteCreateIndex")){
-          dteCreateIndex(argv[1], argv[2], argv[3], argv[4], argv[5]);
-          control->ReturnVal(API_ACK, "");
-          return 1;
-     }
+		if (!strcmp(argv[0],"dteCreateIndex")){
+			dteCreateIndex(argv[1], argv[2], argv[3], argv[4], argv[5]);
+
+			CATCH(
+				string err = "Failed to create index.\n";
+				err += currExcept->toString();
+				control->ReturnVal(API_NAK, (char*) err.c_str());
+				currExcept = NULL;
+				return -1;
+			)
+
+			control->ReturnVal(API_ACK, "");
+			return 1;
+		}
 	}
 	string tmp = string(argv[0]) +
 	  ": no such command or wrong number of args";

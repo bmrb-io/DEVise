@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/03/13 00:31:57  donjerko
+  *** empty log message ***
+
   Revision 1.23  1998/03/12 18:23:45  donjerko
   *** empty log message ***
 
@@ -420,14 +423,6 @@ void dteCreateIndex(const char* tableName, const char* indexName,
 	cerr << "in dteCreateIndex, query =" << query << endl;
 #endif
 	char* retVal = executeQuery(query);
-     CATCH(
-          cout << "DTE error coused by query: \n";
-          cout << "   " << query << endl;
-          cout << currExcept->toString();
-          currExcept = NULL;
-          cout << endl;
-          exit(0);
-     )
 }
 
 string join(const string* src, int n, const string& sep){

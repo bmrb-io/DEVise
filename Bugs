@@ -1064,7 +1064,7 @@ Num Date        Status  Description
 271 01/23/98	FIXED	Color allocation fails on anything but 8 bit displays.
 			(rkw)
 
-272 01/23/98	OPEN	Trying to create an index causes a core dump. (rkw)
+272 01/23/98	FIXED (donko) Trying to create an index causes a core dump. (rkw)
 
 273 01/28/98	OPEN	UniData cannot recognize pipes (|) as field delimiters
 			(also check about any other characters).  (rkw/ad)

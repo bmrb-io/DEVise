@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/03/12 18:23:37  donjerko
+  *** empty log message ***
+
   Revision 1.44  1998/02/09 21:12:26  donjerko
   Added Bin by clause and implementation.
 
@@ -211,6 +214,7 @@ public:
 	string minmaxCatalogN;
 	string definitionFileN;
 	string idFileN;
+	string convert_bulk;
 
 	string materViewDir;
 	string minmaxDir;
@@ -221,9 +225,10 @@ public:
 	string idFile;
 public:
 	DteEnvVars();
+	string valueOf(const string& envVar) const;
 private:
-	string getDirectory(const string& envVar);
-	string getFile(const string& env, const string& def = string());
+	string getDirectory(const string& envVar) const;
+	string getFile(const string& env, const string& def = string()) const;
 };
 
 extern const DteEnvVars DTE_ENV_VARS;
