@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.38  2000/02/24 18:50:21  wenger
+  F/f ("full" cursor) in a view does home on the source views of any cursors
+  for which the selected view is the destination view.
+
   Revision 1.37  1999/12/17 15:54:40  wenger
   The actions of the 1, 3, 7, and 9 keys no longer depend on whether the
   relevant view is a "scatter plot" (each key now only affects the visual
@@ -225,7 +229,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 {
 
 #if defined(DEBUG)
-  if (view->GetName() == NULL)
+  if (view->GetName() != NULL)
   {
   printf("Action::KeySelected(%s, 0x%x, %g, %g)\n", 
 	 view->GetName(), (int)key, x, y);
@@ -473,6 +477,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   }
   case 'f':
   case 'F': {
+#if 0
     /* move the camera forth */
     if (view->GetNumDimensions() == 3) {
       Camera camera = view->GetCamera();
@@ -483,6 +488,17 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     } else {
       view->CursorHome();
     }
+#else
+    PileStack *ps = view->GetParentPileStack();
+    if (ps) {
+      // Note: comparing view to ps->GetFirstView() is a way to only
+      // do this for *one* view in the pile, since all of the views
+      // get the key press event.  RKW 2000-03-21.
+      if (ps->GetFirstView() == view) {
+        view->Flip();
+      }
+    }
+#endif
     break;
   }
   case 'r':

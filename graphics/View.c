@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.219  2000/03/15 22:53:57  wenger
+  Found and fixed bug 574 (invalid object access).
+
   Revision 1.218  2000/03/14 21:51:36  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -1623,6 +1626,38 @@ void View::SetPileMode(Boolean mode)
 
   DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewPileCh);
   Refresh();
+}
+
+void View::Flip()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("View(%s)::Flip()\n", GetName());
+#endif
+
+  // Find the right PileStack to flip:
+  // - If this is a "regular" piled view, flip its parent PileStack.
+  // - If this is a piled child of piled parents, flip the parent view's
+  //   parent PileStack.
+  // - If this is a piled child of unpiled parents or a single parent,
+  //   flip this view's parent PileStack.
+  // - If this is an unpiled child of piled parents, do nothing.
+  PileStack *ps = NULL; // PileStack to flip
+  ViewWin *tmpView = this;
+  Boolean done = false;
+  while (tmpView && !done) {
+    PileStack *tmpPs = tmpView->GetParentPileStack();
+    if (tmpPs && tmpPs->GetState() != PileStack::PSNormal) {
+	  ps = tmpPs;
+	  tmpView = tmpView->GetParent();
+	} else {
+	  done = true;
+	}
+  }
+
+  if (ps) {
+    ps->Flip();
+  }
 }
 
 /* set view geometry */

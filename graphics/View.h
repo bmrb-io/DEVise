@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.105  2000/03/14 21:51:38  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.104  2000/03/14 17:05:14  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -723,6 +727,9 @@ class View : public ViewWin
 	/* Get/set pile mode */
 	Boolean IsInPileMode() { return _pileMode; }
 	void SetPileMode(Boolean mode);
+
+	// Flip the appropriate PileStack object, if any.
+	void Flip();
 
 	Boolean IsHighlightView() { return _isHighlightView; }
 	void SetHighlightView(Boolean highlightView) {
