@@ -22,7 +22,12 @@ include ../../Makefile.common
 
 DTE_DIR = ../../DTE
 
-DTE_INCLUDES =  -I$(DTE_DIR)/Core -I$(DTE_DIR) -I$(DTE_DIR)/StandAlone \
+
+DTE_INCLUDES = \
+	-I$(DTE_DIR)/Core \
+	-I$(DTE_DIR)/DeviseSpecific \
+	-I$(DTE_DIR)/StandAlone \
+	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I../../devread -I../../attrproj 
@@ -34,21 +39,32 @@ CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
 
 CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c Engine.c \
-	Aggregates.c QueryTree.c IndexParse.c
+	Aggregates.c QueryTree.c IndexParse.c RTreeRead.c
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
-	../attrproj/ApParseCat.c Dql.c DqlInclude.c
+	../attrproj/ApParseCat.c TDataDQL.c TDataDQLInterp.c
+	
+#Dql.c DqlInclude.c
+
+RTREE_SRC = \
+	bulk_data.C hfpage.C solaris_stats.C \
+	RTree.C genrtree.C port_genrtree.C type_compat.C \
+	bitmap.C key.C box.C heap.C
+
+RTREE_UTIL = FormatVolume.c
 
 STAND_ALONE_SRC = main.c
 
 LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
-LIBOBJ = $(LIBSRC:.c=.o)
-STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o)
+LIBOBJ = $(LIBSRC:.c=.o) $(RTREE_SRC:.C=.o)
+
+STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
+	$(RTREE_SRC:.C=.o)
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) dte
+all: $(LIBNAME) dte FormatVolume
 lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBOBJ)
@@ -67,7 +83,7 @@ $(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte
+	-rm $(LIBNAME) dte FormatVolume
 
 mostlyclean:
 	-rm $(LIBOBJ) $(STAND_ALONE_OBJ)
