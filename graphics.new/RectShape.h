@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/09 22:15:44  jussi
+  Added 3D block object.
+
   Revision 1.5  1995/12/22 18:06:51  jussi
   Added Vector shape.
 
@@ -75,5 +78,10 @@ class VectorShape : public Shape {};
    (width, height, depth). */
 
 class BlockShape : public Shape {};
+
+/* HorLine: a horizontal line drawn at Y coordinate. The X coordinate is
+   ignored. */
+
+class HorLineShape : public Shape {};
 
 #endif

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/04/09 22:55:00  jussi
+  Added View parameter to DrawGDataArray().
+
   Revision 1.14  1996/02/28 17:30:32  yuc
   Add 3D BlockShape.
 
@@ -70,8 +73,8 @@
 #ifndef MapInterShape_H
 #define MapInterShape_H
 
-#include <assert.h>
 #include <iostream.h>
+
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
@@ -459,7 +462,6 @@ private:
 	void MapBlockEdges (int);
 }; // end of FullMapping_BlockShape
 
-
 // -----------------------------------------------------------------
 
 class FullMapping_3DVectorShape: public VectorShape {
@@ -539,7 +541,34 @@ public:
   }
 }; // FullMapping_3DVectorShape
 
+// -----------------------------------------------------------------
+
+class FullMapping_HorLineShape: public HorLineShape {
+public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0.0;
+    height = 0.0;
+  }
+  
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    VisualFilter filter;
+    view->GetVisualFilter(filter);
+    Coord xLow = filter.xLow;
+    Coord xHigh = filter.xHigh;
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord y = GetY(gdata, map, offset);
+      win->SetFgColor(GetColor(view, gdata, map, offset));
+      win->SetPattern(GetPattern(gdata, map, offset));
+      win->Line(xLow, y, xHigh, y, 2);
+    }
+  }
+};
 
 #endif
-
-
