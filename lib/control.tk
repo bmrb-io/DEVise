@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.107  1996/12/30 23:57:50  andyt
+#	First version with support for Embedded Tcl/Tk windows.
+#
 #	Revision 1.106  1996/12/27 17:00:38  wenger
 #	Got latest code to compile for sun, solsparc, and hp; updated dependencies;
 #	changed 'Import' to 'New Table' in main window GUI to reflect change of
@@ -829,6 +832,8 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Move View" -command DoViewMove
 .mbar.window.menu add command -label "Remove View" -command DoViewRemove
 .mbar.window.menu add command -label "Bring View Back" -command DoBringView
+.mbar.window.menu add separator
+.mbar.window.menu add command -label "View List" -command WinViewList
 
 menu .mbar.help.menu -tearoff 0
 .mbar.help.menu add command -label "Demo" -command DoDemo

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1996/11/26 17:25:22  ssl
+#  added support for stacked views
+#
 #  Revision 1.14  1996/08/03 15:51:52  jussi
 #  3D view parameters are preserved when a merged view is split.
 #
@@ -71,8 +74,8 @@ proc RemoveWindow {win} {
 	set winSet [ WinSet ]
 	set answer [ dialogList .window "Select Window" \
 		"Select window to remove" "" "" \
-		{ Cancel Ok } $winSet ]
-	if {$answer == 0  || $dialogListVar(selected) == ""} {
+		{ OK Cancel } $winSet ]
+	if {$answer == 1  || $dialogListVar(selected) == ""} {
 	    return 
 	}
 	set win $dialogListVar(selected)
@@ -80,6 +83,7 @@ proc RemoveWindow {win} {
 
     set views [DEVise getWinViews $win]
     if {$views != ""} {
+puts "DIAG views = $views"
 	dialog .viewsInWindow "Views Still In Window" \
 		"Window contains views. Remove all views first." \
 		"" 0 OK
@@ -707,8 +711,6 @@ proc FlipStackedView {} {
 	DEVise swapView $win $prevView $view
     }
 
-    set views [DEVise getWinViews $win]
-    DEVise raiseView [lindex $views 0]
 }
 
 ############################################################
@@ -844,4 +846,24 @@ proc DoWindowUnstack {} {
     set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
     eval DEVise setWindowLayout {$win} $newLayout
     DEVise refreshView $curView
+}
+
+############################################################
+
+# Show a list of the views contained in the window containing the currently-
+# selected view.
+
+proc WinViewList {} {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set win [DEVise getViewWin $curView]
+
+    set views [DEVise getWinViews $win]
+    if {$views != ""} {
+	dialogList .winViewList "View List" "Window $win Views" "" 0 {OK} $views
+    }
 }
