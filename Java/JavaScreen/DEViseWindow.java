@@ -159,7 +159,11 @@ public class DEViseWindow extends Container
         winImage = img;
         // Necessary to draw correct image because double-buffering is used
         offScrImg = null;
-
+        
+        // since updateWindow command is coming in after updateCursor commands,
+        // so we have to rebuild cursor image to make sure it reflect the new image
+        buildCursorImage();
+        
         repaint();
     }
 
