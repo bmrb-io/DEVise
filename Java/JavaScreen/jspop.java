@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2001/09/10 21:23:03  xuk
+// Solve the client disconnection problem.
+//
 // Revision 1.54  2001/08/21 18:37:16  wenger
 // JSPoP now responds to JAVAC_CheckPop with JAVAC_Error if no deviseds
 // are connected to it; fixed up redirection of stderr in sh scripts.
@@ -313,6 +316,9 @@ public class jspop implements Runnable
     private int _popCmdPort = 0;
 
     private DEViseThreadChecker _threadChecker = null;
+
+    // enable client log or not
+    public boolean clientLog = true;
 
     //----------------------------------------------------------------------
 
@@ -1292,6 +1298,13 @@ public class jspop implements Runnable
                     } catch (NumberFormatException e) {
                     }
                 }
+            } else if (args[i].startsWith("-clientlog")) {
+	        // enable client log files?
+		String s = args[i].substring(10);
+		if (s.equals("on"))
+		    clientLog = true;
+		else
+		    clientLog = false;
             } else if (args[i].startsWith("-usage")) {
                 System.out.println(usage);
                 System.exit(0);
