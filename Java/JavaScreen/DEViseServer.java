@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2001/02/20 20:02:23  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.49  2001/02/19 20:34:09  xuk
 // Added command(s) and GUI so that a collaboration leader can find out who is
 // collaborating with it.
@@ -621,6 +625,13 @@ public class DEViseServer implements Runnable
         } else if (clientCmd.startsWith(DEViseCommands.OPEN_SESSION)) {
 	    cmdOpenSession(clientCmd);
 
+        } else if (clientCmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) {
+	    cmdSaveSession();
+	    return false;
+
+        } else if (clientCmd.startsWith(DEViseCommands.REOPEN_SESSION)) {
+	    cmdReopenSession();
+
         } else {
 	    cmdClientDefault(clientCmd);
         }
@@ -666,6 +677,31 @@ public class DEViseServer implements Runnable
         } else {
             isRemoveClient = true;
         }
+    }
+
+    public void cmdSaveSession() throws YException
+    {
+	pop.pn("We send the save_session command.");
+	cmdClientDefault(DEViseCommands.SAVE_SESSION + " {" + client.savedSessionName + "}");
+	client.sessionSaved = true;
+	pop.pn("We send the close_session command.");
+	cmdCloseSession();
+	// keep the current session opened
+	if ( !client.isSessionOpened )
+	    client.isSessionOpened = true;
+        if (client.socket != null) {
+            client.socket.closeSocket();
+            client.socket = null;
+        }	
+    }
+
+    public void cmdReopenSession() throws YException
+    {
+	pop.pn("We send the reopen-session command.");
+	sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}");
+	client.sessionSaved = false;
+	if ( !client.isSessionOpened )
+	    client.isSessionOpened = true;
     }
 
     public void cmdExit() throws YException
@@ -967,12 +1003,15 @@ public class DEViseServer implements Runnable
                 client.isSessionOpened = false;
 
                 try {
-                    if (sendCmd(DEViseCommands.SAVE_SESSION + " {" +
-		      client.savedSessionName + "}")) {
-                        client.isSwitchSuccessful = true;
-                    } else {
-                        pop.pn("Can not save session for old client while switching client!");
-                    }
+		    if (!client.sessionSaved)
+			if (sendCmd(DEViseCommands.SAVE_SESSION + " {" +
+				    client.savedSessionName + "}")) {
+			    client.isSwitchSuccessful = true;
+			} else {
+			    pop.pn("Can not save session for old client while switching client!");
+			}
+		    else
+			client.isSwitchSuccessful = true;
 
                     if (!sendCmd(DEViseCommands.CLOSE_SESSION)) {
                         pop.pn("Can not close current session for old client while switching client!");
@@ -980,7 +1019,7 @@ public class DEViseServer implements Runnable
                     currentDir = new Vector();
                     currentDir.addElement(rootDir);
                 } catch (YException e) {
-                    pop.pn("DEViseServer failed3");
+                    pop.pn("DEViseServer failed");
                     pop.pn(e.getMsg());
 
                     //if (!startSocket()) {
