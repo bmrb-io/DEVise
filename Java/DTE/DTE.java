@@ -21,9 +21,17 @@ public class DTE {
 			System.exit(1);
 		}
 		System.out.println("Query was: " + query);
+
 		RelationManager relMngr = 
 			new RelationManager("idFile.dte", "defFile.dte");
-		query.typeCheck(relMngr);
+                try {
+	        	query.typeCheck(relMngr);
+                }
+		catch( TypeCheckException e )
+		{
+			System.out.println(e);
+			System.exit(1);
+		}
 		System.out.println("Type checked Query is: " + query.printTypes());
 		PlanNode plan = query.optimize();
 		Iterator topIter = plan.createIterator();

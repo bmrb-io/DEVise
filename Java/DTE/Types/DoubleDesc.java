@@ -18,12 +18,12 @@ public class DoubleDesc implements TypeDesc {
         String msg2 = "\n\t  double " + opStr + " " + arg.getString( );
         String msg3 = "\n  The following operations on doubles are allowed:";
 	String msg4 = "\n\t  double [op] double,";
-	String msg5 = "\n  where [op] could be ==, !=, <, <=, >, >=, +, -, *, /.\n";
+	String msg5 = "\n  where [op] could be =, !=, <, <=, >, >=, +, -, *, /.\n";
 
         if ( ! arg.getString( ).equals(name) )
 	    throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 
 
-        if ( opStr.equals("==") ) 
+        if ( opStr.equals("=") ) 
             return new DoubleEqualOp( );
 
         if ( opStr.equals("!=") ) 

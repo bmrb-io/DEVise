@@ -44,16 +44,21 @@ public class Operator implements Expression {
         return type;
     }
 
-    public Expression typeCheck( SymbolTable st ){
+    public Expression typeCheck( SymbolTable st ) throws TypeCheckException{
         String strRep = this.toString();
         if ( st.containsKey( strRep ) )
             return st.get(strRep);
 
-        left = left.typeCheck( st );
-        right = right.typeCheck( st );
+        try {
+	    left = left.typeCheck( st );
+            right = right.typeCheck( st );
+            type = left.getType();
+            evalOp = type.getOperator( operator, right.getType() );	
+        }
+	catch( TypeCheckException e ) {
+	    throw e;
+        }
 
-        type = left.getType();
-        evalOp = type.getOperator( operator, right.getType() );	
         type = evalOp.getType();
 
         st.put( this );

@@ -30,9 +30,9 @@ public class CheckType {
         fromClause.addElement( new TableAlias(relId, "t") );
 
         TypeDesc type = new IntDesc( );
-        Selection s = new Selection( "t", "i", type );
+        Selection s = new Selection( "t", "a", type );
         Constant c = new Constant( new DTE_Int( 5 ) );
-        Operator op = new Operator( "-", c, s );
+        Operator op = new Operator( "a", c, s );
         selectClause.addElement( op );
         query = new Query(selectClause, fromClause, whereClause);
         System.out.println("Query was: " + query.toString() );

@@ -42,7 +42,7 @@ public class Selection implements Expression {
         return type;
     }
 
-    public Expression typeCheck(SymbolTable st) throws RuntimeException{
+    public Expression typeCheck(SymbolTable st) throws TypeCheckException{
         String str = this.toString( );
         if ( st.containsKey( str ) )
             return st.get( str );
@@ -59,7 +59,7 @@ public class Selection implements Expression {
                 }
             }
         }
-        throw new InternalError("What's wrong? Let me ask Donko...\n");
+        throw new InternalError( );
     }
 
     public boolean exclusive(Vector aliases){

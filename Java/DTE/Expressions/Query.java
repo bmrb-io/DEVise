@@ -73,7 +73,7 @@ public class Query {
 	}
 
         public String toString(){
-               String s = "SELECT ";
+               String s = "\n\tSELECT ";
                Expression e = null;
                TableAlias t = null;
 
@@ -86,7 +86,7 @@ public class Query {
                      s = s + e.toString() ;
                }
 
-               s = s +  " FROM ";
+               s = s +  "\n\tFROM ";
 
                for ( int i = 0; i < fromClause.size(); i++ )
                {
@@ -98,41 +98,57 @@ public class Query {
                }
 
                if(whereClause != null){			
-                  s = s + " WHERE " + whereClause.toString();
+                  s = s + "\n\tWHERE " + whereClause.toString();
                }
 
                return s; 
         }
 
 	public void typeCheck(RelationManager relMngr) throws IOException {
-		SymbolTable symbolTable = new SymbolTable( );
-		for(int i = 0; i < fromClause.size(); i++){
-			TableAlias ta = (TableAlias) fromClause.elementAt(i);
-			RelationId relId = ta.getRelationId();
-			String alias = ta.getAlias();
-			DataSource dataSrc = relMngr.createDataSource(relId);
-			Schema schema = dataSrc.getSchema();
-			TypeDesc[] types = schema.getTypeDescs();
-			String[] attrs = schema.getAttributeNames();
-			for(int j = 0; j < attrs.length; j++){
-				symbolTable.put(new Selection(alias, attrs[j], types[j]));
-			}
-			ta.setDataSource(dataSrc);
+	    SymbolTable symbolTable = new SymbolTable( );
+	    for(int i = 0; i < fromClause.size(); i++){
+		TableAlias ta = (TableAlias) fromClause.elementAt(i);
+		RelationId relId = ta.getRelationId();
+		String alias = ta.getAlias();
+		DataSource dataSrc = relMngr.createDataSource(relId);
+		Schema schema = dataSrc.getSchema();
+		TypeDesc[] types = schema.getTypeDescs();
+		String[] attrs = schema.getAttributeNames();
+		for(int j = 0; j < attrs.length; j++){
+                    symbolTable.put(new Selection(alias, attrs[j], types[j]));
 		}
-		for(int i = 0; i < selectClause.size(); i++){
-			Expression e = (Expression) selectClause.elementAt(i);
-			e = e.typeCheck(symbolTable);
-			selectClause.setElementAt(e, i);
-		}
-		for(int i = 0; i < predList.size(); i++){
-			Expression e = (Expression) predList.elementAt(i);
-			e = e.typeCheck(symbolTable);
-			predList.setElementAt(e, i);
-		}
+		ta.setDataSource(dataSrc);
+            }
+
+	    for(int i = 0; i < selectClause.size(); i++){
+	        Expression e = (Expression) selectClause.elementAt(i);
+		try {
+		    e = e.typeCheck(symbolTable);
+                }
+
+		catch( TypeCheckException a ) {
+		    throw a;
+                }
+
+		selectClause.setElementAt(e, i);
+	    }
+
+	    for(int i = 0; i < predList.size(); i++){
+		Expression e = (Expression) predList.elementAt(i);
+		try {
+		    e = e.typeCheck(symbolTable);
+                }
+
+		catch( TypeCheckException a ) {
+		    throw a;
+                }
+
+		predList.setElementAt(e, i);
+	    }
 	}
 
 	public String printTypes(){
-               String s = "SELECT ";
+               String s = "\n\tSELECT ";
                Expression e = null;
                TableAlias t = null;
 
@@ -145,7 +161,7 @@ public class Query {
                      s = s + e.printTypes() ;
                }
 
-               s = s +  " FROM ";
+               s = s +  "\n\tFROM ";
 
                for ( int i = 0; i < fromClause.size(); i++ )
                {
@@ -157,7 +173,7 @@ public class Query {
                }
 
                if(whereClause != null){			
-                  s = s + " WHERE " + whereClause.printTypes();
+                  s = s + "\n\tWHERE " + whereClause.printTypes();
                }
 
                return s; 
