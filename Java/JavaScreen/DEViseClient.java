@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2000/06/05 16:35:07  wenger
+// Added comments and cleaned up the code a little.
+//
 // Revision 1.14  2000/04/27 20:15:24  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -322,7 +325,8 @@ public class DEViseClient
             for (int i = 0; i < data.size(); i++) {
                 byte[] d = (byte[])data.elementAt(i);
                 if (d != null && d.length > 0) {
-                    pop.pn("Sending data to client(" + hostname + ")");
+                    pop.pn("Sending data to client(" + hostname + ") (" +
+		      d.length + " bytes)");
                     socket.sendData(d);
                 }
             }
