@@ -30,7 +30,9 @@ public class Schema {
 	    typeIDs[i] = new DoubleDesc();
           else if(s.equals("string"))
 	    typeIDs[i] = new StringDesc();
-          else 
+          else if(s.equals("boolean"))
+	    typeIDs[i] = new BooleanDesc();
+	  else
 	    typeIDs[i] = null;
 
           
@@ -60,7 +62,9 @@ public class Schema {
 	    typeIDs[i] = new DoubleDesc();
           else if(s.equals("string"))
 	    typeIDs[i] = new StringDesc();
-          else 
+          else if(s.equals("boolean"))
+	    typeIDs[i] = new BooleanDesc();
+	  else
 	    typeIDs[i] = null;
 	  
  
@@ -98,7 +102,9 @@ public class Schema {
 	    typeIDs[count] = new DoubleDesc();
           else if(st.sval.equals("string"))
 	    typeIDs[count] = new StringDesc();
-          else 
+          else if(st.sval.equals("boolean"))
+	    typeIDs[count] = new BooleanDesc();
+	  else
 	    typeIDs[count] = null;
 	} 
 	 
@@ -136,6 +142,15 @@ public class Schema {
     return str;  
   }
   
+ public String getTypeAttr(){
+    String str = new String();
+    for(int i=0; i<typeIDs.length; i++){
+      str += typeIDs[i].getString() + " ";
+      str += attributeNames[i] + " ";
+    }
+    return str;
+  }
+    
 
   public void printTypes(){
     String str = new String();
