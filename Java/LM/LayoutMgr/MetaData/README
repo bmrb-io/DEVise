@@ -1,0 +1,11 @@
+Package : LayoutMgr.MetaData 
+Author : Shilpa Lawande
+
+This package implements a the back end counterpart to DEVise in the Layout Manager tool.
+All classes that create and maintain first class data structures in DEVise are implemented
+here. There should be no UI related code in this package.
+
+Other packages used by this package :
+Standard Java Packages
+COM.objectspace.JGL - A library for standard data structures such 
+		      as List, Set, Iterators etc.

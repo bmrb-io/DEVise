@@ -1,0 +1,17 @@
+Package : LayoutMgr.Application 
+Author : Shilpa Lawande
+
+This package implements a the Application i.e UI part of the Layout Manager tool.
+All classes that create the look and feel of the UI, including creation of views,
+links and representation of information are created here. The LayoutEditor 
+is embedded as one of the modes of the Layout Manager.  Makes use of the MenuMaker and ToolbarMaker
+ classes in AwtUtil package to create menus and toolbars. 
+
+Other packages used by this package :
+Standard Java Packages
+AwtUtil - Utility package to create menus, toolbars and other ui items. 
+gjt - Graphic Java Toolkit for image buttons etc
+COM.objectspace.JGL - A library for standard data structures such 
+		      as List, Set, Iterators etc.
+LayoutEditor - The layout editor used to create custom layouts.
+LayoutMgr.MetaData - data structures that maintain all first-class objects such as Views, links etc.

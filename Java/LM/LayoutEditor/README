@@ -1,0 +1,16 @@
+Package : LayoutEditor 
+Author : Shilpa Lawande
+
+This package implements a Layout Editor which can create a layout in the form of boxes and
+supports operations such as alignment, resizing, moving, grouping and rivetting. 
+
+This can be used to create a standalone layout editor by creating an appropriate front end.
+The file TestEditor.java is an example of how the front end of the layout editor may look.
+Makes use of the MenuMaker and ToolbarMaker classes in AwtUtil package. 
+
+Other packages used by this package :
+Standard Java Packages
+AwtUtil - Utility package to create menus, toolbars and other ui items. 
+gjt - Graphic Java Toolkit for image buttons etc
+COM.objectspace.JGL - A library for standard data structures such 
+		      as List, Set, Iterators etc.

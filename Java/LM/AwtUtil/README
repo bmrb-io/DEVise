@@ -1,0 +1,11 @@
+Package : AwtUtil 
+Author : Shilpa Lawande
+
+This package has classes which deal with utilities used in the code such 
+as dialogs, menus and other user inteface items. 
+
+Other packages used by this package :
+Standard Java Packages
+gjt - Graphic Java Toolkit for image buttons etc
+COM.objectspace.JGL - A library for standard data structures such 
+		      as List, Set, Iterators etc.

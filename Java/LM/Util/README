@@ -1,0 +1,8 @@
+Package : Util 
+Author : Shilpa Lawande
+
+This package has classes to serialize objects as ascii text and read them back. Also has a class
+to help debugging. 
+
+Other packages used by this package :
+Standard Java Packages
