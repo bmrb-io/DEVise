@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/22 00:07:24  jussi
+  Name of logical schema, not physical schema, is recorded in
+  catFiles. The absolute path name gets stored in a session file,
+  so storing the physical schema name in catFiles will cause the
+  physical schema to appear in the Auto dialog when the session file
+  is restored.
+
   Revision 1.9  1995/12/20 07:03:27  ravim
   High and low values of attrs can be specified.
 
@@ -496,8 +503,9 @@ char *ParseCatOriginal(char *catFile){
 					recSize = (recSize/roundAmount+1)*roundAmount;
 			}
 			attrs->InsertAttr(numAttrs,args[1],recSize,
-				attrLength,attrType, hasMatchVal, &matchVal,
-				isComposite, isSorted);
+					  attrLength,attrType, hasMatchVal,
+					  &matchVal, isComposite, isSorted,
+					  hasHi, &hiVal, hasLo, &loVal);
 			numAttrs++;
 			recSize += attrLength;
 		      }
@@ -906,7 +914,7 @@ char *ParseCatPhysical(char *catFile){
 		attrs->InsertAttr(numAttrs,args[1],recSize,
 				  attrLength,attrType, hasMatchVal, &matchVal,
 				  isComposite, isSorted,
-				  hasHi, &hiVal, hasLo, &loVal );
+				  hasHi, &hiVal, hasLo, &loVal);
 		numAttrs++;
 		recSize += attrLength;
 		      }
@@ -1167,12 +1175,11 @@ void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
       aval->strVal = CopyString(valstr);
       break;
     case DateAttr:
-      fprintf(stderr,"match of date not implemented\n");
-    Exit::DoExit(2);
+      aval->dateVal = atoi(valstr);
       break;
     default:
       fprintf(stderr,"unknown attr value\n");
-    Exit::DoExit(2);
+      Exit::DoExit(2);
       break;
     }
 
