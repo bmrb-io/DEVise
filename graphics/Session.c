@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/12/11 18:07:13  wenger
+  Tempararily disabled saving of color palette because of bug 441.
+
   Revision 1.39  1998/12/08 20:01:47  wenger
   Color palette is now saved in session files.
 
@@ -1024,23 +1027,6 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
-
-  char *result;
-  int argcOut;
-  char **argvOut;
-  DevStatus tmpStatus = CallParseAPI(saveData->control, result, false,
-      argcOut, argvOut, "getAxis", instance, "x");
-  if (tmpStatus.IsComplete() && strlen(result) > 0) {
-      fprintf(saveData->fp, "DEVise setAxis {%s} {%s} x\n", instance, result);
-  }
-  status += tmpStatus;
-
-  tmpStatus += CallParseAPI(saveData->control, result, false, argcOut,
-      argvOut, "getAxis", instance, "y");
-  if (tmpStatus.IsComplete() && strlen(result) > 0) {
-    fprintf(saveData->fp, "DEVise setAxis {%s} {%s} y\n", instance, result);
-  }
-  status += tmpStatus;
 
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
       instance, "X");
