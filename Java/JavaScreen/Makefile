@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1998
+# (c) Copyright 1992-2000
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
