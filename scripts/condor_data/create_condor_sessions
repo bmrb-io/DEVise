@@ -1,19 +1,37 @@
 #! /bin/csh -f
-rm -r userdat
-
 set dataFile = "UserLastMonth.dat"
 if (-f $dataFile) then
   rm $dataFile
 endif
 
-/p/condor/home/bin/condor_devise_userdata -lastweek > UserLastMonth.dat
+/p/condor/home/bin/condor_devise_userdata -lastweek > $dataFile
 
+# Make sure the data file exists.
+if (! -f $dataFile) then
+    echo "$dataFile does not exist -- exiting"
+    exit 1
+endif
+
+# Make sure the data file contains some data.
+set foo = `wc $dataFile | cut -c1-7`
+if ($foo == 0) then
+    echo "$dataFile contains no data -- exiting"
+    exit 1
+endif
+
+
+# Remove the old processed data.
+rm -r userdat
+
+# Split the data into one file per user.
 split_user_data UserLastMonth.dat userdat
 
+# Remove the old 'raw' data file.
 if (-f $dataFile) then
   rm $dataFile
 endif
 
+# Create the sessions.
 create_2users userdat UserMonth.ds \
   /p/devise/demo/schema/schema/physical/Condor:userlist \
   /p/devise/demo/schema/schema/physical/Condor:user1
