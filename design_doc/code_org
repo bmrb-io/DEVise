@@ -108,10 +108,12 @@ The following directories contain documentation, etc.:
 The following directories contain source code that's not part of DEVise
 itself, but is part of related programs:
 
-* EmbeddedTk
+* EmbeddedTk: code for the EmbeddedTk server.
     Lines of code: 4800
 
-* EmbeddedTk1.3
+* EmbeddedTk1.3: code for the version of the EmbeddedTk server that goes
+  with DEVise 1.3.  This code is in a separate directory because it was
+  committed to CVS retrospectively.
     Lines of code: 1976
 
 * Java/DTE
@@ -126,7 +128,8 @@ itself, but is part of related programs:
 * LM
     Lines of code: 2094
 
-* QCIMS
+* QCIMS: code for a number of programs; most imporantly for Tasvir, which
+  DEVise uses for displaying images.
     Lines of code: 69640
 
 * attrproj
