@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/13 18:14:13  jussi
+  Changed type of "flag" parameter. Changed code to reflect new
+  flag values: API_CMD, API_ACK, API_NAK, API_CTL.
+
   Revision 1.3  1996/05/11 20:43:52  jussi
   Moved output statement from "exit" command to ServerAPI.c.
 
@@ -178,6 +182,12 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
+    if (!strcmp(argv[0], "setBatchMode")) {
+      Boolean batch = (atoi(argv[1]) ? true : false);
+      control->SetBatchMode(batch);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "invalidatePixmap")) {
       View *vg = (View *)classDir->FindInstance(argv[1]);
       if (!vg) {
