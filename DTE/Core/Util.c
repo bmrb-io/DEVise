@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/04/14 17:03:25  donjerko
+  *** empty log message ***
+
   Revision 1.15  1998/03/17 17:19:06  donjerko
   Added new namespace management through relation ids.
 
@@ -241,5 +244,5 @@ string addSQLQuotes(const char* inp, char quote){
 bool fileExists(const string& fileNm)
 {
 	ifstream tmp(fileNm.c_str());
-	return (bool) tmp;
+	return (tmp ? true : false);
 }
