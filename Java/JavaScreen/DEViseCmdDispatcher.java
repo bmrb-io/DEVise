@@ -390,7 +390,15 @@ public class DEViseCmdDispatcher implements Runnable
                                 // communication error on imgSocket, but we need to close both sockets
                                 disconnect();
                             }
-                        } else { // this should not happening
+                        } else if (id == 9) { // server failed
+                            // we need to do something special for this command because there is a open
+                            // dialog hanging out there
+                            if (command.startsWith("JAVAC_GetSessionList") && openDlg != null && openDlg.getStatus()) {
+                                YGlobals.Yshowmsg(openDlg, e.getMessage());
+                            } else {
+                                YGlobals.Yshowmsg(jsc, e.getMessage());
+                                jscreen.updateScreen(false);
+                            }
                         }
                     }
 
@@ -462,9 +470,9 @@ public class DEViseCmdDispatcher implements Runnable
             } else if (rsp[i].startsWith("JAVAC_Fail")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || (cmd.length != 1 && cmd.length != 2) || i != rsp.length - 1) {
-                    throw new YException("Server Failed: " + rsp[i] + "!", 2);
+                    throw new YException("Server Failed: " + rsp[i] + "!", 9);
                 } else {
-                    throw new YException("Server failed: " + cmd[1] + "!", 2);
+                    throw new YException("Server failed: " + cmd[1] + "!", 9);
                 }
             } else if (rsp[i].startsWith("JAVAC_CreateWindow")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);

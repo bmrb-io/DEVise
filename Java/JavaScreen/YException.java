@@ -23,7 +23,7 @@ public final class YException extends Exception
 
     public YException(String s, int i)
     {
-        this(s, null, 0);
+        this(s, null, i);
     }
 
     public YException(String s, String w, int i)
@@ -42,7 +42,7 @@ public final class YException extends Exception
     public String getWhere()
     {
         if (where == null)
-            return new String("");
+            return new String("somewhere");
         else
             return where;
     }

@@ -378,6 +378,7 @@ public class DEViseWindow extends Canvas
     class ViewMouseListener extends MouseAdapter
     {
         WaitThread wt = new WaitThread(dispatcher);
+        boolean isConsumed = false;
 
         public void mousePressed(MouseEvent event)
         {
@@ -389,7 +390,7 @@ public class DEViseWindow extends Canvas
             sp = event.getPoint();
             ep = sp;
 
-            YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount());
+            //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount());
 
             if (!isCurrent) {
                 isFirstTime = true;
@@ -402,6 +403,8 @@ public class DEViseWindow extends Canvas
             isMouseDragged = false;
 
             setCurrentView(sp);
+            if (currentView != null)
+                isConsumed = false;
 
             userAction = 0;
             repaint();
@@ -430,6 +433,14 @@ public class DEViseWindow extends Canvas
                         } else {
                             dispatcher.insertCmd("JAVAC_MouseAction_RubberBand {" + windowName + "} " + sp.x + " " + sp.y + " " + ep.x + " " + ep.y);
                         }
+                    }  
+                    
+                    isConsumed = true;
+                } else {
+                    ep = event.getPoint();
+                    if (isViewFirstTime) {
+                        dispatcher.insertCmd("JAVAC_MouseAction_Click {" + currentView.getName() + "} " + ep.x + " " + ep.y);                    
+                        isConsumed = true;
                     }
                 }
             }
@@ -450,7 +461,10 @@ public class DEViseWindow extends Canvas
                         else
                             dispatcher.insertCmd("JAVAC_MouseAction_DoubleClick {" + currentView.getName() + "} " + p.x + " " + p.y);
                     }
-                } else {
+                } else { 
+                    if (isConsumed)
+                        return;
+                    //YGlobals.Ydebugpn("single click");
                     wt.setDC(false);
                     wt.setValue(currentView.getName(), sp.x, sp.y);
                     Thread newwt = new Thread(wt);

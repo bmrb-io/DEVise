@@ -335,8 +335,9 @@ public class jsdevisec extends Frame
         }
 
         if (isSessionOpened) {
-            YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!");
-            return;
+            jscreen.updateScreen(false);
+            //YGlobals.Yshowmsg(this, "Java Screen still has an opened session!\nPlease press CLOSE to close it first!");
+            //return;
         }
 
         String result = YGlobals.Yshowmsg(this, "Do you really want to quit?", "Confirm", YGlobals.YMBXYESNO);

@@ -80,19 +80,17 @@ public class DEViseClientDispatcher implements Runnable
 
         while (getAction() > 0) {
             waitForSignal();
-
+            
+            //YGlobals.Ydebugpn("active: " + activeClients.size() + " suspend: " + suspendClients.size());
+            
             if (getAction() > 0) {
                 client = getNextClient();
 
                 if (client != null) {
                     server = getNextServer();
                     if (server != null) {
-                        DEViseClient c = server.getClient();
                         server.setClient(client);
-
                         activeClient(client);
-                        if (c != null)
-                            suspendClient(c);
                     }
                 }
             }

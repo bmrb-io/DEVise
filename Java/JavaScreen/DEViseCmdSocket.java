@@ -341,7 +341,7 @@ public class DEViseCmdSocket
 
         clearBuffer();
 
-        YGlobals.Ydebugpn("Receiving: " + response);
+        //YGlobals.Ydebugpn("Receiving: " + response);
 
         return response;
     }
