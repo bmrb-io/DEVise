@@ -16,4 +16,12 @@ DataReader.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 DataReader.o: /usr/include/FlexLexer.h
 DateTime.o: DateTime.h
 Schema.o: DRSchema.h DateTime.h
+datareader.tab.o: DataReaderParser.h /usr/include/assert.h
+datareader.tab.o: /usr/include/features.h /usr/include/sys/cdefs.h
+datareader.tab.o: /usr/include/gnu/stubs.h DRSchema.h
+datareader.tab.o: /usr/include/FlexLexer.h /usr/include/stdio.h
+datareader.tab.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
+datareader.tab.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stdarg.h
+datareader.tab.o: /usr/include/bits/types.h /usr/include/libio.h
+datareader.tab.o: /usr/include/_G_config.h /usr/include/bits/stdio_lim.h
 testParser.o: DataReader.h DRSchema.h DateTime.h

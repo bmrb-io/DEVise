@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.13  1999/07/12 19:01:18  wenger
+# Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+#
 # Revision 1.12  1998/05/08 14:00:10  wenger
 # Updated Linux dependencies.
 #
@@ -75,12 +78,10 @@ ApInit.o: /usr/include/values.h /usr/include/limits.h
 ApInit.o: /usr/include/bits/posix1_lim.h /usr/include/bits/local_lim.h
 ApInit.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 ApInit.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Time.h
-ApInit.o: /usr/include/sys/time.h /usr/include/bits/time.h
-ApInit.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
-ApInit.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/ctype.h
-ApInit.o: /usr/include/math.h /usr/include/bits/huge_val.h
-ApInit.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Timer.h
+ApInit.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+ApInit.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+ApInit.o: /usr/include/bits/mathcalls.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/features.h
 ApParseCat.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 ApParseCat.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -121,16 +122,15 @@ ApParseCat.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 ApParseCat.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 ApParseCat.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
 ApParseCat.o: /usr/include/stdint.h /usr/include/bits/in.h
-ApParseCat.o: /usr/include/bits/byteswap.h ../graphics/AttrList.h
-ApParseCat.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-ApParseCat.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
-ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Parse.h
-ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
-ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
-ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat.o: /usr/include/bits/byteswap.h ../graphics/Dispatcher.h
+ApParseCat.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
+ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat.o: /usr/include/stdlib.h /usr/include/alloca.h
+ApParseCat.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
+ApParseCat.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+ApParseCat.o: /usr/include/string.h ../graphics/Parse.h ApInit.h
+ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
 ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
@@ -176,17 +176,16 @@ ApParseCat2.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 ApParseCat2.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 ApParseCat2.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
 ApParseCat2.o: /usr/include/stdint.h /usr/include/bits/in.h
-ApParseCat2.o: /usr/include/bits/byteswap.h ../graphics/AttrList.h
-ApParseCat2.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
-ApParseCat2.o: ../graphics.new/GroupDir.h ../graphics.new/ItemList.h
-ApParseCat2.o: ../graphics.new/Group.h /usr/include/stdlib.h
-ApParseCat2.o: /usr/include/alloca.h ../graphics.new/MapInterpClassInfo.h
-ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat2.o: ../graphics/ViewDir.h /usr/include/string.h
-ApParseCat2.o: ../graphics/Parse.h ApInit.h
+ApParseCat2.o: /usr/include/bits/byteswap.h ../graphics/Dispatcher.h
+ApParseCat2.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
+ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
+ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
+ApParseCat2.o: /usr/include/stdlib.h /usr/include/alloca.h
+ApParseCat2.o: ../graphics.new/MapInterpClassInfo.h ../graphics/ClassDir.h
+ApParseCat2.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+ApParseCat2.o: /usr/include/string.h ../graphics/Parse.h ApInit.h
 ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
-ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
-ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
+ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
@@ -233,11 +232,11 @@ AttrProj.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
 AttrProj.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
 AttrProj.o: /usr/include/netinet/in.h /usr/include/stdint.h
 AttrProj.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-AttrProj.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/alloca.h
-AttrProj.o: /usr/include/ctype.h /usr/include/math.h
-AttrProj.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-AttrProj.o: /usr/include/bits/mathcalls.h ../graphics/AttrList.h
-AttrProj.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
+AttrProj.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+AttrProj.o: /usr/include/math.h /usr/include/bits/huge_val.h
+AttrProj.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+AttrProj.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
 AttrProj.o: ../graphics.new/DataSeg.h
 AttrProj2.o: /usr/include/stdio.h /usr/include/features.h
 AttrProj2.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
@@ -280,12 +279,13 @@ AttrProj2.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
 AttrProj2.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
 AttrProj2.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
 AttrProj2.o: /usr/include/stdint.h /usr/include/bits/in.h
-AttrProj2.o: /usr/include/bits/byteswap.h ../graphics/Util.h
-AttrProj2.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
-AttrProj2.o: /usr/include/math.h /usr/include/bits/huge_val.h
-AttrProj2.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-AttrProj2.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Init.h
-AttrProj2.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+AttrProj2.o: /usr/include/bits/byteswap.h ../graphics/Dispatcher.h
+AttrProj2.o: ../graphics/DList.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj2.o: /usr/include/alloca.h /usr/include/ctype.h /usr/include/math.h
+AttrProj2.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+AttrProj2.o: /usr/include/bits/mathcalls.h ../graphics/AttrList.h
+AttrProj2.o: ../graphics/Init.h ../graphics/BufPolicy.h
+AttrProj2.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/features.h
 ProjectionList.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 ProjectionList.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
