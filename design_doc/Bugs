@@ -2812,7 +2812,7 @@ Num Date        Status  Description
 703 10/05/01	OPEN	JavaScreen: _pid files don't get deleted correctly
 			if the machine goes down. (rkw)
 
-704 10/05/01	OPEN	JavaScreen: when restarting JSPoP, heartbeats sent
+704 10/05/01		JavaScreen: when restarting JSPoP, heartbeats sent
 			from an existing client can (sometimes, at least)
 			prevent the JSPoP from accepting other client
 			connections. (rkw)
@@ -2833,8 +2833,9 @@ Num Date        Status  Description
 			perform any actions while it's sleeping during timed
 			command log playback. (rkw)
 
-709 10/16/01	OPEN	JavaScreen: there should be some visual indication
+709 10/16/01	FIXED	JavaScreen: there should be some visual indication
 			of being in command playback mode. (rkw)
+                        (Fixed by xuk, 10/19/01.)
 
 710 10/16/01	OPEN	JavaScreen: sleep time in timed command playback
 			should be adjusted to account for the time taken
