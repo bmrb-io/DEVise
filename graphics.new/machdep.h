@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/03 20:29:57  jussi
+  Fixed some AIX problems.
+
   Revision 1.14  1996/11/21 19:14:09  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -430,5 +433,35 @@ union semun {
   
 EXTERNC int fsync(int);
 EXTERNC unsigned sleep(unsigned);
+
+
+/*
+ * Name of architecture.
+ */
+#if defined(AIX)
+  #define ARCH_NAME "AIX"
+#elif defined(ALPHA)
+  #define ARCH_NAME "Alpha"
+#elif defined(HPUX)
+  #define ARCH_NAME "HP-UX"
+#elif defined(LINUX)
+  #define ARCH_NAME "Linux"
+#elif defined(OSF)
+  #define ARCH_NAME "Alpha/OSF"
+#elif defined(SGI)
+  #define ARCH_NAME "SGI"
+#elif defined(SOLARIS)
+//TEMPTEMP sparc vs intel
+  #define ARCH_NAME "Solaris"
+#elif defined(SUN)
+  #define ARCH_NAME "SPARC/SunOS"
+#elif defined(ULTRIX)
+  #define ARCH_NAME "Ultrix"
+#elif defined(WINNT)
+  #define ARCH_NAME "Windows NT"
+#else
+  #define ARCH_NAME "unknown"
+#endif
+
 
 #endif

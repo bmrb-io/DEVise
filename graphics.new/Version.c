@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/12/13 18:20:58  wenger
+  Added release.linux; incremented DEVise revision.
+
   Revision 1.18  1996/12/05 15:31:13  wenger
   Bumped up revision.
 
@@ -114,6 +117,7 @@
 
 #include "Version.h"
 #include "CompDate.h"
+#include "machdep.h"
 
 
 /*
@@ -121,7 +125,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.3";
+static const char *	version = "1.2.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
@@ -173,12 +177,12 @@ Version::GetWinLogo()
 void
 Version::PrintInfo()
 {
-	printf("DEVise Data Visualization Software\n");
-	printf("%s\n", copyright);
-	printf("By the DEVise Development Group\n");
-	printf("All Rights Reserved.\n");
-	printf("Version %s\n", version);
-	printf("Compile date: %s\n", CompDate::Get());
+  printf("DEVise Data Visualization Software\n");
+  printf("%s\n", copyright);
+  printf("By the DEVise Development Group\n");
+  printf("All Rights Reserved.\n");
+  printf("Version %s (%s)\n", version, ARCH_NAME);
+  printf("Compile date: %s\n", CompDate::Get());
 }
 
 /*============================================================================*/
