@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/06/10 18:04:01  wenger
+  Improved new cursor drawing (bug in Mesa implementation sometimes makes
+  it look ugly); cursor color now saved in sessions.
+
   Revision 1.17  1998/06/09 20:05:59  wenger
   2D OpenGL cursor now drawn as shaded outline plus every-other-point
   "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
@@ -545,8 +549,10 @@ void DeviseCursor::SetCursorColor(PColorID color)
   _cursorColor = color;
 
   // Force all cursors in the destination view to be redrawn.
-  _dst->HideCursors();
-  _dst->DrawCursors();
+  if (_dst != NULL) {
+    _dst->HideCursors();
+    _dst->DrawCursors();
+  }
 }
 
 //******************************************************************************

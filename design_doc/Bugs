@@ -1483,6 +1483,7 @@ Num Date        Status  Description
 
 390 09/14/98	FIXED	JavaScreen draws XY cursor too high in the Y
 			direction. (rkw)
+			(Fixed by rkw, 9/25/98.)
 
 391 09/15/98	WORK	Opening the MarsMiron.tk demo session fails when
 			the devised is run with Xvfb as the X server. (hy/rkw)
@@ -1513,6 +1514,11 @@ Num Date        Status  Description
 			and load FamMed_pre_post_natal.tk three times).
 			(QueryProcFull::_queries list gets corrupted
 			somehow.) (rkw)
+
+397 09/25/98	FIXED	If you open the MolBio session in the JavaScreen,
+			force the devised to switch to a different JavaScreen,
+			and then try to switch back, the devised crashes. (rkw)
+			(Fixed by rkw, 9/25/98.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
