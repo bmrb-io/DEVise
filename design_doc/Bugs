@@ -2165,11 +2165,12 @@ Num Date        Status  Description
 			can't tell the difference between a simple error, and
 			the devised crashing. (rkw)
 
-554 01/11/00	OPEN	TData index files should have some kind of checksum
+554 01/11/00	FIXED	TData index files should have some kind of checksum
 			of the entire "known" part of the data file. (rkw)
 			(If bytes are inserted in the middle of a data
 			file, the index is actually invalid, but DEVise
 			doesn't recognize this.)
+			(Fixed by rkw, 5/10/00.)
 
 555 01/11/00	OPEN	The user should be able to invalidate the index for
 			a TData without having to first successfully display
@@ -2251,6 +2252,7 @@ Num Date        Status  Description
 575 03/23/00	OPEN	Either pixmaps or the code that gets the images
 			from them does not work with the latest version
 			of XFree86. (rkw)
+			(See also 584.)
 
 576 03/28/00	OPEN	Various columns in link/cursor info dialog can
 			be scrolled separately (with arrow keys). (oz/rkw)
@@ -2271,18 +2273,22 @@ Num Date        Status  Description
 			correctly passed back up to Tcl on the client side.
 			(rkw)
 
-581 04/21/00	OPEN	Monolithic devise won't run without catalog.tcl and
+581 04/21/00	NB	Monolithic devise won't run without catalog.tcl and
 			Querycatalog.tcl even though the devised will. (rkw)
 			(Do we even really use these files anymore?)
+			(Yes -- they are needed by Tcl GUI for logical
+			schemas.)
 
 582 04/25/00	OPEN	View help in the JavaScreen doesn't wrap lines. (rkw)
 
-583 04/27/00	OPEN	Drill-down in the JavaScreen doesn't seem to work
+583 04/27/00	FIXED	Drill-down in the JavaScreen doesn't seem to work
 			in views with cursors (moves the cursor instead
 			of showing record values.) (rkw)
+			(Fixed by rkw, 5/3/00.)
 
 584 04/28/00	OPEN	Pixmaps for JavaScreen support don't work right
 			with latest X server (Solaris 2.7) (rkw)
+			(See also 575.)
 
 585 05/01/00	OPEN	In the JavaScreen, a parent view cursor that overlaps
 			a child view is drawn incorrectly (the bits of the
