@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/23 19:34:46  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.9  1996/06/27 15:52:46  jussi
   Added functionality which allows TDataAscii and TDataBinary to request
   that views using a given TData be refreshed (existing queries are
@@ -99,6 +103,8 @@ struct QPFullData {
   int            recLinkListIter;       /* record link list iterator */
   RecordLink     *recLink;              /* current record link */
   RecId          recLinkRecId;          /* current record link record */
+  RecId          nextRecLinkRecId;      /* next record link record */
+  RecId          recLinkHigh;           /* high recId of current reclink rec */
 
   RecId hintId;                         /* ID for hint */
   void *userData;
@@ -213,10 +219,12 @@ private:
 
   /*
      Do scan of record ID range. Distribute data to all queries
-     that need it. Return TRUE if have not exceeded
-     amount of memory used for this iteration of the query processor
+     that need it. Return TRUE if have not exceeded amount of memory
+     used for this iteration of the query processor. Also return
+     actual number of records processed.
   */
-  Boolean DoScan(QPFullData *qData, RecId low, RecId high, Boolean tdataOnly);
+  Boolean DoScan(QPFullData *qData, RecId low, RecId high,
+                 Boolean tdataOnly, int &recsScanned);
 
   /* Distribute tdata/gdata to all queries that need it */
   void DistributeTData(QPFullData *qData, RecId startRid,

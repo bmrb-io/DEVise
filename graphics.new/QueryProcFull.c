@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/24 18:13:55  jussi
+  QueryProcFull::GetTData() now uses the gdataBuf in global scope
+  as opposed to having its own gdataBuf.
+
   Revision 1.26  1996/07/24 17:07:33  jussi
   Found bug in GetTData(); same buffer alignment problem as in
   the other gdataDoubleBuf.
@@ -592,6 +596,8 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
 	delete qData->range;
 	qData->range = new QPRange;
 	(void)qData->tdata->HeadID(qData->current);
+        qData->recLinkRecId = 1;
+        qData->nextRecLinkRecId = 0;    // next recLink file lookup starts at 0
       }
     }
     // if still no record link, query is finished
@@ -601,50 +607,76 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
       qData->state = QPFull_EndState;
       return;
     }
+
     /* execute a restricted, non-randomized query using the record
        ranges specified in recLink */
     do {
       RecId low, high;
-      int num;
-      int result = qData->recLink->FetchRecs(qData->recLinkRecId, low, num);
-      if (result < 0) {
-	printf("Cannot fetch record %ld from record link file %s\n",
-	       qData->recLinkRecId, qData->recLink->GetFileName());
-	qData->recLinkList->DoneIterator(qData->recLinkListIter);
-	qData->recLinkListIter = -1;
-	qData->state = QPFull_EndState;
-	return;
-      }
-      if (!result) {
+
+      /* fetch next record link record if needed */
+      if (qData->nextRecLinkRecId != qData->recLinkRecId) {
+        qData->recLinkRecId = qData->nextRecLinkRecId;
 #ifdef DEBUG
-	printf("End of record link file %s (%ld records)\n",
-	       qData->recLink->GetFileName(), qData->recLinkRecId);
+        printf("Fetching record %ld from record link file %s\n",
+               qData->recLinkRecId, qData->recLink->GetFileName());
 #endif
-	qData->recLink = 0;
-	return;
-      }
+        int num;
+        int result = qData->recLink->FetchRecs(qData->recLinkRecId, low, num);
+        if (result < 0) {
+          printf("Cannot fetch record %ld from record link file %s\n",
+                 qData->recLinkRecId, qData->recLink->GetFileName());
+          qData->recLinkList->DoneIterator(qData->recLinkListIter);
+          qData->recLinkListIter = -1;
+          qData->state = QPFull_EndState;
+          return;
+        }
+        if (!result) {
 #ifdef DEBUG
-      printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
-	     low, low + num - 1, qData->recLink->GetFileName(),
-	     qData->recLinkRecId);
+	  printf("End of record link file %s (%ld records)\n",
+                 qData->recLink->GetFileName(), qData->recLinkRecId);
 #endif
-      if (low > qData->high) {
+          qData->recLink = 0;
+          return;
+        }
 #ifdef DEBUG
-	printf("End of record link file %s (%ld records)\n",
-	       qData->recLink->GetFileName(), qData->recLinkRecId);
+        printf("Got [%ld,%ld] from record link file %s (record %ld)\n",
+               low, low + num - 1, qData->recLink->GetFileName(),
+               qData->recLinkRecId);
 #endif
-	qData->recLink = 0;
-	return;
+        if (low > qData->high) {
+#ifdef DEBUG
+          printf("Skipping to next record link record\n");
+#endif
+          qData->nextRecLinkRecId = qData->recLinkRecId + 1;
+          cont = true;
+          continue;
+        }
+        high = low + num - 1;
+        qData->recLinkHigh = high;
+        qData->current = low;
+      } else {
+        low = qData->current;
+        high = qData->recLinkHigh;
+#ifdef DEBUG
+        printf("Restored record range high %ld from previous round\n", high);
+#endif
       }
-      qData->recLinkRecId++;
-      high = low + num - 1;
+
       if (high > qData->high)
-	high = qData->high;
-      cont = DoScan(qData, low, high, isTData);
-      if (cont)
-	/* reset current */
-	qData->current = high;
+        high = qData->high;
+#ifdef DEBUG
+      printf("Doing scan of [%ld,%ld], current is %ld\n", low, high,
+             qData->current);
+#endif
+      int recsScanned;
+      cont = DoScan(qData, low, high, isTData, recsScanned);
+      qData->current += recsScanned;
+      if (qData->current > high) {
+	/* go to next record range from record link */
+        qData->nextRecLinkRecId++;
+      }
     } while (cont);      
+
     return;
   }
 
@@ -660,12 +692,10 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
       if (noHigh || high > qData->high)
 	high = qData->high;
       
-      cont = DoScan(qData, low, high, isTData);
-      
-      if (cont)
-	/* reset current */
-	qData->current = high;
-      
+      int recsScanned;
+      cont = DoScan(qData, low, high, isTData, recsScanned);
+      qData->current += recsScanned;
+
     } while(cont);
     return;
   }
@@ -730,11 +760,25 @@ void QueryProcFull::ProcessScan(QPFullData *qData)
     printf("scanning (%ld,%ld)\n",low,high);
 #endif
 
-    cont = DoScan(qData, low, high, isTData);
+    int recsScanned;
+    cont = DoScan(qData, low, high, isTData, recsScanned);
       
-    if (cont && high == endId ) {
-      /* reset current */
-      qData->current += QPFULL_RANDOM_RECS_PER_BATCH*QPFULL_RANDOM_ITERATIONS;
+    /* there might be a problem here if DoScan() returns fewer
+       than QP_FULL_RANDOM_RECS_PER_BATCH records AND this
+       was not the final (last) fraction of records read from
+       the file; if, in the middle of a file, we request 1024
+       records but get only 1000, this algorithm ignores the
+       missing 24 and just moves on to the next interval */
+
+    if (cont) {
+      if (high != endId) {
+        fprintf(stderr, "Warning: did not get full interval, %ld vs. %ld\n",
+                high, endId);
+      } else {
+        /* reset current */
+        qData->current += QPFULL_RANDOM_RECS_PER_BATCH
+                          * QPFULL_RANDOM_ITERATIONS;
+      }
     }
   } while (cont);
 }
@@ -938,10 +982,11 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
 
 Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
 {
-  int index;
   int numMatchingQueries = 0;
   int totalGRecSize = 0;
-  for(index = _queries->InitIterator(); _queries->More(index);) {
+
+  int index = _queries->InitIterator();
+  while(_queries->More(index)) {
     QPFullData *qData = (QPFullData *)_queries->Next(index);
     if (qData->tdata == tdata && 
 	!(filter.xLow > qData->filter.xLow ||
@@ -971,7 +1016,7 @@ void QueryProcFull::InitScan()
    amount of memory used for this iteration of the query processor */
 
 Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high, 
-			      Boolean tdataOnly)
+			      Boolean tdataOnly, int &recsScanned)
 {
 #ifdef DEBUG
   printf("DoScan map 0x%p, [%ld,%ld]\n", qData->map, low, high);
@@ -984,12 +1029,16 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
   int tRecSize = qData->tdata->RecSize();
   int gRecSize = qData->map->GDataRecordSize();
 		
-  Boolean isTData;
+  recsScanned = 0;
   Boolean exceedMem = false;
-  RecId startRid; 
+
   int numRecs;
+  RecId startRid; 
+  Boolean isTData;
   void *buf, **recs;
+
   while (mgr->GetRecs(isTData, startRid, numRecs, buf, recs)) {
+    recsScanned += numRecs;
     if (isTData) {
       DistributeTData(qData, startRid, numRecs, buf, recs);
       _memFetched += numRecs * tRecSize;
@@ -1603,7 +1652,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid,
         }
         
         int tRecSize = tdata->RecSize();
-        Coord x, y;
+        Coord x = 0, y = 0;
 	
         /* Find the 1st record that fits */
         char *tptr = (char *)_tqueryBuf + _tqueryBeginIndex * tRecSize;
@@ -1640,7 +1689,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid,
                 }
                 
 #ifdef DEBUG
-                printf("TData query id %d, x = %f, y = %f\n", recId, x, y);
+                printf("TData query id %ld, x = %f, y = %f\n", recId, x, y);
 #endif
                 
                 recId++;
