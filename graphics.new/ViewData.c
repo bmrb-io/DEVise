@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/10/20 19:46:17  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.10  1998/07/10 21:20:08  wenger
   Minor cleanups and improvements.
 
@@ -64,6 +71,7 @@
 #include "DerivedTable.h"
 
 //#define DEBUG
+//#define TEST_FILTER_LINK // TEMP -- remove later. RKW 1998-10-29.
 
 struct SymbolInfo {
   Coord x;
@@ -72,6 +80,18 @@ struct SymbolInfo {
   Boolean inFilter;
   Boolean isComplex;
 };
+
+#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
+inline Coord GetShapeAttr(int shapeAttrNum, char *ptr, TDataMap *map,
+  GDataAttrOffset *offset)
+{
+  if (offset->shapeAttrOffset[shapeAttrNum] < 0) {
+    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+    return attrs[shapeAttrNum];
+  }
+  return GetAttr(ptr, shapeAttrOffset[shapeAttrNum], Coord, offset);
+}
+#endif
 
 //******************************************************************************
 // Constructors and Destructors
@@ -209,6 +229,18 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	int					recIndex = 0;
 	int					firstRec = 0;
 
+#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
+    VisualFilter linkFilter;
+	if (!strcmp(GetName(), "FilterSlaveView")) {
+	  View *masterView = FindViewByName("FilterMasterView");
+	  if (masterView == NULL) {
+	    fprintf(stderr, "Can't find master view\n");
+	    return;
+      }
+	  masterView->GetVisualFilter(linkFilter);
+	}
+#endif
+
     // Get info from GData records, figure out whether symbols are within
 	// visual filter.
 	char *dataP = (char *) gdata;
@@ -232,6 +264,14 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	  // are rotated.  RKW Aug. 8, 1997.
 	  symArray[recNum].inFilter = InVisualFilter(_queryFilter, x, y,
 		  maxWidth, maxHeight);
+#if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
+	  if (!strcmp(GetName(), "FilterSlaveView")) {
+	    Coord linkX = GetShapeAttr(5, dataP, mapping, offset);
+	    Coord linkY = GetShapeAttr(6, dataP, mapping, offset);
+        symArray[recNum].inFilter &= InVisualFilter(linkFilter, linkX, linkY,
+		  0.0, 0.0);
+      }
+#endif
 
 	  dataP += gRecSize;
 	}

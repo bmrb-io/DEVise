@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.86  1998/10/21 17:16:53  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.85  1998/10/20 19:46:18  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -719,6 +725,11 @@ void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
 {
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::InsertMapping(%s, %s)\n", GetName(),
+      map->GetName(), label);
+#endif
+
     MappingInfo *info = new MappingInfo;
     DOASSERT(info, "Could not create mapping information");
     DOASSERT(map, "null map");
@@ -745,6 +756,9 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
                                  DEFAULT_HISTOGRAM_BUCKETS);
         }
       }
+    } else {
+      printf("Warning: inserting multiple mappings into view {%s}\n",
+	GetName());
     }
     DoneMappingIterator(index);
 

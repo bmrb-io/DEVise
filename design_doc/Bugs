@@ -1636,6 +1636,16 @@ Num Date        Status  Description
 			directory with the GUI, because you always get the
 			message 'Discarding selection of ".."'. (rkw)
 
+428 10/28/98	OPEN	Negative value for color causes DEVise to crash. (rkw)
+
+429 10/28/98	OPEN	Show mapping dialog, close session, open another
+			session, select a view -> mapping dialog is not 
+			properly enabled. (rkw)
+
+430 10/29/98	OPEN	Problems with quoted strings in DataReader -- see
+			/p/devise/dat/dbworld/message.table,
+			/p/devise/schema/schema/physical/dbworld1.ddr. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

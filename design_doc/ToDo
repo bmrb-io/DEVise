@@ -517,6 +517,18 @@ Possibly change the record link creation code (in VisualLinkClassInfo) to
 actually implement record links as set links (can't be done if UNIXFILES
 are still outside the DTE). (rr/rkw 10/13/98)
 
+Eliminate Jussi's buffer manager from DEVise. (rr/rkw 10/13/98)
+
+The JavaScreen needs to allow dragging and resizing windows, and sending
+them to the back and bringing them to the front. (rr/rkw 10/13/98)
+
+Possibly don't allow a single mapping to be inserted into more than one
+view (force one-to-one correspondence between views and mappings).
+(rkw 10/28/98)
+
+
+COMPLETED
+---------
 GUI improvements to make sessions easier to understand:
 - Mapping should show data source name.
 - Display a table of all links, of the following form, sorted by link name:
@@ -524,14 +536,6 @@ GUI improvements to make sessions easier to understand:
 - If title is shown in view, also show (internal) view name.
 (rr/rkw 10/13/98)
 
-Eliminate Jussi's buffer manager from DEVise. (rr/rkw 10/13/98)
-
-The JavaScreen needs to allow dragging and resizing windows, and sending
-them to the back and bringing them to the front. (rr/rkw 10/13/98)
-
-
-COMPLETED
----------
 If possible, have Jussi's buffer manager use pthreads on SPARC/Solaris and
 Intel/Solaris. (kb/rkw 10/13/98)
 
