@@ -3022,6 +3022,11 @@ Num Date        Status  Description
 			in the X direction, even if home configuration
 			says it should (see Test/Bug749.ds). (rkw)
 
+750 2/5/02	OPEN	Sessions with more than one child view pile in a single
+			parent view cause infinite looping with XFree86 4.1.0
+			(part of the RedHat 7.2 setup) (see
+			Test/view_sym_pile2.ds). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
