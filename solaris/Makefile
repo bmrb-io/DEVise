@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.33  1998/02/09 17:26:06  wenger
+# Removed multi from default compile and Solaris release script.
+#
 # Revision 1.32  1998/01/30 02:17:25  wenger
 # Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 #
@@ -23,6 +26,9 @@
 #
 # Revision 1.30  1998/01/21 17:47:21  wenger
 # Switched csgroup back to cslib pending Dongbin's commits of csgroup.
+#
+# Revision 1.29.2.1  1998/02/12 05:12:33  taodb
+# Allowed make to clean the csgroup binary files
 #
 # Revision 1.29  1998/01/15 19:45:48  taodb
 # Replaced cslib with csgroup
@@ -93,16 +99,16 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree xvertext color utils cslib
+	unidata DTE RTree xvertext color utils csgroup 
 
 #devread is obsolete
 #attrproj is broken
 
-MODULES = $(LIBMODULES) parser generic
-#MODULES = $(LIBMODULES) parser generic multi
+MODULES = $(LIBMODULES) parser generic cslib
+#MODULES = $(LIBMODULES) parser generic multi cslib
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
-	cslib
+	csgroup
 
 all: date
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.20.2.1  1998/01/28 22:43:26  taodb
+  Added support for group communicatoin
+
+  Revision 1.20  1998/01/07 19:28:31  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.19  1997/12/16 17:53:43  zhenhai
   Added OpenGL features to graphics.
 
@@ -180,6 +188,9 @@ class Init {
     static Boolean UseOpenGL() { return _useOpenGL; }
 
     static int Port() { return _port; }
+	static int SwitchPort() {return _switchport;}
+	static int MaxClients() { return _maxclients;}
+	static char* SwitchName() { return _switchname;}
 
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
@@ -238,6 +249,9 @@ protected:
     static Boolean _useOpenGL;     /* whether we use opengl */
 
     static int _port;              /* port for server to listen on */
+    static int _switchport;        /* port for server to listen on */
+	static int _maxclients;		   /* max number of clients */
+	static char* _switchname;      /* name of the switch(collaborator)*/
 };
 
 #endif

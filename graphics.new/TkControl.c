@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.80  1998/01/30 02:17:07  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
+  Revision 1.79.2.2  1998/02/12 05:04:10  taodb
+  *** empty log message ***
+
+  Revision 1.79.2.1  1998/01/28 22:44:03  taodb
+  Added support for group communicatoin
+
   Revision 1.79  1998/01/07 19:29:58  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp

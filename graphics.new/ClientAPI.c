@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14.6.1  1998/01/28 22:43:42  taodb
+  Added support for group communicatoin
+
+  Revision 1.14  1997/09/26 02:10:24  taodb
+  Seperated message preparation from send
+
   Revision 1.13  1996/12/12 22:02:31  jussi
   Disabled debugging messages.
 
@@ -74,16 +80,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <signal.h>
 
 #include "ClientAPI.h"
-
-//#define DEBUG
-
-typedef struct {
-  u_short flag;                         // type of message
-  u_short nelem;                        // number of elements in message
-  u_short size;                         // total size of message
-} NetworkHeader;
 
 int NetworkNonBlockMode(int fd)
 {
@@ -149,6 +148,10 @@ char *NetworkPaste(int argc, char **argv)
 
 int NetworkOpen(char *servName, int portNum)
 {
+	return	NetworkModedOpen(servName, portNum, CONNECT_ONCE,0);
+}
+int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
+{
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0){
     perror("Cannot create socket");
@@ -176,23 +179,59 @@ int NetworkOpen(char *servName, int portNum)
   servAddr.sin_port   = htons(portNum);
   servAddr.sin_addr   = *ptr;
 
-  int result = connect(fd,(struct sockaddr *)&servAddr,
+  int result;
+  do {
+	void (*func)(int);
+	func = signal(SIGPIPE, SIG_IGN);
+  	result = connect(fd,(struct sockaddr *)&servAddr,
 		       sizeof(struct sockaddr));
-  if (result < 0) {
-    perror("Cannot connect to server");
-    close(fd);
-    return -1;
-  }
+	signal(SIGPIPE, func); 
+  	if (result < 0) {
+		if (mode == CONNECT_ONCE)
+		{
+    		perror("Cannot connect to server");
+    		close(fd);
+    		return -1;
+		}
+		else
+		if  (mode == CONNECT_ALWAYS)
+		{
+			sleep(seconds);
+			printf("Connecting ...\n");
+		}
+		close(fd);
+  		fd = socket(AF_INET, SOCK_STREAM, 0);
+  		if (fd < 0){
+    		perror("Cannot create socket");
+    		return -1;
+  		}
+  	}
+  }while (result <0);
   
   return fd;
 }
+
+//
+//extract header information from a header
+void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int&tsize)
+{
+  NetworkHeader *hdr;
+
+  assert(headerbuf!=NULL);
+  hdr = (NetworkHeader *)headerbuf;
+  numElements = ntohs(hdr->nelem);
+  tsize = ntohs(hdr->size);
+  return;
+}
+
+//
 
 int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 {
   static int recBuffSize = 0;
   static char *recBuff = 0;
-  static int argc = 0;
-  static char **argv = 0;
+  int    numElements; 
+  int    tsize;
 
   if (!block) {
     if (NetworkNonBlockMode(fd) < 0)
@@ -226,21 +265,18 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
       perror("recv");
     return -1;
   }
-
   flag = ntohs(hdr.flag);
-  u_short numElements = ntohs(hdr.nelem);
-  u_short tsize = ntohs(hdr.size);
+  NetworkAnalyseHeader((char*)&hdr,numElements, tsize);
 
 #ifdef DEBUG
-  printf("Got flag %u, numElements = %u, size = %u\n",
-	 flag, numElements, tsize);
+  //printf("Got flag %u, numElements = %u, size = %u\n",flag,numElements,tsize);
 #endif
 
   if (!recBuff || tsize >= recBuffSize) {
     delete recBuff;
     recBuffSize = tsize + 1;
 #ifdef DEBUG
-    printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
+    //printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
 #endif
     recBuff = new char [recBuffSize];
     if (!recBuff) {
@@ -248,28 +284,6 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
       return -1;
     }
   }
-
-  if (numElements > argc) {
-    delete argv;
-    argc = numElements;
-#ifdef DEBUG
-    printf("Increasing size of argv to %d elements\n", argc);
-#endif
-    argv = new char * [argc];
-    if (!argv) {
-      fprintf(stderr, "Out of memory\n");
-      return -1;
-    }
-  }
-
-  if (!block) {
-    if (NetworkBlockMode(fd) < 0)
-      return -1;
-  }
-
-#ifdef DEBUG
-  printf("Getting message\n");
-#endif
 
   // first receive message in chunks of some size
   char *ptr = recBuff;
@@ -302,21 +316,38 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     fprintf(stderr, "Invalid protocol message.\n");
     return -1;
   }
-
   ac = numElements;
+  return NetworkParse((const char*)recBuff, ac,av);
+}
+//
+// now break buffer into individual elements
+int NetworkParse(const char *recBuff, int numElements, char **&av)
+{
+  static char **argv = 0;
+  static int argc = 0;
+  const char *ptr;
+
+  if (numElements > argc) {
+    if (argv != 0)
+      delete argv;
+    argc = numElements;
+#ifdef DEBUG
+    printf("Increasing size of argv to %d elements\n", argc);
+#endif
+    argv = new char * [argc];
+    if (!argv) {
+      fprintf(stderr, "Out of memory\n");
+      return -1;
+    }
+  }
   av = argv;
-
-  // now break buffer into individual elements
-
   ptr = recBuff;
-  int totsize = 0;
 
   for(int i = 0; i < numElements; i++) {
     u_short size;
     memcpy(&size, ptr, sizeof size);
     size = ntohs(size);
     ptr += sizeof size;
-    tsize += sizeof size;
 #ifdef DEBUG
     printf("Element %d is %u bytes\n", i, size);
 #endif
@@ -329,21 +360,15 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     }
 
 #ifdef DEBUG
-    printf("Element %d is \"%s\"\n", i, ptr);
+    //printf("Element %d is \"%s\"\n", i, ptr);
 #endif
     argv[i] = ptr;
 
     ptr += size;
-    totsize += size;
-
-    if (totsize > tsize) {
-      fprintf(stderr, "Invalid protocol message.\n");
-      return -1;
-    }
   }
 
 #ifdef DEBUG
-  printf("Received complete message\n\n");
+  //printf("Parsed complete message\n\n");
 #endif
 
   return 1;

@@ -15,6 +15,18 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.53  1998/02/02 18:26:35  wenger
+#  Strings file can now be loaded manually; name of strings file is now
+#  stored in session file; added 'serverExit' command and kill_devised
+#  script to cleanly kill devised; fixed bug 249; more info is now
+#  printed for unrecognized commands.
+#
+#  Revision 1.52.2.2  1998/02/12 05:10:16  taodb
+#  Seperated GUI interface for group and normal version of DEVise
+#
+#  Revision 1.52.2.1  1998/02/04 00:23:42  taodb
+#  Make "R" blinking after a request is received
+#
 #  Revision 1.52  1997/11/24 23:15:48  weaver
 #  Changes for the new ColorManager.
 #
@@ -603,8 +615,24 @@ proc DoExit {} {
       set answer 0
     }
     if { $answer == 0 } {
-	DEVise exit
-	destroy .
+		DEVise exit
+		destroy .
+    }
+}
+
+############################################################
+proc DoGroupExit {} {
+    if {[SessionIsOpen]} {
+      set answer [ dialog .quit "Quit" \
+	      "Are you sure you want to quit?" "" 0 \
+	      { OK } { Cancel} ]
+    } else {
+      set answer 0
+    }
+    if { $answer == 0 } {
+		DEVise GroupCmd ExitGroupMode
+		DEVise exit
+		destroy .
     }
 }
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.2.1  1998/01/28 22:43:59  taodb
+  Added support for group communicatoin
+
+  Revision 1.3  1997/11/24 23:15:12  weaver
+  Changes for the new ColorManager.
+
   Revision 1.2.10.1  1997/05/21 20:40:42  weaver
   Changes for new ColorManager
 
@@ -38,6 +44,7 @@ class MapInterpClassInfo;
 #define API_ACK 1
 #define API_NAK 2
 #define API_CTL 3
+#define API_GRP 4
 
 extern int	ParseAPI(int argc, char** argv, ControlPanel* control);
 extern int	ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/01/30 02:16:32  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
+  Revision 1.16.2.2  1998/02/12 05:19:11  taodb
+  Updated dependency list
+
+  Revision 1.16.2.1  1998/01/28 22:43:19  taodb
+  Added support for group communicatoin
+
   Revision 1.16  1998/01/07 19:28:17  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -123,9 +132,8 @@
 #include "ClientAPI.h"
 #include "DeviseClient.h"
 #include "Version.h"
-
-#define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
-//#define DEBUG
+#define  DOASSERT(c,r) {if (!(c)) DoAbort(r); } 
+#undef	DEBUG
 
 static char *_progName = 0;
 static char *_hostName = "localhost";
@@ -307,7 +315,8 @@ void SetupConnection()
       printf("\n");
     }
 
-    _client = new DeviseClient("DEVise", _hostName, _portNum, !_idleScript);
+    _client = new DeviseClient("DEVise", _hostName, _portNum, !_idleScript, 
+		"NULL");
 
     Tcl_LinkVar(_client->Interp(), "argv0", (char *)&_progName,
 	TCL_LINK_STRING);
@@ -333,7 +342,7 @@ void SetupConnection()
     
     if(!_quiet) printf("Connection established.\n\n");
     
-    char *controlFile = "control.tk";
+    char *controlFile = "groupcontrol.tk";
     if (_idleScript) {
         controlFile = "batch.tcl";
         (void) _client->EvalCmd("DEVise setBatchMode 1");

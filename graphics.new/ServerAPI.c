@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/01/30 02:17:05  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
+  Revision 1.33.2.1  1998/01/28 22:44:00  taodb
+  Added support for group communicatoin
+
   Revision 1.33  1998/01/07 19:29:54  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -233,9 +239,13 @@ ServerAPI::ServerAPI()
   _server = new DeviseServer("DEVise",
 #ifdef SERV_ANYPORT
     0,
+	0,
 #else
+	Init::SwitchPort(),
     Init::Port(),
 #endif
+	Init::SwitchName(),
+	Init::MaxClients(),
     this);
 }
 
@@ -257,7 +267,7 @@ void ServerAPI::DoAbort(char *reason)
 
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
   char *args[] = { "AbortProgram", reason };
-  SendControl(2, args);
+  SendControl(2, args, false);
   fprintf(stderr, "Server aborts.\n");
   delete _server;
   exit(0);
@@ -358,7 +368,7 @@ void ServerAPI::SetBusy()
 
   if (++_busy == 1) {
     char *args[] = { "ChangeStatus", "1" };
-    SendControl(2, args);
+    SendControl(2, args, false);
   }
 }
 
@@ -372,7 +382,7 @@ void ServerAPI::SetIdle()
 
   if (--_busy == 0) {
     char *args[] = { "ChangeStatus", "0" };
-    SendControl(2, args);
+    SendControl(2, args, false);
   }
 }
 
@@ -408,7 +418,7 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
   char *args[] = { "ProcessViewFilterChange", view->GetName(),
 		   (flushed ? "1" : "0"), xLowBuf, yLowBuf,
 		   xHighBuf, yHighBuf, "0" };
-  SendControl(8, args);
+  SendControl(8, args, true);
 
   char *rep[] = { "setFilter", view->GetName(), xLowBuf,
 		  yLowBuf, xHighBuf, yHighBuf };
@@ -421,7 +431,7 @@ void ServerAPI::SelectView(View *view)
 #endif
 
   char *args[] = { "ProcessViewSelected", view->GetName() };
-  SendControl(2, args);
+  SendControl(2, args, true);
 }
 
 void ServerAPI::SyncNotify()
@@ -430,6 +440,6 @@ void ServerAPI::SyncNotify()
   printf("ServerAPI(0x%p)::SyncNotify()\n", this);
 #endif
 
-  SendControl(API_CTL, "SyncDone");
+  SendControl(API_CTL, "SyncDone", false);
   ClearSyncNotify();
 }

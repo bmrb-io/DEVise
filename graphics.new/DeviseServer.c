@@ -20,8 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/03 23:46:32  wenger
+  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
+  283 and 285 (resulted from problems in color manager merge);
+  conditionaled out some debug output.
+
   Revision 1.3  1998/01/30 02:16:59  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
+  Revision 1.2.2.1  1998/01/28 22:43:44  taodb
+  Added support for group communicatoin
 
   Revision 1.2  1998/01/07 19:28:56  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
@@ -56,11 +64,13 @@
  * function: DeviseServer::DeviseServer
  * Constructor.
  */
-DeviseServer::DeviseServer(char *name, int port, ControlPanel *control) :
-  Server(name, port, 10)
+DeviseServer::DeviseServer(char *name, int swt_port, int clnt_port, 
+	char* switchname, int maxclients, ControlPanel *control) :
+  	Server(name, swt_port, clnt_port,switchname, maxclients)
 {
 #if defined(DEBUG)
-  printf("DeviseServer(0x%p)::DeviseServer(%s, %d)\n", this, name, port);
+  printf("DeviseServer(0x%p)::DeviseServer(%s, %d, %d)\n", this, name, 
+	swt_port, clnt_port);
 #endif
 
   _currentClient = CLIENT_INVALID;
@@ -257,48 +267,20 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 #endif
 
     if (ParseAPI(argc, argv, _control) < 0) {
-      char errBuf[1024];
-      sprintf(errBuf, "Devise API command error (command %s).", argv[0]);
-      reportErrNosys(errBuf);
+      	char errBuf[1024];
+      	sprintf(errBuf, "Devise API command error (command %s).", argv[0]);
+      	reportErrNosys(errBuf);
     }
+	_currentClient = CLIENT_INVALID;
   } else {
     // Currently processing another command.
     reportErrNosys("Command while server is busy");
-    (void) Server::ReturnVal(clientID, API_NAK, "Server is busy");
+    (void) ReturnVal(clientID, (u_short)API_NAK, "Server is busy");
   }
 
 #if defined(DEBUG)
   printf("  After ParseAPI(): _currentClient = %d\n", _currentClient);
 #endif
-}
-
-/*------------------------------------------------------------------------------
- * function: DeviseServer::ReturnVal
- * Return command value to the proper client.
- */
-int
-DeviseServer::ReturnVal(u_short flag, int argc, char **argv, Boolean addBraces)
-{
-#if defined(DEBUG)
-  printf("DeviseServer(0x%p)::ReturnVal()\n", this);
-#endif
-
-  int status;
-
-  if (_currentClient != CLIENT_INVALID) {
-    status = Server::ReturnVal(_currentClient, flag, argc, argv, addBraces);
-    _previousClient = _currentClient; // For CloseClient().
-    _currentClient = CLIENT_INVALID;
-  } else {
-    reportErrNosys("No current client");
-    status = -1;
-  }
-
-#if defined(DEBUG)
-  printf("  _currentClient = %d\n", _currentClient);
-#endif
-
-  return status;
 }
 
 /*============================================================================*/

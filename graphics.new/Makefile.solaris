@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.93  1998/02/09 21:13:43  donjerko
+# *** empty log message ***
+#
 # Revision 1.92  1998/02/09 18:10:48  wenger
 # Removed ViewScatter class (totally replaced by ViewData, which is a
 # renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -420,7 +423,10 @@ ClientAPI.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 ClientAPI.o: /usr/include/netdb.h /usr/include/errno.h
 ClientAPI.o: /usr/include/sys/errno.h /usr/include/unistd.h
 ClientAPI.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
-ClientAPI.o: /usr/include/assert.h ClientAPI.h ParseAPI.h
+ClientAPI.o: /usr/include/assert.h /usr/include/signal.h
+ClientAPI.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
+ClientAPI.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+ClientAPI.o: ClientAPI.h ParseAPI.h
 Command.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 Command.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 Command.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -1170,13 +1176,6 @@ ParseCat.o: ../graphics/Control.h ../graphics/Util.h /usr/include/stdlib.h
 ParseCat.o: /usr/include/string.h /usr/include/ctype.h Group.h
 ParseCat.o: MapInterpClassInfo.h GroupDir.h ItemList.h DataSourceBuf.h
 ParseCat.o: DataSourceFileStream.h ParseCat.h ../graphics/DevError.h
-ParseCatAux.o: ../graphics/DeviseTypes.h /usr/include/values.h
-ParseCatAux.o: ../graphics/DevStatus.h /usr/include/sys/types.h
-ParseCatAux.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-ParseCatAux.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-ParseCatAux.o: /usr/include/sys/time.h /usr/include/time.h
-ParseCatAux.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Exit.h
-ParseCatAux.o: ../graphics/Init.h ../graphics/BufPolicy.h
 QPRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 QPRange.o: /usr/include/sys/va_list.h ../graphics/Exit.h QPRange.h
 QPRange.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -1271,6 +1270,52 @@ QueryProcFull.o: PointStorage.h ../tape/HashTable.h GDataBin.h
 QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h RecordLink.h
 QueryProcFull.o: RecFile.h VisualLink.h ../graphics/ViewCallback.h Shape.h
 QueryProcFull.o: ../graphics/Temp.h ../graphics/Map3D.h DrawTimer.h
+QueryProcSimple.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+QueryProcSimple.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
+QueryProcSimple.o: /usr/include/math.h /usr/include/floatingpoint.h
+QueryProcSimple.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
+QueryProcSimple.o: ../graphics/Init.h ../graphics/DeviseTypes.h
+QueryProcSimple.o: /usr/include/values.h ../graphics/DevStatus.h
+QueryProcSimple.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+QueryProcSimple.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+QueryProcSimple.o: /usr/include/sys/time.h /usr/include/time.h
+QueryProcSimple.o: ../graphics/BufPolicy.h BufHint.h TDataMap.h
+QueryProcSimple.o: ../graphics/DList.h ../graphics/Pattern.h ShapeID.h
+QueryProcSimple.o: ../graphics/VisualArg.h ../src/color/Color.h RecId.h
+QueryProcSimple.o: GDataRec.h ../graphics/AttrList.h ../src/color/Coloring.h
+QueryProcSimple.o: BufMgrFull.h BufMgr.h BufferPolicy.h RangeInfoArray.h
+QueryProcSimple.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+QueryProcSimple.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+QueryProcSimple.o: /usr/include/sys/unistd.h /usr/include/errno.h
+QueryProcSimple.o: /usr/include/sys/errno.h /usr/include/assert.h
+QueryProcSimple.o: /usr/include/limits.h /usr/include/sys/stat.h machdep.h
+QueryProcSimple.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+QueryProcSimple.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+QueryProcSimple.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+QueryProcSimple.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+QueryProcSimple.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+QueryProcSimple.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+QueryProcSimple.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+QueryProcSimple.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+QueryProcSimple.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+QueryProcSimple.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+QueryProcSimple.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+QueryProcSimple.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+QueryProcSimple.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+QueryProcSimple.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+QueryProcSimple.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+QueryProcSimple.o: GData.h RangeList.h RangeInfo.h QPRange.h TDataRangeList.h
+QueryProcSimple.o: ../graphics/Journal.h GDataBin.h ../graphics/Transform.h
+QueryProcSimple.o: ../graphics/Geom.h PageSize.h ../graphics/Display.h
+QueryProcSimple.o: ../graphics/Dispatcher.h ../graphics/ViewWin.h
+QueryProcSimple.o: ../graphics/WindowRep.h ../graphics/DevisePixmap.h
+QueryProcSimple.o: ../graphics/Compress.h ../graphics/DevError.h
+QueryProcSimple.o: ../graphics/ETkIfc.h /usr/include/string.h
+QueryProcSimple.o: ../graphics/ETk.h ../graphics/Xdef.h
+QueryProcSimple.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+QueryProcSimple.o: /s/X11/include/X11/Xfuncproto.h
+QueryProcSimple.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+QueryProcSimple.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeCallback.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h

@@ -1,0 +1,82 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile for the client-server library.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.3.2.2  1998/02/12 05:02:22  taodb
+#  Made code proceed even if DEVISE_COLLABORATOR environmental variable is not defined
+#
+#  Revision 1.3.2.1  1998/01/28 22:42:14  taodb
+#  Added support for group communicatoin
+#
+############################################################
+
+include ../../Makefile.common
+
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
+	-I../../tape -I../../csgroup -I../../src/color -I../../src/utils \
+	-I/s/mesa-2.4/include \
+	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
+	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS -D__tcltk
+
+LOCALSRC1 = Client.C\
+	Keys.C\
+	Server.C\
+	TclClient.C\
+	bucket.C\
+	colbrLog.C\
+	datum.C\
+	dbase.C\
+	entry.C\
+	htable.C\
+	log.C\
+	parseConfig.C\
+	queue.C\
+	queueElem.C\
+	servdb.C
+LOCALSRC2= prnfns.c\
+	callBks.c\
+	codec.c\
+	colbr.c\
+	error.c\
+	logfns.c\
+	netfns.c\
+	rcvMsg.c\
+	server_clnt.c\
+	server_locfns.c\
+	server_rmtfns.c\
+	server_serv.c\
+	sigfns.c\
+	sndMsg.c\
+	Csprotocols.c
+
+LIBCSOBJ = $(LOCALSRC1:.C=.o) $(LOCALSRC2:.c=.o) ../graphics.new/ClientAPI.o 
+
+LIBCS = libcsgroup.a
+
+lib: $(LIBCS) 
+all: $(LIBCS)
+
+$(LIBCS): $(LIBCSOBJ)
+	$(AR) cr $@ $(LIBCSOBJ)
+	$(RANLIB) $@
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+mostlyclean:
+	-rm -f $(LIBCSOBJ) $(LIBCS) $(LIBWIN)

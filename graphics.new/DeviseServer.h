@@ -25,6 +25,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/03 23:46:33  wenger
+  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
+  283 and 285 (resulted from problems in color manager merge);
+  conditionaled out some debug output.
+
   Revision 1.4  1998/02/02 18:26:10  wenger
   Strings file can now be loaded manually; name of strings file is now
   stored in session file; added 'serverExit' command and kill_devised
@@ -33,6 +38,9 @@
 
   Revision 1.3  1998/01/30 02:17:00  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
+  Revision 1.2.2.1  1998/01/28 22:43:44  taodb
+  Added support for group communicatoin
 
   Revision 1.2  1998/01/07 19:28:57  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
@@ -61,21 +69,15 @@
 #include "Control.h"
 #include "Dispatcher.h"
 
-#define CLIENT_INVALID (-1)
 
-class DeviseServer : public DispatcherCallback, public Server {
+class DeviseServer : public Server {
 public:
-  DeviseServer(char *name, int port, ControlPanel *control);
+  DeviseServer(char *name, int swt_port, int clnt_port,
+	char* switchname, int maxclients, ControlPanel *control);
   virtual ~DeviseServer();
 
   virtual char *DispatchedName() { return "DeviseServer"; }
   virtual void Run();
-
-  virtual int ReturnVal(u_short flag, char *result) {
-    return ReturnVal(flag, 1, &result, false); }
-  virtual int ReturnVal(int argc, char **argv) {
-    return ReturnVal(API_ACK, argc, argv, true); }
-
   virtual void WaitForConnection();
   virtual void CloseClient();
 
@@ -83,14 +85,24 @@ public:
 
   virtual int NumClients() { return _numClients; }
 
+  virtual int ReturnVal(ClientID cid, u_short flag, char *result){
+	return Server::ReturnVal(cid, flag, 1, &result, false);
+  }
+
+  virtual int ReturnVal(u_short flag, char *result){
+	return Server::ReturnVal(_currentClient, flag, 1, &result, false);
+  }
+
+  virtual int ReturnVal(int argc, char **argv){
+	return Server::ReturnVal(_currentClient, API_ACK , argc, argv, true);
+ }	 
+
 protected:
   virtual void BeginConnection(ClientID clientID);
   virtual void EndConnection(ClientID clientID);
 
   virtual void ProcessCmd(ClientID,	// process a single client command
       int argc, char **argv);
-  virtual int ReturnVal(u_short flag, int argc, char **argv,
-      Boolean addBraces = true); 
 
 private:
   ClientID _currentClient;

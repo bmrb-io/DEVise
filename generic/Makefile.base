@@ -17,6 +17,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.41  1998/01/14 16:38:42  wenger
+#  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+#
+#  Revision 1.40.2.2  1998/02/12 05:19:08  taodb
+#  Updated dependency list
+#
+#  Revision 1.40.2.1  1998/01/28 22:43:17  taodb
+#  Added support for group communicatoin
+#
 #  Revision 1.40  1998/01/07 19:28:14  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #  server library into Devise); updated solaris, sun, linux, and hp
@@ -123,9 +132,12 @@
 
 include ../../Makefile.common
 
-CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../src/color -I../../src/utils -I../../tape -I../../cslib \
+BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
+	-I../../src/color -I../../src/utils -I../../tape \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
+
+CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
+BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../cslib
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
@@ -165,11 +177,11 @@ ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../crsp/libcrsp.a ../xvertext/libXrot.a
 
 CLIENTLIB = ../graphics.new/libclient.a
-SERVERLIB = ../graphics.new/libserver.a ../cslib/libdevcs.a
+SERVERLIB = ../graphics.new/libserver.a ../csgroup/libcsgroup.a
 MONOLITHLIB = ../graphics.new/libmonolith.a
 
-all: generic devise devised deviseb
-pure: generic.pure devise.pure devised.pure deviseb.pure
+all: generic devise devised collaborator deviseb
+pure: generic.pure devise.pure devised.pure collaborator.pure deviseb.pure 
 static: generic.static
 
 # Note: the line below forces CompDate.c to always be compiled.
@@ -193,10 +205,10 @@ generic.static: generic.o StateMap.o $(ALLLIBS) $(MONOLITHLIB)
 	$(GENERIC) $(ARCH_STATIC_LDPOST)
 
 DEVISED = $(CC) -o $@ generic.o StateMap.o CompDate.o \
-		$(ARCH_LDFLAGS) -L../graphics.new -L../cslib \
-		-lserver -ldevcs $(LDFLAGS) $(ARCH_LDPOST)
+		$(ARCH_LDFLAGS) -L../graphics.new -L../csgroup \
+		-lserver -lcsgroup $(LDFLAGS) $(ARCH_LDPOST) -lcsgroup
 
-devised: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
+devised: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB) 
 	$(FORCE_DATE)
 	$(DEVISED)
 
@@ -206,10 +218,10 @@ devised.pure: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 
 
 DEVISE = $(CC) -o $@ devise.o DeviseClient.o ../graphics.new/Version.o \
-	$(ARCH_LDFLAGS) -L../cslib -L../graphics.new -ldevcs \
+	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-devise: devise.o $(CLIENTLIB) DeviseClient.o
+devise: devise.o $(CLIENTLIB) DeviseClient.o ../csgroup/libcsgroup.a
 	$(FORCE_DATE)
 	$(DEVISE)
 
@@ -217,9 +229,23 @@ devise.pure: devise.o $(CLIENTLIB) DeviseClient.o
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(DEVISE)
 
+COLLABORATOR = $(CC) -o $@ -D __tcltk collaborator.o $(ARCH_LDFLAGS) \
+	-L../csgroup -L../graphics.new $(ARCH_SYSLIBS) -lcsgroup $(ARCH_LDPOST) 
+
+collaborator: collaborator.o $(SERVERLIB) 
+	$(COLLABORATOR)
+
+collaborator.pure: ../csgroup/main.o $(SERVERLIB) 
+	$(PURIFY) $(PURE_OPT) $(COLLABORATOR)
 
 DEVISEB = $(CC) -o $@ deviseb.o DeviseBatchClient.o ../graphics.new/Version.o \
 	$(ARCH_LDFLAGS) -L../cslib -L../graphics.new -ldevcs $(ARCH_LDPOST)
+
+deviseb.o:../../generic/deviseb.C 
+	$(CC) -c $(BATCH_CFLAGS) $<
+	
+DeviseBatchClient.o:../../generic/DeviseBatchClient.c
+	$(CC) -c $(BATCH_CFLAGS) $<
 
 deviseb: deviseb.o DeviseBatchClient.o $(CLIENTLIB)
 	$(FORCE_DATE)
@@ -242,10 +268,10 @@ testWindowSpeed: testWindowSpeed.o $(ALLLIBS) $(MONOLITHLIB)
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm generic devised devise deviseb testWindowSpeed
-	-rm generic.pure devised.pure devise.pure deviseb.pure
+	-rm generic devised devise deviseb testWindowSpeed collaborator
+	-rm generic.pure devised.pure devise.pure deviseb.pure collaborator.pure
 	-rm generic.static
 
 mostlyclean:
-	-rm $(OBJ)
+	-rm $(OBJ) collaborator.o
 	-rm *pure*.o

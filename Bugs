@@ -1109,14 +1109,14 @@ Num Date        Status  Description
 287 02/10/98	OPEN	Sometimes can't display data sources (from Tables
 			menu -- opening sessions works okay). (rkw)
 
-288 02/10/98	OPEN	Can't select a view (in monolithic form)
+288 02/10/98	FIXED	Can't select a view (in monolithic form)
 			(with code as of collab_br_1). (rkw)
 
-289 02/10/98	OPEN	Quit causes an error messages, doesn't actually
+289 02/10/98	FIXED	Quit causes an error messages, doesn't actually
 			quit (in monolithic form) (with code as of
 			collab_br_1). (rkw)
 
-290 02/10/98	OPEN	Monolithic form of DEVise shouldn't show group
+290 02/10/98	FIXED	Monolithic form of DEVise shouldn't show group
 			GUI. (rkw)
 
 291 02/10/98	OPEN	DEVise client/server pair can't run at all without
@@ -1125,6 +1125,9 @@ Num Date        Status  Description
 
 292 02/11/98	OPEN	Saving GData from views doesn't work correctly now
 			that ViewData has replaced ViewScatter. (rkw)
+
+293 02/12/98	OPEN	'kill_devised' doesn't work (with collaboration
+			code).  Perhaps deviseb doesn't work at all? (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -17,6 +17,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.53.2.2  1998/02/12 05:04:52  taodb
+#  Removed -g option
+#
+#  Revision 1.53.2.1  1998/01/28 22:43:27  taodb
+#  Added support for group communicatoin
+#
+#  Revision 1.53  1997/12/16 17:53:44  zhenhai
+#  Added OpenGL features to graphics.
+#
 #  Revision 1.52  1997/12/11 04:47:51  beyer
 #  .o files that are placed into libraries (.a) are now removed.
 #

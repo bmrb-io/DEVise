@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1.6.1  1998/02/12 05:13:13  taodb
+#  Removed -g option
+#
+#  Revision 1.1  1997/09/26 02:30:42  taodb
+#  *** empty log message ***
+#
 #  Revision 1.2  1997/01/18 18:58:29  jussi
 #  Removed inclusion of Xaw and related libraries.
 #
@@ -24,7 +30,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include -DDEBUG -g
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include -DDEBUG 
 ARCH_LDFLAGS = -L/s/X11/lib -L/s/tcl/lib -R /s/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.42.2.1  1998/01/28 22:43:25  taodb
+  Added support for group communicatoin
+
+  Revision 1.42  1998/01/07 19:28:30  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.41  1997/12/16 17:53:43  zhenhai
   Added OpenGL features to graphics.
 
@@ -289,6 +297,9 @@ Boolean Init::_useOpenGL = false;
 float Init::_drawTimeout = 10.0;
 
 int Init::_port = DefaultNetworkPort;
+int Init::_switchport = DefaultSwitchPort;
+char* Init::_switchname = DefaultSwitchName;
+int Init::_maxclients = DefaultMaxClients;
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -350,14 +361,24 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-drawTO <value>: symbol drawing timeout\n");
   fprintf(stderr, "\t-gl: use OpenGL to draw\n");
   fprintf(stderr, "\t-port <value>: port for server to listen on\n");
+  fprintf(stderr, "\t-switchport <value>: port for server to listen on\n");
+  fprintf(stderr, "\t-switchname <value>: host for the server to listen for"
+					" the collaborator\n");
+  fprintf(stderr, "\t-maxclients <value>: maximum number of clients\n");
 
   Exit::DoExit(1);
 }
 
 void Init::DoInit(int &argc, char **argv)
 {
+  char *temp;
 
   initialize_system();
+
+  /* set the collaborator name via the environmental variables */
+  temp = getenv ("DEVISE_COLLABORATOR");
+  if (temp)
+	_switchname = temp;
 
   /* Create work directory, if needed */
   char *workDir = getenv("DEVISE_WORK");
@@ -729,7 +750,33 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,1);
       }
 
-      else if (strcmp(&argv[i][1], "port") == 0) {
+    else if (strcmp(&argv[i][1], "switchname") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_switchname = strdup(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+    }
+    else if (strcmp(&argv[i][1], "maxclients") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_maxclients = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+    }
+
+    else if (strcmp(&argv[i][1], "switchport") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_switchport = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+    }
+
+    else if (strcmp(&argv[i][1], "port") == 0) {
 	if (i >= argc -1) {
 	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
 	  Usage(argv[0]);

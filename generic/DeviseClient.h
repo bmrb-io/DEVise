@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.2.1  1998/01/28 22:43:16  taodb
+  Added support for group communicatoin
+
+  Revision 1.2  1998/01/07 19:28:13  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.2.2  1997/12/09 19:03:36  wenger
   deviseb now uses client/server library.
 
@@ -38,8 +46,11 @@
 
 class DeviseClient : public TclClient {
 public:
-  DeviseClient(char *name, char *hostname, int port, Boolean createWindow);
+  DeviseClient(char *name, char *hostname, int port, Boolean createWindow,
+  	char* initStr);
   virtual ~DeviseClient();
+  virtual int RequestRelinquish() { return Client::RequestRelinquish();}
+  virtual int NotifyGrabbed() { return Client::NotifyGrabbed();}
 
   virtual void MainLoop();
 

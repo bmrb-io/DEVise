@@ -1,0 +1,197 @@
+# ========================================================================
+# DEVise Data Visualization Software
+# (c) Copyright 1992-1997
+# By the DEVise Development Group
+# Madison, Wisconsin
+# All Rights Reserved.
+# ========================================================================
+#
+# Under no circumstances is this software to be copied, distributed,
+# or altered in any way without prior permission from the DEVise
+# Development Group.
+
+############################################################
+
+# $Id$
+
+# $Log$
+# Revision 1.5.2.1  1998/01/28 22:42:16  taodb
+# Added support for group communicatoin
+#
+# Revision 1.6  1998/01/07 19:27:48  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
+# Revision 1.5  1997/11/12 15:44:33  wenger
+# Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+# into the trunk.
+#
+# Revision 1.4.2.1  1997/10/30 20:15:04  wenger
+# Got DEVise to compile, link, and run on sun and linux; compiles but
+# doesn't link on hp (can't find memory mapping functions).  This includes
+# moving the unidata config.h files to separate copies in the unidata
+# directory for each architecture, since the config.h's are architecture-
+# dependent.
+#
+# Revision 1.4  1997/10/27 23:33:45  yadong
+# Updated dependencies.
+#
+# Revision 1.3  1997/03/28 16:08:45  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
+
+############################################################
+
+depend:
+	makedepend -fMakefile.linux -I../graphics -I../tape \
+		-I/usr/include/tcl -I/usr/X11/include *.c *.C
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+Client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+Client.o: /usr/include/features.h
+Client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+Client.o: /usr/include/errno.h /usr/include/linux/errno.h
+Client.o: /usr/include/asm/errno.h /usr/include/alloca.h
+Client.o: /usr/include/string.h /usr/include/unistd.h
+Client.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+Client.o: /usr/include/confname.h /usr/include/sys/types.h
+Client.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+Client.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+Client.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+Client.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Client.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+Client.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Client.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Client.h
+Server.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Server.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+Server.o: /usr/include/features.h
+Server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+Server.o: /usr/include/errno.h /usr/include/linux/errno.h
+Server.o: /usr/include/asm/errno.h /usr/include/alloca.h
+Server.o: /usr/include/string.h /usr/include/unistd.h
+Server.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+Server.o: /usr/include/confname.h /usr/include/sys/types.h
+Server.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+Server.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+Server.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+Server.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Server.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+Server.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Server.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Server.h
+TclClient.o: /usr/include/stdio.h /usr/include/libio.h
+TclClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+TclClient.o: /usr/include/stdlib.h /usr/include/features.h
+TclClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+TclClient.o: /usr/include/errno.h /usr/include/linux/errno.h
+TclClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
+TclClient.o: /usr/include/sys/types.h /usr/include/linux/types.h
+TclClient.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+TclClient.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h TclClient.h
+TclClient.o: /usr/include/tcl/tcl.h Client.h
+TestClient.o: /usr/include/stdio.h /usr/include/libio.h
+TestClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+TestClient.o: /usr/include/stdlib.h /usr/include/features.h
+TestClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+TestClient.o: /usr/include/errno.h /usr/include/linux/errno.h
+TestClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
+TestClient.o: /usr/include/string.h /usr/include/unistd.h
+TestClient.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+TestClient.o: /usr/include/confname.h /usr/include/sys/types.h
+TestClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+TestClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+TestClient.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+TestClient.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+TestClient.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+TestClient.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+TestClient.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Client.h
+TkClient.o: /usr/include/stdio.h /usr/include/libio.h
+TkClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+TkClient.o: /usr/include/stdlib.h /usr/include/features.h
+TkClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+TkClient.o: /usr/include/errno.h /usr/include/linux/errno.h
+TkClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
+TkClient.o: /usr/include/string.h /usr/include/unistd.h
+TkClient.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+TkClient.o: /usr/include/confname.h /usr/include/sys/types.h
+TkClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+TkClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+TkClient.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+TkClient.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+TkClient.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+TkClient.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+TkClient.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+TkClient.o: /usr/include/tcl/tcl.h /usr/include/tcl/tk.h
+TkClient.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+TkClient.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+TkClient.o: TkClient.h TclClient.h Client.h
+WinServer.o: /usr/include/sys/param.h /usr/include/features.h
+WinServer.o: /usr/include/sys/cdefs.h /usr/include/limits.h
+WinServer.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+WinServer.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+WinServer.o: /usr/include/asm/param.h /usr/include/sys/types.h
+WinServer.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+WinServer.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+WinServer.o: /usr/include/sys/bitypes.h WinServer.h Server.h
+WinServer.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+WinServer.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
+WinServer.o: /usr/include/stdio.h /usr/include/libio.h
+WinServer.o: /usr/include/_G_config.h /usr/include/math.h
+WinServer.o: /usr/include/huge_val.h /usr/include/endian.h
+WinServer.o: /usr/include/bytesex.h /usr/include/nan.h
+WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+WinServer.o: /usr/include/ieee754.h /usr/include/ieee854.h
+WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/Pattern.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+WinServer.o: ../graphics/DevError.h /usr/include/errno.h
+WinServer.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+WinServer.o: ../graphics/ETkIfc.h /usr/include/string.h
+WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+WinServer.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
+WinServer.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+WinServer.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
+WinServer.o: ../graphics/GraphicsDebug.h
+client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+client.o: /usr/include/features.h
+client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+client.o: /usr/include/errno.h /usr/include/linux/errno.h
+client.o: /usr/include/asm/errno.h /usr/include/alloca.h
+client.o: /usr/include/string.h TkClient.h /usr/include/tcl/tk.h
+client.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+client.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+client.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+client.o: /usr/include/sys/bitypes.h /usr/include/X11/X.h
+client.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+client.o: TclClient.h /usr/include/tcl/tcl.h Client.h
+server.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+server.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+server.o: /usr/include/features.h
+server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+server.o: /usr/include/errno.h /usr/include/linux/errno.h
+server.o: /usr/include/asm/errno.h /usr/include/alloca.h
+server.o: /usr/include/string.h /usr/include/assert.h WinServer.h Server.h
+server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+server.o: /usr/include/values.h ../graphics/DevStatus.h
+server.o: /usr/include/sys/types.h /usr/include/linux/types.h
+server.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+server.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+server.o: ../graphics/Geom.h /usr/include/math.h /usr/include/huge_val.h
+server.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+server.o: /usr/include/ieee754.h /usr/include/ieee854.h
+server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+server.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
+server.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
+server.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+server.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
+server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h

@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.154  1998/02/05 23:46:15  wenger
+#	Added view-level specification of symbol alignment, API commands, simple
+#	GUI for Sanjay.
+#
 #	Revision 1.153  1998/02/02 18:26:32  wenger
 #	Strings file can now be loaded manually; name of strings file is now
 #	stored in session file; added 'serverExit' command and kill_devised
@@ -23,6 +27,20 @@
 #
 #	Revision 1.152  1998/01/14 22:24:45  wenger
 #	Changed 'Bring View Back' to 'Restore View'.
+#	Revision 1.151.2.2  1998/02/12 05:10:13  taodb
+#	Seperated GUI interface for group and normal version of DEVise
+#
+#	Revision 1.153  1998/02/02 18:26:32  wenger
+#	Strings file can now be loaded manually; name of strings file is now
+#	stored in session file; added 'serverExit' command and kill_devised
+#	script to cleanly kill devised; fixed bug 249; more info is now
+#	printed for unrecognized commands.
+#
+#	Revision 1.152  1998/01/14 22:24:45  wenger
+#	Changed 'Bring View Back' to 'Restore View'.
+#
+#	Revision 1.151.2.1  1998/01/28 22:44:14  taodb
+#	Added support for group communicatoin
 #
 #	Revision 1.151  1998/01/09 20:46:06  wenger
 #	Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
@@ -784,6 +802,7 @@ source $libdir/view_config.tcl
 source $libdir/cursor_grid.tcl
 source $libdir/GDataSock.tcl
 source $libdir/symbol_align.tcl
+source $libdir/group.tk
 
 set mode 0
 DEVise changeMode $mode
@@ -927,6 +946,30 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command { DumpLinksCursors }
 .mbar.session.menu add separator
 
+menu .mbar.session.menu.collaborationMenu -tearoff 0
+.mbar.session.menu.collaborationMenu add command -label "Create/Join Group" \
+	-command { DEVise GroupCmd QueryGroup }
+.mbar.session.menu.collaborationMenu add command -label "Request Control" \
+	-command {DEVise GroupCmd LeadGroup}
+
+.mbar.session.menu.collaborationMenu add command -label "Relinquish Control" \
+	-command {DEVise GroupCmd ListenGroup $GroupName $PassWd}
+
+.mbar.session.menu.collaborationMenu add command -label "Leave Group" \
+	-command {DEVise GroupCmd LeaveGroup }
+
+.mbar.session.menu.collaborationMenu add cascade -label "Configuration" \
+	-menu .mbar.session.menu.collaborationMenu.configMenu
+
+menu .mbar.session.menu.collaborationMenu.configMenu -tearoff 0
+.mbar.session.menu.collaborationMenu.configMenu add command  -label "Group Info" \
+	-command {} 
+.mbar.session.menu.collaborationMenu.configMenu add command -label "Token Management" \
+	-command {}
+.mbar.session.menu.collaborationMenu.configMenu add command -label "Pass Word" \
+	-command {}
+
+.mbar.session.menu add separator
 .mbar.session.menu add command -label "Quit" -command DoExit
 
 #.mbar.session.menu add separator

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/02/09 18:10:59  wenger
+  Removed ViewScatter class (totally replaced by ViewData, which is a
+  renamed version of TDataViewX); removed ViewRanges class (not used);
+  re-made Solaris dependencies.
+
+  Revision 1.13.2.1  1998/02/12 05:04:11  taodb
+  *** empty log message ***
+
   Revision 1.13  1997/11/24 23:15:22  weaver
   Changes for the new ColorManager.
 
@@ -96,7 +104,7 @@
 
 #include "Color.h"
 
-#define DEBUG
+//#define DEBUG
 
 //******************************************************************************
 

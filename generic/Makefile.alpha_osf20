@@ -15,11 +15,18 @@
 # $Id$
 
 # $Log$
+# Revision 1.4.16.1  1998/02/12 05:19:08  taodb
+# Updated dependency list
+#
+# Revision 1.4  1997/03/28 16:09:02  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
 depend:
-	makedepend -fMakefile.alpha_osf20  -I../graphics -I../graphics.new \
+	makedepend -fMakefile.alpha_osf20 -I../csgroup -I../graphics -I../graphics.new \
 		-I../tape *.c
 
 # DO NOT DELETE

@@ -17,11 +17,19 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.68  1998/02/09 18:10:35  wenger
+#  Removed ViewScatter class (totally replaced by ViewData, which is a
+#  renamed version of TDataViewX); removed ViewRanges class (not used);
+#  re-made Solaris dependencies.
+#
 #  Revision 1.67  1998/01/30 21:53:15  wenger
 #  Did some cleaning up of the MappingInterp and NativeExpr code
 #  (NativeExpr still needs a lot more); NativeExpr code can now
 #  parse expressions containing constant strings (they are treated
 #  as numerical zero for now) (this fixes bug 275).
+#
+#  Revision 1.66.2.1  1998/01/28 22:43:45  taodb
+#  Added support for group communicatoin
 #
 #  Revision 1.66  1998/01/07 19:28:58  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
@@ -161,7 +169,7 @@ CFLAGS =  $(ARCH_FLAGS) \
 	-I../../graphics -I../../LM \
 	-I../../src/color -I../../src/utils \
 	-I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
-	-I../../cslib\
+	-I../../csgroup\
 	-I../unidata\
 	-I../../graphics.new -I../../tape -I../../generic \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX \

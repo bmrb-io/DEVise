@@ -20,8 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/01/30 02:16:23  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.4  1998/01/14 16:38:33  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
+
+  Revision 1.3.2.1  1998/01/28 22:43:11  taodb
+  Added support for group communicatoin
 
   Revision 1.3  1998/01/09 20:45:09  wenger
   Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
@@ -84,8 +90,8 @@
 #include "ClientAPI.h"
 #include "Server.h"
 #include "machdep.h"
+#include "Exit.h"
 
-#define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
 
 Server::Server(char *name, int port, int maxClients)
@@ -142,7 +148,7 @@ void Server::InitializeListenFd()
     _listenFd = socket(AF_INET, SOCK_STREAM, 0);
     if (_listenFd < 0)
     {
-	perror("socket() failed");
+		perror("socket() failed");
     }
     DOASSERT(_listenFd >= 0, "Cannot create socket");
     
@@ -152,7 +158,7 @@ void Server::InitializeListenFd()
 			    (char *)&enable, sizeof enable);
     if (result < 0)
     {
-	perror("setsockopt() failed");
+		perror("setsockopt() failed");
     }
     DOASSERT(result >= 0, "Cannot set socket options");
     
@@ -171,14 +177,14 @@ void Server::InitializeListenFd()
 		  sizeof(struct sockaddr));
     if (result < 0)
     {
-	perror("bind() failed");
+		perror("bind() failed");
     }
     DOASSERT(result >= 0, "Cannot bind to address");
     
     result = listen(_listenFd, 5);
     if (result < 0)
     {
-	perror("listen() failed");
+		perror("listen() failed");
     }
     DOASSERT(result >= 0, "Cannot listen");
     

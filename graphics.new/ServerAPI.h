@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/02/02 18:26:16  wenger
+  Strings file can now be loaded manually; name of strings file is now
+  stored in session file; added 'serverExit' command and kill_devised
+  script to cleanly kill devised; fixed bug 249; more info is now
+  printed for unrecognized commands.
+
+  Revision 1.12.2.1  1998/01/28 22:44:01  taodb
+  Added support for group communicatoin
+
   Revision 1.12  1998/01/07 19:29:55  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -146,10 +155,20 @@ private:
   virtual int ReturnVal(int argc, char **argv) {
     return _server->ReturnVal(argc, argv);
   }
-  virtual int SendControl(u_short flag, char *result) {
+
+  virtual int SendControl(u_short flag, char *result, bool grp_enable) {
+	if (grp_enable)
+	{
+		_server->ServerClientCmd(flag, 1,&result);
+	}
     return _server->SendControl(flag, result);
   }
-  virtual int SendControl(int argc, char **argv) {
+
+  virtual int SendControl(int argc, char **argv, bool grp_enable) {
+	if (grp_enable)
+	{
+		_server->ServerClientCmd(API_CTL,argc, argv);
+	}
     return _server->SendControl(API_CTL, argc, argv);
   }
 

@@ -1,5 +1,5 @@
 CLASSROOT=classes
-CLASSPATH=/s/java/lib/classes.zip:/u/w/e/weaver/java/lib/jgl3.0.0/src:/u/s/s/ssl/Work/LM/classes/
+CLASSPATH=/s/java/lib/classes.zip:/u/w/e/weaver/java/lib/jgl3.0.0/src:/p/devise/taodb/world/Java/LM/classes/
 
 PACKAGES=Util AwtUtil LayoutEditor LayoutMgr
 

@@ -15,11 +15,18 @@
 # $Id$
 
 # $Log$
+# Revision 1.8.16.1  1998/02/12 05:19:08  taodb
+# Updated dependency list
+#
+# Revision 1.8  1997/03/28 16:09:02  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
 depend:
-	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
+	makedepend -fMakefile.aix -I../csgroup -I../graphics -I../graphics.new \
 		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

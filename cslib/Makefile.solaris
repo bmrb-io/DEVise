@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.14  1998/02/09 21:13:05  donjerko
+# *** empty log message ***
+#
 # Revision 1.13  1998/02/09 18:09:54  wenger
 # Removed ViewScatter class (totally replaced by ViewData, which is a
 # renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -84,6 +87,7 @@ Client.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 Client.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 Client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 Client.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h Client.h
+Client.o: ../graphics/Exit.h
 Server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Server.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
@@ -102,7 +106,7 @@ Server.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 Server.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 Server.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 Server.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Server.o: /usr/include/sys/byteorder.h Server.h
+Server.o: /usr/include/sys/byteorder.h Server.h ../graphics/Exit.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

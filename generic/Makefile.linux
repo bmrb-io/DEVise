@@ -15,6 +15,14 @@
 # $Id$
 
 # $Log$
+# Revision 1.12.2.1  1998/02/12 05:19:09  taodb
+# Updated dependency list
+#
+# Revision 1.12  1998/01/07 19:28:15  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.11  1997/11/12 15:45:01  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -43,7 +51,7 @@
 ############################################################
 
 depend:
-	makedepend -fMakefile.linux -I../graphics -I../graphics.new \
+	makedepend -fMakefile.linux -I../csgroup -I../graphics -I../graphics.new \
 		-I../tape *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

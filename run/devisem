@@ -19,10 +19,10 @@ setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
 setenv DEVISE_CACHE   $DEVISE_ROOT/cache
 setenv DEVISE_SCHEMA  $DEVISE_ROOT/schema/schema
 setenv DEVISE_SESSION $DEVISE_ROOT/session
-setenv DEVISE_LIB     $DEVISE_ROOT/`whoami`/lib
+setenv DEVISE_LIB     $DEVISE_ROOT/taodb/world/lib
 setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
-setenv DEVISE_EXEC    bin/generic/generic
+setenv DEVISE_EXEC    /p/devise/taodb/world/solaris/generic/generic
 setenv DEVISE_PALETTE	$DEVISE_ROOT/palette
 
 setenv LM_LIB         $DEVISE_LIB/LM
