@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2001/10/12 01:55:44  xuk
+// Using timestamp-based client ID.
+// 1. cmdId has been expanded to long int;
+// 2. Modified sendCmd(), ID has been expanded to long int;
+// 3. Modified receiveCmd(), read 16 bytes of message header, since now cmdId is 8 bytes long.
+//
 // Revision 1.24  2001/09/10 21:18:52  xuk
 // Solve the client disconnection problem.
 // Added isAvailable() method to check whether there is something with the socket connection.
@@ -390,9 +396,8 @@ public class DEViseCommSocket
     // Note: the format of commands on the socket is as follows:
     // u_short msgType // API_CMD, etc. -- see DEViseGlobals,java,
     //                    graphics.new/ParseAPI.h
-    // u_short id // JavaScreen ID; sent only if msgType is API_JAVA_WID
-    // u_short useCgi // whether we're using the CGI interface; sent only
-    //                   if msgType is API_JAVA_WID
+    // u_short id // JavaScreen ID
+    // u_short useCgi // whether we're using the CGI interface
     // u_short argCount
     // u_short totalBytes // size of everything remaining
     // u_short arg1Bytes

@@ -25,6 +25,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2001/10/12 01:47:32  xuk
+// Using timestamp-based client ID.
+// 1. Got rid of _nextClientId;
+// 2. Modified getID() method, now client ID is from current timestamp;
+// 3. In handleCommection(), onCollab(), findClientById(), getNextRequestingClient() all id has been expanded to long int.
+//
 // Revision 1.59  2001/10/05 15:51:35  wenger
 // Minor cleanup: fixed usage messages, improved argument checking.
 //
@@ -318,7 +324,7 @@ public class jspop implements Runnable
     private Hashtable users = new Hashtable();
     private Vector servers = new Vector();
 
-    // private int _nextClientId = 1;
+    private long _lastClientId = 0;
 
     // Clients that are not connected to a devised.
     private Vector suspendClients = new Vector();
@@ -1157,7 +1163,8 @@ public class jspop implements Runnable
     //----------------------------------------------------------------------
     private DEViseClient createClient(String clientHost, DEViseCommSocket socket, boolean cgi)
     {
-	DEViseClient client = new DEViseClient(this, clientHost, socket, getID(), cgi);
+	DEViseClient client = new DEViseClient(this, clientHost, socket,
+	  getID(), cgi);
 
 	// Note: a new client gets added into the suspended clients list;
 	// eventually it gets moved from there to the active clients list.
@@ -1175,23 +1182,19 @@ public class jspop implements Runnable
 	// xuk 10/10/01
 	Date date = new Date();
 	long id = date.getTime();
-	
-	return id;
-	
-	/*
-        Integer id = new Integer(_nextClientId++);
 
-	if (_nextClientId == Short.MAX_VALUE) {//TEMP
-	    System.err.println("Warning: client IDs rolled over");
-	    _nextClientId = DEViseGlobals.DEFAULTID + 1;
-	}
-	if (_nextClientId == DEViseGlobals.DEFAULTID) {
-	    System.err.println("Warning: client IDs equals default");
-	    _nextClientId = DEViseGlobals.DEFAULTID + 1;
+	//
+	// Make sure there's no chance of duplicate IDs.
+	//
+	if (id <= _lastClientId) {
+	  id = _lastClientId + 1;
 	}
 
+	_lastClientId = id;
+	
+	System.out.println("  New client ID: " + id);
+
 	return id;
-	*/
     }
 
     //----------------------------------------------------------------------
