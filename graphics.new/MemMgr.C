@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/20 16:30:01  jussi
+  Removed call to SemaphoreV::destroy().
+
   Revision 1.4  1996/12/18 15:31:35  jussi
   Improved the destructors so that IPC structures are properly destroyed.
 
@@ -420,6 +423,11 @@ DataPipe::DataPipe(int maxSize, int &status)
     _sem = _free = _data = NULL;
     _shm = NULL;
 
+    _chunk = NULL;
+    _offset = NULL;
+    _bytes = NULL;
+    _count = NULL;
+
     status = Initialize(maxSize);
 }
 
@@ -463,7 +471,7 @@ int DataPipe::Initialize(int maxSize)
     int created = 0;
     char *buf;
     _shm = new SharedMemory(_shmKey, size, buf, created);
-    if (!_shm) {
+    if (!_shm || !buf) {
       fprintf(stderr, "Cannot create shared memory\n");
       return -1;
     }
@@ -473,11 +481,6 @@ int DataPipe::Initialize(int maxSize)
     printf("Created a %d-byte shared memory segment (key %d) at 0x%p\n",
            size, _shmKey, buf);
 #endif
-
-    if (!buf) {
-      fprintf(stderr, "Failed to get shared memory\n");
-      return -1;
-    }
 
     _chunk = (char **)buf;
     _offset = (streampos_t *)(_chunk + maxSize);
