@@ -1,0 +1,19 @@
+To compile (on Pentium-Solaris), do:
+
+make -f makefile.PENTIUM
+
+Use the appropriate make.* file for your machine.
+Each subdirectory also has a make.* file for each
+architecture, along with instructions for modifications
+for other architectures/machines.
+
+To exclude RD-OPT from Tasvir, remove the flag
+"-DHAVE_RDOPT" from the makefile in the Tasvir
+directory.
+
+To exclude SPIHT (wavelet compression by Said&Pearlman,
+which is patented and copyrighted) remove the flag
+"-DHAVE_SPIHT" from the makefile in the Tasvir
+directory.
+
+
