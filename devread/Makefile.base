@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/08/14 19:04:36  flisakow
+#    Checkin of DevRead class, a near duplicate of the AttrProj class,
+#    it is an interface to reading data from Devise files.
+#
 #  Revision 1.18  1996/08/12 18:43:21  flisakow
 #    Makefiles changed to use AR and RANLIB vars from Makefile.common.
 #
@@ -39,7 +43,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../devread -I../../attrproj -I../../graphics \
 TESTSRC = drtest.c
 TESTOBJ = $(TESTSRC:.c=.o)
 
-LOCALSRC = DevRead.c types.c
+LOCALSRC = DevRead.c
 
 SRCc = $(filter %.c,$(LOCALSRC))
 SRCC = $(filter %.C,$(LOCALSRC))
@@ -47,9 +51,6 @@ LOCALOBJ = $(SRCc:.c=.o)
 LOCALOBJ += $(SRCC:.C=.o)
 
 LIBOBJ = \
-	../attrproj/vector.o \
-	../attrproj/ProjectionList.o \
-	../attrproj/VectorArray.o \
 	../attrproj/ApInit.o \
 	../attrproj/ApParseCat.o \
 	../attrproj/Exit.o \
@@ -88,12 +89,8 @@ ALLSHOWOBJ = $(SHOWOBJ)
 all: drtest
 lib: $(LIB)
 
-drtest: $(ALLTESTOBJ) $(LIB)
-	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
-                -ldevread -ltcl -lm $(ARCH_LDPOST)
-
-show: $(ALLSHOWOBJ) $(LIB)
-	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
+drtest: $(ALLTESTOBJ) types.o $(LIB) 
+	$(CC) -o $@ $(ARCH_LDFLAGS) types.o -L. $(ALLTESTOBJ) \
                 -ldevread -ltcl -lm $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
@@ -106,4 +103,4 @@ clean: mostlyclean
 	-rm -f drtest
 
 mostlyclean:
-	-rm -f $(TESTOBJ) $(LOCALOBJ) $(LIB)
+	-rm -f $(TESTOBJ) $(LOCALOBJ) types.o $(LIB)

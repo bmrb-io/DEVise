@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.1  1996/08/14 19:04:29  flisakow
+      Checkin of DevRead class, a near duplicate of the AttrProj class,
+      it is an interface to reading data from Devise files.
+
  */
 
 #define _DevRead_c_
@@ -259,9 +263,14 @@ Tuple *DevRead::getNext()
                     (*result)[attrNum] = (Type*) new IString(attrVal);
                     break;
 
-                case DateAttr:
-                    (*result)[attrNum] = NULL;
-                    break;
+                case DateAttr: {
+                        time_t tmp;
+                        memcpy(&tmp, attrVal, sizeof(time_t));
+                        // NEW DATE (new date)
+                        // (*result)[attrNum] = (Type*) new IDate(tmp);
+                        (*result)[attrNum] = NULL;
+                        break;
+                    }
 
                 default:
                     (*result)[attrNum] = NULL;
