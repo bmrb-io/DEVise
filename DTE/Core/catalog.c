@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/23 23:45:22  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.12  1997/03/20 20:42:21  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -266,9 +269,10 @@ Schema* QueryInterface::getSchema(TableName* table){	// throws exception
 	TypeID* types = iterator->getTypeIDs();
 	assert(types[0] == "schema");
 	iterator->initialize();
-	Tuple* tuple = iterator->getNext();
+	Tuple tuple[1];
+	assert(iterator->getNext(tuple));
 	Schema* schema = (Schema*) tuple[0];
-	assert(iterator->getNext() == NULL);
+	assert(!iterator->getNext(tuple));
 	delete iterator;
 	return schema;
 }
@@ -291,10 +295,10 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 
 	String firstPathNm = *path->getFirst();
 	path->deleteFirst();
-	Tuple* tuple;
+	Tuple tuple[1];
 //	cout << "searching for " << firstPathNm << " in " << fileName << endl;
 
-	while((tuple = fileRead->getNext())){
+	while(fileRead->getNext(tuple)){
 		CatEntry* entry = (CatEntry*) tuple[0];
 		assert(entry);
 		String tableNm = entry->getName();

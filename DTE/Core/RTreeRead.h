@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/03/28 16:07:26  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef RTREE_READ_H
@@ -214,7 +218,7 @@ public:
 		return indexDesc->getNumAddFlds();
 	}
 	virtual void initialize();
-	virtual Tuple* getNext();
+	virtual bool getNext(Tuple* next);
 	virtual Offset getNextOffset();
 };
 

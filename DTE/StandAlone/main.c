@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/28 16:08:05  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include<iostream.h>
@@ -68,10 +72,10 @@ int main(int argc, char** argv){
 			cout << attrs[i] << " ";
 		}
 		cout << endl << "---------------------------------" << endl;
-		Tuple* tup;
+		Tuple tup[numFlds];
 
 		engine.initialize();
-		while((tup = engine.getNext())){
+		while(engine.getNext(tup)){
 			for(int i = 0; i < numFlds; i++){
 				writePtrs[i](cout, tup[i]);
 				cout << '\t';

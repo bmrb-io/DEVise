@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:07:29  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef JOINS_H
@@ -28,11 +32,11 @@ class Joins:public SiteGroup{
 		public:
 			Joins(Site * left,Site * right,String * function):function(function)
 				,left(left),right(right), SiteGroup(left,right),
-					nextInnerTup(NULL),nextOuterTup(NULL){ }
+					nextInnerTup(NULL), moreInnerTup(true), 
+					nextOuterTup(NULL), moreOuterTup(true) { }
 		
-			virtual Tuple * getNext();
+			virtual bool getNext(Tuple* next);
 			virtual void typify(String );
-
 		private:
 			List<Tuple *> innerRel;
 			List<Tuple *> outerRel;
@@ -45,7 +49,9 @@ class Joins:public SiteGroup{
 			GeneralPtr * leftequalPtr;
 			GeneralPtr * rightequalPtr;
 			Tuple * nextInnerTup;
+			bool moreInnerTup;
 			Tuple * nextOuterTup;
+			bool moreOuterTup;
 			int leftCountFlds;
 			int rightCountFlds;
 

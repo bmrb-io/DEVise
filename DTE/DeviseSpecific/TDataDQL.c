@@ -91,8 +91,9 @@ void TDataDQL::runQuery(){
 	memset(lowTup, 0, _numFlds * sizeof(Tuple));
 
 	engine.initialize();
-	Tuple* firstTup = engine.getNext();
-	if(firstTup){
+	Tuple* firstTup = new Tuple[_numFlds];
+	bool more = engine.getNext(firstTup);
+	if(more){
 		for(int i = 0; i < _numFlds; i++){
 			lowTup[i] = firstTup[i];
 			highTup[i] = firstTup[i];
@@ -115,10 +116,13 @@ void TDataDQL::runQuery(){
 		greaterPtrs[i] = tmp->opPtr;
      }
 
-     while((tup = engine.getNext())){
+	tup = new Tuple[_numFlds];
+     while(engine.getNext(tup)){
 		updateHighLow(_numFlds, lessPtrs, greaterPtrs, tup, highTup, lowTup);
           _result.add_high(tup);
+		tup = new Tuple[_numFlds];
      }
+	delete tup;
 
 	cout << "Done with query ----------------------------------\n";
 #ifdef DEBUG

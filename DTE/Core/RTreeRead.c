@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/03/28 16:07:25  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "RTreeRead.h"
@@ -80,7 +84,7 @@ int RTreeIndex::queryBoxSize(){
 	return size;
 }
 
-Tuple* RTreeIndex::getNext(){
+bool RTreeIndex::getNext(Tuple* retVal){
 	assert(initialized);
 	gen_key_t ret_key;
 	bool eof = false;
@@ -96,7 +100,6 @@ Tuple* RTreeIndex::getNext(){
 	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
 	if(!eof){
 		// ret_key.print();
-		Tuple* retVal = new Tuple[numFlds];
 		int offs = 0;
 		int numKeyFlds = getNumKeyFlds();
 		int numAddFlds = getNumAddFlds();
@@ -117,10 +120,10 @@ Tuple* RTreeIndex::getNext(){
 		#ifdef DEBUG
 		cout << "Offset = " << offset << endl;
 		#endif
-		return retVal;
+		return true;
 	}
 	else{
-		return NULL;
+		return false;
 	}
 }
 

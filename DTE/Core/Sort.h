@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:27  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef SORT_H
@@ -40,7 +44,7 @@ public:
           assert(0);
      }
 	virtual void initialize();
-     virtual Tuple  *getNext();
+     virtual bool getNext(Tuple* next);
 };
 
 #endif

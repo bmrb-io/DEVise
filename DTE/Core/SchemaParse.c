@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:27  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "ParseTree.h"
@@ -65,14 +69,13 @@ public:
           return new String("schema");
      }
 	virtual void initialize(){}
-	virtual Tuple* getNext(){
+	virtual bool getNext(Tuple* retVal){
 		if(done){
-			return NULL;
+			return false;
 		}
 		done = true;
-		Tuple* retVal = new Tuple[1];
 		retVal[0] = schema;
-		return retVal;
+		return true;
 	}
 };
 

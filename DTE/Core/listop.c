@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/03/23 23:45:23  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.5  1996/12/21 22:21:48  donjerko
   Added hierarchical namespace.
 
@@ -217,8 +220,8 @@ bool evaluateList(List<BaseSelection*>* list, Tuple* left, Tuple* right){
 	return true;
 }
 
-Tuple* tupleFromList(List<BaseSelection*>* list, Tuple* left, Tuple* right){
-     Tuple* retVal = new Tuple[list->cardinality()];
+void tupleFromList(Tuple* retVal, 
+		List<BaseSelection*>* list, Tuple* left, Tuple* right){
 	list->rewind();
 	int i = 0;
 	while(!list->atEnd()){
@@ -226,7 +229,6 @@ Tuple* tupleFromList(List<BaseSelection*>* list, Tuple* left, Tuple* right){
 		list->step();
 		i++;
 	}
-	return retVal;
 }
 
 void collectFrom(List<BaseSelection*>* from, 

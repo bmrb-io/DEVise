@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/03/23 23:45:19  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.8  1997/03/20 20:42:19  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -67,8 +70,8 @@ public:
      virtual String* getTypeIDs(){
           return topNode->getTypeIDs();
      }
-	virtual Tuple* getNext(){
-		return topNode->getNext();
+	virtual bool getNext(Tuple* next){
+		return topNode->getNext(next);
 	}
 	virtual String* getAttributeNames(){
 		if(attributeNames){

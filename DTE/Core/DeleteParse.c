@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:23  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include<iostream.h>
@@ -56,7 +60,6 @@ Site* DeleteParse::createSite(){
 
 	TRY(site->typify(""), NULL);
 	List<Tuple*> tupleList;
-	Tuple* tuple;
 	bool cond;
 	List<Site*> sites;
 	sites.append(site);
@@ -72,16 +75,22 @@ Site* DeleteParse::createSite(){
 	predicate->display(cout);
 	TRY(site->enumerate(), NULL);
 	site->initialize();
-	while((tuple = site->getNext())){
-		cond = predicate->evaluate(tuple, NULL);
+	int inputNumFlds = site->getNumFlds();
+	Tuple tmpTuple[inputNumFlds];
+	while((site->getNext(tmpTuple))){
+		cond = predicate->evaluate(tmpTuple, NULL);
 		if(!cond){
-			tupleList.append(tuple);
+			Tuple* copy = new Tuple[inputNumFlds];
+			memcpy(copy, tmpTuple, inputNumFlds * sizeof(Type*));
+			tupleList.append(copy);
 		}
 	}
 	TRY(site->writeOpen(ios::out), NULL);
 	for(tupleList.rewind(); !tupleList.atEnd(); tupleList.step()){
+		Tuple* tuple;
 		tuple = tupleList.get();
 		site->write(tuple);
+		delete tuple;
 	}
 	site->writeClose();
 	delete site;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/03/28 16:07:24  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include<iostream.h>
@@ -132,9 +136,10 @@ Site* IndexParse::createSite(){
 		TRY(offset = site->getOffset(), NULL);
 		cout << "offset = " << offset << endl;
 	}
-     tup = site->getNext();
+	Tuple* tup = new Tuple[numFlds];
+     bool more = site->getNext(tup);
 	char* flatTup = NULL;
-	if(tup){ // make sure this is not empty
+	if(more){ // make sure this is not empty
 		TRY(fixedSize = packSize(types, numFlds), NULL);
 		flatTup = new char[fixedSize];
 		marshal(tup, flatTup, types, numFlds);
@@ -144,7 +149,7 @@ Site* IndexParse::createSite(){
 			offset = site->getOffset();
 			cout << "offset = " << offset << endl;
 		}
-		while((tup = site->getNext())){
+		while(site->getNext(tup)){
 			tupSize = packSize(tup, types, numFlds);
 			if(tupSize != fixedSize){
 				assert(0);
@@ -159,6 +164,7 @@ Site* IndexParse::createSite(){
 		}
 	}
 	delete flatTup;
+	delete tup;
 	ind.close();
 	String convBulk = bulkfile + ".conv";
 	String cmd = "convert_bulk < " + bulkfile + " > " + convBulk;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/02/03 04:11:27  donjerko
+  Catalog management moved to DTE
+
  */
 
 #ifndef FUNCTION_READ_H
@@ -53,8 +56,13 @@ public:
 	virtual String * getOrderingAttrib(){
 		return iterator->getOrderingAttrib();
 	}
-	virtual Tuple* getNext(){
-		return funcPtr();
+	virtual bool getNext(Tuple* next){
+		Tuple* tmp = funcPtr();
+		if(tmp == NULL){
+			return false;
+		}
+		memcpy(next, tmp, numFlds * sizeof(Type*));
+		return true;
 	}
 	virtual ostream& display(ostream& out){
 		return iterator->display(out);
@@ -75,9 +83,11 @@ private:
 	List<List<Tuple*>*>* TupleListList;
 	int seqAttrPos;
 	Tuple * nextTup;
+	bool moreTup;
 	int currentTupVal,nextTupVal,presentTupVal;
 	int offset;
 	int numFlds;
+	int inputNumFlds; 	// happens to be the same as numFlds
 };
 
 #endif

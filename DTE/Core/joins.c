@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/03/28 16:07:28  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include"joins.h"
@@ -91,15 +95,15 @@ void Joins::typify(String  option){
 
 }
 
-Tuple * Joins::getNext()
+bool Joins::getNext(Tuple* retVal)
 {
 	
-	if (!nextInnerTup && innerRel.isEmpty()||outerRel.atEnd())
+	if (!moreInnerTup && innerRel.isEmpty()||outerRel.atEnd())
 		if (!innerFill())	
-			return NULL;
-	if ((!nextOuterTup && outerRel.isEmpty()) || outerRel.atEnd())
+			return false;
+	if ((!moreOuterTup && outerRel.isEmpty()) || outerRel.atEnd())
 		if (!outerFill())	
-			return NULL;
+			return false;
 	
 	Tuple * leftTup = outerRel.get();
 	Tuple * rightTup = innerRel.get();
@@ -133,28 +137,33 @@ Tuple * Joins::getNext()
 		innerRel.rewind();
 		outerRel.step();
 	}
-	Tuple * retVal = new Tuple[leftCountFlds+rightCountFlds];
+
+	// size of the tuple should be leftCountFlds+rightCountFlds
+
 	for(int i = 0;i < leftCountFlds;i++)
 		retVal[i] = leftTup[i];
 	for(int i = 0;i < rightCountFlds;i++)
 		retVal[i+leftCountFlds] = rightTup[i];
-	return retVal;
+	return true;
 }
 
 bool Joins::outerFill(){
 	
 	outerRel.removeAll();
-	if (!nextOuterTup)
-		nextOuterTup = left->getNext();
-	if (!nextOuterTup)
+	nextOuterTup = new Tuple[left->getNumFlds()];
+	assert(nextOuterTup);
+	if (!moreOuterTup)
+		moreOuterTup = left->getNext(nextOuterTup);
+	if (!moreOuterTup)
 		return false;
 	
 	outerRel.append(nextOuterTup);
 	while(1){
 		
-		Tuple * next = left->getNext(); 
-		if (!next){
-			nextOuterTup = NULL;
+		Tuple* next = new Tuple[left->getNumFlds()];
+		bool more = left->getNext(next); 
+		if (!more){
+			moreOuterTup = false;
 			break;
 		}
 		if (leftequalPtr->opPtr(nextOuterTup[leftSeqAttrPos],
@@ -172,18 +181,21 @@ bool Joins::outerFill(){
 bool Joins::innerFill(){
 	
 	innerRel.removeAll();
-	if (!nextInnerTup)
-		nextInnerTup = right->getNext();
+	nextInnerTup = new Tuple[right->getNumFlds()];
+	assert(nextInnerTup);
+	if (!moreInnerTup)
+		moreInnerTup = right->getNext(nextInnerTup);
 	
-	if (!nextInnerTup)
+	if (!moreInnerTup)
 		return false;
 	innerRel.append(nextInnerTup);
 	
 	while(1){
 		
-		Tuple * next = right->getNext(); 
-		if (!next){
-			nextInnerTup = NULL;
+		Tuple* next = new Tuple[right->getNumFlds()];
+		bool more = right->getNext(next); 
+		if (!more){
+			moreInnerTup = false;
 			break;
 		}
 		if (rightequalPtr->opPtr(nextInnerTup[rightSeqAttrPos],

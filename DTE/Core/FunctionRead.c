@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/23 23:45:19  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.2  1997/02/03 04:11:27  donjerko
   Catalog management moved to DTE
 
@@ -41,6 +44,7 @@ void FunctionRead::initialize(){	// Throws exception
 	String * attributeNames = iterator->getAttributeNames();
 	TypeID * typeIDs = iterator->getTypeIDs();
     numFlds = iterator->getNumFlds();
+    inputNumFlds = numFlds;
 	int i;
 	TypeID type;
 	for (i = 0; i < numFlds; i++){
@@ -87,11 +91,12 @@ void FunctionRead::initialize(){	// Throws exception
 Tuple * FunctionRead::next()
 {
 	// For the initial case;;;
-	if (nextTup == NULL ){
-		nextTup = iterator->getNext();
-		if (!nextTup && TupleList->atEnd()) 
+	if (!moreTup){
+		nextTup = new Tuple[inputNumFlds];
+		moreTup = iterator->getNext(nextTup);
+		if (!moreTup && TupleList->atEnd()) 
 			return NULL;
-		if (nextTup){
+		if (moreTup){
 			nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
 			presentTupVal = nextTupVal - 1;
 			currentTupVal = presentTupVal;
@@ -101,15 +106,18 @@ Tuple * FunctionRead::next()
 	if (presentTupVal >  currentTupVal - 1){
 		
 		currentTupVal = nextTupVal;
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		
 		TupleList->removeAll();
 		TupleList->append(nextTup);
 		while(1){
 			
-			Tuple * tup = iterator->getNext();
-			if (!tup ){
+			bool more;
+			Tuple* tup = new Tuple[inputNumFlds];
+			more = iterator->getNext(tup);
+			if (!more ){
+				moreTup = false;
 				nextTup = NULL;
 				nextTupVal = currentTupVal + 1;
 				break;
@@ -140,13 +148,14 @@ Tuple *FunctionRead::previous()
 {
 
 	// For the initial case;;;
-	if (nextTup == NULL ){
+	if (!moreTup){
 		
-		nextTup = iterator->getNext();
-		if (!nextTup && TupleList->atEnd())
+		nextTup = new Tuple[inputNumFlds];
+		moreTup = iterator->getNext(nextTup);
+		if (!moreTup && TupleList->atEnd())
 			return NULL;
 
-		if (nextTup){
+		if (moreTup){
 			
 			currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue() -1;
 			nextTupVal    = currentTupVal + 1;
@@ -157,15 +166,18 @@ Tuple *FunctionRead::previous()
 	if (presentTupVal >  nextTupVal ){
 		
 		currentTupVal = nextTupVal;
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		
 		TupleList->removeAll();
 		TupleList->append(nextTup);
 		while(1){
 			
-			Tuple * tup = iterator->getNext();
-			if (!tup ){
+			bool more;
+			Tuple* tup = new Tuple[inputNumFlds];
+			more = iterator->getNext(tup);
+			if (!more ){
+				moreTup = false;
 				nextTup = NULL;
 				nextTupVal = currentTupVal + 1;
 				break;
@@ -193,28 +205,33 @@ Tuple *FunctionRead::previous()
 Tuple * FunctionRead::neg_value_offset()
 {
 	// For the initial case;;;
-	if (nextTup == NULL ){
+	if (!moreTup){
 		int count = 0;
 		List<Tuple *> *dupList;
 
-		nextTup = iterator->getNext();
-		if (!nextTup && TupleListList->atEnd())
+		nextTup = new Tuple[inputNumFlds];
+		moreTup = iterator->getNext(nextTup);
+		if (!moreTup && TupleListList->atEnd())
 			return NULL;
-		if (nextTup){
+		if (moreTup){
 		
 			while(count < -offset){
 			
 				dupList = new List<Tuple *>;
 				dupList->append(nextTup);
-			
-				if (nextTup)
+
+				if (moreTup){
 					currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
-				if (nextTup){
+				}
+				if (moreTup){
 				
 					while(1){
 					
-						Tuple * tup = iterator->getNext();
-						if (!tup ){
+						bool more;
+						Tuple* tup = new Tuple[inputNumFlds];
+						more = iterator->getNext(tup);
+						if (!more ){
+							moreTup = false;
 							nextTup = NULL;
 							nextTupVal = currentTupVal + 1;
 							break;
@@ -236,7 +253,7 @@ Tuple * FunctionRead::neg_value_offset()
 					}
 				}
 			}
-			if (nextTup)
+			if (moreTup)
 				currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
 			nextTupVal    = currentTupVal ;
 			if (dupList){
@@ -249,19 +266,22 @@ Tuple * FunctionRead::neg_value_offset()
 	if (presentTupVal >  nextTupVal){
 		
 		currentTupVal = nextTupVal;
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		TupleListList->rewind();	
 		TupleListList->remove();
 		
 		List<Tuple*>* dupList = new List<Tuple*>;
 		dupList->append(nextTup);
-		if (nextTup)
+		if (moreTup)
 			currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
 		while(1){
 			
-			Tuple * tup = iterator->getNext();
-			if (!tup ){
+			bool more;
+			Tuple* tup = new Tuple[inputNumFlds];
+			more = iterator->getNext(tup);
+			if (!more ){
+				moreTup = false;
 				nextTup = NULL;
 				nextTupVal = currentTupVal + 1;
 				break;
@@ -298,28 +318,33 @@ Tuple * FunctionRead::pos_value_offset()
 		int count = 0;
 		List<Tuple *> *dupList;
 
-		nextTup = iterator->getNext();
-		if (!nextTup && TupleListList->atEnd())
+		nextTup = new Tuple[inputNumFlds];
+		moreTup = iterator->getNext(nextTup);
+		if (!moreTup && TupleListList->atEnd())
 			return NULL;
-		if (nextTup)
+
+		if (moreTup)
 			currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
 
-		if (nextTup){
+		if (moreTup){
 		
 			while(count < offset){
 			
 				dupList = new List<Tuple *>;
 				dupList->append(nextTup);
 				
-				if (nextTup)
+				if (moreTup)
 					nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue(); 
 			
-				if (nextTup){
+				if (moreTup){
 				
 					while(1){
 					
-						Tuple * tup = iterator->getNext();
-						if (!tup ){
+						bool more;
+						Tuple* tup = new Tuple[inputNumFlds];
+						more = iterator->getNext(tup);
+						if (!more ){
+							moreTup = false;
 							nextTup = NULL;
 							nextTupVal = currentTupVal + 1;
 							break;
@@ -341,7 +366,7 @@ Tuple * FunctionRead::pos_value_offset()
 					}
 				}
 			}
-			if (nextTup)
+			if (moreTup)
 				nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue(); 
 			presentTupVal = currentTupVal -1; 
 		}
@@ -349,7 +374,7 @@ Tuple * FunctionRead::pos_value_offset()
 	// Now for the general case..
 	if ( presentTupVal >=  currentTupVal ){
 		
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		
 		TupleListList->rewind();	
@@ -360,19 +385,22 @@ Tuple * FunctionRead::pos_value_offset()
 			temp->rewind();
 			currentTupVal = ((IInt *)(temp->get())[seqAttrPos])->getValue();
 		}
-		else if (nextTup)
+		else if (moreTup)
 			 currentTupVal = ((IInt *)nextTup[seqAttrPos])->getValue();
 
 		List<Tuple*>* dupList = new List<Tuple*>;
 		dupList->append(nextTup);
 		
-		if (nextTup)
+		if (moreTup)
 			nextTupVal = ((IInt *)nextTup[seqAttrPos])->getValue(); 
 		
 		while(1){
 			
-			Tuple * tup = iterator->getNext();
-			if (!tup ){
+			bool more;
+			Tuple* tup = new Tuple[inputNumFlds];
+			more = iterator->getNext(tup);
+			if (!more ){
+				moreTup = false;
 				nextTup = NULL;
 				nextTupVal = currentTupVal + 1;
 				break;
@@ -413,29 +441,33 @@ Tuple *FunctionRead::neg_pos_offset()
 {
 				
 	// For the initial case;;;
-	if (nextTup == NULL ){
+	if (!moreTup){
 		
 		int count = 0;
 		List<Tuple *> *dupList;
 
-		nextTup = iterator->getNext();
+		nextTup = new Tuple[inputNumFlds];
+		moreTup = iterator->getNext(nextTup);
 		
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		
-		if (nextTup){
+		if (moreTup){
 		
 			while(count < -offset){
 			
 				dupList = new List<Tuple *>;
 				dupList->append(nextTup);
 				
-				if (nextTup){
+				if (moreTup){
 				
 					while(1){
 					
-						Tuple * tup = iterator->getNext();
-						if (!tup ){
+						bool more;
+						Tuple* tup = new Tuple[inputNumFlds];
+						more = iterator->getNext(tup);
+						if (!more ){
+							moreTup = false;
 							nextTup = NULL;
 							break;
 						}
@@ -464,7 +496,7 @@ Tuple *FunctionRead::neg_pos_offset()
 	// Now for the general case..
 	if ( temp->atEnd()){
 		
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		
 		TupleListList->rewind();	
@@ -475,8 +507,11 @@ Tuple *FunctionRead::neg_pos_offset()
 		
 		while(1){
 			
-			Tuple * tup = iterator->getNext();
-			if (!tup ){
+			bool more;
+			Tuple* tup = new Tuple[inputNumFlds];
+			more = iterator->getNext(tup);
+			if (!more ){
+				moreTup = false;
 				nextTup = NULL;
 				return NULL;
 			}
@@ -509,12 +544,13 @@ Tuple * FunctionRead::pos_pos_offset()
 		int count = 0;
 		List<Tuple *> *dupList;
 
-		nextTup = iterator->getNext();
+		nextTup = new Tuple[inputNumFlds];
+		moreTup = iterator->getNext(nextTup);
 		
-		if (!nextTup && TupleListList->cardinality() < offset+1)
+		if (!moreTup && TupleListList->cardinality() < offset+1)
 			return NULL;
 		
-		if (nextTup){
+		if (moreTup){
 			
 			// Note it is offset + 1 to include the last one too.
 			while(count < offset+1){
@@ -526,8 +562,11 @@ Tuple * FunctionRead::pos_pos_offset()
 				
 					while(1){
 					
-						Tuple * tup = iterator->getNext();
-						if (!tup ){
+						bool more;
+						Tuple* tup = new Tuple[inputNumFlds];
+						more = iterator->getNext(tup);
+						if (!more ){
+							moreTup = false;
 							nextTup = NULL;
 							break;
 						}
@@ -559,7 +598,7 @@ Tuple * FunctionRead::pos_pos_offset()
 	// Now for the general case..
 	if ( end->atEnd()){
 		
-		if (!nextTup )
+		if (!moreTup )
 			return NULL;
 		
 		TupleListList->rewind();	
@@ -570,8 +609,11 @@ Tuple * FunctionRead::pos_pos_offset()
 		
 		while(1){
 			
-			Tuple * tup = iterator->getNext();
-			if (!tup ){
+			bool more;
+			Tuple* tup = new Tuple[inputNumFlds];
+			more = iterator->getNext(tup);
+			if (!more ){
+				moreTup = false;
 				nextTup = NULL;
 				break;
 			}

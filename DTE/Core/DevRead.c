@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.11  1997/03/23 23:45:18  donjerko
+    Made boolean vars to be in the tuple.
+
     Revision 1.10  1997/03/20 20:42:17  donjerko
     Removed the List usage from Aggregates and replaced it with Plex, a
     form of dynamic array.
@@ -314,9 +317,9 @@ String *DevRead::getAttributeNames()
  * function: DevRead::getNext
  * Read a record, return NULL when done.
  */
-Tuple *DevRead::getNext()
-{
-    Tuple *result = NULL;
+bool DevRead::getNext(Tuple* next){
+
+    bool result = false;
 
     DO_DEBUG(printf("DevRead::getNext()\n"));
 
@@ -329,12 +332,12 @@ Tuple *DevRead::getNext()
         if (_tDataP->GetRecs(handle, _recBuf, _recBufSize, _nxtRecId,
                              numRecs, dataSize))
         {
-            result = new Tuple[_numAttr];
 
+		 result = true;
             AttrList *attrListP = _tDataP->GetAttrList();
 
             int tmp = _nxtRecId;			// add RecId at the first place 
-	       result[0] = (Type*) new IInt(tmp);
+	       next[0] = (Type*) new IInt(tmp);
             int       attrNum = 1;
 
             attrListP->InitIterator();
@@ -348,37 +351,37 @@ Tuple *DevRead::getNext()
                 case IntAttr: {
                         int tmp;
                         memcpy(&tmp, attrVal, sizeof(int));
-                        result[attrNum] = (Type*) new IInt(tmp);
+                        next[attrNum] = (Type*) new IInt(tmp);
                         break;
                     }
 
                 case FloatAttr: {
                         float tmp;
                         memcpy(&tmp, attrVal, sizeof(float));
-                        result[attrNum] = (Type*) new IDouble((double) tmp);
+                        next[attrNum] = (Type*) new IDouble((double) tmp);
                         break;
                     }
 
                 case DoubleAttr: {
                         double tmp;
                         memcpy(&tmp, attrVal, sizeof(double));
-                        result[attrNum] = (Type*) new IDouble(tmp);
+                        next[attrNum] = (Type*) new IDouble(tmp);
                         break;
                     }
 
                 case StringAttr:
-                    result[attrNum] = (Type*) new IString(attrVal);
+                    next[attrNum] = (Type*) new IString(attrVal);
                     break;
 
                 case DateAttr: {
                         time_t tmp;
                         memcpy(&tmp, attrVal, sizeof(time_t));
-                        result[attrNum] = (Type*) new IDate(tmp);
+                        next[attrNum] = (Type*) new IDate(tmp);
                         break;
                     }
 
                 default:
-                    result[attrNum] = NULL;
+                    next[attrNum] = NULL;
                     break;
                 }
 
@@ -392,7 +395,7 @@ Tuple *DevRead::getNext()
         _tDataP->DoneGetRecs(handle);
     }
 
-    return(result);
+    return result;
 }
 
 /*============================================================================*/

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:28  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <String.h>
@@ -28,31 +32,31 @@
 
 #include "Utility.h"
 
-String stripQuotes(char* str){
+String& stripQuotes(char* str){
 	strstream tmp;
 	tmp << str << ends;
 	return stripQuotes(tmp);
 }
 
-String stripQuotes(istream& in){	// can throw excetion
+String& stripQuotes(istream& in){	// can throw excetion
 
 	// strips backslashes from the string (and outer quotes)
 
-	String value;
+	String& value = *(new String);
 	char tmp;
 	in >> tmp;
 	if(!in){
-		return "";
+		return value;
 	}
 	if(tmp != '"'){
-		THROW(new Exception("Leading \" expected"), "");
+		THROW(new Exception("Leading \" expected"), value);
 	}
 	bool escape = false;
 	while(1){
 		in.get(tmp);
 		if(!in){
 			String e = "Closing \" expected";
-			THROW(new Exception(e), "");
+			THROW(new Exception(e), value);
 		}
 		if(escape){
 			escape = false;
@@ -80,11 +84,11 @@ String stripQuotes(istream& in){	// can throw excetion
 	return value;
 }
 
-String addQuotes(String in){	// can throw excetion
+String& addQuotes(String in){	// can throw excetion
 
 	// adds backslashes from the string (and outer quotes)
 
-	String value;
+	String& value = *(new String);
 	char tmp;
 	value += '"';
 	for(unsigned int i = 0; i < in.length(); i++){

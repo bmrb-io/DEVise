@@ -1,23 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1997
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  $Id$
-
-  $Log$
- */
-
 #include "Aggregates.h"
 
 bool Aggregates::isApplicable(){
@@ -185,7 +165,6 @@ void Aggregates::typify(Site* inputIterator){
 			for(j = 0; j < countFlds ; j++){
 			    int arg1,arg2;	
 				Path *newPath;
-				//if (selArgument->match(selectList->getVal(j),newPath))
 				if (selArgument->toString() == AttribNameList[j]){
 					
 					//	Now that u have set the name..
@@ -334,14 +313,13 @@ TypeID &Aggregates::setFunctionPtr(GenFunction*&functionPtr,String funcName,int 
 	return functionPtr->getTypeID();
 }
 
-Tuple* Aggregates::getNext()
+bool Aggregates::getNext(Tuple* retVal)
 {
 	
-	Tuple * retVal = new (Type*)[numFlds];
 	fillNextFunc->fillWindow();
 	
 	if (fillNextFunc->getTupleAtCurrPos() == NULL)
-		return NULL;
+		return false;
 	
 	int i;
 	for(i = 0; i < numFlds;i++)
@@ -351,7 +329,7 @@ Tuple* Aggregates::getNext()
 		else
 			//Get the actual value and stuff it.
 			retVal[i] = fillNextFunc->getTupleAtCurrPos()[i];
-	return retVal;
+	return true;
 
 }
 
@@ -961,15 +939,27 @@ int Grouping::tupleCompare(int *positions,GeneralPtr **lessPtr,GeneralPtr ** equ
 
 }
 
-Tuple *Grouping::getNext(){
+Tuple* Grouping::getNext(){
+
+	int inputNumFlds = iterator->getNumFlds();
 	
-	if (!count)
-		return iterator->getNext();
+	if (!count){
+		Tuple* nextTuple = new Tuple[inputNumFlds];
+		if(iterator->getNext(nextTuple)){
+			return nextTuple;
+		}
+		else{
+			return NULL;
+		}
+	}
 
 	if (TupleList.empty()){
-		
-		while((next = iterator->getNext()))
+		next = new Tuple[inputNumFlds];	
+		while((iterator->getNext(next))){
 			TupleList.add_high(next);
+			next = new Tuple[inputNumFlds];	
+		}
+		next = NULL;
 		
 		if (TupleList.empty()){
 			next = NULL;

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/04/03 16:37:15  wenger
+  Reduced memory and CPU usage in statistics; fixed a memory leak in the
+  statistics code; switched devised back to listening on port 6100
+  (changed accidentally?); turned off a bunch of debug output.
+
   Revision 1.5  1997/03/28 16:07:34  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -70,10 +75,10 @@ char* executeQuery(const char* query){
 	}
 	TRY(WritePtr* writePtrs = engine.getWritePtrs(), NULL);
 	assert(writePtrs);
-	Tuple* tup;
 	engine.initialize();
 	ostrstream out;
-	while((tup = engine.getNext())){
+	Tuple tup[numFlds];
+	while(engine.getNext(tup)){
 		out << "{";
 		for(int i = 0; i < numFlds; i++){
 			(writePtrs[i])(out, tup[i]);
@@ -224,10 +229,10 @@ char* dteListAttributes(const char* tableName){
 	TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "schema");
 	engine.initialize();
-	Tuple* tuple = engine.getNext();
-	assert(tuple);
+	Tuple tuple[1];
+	assert(engine.getNext(tuple));
 	Schema* schema = (Schema*) tuple[0];
-	assert(engine.getNext() == NULL);
+	assert(!engine.getNext(tuple));
 	engine.finalize();
 	attrNames = schema->getAttributeNames();
 	numFlds = schema->getNumFlds();
@@ -329,10 +334,10 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
 	TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "indexdesc");
 	engine.initialize();
-	Tuple* tuple = engine.getNext();
-	assert(tuple);
+	Tuple tuple[1];
+	assert(engine.getNext(tuple));
 	IndexDesc* indexDesc = (IndexDesc*) tuple[0];
-	assert(engine.getNext() == NULL);
+	assert(!engine.getNext(tuple));
 	engine.finalize();
 	int numKeyFlds = indexDesc->getNumKeyFlds();
 	int numAddFlds = indexDesc->getNumAddFlds();

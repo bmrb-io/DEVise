@@ -19,6 +19,10 @@
 /*
     $Id$
     $Log$
+    Revision 1.3  1996/12/16 11:13:04  kmurli
+    Changes to make the code work for separate TDataDQL etc..and also changes
+    done to make Aggregates more robust
+
     Revision 1.2  1996/12/15 06:41:04  donjerko
     Added support for RTree indexes
 
@@ -80,8 +84,8 @@ class DevRead : public Iterator
 
 	virtual String *getAttributeNames();
 
-	  // returns NULL when done
-	virtual Tuple  *getNext();
+	  // returns false when done
+	virtual bool getNext(Tuple* next);
 
 	virtual void reset(int lowRid, int highRid);
 

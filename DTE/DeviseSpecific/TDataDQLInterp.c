@@ -124,7 +124,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 	List<char*>* attrList = new List<char*>;
 	for(char* currAtt = strtok(attrs, " "); currAtt;
 					currAtt = strtok(NULL, " ")){
-		attrList->append(currAtt);
+		attrList->append(strdup(currAtt));
 	}
 	String query = "select ";
 	attrList->rewind();

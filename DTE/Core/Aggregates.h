@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/03/28 16:07:22  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef AGGREGATES_H
@@ -407,7 +411,7 @@ public:
 		assert(iterator);
 		iterator->initialize();
 	}
-	virtual Tuple* getNext();
+	virtual bool getNext(Tuple* next);
 	
 	virtual String *getOrderingAttrib(){
 		return iterator->getOrderingAttrib();

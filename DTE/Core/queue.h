@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/20 20:42:24  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.7  1997/02/03 04:11:35  donjerko
   Catalog management moved to DTE
 
@@ -214,22 +218,6 @@ public:
 		return false;
 	}
 
-	/*
-	bool setPos(int position){
-
-		rewind();
-		int pos = 0;
-		while(!atEnd() && pos < position){
-			pos ++;
-			step();
-		}
-		if (atEnd())
-			return false;
-		// found
-		return true;
-	}
-	*/
-
 	int getPos(T item){
 		
 		Cell * curr = current;
@@ -253,6 +241,8 @@ public:
 		currPos = savePos;
 		return -1;
 	}
+
+/*
 	T getVal(int position)
 	{
 		
@@ -282,6 +272,8 @@ public:
 			return tmp;
 		}
 	}
+*/
+
 	void display(){
 		
 		Cell * curr = head;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/03/23 23:45:21  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.7  1997/02/18 18:06:02  donjerko
   Added skeleton files for sorting.
 
@@ -91,24 +94,17 @@ public:
 	virtual String * getOrderingAttrib(){
 		return order;
 	}
-	virtual Tuple* getNext(streampos& pos){
+	virtual bool getNext(streampos& pos, Tuple* next){
 		assert(in);
 		pos = in->tellg();
-		return getNext();
+		return getNext(next);
 	}
-	virtual Tuple* getNext(){
+	virtual bool getNext(Tuple* tuple){
 		assert(in);
-		Tuple* tuple = new Tuple[numFlds];
           for(int i = 0; i < numFlds; i++){
-			TRY(tuple[i] = (readPtrs[i])(*in), NULL);
+			TRY(tuple[i] = (readPtrs[i])(*in), false);
 		}
-		if(in->good()){
-			return tuple;
-		}
-		else{
-			delete tuple;
-			return NULL;
-		}
+		return in->good();
 	}
      virtual Stats* getStats(){
           return stats;

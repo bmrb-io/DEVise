@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/02/25 22:14:53  donjerko
+  Enabled RTree to store data attributes in addition to key attributes.
+
   Revision 1.10  1997/02/18 18:06:03  donjerko
   Added skeleton files for sorting.
 
@@ -75,6 +78,7 @@ class Interface{
 public:
 	enum Type {UNKNOWN, CATALOG, QUERY};
 	Interface() {}
+	virtual ~Interface(){}
 	virtual Site* getSite() = 0;
 	virtual istream& read(istream& in) = 0;
 	virtual ostream* getOutStream(){
@@ -105,6 +109,7 @@ class DummyInterface : public Interface {
 	String segment;	// quoted
 public:
 	DummyInterface() {}
+	virtual ~DummyInterface(){}
 	virtual Site* getSite(){
 		String err = "Operations on old DEVise table are not supported";
 		THROW(new Exception(err), NULL);
@@ -138,10 +143,13 @@ class ViewInterface : public Interface {
 	String* attributeNames;
 	String query;
 public:
-	ViewInterface(String tableNm) : tableNm(tableNm), attributeNames(NULL) {}
+	ViewInterface(String tableNm) : tableNm(tableNm), attributeNames(NULL) {
+		// cout << "ViewInterface constructor" << endl;}
 	ViewInterface(int numFlds, String* attributeNames, String query) 
-		: numFlds(numFlds), attributeNames(attributeNames), query(query) {}	
+		: numFlds(numFlds), attributeNames(attributeNames), query(query) {
+		// cout << "ViewInterface constructor" << endl;}
 	virtual ~ViewInterface(){
+		// cout << "~ViewInterface destuctor" << endl;
 		delete [] attributeNames;
 	}
 	virtual Site* getSite();
@@ -164,6 +172,7 @@ class DeviseInterface : public Interface{
 	String viewNm;
 public:
 	DeviseInterface(String tableNm) : tableNm(tableNm){}
+	virtual ~DeviseInterface(){}
 	virtual Site* getSite();
 	virtual istream& read(istream& in){
 		in >> schemaNm >> dataNm;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/23 23:45:24  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.10  1997/03/20 20:42:25  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -438,8 +441,10 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	String tableNm = getFullNm();
 	TRY(Site* indexForTable = findIndexFor(tableNm), NULL);
 	indexForTable->initialize();
-	Tuple* tup;
-	while((tup = indexForTable->getNext())){
+	int tmpNumFlds = indexForTable->getNumFlds();
+	assert(tmpNumFlds == 3);
+	Tuple* tup = new Tuple[tmpNumFlds];
+	while(indexForTable->getNext(tup)){
 		IndexDesc* indexDesc = (IndexDesc*) tup[2];
 		cout << "Index Desc for " << tableNm << ": ";
 		indexDesc->display(cout);
@@ -500,50 +505,54 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 			retVal->append(newAlt);
 		}
 	}
+	delete tup;
 	delete indexForTable;
 	return retVal;
 }
 
-Tuple* SiteGroup::getNext(){
+bool SiteGroup::getNext(Tuple* next){
 	bool cond = false;
 	Tuple* innerTup = NULL;
+	assert(outerTup);
 	if(firstEntry){
-		outerTup = site1->getNext();
+		moreOuter = site1->getNext(outerTup);
 		firstEntry = false;
 	}
+	int innerNumFlds = site2->getNumFlds();
 	while(cond == false){
 		if(firstPass){
-			innerTup = site2->getNext();
-			if(innerTup){
+			innerTup = new Tuple[innerNumFlds];
+			if(site2->getNext(innerTup)){
 				innerRel.append(innerTup);
 			}
 			else{
 				firstPass = false;
 				innerRel.rewind();
 				if(innerRel.atEnd()){
-					return NULL;
+					return false;
 				}
 				innerTup = innerRel.get();
 				innerRel.step();
-				outerTup = site1->getNext();
+				moreOuter = site1->getNext(outerTup);
 			}
 		}
 		else{
 			if(innerRel.atEnd()){
 				innerRel.rewind();
-				outerTup = site1->getNext();
+				moreOuter = site1->getNext(outerTup);
 			}
 			innerTup = innerRel.get();
 			innerRel.step();
 		}
 		assert(innerTup);
-		if(!outerTup){
-			return NULL;
+		if(!moreOuter){
+			return false;
 		}
 		cond = evaluateList(myWhere, outerTup, innerTup);
 	}
-	assert(outerTup);
-	return tupleFromList(mySelect, outerTup, innerTup);
+	assert(moreOuter);
+	tupleFromList(next, mySelect, outerTup, innerTup);
+	return true;
 }
 
 void SiteGroup::typify(String option){	// Throws exception

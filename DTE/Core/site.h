@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/03/23 23:45:24  donjerko
+  Made boolean vars to be in the tuple.
+
   Revision 1.15  1997/03/20 20:42:26  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
   form of dynamic array.
@@ -158,9 +161,9 @@ public:
 	}
 	virtual void enumerate(){}
      virtual void typify(String option);	// Throws a exception
-	virtual Tuple* getNext(){
+	virtual bool getNext(Tuple* next){
 		assert(iterator);
-		return iterator->getNext();
+		return iterator->getNext(next);
 	}
 	virtual int getNumFlds(){
 		if(mySelect){
@@ -263,6 +266,7 @@ class LocalTable : public Site {
 	ofstream* fout;
 	WritePtr* writePtrs;
 protected:
+	Tuple* input;
 	Site* directSite;
 public:
      LocalTable(String nm, Iterator* marsh, String fileToWrite = "") : 
@@ -273,6 +277,7 @@ public:
 		this->fileToWrite = fileToWrite;
 		fout = NULL;
 		writePtrs = NULL;
+		input = NULL;
 	}
 	LocalTable(String nm, List<BaseSelection*>* select, 
 		List<BaseSelection*>* where, Iterator* iterator) : Site(nm) {
@@ -288,6 +293,7 @@ public:
 		this->iterator = NULL;
 		fout = NULL;
 		writePtrs = NULL;
+		input = NULL;
 	}
 	LocalTable(String nm, List<BaseSelection*>* select, 
 		List<BaseSelection*>* where, Site* base) : Site(nm) {
@@ -303,11 +309,13 @@ public:
 		directSite = base;
 		fout = NULL;
 		writePtrs = NULL;
+		input = NULL;
 	}
 	virtual ~LocalTable(){
 		delete fout;
 		delete writePtrs;
 		delete directSite;
+		delete input;
 	}
 	virtual void finalize(){}
 	virtual void addTable(TableAlias* tabName){
@@ -329,23 +337,22 @@ public:
 	virtual void initialize(){
 		directSite->initialize();
 		Site::initialize();
+		input = new Tuple[directSite->getNumFlds()];
 	}
-	virtual Tuple* getNext(){
+	virtual bool getNext(Tuple* next){
 		bool cond = false;
-		Tuple* input = NULL;
+		assert(input);
 		while(!cond){
-			// input = iterator->getNext();
 
-			input = directSite->getNext();	
-				// same thing as iterator->getNext()
+			// same thing as iterator->getNext()
 
-			if(!input){
-				return NULL;
+			if(!directSite->getNext(input)){
+				return false;
 			}
 			cond = evaluateList(myWhere, input);
 		}
-		assert(input);
-		return tupleFromList(mySelect, input);
+		tupleFromList(next, mySelect, input);
+		return true;
 	}
 	virtual List<Site*>* generateAlternatives();
      virtual Offset getOffset(){
@@ -397,23 +404,23 @@ public:
 	virtual void initialize(){
 		assert(index);
 		index->initialize();
-		Site::initialize();
+		LocalTable::initialize();
 	}
-	virtual Tuple* getNext(){
+	virtual bool getNext(Tuple* next){
 		bool cond = false;
-		Tuple* input = NULL;
+		assert(input);
 		while(!cond){
 			Offset offset = index->getNextOffset();
 			if(offset.isNull()){
-				return NULL;
+				return false;
 			}
 			iterator->setOffset(offset);
-			input = iterator->getNext();
-			assert(input);
+			bool more = iterator->getNext(input);
+			assert(more);
 			cond = evaluateList(myWhere, input);
 		}
-		assert(input);
-		return tupleFromList(mySelect, input);
+		tupleFromList(next, mySelect, input);
+		return true;
 	}
 };
 
@@ -448,6 +455,7 @@ protected:
 	bool firstEntry;
 	bool firstPass;
 	Tuple* outerTup;
+	bool moreOuter;
 public:
 	SiteGroup(Site* s1, Site* s2) : Site(""), site1(s1), site2(s2){
 		sites = new List<Site*>;
@@ -473,15 +481,19 @@ public:
 		outerTup = NULL;
 	}
 	virtual void initialize(){
-		if (site1)
+		if (site1){
 			site1->initialize();
-		if(site2)
+			outerTup = new Tuple[site1->getNumFlds()];
+		}
+		if(site2){
 			site2->initialize();
+		}
 	}
 	virtual ~SiteGroup(){
 //		delete sites;	// list only PROBLEm
 		delete site1;
 		delete site2;
+		delete outerTup;
 	}
 	virtual bool have(Site* siteGroup){
 		List<Site*>* checkList = siteGroup->getList();
@@ -529,7 +541,7 @@ public:
 		out << endl;
 		site2->display(out, detail);
 	}
-	virtual Tuple* getNext();
+	virtual bool getNext(Tuple* next);
 	virtual int getNumFlds(){
 		return mySelect->cardinality();
 	}
@@ -559,20 +571,19 @@ public:
 	virtual void initialize(){
 		iter1->initialize();
 	}
-	virtual Tuple* getNext(){
+	virtual bool getNext(Tuple* next){
 		if(runningFirst){
-			Tuple* retVal;
-			if((retVal = iter1->getNext())){
-				return retVal;
+			if(iter1->getNext(next)){
+				return true;
 			}
 			else{
 				runningFirst = false;
 				iter2->initialize();
-				return iter2->getNext();
+				return iter2->getNext(next);
 			}
 		}
 		else{
-			return iter2->getNext();
+			return iter2->getNext(next);
 		}
 	}
 	~UnionSite(){

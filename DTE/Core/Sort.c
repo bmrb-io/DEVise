@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:07:27  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "Sort.h"
@@ -37,10 +41,10 @@ void Sort::initialize(){
 	// use function pointers for sorting (types.h: getOperatorPtr).
 }
 
-Tuple* Sort::getNext(){
+bool Sort::getNext(Tuple* next){
 	// open all the runs
 	// To read temp file use StandardRead ...
 	// use heap to get max/min
-	// return tuple
-	return NULL;
+	// copy the next tuple over "next"
+	return false;
 }

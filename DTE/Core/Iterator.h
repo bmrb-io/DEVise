@@ -33,7 +33,7 @@ public:
 	virtual String *getOrderingAttrib(){
 		assert(0);
 	}
-	virtual Tuple  *getNext() = 0;
+	virtual bool getNext(Tuple* next) = 0;
 	virtual Stats* getStats(){
 
 		// default stats
