@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/05/21 20:27:07  andyt
+  ETk server now prints compile date when it starts. SampleClient can now send
+  "eval" commands to the ETk server.
+
   Revision 1.1  1996/07/09 15:59:29  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -27,10 +31,10 @@
 
  */
 
-#include "CompDate.h"
+#include "ETkCompDate.h"
 
 const char *
-CompDate::Get()
+ETkCompDate::Get()
 {
     return __DATE__;
 }

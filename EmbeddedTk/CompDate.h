@@ -1,8 +1,8 @@
 
-#ifndef _COMPDATE_H_
-#define _COMPDATE_H_
+#ifndef _ETK_COMPDATE_H_
+#define _ETK_COMPDATE_H_
 
-class CompDate
+class ETkCompDate
 {
   public:
     static const char *Get();
