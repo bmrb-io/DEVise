@@ -2814,7 +2814,7 @@ Num Date        Status  Description
 			connections. (rkw)
 
 705 10/05/01	OPEN	JavaScreen: the JSPoP should not create client log
-			files for clients that only send a JAVAC_CheckPop'
+			files for clients that only send a JAVAC_CheckPop
 			command. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
