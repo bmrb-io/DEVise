@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2000/07/26 15:53:49  venkatan
+// Hand - Mouse Cursor is used in the 3D view
+//
 // Revision 1.39  2000/06/26 16:48:33  wenger
 // Added client-side JavaScreen debug logging.
 //
@@ -65,7 +68,7 @@ public class jsa extends Applet
 
     Vector images = null;
 
-    Button startButton = new Button("Start Java Screen");
+    Button startButton = new Button("Click here to start JavaScreen");
 
     TextArea startInfo = null;
 
