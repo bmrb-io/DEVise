@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/06/15 13:50:59  jussi
+  Added get3DLocation and setMappingLegend commands.
+
   Revision 1.11  1996/06/12 14:56:23  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -235,18 +238,15 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
-    if (!strcmp(argv[1], "get3DLocation")) {
-      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+    if (!strcmp(argv[0], "get3DLocation")) {
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
       }
-#if 0
       Camera c = view->GetCamera();
       sprintf(result, "%g %g %g", c.x_, c.y_, c.z_);
       control->ReturnVal(API_ACK, result);
-#endif
-      control->ReturnVal(API_ACK, "0 0 0");
       return 1;
     }
     if (!strcmp(argv[0], "getLinkMaster")) {
@@ -1278,6 +1278,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 5) {
+    if (!strcmp(argv[0], "set3DLocation")) {
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      Camera c = view->GetCamera();
+      c.x_ = atof(argv[2]);
+      c.y_ = atof(argv[3]);
+      c.z_ = atof(argv[4]);
+      view->SetCamera(c);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "setLabel")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
