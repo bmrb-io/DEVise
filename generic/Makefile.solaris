@@ -28,7 +28,7 @@ generic.o: ../graphics.new/ViewGraph.h ../graphics.new/TDataMap.h
 generic.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
 generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
 generic.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics/ParseCat.h
+generic.o: ../graphics.new/ParseCat.h
 issm.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 issm.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 issm.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -62,4 +62,5 @@ issm.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
 issm.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 issm.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 issm.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-issm.o: /usr/include/sys/shm.h /usr/include/sys/sem.h ../graphics/ParseCat.h
+issm.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+issm.o: ../graphics.new/ParseCat.h

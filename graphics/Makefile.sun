@@ -127,12 +127,6 @@ Parse.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Parse.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 Parse.o: /usr/include/sys/time.h /usr/include/ctype.h /usr/include/stdio.h
 Parse.o: Config.h Exit.h
-ParseCat.o: /usr/include/stdio.h ParseCat.h DeviseTypes.h ClassDir.h
-ParseCat.o: AttrList.h /usr/include/sys/time.h /usr/include/sys/time.h
-ParseCat.o: Config.h DList.h Exit.h Parse.h Control.h VisualArg.h Color.h
-ParseCat.o: Util.h /usr/include/assert.h /usr/include/stdlib.h
-ParseCat.o: /usr/include/sys/stdtypes.h /usr/include/strings.h
-ParseCat.o: /usr/include/ctype.h
 Selection.o: /usr/include/strings.h /usr/include/stdio.h Selection.h View.h
 Selection.o: DeviseTypes.h Dispatcher.h DList.h Exit.h VisualArg.h Color.h
 Selection.o: Journal.h ViewWin.h WindowRep.h Geom.h /usr/include/math.h

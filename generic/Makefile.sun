@@ -29,7 +29,7 @@ generic.o: ../graphics.new/ViewGraph.h ../graphics.new/TDataMap.h
 generic.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
 generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
 generic.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
-generic.o: ../graphics/ParseCat.h
+generic.o: ../graphics.new/ParseCat.h
 issm.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 issm.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 issm.o: /usr/include/sys/time.h /usr/include/stdio.h
@@ -67,4 +67,4 @@ issm.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 issm.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 issm.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
 issm.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
-issm.o: ../graphics/ParseCat.h
+issm.o: ../graphics.new/ParseCat.h
