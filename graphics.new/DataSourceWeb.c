@@ -25,6 +25,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/01/14 20:05:47  wenger
+  Fixed some compile warnings; fixed relative positions of OK/Cancel
+  buttons in link GUI; removed some debug code I accidentally left
+  in place.
+
   Revision 1.8  1996/12/20 16:30:29  jussi
   Added count of transferred bytes.
 
@@ -200,6 +205,7 @@ DataSourceWeb::ChildProc()
 
     if (fd < 0) {
         fprintf(stderr, "Unable to open URL %s", _url);
+	Timer::StartTimer();
         return StatusFailed;
     }
 
@@ -207,6 +213,7 @@ DataSourceWeb::ChildProc()
     FILE *cfile = fopen(_filename, "w");
     if (!cfile) {
         fprintf(stderr, "Unable to create cache file %s", _filename);
+	Timer::StartTimer();
         return StatusFailed;
     }
 
@@ -220,6 +227,7 @@ DataSourceWeb::ChildProc()
                    _url, (long) totlen);
             close(fd);
             fclose(cfile);
+	    Timer::StartTimer();
             return StatusOk;
         }
         if (len < 0) {
@@ -240,6 +248,7 @@ DataSourceWeb::ChildProc()
     close(fd);
     fclose(cfile);
 
+    Timer::StartTimer();
     return StatusFailed;
 }
 
