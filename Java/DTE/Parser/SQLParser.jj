@@ -35,11 +35,28 @@ Query query() :
 	Vector whereClause;
 }
 {
-	<SELECT> "*"
+	<SELECT> selectClause = SelectClause() fromClause = FromClause() ...
 	{
 		return new Query(selectClause, fromClause, whereClause);		
 	}
   <EOF>
+}
+
+Vector SelectClause() :
+{
+	Vector retVal = new Vector();
+	Expression e;
+}
+{
+	e = Expression()
+		{
+			retVal.addElement(e);
+		}
+	( "," e=Expression()
+		{
+			retVal.addElement(e);
+		}
+	)*
 }
 
 String Expression() :
