@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/06/22 23:46:58  okan
+  Fixed Some bugs...
+
   Revision 1.4  1998/06/16 16:30:51  wenger
   Added standard headers to DataReader sources.
 
@@ -861,7 +864,11 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 						return status;
 				}
 			} else 
-				return FOUNDSEPARATOR;
+				status = checkEOL(_curChar);
+				if (status == OK)
+					return FOUNDSEPARATOR;
+				else
+					return status;
 		}
 
 		if (!ignoreRest) {
