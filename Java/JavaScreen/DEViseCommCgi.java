@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/05/11 20:36:05  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.3  2001/03/09 20:24:37  wenger
 // Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
 // to the trunk; updated linux and solaris dependencies.
@@ -233,9 +236,10 @@ public class DEViseCommCgi
 	    System.err.println("IOException in DEViseCommCgi.receiveCmd: " +
 	      e.getMessage());
 	    if (expectResponse) {
-                throw new YException("Error occurs while reading from " +
-	          "input stream in DEViseCommCgi.receiveCmd()",
-		  "DEViseCommCgi.receiveCmd()");
+                //throw new YException("Error occurs while reading from " +
+	        //  "input stream in DEViseCommCgi.receiveCmd()",
+		//  "DEViseCommCgi.receiveCmd()");
+		return ("Connection disabled");
 	    } else {
                 return DEViseCommands.DONE;
 	    }
