@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.18  1996/01/12 16:20:26  jussi
+#	Old command value was extracted incorrectly -- fixed.
+#
 #	Revision 1.17  1996/01/11 21:00:59  jussi
 #	No major changes -- improvements in coding style and organization.
 #
@@ -158,8 +161,10 @@ proc updateStreamDef {} {
     global dispname source key schemafile evaluation priority command
 
     if {$source == "SEQ"} {
-	set schemafile $schemadir/physical/SEQ.$key.schema
-	set schematype "SEQ.$key"
+	set schemafile [format "%s/%s.%s.schema" $schemadir/physical \
+		[string trim $source] [string trim $key]]
+	set schematype [format "%s.%s" [string trim $source] \
+		[string trim $key]]
     }
 
     if {$dispname == "" || $key == "" || $schemafile == ""} {
@@ -172,7 +177,7 @@ proc updateStreamDef {} {
     set cachefile [getCacheName $source $key]
     set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 
-    if {$source == "SEQ"} {
+    if {$source == "SEQ" || $source == "WWW"} {
 	set oldCommand [lindex $sourceList($dispname) 7]
 	if {$oldCommand != $command} {
 	    uncacheData $oldDispName "Query changed."
