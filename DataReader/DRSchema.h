@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/10/02 17:19:59  wenger
+  Fixed bug 404 (DataReader gets out-of-sync with records); made other
+  cleanups and simplifications to DataReader code.
+
   Revision 1.3  1998/06/24 09:24:14  okan
   *** empty log message ***
 
@@ -32,7 +36,8 @@
 
 // Constants used for several definitions
 
-enum types { TYPE_INT, TYPE_STRING, TYPE_DOUBLE, TYPE_DATE };
+enum AttrType { TYPE_INVALID, TYPE_INT, TYPE_STRING, TYPE_DOUBLE, TYPE_DATE };
+ostream& operator<<(ostream &out, const AttrType &attrType);
 
 #define DIGITSTART '0'
 #define DIGITEND '9'
@@ -43,15 +48,29 @@ enum types { TYPE_INT, TYPE_STRING, TYPE_DOUBLE, TYPE_DATE };
 #define EXPONENTC 'e' //ASCII value of 'e'
 #define EXPONENTS 'E' //ASCII value of 'E'
 
-enum Status { OK, FAIL, FOUNDEOF, FOUNDEOL, NOQUOTE, FOUNDSEPARATOR, FOUNDCOMMENT };
+enum Status { OK, FAIL, FOUNDEOF, FOUNDEOL, NOQUOTE, FOUNDSEPARATOR,
+	FOUNDCOMMENT };
+ostream& operator<<(ostream &out, const Status &status);
 
-enum Encoding { ENCODING_CSTYLE, ENCODING_QUOTED, ENCODING_URL, ENCODING_NOESCAPE };
+enum Encoding { ENCODING_CSTYLE, ENCODING_QUOTED, ENCODING_URL,
+	ENCODING_NOESCAPE };
 
 // Struct used for defining EOL and separator
-struct Holder {
+class Holder {
+public:
 	char* data; // separator or EOL string
 	bool repeating; // if this repeating ?
 	int length; // length of data
+
+	~Holder() {
+		delete [] data;
+	}
+
+	friend ostream& operator<<(ostream &out, const Holder &holder) {
+		out << "data: {" << holder.data << "}; repeating: " << holder.repeating
+		  << "; length: " << holder.length;
+		return out;
+	}
 };
 
 // This class defines attributes of each field
@@ -59,7 +78,7 @@ class Attribute {
 
 private:
 	Holder* _separator; // Separator for this field
-	int _type; // Type of field
+	AttrType _type; // Type of field
 	int _maxLen; // Max Length of this field, used for buffer allocation
 	char _quote; // Quote character
 	int _fieldLen; // Length of this field if this is a fixed length field
@@ -67,15 +86,14 @@ private:
 	char _encoding; // What is the encoding style if this is a string field, not implemented yet
 	char* _fieldName; // Name of this field
 	char* _dateFormat; // Date format
-	size_t _length; // Length of field
+	size_t _length; // Length of internal data structure for this field
 
 public:
 
 	int whichAttr; // index of attribute in the attribute array
 	int offset; // Offset of this field in the destination buffer
-	Attribute(char* fieldName);
-	Attribute();
 
+	Attribute(char* fieldName = NULL);
 	~Attribute();
 
 	Holder* getSeparator() {
@@ -86,12 +104,11 @@ public:
 		_separator = separator;
 	}
 
-	int getType() {
+	AttrType getType() {
 		return _type;
 	}
 
-	void setType(int type) {
-
+	void setType(AttrType type) {
 		_type = type;
 	}
 
@@ -159,6 +176,7 @@ public:
 		return _dateFormat;
 	}
  
+	friend ostream& operator<<(ostream &out, const Attribute &attr);
 };
 
 // This class holds information about schema and an array of attributes
@@ -304,6 +322,8 @@ public:
 	// but for speeding up the extraction from data file, these are converted to single character formats
 	// for each component. 
 	Status normalizeDate(char*& curDate);
+
+	friend ostream& operator<<(ostream &out, DRSchema &schema);
 	
 };
 #endif

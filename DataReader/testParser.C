@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/10/02 17:20:01  wenger
+  Fixed bug 404 (DataReader gets out-of-sync with records); made other
+  cleanups and simplifications to DataReader code.
+
   Revision 1.4  1998/06/16 16:30:55  wenger
   Added standard headers to DataReader sources.
 
@@ -24,6 +28,7 @@
 #include <iostream.h>
 #include <fstream.h>
 #include "DataReader.h"
+#include "DateTime.h"
 
 //#define TESTDATAREADER  // ifdef, no output
 
@@ -49,6 +54,11 @@ int main(int ARGV, char **ARGC) {
 		testResult = TEST_ERROR;
 		goto end;
 	}
+
+#if defined(DEBUG)
+	cout << *myDataReader;
+#endif
+
 	aa = myDataReader->myDRSchema->qAttr;
 
 /**********************************************************************
@@ -72,7 +82,9 @@ int main(int ARGV, char **ARGC) {
  **********************************************************************/
 
 	while (true) {
+//*TEMP*/cout << "\nBefore getRecord()\n";
 		status = myDataReader->getRecord(results);
+//*TEMP*/cout << "  After getRecord()\n";
 		if (status == OK || status == FOUNDEOL || status == FOUNDEOF) {
 			// these are okay
 		} else if (status == FAIL) {
@@ -88,28 +100,51 @@ int main(int ARGV, char **ARGC) {
 #ifndef TESTDATAREADER
 		for (int i = 0 ; i < aa ; i++) {
 			char* tmp;
+			EncodedDTF tmpDate;
 			switch (myDataReader->myDRSchema->tableAttr[i]->getType()) {
+				case TYPE_INVALID:
+					cerr << "Invalid attribute type\n";
+					break;
 				case TYPE_INT:
 					cout << *(int*)(results+(myDataReader->myDRSchema->tableAttr[i]->offset)) << " " ;
 					break;
+
 				case TYPE_DOUBLE:
 					cout << *(double*)(results+(myDataReader->myDRSchema->tableAttr[i]->offset)) << " " ;
 					break;
+
 				case TYPE_STRING:
 					tmp = results + (myDataReader->myDRSchema->tableAttr[i]->offset);
 					cout << tmp << " " ;
+					break;
+
+				case TYPE_DATE:
+					memcpy(&tmpDate,
+					  results+(myDataReader->myDRSchema->tableAttr[i]->offset),
+					  sizeof(tmpDate));
+					cout << tmpDate.getYear() << "-" <<
+					  tmpDate.getMonth() << "-" << tmpDate.getDay() << " " <<
+					  tmpDate.getHour() << ":" << tmpDate.getMin() << ":" <<
+					  tmpDate.getSec() << "." << tmpDate.getNanoSec() << " ";
+					break;
+
+				default:
+					cerr << "Illegal attribute type.\n";
+					break;
 			}
 		}
 		cout << "->  Got One" << endl ;
 #endif
 
 		if (status == FOUNDEOF) {
-			cerr << "End Of File" << endl;
+			cerr << "End of file" << endl;
 			break;
 		}
 	}
 
 end:
+	delete myDataReader;
+
 	cout << endl << "Test result: ";
 	switch (testResult) {
 	case TEST_OK:

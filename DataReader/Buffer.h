@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/10/02 17:19:59  wenger
+  Fixed bug 404 (DataReader gets out-of-sync with records); made other
+  cleanups and simplifications to DataReader code.
+
   Revision 1.6  1998/06/24 09:24:13  okan
   *** empty log message ***
 
@@ -65,9 +69,9 @@ private:
 	Holder* _comment; //Comment string
 	char* _EOLCheck; //char array used for comparing current character to EOL 
 	char** _separatorCheck; //same as EOLCheck, we use different arrays for each attribute
-	// temporary values
 
-	DateInfo* _curDate; 
+	// temporary values
+	DateInfo _curDate;
 	int _posTarget;
 	int _iRetVal;
 	double _fRetVal;
@@ -105,7 +109,7 @@ private:
 	char** _monthAbbr; // array of abbreviated month names
 
 public:
-	Buffer(const char* fileName, DRSchema* myDRSchema); // constructor
+	Buffer(const char* fileName, DRSchema* myDRSchema, Status &status); // constructor
 	~Buffer();
 
 	// read temporary private members and calculates the final result

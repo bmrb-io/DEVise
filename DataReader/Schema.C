@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/10/02 17:20:01  wenger
+  Fixed bug 404 (DataReader gets out-of-sync with records); made other
+  cleanups and simplifications to DataReader code.
+
   Revision 1.8  1998/06/24 09:24:14  okan
   *** empty log message ***
 
@@ -31,101 +35,193 @@
 #include "sysdep.h"
 #include "DateTime.h"
 
+ostream&
+operator<<(ostream &out, const AttrType &attrType)
+{
+	switch (attrType) {
+	case TYPE_INVALID:
+		out << "Invalid";
+		break;
+
+	case TYPE_INT:
+		out << "int";
+		break;
+
+	case TYPE_STRING:
+		out << "string";
+		break;
+
+	case TYPE_DOUBLE:
+		out << "double";
+		break;
+
+	case TYPE_DATE:
+		out << "date";
+		break;
+
+	default:
+		out << "illegal attribute type";
+		break;
+	}
+
+	return out;
+}
+
+ostream&
+operator<<(ostream &out, const Status &status)
+{
+	switch (status) {
+	case OK:
+		out << "OK";
+		break;
+
+	case FAIL:
+		out << "FAIL";
+		break;
+
+	case FOUNDEOF:
+		out << "FOUNDEOF";
+		break;
+
+	case FOUNDEOL:
+		out << "FOUNDEOL";
+		break;
+
+	case NOQUOTE:
+		out << "NOQUOTE";
+		break;
+
+	case FOUNDSEPARATOR:
+		out << "FOUNDSEPARATOR";
+		break;
+
+	case FOUNDCOMMENT:
+		out << "FOUNDCOMMENT";
+		break;
+
+	default:
+		cerr << "Illegal status value\n";
+		break;
+	}
+
+	return out;
+}
+
 Attribute::Attribute(char* fieldName) {
 	_fieldName = fieldName;
 
-	_type = -1;
+	_type = TYPE_INVALID;
 	_maxLen = -1;
 	_quote = -1;
 	_encoding = -1;
 	_fieldLen = -1;
 	_hidden = -1;
 	_separator = NULL;
-	_dateFormat = NULL;
-}
-
-Attribute::Attribute() {
-	_type = -1;
-	_maxLen = -1;
-	_quote = -1;
-	_encoding = -1;
-	_fieldLen = -1;
-	_hidden = -1;
-	_separator = NULL;
-	_fieldName = NULL; 
 	_dateFormat = NULL;
 }
 
 Attribute::~Attribute() {
+#if defined(DEBUG)
+	cout << "Attribute::~Attribute(" << _fieldName << ")\n";
+#endif
 
-	if (_fieldName != NULL)
-		delete [] _fieldName;
-	if (_dateFormat != NULL)
-		delete [] _dateFormat;
+	//TEMP -- are we sure we 'own' _fieldName and _dateFormat?
+	delete [] _fieldName;
+	_fieldName = NULL;
+	delete [] _dateFormat;
+	_dateFormat = NULL;
 
+	// Note: _separator gets deleted, if necessary, in DRSchema destructor.
 }
 
+ostream&
+operator<<(ostream &out, const Attribute &attr)
+{
+	out << "Attribute " << attr._fieldName << ":\n";
+	out << "  Type: " << attr._type << endl;
+
+	out << "  Field separator: ";
+	if (attr._separator != NULL) {
+		out << *attr._separator << endl;
+	} else {
+		out << "NULL\n";
+	}
+
+	out << "  Max. length: " << attr._maxLen << endl;
+	out << "  Quote: {" << attr._quote << "} (" << (int)attr._quote << ")\n";
+	out << "  Field length: " << attr._fieldLen << endl;
+	//TEMP -- hidden =? skip
+	out << "  Hidden: {" << attr._hidden << "} (" << (int)attr._hidden <<
+	  ")\n";
+
+	out << "  Date format: ";
+	if (attr._dateFormat != NULL) {
+		out << attr._dateFormat << endl;
+	} else {
+		out << "NULL\n";
+	}
+
+	out << "  Length: " << attr._length << endl;
+	return out;
+}
+
+
 DRSchema::~DRSchema() {
+#if defined(DEBUG)
+	cout << "DRSchema::~DRSchema(" << _schemaName << ")\n";
+#endif
+
 	int i;
 
-	if (_separator != NULL) {
-		if (_separator->data != NULL) {
-			delete [] _separator->data;
-		}
-		delete _separator;
-	}
+	delete _separator;
+	_separator = NULL;
 
 	if (tableAttr != NULL) {
 		for (i = 0; i < (int)(qAttr); i++) {
-			if ((tableAttr[i]->getSeparator() != _separator) && (tableAttr[i]->getSeparator() != NULL)) {
-				if (tableAttr[i]->getSeparator()->data != NULL)
-					delete [] tableAttr[i]->getSeparator()->data;
+			if (tableAttr[i]->getSeparator() != _separator) {
 				delete tableAttr[i]->getSeparator();
-
+				tableAttr[i]->setSeparator(NULL);
 			}
 			delete tableAttr[i];
+			tableAttr[i] = NULL;
 		}
 	}
 	delete [] tableAttr;
+	tableAttr = NULL;
 
-	if (_delimiter != NULL) {
-		if (_delimiter->data != NULL) {
-			delete [] _delimiter->data;
-		}
-		 delete _delimiter;
-	}
+	delete _delimiter;
+	_delimiter = NULL;
 
-	if (_nullIf != NULL)
-		delete [] _nullIf;
+	delete [] _nullIf;
+	_nullIf = NULL;
+
 	delete [] _schemaName;
-	if (_sorted != NULL) 
-		delete _sorted;
-	if (_keys != NULL)
-		delete _keys;
+	_schemaName = NULL;
+
+	delete _sorted;
+	_sorted = NULL;
+
+	delete _keys;
+	_keys = NULL;
 }
 
 void DRSchema::addAttribute(Attribute* newAttr) {
-	int i=0;
-	if (qAttr == 0) {
-		tableAttr = new Attribute*[1];
-		tableAttr[0] = newAttr;
-		qAttr = 1;
-	} else {
-		Attribute** tmpAttr;
-		tmpAttr = new Attribute*[qAttr+1];
-		for (i = 0 ; i < (int)(qAttr); i++)
-			tmpAttr[i] = tableAttr[i];
-		tmpAttr[qAttr] = newAttr;
+	Attribute** tmpAttr = new Attribute*[qAttr+1];
+	if (qAttr > 0) {
+		for (int attrNum = 0 ; attrNum < (int)(qAttr); attrNum++) {
+			tmpAttr[attrNum] = tableAttr[attrNum];
+		}
 		delete [] tableAttr;
-		tableAttr = tmpAttr;
-		qAttr++;
 	}
+	tmpAttr[qAttr] = newAttr;
+	tableAttr = tmpAttr;
+	qAttr++;
 }
 
 Status DRSchema::finalizeDRSchema() {
+	int curOff = 0;
 	int i,j,k;
 	bool compoundFound = true;
-	int curOff = 0;
 	int fLen = 0;
 	_recSize = 0;
 
@@ -137,6 +233,8 @@ Status DRSchema::finalizeDRSchema() {
 		}
 	}
 
+	//TEMP -- what the !@#$ ???  having no delimiter does NOT seem
+	// to work this way!!
 	if (_delimiter == NULL) { //default delimiter = [\n]+
 		char* tmpC = new char[2];
 		tmpC[0] = '\n';
@@ -162,6 +260,9 @@ Status DRSchema::finalizeDRSchema() {
 	for (i = 0; i < (int)(qAttr); i++) {
 		
 		switch (tableAttr[i]->getType()) {
+			case TYPE_INVALID:
+				cerr << "Invalid attribute type\n";
+				break;
 			case TYPE_INT:
 				fLen = sizeof(int);
 				break;
@@ -177,6 +278,9 @@ Status DRSchema::finalizeDRSchema() {
 			case TYPE_DOUBLE:
 				fLen = sizeof(double);
 				break;
+			default:
+				cerr << "Illegal attribute type\n";
+				break;
 		}
 
 		if (tableAttr[i]->getFieldName() != NULL) {
@@ -191,42 +295,42 @@ Status DRSchema::finalizeDRSchema() {
 		_recSize += fLen;
 				
 		if ((tableAttr[i]->getType() != TYPE_STRING) && (tableAttr[i]->getEncoding() != -1)) {
-			cerr << "Parse Error : Only String fields can have Encoding -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse error : Only string fields can have encoding -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
 		if ((tableAttr[i]->getQuote() != -1) && (tableAttr[i]->getFieldLen() != -1)) {
-			cerr << "Parse Error :  Attribute can't have both Quote and Length -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse error :  Attribute can't have both quote and length -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
 		if ((tableAttr[i]->getSeparator() != NULL) && (tableAttr[i]->getFieldLen() != -1)) {
-			cerr << "Parse Error :  Attribute can't have both Separator and Length -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse error :  Attribute can't have both separator and length -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
 		if ((tableAttr[i]->getMaxLen() != -1) && (tableAttr[i]->getFieldLen() != -1)) {
-			cerr << "Parse Error :  Attribute can't have both Max Length and Length -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse error :  Attribute can't have both maxlen and length -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
 		if ((tableAttr[i]->getType() != TYPE_STRING) && (tableAttr[i]->getMaxLen() != -1)) {
-			cerr << "Parse Error :  Only String Fields can have Max Length -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse error :  Only string fields can have maxlen -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
 		if ((tableAttr[i]->getType() == TYPE_STRING) && (tableAttr[i]->getMaxLen() == -1 ) && (tableAttr[i]->getFieldLen() == -1)) {
-			cerr << "Parse Error :  MaxLen or Field Length should be defined for String Fields -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse Error :  maxlen or length must be defined for string fields -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
 		if ((tableAttr[i]->getType() != TYPE_STRING) && (tableAttr[i]->getQuote() != -1)) {
-			cerr << "Parse Error :  Only String Fields can have Quote -- Attribute : " << tableAttr[i]->getFieldName() << endl;
+			cerr << "Parse error :  Only string fields can have quote -- attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
-		if (tableAttr[i]->getType() == -1) {
-			cerr << "Parse Error :  Type should be specified for Attribute : " << tableAttr[i]->getFieldName() << endl;
+		if (tableAttr[i]->getType() == TYPE_INVALID) {
+			cerr << "Parse error :  Type must be specified for attribute : " << tableAttr[i]->getFieldName() << endl;
 			return FAIL;
 		}
 
@@ -246,7 +350,7 @@ Status DRSchema::finalizeDRSchema() {
 				tableAttr[i]->setDateFormat(_dateFormat);
 			} else {
 				if (normalizeDate(tmpDF) != OK) {
-					cerr << "Default Date format is not correct for : " << tableAttr[i]->getFieldName() << " !" << endl;
+					cerr << "Default date format is not correct for : " << tableAttr[i]->getFieldName() << " !" << endl;
 					return FAIL;
 				} else 
 					tableAttr[i]->setDateFormat(tmpDF);
@@ -261,7 +365,7 @@ Status DRSchema::finalizeDRSchema() {
 			}
 		} else {
 			if ((tableAttr[i]->getQuote() == -1) && (tableAttr[i]->getFieldLen() == -1) && (tableAttr[i]->getSeparator() == NULL)) {
-				cerr << "Parse Error : Separator should be specified for Attribute : " << tableAttr[i]->getFieldName() << endl ;
+				cerr << "Parse Error : Separator must be specified for Attribute : " << tableAttr[i]->getFieldName() << endl ;
 				return FAIL;
 			}
 		}
@@ -324,8 +428,8 @@ Status DRSchema::finalizeDRSchema() {
 }
 
 Status DRSchema::normalizeDate(char*& curDate) {
-#if defined(DEBUG) || 1
-    printf("DRSchema::normalizeDate(%s)\n", curDate);
+#if defined(DEBUG)
+    cout << "DRSchema::normalizeDate("<< curDate << ")\n";
 #endif
 
 	char* tmp = curDate;
@@ -518,4 +622,51 @@ Status DRSchema::normalizeDate(char*& curDate) {
 	strcpy(curDate,tmpString.str());
 	delete [] tmp1;
 	return OK;
+}
+
+ostream&
+operator<<(ostream &out, DRSchema &schema)
+{
+	out << "Schema " << schema._schemaName << ":\n";
+
+	out << "  Record separator: ";
+	if (schema._delimiter != NULL) {
+		out << *schema._delimiter << endl;
+	} else {
+		out << "NULL\n";
+	}
+
+	out << "  Field separator: ";
+	if (schema._separator != NULL) {
+		out << *schema._separator << endl;
+	} else {
+		out << "NULL\n";
+	}
+
+	out << "  Comment: ";
+	if (schema._comment != NULL) {
+		out << *schema._comment << endl;
+	} else {
+		out << "NULL\n";
+	}
+
+	out << "  Quote: {" << schema._quote << "} (" << (int)schema._quote <<
+	  ")\n";
+	out << "  Null string: {" << schema._nullIf << "} (" <<
+	  (int)schema._nullIf << ")\n";
+
+	out << "  Date format: ";
+	if (schema._dateFormat != NULL) {
+		out << schema._dateFormat << endl;
+	} else {
+		out << "NULL\n";
+	}
+
+	out << "  Record length: " << schema._recSize << endl;
+
+	for (int attrNum = 0; attrNum < (int)schema.qAttr; attrNum++) {
+		out << *schema.tableAttr[attrNum];
+	}
+
+	return out;
 }

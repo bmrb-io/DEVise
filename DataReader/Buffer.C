@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/10/02 17:19:57  wenger
+  Fixed bug 404 (DataReader gets out-of-sync with records); made other
+  cleanups and simplifications to DataReader code.
+
   Revision 1.12  1998/08/06 23:07:26  beyer
   bug fixes
 
@@ -45,27 +49,38 @@
 
  */
 
-#include "Buffer.h"
 #include <math.h>
+
+#include "Buffer.h"
 #include "DateTime.h"
 
 //#define DEBUG
 
-Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
+Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
+#if defined(DEBUG)
+	cout << "Buffer::Buffer(" << fileName << ", " <<
+	  myDRSchema->getDRSchemaName() << ")\n";
+#endif
+
+	status = FAIL;
+
 	int i,j;
 	Holder* temArr;
+
 	_nAttr = myDRSchema->qAttr;
+
 	_in.open(fileName);
 	if (_in.fail()) {
 		cerr << "DataReader File : " << fileName << " not found" << endl;
-		exit(1);
+		perror("open");
+		return;
 	}
 
 	// Initialize EOLCheck to make faster EOL comparison
 	_EOLCheck = new char[128];
-	for (i = 0 ; i<128 ; i++) 
+	for (i = 0 ; i<128 ; i++) {
 		_EOLCheck[i] = 0;
-	
+	}
 	if (myDRSchema->getDelimiter() != NULL) {
 		_EOL = myDRSchema->getDelimiter();
 		for (i = 0 ; i < _EOL->length ; i++) {
@@ -75,7 +90,6 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
 	}
 
 	_separatorCheck = new char*[myDRSchema->qAttr];
-	_curDate = new DateInfo;
 
 	// Initialize month names and abbreviated month names arrays
 	_months = new char*[12];
@@ -111,7 +125,7 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
 	extFunc = new eFunc[myDRSchema->qAttr];
 	valFunc = new vFunc[myDRSchema->qAttr];
 
-        _comment = myDRSchema->getComment();
+	_comment = myDRSchema->getComment();
 	
 	repeatings = new bool[myDRSchema->qAttr];
 	maxLens = new int[myDRSchema->qAttr];
@@ -133,14 +147,19 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
 			repeatings[i] = myDRSchema->tableAttr[i]->getSeparator()->repeating;
 		} else {
 			_separatorCheck[i] = NULL;
-                }
+        }
 
+		//TEMP -- why do we copy all of this shit into here instead
+		// of just keeping a pointer to the schema?
 		maxLens[i] = myDRSchema->tableAttr[i]->getMaxLen();
 		fieldLens[i] = myDRSchema->tableAttr[i]->getFieldLen();
 		quoteChars[i] = myDRSchema->tableAttr[i]->getQuote();
 
 		if (myDRSchema->tableAttr[i]->getFieldLen() != -1) {
 			switch (myDRSchema->tableAttr[i]->getType())	{
+				case TYPE_INVALID:
+					cerr << "Invalid attribute type\n";
+					break;
 				case TYPE_INT:
 					extFunc[i] = &getIntLen;
 					valFunc[i] = &getIntVal;
@@ -153,12 +172,21 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
 					extFunc[i] = &getStringLen;
 					valFunc[i] = &getPosTarget;
 					break;
+				case TYPE_DATE:
+					break;
+				default:
+					cerr << "Illegal attribute type\n";
+					break;
 			}
 		} else if (myDRSchema->tableAttr[i]->getQuote() != -1) {
 			extFunc[i] = &getStringQuote;
 			valFunc[i] = &getPosTarget;
 		} else {
+			//TEMP -- why two switches????
 			switch (myDRSchema->tableAttr[i]->getType()) {
+				case TYPE_INVALID:
+					cerr << "Invalid attribute type\n";
+					break;
 				case TYPE_INT:
 					extFunc[i] = &getIntTo;
 					valFunc[i] = &getIntVal;
@@ -175,33 +203,56 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema) {
 					extFunc[i] = &getDate;
 					valFunc[i] = &getDateVal;
 					break;
+				default:
+					cerr << "Illegal attribute type\n";
+					break;
 			}
 		}
 	}
+
+	status = OK;
 }
 
 Buffer::~Buffer() {
 	int i ;
-	if (_EOLCheck != NULL)
-		delete [] _EOLCheck;
+
+	_in.close();
+
+	delete [] _EOLCheck;
+	_EOLCheck = NULL;
 	
 	if (_separatorCheck != NULL) {
 		for (i = 0 ; i < _nAttr ; i++) {
-			if (_separatorCheck[i] != NULL)
-				delete [] _separatorCheck[i];
+			delete [] _separatorCheck[i];
+			_separatorCheck[i] = NULL;
 		}
 		delete [] _separatorCheck;
+		_separatorCheck = NULL;
 	}
+
 	delete [] extFunc;
+	extFunc = NULL;
+
 	delete [] valFunc;
+	valFunc = NULL;
 
 	delete [] _months;
+	_months = NULL;
+
 	delete [] _monthAbbr;
+	_monthAbbr = NULL;
 
 	delete [] repeatings; 
+	repeatings = NULL;
+
 	delete [] maxLens;
+	maxLens = NULL;
+
 	delete [] fieldLens;
+	fieldLens = NULL;
+
 	delete [] quoteChars;
+	quoteChars = NULL;
 }
 
 Status Buffer::setBufferPos(int cPos) {
@@ -211,8 +262,9 @@ Status Buffer::setBufferPos(int cPos) {
 	if (c == -1) {
 		cerr << "Can not set file pointer to : " << cPos << endl;
 		return FAIL;
-	} else 
+	} else {
 		return OK;
+	}
 }
 
 void Buffer::getDoubleVal(char* dest) {
@@ -244,25 +296,22 @@ void Buffer::getIntVal(char* dest) {
 void Buffer::getDateVal(char* dest) {
 // creates an EncodedDTF from the temporary _curDate
 
-	EncodedDTF* tmpDate = new EncodedDTF();
+	EncodedDTF tmpDate;
 
-	if (_curDate->ampm == PM)
-		_curDate->hour += 12;
+	if (_curDate.ampm == PM)
+		_curDate.hour += 12;
 
-	if (!(_curDate->adbc))
-		_curDate->year *= -1;
+	if (!(_curDate.adbc))
+		_curDate.year *= -1;
 
+	tmpDate.setDate(_curDate.year, _curDate.mon, _curDate.day);
+
+	tmpDate.setTime(_curDate.hour, _curDate.min, _curDate.sec);
 	
-	tmpDate->setDate(_curDate->year, _curDate->mon, _curDate->day);
+	tmpDate.setNanoSec(_curDate.nanosec);
 
-	tmpDate->setTime(_curDate->hour, _curDate->min, _curDate->sec);
-	
-	tmpDate->setNanoSec(_curDate->nanosec);
-	
 	// We MUST use memcpy() here in case dest is not aligned.
-	memcpy(dest, &tmpDate, sizeof(*tmpDate));
-	delete tmpDate;
-	
+	memcpy(dest, &tmpDate, sizeof(tmpDate));
 }
 
 void Buffer::getPosTarget(char* dest) {
@@ -301,7 +350,7 @@ Status Buffer::checkEOL(char curChar) {
 Status Buffer::checkComment() {
 
 #if defined(DEBUG)
-	printf("Buffer::checkComment()\n");
+	cout << "Buffer::checkComment()\n";
 #endif
 
 // This is called at the beginning of the record to check if
@@ -337,7 +386,9 @@ Status Buffer::checkComment() {
 		}
 
 	}
-	return OK;
+
+	// Should never get here.
+	return FAIL;
 }
 
 Status Buffer::checkSeparator(char curChar, Attribute* myAttr) {
@@ -426,6 +477,7 @@ Status Buffer::checkString(char** values, int distinct, int arrayLength, int& va
 // arrayLength : number of elements in the values array
 // val : index of given string in the array
 	
+	//TEMP -- what if arrayLength < 12???
 	int howMany[12] = { 0,1,2,3,4,5,6,7,8,9,10,11 };
 	int i,j;
 	int where = arrayLength;
@@ -995,15 +1047,15 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 // To speed up extraction, user given format is converted to a different format with 
 // single character for each component definition
 
-	_curDate->day = 0;
-	_curDate->mon = 0;
-	_curDate->year = 0;
-	_curDate->hour = 0;
-	_curDate->min = 0;
-	_curDate->sec = 0;
-	_curDate->ampm = NONE;
-	_curDate->nanosec = 0;
-	_curDate->adbc = true;
+	_curDate.day = 0;
+	_curDate.mon = 0;
+	_curDate.year = 0;
+	_curDate.hour = 0;
+	_curDate.min = 0;
+	_curDate.sec = 0;
+	_curDate.ampm = NONE;
+	_curDate.nanosec = 0;
+	_curDate.adbc = true;
 
 	dest++; //just to avoid warning
 
@@ -1012,26 +1064,26 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 	while (*dFormat != '\0') {
 		switch (*dFormat) {
 			case 'd':
-				err = getInt(2,_curDate->day);
+				err = getInt(2,_curDate.day);
 				if ( err != OK)
 					return err;
 				break;
 
 			case 'h':
-				err = getInt(2,_curDate->hour);
+				err = getInt(2,_curDate.hour);
 				if (err != OK)
 					return err;
 
 				break;
 			
 			case 'm':
-				err = getInt(2,_curDate->mon);
+				err = getInt(2,_curDate.mon);
 				if (err != OK)
 					return err;
 				break;
 
 			case 'i':
-				err = getInt(2,_curDate->min);
+				err = getInt(2,_curDate.min);
 				if (err != OK)
 					return err;
 				break;
@@ -1042,12 +1094,12 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 
 				if ((_curChar == 'A') || (_curChar == 'a')) {
-					_curDate->ampm = AM;
+					_curDate.ampm = AM;
 				} else if ((_curChar == 'P') || (_curChar == 'p')) {
-					_curDate->ampm = PM;
+					_curDate.ampm = PM;
 				} else {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 
@@ -1056,33 +1108,33 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 				if ((_curChar != 'M') && (_curChar != 'm')) {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 
 				break;
 
 			case 's':
-				err = getInt(2,_curDate->sec);
+				err = getInt(2,_curDate.sec);
 				if (err != OK)
 					return err;
 				break;
 
 			case 'f':
-				err = getInt(6,_curDate->nanosec);
+				err = getInt(6,_curDate.nanosec);
 				if (err != OK)
 					return err;
 				break;
 				
 			case 'y':
-				err = getInt(2,_curDate->year);
+				err = getInt(2,_curDate.year);
 				if (err != OK)
 					return err;
-				_curDate->year += 1900;
+				_curDate.year += 1900;
 				break;
 
 			case 'Y':
-				err = getInt(4,_curDate->year);
+				err = getInt(4,_curDate.year);
 				if (err != OK)
 					return err;
 				break;
@@ -1094,12 +1146,12 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 
 				if ((_curChar == 'B') || (_curChar == 'b')) {
-					_curDate->adbc= false;
+					_curDate.adbc= false;
 				} else if ((_curChar == 'A') || (_curChar == 'a')) {
-					_curDate->adbc = true;
+					_curDate.adbc = true;
 				} else {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 
@@ -1108,20 +1160,20 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 				if ((_curChar != 'D') && (_curChar != 'd') && (_curChar != 'C') && (_curChar != 'c')) {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
 					return FAIL;
 				}
 			
 				break;
 
 			case 'M':
-				err = checkString(_months,3,12,_curDate->mon);
+				err = checkString(_months,3,12,_curDate.mon);
 				if (err != OK)
 					return err;
 				break;
 
 			case 'N':
-				err = checkString(_monthAbbr,3,12,_curDate->mon);
+				err = checkString(_monthAbbr,3,12,_curDate.mon);
 				if (err != OK)
 					return err;
 				break;
@@ -1132,9 +1184,9 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				}
 				if (_curChar != *dFormat) {
 					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-//cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
-//cerr << "dFormat = " << dFormat << "\n";//TEMP
-//cerr << "_curChar = " << _curChar << "\n";//TEMP
+					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << "dFormat = " << dFormat << "\n";//TEMP
+					cerr << "_curChar = " << _curChar << "\n";//TEMP
 					return FAIL;
 				}
 		}

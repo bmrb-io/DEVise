@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/10/02 17:20:00  wenger
+  Fixed bug 404 (DataReader gets out-of-sync with records); made other
+  cleanups and simplifications to DataReader code.
+
   Revision 1.6  1998/06/29 17:18:23  wenger
   Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
 
@@ -26,6 +30,7 @@
 
 #include "sysdep.h"
 #include "DataReader.h"
+#include "Buffer.h"
 #include "DataReaderParser.h"
 
 //#define DEBUG
@@ -33,67 +38,93 @@
 DataReader::DataReader(const char* dataFile, const char* schemaFile)
 {
 #if defined(DEBUG)
-    printf("DataReader::DataReader(%s, %s)\n", dataFile, schemaFile);
+    cout << "DataReader::DataReader(" << dataFile << ", " << schemaFile <<
+	  ")\n";
 #endif
 
 	int rc;
 	_uStat = OK;
-	myDRSchema = new DRSchema();
+	myDRSchema = NULL;
+	myBuffer = NULL;
 
 	ifstream schemaStream;
 	schemaStream.open(schemaFile);
 	if (schemaStream.fail()) {
 		cout << "DRSchema File " << schemaFile << " can't be opened !..."
 		  << endl;
+		perror("open");
 		_uStat = FAIL;
 	} else {
-		myParser = new DataReaderParser(&schemaStream,0);
+		DataReaderParser *myParser = new DataReaderParser(&schemaStream,0);
+
+		myDRSchema = new DRSchema();
 		myParser->setDRSchema(myDRSchema);
+
 		rc = myParser->parse();
 		schemaStream.close();
+		delete myParser;
+
+#if defined(DEBUG)
+		cout << "\nSchema before finalizing\n";
+		cout << *myDRSchema << endl;
+#endif
+
 		if (rc != 0) {
 			cerr << "Parse Error, DRSchema file " << schemaFile <<
 			  " can't be parsed !" << endl;
 			_uStat = FAIL;
 		} else {
 			if (myDRSchema->finalizeDRSchema() == OK) {
-				offset = new long[myDRSchema->qAttr];
-				myBuffer = new Buffer(dataFile, myDRSchema);
+#if defined(DEBUG)
+			cout << "\nSchema after finalizing\n";
+			cout << *myDRSchema << endl;
+#endif
+				Status bufStatus;
+				myBuffer = new Buffer(dataFile, myDRSchema, bufStatus);
+				if (bufStatus != OK) {
+					_uStat = FAIL;
+				}
 			} else {
 				_uStat = FAIL;
 			}
 		}
 	}
 
+	if (_uStat != OK) {
+		delete myBuffer;
+		myBuffer = NULL;
+		delete myDRSchema;
+		myDRSchema = NULL;
+	}
+
 #if defined(DEBUG)
-    printf("  End of DataReader::DataReader(); _uStat = %d\n", _uStat);
+    cout << "  End of DataReader::DataReader(); status = " << _uStat << endl;
 #endif
 }
 
 DataReader::~DataReader() {
 
-	if (myBuffer != NULL)
-		delete myBuffer;
+	_uStat = FAIL;
+
+	delete myBuffer;
+	myBuffer = NULL;
 		
-	if (myParser != NULL)
-		delete myParser;
-		
-	if (offset != NULL)
-		delete [] offset;
-		
-	if (myDRSchema != NULL)
-		delete myDRSchema;
+	delete myDRSchema;
+	myDRSchema = NULL;
 }
 
 Status DataReader::getRecord(char* dest) {
 #if defined(DEBUG)
-    printf("DataReader::getRecord()\n");
+	cout << "DataReader::getRecord()\n";
 #endif
 
 	Status status;
 	char* tmpPoint;
 
+//TEMP -- check for comment here only???
+
 	for (int i = 0 ; i < (int)(myDRSchema->qAttr); i++) {
+		//cout << "  Getting attribute " << i << endl;//TEMP
 		tmpPoint = dest + myDRSchema->tableAttr[i]->offset; 
 		status = myBuffer->extractField(myDRSchema->tableAttr[i],tmpPoint);
 		if (status != FOUNDSEPARATOR) {
@@ -105,6 +136,7 @@ Status DataReader::getRecord(char* dest) {
 	// not defined.
 	return myBuffer->consumeRecord();
 }
+
 Status DataReader::getRndRec(char* dest, int fileOffset) {
 	Status status;
 	status = myBuffer->setBufferPos(fileOffset-1);
@@ -112,4 +144,14 @@ Status DataReader::getRndRec(char* dest, int fileOffset) {
 		return status;
 	status = getRecord(dest);
 	return status;
+}
+
+ostream &
+operator<<(ostream &out, const DataReader &dr)
+{
+	out << "DataReader:\n";
+	out << "  Status: " << dr._uStat << endl;
+	if (dr.myDRSchema != NULL) out << *dr.myDRSchema;
+
+	return out;
 }

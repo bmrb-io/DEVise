@@ -89,7 +89,7 @@ getcomment: COMMENT_TOKEN '=' STRING_TOKEN {	if (myDRSchema->getComment() != NUL
 												drerror("DRSchema Comment can't be entered twice !...");
 											if ($3 == NULL)
 												drerror("DRSchema Comment NULL ??? ") ;
-											char* tmpCom = new char[strlen($3)];
+											char* tmpCom = new char[strlen($3)+1];
 											strcpy(tmpCom,$3);
                                             Holder* tmpHolderC = new Holder;
 

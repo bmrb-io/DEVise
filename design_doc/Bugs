@@ -1543,11 +1543,22 @@ Num Date        Status  Description
 			(Fixed by kb 9/30/98.)
 
 403 09/30/98	OPEN	DataReader error messages are almost useless. (rkw)
+			(Both in parsing schema and reading data.)
 
 404 09/30/98	FIXED	DataReader can get out-of-synch with the beginnings
 			of records if the number of attributes it finds in
 			a record is different than it expects. (rkw)
 			(Fixed by rkw 10/2/98.)
+
+405 10/05/98	OPEN	Comment lines don't work in DataReader data files.
+			(rkw)
+
+406 10/05/98	OPEN	Date attributes don't work in DataReader. (rkw)
+
+407 10/05/98	OPEN	Skip attributes don't work in DataReader. (rkw)
+
+408 10/06/98	OPEN	String field in data longer than maxlen goofs up
+			subsequent fields in DataReader. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
