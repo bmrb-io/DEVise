@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/04/29 15:50:04  wenger
+  Changed HighLow symbols so that Y is the top rather than the middle (so
+  visual filter and home work better); changed Condor session scripts
+  accordingly.
+
   Revision 1.60  1999/03/18 17:30:42  wenger
   Implemented two-color option in HighLow symbols; compensated for
   XFillRectangle() not working the way O'Reilly says it does (subtracted
@@ -655,11 +660,25 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (width > pixelWidth)
 	  x -= width / 2.0;
 
+    Boolean hasError = false;
+	Coord error;
+	if (map->GDataAttrList()->Find("shapeAttr_1")) {
+	  hasError = true;
+	  error = GetShapeAttr1(gdata, map, offset);
+	}
+
+	Coord lineWidth = GetLineWidth(gdata, map, offset);
+
 	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
-	win->SetLineWidth(GetLineWidth(gdata, map, offset));
+	win->SetLineWidth(lineWidth);
 
 	win->FillRect(x, 0.0, width, y);
+
+	if (hasError) {
+	  win->Line(x + width / 2.0, 0.0, x + width / 2.0, error, lineWidth);
+	  win->Line(x, error, x + width, error, lineWidth);
+	}
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + width / 2, y, y);
