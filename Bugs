@@ -1106,7 +1106,7 @@ Num Date        Status  Description
 			are no dependencies for View.o in
 			graphics/Makefile.solaris(!) (rkw)
 
-287 02/10/98	OPEN	Sometimes can't display data sources (from Tables
+287 02/10/98	FIXED?	Sometimes can't display data sources (from Tables
 			menu -- opening sessions works okay). (rkw)
 
 288 02/10/98	FIXED	Can't select a view (in monolithic form)
@@ -1123,7 +1123,7 @@ Num Date        Status  Description
 			DEVISE_COLLABORATOR envrionment variable defined
 			(with code as of collab_br_1). (rkw)
 
-292 02/11/98	OPEN	Saving GData from views doesn't work correctly now
+292 02/11/98	WORK	Saving GData from views doesn't work correctly now
 			that ViewData has replaced ViewScatter. (rkw)
 
 293 02/12/98	OPEN	'kill_devised' doesn't work (with collaboration

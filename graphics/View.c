@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.124  1998/02/09 18:10:22  wenger
+  Removed ViewScatter class (totally replaced by ViewData, which is a
+  renamed version of TDataViewX); removed ViewRanges class (not used);
+  re-made Solaris dependencies.
+
   Revision 1.123  1998/02/05 23:45:53  wenger
   Added view-level specification of symbol alignment, API commands, simple
   GUI for Sanjay.
@@ -2955,7 +2960,9 @@ View::PrintPS()
   }
 
   // Force a refresh to print the PostScript.
-  fprintf(psDispP->GetPrintFile(), "\n%% Start of view '%s'\n", _name);
+  FILE *printFile = psDispP->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
+  fprintf(printFile, "\n%% Start of view '%s'\n", _name);
   Refresh();
 
   return result;
@@ -2971,7 +2978,9 @@ View::PrintPSDone()
 
   DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
 
-  fprintf(psDispP->GetPrintFile(), "%% End of view '%s'\n", _name);
+  FILE *printFile = psDispP->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
+  fprintf(printFile, "%% End of view '%s'\n", _name);
 
   // Switch this view back to screen drawing mode.
   if (_pileMode) {

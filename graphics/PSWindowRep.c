@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/02/03 18:31:24  zhenhai
+  Fully implemented functionalities of XWindowRep with GLWindowRep. Fixed bugs in
+  postscript printing.
+
   Revision 1.33  1997/11/24 23:14:29  weaver
   Changes for the new ColorManager.
 
@@ -288,19 +292,25 @@ PSWindowRep::~PSWindowRep(void)
 // non-null, so something insidious is happening.
 void	PSWindowRep::SetForeground(PColorID fgid)
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::SetForeground(%d)\n", fgid);
+#endif
+
 	WindowRep::SetForeground(fgid);
 	oldForeground = fgid;
 
 #ifdef GRAPHICS
 	FILE*	printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	DOASSERT(printFile != NULL, "No PostScript file open");
+
 	RGB		rgb;
 	double	r, g, b;
 
 	if (PM_GetRGB(fgid, rgb))
 	{
 		rgb.Get(r, g, b);
-		if (printFile)
-		  fprintf(printFile, "%f %f %f setrgbcolor\n", (float)r, (float)g, (float)b);
+ 	    fprintf(printFile, "%f %f %f setrgbcolor\n", (float)r,
+			(float)g, (float)b);
 	}
 #endif
 }
@@ -383,6 +393,7 @@ void PSWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -417,6 +428,7 @@ void PSWindowRep::PopClip()
 
 #ifdef GRAPHICS
     FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
     fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -430,6 +442,7 @@ void PSWindowRep::PopClip()
     /* no more clipping */
 #ifdef GRAPHICS 
     FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
     fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -502,6 +515,7 @@ PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -577,6 +591,7 @@ PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
 //#ifdef GRAPHICS
 //  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+//	DOASSERT(printFile != NULL, "No PostScript file open");
   
 //  fprintf(printFile, "%f %f %f setrgbcolor\n", r, g, b);
 //#endif
@@ -614,6 +629,7 @@ PSWindowRep::SetLineWidth(int w)
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
   // Scale width to points.  Note: in most cases X and Y scaling should be
   // the same, so we can just use X for the scaling.
@@ -690,6 +706,7 @@ void PSWindowRep::DrawPixel(Coord x, Coord y)
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -749,6 +766,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
 #ifdef GRAPHICS
     FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
     fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -790,6 +808,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -861,6 +880,7 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -927,6 +947,7 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -978,6 +999,7 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1015,6 +1037,7 @@ void PSWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1068,6 +1091,7 @@ void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1129,6 +1153,7 @@ void PSWindowRep::FillPoly(Point *pts, int pointCount)
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1218,6 +1243,7 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1269,6 +1295,7 @@ void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1302,6 +1329,7 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
@@ -1385,6 +1413,8 @@ void PSWindowRep::SetXorMode()
 
 #ifdef GRAPHICS
 	FILE*	printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	DOASSERT(printFile != NULL, "No PostScript file open");
+
 	RGB		rgb;
 	double	r, g, b;
 
@@ -1413,6 +1443,7 @@ void PSWindowRep::SetCopyMode()
 
 #ifdef GRAPHICS
 	FILE*	printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	DOASSERT(printFile != NULL, "No PostScript file open");
 
 	if (GetForeground() != oldForeground)	// Avoid redundant color commands
 		SetForeground(oldForeground);
@@ -1432,6 +1463,7 @@ void PSWindowRep::SetFont(char *family, char *weight, char *slant,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
   if (!strcasecmp(family, "new century schoolbook")) {
     family = "NewCenturySchoolbook";
@@ -1862,6 +1894,7 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+  DOASSERT(printFile != NULL, "No PostScript file open");
 
 #if defined(PS_DEBUG)
   fprintf(printFile, "%% PSWindowRep::%s()\n", scaled ? "ScaledText" :

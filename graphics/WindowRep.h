@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1998/02/09 17:29:08  wenger
+  Conditionaled out some debug output.
+
   Revision 1.62  1998/02/04 20:22:05  zhenhai
   Fixed bugs of displaying date and customized text at axis.
 
@@ -322,7 +325,7 @@
 
 #include "GraphicsDebug.h"
 
-#include "Color.h"
+#include "Color.h" // Note: this includes X-specific stuff -- bad!!
 #include "Coloring.h"
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/11/24 23:14:28  weaver
+  Changes for the new ColorManager.
+
   Revision 1.22  1997/11/12 15:45:23  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -176,6 +179,8 @@ PSDisplay::PSDisplay(char *name)
   _outputHeight = _userHeight = 11.0;
   _outputXMargin = _userXMargin = 1.0;
   _outputYMargin = _userYMargin = 1.0;
+
+  _printFile = NULL;
 }
 
 /*************************************************************

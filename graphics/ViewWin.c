@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/02/04 20:22:04  zhenhai
+  Fixed bugs of displaying date and customized text at axis.
+
   Revision 1.40  1997/12/16 17:53:53  zhenhai
   Added OpenGL features to graphics.
 
@@ -452,8 +455,13 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 	x, y, w, h, NULL, min_width,
 	min_height, relativeMinSize, _winBoundary);
   
+#if 0
+  // These functions CANNOT be called here because there is no print file
+  // open.  I think we are okay just not calling them, because the colors
+  // should be set before we drawn anything.  RKW Feb. 13, 1998.
   fileWinRep->SetForeground(fgid);
   fileWinRep->SetBackground(bgid);
+#endif
 
   fileWinRep->SetDaliServer(Init::DaliServer());
   _winReps.SetFileWinRep(fileWinRep);
