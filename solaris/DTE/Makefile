@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/02/25 22:17:40  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.8  1997/02/03 04:13:47  donjerko
 #  Catalog management moved to DTE
 #
@@ -46,7 +49,8 @@ ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script ../../attrproj/
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script \
+	../../attrproj/ $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
@@ -56,6 +60,10 @@ dte: $(STAND_ALONE_OBJ)
 
 script: $(SCRIPT_OBJ)
 	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+
+gui: $(GUI_OBJ)
+	$(CC) -gstabs -o gui $(GUI_OBJ) -L../devread -L/s/X11/lib -L/s/tcl/lib \
+	-ldevread -lm -ltk -ltcl -lX11 -lsocket -lnsl
 
 FormatVolume: FormatVolume.C
 	$(CC) $< -o $@
