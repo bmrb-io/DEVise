@@ -1,40 +1,74 @@
-#! /bin/csh -f
-# Start devised for JavaScreen.
+#! /s/std/bin/perl
 
-rmmem
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1998-1999
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
 
-# For Tasvir and EmbeddedTk.
-set path = ( $path /p/devise/public/bin )
+#  This is a script for the jspop to use to kill a devised.  Optional
+#  argument is port number devised is listening on, to make sure you
+#  kill the right one.
 
-setenv DEVISE_ROOT		/p/devise/demo
-#setenv DEVISE_ROOT		/p/devise/wenger
-setenv DEVISE_PUB               /p/devise/public
+############################################################
 
-setenv DEVISE_DAT		$DEVISE_ROOT/dat
-setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.js.dte
-setenv DEVISE_ID_FILE		$DEVISE_ROOT/schema/schema/temp_catalog.js
-setenv DEVISE_DEF_FILE		$DEVISE_ROOT/schema/schema/def_file.js
-setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.js.dte
-setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.js.dte
-setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
-setenv DEVISE_MATER_DIR		$DEVISE_ROOT/dat
-setenv DEVISE_CACHE		$DEVISE_ROOT/cache
-setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
-setenv DEVISE_SESSION		$DEVISE_ROOT/session.js
-setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
+#  $Id$
 
-setenv DEVISE_TMP		/tmp/$USER-devise-tmp
-setenv DEVISE_WORK		/tmp/$USER-devise-work
-setenv LM_DAT			/tmp/LM/dat
-setenv LM_TMP			/tmp/LM/dat
+#  $Log$
+#  Revision 1.2  1999/06/22 20:48:00  wenger
+#  Put a copy of kill_devised2 here for the JS.
+#
+#  Revision 1.4  1999/06/17 18:55:52  wenger
+#  Fixed kill_devised2 script for problems with 'ps'; added check_jspop
+#  script for restarting jspop if necessary.
+#
+#  Revision 1.3  1999/06/08 20:29:58  wenger
+#  Fixed split.
+#
+#  Revision 1.2  1999/02/17 18:48:54  wenger
+#  Made this script work even if the devised command has a very long path.
+#
+#  Revision 1.1  1998/11/03 17:42:49  wenger
+#  New script for jspop to use to kill devised.
+#
 
-setenv DEVISE_LIB               $DEVISE_PUB/lib
-setenv LM_LIB                   $DEVISE_LIB/LM 
-#setenv DEVISE_EXEC              $DEVISE_PUB/bin/devised
-#setenv DEVISE_EXEC              ../../solaris/generic/devised
-#setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
-setenv DEVISE_EXEC              ./devised
+############################################################
 
-$DEVISE_EXEC $* >>& devised.out
+if ($#ARGV >= 0) {
+    $pattern = "devised -port $ARGV[0]";
+    # ww option forces extra-wide output
+    #TEMP -ww option in ps goofs things up; but without it we may goof
+    # up if path is too long
+    #TEMPopen PS, "ps -axww >& 1 |" or die "can't fork: $!";
+    open PS, "ps -ax >& 1 |" or die "can't fork: $!";
+} else {
+    $pattern = "devised";
+    # c option prevents path from being shown as part of command name
+    open PS, "ps -axc >& 1 |" or die "can't fork: $!";
+}
 
-rmmem
+while (<PS>) {
+#    print "line: ";
+#    print;
+    # Avoid killing ourself!
+    if ((!($_ =~ /kill_devised2/)) and $_ =~ /$pattern/) {
+	print "Killing $_";
+
+	@words = split /  */, $_;
+	$pid = @words[1];
+
+        system("kill -INT $pid");
+        system sleep 1;
+        system("kill -INT $pid");
+        system sleep 1;
+        system("kill -INT $pid");
+    }
+}
+
+close PS;
