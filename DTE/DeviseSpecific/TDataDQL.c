@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/04/10 16:25:53  donjerko
+  *** empty log message ***
+
   Revision 1.29  1998/03/12 18:23:46  donjerko
   *** empty log message ***
 
@@ -171,7 +174,7 @@ TDataDQL::TDataDQL(
 void TDataDQL::runQuery(){
 
 #if defined(DEBUG)
-	cout << "Running: " << _query << endl;
+	cout << "Running query: " << _query << endl;
 	cerr << ".";
 #endif
 
@@ -253,7 +256,8 @@ void TDataDQL::runQuery(){
 	_recSize = offset;
 
 	if(firstTup){
-		_totalRecs = ((int) firstTup[1]) + 1;	// max(recId)
+		// this is max(recId)
+		_totalRecs = IInt::getInt(firstTup[2 * _recIdAttrPosition + 1]) + 1;
 	}
 	else{
 		_totalRecs = 0;
@@ -285,9 +289,13 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	const int MAX_NUM_ATTRS = 100;
 	_attributeNames = new string[MAX_NUM_ATTRS];
 	int i = 0;
+	_recIdAttrPosition = -1;
 	while(attName){
 		assert(i < MAX_NUM_ATTRS);	
 		_attributeNames[i] = string(attName);
+		if(_attributeNames[i] == RID_STRING){
+			_recIdAttrPosition = i;
+		}
 		string delimiAttNm = addSQLQuotes(attName, '"');
 		minmaxQ += string("min(t.") + delimiAttNm + 
 			"), max(t." + delimiAttNm + ")";
@@ -299,6 +307,7 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 		}
 		i++;
 	}
+	assert(_recIdAttrPosition >= 0 || !"recId not found in schema");
 	_numFlds = i;
 	minmaxQ += string(" from ") + _tableName + " as t";
 	queryHeader += string(" from ") + _tableName + " as t where ";

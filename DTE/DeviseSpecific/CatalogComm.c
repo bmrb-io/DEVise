@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/04/10 16:25:52  donjerko
+  *** empty log message ***
+
   Revision 1.25  1998/03/13 04:02:24  donjerko
   *** empty log message ***
 
@@ -341,33 +344,27 @@ char* dteListQueryAttributes(const char* query){
 	return strdup(retVal.c_str());
 }
 
-char* dteListAttributes(const char* tableName){
-	int numFlds;
-	string query = "schema " + string(tableName);
+char* dteListAttributes(const char* table)
+{
+	string query = string("select * from ") + table + " as t";
 	Engine engine(query);
-	engine.optimize();
-     CATCH(
-          cout << "DTE error coused by query: \n";
-          cout << "   " << query << endl;
-          cout << currExcept->toString();
-          currExcept = NULL;
-          cout << endl;
-          exit(0);
-     )
-	assert(engine.getNumFlds() == 1);
-	const TypeID* types = engine.getTypeIDs();
-	assert(types[0] == "schema");
-	const Tuple* tuple;
-	assert((tuple = engine.getFirst()));
-	const ISchema* schema = (const ISchema*) tuple[0];
-	assert(!(tuple = engine.getNext()));
-	engine.finalize();
+	TRY(const ISchema* schema = engine.typeCheck(), NULL);
 	const string* attrNames = schema->getAttributeNames();
-	numFlds = schema->getNumFlds();
+	int numFlds = schema->getNumFlds();
 	string retVal;
 	for(int i =  0; i < numFlds; i++){
-		retVal += attrNames[i] + " ";
+		string currAtt = attrNames[i].substr(2); // discards "t."
+		if(currAtt[0] == '"'){
+
+			// have to strip quotes because Devise cannot handle them
+
+			currAtt = stripSQLQuotes(currAtt.c_str());
+		}
+		retVal += currAtt + " ";	// discards "t."
 	}
+#if defined(DEBUG)
+  	cerr << "dteListAttributes returning: " << retVal.c_str() << endl;
+#endif
 	return strdup(retVal.c_str());
 }
 

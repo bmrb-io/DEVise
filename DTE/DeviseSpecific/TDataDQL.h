@@ -190,6 +190,7 @@ private:
 	Engine* engine;
 	string queryHeader;
 	const Tuple* tuple;
+	int _recIdAttrPosition;
 };
 
 #endif
