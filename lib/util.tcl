@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1996/11/26 09:45:55  beyer
+#  WindowVisible always puts a window on top, rather than iconify
+#
 #  Revision 1.32  1996/10/07 22:54:08  wenger
 #  Added more error checking and better error messages in response to
 #  some of the problems uncovered by CS 737 students.
@@ -212,6 +215,18 @@ proc findNumericValue {list value} {
 	if {[lindex $item 1] == $value} {
 	    return [lindex $item 0]
 	}
+    }
+    return $value
+}
+
+############################################################
+
+# case insensitive version of FindNumericValue
+proc findNumericCaseValue {list value} {
+    foreach item $list {
+        if {[string tolower [lindex $item 1]] == [string tolower $value]} {
+            return [lindex $item 0]
+        }
     }
     return $value
 }
