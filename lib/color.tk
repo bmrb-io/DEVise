@@ -101,6 +101,9 @@ proc InitColorMenu { m } {
 	$m.color.menu add command -label "View Background..." -state normal \
 			-command { DoColorDialog 0 0 }
 	$m.color.menu add separator
+	$m.color.menu add command -label "Cursor Foreground..." -state normal \
+			-command { DoCursorColorDialog }
+	$m.color.menu add separator
 	$m.color.menu add command -label "Palette..." -state normal \
 			-command DoPaletteDialog
 }
@@ -150,8 +153,28 @@ proc DoMappingColorDialog { varname background current } {
 	}
 }
 
+proc DoCursorColorDialog {} {
+    global newRGB curView isColorSelected
+
+	set cursor [DoGetCursor "Select cursor for color"]
+
+	if {$curView != ""} {
+	    set background [DEVise color GetBackground $curView]
+	} else {
+	    set background "#ffffffffffff"
+	}
+    set current [DEVise color GetCursorColor $cursor]
+
+	ColorDialog newRGB $background $current "Cursor"
+
+	if {$isColorSelected} {
+    	DEVise color SetCursorColor $cursor $newRGB
+	}
+}
+
 proc ColorDialog { varname background current {type "A"} } {
     global $varname isColorSelected pids
+	global text
 
     if {[WindowVisible .colorDialog]} {
 		return

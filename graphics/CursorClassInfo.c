@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.8.1  1998/06/09 18:15:29  wenger
+  Added cursor color-changing capability.
+
+  Revision 1.6  1997/11/24 23:14:13  weaver
+  Changes for the new ColorManager.
+
   Revision 1.5  1997/07/22 15:36:23  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -120,8 +126,6 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
   if (argc >= 4) gridX = atof(argv[3]);
   if (argc >= 5) gridX = atof(argv[4]);
   DeviseCursor *cursor = new DeviseCursor(name, flag,
-										  GetPColorID(defForeColor),
-										  GetPColorID(defBackColor),
 										  useGrid, gridX, gridY);
   return new CursorClassInfo(name, flag, cursor);
 }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/05/29 19:34:38  wenger
+  Added JAVAC_SetDisplaySize to allow the JavaScreen to set the display
+  size.
+
   Revision 1.14  1998/05/21 18:18:47  wenger
   Most code for keeping track of 'dirty' GIFs in place; added 'test'
   command to be used for generic test code that needs to be controlled
@@ -526,10 +530,7 @@ TAG*/
 int
 DeviseCommand_color::Run(int argc, char** argv)
 {
-    {
-    		return ParseAPIColorCommands(argc, argv, control);
-    }
-    return true;
+	return ParseAPIColorCommands(argc, argv, control);
 }
 int
 DeviseCommand_getAllViews::Run(int argc, char** argv)

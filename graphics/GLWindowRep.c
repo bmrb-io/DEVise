@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18.2.1  1998/06/04 21:08:44  wenger
+  Experimental drawing of 2D cursor in OpenGL by manipulating pixmap values.
+
+  Revision 1.18  1998/05/28 15:04:57  wenger
+  OpenGL cursors now drawn in view foreground color;
+  fixes to OpenGL crashes with some sessions (bugs 342, 356?).
+
   Revision 1.17  1998/05/14 18:21:02  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -3673,6 +3680,10 @@ void GLWindowRep::ReadCursorStore(CursorStore & c)
 
 void GLWindowRep::DrawCursorStore(CursorStore & c)
 {
+#if defined(DEBUG)
+  printf("GLWindowRep::DrawCursorStore()\n");
+#endif
+
   MAKECURRENT();
 
   if (c.Valid()) {

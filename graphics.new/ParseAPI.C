@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.95  1998/02/26 20:48:17  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.90  1998/02/05 23:46:04  wenger
   Added view-level specification of symbol alignment, API commands, simple
   GUI for Sanjay.
@@ -749,6 +752,37 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 		return 1;
 	}
 
+	// Arguments: <cursor name>
+	// Returns: <cursor color (RGB)>
+	if (!strcmp(argv[1], "GetCursorColor"))
+	{
+		Trace("    Command: color GetCursorColor");
+
+		DeviseCursor *	cursor =
+		  (DeviseCursor *)classDir->FindInstance(argv[2]);
+
+		if (!cursor)
+		{
+			control->ReturnVal(API_NAK,"Cannot find cursor");
+			return -1;
+		}
+
+		PColorID	pcid = cursor->GetCursorColor();
+		RGB			rgb;
+
+		if (!PM_GetRGB(pcid, rgb) && !PM_GetRGB((PColorID)0, rgb))
+		{
+			control->ReturnVal(API_NAK, "Couldn't get color");
+			return -1;
+		}
+
+		string		s = rgb.ToString();
+		
+		strcpy(result, s.c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
 	if (!strcmp(argv[1], "SetForeground"))
 	{
 		Trace("    Command: color SetForeground");
@@ -801,6 +835,37 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 		}
 
 		view->SetBackground(pcid);
+		control->ReturnVal(API_ACK, "done");
+		return 1;
+	}
+
+	// Arguments: <cursor name> <cursor color (RGB) >
+	// Returns: "done"
+	if (!strcmp(argv[1], "SetCursorColor"))
+	{
+		Trace("    Command: color SetCursorColor");
+
+		DeviseCursor *	cursor =
+		  (DeviseCursor *)classDir->FindInstance(argv[2]);
+
+		if (!cursor)
+		{
+			control->ReturnVal(API_NAK, "Cannot find cursor");
+			return -1;
+		}
+
+		PColorID	pcid;
+		RGB			rgb;
+
+		rgb.FromString(argv[3]);
+
+		if (!PM_GetPColorID(rgb, pcid))
+		{
+			control->ReturnVal(API_NAK, "Couldn't set color");
+			return -1;
+		}
+
+		cursor->SetCursorColor(pcid);
 		control->ReturnVal(API_ACK, "done");
 		return 1;
 	}

@@ -1,3 +1,30 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.3.2.2  1998/06/05 20:08:10  wenger
+  Cursor in OpenGL now drawn as a shaded outline plus background color
+  is changed.
+
+  Revision 1.3.2.1  1998/06/04 21:08:44  wenger
+  Experimental drawing of 2D cursor in OpenGL by manipulating pixmap values.
+
+ */
+
 #include <iostream.h>
 #include "CursorStore.h"
 #include "Exit.h"
@@ -69,10 +96,12 @@ void CursorStore::Expand(int min_x, int min_y, int max_x, int max_y)
   // expand the region to cover a bit more to make sure the edges are covered
 
   DOASSERT(_inited, "CursorStore not inited before used");
+#if 0 // Shouldn't be needed -- RKW June 9, 1998.
   _min_x-=1;
   _min_y-=1;
   _max_x+=1;
   _max_y+=1;
+#endif
   if (_min_x > max_x || _max_x < min_x || _min_y > max_y || _max_y < min_y) {
     _need_draw=0;
     return;

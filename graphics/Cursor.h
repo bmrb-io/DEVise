@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.15.2.1  1998/06/09 18:15:28  wenger
+  Added cursor color-changing capability.
+
+  Revision 1.15  1998/05/05 15:14:39  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.14  1998/04/13 22:24:43  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -86,11 +94,11 @@
 #include "DList.h"
 #include "VisualArg.h"
 #include "ViewCallback.h"
-#include "WindowRep.h"
+#include "CursorStore.h"
 
 #include "Color.h"
-#include "Coloring.h"
 
+class WindowRep;
 class DeviseCursor;
 class View;
 DefinePtrDList(DeviseCursorList, DeviseCursor *)
@@ -99,13 +107,12 @@ DefinePtrDList(DeviseCursorList, DeviseCursor *)
 // class DeviseCursor
 //******************************************************************************
 
-class DeviseCursor : private ViewCallback, public Coloring
+class DeviseCursor : private ViewCallback
 {
 	public:
 
 		// Constructors and Destructors
 		DeviseCursor(char* name, VisualFlag flag,
-					 PColorID fgid, PColorID bgid,
 					 Boolean useGrid = false,
 					 Coord gridX = 1.0, Coord gridY = 1.0);
 		virtual ~DeviseCursor(void);
@@ -143,6 +150,9 @@ class DeviseCursor : private ViewCallback, public Coloring
   void DrawCursorStore(WindowRep*);
   void DrawCursor(WindowRep*);
 
+  void SetCursorColor(PColorID color);
+  PColorID GetCursorColor() { return _cursorColor; }
+
 private:
   virtual void FilterAboutToChange(View *view);
   virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
@@ -156,6 +166,7 @@ private:
   Coord _gridX;
   Coord _gridY;
   CursorStore _cursor_store[12];
+  PColorID _cursorColor;
 };
 
 //******************************************************************************

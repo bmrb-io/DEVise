@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,33 @@
   $Id$
 
   $Log$
+  Revision 1.16.2.7  1998/06/09 18:15:27  wenger
+  Added cursor color-changing capability.
+
+  Revision 1.16.2.6  1998/06/08 22:10:09  wenger
+  CursorStore pixmap is now correctly saved and restored.
+
+  Revision 1.16.2.5  1998/06/08 21:49:10  wenger
+  Cleaned up conditional-out code.
+
+  Revision 1.16.2.4  1998/06/08 21:32:33  wenger
+  2D OpenGL cursor now drawn as shaded outline plus every-other-point
+  "mesh".
+
+  Revision 1.16.2.3  1998/06/05 20:08:09  wenger
+  Cursor in OpenGL now drawn as a shaded outline plus background color
+  is changed.
+
+  Revision 1.16.2.2  1998/06/05 17:55:16  wenger
+  Cursor in OpenGL drawn as a shaded outline.
+
+  Revision 1.16.2.1  1998/06/04 21:08:43  wenger
+  Experimental drawing of 2D cursor in OpenGL by manipulating pixmap values.
+
+  Revision 1.16  1998/05/28 15:04:56  wenger
+  OpenGL cursors now drawn in view foreground color;
+  fixes to OpenGL crashes with some sessions (bugs 342, 356?).
+
   Revision 1.15  1998/05/05 15:14:38  zhenhai
   Implemented 3D Cursor as a rectangular block in the destination view
   showing left, right, top, bottom, front and back cutting planes of the
@@ -90,6 +117,7 @@
 #include "Cursor.h"
 #include "View.h"
 #include "Color.h"
+#include "XColor.h"
 #include "CmdContainer.h"
 #include "CommandObj.h"
 
@@ -98,9 +126,7 @@
 //******************************************************************************
 
 DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
-						   PColorID fgid, PColorID bgid,
 						   Boolean useGrid, Coord gridX, Coord gridY)
-	: Coloring(fgid, bgid)
 {
   _name = name;
   _visFlag = flag;
@@ -111,6 +137,7 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _useGrid = useGrid;
   _gridX = gridX;
   _gridY = gridY;
+  _cursorColor = GetPColorID(whiteColor);
 
   View::InsertViewCallback(this);
 }
@@ -270,35 +297,21 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
 
 void DeviseCursor::ReadCursorStore(WindowRep*w)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::ReadCursorStore()\n", _name);
+#endif
+
   VisualFilter *filter;
 
   GetVisualFilter(filter);
 
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
-    w->Line(filter->xLow, filter->yLow, filter->xLow, filter->yHigh, 1,
-            &_cursor_store[0]);
-    w->Line(filter->xHigh/2+filter->xLow/2, filter->yLow,
-              filter->xHigh/2+filter->xLow/2, filter->yHigh, 1,
-              &_cursor_store[1]);
-    w->Line(filter->xHigh, filter->yLow, filter->xHigh, filter->yHigh, 1,
-              &_cursor_store[2]);
-
-    w->Line(filter->xLow, filter->yLow, filter->xHigh, filter->yLow, 1,
-              &_cursor_store[3]);
-    w->Line(filter->xLow, filter->yLow/2+filter->yHigh/2,
-              filter->xHigh, filter->yLow/2+filter->yHigh/2, 1,
-              &_cursor_store[4]);
-    w->Line(filter->xLow, filter->yHigh, filter->xHigh, filter->yHigh, 1,
-              &_cursor_store[5]);
-/*
      w->FillRect(filter->xLow, filter->yLow,
                  filter->xHigh-filter->xLow,
-	         filter->yHigh-filter->yLow, &_cursor_store);
-*/
-    for (int i=0; i<6; i++) {
-     w->ReadCursorStore(_cursor_store[i]);
-    }
+	         filter->yHigh-filter->yLow, &_cursor_store[0]);
+
+    w->ReadCursorStore(_cursor_store[0]);
   }
   if (_src && _src->GetNumDimensions()==3
    && _dst&& _dst->GetNumDimensions()==3) {
@@ -362,10 +375,13 @@ void DeviseCursor::ReadCursorStore(WindowRep*w)
 
 void DeviseCursor::DrawCursorStore(WindowRep*w)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::DrawCursorStore()\n", _name);
+#endif
+
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
-    for (int i=0; i<6; i++)
-      w->DrawCursorStore(_cursor_store[i]);
+    w->DrawCursorStore(_cursor_store[0]);
   }
   if (_src && _src->GetNumDimensions()==3
    && _dst&& _dst->GetNumDimensions()==3) {
@@ -376,6 +392,10 @@ void DeviseCursor::DrawCursorStore(WindowRep*w)
 
 void DeviseCursor::DrawCursor(WindowRep* w)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::DrawCursor()\n", _name);
+#endif
+
   VisualFilter *filter;
   GetVisualFilter(filter);
 
@@ -383,16 +403,80 @@ void DeviseCursor::DrawCursor(WindowRep* w)
 
   if (_src && _src->GetNumDimensions()==2
    && _dst&& _dst->GetNumDimensions()==2) {
-    w->Line(filter->xLow, filter->yLow, filter->xLow, filter->yHigh, 1);
-    w->Line(filter->xHigh/2+filter->xLow/2, filter->yLow,
-              filter->xHigh/2+filter->xLow/2, filter->yHigh, 1);
-    w->Line(filter->xHigh, filter->yLow, filter->xHigh, filter->yHigh, 1);
+    //
+    // Note that this code relies on USERGB *not* being defined.
+    //
 
-    w->Line(filter->xLow, filter->yLow, filter->xHigh, filter->yLow, 1);
-    w->Line(filter->xLow, filter->yLow/2+filter->yHigh/2,
-              filter->xHigh, filter->yLow/2+filter->yHigh/2, 1);
-    w->Line(filter->xLow, filter->yHigh, filter->xHigh, filter->yHigh, 1);
+    //
+    // Fill in every-other-point "mesh" of the cursor color.
+    //
+    XColorID viewBgColX = AP_GetXColorID(_dst->GetBackground());
+    XColorID viewFgColX = AP_GetXColorID(_dst->GetForeground());
+    XColorID cursorColX = AP_GetXColorID(_cursorColor);
+
+    GLfloat *savePixels = _cursor_store[0].color_index;
+    GLfloat *tmpPixels = new GLfloat[_cursor_store[0]._tot];
+    memcpy(tmpPixels, _cursor_store[0].color_index,
+	_cursor_store[0]._tot * sizeof(GLfloat));
+    _cursor_store[0].color_index = tmpPixels;
+
+    {
+      for (int index = 0; index < _cursor_store[0]._tot; index+=4) {
+	if (_cursor_store[0].color_index[index] != cursorColX) {
+	  _cursor_store[0].color_index[index] = cursorColX;
+	} else {
+	  _cursor_store[0].color_index[index] = viewFgColX;
+	}
+      }
+    }
+
+    w->DrawCursorStore(_cursor_store[0]);
+
+    //
+    // Restore the original CursorStore pixmap.
+    //
+    _cursor_store[0].color_index = savePixels;
+    delete [] tmpPixels;
+
+    Coord xLowPix, yLowPix, xHighPix, yHighPix;
+    w->Transform(filter->xLow, filter->yLow, xLowPix, yLowPix);
+    w->Transform(filter->xHigh, filter->yHigh, xHighPix, yHighPix);
+
+    //
+    // Outline the cursor in the view foreground color.
+    //
+    w->AbsoluteLine((int)xLowPix+1, (int)yLowPix+1, (int)xLowPix+1,
+	(int)yHighPix-1, 1);
+    w->AbsoluteLine((int)xHighPix-1, (int)yLowPix+1, (int)xHighPix-1,
+	(int)yHighPix-1, 1);
+
+    w->AbsoluteLine((int)xLowPix+1, (int)yLowPix+1, (int)xHighPix-1,
+	(int)yLowPix+1, 1);
+    w->AbsoluteLine((int)xLowPix+1, (int)yHighPix-1, (int)xHighPix-1,
+	(int)yHighPix-1, 1);
+
+    //
+    // Draw a highlight and shadow around the outline.
+    //
+    w->SetForeground(GetPColorID(whiteColor));
+    w->AbsoluteLine((int)xLowPix, (int)yLowPix, (int)xLowPix,
+	(int)yHighPix, 1);
+    w->AbsoluteLine((int)xLowPix, (int)yHighPix, (int)xHighPix,
+	(int)yHighPix, 1);
+
+    w->SetForeground(GetPColorID(blackColor));
+    w->AbsoluteLine((int)xHighPix, (int)yLowPix, (int)xHighPix,
+	(int)yHighPix, 1);
+    w->AbsoluteLine((int)xLowPix, (int)yLowPix, (int)xHighPix,
+	(int)yLowPix, 1);
+
+    w->SetForeground(_dst->GetForeground());
+    w->Line(xHighPix/2+xLowPix/2, yLowPix+1,
+              xHighPix/2+xLowPix/2, yHighPix-1, 1);
+    w->Line(xLowPix-1, yLowPix/2+yHighPix/2,
+              xHighPix-1, yLowPix/2+yHighPix/2, 1);
   }
+
   if (_src && _src->GetNumDimensions()==3
    && _dst&& _dst->GetNumDimensions()==3) {
     w->PushTop();
@@ -448,5 +532,18 @@ void DeviseCursor::DrawCursor(WindowRep* w)
   }
 }
 
+void DeviseCursor::SetCursorColor(PColorID color)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SetCursorColor(%d)\n", _name, color);
+#endif
+
+  _cursorColor = color;
+
+  // Force the cursor to be redrawn.  Note that if we change how the cursor
+  // is drawn, we might have to do something more extensive here, like
+  // restoring the original pixmap before we redraw.
+  DrawCursor(_dst->GetWindowRep());
+}
 
 //******************************************************************************
