@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/11/30 22:28:02  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.3  1995/12/29 18:29:57  jussi
   Added the copyright message and cleaned up the code a bit.
 
@@ -52,7 +59,7 @@ int FilterQueue::FirstNonMarked()
   return -1;
 }
 
-int FilterQueue::Enqueue(VisualFilter &filter, Boolean marked)
+int FilterQueue::Enqueue(const VisualFilter &filter, Boolean marked)
 {
   int flushIndex = -1;
 

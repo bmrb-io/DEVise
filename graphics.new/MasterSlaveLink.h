@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/01/13 23:07:09  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.4  1998/11/11 14:31:01  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -56,7 +59,7 @@ class TData;
 
 class MasterSlaveLink : public DeviseLink {
 public:
-  MasterSlaveLink(char *name, VisualFlag linkFlag);
+  MasterSlaveLink(const char *name, VisualFlag linkFlag);
   virtual ~MasterSlaveLink();
 
   virtual void SetMasterView(ViewGraph *view);

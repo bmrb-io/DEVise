@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/04/22 19:29:54  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.8  1999/04/05 21:09:48  wenger
   Fixed bug 476 ('home' on a visually-linked view now does home on the entire
   link as a unit) (removed the corresponding code from the PileStack class,
@@ -78,7 +84,8 @@ public:
   /* Set/get visual flag */
   virtual void SetFlag(VisualFlag flag);
 
-  virtual void FilterChanged(View *view, VisualFilter &newFilter, int flushed);
+  virtual void FilterChanged(View *view, const VisualFilter &newFilter,
+      int flushed);
 
   virtual void Print();
 

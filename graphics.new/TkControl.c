@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.95  1999/11/30 22:28:30  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.94  1999/11/24 15:44:25  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -624,7 +631,7 @@ Boolean TkControlPanel::IsBusy()
   return (_busy > 0);
 }
 
-void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
+void TkControlPanel::FilterChanged(View *view, const VisualFilter &filter,
 				   int flushed)
 {
 #ifdef DEBUG

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.97  2000/02/08 22:11:58  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.96  2000/01/14 18:23:14  wenger
   Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
   filters back to the values defined in the session file, without actually
@@ -1222,7 +1228,7 @@ DeviseCommand_create::Run(int argc, char** argv)
         	printf("ParseAPI: argv[%d]=%s \n", i, argv[i]);
         }
     #endif
-        char *name = _classDir->CreateWithParams(argv[1], argv[2],
+        const char *name = _classDir->CreateWithParams(argv[1], argv[2],
     					    argc - 3, &argv[3]);
     #ifdef DEBUG
         printf("Create - return value = %s\n", name);
@@ -2451,7 +2457,8 @@ DeviseCommand_getInstParam::Run(int argc, char** argv)
 {
     {
         {
-          _classDir->GetParams(argv[1], _numArgs, _args);
+		  //TEMP -- get rid of cast
+          _classDir->GetParams(argv[1], _numArgs, (const char **)_args);
           ReturnVal(_numArgs, _args);
           return 1;
         }
@@ -2493,7 +2500,8 @@ DeviseCommand_get::Run_2(int argc, char** argv)
 {
     {
         {
-          _classDir->ClassNames(argv[1], _numArgs, _args);
+		  //TEMP -- get rid of cast
+          _classDir->ClassNames(argv[1], _numArgs, (const char **)_args);
           ReturnVal(_numArgs, _args);
           return 1;
         }
@@ -2505,7 +2513,9 @@ DeviseCommand_get::Run_3(int argc, char** argv)
 {
     {
         {
-          _classDir->InstanceNames(argv[1], argv[2], _numArgs, _args);
+		  //TEMP -- get rid of cast
+          _classDir->InstanceNames(argv[1], argv[2], _numArgs,
+		    (const char **)_args);
           ReturnVal(_numArgs, _args);
           return 1;
         }
@@ -3735,7 +3745,9 @@ DeviseCommand_getparam::Run(int argc, char** argv)
 {
     {
         {
-          _classDir->GetParams(argv[1], argv[2], _numArgs, _args);
+		  //TEMP -- get rid of cast
+          _classDir->GetParams(argv[1], argv[2], _numArgs,
+		    (const char **)_args);
           ReturnVal(_numArgs, _args);
           return 1;
         }
@@ -4257,7 +4269,9 @@ DeviseCommand_getCreateParam::Run(int argc, char** argv)
 {
     {
         {
-          _classDir->CreateParams(argv[1], argv[2], argv[3], _numArgs, _args);
+		  //TEMP -- get rid of cast
+          _classDir->CreateParams(argv[1], argv[2], argv[3], _numArgs,
+		    (const char **)_args);
           ReturnVal(_numArgs, _args);
           return 1;
         }

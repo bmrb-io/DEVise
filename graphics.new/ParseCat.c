@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/11/30 22:28:24  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.50  1999/11/16 17:02:07  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -832,7 +839,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,
 			Boolean haveSchema = false;
 			{
 				int argc;
-				char **argv;
+				const char **argv;
 				ControlPanel::GetClassDir()->ClassNames("tdata", argc, argv);
 				for (int index = 0; index < argc; index++) {
 					if (!strcmp(fileType, argv[index])) {

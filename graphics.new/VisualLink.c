@@ -30,6 +30,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/12/06 18:41:06  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.16  1999/11/15 22:55:20  wenger
   Fixed bug 534 ("disappearing" data in SoilSci/TwoStation5Var.ds session
   caused by highlight view/pile problems).
@@ -209,7 +213,7 @@ void VisualLink::SetFlag(VisualFlag flag)
 // gets called any time *any* view's visual filter gets changed, even if
 // that view isn't even linked!  RKW 1999-04-05.
 
-void VisualLink::FilterChanged(View *view, VisualFilter &newFilter,
+void VisualLink::FilterChanged(View *view, const VisualFilter &newFilter,
 			       int flushed)
 {
 #if defined(DEBUG)

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/05/21 14:52:14  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.2  1998/12/08 20:00:53  wenger
   MQL session description improvements: views list table name and mappings
   for all GData attrs; color palette is now listed.
@@ -436,7 +440,7 @@ RangeDesc::BuildTDataList()
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
 
   int classCount;
-  char **classNames;
+  const char **classNames;
   classDir->ClassNames("tdata", classCount, classNames);
 
 #if defined(DEBUG)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  2000/01/13 23:07:09  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.21  1999/03/12 18:46:05  wenger
   Implemented duplicate symbol elimination.
 
@@ -247,7 +250,8 @@ void RecordLink::Initialize()
     _file = NULL;
   }
 
-  char *fname = MakeFileName(GetName());
+  //TEMP -- get rid of cast
+  char *fname = MakeFileName((char *)GetName());
 #ifdef DEBUG
   printf("Initializing record link file %s for new query\n", fname);
 #endif

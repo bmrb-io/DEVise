@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  2000/02/15 16:16:05  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.34  1999/12/27 19:33:06  wenger
   Cursor grids can now be applied to the edges of a cursor, rather than the
   center, if desired.
@@ -334,7 +338,7 @@ void DeviseCursor::FilterAboutToChange(View *view)
   }
 }
 
-void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
+void DeviseCursor::FilterChanged(View *view, const VisualFilter &filter,
 				 int flushed)
 {
 #if defined(DEBUG)

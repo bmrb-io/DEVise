@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.78  2000/02/08 22:11:47  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.77  2000/01/14 18:23:07  wenger
   Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
   filters back to the values defined in the session file, without actually
@@ -2014,7 +2020,7 @@ Session::SaveCategory(SaveData *saveData, char *category)
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
 
   int classArgc;
-  char **tmpArgv;
+  const char **tmpArgv;
   classDir->ClassNames(category, classArgc, tmpArgv);
   char **classArgv;
   CopyArgs(classArgc, tmpArgv, classArgv);
@@ -2045,7 +2051,7 @@ Session::SaveClass(SaveData *saveData, char *category, char *devClass)
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
 
   int instArgc;
-  char **tmpArgv;
+  const char **tmpArgv;
   classDir->InstanceNames(category, devClass, instArgc, tmpArgv);
   char **instArgv;
   CopyArgs(instArgc, tmpArgv, instArgv);
@@ -2096,7 +2102,7 @@ Session::ForEachInstance(char *category, InstanceFuncP function,
 
   ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
 
-  char **tmpArgv;
+  const char **tmpArgv;
 
   // Get class names
   int classArgc;
@@ -2255,7 +2261,7 @@ Session::CheckWindowLocations()
     ViewWin *window = (ViewWin *)info->GetInstance();
     if (window) {
       int argc;
-      char **argv;
+      const char **argv;
       info->CreateParams(argc, argv);
       Coord relX = atof(argv[1]);
       Coord relY = atof(argv[2]);

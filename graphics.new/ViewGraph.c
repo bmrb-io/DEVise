@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.135  2000/02/15 16:16:24  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.134  2000/02/09 21:29:40  wenger
   Fixed bug 562 (one problem with pop clip underflow, related to highlight
   views).
@@ -3029,13 +3033,11 @@ ViewGraph::SwitchTData(const char *tdName)
 
 	  // Get creation arguments of old mapping.
       int argc;
-	  //TEMPTEMP -- restore const here
-	  char **argv;
+	  const char **argv;
 	  oldInfo->CreateParams(argc, argv);
 
 	  // Change the TData name and mapping name.
-	  //TEMPTEMP -- remove cast
-	  argv[0] = (char *)tdName;
+	  argv[0] = tdName;
 
       char newName[1024];
       sprintf(newName, "%s#%s", tdName, GetName());

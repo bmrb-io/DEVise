@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.53  2000/02/08 22:11:59  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.52  2000/01/14 18:23:16  wenger
   Added resetAllFilters and JAVAC_ResetFilters commands to reset all visual
   filters back to the values defined in the session file, without actually
@@ -315,6 +321,7 @@ class DeviseCommand
 		}
 		virtual int Run(int argc, char** argv) = 0;
 		virtual int ReturnVal(u_short flag, const char *result);
+		//TEMP -- should be const char **
 		virtual int ReturnVal(int argc, char **argv);
 	protected:
         char		*_result;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/12/27 19:33:07  wenger
+  Cursor grids can now be applied to the edges of a cursor, rather than the
+  center, if desired.
+
   Revision 1.10  1999/11/30 22:28:01  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -95,7 +99,7 @@ CursorClassInfo::CursorClassInfo()
   DevCursor::_cursorList.Insert(this);
 }
 
-CursorClassInfo::CursorClassInfo(char *name, VisualFlag flag,
+CursorClassInfo::CursorClassInfo(const char *name, VisualFlag flag,
 				 DeviseCursor *cursor)
 {
   _name = name;
@@ -115,14 +119,14 @@ CursorClassInfo::~CursorClassInfo()
   }
 }
 
-char *CursorClassInfo::ClassName()
+const char *CursorClassInfo::ClassName()
 {
   return "Cursor";
 }
 
-static char *args[5];
+static const char *args[5];
 
-void CursorClassInfo::ParamNames(int &argc, char **&argv)
+void CursorClassInfo::ParamNames(int &argc, const char **&argv)
 {
   argc = 6;
   argv = args;
@@ -134,7 +138,8 @@ void CursorClassInfo::ParamNames(int &argc, char **&argv)
   args[5] = "Edge Grid";
 }
 
-ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *CursorClassInfo::CreateWithParams(int argc,
+    const char * const *argv)
 {
   if ((argc != 2) && (argc != 5) && (argc != 6)) {
     reportErrNosys("CursorClassInfo::CreateWithParams: wrong args\n");
@@ -156,16 +161,16 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
   return new CursorClassInfo(name, flag, cursor);
 }
 
-void CursorClassInfo::SetDefaultParams(int argc, char **argv)
+void CursorClassInfo::SetDefaultParams(int argc, const char * const *argv)
 {
 }
 
-void CursorClassInfo::GetDefaultParams(int &argc, char **&argv)
+void CursorClassInfo::GetDefaultParams(int &argc, const char **&argv)
 {
   argc = 0;
 }
 
-char *CursorClassInfo::InstanceName()
+const char *CursorClassInfo::InstanceName()
 {
   return _name;
 }
@@ -179,7 +184,7 @@ void *CursorClassInfo::GetInstance()
 
 static char buf1[80], buf2[80], buf3[80], buf4[80], buf5[80];
 
-void CursorClassInfo::CreateParams(int &argc, char **&argv)
+void CursorClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 6;
   argv= args;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/07 16:35:15  jussi
+  Moved files from graphics directory.
+
   Revision 1.4  1996/01/30 21:10:15  jussi
   Removed extraneous Changeable() which is inherited from ClassInfo.
 
@@ -37,41 +40,41 @@ class GenAction;
 
 class ActionClassInfo: public ClassInfo {
 public:
-  ActionClassInfo(char *className, GenAction *gen);
-  ActionClassInfo(char *className, char *instName, Action *action);
+  ActionClassInfo(const char *className, GenAction *gen);
+  ActionClassInfo(const char *className, const char *instName, Action *action);
   virtual ~ActionClassInfo();
 
   /* Info for category */
-  virtual char *CategoryName() { return "action"; }
+  virtual const char *CategoryName() { return "action"; }
 
   /* Info for class */
-  virtual char *ClassName(); 	/* name of class */
+  virtual const char *ClassName(); 	/* name of class */
 
   /* Get name of parameters and default/current values */
-  virtual void ParamNames(int &argc, char **&argv);
+  virtual void ParamNames(int &argc, const char **&argv);
 
   /* Create instance using the supplied parameters. Return 
      the instance info if successful, otherwise return NULL. */
-  virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  virtual ClassInfo *CreateWithParams(int argc, const char * const *argv);
   
   /* Set default parameters */
-  void SetDefaultParams(int argc, char **argv);
+  void SetDefaultParams(int argc, const char * const *argv);
 
   /* Get default parameters */
-  void GetDefaultParams(int &argc, char **&argv);
+  void GetDefaultParams(int &argc, const char **&argv);
 
   /**************************************************
     Instance Info. 
   ***************************************************/
-  virtual char *InstanceName();
+  virtual const char *InstanceName();
   virtual void *GetInstance();
 
   /* Get parameters that can be used to re-create this instance */
-  virtual void CreateParams(int &argc, char **&argv);
+  virtual void CreateParams(int &argc, const char **&argv);
 
 private:
   GenAction *_gen;
-  char *_className, *_instName;
+  const char *_className, *_instName;
   Action *_action;
 };
 

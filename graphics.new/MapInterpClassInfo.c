@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/08/10 20:15:05  wenger
+  Parent views can now control the titles of view symbols.
+
   Revision 1.26  1999/07/13 17:32:42  wenger
   Parent view can now control attribute(s) in child view's mapping;
   cleaned up some of the mapping-related code; better command logging.
@@ -133,7 +136,7 @@
 static char *rootClassName = "interpreted";
 static const unsigned int bufLen = 256;
 static char buf[11 + MAX_SHAPE_ATTRS][bufLen];
-static char *args[11 + MAX_SHAPE_ATTRS];
+static const char *args[11 + MAX_SHAPE_ATTRS];
 
 MapInterpClassInfo::MapInterpClassInfo()
 {
@@ -149,7 +152,7 @@ MapInterpClassInfo::MapInterpClassInfo()
   _map = NULL;
 }
 
-MapInterpClassInfo::MapInterpClassInfo(char *className)
+MapInterpClassInfo::MapInterpClassInfo(const char *className)
 {
 #ifdef DEBUG
   printf("Creating new mapping class %s\n", className);
@@ -163,8 +166,8 @@ MapInterpClassInfo::MapInterpClassInfo(char *className)
   _map = NULL;
 }
 
-MapInterpClassInfo::MapInterpClassInfo(char *className,
-				       char *fileAlias, char *name, 
+MapInterpClassInfo::MapInterpClassInfo(const char *className,
+				       const char *fileAlias, const char *name, 
 				       VisualFlag *dimensionInfo,
 				       int numDimensions, MappingInterp *map, 
 				       TData *tdata, MappingInterpCmd *cmd,
@@ -204,7 +207,7 @@ MapInterpClassInfo::~MapInterpClassInfo()
 /* Return true if string is not empty. A string is not empty
    if it contains characters other than '\n', '\t', and '\r' */
 
-static Boolean NotEmpty(char *str)
+static Boolean NotEmpty(const char *str)
 {
   while (*str != '\0') {
     if (!isspace(*str))
@@ -215,7 +218,7 @@ static Boolean NotEmpty(char *str)
 }
 
 DevStatus
-MapInterpClassInfo::ExtractCommand(int argc, char **argv, 
+MapInterpClassInfo::ExtractCommand(int argc, const char * const *argv, 
 					MappingInterpCmd *cmd,
 					unsigned long int &cmdFlag,
 					unsigned long int &attrFlag, 
@@ -370,7 +373,7 @@ MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   return StatusOk;
 }
 
-void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
+void MapInterpClassInfo::ParamNames(int &argc, const char **&argv)
 {
 #ifdef DEBUG
   printf("MapInterpClassInfo::ParamNames\n");
@@ -486,7 +489,7 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
   }
 }
 
-void MapInterpClassInfo::ChangeParams(int argc, char**argv)
+void MapInterpClassInfo::ChangeParams(int argc, const char* const *argv)
 {
 #if defined(DEBUG)
   printf("MapInterpClassInfo(%s)::ChangeParams(", InstanceName());
@@ -511,7 +514,8 @@ void MapInterpClassInfo::ChangeParams(int argc, char**argv)
 }
 
 
-ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *MapInterpClassInfo::CreateWithParams(int argc,
+    const char * const *argv)
 {
   // the new form uses just the class name parameter when a new class
   // is to be created, or a full list of parameters when an instance
@@ -572,18 +576,18 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
 }
 
 /* Set default parameters */
-void MapInterpClassInfo::SetDefaultParams(int argc, char **argv)
+void MapInterpClassInfo::SetDefaultParams(int argc, const char * const *argv)
 {
 }
 
 /* Get default parameters */
-void MapInterpClassInfo::GetDefaultParams(int &argc, char **&argv)
+void MapInterpClassInfo::GetDefaultParams(int &argc, const char **&argv)
 {
   argc = 0;
   argv = args;
 }
 
-char *MapInterpClassInfo::InstanceName()
+const char *MapInterpClassInfo::InstanceName()
 {
   return _name;
 }
@@ -593,7 +597,7 @@ void *MapInterpClassInfo::GetInstance()
   return _map;
 }
 
-void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
+void MapInterpClassInfo::CreateParams(int &argc, const char **&argv)
 {
 #ifdef DEBUG
   printf("MapInterpClassInfo::CreateParams\n");

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2000/02/09 21:29:32  wenger
+  Fixed bug 562 (one problem with pop clip underflow, related to highlight
+  views).
+
   Revision 1.8  1999/04/05 16:16:02  wenger
   Record- and set-link follower views with auto filter update enabled have
   'home' done on them after they are updated by a record link or set link.
@@ -74,7 +78,7 @@ Boolean MasterSlaveLink::_disableUpdates = false;
  * function: MasterSlaveLink::MasterSlaveLink
  * Constructor.
  */
-MasterSlaveLink::MasterSlaveLink(char *name, VisualFlag linkFlag) :
+MasterSlaveLink::MasterSlaveLink(const char *name, VisualFlag linkFlag) :
 	DeviseLink(name, linkFlag)
 {
 #if defined(DEBUG)

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/08 00:01:13  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.3  1997/09/05 22:36:31  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -82,7 +86,8 @@ void UpdateLink::InsertView(ViewGraph *view)
 }
 
 
-void UpdateLink::FilterChanged(View *view, VisualFilter &filter, int flushed)
+void UpdateLink::FilterChanged(View *view, const VisualFilter &filter,
+    int flushed)
 {
   // ignore message
 }

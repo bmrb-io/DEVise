@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  2000/01/13 23:06:50  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.25  1999/11/30 22:28:00  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -172,8 +175,8 @@ void ClassDir::InsertCategory(char *name)
 
 void ClassDir::InsertClass(ClassInfo *cInfo)
 {
-  char *catName = cInfo->CategoryName();
-  char *className = cInfo->ClassName();
+  const char *catName = cInfo->CategoryName();
+  const char *className = cInfo->ClassName();
 #if defined(DEBUG)
   printf("ClassDir::InsertClass(%s, %s)\n", catName, className);
 #endif
@@ -217,20 +220,20 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
 }
 
 #define ARG_ARRAY_SIZE 512
-char *argArray[ARG_ARRAY_SIZE];
+static char *argArray[ARG_ARRAY_SIZE];
 
-void ClassDir::ClassNames(const char *category, int &num, char **&names)
+void ClassDir::ClassNames(const char *category, int &num, const char **&names)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
-  names = argArray;
+  names = (const char **)argArray;
 
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, category)) {
       for(int j = 0; j < catRec->_numClasses; j++) {
 	DOASSERT(num < ARG_ARRAY_SIZE, "ClassDir: argArray overflowed");
-	argArray[num++] = catRec->_classRecs[j]->classInfo->ClassName();
+	names[num++] = catRec->_classRecs[j]->classInfo->ClassName();
       }
       return;
     }
@@ -240,11 +243,11 @@ void ClassDir::ClassNames(const char *category, int &num, char **&names)
 /* Get pointers to all instances */
 
 void ClassDir::InstancePointers(const char *category, const char *className,
-				int &num, char **&instanceNames)
+				int &num, char **&instancePointers)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
-  instanceNames = argArray;
+  instancePointers = argArray;
 
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
@@ -264,11 +267,11 @@ void ClassDir::InstancePointers(const char *category, const char *className,
 /* Get names of all instances */
 
 void ClassDir::InstanceNames(const char *category, const char *className,
-			     int &num, char **&instanceNames)
+			     int &num, const char **&instanceNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
-  instanceNames = argArray;
+  instanceNames = (const char **)argArray;
 
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
@@ -277,7 +280,7 @@ void ClassDir::InstanceNames(const char *category, const char *className,
 	ClassRec *classRec = catRec->_classRecs[j];
 	if (!strcmp(classRec->classInfo->ClassName(), className)) {
 	  for(int k = 0; k < classRec->_numInstances; k++)
-	    argArray[num++] = classRec->_instances[k]->InstanceName();
+	    instanceNames[num++] = classRec->_instances[k]->InstanceName();
 	  return;
 	}
       }
@@ -288,7 +291,7 @@ void ClassDir::InstanceNames(const char *category, const char *className,
 /* Get creation parameters for a class */
 
 void ClassDir::GetParams(const char *category, const char *className, 
-			 int &numParams, char **&params)
+			 int &numParams, const char **&params)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
@@ -331,8 +334,8 @@ void ClassDir::SetDefault(const char *category, const char *className,
 
 /* Create a new instance given the parameters */
 
-char *ClassDir::CreateWithParams(const char *category, const char *className,
-				 int numParams, char **paramNames)
+const char *ClassDir::CreateWithParams(const char *category,
+    const char *className, int numParams, const char * const *paramNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 #if defined(DEBUG)
@@ -619,7 +622,7 @@ void ClassDir::DestroyTransientClasses()
 
 void ClassDir::CreateParams(const char *category, const char *className,
 			    const char *instanceName, 
-			    int &numParams, char **&params)
+			    int &numParams, const char **&params)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
@@ -660,7 +663,7 @@ ClassInfo::~ClassInfo()
   */
 }
 
-char *ClassInfo::InstanceName()
+const char *ClassInfo::InstanceName()
 {
   DOASSERT(0, "Invalid function call");
   return NULL; /* to keep compiler happy*/
@@ -674,14 +677,14 @@ void *ClassInfo::GetInstance()
 
 /* Get parameters that can be used to re-create this instance */
 
-void ClassInfo::CreateParams(int &argc, char **&argv)
+void ClassInfo::CreateParams(int &argc, const char **&argv)
 {
   DOASSERT(0, "Invalid function call");
 }
 
 /* Set default parameters */
 
-void ClassInfo::SetDefaultParams(int argc, char **argv)
+void ClassInfo::SetDefaultParams(int argc, const char * const *argv)
 {
   if (argc == 0)
     return;
@@ -703,10 +706,10 @@ void ClassInfo::SetDefaultParams(int argc, char **argv)
 
 /* Get default parameters */
 
-void ClassInfo::GetDefaultParams(int &argc, char **&argv)
+void ClassInfo::GetDefaultParams(int &argc, const char **&argv)
 {
   argc = _numDefaultParams;
-  argv = _defaultParams;
+  argv = (const char **)_defaultParams;
 }
 
 /* Find instance with given name */
@@ -747,7 +750,7 @@ void ClassDir::ChangeParams(const char *name, int num, char **paramNames)
 
 /* Get params */
 
-void ClassDir::GetParams(const char *name, int &num, char **&paramNames)
+void ClassDir::GetParams(const char *name, int &num, const char **&paramNames)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
@@ -806,7 +809,7 @@ void ClassDir::Print()
 
 /* Find name of instance */
 
-char *ClassDir::FindInstanceName(const void *inst)
+const char *ClassDir::FindInstanceName(const void *inst)
 {
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {

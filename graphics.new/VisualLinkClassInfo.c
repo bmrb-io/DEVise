@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/03/01 23:09:11  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.6  1999/02/11 19:55:00  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -104,7 +107,7 @@ VisualLinkClassInfo::VisualLinkClassInfo()
   DevLink::_linkList.Insert(this);
 }
 
-VisualLinkClassInfo::VisualLinkClassInfo(char *name, VisualFlag flag, 
+VisualLinkClassInfo::VisualLinkClassInfo(const char *name, VisualFlag flag, 
 					 DeviseLink *link)
 {
 #if defined(DEBUG)
@@ -132,17 +135,17 @@ VisualLinkClassInfo::~VisualLinkClassInfo()
   }
 }
 
-char *VisualLinkClassInfo::ClassName()
+const char *VisualLinkClassInfo::ClassName()
 {
   return "Visual_Link";
 }
 
-static char *args[4];
+static const char *args[4];
 static char buf1[80];
 static char buf2[80];
 static char buf3[80];
 
-void VisualLinkClassInfo::ParamNames(int &argc, char **&argv)
+void VisualLinkClassInfo::ParamNames(int &argc, const char **&argv)
 {
   argc = 4;
   argv = args;
@@ -154,7 +157,8 @@ void VisualLinkClassInfo::ParamNames(int &argc, char **&argv)
   return;
 }
 
-ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
+    const char * const *argv)
 {
 #if defined(DEBUG)
   printf("VisualLinkClassInfo(%p)::CreateWithParams(%s)\n", this, argv[0]);
@@ -198,17 +202,17 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc, char **argv)
 }
 
 /* Set default parameters */
-void VisualLinkClassInfo::SetDefaultParams(int argc, char **argv)
+void VisualLinkClassInfo::SetDefaultParams(int argc, const char * const *argv)
 {
 }
 
 /* Get default parameters */
-void VisualLinkClassInfo::GetDefaultParams(int &argc, char **&argv)
+void VisualLinkClassInfo::GetDefaultParams(int &argc, const char **&argv)
 {
   argc = 0;
 }
 
-char *VisualLinkClassInfo::InstanceName()
+const char *VisualLinkClassInfo::InstanceName()
 {
   return _name;
 }
@@ -219,7 +223,7 @@ void *VisualLinkClassInfo::GetInstance()
 }
 
 /* Get parameters that can be used to re-create this instance */
-void VisualLinkClassInfo::CreateParams(int &argc, char **&argv)
+void VisualLinkClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 2;
   argv = args;
@@ -239,7 +243,7 @@ void
 VisualLinkClassInfo::Dump(FILE *fp)
 {
   if (_name != NULL) {
-    char *name = _link->GetName();
+    const char *name = _link->GetName();
     if (strcmp(_name, name)) {
       reportErrNosys("warning: link name doesn't match info name");
     }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/02/22 19:07:51  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.18  1998/12/15 14:55:25  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -123,7 +128,7 @@
 // ViewXInfo and ViewScatterInfo.  RKW Mar. 5, 1998.
 
 static char buf[7][64];
-static char *args[7];
+static const char *args[7];
 
 QueryProc *GetQueryProc()
 {
@@ -134,7 +139,7 @@ QueryProc *GetQueryProc()
   return qp;
 }
 
-void SetViewColors(ViewGraph *view, int argc, char **argv)
+void SetViewColors(ViewGraph *view, int argc, const char * const *argv)
 {
   // Note: the only vintage of session files for which this will end up
   // setting anything is 1.5 session files saved since this fix was put
@@ -167,7 +172,7 @@ ViewClassInfo::ViewClassInfo()
   _view = NULL;
 }
 
-ViewClassInfo::ViewClassInfo(char *name, ViewGraph *view)
+ViewClassInfo::ViewClassInfo(const char *name, ViewGraph *view)
 {
   _name = name;
   _view = view;
@@ -183,10 +188,10 @@ ViewClassInfo::~ViewClassInfo()
 
 /* Get names of parameters */
 
-void ViewClassInfo::ParamNames(int &argc, char **&argv)
+void ViewClassInfo::ParamNames(int &argc, const char **&argv)
 {
   int numDefaults;
-  char **defaults;
+  const char **defaults;
   GetDefaultParams(numDefaults, defaults);
 
   argc = 7;
@@ -213,7 +218,7 @@ void ViewClassInfo::ParamNames(int &argc, char **&argv)
   sprintf(buf[6], "bgcolor {%ld}", GetPColorID(defBackColor));
 }
 
-void ViewClassInfo::CreateParams(int &argc, char **&argv)
+void ViewClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 7;
   argv = args;
@@ -248,12 +253,12 @@ void ViewClassInfo::CreateParams(int &argc, char **&argv)
   sprintf(buf[6], "%ld", backColor);
 }
 
-ViewXInfo::ViewXInfo(char *name, ViewData *view)
+ViewXInfo::ViewXInfo(const char *name, ViewData *view)
 	: ViewClassInfo(name, view)
 {
 }
 
-ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *ViewXInfo::CreateWithParams(int argc, const char * const *argv)
 {
   if (argc != 4 && argc != 5 && argc != 6 && argc != 7) {
     fprintf(stderr, "ViewXInfo::CreateWithParams: wrong args\n");
@@ -280,7 +285,8 @@ ViewScatterInfo::ViewScatterInfo(char *name, ViewGraph *view)
 {
 }
 
-ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *ViewScatterInfo::CreateWithParams(int argc,
+    const char * const *argv)
 {
   if (argc != 4 && argc != 5 && argc != 6 && argc != 7) {
     fprintf(stderr, "ViewScatterInfo::CreateWithParams: wrong args\n");

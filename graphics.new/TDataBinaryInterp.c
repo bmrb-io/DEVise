@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/01/11 22:28:34  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.12  1997/07/15 14:29:59  wenger
   Moved hashing of strings from TData*Interp classes to MappingInterp
   class; cleaned up a few extra includes of StringStorage.h.
@@ -84,7 +90,7 @@
 #include "DevError.h"
 
 #ifndef ATTRPROJ
-TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
+TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(const char *className,
 						       AttrList *attrList,
 						       int recSize)
 {
@@ -108,10 +114,10 @@ TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
 	   "Invalid physical record size");
 }
 
-TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(char *className,
-						       char *name,
-						       char *type,
-                                                       char *param,
+TDataBinaryInterpClassInfo::TDataBinaryInterpClassInfo(const char *className,
+						       const char *name,
+						       const char *type,
+                                                       const char *param,
 						       TData *tdata)
 {
   _className = className;
@@ -127,15 +133,15 @@ TDataBinaryInterpClassInfo::~TDataBinaryInterpClassInfo()
     delete _tdata;
 }
 
-char *TDataBinaryInterpClassInfo::ClassName()
+const char *TDataBinaryInterpClassInfo::ClassName()
 {
   return _className;
 }
 
 static char buf[3][256];
-static char *args[3];
+static const char *args[3];
 
-void TDataBinaryInterpClassInfo::ParamNames(int &argc, char **&argv)
+void TDataBinaryInterpClassInfo::ParamNames(int &argc, const char **&argv)
 {
   argc = 3;
   argv = args;
@@ -148,7 +154,8 @@ void TDataBinaryInterpClassInfo::ParamNames(int &argc, char **&argv)
   strcpy(buf[2], "Param {foobar}");
 }
 
-ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc,
+    const char * const *argv)
 {
   if (argc != 2 && argc != 3)
     return (ClassInfo *)NULL;
@@ -172,7 +179,7 @@ ClassInfo *TDataBinaryInterpClassInfo::CreateWithParams(int argc, char **argv)
   return new TDataBinaryInterpClassInfo(_className, name, type, param, tdata);
 }
 
-char *TDataBinaryInterpClassInfo::InstanceName()
+const char *TDataBinaryInterpClassInfo::InstanceName()
 {
   return _name;
 }
@@ -182,7 +189,7 @@ void *TDataBinaryInterpClassInfo::GetInstance()
   return _tdata;
 }
 
-void TDataBinaryInterpClassInfo::CreateParams(int &argc, char **&argv)
+void TDataBinaryInterpClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 3;
   argv = args;

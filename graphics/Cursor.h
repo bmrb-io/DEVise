@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  2000/02/15 16:16:14  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.24  1999/12/27 19:33:07  wenger
   Cursor grids can now be applied to the edges of a cursor, rather than the
   center, if desired.
@@ -230,7 +234,8 @@ class DeviseCursor : private ViewCallback
 
 private:
   virtual void FilterAboutToChange(View *view);
-  virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
+  virtual void FilterChanged(View *view, const VisualFilter &filter,
+      int flushed);
   virtual void ViewDestroyed(View *view);
   void MatchGrid(Coord x, Coord y, Coord width, Coord height,
       VisualFilter &filter);

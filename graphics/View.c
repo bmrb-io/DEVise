@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.215  2000/02/15 16:16:15  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.214  2000/02/09 21:28:50  wenger
   Fixed bug 562 (one problem with pop clip underflow, related to highlight
   views).
@@ -1401,9 +1405,7 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
       _updateTransform = true;
       _filter = filter;
 
-	  //TEMPTEMP -- remove temp
-	  VisualFilter tmpFilter = filter;
-      int flushed = _filterQueue->Enqueue(tmpFilter);
+      int flushed = _filterQueue->Enqueue(filter);
       ReportFilterChanged(filter, flushed);
       
 	  Refresh();
@@ -2549,9 +2551,7 @@ void View::ReportFilterChanged(const VisualFilter &filter, int flushed)
     printf("Calling FilterChanged callback 0x%p for view 0x%p\n",
 	   callBack, this);
 #endif
-	//TEMPTEMP -- remove temp
-	VisualFilter tmpFilter = filter;
-    callBack->FilterChanged(this, tmpFilter, flushed);
+    callBack->FilterChanged(this, filter, flushed);
   }
   _viewCallbackList->DoneIterator(index);
 }

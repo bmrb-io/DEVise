@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/12/06 20:03:21  wenger
+  Windows are forced to be on-screen when opening or saving a session.
+
   Revision 1.24  1999/10/04 22:36:08  wenger
   Fixed bug 508 (windows move slightly when repeatedly opening and saving
   a session) -- replaced kludgey (incorrect) way of dealing with window
@@ -139,6 +142,7 @@
 
 //#define DEBUG
 
+static const char *args[7];
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80],
   buf7[80];
 
@@ -172,7 +176,7 @@ TileLayoutInfo::TileLayoutInfo()
   DevWindow::_windowList.Insert(this);
 }
 
-TileLayoutInfo::TileLayoutInfo(char *name, Layout *win, double relativeX,
+TileLayoutInfo::TileLayoutInfo(const char *name, Layout *win, double relativeX,
   double relativeY, double relativeWidth, double relativeHeight)
 {
   _name = name;
@@ -197,28 +201,28 @@ TileLayoutInfo::~TileLayoutInfo()
 
 /* Get names of parameters */
 
-void TileLayoutInfo::ParamNames(int &argc, char **&argv)
+void TileLayoutInfo::ParamNames(int &argc, const char **&argv)
 {
   argc = 7;
-  argv = arg;
-  arg[0] = buf1;
-  arg[1] = buf2;
-  arg[2] = buf3;
-  arg[3] = buf4;
-  arg[4] = buf5;
-  arg[5] = buf6;
-  arg[6] = buf7;
+  argv = args;
+  args[0] = buf1;
+  args[1] = buf2;
+  args[2] = buf3;
+  args[3] = buf4;
+  args[4] = buf5;
+  args[5] = buf6;
+  args[6] = buf7;
 
   strcpy(buf1, "Name {foobar}");
   int numDefaults;
-  char **defaults;
+  const char **defaults;
   GetDefaultParams(numDefaults, defaults);
   
   if (numDefaults == 4) {
-    sprintf(arg[1], "X %s", defaults[0]);
-    sprintf(arg[2], "Y %s", defaults[1]);
-    sprintf(arg[3], "Width %s", defaults[2]);
-    sprintf(arg[4], "Height %s", defaults[3]);
+    sprintf(buf2, "X %s", defaults[0]);
+    sprintf(buf3, "Y %s", defaults[1]);
+    sprintf(buf4, "Width %s", defaults[2]);
+    sprintf(buf5, "Height %s", defaults[3]);
   } else {
     sprintf(buf2, "X 0.0");
     sprintf(buf3, "Y 0.0");
@@ -230,7 +234,7 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
   sprintf(buf7, "{Print Pixmap} 0");
 }
 
-ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *TileLayoutInfo::CreateWithParams(int argc, const char * const *argv)
 {
 #if defined(DEBUG)
   printf("TileLayoutInfo::CreateWithParams(%s)\n", argv[0]);
@@ -280,7 +284,7 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
     relativeHeight);
 }
 
-char *TileLayoutInfo::InstanceName()
+const char *TileLayoutInfo::InstanceName()
 {
   return _name;
 }
@@ -292,21 +296,21 @@ void *TileLayoutInfo::GetInstance()
 
 /* Get parameters that can be used to re-create this instance */
 
-void TileLayoutInfo::CreateParams(int &argc, char **&argv)
+void TileLayoutInfo::CreateParams(int &argc, const char **&argv)
 {
 #if defined(DEBUG)
   printf("TileLayoutInfo(%s)::CreateParams()\n", InstanceName());
 #endif
 
   argc = 7;
-  argv = arg;
-  arg[0] = _name;
-  arg[1] = buf2;
-  arg[2] = buf3;
-  arg[3] = buf4;
-  arg[4] = buf5;
-  arg[5] = buf6;
-  arg[6] = buf7;
+  argv = args;
+  args[0] = _name;
+  args[1] = buf2;
+  args[2] = buf3;
+  args[3] = buf4;
+  args[4] = buf5;
+  args[5] = buf6;
+  args[6] = buf7;
 
   int x, y;
   unsigned int w, h;

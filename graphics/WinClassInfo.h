@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/06/15 18:09:45  wenger
+  Added dumping of ViewWin objects to help with pile debugging.
+
   Revision 1.10  1999/01/04 15:33:21  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -97,32 +100,31 @@ public:
   TileLayoutInfo();			       /* class constructor */
 
   // Instance constructor.
-  TileLayoutInfo(char *name, Layout *win, double relativeX, double relativeY,
-    double relativeWidth, double relativeHeight);
+  TileLayoutInfo(const char *name, Layout *win, double relativeX,
+    double relativeY, double relativeWidth, double relativeHeight);
 
   virtual ~TileLayoutInfo();		       /* class destructor */
 
   /*********** Class methods **************************/
-  virtual char *CategoryName() { return "window"; }
-  virtual char *ClassName() { return "TileLayout"; }
+  virtual const char *CategoryName() { return "window"; }
+  virtual const char *ClassName() { return "TileLayout"; }
 
   /* Get name of parameters */
-  virtual void ParamNames(int &argc, char **&argv) ;
+  virtual void ParamNames(int &argc, const char **&argv) ;
 
   /* Create instance using the supplied parameters. Return
      the instance info if successful, otherwise return NULL. */
-  virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  virtual ClassInfo *CreateWithParams(int argc, const char * const *argv);
 
   /************* Instance Methods ***************************/
-  virtual char *InstanceName();
+  virtual const char *InstanceName();
   virtual void *GetInstance();
 
   /* Get parameters that can be used to re-create this instance */
-  virtual void CreateParams(int &argc, char **&argv);
+  virtual void CreateParams(int &argc, const char **&argv);
 
 private:
-  char *arg[7];
-  char *_name;
+  const char *_name;
   Layout *_win;
 
   // Save creation parameters to avoid roundoff problems if window is not

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/01/11 22:28:33  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.27  1998/10/13 19:40:45  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -136,7 +142,6 @@
 #ifndef TDataAscii_h
 #define TDataAscii_h
 
-#include <stdio.h>
 #include <sys/types.h>
 
 #include "TData.h"
@@ -152,6 +157,7 @@ public:
 	/**** MetaData about TDataAscii ****/
 
 	// Get list of attributes
+	//TEMP -- could this be moved up into TData??
 	virtual AttrList *GetAttrList() { return NULL; }
 	virtual Boolean SetAttrs(const AttrList &attrs) { return false; }
 

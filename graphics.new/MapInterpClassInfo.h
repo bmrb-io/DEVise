@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/04/16 20:59:23  wenger
+  Fixed various bugs related to view symbols, including memory problem
+  with MappingInterp dimensionInfo; updated create_condor_session script
+  to take advantage of view symbol TData switching capability.
+
   Revision 1.6  1998/04/01 18:54:27  wenger
   Fixed bug 332.
 
@@ -57,61 +62,63 @@ public:
 	void *UserInfo() { return &_isInterp; }
 
 	/* constructor for new interpreted mapping class */
-	MapInterpClassInfo(char *className);
+	MapInterpClassInfo(const char *className);
 
 	/* constructor for interpreted mapping instance */
-	MapInterpClassInfo(char *className,
-		char *fileAlias, char *name, VisualFlag *dimensionInfo,
+	MapInterpClassInfo(const char *className,
+		const char *fileAlias, const char *name, VisualFlag *dimensionInfo,
 		int numDimensions, MappingInterp *map, TData *tdata, 
 		MappingInterpCmd *cmd, int cmdFlag, int attrFlag);
 
 	/* Info for category */
-	virtual char *CategoryName() { return "mapping"; }
+	virtual const char *CategoryName() { return "mapping"; }
 
 	/* Info for class */
-	virtual char *ClassName(){ return _className; }
+	virtual const char *ClassName(){ return _className; }
 
 	/* Get name of parameters */
-	virtual void ParamNames(int &argc, char **&argv);
+	virtual void ParamNames(int &argc, const char **&argv);
 
 	/* Create instance using the supplied parameters. Return 
 	the instance info if successful, otherwise return NULL. */
-	virtual ClassInfo *CreateWithParams(int argc, char **argv) ;
+	virtual ClassInfo *CreateWithParams(int argc,
+	    const char * const *argv) ;
 
 	/* Return true is parameters can be changed dynamically at run time */
 	virtual Boolean Changeable() { return true; }
 
 	/* Change parameters dynamically at run time */
-	virtual void ChangeParams(int argc, char **argv);
+	virtual void ChangeParams(int argc, const char * const *argv);
 
 	/* Set default parameters */
-	void SetDefaultParams(int argc, char **argv);
+	void SetDefaultParams(int argc, const char * const *argv);
 
 	/* Get default parameters */
-	void GetDefaultParams(int &argc, char **&argv);
+	void GetDefaultParams(int &argc, const char **&argv);
 
 	/**************************************************
 	Instance Info. 
 	***************************************************/
-	virtual char *InstanceName();
+	virtual const char *InstanceName();
 	virtual void *GetInstance();
 
 	/* Get parameters that can be used to re-create this instance */
-	virtual void CreateParams(int &argc, char **&argv);
+	virtual void CreateParams(int &argc, const char **&argv);
 
 private:
-	DevStatus ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
+	DevStatus ExtractCommand(int argc, const char * const *argv,
+	                    MappingInterpCmd *cmd,
 			    unsigned long int &cmdFlag,
 			    unsigned long int &attrFlag,
 			    VisualFlag *dimensionInfo, int &numDimensions,
 			    char *&tdataAlias, TData *&tdata, char *&name);
 
-	char *_fileAlias;
-	char *_className; /* name of this interpreted mapping class */
+	const char *_fileAlias;
+	const char *_className; /* name of this interpreted mapping class */
 	MappingInterpCmd *_cmd;
 	unsigned long int _attrFlag;
 	unsigned long int _cmdFlag;
-	char *_name;
+	const char *_name;
 	MappingInterp *_map;
 	TData *_tdata;
 	int _numDimensions;

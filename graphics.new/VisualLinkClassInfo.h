@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/08 00:01:17  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.2  1997/07/22 15:36:38  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -63,42 +67,42 @@ class DeviseLink;
 class VisualLinkClassInfo: public ClassInfo {
 public:
   VisualLinkClassInfo();
-  VisualLinkClassInfo(char *name, VisualFlag flag, DeviseLink *link);
+  VisualLinkClassInfo(const char *name, VisualFlag flag, DeviseLink *link);
   virtual ~VisualLinkClassInfo();
 
   /* Info for category */
-  virtual char *CategoryName() { return "link"; } 
+  virtual const char *CategoryName() { return "link"; } 
 
   /* Info for class */
-  virtual char *ClassName(); 	/* name of class */
+  virtual const char *ClassName(); 	/* name of class */
 
   /* Get name of parameters and default/current values */
-  virtual void ParamNames(int &argc, char **&argv);
+  virtual void ParamNames(int &argc, const char **&argv);
 
   /* Create instance using the supplied parameters. Return 
      the instance info if successful, otherwise return NULL. */
-  virtual ClassInfo *CreateWithParams(int argc, char **argv) ;
+  virtual ClassInfo *CreateWithParams(int argc, const char * const *argv) ;
 
   /* Set default parameters */
-  void SetDefaultParams(int argc, char **argv);
+  void SetDefaultParams(int argc, const char * const *argv);
 
   /* Get default parameters */
-  void GetDefaultParams(int &argc, char **&argv);
+  void GetDefaultParams(int &argc, const char **&argv);
 
   /**************************************************
     Instance Info. 
   ***************************************************/
-  virtual char *InstanceName();
+  virtual const char *InstanceName();
   virtual void *GetInstance();
   
   /* Get parameters that can be used to re-create this instance */
-  virtual void CreateParams(int &argc, char **&argv);
+  virtual void CreateParams(int &argc, const char **&argv);
 
   void Dump(FILE *fp);
 
 private:
   VisualFlag _flag;
-  char *_name;
+  const char *_name;
   DeviseLink *_link;
 };
 

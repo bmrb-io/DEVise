@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/08 00:01:13  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.2  1996/11/26 16:51:40  ssl
   Added support for piled viws
 
@@ -52,7 +56,8 @@ class UpdateLink
     virtual bool DeleteView(ViewGraph *view);
     
     // ViewCallback messages
-    virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
+    virtual void FilterChanged(View *view, const VisualFilter &filter,
+        int flushed);
     virtual void UpdateLink::ViewRecomputed(View *view);
 
     void Print();

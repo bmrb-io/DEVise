@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/08/04 21:04:52  beyer
+  Needed a forward declaration
+
   Revision 1.4  1996/07/13 17:28:14  jussi
   Added ViewRecomputed() callback interface.
 
@@ -45,7 +48,8 @@ public:
   /* Called by View when its visual filter has changed.
      flushed == index of 1st element in the history that has been flushed,
      or -1 if none. index 0 == oldest element .*/
-  virtual void FilterChanged(View *view, VisualFilter &filter, int flushed) {}
+  virtual void FilterChanged(View *view, const VisualFilter &filter,
+      int flushed) {}
   
   /* Called by View when view is recomputed (statistics have changed). */
   virtual void ViewRecomputed(View *view) {}

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/02/11 19:54:58  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.4.4.1  1999/02/11 18:24:22  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -62,11 +67,11 @@ enum RecordLinkType { NotRecordLink, Positive, Negative };
 
 class DeviseLink: public ViewCallback {
 public:
-  DeviseLink(char *name, VisualFlag linkFlag);
+  DeviseLink(const char *name, VisualFlag linkFlag);
   virtual ~DeviseLink();
 
   /* Return name of link */
-  char *GetName() { return _name; }
+  const char *GetName() { return _name; }
 
   /* Set/get visual flag */
   virtual void SetFlag(VisualFlag flag) { _linkAttrs = flag; }
@@ -98,10 +103,10 @@ public:
   virtual void Print();
 
   // Find out whether the given name is the name of a pile link.
-  static Boolean IsPileLinkName(char *name);
+  static Boolean IsPileLinkName(const char *name);
 
 protected:
-  char *_name;
+  const char *_name;
   LinkViewList *_viewList;
   VisualFlag _linkAttrs; // Which attribute(s) is link on?
 

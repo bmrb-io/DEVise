@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/11/30 22:28:18  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.3  1998/01/14 16:39:14  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -42,14 +49,14 @@
 #include "View.h"
 #include "Util.h"
 
-ActionClassInfo::ActionClassInfo(char *className, GenAction *gen){
+ActionClassInfo::ActionClassInfo(const char *className, GenAction *gen){
 	_gen = gen;
 	_className = className;
 	_instName = NULL;
 	_action = NULL;
 }
 
-ActionClassInfo::ActionClassInfo(char *className, char *instName, 
+ActionClassInfo::ActionClassInfo(const char *className, const char *instName, 
 	Action *action) {
 	_gen = NULL;
 	_className = className;
@@ -61,13 +68,13 @@ ActionClassInfo::~ActionClassInfo(){
 	delete _action;
 }
 
-char *ActionClassInfo::ClassName(){
+const char *ActionClassInfo::ClassName(){
 	return _className;
 }
 
-char *args[2];
-char buf1[80], buf2[80];
-void ActionClassInfo::ParamNames(int &argc, char **&argv){
+static const char *args[2];
+static char buf1[80], buf2[80];
+void ActionClassInfo::ParamNames(int &argc, const char **&argv){
 	argc = 1;
 	argv = args;
 	if (_instName != NULL){
@@ -77,7 +84,7 @@ void ActionClassInfo::ParamNames(int &argc, char **&argv){
 	else args[0] = "name";
 }
 
-ClassInfo *ActionClassInfo::CreateWithParams(int argc, char **argv) {
+ClassInfo *ActionClassInfo::CreateWithParams(int argc, const char * const *argv) {
 	if (argc != 1){
 		reportErrNosys("ActionClassInfo::CreateWithParams: need 1 params\n");
 		Exit::DoExit(2);
@@ -90,15 +97,15 @@ ClassInfo *ActionClassInfo::CreateWithParams(int argc, char **argv) {
 
 
 /* Set default parameters */
-void ActionClassInfo::SetDefaultParams(int argc, char **argv){}
+void ActionClassInfo::SetDefaultParams(int argc, const char * const *argv){}
 
 /* Get default parameters */
-void ActionClassInfo::GetDefaultParams(int &argc, char **&argv){
+void ActionClassInfo::GetDefaultParams(int &argc, const char **&argv){
 	argc = 0;
 	argv = NULL;
 }
 
-char *ActionClassInfo::InstanceName(){
+const char *ActionClassInfo::InstanceName(){
 	return _instName;
 }
 
@@ -107,7 +114,7 @@ void *ActionClassInfo::GetInstance(){
 }
 
 /* Get parameters that can be used to re-create this instance */
-void ActionClassInfo::CreateParams(int &argc, char **&argv) {
+void ActionClassInfo::CreateParams(int &argc, const char **&argv) {
 	argc = 1;
 	argv= args;
 	args[0] = buf1;

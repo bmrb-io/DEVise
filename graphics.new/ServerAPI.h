@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  2000/01/13 23:07:11  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.20  1999/10/18 15:36:43  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -182,7 +185,8 @@ protected:
 						Coord w, Coord h) {}
 
 private:
-  virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
+  virtual void FilterChanged(View *view, const VisualFilter &filter,
+      int flushed);
 
   int _busy;
   static MapInterpClassInfo *_interpProto;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/01/13 23:06:50  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.11  1999/09/24 22:02:18  wenger
   C++ code no longer allows a session to be opened while one is already
   open.
@@ -78,30 +81,31 @@ public:
 	Boolean IsTransient() { return _transient; }
 
 	/* Info for category */
-	virtual char *CategoryName() = 0;
+	virtual const char *CategoryName() = 0;
 
 	/* Info for class */
-	virtual char *ClassName()=0; 	/* name of class */
+	virtual const char *ClassName()=0; 	/* name of class */
 
 	/* Get name of parameters and default/current values */
-	virtual void ParamNames(int &argc, char **&argv) = 0;
+	virtual void ParamNames(int &argc, const char **&argv) = 0;
 
 	/* Create instance using the supplied parameters. Return 
 	the instance info if successful, otherwise return NULL. */
-	virtual ClassInfo *CreateWithParams(int argc, char **argv) = 0;
+	virtual ClassInfo *CreateWithParams(int argc,
+	    const char * const *argv) = 0;
 
 	/* Return true is parameters can be changed dynamically at run time */
 	virtual Boolean Changeable() { return false; }
 
 	/* Change parameters dynamically at run time */
-	virtual void ChangeParams(int argc, char **argv){};
+	virtual void ChangeParams(int argc, const char * const *argv){};
 
 
 	/* Set default parameters */
-	void SetDefaultParams(int argc, char **argv);
+	void SetDefaultParams(int argc, const char * const *argv);
 
 	/* Get default parameters */
-	void GetDefaultParams(int &argc, char **&argv);
+	void GetDefaultParams(int &argc, const char **&argv);
 
 	/* Get user info */
 	virtual void *UserInfo() { return 0; }
@@ -109,11 +113,11 @@ public:
 	/**************************************************
 	Instance Info. 
 	***************************************************/
-	virtual char *InstanceName();
+	virtual const char *InstanceName();
 	virtual void *GetInstance();
 
 	/* Get parameters that can be used to re-create this instance */
-	virtual void CreateParams(int &argc, char **&argv);
+	virtual void CreateParams(int &argc, const char **&argv);
 
 private:
 	char **_defaultParams;
@@ -146,12 +150,13 @@ public:
 
 	/* Get name of all classes in a category */
 	void ClassNames(const char *category, int &numClasses,
-	                char **&classNames);
+	                const char **&classNames);
 
 	/* Get creation parameters for a class */
 	void GetParams(const char *category, const char *className, 
-		int &numParams, char **&paramNames);
-	void GetParams(const char *inst, int &numParams, char **&paramNames);
+		int &numParams, const char **&paramNames);
+	void GetParams(const char *inst, int &numParams,
+	    const char **&paramNames);
 
 	/* Get user info for a class */
 	void *UserInfo(const char *category, const char *className);
@@ -162,13 +167,14 @@ public:
 
 	/* Create a new instance with parameters. Return the name  of
 	new instance, or NULL if not successful */
-	char *CreateWithParams(const char *category, const char *className,
-		int numParams, char **paramNames);
+	const char *CreateWithParams(const char *category,
+	    const char *className, int numParams,
+	    const char * const *paramNames);
 
 
 	/* Get name of all instances for a given class */
 	void InstanceNames(const char *category, const char *className,
-		int &num, char **&instanceNames);
+		int &num, const char **&instanceNames);
 
 	/* Get pointer to all instances for a given class */
 	void InstancePointers(const char *category, const char *className,
@@ -178,7 +184,7 @@ public:
 	void *FindInstance(const char *name);
 
 	/* Find name for instance */
-	char *FindInstanceName(const void *instance);
+	const char *FindInstanceName(const void *instance);
 
 	/* Find ClassInfo object for a given instance */
 	ClassInfo *FindClassInfo(const char *instanceName);
@@ -204,7 +210,7 @@ public:
 	/* Get the creation parameters for an instance */
 	void CreateParams(const char *category, const char *className,
 	                  const char *instanceName, int &numParams,
-			  char **&params);
+			  const char **&params);
 
 	void Print();
 

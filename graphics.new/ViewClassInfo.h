@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/12/15 14:55:26  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.8  1998/03/05 20:36:22  wenger
   Fixed bugs 304 and 309 (problems with view colors); fixed a few other
   problems related to *ClassInfo classes.
@@ -56,19 +62,19 @@
 class ViewClassInfo: public ClassInfo {
 public:
   ViewClassInfo();
-  ViewClassInfo(char *name, ViewGraph *view);
+  ViewClassInfo(const char *name, ViewGraph *view);
   virtual ~ViewClassInfo();
 
-  virtual char *CategoryName() { return "view"; }
-  virtual char *InstanceName() { return _name; }
+  virtual const char *CategoryName() { return "view"; }
+  virtual const char *InstanceName() { return _name; }
   virtual void *GetInstance() { return _view; }
 
-  virtual void ParamNames(int &argc, char **&argv);
-  virtual void CreateParams(int &argc, char **&argv);
+  virtual void ParamNames(int &argc, const char **&argv);
+  virtual void CreateParams(int &argc, const char **&argv);
   virtual Boolean Changeable() { return true; }
 
 protected:
-  char *_name;
+  const char *_name;
   char *_fgName;
   char *_bgName;
   ViewGraph *_view;
@@ -77,17 +83,17 @@ protected:
 class ViewXInfo: public ViewClassInfo {
 public:
   ViewXInfo() : ViewClassInfo() {}
-  ViewXInfo(char *name, ViewData *view);
-  virtual char *ClassName() { return "SortedX"; }
-  virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  ViewXInfo(const char *name, ViewData *view);
+  virtual const char *ClassName() { return "SortedX"; }
+  virtual ClassInfo *CreateWithParams(int argc, const char * const *argv);
 };
 
 class ViewScatterInfo : public ViewClassInfo {
 public:
   ViewScatterInfo() : ViewClassInfo() {}
   ViewScatterInfo(char *name, ViewGraph *view);
-  virtual char *ClassName() { return "Scatter"; }
-  virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  virtual const char *ClassName() { return "Scatter"; }
+  virtual ClassInfo *CreateWithParams(int argc, const char * const *argv);
 };
 
 #endif

@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  2000/01/13 23:07:11  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.16  1999/11/16 17:02:08  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -127,7 +130,8 @@ char *TAttrLink::_dummyAttrName = "dummy_attribute";
  * function: TAttrLink::TAttrLink
  * Constructor.
  */
-TAttrLink::TAttrLink(char *name, char *masterAttrName, char *slaveAttrName) :
+TAttrLink::TAttrLink(const char *name, const char *masterAttrName,
+    const char *slaveAttrName) :
     MasterSlaveLink(name, VISUAL_TATTR)
 {
 #if defined(DEBUG)
@@ -403,7 +407,9 @@ TAttrLink::CreateMasterTable()
   DevStatus result = StatusOk;
 
   if (_masterView != NULL) {
-    _masterTableName = _masterView->CreateDerivedTable(_name, _masterAttrName);
+    //TEMP -- get rid of cast
+    _masterTableName = _masterView->CreateDerivedTable((char *)_name,
+        _masterAttrName);
     if (_masterTableName == NULL) {
       char errBuf[1024];
       sprintf(errBuf, "Can't create master table for link %s\n", _name);

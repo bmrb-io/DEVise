@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/06/15 19:55:21  wenger
+  Fixed bugs 338 and 363 (problems with special cases of set links).
+
   Revision 1.7  1998/06/12 19:55:31  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -75,7 +78,8 @@ enum TDType { TDataPhys, TDataLog };
 class TAttrLink : public MasterSlaveLink {
 public:
   // Constructor/destructor.
-  TAttrLink(char *name, char *masterAttrName, char *slaveAttrName);
+  TAttrLink(const char *name, const char *masterAttrName,
+      const char *slaveAttrName);
   virtual ~TAttrLink();
 
   // From DeviseLink.

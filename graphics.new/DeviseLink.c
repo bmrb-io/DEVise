@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/03/01 23:09:09  wenger
+  Fixed a number of memory leaks and removed unused code.
+
   Revision 1.4  1999/02/11 19:54:58  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -53,7 +56,7 @@
 
 //#define DEBUG
 
-DeviseLink::DeviseLink(char *name, VisualFlag linkFlag)
+DeviseLink::DeviseLink(const char *name, VisualFlag linkFlag)
 {
 #if defined(DEBUG)
   printf("DeviseLink(0x%p)::DeviseLink(%s, %d)\n", this, name, linkFlag);
@@ -168,7 +171,7 @@ void DeviseLink::Print() {
 }
 
 Boolean
-DeviseLink::IsPileLinkName(char *name)
+DeviseLink::IsPileLinkName(const char *name)
 {
   const char *pileStr = "Pile: ";
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  2000/01/13 23:07:10  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.44  1999/11/30 22:28:25  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -421,7 +424,7 @@ Boolean ServerAPI::IsBusy()
   return (_busy > 0);
 }
 
-void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
+void ServerAPI::FilterChanged(View *view, const VisualFilter &filter,
 				   int flushed)
 {
 #if defined(DEBUG)

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/01/11 22:28:34  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.7  1998/10/13 19:40:47  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -59,39 +65,40 @@
 #ifndef ATTRPROJ
 class TDataBinaryInterpClassInfo: public ClassInfo {
 public:
-  TDataBinaryInterpClassInfo(char *className, AttrList *attrList, int recSize);
+  TDataBinaryInterpClassInfo(const char *className, AttrList *attrList,
+      int recSize);
 	
-  TDataBinaryInterpClassInfo(char *className, char *name, char *type,
-                             char *param, TData *tdata);
+  TDataBinaryInterpClassInfo(const char *className, const char *name,
+      const char *type, const char *param, TData *tdata);
   virtual ~TDataBinaryInterpClassInfo();
 
   /* Info for category */
-  virtual char *CategoryName(){ return "tdata"; } 
+  virtual const char *CategoryName(){ return "tdata"; } 
 
   /* Info for class */
-  virtual char *ClassName();
+  virtual const char *ClassName();
 
   /* Get name of parameters and default/current values */
-  virtual void ParamNames(int &argc, char **&argv);
+  virtual void ParamNames(int &argc, const char **&argv);
 
   /* Create instance using the supplied parameters. Return
      the instance info if successful, otherwise return NULL. */
-  virtual ClassInfo *CreateWithParams(int argc, char **argv);
+  virtual ClassInfo *CreateWithParams(int argc, const char * const *argv);
 
   /**************************************************
     Instance Info.
   ***************************************************/
-  virtual char *InstanceName();
+  virtual const char *InstanceName();
   virtual void *GetInstance();
 
   /* Get parameters that can be used to re-create this instance */
-  virtual void CreateParams(int &argc, char **&argv);
+  virtual void CreateParams(int &argc, const char **&argv);
 
 private:
-  char *_className;
-  char *_name;
-  char *_type;
-  char *_param;
+  const char *_className;
+  const char *_name;
+  const char *_type;
+  const char *_param;
   TData *_tdata;
   int _recSize;
   int _physRecSize;

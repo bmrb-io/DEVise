@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.98  1999/11/19 21:29:25  wenger
+  Removed Journal class and related code (no longer works); removed various
+  other unused or unnecessary code.
+
   Revision 1.97  1999/10/08 19:57:56  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -1504,7 +1508,7 @@ void QueryProcFull::EndQueries()
 
 void QueryProcFull::EndQuery(QPFullData *query)
 {
-#if DEBUGLVL >= 5
+#if (DEBUGLVL >= 5)
   printf("End query for tdata %s, map %s\n",
          query->tdata->GetName(), query->map->GetName());
 #endif

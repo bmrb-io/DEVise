@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  2000/01/11 22:28:33  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.39  1999/11/16 17:02:08  wenger
   Removed all DTE-related conditional compiles; changed version number to
   1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -204,7 +210,7 @@
 //#define DEBUG
 
 #ifndef ATTRPROJ
-TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
+TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(const char *className,
 						     AttrList *attrList,
 						     int recSize,
 						     char *separators,
@@ -223,9 +229,8 @@ TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
   _tdata = NULL;
 }
 
-TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(char *className,
-						     char *name, char *type, char *param,
-						     TData *tdata)
+TDataAsciiInterpClassInfo::TDataAsciiInterpClassInfo(const char *className,
+    const char *name, const char *type, const char *param, TData *tdata)
 {
   _className = className;
   _name = name;
@@ -240,15 +245,15 @@ TDataAsciiInterpClassInfo::~TDataAsciiInterpClassInfo()
     delete _tdata;
 }
 
-char *TDataAsciiInterpClassInfo::ClassName()
+const char *TDataAsciiInterpClassInfo::ClassName()
 {
   return _className;
 }
 
 static char buf[3][256];
-static char *args[3];
+static const char *args[3];
 
-void TDataAsciiInterpClassInfo::ParamNames(int &argc, char **&argv)
+void TDataAsciiInterpClassInfo::ParamNames(int &argc, const char **&argv)
 {
   argc = 3;
   argv = args;
@@ -263,7 +268,8 @@ void TDataAsciiInterpClassInfo::ParamNames(int &argc, char **&argv)
 
 extern ControlPanel *ctrl;
 
-ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
+ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, 
+    const char * const *argv)
 {
 #if defined(DEBUG) || 0
   for(int i=0; i<argc; i++) {
@@ -322,7 +328,7 @@ ClassInfo *TDataAsciiInterpClassInfo::CreateWithParams(int argc, char **argv)
   return new TDataAsciiInterpClassInfo(_className, name, type, param, tdata);
 }
 
-char *TDataAsciiInterpClassInfo::InstanceName()
+const char *TDataAsciiInterpClassInfo::InstanceName()
 {
   return _name;
 }
@@ -333,7 +339,7 @@ void *TDataAsciiInterpClassInfo::GetInstance()
 }
 
 /* Get parameters that can be used to re-create this instance */
-void TDataAsciiInterpClassInfo::CreateParams(int &argc, char **&argv)
+void TDataAsciiInterpClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 3;
   argv = args;
