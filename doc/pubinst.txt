@@ -1,0 +1,27 @@
+Instructions for running Devise from the public directories
+-----------------------------------------------------------
+
+Execute the following commands:
+
+  % cd ~
+  % mkdir devise
+  % cd devise
+  % cp /p/devise/public/run.script---copy.and.customize devise
+  % cp devise devisepub
+  % cp -r /p/devise/public/schema schema
+
+Edit the devise script and make DEVISE_DAT, DEVISE_CACHE, and
+DEVISE_SESSION point to ~/devise. Make DEVISE_SCHEMA point to
+~/devise/schema/schema. Leave devisepub unchanged.
+
+A tutorial can be found in /p/devise/public/doc/userman.ps which
+is a user manual being developed. Run Devise using 'devisepub'
+when you follow the examples in the tutorial.
+
+When you want to visualize your own data, run Devise using
+'devise' not 'devisepub', and follow the instructions in
+userman.ps.
+
+The supported platforms are Solaris/Intel, SunOS/Sparc, and
+HPUX/HPPA. The devise/devisepub script will invoke the
+appropriate binaries depending on the machine you're logged on.
