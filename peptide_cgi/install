@@ -52,7 +52,7 @@ cd ..
 
 # Create and set up the dynamic sessions directory.
 set targetdir = $demohome/session.js/bmrb/dynamic_sessions
-if (! -d $targetdir) then
+if (! -e $targetdir) then
   mkdir $targetdir
 
   # Needed so www-user can write here.
@@ -62,7 +62,7 @@ cp -p dynamic_sessions/*.base $targetdir
 
 # Create and set up the data/html directory.
 set targetdir = $demohome/dat/bmrb/dynamic_data
-if (! -d $targetdir) then
+if (! -e $targetdir) then
   mkdir $targetdir
 
   # Needed so www-user can write here.
@@ -72,15 +72,17 @@ cp -p html/[a-z]* $targetdir
 
 # Create and set up the java classes directory.
 set targetdir = $demohome/dat/bmrb/dynamic_data/java_classes
-if (! -d $targetdir) then
+if (! -e $targetdir) then
   mkdir $targetdir
+  chmod 755 $targetdir
 endif
 cp java_classes/*.class $targetdir
 cp java_classes/*.jar $targetdir
+chmod 644 $targetdir/*
 
 # Create and set up the directory containing the "front-end" html file.
 set targetdir = $wwwhome/public/bmrb
-if (! -d $targetdir) then
+if (! -e $targetdir) then
   mkdir $targetdir
   chmod 755 $targetdir
 endif
@@ -89,13 +91,13 @@ chmod 644 $targetdir/bmrb_select.html
 
 # Create the link that we use to have the browser find the summary page.
 set targetdir = $wwwhome/public/bmrb/html
-if (! -f $targetdir) then
+if (! -e $targetdir) then
   ln -s $demohome/dat/bmrb/dynamic_data $targetdir
 endif
 
 # Create and set up the CGI directory.
 set targetdir = $wwwhome/cgi-bin/bmrb
-if (! -d $targetdir) then
+if (! -e $targetdir) then
   mkdir $targetdir
   chmod 755 $targetdir
 endif
@@ -104,12 +106,12 @@ chmod 755 $targetdir/make_view
 
 # Link data directory to CGI directory.
 set targetdir = $wwwhome/cgi-bin/bmrb/data_dir
-if (! -f $targetdir) then
+if (! -e $targetdir) then
   ln -s $demohome/dat/bmrb/dynamic_data $targetdir
 endif
 
 # Link session directory to CGI directory.
 set targetdir = $wwwhome/cgi-bin/bmrb/session_dir
-if (! -f $targetdir) then
+if (! -e $targetdir) then
   ln -s $demohome/session.js/bmrb/dynamic_sessions $targetdir
 endif
