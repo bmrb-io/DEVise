@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.61  1997/11/05 00:18:41  donjerko
+# *** empty log message ***
+#
 # Revision 1.60  1997/10/28 19:58:20  wenger
 # Updated solaris dependencies.
 #
@@ -520,6 +523,7 @@ Aggregates.o: SockStream.h listop.h site.h Iterator.h MemoryMgr.h
 Aggregates.o: /s/gcc/lib/g++-include/deque /s/gcc/lib/g++-include/deque.h
 Aggregates.o: TypeCheck.h /s/gcc/lib/g++-include/map.h
 Aggregates.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
+Aggregates.o: StringLess.h
 DeleteParse.o: /s/gcc/lib/g++-include/string
 DeleteParse.o: /s/gcc/lib/g++-include/std/string.h
 DeleteParse.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -552,7 +556,7 @@ DeleteParse.o: site.h Iterator.h catalog.h ParseTree.h ExecExpr.h MemoryMgr.h
 DeleteParse.o: /s/gcc/lib/g++-include/deque /s/gcc/lib/g++-include/deque.h
 DeleteParse.o: TypeCheck.h /s/gcc/lib/g++-include/map.h
 DeleteParse.o: /s/gcc/lib/g++-include/tree.h
-DeleteParse.o: /s/gcc/lib/g++-include/projectn.h
+DeleteParse.o: /s/gcc/lib/g++-include/projectn.h StringLess.h
 DevRead.o: /s/gcc/lib/g++-include/strstream.h
 DevRead.o: /s/gcc/lib/g++-include/iostream.h
 DevRead.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
@@ -735,7 +739,7 @@ IndexParse.o: ParseTree.h Aggregates.h MemoryMgr.h
 IndexParse.o: /s/gcc/lib/g++-include/deque /s/gcc/lib/g++-include/deque.h
 IndexParse.o: TypeCheck.h /s/gcc/lib/g++-include/map.h
 IndexParse.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
-IndexParse.o: Inserter.h MinMax.h StandardRead.h Interface.h
+IndexParse.o: StringLess.h Inserter.h MinMax.h StandardRead.h Interface.h
 IndexParse.o: ../../RTree/src/TypeSupport/typed_rtree.h
 IndexParse.o: ../../RTree/src/RTree/rtree.h ../../RTree/src/index.h
 IndexParse.o: ../../RTree/src/dbinterface.h ../../RTree/src/setup.h
@@ -809,7 +813,7 @@ IndexParse.dummy.o: MemoryMgr.h /s/gcc/lib/g++-include/deque
 IndexParse.dummy.o: /s/gcc/lib/g++-include/deque.h TypeCheck.h
 IndexParse.dummy.o: /s/gcc/lib/g++-include/map.h
 IndexParse.dummy.o: /s/gcc/lib/g++-include/tree.h
-IndexParse.dummy.o: /s/gcc/lib/g++-include/projectn.h
+IndexParse.dummy.o: /s/gcc/lib/g++-include/projectn.h StringLess.h
 InsertParse.o: /s/gcc/lib/g++-include/string
 InsertParse.o: /s/gcc/lib/g++-include/std/string.h
 InsertParse.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -981,10 +985,7 @@ Optimizer.o: /s/gcc/lib/g++-include/libio.h /s/gcc/lib/g++-include/defalloc.h
 Optimizer.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
 Optimizer.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stdlib.h
 Optimizer.o: /usr/include/sys/feature_tests.h /usr/include/limits.h
-Optimizer.o: /usr/include/sys/isa_defs.h ParseTree.h queue.h
-Optimizer.o: /usr/include/assert.h ../../unidata/sysdep.h
-Optimizer.o: /usr/include/varargs.h /usr/include/sys/va_list.h myopt.h
-Optimizer.o: /s/gcc/lib/g++-include/string
+Optimizer.o: /usr/include/sys/isa_defs.h /s/gcc/lib/g++-include/string
 Optimizer.o: /s/gcc/lib/g++-include/std/string.h
 Optimizer.o: /s/gcc/lib/g++-include/std/bastring.h
 Optimizer.o: /s/gcc/lib/g++-include/std/stddef.h
@@ -992,9 +993,10 @@ Optimizer.o: /s/gcc/lib/g++-include/std/straits.h
 Optimizer.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
 Optimizer.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
 Optimizer.o: /s/gcc/lib/g++-include/cassert
-Optimizer.o: /s/gcc/lib/g++-include/std/cassert.h
-Optimizer.o: /s/gcc/lib/g++-include/std/sinst.h types.h exception.h Utility.h
-Optimizer.o: Array.h url.h SockStream.h listop.h
+Optimizer.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+Optimizer.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/map.h
+Optimizer.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
+Optimizer.o: StringLess.h
 PQueue.o: ../../unidata/sysdep.h /usr/include/varargs.h
 PQueue.o: /usr/include/sys/va_list.h PQueue.h types.h
 PQueue.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
@@ -1037,9 +1039,10 @@ QueryTree.o: Array.h url.h SockStream.h listop.h site.h Iterator.h catalog.h
 QueryTree.o: DevRead.h Aggregates.h MemoryMgr.h /s/gcc/lib/g++-include/deque
 QueryTree.o: /s/gcc/lib/g++-include/deque.h TypeCheck.h
 QueryTree.o: /s/gcc/lib/g++-include/map.h /s/gcc/lib/g++-include/tree.h
-QueryTree.o: /s/gcc/lib/g++-include/projectn.h ParseTree.h joins.h Sort.h
-QueryTree.o: StandardRead.h PQueue.h MinMax.h Interface.h /usr/include/math.h
-QueryTree.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+QueryTree.o: /s/gcc/lib/g++-include/projectn.h StringLess.h ParseTree.h
+QueryTree.o: joins.h Sort.h StandardRead.h PQueue.h MinMax.h Interface.h
+QueryTree.o: /usr/include/math.h /usr/include/floatingpoint.h
+QueryTree.o: /usr/include/sys/ieeefp.h
 RTreeInit.dummy.o: ../../unidata/sysdep.h /usr/include/varargs.h
 RTreeInit.dummy.o: /usr/include/sys/va_list.h
 RTreeRead.o: RTreeRead.h myopt.h /s/gcc/lib/g++-include/string
@@ -1228,7 +1231,7 @@ TypeCheck.o: /usr/include/varargs.h /usr/include/sys/va_list.h types.h
 TypeCheck.o: exception.h Utility.h Array.h url.h SockStream.h listop.h
 TypeCheck.o: TypeCheck.h /s/gcc/lib/g++-include/map.h
 TypeCheck.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
-TypeCheck.o: catalog.h Interface.h
+TypeCheck.o: StringLess.h catalog.h Interface.h
 UnionParse.o: /s/gcc/lib/g++-include/string
 UnionParse.o: /s/gcc/lib/g++-include/std/string.h
 UnionParse.o: /s/gcc/lib/g++-include/std/bastring.h

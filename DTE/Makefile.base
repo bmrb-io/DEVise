@@ -51,6 +51,7 @@ DTE_INCLUDES = \
 CFLAGS = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
 	$(OPTFLAG) \
 	-DUNIX -DLIBCS -DHAVE_CONFIG_H
+#	-fhandle-exceptions
 #	-pedantic
 #	-Wall -Wno-unused -Wno-comment \
 #	-fexternal-templates \
