@@ -101,7 +101,7 @@ void TDataDQLInterpClassInfo::ParamNames(int &argc, char **&argv)
 ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
 
-#ifdef DEBUG
+#if defined(DEBUG) || 0
 	cout << "In TDataDQLInterpClassInfo::CreateWithParams(";
 	cout << argc << ", {";
 	for(int i = 0; i < argc; i++){
@@ -153,15 +153,71 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 
 
 	ostrstream name;
-	name << argv[0];
-//	name << _counter;
-	_counter++;
+//	if(_counter){
+		name << argv[0];
+//	}
+//	else{
+//		name << argv[0] << ends;
+//	}
+	_counter++;	// this is used to create unique names;
 	name << ends;
 	_name = name.str();
 
   DataSeg::Set(_name, _query, 0, 0);
 
   TDataDQLInterp *tdata = new TDataDQLInterp(_name, attrList, _query);
+
+  _tdata = NULL;	// cannot put _tdata = tdata (core dump?)
+
+  return new TDataDQLInterpClassInfo(
+	_className,_attrs, _name, _type, _query, tdata, _tableName);
+}
+
+ClassInfo *TDataDQLInterpClassInfo::CreateWithParamsNew(char **argv, char* queryS)
+{
+
+#if defined(DEBUG) || 0
+	cout << "In TDataDQLInterpClassInfo::CreateWithParamsNew(";
+	cout << "{";
+	for(int i = 0; i < 2; i++){
+		cout << argv[i] << ", ";
+	}
+	cout << queryS << "})" << endl;
+#endif
+
+	_tableName = strdup(argv[0]);
+	char* attrs = argv[1];
+	_type = strdup(argv[1]);
+	List<char*>* attrList = new List<char*>;
+	for(char* currAtt = strtok(attrs, " "); currAtt;
+					currAtt = strtok(NULL, " ")){
+		attrList->append(currAtt);
+	}
+	_query = strdup(queryS);
+
+  #ifdef DEBUG
+	  printf(" Query = %s \n",_query);
+  #endif
+
+
+//	ostrstream name;
+//	if(_counter){
+//		name << argv[0];
+//	}
+//	else{
+//		name << argv[0] << ends;
+//	}
+//	_counter++;	// this is used to create unique names;
+//	name << _counter;
+//	_counter++;
+//	name << ends;
+//	_name = name.str();
+
+	_name = strdup(argv[0]);
+
+  DataSeg::Set(_name, _query, 0, 0);
+
+  TDataDQLInterp *tdata = new TDataDQLInterp(_name,  attrList, _query);
 
   _tdata = NULL;	// cannot put _tdata = tdata (core dump?)
 
