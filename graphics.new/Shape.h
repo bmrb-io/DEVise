@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/07/15 21:33:23  jussi
+  Added support for the 'size' gdata parameter. Added GetSize()
+  and GetOrientation() functions.
+
   Revision 1.16  1996/07/12 23:30:12  jussi
   Added missing semicolon.
 
@@ -79,12 +83,20 @@
 #define Shape_h
 
 #include <stdio.h>
+
 #include "TDataMap.h"
 #include "WindowRep.h"
 #include "Temp.h"
 
 #define GetAttr(ptr, attrName, attrType, offset) \
 	*((attrType *)(ptr+offset->attrName))
+
+inline RecId GetRecId(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+  if (offset->recidOffset < 0)
+    return map->GetDefaultRecId();
+  return GetAttr(ptr, recidOffset, RecId, offset);
+}
 
 inline Coord GetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
@@ -107,7 +119,7 @@ inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, zOffset, Coord, offset);
 }
 
-inline Color GetColor(View *view, char *ptr, TDataMap *map,
+inline Color GetColor(ViewGraph *view, char *ptr, TDataMap *map,
 		      GDataAttrOffset *offset)
 {
   Boolean active;
@@ -179,10 +191,11 @@ class TDataMap;
 
 class Shape {
  public:
+  /* Initialize shape every time a view is refreshed */
+  virtual void Init() {}
+
   /* Return # of shape attributes needed for this shape */
-  virtual int NumShapeAttrs() {
-    return 0;
-  }
+  virtual int NumShapeAttrs() { return 0; }
 
   /* Find maximum symbol size. By default, use 0th and 1st shape
      attribute as the width and height, respectively.  */
@@ -197,29 +210,34 @@ class Shape {
 
     for(int i = 0; i < numSyms; i++) {
       Coord temp;
-      temp = fabs(GetSize(ptr, map, offset) * GetShapeAttr0(ptr, map, offset));
+      temp = fabs(GetSize(ptr, map, offset)
+                  * GetShapeAttr0(ptr, map, offset));
       if (temp > width) width = temp;
-      temp = fabs(GetSize(ptr, map, offset) * GetShapeAttr1(ptr, map,  offset));
+      temp = fabs(GetSize(ptr, map, offset)
+                  * GetShapeAttr1(ptr, map,  offset));
       if (temp > height) height = temp;
       ptr += gRecSize;
     }
   }
 
   /* Draw GData symbols. */
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {}
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {}
 
  protected:
 
   /* By default, the shapes cannot display themselves in 3D */
-  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-                                TDataMap *map, View *view, int pixelSize) {}
+  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
+                                int numSyms, TDataMap *map,
+                                ViewGraph *view, int pixelSize) {}
 
   /* Draw each GData symbol as a single pixel. Used by derived classes
      as a common method in cases where symbols are smaller than one
      pixel. */
-  virtual void DrawPixelArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawPixelArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
     GDataAttrOffset *offset = map->GetGDataOffset();
     int i = 0;
     while (i < numSyms) {

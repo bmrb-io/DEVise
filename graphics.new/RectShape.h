@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/06/27 19:06:57  jussi
+  Merged 3D block shape into 2D rect shape, the appropriate shape
+  is chosen based on current view setting. Removed Block and 3DVector
+  shapes. Added empty default 3D drawing routine to all other
+  shapes.
+
   Revision 1.10  1996/06/16 01:54:32  jussi
   Added PolylineShape, PolylineFileShape, and TextLabelShape.
 
@@ -126,5 +132,14 @@ class PolylineFileShape : public Shape {};
 /* TextLabel: draws a text label given by shape attribute 0 at (X,Y). */
 
 class TextLabelShape : public Shape {};
+
+/* Line: connects adjacent data points, forming a line. */
+
+class LineShape : public Shape {};
+
+/* LineShade: connects adjacent data points, forming a line, then
+   shades the area between line and X axis. */
+
+class LineShadeShape : public Shape {};
 
 #endif
