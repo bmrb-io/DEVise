@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/03 20:44:01  jussi
+  Removed reference to unneeded file Snapshot.h.
+
   Revision 1.5  1996/11/23 20:47:41  jussi
   Removed references to DispQueryProc.
 
@@ -54,6 +57,7 @@
 #include "CycleOccMappingClassInfo.h"
 #include "CycleRec.h"
 #include "Util.h"
+#include "Session.h"
 
 #include "map_cycle_occ.h"
 
@@ -88,7 +92,13 @@ ClassInfo *CycleOccMappingInfo::CreateWithParams(int argc, char **argv){
 	}
 	TData *tdata;
 	char *tdataAlias = CopyString(argv[0]);
-	if ((tdata=(TData *)ControlPanel::FindInstance(tdataAlias)) == NULL){
+        tdata = (TData *) ControlPanel::FindInstance(tdataAlias);
+        // If we don't already have this TData, try to create it.
+        if (!tdata) {
+          Session::CreateTData(tdataAlias);
+          tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
+        }
+        if (tdata == NULL) {
 		fprintf(stderr,"CycleOccCycleOccMappingInfo::CreateWithParams: can't find tdata\n");
 		return NULL;
 	}

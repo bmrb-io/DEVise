@@ -21,6 +21,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/10/02 18:46:38  wenger
+# Opening and saving batch-style sessions in back end now fully working;
+# added tk2ds.tcl script for conversion.
+#
 
 ############################################################
 
@@ -29,6 +33,12 @@ global newFd
 #-----------------------------------------------------------
 
 proc scanDerivedSources {} {
+  # No op.
+}
+
+#-----------------------------------------------------------
+
+proc SetDescription {description} {
   # No op.
 }
 
@@ -51,9 +61,17 @@ proc OpenDataSource {tdataName} {
 proc DEVise args {
   global newFd
 
-  # Just echo to the output file unless the command is 'DEVise create tdata...'
+  # Just echo to the output file unless the command is "DEVise create
+  # tdata...", "DEVise importFileType", "DEVise dteImportFileType", or
+  # "DEVise dataSegment".
   if {[string match "create" [lindex $args 0]] && \
       [string match "tdata" [lindex $args 1]]} {
+    # No op.
+  } elseif {[string match "importFileType" [lindex $args 0]]} {
+    # No op.
+  } elseif {[string match "dteImportFileType" [lindex $args 0]]} {
+    # No op.
+  } elseif {[string match "dataSegment" [lindex $args 0]]} {
     # No op.
   } else {
     puts $newFd "DEVise $args"

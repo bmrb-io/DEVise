@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/09/23 19:57:40  wenger
+  Opening and saving of sessions now working with new scheme of mapping
+  automatically creating the appropriate TData.
+
   Revision 1.13  1997/04/16 18:53:34  wenger
   Text labels can now show non-string attributes; fixed a bug in constant
   strings in mapping (non-terminated string); added constant attributes to
@@ -194,7 +198,7 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
   // If we don't already have this TData, try to create it.
   if (!tdata) {
-    Session::CreateTData(tdataAlias, ControlPanel::Instance());
+    Session::CreateTData(tdataAlias);
     tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
   }
   if (!tdata) {

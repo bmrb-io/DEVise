@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/03 20:44:05  jussi
+  Removed reference to unneeded file Snapshot.h.
+
   Revision 1.6  1996/11/23 20:47:42  jussi
   Removed references to DispQueryProc.
 
@@ -57,6 +60,7 @@
 #include "HostMappingClassInfo.h"
 #include "HostRec.h"
 #include "Util.h"
+#include "Session.h"
 
 GlobalColor all_busyColor;
 GlobalColor some_idleColor;
@@ -94,7 +98,13 @@ ClassInfo *HostMappingInfo::CreateWithParams(int argc, char **argv){
 	}
 	TData *tdata;
 	char *tdataAlias = CopyString(argv[0]);
-	if ((tdata=(TData *)ControlPanel::FindInstance(tdataAlias)) == NULL){
+        tdata = (TData *) ControlPanel::FindInstance(tdataAlias);
+        // If we don't already have this TData, try to create it.
+        if (!tdata) {
+          Session::CreateTData(tdataAlias);
+          tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
+        }
+        if (tdata == NULL) {
 		fprintf(stderr,"HostHostMappingInfo::CreateWithParams: can't find tdata\n");
 		return NULL;
 	}

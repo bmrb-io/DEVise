@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/10/02 18:46:31  wenger
+  Opening and saving batch-style sessions in back end now fully working;
+  added tk2ds.tcl script for conversion.
+
   Revision 1.5  1997/09/23 19:57:26  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -56,10 +60,16 @@ public:
   static DevStatus Open(char *filename);
   static DevStatus Save(char *filename, Boolean asTemplate, Boolean asExport,
       Boolean withData);
-  static DevStatus CreateTData(char *name, ControlPanel *control);
+  static DevStatus CreateTData(char *name);
 
 private:
   static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
+      int argc, char *argv[]);
+  static int OpenDataSourceCmd(ClientData clientData, Tcl_Interp *interp,
+      int argc, char *argv[]);
+  static int scanDerivedSourcesCmd(ClientData clientData, Tcl_Interp *interp,
+      int argc, char *argv[]);
+  static int SetDescriptionCmd(ClientData clientData, Tcl_Interp *interp,
       int argc, char *argv[]);
 
   struct SaveData {

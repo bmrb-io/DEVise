@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.76  1997/10/02 18:46:22  wenger
+  Opening and saving batch-style sessions in back end now fully working;
+  added tk2ds.tcl script for conversion.
+
   Revision 1.75  1997/09/23 19:57:38  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -381,7 +385,6 @@ int GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType);
 //#define DEBUG
 #define LINESIZE 1024
 
-static char result[10 * 1024];
 static ViewKGraph *vkg = 0;
 
 void ResetVkg()
@@ -393,6 +396,8 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control);
 
 int ParseAPI(int argc, char **argv, ControlPanel *control)
 {
+  // Result not static so this function is reentrant.
+  char result[10 * 1024];
   ClassDir *classDir = control->GetClassDir();
   int numArgs;
   char **args;
@@ -1785,7 +1790,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 #if defined(DEBUG)
       printf("createTData <%s>\n", argv[1]);
 #endif
-      if (!Session::CreateTData(argv[1], control).IsComplete()) {
+      if (!Session::CreateTData(argv[1]).IsComplete()) {
         control->ReturnVal(API_NAK, "Unable to create tdata");
         return -1;
       }

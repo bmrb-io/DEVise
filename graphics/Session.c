@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/10/02 18:46:31  wenger
+  Opening and saving batch-style sessions in back end now fully working;
+  added tk2ds.tcl script for conversion.
+
   Revision 1.5  1997/09/23 19:57:25  wenger
   Opening and saving of sessions now working with new scheme of mapping
   automatically creating the appropriate TData.
@@ -156,12 +160,15 @@ Session::Open(char *filename)
   ControlPanelSimple control(status);
 
   if (status.IsComplete()) {
-#if 1 //TEMPTEMP
     Tcl_CreateCommand(control._interp, "DEVise", DEViseCmd, &control, 0);
-#else
-    //TEMPTEMP -- this is incorrect for devised
-    Tcl_CreateCommand(control._interp, "DEVise", DEViseCmd, ControlPanel::Instance(), 0);
-#endif
+    Tcl_CreateCommand(control._interp, "OpenDataSource", OpenDataSourceCmd,
+	&control, 0);
+    Tcl_CreateCommand(control._interp, "scanDerivedSources",
+	scanDerivedSourcesCmd, &control, 0);
+    Tcl_CreateCommand(control._interp, "SetDescription", SetDescriptionCmd,
+	&control, 0);
+
+    Tcl_SetVar(control._interp, "template", "0", TCL_GLOBAL_ONLY);
 
     if (Tcl_EvalFile(control._interp, filename) != TCL_OK) {
       char errBuf[256];
@@ -222,7 +229,6 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
   if (status.IsComplete()) {
     char *header = DevFileHeader::Get(FILE_TYPE_SESSION);
     fprintf(saveData.fp, "%s", header);
-    fprintf(saveData.fp, "# Saved by C++ code\n");//TEMPTEMP
 
     fprintf(saveData.fp, "\n# Create views\n");
     status += ForEachInstance("view", SaveView, &saveData);
@@ -297,13 +303,14 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
  * to be stored in session files.
  */
 DevStatus
-Session::CreateTData(char *name, ControlPanel *control)
+Session::CreateTData(char *name)
 {
 #if defined(DEBUG)
   printf("Session::CreateTData(%s)", name);
 #endif
 
   DevStatus status = StatusOk;
+  ControlPanelSimple control(status);
 
   // Get the DTE catalog entry for this data source.
   char *catEntry = dteShowCatalogEntry(name);
@@ -410,7 +417,7 @@ Session::CreateTData(char *name, ControlPanel *control)
     // changed when we re-implement exported templates with data.
     argvIn[3] = "0";
     argvIn[4] = "0";
-    if (ParseAPI(argcIn, argvIn, control) < 0) {
+    if (ParseAPI(argcIn, argvIn, &control) < 0) {
       status = StatusFailed;
     }
   }
@@ -432,7 +439,7 @@ Session::CreateTData(char *name, ControlPanel *control)
       argvIn[4] = sourceType;
       argvIn[5] = param;
     }
-    if (ParseAPI(argcIn, argvIn, control) < 0) {
+    if (ParseAPI(argcIn, argvIn, &control) < 0) {
       status = StatusFailed;
     }
   }
@@ -458,17 +465,109 @@ Session::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 
   int status = TCL_OK;
 
-  // don't pass DEVise command verb (argv[0])
-  if (ParseAPI(argc - 1, &argv[1], (ControlPanel *) clientData) < 0) {
-    status = TCL_ERROR;
-    fprintf(stderr, "Error in command: ");
-    PrintArgs(stderr, argc, argv);
+  // Don't do anything for "DEVise create tdata...", "DEVise importFileType",
+  // "DEVise dteImportFileType", and "DEVise dataSegment" commands.
+  if (!strcmp(argv[1], "create") && !strcmp(argv[2], "tdata")) {
+    // No op.
+  } else if (!strcmp(argv[1], "importFileType")) {
+    // No op.
+  } else if (!strcmp(argv[1], "dteImportFileType")) {
+    // No op.
+  } else if (!strcmp(argv[1], "dataSegment")) {
+    // No op.
+  } else {
+    // don't pass DEVise command verb (argv[0])
+    if (ParseAPI(argc - 1, &argv[1], (ControlPanel *) clientData) < 0) {
+      status = TCL_ERROR;
+      fprintf(stderr, "Error in command: ");
+      PrintArgs(stderr, argc, argv);
+    }
   }
 
 #if defined(DEBUG)
   printf("  finished command %s; result = %s\n", argv[1], status == TCL_OK ?
       "TCL_OK" : "TCL_ERROR");
 #endif
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::OpenDataSourceCmd
+ * OpenDataSource command procedure for session file interpreter.
+ */
+int
+Session::OpenDataSourceCmd(ClientData clientData, Tcl_Interp *interp,
+    int argc, char *argv[])
+{
+#if defined(DEBUG)
+  printf("Session::OpenDataSourceCmd() ");
+  PrintArgs(stdout, argc, argv);
+#endif
+
+  int status = TCL_OK;
+
+  // Turn old-style (pre-DTE) name into new-style (DTE) name.
+  char *result;
+  char newName[1024];
+  if (argv[1][0] != '.') {
+    sprintf(newName, ".%s", argv[1]);
+    char *current = &newName[1];
+    while (*current != '\0') {
+      if (*current == '.' || *current == ' ' || *current == ',') {
+	*current = '_';
+      }
+      current++;
+    }
+    result = newName;
+  } else {
+    result = argv[1];
+  }
+
+  Tcl_SetResult(interp, result, TCL_VOLATILE);
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::scanDerivedSourcesCmd
+ * scanDerivedSources command procedure for session file interpreter.
+ */
+int
+Session::scanDerivedSourcesCmd(ClientData clientData, Tcl_Interp *interp,
+    int argc, char *argv[])
+{
+#if defined(DEBUG)
+  printf("Session::scanDerivedSourcesCmd() ");
+  PrintArgs(stdout, argc, argv);
+#endif
+
+  int status = TCL_OK;
+
+  // This command is a no-op -- we just need to have the command exist
+  // because it's in session files -- derived sources are goofed up
+  // right now anyhow.
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SetDescriptionCmd
+ * SetDescription command procedure for session file interpreter.
+ */
+int
+Session::SetDescriptionCmd(ClientData clientData, Tcl_Interp *interp,
+    int argc, char *argv[])
+{
+#if defined(DEBUG)
+  printf("Session::SetDescriptionCmd() ");
+  PrintArgs(stdout, argc, argv);
+#endif
+
+  int status = TCL_OK;
+
+  // This command is a no-op -- we just need to have the command exist
+  // because it's in session files.
 
   return status;
 }
