@@ -3,4 +3,4 @@
 /bin/rm -f summarize.out
 /bin/rm -f error.log
 
-/s/std/bin/java -classpath ./java_classes:./java_classes/starlibj.jar Summarize $* >>& summarize.out
+java -classpath ./java_classes:./java_classes/starlibj.jar Summarize $* >>& summarize.out
