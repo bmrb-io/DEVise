@@ -1,0 +1,8 @@
+#!/s/std/bin/perl -w
+
+$ENV{'DTEW_WORK_DIR'} = "/p/devise/ext17/yunrui/dte/solaris/DTE";
+$ENV{'DEVISE_MATER_DIR'} = "/p/devise/ext17/yunrui/dte/solaris/DTE";
+$ENV{'DEVISE_HOME_TABLE'} = "/p/devise/ext17/yunrui/dte/solaris/DTE/catalog.dte";
+$ENV{'DEVISE_MINMAX_TABLE'} =  "/p/devise/ext17/yunrui/dte/solaris/DTE/minmax.dte";
+exec 'java DTEWindow';
+

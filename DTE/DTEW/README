@@ -1,0 +1,5 @@
+Files under the directory:
+
+Makefile:	makefile to make DTEW
+run:		a sample script to run DTEW
+*.java,*.c	source files
