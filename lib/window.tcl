@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/04/15 15:05:39  jussi
+#  Rewrote WindowMerge and WindowSplit code.
+#
 #  Revision 1.2  1996/04/14 00:07:08  jussi
 #  DupWindow now copies all links of the source view into the new view.
 #
@@ -587,7 +590,7 @@ proc RotateMergedView {} {
     # move mapping to end of mapping list in view
     set legend [DEVise getMappingLegend $curView $map]
     if {$legend == ""} {
-	set legend "Unknown"
+	set legend "X"
     }
     DEVise removeMapping $curView $map
     DEVise insertMapping $curView $map $legend
