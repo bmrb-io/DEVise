@@ -8,8 +8,8 @@ Iterator* createIteratorFor(
 {
 	assert(in && in->good());
 	int numFlds = schema.getNumFlds();
-	const TypeID* types = schema.getTypeIDs();
-	StandReadExec* fs = new StandReadExec(numFlds, types, in);
+	const TypeIDList& types = schema.getTypeIDs();
+	StandReadExec* fs = new StandReadExec(types, in);
 
         ExprList* project = new ExprList;
 	for(int i = 0; i < numFlds; i++) {

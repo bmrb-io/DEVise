@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/06/28 21:47:42  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.21  1998/03/17 17:19:03  donjerko
   Added new namespace management through relation ids.
 
@@ -89,7 +93,7 @@
 #include "ExecOp.h"
 
 StandReadExec::StandReadExec(const TypeIDList& typeIDs, istream* in,
-                             string url)
+                             const string& url)
 : types(typeIDs), in(in), url(url)
 {
   numFlds = types.size();
@@ -99,7 +103,7 @@ StandReadExec::StandReadExec(const TypeIDList& typeIDs, istream* in,
 }
 
 
-StandReadExec::StandReadExec(const TypeIDList& typeIDs, string url)
+StandReadExec::StandReadExec(const TypeIDList& typeIDs, const string& url)
 : types(typeIDs), in(in), url(url)
 {
   URL url(url);

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/06/28 21:47:47  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.54  1998/06/24 22:14:11  donjerko
   *** empty log message ***
 
@@ -979,23 +983,61 @@ public:
 	}
 };
 
+class TypeIDList
+: private vector<TypeID>
+{
+public:
+
+  TypeIDList() {}
+
+  TypeIDList(const TypeID* types, int numFlds){
+    for(int i = 0; i < numFlds; i++){
+      push_back(types[i]);
+    }
+  }
+
+  ~TypeIDList() {}
+
+  TypeIDList(const TypeIDList& x) : vector<TypeID>(x) {}
+
+  TypeIDList& operator=(const TypeIDList& x) {
+    vector<TypeID>::operator=(x);
+    return *this;
+  }
+
+  vector<TypeID>::size;
+  vector<TypeID>::empty;
+  vector<TypeID>::push_back;
+  vector<TypeID>::operator[];
+  // vector<TypeID>::clear; // vector::clear not in gcc 2.7
+  void clear()
+    { erase(begin(), end()); }
+
+  void append(const TypeIDList& types)
+    { insert(end(), types.begin(), types.end()); }
+
+  void push_front(const TypeID& type)
+    { insert(begin(), type); }
+};
+
 class ISchema {
-	TypeID* typeIDs;
+	TypeIDList typeIDs;
 	string* attributeNames;
 	int numFlds;
 public:
-	ISchema() : typeIDs(NULL), attributeNames(NULL), numFlds(0) {}
+	ISchema() : attributeNames(NULL), numFlds(0) {}
 	ISchema(const string& str); 
+	/*
 	ISchema(TypeID* typeIDs, string* attributeNames, int numFlds) :
 		typeIDs(typeIDs),
 		attributeNames(attributeNames), 
 		numFlds(numFlds) {}
+	*/
 	ISchema(int numFlds, const TypeID* typeIDs, const string* attributeNames); 
 	ISchema(const ISchema& x);
 	ISchema& operator=(const ISchema& x);
 	ISchema operator+(const ISchema& x) const;
 	~ISchema(){
-	//	delete [] typeIDs;
 	//	delete [] attributeNames;	// causing core dumps?
 	}
 	istream& read(istream& in); // Throws Exception
@@ -1007,8 +1049,7 @@ public:
 		assert(attributeNames);
 		return attributeNames;
 	}
-	const TypeID* getTypeIDs() const {
-		assert(typeIDs);
+	const TypeIDList& getTypeIDs() const {
 		return typeIDs;
 	}
 	static const ISchema* getISchema(const Type* arg){
@@ -1087,36 +1128,6 @@ char* allocateSpace(TypeID type, size_t& size = dummySz);
 ConstructorPtr getConstructorPtr(
 	const string& name, const TypeID* inpTypes, int numFlds, TypeID& retType);
 
-
-class TypeIDList
-: private vector<TypeID>
-{
-public:
-
-  TypeIDList() {}
-
-  ~TypeIDList() {}
-
-  TypeIDList(const TypeIDList& x) : vector<TypeID>(x) {}
-
-  TypeIDList& operator=(const TypeIDList& x) {
-    vector<TypeID>::operator=(x);
-    return *this;
-  }
-
-  vector<TypeID>::size;
-  vector<TypeID>::push_back;
-  vector<TypeID>::operator[];
-  // vector<TypeID>::clear; // vector::clear not in gcc 2.7
-  void clear()
-    { erase(begin(), end()); }
-
-  void append(const TypeIDList& types)
-    { insert(end(), types.begin(), types.end()); }
-
-  void push_front(const TypeID& type)
-    { insert(begin(), type); }
-};
 
 
 

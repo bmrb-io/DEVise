@@ -82,7 +82,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
 	RelationId.c Iterator.c DataRead.c ODBCParse.dummy.c ODBCInfo.c \
-	ODBCCatalogParse.c
+	ODBCCatalogParse.c AccessMethod.c
 	
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
@@ -97,7 +97,7 @@ ifdef NO_UNIDATA
 	CORE_SRC += DevRead.dummy.c
 else
 	CORE_SRC += DevRead.c
-	STAND_ALONE_LIBS += -L../unidata -lunidata
+	STAND_ALONE_LIBS += -L../unidata -lunidata -L$(PERL_CORE) -lperl
 endif
 
 # Set up for profiling.
@@ -137,7 +137,9 @@ SCRIPTCLIENT_SRC = scriptClient.c
 
 SCRIPTCLIENT_OBJ = $(SCRIPTCLIENT_SRC:.c=.o)
 
-LIBOBJ = $(CORE_OBJ) $(DEVISE_SPECIFIC_SRC:.c=.o)
+LIBOBJ = $(CORE_OBJ) $(STAND_ALONE_OBJ) $(DEVISE_SPECIFIC_SRC:.c=.o)
+
+# Common.cpp should be part of the library because Jie is using it.
 
 STAND_ALONE_OBJ = $(STAND_ALONE_SRC:.cpp=.o)
 

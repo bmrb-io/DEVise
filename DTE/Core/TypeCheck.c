@@ -57,7 +57,7 @@ void TypeCheck::initialize(const vector<TableAlias*>& tableList){
 
 		int numFlds = schema.getNumFlds();
 		const string* attrs = schema.getAttributeNames();
-		const TypeID* types = schema.getTypeIDs();
+		const TypeIDList& types = schema.getTypeIDs();
 		for(int i = 0; i < numFlds; i++){
 			string* aliasCopy = new string(*current->getAlias());
 			string* attCpy = new string(attrs[i]);

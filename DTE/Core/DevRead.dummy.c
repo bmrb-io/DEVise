@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/07/02 20:58:52  beyer
+  finished fixing for new interface
+
   Revision 1.4  1998/07/02 20:51:22  beyer
   corrected for new interface
 
@@ -50,6 +53,7 @@ TypeID translateUDType(Attr* at){
 }
 
 void DevRead::Open(char* schemaFile, char* dataFile){ // throws
+	cerr << "Opening DUMMY Unidata reader!!!" << endl;
 }
 
 Iterator* DevRead::createExec(){
@@ -78,4 +82,5 @@ Offset DevReadExec::getOffset()
 
 const TypeIDList& DevReadExec::getTypes()
 {
+	return *(new TypeIDList());	
 }

@@ -2,6 +2,7 @@
 #include "myopt.h"
 #include "Iterator.h"
 #include "Optimizer.h"
+#include "Stats.h"
 
 #include <math.h>
 
@@ -44,7 +45,7 @@ SPQueryProduced::SPQueryProduced(TableMap tableMap,
 		: OptNode(tableMap, siteDesc), bestAlt(NULL) {}
 
 SPQueryProduced::~SPQueryProduced(){
-	delete bestAlt;
+	// do not delete bestAlt, not an owner;
 }
 
 SPJQueryProduced::SPJQueryProduced(TableMap tableMap,
@@ -258,14 +259,25 @@ bool SPQueryProduced::expand(
 	if(bestAlt){
 		return false;
 	}
-	SiteDesc* siteDesc = &THIS_SITE;	// remove later
-	bestAlt = siteDesc->getBestAM(tableMap, q);
+	const vector<TableAlias*>& tl = q.getTableList();
+	assert(tl.size() == 1);
+	const TableAlias* ta = tl[0];
+	const vector<AccessMethod*>& amethods = ta->getAccessMethods();
+
+	assert(amethods.size() == 1 || !"not implemented");
+	// choose the cheapest access method (depends on predicates available)
+
+	bestAlt = amethods[0];
+
 	return true;
 }
 
 Iterator* SPQueryProduced::createExec() const {
-	assert(!"not implemented");
-	return NULL;
+	assert(bestAlt);
+
+	// should do projections and selections here, or in expand??
+
+	return bestAlt->createExec();
 }
 
 Iterator* SPJQueryProduced::createExec() const {
@@ -335,9 +347,7 @@ void Optimizer::run(){
 	cerr << "Total Expressions expanded: " << debugExpressCnt << endl;
 	cerr << "Root expanded " << root->getNumExpandedNodes() << " out of ";
 	cerr << root->getTotalNumNodes() << " nodes " << endl;
-	display(cerr);
 	cout << debugExpressCnt << endl;
-	exit(0);
 }
 
 void Optimizer::display(ostream& out) const {
@@ -411,22 +421,6 @@ Iterator* Optimizer::createExec() {
 		run();
 	}
 	return root->createExec();
-}
-
-Iterator* FileScan::createExec() const {
-	assert(!"not implemented");
-	return NULL;
-}
-
-FileScan::FileScan(const NewStat& stat)
-{
-//	cost = stat.getNumPgs();
-//	cost = TABLE_CARD * NUM_FLDS * FIELD_SZ / PAGE_SZ;
-}
-
-Cost FileScan::getCost() const
-{
-	return cost;
 }
 
 AccessMethod* DTESite::getBestAM(TableMap tableMap, const Query& q) const
@@ -564,6 +558,9 @@ void LogPropTable::initialize(const Query& query)
 		predMaps.push_back(tmp);
 	}
 
+/*
+	// This should be done in the perl script that will enter these
+	// values into the catalog.
 	// calculating cardinalities
 
 	char* muS = getenv("MU");
@@ -584,12 +581,12 @@ void LogPropTable::initialize(const Query& query)
 	}
 	cerr << "card of " << numTables << " " << cardinalities[numTables - 1] << endl;
 
+*/
 	for(i = 0; i < numTables; i++){
-
-		// this will not be necessary later when the cardinalities are
-		// read from the catalog
-
-		// tableList[i]->setCardinality(cardinalities[i]);
+		const Stats* stats = tableList[i]->getStats();
+		assert(stats);
+		cardinalities.push_back(stats->getCardinality());
+		cerr << "card of " << i + 1 << " " << cardinalities[i] << endl;
 	}
 
 	for(pi = preds.begin(); pi != preds.end(); ++pi){

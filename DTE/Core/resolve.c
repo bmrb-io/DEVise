@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/06/28 21:47:46  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.38  1998/06/24 22:14:08  donjerko
   *** empty log message ***
 
@@ -155,6 +159,7 @@
 #include "Interface.h"
 #include "listop.h"
 #include "RelationManager.h"
+#include "AccessMethod.h"        // for getAccessMethods
 
 bool PrimeSelection::exclusive(Site* site){
 	assert(alias);
@@ -350,12 +355,13 @@ double Operator::getSelectivity(){
 
 		if(right->selectID() == SELECT_ID){
 			
+			// foreign key relationship, left matches to exactly one right
 			// selectivity = 1 / cardinalityOfRightTable
 
 			PrimeSelection* rightc = (PrimeSelection*) right;
 			const TableAlias* rightTable = rightc->getTable();
 			assert(rightTable);
-			Cardinality c = rightTable->getStats().getCardinality();
+			Cardinality c = rightTable->getStats()->getCardinality();
 			if(!c){
 				return 1;
 			}
@@ -598,6 +604,39 @@ TableMap Operator::getTableMap(const vector<TableAlias*>& x) const {
 	return left->getTableMap(x) | right->getTableMap(x);
 }
 
+TableAlias::TableAlias(TableName *t, string* a, string *func,
+			int optShiftVal) : table(t), alias(a),function(func),
+		shiftVal(optShiftVal), stats(0), schema(0) 
+{
+	TableName* tableNameCopy = new TableName(*table);
+	Interface* interf;
+	const ISchema* s;
+	const Stats* tempStats;
+	CON_TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy));
+	CON_TRY(s = interf->getISchema(tableNameCopy));
+	schema = new ISchema(*s);
+	tempStats = interf->getStats();
+	if(tempStats){
+		stats = new Stats(*tempStats);
+	}
+	else{
+		stats = new Stats(schema->getNumFlds());
+	}
+	accessMethods = interf->createAccessMethods();
+	delete interf;
+	CON_END:
+	;
+}
+
+TableAlias::~TableAlias()
+{
+	vector<AccessMethod*>::iterator it;
+	for(it = accessMethods.begin(); it != accessMethods.end(); ++it){
+		delete *it;
+	}
+	delete stats;
+}
+
 void TableAlias::display(ostream& out, int detail){
 	assert(table);
 	if (function ){
@@ -666,13 +705,13 @@ Site* TableAlias::createSite(){
 
 ISchema TableAlias::getISchema() const
 {
-	TableName* tableNameCopy = new TableName(*table);
-	Interface* interf;
-	TRY(interf = ROOT_CATALOG.createInterface(tableNameCopy), ISchema());
-	const ISchema* schema;
-	TRY(schema = interf->getISchema(tableNameCopy), ISchema());
 	assert(schema);
 	return *schema;
+}
+
+const vector<AccessMethod*>& TableAlias::getAccessMethods() const
+{
+	return accessMethods;
 }
 
 ISchema QuoteAlias::getISchema() const

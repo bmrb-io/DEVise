@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/11/24 12:45:06  okan
+  Added record operationts to ODBC
+
   Revision 1.35  1997/11/24 05:25:36  okan
   *** empty log message ***
 
@@ -159,8 +162,8 @@ Interface* Directory::createInterface(const string& entry) const
 		// throw Exception(msg);
 	}
 	int dsnf = DIR_SCHEMA.getNumFlds();
-	const TypeID* dst = DIR_SCHEMA.getTypeIDs();
-	Iterator* iterator = new StandReadExec(dsnf, dst, in);
+	const TypeIDList& dst = DIR_SCHEMA.getTypeIDs();
+	Iterator* iterator = new StandReadExec(dst, in);
 	assert(iterator);
 	iterator->initialize();
 

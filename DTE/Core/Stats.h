@@ -31,9 +31,13 @@ public:
 		in >> cardinality;
 		int numFlds;
 		in >> numFlds;
+		vector<int> emptyVec;
+		fldSizes = emptyVec;
           fldSizes.reserve(numFlds);
 		for(int i = 0; i < numFlds; i++){
-			in >> fldSizes[i];
+			int fldSz;
+			in >> fldSz;
+			fldSizes.push_back(fldSz);
 		}
 	}
 	void display(ostream& out){

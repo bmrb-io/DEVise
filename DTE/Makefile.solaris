@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.93  1998/07/09 19:39:56  wenger
+# Re-made this for Solaris 2.6.
+#
 # Revision 1.92  1998/07/09 19:30:51  wenger
 # Fixed bug 374 (Tables failing on SPARC/Solaris).
 #
@@ -560,6 +563,35 @@ TDataDQLInterp.o: ../../graphics/Control.h ../../graphics/Util.h
 TDataDQLInterp.o: ../../graphics/DevError.h ../../graphics.new/ParseCat.h
 TDataDQLInterp.o: ../../graphics.new/DataSourceBuf.h
 
+AccessMethod.o: StandardRead.h /s/gcc/lib/g++-include/string
+AccessMethod.o: /s/gcc/lib/g++-include/std/string.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/bastring.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/stddef.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/straits.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+AccessMethod.o: /usr/include/sys/feature_tests.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+AccessMethod.o: /s/gcc/lib/g++-include/cassert
+AccessMethod.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+AccessMethod.o: /s/gcc/lib/g++-include/std/sinst.h types.h
+AccessMethod.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
+AccessMethod.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
+AccessMethod.o: /s/gcc/lib/g++-include/function.h
+AccessMethod.o: /s/gcc/lib/g++-include/bool.h
+AccessMethod.o: /s/gcc/lib/g++-include/algobase.h
+AccessMethod.o: /s/gcc/lib/g++-include/pair.h
+AccessMethod.o: /s/gcc/lib/g++-include/iterator.h
+AccessMethod.o: /s/gcc/lib/g++-include/iostream.h
+AccessMethod.o: /s/gcc/lib/g++-include/streambuf.h
+AccessMethod.o: /s/gcc/lib/g++-include/libio.h
+AccessMethod.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+AccessMethod.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+AccessMethod.o: /usr/include/sys/int_limits.h exception.h Utility.h queue.h
+AccessMethod.o: Array.h SeqSimVec.h /usr/include/math.h
+AccessMethod.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+AccessMethod.o: Iterator.h /s/gcc/lib/g++-include/fstream.h Stats.h
+AccessMethod.o: AccessMethod.h
 Aggregates.o: Aggregates.h types.h /s/gcc/lib/g++-include/string
 Aggregates.o: /s/gcc/lib/g++-include/std/string.h
 Aggregates.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -956,7 +988,8 @@ GlobalConstructors.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 GlobalConstructors.o: /usr/include/sys/int_limits.h exception.h Utility.h
 GlobalConstructors.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
 GlobalConstructors.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-GlobalConstructors.o: catalog.h RelationManager.h Interface.h RelationId.h
+GlobalConstructors.o: catalog.h RelationManager.h Interface.h Stats.h
+GlobalConstructors.o: RelationId.h
 IndexParse.o: /s/gcc/lib/g++-include/iostream.h
 IndexParse.o: /s/gcc/lib/g++-include/streambuf.h
 IndexParse.o: /s/gcc/lib/g++-include/libio.h /usr/include/memory.h
@@ -1159,15 +1192,14 @@ Interface.o: /usr/include/stdlib.h /usr/include/limits.h
 Interface.o: /usr/include/sys/isa_defs.h /usr/include/sys/int_limits.h
 Interface.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
 Interface.o: /usr/include/math.h /usr/include/floatingpoint.h
-Interface.o: /usr/include/sys/ieeefp.h Interface.h site.h myopt.h
-Interface.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
-Interface.o: Iterator.h /s/gcc/lib/g++-include/set
-Interface.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
-Interface.o: /s/gcc/lib/g++-include/projectn.h DevRead.h DataRead.h
-Interface.o: StandardRead.h /s/gcc/lib/g++-include/fstream.h Inserter.h
-Interface.o: Engine.h catalog.h ParseTree.h TypeCheck.h
-Interface.o: /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
-Interface.o: StringLess.h
+Interface.o: /usr/include/sys/ieeefp.h Interface.h Stats.h site.h myopt.h
+Interface.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Iterator.h
+Interface.o: /s/gcc/lib/g++-include/set /s/gcc/lib/g++-include/set.h
+Interface.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
+Interface.o: DevRead.h DataRead.h StandardRead.h
+Interface.o: /s/gcc/lib/g++-include/fstream.h Inserter.h Engine.h catalog.h
+Interface.o: ParseTree.h TypeCheck.h /s/gcc/lib/g++-include/map
+Interface.o: /s/gcc/lib/g++-include/map.h StringLess.h AccessMethod.h
 Iterator.o: Iterator.h /usr/include/assert.h types.h
 Iterator.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 Iterator.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1255,7 +1287,7 @@ MemoryMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/int_limits.h
 MemoryMgr.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
 MemoryMgr.o: /usr/include/math.h /usr/include/floatingpoint.h
 MemoryMgr.o: /usr/include/sys/ieeefp.h ../../DataReader/DateTime.h
-MemoryMgr.o: Interface.h MemoryMgr.h /s/gcc/lib/g++-include/deque
+MemoryMgr.o: Interface.h Stats.h MemoryMgr.h /s/gcc/lib/g++-include/deque
 MemoryMgr.o: /s/gcc/lib/g++-include/deque.h
 MinMax.o: MinMax.h myopt.h /s/gcc/lib/g++-include/string
 MinMax.o: /s/gcc/lib/g++-include/std/string.h
@@ -1379,14 +1411,44 @@ ODBCInterface.dummy.o: /usr/include/sys/isa_defs.h
 ODBCInterface.dummy.o: /usr/include/sys/int_limits.h exception.h Utility.h
 ODBCInterface.dummy.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
 ODBCInterface.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-ODBCInterface.dummy.o: Interface.h site.h myopt.h TableUtils.h url.h
-ODBCInterface.dummy.o: SockStream.h RelationId.h listop.h Stats.h Iterator.h
+ODBCInterface.dummy.o: Interface.h Stats.h site.h myopt.h TableUtils.h url.h
+ODBCInterface.dummy.o: SockStream.h RelationId.h listop.h Iterator.h
 ODBCInterface.dummy.o: /s/gcc/lib/g++-include/set
 ODBCInterface.dummy.o: /s/gcc/lib/g++-include/set.h
 ODBCInterface.dummy.o: /s/gcc/lib/g++-include/tree.h
 ODBCInterface.dummy.o: /s/gcc/lib/g++-include/projectn.h DevRead.h
 ODBCInterface.dummy.o: StandardRead.h /s/gcc/lib/g++-include/fstream.h
 ODBCInterface.dummy.o: Inserter.h Engine.h catalog.h
+ODBCList.dummy.o: ODBCList.h exception.h /s/gcc/lib/g++-include/string
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/string.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/bastring.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/stddef.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/straits.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+ODBCList.dummy.o: /usr/include/sys/feature_tests.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/cassert
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/sinst.h types.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/new.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/std/new.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/vector
+ODBCList.dummy.o: /s/gcc/lib/g++-include/vector.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/function.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/bool.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/algobase.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/pair.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/iterator.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/iostream.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/streambuf.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/libio.h
+ODBCList.dummy.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+ODBCList.dummy.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+ODBCList.dummy.o: /usr/include/sys/int_limits.h Utility.h queue.h Array.h
+ODBCList.dummy.o: SeqSimVec.h /usr/include/math.h
+ODBCList.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ODBCList.dummy.o: Iterator.h ODBCInfo.h
 ODBCParse.dummy.o: ParseTree.h queue.h /usr/include/assert.h myopt.h
 ODBCParse.dummy.o: /s/gcc/lib/g++-include/string
 ODBCParse.dummy.o: /s/gcc/lib/g++-include/std/string.h
@@ -1447,7 +1509,7 @@ Optimizer.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
 Optimizer.o: /usr/include/math.h /usr/include/floatingpoint.h
 Optimizer.o: /usr/include/sys/ieeefp.h myopt.h url.h SockStream.h
 Optimizer.o: RelationId.h listop.h Stats.h Iterator.h Optimizer.h
-Optimizer.o: StringLess.h /s/gcc/lib/g++-include/algorithm
+Optimizer.o: StringLess.h AccessMethod.h /s/gcc/lib/g++-include/algorithm
 Optimizer.o: /s/gcc/lib/g++-include/algo.h /s/gcc/lib/g++-include/heap.h
 Optimizer.o: /s/gcc/lib/g++-include/tempbuf.h
 PQueue.o: PQueue.h types.h /s/gcc/lib/g++-include/string
@@ -1507,7 +1569,7 @@ QueryTree.o: TypeCheck.h /s/gcc/lib/g++-include/map
 QueryTree.o: /s/gcc/lib/g++-include/map.h StringLess.h FixedLenQueue.h
 QueryTree.o: ParseTree.h Sort.h StandardRead.h
 QueryTree.o: /s/gcc/lib/g++-include/fstream.h PQueue.h MinMax.h Interface.h
-QueryTree.o: Optimizer.h
+QueryTree.o: Optimizer.h AccessMethod.h
 RTreeRead.o: RTreeRead.h myopt.h /s/gcc/lib/g++-include/string
 RTreeRead.o: /s/gcc/lib/g++-include/std/string.h
 RTreeRead.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -1647,7 +1709,7 @@ RelationManager.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 RelationManager.o: /usr/include/sys/int_limits.h exception.h Utility.h
 RelationManager.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
 RelationManager.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-RelationManager.o: RelationId.h
+RelationManager.o: Stats.h RelationId.h
 SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h
 SchemaParse.o: /s/gcc/lib/g++-include/string
 SchemaParse.o: /s/gcc/lib/g++-include/std/string.h
@@ -1990,7 +2052,7 @@ lex.yy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h TableUtils.h
 lex.yy.o: url.h SockStream.h RelationId.h listop.h Stats.h ParseTree.h
 lex.yy.o: TypeCheck.h /s/gcc/lib/g++-include/map /s/gcc/lib/g++-include/map.h
 lex.yy.o: /s/gcc/lib/g++-include/tree.h /s/gcc/lib/g++-include/projectn.h
-lex.yy.o: StringLess.h
+lex.yy.o: StringLess.h my.yacc.tab.h
 listop.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 listop.o: /s/gcc/lib/g++-include/std/bastring.h
 listop.o: /s/gcc/lib/g++-include/std/stddef.h
@@ -2016,6 +2078,38 @@ listop.o: SeqSimVec.h TableUtils.h url.h SockStream.h RelationId.h listop.h
 listop.o: Stats.h site.h Iterator.h /s/gcc/lib/g++-include/set
 listop.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
 listop.o: /s/gcc/lib/g++-include/projectn.h catalog.h ExecExpr.h
+my.yacc.tab.o: myopt.h /s/gcc/lib/g++-include/string
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/string.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/bastring.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/stddef.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/straits.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+my.yacc.tab.o: /usr/include/sys/feature_tests.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/cassert
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/sinst.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/vector /s/gcc/lib/g++-include/vector.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/function.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/bool.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/algobase.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/pair.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/iterator.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/iostream.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/streambuf.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/libio.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/defalloc.h /s/gcc/lib/g++-include/new.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/std/new.h /usr/include/stdlib.h
+my.yacc.tab.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+my.yacc.tab.o: /usr/include/sys/int_limits.h queue.h types.h exception.h
+my.yacc.tab.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+my.yacc.tab.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+my.yacc.tab.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
+my.yacc.tab.o: ParseTree.h TypeCheck.h /s/gcc/lib/g++-include/map
+my.yacc.tab.o: /s/gcc/lib/g++-include/map.h /s/gcc/lib/g++-include/tree.h
+my.yacc.tab.o: /s/gcc/lib/g++-include/projectn.h StringLess.h
+my.yacc.tab.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 resolve.o: types.h /s/gcc/lib/g++-include/string
 resolve.o: /s/gcc/lib/g++-include/std/string.h
 resolve.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -2043,7 +2137,7 @@ resolve.o: TableUtils.h url.h SockStream.h RelationId.h listop.h Stats.h
 resolve.o: site.h Iterator.h /s/gcc/lib/g++-include/set
 resolve.o: /s/gcc/lib/g++-include/set.h /s/gcc/lib/g++-include/tree.h
 resolve.o: /s/gcc/lib/g++-include/projectn.h ExecExpr.h catalog.h Interface.h
-resolve.o: RelationManager.h
+resolve.o: RelationManager.h AccessMethod.h
 site.o: site.h queue.h /usr/include/assert.h types.h
 site.o: /s/gcc/lib/g++-include/string /s/gcc/lib/g++-include/std/string.h
 site.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -2095,8 +2189,8 @@ types.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
 types.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 types.o: /usr/include/sys/int_limits.h exception.h Utility.h queue.h Array.h
 types.o: SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
-types.o: /usr/include/sys/ieeefp.h Interface.h ../../DataReader/DateTime.h
-types.o: catalog.h
+types.o: /usr/include/sys/ieeefp.h Interface.h Stats.h
+types.o: ../../DataReader/DateTime.h catalog.h
 url.o: url.h /s/gcc/lib/g++-include/string
 url.o: /s/gcc/lib/g++-include/std/string.h
 url.o: /s/gcc/lib/g++-include/std/bastring.h
@@ -2171,8 +2265,58 @@ TableCreate.o: /usr/include/sys/int_limits.h ../Core/exception.h
 TableCreate.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
 TableCreate.o: ../Core/SeqSimVec.h /usr/include/math.h
 TableCreate.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-TableCreate.o: ../Core/RelationId.h ../Core/Inserter.h
+TableCreate.o: ../Core/Stats.h ../Core/RelationId.h ../Core/Inserter.h
 main.o: InitShut.h Common.h
+memoryTest.o: ../Core/types.h /s/gcc/lib/g++-include/string
+memoryTest.o: /s/gcc/lib/g++-include/std/string.h
+memoryTest.o: /s/gcc/lib/g++-include/std/bastring.h
+memoryTest.o: /s/gcc/lib/g++-include/std/stddef.h
+memoryTest.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+memoryTest.o: /s/gcc/lib/g++-include/std/straits.h
+memoryTest.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+memoryTest.o: /usr/include/sys/feature_tests.h
+memoryTest.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
+memoryTest.o: /s/gcc/lib/g++-include/cassert
+memoryTest.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+memoryTest.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
+memoryTest.o: /s/gcc/lib/g++-include/std/new.h /s/gcc/lib/g++-include/vector
+memoryTest.o: /s/gcc/lib/g++-include/vector.h
+memoryTest.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
+memoryTest.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
+memoryTest.o: /s/gcc/lib/g++-include/iterator.h
+memoryTest.o: /s/gcc/lib/g++-include/iostream.h
+memoryTest.o: /s/gcc/lib/g++-include/streambuf.h
+memoryTest.o: /s/gcc/lib/g++-include/libio.h
+memoryTest.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
+memoryTest.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
+memoryTest.o: /usr/include/sys/int_limits.h ../Core/exception.h
+memoryTest.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
+memoryTest.o: ../Core/SeqSimVec.h /usr/include/math.h
+memoryTest.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+memoryTest.o: ../Core/MemoryMgr.h /s/gcc/lib/g++-include/deque
+memoryTest.o: /s/gcc/lib/g++-include/deque.h
+test.o: InitShut.h Common.h ../Core/types.h /s/gcc/lib/g++-include/string
+test.o: /s/gcc/lib/g++-include/std/string.h
+test.o: /s/gcc/lib/g++-include/std/bastring.h
+test.o: /s/gcc/lib/g++-include/std/stddef.h
+test.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
+test.o: /s/gcc/lib/g++-include/std/straits.h
+test.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
+test.o: /usr/include/sys/feature_tests.h /s/gcc/lib/g++-include/std/cstring.h
+test.o: /usr/include/string.h /s/gcc/lib/g++-include/cassert
+test.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
+test.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
+test.o: /s/gcc/lib/g++-include/std/new.h /s/gcc/lib/g++-include/vector
+test.o: /s/gcc/lib/g++-include/vector.h /s/gcc/lib/g++-include/function.h
+test.o: /s/gcc/lib/g++-include/bool.h /s/gcc/lib/g++-include/algobase.h
+test.o: /s/gcc/lib/g++-include/pair.h /s/gcc/lib/g++-include/iterator.h
+test.o: /s/gcc/lib/g++-include/iostream.h /s/gcc/lib/g++-include/streambuf.h
+test.o: /s/gcc/lib/g++-include/libio.h /s/gcc/lib/g++-include/defalloc.h
+test.o: /usr/include/stdlib.h /usr/include/limits.h
+test.o: /usr/include/sys/isa_defs.h /usr/include/sys/int_limits.h
+test.o: ../Core/exception.h ../Core/Utility.h ../Core/queue.h ../Core/Array.h
+test.o: ../Core/SeqSimVec.h /usr/include/math.h /usr/include/floatingpoint.h
+test.o: /usr/include/sys/ieeefp.h
 Common.o: /usr/include/assert.h /usr/include/math.h
 Common.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Common.o: ../Core/types.h /s/gcc/lib/g++-include/string

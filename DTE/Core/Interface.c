@@ -12,6 +12,7 @@
 #include <string>
 #include "sysdep.h"
 #include "Utility.h"
+#include "AccessMethod.h"
 
 string ViewInterface::typeName = "SQLView";
 string MaterViewInterface::typeName = "MaterView";
@@ -182,8 +183,8 @@ const ISchema* DeviseInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	int numFlds;
-	string* attributeNames;
-	TypeID* typeIDs;
+	const string* attributeNames;
+	const TypeID* typeIDs;
 	if(viewNm.empty()){
 		if(schemaNm.substr(schemaNm.size() - 3) == "ddr"){
 
@@ -192,8 +193,9 @@ const ISchema* DeviseInterface::getISchema(TableName* table){
 			TRY(DataRead* reader = new DataRead(schemaNm, dataNm), 0);
 			assert(reader);
 			numFlds = reader->getNumFlds();
-			attributeNames = reader->stealAttributeNames();
-			typeIDs = reader->stealTypeIDs();
+			attributeNames = reader->getAttributeNames();
+			typeIDs = reader->getTypeIDs();
+			schema = new ISchema(numFlds, typeIDs, attributeNames);
 			delete reader;
 		}
 		else{
@@ -207,8 +209,9 @@ const ISchema* DeviseInterface::getISchema(TableName* table){
 			TRY(reader->Open(schemaFile, data), NULL);
 			assert(reader);
 			numFlds = reader->getNumFlds();
-			attributeNames = reader->stealAttributeNames();
-			typeIDs = reader->stealTypeIDs();
+			attributeNames = reader->getAttributeNames();
+			typeIDs = reader->getTypeIDs();
+			schema = new ISchema(numFlds, typeIDs, attributeNames);
 			delete reader;
 		}
 	}
@@ -220,7 +223,6 @@ const ISchema* DeviseInterface::getISchema(TableName* table){
 		TRY(readFilter(viewNm, select, attributeNames, numFlds, where), NULL);
 		*/
 	}
-	schema = new ISchema(typeIDs, attributeNames, numFlds);
 	return schema;
 }
 
@@ -247,6 +249,7 @@ Inserter* StandardInterface::getInserter(TableName* table){ // Throws
      return inserter;
 }
 
+/*
 Site* CatalogInterface::getSite(){ // Throws a exception
 	Interface* interf = new StandardInterface(DIR_SCHEMA, fileName);
 	Site* retVal = interf->getSite();
@@ -259,6 +262,7 @@ const ISchema* CatalogInterface::getISchema(TableName* table){
 	assert(table->isEmpty());
 	return &DIR_SCHEMA;
 }
+*/
 
 istream& CGIInterface::read(istream& in){  // throws
 	in >> urlString;
@@ -421,7 +425,7 @@ const ISchema* ViewInterface::getISchema(TableName* table){
 
 	Engine engine(query);
 	TRY(const ISchema* tmp = engine.typeCheck(), 0);
-	const TypeID* tmpTypes = tmp->getTypeIDs();
+	const TypeIDList& tmpTypes = tmp->getTypeIDs();
 
 	string* retVal = new string[numFlds + 1];
 	TypeID* types = new TypeID[numFlds + 1];
@@ -431,9 +435,10 @@ const ISchema* ViewInterface::getISchema(TableName* table){
 		retVal[i + 1] = attributeNames[i];
 		types[i + 1] = tmpTypes[i];
 	}
-	schema = new ISchema(types, retVal, numFlds + 1);
+	schema = new ISchema(numFlds + 1, types, retVal);
 
-	// do not delete types and retVal
+	delete [] types;
+	delete [] retVal;
 
 	return schema;
 }
@@ -635,6 +640,9 @@ istream& Interface::read(istream& in)
 		if(next == Stats::KEYWD){
 		
 			// read in statistics
+
+			stats = new Stats();
+			stats->read(in);
 		}
 		else{
 			string msg = "Invalid catalog format: " + Stats::KEYWD +
@@ -655,14 +663,28 @@ istream& StandardInterface::read(istream& in){
 	return Interface::read(in);
 }
 
+vector<AccessMethod*> StandardInterface::createAccessMethods()
+{
+	vector<AccessMethod*> retVal;
+	Stats defStats(schema.getNumFlds());
+	Stats* nonNullStats = (stats ? stats : &defStats);
+	AccessMethod* sr = new StandardAM(schema, urlString, *nonNullStats);
+	retVal.push_back(sr);
+	return retVal;
+}
+
 istream& QueryInterface::read(istream& in){
 	in >> urlString;
 	return Interface::read(in);
 }
 
 istream& CatalogInterface::read(istream& in){
-	in >> fileName;
+	in >> urlString;
 	return Interface::read(in);
 }
 
-
+vector<AccessMethod*> Interface::createAccessMethods()
+{
+	vector<AccessMethod*> emptyVec;
+	return emptyVec;
+}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/12/04 04:05:21  donjerko
+  *** empty log message ***
+
   Revision 1.37  1997/11/24 23:13:18  weaver
   Changes for the new ColorManager.
 
@@ -460,7 +463,7 @@ public:
 		this->schema = new ISchema(*schema);
 	}
 	ISchemaSite(int numFlds, TypeID* types, string* attrs){
-		schema = new ISchema(types, attrs, numFlds);
+		schema = new ISchema(numFlds, types, attrs);
 	}
 	virtual ~ISchemaSite(){
 		// do not delete schema, ISchemaExec is the owner

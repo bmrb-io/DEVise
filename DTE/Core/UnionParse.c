@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/12/04 04:05:17  donjerko
+  *** empty log message ***
+
   Revision 1.8  1997/11/12 23:17:37  donjerko
   Improved error checking.
 
@@ -71,4 +74,5 @@ Iterator* UnionParse::createExec(){	// throws exception;
 		}
 	}
 //	return new UnionSite(iter1, iter2);
+	return 0;
 }

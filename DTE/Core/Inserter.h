@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/06/04 23:06:48  donjerko
+  Added DataReader.
+
   Revision 1.10  1998/03/17 17:18:55  donjerko
   Added new namespace management through relation ids.
 
@@ -50,8 +53,11 @@
 #define INSERTER_H
 
 //#include<iostream.h>   erased for sysdep.h
+
 #include "types.h"
 #include "sysdep.h"
+
+#include <vector>
 
 #ifndef __GNUG__
 using namespace std;
@@ -60,14 +66,12 @@ using namespace std;
 class Inserter {
 	ostream* out;
 	int numFlds;
-	WritePtr* writePtrs;
+	vector<WritePtr> writePtrs;
 public:
 	Inserter(){
 		out = NULL;
-		writePtrs = NULL;
 	}
 	virtual ~Inserter(){
-		delete [] writePtrs;
 		delete out;
 	}
 	void open(const ISchema& schema, string urlstring, int mode = ios::app); 
@@ -76,11 +80,12 @@ public:
 	void open(ostream* out, int numFlds, const TypeID* typeIDs){ // throws
 		this->out = out;
 		this->numFlds = numFlds;
-		TRY(writePtrs = newWritePtrs(typeIDs, numFlds), NVOID );
+		TypeIDList types(typeIDs, numFlds);
+		TRY(writePtrs = getWritePtrs(types), NVOID );
 	}
 	void insert(const Tuple* tuple){ // throws
 		assert(out);
-		for(int i = 0; i < numFlds; i++){
+		for(int i = 0; i < writePtrs.size(); i++){
 			writePtrs[i](*out, tuple[i]);
 			*out << " ";
 		}

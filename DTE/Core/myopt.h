@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/06/24 22:14:07  donjerko
+  *** empty log message ***
+
   Revision 1.47  1998/04/09 20:26:24  donjerko
   *** empty log message ***
 
@@ -1106,6 +1109,7 @@ public:
 };
 
 class SiteDesc;
+class AccessMethod;
 
 class TableAlias {
 protected:
@@ -1115,24 +1119,28 @@ protected:
 	int shiftVal;
 	const SiteDesc* sd;
 	TableName relTabName;
-	Stats stats;
+	Stats* stats;
+	ISchema* schema;
+	vector<AccessMethod*> accessMethods;
 public:
 	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
-			int optShiftVal = 0) : table(t), alias(a),function(func),
-		shiftVal(optShiftVal) {}
+			int optShiftVal = 0);
+/*
 	TableAlias(string tableNm, string aliasNm){
 		table = new TableName(tableNm.c_str());
 		alias = new string(aliasNm);
 		function = NULL;
 		shiftVal = 0;
+		stats = 0;
 	}
+*/
 	void setSiteDesc(const SiteDesc* sd){
 		this->sd = sd;
 	}
 	void setRelTabName(const TableName& tn){
 		relTabName = tn;
 	}
-	virtual ~TableAlias(){}
+	virtual ~TableAlias();
 	virtual TableName* getTable(){
 		return table;
 	}
@@ -1148,9 +1156,11 @@ public:
 	virtual void display(ostream& out, int detail = 0);
 	virtual Site* createSite();
 	virtual ISchema getISchema() const;
-	const Stats& getStats() const {
+	const Stats* getStats() const {
+		assert(stats);
 		return stats;
 	}
+	virtual const vector<AccessMethod*>& getAccessMethods() const;
 };
 
 class QuoteAlias : public TableAlias {

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.58  1998/06/28 21:47:47  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.57  1998/06/24 22:14:10  donjerko
   *** empty log message ***
 
@@ -1280,9 +1284,8 @@ ISchema::ISchema
 {
 	int i;
 	this->numFlds = numFlds;
-	this->typeIDs = new TypeID[numFlds];
 	for(i = 0; i < numFlds; i++){
-		this->typeIDs[i] = typeIDs[i];
+		this->typeIDs.push_back(typeIDs[i]);
 	}
 	this->attributeNames = new string[numFlds];
 	for(i = 0; i < numFlds; i++){
@@ -1307,18 +1310,7 @@ ISchema& ISchema::operator=(const ISchema& x){
 	else{
 		attributeNames = NULL;
 	}
-	if(typeIDs != x.typeIDs){
-		delete typeIDs;
-	}
-	if(x.typeIDs){
-		typeIDs = new TypeID[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			typeIDs[i] = x.typeIDs[i];
-		}
-	}
-	else{
-		typeIDs = NULL;
-	}
+	typeIDs = x.typeIDs;
 	return *this;
 }
 
@@ -1333,15 +1325,7 @@ ISchema::ISchema(const ISchema& x){
 	else{
 		attributeNames = NULL;
 	}
-	if(x.typeIDs){
-		typeIDs = new TypeID[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			typeIDs[i] = x.typeIDs[i];
-		}
-	}
-	else{
-		typeIDs = NULL;
-	}
+	typeIDs = x.typeIDs;
 }
 
 void destroyTuple(Type** tuple, int numFlds, DestroyPtr* destroyers){ // throws
@@ -1769,22 +1753,22 @@ istream& operator>>(istream& in, ISchema& s){
 	if(!in){
 		return in;
 	}
-	delete [] s.typeIDs;
+	TypeIDList emptyVec;
+	s.typeIDs = emptyVec;
 	delete [] s.attributeNames;
-	s.typeIDs = new TypeID[s.numFlds];
 	s.attributeNames = new string[s.numFlds];
 	string typeName;
 	for(int i = 0; i < s.numFlds; i++){
 		in >> typeName;
 		// s.typeIDs[i] = TypeWrapper::create(typeName);
-		s.typeIDs[i] = typeName;
+		s.typeIDs.push_back(typeName);
 		in >> s.attributeNames[i];
 	}
 	return in;
 }
 
 ISchema::ISchema(const string& str) :
-	typeIDs(NULL), attributeNames(NULL) {
+	attributeNames(NULL) {
 //	istrstream in(strdup(str.c_str()));
 	istringstream in(str.c_str());	// trying to free the string??
 	in >> *this;
@@ -1793,7 +1777,7 @@ ISchema::ISchema(const string& str) :
 ostream& operator<<(ostream& out, const ISchema& s){
 	out << s.numFlds;
 	for(int i = 0; i < s.numFlds; i++){
-		if(s.typeIDs){
+		if(!s.typeIDs.empty()){
 			out << " " << s.typeIDs[i];
 		}
 		else{

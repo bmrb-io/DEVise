@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/07/06 21:07:02  wenger
+  More memory leak hunting -- partly tracked down some in the DTE.
+
   Revision 1.24  1998/06/28 21:47:35  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -106,6 +109,8 @@ Engine::~Engine(){
 	delete parseTree;
 	parseTree = 0;
 	// do not delete schema
+	delete [] types;
+	types = 0;
 }
 
 const ParseTree* Engine::parse(){

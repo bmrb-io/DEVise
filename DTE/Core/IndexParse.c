@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/07/10 13:45:07  beyer
+  changes and bug fixes to get rtrees working in the plan reader.
+
   Revision 1.26  1998/06/28 21:47:37  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -397,7 +400,11 @@ Iterator* IndexParse::createExec(){
 	tuple[2] = &tmpid;
 	Inserter inserter;
 	ostream* out = getIndexTableOutStream(ios::app);
-	inserter.open(out, INDEX_SCHEMA.getNumFlds(), INDEX_SCHEMA.getTypeIDs());
+
+	TypeID* typeIDs = makeArray(INDEX_SCHEMA.getTypeIDs());
+	inserter.open(out, INDEX_SCHEMA.getNumFlds(), typeIDs);
+	delete [] typeIDs;
+
 	inserter.insert(tuple);
 
 	return NULL;

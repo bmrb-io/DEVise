@@ -8,8 +8,8 @@ void Inserter::open(const ISchema& schema, string urlString, int mode)
 { // throws
 	TRY(URL* url = new URL(urlString), NVOID );
 	numFlds = schema.getNumFlds();
-	const TypeID* types = schema.getTypeIDs();
-	TRY(writePtrs = newWritePtrs(types, numFlds), NVOID );
+	const TypeIDList& types = schema.getTypeIDs();
+	TRY(writePtrs = getWritePtrs(types), NVOID );
 	TRY(out = url->getOutputStream(mode), NVOID );
 	delete url;
 }
@@ -26,13 +26,17 @@ void Modifier::replace
 	}
 	assert(ins && ins->good());
 	int numFlds = schema.getNumFlds();
-	const TypeID* typeIDs = schema.getTypeIDs();
-	StandReadExec* iter = new StandReadExec(numFlds, typeIDs, ins);
+	const TypeIDList& types = schema.getTypeIDs();
+	StandReadExec* iter = new StandReadExec(types, ins);
      iter->initialize();
 	const Tuple* tmpTuple;
 	List<Tuple*> tupleList;
 	TupleLoader tupleLoader;
+
+	TypeID* typeIDs = makeArray(types);
 	TRY(tupleLoader.open(numFlds, typeIDs), NVOID);
+	delete [] typeIDs;
+
 	TRY(tmpTuple = iter->getNext(), NVOID);
 
 	bool isReplaced = false;
@@ -91,7 +95,6 @@ void UniqueInserter::close()
 	//cerr << tmpFile << endl;
 
 	int numFlds = schema.getNumFlds();
-	const TypeID* types = schema.getTypeIDs();
 	ifstream* istr = new ifstream(tmpFile.c_str());
 	assert(*istr);
 
@@ -101,7 +104,8 @@ void UniqueInserter::close()
 		sortFlds[i] = i;
 	}
 
-	StandReadExec* inp = new StandReadExec(numFlds, types, istr);
+	const TypeIDList& types = schema.getTypeIDs();
+	StandReadExec* inp = new StandReadExec(types, istr);
 	open(schema, finalFile, mode);
 
 
@@ -110,7 +114,6 @@ void UniqueInserter::close()
           sort_fields->push_back(Field(types[sortFlds[i]], sortFlds[i]));
         }
         // SortExec used to delete these...
-        delete [] types;
         delete [] sortFlds;
 
 	TRY(Iterator* inp2 = new UniqueSortExec(inp, sort_fields, Ascending),

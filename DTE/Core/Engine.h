@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/06/28 21:47:35  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.21  1998/04/09 20:26:17  donjerko
   *** empty log message ***
 
@@ -95,9 +99,10 @@ protected:
 	Iterator* topNodeIt;
 	const ISchema* schema;
 	ParseTree* parseTree;
+	TypeID* types;
 public:
 	Engine(const string& query) : query(query),
-		topNodeIt(0), schema(0), parseTree(0) {}
+		topNodeIt(0), schema(0), parseTree(0), types(0) {}
 	virtual ~Engine();
 	const ParseTree* parse();	// throws
 	const ISchema* typeCheck();	// throws
@@ -118,8 +123,16 @@ public:
 		return schema->getNumFlds();
      }
      virtual const string* getTypeIDs(){
+		if(types){
+			return types;
+		}
 		assert(schema);
-          return schema->getTypeIDs();
+		const TypeIDList& st = schema->getTypeIDs();
+		types = new TypeID[st.size()];
+		for(int i = 0; i < st.size(); i++){
+			types[i] = st[i];
+		}
+          return types;
      }
 	const Tuple* getFirst(){
 		assert(getNumFlds() != 0);
@@ -174,7 +187,7 @@ public:
 		}
 		assert(schema);
 		assert(schema->getNumFlds() + 1 == numFlds);
-          const TypeID* inTypes = schema->getTypeIDs();
+          const TypeIDList& inTypes = schema->getTypeIDs();
 		typeIDs = new TypeID[numFlds];
 		typeIDs[0] = "int";
 		for(int i = 1; i < numFlds; i++){

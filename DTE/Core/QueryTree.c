@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/06/28 21:47:40  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.51  1998/06/17 22:20:04  donjerko
   *** empty log message ***
 
@@ -249,9 +253,10 @@ void QueryTree::setupSchema(){
 		types[i] = (*it)->getTypeID();
 		attrs[i] = (*it)->toString();
 	}
-	schema = new ISchema(types, attrs, numFlds);
+	schema = new ISchema(numFlds, types, attrs);
 
-	// schema is the owner of types and attrs
+	delete [] types;
+	delete [] attrs;
 }
 
 Iterator* QueryTree::createExec(){
@@ -289,9 +294,8 @@ Iterator* QueryTree::createExec(){
 	Query query(selectVec, tableVec, predicateVec);
 	Optimizer optimizer(query);
 	optimizer.run();
-	optimizer.display();
+	optimizer.display(cerr);
 	cerr << endl;
-	exit(1);
 	return optimizer.createExec();
 
 #endif

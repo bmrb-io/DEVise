@@ -7,6 +7,7 @@
 #include "types.h"
 #include "StringLess.h"
 #include "TableUtils.h"
+#include "AccessMethod.h"
 
 #define DEBUG_STAT
 
@@ -145,24 +146,6 @@ public:
      bool operator()(const AltEntry& a, const AltEntry& b) const {
           return a.first > b.first;
      }
-};
-
-class AccessMethod {
-public:
-//	vector<BaseSelection*> getProjectList();
-	virtual Iterator* createExec() const = 0;
-	virtual Cost getCost() const = 0;
-	virtual string getName() const = 0;
-};
-
-class FileScan : public AccessMethod {
-	Cost cost;
-public:
-	FileScan(const NewStat& stat);
-//	vector<BaseSelection*> getProjectList();
-	virtual string getName() const {return "FileScan";} 
-	virtual Iterator* createExec() const;
-	virtual Cost getCost() const;
 };
 
 class SiteDesc {

@@ -13,6 +13,7 @@
 //#endif
 
 #include "types.h"
+#include "Stats.h"
 
 #ifndef __GNUG__
 using namespace std;
@@ -23,13 +24,16 @@ class TableName;
 class Site;
 class ISchema;
 class ODBC_Data;
+class AccessMethod;
 
 class Interface{
+protected:
+	Stats* stats;
 public:
 	enum Type {UNKNOWN, CATALOG, QUERY, VIEW, ODBC, DB_SERVER};
-	Interface() {}
+	Interface() {stats = 0;}
 	virtual Interface* duplicate() const = 0;
-	virtual ~Interface(){}
+	virtual ~Interface(){delete stats;}
 	virtual Site* getSite() = 0;
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
@@ -48,6 +52,10 @@ public:
 	virtual Inserter* getInserter(TableName* table); // throws
 	virtual string getTypeNm() = 0;
 	virtual Interface* copyTo(void* space) = 0;
+	const Stats* getStats(){
+		return stats;
+	}
+	virtual vector<AccessMethod*> createAccessMethods();
 };
 
 class DummyInterface : public Interface {
@@ -111,6 +119,7 @@ public:
 	virtual Interface* copyTo(void* space){
 		return new (space) StandardInterface(*this);
 	}
+	virtual vector<AccessMethod*> createAccessMethods();
 };
 
 class ViewInterface : public Interface {
@@ -308,33 +317,31 @@ public:
 	}
 };
 
-class CatalogInterface : public Interface {
-	string fileName;
+class CatalogInterface : public StandardInterface {
 public:
 	static string typeName;
 	CatalogInterface() {}
-	CatalogInterface(const string& fileName) : fileName(fileName) {}
+	CatalogInterface(const string& fileName) 
+		: StandardInterface(DIR_SCHEMA, fileName) {}
 	virtual string getTypeNm(){
 		return typeName;
 	}
 	virtual Interface* duplicate() const; 
 	string getFileName(){
-		return fileName;
+		return urlString;
 	}
-	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
-		out << " " << fileName;
+		out << " " << urlString;
 		Interface::write(out);
 	}
 	virtual string getCatalogName(){	// throws
-		return fileName;
+		return urlString;
 	}
 	virtual Type getType(){
 		return CATALOG;
 	}
-	virtual const ISchema* getISchema(TableName* table);	// throws exception
 	virtual Interface* copyTo(void* space){
 		return new (space) CatalogInterface(*this);
 	}

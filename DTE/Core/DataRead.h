@@ -104,22 +104,10 @@ public:
 		return numFlds;
 	}
 	virtual const TypeID* getTypeIDs(){
-		assert(typeIDs);
 		return typeIDs;
 	}
-	virtual TypeID* stealTypeIDs(){
-		TypeID* retVal = typeIDs;
-		typeIDs = NULL;
-		return retVal;
-	}
 	virtual const string* getAttributeNames(){
-		assert(attributeNames);
-		return attributeNames;
-	}
-	virtual string* stealAttributeNames(){
-		string* retVal = attributeNames;
-		attributeNames = NULL;
-		return retVal;
+		return attributeNames; // may be NULL
 	}
 	virtual string* getOrderingAttrib(){
 		return order;

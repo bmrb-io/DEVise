@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/06/28 21:47:43  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.25  1998/06/24 22:14:06  donjerko
   *** empty log message ***
 
@@ -108,9 +112,9 @@ class StandReadExec : public RandomAccessIterator
 public:
 
   StandReadExec(const TypeIDList& typeIDs, istream* in,
-                string url = "*noname*");
+                const string& url = "*noname*");
 
-  StandReadExec(const TypeIDList& typeIDs, string url);
+  StandReadExec(const TypeIDList& typeIDs, const string& url);
 
   StandReadExec(int numFlds, const TypeID* typeIDs, istream* in,
                 string url = "*noname*"); // defunct
