@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/13 18:07:11  jussi
+  Changed interpretation of the "flag" argument to Send().
+  It is no longer simply an error flag but instead indicates
+  the type of a message: API_CMD, API_ACK, API_NAK, or API_CTL.
+  Removed control channel from client-server communication;
+  all communication goes through a single socket pair.
+
   Revision 1.6  1996/05/11 20:44:19  jussi
   Moved output statement for "exit" command from ParseAPI.C to
   ServerAPI.c.
@@ -80,6 +87,17 @@ ServerAPI::ServerAPI()
 
   _replicate = 0;
 
+  // see if any replicas are defined
+
+  FILE *fp = fopen("devise.rep", "r");
+  if (fp) {
+    char hostName[64];
+    int port;
+    while(fscanf(fp, "%s%d", hostName, &port) == 2)
+      (void)AddReplica(hostName, port);
+    fclose(fp);
+  }
+
   RestartSession();
 }
 
@@ -96,7 +114,8 @@ void ServerAPI::DoAbort(char *reason)
 int ServerAPI::AddReplica(char *hostName, int port)
 {
   if (_replicate >= _maxReplicas) {
-    fprintf(stderr, "Replica limit exceeded.\n");
+    fprintf(stderr, "Replica limit exceeded. Cannot add %s:%d.\n",
+	    hostName, port);
     return -1;
   }
   
@@ -140,7 +159,9 @@ int ServerAPI::AddReplica(char *hostName, int port)
   int result = connect(fd,(struct sockaddr *)&servAddr,
 		       sizeof(struct sockaddr));
   if (result < 0) {
-    perror("Cannot connect to replica server");
+    fprintf(stderr, "Cannot connect to replica server %s:%d.\n",
+	    hostName, port);
+    perror("connect");
     close(fd);
     return -1;
   }
@@ -195,6 +216,18 @@ int ServerAPI::RemoveReplica(char *hostName, int port)
 
 void ServerAPI::Replicate(int argc, char **argv)
 {
+  if (!_replicate)
+    return;
+
+  if (argc > 0 &&
+      (!strcmp(argv[0], "addReplicaServer")
+       || !strcmp(argv[0], "removeReplicaServer")))
+    return;
+
+#ifdef DEBUG
+  printf("Replicating command to other servers\n");
+#endif
+
   for(int i = 0; i < _replicate; i++) {
     if (Send(_replicas[i].fd, API_CMD, 0, argc, argv) < 0) {
       fprintf(stderr,
@@ -203,6 +236,10 @@ void ServerAPI::Replicate(int argc, char **argv)
       RemoveReplica(_replicas[i].host, _replicas[i].port);
     }
   }
+
+#ifdef DEBUG
+  printf("Done replicating command\n");
+#endif
 }
 
 void ServerAPI::DestroySessionData()
@@ -393,32 +430,28 @@ int ServerAPI::ReadSocket()
     }
   }
 
-#ifdef DEBUG
-  printf("Executing command\n");
-#endif
-
   if (flag != API_CMD) {
     fprintf(stderr, "Received unexpected type of message: %u\n", flag);
     goto error;
   }
 
-  if (ParseAPI(numElements, buff, this) < 0) {
+  // a command must first be replicated before executing it locally
+  // because the local execution may result in further API_CTL type
+  // commands being sent to the replicas before ParseAPI completes
+
+  // for example, a "create view" command causes a "setFilter" control
+  // command to be sent to the replicas, and we want the replicas to
+  // have already executed the "create view" command before the
+  // "setFilter" command is sent
+
+  Replicate(numElements, buff);
+
+#ifdef DEBUG
+  printf("Executing command\n");
+#endif
+
+  if (ParseAPI(numElements, buff, this) < 0)
     fprintf(stderr, "Devise API command error\n");
-  } else {
-    if (_replicate) {
-      if (!numElements ||
-	  (strcmp(buff[0], "addReplicaServer")
-	   && strcmp(buff[0], "removeReplicaServer"))) {
-#ifdef DEBUG
-	printf("Replicating command to other servers\n");
-#endif
-	Replicate(numElements, buff);
-#ifdef DEBUG
-	printf("Done replicating command\n");
-#endif
-      }
-    }
-  }
 
 #ifdef DEBUG
   printf("Done executing command\n");
@@ -486,6 +519,13 @@ void ServerAPI::RestartSession()
     close(_socketFd);
     _socketFd = -1;
   }
+
+  for(int i = 0; i < _replicate; i++) {
+    printf("Closing replica connection to %s:%d\n", _replicas[i].host,
+	   _replicas[i].port);
+    close(_replicas[i].fd);
+  }
+  _replicate = 0;
 
   DOASSERT(_listenFd < 0, "Invalid socket");
   _listenFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -668,11 +708,9 @@ void ServerAPI::FilterChanged(View *view, VisualFilter &filter,
 	  view->GetName(), flushed, xLowBuf, yLowBuf, xHighBuf, yHighBuf);
   SendControl(API_CTL, cmd);
 
-  if (_replicate) {
-    char *args[] = { "setFilter", view->GetName(), xLowBuf,
-		     yLowBuf, xHighBuf, yHighBuf };
-    Replicate(6, args);
-  }
+  char *args[] = { "setFilter", view->GetName(), xLowBuf,
+		   yLowBuf, xHighBuf, yHighBuf };
+  Replicate(6, args);
 }
 
 void ServerAPI::SelectView(View *view)
