@@ -1075,7 +1075,7 @@ Num Date        Status  Description
 275 01/29/98	FIXED	There are expression evaluation errors in the
 			search engine demo. (rkw)
 
-276 01/29/98	OPEN	Printing all windows or printing display only prints
+276 01/29/98	NB	Printing all windows or printing display only prints
 			one window in batch mode (1.4.7 and 1.5.0). (rkw)
 
 277 01/30/98	FIXED	XWindowRep should avoid creating Tcl/Tk objects
@@ -1101,6 +1101,10 @@ Num Date        Status  Description
 284 02/03/98	OPEN	Can't execute 'group by'. (rkw)
 
 285 02/03/98	FIXED	Can't generate histograms. (rkw)
+
+286 02/05/98	OPEN	Dependencies are missing things -- for example, there
+			are no dependencies for View.o in
+			graphics/Makefile.solaris(!) (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
