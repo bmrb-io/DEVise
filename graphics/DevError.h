@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/23 20:12:42  wenger
+  Preliminary version of code to save TData (schema(s) and data) to a file.
+
   Revision 1.2  1996/06/26 23:55:44  jussi
   Added method to turn on/off error reporting.
 
@@ -34,13 +37,18 @@
 
 
 #include <stdio.h>
+#include <errno.h>
 #include "DeviseTypes.h"
 
 
 const int	devNoSyserr = -9999;
 
-#define		reportError(message, errno) DevError::ReportError((message), \
-	__FILE__, __LINE__, (errno))
+#define		reportError(message, syserr) DevError::ReportError((message), \
+	__FILE__, __LINE__, (syserr))
+#define		reportErrSys(message) DevError::ReportError((message), \
+	__FILE__, __LINE__, errno)
+#define		reportErrNosys(message) DevError::ReportError((message), \
+	__FILE__, __LINE__, devNoSyserr)
 
 
 class DevError

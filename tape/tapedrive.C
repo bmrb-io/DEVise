@@ -7,6 +7,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/09/26 18:55:42  jussi
+  Added support for 64-bit file offsets. Tape commands are now
+  executed in a subprocess or thread which increases parallelism
+  in the system.
+
   Revision 1.11  1996/07/18 02:48:24  jussi
   Make this code compile in Ultrix.
 
@@ -64,6 +69,7 @@
 #include "tapedrive.h"
 #include "DCE.h"
 #include "Exit.h"
+#include "DevError.h"
 
 // Use fake fileno and blkno to make this file compile in Alpha
 // until a real fix is found. The problem is that in Alpha/OSF,
@@ -97,7 +103,7 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
   _child = 0;
 
   if (!(file = fopen(name, mode))) {
-    perror("fopen");
+    reportErrSys("fopen");
     return;
   }
 
@@ -109,7 +115,7 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
   _fwriteBuf = new char [fwriteBufSize];
   DOASSERT(_fwriteBuf, "Out of memory");
   if (setvbuf(file, _fwriteBuf, _IOFBF, fwriteBufSize) != 0) {
-      perror("setvbuf");
+      reportErrSys("setvbuf");
       exit(1);
   }
 #endif
@@ -157,7 +163,7 @@ TapeDrive::~TapeDrive()
   setbuf(file, 0);
 
   if (fclose(file))
-    perror("fclose");
+    reportErrSys("fclose");
 
 #ifdef USE_FWRITEBUF
   delete _fwriteBuf;
@@ -215,7 +221,7 @@ void TapeDrive::waitForChildProcess()
     (void)pthread_join(_child, 0);
 #else
     if (wait(0) < 0) {
-      perror("wait");
+      reportErrSys("wait");
       exit(1);
     }
 #endif
@@ -497,7 +503,7 @@ void *TapeDrive::ProcessCmd(short mt_op, daddr_t mt_count)
   static struct mtget otstat;           // original tape status
   int status = ioctl(fileno(file), MTIOCGET, (char *)&otstat);
   if (status < 0)
-    perror("ioctl4");
+    reportErrSys("ioctl4");
   DOASSERT(status >= 0, "Cannot get tape status");
 
   for(int attempt = 0; attempt < 10; attempt++) {
@@ -536,7 +542,7 @@ int TapeDrive::ProcessCmdNR(short mt_op, daddr_t mt_count)
   mt_tim[mt_op] += getTimer();
 
   if (status < 0)
-      perror("ioctl");
+      reportErrSys("ioctl");
 
   TAPEDBG(cout << "Tape " << fileno(file) << ", command " << mt_op
           << ", count " << mt_count << " finished, status = " << status
@@ -554,7 +560,7 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
   _proc_mt_op = mt_op;
   _proc_mt_count = mt_count;
   if (pthread_create(&_child, 0, ProcessCmd, this)) {
-      perror("pthread_create");
+      reportErrSys("pthread_create");
       return -1;
   }
 #else
@@ -566,7 +572,7 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
   }
 
   if (_child < 0) {
-      perror("fork");
+      reportErrSys("fork");
       return -1;
   }
 #endif
@@ -585,7 +591,7 @@ void TapeDrive::getStatus()
 #else
   int status = ioctl(fileno(file), MTIOCGET, (char *)&tstat);
   if (status < 0)
-    perror("ioctl2");
+    reportErrSys("ioctl2");
   DOASSERT(status >= 0, "Cannot get tape status");
 #endif
 }
@@ -633,7 +639,7 @@ void TapeDrive::fillBuffer()
 #endif
     cerr << "Read failed: fd " << fileno(file) << ", buffer "
          << (void *)buffer << ", bytes " << blockSize << endl;
-    perror("read");
+    reportErrSys("read");
     exit(1);
   }
   
@@ -659,7 +665,7 @@ void TapeDrive::flushBuffer()
 
 //  startTimer();
   if (fwrite(buffer, blockSize, 1, file) < 1) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     exit(1);
   }
 //  write_time += getTimer();
@@ -702,7 +708,7 @@ void TapeDrive::gotoBeginningOfFile()
 {
   int status = fseek(file, 0, SEEK_SET);
   if (status < 0)
-    perror("fseek");
+    reportErrSys("fseek");
   DOASSERT(status >= 0, "Cannot operate tape drive");
 
   if (!fileNo) {                        // first file? just rewind
@@ -762,7 +768,7 @@ void TapeDrive::gotoEndOfFile()
 	return;
       }
     }
-    perror("ioctl3");
+    reportErrSys("ioctl3");
     DOASSERT(status >= 0, "Cannot operate tape drive");
   }
 }

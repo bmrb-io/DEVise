@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/09/26 19:02:32  jussi
+  Renamed file from ExtBufMgr -> SBufMgr. Added Web I/O task and
+  changed buffer manager to allow more concurrency between I/Os.
+
   Revision 1.3  1996/09/07 01:43:24  jussi
   Method BufferDealloc() is used also when BUFFER is not defined.
 
@@ -43,6 +47,7 @@
 #include "SBufMgr.h"
 #include "Web.h"
 #include "Exit.h"
+#include "DevError.h"
 
 #define DEBUGLVL 0
 
@@ -1039,8 +1044,7 @@ void UnixWebIOTask::DeviceIO(Request &req, Request &reply)
                 _offset = _cacheSize;
             }
             if (fwrite(buffer, len, 1, _cache) != 1) {
-                fprintf(stderr, "Cannot write to cache file\n");
-                perror("fwrite");
+                reportErrSys("Cannot write to cache file");
                 break;
             }
             _offset += len;

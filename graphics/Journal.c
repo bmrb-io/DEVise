@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 21:44:17  jussi
+  Fixed time conversion routine.
+
   Revision 1.4  1995/12/28 21:40:55  jussi
   Got rid of strings.h and stuck with string.h.
 
@@ -38,6 +41,7 @@
 #include "Init.h"
 #include "Selection.h"
 #include "Time.h"
+#include "DevError.h"
 
 
 
@@ -119,7 +123,7 @@ char buf[80];
 	_opened = true;
 	return;
 error:
-	fprintf(stderr,"Journal::Init: error writing args\n");
+	reportErrSys("Journal::Init: error writing args");
 	Exit::DoExit(1);
 }
 
@@ -167,7 +171,7 @@ void Journal::RecordEvent(EventType type, Selection *selection,
 		rec.numPrefetch= numPrefetch;
 		rec.numPrefetchHits = numPrefetchHits;
 		if (write(_fd,(char *)&rec,sizeof(rec))!=sizeof(rec)){
-			perror("Journal::RecordEvent: write Push/change");
+			reportErrSys("Journal::RecordEvent: write Push/change");
 			Exit::DoExit(1);
 		}
 }

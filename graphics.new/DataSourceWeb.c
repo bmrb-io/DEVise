@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/14 20:34:09  jussi
+  Rewrote class to fork a process that does all data transfers
+  from the Web site.
+
   Revision 1.3  1996/07/12 19:37:21  jussi
   Added timeout processing for network connections.
 
@@ -203,15 +207,15 @@ DataSourceWeb::ChildProc()
             return StatusOk;
         }
         if (len < 0) {
-            fprintf(stderr, "Cannot read from network\n");
+            reportErrSys("Cannot read from network");
             break;
         }
         if (fseek(cfile, 0, SEEK_END) < 0) {
-            fprintf(stderr, "Cannot seek to end of file\n");
+            reportErrSys("Cannot seek to end of file");
             break;
         }
         if (fwrite(buffer, len, 1, cfile) != 1) {
-            fprintf(stderr, "Cannot write to cache file\n");
+            reportErrSys("Cannot write to cache file");
             break;
         }
     }

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/04 21:59:56  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.6  1996/05/31 15:40:35  jussi
   Cleaned up a bit. Added copyright notice.
 
@@ -43,6 +50,7 @@
 #include "UnixRecFile.h"
 #include "Util.h"
 #include "Exit.h"
+#include "DevError.h"
 
 /****************************************************************
 Create a new file. Return NULL if file already exists
@@ -61,7 +69,7 @@ UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
   /* Cannot open file. Create it */
   if ((fd = open(name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
     fprintf(stderr, "File %s: ", name);
-    perror("open");
+    reportErrSys("open");
     Exit::DoExit(1);
   }
 
@@ -83,7 +91,7 @@ UnixRecFile *UnixRecFile::OpenFile(char *name, int recSize, Boolean trunc)
   /* Find size of file */
   struct stat fileStat;
   if (fstat(fd, &fileStat) != 0) {
-    perror("fstat");
+    reportErrSys("fstat");
     Exit::DoExit(1);
   }
   
@@ -138,7 +146,7 @@ void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
   if (_seekRec != recNum) {
     off_t pos = (off_t) (recNum * _recSize);
     if (lseek(_fd, pos, SEEK_SET) != pos) {
-      perror("lseek");
+      reportErrSys("lseek");
       Exit::DoExit(1);
     }
   }
@@ -149,7 +157,7 @@ void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
     len = read(_fd, (char *)buf, toRead);
     if (len< 0) {
       if ( errno != EINTR) {
-	perror("read");
+	reportErrSys("read");
 	Exit::DoExit(1);
       }
     } else if (len == 0) {
@@ -186,7 +194,7 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
   if (_seekRec != recNum) {
     off_t pos = (off_t)(recNum * _recSize);
     if (lseek(_fd, pos, SEEK_SET) != pos) {
-      perror("lseek");
+      reportErrSys("lseek");
       Exit::DoExit(1);
     }
   }
@@ -197,7 +205,7 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
     len = write(_fd, (char *)buf, toWrite);
     if (len< 0) {
       if (errno != EINTR) {
-	perror("write");
+	reportErrSys("write");
 	Exit::DoExit(1);
       }
     } else {
@@ -225,7 +233,7 @@ int UnixRecFile::GetModTime()
 {
   struct stat sbuf;
   if (fstat(_fd, &sbuf) < 0) {
-    perror("fstat");
+    reportErrSys("fstat");
     Exit::DoExit(1);
   }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/08/27 19:03:27  flisakow
+    Added ifdef's around some informational printf's.
+
   Revision 1.17  1996/08/04 21:59:54  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -342,7 +345,7 @@ void TDataBinary::Initialize()
  
   unsigned long magicNumber;
   if (read(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    perror("read");
+    reportErrSys("read");
     goto error;
   }
   if (magicNumber != 0xdeadbeef) {
@@ -353,17 +356,17 @@ void TDataBinary::Initialize()
   /* index file exists. See if we are still working on the same
      file, and if we are, reinitialize */
   if (_data->Seek(0, SEEK_SET) < 0) {
-    perror("fseek");
+    reportErrSys("fseek");
     goto error;
   }
   if (_data->Fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1) != 1) {
-    perror("fread");
+    reportErrSys("fread");
     goto error;
   }
 
   if (read(indexFd, indexFileContent, BIN_CONTENT_COMPARE_BYTES)
       != BIN_CONTENT_COMPARE_BYTES) {
-    perror("read");
+    reportErrSys("read");
     goto error;
   }
   if (memcmp(indexFileContent, fileContent, BIN_CONTENT_COMPARE_BYTES)) {
@@ -379,13 +382,13 @@ void TDataBinary::Initialize()
   
   /* Read last file position */
   if (read(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    perror("read");
+    reportErrSys("read");
     goto error;
   }
   
   /* Read number of records */
   if (read(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    perror("read");
+    reportErrSys("read");
     goto error;
   }
 
@@ -402,7 +405,7 @@ void TDataBinary::Initialize()
   /* read the index */
   if (read(indexFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
-    perror("read");
+    reportErrSys("read");
     goto error;
   }
   
@@ -456,33 +459,33 @@ void TDataBinary::Checkpoint()
 		      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP
 		      | S_IROTH | S_IWOTH)) < 0) {
     fprintf(stderr, "Cannot create index file %s\n", _indexFileName);
-    perror("open");
+    reportErrSys("open");
     goto error;
   }
 
   fileOpened = true;
   
   if (write(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    perror("write");
+    reportErrSys("write");
     goto error;
   }
 
   if (_data->Seek(0, SEEK_SET) < 0) {
-    perror("fseek");
+    reportErrSys("fseek");
     goto error;
   }
   if (_data->Fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1) != 1) {
     if (!errno)
       fprintf(stderr, "File not checkpointed due to its small size\n");
     else
-      perror("fread");
+      reportErrSys("fread");
     goto error;
   }
   
   /* write contents of file to be compared later */
   if (write(indexFd, fileContent, BIN_CONTENT_COMPARE_BYTES) !=
       BIN_CONTENT_COMPARE_BYTES) {
-    perror("write");
+    reportErrSys("write");
     goto error;
   }
   
@@ -492,20 +495,20 @@ void TDataBinary::Checkpoint()
   
   /* write last position in the file */
   if (write(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    perror("write");
+    reportErrSys("write");
     goto error;
   }
   
   /* write # of records */
   if (write(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    perror("write");
+    reportErrSys("write");
     goto error;
   }
     
   /* write indices */
   if (write(indexFd, _index, _totalRecs * sizeof(long))
       != (int)(_totalRecs * sizeof(long))) {
-    perror("write");
+    reportErrSys("write");
     goto error;
   }
 
@@ -536,7 +539,7 @@ void TDataBinary::BuildIndex()
 
   // First go to last valid position of file
   if (_data->Seek(_currPos, SEEK_SET) < 0) {
-    perror("fseek");
+    reportErrSys("fseek");
     return;
   }
 
@@ -617,13 +620,13 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
     // the previously-existing code.  RKW 5/21/96.
     if (_data->isTape() || (_currPos != recloc)) {
       if (_data->Seek(recloc, SEEK_SET) < 0) {
-	perror("fseek");
+	reportErrSys("fseek");
 	DOASSERT(0, "Cannot perform file seek");
       }
       _currPos = recloc;
     }
     if (_data->Fread(ptr, _physRecSize, 1) != 1) {
-      perror("fread");
+      reportErrSys("fread");
       DOASSERT(0, "Cannot read from file");
     }
 
@@ -662,7 +665,7 @@ void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
   int len = numRecs * _physRecSize;
 
   if (_data->append(buf, len) != len) {
-    perror("tapewrite");
+    reportErrSys("tapewrite");
     DOASSERT(0, "Cannot append to file");
   }
 

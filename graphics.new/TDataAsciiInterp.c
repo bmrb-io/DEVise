@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/21 02:23:23  jussi
+  Added code that deletes allocated string space if string not
+  inserted into string hash table.
+
   Revision 1.20  1996/07/15 17:02:06  jussi
   Added support for string attributes in GData.
 
@@ -101,6 +105,7 @@
 #include "Parse.h"
 #include "Control.h"
 #include "Util.h"
+#include "DevError.h"
 #ifndef ATTRPROJ
 #  include "StringStorage.h"
 #endif
@@ -270,7 +275,7 @@ Boolean TDataAsciiInterp::WriteIndex(int fd)
 {
   int numAttrs = _attrList.NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    perror("write");
+    reportErrSys("write");
     return false;
   }
 
@@ -280,20 +285,20 @@ Boolean TDataAsciiInterp::WriteIndex(int fd)
       continue;
     if (write(fd, &info->hasHiVal, sizeof info->hasHiVal)
 	!= sizeof info->hasHiVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
     if (write(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
     if (write(fd, &info->hasLoVal, sizeof info->hasLoVal)
 	!= sizeof info->hasLoVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
     if (write(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
   }
@@ -305,7 +310,7 @@ Boolean TDataAsciiInterp::ReadIndex(int fd)
 {
   int numAttrs;
   if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    perror("read");
+    reportErrSys("read");
     return false;
   }
   if (numAttrs != _attrList.NumAttrs()) {
@@ -319,20 +324,20 @@ Boolean TDataAsciiInterp::ReadIndex(int fd)
       continue;
     if (read(fd, &info->hasHiVal, sizeof info->hasHiVal)
 	!= sizeof info->hasHiVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
     if (read(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
     if (read(fd, &info->hasLoVal, sizeof info->hasLoVal)
 	!= sizeof info->hasLoVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
     if (read(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
   }

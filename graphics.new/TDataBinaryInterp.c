@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/08/29 18:24:42  wenger
+  A number of Dali-related improvements: ShapeAttr1 now specifies image
+  type when shape is 'image'; added new '-bytes' flag to Dali commands
+  when sending images; TDataBinaryInterp now uses StringStorage so GData
+  can access strings; fixed hash function for StringStorage so having the
+  high bit set in a byte in the string doesn't crash the hash table;
+  improved the error checking in some of the Dali code.
+
   Revision 1.9  1996/07/01 19:28:10  jussi
   Added support for typed data sources (WWW and UNIXFILE). Renamed
   'cache' references to 'index' (cache file is really an index).
@@ -65,6 +73,7 @@
 #include "Parse.h"
 #include "Control.h"
 #include "Util.h"
+#include "DevError.h"
 #ifndef ATTRPROJ
 #  include "StringStorage.h"
 #endif
@@ -227,7 +236,7 @@ Boolean TDataBinaryInterp::WriteIndex(int fd)
 {
   int numAttrs = _attrList.NumAttrs();
   if (write(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    perror("write");
+    reportErrSys("write");
     return false;
   }
 
@@ -237,20 +246,20 @@ Boolean TDataBinaryInterp::WriteIndex(int fd)
       continue;
     if (write(fd, &info->hasHiVal, sizeof info->hasHiVal)
 	!= sizeof info->hasHiVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
     if (write(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
     if (write(fd, &info->hasLoVal, sizeof info->hasLoVal)
 	!= sizeof info->hasLoVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
     if (write(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      perror("write");
+      reportErrSys("write");
       return false;
     }
   }
@@ -262,7 +271,7 @@ Boolean TDataBinaryInterp::ReadIndex(int fd)
 {
   int numAttrs;
   if (read(fd, &numAttrs, sizeof numAttrs) != sizeof numAttrs) {
-    perror("read");
+    reportErrSys("read");
     return false;
   }
   if (numAttrs != _attrList.NumAttrs()) {
@@ -276,20 +285,20 @@ Boolean TDataBinaryInterp::ReadIndex(int fd)
       continue;
     if (read(fd, &info->hasHiVal, sizeof info->hasHiVal)
 	!= sizeof info->hasHiVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
     if (read(fd, &info->hiVal, sizeof info->hiVal) != sizeof info->hiVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
     if (read(fd, &info->hasLoVal, sizeof info->hasLoVal)
 	!= sizeof info->hasLoVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
     if (read(fd, &info->loVal, sizeof info->loVal) != sizeof info->loVal) {
-      perror("read");
+      reportErrSys("read");
       return false;
     }
   }

@@ -1,12 +1,17 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:16:27  jussi
+  Added CVS header.
+*/
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "ams.h"
+#include "DevError.h"
 
 #define NUMRECORDS 100
 #define outfile "AmsOut"
@@ -17,7 +22,7 @@ double time = 0.0;
 int fd;
 
 	if ((fd=open(outfile,O_CREAT|O_TRUNC|O_WRONLY, 0666))<0){
-		perror("open");
+		reportErrSys("open");
 		exit(2);
 	}
 	for (i=0; i < NUMRECORDS; i++){
@@ -31,7 +36,7 @@ int fd;
 		data.rain = (double)(((int)i)% 10) ;
 
 		if (write(fd,(char *)&data,sizeof(data))!=sizeof(data)){
-			perror("write");
+			reportErrSys("write");
 			exit(2);
 		}
 

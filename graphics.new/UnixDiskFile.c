@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:27:52  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:12  jussi
   Added CVS header.
 */
@@ -31,6 +34,7 @@
 #include "UnixDiskFile.h"
 #include "Exit.h"
 #include "PageSize.h"
+#include "DevError.h"
 
 /****************************************************************
 Create a new file. Return NULL if file already exists
@@ -40,15 +44,15 @@ UnixDiskFile *UnixDiskFile::CreateFile(char *name)
 {
   /* open file */
   int fd;
-  if ((fd = open(name, /*O_FSYNC|*/O_RDWR, S_IRUSR | S_IWUSR)) >= 0) {
+  if ((fd = open(name, /*O_SYNC|*/O_RDWR, S_IRUSR | S_IWUSR)) >= 0) {
     /* file already exists */
     close(fd);
     return NULL;
   }
 
   /* can't open file. Create it */
-  if ((fd = open(name, /*O_FSYNC|*/O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
-    perror("UnixDiskFile: can't create file");
+  if ((fd = open(name, /*O_SYNC|*/O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
+    reportErrSys("UnixDiskFile: can't create file");
     fprintf(stderr,"file name is %s\n",name);
     Exit::DoExit(1);
   }
@@ -64,14 +68,14 @@ UnixDiskFile *UnixDiskFile::OpenFile(char *name)
 {
   /* open file */
   int fd;
-  if ((fd = open(name, O_FSYNC | O_RDWR, S_IRUSR | S_IWUSR)) < 0)
+  if ((fd = open(name, O_SYNC | O_RDWR, S_IRUSR | S_IWUSR)) < 0)
     /* can't open file */
     return NULL;
 
   /* find size of file */
   struct stat fileStat;
   if (fstat(fd,&fileStat) != 0) {
-    perror("UnixDiskFile: can't get file stat\n");
+    reportErrSys("UnixDiskFile: can't get file stat\n");
     Exit::DoExit(1);
   }
 
@@ -118,7 +122,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
   if (_seekPage != pageNum) {
     off_t pos = (off_t) pageNum * DISKFILE_PAGESIZE;
     if (lseek(_fd,pos,SEEK_SET)!= pos) {
-      perror("UnixDiskFile::GetPage: can't seek");
+      reportErrSys("UnixDiskFile::GetPage: can't seek");
       Exit::DoExit(1);
     }
   }
@@ -129,7 +133,7 @@ void UnixDiskFile::ReadPage(int pageNum, void *buf)
     len=read(_fd,(char *)buf, toRead);
     if (len< 0) {
       if ( errno != EINTR) {
-	perror("UnixDiskFile::GetPage: ");
+	reportErrSys("UnixDiskFile::GetPage: ");
 	Exit::DoExit(1);
       }
     }
@@ -172,7 +176,7 @@ void UnixDiskFile::WritePage(int pageNum, void *buf)
   if (_seekPage != pageNum) {
     off_t pos = (off_t) pageNum * DISKFILE_PAGESIZE;
     if (lseek(_fd,pos,SEEK_SET)!= pos) {
-      perror("UnixDiskFile::GetPage: can't seek");
+      reportErrSys("UnixDiskFile::GetPage: can't seek");
       Exit::DoExit(1);
     }
   }
@@ -183,7 +187,7 @@ void UnixDiskFile::WritePage(int pageNum, void *buf)
     len=write(_fd,(char *)buf, toWrite);
     if (len< 0) {
       if (errno != EINTR) {
-	perror("UnixDiskFile::WritePage: ");
+	reportErrSys("UnixDiskFile::WritePage: ");
 	Exit::DoExit(1);
       }
     }

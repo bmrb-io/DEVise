@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/12 17:53:57  jussi
+  Replaced call to random() with call to rand().
+
   Revision 1.3  1996/01/12 15:33:46  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -32,6 +35,7 @@
 #include <sys/stat.h>
 
 #include "StrData.h"
+#include "DevError.h"
 
 int NumRecords= 1000; /* number of records to generate */
 const char *fileName = "strData"; /* name of output file */
@@ -80,7 +84,7 @@ main(int argc, char **argv)
     rec.io= procRecs[proc].meanIo+ (rand() % 10)-5;
 
     if (write(fd,(char *)&rec, sizeof(rec))!= sizeof(rec)){
-      perror("write");
+      reportErrSys("write");
       exit(2);
     }
   }

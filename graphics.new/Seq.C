@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/31 15:39:31  jussi
+  Minor changes to remove compiler warnings in Linux.
+
   Revision 1.8  1996/04/16 20:38:47  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -58,6 +61,7 @@
 #include "machdep.h"
 #include "Util.h"
 #include "Parse.h"
+#include "DevError.h"
 
 //#define DEBUG
 //#define DEBUG_IO
@@ -520,7 +524,7 @@ int seq_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   // send query plus terminating null to SEQ server
   int bytes = strlen(cmdbuf) + 1;
   if (write(sock, cmdbuf, bytes) != bytes) {
-    perror("Error in SEQ server connection: write");
+    reportErrSys("Error in SEQ server connection: write");
     return TCL_ERROR;
   }
   

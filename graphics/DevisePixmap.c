@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/05 21:55:18  jussi
+  Added #include <stdlib.h> to get malloc() prototype.
+
   Revision 1.3  1995/12/05 20:19:11  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -28,6 +31,7 @@
 
 #include "Exit.h"
 #include "DevisePixmap.h"
+#include "DevError.h"
 
 PixmapIO::PixmapIO()
 {
@@ -55,7 +59,7 @@ void PixmapIO::Begin()
     printf("Begin Compress\n");
 #endif
     if (fwrite(_pixmap, sizeof(*_pixmap), 1, _file) != 1) {
-      perror("PixmapIO::WritePixmap");
+      reportErrSys("PixmapIO::WritePixmap");
       Exit::DoExit(1);
     }
 #ifdef DEBUG
@@ -68,7 +72,7 @@ void PixmapIO::Begin()
 #endif
     _pixmap = new DevisePixmap();
     if (fread(_pixmap, sizeof(*_pixmap), 1, _file) != 1) {
-      perror("PixmapIO::LoadPixmap");
+      reportErrSys("PixmapIO::LoadPixmap");
     Exit::DoExit(1);
     }
 #ifdef DEBUG
@@ -110,11 +114,11 @@ char *PixmapIO::ReadLine(int &length)
     int numBytes;
     if (fread(&numBytes, sizeof(numBytes), 1, _file) != 1
 	|| numBytes > PIXMAPIO_BUFSIZE) {
-      perror("PixmapIO::LoadPixmap numBytes");
+      reportErrSys("PixmapIO::LoadPixmap numBytes");
       Exit::DoExit(1);
     }
     if (fread(pixBuf, numBytes, 1, _file) != 1) {
-      perror("PixmapIO::LoadPixmap read data");
+      reportErrSys("PixmapIO::LoadPixmap read data");
       Exit::DoExit(1);
     }
     data = pixBuf;
@@ -138,11 +142,11 @@ void PixmapIO::WriteLine(char *line, int length)
 
   if (_compress) {
     if (fwrite(&length, sizeof(length), 1, _file) != 1) {
-      perror("PixmapIO::WritePixmap numBytes");
+      reportErrSys("PixmapIO::WritePixmap numBytes");
       Exit::DoExit(1);
     }
     if (fwrite(line, length, 1, _file) != 1) {
-      perror("PixmapIO::WritePixmap data");
+      reportErrSys("PixmapIO::WritePixmap data");
       Exit::DoExit(1);
     }
   } else {

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  1996/09/27 15:52:34  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.76  1996/09/19 20:11:53  wenger
   More PostScript output code (still disabled); some code for drawing
   view borders (disabled).
@@ -324,6 +327,7 @@
 #include "PSDisplay.h"
 #include "Init.h"
 #include "DaliIfc.h"
+#include "DevError.h"
 
 // Whether to draw view borders -- must eventually be controlled by GUI.
 static const Boolean viewBorder = false;
@@ -2378,7 +2382,7 @@ void View::SavePixmaps(FILE *file)
 
   unsigned long int magic = 0xdeadbeef;
   if (fwrite(&magic, sizeof magic, 1, file) != 1) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     DOASSERT(0, "Cannot write pixmap file");
   }
   
@@ -2413,7 +2417,7 @@ void View::SavePixmaps(FILE *file)
   }
   
   if (fwrite(&saved, sizeof(saved), 1, file) != 1) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     DOASSERT(0, "Cannot write pixmap file");
   }
 
@@ -2456,11 +2460,11 @@ void View::SavePixmaps(FILE *file)
 #endif
 		
   if (fwrite(pixmap, sizeof(*pixmap), 1, file) != 1) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     DOASSERT(0, "Cannot write pixmap file");
   }
   if (fwrite(pixmap->data, pixmap->compressedBytes, 1, file) != 1) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     DOASSERT(0, "Cannot write pixmap file");
   }
 
@@ -2475,7 +2479,7 @@ void View::SavePixmaps(FILE *file)
   if (!Mapped() || _bytes < 0 * VIEW_BYTES_BEFORE_SAVE || _refresh) {
     num[1] = pos + 2 * sizeof(int);
     if (fwrite(num, sizeof(num), 1, file) != 1) {
-      perror("fwrite");
+      reportErrSys("fwrite");
       DOASSERT(0, "Cannot write pixmap file");
     }
     /* Return cursors to original state */
@@ -2491,7 +2495,7 @@ void View::SavePixmaps(FILE *file)
 
 #if 0
   if (fwrite(&num, sizeof(num), 1, file) != 1) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     DOASSERT(0, "Cannot write pixmap file");
   }
 #endif
@@ -2509,7 +2513,7 @@ void View::SavePixmaps(FILE *file)
   
 #if 0
   if (fwrite(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
-    perror("fwrite");
+    reportErrSys("fwrite");
     DOASSERT(0, "Cannot write pixmap file");
   }
 #endif
@@ -2567,7 +2571,7 @@ void View::LoadPixmaps(FILE *file)
 
   unsigned long int check;
   if (fread(&check, sizeof check, 1, file) != 1) {
-    perror("fread");
+    reportErrSys("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
 
@@ -2586,7 +2590,7 @@ void View::LoadPixmaps(FILE *file)
 
   int saved;
   if (fread(&saved, sizeof(saved), 1, file) != 1 ) {
-    perror("fread");
+    reportErrSys("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
   if (!saved) {
@@ -2605,7 +2609,7 @@ void View::LoadPixmaps(FILE *file)
   DOASSERT(pixmap, "Out of memory");
 
   if (fread(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
-    perror("fread");
+    reportErrSys("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
 
@@ -2621,7 +2625,7 @@ void View::LoadPixmaps(FILE *file)
   }
   
   if (fread(pixmap->data, pixmap->compressedBytes, 1, file) != 1) {
-    perror("fread");
+    reportErrSys("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
   _pixmap = pixmap;
@@ -2637,7 +2641,7 @@ void View::LoadPixmaps(FILE *file)
 
   int num[2];
   if (fread(num, sizeof(num), 1, file) != 1) {
-    perror("fread");
+    reportErrSys("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
   _nextPos = num[1];
@@ -2651,7 +2655,7 @@ void View::LoadPixmaps(FILE *file)
   DOASSERT(_pixmap, "Out of memory");
 
   if (fread(_pixmap, sizeof(*_pixmap), 1, file) != 1) {
-    perror("fread");
+    reportErrSys("fread");
     DOASSERT(0, "Cannot read pixmap file");
   }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/12 15:49:14  jussi
+  #include <unistd.h>
+
   Revision 1.5  1995/12/14 19:10:49  jussi
   Made small fixes to get rid of g++ -Wall warnings.
 
@@ -46,6 +49,7 @@
 #include <sys/stat.h>
 
 #include "ams.h"
+#include "DevError.h"
 
 void Usage(char *name)
 {
@@ -118,7 +122,7 @@ main(int argc, char **argv)
       
       /* put it through */
       if (write(outfd,(char *)&rec,sizeof(rec))!= sizeof(AmsData)){
-	perror("write");
+	reportErrSys("write failed");
 	exit(1);
       }
     }
