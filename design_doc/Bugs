@@ -1708,6 +1708,10 @@ Num Date        Status  Description
 
 445 12/15/98	OPEN	Text symbols don't work in OpenGL. (rkw)
 
+446 12/18/98	OPEN	A cursor in a piled view is not drawn correctly
+			if the view is not the "front" one in the pile.
+			(ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
