@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.74  1998/02/20 08:46:31  beyer
+#	resurected histograms
+#
 #	Revision 1.73  1997/12/05 16:51:49  wenger
 #	Removed some unused Tcl code; removed 'Remove' selection from window
 #	menu (duplicated 'Destroy'); removed Layout Manager menu selection.
@@ -843,8 +846,8 @@ puts "schemafile = $schemafile"
     }
     button .srcdef.top.row3.new -text "New..." -width 10 \
 	    -command {
-		global is_unidata
-		set is_unidata 0
+		global schema_type
+		set schema_type 0
 	        set schemafile [newschema]
 	    }
     pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
@@ -1170,9 +1173,10 @@ proc defineTable {content} {
     }
     button .srcdef.top.row3.new -text "New..." -width 10 \
 	    -command {
-		global is_unidata
-		set is_unidata 1
-	        set schemaFile [unidata_newschema]
+		global schema_type
+		#TEMP -- should change this to 2 to make DataReader schema
+		set schema_type 1
+	        set schemaFile [DrNewSchema]
 	    }
     pack .srcdef.top.row3.l1 .srcdef.top.row3.e1 .srcdef.top.row3.b1 \
 	    .srcdef.top.row3.new \

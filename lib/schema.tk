@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1998/01/31 20:02:12  wenger
+#  Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
+#  written at the end.
+#
 #  Revision 1.41  1998/01/14 16:39:43  wenger
 #  Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 #
@@ -216,13 +220,23 @@ proc SchemaBrowse {} {
 
 proc SchemaEdit {mode} {
     if {$mode == 0} {
+		# Physical (UNIXFILE).
 		SchemaSuperuser
-    } elseif {$mode == 3} {
-    		SchemaSuperuser 1
     } elseif {$mode == 1} {
+		# Logical.
 		SchemaUser
-    } else {
+    } elseif {$mode == 2} {
+		# Query.
 		SchemaQuery
+    } elseif {$mode == 3} {
+		# Physical UniData.
+    	SchemaSuperuser 1
+    } elseif {$mode == 4} {
+		# Physical DataReader.
+    	SchemaSuperuser 2
+	} else {
+		# Error.
+		puts "Illegal schema editing mode: $mode"
 	}
 }
 
@@ -348,10 +362,10 @@ proc SchemaQuery {} {
 }
 ########################################################
 # Schema browser for the superuser - can change both physical and logical parts
-proc SchemaSuperuser {{isunidata 0}} {
+proc SchemaSuperuser {{schemaType 0}} {
     
-    global schemadir  is_unidata
-    set is_unidata $isunidata
+    global schemadir  schema_type
+    set schema_type $schemaType
     # Show a list of currently defined schemas and buttons to either
     # create a New one or Open an existing one
 
@@ -384,22 +398,22 @@ proc SchemaSuperuser {{isunidata 0}} {
 
     # Buttons at bottom
     button .psch.bot.new -text New -command {
-    	global is_unidata 
+    	global schema_type 
 	destroy .psch
-	if {$is_unidata == 1 } {
+	if {$schema_type == 1 } {
 		unidata_newschema
 	} else {
 		newschema
 	}
     }
     button .psch.bot.open -text Open -command {
-    	global is_unidata 
+    	global schema_type 
 	set sel [.psch.mid.list get active]
 	if {$sel == ""} {
 	    showmesg "Select the schema to edit by clicking once on the entry."
 	} else {
 	    destroy .psch
-	    if {$is_unidata == 1 } {
+	    if {$schema_type == 1 } {
 	    	unidata_openschema $sel
 	    } else {
 	    	openschema $sel
@@ -439,9 +453,9 @@ proc SchemaSuperuser {{isunidata 0}} {
 # Called whenever the type field is changed.
 proc ChgType {name element op} {
     upvar $name x
-    global is_unidata
+    global schema_type
 
-    if {$is_unidata} {
+    if {$schema_type} {
       if {$x == "string"} {
 #        .newschema.astrlen.label configure -fg white
         .newschema.astrlen.entry configure -state normal

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.166  1998/06/12 19:55:39  wenger
+#	Attribute of TAttr/set links can now be changed; GUI has menu of available
+#	attributes; attribute is set when master view is set instead of at link
+#	creation; misc. debug code added.
+#
 #	Revision 1.165  1998/05/21 18:18:56  wenger
 #	Most code for keeping track of 'dirty' GIFs in place; added 'test'
 #	command to be used for generic test code that needs to be controlled
@@ -842,6 +847,8 @@ source $libdir/cursor_grid.tcl
 source $libdir/GDataSock.tcl
 source $libdir/symbol_align.tcl
 source $libdir/group.tk
+source $libdir/dr_schema.tcl
+source $libdir/link.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1300,6 +1307,8 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 	-command {SchemaEdit 0}
 .mbar.tdata.menu.schemaMenu add command -label "Physical Unidata..." \
 	-command {SchemaEdit 3}
+#TEMP .mbar.tdata.menu.schemaMenu add command -label "Physical DataReader..." \
+#TEMP	-command {SchemaEdit 4}
 .mbar.tdata.menu.schemaMenu add command -label "Logical..." \
 	-command {SchemaEdit 1}
 #.mbar.tdata.menu.schemaMenu add command -label "Query..." \
@@ -1346,6 +1355,9 @@ menu .mbar.view.menu -tearoff 0
 	-menu .mbar.view.menu.linkMenu 
 
 menu .mbar.view.menu.linkMenu -tearoff 0
+.mbar.view.menu.linkMenu add command -label "Create Link" \
+	-command { CreateAndLinkLink }
+.mbar.view.menu.linkMenu add separator
 .mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
 .mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
 .mbar.view.menu.linkMenu add separator
@@ -1363,8 +1375,6 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu.linkMenu add command -label "Link Info" \
 	-command { DoDisplayLinkInfo }
 .mbar.view.menu.linkMenu add separator
-.mbar.view.menu.linkMenu add command -label "Create Link" \
-	-command { DoLinkCreate 0 } 
 .mbar.view.menu.linkMenu add command -label "Destroy Link" \
 	-command { DoLinkDestroy }
 

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.51  1998/06/15 19:55:30  wenger
+#  Fixed bugs 338 and 363 (problems with special cases of set links).
+#
 #  Revision 1.50  1998/06/12 19:55:44  wenger
 #  Attribute of TAttr/set links can now be changed; GUI has menu of available
 #  attributes; attribute is set when master view is set instead of at link
@@ -250,6 +253,13 @@
 #  Initial revision.
 #
 
+# 0 = not doing anything; 1 = selecting first view for link; 2 = selecting
+# second view for link
+set linkViewStatus 0
+
+# Name of link we are creating.
+set currentLink ""
+
 ############################################################
 
 proc RefreshAllViews {} {
@@ -268,6 +278,7 @@ proc ProcessViewSelected { view } {
     global curView lastView
 
     if {$view == $curView} {
+        LinkSelectedView
 	return
     }
 
@@ -314,6 +325,8 @@ proc ProcessViewSelected { view } {
     # Note: because of changes to ViewGraph, this command is now needed
     # only for collaboration.  RKW Jan. 27, 1998.
     DEVise highlightView $curView 1
+
+    LinkSelectedView
 }
 
 ############################################################
@@ -779,6 +792,21 @@ proc DoSetRecordCursor {} {
 
 ############################################################
 
+# Create a link, and link views to it.
+
+proc CreateAndLinkLink {} {
+    global linkViewStatus currentLink
+
+    set currentLink [DoLinkCreate 0]
+
+    if { $currentLink != "" } {
+        set linkViewStatus 1
+        LinkViewMsg
+    }
+}
+
+############################################################
+
 # Create a link, return its name
 proc DoLinkCreate { isRec } {
     global dialogCkButVar 
@@ -789,10 +817,11 @@ proc DoLinkCreate { isRec } {
 	} else {
 	    set flag 3
 	}
-	set but [dialogCkBut .createLink "Create Link" \
-		"Enter parameters for creating a new link" "" \
-		0 { OK Info Cancel } name \
-		{x y record {tdata attribute}} $flag]
+	set but [CreateLink $flag]
+	#set but [dialogCkBut .createLink "Create Link" \
+	#	"Enter parameters for creating a new link" "" \
+	#	0 { OK Info Cancel } name \
+	#	{x y record {tdata attribute}} $flag]
 	
 	if { $but == 2 } {
 	    return ""
@@ -2420,4 +2449,117 @@ proc CurrentView {} {
 	    "Select a view first by clicking in it." "" 0 OK
 
     return 0
+}
+
+############################################################
+
+# Show message telling user to select a view to link.
+
+proc LinkViewMsg {} {
+    global linkViewStatus currentLink
+
+    # Figure out whether the link is a master/slave link.
+    set linkFlag [DEVise getLinkFlag $currentLink]
+    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024]
+
+    # Figure out the right message to show.
+    if { $isMasterSlaveLink } {
+	if { $linkViewStatus == 1 } {
+	    set message "Click OK, then select master view."
+	} else {
+	    set message "Click OK, then select slave view."
+	}
+    } else {
+	if { $linkViewStatus == 1 } {
+	    set message "Click OK, then select first view to link."
+	} else {
+	    set message "Click OK, then select second view to link."
+	}
+    }
+
+    set answer [dialog .getLinkView "Select View" $message "" 0 OK Cancel]
+    if { $answer == 1 } {
+	set linkViewStatus 0
+    }
+}
+
+############################################################
+
+# If we're in the right state (creating a link), link the view
+# that was just selected.
+
+proc LinkSelectedView {} {
+    global linkViewStatus curView currentLink
+
+    if { $linkViewStatus == 0 } {
+	return
+    }
+
+    #
+    # Figure out whether the link is a master/slave link.
+    #
+    set linkFlag [DEVise getLinkFlag $currentLink]
+    set isMasterSlaveLink [expr $linkFlag == 128 || $linkFlag == 1024]
+
+    if { $linkViewStatus == 1 } {
+
+	#
+	# Link the first or master view; if this is a TAttr/set link, also
+	# set the link attribute.
+	#
+        set check 1
+        if { $linkFlag == 128  } {
+	    set check [CheckTData $currentLink $curView 0] 
+        }
+        if { $check } {
+	    if { $isMasterSlaveLink} {
+	        DEVise setLinkMaster $currentLink $curView 
+		if { $linkFlag == 1024 } {
+	            SetLinkAttr $currentLink
+	        }
+	    } else {
+	        DEVise insertLink $currentLink $curView
+	    }
+        }
+
+	#
+	# Have the user select the second or slave view.
+	#
+	set linkViewStatus 2
+        LinkViewMsg
+
+    } elseif { $linkViewStatus == 2 } {
+
+	#
+	# Make sure this view isn't already linked to this link.
+	#
+        set linkMaster [DEVise getLinkMaster $currentLink]
+        set linkViews [DEVise getLinkViews $currentLink]
+	if { $linkMaster == $curView || \
+	  [lsearch -exact $linkViews $curView] != -1 } {
+	    set message "View $curView is already linked by this link.  Please select another view."
+	    set answer [dialog .viewAlreadyLinked "View Already Linked" \
+	      $message "" 0 OK Cancel]
+	    if {$answer == 1} {
+		set linkViewStatus 0
+	    }
+	    return
+	}
+
+	#
+	# Link the second or slave view.
+	#
+        set check 1
+        if { $linkFlag == 128  } {
+	    set check [CheckTData $currentLink $curView 0] 
+        }
+        if { $check } {
+	    DEVise insertLink $currentLink $curView
+        }
+
+	#
+	# We're done.
+	#
+	set linkViewStatus 0
+    }
 }
