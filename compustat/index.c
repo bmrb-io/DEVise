@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/02 16:57:16  jussi
+  Updated copyright message.
+
   Revision 1.5  1995/09/22 15:52:16  jussi
   Added copyright message.
 
@@ -48,12 +51,13 @@ main(int argc, char **argv)
   }
 
   /* Get the input file pointer */
-  TapeDrive tape(argv[1], "r", -1, 8332);
+  TapeDrive tape(argv[1], "r", -1, 32768);
   if (!tape)
   {
     fprintf(stderr, "Error: could not open tape device %s\n", argv[1]);
     exit(0);
   }
+  tape.readTarHeader();
 
   /* Get the output file pointer */
   /* Create a new output file for writing index */
@@ -84,12 +88,12 @@ main(int argc, char **argv)
 void create_index(TapeDrive &tape, FILE *outfile)
 {
   char comp_rec[COMP_REC_LENGTH];	/* buffer to hold a record */
-  int offset = 0;			/* Offset of first company is 0 */
+  unsigned long int offset = tape.tell(); /* Offset of first company is 0 */
 
   for(;;) {
     if (tape.seek(offset) != offset)
     {
-      printf("Cannot seek to offset %d\n", offset);
+      printf("Cannot seek to offset %lu\n", offset);
       break;
     }
     int bytes = tape.read((void *)comp_rec, (size_t)COMP_REC_LENGTH);
@@ -102,14 +106,13 @@ void create_index(TapeDrive &tape, FILE *outfile)
     }
 
     /* Output the first field (offset) in the output record */
-    fprintf(outfile,"%i ",offset);
+    fprintf(outfile,"%lu",offset);
 
     /* Extract fields from first record */
     extract_fields(COMP_NUM_FIELDS_1, comp_idx_1, comp_rec, outfile);
 
     /* Seek to the fifth record of company */
-    int cur_pos = tape.tell();
-    if (tape.seek(cur_pos + 4*COMP_REC_LENGTH) != cur_pos + 4*COMP_REC_LENGTH)
+    if (tape.seek(offset + 3*COMP_REC_LENGTH) != offset + 3*COMP_REC_LENGTH)
     {
       printf("Error: could not access the fifth record\n");
       break;
@@ -162,40 +165,16 @@ void extract_fields(int num_fields, int field_arr[], char recbuf[],
 
     tmpbuf[len] = '\0';
 
-    /* If it is a string field, we need to make some reformatting
-       so that there are no spaces in it because we want to
-       write out the entire field as a single string and read it back
-       as a single string */
-    if (field_arr[i*COMP_NUM_PER_FIELD + 2] == COMP_CHAR)
-      fprintf(outfile,"%s ", comp_str_format(tmpbuf, len));
+    /* A hack to ensure that the name appears in quotes */
+    if ((field_arr == comp_idx_1) && 
+	(field_arr[i*COMP_NUM_PER_FIELD] == 18))
+      fprintf(outfile,",\"%s\"", tmpbuf);
+    else if (field_arr[i*COMP_NUM_PER_FIELD + 2] == COMP_CHAR)
+      fprintf(outfile,",%s", tmpbuf);
     else
-      fprintf(outfile,"%i ", atoi(tmpbuf));
+      fprintf(outfile,",%d", atoi(tmpbuf));
     free(tmpbuf);
   }
 }
 
 
-/* This function reformats the passed string so that the entire buffer can be
-   written and read back as a single string */
-char *comp_str_format(char *str, int len)
-{
-  int i = 0;
-
-  /* If there is one space between two chars, change to -.
-     If more that one blank, terminate the string */
-
-  while (i < len -1)
-  {
-    if (isspace(str[i]))
-      if (isspace(str[i+1]))
-      {
-	str[i]='\0';
-	break;
-      }
-      else
-	str[i]='-';
-    i++;
-  }
-
-  return str;
-}

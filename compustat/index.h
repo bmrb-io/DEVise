@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/02 16:57:17  jussi
+  Updated copyright message.
+
   Revision 1.5  1995/09/22 15:52:17  jussi
   Added copyright message.
 
@@ -83,5 +86,4 @@ void create_index(TapeDrive &tape, FILE *outfile);
 
 void extract_fields(int num_fields, int field_arr[], char recbuf[], 
 		    FILE *outfile);
-char *comp_str_format(char *str, int len);
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/11/02 16:57:15  jussi
+  Updated copyright message.
+
   Revision 1.6  1995/10/18 21:03:06  ravim
   Extracts all the attrs from compustat database.
 
@@ -475,12 +478,9 @@ int comp_dat_2[COMP_DAT_FIELDS_2 * COMP_NUM_PER_DAT] = {
 #define COMP_MAX_STR_LEN  50
 
 /* Function prototypes */
-int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off, 
-	      int *year, char *smbl_val);
+int find_rec(FILE *idxfile, char cval[]);
 void generate_dat(char *dat1, char *dat2, int year,
 		  FILE *outfile);
-int comp_get_pos(char fname[]);
-int comp_compare(char *val1, char *val2, int pos);
 double comp_get_val(char *str, int len, int pre);
 
 #endif
