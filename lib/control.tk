@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.109  1997/01/09 18:37:30  wenger
+#	Removed some leftover debug code.
+#
 #	Revision 1.108  1997/01/08 18:56:50  wenger
 #	Added 'View List' selection to window menu (gives a list of the views
 #	in the window containing the selected view, especially useful for
@@ -752,9 +755,9 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 	-command DoSetCursorSrc
 .mbar.view.menu.cursorMenu add command -label "Set Destination" \
 	-command DoSetCursorDst
-.mbar.view.menu.cursorMenu add separator
-.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
-	-command DoSetRecordCursor
+#.mbar.view.menu.cursorMenu add separator
+#.mbar.view.menu.cursorMenu add command -label "Set Record Cursor" \
+#	-command DoSetRecordCursor
 
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Statistics" -command { DoStat }
@@ -829,8 +832,8 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Stack Control" \
 	-command { DoWindowStackControl }
 ######################MODIFIED SSL 11/3########################################
-.mbar.window.menu add command -label "Lens Control" \
-	-command { DoWindowLensControl }
+#.mbar.window.menu add command -label "Lens Control" \
+#	-command { DoWindowLensControl }
 ######################MODIFIED SSL 11/3########################################
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Swap Views" -command DoSwapView
@@ -1202,11 +1205,11 @@ proc DoSwitchTData {} {
     if {[llength $tdataSet] > 1} {
 	set answer [ dialogList .selectTData "Open Data Streams"  \
 		"Select a data stream" \
-		"" 1 { Other OK Cancel } $tdataSet ]
+		"" 1 { OK Other Cancel } $tdataSet ]
 	if {$answer == 2 || $dialogListVar(selected) == ""} {
 	    return
 	}
-	if {$answer == 1} { 
+	if {$answer == 0} { 
 	    set tdata $dialogListVar(selected)
 	} else {
 	    set tdata ""

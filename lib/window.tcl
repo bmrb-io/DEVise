@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1997/01/22 14:40:34  wenger
+#  Added devise.etk to release scripts; removed merged view buttons from
+#  Stack Control dialog.
+#
 #  Revision 1.17  1997/01/17 20:32:32  wenger
 #  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
 #  simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -383,12 +387,12 @@ proc DoGetWindow {} {
 
     set answer [ dialogList .window "Select Window" \
 	    "Select a window to display view in" "" "" \
-	    { Cancel New Ok } $winSet ]
+	    { OK New Cancel } $winSet ]
     if { $answer == 1 } {
 	return [ DoCreateWindow "Select window type" ]
     }
 
-    if {$answer == 0  || $dialogListVar(selected) == ""} {
+    if {$answer == 2  || $dialogListVar(selected) == ""} {
 	return 
     }
 
@@ -635,8 +639,11 @@ proc DoWindowStackControl {} {
 	    -command { RotateMergedView }
     button .stack.bot.row2.but.flip -text "Flip" -width 10 \
 	    -command { FlipStackedView }
-    button .stack.bot.row1.but.edit -text "Edit..." -width 10 \
-	    -command { EditMergedView }
+
+    frame .stack.bot.row1.but.placeholder -relief flat -width 30m -height 8m
+#    button .stack.bot.row1.but.edit -text "Edit..." -width 10 \
+#	    -command { EditMergedView }
+
     button .stack.bot.row2.but.close -text Close -width 10 \
 	    -command "global stackyWinOpened; \
 	              set stackWinOpened false; \
@@ -644,8 +651,12 @@ proc DoWindowStackControl {} {
 
     pack .stack.bot.row1.but.pile \
             .stack.bot.row1.but.stack .stack.bot.row1.but.rotate \
-            .stack.bot.row1.but.edit \
-	    -side left -expand 1 -fill x -padx 3m
+	    .stack.bot.row1.but.placeholder \
+	    -side left -padx 3m
+#    pack .stack.bot.row1.but.pile \
+#            .stack.bot.row1.but.stack .stack.bot.row1.but.rotate \
+#            .stack.bot.row1.but.edit \
+#	    -side left -expand 1 -fill x -padx 3m
 
     pack .stack.bot.row2.but.unpile \
 	    .stack.bot.row2.but.unstack .stack.bot.row2.but.flip \

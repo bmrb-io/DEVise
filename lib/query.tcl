@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/11/25 22:31:35  beyer
+#  1. extended .devise.rc search
+#  2. added DestroyView command
+#  3. query window updated properly, history window update changed
+#  4. filter properly set to (0,100) instead of (100,0) when high,low values
+#     are not known.
+#
 #  Revision 1.7  1996/08/07 15:43:40  guangshu
 #  Added global statistics into the query box.
 #
@@ -200,12 +207,17 @@ proc SetQuery {} {
     pack .query.sel -in .query.xyRange.bottom.xDummy \
 	    -side top -pady 1m -expand $expand -fill $fill
 
-    button .query.sel.attr -text "Attributes..." \
-	    -command DoAttributeSelect
-    button .query.sel.color -text "Colors..." \
-	    -command DoColorSelect
+#    button .query.sel.attr -text "Attributes..." \
+#	    -command DoAttributeSelect
+#    button .query.sel.color -text "Colors..." \
+#	    -command DoColorSelect
 
-    pack .query.sel.attr .query.sel.color -side left -padx 3m
+#    pack .query.sel.attr .query.sel.color -side left -padx 3m
+
+    # This frame takes up the space held by the removed buttons.
+    frame .query.sel.placeholder -relief flat -width 65m -height 8m \
+        -borderwidth 4
+    pack .query.sel.placeholder -side left -padx 3m
 
     if {0} {
 	frame .query.sel.sample -relief groove -bd 2

@@ -483,8 +483,9 @@ Num Date        Status  Description
 126 01/22/97	OPEN	When views are unstacked, they're not always redrawn
 			correctly. (rkw)
 
-127 01/22/97	OPEN	'Attributes' and 'Colors' buttons in Query Tool do
+127 01/22/97	WORK	'Attributes' and 'Colors' buttons in Query Tool do
 			nothing. (rkw)
+			Workaround: removed the buttons.
 
 128 01/22/97	OPEN	If you change both the X and Y values in the Query
 			Tool on a view with X and Y links, only the X change

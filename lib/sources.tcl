@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.52  1996/12/27 14:59:51  donjerko
+#	Import button is used only for importing new streams.
+#	Added a button "Display" in the import window that immediately goes to
+#	visualization.
+#
 #	Revision 1.51  1996/12/23 22:20:41  donjerko
 #	  Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
 #	  pairs to have OK always on the left, Cancel on the right.  Renamed
@@ -648,7 +653,7 @@ proc defineStream {base edit} {
     		-command {updateStreamDef_and_display $dispname}
     button .srcdef.but.cancel -text Cancel -width 10 \
 	    -command { destroy .srcdef }
-    pack .srcdef.but.index .srcdef.but.display .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \
+    pack .srcdef.but.ok .srcdef.but.index .srcdef.but.display .srcdef.but.cancel -in .srcdef.but.row1 \
 	    -side left -padx 7m
 
     tkwait visibility .srcdef

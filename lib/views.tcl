@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  1997/01/14 20:05:56  wenger
+#  Fixed some compile warnings; fixed relative positions of OK/Cancel
+#  buttons in link GUI; removed some debug code I accidentally left
+#  in place.
+#
 #  Revision 1.20  1996/11/25 22:31:36  beyer
 #  1. extended .devise.rc search
 #  2. added DestroyView command
@@ -452,8 +457,8 @@ proc DoBringView {} {
     global dialogListVar
 
     set answer [ dialogList .bringView "Bring View Back" \
-	    "Select view to move to a window" "" 0 { Cancel OK } [ViewSet] ]
-    if {$answer == 0 || $dialogListVar(selected) == ""} {
+	    "Select view to move to a window" "" 0 { OK Cancel } [ViewSet] ]
+    if {$answer == 1 || $dialogListVar(selected) == ""} {
 	return
     }
     set viewName $dialogListVar(selected)
@@ -475,8 +480,8 @@ proc DoCursorCreate {} {
 
     set but [dialogCkBut .createCursor "Create Cursor" \
 	    "Enter parameters for creating a new cursor" "" \
-	    0 {Cancel OK} name {x y} {3}]
-    if { $but != 1 } {
+	    0 {OK Cancel} name {x y} {3}]
+    if { $but != 0 } {
 	return ""
     }
 
@@ -528,11 +533,11 @@ proc DoGetCursor {label} {
     if { [llength $cursorSet] == 0 } {
 	set cursor [DoCursorCreate]
     } else {
-	set answer [ dialogList .getCursor "GetCursor" $label "" 0 \
-		{ New Cancel OK } $cursorSet ]
-	if { $answer == 0 } {
+	set answer [ dialogList .getCursor "Get Cursor" $label "" 0 \
+		{ OK New Cancel } $cursorSet ]
+	if { $answer == 1 } {
 	    set cursor [ DoCursorCreate ]
-	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
+	} elseif {$answer == 2 || $dialogListVar(selected) == ""} {
 	    set cursor ""
 	} else {
 	    set cursor $dialogListVar(selected)
@@ -700,7 +705,7 @@ proc DoViewUnlink {} {
     } else {
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link to unlink" "" 0 \
-		{ OK Cancel OK } $viewLinks ]
+		{ OK Cancel } $viewLinks ]
 	if { $answer == 1 } {
 	    return
 	} elseif { $dialogListVar(selected) == "" } {
