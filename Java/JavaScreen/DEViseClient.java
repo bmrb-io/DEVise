@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2001/02/20 20:02:20  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.28  2001/02/19 20:32:45  xuk
 // Added command(s) and GUI so that a collaboration leader can find out who is
 // collaborating with it.
@@ -195,7 +199,8 @@ public class DEViseClient
     public Vector collabSockets = new Vector();
     public int collabInit = 0;
 
-    public boolean isAbleCollab = true;
+    public boolean isAbleCollab = false;
+    private String collabPass = null;
 
 
     public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
@@ -468,9 +473,6 @@ public class DEViseClient
 			    if (user != null) { 
 				cmdBuffer.removeAllElements();
 				cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
-				if (cmds[4].equals(DEViseGlobals.DISABLECOLLAB)) {
-				    isAbleCollab = false;
-				}
 			    } else {
 				sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
 				throw new YException("Client send invalid login information");
@@ -492,6 +494,14 @@ public class DEViseClient
 			String state = DEViseCommands.COLLAB_STATE + " {" +collabSockets.size() + "}";
 			state = state.trim();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
+			cmdBuffer.removeAllElements();
+		    } else if (command.startsWith(DEViseCommands.SET_COLLAB_PASS)) {
+			isAbleCollab = true;
+
+			String[] cmds = DEViseGlobals.parseString(command);
+			collabPass = cmds[1];
+			pop.pn("We get the collab passwd: " + collabPass);
+			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
 		    } else {
 			//
@@ -676,4 +686,13 @@ public class DEViseClient
             socket = null;
         }
     }
+
+    public boolean checkPass(String requestPass)
+    {
+	if (requestPass.equals(collabPass))
+	    return true;
+	else
+	    return false;
+    }
+
 }
