@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/05/22 21:06:24  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.22  1996/05/11 03:28:20  jussi
   Added association of YyMmDd composite parser with the CRSP schema.
 
@@ -688,6 +691,114 @@ private:
   Boolean   _init;                /* true when instance initialized */
 };
 
+
+/*
+   Second user composite function for address traces on some IBM
+   architecture.  Each address reference has a 64-bit address part
+   and a 32-bit reference that tells whether it's an instruction,
+   load, or store, and any cache misses that happened.
+   We convert the 6 highest bits of the address to Y, the next 6 bits
+   to X, and ignore the remaining bits. A randomizing is performed
+   to create a cloud of address references at X,Y. Type tag is mapped
+   to a color (red = instruction, green = load, blue = store).
+*/
+
+class IBMAddressTraceComposite2 : public UserComposite {
+public:
+
+  IBMAddressTraceComposite2() {
+    _init = false;
+    attrOffset = 0;
+  }
+
+  virtual ~IBMAddressTraceComposite2() {
+    delete attrOffset;
+  }
+
+  virtual void Decode(RecInterp *recInterp) {
+
+    if (!_init) {
+      /* initialize by caching offsets of all the attributes we need */
+
+      char *primAttrs[] = { "Address", "Ref", "RecNum", "Tag", "X", "Y",
+        "Color", "Misses" };
+      const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
+      attrOffset = new int [numPrimAttrs];
+      DOASSERT(attrOffset, "Out of memory");
+
+      for(int i = 0; i < numPrimAttrs; i++) {
+	AttrInfo *info;
+	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
+	}
+	attrOffset[i] = info->offset;
+      }
+      _init = true;
+    }
+
+    char *buf = (char *)recInterp->GetBuf();
+    unsigned char *address = (unsigned char *) buf + attrOffset[0];
+    unsigned char *refP = (unsigned char *) buf + attrOffset[1];
+    int *recPtr = (int *)(buf + attrOffset[2]);
+    int *tagPtr = (int *)(buf + attrOffset[3]);
+    float *XPtr = (float *)(buf + attrOffset[4]);
+    float *YPtr = (float *)(buf + attrOffset[5]);
+    int *colorPtr = (int *)(buf + attrOffset[6]);
+    int *missesP = (int *)(buf + attrOffset[7]);
+
+    // Record number is passed to us via the record interpreter
+    *recPtr = recInterp->GetRecPos();
+
+    // The high 32 bits are first, followed by the low 32 bits.
+    // Randomize the picture a little by creating a square cloud.
+
+#ifdef GRANULARITY_64
+    *YPtr = (address[0] & 0xfc) >> 2;
+    *XPtr = ((address[0] & 0x03) << 4) | ((address[1] & 0xf0) >> 4);
+    int cloudSize = 4;
+#else
+    *YPtr = address[0];
+    *XPtr = address[1];
+    int cloudSize = 8;
+#endif
+    *YPtr += (rand() % (cloudSize * 100)) / 100.0 - cloudSize / 2;
+    *XPtr += (rand() % (cloudSize * 100)) / 100.0 - cloudSize / 2;
+
+    // The the second byte of the reference tells what kind it is.
+
+    *tagPtr = refP[1] & 0x7;
+    *colorPtr = 0;
+    if (*tagPtr == 1)                   // instruction reference?
+    {
+      *colorPtr = 2;                    // make it red
+    }
+    else if (*tagPtr == 2)              // load reference?
+    {
+      *colorPtr = 6;                    // make it green
+    }
+    else if (*tagPtr == 4)              // store reference?
+    {
+      *colorPtr = 3;                    // make it blue
+    }
+    else
+    {
+      fprintf(stderr, "Invalid tag in trace: %d (record %d)\n", *tagPtr,
+        *recPtr);
+    }
+
+    // The third and fourth bytes tell us the cache miss, if any.
+    *missesP = refP[2] << 8 | refP[3];
+
+    //printf("%d: %02x %02x  %02x %04x\n", *recPtr, address[0], address[1], *tagPtr, *missesP);
+  }
+
+private:
+  int       *attrOffset;          /* attribute offsets */
+  Boolean   _init;                /* true when instance initialized */
+};
+
+
 QueryProc *genQueryProcTape()
 {
   return new QueryProcTape;
@@ -713,6 +824,10 @@ int main(int argc, char **argv)
   CompositeParser::Register("IBMTRACE1", new IBMAddressTraceComposite);
   CompositeParser::Register("IBMTRACE2", new IBMAddressTraceComposite);
   CompositeParser::Register("IBMTRACE3", new IBMAddressTraceComposite);
+  CompositeParser::Register("IBMTRACE.2.all", new IBMAddressTraceComposite2);
+  CompositeParser::Register("IBMTRACE.2.ir", new IBMAddressTraceComposite2);
+  CompositeParser::Register("IBMTRACE.2.ld", new IBMAddressTraceComposite2);
+  CompositeParser::Register("IBMTRACE.2.st", new IBMAddressTraceComposite2);
 
   /* Register known query processors */
   QueryProc::Register("Tape", genQueryProcTape);
