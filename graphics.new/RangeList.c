@@ -1,17 +1,32 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:26  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include <errno.h>
 #include "Exit.h"
 #include "RangeList.h"
 
-static RangeList *_rangeFreeList = NULL;
 int RangeList::_numSearch = 0;
 int RangeList::_searchSteps = 0;
-
 
 /***************************************************************
 constructors
@@ -133,11 +148,13 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
 			page number is next->low-1.
 	MERGE_BOTH: merge with current and next range 
 	*/
-	int action;
+
 #define CREATE_RANGE 0
 #define MERGE_CURRENT 1
 #define MERGE_NEXT 2
 #define MERGE_BOTH 3
+
+	int action = CREATE_RANGE;
 
 	/* find next range */
 	if (current != NULL){
@@ -167,7 +184,7 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
 				action = CREATE_RANGE;
 		}
 		else {
-			fprintf(stderr,"RangeList::Insert:inconsistent id: low %d high %d\n",
+			fprintf(stderr,"RangeList::Insert:inconsistent id: low %ld high %ld\n",
 				low,high);
 			Print();
 			Exit::DoExit(2);
@@ -176,8 +193,8 @@ void RangeList::Insert(RangeInfo *rangeInfo, RangeListMergeInfo info,
 	else {
 		/* current not NULL */
 		if ( !(low > current->high)){
-				printf("RangeList::Insert() recId %d,%d already processed\n", low,high);
-				printf("current: %d %d, to be inserted:low %d %d\n", 
+				printf("RangeList::Insert() recId %ld,%ld already processed\n", low,high);
+				printf("current: %ld %ld, to be inserted:low %ld %ld\n", 
 					current->low, current->high, rangeInfo->low, rangeInfo->high);
 				Print();
 				Exit::DoExit(1);
@@ -321,7 +338,7 @@ void RangeList::Print(){
 	int num=0;
 	printf("low\thi\tdata\tdataSize\tbuf\tbufSize\n");
 	for (data = _rangeList.next; data != &_rangeList; data = data->next){
-		printf("%d\t%d\t%d\t%d\t%d\t%d\n",data->low, data->high,
+		printf("%ld\t%ld\t0x%x\t%d\t0x%x\t%d\n",data->low, data->high,
 			data->data,data->dataSize,data->buf,data->bufSize);
 		if (++num > 7){
 			printf("\n");

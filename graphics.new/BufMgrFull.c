@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 15:38:32  jussi
+  Added copyright notice and made small fixes.
+
   Revision 1.2  1995/09/05 22:14:13  jussi
   Added CVS header.
 */
@@ -212,6 +215,8 @@ Boolean BufMgrFull::GetTDataInMem(RecId &startRecId, int &numRecs, void *&buf){
 		}
 		else _getTInMem = true;
 	}
+
+	return false;
 }
 
 void BufMgrFull::DoneGetTDataInMem(){
@@ -230,7 +235,6 @@ void BufMgrFull::InitGDataScan(){
 }
 
 Boolean BufMgrFull::GDataScan(RecId &startRecId, int &numRecs, void *&buf){
-	RecId convertedLow, convertedHigh; /* What's converted */
 	RecId processLow, processHigh; /* what's to be processed next */
 	RangeInfo *rangeInfo;
 /*
@@ -372,6 +376,8 @@ Boolean BufMgrFull::TDataScan(RecId &startRecId, int &numRecs, void *&buf){
 			_getTRange = true;
 		}
 	}
+
+	return false;
 }
 
 void BufMgrFull::DoneTDataScan(){
@@ -388,7 +394,6 @@ void BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 	 lowId, highId, tdata, gdata);
 #endif
 
-	RangeInfo *info;
 	if (tdata->RecSize() < 0){
 		fprintf(stderr,"BufMgrFull: can't handle var records yet\n");
 		Exit::DoExit(2);
@@ -397,7 +402,7 @@ void BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
 	Boolean hasFirst = tdata->HeadID(firstId);
 	Boolean hasLast = tdata->LastID(lastId);
 	if (!hasFirst || !hasLast || lowId < firstId || highId > lastId){
-		fprintf(stderr,"BufMgrFull::GetRecs: tdata ids (%d,%d) out of range\n",
+		fprintf(stderr,"BufMgrFull::GetRecs: tdata ids (%ld,%ld) out of range\n",
 			lowId,highId);
 		Exit::DoExit(2);
 	}
@@ -489,6 +494,8 @@ Boolean BufMgrFull::GetRecs(Boolean &isTData,
 				Exit::DoExit(2);
 		}
 	}
+
+	return false;
 }
 
 void BufMgrFull::DoneGetRecs(){
@@ -504,6 +511,8 @@ void BufMgrFull::DoneGetRecs(){
 			break;
 		case DoTDataScan:
 			DoneTDataScan();
+			break;
+		default:
 			break;
 	}
 	_state = DoneBuffer;
@@ -545,7 +554,7 @@ void BufMgrFull::ClearUse(void *buf, Boolean dirty){
 			}
 		} 
 	}
-	fprintf(stderr,"BufMgrFull::FreeRecs: can't find buf 0x%x\n");
+	fprintf(stderr,"BufMgrFull::FreeRecs: can't find buf 0x%x\n", buf);
 	Exit::DoExit(2);
 }
 
@@ -588,7 +597,7 @@ void BufMgrFull::CalcRetArgs(Boolean isTData, Boolean isInMem,
 
 		if (numRecs < 0){
 			fprintf(stderr,"BufMgrFull::CalcRetArgs: internal error: low numRecs = %d\n",numRecs);
-			fprintf(stderr,"rangeInfo (%d,%d),data %d, buf %d\n",
+			fprintf(stderr,"rangeInfo (%ld,%ld),data %d, buf %d\n",
 				rangeInfo->low, rangeInfo->high,
 				rangeInfo->DataSize(), rangeInfo->BufSize());
 			Exit::DoExit(2);
@@ -664,7 +673,7 @@ if (debug)
 		}
 /*
 if (debug)
-printf("victim (%d,%d), data %d, buf %d, gap %d\n",
+printf("victim (%ld,%ld), data %d, buf %d, gap %d\n",
 		rangeInfo->low, rangeInfo->high,
 		rangeInfo->DataSize(), rangeInfo->BufSize(),
 		rangeInfo->GapSize());
@@ -726,7 +735,7 @@ void BufMgrFull::InitGetRangeNotInMem(TData *tdata, RangeList *rangeList,
 	RecId lowId, RecId highId){
 
 	if (lowId > highId){
-		fprintf(stderr,"BufMgrFull::InitGetRangeNotInMem: low %d >high %d\n",
+		fprintf(stderr,"BufMgrFull::InitGetRangeNotInMem: low %ld >high %ld\n",
 			lowId, highId);
 		Exit::DoExit(2);
 	}
@@ -741,7 +750,7 @@ void BufMgrFull::InitGetRangeNotInMem(TData *tdata, RangeList *rangeList,
 	_rangeN = NULL;
 /*
 printf("BufMgrFull::InitGetRangeNotINMem\n");
-printf("lowId %d, highId %d, dataSize %d, bufSize %d\n",
+printf("lowId %ld, highId %ld, dataSize %d, bufSize %d\n",
 	_lowN, _highN, _dSizeN, BufSize(_dSizeN));
 */
 }
@@ -769,7 +778,7 @@ printf("BufMgrFul::GetRangeNotInMem: _dSize %d\n", _dSizeN);
 	}
 /*
 if (debug)
-	printf("Got recs %d,%d\n", startRid,startRid+numRecs-1);
+	printf("Got recs %ld,%ld\n", startRid,startRid+numRecs-1);
 */
 
 
@@ -878,7 +887,7 @@ void BufMgrFull::Print(TData *tdata){
 	RangeInfo *cur;
 	printf("low\thigh\tdata\tbuf\tgap\n");
 	for (cur = head->next; cur != head; cur = cur->next){
-		printf("%d\t%d\t%d\t%d\t%d\n",cur->low,cur->high,
+		printf("%ld\t%ld\t%d\t%d\t%d\n",cur->low,cur->high,
 			cur->DataSize(),cur->BufSize(),cur->GapSize());
 	}
 }
@@ -911,7 +920,7 @@ void BufMgrFull::CheckRange(RangeInfo *rangeInfo){
 		goto error;
 	return;
 error:
-	printf("Range error:buf 0x%x, data 0x%x, id (%d,%d), bsizes %d, dSize %d\n",rangeInfo->buf,rangeInfo->data,rangeInfo->low,rangeInfo->high,
+	printf("Range error:buf 0x%x, data 0x%x, id (%ld,%ld), bsizes %d, dSize %d\n",rangeInfo->buf,rangeInfo->data,rangeInfo->low,rangeInfo->high,
 	rangeInfo->BufSize(), rangeInfo->DataSize());
 	Exit::DoExit(2);
 }
@@ -1098,10 +1107,9 @@ void BufMgrFull::Clear(){
 /* Clear buffers occupied by GData */
 void BufMgrFull::ClearGData(GData *gdata) {
 	int numArrays = _rangeArrays->NumArrays();
-	int i;
-	for (i=0; i < numArrays; i++){
+	for(int i = 0; i < numArrays; i++) {
 		int size = _rangeArrays->Size(i);
-		int j;
+		int j = 0;
 		while ( j < size) {
 			RangeInfo *info = _rangeArrays->GetRange(i,j);
 			if (info->GetTData() == gdata){
