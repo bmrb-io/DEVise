@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/02/26 20:48:39  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.6  1998/02/12 17:16:29  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -71,12 +74,13 @@
 #include "Server.h"
 #include "Control.h"
 #include "Dispatcher.h"
+#include "CmdDescriptor.h"
 
 
 class DeviseServer : public Server {
 friend class CommandObj;
 public:
-  DeviseServer(char *name, int swt_port, int clnt_port,
+  DeviseServer(char *name, int image_port, int swt_port, int clnt_port,
 	char* switchname, int maxclients, ControlPanel *control);
   virtual ~DeviseServer();
 
@@ -84,10 +88,16 @@ public:
   virtual void Run();
   virtual void WaitForConnection();
   virtual void CloseClient();
+  virtual void CloseImageConnection();
+
 
   virtual int CurrentClientFd();
+  virtual void RunCmd(int argc, char** argv, CmdDescriptor& cmdDes);
 
   virtual int NumClients() { return _numClients; }
+  virtual void setCurrentClient(ClientID cid){ _currentClient = cid;}
+  virtual int getCurrentClient(){ return _currentClient;}
+  virtual int WriteImagePort(const void* buf, int nsize);
 
   virtual int ReturnVal(ClientID cid, u_short flag, char *result){
 	return Server::ReturnVal(cid, flag, 1, &result, false);
@@ -101,13 +111,16 @@ public:
 	return Server::ReturnVal(_currentClient, API_ACK , argc, argv, true);
  }	 
 
+  virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace){
+	return Server::ReturnVal(_currentClient, flag, argc, argv, addBrace);
+ }	 
+
 protected:
   virtual void BeginConnection(ClientID clientID);
   virtual void EndConnection(ClientID clientID);
 
   virtual void ProcessCmd(ClientID,	// process a single client command
       int argc, char **argv);
-
 private:
   ClientID _currentClient;
   ClientID _previousClient;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/02/26 20:49:02  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.4  1998/02/12 17:17:05  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -48,6 +51,7 @@ class MapInterpClassInfo;
 #define API_NAK 2
 #define API_CTL 3
 #define API_GRP 4
+#define API_JAVACMD 5
 
 extern int	ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 //******************************************************************************

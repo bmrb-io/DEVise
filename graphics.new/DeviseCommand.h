@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/27 15:08:56  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
  */
 
 #ifndef _DeviseCommand_h_
@@ -46,6 +51,8 @@ class DeviseCommand
 {
 	friend class CmdContainer;
 	friend ostream& operator <<(ostream&, DeviseCommand&);
+	public:
+		static ControlPanel* getDefaultControl();
 	private:
 		DeviseCommandOption	_cmdOption;
 		static	ControlPanel* defaultControl;
@@ -87,6 +94,56 @@ class DeviseCommand
 		}
 };
 ostream& operator <<(ostream& os, DeviseCommand& cmd);
+
+//-------------------------------------------------------------------------
+//				Commands Dedicated for JAVA Screen - Begin
+//-------------------------------------------------------------------------
+//
+//Class definition: DeviseCommand_JAVAC_GetSessionList
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_GetSessionList)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_Exit
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_Exit)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_CloseCurrentSession
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_CloseCurrentSession)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_OpenSession
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_OpenSession)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_Click
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_Click)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_DoubleClick
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_DoubleClick)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_RubberBand
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_RubberBand)
+DECLARE_CLASS_END
+
+//-------------------------------------------------------------------------
+//				Commands Dedicated for JAVA Screen - End
+//-------------------------------------------------------------------------
+
 
 //
 //Class definition: DeviseCommand_dteImportFileType
@@ -1212,4 +1269,9 @@ DECLARE_CLASS_END
 DECLARE_CLASS_DeviseCommand_(viewSetHome) 
 DECLARE_CLASS_END
 
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(playLog) 
+DECLARE_CLASS_END
 #endif // _DeviseCommand_h_

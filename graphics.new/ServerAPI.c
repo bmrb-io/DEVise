@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1998/02/12 17:17:07  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.34  1998/01/30 02:17:05  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -238,9 +241,11 @@ ServerAPI::ServerAPI()
 
   _server = new DeviseServer("DEVise",
 #ifdef SERV_ANYPORT
+	0,
     0,
 	0,
 #else
+	Init::ImagePort(),
 	Init::SwitchPort(),
     Init::Port(),
 #endif

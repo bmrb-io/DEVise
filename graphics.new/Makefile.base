@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.83  1998/04/29 17:53:52  wenger
+#  Created new DerivedTable class in preparation for moving the tables
+#  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+#  problems) while working on this.
+#
 #  Revision 1.82  1998/04/10 18:29:25  wenger
 #  TData attribute links (aka set links) mostly implemented through table
 #  insertion; a crude GUI for creating them is implemented; fixed some
@@ -225,6 +230,8 @@
 
 ############################################################
 
+# allow standard template
+IMPLICIT_TEMPLATES = 1
 include ../../Makefile.common
 
 CFLAGS =  $(ARCH_FLAGS) \
@@ -259,7 +266,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
-	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c
+	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
+	JavaScreenCmd.h JavaScreenCmd.C
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

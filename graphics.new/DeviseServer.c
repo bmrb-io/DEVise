@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/03/02 22:03:41  taodb
+  Add control parameter to Run() invocations
+
   Revision 1.6  1998/02/26 20:48:39  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -59,11 +62,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/uio.h>
+#include <errno.h>
 
 #include "DeviseServer.h"
 #include "DevError.h"
 #include "Scheduler.h"
 #include "CmdContainer.h"
+#include "CmdDescriptor.h"
+#include "Csprotocols.h"
 
 //#define DEBUG
 
@@ -71,16 +80,17 @@
  * function: DeviseServer::DeviseServer
  * Constructor.
  */
-DeviseServer::DeviseServer(char *name, int swt_port, int clnt_port, 
+DeviseServer::DeviseServer(char *name,int image_port,int swt_port, 
+	int clnt_port, 
 	char* switchname, int maxclients, ControlPanel *control) :
-  	Server(name, swt_port, clnt_port,switchname, maxclients)
+  	Server(name,image_port, swt_port, clnt_port,switchname, maxclients)
 {
 #if defined(DEBUG)
-  printf("DeviseServer(0x%p)::DeviseServer(%s, %d, %d)\n", this, name, 
-	swt_port, clnt_port);
+  printf("DeviseServer(0x%p)::DeviseServer(%s,%d, %d, %d)\n", this, name, 
+	image_port, swt_port, clnt_port);
 #endif
 
-  cmdContainerp = new CmdContainer(control,CmdContainer::CSGROUP);
+  cmdContainerp = new CmdContainer(control,CmdContainer::CSGROUP, this);
   _currentClient = CLIENT_INVALID;
   _previousClient = CLIENT_INVALID;
   _control = control;
@@ -94,6 +104,8 @@ DeviseServer::DeviseServer(char *name, int swt_port, int clnt_port,
   // Note: we have to do WaitForConnection(), or _listenFd isn't valid.
   WaitForConnection();
   (void) Dispatcher::Current()->Register(this, 10, AllState, true, _listenFd);
+  (void) Dispatcher::Current()->Register(this, 10, AllState, true, 
+	_listenImageFd);
 }
 
 /*------------------------------------------------------------------------------
@@ -140,6 +152,11 @@ DeviseServer::Run()
   }
 }
 
+void 
+DeviseServer::RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
+{
+	cmdContainerp->Run(argc, argv, _control, cmdDes);
+}
 /*------------------------------------------------------------------------------
  * function: DeviseServer::WaitForConnection
  * Waits for a client connection.
@@ -154,6 +171,18 @@ DeviseServer::WaitForConnection()
   Server::WaitForConnection();
 }
 
+void
+DeviseServer::CloseImageConnection()
+{
+	if (_currentClient != CLIENT_INVALID)
+	{
+		Server::CloseImageConnection(_currentClient);
+	}
+	else
+	{
+    	reportErrNosys("No active client to close image connection");
+	}
+}
 
 /*------------------------------------------------------------------------------
  * function: DeviseServer::CloseClient
@@ -248,12 +277,66 @@ DeviseServer::EndConnection(ClientID clientID)
 }
 
 /*------------------------------------------------------------------------------
+ * function: DeviseServer::WriteImagePort
+ * Write Image into current client's image port, only apply to JAVA_SCREEN
+ */
+int 
+DeviseServer::WriteImagePort(const void* buf, int nsize)
+{
+	if (_currentClient == CLIENT_INVALID)
+	{
+		fprintf(stderr, "No client was specified\n");
+		return -1;
+	}
+	if (_clients[_currentClient].ctype != ClientInfo::JAVA_SCREEN)
+	{
+		fprintf(stderr, "Not JAVA_SCREEN client\n");
+		return -1;
+	}
+	if (_clients[_currentClient].imagefd <0)
+	{
+		fprintf(stderr, "Invalid image port file descriptor\n");
+		return -1;
+	}
+
+	int	 nbytes =-1;
+	char tempbuf[IMG_OOB];	
+	bool stopped = false; 
+	do {
+		/*
+		// prvoide client-controlled stopping functions
+		do{
+			nbytes = recv(_clients[_currentClient].imagefd, tempbuf,IMG_OOB, 0);
+			if ((nbytes >0)&&(!stopped))
+				stopped = true;
+		}while (nbytes >0);
+		if (stopped)
+		{
+			printf("Stop requested from the client\n");
+			nbytes = -1;
+			break;
+		}
+		if ((nbytes!=-1 )||(errno != EWOULDBLOCK))
+		{
+			perror("Image connection error:");
+			nbytes = -1;
+			break;
+		}
+		*/
+		nbytes = write(_clients[_currentClient].imagefd, buf, nsize);
+	} while ((nbytes == -1) && ((errno == EAGAIN)||(errno==EINTR)));
+	return nbytes;
+}
+
+/*------------------------------------------------------------------------------
  * function: DeviseServer::ProcessCmd
  * Process a command from a client.
  */
 void
 DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 {
+	cerr << "******I should not come here "<<endl;
+/*
 #if defined(DEBUG)
   printf("DeviseServer(0x%p)::ProcessCmd(%d)\n", this, clientID);
   printf("  Command: ");
@@ -266,6 +349,7 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 #if defined(DEBUG)
   printf("  _currentClient = %d\n", _currentClient);
 #endif
+  
 
   if (_currentClient == CLIENT_INVALID) {
     // Not currently processing a command.
@@ -274,7 +358,7 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
   printf("  Before cmdContainer call: _currentClient = %d\n", _currentClient);
 #endif
 
-    if (cmdContainerp->Run(argc, argv,_control) < 0) {
+    if (cmdContainerp->RunOneCommand(argc, argv,_control) < 0) {
       	char errBuf[1024];
       	sprintf(errBuf, "Devise API command error (command %s).", argv[0]);
       	reportErrNosys(errBuf);
@@ -289,6 +373,7 @@ DeviseServer::ProcessCmd(ClientID clientID, int argc, char **argv)
 #if defined(DEBUG)
   printf("  After cmdContainer call: _currentClient = %d\n", _currentClient);
 #endif
+*/
 }
 
 /*============================================================================*/

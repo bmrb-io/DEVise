@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/04/28 18:02:54  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.9  1998/04/27 17:30:25  wenger
   Improvements to TAttrLinks and related code.
 
@@ -30,6 +35,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
 
@@ -72,6 +78,9 @@
 #include "Session.h"
 #include "GDataSock.h"
 #include "Timer.h"
+#include "CmdLog.h"
+#include "CmdContainer.h"
+#include "JavaScreenCmd.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -121,6 +130,12 @@ operator <<(ostream& os, const DeviseCommand& cmd)
 	return os;
 }
 ControlPanel* DeviseCommand::defaultControl;
+ControlPanel*
+DeviseCommand::getDefaultControl()
+{
+	return defaultControl;
+}
+
 void
 DeviseCommand::setDefaultControl(ControlPanel* defaultCntl)
 {
@@ -177,8 +192,50 @@ DeviseCommand::Run(int argc, char** argv)
 // DTE Command objects
 //**********************************************************************
 
+IMPLEMENT_COMMAND_BEGIN(JAVAC_GetSessionList)
+	JavaScreenCmd jc(control,JavaScreenCmd::GETSESSIONLIST,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_Exit)
+	JavaScreenCmd jc(control,JavaScreenCmd::JAVAEXIT,
+		argc-1, NULL);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_CloseCurrentSession)
+	JavaScreenCmd jc(control,JavaScreenCmd::CLOSECURRENTSESSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_OpenSession)
+	JavaScreenCmd jc(control,JavaScreenCmd::OPENSESSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_MouseAction_Click)
+	JavaScreenCmd jc(control,JavaScreenCmd::MOUSEACTION_CLICK,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_MouseAction_DoubleClick)
+	JavaScreenCmd jc(control,JavaScreenCmd::MOUSEACTION_DOUBLECLICK,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_MouseAction_RubberBand)
+	JavaScreenCmd jc(control,JavaScreenCmd::MOUSEACTION_RUBBERBAND,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
 /*
-	// alternatively, we can write this, instead of the Macro
+// alternatively, we can write this, instead of the Macro
 int
 DeviseCommand_dteImportFileType::Run(int argc, char** argv)
 {
@@ -4772,3 +4829,53 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
     }
     return ret_value;
 }
+
+IMPLEMENT_COMMAND_BEGIN(playLog)
+	char	*logFile;
+	char	*errmsg = NULL;
+
+	static	long	lastLogId = CmdLogRecord::LOG_BEGIN;
+	if (argc != 6)
+	{
+		fprintf(stderr,"Wrong # of arguments:%d in playLog\n", argc);
+    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+	if (!strcmp(argv[1], "default"))
+	{
+		logFile = cmdContainerp->getLogName();
+	}
+	else
+	{
+		logFile = argv[1];
+	}
+	FILE* fp= fopen(logFile,"r");
+	if (fp == NULL)
+	{
+		errmsg = "Open log file failure";
+		control->ReturnVal(API_NAK, errmsg);
+		fprintf(stderr,"%s\n", errmsg);
+		return -1;
+	}
+	fclose(fp);
+
+	int	by = atoi(argv[2]);
+	int pause = atoi(argv[3]);
+	long	start = atol(argv[4]);
+	long	end = atol(argv[5]);
+
+	// it is up to the last scheduled Run to garbage-collect this object
+	CmdLogRecord 	*cmdLog= new CmdLogRecord(logFile);
+	bool success = cmdLog->playLog( by, pause, start, end, errmsg);
+	if (success)
+	{
+    	control->ReturnVal(API_ACK, "done");
+		return 1;
+	}
+	else
+	{
+		fprintf(stderr, "Play log failure:%s\n",errmsg);
+    	control->ReturnVal(API_NAK, errmsg);
+		return -1;
+	}
+IMPLEMENT_COMMAND_END

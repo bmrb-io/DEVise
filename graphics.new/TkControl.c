@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.83  1998/03/02 22:03:40  taodb
+  Add control parameter to Run() invocations
+
   Revision 1.82  1998/02/26 20:49:05  taodb
   Replaced ParseAPI() with Command Object Interface
 
@@ -382,7 +385,7 @@ TkControlPanel::TkControlPanel()
 {
 	
   _interpProto = new MapInterpClassInfo();
-  cmdContainerp = new CmdContainer(this,CmdContainer::MONOLITHIC);
+  cmdContainerp = new CmdContainer(this,CmdContainer::MONOLITHIC, NULL);
   
   View::InsertViewCallback(this);
 
@@ -563,7 +566,8 @@ int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 #endif
 
   // don't pass DEVise command verb (argv[0])
-  if (cmdContainerp->Run(argc - 1, &argv[1],(ControlPanel *)clientData) < 0)
+  if (cmdContainerp->RunOneCommand(argc - 1, 
+		&argv[1],(ControlPanel *)clientData) < 0)
     return TCL_ERROR;
 
   return TCL_OK;

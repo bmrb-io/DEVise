@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.13  1998/02/12 17:16:10  wenger
+   Merged through collab_br_2; updated version number to 1.5.1.
+
    Revision 1.12.6.1  1998/01/28 22:43:43  taodb
    Added support for group communicatoin
 
@@ -74,9 +77,14 @@ extern int NetworkPrepareMsg(u_short flag, u_short bracket,
 		       int argc, char **argv, char** recBufferp);
 extern int NetworkClose(int fd);
 
+//
+// Dataport is for one-time connection
+// Image port is for dedicated connection
 const int DefaultNetworkPort = 6100;
 const int DefaultDataPort = 6200;
 const int DefaultSwitchPort = 6300;
+const int DefaultImagePort = 6400; 
+
 const int DefaultMaxClients = 10;
 #define DefaultSwitchName  ("NULL")
 const int BUF_SIZE = 1024;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/04/07 14:30:05  wenger
+  Reduced unnecessary include dependencies.
+
   Revision 1.6  1998/03/27 15:08:52  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -39,9 +42,13 @@
 
 */
 
+#include <string>
+#include <vector>
 #include <stdio.h>
 #include <ctype.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "ParseAPI.h"
 
@@ -50,8 +57,12 @@
 #include "htable.h"
 #include "datum.h"
 #include "CmdContainer.h"
+#include "DeviseServer.h"
+#include "Csprotocols.h"
+#include "CmdLog.h"
 #include "DeviseCommand.h"
 
+static char* cmdLogBase ="/tmp/cmdLog.";
 #define REGISTER_COMMAND(objType)\
 {\
 	DeviseCommandOption	cmdOption;\
@@ -78,11 +89,28 @@ int GetWindowImageAndSize(ControlPanel *control, int port, char *imageType,
 int		ParseAPIDTE(int argc, char** argv, ControlPanel* control);
 int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 
-CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make)
+CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
+	DeviseServer* server)
 {
 	DeviseCommand::setDefaultControl(defaultControl);
 	this->make = make;
 	cmdContainerp = this;
+	_server = server;
+
+	char	tempFileName[128];
+	sprintf(tempFileName, "%s%ld", cmdLogBase, getpid());
+	cmdLogFname = strdup(tempFileName);
+	unlink(cmdLogFname);
+	cmdLog = new CmdLogRecord(cmdLogFname);
+
+	// JAVA Screen commands
+	REGISTER_COMMAND(JAVAC_GetSessionList)
+	REGISTER_COMMAND(JAVAC_OpenSession)
+	REGISTER_COMMAND(JAVAC_CloseCurrentSession)
+	REGISTER_COMMAND(JAVAC_Exit)
+	REGISTER_COMMAND(JAVAC_MouseAction_Click)
+	REGISTER_COMMAND(JAVAC_MouseAction_DoubleClick)
+	REGISTER_COMMAND(JAVAC_MouseAction_RubberBand)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -272,15 +300,92 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make)
 	REGISTER_COMMAND(set3DLocation)
 	REGISTER_COMMAND(setViewGDS)
 	REGISTER_COMMAND(viewSetHome)
+	REGISTER_COMMAND(playLog)
 }
 
 CmdContainer::~CmdContainer()
 {
+	// clean logfile upon completion
+	unlink(cmdLogFname);
+	free(cmdLogFname);
+	delete cmdLog;
 }
 
-int
-CmdContainer::Run(int argc, char** argv, ControlPanel* control)
+long
+CmdContainer::logCommand(int argc, char** argv, CmdDescriptor& cmdDes)
 {
+	char**	nargv= new (char*)[argc +1];
+	int		i;
+	long	logId;
+
+	for (i=0 ; i< argc; ++i)
+		nargv[i] = argv[i];
+	nargv[argc]= (char*)cmdDes.Serialize().c_str();
+
+	//append one command to log tail
+	logId = cmdLog->logCommand(argc+1, nargv);
+	delete []nargv;
+	return logId;
+}
+
+/* 
+// play the log within a certain range
+obosolete, command container is not supposed to do this
+bool
+CmdContainer::playCommand(long logId1, long logId2)
+{
+	long	logId;
+	long	savelogId;
+
+	logId =	cmdLog->seekLog(logId1);
+
+	if (logId != logId1)
+	{
+		cerr << "Specified log record:"<<logId1<<" not found"<<endl;
+		return false;
+	}
+	else
+	{
+		do
+		{
+			// fetch a command
+			vector <string> vec;
+			cmdLog->getCommand(vec);
+			int args = vec.size();
+
+			// deserialize the same command descriptor
+			CmdDescriptor	cmdDes(vec[args-1]);
+
+			// add fromLog flag
+			CmdSource*	cmdSrcp;
+			cmdSrcp = cmdDes.getCmdsource();
+			cmdSrcp->setFromLog();
+
+			// play one command from the log
+			char** argv = new (char*)[args-1];
+			Run(args-1, argv, DeviseCommand::getDefaultControl(), cmdDes);
+			delete []argv;
+
+			savelogId = logId;
+			logId = cmdLog->seekLog(CmdLogRecord::LOG_NEXT);
+		}while ((savelogId != logId)&&
+				(logId <= logId2));
+	}
+	return true;
+}
+*/
+
+
+int
+CmdContainer::Run(int argc, char** argv, ControlPanel* control, 
+	CmdDescriptor& cmdDes)
+{
+	bool	success = true;
+	char*	errmsg = NULL;
+	int		cid;
+	bool	inGroup = false;
+	bool	activeGroup = false;
+
 #if defined(DEBUG)
     printf("CmdContainer::Run(");
 	for (int index = 0; index < argc; index++) {
@@ -289,9 +394,125 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control)
 	}
     printf(")\n");
 #endif
+	
+	// no command logging & broadcasting for log file replay and session replay
+	// control command routing 
+	CmdSource::SrcType srcType =cmdDes.getCmdsource()->getSrctype();
+	if (cmdDes.getCmdsource()->isFromLog())
+		srcType = CmdSource::LOGFILE;
 
-	DeviseCommand*	cmd;
+	switch (srcType)
+	{
+		case CmdSource::LOGFILE:
+				success = RunOneCommand(argc, argv, control);
+				break;
+
+		case CmdSource::NETWORK:
+			if (cmdDes.getDest() == CmdDescriptor::FOR_CLIENT)
+			{
+				// send control commands to its client
+				// which CLIENT?
+				((Server*)_server)->SendControl(API_CTL, argc, argv, true);
+			}
+			else
+			if (cmdDes.getDest() == CmdDescriptor::FOR_SERVER)
+			{
+				success = RunOneCommand(argc, argv, control);
+			}
+
+			//we do not log network commands at this stage
+			//logCommand(argc, argv, cmdDes);
+			break;
+		case CmdSource::JAVACLIENT:
+			// run JAVA commands with logging turned off
+			success = RunOneCommand(argc, argv, control);
+			break;
+		case CmdSource::USER:
+		case CmdSource::CLIENT:
+			cid = cmdDes.getCmdsource()->getClientid();
+			success = false;
+
+			// access-control, this is a temporary hack
+			// we need better solution!
+			// by default, cid =0, is always the group communication client
+			// we use default for USER commands, since at this time
+			// we do not know SERVER is sending commands for which
+			// group control client.
+
+			ClientInfo* cInfo;
+			if (cid != CLIENT_INVALID)
+				cInfo = _server->getClientInfo(cid);
+			else
+				cInfo = _server->getClientInfo(0);
+
+			inGroup = (cInfo->gname != NULL);
+			activeGroup = inGroup?(cInfo->active):false;
+
+			if (!inGroup)
+			{
+				// always allowed
+				success = RunOneCommand(argc, argv, control);
+
+				// we do not log this command
+				if (strcmp(argv[0],"playLog"))
+				{
+					if (success)
+						logCommand(argc, argv, cmdDes);
+					else
+						cerr <<"Commands failed, not logged"<<endl;
+				}
+			}
+			else 
+			if (!activeGroup)
+			{
+				// commands are disallowd
+				success = false;
+				errmsg = "Non-leader should not operate!";
+				_server->ReturnVal(cid, (u_short)API_NAK, errmsg);
+			}
+			else
+			{
+				// group cast commands first
+				success = _server->GroupCast(cInfo->gname, cInfo->cname,
+						SS_CSS_Cmd,
+						argc, argv, errmsg);
+
+				// run it locally
+				if (!success)
+					cerr <<"Error in groupcast:"<<errmsg<<endl;
+				success = RunOneCommand(argc, argv, control);
+				if (success)
+					logCommand(argc, argv, cmdDes);
+			}
+			break;
+		case CmdSource::INTERNAL:
+			success = RunOneCommand(argc, argv, control);
+			if (success)
+				logCommand(argc, argv, cmdDes);
+			else
+					cerr <<"Commands failed, not logged"<<endl;
+			break;
+		case CmdSource::SESSION_PLAY:
+		case CmdSource::SESSION_SAVE:
+			success = RunOneCommand(argc, argv, control);
+			break;
+		default:
+			errmsg = "Illegal command source type";
+			break;
+	}
+
+	// set return value
+	cmdDes.setRetval(success, errmsg);
+	if (!success)
+		cerr << cmdDes.getErrmsg();
+	return success;
+}
+
+int
+CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control) 
+{
 	int	retval;
+	DeviseCommand* cmd;
 
 	cmd = lookupCmd(argv[0]);
 	if (cmd == NULL)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/02/26 20:49:04  taodb
+  Replaced ParseAPI() with Command Object Interface
+
   Revision 1.14  1998/02/12 17:17:08  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -159,6 +162,9 @@ private:
     return _server->ReturnVal(argc, argv);
   }
 
+  virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace){
+    return _server->ReturnVal(flag, argc,argv, addBrace);
+  } 
   virtual int SendControl(u_short flag, char *result, bool grp_enable) {
 	if (grp_enable)
 	{

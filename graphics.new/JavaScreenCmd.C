@@ -20,16 +20,234 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/25 05:45:23  taodb
+  Initial Revision
+
  */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 #include "JavaScreenCmd.h"
 #include "DeviseServer.h"
+#include "CmdContainer.h"
 #include "ClientAPI.h"
+#include "Control.h"
+
+off_t getFileSize(const char* filename);
+void
+JavaScreenCmd::GetSessionList()
+{
+	// ADD---begin
+	char* argv[4] =
+	{
+		_controlCmdName[UPDATESESSIONLIST],
+		"/p/devise/session/AAAcolor2.ds",
+		"/p/devise/session/AAAcolor3.ds",
+		"/p/devise/session/JFK2.ds"
+	};
+
+
+
+	// ADD---end
+	_status = RequestUpdateSessionList(4, argv);	
+}
+
+void
+JavaScreenCmd::OpenSession()
+{
+	if (_argc != 1)
+	{
+		errmsg = "{Usage: OpenSession <session name>}";
+		_status = ERROR;
+		return;
+	}
+
+	// Add---begin
+
+
+
+	// Dump all window images to files: e.g. window1.gif, window2.gif...
+	printf("Session:%s requested!\n", _argv[0]);
+	JavaRectangle winRec(0,0,400,300);
+	JavaRectangle viewRec1(0,0,200,300);
+	JavaRectangle viewRec2(200,0,400,300);
+
+	string	winName("Testwindow");
+	string	imageName("window1.gif");
+	string	viewName1("View1");
+	string	viewName2("View2");
+
+	JavaViewInfo viewInfo1(viewRec1, viewName1);
+	JavaViewInfo viewInfo2(viewRec2, viewName2);
+
+	JavaWindowInfo winInfo(
+					winRec,
+					winName,
+					imageName,
+					2, (void*)&viewInfo1, (void*)&viewInfo2);
+
+	// send one image to JAVA_Screen 
+	_status = RequestCreateWindow(winInfo);
+	if (_status != DONE)
+		return;
+	else
+	{
+		//.... You can send more window images here....
+	}
+
+	// Add---end
+}
+
+void
+JavaScreenCmd::MouseAction_Click()
+{
+	if (_argc != 3)
+	{
+		errmsg = "{Usage: MouseAction_Click <view name> <x> <y>}";
+		_status = ERROR;
+		return;
+	}
+
+	// ADD---begin
+	TDataVal	tdval = 3.1415926;
+
+
+
+
+
+	// ADD---end
+	_status = RequestUpdateRecordValue(tdval);
+}
+
+void
+JavaScreenCmd::MouseAction_DoubleClick()
+{
+	if (_argc != 3)
+	{
+		errmsg = "{Usage: MouseAction_DoubleClick <view name> <x> <y>}";
+		_status = ERROR;
+		return;
+	}
+
+	// ADD---begin
+	GDataVal	gval;
+
+
+
+
+
+
+	// ADD---end
+	_status = RequestUpdateGData(gval);
+}
+
+void
+JavaScreenCmd::MouseAction_RubberBand()
+{
+	if (_argc != 5)
+	{
+		errmsg = "{Usage: MouseAction_DoubleClick <view name>}"
+				 " <x1> <y1> <x2> <y2>";
+		_status = ERROR;
+		return;
+	}
+
+	// ADD---begin
+	char *fileName = "window2.gif";
+
+	
+	
+	
+	
+	// ADD---end
+	int	filesize;
+	filesize = getFileSize(fileName);
+	if (filesize >0)
+	{
+		_status =RequestUpdateWindow(_argv[1] ,filesize);
+		ControlCmd(_status);
+		if (_status == DONE)
+		{
+			_status = SendWindowImage(fileName, filesize);
+		}
+
+		// avoid unnecessary JAVAC_Done command, after sending back images
+		if (_status == DONE)
+			_status = NULL_COMMAND;
+	}
+}
+
+void
+JavaScreenCmd::CloseCurrentSession()
+{
+	// ADD---Begin
+
+
+
+
+
+
+	// ADD---End
+	_status = DONE;
+	return;
+}
+
+//====================================================================
+JavaScreenCmd::ControlCmdType
+JavaScreenCmd::RequestUpdateGData(GDataVal gval)
+{
+	// Add---begin
+	char* argv[7] =
+	{
+		_controlCmdName[UPDATEGDATA],
+		"{name 1}",
+		"http://www.test1.edu",
+		"{name 2}",
+		"http://www.test2.edu",
+		"{name 3}",
+		"http://www.test3.edu",
+	};
+	ReturnVal(7, argv);
+
+	// Add---end
+	return DONE;
+}
+
+JavaScreenCmd::ControlCmdType
+JavaScreenCmd::RequestUpdateRecordValue(TDataVal tval)
+{
+	// Add--begin
+	char buf[128];
+	sprintf(buf, "%f", tval);
+	char* argv[2] = {
+		_controlCmdName[UPDATERECORDVALUE],
+		buf
+	};
+	ReturnVal(2, argv);
+
+	// Add---end
+	return DONE;
+}
+//====================================================================
+off_t
+getFileSize(const char* filename)
+{
+	off_t filesize;
+	int	fd = open(filename, O_RDONLY);
+	filesize = lseek(fd, 0, SEEK_END);
+	if (filesize <0)
+	{
+		perror("Error in getting file size:");
+	}
+	return filesize;
+}
 
 JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
-	string imageName, int views, ...)
+	string& imageName, int views, ...)
 {
 	_winRec = winRec;
 	_winName = winName;
@@ -44,12 +262,12 @@ JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
 	{
 		void* cmd;
 		cmd = va_arg(pvar, void*);
-		_viewList[i] = *(ViewInfo*)cmd;
+		_viewList[i] = *(JavaViewInfo*)cmd;
 	}
 	va_end(pvar);
 }
 
-JavaWindowInfo::~JavaWindowInfo(0
+JavaWindowInfo::~JavaWindowInfo()
 {
 	delete []_viewList;
 }
@@ -68,7 +286,12 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_Error",
 	"JAVAC_Fail"
 };
-JavaScreenCmd::JavaScreenCmd(DeviseServer* control, 
+char* 
+JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
+{
+	return JavaScreenCmd::_controlCmdName[(int)ctype];
+}
+JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
 	_control  = control;
@@ -82,111 +305,71 @@ int
 JavaScreenCmd::Run()
 {
 	_status = DONE;
+	if (_ctype == JAVAEXIT)
+	{
+		CloseJavaConnection();
+		return _status;
+	}
 	switch (_ctype)
 	{
+		case CLOSECURRENTSESSION:
+			CloseCurrentSession();
+			break;
 		case GETSESSIONLIST:
-			GetSession();
+			GetSessionList();
+			break;
 		case OPENSESSION:
 			OpenSession();
+			break;
 		case MOUSEACTION_CLICK:
 			MouseAction_Click();
+			break;
 		case MOUSEACTION_DOUBLECLICK:
 			MouseAction_DoubleClick();
+			break;
 		case MOUSEACTION_RUBBERBAND:
 			MouseAction_RubberBand();
+			break;
 		default:
+			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
 	}
-
+	return ControlCmd(_status);
+}
+int
+JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
+{
 	// return either DONE/ERROR/FAIL to current JAVA client
-	if (_status == DONE)
+	if (status == DONE)
 	{
-		_control->ReturnVal(1,&_controlCmdName[DONE]);
+		ReturnVal(1,&_controlCmdName[DONE]);
 		return 1;
 	}
-	if (_status == FAIL)
+	if (status == FAIL)
 	{
+		// abort the client 
 		ReturnVal(1, &_controlCmdName[FAIL]);
+		CloseJavaConnection();
 		return -1;
 	}
-	if (_status == ERROR)
+	if (status == ERROR)
 	{
 		const char *argv[2] = {
-			&_controlCmdname[ERROR],
+			JavaScreenCmd::_controlCmdName[ERROR],
 			errmsg
 		};	
 		if (argv[1] == NULL)
 		{
 			argv[1]= "Error, but no error message available";
 		}
-		ReturnVal(2, &argv[0]);
+		ReturnVal(2, (char**)&argv[0]);
 		return -1;
 	}
-}
-
-void
-JavaScreenCmd::GetSessionList()
-{
-	// TODO:
-	// export all sessions avialable for JAVA screen
-	//
-	char* argv[4] =
+	if (status != NULL_COMMAND)
 	{
-		_controlCmdName[UPDATESESSIONLIST],
-		"/p/devise/session/AAAcolor2.ds",
-		"/p/devise/session/AAAcolor3.ds",
-		"/p/devise/session/JFK2.ds"
-	};
-	_status = RequestUpdateSessionList(4, argv);	
-}
-
-void
-JavaScreenCmd::OpenSession()
-{
-	if (argc != 1)
-	{
-		errmsg = "Usage: OpenSession <session name>";
-		_status = ERROR;
-		return;
+		fprintf(stderr, "Return value is not DONE/FAIL/ERROR\n");
+		return -1;
 	}
-	// TODO:
-	// open the right session here with session name 
-	//
-	printf("Session:%s requested!\n", argv[0]);
-
-	// TODO:
-	// Dump all window images to files: e.g. window1.gif, window2.gif...
-	//
-	// 
-	// Example of preparing information to send to JAVA_Screen for one window
-	// For a real impementation, we will do this for as many window for 
-	// a session
-	//
-	JavaRectangle winRec(0,0,400,300);
-	JavaRectangle viewRec1(0,0,200,300);
-	JavaRectangle viewRec2(200,0,400,300);
-
-	string	winName("Win");
-	string	imageName("window1.gif");
-	string	viewName1("View1");
-	string	viewName2("View2");
-
-	JavaViewInfo viewInfo1(viewRec1, viweName1);
-	JavaViewInfo viewInfo2(viewRec2, viweName2);
-
-	JavaWindowInfo winInfo(
-					winName,
-					imageName, winRec, 
-					2, (void*)&viewInfo1, (void*)&viewInfo2);
-
-	// send image to JAVA_Screen and one command to it
-	_status = RequestCreateWindow(winInfo);
-	if (_status != DONE)
-		return;
-	else
-	{
-		// TODO:
-		//.... You can send more window images for a session here.... 
-	}
+	return DONE;
 }
 
 void
@@ -198,21 +381,21 @@ JavaScreenCmd::FillInt(char** argv, int& pos, const int x)
 }
 
 void
-JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectange& jr)
+JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 {
 	char	buf[128];
-	sprintf(buf,"%f", jr._x1);
+	sprintf(buf,"%.0f", jr._x1);
 	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%f", jr._y1);
+	sprintf(buf,"%.0f", jr._y1);
 	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%f", jr._x2);
+	sprintf(buf,"%.0f", jr._x2);
 	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%f", jr._y2);
+	sprintf(buf,"%.0f", jr._y2);
 	argv[pos ++] = strdup(buf);
 }
 
-ControlCmdType
-JavaScreenCmd::SendWindowImage(char* fileName, int& filesize)
+JavaScreenCmd::ControlCmdType
+JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 {
 	ControlCmdType	status = DONE;
 
@@ -222,15 +405,23 @@ JavaScreenCmd::SendWindowImage(char* fileName, int& filesize)
 	{
 		perror("Image file:");
 		status = ERROR;
-		errmsg = "Cannot open image file";
+		errmsg = "{Cannot open image file}";
 	}
 	else
 	{
 		filesize = 0;
-		char buf[1024];
-		while (nbytes = read(fd, buf, sizeof(buf)))
+		char buf[2048];
+		int	nbytes;
+		
+		while ((nbytes = read(fd, buf, sizeof(buf)))>0)
 		{
-			_control->WriteImagePort(buf, nbytes);
+			DeviseServer*	server;
+			server = cmdContainerp->getDeviseServer();
+			if (server->WriteImagePort(buf, nbytes) <0)
+			{
+				status = FAIL;
+				break;
+			}
 			filesize += nbytes;
 		}
 		close(fd);
@@ -238,22 +429,22 @@ JavaScreenCmd::SendWindowImage(char* fileName, int& filesize)
 	return status;
 }
 
-ControlCmdType 
+JavaScreenCmd::ControlCmdType 
 JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 {
 	ReturnVal(argc, argv);
 	return DONE;
 }
-ControlCmdType
+
+JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 {
-	char*	fileName = winInfo._imageName.c_str();
-	ControlCmdType	status;
+	const char*	fileName = winInfo._imageName.c_str();
+	ControlCmdType	status = DONE;
 	int		filesize = 0;
 
-	status = SendWindowImage(fileName, filesize);
-
-	if (status == DONE)
+	filesize = getFileSize(fileName);
+	if (filesize >0)
 	{
 		//
 		// Return one command to  the JAVA Screen
@@ -265,138 +456,52 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 				+4 						// Win coordinates
 				+1						// Image Size
 				+1						// # Views
-				+_views * 5 			// viewname + coordinaes
+				+winInfo._views * 5;	// viewname + coordinaes
 
-		char**	argv = new argv[argc](NULL);
+		char**	argv = new (char*)[argc](NULL);
 		int		i;
 		int		pos = 0;
 
 		argv[pos++] = strdup(_controlCmdName[CREATEWINDOW]);
-		argv[pos++] = strdup(_winName);
-		FillArgv(argv, pos, _winRec);
+		argv[pos++] = strdup(winInfo._winName.c_str());
+		FillArgv(argv, pos, winInfo._winRec);
 		FillInt(argv, pos, filesize);
-		FillInt(argv, pos, views);
+		FillInt(argv, pos, winInfo._views);
 
-		for (i =0; i< views; ++i)
+		for (i =0; i< winInfo._views; ++i)
 		{
 			JavaViewInfo	*jv;
-			jv = &_viweList[i];
+			jv = &winInfo._viewList[i];
 			argv[pos++] = strdup(jv->_viewName.c_str());
 			FillArgv(argv, pos, jv->_jr);
 		}
-		if (pos != cnt)
+		if (pos != argc)
 		{
 			fprintf(stderr, "Error in perparing create window command\n");
 		}
 
-		// Send a command to JAVA_Screen
+		// Send a image retrieving command to JAVA_Screen
 		ReturnVal(argc, argv);
+		ControlCmd(DONE);
+
+		// Send back the window image, and omit return value if successful
+		status = SendWindowImage(fileName, filesize);
+		if (status == DONE)
+			status = NULL_COMMAND;
 
 		// free all ..
 		for (i=0; i< argc; ++i)
 		{
-			free argv[i];
+			free(argv[i]);
 		}
 		delete []argv;
 	}
 	return status;
 }
 
-void
-JavaScreenCmd::MouseAction_Click()
-{
-	if (argc != 3)
-	{
-		errmsg = "Usage: MouseAction_Click <view name> <x> <y>";
-		_status = ERROR;
-		return;
-	}
 
-	// TODO:
-	// Select a view based on view name and return TData Record Value
-	TDataVal	tdval = 3.1415926;
-	_status = RequestUpdateRecordValue(tdval);
-}
 
-void
-JavaScreenCmd::MouseAction_DoubleClick()
-{
-	if (argc != 3)
-	{
-		errmsg = "Usage: MouseAction_DoubleClick <view name> <x> <y>";
-		_status = ERROR;
-		return;
-	}
-
-	// TODO:
-	// Select a view and return all the gdata associated with the view
-	GDataVal	gval;
-	_status = RequestUpdateGData(gval);
-}
-
-void
-JavaScreenCmd::MouseAction_RubberBand()
-{
-	if (argc != 5)
-	{
-		errmsg = "Usage: MouseAction_DoubleClick <view name>"
-				 " <x1> <y1> <x2> <y2>";
-		_status = ERROR;
-		return;
-	}
-
-	// TODO:
-	// select the view, perform rubber band, and generate its GIF for
-	// the window it is in
-	// EXAMPLE:
-	char *fileName = "window2.gif";
-	int	filesize;
-
-	_status = SendWindowImage(fileName, filesize);
-	if (_status == DONE)
-	{
-		_status =RequestUpdateWindow(_argv[1] ,filesize);
-	}
-}
-
-ControlCmdType
-JavaScreenCmd::RequestUpdateGData(GDataVal gval)
-{
-	// TODO:
-	// Same problem as TData val, we need to define 
-	// GData table format, and serialize it and have 
-	// JavaScreen understand its format
-	char* argv[7] =
-	{
-		_controlCmdName[UPDATEGDATA],
-		"{name 1}",
-		"http://www.test1.edu",
-		"{name 2}",
-		"http://www.test2.edu",
-		"{name 3}",
-		"http://www.test3.edu",
-	};
-	ReturnVal(7, argv);
-	return DONE;
-}
-
-ControlCmdType
-JavaScreenCmd::RequestUpdateRecordValue(TDataVal tval)
-{
-	//TODO: we need find a good protocols for serializing
-	// a TData tuple, and on the other side, JAVA Screen
-	// need to de-serialize it
-	char buf[128];
-	sprintf(buf, "%f", tval);
-	char* argv[2] = {
-		_controlCmdName[UPDATERECORDVALUE],
-		buf
-	};
-	ReturnVal(2, argv);
-	return DONE;
-}
-
-ControlCmdType
+JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 {
 	char* argv[3];
@@ -404,12 +509,45 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 	argv[pos++] = _controlCmdName[UPDATEWINDOW];
 	argv[pos++] = winName;
 	FillInt(argv, pos, imageSize);
-	ReturnVal(2, argv);
-	free(argv[1]);
+	ReturnVal(3, argv);
+	free(argv[2]);
 	return DONE;
 }
 void
 JavaScreenCmd::ReturnVal(int argc, char** argv)
 {
-	_control->ReturnVal(API_JAVACMD, argc, argv, true);
+	static	char* buf = NULL;
+	static	int bufsize = 0;
+	int		eleSize = 0;
+
+	// Append end-of-command marker
+	char** nargv = new (char*)[argc](NULL);
+	int	i;
+	for (i=0; i< argc-1; ++i)
+		nargv[i] = argv[i];
+
+	eleSize = strlen(argv[argc-1]);
+
+	if ((buf == NULL)||(eleSize > bufsize))
+	{
+		if (!buf)
+			delete buf;
+		buf = new char[strlen(argv[argc-1])+3];
+	}
+
+	// We can also send back multiple commands by seperating them with "\n"
+	sprintf(buf,"%s",argv[argc-1]);
+	nargv[argc-1]= buf;
+
+	// send the command out
+	_control->ReturnVal(API_JAVACMD, argc, nargv, false);
+	delete []nargv;
+}
+
+void
+JavaScreenCmd::CloseJavaConnection()
+{
+	DeviseServer*	server;
+	server = cmdContainerp->getDeviseServer();
+	server->CloseClient();
 }
