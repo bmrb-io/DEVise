@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/05/22 21:03:56  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.11  1996/05/15 16:43:44  jussi
   Added support for the new server synchronization mechanism.
 
@@ -110,7 +113,7 @@ public:
 
   /* Start/restart session */
   virtual void StartSession() {}
-  virtual void DestroySessionData() {}
+  virtual void DestroySessionData() { _batchMode = false; }
   virtual void RestartSession() {}
 
   /* Get/set batch mode */
