@@ -1,17 +1,34 @@
 package Expressions;
 
+import java.util.Hashtable;
+
 /** Symbol table is used to store already resolved (type checked) expressions
     without duplicates.
 */
 
 public class SymbolTable {
-	bool isPresent(String exprStr){
-		return false;
+	private Hashtable table;
+
+	public SymbolTable( ){
+		table = new hashTable( );
 	}
-	public void insert(Expression element){
+
+	public SymbolTable( Schema schema ){
+		this( );
+		// insert Expressions from the given schema
 	}
+
+	public boolean contains(String exprStr){
+		return table.containsKey( exprStr );
+	}
+
+	public void insert(Expression expr){
+		if ( !table.contains( expr ) )
+			table.put( expr.toString( ), expr );
+	}
+
 	public Expression lookup(String exprStr){
-		// throw exception if not found
+		return table.get( exprStr );	
 	}
 }
 
