@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/02/03 04:12:27  donjerko
+#  Catalog management moved to DTE
+#
 #  Revision 1.6  1997/01/10 17:05:26  wenger
 #  Fixed DTE makefiles for HP and Sun.
 #  : ----------------------------------------------------------------------
@@ -44,7 +47,8 @@ ARCH_LDFLAGS = -L/s/tcl/lib
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script ../../attrproj/
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools $(DTE_DIR)/Script \
+	../../attrproj/ $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.hp
@@ -54,6 +58,10 @@ dte: $(STAND_ALONE_OBJ)
 
 script: $(SCRIPT_OBJ)
 	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm
+
+gui: $(GUI_OBJ)
+	$(CC) -gstabs -o gui $(GUI_OBJ) -L../devread -L/s/X11/lib -L/s/tcl/lib \
+	-ldevread -lm -ltk -ltcl -lX11
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@

@@ -13,6 +13,9 @@
 ############################################################
 
 #  $Log$
+#  Revision 1.6  1997/02/25 22:17:52  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.5  1997/02/03 04:14:28  donjerko
 #  Catalog management moved to DTE
 #
@@ -41,13 +44,17 @@ ARCH_LDFLAGS =
 
 DTE_DIR = ../../DTE
 VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
-	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/
+	$(DTE_DIR)/RTree $(DTE_DIR)/RTree/tools ../../attrproj/ $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
 include $(DTE_DIR)/Makefile.solaris
 
 dte: $(STAND_ALONE_OBJ)
 	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
+
+gui: $(GUI_OBJ)
+	$(CC) -gstabs -o gui $(GUI_OBJ) -L../devread -L/s/X11/lib -L/s/tcl/lib \
+	-ldevread -lm -ltk -ltcl -lX11 -lsocket -lnsl
 
 pure: $(STAND_ALONE_OBJ)
 	purify $(CC) -gstabs -o dte.pure $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl

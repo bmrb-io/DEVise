@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/02/21 01:38:06  donjerko
+  Fixed some problems with "group by" clause.
+
   Revision 1.11  1997/02/18 18:06:04  donjerko
   Added skeleton files for sorting.
 
@@ -117,7 +120,7 @@ LessGreat    ">="|">"|"<="|"<"
 %%
 int yywrap(){
 	yy_flush_buffer(YY_CURRENT_BUFFER);
-	yyrestart(yyin);
+	yyrestart(yyin);	// no effect warning?
      return 1;
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/07 17:41:40  donjerko
+  Added method Clear() that resets attrList to empty.
+
   Revision 1.10  1996/09/27 15:52:33  wenger
   Fixed a number of memory leaks.
 
@@ -63,8 +66,10 @@ AttrList::AttrList(char *name)
 }
 
 void AttrList::Clear(){
-  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++)
+  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++){
+    delete _attrs[i];
     _attrs[i] = NULL;
+  }
   _size = 0;
 }
 
