@@ -50,6 +50,15 @@ cd java_classes
 make
 cd ..
 
+# Create and set up the directory containing the "front-end" html file.
+set targetdir = $wwwhome/public/bmrb
+if (! -e $targetdir) then
+  mkdir $targetdir
+  chmod a+rx $targetdir
+endif
+cp -p bmrb_select.html $targetdir
+chmod a+r $targetdir/bmrb_select.html
+
 # Create and set up the dynamic sessions directory.
 set targetdir = $demohome/session.js/bmrb/dynamic_sessions
 if (! -e $targetdir) then
@@ -82,15 +91,6 @@ endif
 cp java_classes/*.class $targetdir
 cp java_classes/*.jar $targetdir
 chmod a+r $targetdir/*.*
-
-# Create and set up the directory containing the "front-end" html file.
-set targetdir = $wwwhome/public/bmrb
-if (! -e $targetdir) then
-  mkdir $targetdir
-  chmod a+rx $targetdir
-endif
-cp -p bmrb_select.html $targetdir
-chmod a+r $targetdir/bmrb_select.html
 
 # Create the link that we use to have the browser find the summary page.
 set targetdir = $wwwhome/public/bmrb/html
