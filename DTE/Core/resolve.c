@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/26 02:01:48  donjerko
+  Added the files that will perform aggregate functions
+
   Revision 1.1  1996/11/23 02:00:44  donjerko
   Restructered DTE directory
 
@@ -261,4 +264,27 @@ BaseSelection* Operator::distributeWrapper(Site* site){
 	}
 	BaseSelection::distributeWrapper(site);
 	return this;
+}
+
+
+bool Operator::isIndexable(
+	String& attrName, String& opName, BaseSelection*& value){
+	SelectID ls = left->selectID();
+	SelectID rs = right->selectID();
+	ostrstream os;
+	if(ls == SELECT_ID && (rs == STRING_ID || rs == INT_ID)){
+		left->getPath()->display(os);
+		value = right;
+	}
+	else if(rs == SELECT_ID && (ls == STRING_ID || ls == INT_ID)){
+		right->getPath()->display(os);
+		value = left;
+	}
+	else{
+		return false;
+	}
+	os << ends;
+	attrName = String(os.str());
+	opName = name;
+	return true;
 }

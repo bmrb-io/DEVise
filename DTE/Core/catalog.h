@@ -8,9 +8,18 @@
 
 class Catalog {
      class Interface{
+	protected:
+		List<RTreeIndex*> indexes;
 	public:
+		Interface() {}
 		virtual Site* getSite() = 0;
 		virtual istream& read(istream& in) = 0;
+		istream& readIndex(istream& in){	// throws exception
+			RTreeIndex* rTreeIndex = new RTreeIndex();
+			TRY(rTreeIndex->read(in), in);
+			indexes.append(rTreeIndex);
+			return in;
+		}
 	};
 	class DeviseInterface : public Interface{
 		String tableNm;
@@ -97,6 +106,19 @@ class Catalog {
 			else{
 				String msg = "Table " + tableNm + " interface: " + 
 					typeNm + ", not defined";
+				THROW(new Exception(msg), in);
+			}
+			String indexStr;
+			in >> indexStr;
+			assert(in);
+			if(indexStr == "index"){
+				TRY(interface->readIndex(in), in);
+			}
+			else if(indexStr == ";") {
+			}
+			else {
+				String msg = 
+				"Invalid catalog format: \"index\" or \";\" expected";
 				THROW(new Exception(msg), in);
 			}
 			return in;

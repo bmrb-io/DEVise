@@ -10,6 +10,31 @@
 #include "StandardRead.h"
 #include "url.h"
 
+class RTreeIndex {
+public:
+	int numAttrs;
+	String* attrNames;
+public:
+	RTreeIndex(){}
+	istream& read(istream& in){	// throws exception
+		assert(in);
+		in >> numAttrs;
+		if(!in){
+			String msg = "Number of index attributes expected";
+			THROW(new Exception(msg), in);
+		}
+		attrNames = new String[numAttrs];
+		for(int i = 0; i < numAttrs; i++){
+			in >> attrNames[i];
+			if(!in){
+				String msg = "Name of the index attribute expected";
+				THROW(new Exception(msg), in);
+			}
+		}
+		return in;
+	}
+};
+
 List<BaseSelection*>* createSelectList(String nm, GeneralRead* iterator);
 
 class Site {
@@ -105,11 +130,83 @@ public:
 	List<BaseSelection*>* getSelectList(){
 		return mySelect;
 	}
+	List<BaseSelection*>* getWhereList(){
+		return myWhere;
+	}
 	virtual Stats* getStats(){
 		return stats;
 	}
 	void reset(int lowRid, int highRid){
 		TRY(iterator->reset(lowRid, highRid), );
+	}
+	virtual List<Site*>* generateAlternatives(){
+		List<Site*>* retVal = new List<Site*>;
+		return retVal;
+	}
+};
+
+class IndexScan : public Site {
+	struct RTreePred{
+		bool bounded[2];
+		bool closed[2];
+		Type* values[2];
+		RTreePred(){
+			bounded[0] = bounded[1] = false;
+		}
+		void update(String opName, BaseSelection* constant){
+		}
+	};
+	RTreePred* rTreeQuery;	// query is an array of RTree predicates
+	Site* parent;
+	RTreeIndex* index;
+	int numAttrs;
+	bool isIndexable(BaseSelection* predicate);
+public:
+	IndexScan(Site* parent, RTreeIndex* index) : 
+		Site(), parent(parent), index(index) {
+		numAttrs = index->numAttrs;
+		rTreeQuery = new RTreePred[numAttrs];
+	}
+	virtual void display(ostream& out, int detail = 0){
+		if(detail > 0){
+			 out << "Site " << name << ":\n"; 
+			 if(stats){
+				 out	<< " stats: ";
+				 stats->display(out);
+			 }
+			 out << "\n query:";
+		}
+		out << "   select ";
+		displayList(out, mySelect, ", ", detail);
+		out << "\n   from ";
+		displayList(out, myFrom, ", ");
+		if(!myWhere->isEmpty()){
+			out << "\n   where ";
+			displayList(out, myWhere, " and ", detail);
+		}
+		out << ';';
+	}
+	bool isApplicable(){
+		bool retVal = false;
+		List<BaseSelection*>* parentWhere = parent->getWhereList();	
+		parentWhere->rewind();
+		while(!parentWhere->atEnd()){
+			BaseSelection* currPred = parentWhere->get();
+			if(isIndexable(currPred)){
+				retVal = true;
+			}
+			else{
+				myWhere->append(currPred);
+			}
+			parentWhere->step();
+		}
+		return retVal;
+	}
+	double evaluateCost(){
+		return 0;
+	}
+	virtual Tuple* getNext(){
+		return NULL;
 	}
 };
 
@@ -130,6 +227,7 @@ public:
 
 class LocalTable : public Site {
 	Site* directSite;
+	List<RTreeIndex*> indexes;
 	void setStats(){
 		double selectivity = listSelectivity(myWhere);
 		assert(directSite);
@@ -140,8 +238,11 @@ class LocalTable : public Site {
 		stats = new Stats(numFlds, sizes, cardinality);
 	}
 public:
-     LocalTable(String nm, GeneralRead* marsh = NULL) : 
+     LocalTable(String nm, GeneralRead* marsh, List<RTreeIndex*>* indx) : 
 		Site(nm), directSite(NULL) {
+		if(indx){
+			indexes.addList(indx);
+		}
 		iterator = marsh;
 	}
 	virtual ~LocalTable(){}
@@ -204,6 +305,18 @@ public:
 	virtual int getNumFlds(){
 		return numFlds;
 	}
+	virtual List<Site*>* generateAlternatives(){
+		List<Site*>* retVal = new List<Site*>;
+		indexes.rewind();
+		while(!indexes.atEnd()){
+			IndexScan* newAlt = new IndexScan(this, indexes.get());
+			if(newAlt->isApplicable()){
+				retVal->append(newAlt);
+			}
+			indexes.step();
+		}
+		return retVal;
+	}
 };
 
 class CGISite : public LocalTable {
@@ -219,7 +332,8 @@ class CGISite : public LocalTable {
 	String urlString;
 public:
 	CGISite(String url, Entry* entry, int entryLen) : 
-		LocalTable(""), entry(entry), entryLen(entryLen), urlString(url) {}
+		LocalTable("", NULL, NULL), entry(entry), 
+		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){
 		delete [] entry;
 	}

@@ -11,7 +11,7 @@ Site* Catalog::DeviseInterface::getSite(){
 	char* schema = strdup(schemaNm.chars());
 	char* data = strdup(dataNm.chars());
 	GeneralRead* unmarshal = new DevRead(schema, data);
-     return new LocalTable("", unmarshal);	
+     return new LocalTable("", unmarshal, &indexes);	
 }
 
 Site* Catalog::StandardInterface::getSite(){ // Throws a exception
@@ -28,7 +28,7 @@ Site* Catalog::StandardInterface::getSite(){ // Throws a exception
 	LOG(iTimer.display(logFile) << endl);
 
 	delete url;
-     return new LocalTable("", unmarshal);	
+     return new LocalTable("", unmarshal, &indexes);	
 }
 
 istream& Catalog::CGIInterface::read(istream& in){  // throws
@@ -46,5 +46,6 @@ istream& Catalog::CGIInterface::read(istream& in){  // throws
 		TRY(entries[i].read(in), in);
 	}
 	site = new CGISite(urlString, entries, entryLen);
+	assert(indexes.isEmpty());
 	return in;
 }

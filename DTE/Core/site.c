@@ -14,7 +14,7 @@ List<BaseSelection*>* createSelectList(String nm, GeneralRead* iterator){
 	for(int i = 0; i < numFlds; i++){
 		Path* path = new Path(&attNms[i], NULL);
 		retVal->append(new 
-			PrimeSelection(new String(nm), path, types[i], sizes[i]));
+			PrimeSelection(new String(nm), path, types[i], sizes[i], i));
 	}
 	return retVal;
 }
@@ -191,4 +191,23 @@ istream& CGISite::Entry::read(istream& in){	// throws
 		}
 	}
 	return in;
+}
+
+
+bool IndexScan::isIndexable(BaseSelection* predicate){
+	String attr;
+	String opName;
+	BaseSelection* constant;
+	if(predicate->isIndexable(attr, opName, constant)){
+		for(int i = 0; i < index->numAttrs; i++){
+			if(index->attrNames[i] == attr){
+				cout << "Updating rtree query on att " << i;
+				cout << "with: " << opName << endl;
+				constant->display(cout);
+				rTreeQuery[i].update(opName, constant);
+				return true;
+			}
+		}
+	}
+	return false;
 }

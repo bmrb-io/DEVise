@@ -151,6 +151,7 @@ int Engine::optimize(){
 	LOG(logFile << "Typified sites\n");
      while(!sites->atEnd()){
           Site* current = sites->get();
+		List<Site*>* alters = current->generateAlternatives();
 		LOG(logFile << current->getName());
           LOG(current->display(logFile));
 		LOG(logFile << endl);

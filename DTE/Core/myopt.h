@@ -252,6 +252,14 @@ public:
 	Path* getPath(){
 		return nextPath;
 	}
+	virtual bool isIndexable(
+		String& attrName, String& opName, BaseSelection*& value){
+
+		// Introduced to recognize the indexable predicates.
+		// Only OperatorSelection can be indexable
+
+		return false;
+	}
 };
 
 class GlobalSelect : public BaseSelection {
@@ -515,6 +523,8 @@ public:
 		}
 		BaseSelection::display(out, detail);
 	}
+	virtual bool isIndexable(
+		String& attrName, String& opName, BaseSelection*& value);
 	String getAttribute(){
 		ostrstream os;
 		if(left->selectID() == SELECT_ID){
@@ -859,8 +869,9 @@ class PrimeSelection : public BaseSelection{
 	int position;  // position of this selection in a tuple
 public:
 	PrimeSelection(String* a, Path* n = NULL, TypeID typeID = "Unknown",
-		int avgSize = 0) : 
-          BaseSelection(n), alias(a), typeID(typeID), avgSize(avgSize) {}
+		int avgSize = 0, int position = 0) : 
+          BaseSelection(n), alias(a), typeID(typeID), avgSize(avgSize),
+		position(position) {}
      virtual void display(ostream& out, int detail = 0){
 		if(alias){
 			out << *alias;
