@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.93  1996/09/27 15:51:36  wenger
+#	Added "Memory leaks" and "Memory in use" menu selections and associated
+#	Tcl "DEVise" commands (conditionaled out for commit).
+#
 #	Revision 1.92  1996/09/13 23:08:00  guangshu
 #	Changed print menu to "print with map" and "print without map".
 #
@@ -603,6 +607,8 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 	-command {SchemaEdit 0}
 .mbar.tdata.menu.schemaMenu add command -label "Logical..." \
 	-command {SchemaEdit 1}
+.mbar.tdata.menu.schemaMenu add command -label "Query..." \
+	-command {SchemaEdit 2}
 
 .mbar.tdata.menu add cascade -label "Mapping" \
 	-menu .mbar.tdata.menu.mappingMenu

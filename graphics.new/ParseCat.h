@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/01 19:28:21  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.10  1996/04/19 17:20:49  wenger
   Put the GenClassInfo code back in -- this is needed for tape data;
   started adding the tape-related code back in (it was previously
@@ -62,7 +67,7 @@
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *catFile);
-extern char *ParseDQL(char * schema,char * query);
+extern char *ParseDQL(char *name,char *schema,char * schemaFile,char * query);
 
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,

@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.47  1996/11/01 19:29:02  kmurli
+#	Changed to include the DQL type. Also calls importFileDQL command in
+#	ParseAPI.c to facilitate the creation of the DQL classes.
+#
 #	Revision 1.46  1996/08/29 22:29:31  guangshu
 #	Changed puts to proc Puts in case the client wants to be quiet.
 #
@@ -511,6 +515,8 @@ proc scanSchema {schemafile} {
 	    set type [lindex $line 1]
 	    break
 	} elseif {[lindex $line 0] == "physical"} {
+	    return [scanSchema [lindex $line 1]]
+	} elseif {[lindex $line 0] == "logical"} {
 	    return [scanSchema [lindex $line 1]]
 	}
     }

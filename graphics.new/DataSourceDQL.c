@@ -46,9 +46,12 @@ DataSourceDQL::DataSourceDQL(char *query, char *name) : DataSource(name)
 {
     DO_DEBUG(printf("DataSourceDQL::DataSourceDQL(%s,%s,%s)\n",
                     url, cache, (label != NULL) ? label : "null"));
-
-    _query = strdup(query);
-	_name = strdup(name);
+	
+	_query = _name = 0;
+    if (query)
+		_query = strdup(query);
+	if (name)
+		_name = strdup(name);
 }
 
 /*------------------------------------------------------------------------------

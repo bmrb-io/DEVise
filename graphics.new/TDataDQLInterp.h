@@ -25,9 +25,9 @@
 #ifndef ATTRPROJ
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
-  TDataDQLInterpClassInfo(char *className,char *query);
-  TDataDQLInterpClassInfo(char *className, char * name,char * type,char *query, 
-    TData *tdata);
+  TDataDQLInterpClassInfo(char*className,char * schemaFile,char *query);
+  TDataDQLInterpClassInfo(char *className,char * schemaFile,
+  AttrList attrs,char * name,char * type,char *query,TData *tdata);
 
   virtual ~TDataDQLInterpClassInfo();
 
@@ -49,7 +49,7 @@ public:
   ***************************************************/
   virtual char *InstanceName();
   virtual void *GetInstance();
-
+  virtual AttrList * GetAttrList() { return & _attrs;}	
   /* Get parameters that can be used to re-create this instance */
   virtual void CreateParams(int &argc, char **&argv);
 
@@ -57,9 +57,11 @@ private:
   char *_query;
   char * _name;
   char * _className; 
+  char * _schemaFile; 
   char * _type;
   TData *_tdata;
 //  int _recSize;
+  AttrList _attrs;
 };
 #endif
 
@@ -67,7 +69,7 @@ class RecInterp;
 
 class TDataDQLInterp: public TDataDQL {
 public:
-  TDataDQLInterp(char *name, char *type, char *query);
+  TDataDQLInterp(AttrList attrs,char *name,char *type,char *query);
   virtual ~TDataDQLInterp();
 
   AttrList *GetAttrList(){ return &_attrList; }

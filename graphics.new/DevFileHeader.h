@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/08/23 16:56:15  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
   Revision 1.1  1996/07/11 17:25:40  wenger
   Devise now writes headers to some of the files it writes;
   DataSourceSegment class allows non-fixed data length with non-zero
@@ -41,6 +46,7 @@
 #define FILE_TYPE_DATACAT	"dataCat"
 #define FILE_TYPE_PSCHEMA	"physSchema"
 #define FILE_TYPE_LSCHEMA	"logSchema"
+#define FILE_TYPE_QSCHEMA	"querySchema"
 #define FILE_TYPE_TEMP		"temp"
 #define FILE_TYPE_WORK		"work"
 #define FILE_TYPE_CACHE		"cache"

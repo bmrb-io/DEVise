@@ -31,20 +31,26 @@
 //#define DEBUG
 
 #ifndef ATTRPROJ
-TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char *className,char *query)
+TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className,char *schemaFile,char *query): _attrs(className)
 {
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
   _className = strdup(className); 
+  _schemaFile = strdup(schemaFile);
   _query = strdup(query);
   _tdata = NULL;
   _type = NULL;
   _name = NULL;
+ _attrs.InsertAttr(0,"ID1",0,sizeof(int),IntAttr,false,0,false,true,
+ false,0,false,0);
+ _attrs.InsertAttr(1,"ID2",4,sizeof(int),IntAttr,false,0,false,false,
+ false,0,false,0);
 }
 
-TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char *className,
-						     char * name,char * type,char *query, TData *tdata)
+TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className, char *schemaFile, AttrList attrs,char * name,char * type,char *query, 
+TData *tdata): _attrs(attrs)
 {
   _className = strdup(className);
+  _schemaFile = strdup(schemaFile);
   _name = strdup(name);
   _type = strdup(type);
   _query = strdup(query);
@@ -94,13 +100,13 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
     query = CopyString(argv[0]);
   } else {
     name = CopyString(argv[0]);
-    type = CopyString(argv[1]);
-    query= CopyString(argv[2]);
+    type = CopyString("DQL");
+	// 2 will give the actual type... e.g. UNIXFILE..
   }
 
-  TDataDQLInterp *tdata = new TDataDQLInterp(name,type,query);
+  TDataDQLInterp *tdata = new TDataDQLInterp(_attrs,name,type,_query);
                                                  
-  return new TDataDQLInterpClassInfo(_className,name,type,query,tdata);
+  return new TDataDQLInterpClassInfo(_className,_schemaFile,_attrs,name,type,_query,tdata);
 }
 
 char *TDataDQLInterpClassInfo::InstanceName()
@@ -124,19 +130,13 @@ void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 }
 #endif
 
-TDataDQLInterp::TDataDQLInterp(char *name, char *type,char *query ) :
-     TDataDQL(name, type, query ),_attrList(name)
+TDataDQLInterp::TDataDQLInterp(AttrList attrs,char *name, char *type,char *query): TDataDQL(name, type, query ),_attrList(attrs)
 {
 #ifdef DEBUG
   printf("TDataDQLInterp %s, recSize %d\n", name, recSize);
 #endif
   
  // Need to form a attribute list and pass it back..
-
- _attrList.InsertAttr(0,"ID1",0,sizeof(int),IntAttr,false,0,false,true,
- false,0,false,0);
- _attrList.InsertAttr(1,"ID2",4,sizeof(int),IntAttr,false,0,false,false,
- false,0,false,0);
 
   Initialize();
 }

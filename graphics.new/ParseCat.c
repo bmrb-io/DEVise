@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/11/01 19:28:20  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.31  1996/10/07 22:53:58  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -610,7 +615,7 @@ ParseAttr(
  * schema and a logical schema) is being read.
  */
 static char *
-ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
+ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly= false)
 {
 	Boolean hasSource = false;
 	char *source = 0; /* source of data. Which interpreter we use depends
@@ -717,6 +722,13 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 				goto error;
 			}
 			fileType = CopyString(args[1]);
+			
+			// In case only the type information is needed return that...
+			if (typeOnly){
+				schemaSource->Close();
+				return fileType;
+			}
+
 			hasFileType = true;
 			if (physicalOnly)
 			{
@@ -925,25 +937,33 @@ error:
  * schema and a logical schema) is being read.
  */
 char *
-ParseDQL(char * schema,char * query)
+ParseDQL(char * name,char * schema,char *schemaFile,char * query)
 {
 
-    gdir->add_entry(schema);
-	ControlPanel::RegisterClass(new TDataDQLInterpClassInfo(schema,query),true);
+    gdir->add_entry(name);
+	TDataDQLInterpClassInfo * DQLclass = 
+		new TDataDQLInterpClassInfo(schema,schemaFile,query);
+	
+	ControlPanel::RegisterClass(DQLclass,true);
+	
 	if (Init::PrintTDataAttr())
 		attrs->Print();
 
-	if (gdir->num_topgrp(schema) == 0)
+	if (gdir->num_topgrp(name) == 0)
 	{
 	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(schema,newgrp);
-      newgrp->insert_item("ID1");
-      newgrp->insert_item("ID2");
+	  gdir->add_topgrp(name,newgrp);
+
+	  AttrList attrs(*DQLclass->GetAttrList());
+	  int numAttrs = attrs.NumAttrs(); 
+
+	  for (int i=0; i < numAttrs; i++) {
+	    AttrInfo *iInfo = attrs.Get(i);
+            newgrp->insert_item(iInfo->name);
+	  }
+
 	}
-
-	
-	return "OK";
-
+	return schema;
 }
 
 /*------------------------------------------------------------------------------
@@ -1104,8 +1124,6 @@ ParseCat(char *catFile)
 		StripTrailingNewline(buf);
 	}
 
-	fclose(fp);
-
 	// Look for the keyword 'physical' to determine whether this is a
 	// logical schema file.
         // Note: we could parse the header here to look for logical schema file
@@ -1113,8 +1131,66 @@ ParseCat(char *catFile)
 	char token1[LINESIZE];
 	char token2[LINESIZE];
 	sscanf(buf, "%s %s", token1, token2);
+    
+	if (!strcmp(token1,"logical")) {
+		
+		// The query needs to be passed down to TDataDQL instead of being
+		// evaluated..
+		// Thus we need to call ParseDQL instead of anything else....
+		// Pass the schema and the query itself..
+    	
+		buf[0] = '\0';
+		while (IsBlank(buf) || (buf[0] == '#'))
+		{
+			fgets(buf, LINESIZE, fp);
+			StripTrailingNewline(buf);
+		}
+		fclose(fp);
+		char * query = strdup(buf);
+		char * schema = strdup(token2);
+		// Extract the physical schema name 	
+		fp = fopen(	token2,"r");
 
-    if (strcmp(token1, "physical"))
+	  	if (!fp)
+	  	{
+			fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+	  	}
+	  	else
+	  	{
+			char buf[LINESIZE];
+			// Find the first nonblank, non-comment line.
+			buf[0] = '\0';
+			while (IsBlank(buf) || (buf[0] == '#'))
+			{
+				fgets(buf, LINESIZE, fp);
+				StripTrailingNewline(buf);
+			}
+	
+			// Look for the keyword 'physical' to determine whether this is a
+		
+			char token1[LINESIZE];
+			char token2[LINESIZE];
+			sscanf(buf, "%s %s", token1, token2);
+    
+			printf(" DQL:: Schema = %s Query = %s \n",token2,query);
+     	 	DataSourceFileStream schemaSource(token2, StripPath(token2));
+			//char * temp = ParseDQL((&schemaSource)->getLabel(),
+		    // ParseCatPhysical(&schemaSource,false,true),schema,query);
+			
+			char * temp = ParseDQL(StripPath(catFile),
+				ParseCatPhysical(&schemaSource,false,true),schema,query);
+			
+			free(query);
+			free(schema);
+			return temp;
+
+		}
+		return "";
+
+	}
+	
+	fclose(fp);
+	if (strcmp(token1, "physical"))
 	{
       DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
       result = ParseCatPhysical(&schemaSource, true);

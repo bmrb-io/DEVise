@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/11 17:25:36  wenger
+  Devise now writes headers to some of the files it writes;
+  DataSourceSegment class allows non-fixed data length with non-zero
+  offset; GUI for editing schema files can deal with comment lines;
+  added targets to top-level makefiles to allow more flexibility.
+
  */
 
 #define _DevFileHeader_c_
@@ -57,6 +63,7 @@ DevFileHeader::Get(char *fileType)
 		!strcmp(fileType, FILE_TYPE_DATACAT) ||
 		!strcmp(fileType, FILE_TYPE_PSCHEMA) ||
 		!strcmp(fileType, FILE_TYPE_LSCHEMA) ||
+		!strcmp(fileType, FILE_TYPE_QSCHEMA) ||
 		!strcmp(fileType, FILE_TYPE_TEMP) ||
 		!strcmp(fileType, FILE_TYPE_WORK) ||
 		!strcmp(fileType, FILE_TYPE_CACHE) ||

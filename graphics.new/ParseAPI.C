@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/11/01 19:28:20  kmurli
+  Added DQL sources to include access to TDataDQL. This is equivalent to
+  TDataAscii/TDataBinary. The DQL type in the Tcl/Tk corresponds to this
+  class.
+
   Revision 1.35  1996/10/08 23:34:38  guangshu
   Fixed bug found by cs737 class.
 
@@ -184,7 +189,7 @@ extern "C" int purify_new_inuse();
 #endif
 
 
-#define DEBUG
+//#define DEBUG
 #define LINESIZE 1024
 
 static char result[10 * 1024];
@@ -1078,7 +1083,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   if (argc == 3) {
 
 	if(!strcmp(argv[0],"importFileDQLType")){
-	  char * name = ParseDQL(argv[1],argv[2]); 
+	  char * name = ParseDQL("HIST","HIST",argv[1],argv[2]); 
 	  if (!name){
 		strcpy(result,"");
 		control->ReturnVal(API_NAK, result);

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  1996/10/28 23:20:03  flisakow
+#   Allows the entry of a tab in the Whitespace field, though the focus
+#   still changes to the next window.
+#
 #  Revision 1.20  1996/10/23 22:51:08  flisakow
 #  Added an array, "hiddendata" to store attributes that we don't wish to
 #  show in the listbox.  Used it to store the strlen for strings, and
@@ -103,6 +107,13 @@ if {![file exists $catalogFile]} {
 }
 source $catalogFile
 
+set queryCatalogFile $schemadir/queryCatalog.tcl
+if {![file exists $queryCatalogFile]} {
+    puts "Cannot read Query catalog file for logical to query associations"
+    exit 1
+}
+source $queryCatalogFile
+
 #-----------------------------------------------------------
 #		PROCEDURES
 #-----------------------------------------------------------
@@ -116,10 +127,12 @@ proc SchemaBrowse {} {
 
 proc SchemaEdit {mode} {
     if {$mode == 0} {
-	SchemaSuperuser
+		SchemaSuperuser
+    } elseif {$mode == 1} {
+		SchemaUser
     } else {
-	SchemaUser
-    }
+		SchemaQuery
+	}
 }
 
 # Schema browser for  a normal user - can manipulate only the logical schema
@@ -183,6 +196,65 @@ proc SchemaUser {} {
     tkwait window .psch
 }
 
+proc SchemaQuery {} {
+    global schemadir physchema
+    # Show a list of currently defined physical schemas and buttons to either
+    # create a Open one of these
+
+    toplevel .psch
+    wm title .psch "Current Schemas"
+    wm geometry .psch +50+50
+
+    frame .psch.top -relief raised
+    frame .psch.mid -relief raised
+    frame .psch.bot -relief raised
+    pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
+
+    # Label on top
+    label .psch.top.label -text "Schemas"
+    pack .psch.top.label
+
+    # Listbox with scrollbar in the middle
+    listbox .psch.mid.list -relief raised -bd 1 \
+	    -yscrollcommand ".psch.mid.scroll set" \
+	    -font 9x15 -selectmode single
+    scrollbar .psch.mid.scroll -command ".psch.mid.list yview"
+    pack .psch.mid.scroll -side right -fill y
+    pack .psch.mid.list -fill x
+
+    # Search for files in the schema/physical directory to populate the list
+    set flist [glob $schemadir/physical/*]
+    foreach fname $flist {
+	.psch.mid.list insert end [file tail $fname]
+    }    
+
+    # Button to Open or Quit
+    button .psch.bot.attr -text "Attributes" \
+	    -command {
+	set physchema [.psch.mid.list get active]
+	if {$physchema == ""} {
+	    showmesg "Please choose a schema by clicking on the entry."
+	} else {
+	    displayattrs $physchema
+	}
+    }
+    button .psch.bot.view -text "Views" -command {
+	set physchema [.psch.mid.list get active]
+	if {$physchema == ""} {
+	    showmesg "Please choose a schema by clicking on the entry."
+	} else {
+	    destroy .psch
+	    dispQuerylogical $physchema
+	}
+    }
+    button .psch.bot.quit -text Quit -command {
+	destroy .psch
+    }
+    pack .psch.bot.attr .psch.bot.view .psch.bot.quit \
+	    -side left -padx 3m -pady 1m -expand 1
+
+    tkwait window .psch
+}
 ########################################################
 # Schema browser for the superuser - can change both physical and logical parts
 proc SchemaSuperuser {} {
@@ -703,6 +775,22 @@ proc writelogical {name} {
     close $f
 }
 
+proc writeQuerylogical {logschema queryName query} {
+    global schemadir 
+
+    set f [open $schemadir/query/$queryName w]
+
+    set header [DEVise getFileHeader querySchema]
+    puts $f $header
+    unset header
+    
+    puts $f "logical $schemadir/logical/$logschema"
+	
+	puts $f $query
+
+    close $f
+}
+
 proc writeDefaultLogical {sname} {
     global schemadir
 
@@ -796,6 +884,63 @@ proc readlogical {filename} {
     close $f
 }
 
+proc readQuerylogical {filename} {
+    
+	global tgrps schemadir logicalAttrlist physchema attrlist
+	set tgrps ""
+	
+	set logicalAttrlist ""
+
+    # Open file for reading
+    set f [open $schemadir/logical/$filename r]
+
+    # First line specifies the physical schema
+
+    set line ""
+    readSchemaLine $f line
+	
+    # Group declarations
+    set len [readSchemaLine $f line]
+    while {$len >= 0} {
+		set type [lindex $line 0]
+		if { $type == "group" } {
+		} else {
+			set nm [lindex $line 1] 
+			if { [lsearch $logicalAttrlist $nm] == -1} {
+				set logicalAttrlist [linsert $logicalAttrlist 0 $nm]
+			}
+		}
+		set len [readSchemaLine $f line]
+    }
+
+	if { $logicalAttrlist == "" } {
+		# read the physical schema and fill up the attribute list..	
+		readphysical $physchema
+		foreach attr $attrlist {
+			set logicalAttrlist [linsert $logicalAttrlist 0 [lindex $attr 4]]
+		}
+	}	
+    # Close file
+    close $f
+}
+
+proc readQuery {filename} {
+    global schemadir query
+	
+	set query ""
+    # Open file for reading
+    set f [open $schemadir/query/$filename r]
+
+    # First line specifies the logical schema
+	set line ""
+    readSchemaLine $f line
+	
+	set line ""
+	readSchemaLine $f query 
+	
+	# Close file
+    close $f
+}
 proc readphysical {filename} {
     global sname ftype comm issepar separ attrlist schemadir
     set attrlist ""
@@ -868,7 +1013,9 @@ proc readphysical {filename} {
 	
 	set attr [list $attrtype $sorted $hival $loval $attrname $acomp \
 		$astrlen]
-	#	puts "Inserting .. $attr"
+
+	# puts "ATTR LIST Inserting .. $attr"
+
 	set attrlist [linsert $attrlist $num $attr]
 	set len [readSchemaLine $f line]
 	set num [expr $num+1]
@@ -1032,6 +1179,121 @@ proc gbrowse {} {
 	    -side left -padx 3m -pady 1m -expand 1
 }
 
+proc qbrowse {} {
+    global logicalAttrlist physchema logschema tgrps glist Query query \
+	queryName iname
+
+    toplevel .gbrowse
+    wm title .gbrowse "$logschema View: $queryName"
+    wm geometry .gbrowse +50+50
+    wm iconname .gbrowse "Groups"
+
+    # Toplevel rows
+    frame .gbrowse.attrs -relief raised
+    frame .gbrowse.list -relief raised
+    frame .gbrowse.ops -relief raised
+    pack .gbrowse.attrs .gbrowse.list .gbrowse.ops \
+	    -side top -fill x -padx 3m -pady 1m
+
+    #----------------------------------------------------------
+    # Create a listbox with all the attrs in the logical schema
+	# This reads the attributes (items) in the logical schema 
+	# and puts it in the logicalAttrlist list..
+	
+	readQuerylogical $logschema
+	
+	label .gbrowse.attrs.label -text "List of View Attributes"
+    pack .gbrowse.attrs.label -side top -fill x
+    listbox .gbrowse.attrs.list -relief raised -bd 1 \
+	    -yscrollcommand ".gbrowse.attrs.scroll set" \
+	    -font 9x15 -selectmode single
+    scrollbar .gbrowse.attrs.scroll -command ".gbrowse.attrs.list yview"
+    pack .gbrowse.attrs.scroll -side right -fill y
+    pack .gbrowse.attrs.list -fill x
+
+    # Populate the list with all the attrs 
+    foreach attr $logicalAttrlist {
+	  .gbrowse.attrs.list insert end $attr 
+    }
+
+    # Bind the mouse click on this list
+    bind .gbrowse.attrs.list <Double-1> {
+	  set query  "$query [.gbrowse.attrs.list get active] "
+    }
+
+    #-----------------------------------------------------------
+    # Create a listbox displaying list of groups
+    #    CreateTextBitmap .gbrowse.list.label group.gif Groups
+    label .gbrowse.list.label -text "Query"
+    pack .gbrowse.list.label -side top -fill x
+	
+	#### Gotta put the entry box here..
+    # Panel for group name and panels for operators  
+    
+	frame .gbrowse.ops.name -relief raised -bd 1
+    frame .gbrowse.ops.op -relief raised
+    pack .gbrowse.ops.name .gbrowse.ops.op -side top -fill x \
+	    -padx 3m -pady 1m
+    #label .gbrowse.ops.name.label -text "Query "
+    entry .gbrowse.ops.name.entry -width 100 -relief sunken -bd 2 \
+	    -textvariable query 
+    #pack .gbrowse.ops.name.label .gbrowse.ops.name.entry -side left \
+	#    -fill x -padx 1m -pady 1m -expand 1
+    
+	pack .gbrowse.ops.name.entry -side left \
+	    -fill x -padx 1m -pady 1m -expand 1
+
+    button .gbrowse.ops.op.and -text "AND" -command {
+	    set query "$query AND " 
+    }
+    button .gbrowse.ops.op.or -text "OR" -command {
+	    set query "$query OR " 
+    }
+    button .gbrowse.ops.op.not -text "NOT" -command {
+	    set query "$query NOT " 
+    }
+    button .gbrowse.ops.op.lbrac -text "(" -command {
+	    set query "$query ( " 
+    }
+    button .gbrowse.ops.op.rbrac -text ")" -command {
+	    set query "$query ) " 
+    }
+    button .gbrowse.ops.op.albrac -text "<" -command {
+	    set query "$query < " 
+    }
+    button .gbrowse.ops.op.arbrac -text ">" -command {
+	    set query "$query > " 
+    }
+    button .gbrowse.ops.op.eq -text "=" -command {
+	    set query "$query = " 
+    }
+    button .gbrowse.ops.op.ne -text "<>" -command {
+	    set query "$query <> " 
+    }
+    
+	button .gbrowse.ops.op.quit -text "Quit" -command {
+	
+	writeQuerylogical $logschema $queryName $query
+
+	# Update catalog if needed
+	if {[lsearch $Query($physchema,$logschema) $queryName] == -1} {
+	    set Query($physchema,$logschema) \
+			[lappend Query($physchema,$logschema) $queryName]
+	    writeQuerycatalog
+	}
+	set logschema ""
+	set physchema ""
+	set queryName ""
+	set tgrps ""
+	destroy .gbrowse
+    }
+    pack .gbrowse.ops.op.and .gbrowse.ops.op.or \
+	    .gbrowse.ops.op.not .gbrowse.ops.op.lbrac\
+	    .gbrowse.ops.op.rbrac .gbrowse.ops.op.albrac \
+	    .gbrowse.ops.op.arbrac .gbrowse.ops.op.eq\
+	    .gbrowse.ops.op.ne .gbrowse.ops.op.quit \
+	    -side left -padx 3m -pady 1m -expand 1
+}
 proc dispgrp {gname } {
     global glist tgrps currgrp cnt iname
     # Displays the group information and allows modification
@@ -1489,6 +1751,25 @@ proc writecatalog {} {
     close $f
 }
 
+proc writeQuerycatalog {} {
+    global Query schemadir
+
+    set f [open $schemadir/Querycatalog.tcl w]
+
+    set header [DEVise getFileHeader schemaCat]
+    puts $f $header
+    unset header
+    
+	puts $f "# Association between logical and Query schemas"
+    puts $f ""
+
+    foreach itm [lsort [array names Query]] {
+		if {[info exists Query($itm)]} {
+			puts $f "set \"Query($itm)\" \{$Query($itm)\}"
+		}
+    }
+    close $f
+}
 ##########################################################################
 
 proc displogical {pname} {
@@ -1601,6 +1882,192 @@ proc displogical {pname} {
     tkwait window .lsch
 }
 
+proc dispQuerylogical {pname} {
+    global schemadir tgrps logschema Logical physchema button
+
+    set physchema $pname
+    
+    # Display the logical schema corr. to the passed physical schema
+    toplevel .lsch
+    wm title .lsch "Current Views"
+    wm geometry .lsch +50+50
+
+    frame .lsch.top -relief raised
+    frame .lsch.mid -relief raised
+    frame .lsch.bot -relief raised
+    frame .lsch.ent -relief raised
+    pack .lsch.top .lsch.mid .lsch.ent .lsch.bot \
+	    -side top -fill x -padx 1m -pady 1m
+
+    # Entry for schema name
+    #label .lsch.ent.label -text "Schema name : "
+	#entry .lsch.ent.entry -width 25 -relief sunken -bd 2 \
+	#    -textvariable logschema
+	#pack .lsch.ent.label .lsch.ent.entry -side left -padx 1m 
+
+    # Label on top
+    label .lsch.top.label -text "$pname  Views"
+    pack .lsch.top.label
+
+    # Listbox with scrollbar in the middle
+    listbox .lsch.mid.list -relief raised -bd 1 \
+	    -yscrollcommand ".lsch.mid.scroll set" \
+	    -font 9x15 -selectmode single
+    scrollbar .lsch.mid.scroll -command ".lsch.mid.list yview"
+    pack .lsch.mid.scroll -side right -fill y
+    pack .lsch.mid.list -fill x
+
+    # bind mouse click on the listbox
+    #bind .lsch.mid.list <Double-1> {
+	#set logschema [.lsch.mid.list get active]
+    #}
+
+    # Populate the listbox based on the Logical array values
+    if {[info exists Logical($pname)] == 0} {
+		set Logical($pname) ""
+    }
+    foreach itm $Logical($pname) {
+	.lsch.mid.list insert end $itm
+    }
+
+    # Button to Open or Quit
+    button .lsch.bot.open -text Queries -command {
+		
+		set logschema [.lsch.mid.list get active]
+		if {$logschema == ""} {
+	    showmesg "Please type in the name of the schema to be chosen."
+		} else {
+	    	set tgrps ""
+	    	destroy .lsch
+			# pass the physical and logical schemas
+	    	dispQuery $physchema $logschema
+		}
+    }
+
+    button .lsch.bot.quit -text Quit -command {
+	destroy .lsch
+    }
+    pack .lsch.bot.open .lsch.bot.quit \
+	    -side left -padx 3m -pady 1m -expand 1
+
+    # Finally grab focus
+    tkwait visibility .lsch
+    grab set .lsch
+    tkwait window .lsch
+}
+
+proc dispQuery {pname lname} {
+
+    global schemadir Query button
+
+    set physchema $pname
+    set logschema $lname
+    
+    # Display the query schemas corr. to the passed logical schema
+    toplevel .lsch
+    wm title .lsch "Current Queries"
+    wm geometry .lsch +50+50
+
+    frame .lsch.top -relief raised
+    frame .lsch.mid -relief raised
+    frame .lsch.bot -relief raised
+    frame .lsch.ent -relief raised
+    pack .lsch.top .lsch.mid .lsch.ent .lsch.bot \
+	    -side top -fill x -padx 1m -pady 1m
+
+    # Entry for schema name
+    label .lsch.ent.label -text "Query name : "
+    entry .lsch.ent.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable queryName 
+    pack .lsch.ent.label .lsch.ent.entry -side left -padx 1m 
+
+    # Label on top
+    label .lsch.top.label -text "$pname   Queries"
+    pack .lsch.top.label
+
+    # Listbox with scrollbar in the middle
+    listbox .lsch.mid.list -relief raised -bd 1 \
+	    -yscrollcommand ".lsch.mid.scroll set" \
+	    -font 9x15 -selectmode single
+    scrollbar .lsch.mid.scroll -command ".lsch.mid.list yview"
+    pack .lsch.mid.scroll -side right -fill y
+    pack .lsch.mid.list -fill x
+
+    # bind mouse click on the listbox
+    bind .lsch.mid.list <Double-1> {
+	set queryName [.lsch.mid.list get active]
+    }
+
+    # Populate the listbox based on the Logical array values
+    if {[info exists Query($pname,$lname)] == 0} {
+		set Query($pname,$lname) ""
+    }
+    foreach itm $Query($pname,$lname) {
+	.lsch.mid.list insert end $itm
+    }
+
+    # Button to create a New one, Open or Quit
+    button .lsch.bot.new -text New -command {
+	if {$queryName == ""} {
+	    showmesg "Please type in the name of the query to be created."
+	} else {
+	    set tgrps ""
+	    destroy .lsch
+		set query ""
+	    qbrowse 
+	}
+    }
+    button .lsch.bot.open -text Open -command {
+	if {$queryName == ""} {
+	    showmesg "Please choose a query by clicking on the entry."
+	} else {
+	    destroy .lsch
+	    readQuery $queryName
+	    qbrowse 
+	}
+    }
+    button .lsch.bot.del -text Remove -command {
+	if {$queryName == ""} {
+	    showmesg "Please select the to remove by clicking on \
+		    the entry."
+	} else {
+	    dialog .rem "Remove Query " \
+		    "This will remove the query permanently. Proceed ? " \
+		    "" 0 Yes No
+	    if {$button == 0} {
+		set idx [lsearch $Query($physchema,$logschema) $queryName]
+		if {$idx == -1} {
+		    dialog .note "Unknown Query" \
+			    " The query does not exist. Cannot remove it." \
+			    "" 0 OK
+		    return
+		}
+		set Query($physchema,$logschema) [lreplace $Query($physchema,$logschema) $idx $idx]
+		writeQuerycatalog
+		# Remove the entry from the listbox 
+		set len [.lsch.mid.list index end]
+		set i 0
+		while {[.lsch.mid.list get $i] != $queryName} {
+		    incr i
+		}
+		.lsch.mid.list delete $i
+		exec rm $schemadir/query/$queryName
+		set queryName ""
+	    }
+	}
+    }
+    button .lsch.bot.quit -text Quit -command {
+	destroy .lsch
+    }
+    pack .lsch.bot.new .lsch.bot.open .lsch.bot.del .lsch.bot.quit \
+	    -side left -padx 3m -pady 1m -expand 1
+
+
+    # Finally grab focus
+    tkwait visibility .lsch
+    grab set .lsch
+    tkwait window .lsch
+}
 proc displayattrs {pname} {
     global attrlist
 
