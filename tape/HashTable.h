@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/01 23:20:03  jussi
+  Added num() method.
+
   Revision 1.6  1996/07/19 03:32:56  jussi
   Fixed bug in lookup().
 
@@ -74,6 +77,8 @@ class HashTable {
 	      void *&next);
   int remove(Index &index);  
   int clear();
+  void InitRetrieveIndex();
+  int RetrieveIndex(void *&pointer, Index *&index, Value &i);
 
 #ifdef MODIFIED
   int num() { return _num; }
@@ -94,6 +99,7 @@ class HashTable {
 		 int numBuckets);            // hash function
   int (*compfcn)(Index &index1,
                  Index &index2);             // comparison function
+  int cur_buck_index;
 };
 
 // Construct hash table. Allocate memory for hash table and
@@ -113,9 +119,34 @@ HashTable<Index,Value>::HashTable(int tableSz,
   }
   for(int i = 0; i < tableSize; i++)
     ht[i] = 0;
+  cur_buck_index = 0;
 #ifdef MODIFIED
   _num = 0;
 #endif
+}
+
+// Should be called everytime before retrieving index
+template <class Index, class Value>
+void HashTable<Index,Value>::InitRetrieveIndex() {
+	cur_buck_index = 0;
+}
+
+template <class Index, class Value>
+int HashTable<Index,Value>::RetrieveIndex(void *&current, Index *&index, Value &i)
+{
+	HashBucket<Index, Value> *bucket;
+	if(current == NULL) {
+		while (cur_buck_index < tableSize && !ht[cur_buck_index++]);
+		if(cur_buck_index >= tableSize) return -1;
+		bucket = ht[cur_buck_index-1];
+	} 
+	else bucket = (HashBucket<Index, Value> *)current;
+
+	index = &(bucket->index);
+	i = bucket->value;
+	current = bucket->next;
+	
+	return 0;
 }
 
 // Insert entry into hash table mapping Index to Value.
@@ -134,8 +165,8 @@ int HashTable<Index,Value>::insert(Index &index, Value &value)
 
   bucket->index = index;
   bucket->value = value;
-  bucket->next = ht[idx];
-  ht[idx] = bucket;
+  bucket->next = ht[idx]; 
+  ht[idx] = bucket; 
 
 #ifdef MODIFIED
   ++_num;
@@ -153,8 +184,9 @@ int HashTable<Index,Value>::insert(Index &index, Value &value)
 
 template <class Index, class Value>
 int HashTable<Index,Value>::lookup(Index &index, Value &value)
-{
+{ 
   int idx = hashfcn(index, tableSize);
+//  printf("lookup in hashTable, index=%f, idx=%d\n", index, idx);
 
   HashBucket<Index, Value> *bucket = ht[idx];
   while(bucket) {
@@ -169,7 +201,6 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
 #ifdef DEBUGHASH
   dump();
 #endif
-
   return -1;
 }
 
