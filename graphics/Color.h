@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/29 23:57:28  jussi
+  Added a few colors and removed duplicate ones.
+
   Revision 1.3  1995/12/05 21:57:55  jussi
   Added some 20 missing colors which were defined in ColorMgr.c
   but not listed here. Now Devise can refer to all colors by the
@@ -76,6 +79,6 @@ const Color GoldColor2		= 42;
 
 const Color ForegroundColor	= BlackColor;
 const Color BackgroundColor	= AntiqueWhiteColor;
-const Color HighlightColor	= RedColor;
+const Color HighlightColor	= BlackColor;
 
 #endif
