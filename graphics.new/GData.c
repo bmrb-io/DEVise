@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/10/22 22:40:13  wenger
+  Workaround for bug 053: GData constructor doesn't open GData file when
+  '-convert 0' is specified on command line.
+
   Revision 1.10  1996/08/28 00:19:50  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -59,7 +63,6 @@
 //#define DEBUG
 
 GData::GData(TData *tdata, char *fname, int recSize, int maxBuf)
-: TData()
 {
   _tdata = tdata;
 
@@ -125,30 +128,6 @@ int GData::Dimensions(int *sizeDimension)
   else
     sizeDimension[0] = 0;
   return 1;
-}
-
-/* Return record size, or -1 if variable record size */
-int GData::RecSize()
-{
-  return _recSize;
-}
-
-/* Return page size of TData, or -1 if no paging structure */
-int GData::PageSize()
-{
-  return -1;
-}
-
-/* Return true if TData deletes records from the beginning
-   due to limited disk/memory buffer. */
-Boolean GData::HasDeletion()
-{
-  return 0;
-}
-
-Boolean GData::HasAppend()
-{
-  return true;
 }
 
 void GData::GetIndex(RecId id, int *&indices)

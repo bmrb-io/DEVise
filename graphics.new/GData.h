@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/24 19:41:54  jussi
+  Cleaned up and removed unused code.
+
   Revision 1.3  1996/03/05 23:27:52  jussi
   Minor fix.
 
@@ -59,19 +62,13 @@ public:
 	   or -1 if unknown */
 	virtual int Dimensions(int *sizeDimension);
 
-	/* Return record size, or -1 if variable record size */
-	virtual int RecSize();
-
-	/* Return page size of TData, or -1 if no paging structure */
-	virtual int PageSize();
-
 	int UserAttr(int attrNum);
 
 	/* Return true if TData deletes records from the beginning
-	due to limited disk/memory buffer. */
-	virtual Boolean HasDeletion(); 
+           due to limited disk/memory buffer. */
+	virtual Boolean HasDeletion() { return false; }
 
-	virtual Boolean HasAppend();
+	virtual Boolean HasAppend() { return true; }
 
 	/* convert RecId into index */
 	virtual void GetIndex(RecId id, int *&indices);
@@ -154,7 +151,7 @@ public:
 
 private:
 	RecFile *_recFile;
-	int _recSize;
+
 	GDataRangeMap *_rangeMap;
 	int _recsLeft; /* # of records left to convert */
 	int _totalRecs; /* # of recs converted */
