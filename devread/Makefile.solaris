@@ -25,8 +25,17 @@ DevRead.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h marshal.h
 DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
 DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
 DevRead.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
-DevRead.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-DevRead.o: ../graphics.new/DataSource.h ../graphics/AttrList.h
+DevRead.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+DevRead.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+DevRead.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+DevRead.o: /usr/include/sys/shm.h /usr/include/errno.h
+DevRead.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
+DevRead.o: ../graphics.new/machdep.h /usr/include/limits.h
+DevRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+DevRead.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+DevRead.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
+DevRead.o: /usr/include/sys/netconfig.h ../graphics/AttrList.h
 DevRead.o: ../graphics/DList.h ../graphics/Init.h ../graphics/BufPolicy.h
 DevRead.o: ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h

@@ -13,10 +13,35 @@ Templates.o: /usr/include/sys/time.h /usr/include/sys/time.h
 Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
 Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-Templates.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/unistd.h
+Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+Templates.o: /usr/include/stdlib.h /usr/include/unistd.h
 Templates.o: /usr/include/sys/unistd.h /usr/include/string.h
 Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
+Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
+Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
+Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
+Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+Templates.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+Templates.o: /usr/include/sys/shm.h /usr/include/errno.h
+Templates.o: /usr/include/sys/errno.h /usr/include/assert.h
+Templates.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+Templates.o: /usr/include/limits.h /usr/include/sys/param.h
+Templates.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+Templates.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+Templates.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+Templates.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Templates.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+Templates.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+Templates.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+Templates.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+Templates.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+Templates.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+Templates.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+Templates.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+Templates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Templates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+Templates.o: /usr/include/sys/byteorder.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

@@ -188,8 +188,10 @@ DevRead.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
 DevRead.o: ../../graphics/BufPolicy.h GeneralRead.h ../../graphics/Util.h
 DevRead.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
 DevRead.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-DevRead.o: ../../graphics.new/TData.h ../../graphics.new/RecOrder.h
-DevRead.o: ../../graphics.new/DataSource.h ../../graphics.new/DataSeg.h
+DevRead.o: ../../graphics.new/TData.h ../../graphics.new/DataSource.h
+DevRead.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
+DevRead.o: /usr/include/errno.h /usr/include/sys/errno.h
+DevRead.o: /usr/include/sys/stat.h ../../graphics.new/DataSeg.h
 Engine.o: /usr/include/memory.h /usr/include/string.h
 Engine.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
 Engine.o: /usr/include/math.h /usr/include/floatingpoint.h

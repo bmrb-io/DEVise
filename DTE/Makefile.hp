@@ -115,7 +115,9 @@ DevRead.o: ../../graphics/Exit.h ../../graphics/Init.h
 DevRead.o: ../../graphics/BufPolicy.h GeneralRead.h ../../graphics/Util.h
 DevRead.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
 DevRead.o: /usr/include/math.h ../../graphics.new/TData.h
-DevRead.o: ../../graphics.new/RecOrder.h ../../graphics.new/DataSource.h
+DevRead.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+DevRead.o: ../../graphics.new/DCE.h /usr/include/errno.h
+DevRead.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
 DevRead.o: ../../graphics.new/DataSeg.h
 Engine.o: /usr/include/memory.h /usr/include/sys/stdsyms.h
 Engine.o: /usr/include/string.h /usr/include/assert.h /usr/include/math.h

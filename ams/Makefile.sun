@@ -31,6 +31,22 @@ MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
 MapClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MapClassInfo.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+MapClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+MapClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+MapClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/param.h
+MapClassInfo.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+MapClassInfo.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+MapClassInfo.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+MapClassInfo.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+MapClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
+MapClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
+MapClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+MapClassInfo.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+MapClassInfo.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+MapClassInfo.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+MapClassInfo.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+MapClassInfo.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 MapClassInfo.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
 MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
@@ -38,8 +54,8 @@ MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
-MapClassInfo.o: ../graphics.new/Snapshot.h ../graphics.new/ViewScatter.h
-MapClassInfo.o: ../graphics.new/QueryProc.h MapClassInfo.h Soil.h AmsMap.h
+MapClassInfo.o: ../graphics.new/ViewScatter.h ../graphics.new/QueryProc.h
+MapClassInfo.o: MapClassInfo.h Soil.h AmsMap.h
 ams.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/sys/types.h
 ams.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
@@ -62,6 +78,20 @@ ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
 ams.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
 ams.o: ../tape/HashTable.h ../graphics.new/DataSourceFixedBuf.h
 ams.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+ams.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
+ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/sys/param.h
+ams.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+ams.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+ams.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+ams.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+ams.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
+ams.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+ams.o: /usr/include/limits.h /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+ams.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+ams.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+ams.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+ams.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 ams.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 ams.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
@@ -71,9 +101,9 @@ ams.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
 ams.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 ams.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-ams.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
+ams.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
+ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h
 amsStat.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h
@@ -83,10 +113,26 @@ amsStat.o: ../graphics.new/BufHint.h ../graphics.new/PageSize.h
 amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
 amsStat.o: ../graphics/DeviseTypes.h /usr/include/values.h
 amsStat.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
-amsStat.o: ../graphics.new/RecOrder.h ../graphics.new/DataSource.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
-amsStat.o: ../graphics.new/ams.h /usr/include/math.h
-amsStat.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+amsStat.o: ../graphics.new/DataSource.h ../graphics/Exit.h
+amsStat.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+amsStat.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+amsStat.o: /usr/include/sys/shm.h /usr/include/sys/param.h
+amsStat.o: /usr/include/machine/param.h /usr/include/sys/signal.h
+amsStat.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+amsStat.o: /usr/include/debug/debug.h /usr/include/mon/sunromvec.h
+amsStat.o: /usr/include/mon/openprom.h /usr/include/mon/obpdefs.h
+amsStat.o: /usr/include/errno.h /usr/include/sys/errno.h
+amsStat.o: /usr/include/assert.h ../graphics.new/machdep.h
+amsStat.o: /usr/include/sys/time.h /usr/include/sys/time.h
+amsStat.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+amsStat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+amsStat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+amsStat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+amsStat.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+amsStat.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
+amsStat.o: /usr/include/math.h /usr/include/floatingpoint.h
+amsStat.o: /usr/include/sys/ieeefp.h
 extendAms.o: /usr/include/stdio.h /usr/include/stdlib.h
 extendAms.o: /usr/include/sys/stdtypes.h /usr/include/fcntl.h
 extendAms.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stat.h

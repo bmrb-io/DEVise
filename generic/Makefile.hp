@@ -29,6 +29,16 @@ generic.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 generic.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
 generic.o: ../graphics.new/DataSourceFixedBuf.h
 generic.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+generic.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
+generic.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
+generic.o: /usr/include/sys/shm.h /usr/include/assert.h
+generic.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
+generic.o: /usr/include/limits.h /usr/include/sys/param.h
+generic.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+generic.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+generic.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+generic.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+generic.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 generic.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
 generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 generic.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
@@ -38,8 +48,9 @@ generic.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
 generic.o: ../graphics.new/ViewScatter.h ../graphics.new/ViewLens.h
 generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 generic.o: ../graphics.new/TDataMap.h ../graphics.new/GDataRec.h
-generic.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-generic.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
+generic.o: ../graphics.new/TData.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/ParseCat.h ../graphics/DevError.h
+generic.o: ../graphics/Util.h /usr/include/ctype.h
 testWindowSpeed.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 testWindowSpeed.o: /usr/include/time.h /usr/include/sys/time.h
 testWindowSpeed.o: ../graphics.new/TkControl.h ../graphics/Dispatcher.h
