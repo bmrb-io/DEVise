@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/08/28 18:21:14  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.55  1997/08/20 22:11:11  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -32,6 +36,9 @@
   Revision 1.54.8.1  1997/08/07 16:56:44  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
+
+  Revision 1.54.6.1  1997/05/21 20:40:49  weaver
+  Changes for new ColorManager
 
   Revision 1.54  1997/04/21 23:00:26  guangshu
   Small changes.
@@ -247,10 +254,12 @@
   Added CVS header.
 */
 
+//******************************************************************************
+
 #include <assert.h>
 #include <string.h>
 
-// #define DEBUG
+//#define DEBUG
 
 #include "Init.h"
 #include "TDataViewX.h"
@@ -262,26 +271,38 @@
 
 ImplementDList(BStatList, BasicStats *)
 
-TDataViewX::TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
-		       GlobalColor fg, GlobalColor bg, AxisLabel *xAxis,
-		       AxisLabel *yAxis, Action *action) :
-	ViewGraph(name, initFilter, qp, xAxis, yAxis, fg, bg, action)
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+TDataViewX::TDataViewX(char* name, VisualFilter& initFilter, QueryProc* qp, 
+					   PColorID fgid, PColorID bgid,
+					   AxisLabel* xAxis, AxisLabel* yAxis, Action* action)
+	: ViewGraph(name, initFilter, qp, xAxis, yAxis, fgid, bgid, action)
 {
-  _dataBin = new GDataBin();
-  DOASSERT(_dataBin, "Out of memory");
+	gDataBinCallback = new TDataViewX_GDataBinCallback(this);
 
-  _totalGData = _numBatches = 0;
-  _batchRecs = Init::BatchRecs();
+	_dataBin = new GDataBin();
+	DOASSERT(_dataBin, "Out of memory");
 
-  _dispSymbols = true;
-  _dispConnectors = false;
-  _cMap = 0;
+	_totalGData = _numBatches = 0;
+	_batchRecs = Init::BatchRecs();
+
+	_dispSymbols = true;
+	_dispConnectors = false;
+	_cMap = 0;
 }
 
-TDataViewX::~TDataViewX()
+TDataViewX::~TDataViewX(void)
 {
-  delete _dataBin;
+	delete _dataBin;
+
+	delete gDataBinCallback;
 }
+
+//******************************************************************************
+// Public Methods
+//******************************************************************************
 
 void TDataViewX::InsertMapping(TDataMap *map)
 {
@@ -346,7 +367,7 @@ Boolean TDataViewX::DisplayConnectors(Boolean state)
     DOASSERT(!_cMap, "Unexpected connector mapping");
     _cMap = new TDataCMap;
     DOASSERT(_cMap, "Could not create connector mapping");
-    _cMap->SetDefaultColor(GetFgColor());
+    _cMap->GetColoring().SetForeground(GetForeground());
   }
 
   Boolean oldState = _dispConnectors;
@@ -362,234 +383,6 @@ Boolean TDataViewX::DisplayConnectors(Boolean state)
   return oldState;
 }
 
-/* Query data ready to be returned. Do initialization here. */
-
-void TDataViewX::QueryInit(void *userData)
-{ 
-  _dataBin->Init(_map, &_queryFilter, GetWindowRep()->TopTransform(),
-		 _dispSymbols, _dispConnectors, _cMap, this);
-}
-
-void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
-			     void *gdata, int numGData,
-			     int &recordsProcessed)
-{
-  VisualFilter filter;
-  GetVisualFilter(filter);
-  ResetGStatInMem();
-
-#if defined(DEBUG)
-  printf("TDataViewX::ReturnGData(%d)\n", numGData);
-#endif
-
-  recordsProcessed = numGData;
-
-  if( _index < 0 ) return;
-
-  mapping->UpdateMaxSymSize(gdata, numGData);
-  int gRecSize = mapping->GDataRecordSize();
-
-  _totalGData += numGData;
-  _numBatches++;
-
-  char *tp = (char *)gdata;
-  GDataAttrOffset *offset = mapping->GetGDataOffset();
-
-  // Can do record elimination only for constant bar shape
-  Boolean canElimRecords = false;
-  if (offset->shapeOffset < 0 && mapping->GetDefaultShape() == 2)
-      canElimRecords = true;
-
-  double width = _allStats.GetHistWidth();
-
-#if defined(DEBUG) || 0
-  printf("Hist width in TDataViewX is %g\n", width);
-#endif
-
-  double yMax = _allStats.GetStatVal(STAT_MAX);
-  double yMin = _allStats.GetStatVal(STAT_MIN);
-  double ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
-
-  if( width == 0 || ratio > 2) {
-        double hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
-        double lo = (yMin > filter.yLow) ? yMin:filter.yLow;
-	_allStats.SetHistWidth(lo, hi);
-#if defined(DEBUG) || 0
-        printf("TDataViewX::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n", 
-                yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
-#endif
-  }
-
-
-
-
-  // Draw data only if window is not iconified
-  if (!Iconified()) {
-    if (_batchRecs) {
-      _dataBin->InsertSymbol(recId, gdata, numGData, recordsProcessed, 0, 1,
-	canElimRecords);
-#ifdef DEBUG
-      _dataBin->PrintStat();
-#endif
-    } else {
-      char *ptr = (char *)gdata;
-      recordsProcessed = 0;
-      Boolean timedOut = false;
-      for(int i = 0; i < numGData && !timedOut; i++) {
-        int tmpRecsProc;
-        _dataBin->InsertSymbol(recId, ptr, 1, tmpRecsProc, 0, 1,
-	  canElimRecords);
-	recordsProcessed += tmpRecsProc;
-	if (tmpRecsProc < 1) timedOut = true;
-        recId++;
-        ptr += gRecSize;
-      }
-    }
-  }
-
-
-
-
-
-  // Collect statistics and update record links only for last mapping;
-  // and only for the records that actually got drawn (unless the view
-  // was iconified).
-  if (!MoreMapping(_index)) {
-
-    int firstRec = 0;
-
-    for(int i = 0; i < recordsProcessed; i++) {
-      // Extract X, Y, shape, and color information from gdata record
-      Coord x = ShapeGetX(tp, mapping, offset);
-      Coord y = ShapeGetY(tp, mapping, offset);
-      ShapeID shape = GetShape(tp, mapping, offset);
-      GlobalColor color = mapping->GetDefaultColor();
-      if (offset->colorOffset >= 0)
-	color = *(GlobalColor *)(tp + offset->colorOffset);
-      Boolean complexShape = mapping->IsComplexShape(shape);
-      complexShape |= (GetNumDimensions() == 3);
-
-      // Compute statistics only for records that match the filter''s
-      // X range, regardless of the Y boundary
-      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
-	  if (color < MAXCOLOR) _stats[color].Sample(x, y);
-	  _allStats.Sample(x, y);
-	  _allStats.Histogram(y);
-	  if(_glistX.Size() <= MAX_GSTAT) {
-	      double X =  x;
-	      BasicStats *bsx;
-	      if(_gstatX.Lookup(X, bsx)) {
-		  bsx->Sample(x,y);
-	      } else {
-		  bsx = new BasicStats();
-		  DOASSERT(bsx, "Out of memory");
-		  bsx->Init(0);
-		  _glistX.InsertOrderly(X, 1);
-		  bsx->Sample(x, y);
-		  _gstatX.Insert(X, bsx);
-		  _blist.Insert(bsx);
-	      } 
-	  } else {
-	      _gstatInMem = false;
-	  }
-
-	  if(_glistY.Size() <= MAX_GSTAT) {
-	      double Y = y;
-	      BasicStats *bsy;
-	      if(_gstatY.Lookup(Y, bsy)) {
-		  bsy->Sample(y,x);
-	      } else {
-		  bsy = new BasicStats();
-		  DOASSERT(bsy, "Out of memory");
-		  bsy->Init(0);
-		  _glistY.InsertOrderly(Y, 1);
-		  bsy->Sample(y,x);
-		  _gstatY.Insert(Y, bsy);
-		  _blist.Insert(bsy);
-	      } 
-	  } else {
-	      /* mark gstatBuf faulse cleanup the gstat list, the group 
-	         by query will be submitted to DTE when requested  */
-	      _gstatInMem = false;  
-	  }
-      }
-
-      // Contiguous ranges which match the filter''s X *and* Y range
-      // are stored in the record link
-#ifdef DEBUG
-      printf("%s , %f < %f < %f , %f < %f < %f \n", 
-	     GetName(),
-	     _queryFilter.xLow , x, _queryFilter.xHigh,
-	     _queryFilter.yLow , y, _queryFilter.yHigh);
-#endif      
-      if (!complexShape && !InVisualFilter(_queryFilter, x, y, 0.0, 0.0)) {
-	if (i > firstRec)
-	  WriteMasterLink(recId + firstRec, i - firstRec);
-
-	// Next contiguous batch of record id''s starts at i+1
-	firstRec = i + 1;
-      }
-      
-      tp += gRecSize;
-    }
-
-    if (recordsProcessed > firstRec)
-      WriteMasterLink(recId + firstRec, recordsProcessed - firstRec);
-  }
-}
-
-/* Done with query */
-
-void TDataViewX::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
-{
-#ifdef DEBUG
-  printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
-#endif
-
-  ViewGraph::QueryDone(bytes, userData, map);
-
-  // I think recordsProcessed is pretty meaningless at this point.
-  // RKW Aug. 15, 1997.
-  int recordsProcessed;
-  _dataBin->Final(recordsProcessed);
-}
-
-void TDataViewX::ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,
-				    int &recordsProcessed)
-{
-#if defined(DEBUG)
-  printf("TDataViewX::ReturnGDataBinRecs() %d recs buf start 0x%p\n",
-    numRecs, recs);
-#endif
-
-  WindowRep *win = GetWindowRep();
-
-  if (IsInPileMode()) {
-    ViewWin *vw = GetFirstSibling();
-    win = vw->GetWindowRep();
-#ifdef DEBUG
-    printf("Drawing view %s in view %s, window 0x%p\n",
-           GetName(), vw->GetName(), win);
-#endif
-  }
-      
-  map->DrawGDataArray(this, win, recs, numRecs, recordsProcessed);
-#if defined(DEBUG)
-  printf("  %d of %d records processed\n", recordsProcessed, numRecs);
-#endif
-}
-
-void TDataViewX::ReturnGDataBinConnectors(TDataCMap *cmap,
-					  Connector **connectors, int num)
-{
-#if defined(DEBUG)
-  printf("TDataViewX drawing %d connectors\n", num);
-#endif
-
-  for(int i = 0; i < num; i++)
-    ConnectorShapeRegistrar::DrawConnection(GetWindowRep(), connectors[i]);
-}
-
 void TDataViewX::PrintStat()
 {
   if (Init::PrintViewStat()) {
@@ -599,3 +392,273 @@ void TDataViewX::PrintStat()
     _dataBin->PrintStat();
   }
 }
+
+//******************************************************************************
+// Callback Methods (GDataBinCallback)
+//******************************************************************************
+
+void	TDataViewX::ReturnGDataBinRecs(TDataMap* map, void** recs, int numRecs,
+									   int& recordsProcessed)
+{
+#if defined(DEBUG)
+	printf("TDataViewX_GDataBinCallback::ReturnGDataBinRecs() %d recs buf start 0x%p\n", numRecs, recs);
+#endif
+
+	WindowRep*	win = GetWindowRep();
+
+	if (IsInPileMode())
+	{
+		ViewWin*	vw = GetFirstSibling();
+
+		win = vw->GetWindowRep();
+
+#ifdef DEBUG
+		printf("Drawing view %s in view %s, window 0x%p\n",
+			   GetName(), vw->GetName(), win);
+#endif
+	}
+
+	map->DrawGDataArray(this, win, recs, numRecs, recordsProcessed);
+
+#if defined(DEBUG)
+	printf("  %d of %d records processed\n", recordsProcessed, numRecs);
+#endif
+}
+
+void	TDataViewX::ReturnGDataBinConnectors(TDataCMap* cmap,
+											 Connector** connectors, int num)
+{
+#if defined(DEBUG)
+	printf("TDataViewX_GDataBinCallback drawing %d connectors\n", num);
+#endif
+
+	for(int i=0; i<num; i++)
+		ConnectorShapeRegistrar::DrawConnection(GetWindowRep(), connectors[i]);
+}
+
+//******************************************************************************
+// Callback Methods (QueryCallback)
+//******************************************************************************
+
+// Query data ready to be returned. Do initialization here.
+void	TDataViewX::QueryInit(void* userData)
+{ 
+	_dataBin->Init(_map, &_queryFilter, GetWindowRep()->TopTransform(),
+				   _dispSymbols, _dispConnectors, _cMap, gDataBinCallback);
+}
+
+void	TDataViewX::QueryDone(int bytes, void* userData, TDataMap* map = NULL)
+{
+#ifdef DEBUG
+	printf("TDataViewX::Query done, index = %d, bytes = %d\n", _index, bytes);
+#endif
+
+	ViewGraph::QueryDone(bytes, userData, map);
+
+	// I think recordsProcessed is pretty meaningless at this point.
+	// RKW Aug. 15, 1997.
+	int		recordsProcessed;
+
+	_dataBin->Final(recordsProcessed);
+}
+
+void	TDataViewX::ReturnGData(TDataMap* mapping, RecId recId,
+								void* gdata, int numGData,
+								int& recordsProcessed)
+{
+	VisualFilter	filter;
+
+	GetVisualFilter(filter);
+	ResetGStatInMem();
+
+#if defined(DEBUG)
+	printf("TDataViewX::ReturnGData(%d)\n", numGData);
+#endif
+
+	recordsProcessed = numGData;
+
+	if( _index < 0 )
+		return;
+
+	mapping->UpdateMaxSymSize(gdata, numGData);
+
+	int		gRecSize = mapping->GDataRecordSize();
+	char*	tp = (char*)gdata;
+
+	_totalGData += numGData;
+	_numBatches++;
+
+	GDataAttrOffset*	offset = mapping->GetGDataOffset();
+
+	// Can do record elimination only for constant bar shape
+	Boolean		canElimRecords = false;
+
+	if ((offset->shapeOffset < 0) && (mapping->GetDefaultShape() == 2))
+		canElimRecords = true;
+
+	double	width = _allStats.GetHistWidth();
+
+#if defined(DEBUG) || 0
+	printf("Hist width in TDataViewX is %g\n", width);
+#endif
+
+	double	yMax = _allStats.GetStatVal(STAT_MAX);
+	double	yMin = _allStats.GetStatVal(STAT_MIN);
+	double	ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
+
+	if((width == 0) || (ratio > 2))
+	{
+        double	hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
+        double	lo = (yMin > filter.yLow) ? yMin:filter.yLow;
+
+		_allStats.SetHistWidth(lo, hi);
+#if defined(DEBUG) || 0
+		printf("TDataViewX::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n", 
+			   yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
+#endif
+	}
+
+	// Draw data only if window is not iconified
+	if (!Iconified())
+	{
+		if (_batchRecs)
+		{
+			_dataBin->InsertSymbol(recId, gdata, numGData, recordsProcessed, 0,
+								   1, canElimRecords);
+
+#ifdef DEBUG
+			_dataBin->PrintStat();
+#endif
+		}
+		else
+		{
+			char*		ptr = (char*)gdata;
+			Boolean		timedOut = false;
+
+			recordsProcessed = 0;
+
+			for(int i=0; i<numGData && !timedOut; i++)
+			{
+				int		tmpRecsProc;
+
+				_dataBin->InsertSymbol(recId, ptr, 1, tmpRecsProc, 0, 1,
+									   canElimRecords);
+
+				recordsProcessed += tmpRecsProc;
+
+				if (tmpRecsProc < 1)
+					timedOut = true;
+
+				recId++;
+				ptr += gRecSize;
+			}
+		}
+	}
+
+	// Collect statistics and update record links only for last mapping;
+	// and only for the records that actually got drawn (unless the view
+	// was iconified).
+	if (!MoreMapping(_index))
+	{
+		int		firstRec = 0;
+
+		for(int i=0; i<recordsProcessed; i++)
+		{
+			// Extract X, Y, shape, and color information from gdata record
+			Coord		x = ShapeGetX(tp, mapping, offset);
+			Coord		y = ShapeGetY(tp, mapping, offset);
+			ShapeID		shape = GetShape(tp, mapping, offset);
+			PColorID	pcid = mapping->GetPColorID(tp);
+			Boolean		complexShape = mapping->IsComplexShape(shape);
+
+			complexShape |= (GetNumDimensions() == 3);
+
+			// Compute statistics only for records that match the filter''s
+			// X range, regardless of the Y boundary
+			if ((x >= _queryFilter.xLow) && (x <= _queryFilter.xHigh))
+			{
+				// Palette size variability warning...
+				if ((pcid != nullPColorID) && (pcid < gMaxNumColors))
+					_stats[pcid].Sample(x, y);
+
+				_allStats.Sample(x, y);
+				_allStats.Histogram(y);
+
+				if(_glistX.Size() <= MAX_GSTAT)
+				{
+					double			X =  x;
+					BasicStats*		bsx;
+
+					if(_gstatX.Lookup(X, bsx))
+					{
+						bsx->Sample(x,y);
+					}
+					else
+					{
+						bsx = new BasicStats();
+						DOASSERT(bsx, "Out of memory");
+						bsx->Init(0);
+						_glistX.InsertOrderly(X, 1);
+						bsx->Sample(x, y);
+						_gstatX.Insert(X, bsx);
+						_blist.Insert(bsx);
+					} 
+				}
+				else
+				{
+					_gstatInMem = false;
+				}
+
+				if(_glistY.Size() <= MAX_GSTAT)
+				{
+					double			Y = y;
+					BasicStats*		bsy;
+
+					if(_gstatY.Lookup(Y, bsy))
+					{
+						bsy->Sample(y,x);
+					}
+					else
+					{
+						bsy = new BasicStats();
+						DOASSERT(bsy, "Out of memory");
+						bsy->Init(0);
+						_glistY.InsertOrderly(Y, 1);
+						bsy->Sample(y,x);
+						_gstatY.Insert(Y, bsy);
+						_blist.Insert(bsy);
+					} 
+				}
+				else
+				{
+					// mark gstatBuf faulse cleanup the gstat list, the group 
+					// by query will be submitted to DTE when requested
+					_gstatInMem = false;  
+				}
+			}
+
+			// Contiguous ranges which match the filter''s X *and* Y range
+			// are stored in the record link
+#ifdef DEBUG
+			printf("%s , %f < %f < %f , %f < %f < %f \n", GetName(),
+				   _queryFilter.xLow , x, _queryFilter.xHigh,
+				   _queryFilter.yLow , y, _queryFilter.yHigh);
+#endif      
+			if (!complexShape && !InVisualFilter(_queryFilter, x, y, 0.0, 0.0))
+			{
+				if (i > firstRec)
+					WriteMasterLink(recId + firstRec, i - firstRec);
+
+				// Next contiguous batch of record id''s starts at i+1
+				firstRec = i + 1;
+			}
+
+			tp += gRecSize;
+		}
+
+		if (recordsProcessed > firstRec)
+			WriteMasterLink(recId + firstRec, recordsProcessed - firstRec);
+	}
+}
+
+//******************************************************************************

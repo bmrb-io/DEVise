@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/23 21:23:26  donjerko
+  Added ODBC stuff.
+
   Revision 1.16  1997/11/13 22:19:22  okan
   Changes about compilation on NT
 
@@ -109,7 +112,7 @@ Site* DeleteParse::createSite(){
 	List<Site*> sites;
 	sites.append(site);
 	TypeID type = predicate->getTypeID();
-	if(type != "bool"){
+	if(!(type == "bool")){
 		string msg = "Predicate has type " +  type + " (bool expected)";
 		THROW(new Exception(msg), NULL);
 		// throw Exception(msg);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/11/18 23:26:49  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.11  1997/08/27 14:47:38  wenger
   Removed some unnecessary include dependencies.
 
@@ -44,6 +48,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.6.6.1  1997/05/21 20:40:25  weaver
+  Changes for new ColorManager
 
   Revision 1.6  1997/03/28 16:09:43  wenger
   Added headers to all source files that didn't have them; updated
@@ -107,7 +114,6 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     GDataAttrOffset *offset;
     Coord x, y, tx, ty, size;
     Coord x0, y0, x1, y1, width, height;
-    GlobalColor color;
     int argc;
     char argv[MAX_GDATA_ATTRS][ETK_MAX_STR_LENGTH + 1];
     Coord attrValue;
@@ -146,16 +152,8 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	x = ShapeGetX(gdata, map, offset);
 	y = ShapeGetY(gdata, map, offset);
 
-	color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	{
-	    win->SetXorMode();
-	}
-	else
-	{
-	    win->SetFgColor(color);
-	}
-	
+	win->SetForeground(GetPColorID(gdata, map, offset));
+
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->Transform(x, y, tx, ty);
 	win->PushTop();
@@ -163,14 +161,15 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	win->Line(tx - 3, ty, tx + 3, ty, 1);
 	win->Line(tx, ty - 3, tx, ty + 3, 1);
 	win->PopTransform();
-	if (color == XorColor)
-	{
-	    win->SetCopyMode();
-	}
+
+//	if (color == XorColor)
+//	{
+//	    win->SetCopyMode();
+//	}
 	
 	// Size is expressed in data units, so convert to width and
 	// height in pixels.
-        size = GetSize(gdata, map, offset);
+	size = GetSize(gdata, map, offset);
 	win->Transform(0.0, 0.0, x0, y0);
 	win->Transform(size, size, x1, y1);
 	width = fabs(x1 - x0);
@@ -195,7 +194,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	if ((script = GetShapeAttrString(0, map,
 					 gdata, freeScript)) == NULL)
 	{
-	    reportError("No Tcl script specified", devNoSyserr);
+		reportError("No Tcl script specified", devNoSyserr);
 	    continue;
 	}
 	
@@ -382,3 +381,4 @@ GetShapeAttrString(int i,
     
 }
 
+//******************************************************************************

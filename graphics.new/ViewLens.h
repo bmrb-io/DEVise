@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/28 18:21:17  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.5  1997/08/20 22:11:15  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -27,6 +31,9 @@
   Revision 1.4.8.1  1997/08/07 16:56:46  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
+
+  Revision 1.4.6.1  1997/05/21 20:40:53  weaver
+  Changes for new ColorManager
 
   Revision 1.4  1997/03/20 22:26:30  guangshu
   Changed function QueryDone.
@@ -43,15 +50,25 @@
 
  */
 
-#ifndef ViewLens_h
-#define ViewLens_h
+//******************************************************************************
+//
+//******************************************************************************
+
+#ifndef __VIEWLENS_H
+#define __VIEWLENS_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 #include "ViewGraph.h"
 #include "WindowRep.h"
 #include "DList.h"
 #include "ViewCallback.h"
+
 #include "Color.h"
 
+//******************************************************************************
 
 // pile can be in x, y or z dimensions
 enum ViewLensDim { _X_ , _Y_,  _Z_ } ;
@@ -68,36 +85,47 @@ DefinePtrDList(ViewInfoList, ViewInfo *)
 static const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
 static char _pixmapbuf[MAX_PIXMAP_BUF_SIZE];
 
-class ViewLens 
-: public ViewGraph,
-  public ViewCallback  // for informing that all child views are done
-{
-  public :
-    
-    /* create a View Lens with a given list of views */
-    ViewLens(char *name, VisualFilter &initFilter, 
-             QueryProc *qp,
-	     GlobalColor foreground = ForegroundColor, 
-	     GlobalColor background = BackgroundColor,
-	     AxisLabel *xAxis = NULL, 
-	     AxisLabel *yAxis = NULL, 
-	     Action *action = NULL,
-	     ViewLensMode mode = transparent,
-	     ViewLensDim = _Z_);
-  
-  /* destroy the viewlens */
-  ~ViewLens();
+//******************************************************************************
+// class ViewLens
+//******************************************************************************
 
-  /* Get mode */
-  char *GetMode();
-  /* Set mode */
-  void SetMode(char *modestr);
-  void SetBgColor(GlobalColor color)
-  {
-    GetWindowRep()->SetBgColor(color);
-  }
-  void SetLink(VisualLink *link) { _lensLink = link; }
-  VisualLink *GetLink() { return _lensLink; } 
+class ViewLens : public ViewGraph
+{
+		friend class ViewLens_ViewCallback;
+
+	private:
+
+		ViewInfoList*	_lensList;
+		Boolean			_viewLensUpdate;
+		VisualLink*		_lensLink;		// Visual link to all views in the lens
+		ViewLensMode	_mode;
+		ViewLensDim		_dimension;
+		ViewGraph*		_curView;
+		void*			_recs[WINDOWREP_BATCH_SIZE];	// Max # pointers
+
+		// Callback Adapters
+		ViewLens_ViewCallback*	viewCallback;
+		
+	public:
+
+		// Constructors and Destructors
+		ViewLens(char* name, VisualFilter& initFilter, QueryProc* qp,
+				 PColorID fgid = GetPColorID(defForeColor),
+				 PColorID bgid = GetPColorID(defBackColor),
+				 AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+				 Action* action = NULL,
+				 ViewLensMode mode = transparent, ViewLensDim = _Z_);
+		virtual ~ViewLens(void);
+
+		// Getters and Setters
+		virtual void	SetBackground(PColorID bgid);
+
+		char*			GetMode(void);
+		void			SetMode(char* modestr);
+
+		VisualLink*		GetLink(void)				{ return _lensLink; } 
+		void			SetLink(VisualLink* link)	{ _lensLink = link; }
+
   /* iterate through all views */
   /* if lenslist is NULL, the functions do stuff so that the caller gets
    * sane return values and can proceed without realising the problem. 
@@ -127,7 +155,7 @@ class ViewLens
      if ((index < 0)|| !_lensList ) 
         return NULL;
      else 
-        return _lensList->Next(index)->view; 
+        return _lensList->Next(index)->view;     
   }
   void DoneViewLensIterator(int index) { 
      if ((index < 0)|| !_lensList ) 
@@ -155,38 +183,75 @@ protected:
   virtual void DerivedStartQuery(VisualFilter &filter, int timestamp) ;
   virtual void DerivedAbortQuery();
   
-  virtual void Run();
-  virtual void FilterChanged(View *view, VisualFilter &filter, 
-				       int flushed); 
-  virtual void FilterAboutToChange(View *view);
-  virtual void ViewDestroyed(View *view);
-  virtual void ViewCreated(View *view);
-  virtual void ViewRecomputed(View *view);
-
-  /* from querycallback */ 
-  virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData,
-			   int &recordsProcessed);
-  virtual void *GetObj() { return this; }
   
-  /* Done with query */
-  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
-  virtual RecordLinkList *GetRecordLinkList() { 
-      if ( _curView ) {
-        return _curView->SlaveLinkList();
-      } else {
-        return NULL;
-      }
-  }
-private:
-  ViewInfoList *_lensList;
-  Boolean _viewLensUpdate;
-  VisualLink *_lensLink;  /* the visual link to all views in the lens */
-  ViewLensMode _mode;
-  ViewLensDim _dimension;
-  ViewGraph    *_curView;
-  void         *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
+
+
+	protected:
+
+		// Callback methods (DispatcherCallback)
+		virtual void	Run(void);
+
+		// Callback methods (QueryCallback)
+		virtual void	QueryDone(int bytes, void* userData,
+								  TDataMap* map = NULL);
+		virtual void*	GetObj(void) { return this; }
+		virtual RecordLinkList*		GetRecordLinkList(void);
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed);
+
+		// Callback methods (ViewCallback)
+		virtual void	ViewCreated(View* view) {}
+		virtual void	ViewDestroyed(View* view);
+		virtual void	ViewRecomputed(View* view);
+		virtual void	FilterAboutToChange(View *view);
+		virtual void	FilterChanged(View* view, VisualFilter& filter,
+									  int flushed);
 };
+
+//******************************************************************************
+// class ViewLens_ViewCallback
+//******************************************************************************
+
+class ViewLens_ViewCallback : public ViewCallback
+{
+	private:
+
+		ViewLens*	_parent;
+		
+	public:
+
+		ViewLens_ViewCallback(ViewLens* parent)
+			: _parent(parent) {}
+
+		virtual void	ViewCreated(View* view)
+		{
+			_parent->ViewCreated(view);
+		}
+
+		virtual void	ViewDestroyed(View* view)
+		{
+			_parent->ViewDestroyed(view);
+		}
+
+		virtual void	ViewRecomputed(View* view)
+		{
+			_parent->ViewRecomputed(view);
+		}
+
+		virtual void	FilterAboutToChange(View *view)
+		{
+			_parent->FilterAboutToChange(view);
+		}
+
+		virtual void	FilterChanged(View* view, VisualFilter& filter,
+									  int flushed)
+		{
+			_parent->FilterChanged(view, filter, flushed);
+		}
+};
+
+//******************************************************************************
 #endif
 
 

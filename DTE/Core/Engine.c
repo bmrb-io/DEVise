@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/11/12 23:17:22  donjerko
+  Improved error checking.
+
   Revision 1.20  1997/11/08 21:02:25  arvind
   Completed embedded moving aggregates: mov aggs with grouping.
 
@@ -129,7 +132,7 @@ ViewEngine::ViewEngine(string query, const string* attrs, int numInpFlds) :
 	attributeNames = new string[numFlds];
 	attributeNames[0] = RID_STRING;
 	for(int i = 1; i < numFlds; i++){
-		assert(attrs[i - 1] != "recId");
+		assert(!(attrs[i - 1] == "recId"));
 		attributeNames[i] = attrs[i - 1];
 	}
 }

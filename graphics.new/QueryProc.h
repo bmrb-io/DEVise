@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/08/20 22:11:04  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.12.2.1  1997/08/07 16:56:39  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
@@ -80,27 +84,31 @@ class RecordLink;
 class RecordLinkList;
 
 /* Used to return query results */
-class QueryCallback {
- public:
-  /* Query data ready to be returned. Do initialization here. */
-  virtual void QueryInit(void *userData) = 0;
-  
-  /* Return a batch of records */
-  virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData,
-			   int &recordsProcessed) = 0;
-  
-  /* Done with query. bytes == # of TData bytes used in
-     processing this query. */
-  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL) = 0;
+class QueryCallback
+{
+	public:
 
-  /* Return list of record links whose slave the view is */
-  virtual RecordLinkList *GetRecordLinkList() { return 0; }
+		// Query data ready to be returned. Do initialization here.
+		virtual void	QueryInit(void* userData) = 0;
 
-  virtual void PrintLinkInfo() {}
-  
-  virtual void *GetObj() = 0;  /* gets the obj which this querycallback is */
-  virtual RecordLinkList *GetMasterLinkList() { return 0; }
+		// Query done. bytes == # of TData bytes used processing it.
+		virtual void	QueryDone(int bytes, void* userData,
+								  TDataMap* map = NULL) = 0;
+
+		// Return this QueryCallback
+		virtual void*	GetObj(void) = 0;
+
+		virtual RecordLinkList*		GetMasterLinkList() { return 0; }
+
+		// Return list of record links whose slave is the view
+		virtual RecordLinkList*		GetRecordLinkList() { return 0; }
+
+		// Return a batch of records
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed) = 0;
+
+		virtual void	PrintLinkInfo(void) {}
 };
 
 class QueryProc {

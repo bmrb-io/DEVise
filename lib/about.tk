@@ -1,0 +1,113 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+##******************************************************************************
+## Libraries
+##******************************************************************************
+
+source $libdir/color.tk
+source $libdir/util.tcl
+
+##******************************************************************************
+## Globals
+##******************************************************************************
+
+set browser "netscape"
+set httpurl "http://www.cs.wisc.edu/~devise/"
+set mailtourl "devise-sup@cs.wisc.edu"
+
+##******************************************************************************
+## Methods
+##******************************************************************************
+
+proc AboutDevise {} {
+	global browser colors httpurl mailtourl
+
+    if {[WindowVisible .about]} {
+		return
+    }
+
+    set version [DEVise version]
+    set compDate [DEVise compDate]
+    set copyright [DEVise copyright]
+
+	set fg $colors(aboutFrameForeground)
+	set bg $colors(aboutFrameBackground)
+	set headFont -*-times-medium-i-normal--*-300-*-*-*-*-*-*
+	set bodyFont -*-times-medium-i-normal--*-180-*-*-*-*-*-*
+	set copyFont -*-times-medium-r-normal--*-120-*-*-*-*-*-*
+
+    toplevel .about -background $bg
+    wm title .about "About DEVise"
+
+    message .about.bigname -justify center -width 10c \
+			-fg $fg -bg $bg -font $headFont \
+			-text "DEVise"
+
+    message .about.name -justify center -width 10c \
+			-fg $fg -bg $bg -font $bodyFont \
+			-text "(Data Exploration and Visualization)"
+
+    message .about.version -justify center -width 10c \
+			-fg $fg -bg $bg -font $copyFont \
+			-text "Version $version: $compDate"
+
+    message .about.copyright -justify center -width 10c \
+			-fg $fg -bg $bg -font $copyFont \
+			-text "$copyright DEVise Development Group\nMadison, Wisconsin\nAll Rights Reserved"
+
+    message .about.mailto -justify center -width 10c \
+			-fg $fg -bg $bg -font $bodyFont \
+			-text "Send questions and bug reports to:"
+
+    button .about.mailtourl -justify center -relief flat \
+			-cursor hand2 -highlightthickness 0 -height 1\
+			-foreground $fg -background $bg \
+			-activeforeground $colors(aboutFrameHighlight) \
+			-activebackground $bg \
+			-text $mailtourl \
+			-command "catch {exec $browser mailto:$mailtourl &} result;"
+
+    message .about.http -justify center -width 10c \
+			-fg $fg -bg $bg -font $bodyFont \
+			-text "Web Site:"
+
+    button .about.httpurl -justify center -relief flat \
+			-cursor hand2 -highlightthickness 0 \
+			-foreground $fg -background $bg \
+			-activeforeground $colors(aboutFrameHighlight) \
+			-activebackground $bg \
+			-text $httpurl \
+			-command "catch {exec $browser $httpurl &} result;"
+
+    button .about.ok -width 6 \
+			-text OK \
+			-command "destroy .about"
+
+    pack .about.bigname   -side top -pady 0m
+    pack .about.name      -side top -pady 0m
+    pack .about.version   -side top -padx 5m -pady 3m
+    pack .about.copyright -side top -padx 5m -pady 3m
+    pack .about.mailto    -side top -padx 5m -pady 0m
+    pack .about.mailtourl -side top -padx 5m -pady 0m
+    pack .about.http      -side top -padx 5m -pady 0m
+    pack .about.httpurl   -side top -padx 5m -pady 0m
+    pack .about.ok        -side top -padx 5m -pady 3m
+}
+
+##******************************************************************************

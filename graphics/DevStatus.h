@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.1.10.1  1997/05/21 20:39:36  weaver
+  Changes for new ColorManager
+
+  Revision 1.1  1996/08/23 16:55:31  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
  */
 
 #ifndef _DevStatus_h_
@@ -58,25 +66,25 @@ public:
   void operator+=(const DevStatus &status2) {_status =
     StatusCombine(_status, status2._status);}
 
-  Boolean operator==(const StatusVal &status2) {return _status == status2;}
-  Boolean operator==(const DevStatus &status2) {return _status ==
+  Boolean operator==(const StatusVal &status2) const {return _status == status2;}
+  Boolean operator==(const DevStatus &status2) const {return _status ==
     status2._status;}
 
-  Boolean operator!=(const StatusVal &status2) {return _status != status2;}
-  Boolean operator!=(const DevStatus &status2) {return _status !=
+  Boolean operator!=(const StatusVal &status2) const {return _status != status2;}
+  Boolean operator!=(const DevStatus &status2) const {return _status !=
     status2._status;}
 
   // Did the function complete successfully?
-  Boolean IsComplete() {return StatIsComplete(_status);}
+  Boolean IsComplete() const {return StatIsComplete(_status);}
 
   // Was there an error?
-  Boolean IsError() {return StatIsError(_status);}
+  Boolean IsError() const {return StatIsError(_status);}
 
   // Was there a warning?
-  Boolean IsWarn() {return StatIsWarn(_status);}
+  Boolean IsWarn() const {return StatIsWarn(_status);}
 
   // Was the function cancelled (for example, by the user)?
-  Boolean IsCancel() {return StatIsCancel(_status);}
+  Boolean IsCancel() const {return StatIsCancel(_status);}
 
   // Return string equivalent of _status.
   char *Value();
@@ -87,17 +95,17 @@ private:
   StatusVal _status;
 
 
-  Boolean StatIsComplete(StatusVal status) { return (status == StatusOk) ||
+  Boolean StatIsComplete(StatusVal status) const { return (status == StatusOk) ||
     (status == StatusWarn); }
 
-  Boolean StatIsError(StatusVal status) { return (status == StatusFailed) ||
+  Boolean StatIsError(StatusVal status) const { return (status == StatusFailed) ||
     (status == StatusWarn) || (status == StatusWarnCancel); }
 
-  Boolean StatIsWarn(StatusVal status) { return (status == StatusWarn) ||
+  Boolean StatIsWarn(StatusVal status) const { return (status == StatusWarn) ||
     (status == StatusWarnCancel); }
 
   // Was the function cancelled (for example, by the user)?
-  Boolean StatIsCancel(StatusVal status) { return (status == StatusCancel) ||
+  Boolean StatIsCancel(StatusVal status) const { return (status == StatusCancel) ||
     (status == StatusWarnCancel); }
 
   StatusVal StatusCombine(StatusVal status1, StatusVal status2);

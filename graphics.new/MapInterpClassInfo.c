@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/10/28 15:46:28  wenger
+  Fixed bug 236.
+
   Revision 1.15  1997/10/03 14:37:11  wenger
   Various fixes to get session opening/saving to work with client/server
   version; reading old-style (Tcl) session files now works in back end;
@@ -240,6 +243,7 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     cmd->colorCmd = CopyString(argv[5 + shift]);
     cmdFlag |= MappingCmd_Color;
   }
+
   if (NotEmpty(argv[6 + shift])) {
     cmd->sizeCmd = CopyString(argv[6 + shift]);
     cmdFlag |= MappingCmd_Size;

@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.12.10.1  1997/05/21 20:39:38  weaver
+  Changes for new ColorManager
+
+  Revision 1.12  1996/11/13 16:56:06  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.11  1996/11/07 22:40:09  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -63,6 +76,7 @@
 #include <math.h>
 
 #include "DeviseTypes.h"
+
 #include "Color.h"
 
 // ---------------------------------------------------------- 
@@ -78,13 +92,13 @@ class Segment {             // line segment in 2D space
 public:
   Point pt[2];              // two ends of the segment
   Coord width;              // width of line segment
-  GlobalColor color;        // color of segment
+  PColorID color;        	// color of segment
 };
 
 class Plane {               // triangular plane in 2D space
 public:
   Point pt[3];              // three corners of the triangle
-  GlobalColor color;        // color of triangle
+  PColorID color;        	// color of triangle
   Coord dist;               // distance from camera (for sorting)
 };
 
@@ -92,7 +106,7 @@ class Rectangle {           // rectangle in 2D space
 public:
   Coord x, y;               // upper left corner unless otherwise noted
   Coord width, height;
-  GlobalColor color;	    // color of rectangle
+  PColorID color;	    	// color of rectangle
 };
 
 // ---------------------------------------------------------- 
@@ -104,9 +118,9 @@ public:
   Coord x_, y_, z_;         // coordinates of point
 };
 
-// ---------------------------------------------------------- 
-// useful geometric computations
-// ---------------------------------------------------------- 
+//******************************************************************************
+// class Geom
+//******************************************************************************
 
 class Geom {
 public:
@@ -181,4 +195,5 @@ public:
 			      Coord maxX2, Coord maxY2);
 };
 
+//******************************************************************************
 #endif

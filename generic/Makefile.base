@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1997/11/05 00:21:18  donjerko
+#  Added RTree library.
+#
 #  Revision 1.35  1997/08/12 18:46:42  wenger
 #  Fixes to get DEVise to compile on Linux; changed -gstabs to -g in
 #  makefiles; various other makefile cleanups.
@@ -41,6 +44,9 @@
 #
 #  Revision 1.29  1997/05/02 15:39:42  wenger
 #  Greatly reduced the dependencies of the testWindowSpeed program.
+#
+#  Revision 1.28.2.1  1997/05/21 20:39:25  weaver
+#  Changes for new ColorManager
 #
 #  Revision 1.28  1997/04/09 18:24:22  wenger
 #  Fixed various makefiles (removed extra -gstabs flags, etc.);
@@ -81,8 +87,8 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
-	-DNEW_LAYOUT
+	-I../../src/color -I../../src/utils -I../../tape \
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
 # ksb: I created an unfortunate dependency from graphics to graphics.new
 # which caused -lgraphicsnew to be listed twice below...
@@ -90,13 +96,14 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 
 LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -L../LM -L../xvertext \
-	-lgraphicsnew -lgraphics \
+	-L../../src/color -L../../src/utils \
+	-lgraphicsnew -lgraphics -lutils -lcolor \
 	-ldte -lrtree -lgraphicsnew \
 	-llm -lXrot \
 	-lissm -lcrsp -lcstat -ltape \
 	-L$(PERL_CORE) -L../unidata -lunidata -lperl $(ARCH_SYSLIBS)
 
-TEST_LDFLAGS = -L../graphics -lgraphics -lX11
+TEST_LDFLAGS = -L../graphics -lgraphics -lutils -lcolor -lX11
 
 # Set up for profiling.
 ifneq ($(DEV_PROFILE),)
@@ -111,7 +118,8 @@ SRCC = $(filter %.C,$(SRC))
 OBJ = $(SRCc:.c=.o)
 OBJ += $(SRCC:.C=.o)
 
-ALLLIBS = ../graphics/libgraphics.a \
+ALLLIBS = ../src/utils/libutils.a ../src/color/libcolor.a \
+	../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a ../unidata/libunidata.a \
 	../DTE/libdte.a \
 	../RTree/librtree.a \

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/11/23 21:23:30  donjerko
+  Added ODBC stuff.
+
   Revision 1.44  1997/11/13 22:19:23  okan
   Changes about compilation on NT
 
@@ -76,6 +79,9 @@
   Revision 1.25  1997/06/21 22:48:00  donjerko
   Separated type-checking and execution into different classes.
 
+  Revision 1.24.2.1  1997/05/21 20:34:24  weaver
+  Changes needed by new ColorManager
+
   Revision 1.24  1997/05/07 18:55:49  donjerko
   Fixed the problem when constants are selected.
 
@@ -99,9 +105,10 @@
 
 // #define DEBUG
 
-#ifdef __GNUG__
-#pragma implementation "queue.h"
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "queue.h"
+//#endif
 
 #define MAX_AGG 12
 #include "queue.h"
@@ -134,6 +141,7 @@ List<ConstantSelection*>* dummy;	// Just needed for pragma implementation
 List<char*>* dummy2;	// Just needed for pragma implementation
 
 extern List<JoinTable*>*joinList;
+
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
 

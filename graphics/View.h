@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/09/05 22:36:06  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.53  1997/08/20 22:10:41  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -32,6 +36,9 @@
 
   Revision 1.50.4.1  1997/05/20 16:10:52  ssl
   Added layout manager to DEVise
+
+  Revision 1.50.6.1  1997/05/21 20:40:03  weaver
+  Changes for new ColorManager
 
   Revision 1.50  1997/02/03 19:40:01  ssl
   1) Added a new Layout interface which handles user defined layouts
@@ -230,9 +237,16 @@
   Added/update CVS header.
 */
 
-#ifndef View_h
-#define View_h
+//******************************************************************************
+//
+//******************************************************************************
 
+#ifndef __VIEW_H
+#define __VIEW_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 #include "Dispatcher.h"
 #include "DList.h"
@@ -240,11 +254,16 @@
 #include "ViewWin.h"
 #include "Control.h"
 #include "ViewCallback.h"
-#include "Color.h"
 #include "AttrList.h"
 #include "Cursor.h"
 #include "DevFont.h"
 
+#include "Color.h"
+#include "Coloring.h"
+
+//******************************************************************************
+
+//#define VIEWTABLE 
 class DataSourceBuf;
 class DataSourceFixedBuf;
 class View;
@@ -280,7 +299,7 @@ struct AxisInfo {
 			     to draw label, in terms of # of pixels */
   int numTicks;           /* # of ticks to use */
   int significantDigits;  /* # of significant digits */
-  int labelWidth;         /* heigh (for Y axis) or width (X axis)
+  int labelWidth;         /* height (for Y axis) or width (X axis)
 			     of tick labels */
 };
 
@@ -294,37 +313,63 @@ struct LabelInfo {
 
 class FilterQueue;
 
-class View
-: public ViewWin,
-  public DispatcherCallback,
-  private ControlPanelCallback
+//******************************************************************************
+// class View
+//******************************************************************************
+
+class View : public ViewWin
 {
-  public:
+		friend class View_ControlPanelCallback;
+		friend class View_DispatcherCallback;
 
-	enum VIEW_LOCK {
-	    LOWER_LEFT  = 0x0001,
-	    UPPER_LEFT  = 0x0002,
-	    LOWER_RIGHT = 0x0004,
-	    UPPER_RIGHT = 0x0008,
-	    XWIDTH      = 0x0010,
-	    YWIDTH      = 0x0020,
+		// This is here to allow direct access to dispatcherCallback
+		friend class ActionDefault;
 
-	    LEFT_SIDE   = LOWER_LEFT|UPPER_LEFT,
-	    RIGHT_SIDE  = LOWER_RIGHT|UPPER_RIGHT,
-	    TOP_SIDE    = UPPER_LEFT|UPPER_RIGHT,
-	    BOTTOM_SIDE = LOWER_LEFT|LOWER_RIGHT,
-	    ALL_LOCKS   = 0xffff
-	};
+	public:
+
+		enum VIEW_LOCK
+		{
+			LOWER_LEFT	= 0x0001,
+			UPPER_LEFT	= 0x0002,
+			LOWER_RIGHT	= 0x0004,
+			UPPER_RIGHT	= 0x0008,
+			XWIDTH		= 0x0010,
+			YWIDTH		= 0x0020,
+
+			LEFT_SIDE	= LOWER_LEFT  | UPPER_LEFT,
+			RIGHT_SIDE	= LOWER_RIGHT | UPPER_RIGHT,
+			TOP_SIDE	= UPPER_LEFT  | UPPER_RIGHT,
+			BOTTOM_SIDE	= LOWER_LEFT  | LOWER_RIGHT,
+			ALL_LOCKS	= 0xffff
+		};
+
+	private:
+
+		// Callback Adapters
+		View_ControlPanelCallback*		controlPanelCallback;
+		View_DispatcherCallback*		dispatcherCallback;
+
+	public:
+
+		// Constructors and Destructors
+		View(char* name, VisualFilter& initFilter,
+			 PColorID fgid = GetPColorID(defForeColor),
+			 PColorID bgid = GetPColorID(defBackColor),
+			 AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+			 int weight = 1, Boolean boundary = false);
+		virtual ~View(void);
+
+		// Getters and Setters
+		virtual void    SetForeground(PColorID fgid);
+		virtual void    SetBackground(PColorID bgid);
+
+		virtual void    SetColors(PColorID fgid, PColorID bgid);
+
+		// Utility Functions
+		static void		RefreshAll(void);
 
 
-	View(char *name, VisualFilter &initFilter,
-		GlobalColor foreground = ForegroundColor,
-	        GlobalColor background = BackgroundColor,
-		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
-		int weight = 1, Boolean boundary = false);
-	virtual ~View();
-
-	/* Highlight a view of depending on flag.*/
+		/* Highlight a view of depending on flag.*/
 	void Highlight(Boolean flag);
 
 	int GetId() { return _id; }
@@ -428,11 +473,6 @@ class View
 
 	/* This isn't used anywhere. RKW 1/7/97. */
 	//void SetPileViewHold(Boolean mode) { _pileViewHold = mode;}
-	/* Get/set override color */
-	GlobalColor GetOverrideColor(Boolean &active) {
-	  active = _hasOverrideColor;
-	  return _overrideColor;
-	}
 	/* Draw View on XOR Layer */
 	void SetXORFlag(Boolean active) {
 	  if (! active) {
@@ -444,7 +484,6 @@ class View
 	  return _XORflag;
 	}
 
-	void SetOverrideColor(GlobalColor color, Boolean active);
 	void SetGeometry(int x, int y, unsigned wd, unsigned ht); 
 	/******** Pixmap manipulations *********/
 
@@ -489,11 +528,6 @@ class View
 	void SetCamera(Camera new_camera);
 	void SetViewDir(int H, int V);
 	void CompRhoPhiTheta();
-
-	virtual void SetFgBgColor(GlobalColor fg, GlobalColor bg) {
-	  ViewWin::SetFgBgColor(fg, bg);
-	  Refresh();
-	}
 
 	// Print this view (and any child views) to PostScript.
 	virtual DevStatus PrintPS();
@@ -560,20 +594,11 @@ protected:
 protected:
 	void DrawHighlight();
 
-	/* from ControlPanelCallback */
-	void ModeChange(ControlPanel::Mode mode);
-
 	void ReportViewCreated();
 	void ReportFilterAboutToChange();
 	void ReportFilterChanged(VisualFilter &filter, int flushed);
 	void ReportViewRecomputed();
 	void ReportViewDestroyed();
-
-	/* from DispatcherCallback */
-	/* when it's our turn to run: Send a query, if there is one. 
-	Aborting existing if necessary */
-	virtual char *DispatchedName();
-	virtual void Run() ;
 
 	/* Update the visual filter with scrolling. Return
 	the stat as followed:
@@ -598,27 +623,6 @@ protected:
 	/* Find World coord given screen coord */
 	/* void FindWorld(int sx1, int sy1, int sx2, int sy2,
 		Coord &xLow, Coord &yLow, Coord &xHigh, Coord &yHigh); */
-
-	/* from WindowRepCallback */
-	/* draw in the exposed area */
-	virtual void HandleExpose(WindowRep * w, int x, int y,
-				  unsigned width, unsigned height);
-
-	/* Handle button press event */
-	virtual void HandlePress(WindowRep * w, int xlow,
-				 int ylow, int xhigh, int yhigh,
-				 int button) = 0;
-
-	/* handle key event */
-	virtual void HandleKey(WindowRep *w ,int key, int x, int y) = 0;
-
-	virtual void HandleResize(WindowRep * w, int xlow,
-				  int ylow, unsigned width,
-				  unsigned height);
-
-	/* handle pop-up */
-	virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
-				    char **&msgs, int &numMsgs) = 0;
 
 	Boolean  _displaySymbol; /* true if to be displayed */
 	AxisInfo xAxis, yAxis;   /* X and y axis info */
@@ -703,9 +707,6 @@ protected:
 	/* count # of times something happens */
 	int _jump, _zoomIn, _zoomOut, _scrollLeft, _scrollRight, _unknown;
 
-	Boolean _hasOverrideColor;      /* override color defined */
-	GlobalColor _overrideColor;     /* color that overrides color
-					   defined in mapping */
         Boolean _XORflag;    /* draw view on XOR layer */
 	/* 3D data structures */
 	Camera _camera;
@@ -718,6 +719,80 @@ protected:
 	DevFont _titleFont;
 	DevFont _xAxisFont;
 	DevFont _yAxisFont;
+
+
+
+	protected:
+
+		// Callback methods (ControlPanelCallback)
+		void	ModeChange(ControlPanel::Mode mode);
+
+		// Callback methods (DispatcherCallback)
+		virtual char*	DispatchedName(void);
+		virtual void	Run(void);
+		virtual void	Cleanup(void)
+		{ DOASSERT(false, "Call in derived class only"); }
+
+		void	Run2(void);		// Pedagogical version of Run()
+
+		// Callback methods (WindowRepCallback)
+		virtual void	HandleExpose(WindowRep* w, int x, int y,
+									 unsigned width, unsigned height);
+		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
+									 unsigned width, unsigned height);
 };
 
+//******************************************************************************
+// class View_ControlPanelCallback
+//******************************************************************************
+
+class View_ControlPanelCallback : public ControlPanelCallback
+{
+	private:
+
+		View*	_parent;
+		
+	public:
+
+		View_ControlPanelCallback(View* parent)
+			: _parent(parent) {}
+
+		virtual void	ModeChange(ControlPanel::Mode mode)
+		{
+			_parent->ModeChange(mode);
+		}
+};
+
+//******************************************************************************
+// class View_DispatcherCallback
+//******************************************************************************
+
+class View_DispatcherCallback : public DispatcherCallback
+{
+	private:
+
+		View*	_parent;
+		
+	public:
+
+		View_DispatcherCallback(View* parent)
+			: _parent(parent) {}
+
+		virtual char*	DispatchedName(void)
+		{
+			return _parent->DispatchedName();
+		}
+
+		virtual void	Run(void)
+		{
+			_parent->Run();
+		}
+
+		virtual void	Cleanup(void)
+		{
+			_parent->Cleanup();
+		}
+};
+
+//******************************************************************************
 #endif

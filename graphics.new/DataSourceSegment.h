@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7.10.1  1997/05/21 20:40:25  weaver
+  Changes for new ColorManager
+
+  Revision 1.7  1996/12/03 20:36:28  jussi
+  Removed unnecessary AsyncFd() ans AsyncIO().
+
   Revision 1.6  1996/08/06 19:23:03  beyer
   Made functional again after the last changes
 
@@ -61,11 +67,10 @@
 #ifndef _DataSourceSegment_
 #define _DataSourceSegment_
 
-
-#ifdef __GNUG__
-#pragma interface
-#endif
-
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma interface
+//#endif
 
 #include "DeviseTypes.h"
 

@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  1997/05/21 20:39:57  weaver
+  Changes for new ColorManager
+
+  Revision 1.5  1996/11/13 16:56:08  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.4  1996/08/03 15:36:41  jussi
   Added line segment width.
 
@@ -36,6 +49,8 @@
 #include "DeviseTypes.h"
 #include "Geom.h"
 #include "VisualArg.h"
+
+#include "Coloring.h"
 
 // ---------------------------------------------------------- 
 // 3D data structures for blocks
@@ -58,23 +73,28 @@ public:
 #define BLOCK_EDGES  12
 #define BLOCK_SIDES  6
 
-class Object3D {             // 3D object
-public:
-  Point3D  pt;               // location (center) of object
-  Coord    W, H, D;          // size of object
-  Coord    segWidth;         // width of frame segments
-  Vertex3D vt[BLOCK_VERTEX]; // shape's vertices
-  Edge3D   ed[BLOCK_EDGES];  // shape's edges
-  Side3D   sd[BLOCK_SIDES];  // shape's sides
-  GlobalColor color;         // base color of shape
-  Boolean  clipout;          // true = clip, false = keep it
+class WindowRep;
+
+//******************************************************************************
+// class Object3D
+//******************************************************************************
+
+class Object3D : public Coloring
+{             
+	public:
+
+		Point3D		pt;					// location (center) of object
+		Coord		W, H, D;			// size of object
+		Coord		segWidth;			// width of frame segments
+		Vertex3D	vt[BLOCK_VERTEX];	// shape's vertices
+		Edge3D		ed[BLOCK_EDGES];	// shape's edges
+		Side3D		sd[BLOCK_SIDES];	// shape's sides
+		Boolean		clipout;			// true = clip, false = keep it
 };
 
-// ---------------------------------------------------------- 
-// 3D mapping functions
-// ---------------------------------------------------------- 
-
-class WindowRep;
+//******************************************************************************
+// class Map3D
+//******************************************************************************
 
 class Map3D {
 public:
@@ -133,4 +153,5 @@ protected:
 		       Edge3D axis[3], Camera camera);
 };
 
+//******************************************************************************
 #endif

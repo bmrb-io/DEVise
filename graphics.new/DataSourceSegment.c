@@ -20,6 +20,12 @@
    $Id$
 
    $Log$
+   Revision 1.13.10.1  1997/05/21 20:40:24  weaver
+   Changes for new ColorManager
+
+   Revision 1.13  1997/01/24 01:56:58  wenger
+   Fixed bug 068 (major overhaul of DataSourceSegment class).
+
    Revision 1.12  1996/12/03 20:36:27  jussi
    Removed unnecessary AsyncFd() ans AsyncIO().
 
@@ -80,9 +86,10 @@
 
 #define _DataSourceSegment_c_
 
-#ifdef __GNUG__
-#pragma implementation "DataSourceSegment.h"
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "DataSourceSegment.h"
+//#endif
 
 //#define DEBUG
 
@@ -406,3 +413,12 @@ Boolean DataSourceSegment::isTape()
 }
 
 /*============================================================================*/
+
+
+
+
+
+
+
+
+

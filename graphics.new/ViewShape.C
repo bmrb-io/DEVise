@@ -10,6 +10,8 @@
 #include "ClassDir.h"
 #include "Control.h"
 #include "StringStorage.h"
+
+#include "Color.h"
 //#define DEBUG 1
 
 int FullMapping_ViewShape::NumShapeAttrs()
@@ -138,12 +140,11 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     
     ViewWin *viewsym = (ViewWin *)classDir->FindInstance(viewname);
     DOASSERT(viewsym, "View not found");
-    GlobalColor color = viewsym->GetBgColor();
-//    printf("Color = %ld \n", color);
-    if (color == XorColor)
-      win->SetXorMode();
-    else
-      win->SetFgColor(color);
+
+	PColorID	pcid = viewsym->GetBackground();
+//    printf("Color = %ld \n", pcid);
+
+	win->SetForeground(pcid);
     win->SetPattern(GetPattern(gdata, map, offset));
     win->SetLineWidth(GetLineWidth(gdata, map, offset));
     
@@ -182,8 +183,6 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     viewsym->AppendToParent(view);
     viewsym->Map((int)tx, (int)ty, (unsigned int) width, (unsigned int)height);
     ((View *)viewsym)->Refresh();
-    if (color == XorColor)
-      win->SetCopyMode();
   }
   
   recordsProcessed = numSyms;

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6.10.1  1997/05/21 20:40:27  weaver
+  Changes for new ColorManager
+
+  Revision 1.6  1996/07/14 04:08:02  jussi
+  ViewKGraph is now derived from KGraph. Renamed some KGraph
+  member functions so they don't collide with ViewKGraph
+  functions.
+
   Revision 1.5  1996/05/31 20:59:07  jussi
   Added ClearGraph() method and renamed 'rad' to 'diam'.
 
@@ -29,18 +37,48 @@
   Initial version.
 */
 
-#ifndef KGraph_h
-#define KGraph_h
+//******************************************************************************
+//
+//******************************************************************************
+
+#ifndef __KGRAPH_H
+#define __KGRAPH_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 #include "Geom.h"
 #include "WindowRep.h"
 
-class KGraph: protected WindowRepCallback
-{
-public:
-  KGraph();
-  virtual ~KGraph();
+#include "Color.h"
 
+//******************************************************************************
+// class KGraph
+//******************************************************************************
+
+class KGraph : protected WindowRepCallback
+{
+	public:
+
+		// Names for data colors 0-3 in the coloring
+		enum { circleColor, pointColor, textColor, labelColor };
+
+	private:
+
+		Coloring	coloring;
+
+	public:
+
+		// Constructors and Destructors
+		KGraph(Coloring c = GetKGraphDefColoring());
+		virtual ~KGraph(void);
+
+		// Getters and Setters
+		Coloring&				GetColoring(void)		{ return coloring;	}
+		const Coloring&			GetColoring(void) const { return coloring;	}
+
+		
   // Initialize the settings
   void InitGraph(char *winname, char *statname);
 
@@ -73,15 +111,18 @@ protected:
   void Rotate(Coord xval, int degree, Coord &retx, Coord &rety);
   Coord Scale(Coord xval, Coord max);
 
-  // Handle window events
-  virtual void HandlePress(WindowRep *w, int xlow, int ylow, int xhigh,
-			   int yhigh, int button);
-  virtual void HandleResize(WindowRep *w, int xlow, int ylow,
-                            unsigned width, unsigned height);
-  virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button, 
-			      char **&msgs, int &numMsgs);
-
   char **_msgBuf;
+
+	protected:
+
+		// Callback methods (WindowRepCallback)
+		virtual void	HandlePress(WindowRep* w, int xlow, int ylow, int xhigh,
+									int yhigh, int button);
+		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
+									 unsigned width, unsigned height);
+		virtual Boolean	HandlePopUp(WindowRep* w, int x, int y, int button, 
+									char**& msgs, int& numMsgs);
 };
 
+//******************************************************************************
 #endif

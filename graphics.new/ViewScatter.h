@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/08/28 18:21:16  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.16  1997/08/20 22:11:16  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -29,6 +33,9 @@
 
   Revision 1.14.4.1  1997/05/20 16:11:18  ssl
   Added layout manager to DEVise
+
+  Revision 1.14.6.1  1997/05/21 20:40:56  weaver
+  Changes for new ColorManager
 
   Revision 1.14  1997/03/20 22:27:56  guangshu
   Enhanced statistics for user specified number of buckets in histogram,
@@ -95,38 +102,49 @@
   Added CVS header.
 */
 
-#ifndef ViewScatter_h
-#define ViewScatter_h
+//******************************************************************************
+//
+//******************************************************************************
+
+#ifndef __VIEWSCATTER_H
+#define __VIEWSCATTER_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 #include "ViewGraph.h"
+#include "GDataBin.h"
+#include "WindowRep.h"
+
 #include "Color.h"
 
+//******************************************************************************
+// class ViewScatter
+//******************************************************************************
 
-class ViewScatter: public ViewGraph {
-public:
+class ViewScatter : public ViewGraph
+{
+	public:
 
-  ViewScatter(char *name, VisualFilter &initFilter,
-	      QueryProc *qp, GlobalColor fg = ForegroundColor,
-	      GlobalColor bg = BackgroundColor, AxisLabel *xAxis = NULL,
-	      AxisLabel *yAxis = NULL, Action *action = NULL);
+		// Constructors and Destructors
+		ViewScatter(char* name, VisualFilter& initFilter, QueryProc* qp,
+					PColorID fgid = GetPColorID(defForeColor),
+					PColorID bgid = GetPColorID(defBackColor),
+					AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+					Action* action = NULL);
+		virtual ~ViewScatter(void) {}
 
-  ~ViewScatter();
-  
-  virtual void InsertMapping(TDataMap *map);
-  virtual void PrintLinkInfo() { ViewGraph::PrintLinkInfo();}
-  virtual void *GetObj() { return this; }
+	protected:
 
-protected:
-  /* Get record link */
-  virtual RecordLinkList *GetRecordLinkList() { return &_slaveLink; }
-  virtual RecordLinkList *GetMasterLinkList() { return &_masterLink; }
-
-private:
-
-  /* from QueryCallback */
-  virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData,
-			   int &recordsProcessed);
+		// Callback methods (QueryCallback)
+		virtual void*	GetObj(void) { return this; }
+		virtual RecordLinkList*	GetMasterLinkList(void) { return &_masterLink; }
+		virtual RecordLinkList*	GetRecordLinkList(void) { return &_slaveLink; }
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed);
 };
 
+//******************************************************************************
 #endif

@@ -15,8 +15,14 @@
 # $Id$
 
 # $Log$
+# Revision 1.39  1997/09/29 02:53:01  donjerko
+# *** empty log message ***
+#
 # Revision 1.38  1997/08/28 18:23:31  wenger
 # Re-made solaris dependencies.
+#
+# Revision 1.37.6.1  1997/05/21 20:42:28  weaver
+# Change for new ColorManager
 #
 # Revision 1.37  1997/03/28 16:12:53  wenger
 # Added headers to all source files that didn't have them; updated
@@ -27,6 +33,7 @@
 
 depend:
 	makedepend -fMakefile.solaris \
+		-I../src/color -I../src/utils \
 		-I../graphics -I../graphics.new -I../tape \
 		*.C
 # DO NOT DELETE
@@ -37,8 +44,8 @@ Templates.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 Templates.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
 Templates.o: /usr/include/values.h ../graphics/DevStatus.h
-Templates.o: ../graphics/VisualArg.h ../graphics/Color.h
-Templates.o: ../graphics/Pattern.h ../graphics.new/RecId.h
+Templates.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+Templates.o: ../src/color/Color.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
 Templates.o: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
 Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h

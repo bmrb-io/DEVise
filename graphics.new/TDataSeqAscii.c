@@ -16,8 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/10/10 21:13:48  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.6  1997/07/03 01:53:49  liping
   changed query interface to TData from RecId to double
+
+  Revision 1.5.10.1  1997/05/21 20:40:49  weaver
+  Changes for new ColorManager
 
   Revision 1.5  1996/12/23 22:57:28  wenger
   Minor improvements to attrproj code.
@@ -95,7 +104,7 @@ TDataSeqAscii::TDataSeqAscii(char *name, char *type, char *param, int recSize)
     DO_DEBUG(printf("_data = 0x%p\n", _data));
 
     _fileOpen = true;
-    if (_data->Open("r") != StatusOk) {
+    if (!(_data->Open("r") == StatusOk)) {
 	_fileOpen = false;
     }
     
@@ -141,7 +150,7 @@ Boolean TDataSeqAscii::CheckFileStatus()
       _fileOpen = false;
     }
     Boolean old = DevError::SetEnabled(false);
-    if (_data->Open("r") != StatusOk) {
+    if (!(_data->Open("r") == StatusOk)) {
       (void)DevError::SetEnabled(old);
       return false;
     }

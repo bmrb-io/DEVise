@@ -12,12 +12,13 @@
   Development Group.
 */
 
-#ifdef __GNUG__
-#pragma implementation "HashTable.h"
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "HashTable.h"
+//#endif
 
 #include "GdataStat.h"
 
-#ifdef __GNUG__
-template class HashTable<int, BasicStats *>;
-#endif
+//#ifdef __GNUG__
+//template class HashTable<int, BasicStats *>;
+//#endif

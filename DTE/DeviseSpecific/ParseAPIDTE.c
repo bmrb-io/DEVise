@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/11/23 21:23:45  donjerko
+  *** empty log message ***
+
   Revision 1.9  1997/11/12 23:17:46  donjerko
   Improved error checking.
 
@@ -34,6 +37,9 @@
 
   Revision 1.6  1997/08/21 21:04:51  donjerko
   Implemented view materialization
+
+  Revision 1.5.6.1  1997/05/21 20:37:51  weaver
+  Changes for new ColorManager
 
   Revision 1.5  1997/04/30 21:45:07  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
@@ -100,6 +106,7 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
       return 1;
     }
     if(!strcmp(argv[0], "dteShowCatalogEntry")){
+// TEMPTEMP -- Kent, I traced the type 11 error to here...
       char* catEntry = dteShowCatalogEntry(argv[1]);
       control->ReturnVal(API_ACK, catEntry);
       return 1;

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.10.1  1997/05/21 20:38:45  weaver
+  Changes for new ColorManager
+
+  Revision 1.2  1996/04/30 18:53:39  wenger
+  Attrproj now generates a single projection of all attributes of the
+  real data.
+
   Revision 1.1  1996/04/30 15:31:56  wenger
   Attrproj code now reads records via TData object; interface to Birch
   code now in place (but not fully functional).
@@ -33,7 +40,7 @@
 
 #include "iostream.h"	// Needed for vector.h.
 #include "fstream.h"	// Needed for vector.h.
-#include "vector.h"
+#include "Vector.h"
 
 
 class VectorArray

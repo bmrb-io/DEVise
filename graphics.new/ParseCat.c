@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.41.6.1  1997/05/21 20:40:42  weaver
+  Changes for new ColorManager
+
+  Revision 1.41  1997/03/25 17:59:27  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.40  1997/02/03 04:12:17  donjerko
   Catalog management moved to DTE
 
@@ -672,7 +678,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly
 	attrs = NULL;
 	numAttrs = 0;
 
-	if (schemaSource->Open("r") != StatusOk)
+	if (!(schemaSource->Open("r") == StatusOk))
 	{
 		reportError("schemaSource->Open() failed", devNoSyserr);
 		goto error;
@@ -789,8 +795,8 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly
 			   strcmp(args[0],"compattr") == 0 ||
 			   strcmp(args[0],"sorted") == 0)
 		{
-			if (ParseAttr(numArgs, args, recSize, hasFileType, fileType) !=
-				StatusOk) goto error;
+			if (!(ParseAttr(numArgs, args, recSize, hasFileType, fileType) ==
+				StatusOk)) goto error;
 		}
 		else if (physicalOnly && !strcmp(args[0], "group"))
 		{
@@ -1016,7 +1022,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
   int numArgs;
   char **args;
 
-  if (schemaSource->Open("r") != StatusOk)
+  if (!(schemaSource->Open("r") == StatusOk))
   {
     goto error;
   }
@@ -1406,7 +1412,7 @@ ParseDQLCatLogical(DataSource *schemaSource,String &list)
   list = "";
   String phySchema;
 
-  if (schemaSource->Open("r") != StatusOk)
+  if (!(schemaSource->Open("r") == StatusOk))
   {
     goto error;
   }
@@ -1493,7 +1499,7 @@ ParseDQLCatPhysical(DataSource *schemaSource, String &list)
 	attrs = NULL;
 	numAttrs = 0;
 
-	if (schemaSource->Open("r") != StatusOk)
+	if (!(schemaSource->Open("r") == StatusOk))
 	{
 		reportError("schemaSource->Open() failed", devNoSyserr);
 		goto error;

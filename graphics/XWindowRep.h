@@ -15,6 +15,10 @@
 /*
   $Id$
   $Log$
+  Revision 1.46  1997/07/18 20:25:09  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.45  1997/06/13 18:07:32  wenger
   Orientation is now working for text labels and fixed text labels.
 
@@ -27,6 +31,8 @@
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
 
+  Revision 1.43.6.1  1997/05/21 20:40:11  weaver
+  Changes for new ColorManager
 
   Revision 1.43  1997/05/05 16:53:53  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -213,6 +219,9 @@
 #include "Xdef.h"
 #include "DList.h"
 #include "Util.h"
+//#include "machdep.h"
+
+#include "Color.h"
 
 class XWindowRep;
 
@@ -233,8 +242,36 @@ struct XBitmapInfo {
 class XDisplay;
 class Compression;
 
-class XWindowRep: public WindowRep {
-public:
+//******************************************************************************
+// class XWindowRep
+//******************************************************************************
+
+class XWindowRep : public WindowRep
+{
+		friend class XDisplay;
+		
+	protected:
+
+		// Constructors and Destructors
+		XWindowRep(Display* display, Window window, XDisplay* DVDisp, 
+				   XWindowRep* parent, Boolean backingStore = false); 
+		/* called by XDisplay to create new X window */
+
+		XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp, 
+				   XWindowRep* parent, int x, int y); 
+		/* called by XDisplay to create new X pixmap */
+
+		virtual ~XWindowRep(void);
+
+	public:
+
+		// Getters and Setters
+		virtual void	SetForeground(PColorID fgid);
+		virtual void	SetBackground(PColorID bgid);
+
+		// Utility Functions
+		virtual void	SetWindowBackground(PColorID bgid);
+		void	ClearPixmap(void);
 
 #ifdef TK_WINDOW_old
 	/* Decorate window */
@@ -357,20 +394,6 @@ public:
 	virtual void ScrollAbsolute(int x, int y, unsigned width,
 				    unsigned height, int dstX, int dstY);
 
-        /* Color selection interface using Devise colormap */
-	virtual void SetFgColor(GlobalColor fg);
-	virtual void SetBgColor(GlobalColor bg);
-	virtual void SetWindowBgColor(GlobalColor bg);
-
-#if defined(LIBCS)
-        /* Color selection interface using specific colors */
-        virtual void SetFgRGB(float r, float g, float b);
-        virtual void SetBgRGB(float r, float g, float b);
-        virtual void GetFgRGB(float &r, float &g, float &b);
-        virtual void GetBgRGB(float &r, float &g, float &b);
-        virtual void SetWindowBgRGB(float r, float g, float b);
-#endif
-
 	virtual void SetPattern(Pattern p);
 
 	virtual void SetLineWidth(int w);
@@ -470,23 +493,9 @@ public:
 #endif
 
 protected:
-	friend class XDisplay;
-
-	/* called by XDisplay to create new X window */
- 	XWindowRep(Display *display, Window window, XDisplay *DVDisp, 
-		   XWindowRep *parent, GlobalColor fgndColor,
-		   GlobalColor bgndColor, Boolean backingStore = false); 
-
-	/* called by XDisplay to create new X pixmap */
- 	XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp, 
-		   XWindowRep *parent, GlobalColor fgndColor,
-		   GlobalColor bgndColor, int x, int y); 
 
 	/* called by constructors to initialize object */
 	void Init();
-
-	/* destructor */
-	~XWindowRep();
 
 	void HandleEvent(XEvent &event);
 
@@ -592,12 +601,6 @@ private:
 	Window _win;
 	GC _gc;
 
-#if defined(LIBCS)
-        /* current foreground/background color pixel values */
-        LocalColor _rgbForeground;
-        LocalColor _rgbBackground;
-#endif
-
 	/* pixmap and child/parent links for pixmaps */
 	Pixmap _pixmap;
 	XWindowRep    *_parent;
@@ -633,7 +636,7 @@ private:
 	ETkWinList _etkWindows;       // List of embedded Tk windows
 	char *_etkServer;             // Machine where ETk server is running
 //#endif
-	
 };
 
+//******************************************************************************
 #endif

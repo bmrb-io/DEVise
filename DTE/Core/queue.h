@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/09/17 02:35:49  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.12  1997/09/05 22:20:19  donjerko
   Made changes for port to NT.
 
@@ -25,6 +28,14 @@
   Revision 1.10  1997/06/16 16:04:53  donjerko
   New memory management in exec phase. Unidata included.
 
+  Revision 1.9.6.1  1997/05/21 20:34:25  weaver
+  Changes needed by new ColorManageR
+
+  Revision 1.9  1997/04/04 23:10:30  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
 
   Revision 1.8  1997/03/20 20:42:24  donjerko
   Removed the List usage from Aggregates and replaced it with Plex, a
@@ -54,9 +65,10 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#ifdef __GNUG__
-#pragma interface
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma interface
+//#endif
 
 #include <assert.h>
 // #include <stdio.h>   erased for sysdep.h

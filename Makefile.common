@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1997/11/23 22:57:36  donjerko
+#  Added .cpp rule.
+#
 #  Revision 1.19  1997/11/05 00:18:25  donjerko
 #  Made compilation to fail if any library fails.
 #
@@ -127,6 +130,10 @@ else
  	OPTFLAG = -gstabs
     endif
 endif
+
+#TEMPLATE_FLAGS = -fexternal-templates
+TEMPLATE_FLAGS = -fno-implicit-templates
+#TEMPLATE_FLAGS = -fno-implicit-templates -fhuge-objects
 
 # Set up for profiling.
 ifneq ($(DEV_PROFILE),)

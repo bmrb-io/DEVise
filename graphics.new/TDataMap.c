@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.19.10.1  1997/05/21 20:40:48  weaver
+  Changes for new ColorManager
+
+  Revision 1.19  1996/12/30 23:57:37  andyt
+  First version with support for Embedded Tcl/Tk windows. Added new
+  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+  function to handle all GData attributes (used to only handle a subset).
+
   Revision 1.18  1996/11/23 21:17:16  jussi
   Removed reference to DEVISE_PAGESIZE. Removed StripPath() which
   is already in Util.c.
@@ -92,6 +100,10 @@
    Also used in creating the name of GData */
 int TDataMap::_incarnation= 0; 
 
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
 TDataMap::TDataMap(char *name, TData *tdata, char *gdataName, 
 		   int gdataRecSize, VisualFlag dynamicArgs,
                    unsigned long dynamicAttrs, int maxGDataPages,
@@ -139,7 +151,6 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _x = 0.0;
   _y = 0.0;
   _z = 0.0;
-  _color = ForegroundColor;
   _size = 1.0;
   _pattern = Pattern0;
   _orientation = 0.0;
@@ -165,6 +176,57 @@ TDataMap::~TDataMap()
   delete _shapeAttrs;
 }
 
+//******************************************************************************
+// Utility Functions
+//******************************************************************************
+// Central point for mapping->color conversions. Nowhere else!!!
+// With all three of these, recPtr=NULL will return the default color.
+// ONLY GetPColorID CAN "FAIL", BECAUSE PALETTES DON'T HAVE DEFAULTS.
+
+PColorID	TDataMap::GetPColorID(const char* recPtr) const
+{
+	if ((GetGDataOffset()->colorOffset >= 0) && (recPtr != NULL))
+		return *(PColorID*)(recPtr + GetGDataOffset()->colorOffset);
+	else
+		return nullPColorID;
+}
+
+ColorID		TDataMap::GetColorID(const char* recPtr) const
+{
+	PColorID	pcid = GetPColorID(recPtr);
+	ColorID		cid = nullColorID;
+
+	if (pcid != nullPColorID)			// Try the mapped palette index
+		cid = PM_GetColorID(pcid);
+
+	if (cid == nullColorID)				// Try the map default foreground
+		cid = GetColoring().GetForeground();
+
+	if (cid == nullColorID)				// Try the global default foreground
+		cid = defForeColor;
+
+	return cid;
+}
+
+XColorID	TDataMap::GetXColorID(const char* recPtr) const
+{
+	PColorID	pcid = GetPColorID(recPtr);
+	XColorID	xcid = nullXColorID;
+	
+	if (pcid != nullPColorID)			// Try the mapped palette index
+		xcid = AP_GetXColorID(pcid);
+
+	if (xcid == nullXColorID)			// Try the map default foreground
+		xcid = CM_GetXColorID(GetColoring().GetForeground());
+
+	if (xcid == nullXColorID)			// Try the global default foreground
+		xcid = CM_GetXColorID(::GetColorID(defForeColor));
+
+	return xcid;
+}
+
+//******************************************************************************
+
 void TDataMap::SetDimensionInfo(VisualFlag *dimensionInfo, int numDimensions)
 {
   _dimensionInfo = dimensionInfo;
@@ -184,7 +246,7 @@ void TDataMap::MapToSymbol(TData *tdata, RecId recId, void *rec, Symbol *sym)
   sym->x = _x;
   sym->y = _y;
   sym->z = _z;
-  sym->color = _color;
+  sym->color = GetColoring().GetForeground();
   sym->size = _size;
   sym->pattern = _pattern; 
   sym->orientation = _orientation;
@@ -358,3 +420,5 @@ void TDataMap::ResetGData(int gRecSize)
     QueryProc::Instance()->ResetGData(_tdata, _gdata);
   }
 }
+
+//******************************************************************************

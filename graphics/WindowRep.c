@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/05/21 22:10:00  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
+  Revision 1.24.10.1  1997/05/21 20:40:07  weaver
+  Changes for new ColorManager
+
   Revision 1.24  1997/01/17 20:31:48  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -126,8 +138,12 @@
 
 Boolean WindowRep::_destroyPending = false;
 
-WindowRep::WindowRep(DeviseDisplay *disp, GlobalColor fgndColor,
-		     GlobalColor bgndColor, Pattern p)
+//******************************************************************************
+// Constructore and Destructors
+//******************************************************************************
+
+WindowRep::WindowRep(DeviseDisplay* disp, Pattern p)
+	:	_display(disp)
 {
   _callbackList = new WindowRepCallbackList;
   DOASSERT(_callbackList, "Out of memory");
@@ -135,18 +151,35 @@ WindowRep::WindowRep(DeviseDisplay *disp, GlobalColor fgndColor,
   _current = 0;
   _current3 = 0;
   _clipCurrent = -1;
-  _fgndColor = fgndColor;
-  _bgndColor = bgndColor;
-  _display = disp;
   _pattern = p;
 }
 
-WindowRep::~WindowRep()
+WindowRep::~WindowRep(void)
 {
   delete _callbackList;
   if (DaliImageCount() > 0)
       DaliFreeImages();
+//#ifndef LIBCS
+//  if (ETk_WindowCount() > 0)
+//      ETk_FreeWindows();
+//#endif
 }
+
+//******************************************************************************
+// Getters and Setters
+//******************************************************************************
+
+void	WindowRep::SetForeground(PColorID fgid)
+{
+	coloring.SetForeground(fgid);
+}
+
+void	WindowRep::SetBackground(PColorID bgid)
+{
+	coloring.SetBackground(bgid);
+}
+
+//******************************************************************************
 
 /* called by derived class to when window is resized or moved */
 
@@ -286,13 +319,6 @@ void WindowRep::HandleWindowDestroy()
   }
 }
 
-/* called by derived class to get current local color from global color */
-
-LocalColor WindowRep::GetLocalColor(GlobalColor globalColor)
-{
-  return _display->GetLocalColor(globalColor);
-}
-
 /* Copy the "state" (2D transforms, 3D transforms, clip mask)
    of the given WindowRep. */
 void
@@ -341,3 +367,7 @@ WindowRep::CopyState(WindowRep *winRepP)
 
   return;
 }
+
+//******************************************************************************
+
+

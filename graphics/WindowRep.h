@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/11/12 15:45:26  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.55.4.1  1997/11/11 19:13:46  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
   WindowRep::ExportGIF() inheritance.
@@ -278,7 +282,6 @@
 #include "Geom.h"
 #include "Transform.h"
 #include "DList.h"
-#include "Color.h"
 #include "Pattern.h"
 #include "Exit.h"
 #include "DevisePixmap.h"
@@ -292,6 +295,9 @@
 #define FILENAME_MAX    1024    /* max # of characters in a path name */
 #endif
 
+#include "Color.h"
+#include "Coloring.h"
+
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
 class DeviseDisplay;
@@ -299,6 +305,10 @@ class DeviseDisplay;
 /* Callback from windowRep for processing window events. 
    Default: no event is handled. */
 class WindowRep;
+
+//******************************************************************************
+// class WindowRepCallback
+//******************************************************************************
 
 class WindowRepCallback {
 public:
@@ -369,10 +379,39 @@ struct ETkInfo
     bool in_use;
 };
 
-class WindowRep {
+//******************************************************************************
+// class WindowRep
+//******************************************************************************
+
+class WindowRep
+{
+	protected:
+
+		DeviseDisplay*	_display;		// Display object
+		Coloring		coloring;		// Coloring of shape being drawn
+
+	public:
+
+		// Constructors and Destructors
+		WindowRep(DeviseDisplay* disp, Pattern p = Pattern0);
+		virtual ~WindowRep(void);
+
+		// Getters and Setters
+		DeviseDisplay*			GetDisplay(void)		{ return _display;	};
+		const DeviseDisplay*	GetDisplay(void) const	{ return _display;	};
+
+		Coloring&				GetColoring(void)		{ return coloring;	}
+		const Coloring&			GetColoring(void) const { return coloring;	}
+
+		PColorID		GetForeground(void) const;
+		PColorID		GetBackground(void) const;
+		virtual void	SetForeground(PColorID fgid);
+		virtual void	SetBackground(PColorID bgid);
+
+		// Utility Functions
+		virtual void	SetWindowBackground(PColorID bgid) = 0;
+
 public:
-  /* destructor */
-  virtual ~WindowRep();
 
 #ifdef TK_WINDOW_old
   /* Decorate window */
@@ -566,22 +605,6 @@ public:
   virtual void ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 			      int dstX, int dstY) = 0;
 
-  /* Color selection interface using Devise colormap */
-  virtual void SetFgColor(GlobalColor fg) { _fgndColor = fg; }
-  virtual void SetBgColor(GlobalColor bg) { _bgndColor = bg; }
-  virtual GlobalColor GetFgColor() { return _fgndColor; }
-  virtual GlobalColor GetBgColor() { return _bgndColor; }
-  virtual void SetWindowBgColor(GlobalColor bg) = 0;
-
-#ifdef LIBCS
-  /* Color selection interface using specific colors */
-  virtual void SetFgRGB(float r, float g, float b) = 0;
-  virtual void SetBgRGB(float r, float g, float b) = 0;
-  virtual void GetFgRGB(float &r, float &g, float &b) = 0;
-  virtual void GetBgRGB(float &r, float &g, float &b) = 0;
-  virtual void SetWindowBgRGB(float r, float g, float b) = 0;
-#endif
-
   virtual void SetPattern(Pattern p) { _pattern = p; }
   Pattern GetPattern(){ return _pattern; }
 
@@ -676,9 +699,6 @@ public:
 
   /* Set window rep absolute origin */
   virtual void SetAbsoluteOrigin(int x, int y) {}
-  
-  /* get display of this Window Rep */
-  DeviseDisplay *GetDisplay() { return _display; };
   
   /* Get flag which indicates if window destroy is pending */
   static Boolean IsDestroyPending() { return _destroyPending; }
@@ -840,13 +860,7 @@ public:
   /* Display pixmap in window */
   virtual void DisplayPixmap(DevisePixmap *pixmap) = 0;
   /* Free pixmap from memory */
-  virtual void FreePixmap(DevisePixmap *pixmap) = 0;
-
-//TEMPTEMP -- this is kind of X-specific
-  /* called by derived class to get currennt local color from
-     global color */
-  LocalColor GetLocalColor(GlobalColor globalColor);
-  
+  virtual void FreePixmap(DevisePixmap *pixmap) = 0;  
 
 protected:
 
@@ -909,10 +923,6 @@ protected:
   /* called by derived class on window destroy event */
   virtual void HandleWindowDestroy();
 
-  /* constructor */
-  WindowRep(DeviseDisplay *disp, GlobalColor fgndColor = ForegroundColor,
-	    GlobalColor bgndColor = BackgroundColor, Pattern p = Pattern0);
-
   WindowRepCallbackList  *_callbackList;
 
   Transform2D _transforms[WindowRepTransformDepth];
@@ -929,12 +939,25 @@ protected:
 #if 0 // Not used anywhere.  RKW 10/11/96.
   Coord _x, _y, _width, _height;  /* location and dimensions of window */
 #endif
-  GlobalColor _fgndColor, _bgndColor;   /* current fg and bg colors */
   Pattern _pattern;               /* current pattern */
   int _line_width;		  /* current border line width */
-  DeviseDisplay *_display;        /* display object */
 
   static Boolean _destroyPending; /* true if window destroy is pending */
 };
 
+//******************************************************************************
+// Getters and Setters (Inline)
+//******************************************************************************
+
+inline PColorID		WindowRep::GetForeground(void) const
+{
+	return coloring.GetForeground();
+}
+
+inline PColorID		WindowRep::GetBackground(void) const
+{
+	return coloring.GetBackground();
+}
+
+//******************************************************************************
 #endif

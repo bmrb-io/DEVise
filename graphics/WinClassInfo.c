@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/06/10 19:34:39  wenger
+  Fixed names of print control attributes.
+
   Revision 1.13  1997/06/09 14:46:41  wenger
   Added cursor grid; fixed bug 187; a few minor cleanups.
 
@@ -80,6 +83,8 @@
 #include "Layout.h"
 #endif
 #include "Util.h"
+
+//#define DEBUG
 
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80],
   buf7[80];

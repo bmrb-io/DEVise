@@ -15,8 +15,14 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.3  1997/05/28 15:39:52  wenger
+#       Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #       Revision 1.2.8.1  1997/05/20 16:11:27  ssl
 #       Added layout manager to DEVise
+#
+#       Revision 1.2.10.1  1997/05/21 20:41:12  weaver
+#       Changes for new ColorManager
 #
 #       Revision 1.2  1996/12/02 16:54:38  wenger
 #       Fixed compile warning; added standard headers to some files;
@@ -135,7 +141,7 @@ proc DoLensCreate {} {
     puts "flag = $flag"
     
     set filter [ DEVise getCurVisualFilter $curView ]
-#    set bgcolor [ DEVise getBgColor $curView]
+	#    set bgcolor [ DEVise color GetBackground $curView]
     set bgcolor AntiqueWhite
 
     if {[DEVise create view ViewLens $name \

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.10.1  1997/05/21 20:40:27  weaver
+  Changes for new ColorManager
+
+  Revision 1.3  1995/12/29 22:42:46  jussi
+  Added copyright message and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:58  jussi
   Added CVS header.
 */
@@ -26,6 +32,8 @@
 #include "ConnectorShape.h"
 #include "Connector.h"
 #include "WindowRep.h"
+
+#include "Color.h"
 
 /*************************************************************
 A Discrete line connector that plots the following:
@@ -38,7 +46,7 @@ class DiscLineConnector: public ConnectorShape {
 public:
   /* draw connection between two symbols */
   virtual void DrawConnection(WindowRep *win, Connector *con) {
-    win->SetFgColor(con->color);
+    win->SetForeground(con->color);
     win->SetPattern(con->pattern);
     Coord width = 2.0;
     if (con->numShapeAttrs > 0)
@@ -59,7 +67,7 @@ class DiscLineConnector2: public ConnectorShape {
 public:
   /* draw connection between two symbols */
   virtual void DrawConnection(WindowRep *win, Connector *con) {
-    win->SetFgColor(con->color);
+    win->SetForeground(con->color);
     win->SetPattern(con->pattern);
     Coord width = 2.0;
     if (con->numShapeAttrs > 0)
@@ -76,7 +84,7 @@ Continuous connector
 class ContLineConnector : public ConnectorShape {
 public:
   virtual void DrawConnection(WindowRep *win,Connector *con) {
-    win->SetFgColor(con->color);
+    win->SetForeground(con->color);
     win->SetPattern(con->pattern);
     Coord width = 1.0;
     if (con->numShapeAttrs > 0)
@@ -92,10 +100,11 @@ bar connector
 class BarConnector : public ConnectorShape {
 public:
   virtual void DrawConnection(WindowRep *win,Connector *con) {
-    win->SetFgColor(con->color);
+    win->SetForeground(con->color);
     win->SetPattern(con->pattern);
     win->FillRect(con->x1, 0.0, con->x2 - con->x1, con->y1);
   }
 };
 
+//******************************************************************************
 #endif

@@ -16,12 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/10/10 21:13:47  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.33  1997/09/05 22:36:29  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
 
   Revision 1.32  1997/07/03 01:53:47  liping
   changed query interface to TData from RecId to double
+
+  Revision 1.31.10.1  1997/05/21 20:40:47  weaver
+  Changes for new ColorManager
 
   Revision 1.31  1997/01/11 20:56:05  jussi
   Removed references to _currPos.
@@ -207,7 +216,7 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
   }
 
   _fileOpen = true;
-  if (_data->Open("r") != StatusOk)
+  if (!(_data->Open("r") == StatusOk))
     _fileOpen = false;
   
   DataSeg::Set(NULL, NULL, 0, 0);
@@ -269,7 +278,7 @@ Boolean TDataBinary::CheckFileStatus()
 #endif
       _fileOpen = false;
     }
-    if (_data->Open("r") != StatusOk) {
+    if (!(_data->Open("r") == StatusOk)) {
       // file access failure, get rid of index
       _indexP->Clear();
       _initTotalRecs = _totalRecs = 0;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.116  1997/09/05 22:36:04  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.115  1997/08/20 22:10:40  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -56,6 +60,9 @@
 
   Revision 1.109.4.1  1997/05/20 16:10:50  ssl
   Added layout manager to DEVise
+
+  Revision 1.109.6.1  1997/05/21 20:40:01  weaver
+  Changes for new ColorManager
 
   Revision 1.109  1997/04/03 16:37:24  wenger
   Reduced memory and CPU usage in statistics; fixed a memory leak in the
@@ -507,6 +514,8 @@
   Added/updated CVS header.
 */
 
+//******************************************************************************
+
 #include <time.h>
 
 //#define DEBUG
@@ -531,6 +540,8 @@
 #include "RecordLink.h"
 #include "Scheduler.h"
 #include "DepMgr.h"
+
+//******************************************************************************
 
 // Whether to draw view borders -- must eventually be controlled by GUI.
 static const Boolean viewBorder = false;
@@ -569,129 +580,163 @@ DataSourceFixedBuf *View::_viewTableBuffer = NULL;
 #endif
 
 
-View::View(char *name, VisualFilter &initFilter, 
-	    GlobalColor fg, GlobalColor bg, AxisLabel *xAxisLabel,
-	    AxisLabel *yAxisLabel,
-	    int weight, Boolean boundary) :
-            ViewWin(name, fg, bg, weight, boundary)
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
+		   AxisLabel* xAxisLabel, AxisLabel* yAxisLabel,
+		   int weight, Boolean boundary)
+	: ViewWin(name, fgid, bgid, weight, boundary)
 {
-  DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
-  _jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
+	DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
 
-  _modeRefresh = false;
+	controlPanelCallback = new View_ControlPanelCallback(this);
+	dispatcherCallback = new View_DispatcherCallback(this);
 
-  /* init default filter */
-  _filter = initFilter;
-  _filterChanged = true;
-  _hasTimestamp = true;
-  _timeStamp = TimeStamp::NextTimeStamp();
-  
-  _hasExposure = false; /* no exposure rectangle yet */
-  _querySent = false;	/* TRUE if query has been sent */
-  
-  _xAxisLabel = xAxisLabel;
-  _yAxisLabel = yAxisLabel;
-  
-  xAxis.inUse = false;
-  xAxis.width = 15;
-  xAxis.numTicks = 8;
-  xAxis.significantDigits = 6;
-  xAxis.labelWidth = 60;
-  
-  yAxis.inUse = false;
-  yAxis.width = 50;
-  yAxis.numTicks = 8;
-  yAxis.significantDigits = 6;
-  yAxis.labelWidth = 40;
-  
-  _label.occupyTop = false;
-  _label.extent = 12;
-  _label.name = 0;
-  
-  _xAxisAttrType = FloatAttr;
-  _yAxisAttrType = FloatAttr;
+	_jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
+	_modeRefresh = false;
 
-  _cursors = new DeviseCursorList;
-  DOASSERT(_cursors, "Out of memory");
+	// Init default filter
+	_filter = initFilter;
+	_filterChanged = true;
+	_hasTimestamp = true;
+	_timeStamp = TimeStamp::NextTimeStamp();
 
-  _filterQueue = new FilterQueue();
-  ReportViewCreated();
-  
-  int flushed = _filterQueue->Enqueue(initFilter);
-  ReportFilterChanged(initFilter, flushed);
-  _highlight = false; 
+	_hasExposure = false;	// No exposure rectangle yet
+	_querySent = false;		// TRUE if query has been sent
 
-  _view_locks = 0;
+	_xAxisLabel = xAxisLabel;
+	_yAxisLabel = yAxisLabel;
 
-  _hasLastFilter = false;
-  _updateTransform = true;
-  _refresh = true;
+	xAxis.inUse = false;
+	xAxis.width = 15;
+	xAxis.numTicks = 8;
+	xAxis.significantDigits = 6;
+	xAxis.labelWidth = 60;
 
-  _pixmap = NULL;
-  _pixmapIO = new PixmapIO();
-  _compress = new SimpleCompress();
+	yAxis.inUse = false;
+	yAxis.width = 50;
+	yAxis.numTicks = 8;
+	yAxis.significantDigits = 6;
+	yAxis.labelWidth = 40;
 
-  _cursorsOn = false;
-  _numDimensions = 2;
-  _solid3D = 2;
+	_label.occupyTop = false;
+	_label.extent = 12;
+	_label.name = 0;
 
-  _xyZoom = true;
-  _dispDataValues = false;
-  _pileMode = false;
-  _pileViewHold = true;
-  _printing = false;
-  _hasOverrideColor = false;
-  _overrideColor = fg;
+	_xAxisAttrType = FloatAttr;
+	_yAxisAttrType = FloatAttr;
 
-  _displaySymbol = true;
+	_cursors = new DeviseCursorList;
+	DOASSERT(_cursors, "Out of memory");
 
-  _camera.x_ = 4.6;
-  _camera.y_ = 4.0;
-  _camera.z_ = -4.0;
-  _camera.fx = 0.0;
-  _camera.fy = 0.0;
-  _camera.fz = 0.0;
-  _camera._rho = 7.0;
-  _camera._phi = 1.0;
-  _camera._theta = 0.9;
-  _camera._dvs = 250;
-  _camera._twist_angle = deg_rad(0.0);
-  _camera._perspective = 1;
-  _camera.flag = 0;
-  _camera.fix_focus = 1;
-  _camera.spherical_coord = 1;
-  _camera.H = 0;
-  _camera.V = 0;
+	_filterQueue = new FilterQueue();
+	ReportViewCreated();
 
-  _id = ++_nextId;
-  
-  _viewList->Insert(this);
-  
-  ControlPanel::Instance()->InsertCallback(this);
+	int		flushed = _filterQueue->Enqueue(initFilter);
 
-  _dispatcherID = Dispatcher::Current()->Register(this, 10, GoState);
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewCreated);
-  Scheduler::Current()->RequestCallback(_dispatcherID);
+	ReportFilterChanged(initFilter, flushed);
+	_highlight = false; 
+
+	_view_locks = 0;
+
+	_hasLastFilter = false;
+	_updateTransform = true;
+	_refresh = true;
+
+	_pixmap = NULL;
+	_pixmapIO = new PixmapIO();
+	_compress = new SimpleCompress();
+
+	_cursorsOn = false;
+	_numDimensions = 2;
+	_solid3D = 2;
+
+	_xyZoom = true;
+	_dispDataValues = false;
+	_pileMode = false;
+	_pileViewHold = true;
+	_printing = false;
+
+	_displaySymbol = true;
+
+	_camera.x_ = 4.6;
+	_camera.y_ = 4.0;
+	_camera.z_ = -4.0;
+	_camera.fx = 0.0;
+	_camera.fy = 0.0;
+	_camera.fz = 0.0;
+	_camera._rho = 7.0;
+	_camera._phi = 1.0;
+	_camera._theta = 0.9;
+	_camera._dvs = 250;
+	_camera._twist_angle = deg_rad(0.0);
+	_camera._perspective = 1;
+	_camera.flag = 0;
+	_camera.fix_focus = 1;
+	_camera.spherical_coord = 1;
+	_camera.H = 0;
+	_camera.V = 0;
+
+	_id = ++_nextId;
+
+	_viewList->Insert(this);
+	ControlPanel::Instance()->InsertCallback(controlPanelCallback);
+	_dispatcherID = Dispatcher::Current()->Register(dispatcherCallback, 10,
+													GoState);
+	DepMgr::Current()->RegisterEvent(dispatcherCallback,
+									 DepMgr::EventViewCreated);
+	Scheduler::Current()->RequestCallback(_dispatcherID);
 }
 
-View::~View()
+View::~View(void)
 {
-  _viewList->Delete(this);
+	_viewList->Delete(this);
+	Dispatcher::Current()->Unregister(dispatcherCallback);
 
-  Dispatcher::Current()->Unregister(this);
+	DOASSERT(!_querySent, "Query still active");
 
-  DOASSERT(!_querySent, "Query still active");
+	delete _label.name;
+	delete _cursors;
+	delete _filterQueue;
 
-  delete _label.name;
-  delete _cursors;
-  delete _filterQueue;
+	Unmap();
+	DeleteFromParent();
+	ControlPanel::Instance()->DeleteCallback(controlPanelCallback);
 
-  Unmap();
-  DeleteFromParent();
-  ControlPanel::Instance()->DeleteCallback(this);
+	ReportViewDestroyed();
 
-  ReportViewDestroyed();
+	delete controlPanelCallback;
+	delete dispatcherCallback;
 }
+
+//******************************************************************************
+// Getters and Setters
+//******************************************************************************
+
+void    View::SetForeground(PColorID fgid)
+{
+	ViewWin::SetForeground(fgid);
+	Refresh();
+}
+
+void    View::SetBackground(PColorID bgid)
+{
+	ViewWin::SetBackground(bgid);
+	Refresh();
+}
+
+// Exists to avoid refreshing a view twice when both foreground and
+// background are changed.
+void    View::SetColors(PColorID fgid, PColorID bgid)
+{
+	ViewWin::SetForeground(fgid);
+	ViewWin::SetBackground(bgid);
+	Refresh();
+}
+
+//******************************************************************************
 
 /***************************************************************
 Find view by name. Return NULL if not found.
@@ -759,7 +804,8 @@ void View::SubClassMapped()
 
   // in batch mode, force Run() method to be called so that
   // (first) query gets properly started up
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewSubclassMapped);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback,
+								   DepMgr::EventViewSubclassMapped);
   Scheduler::Current()->RequestCallback(_dispatcherID);
 #if 0
   UpdateViewTable();
@@ -812,8 +858,8 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
       else
 	_unknown++;
       
-      if (registerEvent) DepMgr::Current()->RegisterEvent(this,
-	DepMgr::EventViewFilterCh);
+      if (registerEvent) DepMgr::Current()->RegisterEvent(dispatcherCallback,
+													DepMgr::EventViewFilterCh);
       ReportFilterAboutToChange();
 
       _filterChanged = true;
@@ -874,69 +920,6 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
   return true;
 }
 
-void View::HandleExpose(WindowRep *w, int x, int y, unsigned width, 
-			unsigned height)
-{
-#if defined(DEBUG)
-  printf("View(%s)::HandleExpose()\n", GetName());
-#endif
-#if defined(DEBUG)
-  printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
-#endif
-
-  /* Just in case record links didn't get re-enabled after printing. */
-  RecordLink::EnableUpdates();
-
-#if USE_BUG123_WORKAROUND
-  /* If we have backing store, all Expose events should be for the whole
-   * view. */
-  if (GetWindowRep()->HasBackingStore()) {
-    int viewX, viewY;
-    unsigned int viewWidth, viewHeight;
-    Geometry(viewX, viewY, viewWidth, viewHeight);
-    if ((viewX != x) ||
-      (viewY != y) ||
-      (viewWidth != width) ||
-      (viewHeight != height)) {
-#if defined(DEBUG)
-      printf("View(%s)::HandleExpose() ignoring Expose event\n", GetName());
-#endif
-      return;
-    }
-  }
-#endif
-
-  if (!_hasExposure) {
-
-    _hasExposure = true;
-    _exposureRect.xLow = x;
-    _exposureRect.yLow = y;
-    _exposureRect.xHigh = x + width - 1;
-    _exposureRect.yHigh = y + height - 1;
-
-  } else {
-
-    /* merge with existing exposed region */
-    int minX1 = _exposureRect.xLow;
-    int minY1 = _exposureRect.yLow;
-    int maxX1 = _exposureRect.xHigh;
-    int maxY1 = _exposureRect.yHigh;
-    
-    int minX2 = x;
-    int minY2 = y;
-    int maxX2 = x + width - 1;
-    int maxY2 = y + height - 1;
-    
-    _exposureRect.xLow = MIN(minX1, minX2);
-    _exposureRect.yLow = MIN(minY1, minY2);
-    _exposureRect.xHigh = MAX(maxX1, maxX2);
-    _exposureRect.yHigh = MAX(maxY1, maxY2);
-  }
-
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewExpose);
-  Scheduler::Current()->RequestCallback(_dispatcherID);
-}
-
 /* set dimensionality */
 
 void View::SetNumDimensions(int d)
@@ -952,7 +935,7 @@ void View::SetNumDimensions(int d)
   _numDimensions = d;
   _updateTransform = true;
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewDimensionsCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewDimensionsCh);
   Refresh();
 }
 
@@ -965,7 +948,7 @@ void View::SetSolid3D(int solid)
 
   _solid3D = solid;
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewSolidCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewSolidCh);
   Refresh();
 }
 
@@ -978,7 +961,7 @@ void View::SetDisplayDataValues(Boolean disp)
 
   _dispDataValues = disp;
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewDataDisplayCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewDataDisplayCh);
   Refresh();
 }
 
@@ -999,7 +982,7 @@ void View::SetPileMode(Boolean mode)
   /* Just in case record links didn't get re-enabled after printing. */
   RecordLink::EnableUpdates();
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewPileCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewPileCh);
   Refresh();
 }
 
@@ -1016,29 +999,28 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
   /* Just in case record links didn't get re-enabled after printing. */
   RecordLink::EnableUpdates();
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewGeomCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewGeomCh);
   Refresh();
 }
 
 /* set override color */
+//void View::SetOverrideColor(GlobalColor color, Boolean active)
+//{
+//  /* no change in color override? */
+//  if (_hasOverrideColor == active && color == _overrideColor)
+//    return;
 
-void View::SetOverrideColor(GlobalColor color, Boolean active)
-{
-  /* no change in color override? */
-  if (_hasOverrideColor == active && color == _overrideColor)
-    return;
+//  _overrideColor = color;
 
-  _overrideColor = color;
+//  /* color override still not enabled (but color may have changed)? */
+//  if (_hasOverrideColor == active && !active)
+//    return;
 
-  /* color override still not enabled (but color may have changed)? */
-  if (_hasOverrideColor == active && !active)
-    return;
+//  _hasOverrideColor = active;
 
-  _hasOverrideColor = active;
-
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewOverrideColorCh);
-  Refresh();
-}
+//  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewOverrideColorCh);
+//  Refresh();
+//}
 
 /* get area for displaying label */
 
@@ -1235,7 +1217,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
    * in PostScript.  Note that we _must_ have an identity matrix for
    * the window transform for this to work. */
   if (FILL_WHOLE_BACKGROUND || _winReps.IsFileOutput()) {
-    win->SetFgColor(GetBgColor());
+    win->SetForeground(GetBackground());
     win->FillRect((Coord) winX, (Coord) winY, (Coord) winW, (Coord) winH);
   }
 
@@ -1243,7 +1225,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 #if !FILL_WHOLE_BACKGROUND
   /* Clear highlight area */
-  win->SetFgColor(GetBgColor());
+  win->SetForeground(GetBackground());
   DrawHighlight();
 #endif
 
@@ -1252,7 +1234,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
     if (xAxis.inUse) {
 #if !FILL_WHOLE_BACKGROUND
       GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
-      win->SetFgColor(GetBgColor());
+      win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
@@ -1262,7 +1244,7 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
     if (yAxis.inUse) {
 #if !FILL_WHOLE_BACKGROUND
       GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
-      win->SetFgColor(GetBgColor());
+      win->SetForeground(GetBackground());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
@@ -1276,8 +1258,8 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
 
 void View::DrawLabel()
 {
-  WindowRep *win = GetWindowRep();
-
+	WindowRep*	win = GetWindowRep();
+	
   win->PushTop();
   win->MakeIdentity();
   
@@ -1290,10 +1272,12 @@ void View::DrawLabel()
     GetLabelArea(labelX, labelY, labelWidth, labelHeight);
     win->SetPattern(Pattern0);
     win->SetLineWidth(0);
-    win->SetFgColor(GetBgColor());
+
+    win->SetForeground(GetBackground());
     win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
-    win->SetFgColor(GetFgColor());
-    win->SetBgColor(GetBgColor());
+
+    win->SetForeground(GetForeground());
+    win->SetBackground(GetBackground());
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
   } else {
@@ -1301,7 +1285,7 @@ void View::DrawLabel()
     int x, y, w, h;
     GetLabelArea(x, y, w, h);
     win->SetPattern(Pattern0);
-    win->SetFgColor(GetFgColor());
+    win->SetForeground(GetForeground());
     win->AbsoluteLine(x, y, x + _label.extent - 1, y, 1);
     win->AbsoluteLine(x + _label.extent - 1, y,
 		      x + _label.extent - 1, y + _label.extent - 1, 1);
@@ -1336,7 +1320,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     return;
   }
   
-  win->SetFgColor(GetFgColor());
+  win->SetForeground(GetForeground());
   win->SetPattern(Pattern0);
   win->SetNormalFont();
   _xAxisFont.SetWinFont(win);
@@ -1448,7 +1432,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     return;
   }
 
-  win->SetFgColor(GetFgColor());
+  win->SetForeground(GetForeground());
   win->SetPattern(Pattern0);
   win->SetNormalFont();
   _yAxisFont.SetWinFont(win);
@@ -1747,421 +1731,6 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   ReportViewRecomputed();
 }
 
-/***********************************************************************
-Send a query, if there is one.  Abort existing query if necessary. 
-XXX: need to crop exposure against _filter before sending query.
-**********************************************************************/
-
-void View::Run()
-{
-#if defined(DEBUG)
-    printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
-#endif
-
-    /* if view is in pile mode but not the top view, it has to wait until
-       the top view has erased the window and drawn axes and other
-       decorations; the top view will send explicit refresh requests
-       to the bottom views */
-
-    if (_pileMode) {
-	ViewWin *parent = GetParent();
-
-	// If we are running client/server Devise, we may get here before this
-	// view's parent has been created, so do not bomb out.  RKW 8/30/96.
-	if (parent == NULL) return;
-
-	int index = parent->InitIterator();
-	DOASSERT(parent->More(index), "Parent view has no children");
-	ViewWin *vw = parent->Next(index);
-	parent->DoneIterator(index);
-	if (this != vw) {
-	    if (_pileViewHold) {
-#if defined(DEBUG)
-		printf("View %s cannot continue\n", GetName());
-#endif
-		AbortQuery();
-		return;
-	    }
-#if defined(DEBUG)
-	    printf("Bottom pile view %s continues\n", GetName());
-#endif
-	    _pileViewHold = true;
-	} else {
-#if defined(DEBUG)
-	    printf("Top pile view %s continues\n", GetName());
-#endif
-	    /* make sure top view is visible */
-	    GetWindowRep()->Raise();
-	}
-    }
-
-    ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
-#if defined(DEBUG)
-    if (mode == ControlPanel::LayoutMode)
-	printf("layout mode ");
-    else
-	printf("disp mode ");
-    printf("exp %d flt %d ref %d upd %d\n", _hasExposure, _filterChanged,
-	   _refresh, _updateTransform);
-#endif
-//TEMPTEMP -- there seems to be almost no difference between what we do
-// for _hasExposure, _filterChanged, _refresh, and _updateTransform.
-    
-    if (mode == ControlPanel::LayoutMode && 
-	(_hasExposure || _filterChanged || _refresh || _updateTransform)) { 
-	/* keep track that events occurred while in LayoutMode */
-	_modeRefresh = true;
-    } else if (mode == ControlPanel::DisplayMode && _modeRefresh) {
-	/* need to refresh in display mode because events occurred in
-	   LayoutMode */
-	_refresh = true;
-    }
-    
-    if (_querySent) {
-	if (_hasExposure || _filterChanged || _refresh || _updateTransform
-	    || !Mapped()) {
-#if defined(DEBUG)
-	    printf("View:: aborting\n");
-	    printf("querySent == true, refresh = %d\n", _refresh);
-#endif
-	    AbortQuery();
-	    _refresh = true;
-	} else {
-#if defined(DEBUG)
-	    printf("Query already sent, nothing to do\n");
-#endif
-	    return;
-	}
-    }
-    
-    if (!Mapped()) {
-#if defined(DEBUG)
-	printf("Window not mapped, nothing to do\n");
-#endif
-	return;
-    }
-
-    if (Iconified()) {
-	/* force "redrawing" of whole view (mainly for statistics and
-	   other derived data) when window iconified displayed */
-	_refresh = true;
-	_hasExposure = false;
-    }
-
-    if (!_hasExposure && !_filterChanged && !_refresh) {
-#if defined(DEBUG)
-	printf("View not refreshed and filter not changed, nothing to do\n");
-#endif
-	return;
-    }
-
-    WindowRep *winRep = GetWindowRep();
-    if (_pileMode)
-	winRep = GetFirstSibling()->GetWindowRep();
-
-    int scrnX, scrnY, scrnWidth, scrnHeight;
-    unsigned int sW, sH;
-    Geometry(scrnX, scrnY, sW, sH);
-
-    scrnWidth = sW;
-    scrnHeight = sH;
-
-    VisualFilter newFilter;
-    
-    if (!Iconified() && !_pileMode && _numDimensions == 2 &&
-	RestorePixmap(_filter, newFilter) == PixmapTotal) {
-#if defined(DEBUG)
-	printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
-#endif
-
-	if (_updateTransform) {
-	    UpdateTransform(GetWindowRep());
-	    _updateTransform = false;
-	}
-
-	/* Set up identity transformation */
-	winRep->PushTop();
-	winRep->MakeIdentity();
-
-	/* Draw axes */
-	DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);
-	
-	/* Draw view border. */
-	if (viewBorder)
-	{
-	    GlobalColor oldColor = winRep->GetFgColor();
-	    winRep->SetFgColor(RedColor/*TEMPTEMP*/);
-	    winRep->SetFgColor((GlobalColor)((winRep->GetBgColor()
-					      + 1) % 43)/*TEMPTEMP*/);
-	    DrawHighlight();
-	    winRep->SetFgColor(oldColor);
-	}
-
-	/* Draw highlight border */
-	Boolean oldHighlight = _highlight;
-	_highlight = false;
-	Highlight(oldHighlight);
-	
-	/* Pop the transform */
-	winRep->PopTransform();
-
-	/* Draw cursors */
-	_cursorsOn = false;
-	if (_numDimensions == 2)
-	    (void)DrawCursors();
-	else
-	    Draw3DAxis();
-
-	_hasExposure = false;
-	_filterChanged = false;
-	_refresh = false;
-	_hasLastFilter = false;
-
-	return;
-    }
-
-    if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged) {
-	/* Do scroll, if we can  */
-	UpdateFilterStat stat;
-	stat = UpdateFilterWithScroll();
-	if (stat == Scrolled) {
-	    /* did scrolling. Can keep this filter
-	       update so that _hasFilter is no longer true,
-	       and _hasExposure is true. */
-	    _hasExposure = true;
-	    _filterChanged = false;
-	    _hasLastFilter = true;
-	    _lastFilter = _filter;
-	} else if (stat == SameFilter) {
-	    /* A sequence of scroll/zoom between updates
-	       made the latest filter the same as the one being displayed */
-	    _filterChanged = false;
-	    _hasLastFilter = true;
-	    _lastFilter = _filter;
-	    return;
-	}
-    }
-    
-    /* Update the WindowRep's transformation matrix */
-    if (_updateTransform) {
-	UpdateTransform(GetWindowRep());
-	_updateTransform = false;
-    }
-    
-    Boolean piledDisplay = false;
-
-    if (_pileMode) {
-	ViewWin *firstSibling = GetFirstSibling();
-	if (this != firstSibling) {
-#if defined(DEBUG)
-	    printf("View %s follows first sibling %s\n", GetName(),
-		   firstSibling->GetName());
-#endif
-	    piledDisplay = true;
-	} else {
-#if defined(DEBUG)
-	    printf("View %s is first child\n", GetName());
-#endif
-	}
-    }
-    
-    if (piledDisplay || _filterChanged || _refresh) {
-	/* Need to redraw the whole screen */
-	_queryFilter = _filter;
-	_hasLastFilter = true;
-	_lastFilter = _queryFilter;
-	_hasExposure = false;
-    }
-
-#if !FILL_WHOLE_BACKGROUND
-    if (_hasExposure) {
-	/* limit exposure to the size of the window */
-#if defined(DEBUG)
-	printf("exposure (%d,%d),(%d,%d) ",
-	       _exposureRect.xLow, _exposureRect.yLow,
-	       _exposureRect.xHigh, _exposureRect.yHigh);
-#endif
-	
-	_exposureRect.xLow = MAX(_exposureRect.xLow, 0);
-	_exposureRect.xLow = MIN(_exposureRect.xLow, scrnWidth - 1);
-	_exposureRect.xHigh = MAX(_exposureRect.xLow, _exposureRect.xHigh);
-	_exposureRect.xHigh = MIN(_exposureRect.xHigh, scrnWidth - 1);
-	
-	_exposureRect.yLow = MAX(_exposureRect.yLow, 0);
-	_exposureRect.yLow = MIN(_exposureRect.yLow, scrnHeight - 1);
-	_exposureRect.yHigh = MAX(_exposureRect.yLow, _exposureRect.yHigh);
-	_exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
-	
-#if defined(DEBUG)
-	printf("--> (%d,%d),(%d,%d)\n",
-	       _exposureRect.xLow, _exposureRect.yLow,
-	       _exposureRect.xHigh, _exposureRect.yHigh);
-#endif
-	
-	// I don't understand at all why we're changing the query filter
-	// here.  It makes the query filter not correspond to the visual
-	// filter, and it means that simply resizing the view changes
-	// the query filter, thus changing the view statistics as well.
-	// For that matter, I don't understand why we have two different
-	// filters (_queryFilter and _filter).  And then we've got _lastFilter
-	// and _filterQueue -- why do we have so damn many copies of the
-	// visual filter(s)?  RKW Aug. 14, 1997.
-
-#if 0
-	_queryFilter.flag = VISUAL_LOC; 
-	FindWorld(_exposureRect.xLow, _exposureRect.yLow,
-		  _exposureRect.xHigh, _exposureRect.yHigh,
-		  _queryFilter.xLow, _queryFilter.yLow, 
-		  _queryFilter.xHigh, _queryFilter.yHigh);
-#endif
-	
-#if defined(DEBUG)
-	printf("exposure world %f,%f,%f,%f\n",
-	       _queryFilter.xLow, _queryFilter.yLow,
-	       _queryFilter.xHigh, _queryFilter.yHigh);
-#endif
-    }
-#endif
-    
-    /* Decorate view with axes etc. */
-    
-    /* Set up identity transformation */
-    winRep->PushTop();
-    winRep->MakeIdentity();
-    
-    if (!piledDisplay) {
-	/* Draw axes */
-	DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);
-
-	/* Draw view border. */
-	if (viewBorder)
-	{
-	    GlobalColor oldColor = winRep->GetFgColor();
-	    winRep->SetFgColor(RedColor/*TEMPTEMP*/);
-	    GlobalColor junk = winRep->GetBgColor();
-	    /*TEMPTEMP*/printf("Background color = %d\n", (int) junk);
-	    junk = (GlobalColor) ((junk + 1) % 43);
-	    /*TEMPTEMP*/printf("  Highlight color = %d\n", (int) junk);
-	    winRep->SetFgColor(junk);
-	    DrawHighlight();
-	    winRep->SetFgColor(oldColor);
-	}
-
-	/* Draw highlight border */
-	Boolean oldHighlight = _highlight;
-	_highlight = false;
-	Highlight(oldHighlight);
-    }
-
-    /* push clip region using this transform */
-    int dataX, dataY, dataW, dataH;
-    if (_pileMode)
-	((View *)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
-    else
-	GetDataArea(dataX, dataY, dataW, dataH);
-
-#if !FILL_WHOLE_BACKGROUND
-    /* use exposure rectangle if needed */
-    if (_hasExposure) {
-	int dataX2 = MIN(_exposureRect.xHigh, dataX + dataW - 1);
-	int dataY2 = MIN(_exposureRect.yHigh, dataY + dataH - 1);
-	dataX = MAX(_exposureRect.xLow, dataX);
-	dataY = MAX(_exposureRect.yLow, dataY);
-	dataW = dataX2 - dataX + 1;
-	dataH = dataY2 - dataY + 1;
-    }
-#endif
-
-    /* clip area to be drawn */
-    winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);
-
-    /* blank out area to be drawn */
-    if (!piledDisplay) {
-#if defined(DEBUG)
-	printf("Clearing data area in window 0x%p\n", winRep);
-#endif
-	if (winRep->DaliImageCount() > 0)
-	{
-	    (void) winRep->DaliFreeImages();
-	    sleep(1);
-	}
-	if (winRep->ETk_WindowCount() > 0)
-	{
-	    winRep->ETk_MarkAll(false);
-	}
-	// If the view had a view has views as symbols then,
-	// we have to clean then up.
-	if (NumChildren()) {
-	  DetachChildren();
-	}
-#if !FILL_WHOLE_BACKGROUND
-	winRep->SetFgColor(GetBgColor());
-	winRep->SetPattern(Pattern0);
-	winRep->SetLineWidth(0);
-	winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
-#endif
-    }
-    
-    /* pop the identity transform matrix */
-    winRep->PopTransform();
-
-    _hasExposure = false;
-    _filterChanged = false;
-    _refresh = false;
-
-    if (mode == ControlPanel::DisplayMode) {
-	_querySent = true;
-	/* now sending query for events that occurred while in
-	   layout mode */
-	_modeRefresh = false; 
-	
-	ControlPanel::Instance()->SetBusy();
-	if (!_hasTimestamp)
-	    _timeStamp = TimeStamp::NextTimeStamp();
-	_hasTimestamp = false;
-	_bytes = 0;
-#if defined(DEBUG)
-	printf("View %s sending query\n", GetName());
-	printf("  filter: %d, (%f, %f, %f, %f)\n", _queryFilter.flag,
-	       _queryFilter.xLow, _queryFilter.xHigh, _queryFilter.yLow,
-	       _queryFilter.yHigh);
-#endif
-	DerivedStartQuery(_queryFilter, _timeStamp);
-    } else {
-	winRep->PopClip();
-    }
-
-#if defined(DEBUG)
-    printf("after Run %d %d %d %d\n",
-	   _hasExposure, _filterChanged, _refresh, _updateTransform);
-#endif
-}
-
-void View::HandleResize(WindowRep *w, int xlow, int ylow,
-			unsigned width, unsigned height)
-{
-#if defined(DEBUG)
-  printf("View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(), xlow, ylow,
-    width, height);
-#endif
-
-  /* Just in case record links didn't get re-enabled after printing. */
-  RecordLink::EnableUpdates();
-  
-  /* is this a real size change? */
-  if (_hasGeometry && _x == xlow && _y == ylow &&
-      _width == width && _height == height)
-    return;
-
-  /* base class should handle this, too */
-  ViewWin::HandleResize(w, xlow, ylow, width, height);
-  
-  _updateTransform = true; /* need to update the transformation */
-  
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewResize);
-  Scheduler::Current()->RequestCallback(_dispatcherID);
-}
-
 void View::UpdateTransform(WindowRep *winRep)
 {
 #if defined(DEBUG)
@@ -2218,7 +1787,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
   } else {
     _updateTransform = true;
 
-    DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewTitleCh);
+    DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewTitleCh);
     Refresh();
   }
 }
@@ -2230,7 +1799,7 @@ void View::XAxisDisplayOnOff(Boolean stat)
     _updateTransform = true;
   }
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewAxesCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewAxesCh);
   Refresh();
 }
 
@@ -2241,7 +1810,7 @@ void View::YAxisDisplayOnOff(Boolean stat)
     _updateTransform  = true;
   }
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewAxesCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewAxesCh);
   Refresh();
 }
 
@@ -2530,25 +2099,7 @@ void View::Iconify(Boolean iconified)
   if (iconified)
     AbortQuery();
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewIconify);
-  Refresh();
-}
-
-void View::ModeChange(ControlPanel::Mode mode)
-{
-#if defined(DEBUG)
-  printf("Change mode %d,%d,%d,%d\n", _hasExposure,
-	 _filterChanged, _refresh, _updateTransform);
-#endif
-
-  if (mode == ControlPanel::LayoutMode && _querySent) {
-#if defined(DEBUG)
-    printf("abort query from mode change\n");
-#endif
-    AbortQuery();
-    _modeRefresh = true;
-  }
-
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewIconify);
   Refresh();
 }
 
@@ -2626,11 +2177,6 @@ void View::SetYAxisAttrType(AttrType type)
   _yAxisAttrType = type;
 }
 
-char *View::DispatchedName()
-{
-  return "View";
-}
-
 void View::AppendCursor(DeviseCursor *cursor)
 {
   _cursors->Append(cursor);
@@ -2702,8 +2248,7 @@ void View::DoDrawCursors()
   for(index = _cursors->InitIterator(); _cursors->More(index);) {
     DeviseCursor *cursor = _cursors->Next(index);
     VisualFilter *filter;
-    GlobalColor color;
-    cursor->GetVisualFilter(filter, color);
+    cursor->GetVisualFilter(filter);
 
     Coord xLow, yLow, xHigh, yHigh;
     xLow = MAX(_filter.xLow, filter->xLow);
@@ -2816,6 +2361,22 @@ void View::InvalidatePixmaps()
   free(_pixmap->data);
   delete _pixmap;
   _pixmap = NULL;
+}
+
+// Used by the color manager when the palette changes. Forces all views
+// to update their pixmaps to use the new colors.
+void	View::RefreshAll(void)
+{
+	int		index;
+
+	for(index = View::InitViewIterator(); View::MoreView(index);)
+	{
+		View*	view = View::NextView(index);
+
+		view->Refresh();
+	}
+
+	View::DoneViewIterator(index);
 }
 
 void View::SavePixmaps(FILE *file)
@@ -3274,7 +2835,8 @@ void View::SetCamera(Camera new_camera)
   if (newMap) {
     CompRhoPhiTheta();
     _updateTransform = true;
-    DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewCameraCh);
+    DepMgr::Current()->RegisterEvent(dispatcherCallback,
+									 DepMgr::EventViewCameraCh);
     Refresh();
   }
 
@@ -3289,8 +2851,9 @@ void View::Draw3DAxis()
   printf("Drawing 3D axis\n");
 #endif
 
-  WindowRep *win = GetWindowRep();
-  win->SetFgColor(GetFgColor());
+  WindowRep*	win = GetWindowRep();
+
+  win->SetForeground(GetForeground());
   Map3D::DrawRefAxis(win, _camera);
 }
 
@@ -3386,7 +2949,7 @@ View::SetFont(char *which, int family, float pointSize,
     reportErrNosys("Illegal font selection");
   }
 
-  DepMgr::Current()->RegisterEvent(this, DepMgr::EventViewFontCh);
+  DepMgr::Current()->RegisterEvent(dispatcherCallback, DepMgr::EventViewFontCh);
   Refresh();
 }
 
@@ -3412,8 +2975,7 @@ View::GetFont(char *which, int &family, float &pointSize,
 #if 0
 
 //void 
-// View::UpdateViewTable(char *name, double X, double Y, 
-//		       GlobalColor bgcolor) 
+// View::UpdateViewTable(char *name, double X, double Y, PColorID bgid) 
 void View::UpdateViewTable()
 {
   DataSourceBuf *vBuf = GetViewTable();
@@ -3430,12 +2992,12 @@ void View::UpdateViewTable()
     v->Geometry(x, y, w, h);
     v->AbsoluteOrigin(x0,y0);
     char *name = v->GetName();
-    GlobalColor bgcolor = v->GetBgColor();
+    PColorID	bgid = v->GetBackground();
 #if defined(DEBUG)
-    printf("UpdateViewtable: %g %g %d %s\n", (double)x0, (double)y0, bgcolor, 
+    printf("UpdateViewtable: %g %g %d %s\n", (double)x0, (double)y0, bgid, 
 	   name);
 #endif
-    sprintf(line, "%g %g %d %s\n", (double)x0, (double)y0, bgcolor, name );
+    sprintf(line, "%g %g %d %s\n", (double)x0, (double)y0, bgid, name );
     int len = strlen(line);
     DOASSERT(len < (int)sizeof(line), "too much data in sprintf");
     DOASSERT(_viewTableBuffer,"no view table buffer");
@@ -3456,3 +3018,835 @@ DataSourceBuf* View::GetViewTable()
   return _viewTableBuffer; 
 }
 #endif
+
+//******************************************************************************
+// Callback Methods (ControlPanelCallback)
+//******************************************************************************
+
+void	View::ModeChange(ControlPanel::Mode mode)
+{
+#if defined(DEBUG)
+	printf("Change mode %d,%d,%d,%d\n", _hasExposure, _filterChanged, _refresh,
+		   _updateTransform);
+#endif
+
+	if ((mode == ControlPanel::LayoutMode) && _querySent)
+	{
+#if defined(DEBUG)
+		printf("abort query from mode change\n");
+#endif
+
+		AbortQuery();
+		_modeRefresh = true;
+	}
+
+	Refresh();
+}
+
+//******************************************************************************
+// Callback Methods (DispatcherCallback)
+//******************************************************************************
+
+char*	View::DispatchedName(void)
+{
+	return "View";
+}
+
+// Send a query, if there is one. Abort existing query if necessary. 
+// XXX: need to crop exposure against _filter before sending query.
+void	View::Run(void)
+{
+#if defined(DEBUG)
+	printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
+#endif
+
+	if (_refresh)
+		_hasExposure = false;
+
+	// If view is in pile mode but not the top view, it has to wait until the
+	// top view has erased the window and drawn axes and other decorations; the
+	// top view will send explicit refresh requests to the bottom views.
+
+    if (_pileMode)
+	{
+		ViewWin*	parent = GetParent();
+
+		// If we are running client/server Devise, we may get here before this
+		// view's parent has been created, so do not bomb out.  RKW 8/30/96.
+		if (parent == NULL)
+			return;
+
+		int			index = parent->InitIterator();
+
+		DOASSERT(parent->More(index), "Parent view has no children");
+
+		ViewWin*	vw = parent->Next(index);
+
+		parent->DoneIterator(index);
+
+		if (this != vw)
+		{
+			if (_pileViewHold)
+			{
+#if defined(DEBUG)
+				printf("View %s cannot continue\n", GetName());
+#endif
+				AbortQuery();
+				return;
+			}
+
+#if defined(DEBUG)
+			printf("Bottom pile view %s continues\n", GetName());
+#endif
+
+			_pileViewHold = true;
+		}
+		else
+		{
+#if defined(DEBUG)
+			printf("Top pile view %s continues\n", GetName());
+#endif
+
+			GetWindowRep()->Raise();	// Assure top view is visible
+		}
+	}
+
+	ControlPanel::Mode	mode = ControlPanel::Instance()->GetMode();
+
+#if defined(DEBUG)
+	if (mode == ControlPanel::LayoutMode)
+		printf("layout mode ");
+	else
+		printf("disp mode ");
+
+	printf("exp %d flt %d ref %d upd %d\n", _hasExposure, _filterChanged,
+		   _refresh, _updateTransform);
+#endif
+
+	//TEMPTEMP -- there seems to be almost no difference between what we do
+	// for _hasExposure, _filterChanged, _refresh, and _updateTransform.
+
+	if ((mode == ControlPanel::LayoutMode) && 
+		(_hasExposure || _filterChanged || _refresh || _updateTransform))
+	{ 
+		// Keep track that events occurred while in LayoutMode
+		_modeRefresh = true;
+	}
+	else if ((mode == ControlPanel::DisplayMode) && _modeRefresh)
+	{
+		// Refresh in display mode because events occurred in LayoutMode
+		_refresh = true;
+	}
+
+	if (_querySent)
+	{
+		if (_hasExposure || _filterChanged || _refresh || _updateTransform ||
+			!Mapped())
+		{
+#if defined(DEBUG)
+			printf("View:: aborting\n");
+			printf("querySent == true, refresh = %d\n", _refresh);
+#endif
+
+			AbortQuery();
+			_refresh = true;
+		}
+		else
+		{
+#if defined(DEBUG)
+			printf("Query already sent, nothing to do\n");
+#endif
+			return;
+		}
+	}
+
+	if (!Mapped())
+	{
+#if defined(DEBUG)
+		printf("Window not mapped, nothing to do\n");
+#endif
+
+		return;
+	}
+
+	if (Iconified())
+	{
+		// Force "redrawing" of whole view (mainly for statistics and
+		// other derived data) when window iconified displayed
+		_refresh = true;
+		_hasExposure = false;
+	}
+
+	if (!_hasExposure && !_filterChanged && !_refresh)
+	{
+#if defined(DEBUG)
+		printf("View not refreshed and filter not changed, nothing to do\n");
+#endif
+
+		return;
+	}
+
+	WindowRep*		winRep = GetWindowRep();
+	int				scrnX, scrnY, scrnWidth, scrnHeight;
+	unsigned int	sW, sH;
+    VisualFilter	newFilter;
+
+	if (_pileMode)
+		winRep = GetFirstSibling()->GetWindowRep();
+
+	Geometry(scrnX, scrnY, sW, sH);
+
+	scrnWidth = sW;
+	scrnHeight = sH;
+    
+	if (!Iconified() && !_pileMode && (_numDimensions == 2) &&
+		RestorePixmap(_filter, newFilter) == PixmapTotal)
+	{
+#if defined(DEBUG)
+		printf("View::Run: Restored complete pixmap for\n  %s\n", GetName());
+#endif
+
+		if (_updateTransform)
+		{
+			UpdateTransform(GetWindowRep());
+			_updateTransform = false;
+		}
+
+		winRep->PushTop();
+		winRep->MakeIdentity();			// Set up identity transformation
+		DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);	// Draw axes
+	
+		if (viewBorder)					// Draw view border
+		{
+			PColorID	savePColorID = winRep->GetForeground();
+		
+			winRep->SetForeground(GetPColorID(viewBorderColor));
+			DrawHighlight();
+			winRep->SetForeground(savePColorID);
+		}
+
+		Boolean		oldHighlight = _highlight;
+
+		_highlight = false;
+		Highlight(oldHighlight);		// Draw highlight border
+		winRep->PopTransform();			// Pop the transform
+
+		_cursorsOn = false;
+
+		if (_numDimensions == 2)
+			(void)DrawCursors();		// Draw cursors
+		else
+			Draw3DAxis();
+
+		_hasExposure = false;
+		_filterChanged = false;
+		_refresh = false;
+		_hasLastFilter = false;
+
+		return;
+	}
+
+	if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged)
+	{
+		UpdateFilterStat	stat;
+
+		stat = UpdateFilterWithScroll();
+
+		if (stat == Scrolled)			// Do scroll, if possible
+		{
+			// Did scrolling. Can keep this filter update so that _hasFilter
+			// is no longer true, and _hasExposure is true.
+			_hasExposure = true;
+			_filterChanged = false;
+			_hasLastFilter = true;
+			_lastFilter = _filter;
+		}
+		else if (stat == SameFilter)
+		{
+			// A sequence of scroll/zoom between updates made the latest
+			// filter the same as the one being displayed
+			_filterChanged = false;
+			_hasLastFilter = true;
+			_lastFilter = _filter;
+			return;
+		}
+	}
+
+	if (_updateTransform)				// Update WindowRep transform matrix
+	{
+		UpdateTransform(GetWindowRep());
+		_updateTransform = false;
+	}
+
+	Boolean		piledDisplay = false;
+
+	if (_pileMode)
+	{
+		ViewWin*	firstSibling = GetFirstSibling();
+
+		if (this != firstSibling)
+		{
+#if defined(DEBUG)
+			printf("View %s follows first sibling %s\n", GetName(),
+				   firstSibling->GetName());
+#endif
+
+			piledDisplay = true;
+		}
+		else
+		{
+#if defined(DEBUG)
+			printf("View %s is first child\n", GetName());
+#endif
+		}
+	}
+
+	if (piledDisplay || _filterChanged || _refresh)
+	{									// Need to redraw the whole screen
+		_queryFilter = _filter;
+		_hasLastFilter = true;
+		_lastFilter = _queryFilter;
+		_hasExposure = false;
+	}
+
+#if !FILL_WHOLE_BACKGROUND
+	if (_hasExposure)					// Limit exposure to size of window
+	{
+#if defined(DEBUG)
+		printf("exposure (%d,%d),(%d,%d) ",
+			   _exposureRect.xLow, _exposureRect.yLow,
+			   _exposureRect.xHigh, _exposureRect.yHigh);
+#endif
+
+		_exposureRect.xLow = MAX(_exposureRect.xLow, 0);
+		_exposureRect.xLow = MIN(_exposureRect.xLow, scrnWidth - 1);
+		_exposureRect.xHigh = MAX(_exposureRect.xLow, _exposureRect.xHigh);
+		_exposureRect.xHigh = MIN(_exposureRect.xHigh, scrnWidth - 1);
+
+		_exposureRect.yLow = MAX(_exposureRect.yLow, 0);
+		_exposureRect.yLow = MIN(_exposureRect.yLow, scrnHeight - 1);
+		_exposureRect.yHigh = MAX(_exposureRect.yLow, _exposureRect.yHigh);
+		_exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
+
+#if defined(DEBUG)
+		printf("--> (%d,%d),(%d,%d)\n", _exposureRect.xLow, _exposureRect.yLow,
+			   _exposureRect.xHigh, _exposureRect.yHigh);
+#endif
+	
+		// I don't understand at all why we're changing the query filter here.
+		// It makes the query filter not correspond to the visual filter, and
+		// it means that simply resizing the view changes the query filter,
+		// thus changing the view statistics as well. For that matter, I don't
+		// understand why we have two different filters (_queryFilter and
+		// _filter). And then we've got _lastFilter and _filterQueue -- why do
+		// we have so damn many copies of the visual filter(s)?  RKW 8/14/1997
+
+#if 0
+		_queryFilter.flag = VISUAL_LOC; 
+		FindWorld(_exposureRect.xLow, _exposureRect.yLow,
+				  _exposureRect.xHigh, _exposureRect.yHigh,
+				  _queryFilter.xLow, _queryFilter.yLow, 
+				  _queryFilter.xHigh, _queryFilter.yHigh);
+#endif
+
+#if defined(DEBUG)
+		printf("exposure world %f,%f,%f,%f\n",
+			   _queryFilter.xLow, _queryFilter.yLow,
+			   _queryFilter.xHigh, _queryFilter.yHigh);
+#endif
+	}
+#endif
+    
+	// Decorate view with axes etc.
+	// Set up identity transformation
+	winRep->PushTop();
+	winRep->MakeIdentity();
+
+	if (!piledDisplay)
+	{
+		DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);	// Draw axes
+
+		if (viewBorder)					//	Draw view border
+		{
+			PColorID	savePColorID = winRep->GetBackground();
+
+			winRep->SetForeground(GetPColorID(viewBorderColor));
+			DrawHighlight();
+			winRep->SetForeground(savePColorID);
+		}
+
+		Boolean		oldHighlight = _highlight;
+
+		_highlight = false;
+		Highlight(oldHighlight);		// Draw highlight border
+	}
+
+	// Push clip region using this transform
+	int		dataX, dataY, dataW, dataH;
+
+	if (_pileMode)
+		((View*)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
+	else
+		GetDataArea(dataX, dataY, dataW, dataH);
+
+#if !FILL_WHOLE_BACKGROUND
+	if (_hasExposure)					// Use exposure rectangle if needed
+	{
+		int		dataX2 = MIN(_exposureRect.xHigh, dataX + dataW - 1);
+		int		dataY2 = MIN(_exposureRect.yHigh, dataY + dataH - 1);
+
+		dataX = MAX(_exposureRect.xLow, dataX);
+		dataY = MAX(_exposureRect.yLow, dataY);
+		dataW = dataX2 - dataX + 1;
+		dataH = dataY2 - dataY + 1;
+	}
+#endif
+
+	winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);	// Clip draw area
+
+	if (!piledDisplay)					// Blank out area to be drawn
+	{
+#if defined(DEBUG)
+		printf("Clearing data area in window 0x%p\n", winRep);
+#endif
+
+		if (winRep->DaliImageCount() > 0)
+		{
+			(void)winRep->DaliFreeImages();
+			sleep(1);
+		}
+
+		if (winRep->ETk_WindowCount() > 0)
+			winRep->ETk_MarkAll(false);
+
+		if (NumChildren())				// Clean up embedded views (symbols)
+			DetachChildren();
+
+#if !FILL_WHOLE_BACKGROUND
+		winRep->SetForeground(GetBackground());
+		winRep->SetPattern(Pattern0);
+		winRep->SetLineWidth(0);
+		winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+#endif
+	}
+
+	winRep->PopTransform();				// Pop the identity transform matrix
+
+	_hasExposure = false;
+	_filterChanged = false;
+	_refresh = false;
+
+	if (mode == ControlPanel::DisplayMode)
+	{
+		// Send query for events that occurred while in layout mode
+		_querySent = true;
+		_modeRefresh = false; 
+
+		ControlPanel::Instance()->SetBusy();
+
+		if (!_hasTimestamp)
+			_timeStamp = TimeStamp::NextTimeStamp();
+
+		_hasTimestamp = false;
+		_bytes = 0;
+
+#if defined(DEBUG)
+		printf("View %s sending query\n", GetName());
+		printf("  filter: %d, (%f, %f, %f, %f)\n", _queryFilter.flag,
+			   _queryFilter.xLow, _queryFilter.xHigh, _queryFilter.yLow,
+			   _queryFilter.yHigh);
+#endif
+
+		DerivedStartQuery(_queryFilter, _timeStamp);
+	}
+	else
+	{
+		winRep->PopClip();
+	}
+
+#if defined(DEBUG)
+	printf("after Run %d %d %d %d\n", _hasExposure, _filterChanged, _refresh,
+		   _updateTransform);
+#endif
+}
+
+//******************************************************************************
+
+// This is a pruned version for pedagogical purposes
+void	View::Run2(void)
+{
+    if (_pileMode)
+	{
+		ViewWin*	parent = GetParent();
+
+		if (parent == NULL)
+			return;
+
+		int			index = parent->InitIterator();
+
+		DOASSERT(parent->More(index), "Parent view has no children");
+
+		ViewWin*	vw = parent->Next(index);
+
+		parent->DoneIterator(index);
+
+		if (this != vw)
+		{
+			if (_pileViewHold)
+			{
+				AbortQuery();
+				return;
+			}
+
+			_pileViewHold = true;
+		}
+		else
+		{
+			GetWindowRep()->Raise();	// Assure top view is visible
+		}
+	}
+
+	ControlPanel::Mode	mode = ControlPanel::Instance()->GetMode();
+
+	// Keep track that events occurred while in LayoutMode, else
+	// refresh in display mode because events occurred in LayoutMode
+	if ((mode == ControlPanel::LayoutMode) && 
+		(_hasExposure || _filterChanged || _refresh || _updateTransform))
+		_modeRefresh = true;
+	else if ((mode == ControlPanel::DisplayMode) && _modeRefresh)
+		_refresh = true;
+
+	if (_querySent)
+	{
+		if (_hasExposure || _filterChanged || _refresh || _updateTransform ||
+			!Mapped())
+		{
+			AbortQuery();
+			_refresh = true;
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	if (!Mapped())
+		return;
+
+	if (Iconified())
+	{
+		_refresh = true;
+		_hasExposure = false;
+	}
+
+	if (!_hasExposure && !_filterChanged && !_refresh)
+		return;
+
+	WindowRep*		winRep = GetWindowRep();
+	int				scrnX, scrnY, scrnWidth, scrnHeight;
+	unsigned int	sW, sH;
+    VisualFilter	newFilter;
+
+	if (_pileMode)
+		winRep = GetFirstSibling()->GetWindowRep();
+
+	Geometry(scrnX, scrnY, sW, sH);
+
+	scrnWidth = sW;
+	scrnHeight = sH;
+    
+	if (!Iconified() && !_pileMode && (_numDimensions == 2) &&
+		RestorePixmap(_filter, newFilter) == PixmapTotal)
+	{
+		if (_updateTransform)
+		{
+			UpdateTransform(GetWindowRep());
+			_updateTransform = false;
+		}
+
+		winRep->PushTop();
+		winRep->MakeIdentity();			// Set up identity transformation
+		DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);	// Draw axes
+	
+		if (viewBorder)					// Draw view border
+		{
+			PColorID	savePColorID = winRep->GetForeground();
+		
+			winRep->SetForeground(GetPColorID(viewBorderColor));
+			DrawHighlight();
+			winRep->SetForeground(savePColorID);
+		}
+
+		Boolean		oldHighlight = _highlight;
+
+		_highlight = false;
+		Highlight(oldHighlight);		// Draw highlight border
+		winRep->PopTransform();			// Pop the transform
+
+		_cursorsOn = false;
+
+		if (_numDimensions == 2)
+			(void)DrawCursors();		// Draw cursors
+		else
+			Draw3DAxis();
+
+		_hasExposure = false;
+		_filterChanged = false;
+		_refresh = false;
+		_hasLastFilter = false;
+
+		return;
+	}
+
+	if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged)
+	{
+		UpdateFilterStat	stat;
+
+		stat = UpdateFilterWithScroll();
+
+		if (stat == Scrolled)			// Do scroll, if possible
+		{
+			// Did scrolling. Can keep this filter update so that _hasFilter
+			// is no longer true, and _hasExposure is true.
+			_hasExposure = true;
+			_filterChanged = false;
+			_hasLastFilter = true;
+			_lastFilter = _filter;
+		}
+		else if (stat == SameFilter)
+		{
+			// A sequence of scroll/zoom between updates made the latest
+			// filter the same as the one being displayed
+			_filterChanged = false;
+			_hasLastFilter = true;
+			_lastFilter = _filter;
+			return;
+		}
+	}
+
+	if (_updateTransform)				// Update WindowRep transform matrix
+	{
+		UpdateTransform(GetWindowRep());
+		_updateTransform = false;
+	}
+
+	Boolean		piledDisplay = false;
+
+	if (_pileMode)
+	{
+		ViewWin*	firstSibling = GetFirstSibling();
+
+		if (this != firstSibling)
+			piledDisplay = true;
+	}
+
+	if (piledDisplay || _filterChanged || _refresh)
+	{									// Need to redraw the whole screen
+		_queryFilter = _filter;
+		_hasLastFilter = true;
+		_lastFilter = _queryFilter;
+		_hasExposure = false;
+	}
+
+#if !FILL_WHOLE_BACKGROUND
+	if (_hasExposure)					// Limit exposure to size of window
+	{
+		_exposureRect.xLow = MAX(_exposureRect.xLow, 0);
+		_exposureRect.xLow = MIN(_exposureRect.xLow, scrnWidth - 1);
+		_exposureRect.xHigh = MAX(_exposureRect.xLow, _exposureRect.xHigh);
+		_exposureRect.xHigh = MIN(_exposureRect.xHigh, scrnWidth - 1);
+
+		_exposureRect.yLow = MAX(_exposureRect.yLow, 0);
+		_exposureRect.yLow = MIN(_exposureRect.yLow, scrnHeight - 1);
+		_exposureRect.yHigh = MAX(_exposureRect.yLow, _exposureRect.yHigh);
+		_exposureRect.yHigh = MIN(_exposureRect.yHigh, scrnHeight - 1);
+	}
+#endif
+    
+	winRep->PushTop();
+	winRep->MakeIdentity();
+
+	if (!piledDisplay)
+	{
+		DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);	// Draw axes
+
+		if (viewBorder)					//	Draw view border
+		{
+			PColorID	savePColorID = winRep->GetBackground();
+
+			winRep->SetForeground(GetPColorID(viewBorderColor));
+			DrawHighlight();
+			winRep->SetForeground(savePColorID);
+		}
+
+		Boolean		oldHighlight = _highlight;
+
+		_highlight = false;
+		Highlight(oldHighlight);		// Draw highlight border
+	}
+
+	// Push clip region using this transform
+	int		dataX, dataY, dataW, dataH;
+
+	if (_pileMode)
+		((View*)GetFirstSibling())->GetDataArea(dataX, dataY, dataW, dataH);
+	else
+		GetDataArea(dataX, dataY, dataW, dataH);
+
+#if !FILL_WHOLE_BACKGROUND
+	if (_hasExposure)					// Use exposure rectangle if needed
+	{
+		int		dataX2 = MIN(_exposureRect.xHigh, dataX + dataW - 1);
+		int		dataY2 = MIN(_exposureRect.yHigh, dataY + dataH - 1);
+
+		dataX = MAX(_exposureRect.xLow, dataX);
+		dataY = MAX(_exposureRect.yLow, dataY);
+		dataW = dataX2 - dataX + 1;
+		dataH = dataY2 - dataY + 1;
+	}
+#endif
+
+	winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);	// Clip draw area
+
+	if (!piledDisplay)					// Blank out area to be drawn
+	{
+		if (winRep->DaliImageCount() > 0)
+		{
+			(void)winRep->DaliFreeImages();
+			sleep(1);
+		}
+
+		if (winRep->ETk_WindowCount() > 0)
+			winRep->ETk_MarkAll(false);
+
+		if (NumChildren())				// Clean up embedded views (symbols)
+			DetachChildren();
+
+#if !FILL_WHOLE_BACKGROUND
+		winRep->SetForeground(GetBackground());
+		winRep->SetPattern(Pattern0);
+		winRep->SetLineWidth(0);
+		winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+#endif
+	}
+
+	winRep->PopTransform();				// Pop the identity transform matrix
+
+	_hasExposure = false;
+	_filterChanged = false;
+	_refresh = false;
+
+	if (mode == ControlPanel::DisplayMode)
+	{
+		// Send query for events that occurred while in layout mode
+		_querySent = true;
+		_modeRefresh = false; 
+
+		ControlPanel::Instance()->SetBusy();
+
+		if (!_hasTimestamp)
+			_timeStamp = TimeStamp::NextTimeStamp();
+
+		_hasTimestamp = false;
+		_bytes = 0;
+
+		DerivedStartQuery(_queryFilter, _timeStamp);
+	}
+	else
+	{
+		winRep->PopClip();
+	}
+}
+
+//******************************************************************************
+// Callback Methods (WindowRepCallback)
+//******************************************************************************
+
+void	View::HandleExpose(WindowRep* w, int x, int y, unsigned width, 
+						   unsigned height)
+{
+#if defined(DEBUG)
+	printf("View(%s)::HandleExpose()\n", GetName());
+	printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
+#endif
+
+	// In case record links didn't get re-enabled after printing.
+	RecordLink::EnableUpdates();
+
+#if USE_BUG123_WORKAROUND
+	// If we have backing store, all Expose events should be for the whole view
+	if (GetWindowRep()->HasBackingStore())
+	{
+		int				viewX, viewY;
+		unsigned int	viewWidth, viewHeight;
+
+		Geometry(viewX, viewY, viewWidth, viewHeight);
+
+		if ((viewX != x) || (viewY != y) ||
+			(viewWidth != width) || (viewHeight != height))
+		{
+#if defined(DEBUG)
+			printf("View(%s)::HandleExpose() ignoring Expose event\n",
+				   GetName());
+#endif
+			return;
+		}
+	}
+#endif
+
+	if (!_hasExposure)
+	{
+		_hasExposure = true;
+		_exposureRect.xLow = x;
+		_exposureRect.yLow = y;
+		_exposureRect.xHigh = x + width - 1;
+		_exposureRect.yHigh = y + height - 1;
+	}
+	else								// Merge with existing exposed region
+	{
+		int		minX1 = _exposureRect.xLow;
+		int		minY1 = _exposureRect.yLow;
+		int		maxX1 = _exposureRect.xHigh;
+		int		maxY1 = _exposureRect.yHigh;
+    
+		int		minX2 = x;
+		int		minY2 = y;
+		int		maxX2 = x + width - 1;
+		int		maxY2 = y + height - 1;
+
+		_exposureRect.xLow = MIN(minX1, minX2);
+		_exposureRect.yLow = MIN(minY1, minY2);
+		_exposureRect.xHigh = MAX(maxX1, maxX2);
+		_exposureRect.yHigh = MAX(maxY1, maxY2);
+	}
+
+	DepMgr::Current()->RegisterEvent(dispatcherCallback,
+									 DepMgr::EventViewExpose);
+	Scheduler::Current()->RequestCallback(_dispatcherID);
+}
+
+void	View::HandleResize(WindowRep* w, int xlow, int ylow,
+						   unsigned width, unsigned height)
+{
+#if defined(DEBUG)
+	printf("View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(), xlow, ylow,
+		   width, height);
+#endif
+
+	// In case record links didn't get re-enabled after printing.
+	RecordLink::EnableUpdates();
+  
+	// Is this a real size change?
+	if (_hasGeometry && (_x == xlow) && (_y == ylow) &&
+		(_width == width) && (_height == height))
+		return;
+
+	ViewWin::HandleResize(w, xlow, ylow, width, height);
+	_updateTransform = true;			// Update the transformation
+
+	DepMgr::Current()->RegisterEvent(dispatcherCallback, 
+									 DepMgr::EventViewResize);
+	Scheduler::Current()->RequestCallback(_dispatcherID);
+}
+
+//******************************************************************************

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/13 22:19:25  okan
+  Changes about compilation on NT
+
   Revision 1.18  1997/11/05 00:19:45  donjerko
   Separated typechecking from optimization.
 
@@ -237,7 +240,7 @@ bool boolCheckList(List<BaseSelection*>* list){
 	list->rewind();
 	while(!list->atEnd()){
 		BaseSelection* current = list->get();
-		if(current->getTypeID() != "bool"){
+		if(!(current->getTypeID() == "bool")){
 			stringstream msg;
 			current->display(msg);
 			msg << ends;

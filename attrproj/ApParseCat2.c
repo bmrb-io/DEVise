@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.6.1  1997/05/21 20:38:41  weaver
+  Changes for new ColorManager
+
+  Revision 1.2  1997/03/19 21:34:14  wenger
+  Fixed bug 172 (DTE index filename conflict) -- DTE TData names are now
+  the data file name instead of the schema file name.
+
   Revision 1.1  1996/11/22 21:15:56  flisakow
   An example of how to use the new Sequential (no index) TData class.
   You need to set USE_SEQ to "yes" in the Makefile to build to the
@@ -621,8 +628,8 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 			   strcmp(args[0],"compattr") == 0 ||
 			   strcmp(args[0],"sorted") == 0)
 		{
-			if (ParseAttr(numArgs, args, recSize, hasFileType, fileType) !=
-				StatusOk) goto error;
+			if (!(ParseAttr(numArgs, args, recSize, hasFileType, fileType) ==
+				StatusOk)) goto error;
 		}
 		else if (physicalOnly && !strcmp(args[0], "group"))
 		{

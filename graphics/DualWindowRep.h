@@ -22,6 +22,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.10.1  1997/05/21 20:39:37  weaver
+  Changes for new ColorManager
+
+  Revision 1.2  1996/10/28 15:55:37  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.1  1996/10/18 20:34:04  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -38,6 +46,9 @@
 
 #include "WindowRep.h"
 
+//******************************************************************************
+// class DualWindowRep
+//******************************************************************************
 
 class DualWindowRep
 {
@@ -45,7 +56,8 @@ public:
   DualWindowRep();
   ~DualWindowRep();
 
-  WindowRep *GetWindowRep() { return _windowRep; }
+  WindowRep*		GetWindowRep(void)			{ return _windowRep;	}
+  const WindowRep*	GetWindowRep(void) const	{ return _windowRep;	}
 
   void SetScreenWinRep(WindowRep *screenWinRep);
   void SetFileWinRep(WindowRep *fileWinRep);
@@ -66,6 +78,5 @@ private:
 
 };
 
-#endif /* _DualWindowRep_h_ */
-
-/*============================================================================*/
+//******************************************************************************
+#endif

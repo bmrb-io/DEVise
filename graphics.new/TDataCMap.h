@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.6.10.1  1997/05/21 20:40:48  weaver
+  Changes for new ColorManager
+
+  Revision 1.6  1996/11/13 16:57:09  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.5  1996/01/30 21:15:51  jussi
   Removed references to specific colors.
 
@@ -32,25 +45,40 @@
 #ifndef TDataCMap_h
 #define TDataCMap_h
 
-#include "Color.h"
 #include "Pattern.h"
 #include "ConnectorShape.h"
 #include "Connector.h"
 #include "GDataBin.h"
 #include "Exit.h"
 
+#include "Color.h"
+
 class Stream;
 class Connector;
 
-class TDataCMap {
-public:
-  TDataCMap() {
-    defaultColor = ForegroundColor;
-    defaultPattern = Pattern0;
-    _shapeId = ContLineConnectorID;
-    _numShapeAttrs = 0;
-  }
+//******************************************************************************
+// class TDataCMap
+//******************************************************************************
 
+class TDataCMap
+{
+	private:
+
+		Coloring	coloring;		// Default data coloring
+
+	public:
+
+		// Constructors and Destructors
+		TDataCMap(void){
+			defaultPattern = Pattern0;
+			_shapeId = ContLineConnectorID;
+			_numShapeAttrs = 0;
+		}
+
+		// Getters and Setters
+		Coloring&			GetColoring(void)			{ return coloring;	}
+		const Coloring&		GetColoring(void) const 	{ return coloring;	}
+		
   /* called by GDataBin to map 2 gdata records to one connection */
   virtual Boolean MapToConnection(void *grec1, void *grec2, Connector *c) {
     GDataBinRec *s1 = (GDataBinRec *)grec1;
@@ -60,7 +88,7 @@ public:
     c->x2 = s2->x;
     c->y2 = s2->y;
     c->pattern = defaultPattern;
-    c->color = defaultColor;
+    c->color = GetColoring().GetForeground();
     c->cShapeID = _shapeId;
     c->numShapeAttrs = _numShapeAttrs;
     for(int i = 0; i < _numShapeAttrs; i++)
@@ -68,7 +96,6 @@ public:
     return Map(grec1, grec2, c);
   }
 
-  void SetDefaultColor(GlobalColor c) { defaultColor = c; }
   void SetDefaultPattern(Pattern p) { defaultPattern = p; }
   void SetDefaultConnectorShape(ConnectorShapeID shapeId,
 				int numAttrs = 0,
@@ -82,18 +109,17 @@ public:
     _numShapeAttrs = numAttrs;
     _shapeAttrs = shapeAttr;
   }
-  GlobalColor GetDefaultColor() { return defaultColor; }
   Pattern GetDefaultPattern() { return defaultPattern; }
 
 protected:
   virtual Boolean Map(void *, void *, Connector *) { return true; }
 
 private:
-  GlobalColor      defaultColor;
   Pattern          defaultPattern;
   ConnectorShapeID _shapeId;
   int              _numShapeAttrs;
   ShapeAttr        *_shapeAttrs;
 };
 
+//******************************************************************************
 #endif

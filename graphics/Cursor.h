@@ -16,8 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/07/22 15:36:22  wenger
+  Added capability to dump human-readable information about all links
+  and cursors.
+
   Revision 1.9  1997/06/09 14:46:34  wenger
   Added cursor grid; fixed bug 187; a few minor cleanups.
+
+  Revision 1.8.10.1  1997/05/21 20:39:36  weaver
+  Changes for new ColorManager
 
   Revision 1.8  1996/11/13 16:56:05  wenger
   Color working in direct PostScript output (which is now enabled);
@@ -57,22 +64,32 @@
 #define DeviseCursor_h
 
 #include "DList.h"
-#include "Color.h"
 #include "VisualArg.h"
 #include "ViewCallback.h"
+
+#include "Color.h"
+#include "Coloring.h"
 
 class DeviseCursor;
 class View;
 DefinePtrDList(DeviseCursorList, DeviseCursor *)
 
-class DeviseCursor : private ViewCallback {
-public:
-  DeviseCursor(char *name, VisualFlag flag,
-    GlobalColor color = ForegroundColor, Boolean useGrid = false, Coord
-    gridX = 1.0, Coord gridY = 1.0);
-  virtual ~DeviseCursor();
+//******************************************************************************
+// class DeviseCursor
+//******************************************************************************
 
-  /* Set source view. Changing this view's visual filter
+class DeviseCursor : private ViewCallback, public Coloring
+{
+	public:
+
+		// Constructors and Destructors
+		DeviseCursor(char* name, VisualFlag flag,
+					 PColorID fgid, PColorID bgid,
+					 Boolean useGrid = false,
+					 Coord gridX = 1.0, Coord gridY = 1.0);
+		virtual ~DeviseCursor(void);
+
+	 /* Set source view. Changing this view's visual filter
      changes in the cursor's position. Can also set to NULL */
   void SetSource(View *view);
   View *GetSource() { return _src; }
@@ -83,8 +100,7 @@ public:
   View *GetDst() { return _dst; }
   
   /* Get current visual filter. return TRUE if it exists. */
-  //TEMPTEMP -- filter arg should probably be a const!
-  Boolean GetVisualFilter(VisualFilter *&filter, GlobalColor &color);
+  Boolean GetVisualFilter(VisualFilter *&filter);
 
   /* Move the X and Y coords of source */
   void MoveSource(Coord x, Coord y);
@@ -110,10 +126,10 @@ private:
   View *_src, *_dst;                    /* source and destination views */
   VisualFilter _filter;                 /* current filter */
   VisualFlag _visFlag;                  /* valid components in filter */
-  GlobalColor _color;                   /* cursor color */
   Boolean _useGrid;
   Coord _gridX;
   Coord _gridY;
 };
 
+//******************************************************************************
 #endif

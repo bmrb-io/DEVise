@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11.10.1  1997/05/21 20:39:18  weaver
+#  Changes for new ColorManager
+#
+#  Revision 1.11  1996/12/16 07:21:38  donjerko
+#  Fixed some compile problems
+#
 #  Revision 1.10  1996/12/03 20:58:00  jussi
 #  Added DCE and MemMgr.
 #
@@ -69,9 +75,9 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../devread -I../../attrproj -I../../graphics \
+	-I../../src/color -I../../src/utils -I/s/X11/include \
 	-I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
-	-DATTRPROJ -DLIBCS
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DATTRPROJ -DLIBCS
 
 #LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
 

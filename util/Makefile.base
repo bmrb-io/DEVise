@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15.10.1  1997/05/21 20:42:38  weaver
+#  Changes for new ColorManager
+#
+#  Revision 1.15  1996/12/18 15:40:34  jussi
+#  Added mkparfile.
+#
 #  Revision 1.14  1996/11/23 21:02:36  jussi
 #  Removed default compile rules.
 #
@@ -33,7 +39,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../graphics \
-	-Wall -Wno-unused $(OPTFLAG)
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG)
 
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 

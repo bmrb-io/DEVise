@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.80  1997/11/24 16:22:28  wenger
+  Added GUI for saving GData; turning on GData to socket now forces
+  redraw of view; GData to socket params now saved in session files;
+  improvement to waitForQueries command.
+
   Revision 1.79  1997/11/18 23:26:57  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -93,6 +98,9 @@
 
   Revision 1.63  1997/04/21 22:55:36  guangshu
   Added several CPI commands.
+
+  Revision 1.63.6.1  1997/05/21 20:40:41  weaver
+  Changes for new ColorManager
 
   Revision 1.62  1997/03/25 17:59:25  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
@@ -391,6 +399,10 @@
 #include "Session.h"
 #include "GDataSock.h"
 
+#include "Color.h"
+//#define INLINE_TRACE
+#include "debug.h"
+
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -414,9 +426,10 @@ void ResetVkg()
   vkg = 0;
 }
 
-int ParseAPIDTE(int argc, char **argv, ControlPanel *control);
+int		ParseAPIDTE(int argc, char** argv, ControlPanel* control);
+int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control);
 
-int ParseAPI(int argc, char **argv, ControlPanel *control)
+int		ParseAPI(int argc, char** argv, ControlPanel* control)
 {
   // Result not static so this function is reentrant.
   char result[10 * 1024];
@@ -435,25 +448,84 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   printf("\n");
 #endif
 
-  // DTE commands are done in separate file which is shared by
-  // stand alone DTE gui.
-  
-  if((argc >= 1) && (strlen(argv[0]) >= 3) && !strncmp(argv[0], "dte", 3)){
-    
-    if(argc == 2 && !strcmp(argv[0],"dteImportFileType")){
-      char * name = dteImportFileType(argv[1]);
-      if (!name){
-	control->ReturnVal(API_NAK, strdup(""));
-	return -1;
-      }
-      control->ReturnVal(API_ACK, name);
-      return 1;
-    }
-    
-    return ParseAPIDTE(argc, argv, control);
-  }
-  
-  // The first few commands have a variable number of arguments
+	// DTE commands are done in separate file which is shared by
+	// stand alone DTE gui.
+
+	if((argc >= 1) && (strlen(argv[0]) >= 3) && !strncmp(argv[0], "dte", 3)){
+
+	    if(argc == 2 && !strcmp(argv[0],"dteImportFileType")){
+		 char * name = dteImportFileType(argv[1]);
+		 if (!name){
+		control->ReturnVal(API_NAK, strdup(""));
+		return -1;
+		 }
+		 control->ReturnVal(API_ACK, name);
+		 return 1;
+	    }
+	
+		return ParseAPIDTE(argc, argv, control);
+	}
+
+	// Branch off color handling commands to a new function. CEW 4/17/97
+	if (!strcmp(argv[0], "color"))
+		return ParseAPIColorCommands(argc, argv, control);
+
+	if (!strcmp(argv[0], "setViewOverrideColor"))
+		return 1;
+
+	// Added for global color changes, but useful otherwise
+	// Doesn't seem to work for some view categories? CEW 971105
+	if (!strcmp(argv[0], "getAllViews"))
+	{
+		int		index;
+
+		for(index = View::InitViewIterator(); View::MoreView(index);)
+		{
+			View*	view = View::NextView(index);
+
+			strcat(result, "{");
+			strcat(result, view->GetName());
+			strcat(result, "} ");
+		}
+
+		View::DoneViewIterator(index);
+
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[0], "getAllViews"))
+	{
+		int		iargc;
+		char**	iargv;
+
+		classDir->ClassNames("view", iargc, iargv);
+
+		for (int i=0; i<iargc; i++)
+		{
+			classDir->InstanceNames("view", iargv[i], numArgs, args);
+
+			for (int j=0; j<numArgs; j++)
+			{
+				View*	view = (View*)classDir->FindInstance(args[j]);
+
+				if (!view)
+				{
+					control->ReturnVal(API_NAK, "Cannot find view");
+					return -1;
+				}
+
+				strcat(result, "{");
+				strcat(result, view->GetName());
+				strcat(result, "} ");
+			}
+		}
+
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+// The first few commands have a variable number of arguments
 
   if (!strcmp(argv[0], "changeParam")) {
     classDir->ChangeParams(argv[1], argc - 2, &argv[2]);
@@ -488,7 +560,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 #endif
     char *name = classDir->CreateWithParams(argv[1], argv[2],
 					    argc - 3, &argv[3]);
-#if defined(DEBUG) || 0
+#ifdef DEBUG
     printf("Create - return value = %s\n", name);
 #endif
     control->SetIdle();
@@ -496,17 +568,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "");
     else
       control->ReturnVal(API_ACK, name);
-    return 1;
-  }
-
-  if (!strcmp(argv[0], "getTDataName")) {
-    TData *tdata = (TData *)classDir->FindInstance(argv[1]);
-    if (!tdata) {
-        control->ReturnVal(API_NAK, "Cannot find TData");
-        return -1;
-    }
-    char *tname = tdata->GetName();
-    control->ReturnVal(API_ACK, tname); 
     return 1;
   }
 
@@ -585,33 +646,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     return 1;
   }
 
-  if (!strcmp(argv[0], "setHistViewname")) {
-    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
-            return -1;
-    }
-    char *viewName = new char[strlen(argv[2]) + 1];
-    strcpy(viewName, argv[2]);
-    view->setHistViewname(viewName);
-
-    control->ReturnVal(API_ACK, "done");
-    return 1;
-  }
-
-  if (!strcmp(argv[0], "getHistViewname")) {
-    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
-	return -1;
-    }
-    char *name = NULL;
-    name = view->getHistViewname();
-
-    control->ReturnVal(API_ACK, name);
-    return 1;
-  }
-
   if (!strcmp(argv[0], "checkGstat")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -630,20 +664,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     return 1;
   }
 
-  if (!strcmp(argv[0], "getSourceName")) {
-   ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-        control->ReturnVal(API_NAK, "Cannot find view");
-        return -1;
-    }
-    TDataMap *map = view->GetFirstMap();
-    TData *tdata = map->GetTData();
-    char *sourceName = tdata->GetTableName();
-    control->ReturnVal(API_ACK, sourceName); 
-
-    return 1;
-  }
-
   if (!strcmp(argv[0], "isXDateType")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -651,90 +671,14 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         return -1;
     }
     if(view->IsXDateType()) {
-//	printf("X type is date\n");
+	printf("X type is date\n");
         strcpy(result, "1");
     } else {
-//	printf("X type is NOT date\n");
+	printf("X type is NOT date\n");
         strcpy(result, "0");
     }
     control->ReturnVal(API_ACK, result);
 
-    return 1;
-  }
-
-  if (!strcmp(argv[0], "isYDateType")) {
-    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-        control->ReturnVal(API_NAK, "Cannot find view");
-        return -1;
-    }
-    if(view->IsYDateType()) {
-//	printf("Y type is date\n");
-        strcpy(result, "1");
-    } else {
-//	printf("Y type is NOT date\n");
-        strcpy(result, "0");
-    }
-    control->ReturnVal(API_ACK, result);
-
-    return 1;
-  }
-
-  if (!strcmp(argv[0], "mapG2TAttr")) {
-    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-        control->ReturnVal(API_NAK, "Cannot find view");
-	return -1;
-    }
-    TDataMap *map = view->GetFirstMap();
-    if (!map) {
-	control->ReturnVal(API_NAK, "Cannot find Mapping");
-        return -1;
-    }
-    AttrInfo *attr = NULL;
-    if (!strcasecmp(argv[2], "X")) {
-      	attr = map->MapGAttr2TAttr(MappingCmd_X);
-    } else if (!strcasecmp(argv[2], "Y")) {
-      	attr = map->MapGAttr2TAttr(MappingCmd_Y);
-    } else if (!strcasecmp(argv[2], "Z")) {
-      	attr = map->MapGAttr2TAttr(MappingCmd_Z);
-    } else if (!strcasecmp(argv[2], "Color")) {
-        attr = map->MapGAttr2TAttr(MappingCmd_Color);
-    } else {
-      	fprintf(stderr, "Not implemented yet\n");
-      	control->ReturnVal(API_NAK, "GAttr type not implemented");
-	return -1;
-    }
-    if (attr) {
-      strcpy(result, attr->name);
-    } else {
-      strcpy(result, "0");
-    }
-    control->ReturnVal(API_ACK, result);
-    return 1;
-  }
-
-  if (!strcmp(argv[0], "mapT2GAttr")) {
-    char *gname = NULL;
-    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-    if (!view) {
-        control->ReturnVal(API_NAK, "Cannot find view");
-        return -1;
-    }
-    TDataMap *map = view->GetFirstMap();
-    if (!map) {
-        control->ReturnVal(API_NAK, "Cannot find Mapping");
-        return -1;
-    }
-    printf("argv[2] is %s\n", argv[2]);
-    gname = map->MapTAttr2GAttr(argv[2]);
-    if (gname == NULL) {
-	strcpy(result, "0");
-    } else {
-	strcpy(result, gname);
-    }
-    control->ReturnVal(API_ACK, result);
-    delete gname; 
     return 1;
   }
 
@@ -752,10 +696,12 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         return -1;
      }
      lens->SetLink(link);
-     lens->SetBgColor((GlobalColor)atoi(argv[4]));
+
+	 // Replace constant with a heuristically-chosen color?
+     lens->SetBackground(GetPColorID(lensBackColor));
 
      int index = lens->InitViewLensIterator();
-     for (int j = 5;  j < argc ; j++) {
+     for (int j = 4;  j < argc ; j++) {
          ViewGraph *v = (ViewGraph *)classDir->FindInstance(argv[j]);
          if (!v) {
             control->ReturnVal(API_NAK, "Cannot find view");
@@ -1150,7 +1096,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       
-#if defined(DEBUG) || 0
+#ifdef DEBUG
       printf("getSchema: \n");
       attrList->Print();
 #endif
@@ -1356,6 +1302,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;	      
     }
+
     if (!strcmp(argv[0], "getWinViews")) {
       ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
       if (!win) {
@@ -1374,6 +1321,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 
       return 1;
     }
+
     if (!strcmp(argv[0], "getLinkViews")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {
@@ -1388,17 +1336,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	strcat(result, "} ");
       }
       link->DoneIterator(index);
-      control->ReturnVal(API_ACK, result);
-      return 1;
-    }
-    if (!strcmp(argv[0], "getBgColor")) {
-      ViewWin *view = (ViewWin *)classDir->FindInstance(argv[1]);
-      if (!view) {
-	control->ReturnVal(API_NAK,"Cannot find view");
-	return -1;
-      }
-      GlobalColor color = view->GetBgColor();
-      sprintf(result,"%d", (int) color);
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -1476,15 +1413,9 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
           buff[i] = new char[64];  /*64 bytes is enough for double type */
       }
       BasicStats *allStats = vg->GetStatObj();
-      if (vg->IsYDateType()) {
-      	sprintf(buff[0], "%s", DateString(allStats->GetStatVal(STAT_MAX)));
-      	sprintf(buff[1], "%s", DateString(allStats->GetStatVal(STAT_MEAN)));
-      	sprintf(buff[2], "%s", DateString(allStats->GetStatVal(STAT_MIN)));
-      } else {
-      	sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
-      	sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
-      	sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
-      }
+      sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
+      sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
+      sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
       sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
 #if defined(DEBUG) || 0
       printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
@@ -1509,20 +1440,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         } else if(!strncmp(argv[1], "Hist:", 5)) {
 	  type = HIST_TYPE;
 	  viewName = &argv[1][5];
-        } else if(!strncmp(argv[1], "GstatX", 6)) {
+        } else if(!strncmp(argv[1], "GstatX: ", 8)) {
 	  //e.g. argv[1] = GstatX: View 1
 	  type = GSTATX_TYPE;
-	  viewName = strchr(argv[1], ':');
-	  viewName ++;
-	  while (*viewName == ' ') viewName ++;
-	  if (!strncmp(argv[1], "GstatXDTE", 9)) {
-	  	char *pos = strrchr(viewName, ':');
-		if (pos) *pos = '\0';
-	  }
-        } else if(!strncmp(argv[1], "GstatY", 6)) {
+	  viewName = &argv[1][8];
+        } else if(!strncmp(argv[1], "GstatY: ", 8)) {
 	  type = GSTATY_TYPE;
-	  viewName = strchr(argv[1], ':');
-	  viewName ++;
+	  viewName = &argv[1][8];
         } else {
 	  control->ReturnVal(API_NAK, "Invalid stat type");
 	  return -1;
@@ -1554,7 +1478,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	}
        DOASSERT(buffObj != NULL, "didn't find stats buffer\n");
       
-         if (buffObj ->Open("r") != StatusOk)
+         if (!(buffObj ->Open("r") == StatusOk))
          {
 	     reportError("Cannot open statBuffer object for read", devNoSyserr);
 	     control->ReturnVal(API_NAK, "statBuffer object");
@@ -1632,19 +1556,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       /* Return pile mode flag */
       sprintf(result, "%d", (vg->IsInPileMode() ? 1 : 0));
-      control->ReturnVal(API_ACK, result);
-      return 1;
-    }
-    if (!strcmp(argv[0], "getViewOverrideColor")) {
-      View *view = (View *)classDir->FindInstance(argv[1]);
-      if (!view) {
-	control->ReturnVal(API_NAK, "Cannot find view");
-	return -1;
-      }
-      Boolean active;
-      GlobalColor color = view->GetOverrideColor(active);
-      sprintf(result, "%d %d", (active ? 1 : 0),
-	      (int)color);
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -2313,7 +2224,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find tdata");
 	return -1;
       }
-      if (tdata->Save(argv[2]) != StatusFailed) {
+      if (!(tdata->Save(argv[2]) == StatusFailed)) {
         control->ReturnVal(API_ACK, "done");
         return 1;
       } else {
@@ -2531,17 +2442,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       viewWin->ExportImage(format, argv[3]);
 
-      control->ReturnVal(API_ACK, "done");
-      return 1;
-    }
-    if (!strcmp(argv[0], "setViewOverrideColor")) {
-      View *view = (View *)classDir->FindInstance(argv[1]);
-      if (!view) {
-	control->ReturnVal(API_NAK, "Cannot find view");
-	return -1;
-      }
-      Boolean active = (atoi(argv[2]) == 1);
-      view->SetOverrideColor((GlobalColor) atoi(argv[3]), active);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
@@ -2830,7 +2730,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
   }
-
+  
   fprintf(stderr, "Unrecognized command or wrong number of args: '%s'\n",
     argv[0]);
   fprintf(stderr, "argc = %d\n", argc);
@@ -2989,3 +2889,339 @@ WriteFileToDataSock(ControlPanel *control, int port, char *tmpFile)
 
   return 1;
 }
+
+//******************************************************************************
+
+int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
+{
+	Trace("ParseAPIColorCommands()");
+
+	char		result[10 * 1024];
+	ClassDir*	classDir = control->GetClassDir();
+
+	if (!strcmp(argv[1], "GetColor"))
+	{
+		Trace("    Command: color GetColor");
+
+		PColorID	pcid = ((PColorID)atoi(argv[2]));
+		RGB			rgb;
+
+		if (!PM_GetRGB(pcid, rgb) && !PM_GetRGB((PColorID)0, rgb))
+		{
+			control->ReturnVal(API_ACK, "Couldn't find Color");
+			return -1;
+		}
+			
+		strcpy(result, rgb.ToString().c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "GetColorID"))
+	{
+		Trace("    Command: color GetColorID");
+
+		PColorID	pcid;
+		RGB			rgb;
+
+		rgb.FromString(argv[2]);
+
+		if (!PM_GetPColorID(rgb, pcid))
+		{
+			control->ReturnVal(API_ACK, "Couldn't find RGB");
+			return -1;
+		}
+
+		sprintf(result, "%ld", pcid);
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "GetForeground"))
+	{
+		Trace("    Command: color GetForeground");
+
+		ViewWin*	view = (ViewWin*)classDir->FindInstance(argv[2]);
+
+		if (!view)
+		{
+			control->ReturnVal(API_NAK, "Cannot find view");
+			return -1;
+		}
+
+		PColorID	pcid = view->GetForeground();
+		RGB			rgb;
+
+		if (!PM_GetRGB(pcid, rgb) && !PM_GetRGB((PColorID)0, rgb))
+		{
+			control->ReturnVal(API_NAK, "Couldn't get color");
+			return -1;
+		}
+
+		string		s = rgb.ToString();
+		
+		strcpy(result, s.c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "GetBackground"))
+	{
+		Trace("    Command: color GetBackground");
+
+		ViewWin*	view = (ViewWin*)classDir->FindInstance(argv[2]);
+
+		if (!view)
+		{
+			control->ReturnVal(API_NAK,"Cannot find view");
+			return -1;
+		}
+
+		PColorID	pcid = view->GetBackground();
+		RGB			rgb;
+
+		if (!PM_GetRGB(pcid, rgb) && !PM_GetRGB((PColorID)0, rgb))
+		{
+			control->ReturnVal(API_NAK, "Couldn't get color");
+			return -1;
+		}
+
+		string		s = rgb.ToString();
+		
+		strcpy(result, s.c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "SetForeground"))
+	{
+		Trace("    Command: color SetForeground");
+
+		View*	view = (View*)classDir->FindInstance(argv[2]);
+
+		if (!view)
+		{
+			control->ReturnVal(API_NAK, "Cannot find view");
+			return -1;
+		}
+
+		PColorID	pcid;
+		RGB			rgb;
+
+		rgb.FromString(argv[3]);
+
+		if (!PM_GetPColorID(rgb, pcid))
+		{
+			control->ReturnVal(API_NAK, "Couldn't set color");
+			return -1;
+		}
+
+		view->SetForeground(pcid);
+		control->ReturnVal(API_ACK, "done");
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "SetBackground"))
+	{
+		Trace("    Command: color SetBackground");
+
+		View*	view = (View*)classDir->FindInstance(argv[2]);
+
+		if (!view)
+		{
+			control->ReturnVal(API_NAK, "Cannot find view");
+			return -1;
+		}
+
+		PColorID	pcid;
+		RGB			rgb;
+
+		rgb.FromString(argv[3]);
+
+		if (!PM_GetPColorID(rgb, pcid))
+		{
+			control->ReturnVal(API_NAK, "Couldn't set color");
+			return -1;
+		}
+
+		view->SetBackground(pcid);
+		control->ReturnVal(API_ACK, "done");
+		return 1;
+	}
+
+//	// This command does nothing right now (override color doesn't exist)
+//	if (!strcmp(argv[1], "GetOverrideColor"))
+//	{
+//		Trace("    Command: color GetOverrideColor");
+
+//		View*	view = (View*)classDir->FindInstance(argv[2]);
+
+//		if (!view)
+//		{
+//			control->ReturnVal(API_NAK, "Cannot find view");
+//			return -1;
+//		}
+
+//		Boolean		active = false;
+////		ColorID		color = view->GetOverrideColor(active);
+//		ColorID		color = 0;
+
+//		sprintf(result, "%d %d", (active ? 1 : 0), (int)color);
+//		control->ReturnVal(API_ACK, result);
+//		return 1;
+//    }
+
+//	// This command does nothing right now (override color doesn't exist)
+//    if (!strcmp(argv[1], "SetOverrideColor"))
+//	{
+//		Trace("    Command: color SetOverrideColor");
+
+//		View*	view = (View*)classDir->FindInstance(argv[2]);
+
+//		if (!view)
+//		{
+//			control->ReturnVal(API_NAK, "Cannot find view");
+//			return -1;
+//		}
+
+//		Boolean		active = (atoi(argv[3]) == 1);
+
+////		view->SetOverrideColor((ColorID)atoi(argv[4]), active);
+//		control->ReturnVal(API_ACK, "done");
+//		return 1;
+//	}
+
+	if (!strcmp(argv[1], "GetAllColors"))
+	{
+		Trace("    Command: color GetAllColors");
+
+		RGBList		rgbList = CM_GetRGBList();
+		string		s;
+		
+		for (unsigned int i=0; i<rgbList.size(); i++)
+		{
+			s += rgbList[i].ToString();
+
+			if (i < rgbList.size() - 1)
+				s += ' ';
+		}
+
+		strcpy(result, s.c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	// Command to request automatic color selection from the ColorManager.
+	// VERY DUMB for now. Finds most distant color. Push into the real CM later.
+	// The commented code inside is obsolete.
+	if (!strcmp(argv[1], "AutoColor"))
+	{
+		Trace("    Command: color AutoColor");
+
+		ColorID		bg, fg = 0;
+//		float		r = 0 , g = 0, b = 0, d, dmax = 0;
+//		RGB			back, fore;
+
+		bg = (ColorID)atoi(argv[2]);			// Background ColorID arg
+//		ColorMgr::GetColorRgb(bg, r, g, b);		// Get rgb values from ColorMgr
+//		back.Set(r, g, b);
+		
+//		for (int i=1; i<43; i++)
+//		{
+//			ColorMgr::GetColorRgb((GlobalColor)i, r, g, b);
+//			fore.Set(r, g, b);
+//			d = back.Distance(fore);			// Calculate color distance
+
+////			printf("  Trying (%f,%f,%f), d = %f\n", r, g, b, d);
+			
+//			if (d > dmax)
+//			{
+//				dmax = d;
+//				fg = (GlobalColor)i;			// Remember new maximal distance
+//			}
+//		}
+
+		fg = 0;	// Always black
+
+		sprintf(result, "%d", (int)fg);
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "NewPalette"))
+	{
+		Trace("    Command: color NewPalette");
+
+		string		s(argv[2]);
+		PaletteID	pid = PM_NewPalette(s);
+
+		if (pid == nullPaletteID)
+		{
+			control->ReturnVal(API_ACK, "Couldn't create palette");
+			return -1;
+		}
+
+		sprintf(result, "%d", (int)pid);
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "GetCurrentPalette"))
+	{
+		Trace("    Command: color GetCurrentPalette");
+
+		PaletteID	pid = PM_GetCurrentPalette();
+
+		if (pid == nullPaletteID)
+		{
+			control->ReturnVal(API_ACK, "Couldn't get palette");
+			return -1;
+		}
+
+		sprintf(result, "%d", (int)pid);
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	// This command always "succeeds", but failure to change the palette
+	// is indicated by returning the current pid after the operation.
+	if (!strcmp(argv[1], "SetCurrentPalette"))
+	{
+		Trace("    Command: color SetCurrentPalette");
+
+		PaletteID	pid = (PaletteID)atoi(argv[2]);
+
+		PM_SetCurrentPalette(pid);
+
+		if (pid != PM_GetCurrentPalette())
+			View::RefreshAll();
+
+		sprintf(result, "%d", (int)PM_GetCurrentPalette());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "GetPaletteColors"))
+	{
+		Trace("    Command: color GetPaletteColors");
+
+		PaletteID	pid = (PaletteID)atoi(argv[2]);
+		Palette*	palette = PM_GetPalette(pid);
+
+		if (palette == NULL)
+		{
+			control->ReturnVal(API_ACK, "Couldn't get palette colors");
+			return -1;
+		}
+
+		string		s = palette->ToString();
+
+		strcpy(result, s.c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	return -1;
+}
+
+//******************************************************************************

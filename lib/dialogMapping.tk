@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.35  1997/10/07 15:28:25  wenger
+#       Changed "Shape" to "SymbolType" in mapping GUI (note that "Symbol Type"
+#       won't work because of the space).
+#
 #       Revision 1.34  1997/10/02 18:48:22  wenger
 #       Removed diagnostic output.
 #
@@ -162,12 +166,12 @@ proc DoEditMapping {} {
 
     # Bring up the mapping dialog and initialize for the current View
 
-    BringUpMappingDialog  .editMapping $curView
+    BringUpMappingDialog .editMapping $curView
     UpdateMappingDialog .editMapping $curView
 }
 
 proc BringUpMappingDialog { w curview } {
-    global dialogParamVar dialogListVar DEViseOldColors DEViseShapes
+    global dialogParamVar dialogListVar DEViseShapes
 	global mappingValueShape
 #	global DEViseShapePositions
     
@@ -179,20 +183,21 @@ proc BringUpMappingDialog { w curview } {
     
 #currently only enabled for piled views
     button $w.message.flip -text Flip -state disabled \
-	    -command { FlipStackedView }
+			-command { FlipStackedView }
     
     frame $w.mapping
     frame $w.mapping.label
     frame $w.mapping.value
     
     set labelWidth 20
-    set valueWidth 30
+	set valueWidth 30
+	set colorList [PaletteColors]
     
     set mappings [list \
 	    [list X {0 1 2 3 4 5 6 7 8 9 10} ] \
 	    [list Y {0 1 2 3 4 5 6 7 8 9 10} ] \
 	    [list Z {0 1 2 3 4 5 6 7 8 9 10} ] \
-	    [list Color $DEViseOldColors ] \
+	    [list Color $colorList ] \
 	    [list Size {0 1 2 3 4} ] \
 	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10}] \
 	    [list Orientation {0 90 180 270} ] \
@@ -240,8 +245,12 @@ proc BringUpMappingDialog { w curview } {
 #		}
 
 		if {$itemname == "Color"} {
+			set map [lindex [DEVise getViewMappings $curview] 0]
+			set params [DEVise getInstParam $map]
+			set color [DEVise color GetColor [lindex [lindex $params 6] 1]]
+			set bg [DEVise color GetBackground $curview]
 			$w.mapping.value.p$itemname.menu add command -label "Constant..." \
-				-command "getColor mappingValue$itemname true"
+				-command "DoMappingColorDialog mappingValue$itemname $bg $color"
 		} else {
 			$w.mapping.value.p$itemname.menu add cascade -label "Constant" \
 				-menu $w.mapping.value.p$itemname.menu.constant
@@ -319,179 +328,192 @@ proc BringUpMappingDialog { w curview } {
  }
 
 proc UpdateMappingDialog { w curView } {
-     global DEViseOldColors DEViseShapes
+	global DEViseShapes
 
-     if {! [winfo exists $w] } {
-	 return
-     }
-     if { $curView == "" } {
-	 ClearMappingDialog $w
-     } 	 
-     if {[DEVise getViewPileMode $curView]} {
-	 set win [DEVise getViewWin $curView]
-	 set curView [lindex [DEVise getWinViews $win] end]
-	 $w.message.flip configure -state normal
-     } else {
-	 $w.message.flip configure -state disabled
-     }
-     
-     $w.message.txt configure -text "Edit Mapping for : $curView"
-     
-     # Get mapping for the view (first one)
-     set map [lindex [DEVise getViewMappings $curView] 0]
-     #See if map is interpreted
-     set found 0
-     foreach m [InterpretedGData] {
-	 if {$m == $map} {
-	     set found 1
-	     break
-	 }
-     }
-     if {!$found} {
-	 dialog .editError "Mapping Not Interpreted" \
-		 "View has a compiled mapping which cannot be edited." "" 0 OK
-	     ClearMappingDialog $w
-	 return
-     }
-     global sourceList derivedSourceList
-     # Get parameters for the mapping
-     set params [DEVise getInstParam $map]
-     
-     if {$params == ""} {
-	 dialog .editError "No Mapping Parameters" \
-		 "Mapping has no parameters." "" 0 OK
-	 ClearMappingDialog $w
-	 return
-     }
-     
-     #     puts "params ========== $params"
-     set tdata [lindex [lindex $params 0] 1]
-     set schemaname ""
-     set error [catch {set sfname [lindex $derivedSourceList($tdata) 3]}]
-     
-     if {$error > 0} {
-	 
-	 #	set nextToLast [string length $tdata]
-	 #	set nextToLast [expr $nextToLast - 2]
-	 #	set tdata [string range $tdata 0 $nextToLast]
-	 
-         # Kludge fix for bug 223...
-	 if {[string index $tdata 0] != "."} {
-	   puts "Can't view mapping of statistics view"
-	   destroy $w
-	   return
-	 }
-	 # ...end of kludge.
+	if {! [winfo exists $w] } {
+		return
+	}
 
-	 set sourcedef [DEVise dteShowCatalogEntry $tdata]
-	 # 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
-	 set sourcedef [lindex $sourcedef 0]
-	 
-	 set err [expr [llength $sourcedef] == 0]
-	 
-	 if {$err == 0} {
-	     # file exists
-	     set stype [lindex $sourcedef 1]
-	     if {[isDTEType $stype]} {
-		 set schemaname $tdata
-	     } else { 
-		 set sfname [lindex $sourcedef 4]
-		 set schemaname [file tail $sfname]
-	     }
-	 } 
-     }
-     set pos [string first : $tdata]
-     set categ ""
-     if {$pos > 0} {
-	 set categ [string range $tdata 0 [expr $pos - 1]]
-     } else {
-	 set categ $tdata
-     }
-     set stat 0
-     if { $categ == "Hist" || $categ == "HistDate" || $categ == "Stat" || \
-	     $categ == "GstatX" || $categ == "GstatXDTE" || $categ == "GstatXDate"|| \
-	     $categ == "GstatY" || $categ == "GstatYDate" } {
-	 set stat 1
-     }
-     if {$schemaname == "" && $stat == 1} {
-	 set schemaname [file tail $sfname]
-     }
-     
-     #     puts "schemaname = $schemaname"
-     set xParm [lindex [lindex $params 3] 1]
-     set yParm [lindex [lindex $params 4] 1]
-     set zParm [lindex [lindex $params 5] 1]
-     set colorParm [findNameValue $DEViseOldColors [lindex [lindex $params 6] 1]]
-     set sizeParm [lindex [lindex $params 7] 1]
-     set patternParm [lindex [lindex $params 8] 1]
-     set orientParm [lindex [lindex $params 9] 1]
-     set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 10] 1]]
-     set shapeAttr0 [lindex [lindex $params 11] 1]
-     set shapeAttr1 [lindex [lindex $params 12] 1]
-     set shapeAttr2 [lindex [lindex $params 13] 1]
-     set shapeAttr3 [lindex [lindex $params 14] 1]
-     set shapeAttr4 [lindex [lindex $params 15] 1]
-#	 set shapePosition [lindex [lindex $params 15] 1]
+	if { $curView == "" } {
+		ClearMappingDialog $w
+	} 	 
+ 
+	if {[DEVise getViewPileMode $curView]} {
+		set win [DEVise getViewWin $curView]
+		set curView [lindex [DEVise getWinViews $win] end]
+		$w.message.flip configure -state normal
+	} else {
+		$w.message.flip configure -state disabled
+	}
 
-     set mappings [list \
-	     [list X $xParm] \
-	     [list Y $yParm] \
-	     [list Z $zParm] \
-	     [list Color $colorParm] \
-	     [list Size $sizeParm] \
-	     [list Pattern $patternParm] \
-	     [list Orientation $orientParm] \
-	     [list SymbolType $shapeParm ] \
-	     [list "ShapeAttr0" $shapeAttr0] \
-	     [list "ShapeAttr1" $shapeAttr1] \
-	     [list "ShapeAttr2" $shapeAttr2] \
-	     [list "ShapeAttr3" $shapeAttr3] \
-	     [list "ShapeAttr4" $shapeAttr4]]
-#		 [list "ShapePosition" $shapePosition]
-     
-#    set topgrp [SelectTopGroup $schemaname]
+	$w.message.txt configure -text "Edit Mapping for : $curView"
 
-#	it cannot find the top group for some reason???
-#	but it should be there!	 DD
+	# Get mapping for the view (first one)
+	set map [lindex [DEVise getViewMappings $curView] 0]
+	#See if map is interpreted
+	set found 0
+	foreach m [InterpretedGData] {
+		if {$m == $map} {
+			set found 1
+			break
+		}
+	}
+
+	if {!$found} {
+		dialog .editError "Mapping Not Interpreted" \
+				"View has a compiled mapping which cannot be edited." "" 0 OK
+		ClearMappingDialog $w
+		return
+	}
+
+	global sourceList derivedSourceList
+	# Get parameters for the mapping
+	set params [DEVise getInstParam $map]
+
+	if {$params == ""} {
+		dialog .editError "No Mapping Parameters" \
+				"Mapping has no parameters." "" 0 OK
+		ClearMappingDialog $w
+		return
+	}
+     
+	#     puts "params ========== $params"
+	set tdata [lindex [lindex $params 0] 1]
+	set schemaname ""
+	set error [catch {set sfname [lindex $derivedSourceList($tdata) 3]}]
+     
+	if {$error > 0} { 
+		#	set nextToLast [string length $tdata]
+		#	set nextToLast [expr $nextToLast - 2]
+		#	set tdata [string range $tdata 0 $nextToLast]
+		# Kludge fix for bug 223...
+		if {[string index $tdata 0] != "."} {
+			puts "Can't view mapping of statistics view"
+			destroy $w
+			return
+		}
+		# ...end of kludge.
+
+		set sourcedef [DEVise dteShowCatalogEntry $tdata]
+		# 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
+		set sourcedef [lindex $sourcedef 0]
+
+		set err [expr [llength $sourcedef] == 0]
+
+		if {$err == 0} {
+			# file exists
+			set stype [lindex $sourcedef 1]
+
+			if {[isDTEType $stype]} {
+				set schemaname $tdata
+			} else { 
+				set sfname [lindex $sourcedef 4]
+				set schemaname [file tail $sfname]
+			}
+		} 
+	}
+
+	set pos [string first : $tdata]
+	set categ ""
+
+	if {$pos > 0} {
+		set categ [string range $tdata 0 [expr $pos - 1]]
+	} else {
+		set categ $tdata
+	}
+
+	set stat 0
+	if { $categ == "Hist" || $categ == "HistDate" || $categ == "Stat" || \
+			$categ == "GstatX" || $categ == "GstatXDTE" || \
+			$categ == "GstatXDate"|| \
+			$categ == "GstatY" || $categ == "GstatYDate" } {
+		set stat 1
+	}
+
+	if {$schemaname == "" && $stat == 1} {
+		set schemaname [file tail $sfname]
+	}
+
+	#     puts "schemaname = $schemaname"
+	set xParm [lindex [lindex $params 3] 1]
+	set yParm [lindex [lindex $params 4] 1]
+	set zParm [lindex [lindex $params 5] 1]
+	set colorParm [lindex [lindex $params 6] 1]
+	set sizeParm [lindex [lindex $params 7] 1]
+	set patternParm [lindex [lindex $params 8] 1]
+	set orientParm [lindex [lindex $params 9] 1]
+	set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 10] 1]]
+	set shapeAttr0 [lindex [lindex $params 11] 1]
+	set shapeAttr1 [lindex [lindex $params 12] 1]
+	set shapeAttr2 [lindex [lindex $params 13] 1]
+	set shapeAttr3 [lindex [lindex $params 14] 1]
+	set shapeAttr4 [lindex [lindex $params 15] 1]
+	#	 set shapePosition [lindex [lindex $params 15] 1]
+
+	set mappings [list \
+			[list X $xParm] \
+			[list Y $yParm] \
+			[list Z $zParm] \
+			[list Color $colorParm] \
+			[list Size $sizeParm] \
+			[list Pattern $patternParm] \
+			[list Orientation $orientParm] \
+			[list SymbolType $shapeParm ] \
+			[list "ShapeAttr0" $shapeAttr0] \
+			[list "ShapeAttr1" $shapeAttr1] \
+			[list "ShapeAttr2" $shapeAttr2] \
+			[list "ShapeAttr3" $shapeAttr3] \
+			[list "ShapeAttr4" $shapeAttr4]]
+	#	[list "ShapePosition" $shapePosition]
+     
+	#    set topgrp [SelectTopGroup $schemaname]
+
+	#	it cannot find the top group for some reason???
+	#	but it should be there!	 DD
 
 	set topgrp __default
 
-#     $w.mapping.value.p$itemname configure -state normal
+	#     $w.mapping.value.p$itemname configure -state normal
 
-     foreach item $mappings {
-	 set itemname [lindex $item 0]
-	 set itemval [lindex $item 1]
+	foreach item $mappings {
+		set itemname [lindex $item 0]
+		set itemval [lindex $item 1]
+
+#		if {$itemname == "ShapePosition"} {
+#			continue
+#		}
+
+		global mappingValue$itemname
+
+		catch { destroy $w.mapping.value.p$itemname.menu.variable }
 	 
-#		 if {$itemname == "ShapePosition"} {
-#			 continue
-#		 }
+		setupAttrRadioMenu $w.mapping.value.p$itemname.menu.variable \
+				mappingValue$itemname "\$" $schemaname $topgrp $topgrp
+		set mappingValue$itemname $itemval
+	}
 
-	 global mappingValue$itemname
-	 catch { destroy $w.mapping.value.p$itemname.menu.variable }
+	$w.but.apply configure -command \
+			" UpdateMappings {$map} {$params} {$mappings} "
 
-	 setupAttrRadioMenu $w.mapping.value.p$itemname.menu.variable \
-		 mappingValue$itemname "\$" $schemaname $topgrp $topgrp
-	 set mappingValue$itemname $itemval
-     }
-     $w.but.apply configure -command \
-	     " UpdateMappings {$map} {$params} {$mappings} "
-
-	 UpdateShapeAttrs $w $shapeParm
+	UpdateShapeAttrs $w $shapeParm
 }
 
 
 proc ClearMappingDialog { w } {
-    if {! [WindowVisible $w ] } {
-	return
-    }
-    set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
-	    "ShapeAttr0" "ShapeAttr1" ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \ # "ShapePosition" \
+	if {! [WindowVisible $w ] } {
+		return
+	}
+
+	set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
+			"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4"
+#		"ShapePosition"
     ]
-    foreach item $mappings  {
-	global mappingValue$item
-	set mappingValue$item ""
-	$w.mapping.value.p$item configure -state disabled
-    }
+
+	foreach item $mappings  {
+		global mappingValue$item
+		set mappingValue$item ""
+		$w.mapping.value.p$item configure -state disabled
+	}
 }
 
 
@@ -563,28 +585,32 @@ proc updateMapName {w xval yval} {
 }
 
 proc ChangeParams { map oldparams newmap } {
-    global dialogParamVar dialogListVar DEViseOldColors DEViseShapes 
+    global dialogParamVar dialogListVar DEViseShapes 
 
     if { $newmap == ""} {
-	return
+		return
     }
+
+	set color [lindex $newmap 3]
+	# For now, map RGB "name" into constant color index
+#	set color [DEVise color GetColorID [lindex $newmap 3]]
 
     # extract parameters
     set newparams [list [lindex [lindex $oldparams 0] 1] \
-	    [lindex [lindex $oldparams 1] 1] \
-	    [lindex [lindex $oldparams 2] 1] \
-	    [lindex $newmap 0] \
-	    [lindex $newmap 1] \
-	    [lindex $newmap 2] \
-	    [findNumericValue $DEViseOldColors [lindex $newmap 3]] \
-	    [lindex $newmap 4] \
-	    [lindex $newmap 5] \
-	    [lindex $newmap 6] \
-	    [findNumericValue $DEViseShapes [lindex $newmap 7]] \
-	    [lindex $newmap 8] [lindex $newmap 9] \
-	    [lindex $newmap 10] [lindex $newmap 11] \
-	    [lindex $newmap 12] \
-	    ]
+			[lindex [lindex $oldparams 1] 1] \
+			[lindex [lindex $oldparams 2] 1] \
+			[lindex $newmap 0] \
+			[lindex $newmap 1] \
+			[lindex $newmap 2] \
+			$color \
+			[lindex $newmap 4] \
+			[lindex $newmap 5] \
+			[lindex $newmap 6] \
+			[findNumericValue $DEViseShapes [lindex $newmap 7]] \
+			[lindex $newmap 8] [lindex $newmap 9] \
+			[lindex $newmap 10] [lindex $newmap 11] \
+			[lindex $newmap 12] \
+			]
     
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $newparams"
@@ -625,7 +651,6 @@ proc UpdateMappings { map params mappings } {
 	global mappingValue$itemname
 	lappend newmap [deref mappingValue$itemname]
     }
-    #puts $newmap
     ChangeParams $map $params $newmap
     ChangeViewMapping $map
 

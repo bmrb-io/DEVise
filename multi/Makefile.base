@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1997/11/14 00:41:12  donjerko
+#  This file now includes relevant definitions from generic/Makefile.base
+#
 #  Revision 1.25  1997/08/11 14:15:21  wenger
 #  Modifications to get DEVise to compile on Linux.
 #
@@ -37,6 +40,9 @@
 #  read in the DList code; fixed bug that caused 1.4 version of multi to
 #  always crash; better error messages in DTE command parser; version is
 #  now 1.4.4.
+#
+#  Revision 1.20.2.1  1997/05/21 20:41:23  weaver
+#  Changes for new ColorManager
 #
 #  Revision 1.20  1997/04/04 15:44:58  wenger
 #  Set up makefiles to allow making a 'profile' version of Devise.

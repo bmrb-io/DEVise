@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.16.6.1  1997/05/21 20:40:44  weaver
+  Changes for new ColorManager
+
+  Revision 1.16  1997/02/26 16:31:44  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.15.4.1  1997/02/19 19:45:54  jussi
   Turned some printf()'s into fprintf()'s.
 
@@ -100,9 +106,10 @@
 #include <signal.h>
 #include <string.h>
 
-#ifdef __GNUG__
-#pragma implementation "HashTable.h"
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "HashTable.h"
+//#endif
 
 #include "SBufMgr.h"
 #include "Exit.h"

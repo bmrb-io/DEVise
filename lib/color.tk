@@ -1,0 +1,401 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+
+
+##******************************************************************************
+## Libraries
+##******************************************************************************
+
+##******************************************************************************
+## Globals
+##******************************************************************************
+
+set monochrome 0
+
+set colors(controlPanelForeground) white
+set colors(controlPanelBackground) black
+
+set colors(aboutFrameForeground) gold
+set colors(aboutFrameBackground) DarkOliveGreen
+set colors(aboutFrameHighlight) white
+
+set colors(defaultViewForeground) black
+set colors(defaultViewBackground) white
+
+set colors(textHighlight) red
+set colors(layoutModeText) red
+set colors(displayModeText) white
+set colors(stopModeText) red
+set colors(runningModeText) white
+
+set colors(layoutManagerBackground) white
+set colors(rubberBandForeground) black
+set colors(rubberBandBackground) white
+
+set isColorSelected 0
+
+set paletteDir "."
+if { [info exists env(DEVISE_PALETTE)] } {
+	set paletteDir $env(DEVISE_PALETTE)
+}
+set curPaletteDir $paletteDir
+
+##******************************************************************************
+## Methods (Initialization)
+##******************************************************************************
+
+proc InitColor {} {
+	global monochrome colors palettes
+
+	if {$monochrome} {
+		tk colormodel . monochrome
+	} else {
+		tk_setPalette \
+				background $colors(controlPanelBackground) \
+				foreground $colors(controlPanelForeground) \
+				selectBackground $colors(controlPanelForeground) \
+				selectForeground $colors(controlPanelBackground)
+		. configure -bg $colors(controlPanelBackground)
+	}
+}
+
+proc InitColorMenu { m } {
+	menubutton $m.color -text Color -underline 0 \
+			-menu $m.color.menu -state normal
+
+	menu $m.color.menu -tearoff 0
+
+	$m.color.menu add command -label "Global Foreground..." -state normal \
+			-command { DoColorDialog 1 2 }
+	$m.color.menu add command -label "Global Background..." -state normal \
+			-command { DoColorDialog 0 2 }
+	$m.color.menu add separator
+	$m.color.menu add command -label "Window Foreground..." -state normal \
+			-command { DoColorDialog 1 1 }
+	$m.color.menu add command -label "Window Background..." -state normal \
+			-command { DoColorDialog 0 1 }
+	$m.color.menu add separator
+	$m.color.menu add command -label "View Foreground..." -state normal \
+			-command { DoColorDialog 1 0 }
+	$m.color.menu add command -label "View Background..." -state normal \
+			-command { DoColorDialog 0 0 }
+	$m.color.menu add separator
+	$m.color.menu add command -label "Palette..." -state normal \
+			-command DoPaletteDialog
+}
+
+##******************************************************************************
+## Methods (Color)
+##******************************************************************************
+
+proc DoColorDialog { isForeground {scope 0} } {
+    global curView rgb isColorSelected colors pids
+
+	if { ![info exists pids(def)] } {
+		InitPalettes
+	}
+
+    if {$scope != "2" && ![CurrentView]} {
+		return
+    }
+
+    if {$curView != ""} {
+		set fg [DEVise color GetForeground $curView]
+		set bg [DEVise color GetBackground $curView]
+	} else {
+		set fg $colors(defaultViewForeground)
+		set bg $colors(defaultViewBackground)
+	}
+
+	if {$isForeground} {
+		ColorDialog rgb $bg $fg "Foreground"
+	} else {
+		ColorDialog rgb $fg $bg "Background"
+	}
+
+    if {$isColorSelected} {
+		SetColor $rgb $isForeground $scope
+    }
+}
+
+proc DoMappingColorDialog { varname background current } {
+	global $varname isColorSelected newRGB
+
+	set newRGB "#000000000000"
+	ColorDialog newRGB $background $current "Mapping"
+
+	if {$isColorSelected} {
+		set $varname [DEVise color GetColorID $newRGB]
+	}
+}
+
+proc ColorDialog { varname background current {type "A"} } {
+    global $varname isColorSelected pids
+
+    if {[WindowVisible .colorDialog]} {
+		return
+    }
+
+	if { ![info exists pids(def)] } {
+		InitPalettes
+	}
+
+    set isColorSelected 1
+	set colorList [PaletteColors]
+	set text $current
+	set foo text
+    set row -1
+    set col -1
+    set maxcol 8
+    set size 1
+
+    toplevel .colorDialog
+    wm title .colorDialog "Select $type Color"
+    wm geometry .colorDialog +100+100
+
+    frame .colorDialog.top -relief groove -borderwidth 2
+    frame .colorDialog.bot
+    pack .colorDialog.top -side top -fill both -expand 1
+    pack .colorDialog.bot -side bottom -fill x
+
+    foreach val $colorList {
+		set color $val
+
+		if {$col < 0} {
+			incr row
+			set col 0
+			frame .colorDialog.top.row$row -bg $background
+			pack .colorDialog.top.row$row -side top -fill x -expand 1
+		}
+
+		button .colorDialog.top.row$row.col$col -background $color \
+				-activebackground $color -highlightbackground $color \
+				-width $size -border 0 -cursor hand2 \
+				-command "set $foo $color"
+
+		pack .colorDialog.top.row$row.col$col -side left -fill x \
+				-padx 8 -pady 8 -expand 1
+		incr col
+
+		if {$col >= $maxcol} {
+			set col -1
+		}
+	}
+
+    # Add empty frames at end of last row
+    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
+		button .colorDialog.top.row$row.col$col \
+				-background $background \
+				-foreground $background \
+				-activebackground $background \
+				-highlightbackground $background \
+				-highlightcolor $background \
+				-width $size -border 0 -state disabled
+		pack .colorDialog.top.row$row.col$col -side left -fill x \
+				-padx 8 -pady 8 -expand 1
+    }
+
+    label .colorDialog.bot.rgb -textvariable text
+    pack .colorDialog.bot.rgb -side left
+
+    button .colorDialog.bot.cancel -text Cancel \
+			-command "set isColorSelected 0; destroy .colorDialog"
+    button .colorDialog.bot.ok -text OK \
+			-command "set $varname $$foo; destroy .colorDialog"
+    pack .colorDialog.bot.ok .colorDialog.bot.cancel -side right
+
+    tkwait visibility .colorDialog
+    grab set .colorDialog
+    tkwait window .colorDialog
+}
+
+proc SetColor { rgb isForeground {scope 0} } {
+    global curView
+
+    if {$scope == "2"} {
+		set viewList [DEVise getAllViews]
+	} elseif {$scope == "1"} {
+		set viewList [DEVise getWinViews [DEVise getViewWin $curView]]
+    } else {
+        set viewList [list $curView]
+    }
+
+    foreach viewName $viewList {
+        set curViewClass [GetClass view $viewName]
+		
+		if ($isForeground) {
+			DEVise color SetForeground $viewName $rgb
+		} else {
+			DEVise color SetBackground $viewName $rgb
+		}
+    }
+}
+
+#*******************************************************************************
+# Methods (Palette)
+#*******************************************************************************
+
+proc InitPalettes {} {
+	global curpalette palettes pids
+
+	set curpalette "def"
+	set pid [DEVise color GetCurrentPalette]
+	set palettes($curpalette) [DEVise color GetPaletteColors $pid]
+	set pids($curpalette) $pid
+}
+
+proc DoPaletteDialog {} {
+	global curpalette palettes pids
+
+	if { ![info exists pids(def)] } {
+		InitPalettes
+	}
+
+	set oldpalette $curpalette
+
+	PaletteDialog
+
+	if { $oldpalette == $curpalette } {
+		return
+	}
+
+	set pid [DEVise color SetCurrentPalette $pids($curpalette)]
+
+	if { $pid != $pids($curpalette) } {
+		set curpalette $oldpalette
+		puts "Couldn't change palettes (old one retained)."
+	}
+}
+
+proc PaletteDialog {} {
+	global curpalette palettes .paletteDialog
+
+    if {[WindowVisible .paletteDialog]} {
+		return
+    }
+
+	set oldpalette $curpalette
+
+    toplevel .paletteDialog
+    wm title .paletteDialog "Choose Palette"
+    wm geometry .paletteDialog +100+100
+
+	# Frames
+    frame .paletteDialog.body -relief groove -borderwidth 2
+    frame .paletteDialog.cntl
+    pack .paletteDialog.body -side top -fill both -expand 1
+    pack .paletteDialog.cntl -side bottom -fill x
+
+	# Palette List
+	foreach name [array names palettes] {
+		button .paletteDialog.body.item$name -text $name \
+				-command "set curpalette $name"
+		pack .paletteDialog.body.item$name -side top -fill x
+	}
+
+	# Controls
+    button .paletteDialog.cntl.newButton -text New... \
+			-command "NewPalette"
+    button .paletteDialog.cntl.cancelButton -text Cancel \
+			-command "set curpalette $oldpalette; destroy .paletteDialog"
+    button .paletteDialog.cntl.okButton -text OK \
+			-command "destroy .paletteDialog"
+
+    pack .paletteDialog.cntl.newButton -side left
+    pack .paletteDialog.cntl.okButton -side right
+	pack .paletteDialog.cntl.cancelButton -side right
+
+    tkwait visibility .paletteDialog
+    grab set .paletteDialog
+    tkwait window .paletteDialog
+}
+
+proc NewPalette {} {
+	global palettes pids .paletteDialog
+
+	set newpalette [LoadPalette]
+
+	if { $newpalette == "-1" } {
+		return
+	}
+
+	set pid [DEVise color NewPalette $palettes($newpalette)]
+	set pids($newpalette) $pid
+
+	button .paletteDialog.body.item$newpalette -text $newpalette \
+			-command "set curpalette $newpalette"
+	pack .paletteDialog.body.item$newpalette -side top -fill x
+}
+
+proc LoadPalette {} {
+	global curPaletteDir fsBox paletteDir palettes
+
+	set saveExtensions $fsBox(extensions)
+	set savePath $fsBox(path)
+	set savePattern $fsBox(pattern)
+
+	set fsBox(extensions) 1
+	set fsBox(path) $curPaletteDir
+	set fsBox(pattern) "*.rgb"
+
+	FSBox "Select Palette File:"
+	set filename $fsBox(name)
+	set curPaletteDir $fsBox(path)
+
+	set fsBox(extensions) $saveExtensions
+	set fsBox(path) $savePath
+	set fsBox(pattern) $savePattern
+
+	if { $filename == "" } {
+		set curPaletteDir $savePath
+		return -1
+	}
+
+	set newpalette [string trimright [file tail $filename] ".rgb"]
+
+	set stream [open $paletteDir/$filename]
+	set palette [read $stream]
+	close $stream
+
+	if { [info exists palettes($newpalette)]} {
+		set curPaletteDir $savePath
+		return -1
+	}
+
+	set palettes($newpalette) $palette
+	return $newpalette
+}
+
+proc PaletteColors {} {
+	global curpalette palettes pids
+
+	if { ![info exists pids(def)] } {
+		InitPalettes
+	}
+
+	set c [split [string trimright $palettes($curpalette) "\n"] "\n"]
+
+	foreach color $c {
+		lappend colorList [lindex $color 0]
+	}
+
+	return $colorList
+}
+
+#*******************************************************************************

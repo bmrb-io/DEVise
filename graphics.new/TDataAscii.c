@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.60  1997/10/10 21:13:46  liping
+  The interface between TData and BufMgr and the interface between BufMgr and
+  QueryProc were changed
+  The new interface carries the information of 1. LowId 2. HighId 3. AttrName
+          4. Granularity in the structure "Range"
+
   Revision 1.59  1997/09/05 22:36:27  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -35,6 +41,9 @@
 
   Revision 1.56.4.1  1997/05/20 16:11:16  ssl
   Added layout manager to DEVise
+
+  Revision 1.56.6.1  1997/05/21 20:40:46  weaver
+  Changes for new ColorManager
 
   Revision 1.56  1997/02/26 16:31:47  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
@@ -305,7 +314,7 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 #endif
 
     _fileOpen = true;
-    if (_data->Open("r") != StatusOk)
+    if (!(_data->Open("r") == StatusOk))
       _fileOpen = false;
     
     DataSeg::Set(NULL, NULL, 0, 0);
@@ -386,7 +395,7 @@ Boolean TDataAscii::CheckFileStatus()
       _fileOpen = false;
     }
     Boolean old = DevError::SetEnabled(false);
-    if (_data->Open("r") != StatusOk) {
+    if (!(_data->Open("r") == StatusOk)) {
       /* File access failure, get rid of index */
       _indexP->Clear();
       _initTotalRecs = _totalRecs = 0;

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.41  1997/08/21 21:06:39  donjerko
+#  Added Materialize button, added isDTEType to some code in views.tcl
+#
 #  Revision 1.40  1997/07/22 18:41:13  wenger
 #  Workaround for bug 210: GUI disallows link names starting with 'Pile:'.
 #
@@ -39,6 +42,8 @@
 #    3. Change Max Avg Min to be HighLow shape
 #    4. Improved title.
 #    5. etc.
+#  Revision 1.35.6.1  1997/05/21 20:41:16  weaver
+#  Changes for new ColorManager
 #
 #  Revision 1.34  1997/03/22 00:00:14  guangshu
 #  Monor fix.
@@ -1324,48 +1329,8 @@ proc DoViewAction {} {
     if {$action == ""} {
 	return
     }
-    
+
     DEVise setAction $curView $action
-}
-
-############################################################
-
-proc DoSetFgBgColor { isForeground {perWindow 0} } {
-    global curView newColor
-    global getColorCanceled
-
-    if {![CurrentView]} {
-	return
-    }
-
-    if {$isForeground} {
-        set paramIndex 5
-    } else {
-        set paramIndex 6
-    }
-
-    getColor newColor
-    if {$getColorCanceled} {
-	return
-    }
-
-    if {$perWindow} {
-	set viewList [DEVise getWinViews [DEVise getViewWin $curView]]
-    } else {
-        set viewList [list $curView]
-    }
-
-    foreach viewName $viewList {
-        set curViewClass [GetClass view $viewName]
-        set param [DEVise getCreateParam view $curViewClass $viewName]
-        set oldColor [lindex $param $paramIndex]
-
-        if {$oldColor != $newColor} {
-            set param [lreplace $param $paramIndex $paramIndex $newColor]
-            set cmd "DEVise changeParam $param"
-            eval $cmd
-	}
-    }
 }
 
 ############################################################
@@ -1421,58 +1386,6 @@ proc DoSetTitle { {perWindow 0} } {
     }
     pack .setTitle.bot.but.ok .setTitle.bot.but.clear \
 	    .setTitle.bot.but.delete .setTitle.bot.but.cancel \
-	    -side left -padx 3m
-}
-
-############################################################
-
-proc DoSetOverrideColor {} {
-    global curView DEViseOldColors newColor newColorActive
-
-    if {[WindowVisible .setColor]} {
-	return
-    }
-
-    if {![CurrentView]} {
-	return
-    }
-
-    toplevel .setColor
-    wm title .setColor "Set View Override Color"
-    wm geometry .setColor +50+50
-
-    frame .setColor.top
-    frame .setColor.bot
-    pack .setColor.top -side top -pady 3m -fill both -expand 1
-    pack .setColor.bot -side top -pady 5m -fill x
-
-    frame .setColor.bot.but
-    pack .setColor.bot.but -side top
-
-    set viewColorParams [DEVise getViewOverrideColor $curView]
-    set hasOverrideColor [lindex $viewColorParams 0]
-    set overrideColor [lindex $viewColorParams 1]
-    set newColor [findNameValue $DEViseOldColors $overrideColor]
-    set newColorActive $hasOverrideColor
-
-    button .setColor.top.b1 -text "Change Color..." -width 20 -bg $newColor \
-	    -command {
-	getColor newColor true
-	.setColor.top.b1 configure -background $newColor
-    }
-    checkbutton .setColor.top.c1 -text "Enabled" -variable newColorActive
-    pack .setColor.top.b1 .setColor.top.c1 \
-	    -side left -padx 3m -fill both -expand 1
-
-    button .setColor.bot.but.ok -text OK -width 10 -command {
-	set colorValue [findNumericValue $DEViseOldColors $newColor]
-	DEVise setViewOverrideColor $curView $newColorActive $colorValue
-	destroy .setColor
-    }
-    button .setColor.bot.but.cancel -text Cancel -width 10 -command {
-	destroy .setColor
-    }
-    pack .setColor.bot.but.ok .setColor.bot.but.cancel \
 	    -side left -padx 3m
 }
 
@@ -1677,13 +1590,11 @@ proc DoBasicStat {} {
     button .basicStat.maxButton -text Max -width 10 -command { \
 			set statmax [flip $statmax] 
 			DoToggleStatistics }
-    entry .basicStat.maxEntry -text "" -relief sunken -width 10 \
-			-fg black -bg LightGray -font 8x13
+    entry .basicStat.maxEntry -text "" -relief sunken -width 10 -font 8x13
     button .basicStat.minButton -text Min -width 10 -command { \
                         set statmin [flip $statmin] 
                         DoToggleStatistics }
-    entry .basicStat.minEntry -text "" -relief sunken -width 10 \
-                        -fg black -bg LightGray -font 8x13
+    entry .basicStat.minEntry -text "" -relief sunken -width 10 -font 8x13
     pack .basicStat.maxButton .basicStat.maxEntry .basicStat.minButton \
 			.basicStat.minEntry -in .basicStat.mmmc.upper  \
 			-side left -expand $expand -fill $fill
@@ -1691,13 +1602,11 @@ proc DoBasicStat {} {
     button .basicStat.meanButton -text Mean -width 10 -command { \
                         set statmean [flip $statmean] 
                         DoToggleStatistics }
-    entry .basicStat.meanEntry -text "" -relief sunken -width 10 \
-                        -fg black -bg LightGray -font 8x13
+    entry .basicStat.meanEntry -text "" -relief sunken -width 10 -font 8x13
     button .basicStat.countButton -text Count -width 10 -command { \
                         set statcount [flip $statcount] 
                         DoToggleStatistics }
-    entry .basicStat.countEntry -text "" -relief sunken -width 10 \
-                        -fg black -bg LightGray -font 8x13
+    entry .basicStat.countEntry -text "" -relief sunken -width 10 -font 8x13
     pack .basicStat.meanButton .basicStat.meanEntry .basicStat.countButton \
                         .basicStat.countEntry -in .basicStat.mmmc.lower  \
                         -side left -expand $expand -fill $fill
@@ -1770,23 +1679,6 @@ proc DoGroupByStat {} {
         return
     }
 
-    set sourceName ""
-    set sourceName [DEVise getSourceName $curView]
-    if {$sourceName == "" } { 
-       puts "Error in getting sourceName" 
-       dialog .winError "sourceName error" \
-       		"Unable to get source name. Please select another one." \
-		"" 0 OK
-		return 
-    }
-    set pos [string first : $sourceName]
-    if { [string range $sourceName 0 [expr $pos -1]] == "GstatXDTE" } {
-       dialog .winError "sourceName error" \
-       		"Aggregate on aggregates is not support.  Please select another one." \
-		"" 0 OK
-		return 
-    }
-
     toplevel    .groupBy
     wm title    .groupBy "Group By Select"
     wm geometry .groupBy +150+150
@@ -1813,10 +1705,9 @@ proc DoGroupByStat {} {
     set windowsel ""
     if {$curView != ""} {
         set windowsel [DEVise getViewWin $curView]
-    } elseif {[DEVise getWinCount] <= 1} {
-    	set windowsel New
-    } else {
-    	set windowsel "None selected yet"
+    }
+    if {$windowsel == ""} {
+        set windowsel "None selected yet"
     }
    
     menu .groupBy.windowsel.windowMenu -tearoff 0
@@ -1826,27 +1717,27 @@ proc DoGroupByStat {} {
     }
 
     .groupBy.windowsel.windowMenu add separator
-    .groupBy.windowsel.windowMenu add command -label "New" -command {
-    	set windowsel New
+    .groupBy.windowsel.windowMenu add command -label "New..." -command {
+        set newwin [DoCreateWindow "Select window type"]
+        if {$newwin != ""} {
+            set windowsel $newwin
+            .groupBy.windowsel.windowMenu add command -label $windowsel \
+                    -command "set windowsel {$windowsel}"
+        }
     }
-#        set newwin [DoCreateWindow "Select window type"]
-#        if {$newwin != ""} {
-#            set windowsel $newwin
-#            .groupBy.windowsel.windowMenu add command -label $windowsel \
-#                    -command "set windowsel {$windowsel}"
-#        }
-   
 
-    set bylist { X Y Color}
+    set bylist { Y Color}
     set onlist { X Y Z}
     set category { Max Min Avg Count Sum }
 
     label .groupBy.byLabel -text "Group By" 
     menubutton .groupBy.xsel -relief raised \
-            -textvariable byAttr -menu .groupBy.xsel.menu -width 20
+            -textvariable byAttr -menu .groupBy.xsel.xselMenu -width 20
+    menu .groupBy.xsel.xselMenu -tearoff 0
 
     set t ""
     set result [DEVise checkGstat $curView]
+    if { $result == "0" } {set t "t."}
 
     set xDate "0"
     set xDate [DEVise isXDateType $curView]
@@ -1894,8 +1785,14 @@ proc DoGroupByStat {} {
     pack .groupBy.byLabel .groupBy.xsel \
 		-in .groupBy.top.right  -side left -padx 1m
 
-    label .groupBy.mid.onLabel -text "Aggregate On: "
-    pack .groupBy.mid.onLabel -side left -fill y
+#    checkbutton .groupBy.byx -text X -width 10 -anchor w \
+#		-variable byx
+#    checkbutton .groupBy.byy -text Y -width 10 -anchor w \
+#		-variable byy
+#    checkbutton .groupBy.bycolor -text Color -width 10 -anchor w \
+#		-variable bycolor
+#    pack .groupBy.byLabel .groupBy.byx .groupBy.byy .groupBy.bycolor \
+#		-in .groupBy.top -side left -expand 1 -fill both
 
      menubutton .groupBy.aggregate -relief raised -textvariable aggregate \
      		-menu .groupBy.aggregate.menu -width 20
@@ -1947,13 +1844,6 @@ proc DoGroupByStat {} {
 		"" 0 OK
 	    return
 	}
-
-	if {$windowsel == "New"} {
-	   set newwin [DoCreateWindow "Select window type"]
-	   if {$newwin != ""} {
-	      set windowsel $newwin
-	   }
-	}
         if {![DEVise exists $windowsel]} {
             dialog .winError "No Window Specified" \
                     "Please select a window for visualization." \
@@ -1989,131 +1879,20 @@ proc DoGroupByStat {} {
         return
     }
 
-    scanDerivedSources
-    set byAttrSource [string range $byAttr 0 4]
-    set byAttr [string range $byAttr 6 end]
-    set aggAttrSource [string range $aggregate 0 4]
-    set aggregate [string range $aggregate 6 end]
-
-    if { $byAttrSource != $aggAttrSource } {
-    	dialog .winError "Attribute Selection Error" \
-	    "Group By and Aggregate on attributes must be both from tdata or gdata. Please select again." \
-	    "" 0 OK
-	    return
-    }
-    set attrSource $byAttrSource
     set tdata ""
-    set queryByDTE 0
-    set queryInMem 0
-    if { $attrSource == "gdata" } {
-       set pos [string first "Color" $byAttr]
-       puts "WAHWAHWAHWAHWAH : pos = $pos"
-       if {$pos > 0 || $byAttr == "Color"} {
-       #GroupBy color is always in memory
-    	  set tdata "{Stat: $curView}"
-  	  set byAttr [string range $byAttr $pos end]
-       } else {
-         if {$result != "0" } {
-         #GroupBy x or y is in memory
-  	   set queryInMem 1
-	   set queryByDTE 0
-	 } else {
-	 #GroupBy x or y is NOT in memory
-	   set byTAttr [DEVise mapG2TAttr $curView $byAttr]
-	   set onTAttr [DEVise mapG2TAttr $curView $aggregate]
-	   if {$byTAttr == "0" || $onTAttr == "0" } {
-	   	dialog .winError "Attribute Selection Error" \
-		     "Group By cannot be calculated in memory and cannot be converted to TData either. Please define an SQL view to visualize it" \
-		     "" 0 OK
-		     return
-	   }
-	   set byAttr $byTAttr
-	   set aggregate $onTAttr
-	   set queryByDTE 1
-	 }
-       }
-    } elseif {$attrSource == "tdata" } {
-        set byGAttr [DEVise mapT2GAttr $curView $byAttr]
-	set onGAttr [DEVise mapT2GAttr $curView $aggregate]
-	if { $byGAttr == "0" || $byGAttr == "Z" || $onGAttr == "0" || $onGAttr == "Z" || $result == "0" } {
-    		set queryByDTE 1
-	} else {
-		set byAttr $byGAttr
-		set aggregate $onGAttr
-		set pos [string first "Color" $byAttr]
-		puts "WAHWAHWAHWAHWAH : pos = $pos byAttr=$byAttr aggregate=$aggregate"
-		if { $byAttr == "Color"} {
-		   set tdata "{Stat: $curView}"
-		   set byAttr [string range $byAttr $pos end]
-		} else {
-		   set queryByDTE 0
-		   set queryInMem 1
-		}
+    set pos [string first "Color" $byAttr]
+    if {$pos > 0 || $byAttr == "Color"} {
+	set tdata "{Stat: $curView}"
+	set byAttr [string range $byAttr $pos end]
+    } else {
+	if {$aggregate == "Y"} {
+    		set tdata "{GstatX: $curView}"
+		set sourceName "GstatX: $curView"
+	} elseif {$aggregate == "X" } {
+    		set tdata "{GstatY: $curView}"
+		set sourceName "GstatY: $curView"
 	}
-    } else { 
-        puts "Invalid attribute category" 
-    	return 
     }
-
-    if {$queryByDTE == 1 } {
-    	set baseName "{GstatXDTE: $curView: 1}"
-	set subName "GstatXDTE: $curView"
-	set uniqTData [UniqueName $baseName]
-	puts "uniqTData = $uniqTData"
-#    	set tdata "{GstatXDTE: $curView}"
-	set tdata $uniqTData
-#	puts "Before tdataMMMMM = $tdata"
-#	set uniqName [UniqueName $tdata]
-#	set tdata $uniqName
-	puts "tdataMMMMM = $tdata"
-#	set this_sourceName "GstatXDTE: $curView"
-	set this_source [string trimleft $tdata "\{"]
-	set this_source [string trimright $this_source "\}"]
-#	set uniq_this_sourceName [UniqueName $this_sourceName]
-	puts "this_source = $this_source"
-	set command "$sourceName $byAttr $aggregate $ylist"
-#	set temp [lindex $derivedSourceList($this_sourceName) 7]
-	set temp [lindex $derivedSourceList($subName) 7]
-#	set elem6 [lindex $derivedSourceList($this_sourceName) 6]
-	set elem6 [lindex $derivedSourceList($subName) 6]
-	puts "Before replace $temp command=$command elem6=$elem6"
-	set derivedSourceList($this_source) [lreplace $derivedSourceList($subName) 6 7 $elem6 $command]
-	set elem6 [lindex $derivedSourceList($this_source) 6]
-	set temp [lindex $derivedSourceList($this_source) 7]
-	puts "After replace $temp $elem6"
-    }
-    if {$queryInMem == 1 } {
-          if {$aggregate == "Y"} {
-             if { $xDate == "1" } {
-                  set tdata "{GstatXDate: $curView}"
-                  set this_sourceName "GstatXDate: $curView"
-             } else {
-                  set tdata "{GstatX: $curView}"
-                  set this_sourceName "GstatX: $curView"
-             }
-          } elseif {$aggregate == "X" } {
-             if { $yDate == "1" && $byAttr == "Y" } {
-                  set tdata "{GstatYDate: $curView}"
-                  set this_sourceName "GstatYDate: $curView"
-             } else {
-                  set tdata "{GstatY: $curView}"
-                  set this_sourceName "GstatY: $curView"
-             }
-           } 
-    }
-
-#    if $attrSource == "gdata" && $byAttr == "X" && $xDate == "1" 
-    if {$queryInMem == 1 && $byAttr == "X" && $xDate == "1" } {
-    	set byAttr DATE
-    }
-
-#    if $attrSource == "gdata" && $byAttr == "Y" && $yDate == "1" 
-    if {$queryInMem == 1 && $byAttr == "Y" && $yDate == "1" } {
-        set byAttr DATE
-    }
-
-    puts "byAttr=$byAttr aggregate=$aggregate ylist=$ylist"
-
     set viewsel 2  
     # Bar Chart
     set linksel 1 
@@ -2125,19 +1904,26 @@ proc DoGroupByStat {} {
     set newgdata 1
     set sname $tdata
 
-    	set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
-    	puts "name_schema_pair after OpenAndDefineDataSources = $name_schema_pair"
-    	set tdata [lindex $name_schema_pair 0]
-    	set is_dte_type [lindex $name_schema_pair 2]
-    	if {$name_schema_pair == ""} { return }
-    	if {$byAttr == "Y" || [string trimleft $byAttr "t."] == "Y"} { 
-		set byAttr "X" 
-		set linksel 0 }
-    #Y attr will be mapped to X in the new mapping
-    puts "result=$result"
+    scanDerivedSources
+    updateDerivedSources
 
+    if { $xDate == "1" && $byAttr == "DATE"} {
+    	set sourceName [string trimleft $sname "{"]
+    	set sourceName [string trimright $sourceName "}"]
+	set schematype GDATASTAT_DATE
+	set schemafile $schemadir/physical/GDATASTAT_DATE
+	set derivedSourceList($sourceName) [lreplace $derivedSourceList($sourceName) 2 3 $schematype $schemafile]
+    }
+
+    set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
+    if {$name_schema_pair == ""} { return }
+    if {$byAttr == "Y" || [string trimleft $byAttr "t."] == "Y"} { 
+	set byAttr "X" 
+	set linksel 0 }
+    #Y attr will be mapped to X in the new mapping
     MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
-            $titlesel $xaxissel $yaxissel $byAttr $ylist $newgdata $aggregate
+            $titlesel $xaxissel $yaxissel $byAttr $ylist $newgdata 
+
 }
 
 ############################################################
@@ -2171,12 +1957,11 @@ proc DoHistStat {} {
     set windowsel ""
     if {$curView != ""} {
         set windowsel [DEVise getViewWin $curView]
-    } elseif  {[DEVise getWinCount] <= 1} {
-    	set windowsel New
-    } else {
-    	set windowsel "None selected yet"
     }
-
+    if {$windowsel == ""} {
+        set windowsel "None selected yet"
+    }
+   
     menu .histStat.windowsel.windowMenu -tearoff 0
     foreach w [WinSet] {
         .histStat.windowsel.windowMenu add command -label $w \
@@ -2184,56 +1969,30 @@ proc DoHistStat {} {
     }
 
     .histStat.windowsel.windowMenu add separator
-    .histStat.windowsel.windowMenu add command -label "New" -command {
-    	set windowsel New
+    .histStat.windowsel.windowMenu add command -label "New..." -command {
+        set newwin [DoCreateWindow "Select window type"]
+        if {$newwin != ""} {
+            set windowsel $newwin
+            .histStat.windowsel.windowMenu add command -label $windowsel \
+                    -command "set windowsel {$windowsel}"
+        }
     }
-#        set newwin [DoCreateWindow "Select window type"]
-#        if {$newwin != ""} {
-#            set windowsel $newwin
-#            .histStat.windowsel.windowMenu add command -label $windowsel \
-#                    -command "set windowsel {$windowsel}"
-#        }
-    
 
     label .histStat.histLabel -text "Number of buckets"
-    entry .histStat.buckEntry -text "" -relief  sunken -width 15 \
-		-fg black -bg LightGray -font 8x13
+    entry .histStat.buckEntry -text "" -relief  sunken -width 15 -font 8x13
     .histStat.buckEntry insert 0 50
 
     pack .histStat.histLabel .histStat.buckEntry -in .histStat.upper \
 		-side left -pady 1m 
 
     button .histStat.ok -text OK -width 15 -command {
-        set yDate "0"
-        set yDate [DEVise isYDateType $curView]
 	set numBucks [.histStat.buckEntry get]
 	DEVise setBuckRefresh $curView $numBucks 
 	set tdata ""
-	if { $yDate == "1" } {
-		set tdata "{HistDate: $curView}"
-		set tdata_1 "HistDate: $curView"
-		set x DATE
-        } else {
-		set tdata "{Hist: $curView}"
-		set tdata_1 "Hist: $curView"
-		set x Bucket
-	}
-		
-              if {$windowsel == "New"} {
-                set newwin [DoCreateWindow "Select window type"]
-                if {$newwin != ""} {
-                  set windowsel $newwin
-                }
-              }
-              if {![DEVise exists $windowsel]} {
-                  dialog .winError "No Window Specified" \
-                          "Please select a window for visualization." \
-                  "" 0 OK
-                 return
-              } 
-
+	set tdata "{Hist: $curView}"
+	set tdata_1 "Hist: $curView"
 	set exist [DEVise exists $tdata_1]
-#	if {![DEVise exists $tdata_1]} { 
+	if {![DEVise exists $tdata_1]} { 
 	 	set viewsel 2  
 		# Bar Chart
 		set linksel 0
@@ -2243,9 +2002,9 @@ proc DoHistStat {} {
 	        set xaxissel 1
        		set yaxissel 1
        		set newgdata 1
-#		set sname "{Hist: $curView}"
-		set sname $tdata
+		set sname "{Hist: $curView}"
        		set ylist Value
+        	set x Bucket
 
 		scanDerivedSources
     		updateDerivedSources
@@ -2254,7 +2013,7 @@ proc DoHistStat {} {
 
 		MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
             	   $titlesel $xaxissel $yaxissel $x $ylist $newgdata 
-#		}
+		}
 		return
     }
     button .histStat.cancel -text Cancel -width 15 -command {

@@ -1,3 +1,48 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1997
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$
+  Revision 1.18.2.1  1997/05/21 20:34:23  weaver
+  Changes needed by new ColorManageR
+
+  Revision 1.18  1997/05/07 21:25:13  wenger
+  Conditionaled out some debug output.
+
+  Revision 1.17  1997/04/18 23:40:31  donjerko
+  Integers are being promoted to doubles when doing aggragates.
+
+  Revision 1.16  1997/04/14 20:44:11  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
+  Revision 1.15  1997/04/10 21:50:22  donjerko
+  Made integers inlined, added type cast operator.
+
+  Revision 1.14  1997/04/04 23:10:20  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
+  Revision 1.13  1997/03/28 16:07:22  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
+ */
+
 #ifndef AGGREGATES_H
 #define AGGREGATES_H
 

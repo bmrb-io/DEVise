@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/03/25 19:13:50  jussi
+#  The quit command is passed to Coral using an echo statement
+#  rather than using a file.
+#
 #  Revision 1.4  1995/12/20 02:23:23  ravim
 #  New simplified interface to generate coral mapping program.
 #
@@ -42,27 +46,27 @@ proc DefineMapping {} {
     global iftype1 iftype2 maptablename unres1name unres2name
     
     # Create a window
-    toplevel .map -bg red4
+    toplevel .map
     wm title .map "Define Mappings"
     wm iconname .map "Mappings"
 
-    frame .map.first -relief raised -bg honeydew2
-    frame .map.second -relief raised -bg honeydew2
-    frame .map.third -relief raised -bg honeydew2
+    frame .map.first -relief raised
+    frame .map.second -relief raised
+    frame .map.third -relief raised
     pack .map.first -fill x -padx 1m -pady 1m
 
 
-    frame .map.first.layer1 -relief raised -bg honeydew2
-    frame .map.first.layer2 -relief raised -bg honeydew2
-    frame .map.first.layer3 -relief raised -bg honeydew2
-    frame .map.first.layer4 -relief raised -bg honeydew2
+    frame .map.first.layer1 -relief raised
+    frame .map.first.layer2 -relief raised
+    frame .map.first.layer3 -relief raised
+    frame .map.first.layer4 -relief raised
     pack .map.first.layer1 .map.first.layer2 .map.first.layer3 \
 	    .map.first.layer4 -fill x -padx 1m -pady 1m
 
-    label .map.first.l1 -text "Mapping between types " -bg honeydew2 -fg red4
+    label .map.first.l1 -text "Mapping between types "
     menubutton .map.first.but1 -relief raised -textvariable iftype1 \
 	    -width 14 -menu .map.first.but1.menu
-    label .map.first.l2 -text "  and  " -bg honeydew2 -fg red4
+    label .map.first.l2 -text "  and  "
     menubutton .map.first.but2 -relief raised -textvariable iftype2 \
 	    -width 14 -menu .map.first.but2.menu 
 
@@ -86,23 +90,19 @@ proc DefineMapping {} {
     set iftype1 COMPUSTAT
     set iftype2 CRSP
 
-    label .map.first.fl -text "File containing mapping table : " \
-	    -bg honeydew2 -fg red4
+    label .map.first.fl -text "File containing mapping table : "
     entry .map.first.fle -width 25 -relief sunken -bd 1 \
-	    -textvariable maptablename -bg bisque    
+	    -textvariable maptablename
     pack .map.first.fl .map.first.fle -in .map.first.layer2 -side left
 
-    label .map.first.un1 -text "Unresolved companies in : " \
-	    -bg honeydew2 -fg red4
+    label .map.first.un1 -text "Unresolved companies in : "
     entry .map.first.une1 -width 10 -relief sunken -bd 1 \
-	    -textvariable unres1name -bg bisque    
-    label .map.first.un2 -text "  and  " \
-	    -bg honeydew2 -fg red4
+	    -textvariable unres1name
+    label .map.first.un2 -text "  and  "
     entry .map.first.une2 -width 10 -relief sunken -bd 1 \
-	    -textvariable unres2name -bg bisque    
+	    -textvariable unres2name
     pack .map.first.un1 .map.first.une1 .map.first.un2 .map.first.une2 \
 	    -in .map.first.layer3 -side left
-
 
     # Buttons
     button .map.proceed -text Proceed -command {
@@ -126,22 +126,19 @@ proc DefineMapping {} {
     tkwait visibility .map
     grab set .map
     tkwait window .map
-
 }
-
-
 
 proc OldDefineMapping {} {
     global datadir button iftype
 
     # Create a window
-    toplevel .map -bg red4
+    toplevel .map
     wm title .map "Generate Input Relations"
     wm iconname .map "Relations"
 
-    frame .map.first -relief raised -bg honeydew2
-    frame .map.second -relief raised -bg honeydew2
-    frame .map.third -relief raised -bg honeydew2
+    frame .map.first -relief raised
+    frame .map.second -relief raised
+    frame .map.third -relief raised
     pack .map.first .map.second .map.third -fill x -padx 1m -pady 1m
     
     # Set defaults
@@ -149,10 +146,10 @@ proc OldDefineMapping {} {
     set iftype "COMPUSTAT"
 
     # Entry for index file name and type
-    label .map.iname -text " Index File " -bg honeydew2 -fg red4
+    label .map.iname -text " Index File "
     entry .map.ientry -width 25 -relief sunken -bd 1 \
-	    -textvariable ifname -bg bisque
-    label .map.itype -text " File Type " -bg honeydew2 -fg red4
+	    -textvariable ifname
+    label .map.itype -text " File Type "
     menubutton .map.tbut -relief raised -textvariable iftype \
 	    -width 14 -menu .map.tbut.menu 
     pack .map.iname .map.ientry .map.itype .map.tbut -in .map.first \
@@ -166,15 +163,14 @@ proc OldDefineMapping {} {
 	    -value CRSP
 
     # Entry for output relation name and output file name
-    label .map.rname -text "Output Relation Name" -bg honeydew2 -fg red4
+    label .map.rname -text "Output Relation Name"
     entry .map.rentry -width 10 -relief sunken -bd 1 \
-	    -textvariable rname -bg bisque
-    label .map.rfname -text "Output File" -bg honeydew2 -fg red4
+	    -textvariable rname
+    label .map.rfname -text "Output File"
     entry .map.rfentry -width 15 -relief sunken -bd 1 \
-	    -textvariable rfname -bg bisque
+	    -textvariable rfname
     pack .map.rname .map.rentry .map.rfname .map.rfentry -in .map.second \
 	    -side left -fill x -expand 1 -padx 2m -pady 1m
-
 
     # Buttons to Create and Done 
     button .map.create -text Create -command {
@@ -240,29 +236,28 @@ proc ResolveMapping {} {
 
     global datadir button
 
-    toplevel .coral -bg red4
+    toplevel .coral
     wm title .coral "Coral Mapping Program"
     wm iconname .coral "Coral"
 
-    frame .coral.first -relief raised -bg honeydew2
-    frame .coral.second -relief raised -bg honeydew2
-    frame .coral.third -relief raised -bg honeydew2
+    frame .coral.first -relief raised
+    frame .coral.second -relief raised
+    frame .coral.third -relief raised
     pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
 
-    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red4
+    label .coral.oname -text " Mapping Table File: "
     entry .coral.oentry -width 10 -relief sunken -bd 1 \
-	    -textvariable oname -bg bisque
+	    -textvariable oname
     pack .coral.oname .coral.oentry \
 	    -in .coral.first -side left -fill x -expand 1 -padx 3m -pady 1m
 
     # Also ask for the names of files that contain any unresolved entries
-    label .coral.uname -text " Files containing unresolved entries: " \
-	    -bg honeydew2 -fg red4
+    label .coral.uname -text " Files containing unresolved entries: "
     entry .coral.urel1 -width 10 -relief sunken -bd 1 \
-	    -textvariable urel1 -bg bisque
-    label .coral.and -text " and " -bg honeydew2 -fg red4
+	    -textvariable urel1
+    label .coral.and -text " and "
     entry .coral.urel2 -width 10 -relief sunken -bd 1 \
-	    -textvariable urel2 -bg bisque
+	    -textvariable urel2
     pack .coral.uname .coral.urel1 .coral.and .coral.urel2 -in .coral.second \
 	    -side left -fill x -expand 1 -padx 2m -pady 1m
 
@@ -295,33 +290,32 @@ proc ResolveMapping {} {
 proc RunCoralMap {} {
     global datadir button
 
-    toplevel .coral -bg red4
+    toplevel .coral
     wm title .coral "Coral Mapping Program"
     wm iconname .coral "Coral"
 
-    frame .coral.first -relief raised -bg honeydew2
-    frame .coral.second -relief raised -bg honeydew2
-    frame .coral.third -relief raised -bg honeydew2
+    frame .coral.first -relief raised
+    frame .coral.second -relief raised
+    frame .coral.third -relief raised
     pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
 
     # Ask the user for the name of the coral mapping program
-    label .coral.pname -text " Coral File: " -bg honeydew2 -fg red4
+    label .coral.pname -text " Coral File: "
     entry .coral.pentry -width 10 -relief sunken -bd 1 \
-	    -textvariable pname -bg bisque
-    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red4
+	    -textvariable pname
+    label .coral.oname -text " Mapping Table File: "
     entry .coral.oentry -width 10 -relief sunken -bd 1 \
-	    -textvariable oname -bg bisque
+	    -textvariable oname
     pack .coral.pname .coral.pentry .coral.oname .coral.oentry \
 	    -in .coral.first -side left -fill x -expand 1 -padx 3m -pady 1m
 
     # Also ask for the names of files that contain any unresolved entries
-    label .coral.uname -text " Files containing unresolved entries: " \
-	    -bg honeydew2 -fg red4
+    label .coral.uname -text " Files containing unresolved entries: "
     entry .coral.urel1 -width 10 -relief sunken -bd 1 \
-	    -textvariable urel1 -bg bisque
-    label .coral.and -text " and " -bg honeydew2 -fg red4
+	    -textvariable urel1
+    label .coral.and -text " and "
     entry .coral.urel2 -width 10 -relief sunken -bd 1 \
-	    -textvariable urel2 -bg bisque
+	    -textvariable urel2
     pack .coral.uname .coral.urel1 .coral.and .coral.urel2 -in .coral.second \
 	    -side left -fill x -expand 1 -padx 2m -pady 1m
 
@@ -407,65 +401,60 @@ proc CoralGen {} {
 	    tmpdir maplist datadir button
     
     # Create a window
-    toplevel .coral -bg red4
+    toplevel .coral
     wm title .coral "Specify Mappings"
     wm iconname .coral "Specify Mappings"
 
-    frame .coral.first -relief raised -bg honeydew2 
-    frame .coral.second -relief raised -bg honeydew2 
-    frame .coral.third -relief raised -bg honeydew2 
+    frame .coral.first -relief raised
+    frame .coral.second -relief raised
+    frame .coral.third -relief raised
     pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
 
-    frame .coral.list1 -relief raised -bg honeydew2
-    frame .coral.list2 -relief raised -bg honeydew2
+    frame .coral.list1 -relief raised
+    frame .coral.list2 -relief raised
     pack .coral.list1 .coral.list2 -side left -in .coral.first
 
-    label .coral.list1.lab1 -text "$iftype1 index" -bg honeydew2 -fg red4
+    label .coral.list1.lab1 -text "$iftype1 index"
     pack .coral.list1.lab1 -fill x
-    frame .coral.list1.top -relief raised -bg honeydew2
-    frame .coral.list1.bot -relief raised -bg honeydew2
+    frame .coral.list1.top -relief raised
+    frame .coral.list1.bot -relief raised
     pack .coral.list1.top .coral.list1.bot
     listbox .coral.list1.list -relief raised -bd 1 \
 	    -yscrollcommand ".coral.list1.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .coral.list1.scroll -command ".coral.list1.list yview" \
-	    -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .coral.list1.scroll -command ".coral.list1.list yview"
     pack .coral.list1.scroll -side left -fill y -in .coral.list1.top
     pack .coral.list1.list -in .coral.list1.top -fill x -fill y
-    label .coral.list1.lab2 -text "Selection : " -bg  honeydew2 -fg red4
+    label .coral.list1.lab2 -text "Selection : "
     entry .coral.list1.entry -width 15 -relief sunken -bd 2 \
-	    -textvariable idxvar1 -bg bisque
+	    -textvariable idxvar1
     pack .coral.list1.lab2 .coral.list1.entry -side left -in .coral.list1.bot \
 	    -padx 2m -pady 1m
 
-
-
-    label .coral.list2.lab1 -text "$iftype2 index" -bg honeydew2 -fg red4
+    label .coral.list2.lab1 -text "$iftype2 index"
     pack .coral.list2.lab1 -fill x
-    frame .coral.list2.top -relief raised -bg honeydew2
-    frame .coral.list2.bot -relief raised -bg honeydew2
+    frame .coral.list2.top -relief raised
+    frame .coral.list2.bot -relief raised
     pack .coral.list2.top .coral.list2.bot
     listbox .coral.list2.list -relief raised -bd 1 \
 	    -yscrollcommand ".coral.list2.scroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .coral.list2.scroll -command ".coral.list2.list yview" \
-	    -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .coral.list2.scroll -command ".coral.list2.list yview"
     pack .coral.list2.scroll -side right -fill y -in .coral.list2.top
     pack .coral.list2.list -in .coral.list2.top -fill x -fill y
-    label .coral.list2.lab2 -text "Selection : " -bg  honeydew2 -fg red4
+    label .coral.list2.lab2 -text "Selection : "
     entry .coral.list2.entry -width 15 -relief sunken -bd 2 \
-	    -textvariable idxvar2 -bg bisque
+	    -textvariable idxvar2
     pack .coral.list2.lab2 .coral.list2.entry -side left -in .coral.list2.bot \
 	    -padx 2m -pady 1m
     
     
 
-    frame .coral.mapops -relief raised -bg honeydew2
-    frame .coral.maplist -relief raised -bg honeydew2
+    frame .coral.mapops -relief raised
+    frame .coral.maplist -relief raised
     pack .coral.mapops .coral.maplist -in .coral.second -fill x 
 
-    button .coral.addmap -text "Add Mapping" -bg gray75 -fg IndianRed4 \
-	    -command {
+    button .coral.addmap -text "Add Mapping" -command {
 	if {($idxvar1 == "") || ($idxvar2 == "")} {
 	    dialog .note Note "Please choose the attributes of both \
 		    indexes before adding the mapping." {} 0 OK
@@ -474,25 +463,24 @@ proc CoralGen {} {
 	    .coral.mlist insert end $elem
 	}
     }
-    button .coral.delmap -text "Delete Mapping" -bg gray75 -fg IndianRed4 \
-	    -command {
-	.coral.mlist delete active
 
+    button .coral.delmap -text "Delete Mapping" -command {
+		.coral.mlist delete active
     }
+
     pack .coral.addmap .coral.delmap -in .coral.mapops -side left -padx 2m \
 	    -pady 1m -expand 1
 
     listbox .coral.mlist -relief raised -bd 1 \
 	    -yscrollcommand ".coral.mscroll set" \
-	    -font 9x15 -selectmode single -bg honeydew2
-    scrollbar .coral.mscroll -command ".coral.mlist yview" -bg honeydew2
+	    -font 9x15 -selectmode single
+    scrollbar .coral.mscroll -command ".coral.mlist yview"
     pack .coral.mscroll -in .coral.maplist -side right -fill y
     pack .coral.mlist -in .coral.maplist -fill x
 
     # Last row of buttons
 
-    button .coral.genmap -text "Generate Mapping Table" -bg gray75 \
-	    -fg IndianRed4 -command {
+    button .coral.genmap -text "Generate Mapping Table" -command {
 	# Save the contents of the listbox containing the defined mappings
 	set len [.coral.mlist index end]
 	set i 0
@@ -572,9 +560,10 @@ proc CoralGen {} {
 	
     }
 
-    button .coral.cancel -text Cancel -bg gray75 -fg IndianRed4 -command {
-	destroy .coral
+    button .coral.cancel -text Cancel -command {
+		destroy .coral
     }
+
     pack .coral.genmap .coral.cancel -side left -in .coral.third \
 	    -padx 2m -pady 1m -expand 1 
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/06/25 17:05:28  wenger
+  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+  function, disabled updating of record links during print, print dialog
+  grabs input.
+
   Revision 1.37  1997/06/04 15:50:30  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -27,6 +32,9 @@
 
   Revision 1.35  1997/05/28 15:38:59  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
+  Revision 1.34.2.1  1997/05/21 20:40:04  weaver
+  Changes for new ColorManager
 
   Revision 1.34  1997/05/08 00:18:06  wenger
   Kludge fix for bug 182 (crash when closing multi1.tk session).
@@ -189,6 +197,8 @@
   Added/updated CVS header.
 */
 
+//******************************************************************************
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -214,43 +224,77 @@
 #include <tk.h>
 #endif
 
+//******************************************************************************
+
 #define DIRECT_POSTSCRIPT 1
 #define LAYOUT 1
-#define _windowRep _winReps.GetWindowRep()
 
-ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg,
-                 int weight, Boolean boundary)
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
+				 int weight, Boolean boundary)
+	: Coloring(fgid, bgid)
 {
-  DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
-  _name = name;
-  _parent = NULL;
-  _mapped = false;
-  _weight = weight;
-  _winBoundary = boundary;
-  _iconified = true;
-  _background = bg;
-  _foreground = fg;
+	DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
 
-  _hasPrintIndex = false;
+	windowRepCallback = new ViewWin_WindowRepCallback(this);
+
+	_name = name;
+	_parent = NULL;
+	_mapped = false;
+	_weight = weight;
+	_winBoundary = boundary;
+	_iconified = true;
+
+	_hasPrintIndex = false;
 
 #ifdef MARGINS
-  _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
+	_leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
 #endif
-//  _alternate = NULL;
+//	_alternate = NULL;
 #ifdef TK_WINDOW
-  _marginsOn = false;
-  _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
-  _tkPathName[0] = 0;
+	_marginsOn = false;
+	_leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
+	_tkPathName[0] = 0;
 #endif
 
-  _excludeFromPrint = false;
-  _printAsPixmap = false;
+	_excludeFromPrint = false;
+	_printAsPixmap = false;
 }
+
+ViewWin::~ViewWin(void)
+{
+#ifdef DEBUG
+	printf("ViewWin::~ViewWin(%p)\n", this);
+#endif
+
+	DetachChildren();
+	DeleteFromParent();
+	Unmap();
+
+	delete windowRepCallback;
+}
+
+//******************************************************************************
+// Getters and Setters
+//******************************************************************************
+
+void	ViewWin::SetBackground(PColorID bgid)
+{
+	if (GetWindowRep())
+		GetWindowRep()->SetBackground(bgid);
+
+	Coloring::SetBackground(bgid);
+}
+
+//******************************************************************************
 
 void ViewWin::Iconify()
 {
-  if (_windowRep)
-    _windowRep->Iconify();
+  if (GetWindowRep())
+    GetWindowRep()->Iconify();
 }
 
 DevStatus
@@ -330,6 +374,9 @@ void ViewWin::AppendToParent(ViewWin *parent)
     Unmap();
   _parent = parent;
   _parent->Append(this);
+
+//	SetColorParent(_parent);			// Establish coloring inheritance
+	// Should probably force a redraw here (happens elsewhere?)
 }
 
 void ViewWin::DeleteFromParent()
@@ -340,6 +387,8 @@ void ViewWin::DeleteFromParent()
       Unmap();
     _parent = NULL;
   }
+
+//	SetColorParent(NULL);				// Eliminate coloring inheritance
 }
 
 void ViewWin::Map(int x, int y, unsigned w, unsigned h)
@@ -359,8 +408,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   Coord min_height = 100;
 
   WindowRep *parentWinRep;
-  GlobalColor foreground;
-  GlobalColor background;
+	PColorID	fgid, bgid;
 
   if (_parent) {
 #ifdef DEBUG
@@ -368,29 +416,39 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 	   _parent->GetWindowRep());
 #endif
     parentWinRep = _parent->GetWindowRep();
-    foreground = _foreground;
-    background = _background;
+
+		fgid = GetForeground();
+		bgid = GetBackground();
   } else {
 #ifdef DEBUG
     printf("ViewWin 0x%p mapping to root\n", this);
 #endif
     parentWinRep = NULL;
-    foreground = ForegroundColor;
-    background = BackgroundColor;
+
+	    fgid = GetPColorID(defForeColor);
+		bgid = GetPColorID(defBackColor);
   }
 
-  WindowRep *screenWinRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(
-	_name, x, y, w, h, foreground, background, parentWinRep, min_width,
+  WindowRep* screenWinRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(
+	_name, x, y, w, h, parentWinRep, min_width,
 	min_height, relativeMinSize, _winBoundary);
+
+  screenWinRep->SetForeground(fgid);
+  screenWinRep->SetBackground(bgid);
+  
   //TEMPTEMP -- is this callback ever deleted?  RKW 5/7/97.
-  screenWinRep->RegisterCallback(this);
+  screenWinRep->RegisterCallback(windowRepCallback);
   screenWinRep->SetDaliServer(Init::DaliServer());
   screenWinRep->SetETkServer((char *)ETkIfc::GetServer());
   _winReps.SetScreenWinRep(screenWinRep);
 
   WindowRep *fileWinRep = DeviseDisplay::GetPSDisplay()->CreateWindowRep(_name,
-	x, y, w, h, foreground, background, NULL, min_width,
+	x, y, w, h, NULL, min_width,
 	min_height, relativeMinSize, _winBoundary);
+  
+  fileWinRep->SetForeground(fgid);
+  fileWinRep->SetBackground(bgid);
+
   fileWinRep->SetDaliServer(Init::DaliServer());
   _winReps.SetFileWinRep(fileWinRep);
 
@@ -408,7 +466,7 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 #endif
 
 #ifdef TK_WINDOW_old
-    _windowRep->Decorate(parentWinRep, _name, (unsigned int)min_width,
+    GetWindowRep()->Decorate(parentWinRep, _name, (unsigned int)min_width,
 			 (unsigned int)min_height);
 #endif
 
@@ -443,7 +501,7 @@ void ViewWin::Unmap()
   _children.DoneIterator(index);
 
 #ifdef TK_WINDOW_old
-  _windowRep->Undecorate();
+  GetWindowRep()->Undecorate();
 #endif
 
 #ifdef TK_WINDOWxxx
@@ -453,7 +511,7 @@ void ViewWin::Unmap()
 #endif
 
   SubClassUnmapped();
-  //TEMPTEMP?_winReps.GetScreenWinRep()->DeleteCallback(this);
+  //TEMPTEMP?_winReps.GetScreenWinRep()->DeleteCallback(windowRepCallback);
 
   if (!WindowRep::IsDestroyPending())
   {
@@ -466,17 +524,6 @@ void ViewWin::Unmap()
 
   _hasGeometry = false;
   _mapped = false;
-}
-
-ViewWin::~ViewWin()
-{
-#ifdef DEBUG
-  printf("ViewWin::~ViewWin(%p)\n", this);
-#endif
-
-  DetachChildren();
-  DeleteFromParent();
-  Unmap();
 }
 
 /* Detach all children from this view */
@@ -533,16 +580,16 @@ void ViewWin::RealGeometry(int &x, int &y, unsigned &w, unsigned &h)
 void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 #endif
 {
-  if (!_windowRep) {
+  if (!GetWindowRep()) {
     fprintf(stderr,"ViewWin::Geometry: not mapped\n");
     Exit::DoExit(2);
   }
 
   if (!_hasGeometry) {
 #ifdef DEBUG
-    printf("ViewWin::Geometry from WindowRep 0x%p\n", _windowRep);
+    printf("ViewWin::Geometry from WindowRep 0x%p\n", GetWindowRep());
 #endif
-    _windowRep->Dimensions(_width, _height);
+    GetWindowRep()->Dimensions(_width, _height);
     _x = _y = 0;
     _hasGeometry = true;
   } else {
@@ -584,11 +631,11 @@ void ViewWin::Geometry(int &x, int &y, unsigned &w, unsigned &h)
 
 void ViewWin::AbsoluteOrigin(int &x, int &y)
 {
-  if (!_windowRep) {
+  if (!GetWindowRep()) {
     fprintf(stderr,"ViewWin::AbsoluteOrigin: not mapped\n");
     Exit::DoExit(2);
   }
-  _windowRep->AbsoluteOrigin(x, y);
+  GetWindowRep()->AbsoluteOrigin(x, y);
 }
 
 /* Move/Resize ourselves */
@@ -604,21 +651,9 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
     Exit::DoExit(1);
   } else {
     _hasGeometry = false;
-    _windowRep->MoveResize(x, y, w, h);
-    HandleResize(_windowRep, x, y, w, h);
+    GetWindowRep()->MoveResize(x, y, w, h);
+    HandleResize(GetWindowRep(), x, y, w, h);
   }
-}
-
-Boolean ViewWin::HandleWindowDestroy(WindowRep *w)
-{
-#ifdef DEBUG
-  printf("ViewWin %s being destroyed\n", _name);
-#endif
-
-  ClassDir *classDir = ControlPanel::GetClassDir();
-  classDir->DestroyInstance(_name);
-
-  return true;
 }
 
 int ViewWin::TotalWeight()
@@ -631,43 +666,6 @@ int ViewWin::TotalWeight()
   }
   DoneIterator(index);
   return w;
-}
-
-void ViewWin::HandleResize(WindowRep *w, int xlow, int ylow,
-			   unsigned width, unsigned height)
-{
-#if defined(DEBUG)
-  printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
-	 this, xlow, ylow, width, height);
-#endif
-
-  _hasGeometry = true;
-  /* Why are these forced to zero?  RKW 10/24/96. */
-  _x = _y = 0;
-  _width = width;
-  _height = height;
-
-#ifdef MARGINS
-  if (Init::DisplayLogo())
-    DrawMargins();
-#endif
-
-#ifdef TK_WINDOW
-  /* Resize margin controls */
-  if (_marginsOn)
-    ResizeMargins(_width, _height);
-#endif
-
-}
-
-void ViewWin::HandleWindowMappedInfo(WindowRep *, Boolean mapped)
-{
-#ifdef DEBUG
-  printf("ViewWin::HandleWindowMappedInfo 0x%p %d\n", this, mapped);
-#endif
-
-  _iconified = !mapped;
-  Iconify(_iconified);
 }
 
 Boolean ViewWin::Iconified()
@@ -763,9 +761,9 @@ void ViewWin::Raise()
   printf("ViewWin(0x%p)::Raise()\n", this);
 #endif
 
-  if (_windowRep) {
-    _windowRep->Raise();
-    _windowRep->Flush();
+  if (GetWindowRep()) {
+    GetWindowRep()->Raise();
+    GetWindowRep()->Flush();
   }
 }
 
@@ -773,19 +771,10 @@ void ViewWin::Raise()
 
 void ViewWin::Lower()
 {
-  if (_windowRep) {
-    _windowRep->Lower();
-    _windowRep->Flush();
+  if (GetWindowRep()) {
+    GetWindowRep()->Lower();
+    GetWindowRep()->Flush();
   }
-}
-
-void ViewWin::SetFgBgColor(GlobalColor fg, GlobalColor bg)
-{
-  _foreground = fg;
-  _background = bg;
-
-  if (_windowRep)
-    _windowRep->SetWindowBgColor(bg);
 }
 
 #if defined(MARGINS) || defined(TK_WINDOW)
@@ -819,18 +808,21 @@ void ViewWin::DrawMargins()
   RealGeometry(x, y, w, h);
 
   // draw logo
-  WindowRep *win = GetWindowRep();
-  win->SetFgColor(GetFgColor());
-  win->SetPattern(Pattern0);
-  win->SetLineWidth(0);
-  win->FillRect(x, y, w - 1, _topMargin - 1);
-  win->SetFgColor(GetBgColor());
-  win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
-  win->SetFgColor(GetFgColor());
-  win->SetFont("Courier", "Medium", "r", "Normal", 8.0);
-  win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
-		    WindowRep::AlignNorth, true);
-  win->SetNormalFont();
+	WindowRep*	win = GetWindowRep();
+
+	win->SetForeground(GetForeground());
+	win->SetPattern(Pattern0);
+	win->SetLineWidth(0);
+	win->FillRect(x, y, w - 1, _topMargin - 1);
+
+	win->SetForeground(GetBackground());
+	win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
+
+	win->SetForeground(GetForeground());
+	win->SetFont("Courier", "Medium", "r", "Normal", 8.0);
+	win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
+					  WindowRep::AlignNorth, true);
+	win->SetNormalFont();
 }
 #endif
 
@@ -928,7 +920,7 @@ void ViewWin::ReparentMarginControl(char *side, int xoff, int yoff)
   }
 
   // make Tk window a child of current window
-  _windowRep->Reparent(true, (void *)Tk_WindowId(tkWindow), xoff, yoff);
+  GetWindowRep()->Reparent(true, (void *)Tk_WindowId(tkWindow), xoff, yoff);
 }
 
 void ViewWin::ResizeMargins(unsigned int w, unsigned int h)
@@ -1034,3 +1026,56 @@ ViewWin::PrintPS()
 
   return result;
 }
+
+//******************************************************************************
+// Callback Methods (WindowRepCallback)
+//******************************************************************************
+
+void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
+							  unsigned width, unsigned height)
+{
+#if defined(DEBUG)
+	printf("ViewWin::HandleResize 0x%p, %d, %d, %u, %u\n",
+		   this, xlow, ylow, width, height);
+#endif
+
+	_hasGeometry = true;
+	_x = _y = 0;			// Why are these forced to zero?  RKW 10/24/96.
+	_width = width;
+	_height = height;
+
+#ifdef MARGINS
+	if (Init::DisplayLogo())
+		DrawMargins();
+#endif
+
+#ifdef TK_WINDOW
+	if (_marginsOn)			// Resize margin controls
+		ResizeMargins(_width, _height);
+#endif
+}
+
+void ViewWin::HandleWindowMappedInfo(WindowRep*, Boolean mapped)
+{
+#ifdef DEBUG
+	printf("ViewWin::HandleWindowMappedInfo 0x%p %d\n", this, mapped);
+#endif
+
+	_iconified = !mapped;
+	Iconify(_iconified);
+}
+
+Boolean ViewWin::HandleWindowDestroy(WindowRep* w)
+{
+#ifdef DEBUG
+	printf("ViewWin %s being destroyed\n", _name);
+#endif
+
+	ClassDir*	classDir = ControlPanel::GetClassDir();
+
+	classDir->DestroyInstance(_name);
+
+	return true;
+}
+
+//******************************************************************************

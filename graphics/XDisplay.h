@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/07/22 19:44:30  wenger
+  Removed extra dependencies that broke cslib link.
+
   Revision 1.29  1997/05/21 22:10:02  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -24,6 +27,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.28.6.1  1997/05/21 20:40:09  weaver
+  Changes for new ColorManager
 
   Revision 1.28  1997/05/05 16:53:49  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -148,10 +154,17 @@
 
 const int LINE_SIZE = 512;
 
-class XDisplay: public DeviseDisplay {
-public:
-    XDisplay(char *name = 0);
+class XDisplay : public DeviseDisplay
+{
+	public:
 
+		// Constructors and Destructors
+		XDisplay(char *name = 0);
+
+		// Getters and Setters
+		Display*		GetDisplay(void)		{ return _display;	}
+		const Display*	GetDisplay(void) const	{ return _display;	}
+		
 #ifdef TK_WINDOW_EV2
     virtual ~XDisplay();
     virtual int HandleXEvent(XEvent &event);
@@ -172,8 +185,6 @@ public:
        coord from (0,0) to (1,1) */
     virtual WindowRep *CreateWindowRep(char *name, Coord x, Coord y,
 				       Coord width, Coord height, 
-				       GlobalColor fgnd = ForegroundColor,
-				       GlobalColor bgnd = BackgroundColor,
 				       WindowRep *parentRep = NULL,
                                        Coord min_width = 0.05,
 				       Coord min_height = 0.05,
@@ -199,13 +210,6 @@ public:
     virtual void ExportGIF(FILE *fp, int isView = 0);
 #endif
 
-#if defined(LIBCS)
-    /* Translate RGB colors to pixel values and back */
-    virtual LocalColor FindLocalColor(float r, float g, float b);
-    virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b);
-#endif
-    virtual void FindLocalColor(LocalColor c, float &r, float &g, float &b);
-
     virtual void SetTasvirServer(const char *server);
     virtual void SetETkServer(const char *server);
 
@@ -220,11 +224,6 @@ protected:
     void ConvertAndWriteGIF(Drawable drawable, 
                             XWindowAttributes xwa,
                             FILE *fp);
-
-    Boolean ClosestColor(Colormap &map, XColor &color, LocalColor &c,
-			 float &error);
-    virtual void AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb);
-    virtual void AllocColor(RgbVals &rgb, GlobalColor globalColor);
     
     friend class XWindowRep;
 
@@ -273,7 +272,6 @@ private:
     XFontStruct *_fontStruct;       /* current font */
     XFontStruct *_normalFontStruct; /* big font used in window */
     XFontStruct *_smallFontStruct;  /* small font used in window */
-    LocalColor _baseColor;           /* base color */
 };
 
 #endif

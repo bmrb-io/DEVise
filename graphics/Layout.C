@@ -16,11 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/05/30 20:41:05  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.2  1997/03/28 16:09:13  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
 
  */
+
+//******************************************************************************
 
 #include "math.h"
 #include "Layout.h"
@@ -28,9 +35,15 @@
 #include "Control.h"
 #include "View.h"
 
-Layout::Layout(char *name, Coord x, Coord y, Coord w, Coord h,
-       Boolean printExclude, Boolean printPixmap) :
-       ViewLayout(name)
+//#define DEBUG
+
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
+			   Boolean printExclude, Boolean printPixmap)
+	: ViewLayout(name)
 {
   Coord rootWidth, rootHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(rootWidth, rootHeight);
@@ -40,6 +53,8 @@ Layout::Layout(char *name, Coord x, Coord y, Coord w, Coord h,
   SetPrintExclude(printExclude);
   SetPrintPixmap(printPixmap);
 }
+
+//******************************************************************************
 
 /* for backward compatibility - to set STACKED, HOR and VERT layouts */
 void Layout::SetPreferredLayout(int v, int h, Boolean stacked)
@@ -125,57 +140,6 @@ void Layout::Delete(ViewWin *child)
       /* map other children */
       MapChildren(0, true);
     }
-  }
-}
-
-void Layout::HandleWindowMappedInfo(WindowRep *win, Boolean mapped)
-{
-  ViewWin::HandleWindowMappedInfo(win, mapped);
-  char buf[100];
-  sprintf(buf,"DEViseWindowMapped {%s}", GetName());
-#ifdef DEBUG
-  printf("%s\n", buf);
-#endif
-  ControlPanel::Instance()->NotifyFrontEnd(buf);
-}
-
-Boolean Layout::HandleWindowDestroy(WindowRep *win)
-{
-  ViewWin::HandleWindowDestroy(win);
-  char buf[100];
-  sprintf(buf,"DEViseWindowDestroy {%s}", GetName());
-#ifdef DEBUG
-  printf("%s\n", buf);
-#endif
-  ControlPanel::Instance()->NotifyFrontEnd(buf);
-  return true;
-}
-
-void Layout::HandleResize(WindowRep *win, int x, int y,
-                              unsigned w, unsigned h)
-{
-#ifdef DEBUG
-  printf("Layout::HandleResize 0x%x at %d,%d, size %u,%u\n",
-         this, x, y, w, h);
-#endif
-  int oldX, oldY, oldX0, oldY0;
-  unsigned oldH, oldW;
-  Geometry(oldX,oldY, oldW, oldH);
-  AbsoluteOrigin(oldX0,oldY0);
-
-  ViewWin::HandleResize(win, x, y, w, h);
-  if ( Mapped() ) {
-    if (_mode == CUSTOM) {
-      ScaleChildren(oldX, oldY, oldW, oldH, oldX0, oldY0);
-    } else {
-      MapChildren(0, true);
-    }
-    char buf[100];
-    sprintf(buf,"DEViseWindowResize {%s}", GetName());
-#ifdef DEBUG
-    printf("%s\n", buf);
-#endif
-    ControlPanel::Instance()->NotifyFrontEnd(buf);
   }
 }
 
@@ -433,12 +397,70 @@ void Layout::ScaleChildren(int oldX, int oldY, unsigned oldW, unsigned oldH,
   return;
 }
 
+//******************************************************************************
+// Callback Methods (WindowRepCallback)
+//******************************************************************************
 
+void	Layout::HandleResize(WindowRep* win, int x, int y,
+							 unsigned w, unsigned h)
+{
+#ifdef DEBUG
+	printf("Layout::HandleResize 0x%x at %d,%d, size %u,%u\n",
+		   this, x, y, w, h);
+#endif
+	int			oldX, oldY, oldX0, oldY0;
+	unsigned	oldH, oldW;
+	
+	Geometry(oldX,oldY, oldW, oldH);
+	AbsoluteOrigin(oldX0,oldY0);
+	ViewWin::HandleResize(win, x, y, w, h);
 
+	if (Mapped())
+	{
+		if (_mode == CUSTOM) 
+			ScaleChildren(oldX, oldY, oldW, oldH, oldX0, oldY0);
+		else
+			MapChildren(0, true);
 
+		char	buf[100];
 
+		sprintf(buf,"DEViseWindowResize {%s}", GetName());
 
+#ifdef DEBUG
+		printf("%s\n", buf);
+#endif
 
+		ControlPanel::Instance()->NotifyFrontEnd(buf);
+	}
+}
 
+void	Layout::HandleWindowMappedInfo(WindowRep* win, Boolean mapped)
+{
+	char	buf[100];
 
+	ViewWin::HandleWindowMappedInfo(win, mapped);
+	sprintf(buf,"DEViseWindowMapped {%s}", GetName());
 
+#ifdef DEBUG
+	printf("%s\n", buf);
+#endif
+
+	ControlPanel::Instance()->NotifyFrontEnd(buf);
+}
+
+Boolean		Layout::HandleWindowDestroy(WindowRep*	win)
+{
+	char	buf[100];
+
+	ViewWin::HandleWindowDestroy(win);
+	sprintf(buf,"DEViseWindowDestroy {%s}", GetName());
+
+#ifdef DEBUG
+	printf("%s\n", buf);
+#endif
+
+	ControlPanel::Instance()->NotifyFrontEnd(buf);
+	return true;
+}
+
+//******************************************************************************

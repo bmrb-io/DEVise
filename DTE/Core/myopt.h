@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/11/23 21:23:33  donjerko
+  Added ODBC stuff.
+
   Revision 1.38  1997/11/12 23:17:40  donjerko
   Improved error checking.
 
@@ -57,6 +60,9 @@
 
   Revision 1.25  1997/06/16 16:04:52  donjerko
   New memory management in exec phase. Unidata included.
+
+  Revision 1.24.6.1  1997/05/21 20:34:25  weaver
+  Changes needed by new ColorManageR
 
   Revision 1.24  1997/04/18 20:46:19  donjerko
   Added function pointers to marshall types.
@@ -264,15 +270,15 @@ public:
 	int binarySize(){
 		return packSize(value, typeID);
 	}
-	virtual bool operator <(ConstantSelection arg){
+	bool operator<(const ConstantSelection& arg) const {
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
-	virtual bool operator >(ConstantSelection arg){
+	bool operator>(const ConstantSelection& arg) const {
 		assert(0);
 		return NULL; // avoid compiler warning
 	}
-	virtual bool operator ==(ConstantSelection arg){ // throws exception
+	bool operator ==(const ConstantSelection& arg) const { // throws exception
 		TypeID tmp;
 		GeneralPtr* genPtr;
 		TRY(genPtr = getOperatorPtr("=", typeID, arg.typeID, tmp), false);
@@ -380,7 +386,8 @@ public:
                return false;
           }
 		TypeCast* y = (TypeCast*) x;
-		if(!(typeID == y->typeID)){
+		// Kludge avoids != (creates an operator ambiguity). CEW 5/20/97
+		if(!(TypeID(typeID) == TypeID(y->typeID))){
 			return false;
 		}
 		if(!input->match(y->input)){
@@ -463,6 +470,7 @@ public:
                return false;
           }
 		Member* y = (Member*) x;
+		// Kludge avoids != (creates an operator ambiguity). CEW 5/20/97
           if(!(*name == *y->name)){
                return false;
           }
@@ -530,6 +538,7 @@ public:
                return false;
           }
 		Member* y = (Member*) x;
+		// Kludge avoids != (creates an operator ambiguity). CEW 5/20/97
           if(!(*name == *y->name)){
                return false;
           }

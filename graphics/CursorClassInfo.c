@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/07/22 15:36:23  wenger
+  Added capability to dump human-readable information about all links
+  and cursors.
+
   Revision 1.4  1997/06/09 14:46:36  wenger
   Added cursor grid; fixed bug 187; a few minor cleanups.
 
@@ -32,6 +36,8 @@
 #include "View.h"
 #include "Util.h"
 #include "Exit.h"
+
+#include "Color.h"
 
 //#define DEBUG
 
@@ -113,8 +119,10 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc, char **argv)
   if (argc >= 3) useGrid = atoi(argv[2]);
   if (argc >= 4) gridX = atof(argv[3]);
   if (argc >= 5) gridX = atof(argv[4]);
-  DeviseCursor *cursor = new DeviseCursor(name, flag, ForegroundColor,
-    useGrid, gridX, gridY);
+  DeviseCursor *cursor = new DeviseCursor(name, flag,
+										  GetPColorID(defForeColor),
+										  GetPColorID(defBackColor),
+										  useGrid, gridX, gridY);
   return new CursorClassInfo(name, flag, cursor);
 }
 
@@ -167,8 +175,7 @@ CursorClassInfo::Dump(FILE *fp)
 
     fprintf(fp, "  Type:");
     VisualFilter *filter;
-    GlobalColor color;
-    _cursor->GetVisualFilter(filter, color);
+    _cursor->GetVisualFilter(filter);
     if (filter != NULL) {
       if (filter->flag & VISUAL_X) fprintf(fp, "X ");
       if (filter->flag & VISUAL_Y) fprintf(fp, "Y ");

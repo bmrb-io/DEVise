@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12.10.1  1997/05/21 20:41:25  weaver
+  Changes for new ColorManager
+
+  Revision 1.12  1996/12/03 20:44:09  jussi
+  Removed reference to unneeded file Snapshot.h.
+
   Revision 1.11  1996/11/13 16:57:30  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -57,7 +63,6 @@
 #include "Display.h"
 #include "Dispatcher.h"
 #include "RectShape.h"
-#include "ColorMgr.h"
 #include "Control.h"
 #include "Init.h"
 #include "VisualLinkClassInfo.h"
@@ -84,7 +89,9 @@
 #include "AxisLabelClassInfo.h"
 #include "CursorClassInfo.h"
 
-const int MAX_COLORS = 32;
+#include "Color.h"
+
+//const int MAX_COLORS = 32;
 
 int debug = 0;
 
@@ -211,27 +218,27 @@ main(int argc, char **argv)
   job_ordering[ 14] = 30;
   
   /* init colors */
-  GlobalColor colorArray0[MAX_COLORS];
-  GlobalColor colorArray1[MAX_COLORS];
-  GlobalColor colorArray2[MAX_COLORS];
-  GlobalColor colorArray3[MAX_COLORS];
-  GlobalColor colorArray4[MAX_COLORS];
-  GlobalColor colorArray5[MAX_COLORS];
-  GlobalColor *colorArrays[6];
-  colorArrays[0] = colorArray0;
-  colorArrays[1] = colorArray1;
-  colorArrays[2] = colorArray2;
-  colorArrays[3] = colorArray3;
-  colorArrays[4] = colorArray4;
-  colorArrays[5] = colorArray5;
-  mapInfo->colorArrays = colorArrays;
+//  GlobalColor colorArray0[MAX_COLORS];
+//  GlobalColor colorArray1[MAX_COLORS];
+//  GlobalColor colorArray2[MAX_COLORS];
+//  GlobalColor colorArray3[MAX_COLORS];
+//  GlobalColor colorArray4[MAX_COLORS];
+//  GlobalColor colorArray5[MAX_COLORS];
+//  GlobalColor *colorArrays[6];
+//  colorArrays[0] = colorArray0;
+//  colorArrays[1] = colorArray1;
+//  colorArrays[2] = colorArray2;
+//  colorArrays[3] = colorArray3;
+//  colorArrays[4] = colorArray4;
+//  colorArrays[5] = colorArray5;
+//  mapInfo->colorArrays = colorArrays;
   
   /* create control panel */
   ControlPanel::_controlPanel = GetNewControl();
   ControlPanel *ctrl = ControlPanel::Instance();
   
   int depth = DeviseDisplay::DefaultDisplay()->NumPlanes();
-  
+#if (0) 
   if (depth >= 8) {
     printf("using colors\n");
     double colorVal = 0.0;
@@ -274,7 +281,7 @@ main(int argc, char **argv)
       colorArray5[i] = color5;
     }
   }
-
+#endif
   ctrl->StartSession();
   
   Dispatcher::RunNoReturn();

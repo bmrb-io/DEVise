@@ -16,6 +16,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/03/28 16:11:25  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -25,9 +29,7 @@ set debug 1
 global DEViseLM 
 set DEViseLM 1
 
-global defaultFgColor defaultBgColor defaultName
-set defaultFgColor black
-set defaultBgColor white
+global defaultName
 set defaultName "view"
 
 global nodeListPtr
@@ -51,11 +53,11 @@ set opMode "create"
 
 
 proc LayoutManager { w params} {
-    global rbdListPtr curNode window nodeListPtr topwin
+    global rbdListPtr curNode window nodeListPtr topwin colors
     toplevel $w
     set topwin $w
     canvas $w.parent 
-    $w.parent configure -bg white
+    $w.parent configure -bg $colors(layoutManagerBackground)
     pack $w.parent 
     set rbdListPtr 0
     set nodeListPtr 0
@@ -113,12 +115,11 @@ proc LayoutManager { w params} {
     }
     
     bind $window <B1-Motion> {
-	global startNode endNode createStart rbdTag bgColor endIndex 
+	global startNode endNode createStart rbdTag endIndex 
 	global opMode
 	global moveStart
 	global name nameTag
 	if { $opMode == "create" } { 
-	    set bgColor white
 	    set endIndex -1
 	    if { $createStart == 1 } {
 		if { [ CheckOverLap [lindex $startNode 0] \
@@ -138,7 +139,7 @@ proc LayoutManager { w params} {
 		    set endNode [CreateNode $window %x %y]
 		}
 		#puts "endNode = $endNode"
-		set rbdTag [DrawRbd $window $startNode $endNode $bgColor]
+		set rbdTag [DrawRbd $window $startNode $endNode]
 		set nameTag [DrawNameTag $window \
 			[MidPoint $startNode $endNode] $name]
 		#puts "rbdTag = $rbdTag"
@@ -170,7 +171,7 @@ proc LayoutManager { w params} {
 		    return
 		}
 		$window delete $rbdTag
-                set nameTag [lindex $rbdObj 4]
+                set nameTag [lindex $rbdObj 3]
 		set name [GetNameFromTag $window $nameTag]
 		$window delete $nameTag
 		if { [llength $nodeTagList([lindex $startNode 2])] == 2 } {
@@ -189,7 +190,7 @@ proc LayoutManager { w params} {
     }
     
     bind $window <ButtonRelease-1> {
-	global createStart startNode EndNode rbdTag startIndex endIndex bgColor
+	global createStart startNode EndNode rbdTag startIndex endIndex
 	global nameTag 
 	global opMode
 	global moveStart
@@ -198,8 +199,7 @@ proc LayoutManager { w params} {
 	if { $opMode == "create" } {
 	    if { $createStart == 1 } { 
 		UpdateCreateRbd $rbdTag $startNode $endNode \
-			$startIndex $endIndex \
-			$bgColor $nameTag
+			$startIndex $endIndex $nameTag
 		set createStart 0
 	    } else  {
 		if { $startIndex == -1 } {
@@ -298,7 +298,7 @@ proc LayoutManager { w params} {
 	    set nodeList($movingIndex) $newNode
 	    foreach rbdIndex $movingRectList {
 		set name [GetNameFromTag $window [lindex $rbdObj 4]]
-		$window delete [lindex $rbdObj 4]
+		$window delete [lindex $rbdObj 3]
 		UpdateResizeRbd $window $movingIndex $movingNode \
 			$newNode $rbdIndex $name
 	    }
@@ -367,24 +367,21 @@ proc UpdateResizeRbd { w nodeIndex oldNode newNode rbdIndex name } {
     set oldTag     [lindex $rbdObj 0]
     set node1Index [lindex $rbdObj 1]
     set node2Index [lindex $rbdObj 2]
-    set color      [lindex $rbdObj 3]
     #puts "start $node1Index , end $node2Index "
 
     unset rbdTagList($oldTag)
     if { $nodeIndex == $node1Index } {
 	#puts " changing start node "
-    	set rbdTag [DrawRbd $w $newNode $nodeList($node2Index) $color]
+    	set rbdTag [DrawRbd $w $newNode $nodeList($node2Index)]
 	set nameTag [DrawNameTag $w \
                 [MidPoint $newNode $nodeList($node2Index)] $name]
-	set rbdList($rbdIndex) [list $rbdTag $nodeIndex $node2Index \
-                $color $nameTag]
+	set rbdList($rbdIndex) [list $rbdTag $nodeIndex $node2Index $nameTag]
     } elseif { $nodeIndex == $node2Index } {
 	#puts " changing end node "
-	set rbdTag [DrawRbd $w $nodeList($node1Index) $newNode $color]
+	set rbdTag [DrawRbd $w $nodeList($node1Index) $newNode]
 	set nameTag [DrawNameTag $w \
                 [MidPoint $nodeList($node1Index) $newNode] $name]
-	set rbdList($rbdIndex) [list $rbdTag $node1Index $nodeIndex \
-                $color $nameTag]
+	set rbdList($rbdIndex) [list $rbdTag $node1Index $nodeIndex $nameTag]
     }
     set rbdTagList($rbdTag) $rbdIndex
     global DEViseLM
@@ -397,7 +394,7 @@ proc UpdateResizeRbd { w nodeIndex oldNode newNode rbdIndex name } {
 }
 
 proc UpdateCreateRbd { rbdTag startNode endNode startIndex endIndex \
-	bgColor nameTag } {
+	nameTag } {
     global debug
     global nodeList nodeListPtr
     global rbdList rbdListPtr
@@ -425,7 +422,7 @@ proc UpdateCreateRbd { rbdTag startNode endNode startIndex endIndex \
     #      log info about the rubberband into the rbdlist
     
     set index $rbdListPtr
-    set rbdList($index) [list $rbdTag $startIndex $endIndex $bgColor $nameTag]
+    set rbdList($index) [list $rbdTag $startIndex $endIndex $nameTag]
 
     #puts $nodeTagList($node1tag)
     #puts $nodeTagList($node2tag)    
@@ -442,16 +439,17 @@ proc UpdateCreateRbd { rbdTag startNode endNode startIndex endIndex \
 }
 
 
-proc DrawRbd { w node1 node2 bgColor} {
-    global defaultBgColor defaultFgColor
-    if { $bgColor == "" } {
-	set bgColor  $defaultBgColor
-    }
+proc DrawRbd { w node1 node2 } {
+    global colors
+
     set tag [$w create rectangle  \
 	    [lindex $node1 0] [lindex $node1 1] \
-	    [lindex $node2 0] [lindex $node2 1] -outline $defaultFgColor \
-	    -fill $bgColor -tags rbd] 
+	    [lindex $node2 0] [lindex $node2 1] \
+		-outline $colors(rubberBandForeground) \
+	    -fill $colors(rubberBandBackground) -tags rbd] 
+
     $w lower $tag
+
     return $tag
 }
 
@@ -659,7 +657,6 @@ proc UpdateMoveRbd { w rbdIndex startNode endNode name } {
 
     set startIndex [lindex $rbdObj 1 ]
     set endIndex [ lindex $rbdObj 2] 
-    set bgColor  [lindex $rbdObj 3]
     set startTag [lindex $nodeList($startIndex) 2]
     set endTag  [lindex $nodeList($endIndex) 2]
     
@@ -689,10 +686,9 @@ proc UpdateMoveRbd { w rbdIndex startNode endNode name } {
     set nodeTagList([lindex $startNode 2]) [list $startIndex $rbdIndex]
     set nodeTagList([lindex $endNode 2]) [list $endIndex $rbdIndex]
 
-    set rbdTag [ DrawRbd $w $startNode $endNode $bgColor]
+    set rbdTag [ DrawRbd $w $startNode $endNode]
     set nameTag [DrawNameTag $w [MidPoint $startNode $endNode] $name]
-    set rbdList($rbdIndex) [list $rbdTag $startIndex $endIndex \
-	       $bgColor $nameTag]
+    set rbdList($rbdIndex) [list $rbdTag $startIndex $endIndex $nameTag]
     set rbdTagList($rbdTag) $rbdIndex
     global DEViseLM
     if { $DEViseLM == 1 } {
@@ -734,12 +730,11 @@ proc InitFromDEViseParams { w params } {
 	set y1 [lindex $rect 1]
 	set x2 [lindex $rect 2]
 	set y2 [lindex $rect 3]
-	set bgColor [lindex $rect 4]
 	set startNode [CreateNode $w $x1 $y1]
 	set endNode [CreateNode $w $x2 $y2]
-	set rbdTag [DrawRbd $w $startNode $endNode $bgColor]
+	set rbdTag [DrawRbd $w $startNode $endNode]
 	set nameTag [DrawNameTag $w [MidPoint $startNode $endNode] $viewName]
-	UpdateCreateRbd $rbdTag $startNode $endNode -1 -1 $bgColor $nameTag
+	UpdateCreateRbd $rbdTag $startNode $endNode -1 -1 $nameTag
     }
 }
 proc MidPoint { node1 node2 } {
@@ -775,13 +770,15 @@ proc LoadFromFile { w filename } {
 		set nodeListPtr [expr $nodeListPtr + 1]
 	    } elseif { $type == 2 } {
 		puts "scanning rect"
+
+		# The color field is now ignored. Update files (test files only?)
+		# CEW 10/17/97
 		scan $line "%d %d %s %s" index1 index2 color name
 		set node1 $nodeList($index1)
 		set node2 $nodeList($index2)
-		set rbdTag [ DrawRbd $w $node1 $node2 $color]
+		set rbdTag [DrawRbd $w $node1 $node2]
 		set nameTag [DrawNameTag $w [MidPoint $node1 $node2] $name]
-		UpdateCreateRbd $rbdTag $node1 $node2 $index1 $index2 \
-			$color $nameTag
+		UpdateCreateRbd $rbdTag $node1 $node2 $index1 $index2 $nameTag
 	    }
 	} else {
 	    set type [expr $type + 1 ]
@@ -812,8 +809,11 @@ proc SaveToFile { w filename } {
 	set i [expr $i - 1]
 	set startIndex [lindex $rbdList($i) 1]
 	set endIndex [lindex $rbdList($i) 2]
-	set color [lindex $rbdList($i) 3]
-	set nameTag  [lindex $rbdList($i) 4]
+
+	# The color field is now ignored. Update files (test files only?)
+	# CEW 10/17/97
+	set color "junk"
+	set nameTag  [lindex $rbdList($i) 3]
 	set name [ GetNameFromTag $w $nameTag]
 	puts $f "$startIndex $endIndex $color $name"
     }
@@ -837,7 +837,7 @@ proc ClearCanvas { w } {
 	set i [expr $i - 1]
 	puts $rbdList($i)
 	$w delete [lindex $rbdList($i) 0]
-	$w delete [lindex $rbdList($i) 4]
+	$w delete [lindex $rbdList($i) 3]
 	unset rbdTagList([lindex $rbdList($i) 0])
 	unset rbdList($i)
     }
@@ -862,9 +862,8 @@ proc MapDevisetoTk { winGeom viewGeom xscale yscale } {
     set rectY1 [expr $viewY * $yscale + 5] 	
     set rectX2 [expr ($viewX + $viewWd) * $xscale + 5] 
     set rectY2 [expr ($viewY + $viewHt) * $yscale + 5]
-    set bgColor white
-    puts "coords: $rectX1, $rectY1 ; $rectX2, $rectY2; $bgColor"
-    return [list $rectX1 $rectY1 $rectX2 $rectY2 $bgColor]
+    puts "coords: $rectX1, $rectY1 ; $rectX2, $rectY2"
+    return [list $rectX1 $rectY1 $rectX2 $rectY2]
 }
 
 proc MapTktoDevise { winGeom viewGeom xscale yscale } {
@@ -902,3 +901,5 @@ proc UpdateDeviseViews { view startNode endNode } {
     DEVise setWinGeometry $view [lindex $viewGeom 0] [lindex $viewGeom 1] \
 	    [lindex $viewGeom 2] [lindex $viewGeom 3]
 }
+
+##******************************************************************************

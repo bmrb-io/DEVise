@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.50  1997/11/18 23:26:37  wenger
+#  First version of GData to socket capability; removed some extra include
+#  dependencies; committed test version of TkControl::OpenDataChannel().
+#
 #  Revision 1.49  1997/11/05 00:22:07  donjerko
 #  Added initialization of Streaming Buffer Mgr, used by RTree.
 #
@@ -37,6 +41,9 @@
 #
 #  Revision 1.44.4.1  1997/05/20 16:10:46  ssl
 #  Added layout manager to DEVise
+#
+#  Revision 1.44.6.1  1997/05/21 20:39:38  weaver
+#  Changes for new ColorManager
 #
 #  Revision 1.44  1997/04/15 18:32:49  wenger
 #  Removed xvgif rule (no longer needed) from graphics makefile.
@@ -125,14 +132,16 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
+	-I../../src/color -I../../src/utils \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
 	-I../../LM/C++ \
-	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS \
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DGRAPHICS \
 	-DNEW_LAYOUT
+# -fexternal-templates 
 
 LIBSRC = AttrList.c AxisLabelClassInfo.c \
-	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \
+	ClassDir.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \

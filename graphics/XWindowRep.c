@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.96  1997/07/18 20:25:08  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.95  1997/06/13 18:07:30  wenger
   Orientation is now working for text labels and fixed text labels.
 
@@ -31,6 +35,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.92.6.1  1997/05/21 20:40:10  weaver
+  Changes for new ColorManager
 
   Revision 1.92  1997/05/05 16:53:51  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -418,9 +425,15 @@
 #include "Init.h"
 #endif
 
+// Defines to get around namespace conflicts with xv code. CEW 5/13/97.
+#define String XVString
+#define black XVblack
 extern "C" {
  #include "xv.h"
 }
+#undef black
+#undef String
+
 // xv.h has a #define DELETE that conflicts with DeviseKey::DELETE
 // that is not used in this module, so undef it before including
 // DeviseKey.h
@@ -576,57 +589,131 @@ XWindowRepInit::XWindowRepInit()
 
 static XWindowRepInit xwindowrep_initializer;
 
-/**********************************************************************
-Initializer
-***********************************************************************/
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
 
-XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
-			XWindowRep *parent, GlobalColor fgndColor,
-			GlobalColor bgndColor, Boolean backingStore) :
-	WindowRep(DVDisp, fgndColor, bgndColor)
+XWindowRep::XWindowRep(Display* display, Window window, XDisplay* DVDisp,
+					   XWindowRep* parent, Boolean backingStore)
+	:	WindowRep(DVDisp), _parent(parent)
 {
-  DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
-    window = 0x%lx)\n", this, parent, window));
-  _display = display;
-  _win = window;
-  _pixmap = 0;
-  _parent = parent;
-  if (_parent)
-    _parent->_children.Append(this);
-  _backingStore = false;
-  _lineStyle = LineSolid;
-  _daliServer = NULL;
-  _etkServer = NULL;
-  Init();
+	DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p, window = 0x%lx)\n", this, parent, window));
+
+	_display = display;
+	_win = window;
+	_pixmap = 0;
+
+	if (_parent)
+		_parent->_children.Append(this);
+
+	_backingStore = false;
+	_lineStyle = LineSolid;
+
+	_daliServer = NULL;
+	_etkServer = NULL;
+  
+	Init();
 }
 
-XWindowRep::XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
-			XWindowRep *parent, GlobalColor fgndColor,
-			GlobalColor bgndColor, int x, int y) :
-	WindowRep(DVDisp, fgndColor, bgndColor)
+XWindowRep::XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp,
+					   XWindowRep* parent, int x, int y)
+	:	WindowRep(DVDisp), _x(x), _y(y), _parent(parent)
 {
   DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
     pixmap = 0x%lx)\n", this, parent, pixmap));
   _display = display;
   _win = 0;
   _pixmap = pixmap;
-  _parent = parent;
   if (_parent)
     _parent->_children.Append(this);
   _backingStore = false;
 
-  _x = x;
-  _y = y;
-
   Init();
-
-  // clear all pixels in pixmap
-  SetFgColor(bgndColor);
-  XFillRectangle(_display, _pixmap, _gc, 0, 0, _width, _height);
-
-  SetFgColor(fgndColor);
-  SetBgColor(bgndColor);
+//  ClearPixmap();
 }
+
+XWindowRep::~XWindowRep(void)
+{
+  DO_DEBUG(printf("XWindowRep::~XWindowRep(this = %p)\n", this));
+  XFreeGC(_display, _gc);
+  XFreeGC(_display, _rectGc);
+  
+  FreeBitmap(_srcBitmap);
+  FreeBitmap(_dstBitmap);
+  
+  /* _win or _pixmap is destroyed by XDisplay */
+  DOASSERT(_win == 0 && _pixmap == 0, "X window or pixmap not freed");
+
+  // This should have already been done by XDisplay::DestroyWindowRep(),
+  // but do it again here just in case...  If it's already been done,
+  // this won't actually do anything.
+  (void) DaliFreeImages();
+  delete [] _daliServer;
+
+  (void) ETk_FreeWindows();
+  delete [] _etkServer;
+  
+  if (_parent) {
+    if (!_parent->_children.Delete(this))
+      fprintf(stderr, "Cannot remove child from parent window\n");
+  }
+
+  if (_children.Size() > 0)
+    reportErrNosys("Child windows should have been destroyed first");
+}
+
+//******************************************************************************
+// Getters and Setters
+//******************************************************************************
+
+void	XWindowRep::SetForeground(PColorID fgid)
+{
+	XColorID	xfgid = AP_GetXColorID(fgid);
+
+	WindowRep::SetForeground(fgid);
+
+#ifdef GRAPHICS
+	if (_dispGraphics)
+		XSetForeground(_display, _gc, xfgid);
+#endif
+}
+
+void	XWindowRep::SetBackground(PColorID bgid)
+{
+	XColorID	xbgid = AP_GetXColorID(bgid);
+
+	WindowRep::SetBackground(bgid);
+
+#ifdef GRAPHICS
+	if (_dispGraphics)
+		XSetBackground(_display, _gc, xbgid);
+#endif
+}
+
+//******************************************************************************
+// Utility Functions
+//******************************************************************************
+
+void	XWindowRep::SetWindowBackground(PColorID bgid)
+{
+#ifdef GRAPHICS
+	if (_dispGraphics)
+		XSetWindowBackground(_display, _win, AP_GetXColorID(bgid));
+#endif
+}
+
+void	XWindowRep::ClearPixmap(void)
+{
+#ifdef GRAPHICS
+	PColorID	savePColorID = GetForeground();
+
+	SetForeground(GetBackground());
+	XFillRectangle(_display, _pixmap, _gc, 0, 0, _width, _height);
+	SetForeground(savePColorID);
+#endif
+}
+
+//******************************************************************************
 
 void XWindowRep::Init()
 {
@@ -670,40 +757,6 @@ void XWindowRep::Init()
   _tkPathName[0] = 0;
   _tkWindow = 0;
 #endif
-}
-
-/**************************************************************
-  destructor 
-**************************************************************/
-
-XWindowRep::~XWindowRep()
-{
-  DO_DEBUG(printf("XWindowRep::~XWindowRep(this = %p)\n", this));
-  XFreeGC(_display, _gc);
-  XFreeGC(_display, _rectGc);
-  
-  FreeBitmap(_srcBitmap);
-  FreeBitmap(_dstBitmap);
-  
-  /* _win or _pixmap is destroyed by XDisplay */
-  DOASSERT(_win == 0 && _pixmap == 0, "X window or pixmap not freed");
-
-  // This should have already been done by XDisplay::DestroyWindowRep(),
-  // but do it again here just in case...  If it's already been done,
-  // this won't actually do anything.
-  (void) DaliFreeImages();
-  delete [] _daliServer;
-
-  (void) ETk_FreeWindows();
-  delete [] _etkServer;
-  
-  if (_parent) {
-    if (!_parent->_children.Delete(this))
-      fprintf(stderr, "Cannot remove child from parent window\n");
-  }
-
-  if (_children.Size() > 0)
-    reportErrNosys("Child windows should have been destroyed first");
 }
 
 /******************************************************************
@@ -1648,101 +1701,6 @@ void XWindowRep::CoalescePixmaps(XWindowRep *root)
 
   root->_children.DoneIterator(index);
 }
-
-/* color selection interface using Devise colormap */
-
-void XWindowRep::SetFgColor(GlobalColor fg)
-{
-#if defined(DEBUG)
-  printf("XWindowRep(0x%p)::SetFgColor(%d)\n", this, fg);
-#endif
-
-  WindowRep::SetFgColor(fg);
-#if defined(LIBCS)
-  _rgbForeground = WindowRep::GetLocalColor(fg);
-#endif
-#ifdef GRAPHICS
-  if (_dispGraphics)
-    XSetForeground(_display, _gc, WindowRep::GetLocalColor(fg));
-#endif
-}
-
-void XWindowRep::SetBgColor(GlobalColor bg)
-{
-#if defined(DEBUG)
-  printf("XWindowRep::SetBgColor(%d)\n", bg);
-#endif
-
-  WindowRep::SetBgColor(bg);
-#if defined(LIBCS)
-  _rgbBackground = WindowRep::GetLocalColor(bg);
-#endif
-#ifdef GRAPHICS
-  if (_dispGraphics)
-    XSetBackground(_display, _gc, WindowRep::GetLocalColor(bg));
-#endif
-}
-
-void XWindowRep::SetWindowBgColor(GlobalColor bg)
-{
-#if defined(DEBUG)
-  printf("XWindowRep::SetWindowBgColor(%d)\n", bg);
-#endif
-
-#ifdef GRAPHICS
-  if (_dispGraphics)
-    XSetWindowBackground(_display, _win, WindowRep::GetLocalColor(bg));
-#endif
-}
-
-#if defined(LIBCS)
-/* color selection interface using local colors */
-
-void XWindowRep::SetFgRGB(float r, float g, float b)
-{
-  _rgbForeground = GetDisplay()->FindLocalColor(r, g, b);
-#ifdef GRAPHICS
-  if (_dispGraphics)
-    XSetForeground(_display, _gc, _rgbForeground);
-#endif
-}
-
-void XWindowRep::SetBgRGB(float r, float g, float b)
-{
-  _rgbBackground = GetDisplay()->FindLocalColor(r, g, b);
-#ifdef GRAPHICS
-  if (_dispGraphics)
-    XSetBackground(_display, _gc, _rgbBackground);
-#endif
-}
-
-void XWindowRep::GetFgRGB(float &r, float &g, float &b)
-{
-  GetDisplay()->FindLocalColor(_rgbForeground, r, g, b);
-#ifdef DEBUG
-  printf("Current foreground color is %lu: %.2f,%.2f,%.2f\n",
-         _rgbForeground, r, g, b);
-#endif
-}
-
-void XWindowRep::GetBgRGB(float &r, float &g, float &b)
-{
-  GetDisplay()->FindLocalColor(_rgbBackground, r, g, b);
-#ifdef DEBUG
-  printf("Current background color is %lu: %.2f,%.2f,%.2f\n",
-         _rgbBackground, r, g, b);
-#endif
-}
-
-void XWindowRep::SetWindowBgRGB(float r, float g, float b)
-{
-  LocalColor color = GetDisplay()->FindLocalColor(r, g, b);
-#ifdef GRAPHICS
-  if (_dispGraphics)
-    XSetWindowBackground(_display, _win, color);
-#endif
-}
-#endif
 
 /* drawing primitives */
 
@@ -2724,24 +2682,34 @@ void XWindowRep::SetOrMode()
 #endif
 
 #ifdef GRAPHICS
-  XSetState(_display, _gc, 
-	    AllPlanes, AllPlanes,
-            GXand, AllPlanes);
+  XSetState(_display, _gc, AllPlanes, AllPlanes, GXand, AllPlanes);
 #endif
 }
 
 void XWindowRep::SetCopyMode()
 {
 #ifdef DEBUG
-  printf("XWindowRep::SetCopyMode\n");
+	printf("XWindowRep::SetCopyMode\n");
 #endif
 
+	XColorID	fgid = AP_GetXColorID(GetForeground());
+	XColorID	bgid = AP_GetXColorID(GetBackground());
+
 #ifdef GRAPHICS
-  XSetState(_display, _gc,
-            GetDisplay()->GetLocalColor(GetFgColor()),
-	    GetDisplay()->GetLocalColor(GetBgColor()),
-            GXcopy, AllPlanes);
+	XSetState(_display, _gc, fgid, bgid, GXcopy, AllPlanes);
 #endif
+
+//#if defined(X_DEBUG)
+//  XDrawLine(_display, DRAWABLE, _gc, (int) startX - 10, (int) startY - 10,
+//    (int) startX + 10, (int) startY + 10);
+//  XDrawLine(_display, DRAWABLE, _gc, (int) startX + 10, (int) startY - 10,
+//    (int) startX - 10, (int) startY + 10);
+//#endif
+
+//  if (scale != 1.0) XRotSetMagnification(scale);
+//  XRotDrawAlignedString(_display, fontStruct, orientation,
+//    DRAWABLE, _gc, startX, startY, text, xvtAlign);
+//  if (scale != 1.0) XRotSetMagnification(1.0);
 }
 
 void XWindowRep::SetFont(char *family, char *weight, char *slant,
@@ -2901,19 +2869,10 @@ void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
   
 #if defined(DEBUG)
   printf("Drawing <%s> starting at %d,%d\n", text, startX, startY);
-#endif
 
-#if defined(X_DEBUG)
-  XDrawLine(_display, DRAWABLE, _gc, (int) startX - 10, (int) startY - 10,
-    (int) startX + 10, (int) startY + 10);
-  XDrawLine(_display, DRAWABLE, _gc, (int) startX + 10, (int) startY - 10,
-    (int) startX - 10, (int) startY + 10);
+  XCopyPlane(_display, _dstBitmap.pixmap, DRAWABLE, _gc, 
+	     0, 0, dstWidth, dstHeight, startX, startY, 1);
 #endif
-
-  if (scale != 1.0) XRotSetMagnification(scale);
-  XRotDrawAlignedString(_display, fontStruct, orientation,
-    DRAWABLE, _gc, startX, startY, text, xvtAlign);
-  if (scale != 1.0) XRotSetMagnification(1.0);
 #endif
 }
 
@@ -3153,7 +3112,7 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
     _y = y;
 
     // clear all pixels in pixmap
-    SetFgColor(GetBgColor());
+    SetForeground(GetBackground());
     XFillRectangle(_display, _pixmap, _gc, 0, 0, w, h);
   }
 
@@ -3197,9 +3156,9 @@ void XWindowRep::DoPopup(int x, int y, int button)
 			    XTextWidth(fontStruct, msgs[i], strlen(msgs[i])));
   }
   textHeight = charHeight * numMsgs;
-  
-  LocalColor bgnd = GetLocalColor(BackgroundColor);
-  LocalColor fgnd = GetLocalColor(ForegroundColor);
+
+	XColorID	fgnd = AP_GetXColorID(GetForeground());
+	XColorID	bgnd = AP_GetXColorID(GetBackground());
 
   /* Create window */
   XSetWindowAttributes attr;
@@ -3773,9 +3732,7 @@ void XWindowRep::DetachFromTkWindow()
   _tkWindow = 0;
 }
 
-
 #endif
-
 
 void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
 			       int height, Boolean filled,
@@ -4067,3 +4024,5 @@ void XWindowRep::CalculateLocation(int &symbolX, int &symbolY, int width,
     break;
   }
 }
+
+//******************************************************************************

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.10.1  1997/05/21 20:40:54  weaver
+  Changes for new ColorManager
+
+  Revision 1.6  1996/11/18 18:10:57  donjerko
+  New files and changes to make DTE work with Devise
+
   Revision 1.5  1996/05/07 16:41:48  jussi
   Updated constructor and added HandleKey, HandlePress and HandlePopup
   to reflect new interface between View and its derived classes.
@@ -33,98 +39,97 @@
   Added CVS header.
 */
 
+//******************************************************************************
+
 #include "ViewRanges.h"
 
 //#define DEBUG
 
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
 ViewRanges::ViewRanges(char *name,  ViewWin *parent, VisualFilter &initFilter,
 		       RangeSource *source, Boolean horizontal)
-	: View(name, initFilter, ForegroundColor, BackgroundColor,
+	: View(name, initFilter,
+		   GetPColorID(defForeColor), GetPColorID(defBackColor),
 	       NULL, NULL, false)
 {
-  _source = source;
-  _source->RegisterCallback(this);
-  _horizontal = horizontal;
-  AppendToParent(parent);
+	rangeCallback = new ViewRanges_RangeCallback(this);
+
+	_source = source;
+	_source->RegisterCallback(rangeCallback);
+	_horizontal = horizontal;
+	AppendToParent(parent);
 }
 
-void ViewRanges::DerivedStartQuery(VisualFilter &filter, int timestamp)
+// SubClassUnmapped aborts any current query; this _must_ be done
+// before this destructor exits, or members needed to do the abort
+// will no longer be defined.  RKW 4/5/96.
+ViewRanges::~ViewRanges(void)
+{
+    SubClassUnmapped();
+
+	delete rangeCallback;
+}
+
+//******************************************************************************
+
+void ViewRanges::DerivedStartQuery(VisualFilter& filter, int timestamp)
 {
 #ifdef DEBUG
-  printf("ViewRanges::DerivedStartQuery (%f,%f),(%f,%f)\n",
-	 filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+	printf("ViewRanges::DerivedStartQuery (%f,%f),(%f,%f)\n",
+		   filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
 #endif
 
-  WindowRep *winRep = GetWindowRep();
-  winRep->SetFgColor(GetFgColor());
+	WindowRep*		winRep = GetWindowRep();
+	VisualFilter*	viewFilter = GetVisualFilter();
+	long			low, high, min, max;
 
-  VisualFilter *viewFilter = GetVisualFilter();
+	winRep->SetForeground(GetForeground());
+	_source->InitRangeSourceIterator();
+	_source->Extent(min, max);
 
-  long low, high;
-  _source->InitRangeSourceIterator();
-  long min, max;
-  _source->Extent(min, max);
+	while(_source->NextRangeSource(low, high))
+	{
+		if (_horizontal)
+			winRep->Line(low, 0.0, high, 0.0, 2);
+		else
+			winRep->FillRect(viewFilter->xLow,
+							 max - high + min, 
+							 viewFilter->xHigh - viewFilter->xLow + 1,
+							 high - low + 1);
+	}
 
-  while(_source->NextRangeSource(low,high)) {
-    if (_horizontal) {
-      winRep->Line(low, 0.0, high, 0.0, 2);
-    } else {
-      winRep->FillRect(viewFilter->xLow,
-		       max - high + min, 
-		       viewFilter->xHigh - viewFilter->xLow + 1,
-		       high - low + 1);
-    }
-  }
-  _source->DoneRangeSourceIterator();
-  
-  ReportQueryDone(0);
+	_source->DoneRangeSourceIterator();
+	ReportQueryDone(0);
 }
 
-ViewRanges::~ViewRanges()
+//******************************************************************************
+// Callback Methods (RangeCallback)
+//******************************************************************************
+
+void	ViewRanges::RangeInserted(long low, long high)
 {
-	// SubClassUnmapped aborts any current query; this _must_ be done
-	// before this destructor exits, or members needed to do the abort
-	// will no longer be defined.  RKW 4/5/96.
-    SubClassUnmapped();
+	WindowRep*		winRep = GetWindowRep();
+	VisualFilter*	viewFilter = GetVisualFilter();
+	long			min, max;
+
+	winRep->SetForeground(GetForeground());
+	_source->Extent(min, max);
+
+	if (_horizontal)
+		winRep->Line(low, 0.0, high, 0.0, 2);
+	else
+		winRep->FillRect(viewFilter->xLow,
+						 max - high + min, 
+						 viewFilter->xHigh - viewFilter->xLow + 1,
+						 high - low + 1);
 }
 
-void ViewRanges::DerivedAbortQuery()
+void	ViewRanges::RangeDeleted(long low, long high)
 {
+	RangeInserted(low, high);	// Identical handling on insert/delete
 }
 
-void ViewRanges::RangeInserted(long low, long high)
-{
-  WindowRep *winRep = GetWindowRep();
-  winRep->SetFgColor(GetFgColor());
-
-  VisualFilter *viewFilter = GetVisualFilter();
-  if (_horizontal)
-    winRep->Line(low, 0.0, high, 0.0, 2);
-  else {
-    long min, max;
-    _source->Extent(min, max);
-    winRep->FillRect(viewFilter->xLow,
-		     max - high + min, 
-		     viewFilter->xHigh - viewFilter->xLow + 1,
-		     high - low + 1);
-  }
-}
-
-void ViewRanges::RangeDeleted(long low, long high)
-{
-  WindowRep *winRep = GetWindowRep();
-  winRep->SetFgColor(GetFgColor());
-
-  VisualFilter *viewFilter = GetVisualFilter();
-  if (_horizontal)
-    winRep->Line(low, 0.0, high, 0.0, 2);
-  else {
-    long min, max;
-    _source->Extent(min, max);
-    winRep->FillRect(viewFilter->xLow,
-		     max - high + min, 
-		     viewFilter->xHigh - viewFilter->xLow + 1,
-		     high - low + 1);
-  }
-}
-
+//******************************************************************************

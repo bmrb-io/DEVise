@@ -16,10 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/06/04 15:50:31  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.23  1997/05/30 20:42:28  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
   implemented but pixmap printing is not.
+
+  Revision 1.22.6.1  1997/05/21 20:40:06  weaver
+  Changes for new ColorManager
 
   Revision 1.22  1997/04/21 22:48:35  guangshu
   Added _histViewExist.
@@ -134,15 +141,22 @@
    2) if parent != NULL: a lower level windowRep is created.
 */
 
-#define MARGINS
+//******************************************************************************
+//
+//******************************************************************************
 
-#ifndef ViewWin_h
-#define ViewWin_h
+#ifndef __VIEWWIN_H
+#define __VIEWWIN_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
+
+#define MARGINS
 
 #include "DList.h"
 #include "DeviseTypes.h"
 #include "WindowRep.h"
-#include "Color.h"
 #include "DualWindowRep.h"
 
 #ifdef TK_WINDOW
@@ -150,17 +164,46 @@
 #include <tk.h>
 #endif
 
-class ViewWin;
-DefinePtrDList(ViewWinList, ViewWin *);
+#include "Color.h"
+#include "Coloring.h"
+
 class WindowRep;
+class ViewWin;
 
-class ViewWin: protected WindowRepCallback {
-public:
-    ViewWin(char *name, GlobalColor foreground = ForegroundColor,
-            GlobalColor background = BackgroundColor, int weight = 1,
-            Boolean boundary = true);
-    virtual ~ViewWin();
+//******************************************************************************
 
+DefinePtrDList(ViewWinList, ViewWin *);
+
+//******************************************************************************
+// class ViewWin
+//******************************************************************************
+
+class ViewWin : public Coloring
+{
+		friend class ViewWin_WindowRepCallback;
+
+	private:
+
+		// Callback Adapters
+		ViewWin_WindowRepCallback*	windowRepCallback;
+
+	public:
+
+		// Constructors and Destructors
+		ViewWin(char* name,
+				PColorID fgid = GetPColorID(defForeColor),
+				PColorID bgid = GetPColorID(defBackColor),
+				int weight = 1, Boolean boundary = true);
+		virtual ~ViewWin(void);
+
+		// Getters and Setters
+		WindowRep*			GetWindowRep(void)
+		{ return _winReps.GetWindowRep(); }
+		const WindowRep*	GetWindowRep(void) const
+		{ return _winReps.GetWindowRep(); }
+
+		virtual void		SetBackground(PColorID bgid);
+		
     /* Iconify window, if top level. Not guaranteed to succeed */
     void Iconify();
 
@@ -204,8 +247,6 @@ public:
        if not already there and then resizes it */
     virtual void MoveResize(int x, int y, unsigned w, unsigned h);
     
-    /* Get the Window Rep of this View window */
-    WindowRep *GetWindowRep() { return _winReps.GetWindowRep(); }
 //    WindowRep *GetAltRep() { return _alternate;}
 //    void SetAltRep(WindowRep *w) { _alternate = w;}
     /* Detach all children from this view */
@@ -259,10 +300,6 @@ public:
     
     /* Return true if window is iconified */
     Boolean Iconified();
-    
-    GlobalColor GetBgColor() { return _background; }
-    GlobalColor GetFgColor() { return _foreground; }
-    virtual void SetFgBgColor(GlobalColor fg, GlobalColor bg);
 
     virtual DevStatus PrintPS();
     void SetScreenOutput() { _winReps.SetScreenOutput(); }
@@ -282,11 +319,6 @@ protected:
     virtual void SubClassMapped() = 0;
     virtual void SubClassUnmapped() = 0;
 
-    virtual void HandleResize(WindowRep *w, int xlow, int ylow,
-                              unsigned width, unsigned height);
-    virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped);
-    virtual Boolean HandleWindowDestroy(WindowRep *w);
-
     /* Get total weight of children */
     int TotalWeight();
 
@@ -304,8 +336,6 @@ protected:
     char *_name;          /* name of window */
     int _weight;          /* relative weight of window */
     Boolean _mapped;      /* TRUE if this window is mapped */
-    GlobalColor _background;    /* background color */
-    GlobalColor _foreground;    /* foreground color */
 
 #ifdef MARGINS
     void DrawMargins();
@@ -336,6 +366,100 @@ private:
 
     Boolean _excludeFromPrint;
     Boolean _printAsPixmap;
+
+
+	protected:
+
+		// Callback methods (WindowRepCallback)
+		virtual void	HandleExpose(WindowRep* w, int x, int y, 
+									 unsigned width, unsigned height) {}
+
+#ifdef RAWMOUSEEVENTS
+		virtual void	HandleButton(WindowRep* w, int x, int y,
+									 int button, int state, int type) {}
+#else
+		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,
+									int xhigh, int yhigh, int button) {}
+#endif
+
+		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
+									 unsigned width, unsigned height);
+		virtual void	HandleKey(WindowRep* w, int key, int x, int y) {}
+
+#ifndef RAWMOUSEEVENTS
+		virtual Boolean	HandlePopUp(WindowRep* w, int x, int y, int button,
+									char**& msgs, int& numMsgs)
+		{ return false; }
+#endif
+
+		virtual void	HandleWindowMappedInfo(WindowRep* w, Boolean mapped);
+		virtual Boolean	HandleWindowDestroy(WindowRep *w);
 };
 
+//******************************************************************************
+// class ViewWin_WindowRepCallback
+//******************************************************************************
+
+class ViewWin_WindowRepCallback : public WindowRepCallback
+{
+	private:
+
+		ViewWin*	_parent;
+		
+	public:
+
+		ViewWin_WindowRepCallback(ViewWin* parent)
+			: _parent(parent) {}
+
+		virtual void	HandleExpose(WindowRep* w, int x, int y, 
+									 unsigned width, unsigned height)
+		{
+			_parent->HandleExpose(w, x, y, width, height);
+		}
+
+#ifdef RAWMOUSEEVENTS
+		virtual void	HandleButton(WindowRep* w, int x, int y,
+									 int button, int state, int type)
+		{
+			_parent->HandleButton(w, x, y, button, state, type);
+		}
+#else
+		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,
+									int xhigh, int yhigh, int button)
+		{
+			_parent->HandlePress(w, xlow, ylow, xhigh, yhigh, button);
+		}
+#endif
+
+		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
+									 unsigned width, unsigned height)
+		{
+			_parent->HandleResize(w, xlow, ylow, width, height);
+		}
+
+		virtual void	HandleKey(WindowRep* w, int key, int x, int y)
+		{
+			_parent->HandleKey(w, key, x, y);
+		}
+  
+#ifndef RAWMOUSEEVENTS
+		virtual Boolean		HandlePopUp(WindowRep* w, int x, int y, int button,
+										char**& msgs, int& numMsgs)
+		{
+			return _parent->HandlePopUp(w, x, y, button, msgs, numMsgs);
+		}
+#endif
+
+		virtual void	HandleWindowMappedInfo(WindowRep* w, Boolean mapped)
+		{
+			_parent->HandleWindowMappedInfo(w, mapped);
+		}
+
+		virtual Boolean		HandleWindowDestroy(WindowRep* w)
+		{
+			return _parent->HandleWindowDestroy(w);
+		}
+};
+
+//******************************************************************************
 #endif

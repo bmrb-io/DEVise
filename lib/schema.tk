@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1997/11/05 00:23:59  donjerko
+#  Added some error checking for DTE calls.
+#
 #  Revision 1.35  1997/10/01 19:11:27  wenger
 #  Fixed bugs in UniData schema editor GUI.
 #
@@ -407,27 +410,27 @@ proc ChgType {name element op} {
 
     if {$is_unidata} {
       if {$x == "string"} {
-        .newschema.astrlen.label configure -fg white
+#        .newschema.astrlen.label configure -fg white
         .newschema.astrlen.entry configure -state normal
-	.newschema.dateformat.label configure -fg gray
+#	.newschema.dateformat.label configure -fg gray
 	.newschema.dateformat.entry configure -state disabled
       } elseif {$x == "date" || $x == "datetime" || $x == "unixtime" } {
-    	.newschema.dateformat.label configure -fg white
+#    	.newschema.dateformat.label configure -fg white
 	.newschema.dateformat.entry configure -state normal
-	.newschema.astrlen.label configure -fg gray
+#	.newschema.astrlen.label configure -fg gray
 	.newschema.astrlen.entry configure -state disabled
       } else {
-        .newschema.dateformat.label configure -fg gray
+#        .newschema.dateformat.label configure -fg gray
 	.newschema.dateformat.entry configure -state disabled
-        .newschema.astrlen.label configure -fg gray
+#        .newschema.astrlen.label configure -fg gray
         .newschema.astrlen.entry configure -state disabled
       }
     } else {
       if {$x == "string"} {
-        .newschema.astrlen.label configure -fg white
+#        .newschema.astrlen.label configure -fg white
         .newschema.astrlen.entry configure -state normal
       } else {
-        .newschema.astrlen.label configure -fg gray
+#        .newschema.astrlen.label configure -fg gray
         .newschema.astrlen.entry configure -state disabled
       }
     }
@@ -611,7 +614,7 @@ proc newschemawin {} {
 	    .newschema.atype.string .newschema.atype.float \
 	    .newschema.atype.date  -side left -fill x -padx 1m 
 
-    label .newschema.astrlen.label -text "Size   " -fg gray
+    label .newschema.astrlen.label -text "Size   " # -fg gray
     entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
          -textvariable astrlen -state disabled
     set astrlen ""
@@ -957,19 +960,19 @@ proc unidata_newschemawin {} {
     pack .newschema.morespec.but -in .newschema.morespec -side left \
     	    -padx 3m -pady 1m
     	
-    label .newschema.dateformat.label -text "Date Format  " -fg gray
+    label .newschema.dateformat.label -text "Date Format  " # -fg gray
     entry .newschema.dateformat.entry -width 25 -relief sunken -bd 2 \
     	    -textvariable dateformat -state disabled
     pack .newschema.dateformat.label .newschema.dateformat.entry -side left \
     	    -padx 3m -pady 1m
 
-    label .newschema.position.label -text "Position  " -fg white
+    label .newschema.position.label -text "Position  " # -fg white
     entry .newschema.position.entry -width 25 -relief sunken -bd 2 \
     	    -textvariable position
     pack .newschema.position.label .newschema.position.entry -side left \
     	    -padx 3m -pady 1m
 
-    label .newschema.length.label -text "Length  " -fg white
+    label .newschema.length.label -text "Length  " # -fg white
     entry .newschema.length.entry -width 25 -relief sunken -bd 2 \
     	    -textvariable length
     pack .newschema.length.label .newschema.length.entry -side left \
@@ -1010,7 +1013,7 @@ proc unidata_newschemawin {} {
     pack .newschema.attrnametype.typelabel .newschema.attrnametype.typebut \
     	    -side left -padx 3m -pady 1m
 
-    label .newschema.astrlen.label -text "Size   " -fg gray
+    label .newschema.astrlen.label -text "Size   " # -fg gray
     entry .newschema.astrlen.entry -width 25 -relief sunken -bd 2 \
          -textvariable astrlen -state disabled
     set astrlen ""

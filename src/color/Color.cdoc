@@ -1,0 +1,463 @@
+//******************************************************************************
+// Color Implementation Notes
+// Copyright (c) 1997 DEVise Group
+// DEVise Color Management
+//******************************************************************************
+// File: Color.cdoc
+// Last modified: Thu Sep 25 16:33:37 1997 by Chris Weaver
+//******************************************************************************
+// Modification History:
+//
+// 960501 [weaver]: Original file.
+//
+//******************************************************************************
+//
+//              *** THIS FILE LOOKS LIKE BUT IS NOT REAL C++ ***
+//
+// The syntax and file extension are for emacs fontification. Don't compile...
+//
+// Notes/To Do:
+//
+// Check for X API calls using explicit color constants (e.g. 0) - look in
+// Xlib.h (e.g. XCreateSimpleWindow() call in XDisplay ctor).
+//
+// X structures which will need modifying when colors change? (Or just do full
+// redraw?)
+//
+// The LIBCS color stuff has to go back in eventually.
+//
+// All CreateWindowRep take no color args. Set the coloring via the winrep
+// pointer afterward. (For X pixmaps, call XWindowRep::ClearPixmap() as well.)
+//
+// Some notes for color inheritance are present below, but incomplete.
+//
+// The ViewGraph/ViewScatter stuff presumes a fixed-sized palette which is
+// not true. Workaround in place, but it should be changed eventually to get
+// the palette size through a Color.h call.
+//
+// Modify Init.c later for color/palette initialization and possible
+// command lines parameters (e.g. specification of default palette file)
+// Otherwise call color init and term routines from main().
+//
+// I couldn't find any connections to GDataSnap.[hc]. Still used?
+//
+// Users of class ViewClassInfo may object to removal of color name strings...
+// Note that the number of args for some calls has changed and will necessitate
+// changing some session scripts!
+// (e.g. [DEVise create view ...] loses the last two args).
+//
+// The stats stuff (ViewScatter and TDataViewX) will be trouble eventually
+// due to variable-size palette.
+//
+//******************************************************************************
+
+//******************************************************************************
+// Code used
+//******************************************************************************
+
+// Constant ColorID values used so far...
+// Not enum (constants) - can be set dynamically.
+enum
+{
+	gifWhiteColorID,		// XDisplay.c (MakeAndWriteGif())
+	gifBlackColorID,		// XDisplay.c (MakeAndWriteGif())
+	xWinBackColorID,		// XDisplay.c (CreateWindowRep())
+	xWinForeColorID,		// XDisplay.c (CreateWindowRep())
+	psDaliBlackColorID,		// PSWindowRep.c (DaliShowImage())
+	psDaliWhiteColorID,		// PSWindowRep.c (DaliShowImage())
+	viewBorderColorID,		// View.c (Run(), twice)
+	viewGraphLegendColorID,	// ViewGraph.c (DrawLegend())
+	defForeColorID,			// Lots
+	defBackColorID,			// Lots
+
+	kgraphForeColorID,		// KGraph.C, was ForegroundColor
+	kgraphBackColorID,		// KGraph.C, was BackgroundColor
+	kgraphCircleColorID,	// KGraph.C, was BlueColor
+	kgraphPointColorID,		// KGraph.C, was GreenColor
+	kgraphTextColorID,		// KGraph.C, was RedColor
+	kgraphLabelColorID,		// KGraph.C, was BlueColor
+
+	gdatasnapColorID,		// GDataSnap.c, was ForegroundColor (still used?)
+	map3DframeColorID,		// Map3D.C, was BlackColor
+};
+
+// This is a workaround for now. There should be a single default global
+// Coloring object for KGraphs.
+void	InitKGraphDefaultColoring(void)
+{
+	kgraphDefColoring.SetForeground(kgraphForeColorID);
+	kgraphDefColoring.SetBackground(kgraphBackColorID);
+
+	kgraphDefColoring.AddDataColor(kgraphCircleColorID);
+	kgraphDefColoring.AddDataColor(kgraphPointColorID);
+	kgraphDefColoring.AddDataColor(kgraphTextColorID);
+	kgraphDefColoring.AddDataColor(kgraphLabelColorID);
+}
+
+// Color functions used so far
+XColorID	CM_GetXColorID(ColorID cid);		// Used many places
+bool		CM_GetRGB(ColorID cid, RGB& rgb);	// PSWindowRep.c (twice)
+
+ColorID		PM_GetColorID(PColorID pcid);		// TDataMap.c
+XColorID	AP_GetXColorID(PColorID pcid);		// TDataMap.c
+
+// All Display, WindowRep, and View files needing colors use Coloring.h code
+// TDataMap, TDataCMap, and KGraph use Colorings as well.
+
+//******************************************************************************
+// Color-dependent code
+//******************************************************************************
+
+//******************************************************************************
+// Display
+//******************************************************************************
+
+// Display.[hc]			Color dependencies removed
+
+// NullDisplay.[hc]		Color dependencies removed
+
+// PSDisplay.[hc]		Color dependencies removed
+
+// XDisplay.[hc]		Most color dependencies removed
+class XDisplay : public DeviseDisplay
+{
+		void	MakeAndWriteGif(.5.);
+		void	ConvertAndWriteGIF(.3.);	// Contains XColor code (from xv)
+		WindowRep*	CreateWindowRep(.10.);
+};
+
+//******************************************************************************
+// WindowRep
+//******************************************************************************
+
+// WindowRep.[hc]
+class WindowRep
+{
+		Coloring		coloring;		// Coloring of shape being drawn
+
+		WindowRep(.1., ColorID fgid, ColorID bgid, .1.);
+
+		Coloring&			GetColoring(void);
+		const Coloring&		GetColoring(void) const;
+
+		ColorID			GetForeground(void) const;
+		ColorID			GetBackground(void) const;
+		virtual void	SetForeground(ColorID fgid);
+		virtual void	SetBackground(ColorID bgid);
+		virtual void	SetWindowBackground(ColorID bgid) = 0;
+};
+
+// NullWindowRep.[hc]
+class NullWindowRep : public WindowRep
+{
+		NullWindowRep(.1., ColorID fgid, ColorID bgid, .3.); 
+
+		virtual void	SetWindowBackground(ColorID bgid);
+};
+
+// PSWindowRep.[hc]
+class PSWindowRep : public WindowRep
+{
+		ColorID		oldForeground;
+
+		PSWindowRep(.1., ColorID fgid, ColorID bgid, .5.); 
+
+		virtual void	SetForeground(ColorID fgid);
+		virtual void	SetBackground(ColorID bgid);
+
+		virtual void	SetWindowBackground(ColorID bgid);
+
+		DevStatus	DaliShowImage(.9.);
+		void		SetXorMode(void);
+		void		SetCopyMode(void);
+};
+
+// XWindowRep.[hc]
+class XWindowRep : public WindowRep
+{
+		XWindowRep(.4., ColorID fgid, ColorID bgid, .1.);
+		XWindowRep(.4., ColorID fgid, ColorID bgid, .2.);
+
+		virtual void	SetForeground(ColorID fgid);
+		virtual void	SetBackground(ColorID bgid);
+		virtual void	SetWindowBackground(ColorID bgid) = 0;
+
+		virtual void	SetCopyMode(void);
+		virtual void	MoveResize(...);
+		void	DoPopup(...);
+};
+
+//******************************************************************************
+// View
+//******************************************************************************
+
+// Can the ColorID ctor args be removed in favor of additional color calls?
+// (defFoo used in ViewWin::Map too)
+
+// I removed the "override" color stuff from View. Purpose?
+
+// ViewWin.[hc]
+class ViewWin : public Coloring
+{
+		ViewWin(.1., ColorID fgid = defForeColorID,
+				ColorID bgid = defBackColorID, .2.);
+
+		virtual void	SetBackground(ColorID bgid);
+
+		void	AppendToParent(.1.);		// When inheritance added...
+		void	DeleteFromParent(void);		// When inheritance added...
+
+		// Color mapping is as commented in this function's def'n?
+		virtual void	Map(.4.);
+		void	DrawMargins(void);
+};
+
+// View.[hc]
+class View : public ViewWin
+{
+		View(.2., ColorID fgid = defForeColorID,
+			 ColorID bgid = defBackColorID, .4.);
+
+		virtual void    SetForeground(ColorID fgid);
+		virtual void    SetBackground(ColorID bgid);
+
+		virtual void    SetColors(ColorID fgid, ColorID bgid);
+
+		void	DrawAxesLabel(.5.);
+		void	DrawLabel(void);
+		void	DrawXAxis(.5.);
+		void	DrawYAxis(.5.);
+		virtual void	Run(void);
+		void	SavePixmaps(.1.);	// Contains JPEG color code
+        void	Draw3DAxis(void);
+		void	UpdateViewTable(void);
+};
+
+// ViewGraph.[hc]
+class ViewGraph : public View
+{
+		ViewGraph(.4., ColorID fgid = defForeColorID,
+				  ColorID bgid = defBackColorID, .1.);
+
+		virtual void	DrawLegend(void);
+};
+
+// ViewLens.[hC]
+class ViewLens : public ViewGraph
+{
+		ViewLens(.3., ColorID fgid = defForeColorID,
+				 ColorID bgid = defBackColorID, .5.);
+
+		void	SetBackground(ColorID bgid);		// See comment in fn
+		void	FilterAboutToChange(View *view);
+		void	DrawStack(void);
+		DevisePixmap*	OverlayPixmap(.4.);
+		void	ReturnGData(.4.);
+};
+
+// ViewRanges.[hc]
+class ViewRanges : public View
+{
+		void	DerivedStartQuery(.2.);
+		void	RangeInserted(.2.);
+		void	RangeDeleted(.2.);
+};
+
+// ViewScatter.[hc]
+class ViewScatter : public ViewGraph
+{
+		ViewScatter(.3., ColorID fgid = defForeColorID,
+					ColorID bgid = defBackColorID, .3.);
+
+		void	ReturnGData(.4.);	// See warning comment in fn
+};
+
+// TDataViewX.[hc]
+class TDataViewX : public ViewGraph
+{
+		TDataViewX(.2., ColorID fgid = defForeColorID,
+				   ColorID bgid = defBackColorID, .3.);
+
+		Boolean		DisplayConnectors(.1.);
+		void		ReturnGData(.4.);		// See warning comment in fn
+};
+
+// Cursor.[hc]
+// Not really a view, but so what?
+// N.B.: GetVisualFilter() call changed (get ColorID separately)
+class DeviseCursor : public Coloring
+{
+		DeviseCursor(.2., ColorID fgid = defForeColorID,
+					 ColorID bgid = defBackColorID);
+};
+
+//******************************************************************************
+// Other
+//******************************************************************************
+
+// TDataMap.[hc]
+// Hopefully CM lookups are isolated here so that mapping structure changes
+// later (for RGB and direct ColorID) can be accommodated.
+// I used a Coloring instead of a single ColorID for future enhancements.
+class TDataMap
+{
+		Coloring	coloring;		// Default data coloring
+
+		Coloring&			GetColoring(void)			{ return coloring;	}
+		const Coloring&		GetColoring(void) const 	{ return coloring;	}
+
+		PColorID	GetPColorID(char* recPtr) const;
+		ColorID		GetColorID(char* recPtr) const;
+		XColorID	GetXColorID(char* recPtr) const;
+
+		void		MapToSymbol(.3.);	// See comment in fn
+};
+
+// TDataCMap.[hc]
+class TDataCMap
+{
+		Coloring	coloring;		// Default data coloring
+
+		TDataCMap(void);
+
+		Coloring&			GetColoring(void)			{ return coloring;	}
+		const Coloring&		GetColoring(void) const 	{ return coloring;	}
+
+		virtual Boolean		MapToConnection(.3.);
+};
+
+// KGraph.[hC]
+class KGraph
+{
+		enum { circleColor, pointColor, textColor, labelColor };
+
+		Coloring	coloring;
+
+		KGraph(Coloring c = Coloring());
+
+		Coloring&				GetColoring(void)		{ return coloring;	}
+		const Coloring&			GetColoring(void) const { return coloring;	}
+
+		void	ClearGraph(void);
+		void	DrawCircle(void);
+		void	PlotPoints(void);
+		void	ShowVal(void)
+};
+
+// GDataSnap.c - Is this file used? I couldn't find cxns to/from it.
+// In class GDataSnapMapping ctor
+
+// Shape.h
+ColorID		GetColorID(char*, TDataMap*, GDataAttrOffset*);
+
+class Shape
+{
+		virtual void	DrawPixelArray(.7.);
+};
+
+// MapInterpShape.[hC]
+void	FullMapping_RectShape::DrawGDataArray(.6.);
+void	FullMapping_RectShape::Draw3DGDataArray(.6.);
+
+void	FullMapping_RectXShape::DrawGDataArray(.6.);
+void	FullMapping_BarShape::DrawGDataArray(.6.); 
+void	FullMapping_RegularPolygonShape::DrawGDataArray(.6.); 
+void	FullMapping_OvalShape::DrawGDataArray(.6.);
+void	FullMapping_VectorShape::DrawGDataArray(.6.);
+void	FullMapping_HorLineShape::DrawGDataArray(.6.);
+void	FullMapping_SegmentShape::DrawGDataArray(.6.);
+void	FullMapping_SegmentShape::Draw3DGDataArray(.6.);
+void	FullMapping_HighLowShape::DrawGDataArray(.6.);
+void	FullMapping_PolylineShape::DrawGDataArray(.6.);
+void	FullMapping_PolylineFileShape::DrawGDataArray(.6.);
+void	FullMapping_TextLabelShape::DrawGDataArray(.6.);
+void	FullMapping_FixedTextLabelShape::DrawGDataArray(.6.);
+void	FullMapping_LineShape::DrawGDataArray(.6.);
+void	FullMapping_LineShape::DrawConnectingLine(.6., ColorID c0,
+												  .2., ColorID c1);
+void	FullMapping_LineShadeShape::DrawConnectingLine(.6., ColorID c0,
+													   .2., ColorID c1);
+
+// Connector.h
+struct Connector
+{
+		ColorID		color;
+};
+
+// LineConnector.h
+class DiscLineConnector
+{
+		virtual void	DrawConnection(.2.);
+};
+class DiscLineConnector2
+{
+		virtual void	DrawConnection(.2.);
+};
+class ContLineConnector
+{
+		virtual void	DrawConnection(.2.);
+};
+class BarConnector
+{
+		virtual void	DrawConnection(.2.);
+};
+
+// Geom.h
+class Segment
+{
+		ColorID		color;
+};
+class Plane
+{
+		ColorID		color;
+};
+class Rectangle
+{
+		ColorID		color;
+};
+
+// PointStorage.h
+class PointStorage
+{
+		void	Insert(.2., ColorID c);
+		// Member of the PointStorage::PointRec struct
+};
+
+// MappingInterp.c
+// The comment "color command" indicates locations for future alteration
+int		MappingInterp::FindGDataSize(.4.);	// Certain its PColorID not ColorID?
+void	MappingInterp::ConvertToGData(.4.);
+AttrList*	MappingInterp::InitCmd(.1.);
+void	MappingInterp::ConvertToGDataSimple(.4.);
+
+// VisualArg.h
+// I'm not sure ranges of PColorIDs make sense anymore.
+struct VisualFilter
+{
+		PColorID	colorLow, colorHigh;	// Color filter
+};
+
+// ViewClassInfo.[hc]
+// The color name stuff has been removed (it doesn't make sense anymore).
+// May need to add in an alternate mechanism later.
+class ViewClassInfo
+{
+		void	ChangeParams(.2.);
+};
+
+// Map3D.h
+class Object3D : public Coloring
+{
+};
+class Map3D
+{
+		void	MapBlockSegments(.6.);
+		void	MapBlockPlanes(.6.);
+		void	DrawSegments(.1.);
+		void	DrawPlanes(WindowRep* win, Boolean frame);
+};
+
+// ETkWindowShape.C
+void	FullMapping_ETkWindowShape::DrawGDataArray(.6.);
+
+//******************************************************************************

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.10.1  1997/05/21 20:40:27  weaver
+  Changes for new ColorManager
+
+  Revision 1.13  1996/08/05 17:36:06  beyer
+  changed axis display format to %g
+
   Revision 1.12  1996/07/14 04:04:42  jussi
   ViewKGraph is now derived from KGraph instead of declaring
   KGraph as its member variable. This allows ViewKGraph to
@@ -54,6 +60,8 @@
   Initial version.
 */
 
+//******************************************************************************
+
 #include <stdio.h>
 
 #include "KGraph.h"
@@ -63,22 +71,30 @@
 
 #define MAX_POPUP_LEN 30
 
-KGraph::KGraph()
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+KGraph::KGraph(Coloring c)
+	: coloring(c)
 {
-  DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();  
+	DeviseDisplay*	disp = DeviseDisplay::DefaultDisplay();  
 
-  // Create a new window
-  _win = disp->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25);
-  _win->RegisterCallback(this);
+	// Create a new window
+	_win = disp->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25);
+	_win->SetForeground(coloring.GetForeground());
+	_win->SetBackground(coloring.GetBackground());
 
-  _naxes = 0;
-  _pts = NULL;
-  _xyarr = NULL;
-  _winame = NULL;
-  _msgBuf = NULL;
+	_win->RegisterCallback(this);
+
+	_naxes = 0;
+	_pts = NULL;
+	_xyarr = NULL;
+	_winame = NULL;
+	_msgBuf = NULL;
 }
 
-KGraph::~KGraph()
+KGraph::~KGraph(void)
 {
   /* We don't need to destroy the window because it's already
      being destroyed -- that's why this destructor is being
@@ -94,6 +110,10 @@ KGraph::~KGraph()
   }
   delete _msgBuf;
 }
+
+//******************************************************************************
+// Utility Functions
+//******************************************************************************
 
 void KGraph::InitGraph(char *winname, char *statname)
 {
@@ -152,7 +172,8 @@ void KGraph::ClearGraph()
 {
   unsigned int w, h;
   _win->Dimensions(w, h);
-  _win->SetFgColor(BackgroundColor);
+
+  _win->SetForeground(coloring.GetBackground());
   _win->FillRect(0, 0, w, h);
 }
 
@@ -168,7 +189,7 @@ void KGraph::DrawCircle()
   _diam = h - 10;
 
   // Draw Circle
-  _win->SetFgColor(BlueColor);
+  _win->SetForeground(coloring[circleColor]);
   _win->Arc(_cx, _cy, _diam, _diam, 0, 2 * PI);
 }    
 
@@ -190,7 +211,7 @@ void KGraph::DrawAxes()
 
 void KGraph::PlotPoints()
 {
-  _win->SetFgColor(GreenColor);
+  _win->SetForeground(coloring[pointColor]);
   int theta = 360 / _naxes;
 
   // Find max of all the points to be plotted
@@ -230,7 +251,7 @@ void KGraph::ShowVal()
   
   // First a generic message
   
-  _win->SetFgColor(RedColor);
+  _win->SetForeground(coloring[textColor]);
   _win->AbsoluteText(_winame, startx, starty, 500, 13,
 		     WindowRep::AlignWest);
   starty += 17;
@@ -238,7 +259,7 @@ void KGraph::ShowVal()
 		     WindowRep::AlignWest);
   starty += 17;
 
-  _win->SetFgColor(BlueColor);
+  _win->SetForeground(coloring[labelColor]);
   _win->AbsoluteText("Values clockwise from O", startx, starty, 500, 13,
 		     WindowRep::AlignWest);
 
@@ -263,34 +284,39 @@ void KGraph::Rotate(Coord xval, int degree, Coord &retx, Coord &rety)
   rety = _cy + xval * sin(ToRadian(degree));
 }
 
-void KGraph::HandlePress(WindowRep *w, int xlow, int ylow, int xhigh, 
-			 int yhigh, int button)
+//******************************************************************************
+// Callback Methods (WindowRepCallback)
+//******************************************************************************
+
+void	KGraph::HandlePress(WindowRep* w, int xlow, int ylow, int xhigh, 
+							int yhigh, int button)
 {
 #ifdef DEBUG
-  printf("HandlePress: button %d\n",button);
+	printf("HandlePress: button %d\n",button);
 #endif
 }
 
-void KGraph::HandleResize(WindowRep *w, int xlow, int ylow,
-                          unsigned width, unsigned height)
+void	KGraph::HandleResize(WindowRep* w, int xlow, int ylow,
+							 unsigned width, unsigned height)
 {
-  DisplayGraph();
+	DisplayGraph();
 }
 
-Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button, 
-			  char **&msgs, int &numMsgs)
+// Message displayed: three generic lines followed by values for each axis.
+Boolean KGraph::HandlePopUp(WindowRep* w, int x, int y, int button, 
+							char**& msgs, int& numMsgs)
 {
-  // Message displayed consists of three generic lines followed by values
-  // for each of the axes.
+	msgs = _msgBuf;
+	sprintf(_msgBuf[0], "%s", _winame);
+	sprintf(_msgBuf[1], "%s", _statname);
+	sprintf(_msgBuf[2], "Values clockwise from 0");
 
-  msgs = _msgBuf;
-  sprintf(_msgBuf[0], "%s", _winame);
-  sprintf(_msgBuf[1], "%s", _statname);
-  sprintf(_msgBuf[2], "Values clockwise from 0");
-  
-  for(int i = 0; i < _naxes; i++)
-    sprintf(_msgBuf[3+i], "%g", _pts[i]);
+	for(int i=0; i<_naxes; i++)
+		sprintf(_msgBuf[3+i], "%g", _pts[i]);
 
-  numMsgs = _naxes + 3;
-  return true;
+	numMsgs = _naxes + 3;
+
+	return true;
 }
+
+//******************************************************************************

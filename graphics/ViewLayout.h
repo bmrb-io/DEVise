@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/04/03 21:31:10  wenger
+  Eliminated unnecessary tcl dependencies in graphics directory.
+
   Revision 1.4  1997/02/03 19:40:01  ssl
   1) Added a new Layout interface which handles user defined layouts
   2) Added functions to set geometry and remap views as changes in the
@@ -36,17 +39,32 @@
   Initial revision.
 */
 
-#ifndef ViewLayout_h
-#define ViewLayout_h
+//******************************************************************************
+//
+//******************************************************************************
+
+#ifndef __VIEWLAYOUT_H
+#define __VIEWLAYOUT_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 #include "ViewWin.h"
 #include "WindowRep.h"
 
-class ViewLayout: public ViewWin {
-public:
-  ViewLayout(char *name, Coord x = 0.1, Coord y = 0.0, 
-	     Coord w = 0.8, Coord h = 0.9);
-  ~ViewLayout();
+//******************************************************************************
+// class ViewLayout
+//******************************************************************************
+
+class ViewLayout : public ViewWin
+{
+	public:
+
+		// Constructors and Destructors
+		ViewLayout(char* name, Coord x = 0.1, Coord y = 0.0, 
+				   Coord w = 0.8, Coord h = 0.9);
+		virtual ~ViewLayout(void);
 
   virtual void Map(int x, int y, unsigned w, unsigned h);
   virtual void Unmap();
@@ -57,8 +75,6 @@ public:
   virtual void Replace(ViewWin *child1, ViewWin *child2);
   virtual void SwapChildren(ViewWin *child1, ViewWin *child2);
 
-  virtual void HandleResize(WindowRep *w, int xlow, int ylow,
-			    unsigned width, unsigned height);
   virtual void Iconify(Boolean iconified);
 
   virtual void SetPreferredLayout(int v, int h, Boolean stacked = false) {
@@ -80,6 +96,14 @@ protected:
   int verRequested;                     // requested height of view layout
   int horRequested;                     // requested width of view layout
   Boolean _stacked;                     // true if stacked view requested
+
+
+	protected:
+
+		// Callback methods (WindowRepCallback)
+		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
+									 unsigned width, unsigned height);
 };
 
+//******************************************************************************
 #endif

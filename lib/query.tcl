@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1997/02/26 16:32:05  wenger
+#  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #  Revision 1.11.4.1  1997/02/14 20:26:17  wenger
 #  Fixed bug 159.
 #
@@ -60,10 +63,8 @@
 
 ############################################################
 
-set queryColors "red blue green white black yellow orange brown"
-
 proc SetQuery {} { 
-    global curView queryColors
+    global curView
 
     if {[WindowVisible .query]} {
 	return
@@ -112,32 +113,28 @@ proc SetQuery {} {
 
     label .query.xyRange.top.yDummy.high.left.max -text "Max" \
 	   -width 4 -font 8x13
-    entry .query.max -text "" -relief sunken -width 5 \
-	    -fg black -bg LightGray -font 8x13
+    entry .query.max -text "" -relief sunken -width 5 -font 8x13
     pack .query.xyRange.top.yDummy.high.left.max .query.max \
 	    -in .query.xyRange.top.yDummy.high.left \
 	    -side left -expand $expand -fill $fill
 
     label .query.xyRange.top.yDummy.high.right.min -text "Min" \
            -width 4 -font 8x13
-    entry .query.min -text "" -relief sunken -width 5 \
-            -fg black -bg LightGray -font 8x13
+    entry .query.min -text "" -relief sunken -width 5 -font 8x13
     pack .query.xyRange.top.yDummy.high.right.min .query.min \
             -in .query.xyRange.top.yDummy.high.right \
             -side left -expand $expand -fill $fill
 
     label .query.xyRange.top.yDummy.low.left.mean -text "Mean" \
            -width 4 -font 8x13
-    entry .query.mean -text "" -relief sunken -width 5 \
-            -fg black -bg LightGray -font 8x13
+    entry .query.mean -text "" -relief sunken -width 5 -font 8x13
     pack .query.xyRange.top.yDummy.low.left.mean .query.mean \
             -in .query.xyRange.top.yDummy.low.left \
             -side left -expand $expand -fill $fill
 
     label .query.xyRange.top.yDummy.low.right.count -text "Count" \
            -width 4 -font 8x13
-    entry .query.count -text "" -relief sunken -width 5 \
-            -fg black -bg LightGray -font 8x13
+    entry .query.count -text "" -relief sunken -width 5 -font 8x13
     pack .query.xyRange.top.yDummy.low.right.count .query.count \
             -in .query.xyRange.top.yDummy.low.right \
             -side left -expand $expand -fill $fill
@@ -157,8 +154,7 @@ proc SetQuery {} {
 
     label .query.xyRange.top.yEntry.yhigh.yHighHeading -text "Y high" \
 	    -width 6 -font 8x13
-    entry .query.yhigh -text "" -relief sunken -width 10 \
-	    -fg black -bg LightGray -font 8x13
+    entry .query.yhigh -text "" -relief sunken -width 10 -font 8x13
 
     pack .query.xyRange.top.yEntry.yhigh.yHighHeading .query.yhigh \
 	    -in .query.xyRange.top.yEntry.yhigh \
@@ -166,8 +162,7 @@ proc SetQuery {} {
 
     label .query.xyRange.top.yEntry.ylow.yLowHeading -text "Y low" \
 	    -width 6 -font 8x13
-    entry .query.ylow -text "" -relief sunken -width 10 \
-	    -fg black -bg white -font 8x13
+    entry .query.ylow -text "" -relief sunken -width 10 -font 8x13
 
     pack .query.xyRange.top.yEntry.ylow.yLowHeading .query.ylow \
 	    -in .query.xyRange.top.yEntry.ylow \
@@ -183,16 +178,14 @@ proc SetQuery {} {
 
     # set up X labels and entries
 
-    entry .query.xlow -text "" -relief sunken -width 20 \
-	    -fg black -bg white -font 8x13
+    entry .query.xlow -text "" -relief sunken -width 20 -font 8x13
     label .query.xyRange.bottom.xEntry.xlow.xLowHeading -text "X low"
 
     pack .query.xlow .query.xyRange.bottom.xEntry.xlow.xLowHeading \
 	    -in .query.xyRange.bottom.xEntry.xlow \
 	    -side top -expand $expand -fill $fill
 
-    entry .query.xhigh -text "" -relief sunken -width 20 \
-	    -fg black -bg LightGray -font 8x13
+    entry .query.xhigh -text "" -relief sunken -width 20 -font 8x13
     label .query.xyRange.bottom.xEntry.xhigh.xHighHeading -text "X high"
 
     pack .query.xhigh .query.xyRange.bottom.xEntry.xhigh.xHighHeading \
@@ -222,10 +215,8 @@ proc SetQuery {} {
 
 #    button .query.sel.attr -text "Attributes..." \
 #	    -command DoAttributeSelect
-#    button .query.sel.color -text "Colors..." \
-#	    -command DoColorSelect
 
-#    pack .query.sel.attr .query.sel.color -side left -padx 3m
+#    pack .query.sel.attr -side left -padx 3m
 
     # This frame takes up the space held by the removed buttons.
     frame .query.sel.placeholder -relief flat -width 65m -height 8m \
@@ -236,15 +227,6 @@ proc SetQuery {} {
 	frame .query.sel.sample -relief groove -bd 2
 	pack .query.sel.sample -side left -padx 3m \
 		-expand $expand -fill $fill
-
-	# set up color selection sample
-
-	set i 0
-	foreach color $queryColors {
-	    frame .query.sel.sample.color$i -bg $color
-	    pack .query.sel.sample.color$i -side left -expand 1 -fill both
-	    incr i
-	}
     }
 
     # set up buttons
@@ -390,44 +372,6 @@ proc DoAttributeSelect {} {
 }
 
 ############################################################
-
-proc DoColorSelect {} {
-}
-
-############################################################
-
-proc AboutDevise {} {
-    if {[WindowVisible .about]} {
-	return
-    }
-
-    toplevel    .about
-    wm title    .about "About DEVise"
-
-    set version [DEVise version]
-    set compDate [DEVise compDate]
-    set copyright [DEVise copyright]
-
-    message .about.bigname -justify center -width 10c \
-	-text DEVise -font -*-times-medium-i-normal--*-300-*-*-*-*-*-*
-    message .about.name -justify center -width 10c \
-	-text "(Data Exploration and Visualization)"
-    message .about.version -justify center -width 10c \
-	-text "Version $version: $compDate"
-    message .about.copyright -justify center -width 10c \
-	-text "$copyright DEVise Development Group\nMadison, Wisconsin\nAll Rights Reserved"
-    message .about.support -justify center -width 10c \
-	-text "Send questions and bug reports to devise-sup@cs.wisc.edu"
-    message .about.web -justify center -width 10c \
-	-text "Web site: http://www.cs.wisc.edu/~devise/"
-
-    button .about.ok -text OK -width 10 -command "destroy .about"
-
-    pack .about.bigname .about.name -side top -pady 0m
-
-    pack .about.version .about.copyright \
-	.about.support .about.web .about.ok -side top -padx 5m -pady 3m
-}
 
 proc Do3DQuery {} { 
     global curView

@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.2.10.1  1997/05/21 20:39:57  weaver
+  Changes for new ColorManager
+
+  Revision 1.2  1996/11/13 16:56:08  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.1  1996/07/10 16:40:38  jussi
   Initial revision.
 */
@@ -38,40 +51,12 @@ NullDisplay::NullDisplay(char *name)
   /* do something */
 }
 
-/*******************************************************************
-Allocate color by name
-********************************************************************/
-
-void NullDisplay::AllocColor(char *name, GlobalColor globalColor)
-{
-#ifdef DEBUG
-  printf("NullDisplay::AllocColor(%s)\n", name);
-#endif
-
-  /* do something */
-}
-
-/*********************************************************************
-Allocate color by RGB
-*********************************************************************/
-
-void NullDisplay::AllocColor(double r, double g, double b,
-  GlobalColor globalColor)
-{
-#ifdef DEBUG
-  printf("NullDisplay::AllocColor(%.2f,%.2f,%.2f)\n", r, g, b);
-#endif
-
-  /* do something */
-}
-
 /*************************************************************
 Create a new window 
 ***************************************************************/
 
 WindowRep *NullDisplay::CreateWindowRep(char *name, Coord x, Coord y,
                                         Coord width, Coord height, 
-                                        GlobalColor fgnd, GlobalColor bgnd, 
                                         WindowRep *parentRep,
                                         Coord min_width, Coord min_height,
                                         Boolean relative, Boolean winBoundary)

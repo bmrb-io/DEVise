@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  1997/05/21 20:40:51  weaver
+  Changes for new ColorManager
+
+  Revision 1.5  1996/11/26 16:51:41  ssl
+  Added support for piled viws
+
   Revision 1.4  1996/06/15 13:52:56  jussi
   Rewrote in order to reduce code size and redundancy. Added
   ChangeParams() method which allows Devise to change the
@@ -40,7 +46,7 @@
 class ViewClassInfo: public ClassInfo {
 public:
   ViewClassInfo();
-  ViewClassInfo(char *name, char *fgName, char *bgName, ViewGraph *view);
+  ViewClassInfo(char *name, ViewGraph *view);
   virtual ~ViewClassInfo();
 
   virtual char *CategoryName() { return "view"; }
@@ -62,7 +68,7 @@ protected:
 class ViewXInfo: public ViewClassInfo {
 public:
   ViewXInfo() : ViewClassInfo() {}
-  ViewXInfo(char *name, char *fgName, char *bgName, TDataViewX *view);
+  ViewXInfo(char *name, TDataViewX *view);
   virtual char *ClassName() { return "SortedX"; }
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };
@@ -70,7 +76,7 @@ public:
 class ViewScatterInfo : public ViewClassInfo {
 public:
   ViewScatterInfo() : ViewClassInfo() {}
-  ViewScatterInfo(char *name, char *fgName, char *bgName, ViewScatter *view);
+  ViewScatterInfo(char *name, ViewScatter *view);
   virtual char *ClassName() { return "Scatter"; }
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };
@@ -78,7 +84,7 @@ public:
 class ViewLensInfo : public ViewClassInfo {
 public:
    ViewLensInfo() : ViewClassInfo() {}
-   ViewLensInfo(char *name, char *fgname, char *bgname, ViewLens *view);
+   ViewLensInfo(char *name, ViewLens *view);
    virtual char *ClassName() { return "ViewLens";}
    virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };  

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.66  1997/11/24 08:27:33  donjerko
+# *** empty log message ***
+#
 # Revision 1.65  1997/11/24 06:30:40  donjerko
 # *** empty log message ***
 #
@@ -62,6 +65,9 @@
 #
 # Revision 1.50  1997/08/14 02:08:45  donjerko
 # Index catalog is now an independent file.
+#
+# Revision 1.36  1997/04/30 21:56:10  wenger
+# Updated solaris, sun, and hp dependencies.
 #
 # Revision 1.49  1997/08/11 17:10:04  donjerko
 # Added special processing for min/max queries.
@@ -197,37 +203,37 @@ CatalogComm2.o: ../../graphics/ClassDir.h TDataDQL.h /usr/include/stdio.h
 CatalogComm2.o: /usr/include/sys/va_list.h ../../graphics/Dispatcher.h
 CatalogComm2.o: ../../graphics/DList.h ../../graphics/Exit.h
 CatalogComm2.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
-CatalogComm2.o: ../../graphics/Color.h ../../graphics/Pattern.h
-CatalogComm2.o: ../Core/queue.h ../../unidata/sysdep.h /usr/include/varargs.h
-CatalogComm2.o: ../Core/types.h /s/gcc/lib/g++-include/new.h
-CatalogComm2.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
-CatalogComm2.o: ../Core/Utility.h ../Core/Array.h ../../graphics.new/TData.h
-CatalogComm2.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
-CatalogComm2.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
-CatalogComm2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-CatalogComm2.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-CatalogComm2.o: /usr/include/errno.h /usr/include/sys/errno.h
-CatalogComm2.o: /usr/include/limits.h /usr/include/sys/stat.h
-CatalogComm2.o: ../../graphics.new/machdep.h /usr/include/sys/param.h
-CatalogComm2.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-CatalogComm2.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-CatalogComm2.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-CatalogComm2.o: /usr/include/netdb.h /usr/include/sys/socket.h
-CatalogComm2.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-CatalogComm2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-CatalogComm2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-CatalogComm2.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-CatalogComm2.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-CatalogComm2.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-CatalogComm2.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-CatalogComm2.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-CatalogComm2.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-CatalogComm2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-CatalogComm2.o: /usr/include/sys/byteorder.h ../../graphics.new/FileIndex.h
-CatalogComm2.o: ../../graphics/AttrList.h ../../graphics/Init.h
-CatalogComm2.o: ../../graphics/BufPolicy.h ../../graphics.new/GroupDir.h
-CatalogComm2.o: ../../graphics.new/ItemList.h ../../graphics.new/Group.h
-CatalogComm2.o: /usr/include/stdlib.h ../../graphics.new/MapInterpClassInfo.h
+CatalogComm2.o: ../../graphics/Pattern.h ../Core/queue.h
+CatalogComm2.o: ../../unidata/sysdep.h /usr/include/varargs.h ../Core/types.h
+CatalogComm2.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
+CatalogComm2.o: ../Core/exception.h ../Core/Utility.h ../Core/Array.h
+CatalogComm2.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
+CatalogComm2.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+CatalogComm2.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
+CatalogComm2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+CatalogComm2.o: /usr/include/sys/unistd.h /usr/include/errno.h
+CatalogComm2.o: /usr/include/sys/errno.h /usr/include/limits.h
+CatalogComm2.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
+CatalogComm2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+CatalogComm2.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+CatalogComm2.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+CatalogComm2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+CatalogComm2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+CatalogComm2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+CatalogComm2.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+CatalogComm2.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+CatalogComm2.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+CatalogComm2.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+CatalogComm2.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+CatalogComm2.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+CatalogComm2.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+CatalogComm2.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+CatalogComm2.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+CatalogComm2.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
+CatalogComm2.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
+CatalogComm2.o: ../../graphics.new/GroupDir.h ../../graphics.new/ItemList.h
+CatalogComm2.o: ../../graphics.new/Group.h /usr/include/stdlib.h
+CatalogComm2.o: ../../graphics.new/MapInterpClassInfo.h
 CatalogComm2.o: ../../graphics/Control.h
 Dql.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Dql.o: /usr/include/sys/va_list.h /usr/include/stdlib.h /usr/include/string.h
@@ -337,8 +343,8 @@ TDataDQL.o: ../../graphics/Exit.h ../../graphics/Init.h
 TDataDQL.o: ../../graphics/BufPolicy.h ../../graphics/Timer.h
 TDataDQL.o: ../../graphics/Parse.h TDataDQL.h ../../graphics/Dispatcher.h
 TDataDQL.o: ../../graphics/Journal.h ../../graphics/VisualArg.h
-TDataDQL.o: ../../graphics/Color.h ../../graphics/Pattern.h ../Core/queue.h
-TDataDQL.o: ../../unidata/sysdep.h /usr/include/varargs.h ../Core/types.h
+TDataDQL.o: ../../graphics/Pattern.h ../Core/queue.h ../../unidata/sysdep.h
+TDataDQL.o: /usr/include/varargs.h ../Core/types.h
 TDataDQL.o: /s/gcc/lib/g++-include/new.h /s/gcc/lib/g++-include/std/new.h
 TDataDQL.o: ../Core/exception.h ../Core/Utility.h ../Core/Array.h
 TDataDQL.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
@@ -421,10 +427,10 @@ TDataDQLInterp.o: ../../graphics/DevStatus.h ../../graphics/ClassDir.h
 TDataDQLInterp.o: TDataDQL.h /usr/include/stdio.h /usr/include/sys/va_list.h
 TDataDQLInterp.o: ../../graphics/Dispatcher.h ../../graphics/DList.h
 TDataDQLInterp.o: ../../graphics/Exit.h ../../graphics/Journal.h
-TDataDQLInterp.o: ../../graphics/VisualArg.h ../../graphics/Color.h
-TDataDQLInterp.o: ../../graphics/Pattern.h ../Core/queue.h
-TDataDQLInterp.o: ../../unidata/sysdep.h /usr/include/varargs.h
-TDataDQLInterp.o: ../Core/types.h /s/gcc/lib/g++-include/new.h
+TDataDQLInterp.o: ../../graphics/VisualArg.h ../../graphics/Pattern.h
+TDataDQLInterp.o: ../Core/queue.h ../../unidata/sysdep.h
+TDataDQLInterp.o: /usr/include/varargs.h ../Core/types.h
+TDataDQLInterp.o: /s/gcc/lib/g++-include/new.h
 TDataDQLInterp.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
 TDataDQLInterp.o: ../Core/Utility.h ../Core/Array.h
 TDataDQLInterp.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.62  1997/11/24 16:22:29  wenger
+  Added GUI for saving GData; turning on GData to socket now forces
+  redraw of view; GData to socket params now saved in session files;
+  improvement to waitForQueries command.
+
   Revision 1.61  1997/11/18 23:27:05  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -46,6 +51,9 @@
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
   Mitre demo.
+
+  Revision 1.54.6.1  1997/05/21 20:40:51  weaver
+  Changes for new ColorManager
 
   Revision 1.54  1997/04/30 21:45:40  wenger
   Fixed non-constant strings in complex mappings bug; TDataAsciiInterp
@@ -265,6 +273,8 @@
   Added CVS header.
 */
 
+//******************************************************************************
+
 //#define DEBUG
 
 #include <assert.h>
@@ -284,15 +294,21 @@
 
 ImplementDList(GStatList, double)
 
-ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, QueryProc *qp,
-		     AxisLabel *xAxis, AxisLabel *yAxis,
-		     GlobalColor fg, GlobalColor bg,
-		     Action *action)
-: View(name, initFilter, fg, bg, xAxis, yAxis),
-  _updateLink("stats link")
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
+					 AxisLabel* xAxis, AxisLabel* yAxis,
+					 PColorID fgid, PColorID bgid, Action* action)
+	: View(name, initFilter, fgid, bgid, xAxis, yAxis),
+	  _updateLink("stats link")
 {
     DO_DEBUG(printf("ViewGraph::ViewGraph(0x%p, %s)\n",
 		    this, (name != NULL) ? name : "<null>"));
+
+	queryCallback = new ViewGraph_QueryCallback(this);
+
     _action = action;
     _deleteAction = false;
     if (!_action)
@@ -355,7 +371,7 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, QueryProc *qp,
   _gdsParams.separator = ' ';
 }
 
-ViewGraph::~ViewGraph()
+ViewGraph::~ViewGraph(void)
 {
     DO_DEBUG(printf("ViewGraph::~ViewGraph(0x%p, %s)\n",
 		    this, (GetName() != NULL) ? GetName() : "<null>"));
@@ -402,6 +418,7 @@ ViewGraph::~ViewGraph()
 
     delete _gdsParams.file;
     delete _gds;
+	delete queryCallback;
 }
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
@@ -589,8 +606,8 @@ void ViewGraph::SetMappingLegend(TDataMap *map, char *label)
 
 void ViewGraph::DrawLegend()
 {
-    WindowRep *win = GetWindowRep();
-
+    WindowRep*	win = GetWindowRep();
+	
     win->PushTop();
     win->MakeIdentity();
     
@@ -609,15 +626,16 @@ void ViewGraph::DrawLegend()
         if (!strlen(label))
           continue;
 
-        TDataMap *map = info->map;
-        if (map->GetGDataOffset()->colorOffset < 0)
-          win->SetFgColor(map->GetDefaultColor());
-        else
-          win->SetFgColor(BlueColor);
-        win->AbsoluteText(label, x, y, w - 4, yInc, WindowRep::AlignEast,
-                          true);
-        y += yInc;
-    }
+		TDataMap*	map = info->map;
+		PColorID	fgid = GetPColorID(viewGraphLegendColor);
+		
+		if (map->GetGDataOffset()->colorOffset < 0)
+			fgid = map->GetColoring().GetForeground();
+
+		win->SetForeground(fgid);
+		win->AbsoluteText(label, x, y, w - 4, yInc, WindowRep::AlignEast, true);
+		y += yInc;
+	}
 
     DoneMappingIterator(index);
 
@@ -959,7 +977,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     /* put the statistics in the stat buffer */
     char line[1024];
     int i;
-    for(i = 0; i < MAXCOLOR; i++) {
+    for(i = 0; i < gMaxNumColors; i++) {
 //	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
 	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g %g\n",
 		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
@@ -1255,82 +1273,6 @@ Boolean ViewGraph::IsYDateType(){
 	return false;
 }
 
-/* Handle button press event */
-
-void ViewGraph::HandlePress(WindowRep *w, int xlow, int ylow,
-			    int xhigh, int yhigh, int button)
-{
-    if (xlow == xhigh && ylow == yhigh) {
-        if (CheckCursorOp(w, xlow, ylow, button))
-          /* was a cursor event */
-          return;
-    }
-    
-    ControlPanel::Instance()->SelectView(this);
-    
-    if (_action) {
-        /* transform from screen to world coordinates */
-        Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-        FindWorld(xlow, ylow, xhigh, yhigh,
-                  worldXLow, worldYLow, worldXHigh, worldYHigh);
-        
-        _action->AreaSelected(this, worldXLow, worldYLow, worldXHigh, 
-                              worldYHigh, button);
-    }
-}
-
-/* handle key event */
-
-void ViewGraph::HandleKey(WindowRep *w, int key, int x, int y)
-{
-    ControlPanel::Instance()->SelectView(this);
-
-    if (_action) {
-        /* xform from screen to world coord */
-        Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-        FindWorld(x, y, x, y,
-                  worldXLow, worldYLow, worldXHigh, worldYHigh);
-        
-        _action->KeySelected(this, key, worldXLow, worldYLow);
-    }
-}
-
-Boolean ViewGraph::HandlePopUp(WindowRep *win, int x, int y, int button,
-			       char **&msgs, int &numMsgs)
-{
-#ifdef DEBUG
-    printf("View::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
-#endif
-
-    ControlPanel::Instance()->SelectView(this);
-
-    int labelX, labelY, labelW, labelH;
-    GetLabelArea(labelX, labelY, labelW, labelH);
-
-    static char *buf[10];
-
-    if (x >= labelX && x <= labelX + labelW - 1
-        && y >= labelY && y <= labelY + labelH - 1) {
-        buf[0] = GetName();
-        msgs = buf;
-        numMsgs = 1;
-        return true;
-    }
-    
-    if (_action) {
-        /* transform from screen x/y into world x/y */
-        Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
-        FindWorld(x, y, x + 1, y - 1, worldXLow,worldYLow,
-                  worldXHigh, worldYHigh);
-        return _action->PopUp(this, worldXLow, worldYLow,
-                              worldXHigh, worldYHigh, button,
-                              msgs, numMsgs);
-    }
-
-    return false;
-}
-
-
 void ViewGraph::SetHistogramWidthToFilter()
 {
     VisualFilter filter;
@@ -1361,29 +1303,6 @@ void ViewGraph::SetHistogramWidthToFilter()
     Refresh();
 }
 
-void ViewGraph::PrintLinkInfo() 
-{
-  printf("View : %s \n", GetName());
-  printf("Master of ");
-  int index = _masterLink.InitIterator();
-  while(_masterLink.More(index)) {
-    RecordLink *reclink = (RecordLink *)_masterLink.Next(index);
-    if (reclink)
-      reclink->Print();
-  }
-  _masterLink.DoneIterator(index);
-  printf("\nSlave of ");
-  index = _slaveLink.InitIterator();
-  while(_slaveLink.More(index)) {
-    RecordLink *reclink = (RecordLink *)_slaveLink.Next(index);
-    if (reclink) 
-      reclink->Print();
-  }
-  _slaveLink.DoneIterator(index);
-  printf("\nUpdate Link");
-  _updateLink.Print();
-}
-
 void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
 #if defined(DEBUG)
@@ -1396,7 +1315,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   // Initialize statistics collection
   _allStats.Init(this);
 
-  for(int i = 0; i < MAXCOLOR; i++)
+  for(int i = 0; i < gMaxNumColors; i++)
     _stats[i].Init(this);
 
   int index = _blist.InitIterator();
@@ -1425,7 +1344,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
     printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
 #endif
     _pstorage.Clear();
-    _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
+    _queryProc->BatchQuery(_map, _queryFilter, queryCallback, 0, _timestamp);
 
     if (_sendToSocket) {
       if (_gds != NULL) {
@@ -1457,7 +1376,7 @@ void ViewGraph::DerivedAbortQuery()
 #endif
 
   if (_map) {
-    _queryProc->AbortQuery(_map, this);
+    _queryProc->AbortQuery(_map, queryCallback);
     DOASSERT(_index >= 0, "Invalid iterator index");
     DoneMappingIterator(_index);
     _map = 0;
@@ -1471,53 +1390,6 @@ void ViewGraph::DerivedAbortQuery()
     link->Abort();
   }
   _masterLink.DoneIterator(index);
-}
-
-void ViewGraph::QueryDone(int bytes, void *userData, TDataMap *map)
-{
-#if defined(DEBUG)
-  printf("ViewGraph::QueryDone(), index = %d, bytes = %d\n", _index, bytes);
-#endif
-
-  _pstorage.Clear();
-
-  if( _index >= 0 ) {
-    if (MoreMapping(_index)) {
-#ifdef DEBUG
-      printf("Submitting next query 0x%p\n", _map);
-#endif
-      _map = NextMapping(_index)->map;
-      _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
-      return;
-    }
-
-    DoneMappingIterator(_index);
-    _map = 0;
-    _index = -1;
-
-    delete _gds;
-    _gds = NULL;
-
-    _allStats.Done();
-    _allStats.Report();
-
-    for(int i = 0; i < MAXCOLOR; i++)
-      _stats[i].Done();
-
-    PrepareStatsBuffer(map);
-
-    DrawLegend();
-
-    // Finish record links whose master this view is
-    int index = _masterLink.InitIterator();
-    while(_masterLink.More(index)) {
-      RecordLink *link = _masterLink.Next(index);
-      link->Done();
-    }
-    _masterLink.DoneIterator(index);
-
-    ReportQueryDone(bytes);
-  }
 }
 
 void
@@ -1563,3 +1435,164 @@ ViewGraph::SetSendParams(const GDataSock::Params &params)
   _gdsParams = params;
   _gdsParams.file = CopyString(_gdsParams.file);
 }
+
+//******************************************************************************
+// Callback Methods (QueryCallback)
+//******************************************************************************
+
+void	ViewGraph::QueryDone(int bytes, void* userData, TDataMap* map)
+{
+#if defined(DEBUG)
+	printf("ViewGraph::QueryDone(), index = %d, bytes = %d\n", _index, bytes);
+#endif
+
+	_pstorage.Clear();
+
+	if (_index < 0)
+		return;
+
+	if (MoreMapping(_index))
+	{
+#ifdef DEBUG
+		printf("Submitting next query 0x%p\n", _map);
+#endif
+		_map = NextMapping(_index)->map;
+		_queryProc->BatchQuery(_map, _queryFilter, queryCallback, 0,
+							   _timestamp);
+
+		return;
+	}
+
+	DoneMappingIterator(_index);
+	_map = 0;
+	_index = -1;
+
+    delete _gds;
+    _gds = NULL;
+
+    _allStats.Done();
+    _allStats.Report();
+
+	for(int i=0; i<gMaxNumColors; i++)
+		_stats[i].Done();
+
+	PrepareStatsBuffer(map);
+	DrawLegend();
+
+	// Finish record links whose master is this view
+	int		index = _masterLink.InitIterator();
+
+	while(_masterLink.More(index))
+		_masterLink.Next(index)->Done();
+
+	_masterLink.DoneIterator(index);
+	ReportQueryDone(bytes);
+}
+
+void	ViewGraph::PrintLinkInfo(void) 
+{
+	printf("View : %s \n", GetName());
+	printf("Master of ");
+
+	int		index = _masterLink.InitIterator();
+
+	while(_masterLink.More(index))
+	{
+		RecordLink*		reclink = (RecordLink*)_masterLink.Next(index);
+
+		if (reclink)
+			reclink->Print();
+	}
+
+	_masterLink.DoneIterator(index);
+	printf("\nSlave of ");
+
+	index = _slaveLink.InitIterator();
+
+	while(_slaveLink.More(index))
+	{
+		RecordLink*		reclink = (RecordLink*)_slaveLink.Next(index);
+
+		if (reclink) 
+			reclink->Print();
+	}
+
+	_slaveLink.DoneIterator(index);
+	printf("\nUpdate Link");
+	_updateLink.Print();
+}
+
+//******************************************************************************
+// Callback Methods (WindowCallback)
+//******************************************************************************
+
+void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
+							   int xhigh, int yhigh, int button)
+{
+	if ((xlow == xhigh) && (ylow == yhigh) &&
+		CheckCursorOp(w, xlow, ylow, button))	// Was a cursor event?
+          return;
+
+	ControlPanel::Instance()->SelectView(this);
+
+	if (_action)				// Convert from screen to world coordinates
+	{
+		Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
+
+		FindWorld(xlow, ylow, xhigh, yhigh,
+				  worldXLow, worldYLow, worldXHigh, worldYHigh);
+		
+		_action->AreaSelected(this, worldXLow, worldYLow, worldXHigh, 
+							  worldYHigh, button);
+	}
+}
+
+void	ViewGraph::HandleKey(WindowRep* w, int key, int x, int y)
+{
+	ControlPanel::Instance()->SelectView(this);
+
+	if (_action)				// Convert from screen to world coordinates
+	{
+		Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
+
+		FindWorld(x, y, x, y, worldXLow, worldYLow, worldXHigh, worldYHigh);
+		_action->KeySelected(this, key, worldXLow, worldYLow);
+	}
+}
+
+Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
+								   char**& msgs, int& numMsgs)
+{
+#ifdef DEBUG
+	printf("ViewGraph::HandlePopUp at %d,%d, action = 0x%p\n", x, y, _action);
+#endif
+
+	int 			labelX, labelY, labelW, labelH;
+	static char*	buf[10];
+
+	ControlPanel::Instance()->SelectView(this);
+	GetLabelArea(labelX, labelY, labelW, labelH);
+
+	if ((x >= labelX) && (x <= labelX + labelW - 1) &&
+		(y >= labelY) && (y <= labelY + labelH - 1))
+	{
+		buf[0] = GetName();
+		msgs = buf;
+		numMsgs = 1;
+		return true;
+	}
+
+	if (_action)				// Convert from screen to world coordinates
+	{
+		Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
+
+		FindWorld(x, y, x + 1, y - 1,
+				  worldXLow, worldYLow, worldXHigh, worldYHigh);
+		return _action->PopUp(this, worldXLow, worldYLow, worldXHigh,
+							  worldYHigh, button, msgs, numMsgs);
+	}
+
+	return false;
+}
+
+//******************************************************************************

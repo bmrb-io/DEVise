@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/11/12 15:45:12  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.27.4.1  1997/11/11 19:13:43  wenger
   Added getWindowImageAndSize and waitForQueries commands; fixed bug in
   WindowRep::ExportGIF() inheritance.
@@ -38,6 +42,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.23.6.1  1997/05/21 20:39:37  weaver
+  Changes for new ColorManager
 
   Revision 1.23  1997/05/05 16:53:42  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -146,11 +153,7 @@
 #include "ViewWin.h"
 #endif
 #include "DList.h"
-#include "ColorMgr.h"
 #include "WindowRep.h"
-
-const int InitColorMapSize = 512;
-const int AdditionalColorMapSize = 512;
 
 class DeviseDisplay;
 
@@ -182,8 +185,6 @@ public:
      relative == 1 if in relative dimensions.*/
   virtual WindowRep* CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
-				     GlobalColor fgnd = ForegroundColor,
-				     GlobalColor bgnd = BackgroundColor, 
 				     WindowRep *parentRep = NULL,
 				     Coord min_width = 0.05,
 				     Coord min_height = 0.05,
@@ -241,23 +242,10 @@ public:
   /* Process windowing events */
   void Run() { InternalProcessing(); }
 
-  /* Get local color given global color. */
-//TEMPTEMP -- this should probably be virtual -- doesn't apply to PS
-  LocalColor GetLocalColor(GlobalColor globalColor);
-
-#ifdef LIBCS
-//TEMPTEMP -- NOTE this is at least somewhat specific to X -- at least the
-// one that returns LocalColor -- maybe PSDisplay abort if that's called
-// on it
-  /* Translate RGB colors to pixel values and back */
-  virtual LocalColor FindLocalColor(float r, float g, float b) = 0;
-  virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b) = 0;
-#endif
-
   virtual void SetTasvirServer(const char *server) = 0;
 
 #ifndef LIBCS
-  /* Get/set desired screen size */
+/* Get/set desired screen size */
   virtual int &DesiredScreenWidth() { return _desiredScreenWidth; }
   virtual int &DesiredScreenHeight() { return _desiredScreenHeight; }
 #endif
@@ -271,43 +259,12 @@ protected:
   virtual void Register() = 0;
 #endif
 
-  /* must be called from within the initializer of derived class
-     to get the initial set of colors from the color manager */
-  void InitializeColors() {
-    ColorMgr::InitializeColors(this);
-  }
-
-  friend class ColorMgr;
-
-  /* Allocate internal colors for the given global color, set rgb to the
-   * RGB values we actually got. */
-  virtual void AllocColor(char *name, GlobalColor globalColor,
-    RgbVals &rgb) = 0;
-
-  /* Allocate internal color by RGB, from 0.0 to 1.0, for the 
-     given global color.  On input, set rgb to the color you want; it will
-     be set to the RGB values you actually got. */
-  virtual void AllocColor(RgbVals &rgb, GlobalColor globalColor) = 0;
-
-  /* functions for derived classes to facilitate color processing.
-     Each display instance must match the global color to its own
-     local color. MapColor() maps local color to global color, while
-     GetLocalColor() retrieves the local color given global color. */
-  
-//TEMPTEMP -- this should probably be virtual -- doesn't apply to PS
-  /* map local color to global color.*/
-  void MapColor(LocalColor localColor, GlobalColor globalColor);
-
   friend class WindowRep;
 
   virtual char *DispatchedName();
   
   static DeviseDisplayList _displays; /* list of all displays */
-  
-  unsigned long _numColors;
-  unsigned long _colorMapSize;
-  LocalColor *_colorMap;
-  static DeviseDisplay *_defaultDisplay;
+    static DeviseDisplay *_defaultDisplay;
   static DeviseDisplay *_psDisplay;
 
 #ifndef LIBCS

@@ -19,11 +19,18 @@ Comments and additions may be sent the author at zhang@cs.wisc.edu.
   $Id$
 
   $Log$
+  Revision 1.1.2.1  1997/05/21 20:38:44  weaver
+  Changes for new ColorManager
+
+  Revision 1.3  1997/03/28 16:08:23  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "global.h"
 //#include "util.h"
-#include "vector.h"
+#include "Vector.h"
 	
 Vector::Vector() {value=NULL;}
 

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.51  1997/11/12 15:47:48  wenger
+#  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+#  into the trunk.
+#
 #  Revision 1.50.6.1  1997/11/10 23:37:14  wenger
 #  Fixed bug 239.
 #
@@ -224,6 +228,8 @@
 #  Revision 1.1  1995/11/28  00:02:52  jussi
 #  Initial revision.
 #
+
+############################################################
 
 ############################################################
 
@@ -597,82 +603,6 @@ proc DoExit {} {
 	DEVise exit
 	destroy .
     }
-}
-
-############################################################
-
-proc getColor {varname {oldColors false}} {
-    global $varname DEViseColors DEViseOldColors
-    global getColorCanceled
-
-    if {[WindowVisible .getColor]} {
-	return
-    }
-
-    set getColorCanceled 0
-
-    toplevel .getColor
-    wm title .getColor "Choose Color"
-    wm geometry .getColor +100+100
-
-    frame .getColor.top -relief groove -borderwidth 2
-    frame .getColor.bot
-    pack .getColor.top -side top -fill both -expand 1
-    pack .getColor.bot -side top -pady 5m -fill x
-    frame .getColor.bot.but
-    pack .getColor.bot.but -side top
-
-    set row -1
-    set col -1
-    set maxcol 8
-    set size 5
-
-    if {$oldColors} {
-      set colorList $DEViseOldColors
-    } else {
-      set colorList $DEViseColors
-    }
-    foreach val $colorList {
-	set cindex [lindex $val 0]
-	set color [lindex $val 1]
-	if {$col < 0} {
-	    incr row
-	    set col 0
-	    frame .getColor.top.row$row
-	    pack .getColor.top.row$row -side top -fill x -expand 1
-	}
-        if {$cindex >= 1000} {
-            # for colors >= 1000, we want to display their names (e.g. "XOR")
-            # instead of the color index values
-            button .getColor.top.row$row.col$col -background black \
-                    -activebackground black -width $size -text $color \
-                    -command "set $varname $color; destroy .getColor"
-        } else {
-            button .getColor.top.row$row.col$col -background $color \
-                    -activebackground $color -width $size -text $cindex \
-                    -command "set $varname $color; destroy .getColor"
-        }
-        pack .getColor.top.row$row.col$col -side left -fill x -expand 1
-	incr col
-	if {$col >= $maxcol} {
-	    set col -1
-	}
-    }
-    
-    # Add empty frames at end of last row
-    for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
-	button .getColor.top.row$row.col$col -relief flat -width $size \
-		-state disabled
-	pack .getColor.top.row$row.col$col -side left -fill x -expand 1
-    }
-
-    button .getColor.bot.but.cancel -text Cancel -width 10 \
-	    -command "set getColorCanceled 1; destroy .getColor"
-    pack .getColor.bot.but.cancel -side left
-
-    tkwait visibility .getColor
-    grab set .getColor
-    tkwait window .getColor
 }
 
 ############################################################

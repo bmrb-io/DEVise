@@ -16,6 +16,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/10/24 00:46:23  ravim
+#  New colors.
+#
 #  Revision 1.1  1995/10/11 17:08:40  ravim
 #  Initial Version.
 #
@@ -40,24 +43,23 @@ toplevel .schema
 wm title .schema "Schema Browser"
 wm iconname .schema "Schema Browser"
 
-frame .schema.msg -relief raised -bd 1 -bg LightBlue
+frame .schema.msg -relief raised -bd 1
 pack .schema.msg -side top -fill both 
 
-frame .schema.opt -relief raised -bd 1 -bg LightGreen
+frame .schema.opt -relief raised -bd 1
 pack .schema.opt -side bottom -fill both
 
 message .schema.msg.msg -width 3i -text "New schema files can be created \
-	or existing ones browsed. Make your selection ..." -justify left \
-	-fg black -bg gray75
+	or existing ones browsed. Make your selection ..." -justify left
 
 pack .schema.msg.msg -side right -expand 1 -fill both \
 	-padx 3m -pady 3m
 label .schema.msg.bitmap -bitmap @schema.xbm
 pack .schema.msg.bitmap -side left -padx 3m -pady 3m
 
-button .schema.opt.new -text New -command newschema -fg Red -bg Yellow
-button .schema.opt.open -text Open -command openschema -fg Red -bg Yellow
-button .schema.opt.quit -text Quit -command exit -fg Red -bg Yellow
+button .schema.opt.new -text New -command newschema
+button .schema.opt.open -text Open -command openschema
+button .schema.opt.quit -text Quit -command exit
 pack .schema.opt.new .schema.opt.open .schema.opt.quit -side left \
 	-padx 3m -pady 3m -ipadx 2m -ipady 1 -expand 1
 

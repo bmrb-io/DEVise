@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/12 15:32:18  wenger
+  Removed unnecessary include dependencies.
+
+  Revision 1.9.10.1  1997/05/21 20:39:43  weaver
+  Changes for new ColorManager
+
   Revision 1.9  1996/11/13 16:56:08  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -269,7 +275,7 @@ void Map3D::MapBlockSegments(WindowRep *win,
       _segment[_numSegments].pt[1].x = pts[block[i].ed[j].q].x;
       _segment[_numSegments].pt[1].y = pts[block[i].ed[j].q].y;
       _segment[_numSegments].width = block[i].segWidth;
-      _segment[_numSegments].color = block[i].color;
+      _segment[_numSegments].color = block[i].GetForeground();
       _numSegments++;
     }
   }
@@ -318,7 +324,7 @@ void Map3D::MapBlockPlanes(WindowRep *win,
 					  block[i].sd[j].pt[1],
 					  block[i].sd[j].pt[2],
 					  cameraPoint);
-      _plane[_numPlanes].color = block[i].color;
+      _plane[_numPlanes].color = block[i].GetForeground();
       _numPlanes++;
       _plane[_numPlanes].pt[0].x = pts[block[i].sd[j].pt[2]].x;
       _plane[_numPlanes].pt[0].y = pts[block[i].sd[j].pt[2]].y;
@@ -331,7 +337,7 @@ void Map3D::MapBlockPlanes(WindowRep *win,
 					  block[i].sd[j].pt[2],
 					  block[i].sd[j].pt[3],
 					  cameraPoint);
-      _plane[_numPlanes].color = block[i].color;
+      _plane[_numPlanes].color = block[i].GetForeground();
       _numPlanes++;
     }
   }
@@ -434,7 +440,7 @@ void Map3D::MapLineSegments(WindowRep *win,
     _segment[_numSegments].pt[1].y = pt.y;
 
     _segment[_numSegments].width = segment[i].segWidth;
-    _segment[_numSegments].color = segment[i].color;
+    _segment[_numSegments].color = segment[i].GetForeground();
 
     _numSegments++;
   }
@@ -483,51 +489,42 @@ Point Map3D::CompProjectionOnViewingPlane(Point3D &viewPt, Camera camera)
 // draw the edges of the shapes
 // ---------------------------------------------------------- 
 
-void Map3D::DrawSegments(WindowRep *win)
+void	Map3D::DrawSegments(WindowRep* win)
 {
-  for(int i = 0; i < _numSegments; i++) {
-    GlobalColor color = _segment[i].color;
-    if (color == XorColor)
-      win->SetXorMode();
-    else
-      win->SetFgColor(color);
-    win->Line(_segment[i].pt[0].x, _segment[i].pt[0].y,
-	      _segment[i].pt[1].x, _segment[i].pt[1].y,
-              _segment[i].width);
-    if (color == XorColor)
-      win->SetCopyMode();
-  }
+	for(int i = 0; i < _numSegments; i++)
+	{
+		win->SetForeground(_segment[i].color);
+		win->Line(_segment[i].pt[0].x, _segment[i].pt[0].y,
+				  _segment[i].pt[1].x, _segment[i].pt[1].y,
+				  _segment[i].width);
+	}
 }
 
 // ---------------------------------------------------------- 
 // draw the sides of the shapes
 // ---------------------------------------------------------- 
 
-void Map3D::DrawPlanes(WindowRep *win, Boolean frame)
+void	Map3D::DrawPlanes(WindowRep* win, Boolean frame)
 {
-  for(int i = 0; i < _numPlanes; i++) {
-    GlobalColor color = _plane[i].color;
-    if (color == XorColor)
-      win->SetXorMode();
-    else
-      win->SetFgColor(color);
-    win->FillPoly(_plane[i].pt, 3);
-    if (color == XorColor)
-      win->SetCopyMode();
+	for(int i = 0; i < _numPlanes; i++)
+	{
+		win->SetForeground(_plane[i].color);
+		win->FillPoly(_plane[i].pt, 3);
 
-    if (frame) {
-      win->SetFgColor(BlackColor);
-      win->Line(_plane[i].pt[0].x, _plane[i].pt[0].y,
-                _plane[i].pt[1].x, _plane[i].pt[1].y, 1);
-      win->Line(_plane[i].pt[1].x, _plane[i].pt[1].y,
-                _plane[i].pt[2].x, _plane[i].pt[2].y, 1);
+		if (frame)
+		{
+			win->SetForeground(GetPColorID(map3DframeColor));
+			win->Line(_plane[i].pt[0].x, _plane[i].pt[0].y,
+					  _plane[i].pt[1].x, _plane[i].pt[1].y, 1);
+			win->Line(_plane[i].pt[1].x, _plane[i].pt[1].y,
+					  _plane[i].pt[2].x, _plane[i].pt[2].y, 1);
 #if 0
-      // don't draw diagonal line
-      win->Line(_plane[i].pt[2].x, _plane[i].pt[2].y,
-                _plane[i].pt[0].x, _plane[i].pt[0].y, 1);
+			// don't draw diagonal line
+			win->Line(_plane[i].pt[2].x, _plane[i].pt[2].y,
+					  _plane[i].pt[0].x, _plane[i].pt[0].y, 1);
 #endif
-    }
-  }
+		}
+	}
 }
 
 // ---------------------------------------------------------- 
@@ -607,3 +604,5 @@ void Map3D::DrawAxis(WindowRep *win, Point3D axisPt[4],
   printf("End DrawAxis\n");
 #endif
 }
+
+//******************************************************************************

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/09 14:46:33  wenger
+  Added cursor grid; fixed bug 187; a few minor cleanups.
+
+  Revision 1.9.10.1  1997/05/21 20:39:36  weaver
+  Changes for new ColorManager
+
   Revision 1.9  1997/01/23 17:38:25  jussi
   Removed references to GetXMin().
 
@@ -60,14 +66,19 @@
 #include "Cursor.h"
 #include "View.h"
 
-DeviseCursor::DeviseCursor(char *name, VisualFlag flag, GlobalColor color,
-  Boolean useGrid, Coord gridX, Coord gridY)
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
+						   PColorID fgid, PColorID bgid,
+						   Boolean useGrid, Coord gridX, Coord gridY)
+	: Coloring(fgid, bgid)
 {
   _name = name;
   _visFlag = flag;
   _src = 0;
   _dst = 0;
-  _color = color;
   _useGrid = useGrid;
   _gridX = gridX;
   _gridY = gridY;
@@ -75,7 +86,7 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag, GlobalColor color,
   View::InsertViewCallback(this);
 }
 
-DeviseCursor::~DeviseCursor()
+DeviseCursor::~DeviseCursor(void)
 {
   View::DeleteViewCallback(this);
 
@@ -90,6 +101,8 @@ DeviseCursor::~DeviseCursor()
   if (_dst && redrawCursors)
     (void)_dst->DrawCursors();
 }
+
+//******************************************************************************
 
 /* Set source view. Changing this view's visual filter
    changes in the cursor's position. Can also set to NULL */
@@ -138,7 +151,7 @@ void DeviseCursor::SetDst(View *view)
 
 /* Get current visual filter. return TRUE if it exists. */
 
-Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, GlobalColor &color)
+Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter)
 {
   if (!_src)
     return false;
@@ -146,7 +159,6 @@ Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, GlobalColor &color)
   _src->GetVisualFilter(_filter);
   _filter.flag = _visFlag;
   filter = &_filter;
-  color = _color;
   return true;
 }
 
@@ -221,3 +233,5 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
     _src->SetVisualFilter(filter);
   }
 }
+
+//******************************************************************************

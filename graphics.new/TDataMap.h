@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/11/18 23:27:03  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.23  1997/08/20 22:11:11  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -29,6 +33,9 @@
 
   Revision 1.21.4.1  1997/05/20 16:11:17  ssl
   Added layout manager to DEVise
+
+  Revision 1.21.6.1  1997/05/21 20:40:49  weaver
+  Changes for new ColorManager
 
   Revision 1.21  1997/04/21 22:59:24  guangshu
   Added function MapTAttr2GAttr.
@@ -125,13 +132,16 @@
 #include "DeviseTypes.h"
 #include "Exit.h"
 #include "DList.h"
-#include "Color.h"
 #include "Pattern.h"
 #include "ShapeID.h"
 #include "VisualArg.h"
 #include "RecId.h"
 #include "GDataRec.h"
 #include "AttrList.h"
+
+//#include "ViewGraph.h"
+#include "Color.h"
+#include "Coloring.h"
 
 class AttrList;
 
@@ -156,25 +166,41 @@ struct GDataAttrOffset {
   int shapeAttrOffset[MAX_GDATA_ATTRS];
 };
 
-class TDataMap {
-public:
-  /* constructor. dynamicArgs == attributes that are
-     dynamically alloated. dynamicAttrs: set bit i to 1 if
-     ith shape attribute is dynamically allocated.
-     name: name of this type of mapping.
-     gdataName:  name of GData (name of this mapping instance */
+//******************************************************************************
+// class TDataMap
+//******************************************************************************
 
-  TDataMap(char *name, TData *tdata, char *gdataName, int gdataRecSize,
-	   VisualFlag dynamicArgs,
-	   unsigned long dynamicShapeAttrs,
-	   int maxGDataPages,
-	   VisualFlag *dimensionInfo, int numDimensions,
-	   Boolean createGData = true);
-  
-  /* destructor */
-  virtual ~TDataMap();
+class TDataMap
+{
+	private:
 
-  /* Set/Get GData attribute list */
+		Coloring	coloring;		// Default data coloring
+
+	public:
+
+		// Constructors and Destructors
+
+		// constructor. dynamicArgs == attributes that are dynamically
+		// allocated. dynamicAttrs: set bit i to 1 if ith shape attribute
+		// is dynamically allocated. name: name of this type of mapping.
+		// gdataName:  name of GData (name of this mapping instance */
+		TDataMap(char* name, TData* tdata, char* gdataName, int gdataRecSize,
+				 VisualFlag dynamicArgs, unsigned long dynamicShapeAttrs,
+				 int maxGDataPages, VisualFlag* dimensionInfo,
+				 int numDimensions, Boolean createGData = true);
+
+		virtual ~TDataMap(void);
+
+		// Getters and Setters
+		Coloring&			GetColoring(void)			{ return coloring;	}
+		const Coloring&		GetColoring(void) const 	{ return coloring;	}
+
+		// Utility Functions
+		PColorID	GetPColorID(const char* recPtr) const;
+		ColorID		GetColorID(const char* recPtr) const;
+		XColorID	GetXColorID(const char* recPtr) const;
+
+/* Set/Get GData attribute list */
   void SetGDataAttrList(AttrList *gAttrList) { _gdataAttrList = gAttrList; }
   AttrList *GDataAttrList() { return _gdataAttrList; }
 
@@ -206,7 +232,6 @@ public:
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
   Coord GetDefaultZ() { return _z; }
-  GlobalColor GetDefaultColor() { return _color; }
   Coord GetDefaultSize() { return _size; }
   Pattern GetDefaultPattern() { return _pattern; }
   Coord GetDefaultOrientation() { return _orientation; }
@@ -296,8 +321,9 @@ public:
   RecId GetFocusId();
   
   /* Setting and getting offsets of GData attributes */
-  void SetGDataOffset(GDataAttrOffset *offset) { _gOffset = offset; }
-  GDataAttrOffset *GetGDataOffset() { return _gOffset; }
+  GDataAttrOffset*			GetGDataOffset(void)		{ return _gOffset; }
+  const GDataAttrOffset*	GetGDataOffset(void) const	{ return _gOffset; }
+		void	SetGDataOffset(GDataAttrOffset *offset) { _gOffset = offset; }
   
   void InsertUserData(void *data) { _userData = data; }
   void *GetUserData() { return _userData; }
@@ -309,7 +335,6 @@ protected:
   void SetDefaultX(Coord x) { _x = x; }
   void SetDefaultY(Coord y) { _y = y; }
   void SetDefaultZ(Coord z) { _z = z; }
-  void SetDefaultColor(GlobalColor color) { _color = color; }
   void SetDefaultSize(Coord size) { _size = size; }
   void SetDefaultPattern(Pattern pattern) { _pattern = pattern; }
   void SetDefaultOrientation(Coord orientation) { _orientation = orientation; }
@@ -338,7 +363,6 @@ private:
   Coord _x;
   Coord _y;
   Coord _z;
-  GlobalColor _color;
   Coord _size;
   Pattern _pattern;
   Coord _orientation;
@@ -382,4 +406,5 @@ private:
   void *_userData;
 };
 
+//******************************************************************************
 #endif

@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13.10.1  1997/05/21 20:38:54  weaver
+#  Changes for new ColorManager
+#
+#  Revision 1.13  1996/12/11 20:35:40  wenger
+#  Added 'cslib' target to top-level makefiles; added 'lib' targets
+#  to library makefiles.
+#
 #  Revision 1.12  1996/08/12 18:43:23  flisakow
 #    Makefiles changed to use AR and RANLIB vars from Makefile.common.
 #
@@ -30,7 +37,8 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape  -fexternal-templates-Wall -Wno-unused $(OPTFLAG)
+	-I../../tape \
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG)
 LDFLAGS = $(ARCH_LDFLAGS) -L. -lcstat -L../tape -ltape $(ARCH_LDPOST)
 
 LIBSRC = compustat.c

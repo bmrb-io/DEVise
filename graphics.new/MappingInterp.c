@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.65  1997/11/18 23:26:55  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.64  1997/11/12 15:46:36  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -50,6 +54,9 @@
   Revision 1.60  1997/07/15 14:29:57  wenger
   Moved hashing of strings from TData*Interp classes to MappingInterp
   class; cleaned up a few extra includes of StringStorage.h.
+
+  Revision 1.59.2.1  1997/05/21 20:40:39  weaver
+  Changes for new ColorManager
 
   Revision 1.59  1997/05/08 00:18:56  wenger
   'Can't find attribute in mapping' warning not printed for recId's.
@@ -304,7 +311,6 @@
 #include "AttrList.h"
 #include "TData.h"
 #include "Pattern.h"
-#include "Color.h"
 #include "WindowRep.h"
 #include "MappingInterp.h"
 #include "ViewGraph.h"
@@ -318,6 +324,8 @@
 #include "Init.h"
 #include "StringStorage.h"
 #include "GDataSock.h"
+
+#include "Color.h"
 
 double     *MappingInterp::_tclAttrs     = NULL;
 double      MappingInterp::_interpResult = 0.0;
@@ -371,8 +379,8 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
     size += sizeof(double);
   }
   if ((flag & MappingCmd_Color) && !IsConstCmd(cmd->colorCmd, val, attrType)) {
-    size = WordBoundary(size, sizeof(GlobalColor));
-    size += sizeof(GlobalColor);
+    size = WordBoundary(size, sizeof(PColorID));
+    size += sizeof(PColorID);
   }
   if ((flag & MappingCmd_Size) && !IsConstCmd(cmd->sizeCmd, val, attrType)) {
     size = WordBoundary(size, sizeof(double));
@@ -929,22 +937,25 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
       }
       *((double *)(gPtr + _offsets->zOffset)) = _interpResult;
     }
-    
-    if (_offsets->colorOffset >= 0 ) {
-      if (_tclCmd->colorCmd == NULL) {
-	_interpResult = (Coord) GetDefaultColor();
-      } else {
-	_interpResult = 0.0;
-	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->colorCmd);
-	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
-      }
-      /*
-	 printf("eval color\n");
-      */
-      *((GlobalColor *)(gPtr + _offsets->colorOffset)) =
-	(GlobalColor)_interpResult;
+
+	// Color command
+    if (_offsets->colorOffset >= 0 )
+	{
+		if (_tclCmd->colorCmd == NULL)
+		{
+			_interpResult = (Coord)nullPColorID;
+		}
+		else
+		{
+			_interpResult = (Coord)nullPColorID;
+			sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->colorCmd);
+			code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+		}
+
+		*((PColorID*)(gPtr + _offsets->colorOffset)) =
+			(PColorID)_interpResult;
     }
-    
+
     if (_offsets->sizeOffset >= 0) {
       if (_tclCmd->sizeCmd == NULL) {
 	_interpResult = GetDefaultSize();
@@ -1106,23 +1117,30 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
-  if (_cmdFlag & MappingCmd_Color) {
-    if (!ConvertSimpleCmd(_cmd->colorCmd, _simpleCmd->colorCmd, attrType,
-			  isSorted))
-      goto complexCmd;
-    if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
-      /* constant */
-      SetDefaultColor((GlobalColor)_simpleCmd->colorCmd.cmd.num);
-      attrList->InsertAttr(3, "color", -1, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-    } else {
-      _offsets->colorOffset = offset = WordBoundary(offset,
-	sizeof(GlobalColor));
-      attrList->InsertAttr(3, "color", offset, sizeof(double),
-			   attrType, false, NULL, false, isSorted);
-      offset += sizeof(GlobalColor);
-    }
-  }
+	// Color command
+	if (_cmdFlag & MappingCmd_Color)
+	{
+		if (!ConvertSimpleCmd(_cmd->colorCmd, _simpleCmd->colorCmd,
+							  attrType, isSorted))
+			goto complexCmd;
+
+		if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd)
+		{
+			PColorID	pcid = (PColorID)_simpleCmd->colorCmd.cmd.num;
+
+			GetColoring().SetForeground(pcid);
+			attrList->InsertAttr(3, "color", -1, sizeof(double),
+								 attrType, false, NULL, false, isSorted);
+		}
+		else
+		{
+			_offsets->colorOffset = offset = WordBoundary(offset,
+														  sizeof(PColorID));
+			attrList->InsertAttr(3, "color", offset, sizeof(double),
+								 attrType, false, NULL, false, isSorted);
+			offset += sizeof(PColorID);
+		}
+	}
 
   if (_cmdFlag & MappingCmd_Size) {
     if (!ConvertSimpleCmd(_cmd->sizeCmd, _simpleCmd->sizeCmd, attrType,
@@ -1317,20 +1335,28 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
-  if (_cmdFlag & MappingCmd_Color) {
-    if (IsConstCmd(_cmd->colorCmd, constVal, attrType)) {
-      SetDefaultColor((GlobalColor)constVal);
-      _tclCmd->colorCmd = "";
-      attrList->InsertAttr(3, "color", -1, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-    } else {
-      _tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
-      _offsets->colorOffset = offset = WordBoundary(offset,sizeof(GlobalColor));
-      attrList->InsertAttr(3, "color", offset, sizeof(double), attrType,
-			   false, NULL, false, isSorted);
-      offset += sizeof(GlobalColor);
-    }
-  }
+	// Color command
+	if (_cmdFlag & MappingCmd_Color)
+	{
+		if (IsConstCmd(_cmd->colorCmd, constVal, attrType))
+		{
+			PColorID	pcid = (PColorID)constVal;
+
+			GetColoring().SetForeground(pcid);
+			_tclCmd->colorCmd = "";
+			attrList->InsertAttr(3, "color", -1, sizeof(double), attrType,
+								 false, NULL, false, isSorted);
+		}
+		else
+		{
+			_tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
+			_offsets->colorOffset = offset = WordBoundary(offset,
+														  sizeof(PColorID));
+			attrList->InsertAttr(3, "color", offset, sizeof(double), attrType,
+								 false, NULL, false, isSorted);
+			offset += sizeof(PColorID);
+		}
+	}
 
   if (_cmdFlag & MappingCmd_Size) {
     if (IsConstCmd(_cmd->sizeCmd, constVal, attrType)) {
@@ -1885,10 +1911,15 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
       dPtr = (double *)(gPtr + _offsets->zOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0);
     }
-    if (_offsets->colorOffset >= 0) {
-      GlobalColor *cPtr = (GlobalColor *)(gPtr + _offsets->colorOffset);
-      *cPtr= (GlobalColor)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0);
-    }
+
+	// Color command
+	if (_offsets->colorOffset >= 0)
+	{
+		PColorID*	pcid = (PColorID*)(gPtr + _offsets->colorOffset);
+
+		*pcid = (PColorID)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0);
+	}
+
     if (_offsets->sizeOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->sizeOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->sizeCmd, 1.0);
@@ -1922,3 +1953,5 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
     _tclRecId++;
   }
 }
+
+//******************************************************************************

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/09/05 22:36:32  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.8  1997/08/28 18:21:16  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
   up into ViewGraph (parent class).
@@ -36,6 +40,9 @@
   Revision 1.6.8.1  1997/08/07 16:56:46  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
+
+  Revision 1.6.6.1  1997/05/21 20:40:53  weaver
+  Changes for new ColorManager
 
   Revision 1.6  1997/03/20 22:26:03  guangshu
   Changed function QueryDone.
@@ -58,6 +65,8 @@
 
  */
 
+//******************************************************************************
+
 #include <time.h>
 
 #include "ViewLens.h"
@@ -73,21 +82,27 @@
 
 //#define DEBUG
 
-ViewLens::ViewLens(char *name, VisualFilter &initFilter, 
-            	   QueryProc *qp,  
-		   GlobalColor foreground, GlobalColor background,
-		   AxisLabel *xAxis, AxisLabel *yAxis,
-		   Action *action, ViewLensMode mode, ViewLensDim dimension)
-: ViewGraph(name, initFilter, qp, xAxis, yAxis, foreground, background,action)
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+ViewLens::ViewLens(char* name, VisualFilter& initFilter, QueryProc* qp,
+				   PColorID fgid, PColorID bgid,
+				   AxisLabel* xAxis, AxisLabel* yAxis,
+				   Action* action, ViewLensMode mode, ViewLensDim dimension)
+	: ViewGraph(name, initFilter, qp, xAxis, yAxis, fgid, bgid, action)
 {
 #ifdef DEBUG
-  printf("View::ViewLens(%s, this = %p)\n", name, this);
+	printf("View::ViewLens(%s, this = %p)\n", name, this);
 #endif
+
+	viewCallback = new ViewLens_ViewCallback(this);
+
   _mode = mode;
   _dimension = dimension;
   _lensList = NULL;	// list of views in lens
   _lensLink = NULL;
-  View::InsertViewCallback(this);
+  View::InsertViewCallback(viewCallback);
   /************TEMP HACK **************/
   _viewLensUpdate = false; // to avoid refresh of the view here 
   XAxisDisplayOnOff(true); 
@@ -95,6 +110,34 @@ ViewLens::ViewLens(char *name, VisualFilter &initFilter,
   _viewLensUpdate = true;
   /************TEMP HACK **************/
 }
+
+ViewLens::~ViewLens(void) 
+{
+  View::DeleteViewCallback(viewCallback);
+  int index = InitViewLensIterator();
+  while(MoreViewsInLens(index)) {
+    ViewInfo *vi = NextViewInfoInLens(index);
+    _lensList->DeleteCurrent(index);
+  }
+  DoneViewLensIterator(index);
+  delete  _lensList;
+
+	delete viewCallback;
+}
+
+//******************************************************************************
+// Getters and Setters
+//******************************************************************************
+
+void	ViewLens::SetBackground(PColorID bgid)
+{
+// Why isn't the primary background color changed as well?
+//	ViewGraph::SetBackground(bgid);
+	GetWindowRep()->SetBackground(bgid);
+}
+
+//******************************************************************************
+
 void ViewLens::ReplaceView(ViewInfo *vinfo, ViewGraph *v)       
 {
   if (vinfo == NULL) {
@@ -168,17 +211,6 @@ void ViewLens::DeleteView(ViewGraph *v)
 
 }
 
-ViewLens::~ViewLens() 
-{
-  View::DeleteViewCallback(this);
-  int index = InitViewLensIterator();
-  while(MoreViewsInLens(index)) {
-    ViewInfo *vi = NextViewInfoInLens(index);
-    _lensList->DeleteCurrent(index);
-  }
-  DoneViewLensIterator(index);
-  delete  _lensList;
-}
 char* ViewLens::GetMode() 
 {
   if (_mode == transparent) {
@@ -216,139 +248,6 @@ void ViewLens::Refresh()
   View::Refresh();
 }
 
-/* from View */
-void ViewLens::Run() 
-{
-  bool done = true;
-  int index = InitViewLensIterator();
-  while(MoreViewsInLens(index)) {
-    ViewInfo *vi = NextViewInfoInLens(index);
-#ifdef DEBUG
-//    printf("checking view %s\n", vi->view->GetName());
-#endif      
-    if (vi->toRefresh && !vi->refreshStatus) {
-      done = false;
-      break;
-#ifdef DEBUG
-//    printf("view %s not done\n", vi->view->GetName());
-#endif
-    }
-  }
-  DoneViewLensIterator(index);
-  if (done) {
-#ifdef DEBUG
-    printf("ViewLens %s can now proceed\n", GetName());
-#endif
-    /* Do pixmap stuff here */
-    //DrawStack();
-    //_timestamp = TimeStamp::NextTimeStamp();
-    //DerivedStartQuery(_queryFilter, _timestamp);
-    View::Run();
-  } 
-  else {
-#ifdef DEBUG
-//    printf("ViewLens %s cannot  proceed\n", GetName());
-    Scheduler::Current()->RequestCallback(_dispatcherID);
-#endif
-  }
-}
-
-/* from ViewCallback */
-void ViewLens::ViewRecomputed(View *view) {
-#ifdef DEBUG
-  printf("Got information of completion of %s\n", view->GetName());
-#endif
-  int index = InitViewLensIterator();
-  bool found = false;
-  while(MoreViewsInLens(index)) {
-    ViewInfo *vi = NextViewInfoInLens(index);
-    if (vi->view == view) { 
-#ifdef DEBUG
-      printf("found view %s\n", vi->view->GetName());
-#endif
-      found = true;
-      vi->refreshStatus = true;
-      vi->toRefresh = false;
-    }
-  }
-  DoneViewLensIterator(index);
-  if (found) {
-      View::Refresh();
-  //    Scheduler::Current()->RequestCallback(_dispatcherID);
-  }
-}
-
-
-/* from ViewCallback */
-void ViewLens::ViewCreated(View *view) {
-  /* not needed */
-}
-
-
-/* from ViewCallback */
-void ViewLens::ViewDestroyed(View *view) {
-  /* not needed */
-  DeleteView((ViewGraph *)view);
-}
-
-
-/* from ViewCallback */
-void ViewLens::FilterAboutToChange(View *view) 
-{
-/*
-  Boolean found = false;
-
-  int index = InitViewLensIterator();
-  ViewInfo *vi;
-
-  while(MoreViewsInLens(index)) {
-    vi = NextViewInfoInLens(index); 
-    if (view ==  vi->view) {
-      found = true;
-      break;
-    }
-  }
-  DoneViewLensIterator(index);
-
-  if (found) {
-    WindowRep *winRep = GetWindowRep();
-    winRep->SetFgColor(winRep->GetBgColor());
-    winRep->SetPattern(Pattern0);
-    winRep->SetLineWidth(0);
-    int height, width;
-    winRep->Dimensions(width, height);
-    winRep->FillRect(0, 0, width - 1, height - 1);
-  }
-*/
-}
-
-/* from ViewCallback */
-
-void ViewLens::FilterChanged(View *view, VisualFilter &filter, int flushed) 
-{
-  // check if the view is in our lenslist 
-  Boolean found = false;
-  int index = InitViewLensIterator();
-  ViewInfo *vi = NULL;
-
-  while(MoreViewsInLens(index)) {
-    vi = NextViewInfoInLens(index); 
-    if (view ==  vi->view) {
-      found = true;
-      break;
-    }
-  }
-  DoneViewLensIterator(index);
-  if (found) {
-#ifdef DEBUG
-    printf("ViewLens : callback from view %s refreshing\n", view->GetName());
-#endif
-    vi->toRefresh = true;
-    vi->refreshStatus = false;
-  }
-
-}
-
 void ViewLens::DerivedStartQuery(VisualFilter &filter,
 			       int timestamp)
 {
@@ -382,10 +281,11 @@ void ViewLens::DerivedAbortQuery()
 
 void ViewLens::DrawStack()
 {
-  WindowRep *winRep = GetWindowRep();
+	WindowRep*	winRep = GetWindowRep();
+
   unsigned int Width, Height;
   DevisePixmap *basepixmap = 0;
-  winRep->SetFgColor(winRep->GetBgColor());
+  winRep->SetForeground(winRep->GetBackground());
   winRep->SetPattern(Pattern0);
   winRep->SetLineWidth(0);
   winRep->Dimensions(Width, Height);
@@ -449,20 +349,23 @@ void ViewLens::DrawOpaqueStack()
 
 
 // works only if the pixmaps are of the same size.
+// May be trouble for color management...
 DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
 				      WindowRep *basewin,
 				      DevisePixmap *newpixmap,
 				      WindowRep *newwin)
 {
+	XColorID	xfgid = AP_GetXColorID(newwin->GetForeground());
+	XColorID	xbgid = AP_GetXColorID(newwin->GetBackground());
+
 #ifdef DEBUG
   printf("ViewLens::DisplayPixmap %d bytes\n", basepixmap->compressedBytes);
 #endif
   
   unsigned char *basedata = basepixmap->data;
   unsigned char *newdata = newpixmap->data;
-  unsigned long fgColor = newwin->GetLocalColor(newwin->GetFgColor());
-  unsigned long bgColor = newwin->GetLocalColor(newwin->GetBgColor());
-  if (abs(basepixmap->height - newpixmap->height) > 5) {
+
+    if (abs(basepixmap->height - newpixmap->height) > 5) {
     return NULL;
   }
   int ht = (basepixmap->height > newpixmap->height) ? 
@@ -494,7 +397,7 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
     DOASSERT(outCount2 == newpixmap->bytes_per_line, "Invalid pixmap format");
     
     for (int j = 0; j < outCount1; j++) {
-      if((unsigned char) newbuf[j] != bgColor) {
+      if((unsigned char) newbuf[j] != xbgid) {
 	tmpbasebuf[j] = newbuf[j];
       }
     }
@@ -524,104 +427,286 @@ DevisePixmap *ViewLens::OverlayPixmap(DevisePixmap *basepixmap,
   return basepixmap;
 }
 
-void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
-                           void *gdata, int numGData,
-			   int &recordsProcessed)
+//******************************************************************************
+// Callback Methods (DispatcherCallback)
+//******************************************************************************
+
+void	ViewLens::Run(void) 
 {
-#if defined(DEBUG)
-  printf("ViewLens::ReturnGData()\n");
-//  printf("ViewLens %d recs buf start 0x%p\n", numGData, gdata);
+	bool	done = true;
+	int		index = InitViewLensIterator();
+
+	while(MoreViewsInLens(index))
+	{
+		ViewInfo*	vi = NextViewInfoInLens(index);
+#ifdef DEBUG
+//		printf("checking view %s\n", vi->view->GetName());
+#endif      
+
+		if (vi->toRefresh && !vi->refreshStatus)
+		{
+			done = false;
+			break;
+#ifdef DEBUG
+//			printf("view %s not done\n", vi->view->GetName());
 #endif
+		}
+	}
 
-  recordsProcessed = numGData;
+	DoneViewLensIterator(index);
 
-  /* Cancel the draw timeout for now, so we don't have to deal with
-   * the possibility that some symbols won't be drawn.  This should
-   * be changed to allow the timeout to happen once we have a chance
-   * to test this code.  RKW Aug. 15, 1997. */
-  DrawTimer::Cancel();
+	if (done)
+	{
+#ifdef DEBUG
+		printf("ViewLens %s can now proceed\n", GetName());
+#endif
+		// Do pixmap stuff here
+//		DrawStack();
+//		_timestamp = TimeStamp::NextTimeStamp();
+//		DerivedStartQuery(_queryFilter, _timestamp);
 
-  Coord maxWidth, maxHeight, maxDepth;
-  mapping->UpdateMaxSymSize(gdata, numGData);
-  mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
-
-  WindowRep *win = GetWindowRep();
-  GDataAttrOffset *offset = mapping->GetGDataOffset();
-  int gRecSize = mapping->GDataRecordSize();
-  char *ptr = (char *)gdata;
-  int recIndex = 0;
-  int firstRec = 0;
-  for(int i = 0; i < numGData; i++) {
-    // Extract X, Y, shape, and color information from gdata record
-    Coord x = ShapeGetX(ptr, mapping, offset);
-    Coord y = ShapeGetY(ptr, mapping, offset);
-    ShapeID shape = GetShape(ptr, mapping, offset);
-
-    GlobalColor color = mapping->GetDefaultColor();
-    if (offset->colorOffset >= 0)
-      color = *(GlobalColor *)(ptr + offset->colorOffset);
-    win->SetFgColor(color);
-    Boolean complexShape = mapping->IsComplexShape(shape);
-    complexShape |= (GetNumDimensions() == 3);
-
-    // Contiguous ranges which match the filter''s X and Y range
-    // are stored in the record link
-    if (!complexShape &&
-	(x + maxWidth / 2 < _queryFilter.xLow || 
-	 x - maxWidth / 2 > _queryFilter.xHigh || 
-	 y + maxHeight / 2 < _queryFilter.yLow || 
-	 y - maxHeight / 2 > _queryFilter.yHigh)) {
-	 if (i > firstRec)
-	   WriteMasterLink(recId + firstRec, i - firstRec);
-	     // Next contiguous batch of record ids starts at i+1
-	 firstRec = i + 1;
-     ptr += gRecSize;
-     continue;
-    }
-    // Draw data only if window is not iconified
-    if (!Iconified()) {
-      _recs[recIndex++] = ptr;
-      if (recIndex == WINDOWREP_BATCH_SIZE) {
-        mapping->DrawGDataArray(this, win, _recs, recIndex, recordsProcessed);
-        recIndex = 0;
-      }
-    }
-
-    ptr += gRecSize;
-  }
-
-  if (numGData > firstRec)
-    WriteMasterLink(recId + firstRec, numGData - firstRec);
-
-  if (!Iconified() && recIndex > 0) {
-    mapping->DrawGDataArray(this, win, _recs, recIndex, recordsProcessed);
-  }
+		View::Run();
+	} 
+	else
+	{
+#ifdef DEBUG
+//		printf("ViewLens %s cannot  proceed\n", GetName());
+		Scheduler::Current()->RequestCallback(_dispatcherID);
+#endif
+	}
 }
 
-void ViewLens::QueryDone(int bytes, void *userData, TDataMap *map=NULL)
+//******************************************************************************
+// Callback Methods (QueryCallback)
+//******************************************************************************
+
+void	ViewLens::QueryDone(int bytes, void* userData, TDataMap* map = NULL)
 {
 #ifdef DEBUG
-  printf("ViewLens::Query done, index = %d, bytes = %d\n", _index, bytes);
+	printf("ViewLens::Query done, index = %d, bytes = %d\n", _index, bytes);
 #endif
-  _pstorage.Clear();
-  ViewInfo *vi = NULL;
-  ViewGraph *v = NULL;
-  if ( _index < 0) {
-     return;
+
+	ViewInfo*	vi = NULL;
+	ViewGraph*	v = NULL;
+
+	_pstorage.Clear();
+
+	if ( _index < 0)
+		return;
+
+	if(MoreViewsInLens(_index))
+	{
+		vi = NextViewInfoInLens(_index); 
+		v = (ViewGraph*)vi->view;
+		_curView = v;
+	}
+	else
+	{
+		printf("All views done \n");
+
+		DoneViewLensIterator(_index);
+		ReportQueryDone(bytes, false);
+		_map = 0;
+		_index = -1;
+		_curView = NULL;
+
+		return;
   }
-  if(MoreViewsInLens(_index)) {
-      vi = NextViewInfoInLens(_index); 
-      v = (ViewGraph *)vi->view;
-      _curView = v;
-  } else {
-      printf("All views done \n");
-      DoneViewLensIterator(_index);
-      ReportQueryDone(bytes, false);
-      _map = 0;
-      _index = -1;
-      _curView = NULL;
-      return;
-  }
-  v->GetVisualFilter(_queryFilter);
-  ViewGraph::QueryDone(bytes, userData, map);
+
+	v->GetVisualFilter(_queryFilter);
+	ViewGraph::QueryDone(bytes, userData, map);
 }
+
+RecordLinkList*		ViewLens::GetRecordLinkList()
+{
+	return (_curView ? _curView->SlaveLinkList() : (RecordLinkList*)NULL);
+}
+
+void	ViewLens::ReturnGData(TDataMap* mapping, RecId recId,
+							  void* gdata, int numGData, int& recordsProcessed)
+{
+#if defined(DEBUG)
+	printf("ViewLens::ReturnGData()\n");
+//	printf("ViewLens %d recs buf start 0x%p\n", numGData, gdata);
+#endif
+
+	recordsProcessed = numGData;
+
+	// Cancel the draw timeout for now, so we don't have to deal with
+	// the possibility that some symbols won't be drawn.  This should
+	// be changed to allow the timeout to happen once we have a chance
+	// to test this code.  RKW Aug. 15, 1997.
+	DrawTimer::Cancel();
+
+	Coord		maxWidth, maxHeight, maxDepth;
+	WindowRep*	win = GetWindowRep();
+
+	mapping->UpdateMaxSymSize(gdata, numGData);
+	mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
+
+	GDataAttrOffset*	offset = mapping->GetGDataOffset();
+	int					gRecSize = mapping->GDataRecordSize();
+	char*				ptr = (char*)gdata;
+	int					recIndex = 0;
+	int					firstRec = 0;
+
+	for(int i=0; i<numGData; i++)
+	{
+		// Extract X, Y, shape, and color information from gdata record
+		Coord		x = ShapeGetX(ptr, mapping, offset);
+		Coord		y = ShapeGetY(ptr, mapping, offset);
+		ShapeID		shape = GetShape(ptr, mapping, offset);
+
+		win->SetForeground(mapping->GetPColorID(ptr));
+
+		Boolean		complexShape = mapping->IsComplexShape(shape);
+
+		complexShape |= (GetNumDimensions() == 3);
+
+		// Contiguous ranges which match the filter's X and Y range
+		// are stored in the record link
+		if (!complexShape && (x + maxWidth / 2 < _queryFilter.xLow || 
+							  x - maxWidth / 2 > _queryFilter.xHigh || 
+							  y + maxHeight / 2 < _queryFilter.yLow || 
+							  y - maxHeight / 2 > _queryFilter.yHigh))
+		{
+			if (i > firstRec)
+				WriteMasterLink(recId + firstRec, i - firstRec);
+			// Next contiguous batch of record ids starts at i+1
+			firstRec = i + 1;
+			ptr += gRecSize;
+			continue;
+		}
+
+		// Draw data only if window is not iconified
+		if (!Iconified())
+		{
+			_recs[recIndex++] = ptr;
+			if (recIndex == WINDOWREP_BATCH_SIZE)
+			{
+				mapping->DrawGDataArray(this, win, _recs, recIndex, 
+										recordsProcessed);
+				recIndex = 0;
+			}
+		}
+
+		ptr += gRecSize;
+	}
+
+	if (numGData > firstRec)
+		WriteMasterLink(recId + firstRec, numGData - firstRec);
+
+	if (!Iconified() && recIndex > 0)
+		mapping->DrawGDataArray(this, win, _recs, recIndex, recordsProcessed);
+}
+
+//******************************************************************************
+// Callback Methods (ViewCallback)
+//******************************************************************************
+
+void	ViewLens::ViewDestroyed(View* view)
+{
+	DeleteView((ViewGraph*)view);
+}
+
+void	ViewLens::ViewRecomputed(View* view)
+{
+#ifdef DEBUG
+	printf("Got information of completion of %s\n", view->GetName());
+#endif
+
+	int		index = InitViewLensIterator();
+	bool	found = false;
+
+	while(MoreViewsInLens(index))
+	{
+		ViewInfo*	vi = NextViewInfoInLens(index);
+
+		if (vi->view == view)
+		{ 
+#ifdef DEBUG
+			printf("found view %s\n", vi->view->GetName());
+#endif
+
+			found = true;
+			vi->refreshStatus = true;
+			vi->toRefresh = false;
+		}
+	}
+
+	DoneViewLensIterator(index);
+
+	if (found)
+	{
+		View::Refresh();
+//		Scheduler::Current()->RequestCallback(_dispatcherID);
+	}
+}
+
+void	ViewLens::FilterAboutToChange(View* view) 
+{
+/*
+	Boolean		found = false;
+	int			index = InitViewLensIterator();
+	ViewInfo*	vi;
+
+	while(MoreViewsInLens(index))
+	{
+		vi = NextViewInfoInLens(index); 
+
+		if (view ==  vi->view)
+		{
+			found = true;
+			break;
+		}
+	}
+
+	DoneViewLensIterator(index);
+
+	if (found)
+	{
+		WindowRep*	winRep = GetWindowRep();
+		int 		height, width;
+
+		winRep->SetForeground(winRep->GetBackground());
+		winRep->SetPattern(Pattern0);
+		winRep->SetLineWidth(0);
+
+		winRep->Dimensions(width, height);
+		winRep->FillRect(0, 0, width - 1, height - 1);
+	}
+*/
+}
+
+void	ViewLens::FilterChanged(View* view, VisualFilter& filter, int flushed) 
+{
+	// check if the view is in our lenslist 
+	Boolean		found = false;
+	int			index = InitViewLensIterator();
+	ViewInfo*	vi = NULL;
+
+	while(MoreViewsInLens(index))
+	{
+		vi = NextViewInfoInLens(index); 
+
+		if (view ==  vi->view)
+		{
+			found = true;
+			break;
+		}
+	}
+
+	DoneViewLensIterator(index);
+
+	if (found)
+	{
+#ifdef DEBUG
+		printf("ViewLens_ViewCallback : callback from view %s refreshing\n",
+			   view->GetName());
+#endif
+		vi->toRefresh = true;
+		vi->refreshStatus = false;
+	}
+}
+
+//******************************************************************************

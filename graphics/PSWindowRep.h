@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/07/18 20:25:05  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.25  1997/06/13 18:07:27  wenger
   Orientation is now working for text labels and fixed text labels.
 
@@ -27,6 +31,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.23.6.1  1997/05/21 20:40:01  weaver
+  Changes for new ColorManager
 
   Revision 1.23  1997/05/05 16:53:46  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -168,14 +175,40 @@
 #include "Geom.h"
 #include "Util.h"
 
+#include "Color.h"
+
 class PSWindowRep;
 
 DefinePtrDList(PSWindowRepList, PSWindowRep *);
 
-class PSWindowRep: public WindowRep {
-public:
+class PSWindowRep : public WindowRep
+{
+		friend class PSDisplay;
+		friend class DualWindowRep;
 
-    /* Reparent this window to 'other' or vice versa. */
+	private:
+
+		// Save previous foreground color to simulate XOR
+		PColorID	oldForeground;
+
+	protected:
+
+		// Constructors and Destructors
+		PSWindowRep(DeviseDisplay* display, PSWindowRep* parent,
+					int x, int y, int width, int height); 
+		/* called by PSDisplay to create new window */
+		virtual ~PSWindowRep(void);
+
+	public:
+
+		// Getters and Setters
+		virtual void	SetForeground(PColorID fgid);
+		virtual void	SetBackground(PColorID bgid);
+
+		// Utility Functions
+		virtual void	SetWindowBackground(PColorID bgid);
+
+		/* Reparent this window to 'other' or vice versa. */
     virtual void Reparent(Boolean child, void *other, int x, int y);
 
     /* Raise window to top of stacking order */
@@ -225,19 +258,6 @@ public:
     /* Scroll absolute */
     virtual void ScrollAbsolute(int x, int y, unsigned width,
                                 unsigned height, int dstX, int dstY) {}
-
-    virtual void SetFgColor(GlobalColor bg);
-    virtual void SetBgColor(GlobalColor bg);
-    virtual void SetWindowBgColor(GlobalColor bg);
-
-#if defined(LIBCS)
-    /* Color selection interface using specific colors */
-    virtual void SetFgRGB(float r, float g, float b);
-    virtual void SetBgRGB(float r, float g, float b);
-    virtual void GetFgRGB(float &r, float &g, float &b);
-    virtual void GetBgRGB(float &r, float &g, float &b);
-    virtual void SetWindowBgRGB(float r, float g, float b) {}
-#endif
 
     virtual void SetLineWidth(int w);
 #if defined(LIBCS)
@@ -350,22 +370,10 @@ public:
 
 
 protected:
-    friend class PSDisplay;
-
-    friend class DualWindowRep;
-
-    /* called by PSDisplay to create new window */
-    PSWindowRep(DeviseDisplay *display,
-                GlobalColor fgndColor, GlobalColor bgndColor,
-                PSWindowRep *parent, int x, int y, int width, int height); 
-
-    /* Called to initialize this object -- must be called ONLY when
+	/* Called to initialize this object -- must be called ONLY when
      * the output file is open -- therefore CANNOT be called by the
      * constructor. */
     void Init();
-
-    /* destructor */
-    ~PSWindowRep();
 
 private:
     /* Update window dimensions; globals: _x, _y, _width, _height */
@@ -405,10 +413,6 @@ private:
     /* "Pixel" to point transform. */
     Transform2D _pixToPointTrans;
 
-    /* Save old foreground color when changing current foreground color
-     * to try to simulate XOR. */
-    GlobalColor _oldFgndColor;
-
     Boolean _xorMode;
 
 #if defined(LIBCS)
@@ -417,12 +421,8 @@ private:
     char _dashList[_dashListSize];
 #endif
 
-#if defined(LIBCS)
-    RgbVals _foreground;
-    RgbVals _background;
-#endif
-
-    char *_daliServer;
+	char *_daliServer;
 };
 
+//******************************************************************************
 #endif

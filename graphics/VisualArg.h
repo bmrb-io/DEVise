@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  1997/05/21 20:40:06  weaver
+  Changes for new ColorManager
+
+  Revision 1.5  1996/11/13 16:56:16  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.4  1996/06/15 07:08:14  yuc
   Add Camera structure to the system.
 
@@ -30,8 +43,9 @@
 #define VisualArg_h
 
 #include "DeviseTypes.h"
-#include "Color.h"
 #include "Pattern.h"
+
+#include "Color.h"
 
 /* Index of the attributes */
 
@@ -83,7 +97,7 @@ struct VisualFilter {
   int lastN;		           /* # of records to examine */
   Coord sizeLow, sizeHigh;         /* size filter */
   Pattern patternLow, patternHigh; /* pattern filter */
-  GlobalColor colorLow, colorHigh;   /* color filter */
+		PColorID	colorLow, colorHigh;	// Color filter
   Coord orientationLow, orientationHigh; /* orientation filter*/
   int shapeLow, shapeHigh;         /* shape filter */
   
@@ -113,5 +127,6 @@ struct Camera {
 					   upper lefthand corner of the screen */
 };
 
+//******************************************************************************
 #endif
 

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1997/10/03 16:01:48  wenger
+#  Enabled session opening and saving from back end; incremented version; a
+#  few more minor fixes to session-related code.
+#
 #  Revision 1.41  1997/09/15 18:44:58  wenger
 #  Kludgey fix for DTE thinking that schema file names starting with ".."
 #  belong to it.
@@ -32,6 +36,9 @@
 #  Most of the way to user-configurable '4', '5', and '6' keys -- committing
 #  this stuff now so it doesn't get mixed up with special stuff for printing
 #  Mitre demo.
+#
+#  Revision 1.36.6.1  1997/05/21 20:41:14  weaver
+#  Changes for new ColorManager
 #
 #  Revision 1.36  1997/04/30 18:27:24  wenger
 #  Added session text description capability.

@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33.10.1  1997/05/21 20:38:42  weaver
+#  Changes for new ColorManager
+#
+#  Revision 1.33  1996/12/27 16:58:54  wenger
+#  Got latest code to compile for sun, solsparc, and hp; updated dependencies;
+#  changed 'Import' to 'New Table' in main window GUI to reflect change of
+#  function.
+#
 #  Revision 1.32  1996/12/16 07:21:33  donjerko
 #  Fixed some compile problems
 #
@@ -84,20 +92,19 @@ include ../../Makefile.common
 USE_SEQ = yes
 
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
-	-I../../graphics.new -I../../tape \
-	-I../../DTE -I../../DTE/Core \
-	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
-	-DATTRPROJ -DLIBCS
+	-I../../src/color -I../../src/utils -I/s/X11/include \
+	-I../../graphics.new -I../../tape -I../../DTE -I../../DTE/Core \
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DATTRPROJ -DLIBCS
 
 
 ifeq (yes, $(USE_SEQ))
-TESTSRC = aptest2.c vector.c
+TESTSRC = aptest2.c Vector.c
 else
-TESTSRC = aptest.c vector.c
+TESTSRC = aptest.c Vector.c
 endif
 TESTOBJ = $(TESTSRC:.c=.o)
 
-SHOWSRC = show.c vector.c
+SHOWSRC = show.c Vector.c
 SHOWOBJ = $(SHOWSRC:.c=.o)
 
 ifeq (yes, $(USE_SEQ))
@@ -165,7 +172,8 @@ pure: aptest.pure show.pure
 
 
 APTEST = $(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
-	-lattrproj
+	-L../../src/color -L../../src/utils  \
+	-lattrproj -lcolor -lutils
 
 aptest: $(ALLTESTOBJ) $(LIB)
 	$(APTEST) $(ARCH_LDPOST)
@@ -178,7 +186,8 @@ aptest.pure: $(ALLTESTOBJ) $(LIB)
 
 
 SHOW = $(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
-	-lattrproj $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+	-L../../src/color -L../../src/utils  \
+	-lattrproj -lcolor -lutils $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 show: $(ALLSHOWOBJ) $(LIB)
 	$(SHOW) $(ARCH_LDPOST)

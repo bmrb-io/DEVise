@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  1997/05/21 20:42:29  weaver
+  Change for new ColorManager
+
+  Revision 1.5  1996/11/23 22:23:20  jussi
+  Replaced reference to QueryProcTape with reference to QueryProcFull.
+
   Revision 1.4  1996/07/13 02:32:57  jussi
   Changed template instantiation.
 
@@ -26,14 +32,15 @@
   Added CVS header.
 */
 
-#ifdef __GNUG__
-#pragma implementation "HashTable.h"
-#pragma implementation "SortedTable.h"
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "HashTable.h"
+//#pragma implementation "SortedTable.h"
+//#endif
 
 #include "QueryProcFull.h"
 
-#ifdef __GNUG__
-template class SortedTable<Coord, RecId>;
-#endif
+//#ifdef __GNUG__
+//template class SortedTable<Coord, RecId>;
+//#endif
 

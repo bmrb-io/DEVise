@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/07/22 19:44:28  wenger
+  Removed extra dependencies that broke cslib link.
+
   Revision 1.15  1997/06/13 18:02:39  wenger
   Got client/server library to compile with latest changes.
 
@@ -31,6 +34,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.12.6.1  1997/05/21 20:39:59  weaver
+  Changes for new ColorManager
 
   Revision 1.12  1997/05/05 16:53:45  wenger
   Devise now automatically launches Tasvir and/or EmbeddedTk servers if
@@ -122,8 +128,6 @@ public:
        coord from (0,0) to (1,1) */
     virtual WindowRep *CreateWindowRep(char *name, Coord x, Coord y,
 				       Coord width, Coord height, 
-				       GlobalColor fgnd = ForegroundColor,
-				       GlobalColor bgnd = BackgroundColor,
 				       WindowRep *parentRep = NULL,
                                        Coord min_width = 0.05,
 				       Coord min_height = 0.05,
@@ -174,16 +178,6 @@ public:
     virtual void GetPageGeom(Coord &width, Coord &height, Coord &xMargin,
       Coord &yMargin);
 
-#ifdef LIBCS
-    /* Translate RGB colors to pixel values and back */
-    virtual LocalColor FindLocalColor(float r, float g, float b) {
-        return 0;
-    }
-    virtual void FindLocalColor(GlobalColor c, float &r, float &g, float &b) {
-        r = g = b = 0;
-    }
-#endif
-
     virtual void SetTasvirServer(const char *server);
 
 protected:
@@ -191,9 +185,6 @@ protected:
     /* Register with the dispatcher */
     virtual void Register() {}
 #endif
-
-    virtual void AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb);
-    virtual void AllocColor(RgbVals &rgb, GlobalColor globalColor);
 
 private:
     FILE *_printFile;

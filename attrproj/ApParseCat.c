@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.11.6.1  1997/05/21 20:38:41  weaver
+  Changes for new ColorManager
+
+  Revision 1.11  1997/03/19 21:34:12  wenger
+  Fixed bug 172 (DTE index filename conflict) -- DTE TData names are now
+  the data file name instead of the schema file name.
+
   Revision 1.10  1996/10/10 16:45:16  wenger
   Changed function names, etc., in ApParseCat.c to get rid of name clashes
   when Donko puts transformation engine code into DEVise.
@@ -608,8 +615,8 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 			   strcmp(args[0],"compattr") == 0 ||
 			   strcmp(args[0],"sorted") == 0)
 		{
-			if (ParseAttr(numArgs, args, recSize, hasFileType, fileType) !=
-				StatusOk) goto error;
+			if (!(ParseAttr(numArgs, args, recSize, hasFileType, fileType) ==
+				StatusOk)) goto error;
 		}
 		else if (physicalOnly && !strcmp(args[0], "group"))
 		{

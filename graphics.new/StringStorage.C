@@ -16,9 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/07/17 18:44:00  wenger
+  Added menu selections to report number of strings and save string space.
+
   Revision 1.3  1997/07/16 15:49:14  wenger
   Moved string allocation/deallocation within StringStorage class, fixed
   memory leak of strings.
+
+  Revision 1.2.10.1  1997/05/21 20:40:46  weaver
+  Changes for new ColorManager
 
   Revision 1.2  1997/01/30 19:47:13  jussi
   Added PopulateFromInitFile() method.
@@ -27,9 +33,10 @@
   Initial revision.
 */
 
-#ifdef __GNUG__
-#pragma implementation "HashTable.h"
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "HashTable.h"
+//#endif
 
 #include <string.h>
 #include <stdio.h>

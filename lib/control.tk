@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.145  1997/11/24 16:22:39  wenger
+#	Added GUI for saving GData; turning on GData to socket now forces
+#	redraw of view; GData to socket params now saved in session files;
+#	improvement to waitForQueries command.
+#
 #	Revision 1.144  1997/11/05 00:23:56  donjerko
 #	Added some error checking for DTE calls.
 #
@@ -610,30 +615,6 @@
 set libdir $env(DEVISE_LIB)
 source $libdir/tool.tcl
 
-set DEViseColors { \
-	{1000 XOR} {0 white} \
-	{1 gray88} {2 gray75} {3 gray63} {4 gray50} \
-	{5 gray38} {6 gray25} {7 gray12} {8 black} \
-	{9 red} {10 firebrick} {11 DarkRed} {12 SaddleBrown} \
-	{13 DarkOrange1} {14 orange} {15 Goldenrod2} {16 gold} {17 yellow} \
-	{18 green} {19 OliveDrab} {20 green4} {21 ForestGreen} {22 DarkGreen} \
-	{23 MidnightBlue} {24 DarkBlue} {25 MediumBlue} {26 blue} \
-	{27 DodgerBlue} {28 DeepSkyBlue1} {29 cyan} \
-	{30 magenta} {31 DarkOrchid} {32 MediumOrchid3} \
-	{33 OldLace} {34 LightGoldenrodYellow} {35 PaleGoldenrod} \
-	{36 wheat} {37 khaki}}
-
-set DEViseOldColors \
-	{{1000 XOR} {0 black} {1 white} {2 red} {3 blue} {4 orange} \
-	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
-	{11 tomato} {12 pink} {13 plum} {14 azure1} {15 cyan1} {16 SeaGreen1} \
-	{17 khaki1} {18 goldenrod1} {19 yellow} {20 sienna1} \
-	{21 LightCoral} {22 AntiqueWhite} {23 LemonChiffon} {24 LightGray}\
-	{25 Lavender} {26 LavenderBlush} {27 MistyRose} {28 NavyBlue} \
-	{29 SlateBlue} {30 MediumBlue} {31 DeepSkyBlue} {32 SkyBlue} \
-	{33 red1} {34 red2} {35 DarkSeaGreen} {36 green2} {37 blue1} \
-	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
-
 # Note: this shape-value mapping must correspond to that of the _shapes[] array
 # in graphics.new/MappingInterp.c.  RKW 4/29/97.
 set DEViseShapes \
@@ -665,7 +646,6 @@ set statmax 1
 set statmin 0
 set statcurr 1
 set statcilevel "000"
-set getColorCanceled 0
 
 # set Kiviat graph defaults
 set kval 0
@@ -728,6 +708,7 @@ if {![catch {set hostCfg $libdir/config.$env(HOSTNAME)}]} {
     }
 }
 
+source $libdir/color.tk
 source $libdir/dialog.tk
 source $libdir/FSBox.tk
 source $libdir/description.tcl
@@ -747,6 +728,7 @@ source $libdir/views.tcl
 source $libdir/save.tcl
 source $libdir/history.tcl
 source $libdir/query.tcl
+source $libdir/about.tk
 source $libdir/window.tcl
 source $libdir/tdata.tk
 source $libdir/layout.tk
@@ -761,9 +743,6 @@ source $libdir/GDataSock.tcl
 
 set mode 0
 DEVise changeMode $mode
-
-set backGround DarkOliveGreen
-set foreGround white
 
 # read the .rc file
 # we check the following in sequence:
@@ -810,18 +789,7 @@ if {$rcFile != ""} {
 wm geometry . +0+0
 tk_focusFollowsMouse
 
-if {1} {
-    tk_setPalette background $backGround foreground $foreGround \
-	    selectBackground $foreGround selectForeground $backGround
-    . configure -bg $backGround
-}
-
-if {0} {
-    # Keep the following for monochrome model
-    #set backGround white
-    #set foreGround black
-    #tk colormodel . monochrome
-}
+InitColor
 
 wm title . "DEVise"
 global DEViseApp 
@@ -832,8 +800,8 @@ bind . q DoExit
 bind . <Control-c> DoExit
 bind . <Control-C> DoExit
 
-frame .mbar  -relief raised -bd 4 -bg green
-frame .panel -bg white
+frame .mbar  -relief raised -bd 4
+frame .panel
 
 pack .panel -side top -expand 0 -fill both
 pack .mbar  -side top -expand 0 -fill x
@@ -851,8 +819,10 @@ menubutton .mbar.window -text Window -underline 0 \
 menubutton .mbar.help -text Help -underline 0 \
 	-menu .mbar.help.menu
 
+InitColorMenu .mbar
+
 pack .mbar.session .mbar.tdata .mbar.gdata .mbar.view \
-	.mbar.window .mbar.help -expand 1 -side left -fill x
+	.mbar.window .mbar.color .mbar.help -expand 1 -side left -fill x
 
 menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Open" -command {DoOpen 0}
@@ -1231,10 +1201,6 @@ menu .mbar.view.menu -tearoff 0
 	-command { DoToggleAxis X }
 .mbar.view.menu add command -label "Toggle Y Axis" \
 	-command { DoToggleAxis Y }
-.mbar.view.menu add command -label "Foreground..." \
-	-command { DoSetFgBgColor 1 0 }
-.mbar.view.menu add command -label "Background..." \
-	-command { DoSetFgBgColor 0 0 }
 
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Title" -command DoSetTitle
@@ -1294,7 +1260,6 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add cascade -label "Keypad Config"  \
     -menu .mbar.view.menu.configmenu
-.mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
 .mbar.view.menu add command -label "Save GData..." -command SaveGData
 
@@ -1375,10 +1340,6 @@ menu .mbar.window.menu -tearoff 0
     -command { DoToggleAxisWindow X }
 .mbar.window.menu add command -label "Toggle Y Axis" \
     -command { DoToggleAxisWindow Y }
-.mbar.window.menu add command -label "Foreground..." \
-    -command { DoSetFgBgColor 1 1 }
-.mbar.window.menu add command -label "Background..." \
-    -command { DoSetFgBgColor 0 1 }
 
 # We probably should add these functions to the window menu eventually,
 # but I don't want to deal with them right now.  RKW 2/7/97.
@@ -1418,12 +1379,14 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }
 
 menu .mbar.help.menu -tearoff 0
+.mbar.help.menu add command -label "About..." -command { AboutDevise }
+.mbar.help.menu add separator
 .mbar.help.menu add command -label "Demo" -command DoDemo
 #.mbar.help.menu add command -label "Help" -command DoHelp
 .mbar.help.menu add command -label "History" -command OpenHistory
 
 tk_menuBar .mbar .mbar.session .mbar.tdata .mbar.view \
-	.mbar.link .mbar.window .mbar.help
+	.mbar.link .mbar.window .mbar.color .mbar.help
 focus .mbar
 
 # build control panel
@@ -1452,8 +1415,12 @@ label .panel.center.dummy -text "" -font 5x7
 
 button .panel.center.label -text DEVise \
         -font -*-times-medium-i-normal--*-300-*-*-*-*-*-* \
-	-bd 0 -highlightthickness 2 -activebackground $backGround \
-	-highlightcolor red -command { AboutDevise }
+		-bd 0 -highlightthickness 2  -cursor hand2 \
+		-foreground $colors(aboutFrameForeground) \
+		-background $colors(aboutFrameBackground) \
+		-activeforeground $colors(aboutFrameForeground) \
+		-activebackground $colors(aboutFrameBackground) \
+		-command { AboutDevise }
 
 set version [DEVise version]
 set compDate [DEVise compDate]
@@ -1462,17 +1429,17 @@ label .panel.center.version -text "Version $version: $compDate" \
 
 set copyright [DEVise copyright]
 label .panel.center.copyright \
-	-text "$copyright DEVise Development Group" -font 5x7
+		-text "$copyright DEVise Development Group" -font 5x7
 
 pack  .panel.center.dummy -side top -expand 0 -fill x
 pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
-	-pady 0
+		-pady 0
 pack  .panel.center.version -side top -expand 0 -fill x
 pack  .panel.center.copyright -side top -expand 0 -fill x
 
 button .panel.messages.mode -text Display -width 7 -relief raised \
         -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
-	-highlightthickness 0 -bd 3 -command { ChangeMode }
+		-highlightthickness 0 -bd 3 -command { ChangeMode }
 button .panel.messages.status -text "" -width 7 -relief flat -bd 3 \
         -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
         -state disabled -highlightthickness 0 -command { AbortAllQueries }
@@ -1480,33 +1447,43 @@ button .panel.messages.status -text "" -width 7 -relief flat -bd 3 \
 pack .panel.messages.mode .panel.messages.status -side top -padx 2m -pady 1m
 
 proc ChangeMode {} {
-    global mode
+    global mode colors
+
     if { $mode == 0 } {
-	set mode 1
-        .panel.messages.mode configure -text Layout -fg red \
-                -activeforeground red
+		set mode 1
+        .panel.messages.mode configure -text Layout \
+				-fg $colors(layoutModeText) \
+                -activeforeground $colors(layoutModeText)
     } else {
-	set mode 0
-        .panel.messages.mode configure -text Display -fg white \
-                -activeforeground white
-	RefreshAllViews
+		set mode 0
+        .panel.messages.mode configure -text Display \
+				-fg $colors(displayModeText) \
+                -activeforeground $colors(displayModeText)
+		RefreshAllViews
     }
+
     DEVise changeMode $mode
 }
 
 proc ChangeStatus { status } {
+	global colors
+
     if { $status == 0 } {
-	.panel.messages.status configure -text "" -fg white \
-                -activeforeground white -relief flat -state disabled
+		.panel.messages.status configure -text "" \
+				-fg $colors(runningModeText) \
+                -activeforeground $colors(runningModeText) \
+				-relief flat -state disabled
         Update3DLocation
         Update2DQueryWindow
-	Update2DBasicStatWindow
+		Update2DBasicStatWindow
         UpdateHistoryWindow
-	EnableStackControl
+		EnableStackControl
     } else {
-	.panel.messages.status configure -text "Stop" -fg red \
-                -activeforeground red -relief raised -state normal
-	DisableStackControl
+		.panel.messages.status configure -text "Stop" \
+				-fg $colors(stopModeText) \
+                -activeforeground $colors(stopModeText) \
+				-relief raised -state normal
+		DisableStackControl
     }
 }
 

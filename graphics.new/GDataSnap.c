@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  1997/05/21 20:40:26  weaver
+  Changes for new ColorManager
+
+  Revision 1.5  1996/01/30 21:15:44  jussi
+  Removed references to specific colors.
+
   Revision 1.4  1995/11/27 16:26:23  jussi
   Replaced RectXShapeID with constant 1 for now.
 
@@ -30,7 +36,6 @@
 
 #include "DeviseTypes.h"
 #include "RectShape.h"
-#include "ColorMgr.h"
 #include "SimpleSymStrm.h"
 #include "SimpleFocus.h"
 #include "SimpleView.h"
@@ -42,13 +47,16 @@
 #include "PageRangeMap.h"
 #include "ViewWindow.h"
 
+#include "Color.h"
+
 class GDataSnapMapping: public ColorCompressionMapping {
 public:
   GDataSnapMapping() {
     double attrs[2];
     attrs[0] = attrs[1] = 1.0;
     Mapping::SetDefaultShape(1, 2, attrs);
-    Mapping::SetDefaultColor(ForegroundColor);
+
+	Mapping::GetColoring().SetBackground(GetPColorID(gdatasnapColor));
   }
   
   void Map(Stream *, void *rec, Symbol *symbol) {

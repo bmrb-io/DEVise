@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.10.1  1997/05/21 20:42:27  weaver
+  Change for new ColorManager
+
+  Revision 1.3  1995/09/22 15:43:23  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:26:53  jussi
   Added CVS header.
 */
@@ -23,9 +29,10 @@
 #ifndef BINTABLE_H
 #define BINTABLE_H
 
-#ifdef __GNUG__
-#pragma interface
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma interface
+//#endif
 
 #include <iostream.h>
 

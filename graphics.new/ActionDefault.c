@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/09/05 22:36:13  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
   Revision 1.28  1997/05/30 15:41:17  wenger
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
@@ -185,7 +189,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  }
 	  view->DoneMappingIterator(index);
 	  if (changed) {
-	    DepMgr::Current()->RegisterEvent(view,
+	    DepMgr::Current()->RegisterEvent(view->dispatcherCallback,
 	      DepMgr::EventViewSymbolSizeCh);
 	    view->Refresh();
 	  }
@@ -204,7 +208,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  }
 	  view->DoneMappingIterator(index);
 	  if (changed) {
-	    DepMgr::Current()->RegisterEvent(view,
+	    DepMgr::Current()->RegisterEvent(view->dispatcherCallback,
 	      DepMgr::EventViewSymbolSizeCh);
 	    view->Refresh();
 	  }

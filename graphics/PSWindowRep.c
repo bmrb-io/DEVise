@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/07/18 20:25:04  wenger
+  Orientation now works on Rect and RectX symbols; code also includes
+  some provisions for locating symbols other than at their centers.
+
   Revision 1.31  1997/06/25 17:05:25  wenger
   Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
   function, disabled updating of record links during print, print dialog
@@ -32,6 +36,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.28.6.1  1997/05/21 20:40:00  weaver
+  Changes for new ColorManager
 
   Revision 1.28  1997/04/29 17:35:00  wenger
   Minor fixes to new text labels; added fixed text label shape;
@@ -222,48 +229,95 @@ typedef struct {
     short x, y;
     unsigned short width, height;
 } XRectangle;
-
 */
 
-/**********************************************************************
- Constructor.
-***********************************************************************/
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
 
-PSWindowRep::PSWindowRep(DeviseDisplay *display,
-                          GlobalColor fgndColor, GlobalColor bgndColor,
-                          PSWindowRep *parent, int x, int y, int width,
-			  int height) :
-	WindowRep(display, fgndColor, bgndColor)
+PSWindowRep::PSWindowRep(DeviseDisplay* display, PSWindowRep* parent,
+						 int x, int y, int width, int height)
+	:	WindowRep(display), _x(x), _y(y), _parent(parent)
 {
 #if defined(DEBUG)
-  printf("PSWindowRep::PSWindowRep(%p)\n", this);
-#endif
-  _parent = parent;
-  if (_parent)
-    _parent->_children.Append(this);
-
-  _x = x;
-  _y = y;
-  _width = width;
-  _height = height;
-
-  _xorMode = false;
-
-#ifdef LIBCS
-  _dashedLine = false;
+	printf("PSWindowRep::PSWindowRep(%p)\n", this);
 #endif
 
-  _daliServer = NULL;
+	if (_parent)
+		_parent->_children.Append(this);
+
+	_width = width;
+	_height = height;
+	_xorMode = false;
 
 #ifdef LIBCS
-  ColorMgr::GetColorRgb(fgndColor, _foreground.red, _foreground.green,
-    _foreground.blue);
-  ColorMgr::GetColorRgb(bgndColor, _background.red, _background.green,
-    _background.blue);
+	_dashedLine = false;
+#endif
+
+#ifndef LIBCS
+	_daliServer = NULL;
 #endif
 }
 
+PSWindowRep::~PSWindowRep(void)
+{
+#if defined(DEBUG)
+  printf("PSWindowRep::~PSWindowRep(%p)\n", this);
+#endif
+  if (_parent) {
+    if (!_parent->_children.Delete(this))
+      fprintf(stderr, "Cannot remove child from parent window\n");
+  }
 
+  if (_children.Size() > 0)
+    reportErrNosys("Child windows should have been destroyed first");
+
+#ifndef LIBCS
+  delete [] _daliServer;
+#endif
+}
+
+//******************************************************************************
+// Getters and Setters
+//******************************************************************************
+
+// Has no effect - aborts if the fprintf is uncommented. The file ptr is
+// non-null, so something insidious is happening.
+void	PSWindowRep::SetForeground(PColorID fgid)
+{
+	WindowRep::SetForeground(fgid);
+	oldForeground = fgid;
+
+#ifdef GRAPHICS
+	FILE*	printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	RGB		rgb;
+	double	r, g, b;
+
+	if (PM_GetRGB(fgid, rgb))
+	{
+		rgb.Get(r, g, b);
+//		fprintf(printFile, "%f %f %f setrgbcolor\n", (float)r, (float)g, (float)b);
+	}
+#endif
+}
+
+void	PSWindowRep::SetBackground(PColorID bgid)
+{
+	WindowRep::SetBackground(bgid);
+
+#ifdef GRAPHICS
+	//reportErrNosys("PSWindowRep::SetBackground() not yet implemented");
+	/* do something */
+#endif
+}
+
+void	PSWindowRep::SetWindowBackground(PColorID bgid)
+{
+#ifdef GRAPHICS
+	reportErrNosys("PSWindowRep::SetWindowBackground() not yet implemented");
+	/* do something */
+#endif
+}
 
 /**********************************************************************
 Initializer
@@ -282,27 +336,6 @@ void PSWindowRep::Init()
   SetNormalFont();
 //TEMPTEMP -- maybe this should clear the background like XWindowRep does
 }
-
-
-
-/**************************************************************
-  destructor 
-**************************************************************/
-
-PSWindowRep::~PSWindowRep()
-{
-#if defined(DEBUG)
-  printf("PSWindowRep::~PSWindowRep(%p)\n", this);
-#endif
-  if (_parent) {
-    if (!_parent->_children.Delete(this))
-      fprintf(stderr, "Cannot remove child from parent window\n");
-  }
-  if (_children.Size() > 0)
-    reportErrNosys("Child windows should have been destroyed first");
-  delete [] _daliServer;
-}
-
 
 
 /******************************************************************
@@ -480,13 +513,21 @@ PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   /* Outline the region the image is supposed to occupy -- for
    * debugging purposes. */
-  GlobalColor tmpColor = GetFgColor();
-  SetFgColor(tmpColor != BlackColor ? BlackColor : WhiteColor);
-  DrawLine(printFile, tx1, ty1, tx1, ty2);
-  DrawLine(printFile, tx1, ty2, tx2, ty2);
-  DrawLine(printFile, tx2, ty2, tx2, ty1);
-  DrawLine(printFile, tx2, ty1, tx1, ty1);
-  SetFgColor(tmpColor);
+	PColorID	tempPColorID, savePColorID = GetForeground();
+
+	if (savePColorID != GetPColorID(psDaliBlackColor))
+		tempPColorID = GetPColorID(psDaliBlackColor);
+	else
+		tempPColorID = GetPColorID(psDaliWhiteColor);
+
+	SetForeground(tempPColorID);
+
+	DrawLine(printFile, tx1, ty1, tx1, ty2);
+	DrawLine(printFile, tx1, ty2, tx2, ty2);
+	DrawLine(printFile, tx2, ty2, tx2, ty1);
+	DrawLine(printFile, tx2, ty1, tx1, ty1);
+
+	SetForeground(savePColorID);
 #endif
 
   /* Call procedure to prepare for including EPS file. */
@@ -523,105 +564,42 @@ PSWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
 
 /*---------------------------------------------------------------------------*/
-/* color selection interface using Devise colormap */
+//#ifdef LIBCS
+//void PSWindowRep::SetFgRGB(float r, float g, float b)
+//{
+//  _foreground.red = r;
+//  _foreground.green = g;
+//  _foreground.blue = b;
 
-void PSWindowRep::SetFgColor(GlobalColor fg)
-{
-#if defined(DEBUG)
-  printf("PSWindowRep::SetFgColor(%d)\n", fg);
-#endif
-
-  WindowRep::SetFgColor(fg);
-  _oldFgndColor = fg;
-
-#ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+//#ifdef GRAPHICS
+//  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
   
-  //TEMPTEMP -- maybe this should go through the PSDisplay to be
-  // consistent w/ X stuff
-  float red, green, blue;
-  ColorMgr::GetColorRgb(fg, red, green, blue);
-  fprintf(printFile, "%f %f %f setrgbcolor\n", red, green, blue);
-#ifdef LIBCS
-  _foreground.red = red;
-  _foreground.green = green;
-  _foreground.blue = blue;
-#endif
-#endif
-}
+//  fprintf(printFile, "%f %f %f setrgbcolor\n", r, g, b);
+//#endif
+//}
 
+//void PSWindowRep::SetBgRGB(float r, float g, float b)
+//{
+//  _background.red = r;
+//  _background.green = g;
+//  _background.blue = b;
+//}
 
+//void PSWindowRep::GetFgRGB(float &r, float &g, float &b)
+//{
+//  r = _foreground.red;
+//  g = _foreground.green;
+//  b = _foreground.blue;
+//}
 
+//void PSWindowRep::GetBgRGB(float &r, float &g, float &b)
+//{
+//  r = _background.red;
+//  g = _background.green;
+//  b = _background.blue;
+//}
+//#endif
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::SetBgColor(GlobalColor bg)
-{
-#if defined(DEBUG)
-  printf("PSWindowRep::SetBgColor(%d)\n", bg);
-#endif
-
-  WindowRep::SetBgColor(bg);
-#ifdef GRAPHICS
-  //reportErrNosys("PSWindowRep::SetBgColor() not yet implemented");
-    /* do something */
-#endif
-}
-
-
-
-/*---------------------------------------------------------------------------*/
-void PSWindowRep::SetWindowBgColor(GlobalColor bg)
-{
-#ifdef GRAPHICS
-  reportErrNosys("PSWindowRep::SetWindowBgColor() not yet implemented");
-  /* do something */
-#endif
-}
-
-
-#ifdef LIBCS
-
-/*---------------------------------------------------------------------------*/
-void PSWindowRep::SetFgRGB(float r, float g, float b)
-{
-  _foreground.red = r;
-  _foreground.green = g;
-  _foreground.blue = b;
-
-#ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
-  
-  fprintf(printFile, "%f %f %f setrgbcolor\n", r, g, b);
-#endif
-}
-
-
-/*---------------------------------------------------------------------------*/
-void PSWindowRep::SetBgRGB(float r, float g, float b)
-{
-  _background.red = r;
-  _background.green = g;
-  _background.blue = b;
-}
-
-
-/*---------------------------------------------------------------------------*/
-void PSWindowRep::GetFgRGB(float &r, float &g, float &b)
-{
-  r = _foreground.red;
-  g = _foreground.green;
-  b = _foreground.blue;
-}
-
-
-/*---------------------------------------------------------------------------*/
-void PSWindowRep::GetBgRGB(float &r, float &g, float &b)
-{
-  r = _background.red;
-  g = _background.green;
-  b = _background.blue;
-}
-
-#endif
 
 
 /*---------------------------------------------------------------------------*/
@@ -1392,24 +1370,26 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 void PSWindowRep::SetXorMode()
 {
 #if defined(DEBUG)
-  printf("PSWindowRep::SetXorMode\n");
+	printf("PSWindowRep::SetXorMode\n");
 #endif
 
-  if (_xorMode) return;
+	if (_xorMode)
+		return;
 
-  _xorMode = true;
+	_xorMode = true;
+	oldForeground = GetForeground();
 
 #ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	FILE*	printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	RGB		rgb;
+	double	r, g, b;
 
-  _oldFgndColor = GetFgColor();
-
-  float red, green, blue;
-  ColorMgr::GetColorRgb(GetBgColor(), red, green, blue);
-  red = 1.0 - red;
-  green = 1.0 - green;
-  blue = 1.0 - blue;
-  fprintf(printFile, "%f %f %f setrgbcolor\n", red, green, blue);
+	if (CM_GetRGB(oldForeground, rgb))
+	{
+		rgb.Invert();
+		rgb.Get(r, g, b);
+		fprintf(printFile, "%f %f %f setrgbcolor\n", r, g, b);
+	}
 #endif
 }
 
@@ -1419,19 +1399,19 @@ void PSWindowRep::SetXorMode()
 void PSWindowRep::SetCopyMode()
 {
 #ifdef DEBUG
-  printf("PSWindowRep::SetCopyMode\n");
+	printf("PSWindowRep::SetCopyMode\n");
 #endif
 
-  if (!_xorMode) return;
+	if (!_xorMode)
+		return;
 
-  _xorMode = false;
+	_xorMode = false;
 
 #ifdef GRAPHICS
-  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+	FILE*	printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
 
-  if (GetFgColor() != _oldFgndColor) {
-    SetFgColor(_oldFgndColor);
-  }
+	if (GetForeground() != oldForeground)	// Avoid redundant color commands
+		SetForeground(oldForeground);
 #endif
 }
 
@@ -2049,3 +2029,5 @@ void PSWindowRep::GetAlignmentStrings(SymbolAlignment alignment,
     break;
   }
 }
+
+//******************************************************************************

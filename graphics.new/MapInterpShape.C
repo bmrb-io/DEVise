@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.44  1997/11/18 23:26:52  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.43  1997/08/20 22:10:59  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -39,6 +43,9 @@
 
   Revision 1.41  1997/06/13 18:07:45  wenger
   Orientation is now working for text labels and fixed text labels.
+
+  Revision 1.40.4.1  1997/05/21 20:40:37  weaver
+  Changes for new ColorManager
 
   Revision 1.40  1997/05/06 17:29:03  wenger
   Tasvir image code gives warning if image filename or image is not a string.
@@ -88,7 +95,8 @@
   line; shared memory usage enabled by default.
 
   Revision 1.31.4.3  1997/02/11 23:32:19  weaver
-  Changed vector shape drawing to have constant size arrowhead and beginning of vector at the GData center.
+  Changed vector shape drawing to have constant size arrowhead and beginning
+  of vector at the GData center.
 
   Revision 1.31.4.2	 1997/02/11 15:18:10  wenger
   Fixed bug 154.
@@ -321,36 +329,30 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	ComputeDataLabelFrame(view);
 
-	int i = 0;
-	while (i < numSyms) {
-
-	GlobalColor firstColor = BlackColor;
-	Pattern firstPattern = Pattern0;
-	int firstLineWidth = 0;
-	Coord firstOrientation = 0.0;
-
-	int count = 0;
+	int			i = 0;
+	PColorID	fgid = GetPColorID(defForeColor);
+	Pattern		firstPattern = Pattern0;
+	int			firstLineWidth = 0;
+	Coord		firstOrientation = 0.0;
+	int			count = 0;
 
 	for(; i < numSyms; i++) {
 		char *gdata = (char *)gdataArray[i];
-
-		GlobalColor color = GetColor(view, gdata, map, offset);
+		PColorID	pcid = GetPColorID(gdata, map, offset);
 		Coord size = GetSize(gdata, map, offset);
 		size *= pixelSize;
 		Pattern pattern = GetPattern(gdata, map, offset);
 	    Coord orientation = GetOrientation(gdata, map, offset);
-
-		if (count > 0 && (color != firstColor || pattern != firstPattern ||
+		if (count > 0 && (pcid != fgid || pattern != firstPattern ||
 			orientation != firstOrientation))
 		  break;
 		
 		if (count == 0) {
-		firstColor = color;
+		fgid = pcid;
 		firstPattern = pattern;
 		firstLineWidth = int(GetLineWidth(gdata, map, offset)+0.5);
 		firstOrientation = orientation;
 		}
-
 		_width[count] = fabs(pixelSize * size
 								 * GetShapeAttr0(gdata, map, offset));
 		_height[count] = fabs(pixelSize * size
@@ -359,25 +361,25 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		_y[count] = GetY(gdata, map, offset);
 
 		count++;
-	}
-	
+}
+
 		// Randomize X,Y coordinates if shape attribute 2 or 3 contains
 		// a constant value of 0.15 or more.
 
-		if (offset->shapeAttrOffset[2] < 0 && offset->shapeAttrOffset[3] < 0) {
-			ShapeAttr *attrs = map->GetDefaultShapeAttrs();
-			float cloudWidth = fabs(attrs[2]);
-			float cloudHeight = fabs(attrs[3]);
+		if (offset->shapeAttrOffset[2] < 0 && offset->shapeAttrOffset[3] < 0)
+		{
+			ShapeAttr*	attrs = map->GetDefaultShapeAttrs();
+			float		cloudWidth = fabs(attrs[2]);
+			float		cloudHeight = fabs(attrs[3]);
+
 			if (cloudWidth >= 0.15 || cloudHeight >= 0.15)
-			  RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
+				RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
 		}
 
-	if (firstColor == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(firstColor);
-	win->SetPattern(firstPattern);
-	win->SetLineWidth(firstLineWidth);
+		win->SetForeground(fgid);
+		win->SetPattern(firstPattern);
+		win->SetLineWidth(firstLineWidth);
+		win->FillRectArray(_x, _y, _width, _height, count);
 
 	win->FillRectArray(_x, _y, _width, _height, count, WindowRep::AlignCenter,
 	    firstOrientation);
@@ -387,10 +389,6 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		  DisplayDataLabel(win, _x[s] + _width[s] / 2,
 				   _y[s] + _height[s] / 2,
 				   _y[s] + _height[2] / 2);
-	}
-
-	if (firstColor == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -421,7 +419,7 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 	_object3D[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
 	_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
 	_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
-	_object3D[i].color = GetColor(view, gdata, map, offset);
+	_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
 
 	Map3D::AssignBlockVertices(_object3D[i]);
 	if (wireframe)
@@ -543,11 +541,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	width = MAX(width, pixelSize);
 	height = MAX(height, pixelSize);
 
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
@@ -558,14 +552,10 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
 }
-
 
 //---------------------------------------------------------------------------
 
@@ -639,11 +629,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (width > pixelWidth)
 	  x -= width / 2.0;
 
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
@@ -651,9 +637,6 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + width / 2, y, y);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -743,11 +726,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 		points[seg].y = y + height / 2 * sin(angle);
 	}
 	
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
@@ -755,9 +734,6 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -828,11 +804,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		height *= pixelSize;
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
@@ -840,9 +813,6 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -918,11 +888,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
 
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	// ksb: should we SetLineWidth() or use width param on Line()
 	win->Line(x, y, x + w, y + h, GetLineWidth(gdata, map, offset));
@@ -930,11 +896,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
 
-	if (w == 0 && h == 0) {
-		if (color == XorColor)
-		  win->SetCopyMode();
+	if (w == 0 && h == 0)
 		continue;
-	}
 
 	// compute pixel locations
 	Coord tx, ty, tw, th;
@@ -966,9 +929,6 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->MakeIdentity();
 	win->FillPoly(points, 3);
 	win->PopTransform();
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -1012,20 +972,13 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
 	Coord y = GetY(gdata, map, offset);
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
-	win->SetPattern(GetPattern(gdata, map, offset));
 
+	win->SetForeground(GetPColorID(gdata, map, offset));
+	win->SetPattern(GetPattern(gdata, map, offset));
 	win->Line(xLow, y, xHigh, y, GetLineWidth(gdata, map, offset));
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, (xLow + xHigh) / 2, y, y);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -1122,20 +1075,13 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	h *= pixelSize;
 	Coord x = GetX(gdata, map, offset) - w / 2;
 	Coord y = GetY(gdata, map, offset) - h / 2;
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
-	win->SetPattern(GetPattern(gdata, map, offset));
 
+	win->SetForeground(GetPColorID(gdata, map, offset));
+	win->SetPattern(GetPattern(gdata, map, offset));
 	win->Line(x, y, x + w, y + h, GetLineWidth(gdata, map, offset));
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -1163,7 +1109,7 @@ void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
 		_object3D[i].D = size * GetShapeAttr2(gdata, map, offset);
 		_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
 		_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
-		_object3D[i].color = GetColor(view, gdata, map, offset);
+		_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
 
 #ifdef DEBUG
 		cout << "sym " << i << " of " << numSyms << endl
@@ -1277,11 +1223,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord tw = width / 20.0;
 	Coord hw = width / 2.0;
 
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	int line_width = GetLineWidth(gdata, map, offset);
 	win->SetLineWidth(line_width);
@@ -1294,9 +1236,6 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -1399,11 +1338,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	GlobalColor color = GetColor(view, gdata, map, offset);
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	// LineWidth not currently compatible with PolyLine
 	int width = 1;
@@ -1414,11 +1349,8 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	win->DrawPixel(x, y);
 
 	int npOff = offset->shapeAttrOffset[0];
-	if (npOff < 0) {
-		if (color == XorColor)
-		  win->SetCopyMode();
+	if (npOff < 0)
 		continue;
-	}
 
 	int np = (int)*(Coord *)(gdata + npOff);
 #ifdef DEBUG
@@ -1437,9 +1369,6 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 		x = x1;
 		y = y1;
 	}
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -1509,7 +1438,6 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	GlobalColor color = GetColor(view, gdata, map, offset);
 	
 	// Transform the data X and Y to pixels.
 	Coord tx, ty;
@@ -1524,9 +1452,6 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	win->Line(tx, ty - 3, tx, ty + 3, 1);
 	win->PopTransform();
 #endif
-	
-	if (color == XorColor)
-	    win->SetCopyMode();
 	
 	// Get the name of the image file or the image itself.  (Print a warning
 	// if this isn't a string attribute.)
@@ -1698,7 +1623,6 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	char *gdata = (char *)gdataArray[i];
 	Coord x = GetX(gdata, map, offset);
 	Coord y = GetY(gdata, map, offset);
-	GlobalColor color = GetColor(view, gdata, map, offset);
 
 	char *file = "polyline.dat";
 	char *format = "%lf%lf";
@@ -1737,10 +1661,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	printf("Drawing polyline file %s at %.2f,%.2f\n", file, x, y);
 #endif
 
-	if (color == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(color);
+	win->SetForeground(GetPColorID(gdata, map, offset));
 	win->SetPattern(GetPattern(gdata, map, offset));
 	int width = GetLineWidth(gdata, map, offset);
 	//width *= pixelSize;
@@ -1775,9 +1696,6 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	}
 
 	fclose(fp);
-
-	if (color == XorColor)
-	  win->SetCopyMode();
 	}
 
 	recordsProcessed = numSyms;
@@ -1893,8 +1811,6 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	pointSize = MIN(pointSize, 16.0);
 	pointSize = (Coord) ((int) (pointSize + 0.5));
 
-    GlobalColor color = GetColor(view, gdata, map, offset);
-
     /* Find or generate the label string. */
     char *label;
     if (!labelAttrValid) {
@@ -1936,11 +1852,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
       label = labelBuf;
     }
 
-    if (color == XorColor) {
-      win->SetXorMode();
-    } else {
-      win->SetFgColor(color);
-    }
+	win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
     if (pointSize != oldPointSize) {
       win->SetFont("Helvetica", "Bold", "r", "Normal", pointSize);
@@ -1956,9 +1868,6 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	}
     win->ScaledText(label, x - width / 2, y - height / 2, width, height,
       WindowRep::AlignCenter, true, orientation);
-
-    if (color == XorColor)
-      win->SetCopyMode();
   }
 
 	recordsProcessed = numSyms;
@@ -2057,7 +1966,6 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     if (pointSize <= 1.0)
       pointSize = 12.0;
 	Coord orientation = GetOrientation(gdata, map, offset);
-    GlobalColor color = GetColor(view, gdata, map, offset);
 
     /* Find or generate the label string. */
     char *label;
@@ -2100,11 +2008,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
       label = labelBuf;
     }
 
-    if (color == XorColor) {
-      win->SetXorMode();
-    } else {
-      win->SetFgColor(color);
-    }
+	win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
     if (pointSize != oldPointSize) {
       win->SetFont("Helvetica", "Bold", "r", "Normal", pointSize);
@@ -2117,9 +2021,6 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
     // is too tight, AbsoluteText() will try to scale the text.
     win->AbsoluteText(label, x - filterWidth / 2, y - filterHeight / 2,
       filterWidth, filterHeight, WindowRep::AlignCenter, true, orientation);
-
-    if (color == XorColor)
-      win->SetCopyMode();
   }
 
 	recordsProcessed = numSyms;
@@ -2159,11 +2060,11 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	/* get coordinates of first data point in this batch */
 
-	char *gdata = (char *)gdataArray[0];
-	RecId recId = GetRecId(gdata, map, offset);
-	Coord x0 = GetX(gdata, map, offset);
-	Coord y0 = GetY(gdata, map, offset);
-	GlobalColor c0 = GetColor(view, gdata, map, offset);
+	char*		gdata = (char *)gdataArray[0];
+	RecId		recId = GetRecId(gdata, map, offset);
+	Coord		x0 = GetX(gdata, map, offset);
+	Coord		y0 = GetY(gdata, map, offset);
+	PColorID	c0 = GetPColorID(gdata, map, offset);
 
 	// How should line width be handled for line types?
 	int width = GetLineWidth(gdata, map, offset);
@@ -2171,9 +2072,11 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	/* draw line connecting last point of previous batch to
 	   first point of this batch */
 
-	if (recId > 0) {
-		Coord xp, yp;
-		GlobalColor cp;
+	if (recId > 0)
+	{
+		Coord		xp, yp;
+		PColorID	cp;
+
 		if (view->GetPointStorage()->Find(recId - 1, xp, yp, cp)) {
 			DrawConnectingLine(win, view,
 							   GetPattern(gdata, map, offset), width,
@@ -2188,12 +2091,14 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	/* now draw line connecting rest of points */
 
-	for(int i = 1; i < numSyms; i++) {
-		char *gdata = (char *)gdataArray[i];
-		Coord x = GetX(gdata, map, offset);
-		Coord y = GetY(gdata, map, offset);
-		GlobalColor color = GetColor(view, gdata, map, offset);
-	width = GetLineWidth(gdata, map, offset);
+	for(int i = 1; i < numSyms; i++)
+	{
+		char*		gdata = (char *)gdataArray[i];
+		Coord		x = GetX(gdata, map, offset);
+		Coord		y = GetY(gdata, map, offset);
+		PColorID	color = GetPColorID(gdata, map, offset);
+
+		width = GetLineWidth(gdata, map, offset);
 		DrawConnectingLine(win, view,
 						   GetPattern(gdata, map, offset), width,
 						   x0, y0, c0, x, y, color);
@@ -2204,11 +2109,11 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		c0 = color;
 	}
 
-	/* draw line connecting last point of this batch to
-	   first point of next batch */
+	// Draw line connecting last point of this batch to first point of next
 
-	Coord xn, yn;
-	GlobalColor cn;
+	Coord		xn, yn;
+	PColorID	cn;
+
 	if (view->GetPointStorage()->Find(recId + numSyms, xn, yn, cn)) {
 		DrawConnectingLine(win, view,
 						   Pattern0, width, x0, y0, c0, xn, yn, cn);
@@ -2223,33 +2128,22 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
 					   Pattern pattern, int line_width,
-					   Coord x0, Coord y0, GlobalColor c0,
-					   Coord x1, Coord y1, GlobalColor c1)
+					   Coord x0, Coord y0, PColorID c0,
+					   Coord x1, Coord y1, PColorID c1)
 {
 	win->SetPattern(pattern);
-	if (c0 == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(c0);
+	win->SetForeground(c0);
 
-	if (c0 == c1) {
-	win->Line(x0, y0, x1, y1, line_width);
-	if (c0 == XorColor)
-	  win->SetCopyMode();
-	return;
+	if (c0 == c1)
+	{
+		win->Line(x0, y0, x1, y1, line_width);
+		return;
 	}
 
 	win->Line(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2, line_width);
-	if (c0 == XorColor)
-	  win->SetCopyMode();
 
-	if (c1 == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(c1);
+	win->SetForeground(c1);
 	win->Line((x0 + x1) / 2, (y0 + y1) / 2, x1, y1, line_width);
-	if (c1 == XorColor)
-	  win->SetCopyMode();
 }
 
 
@@ -2277,13 +2171,9 @@ void FullMapping_LineShadeShape::MaxSymSize(TDataMap *map,
   
 
 void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
-							ViewGraph *view,
-							Pattern pattern,
-							int line_width,
-							Coord x0, Coord y0,
-							GlobalColor c0,
-							Coord x1, Coord y1,
-							GlobalColor c1)
+							ViewGraph *view, Pattern pattern, int line_width,
+							Coord x0, Coord y0, PColorID c0,
+							Coord x1, Coord y1, PColorID c1)
 {
 	/* clip top of shape with filter (filled polygons are
 	   really slow if y0 or y1 is far outside of the screen */
@@ -2296,10 +2186,7 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 
 	win->SetPattern(pattern);
 	win->SetLineWidth(-1);	// no edge lines
-	if (c0 == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(c0);
+	win->SetForeground(c0);
 
 	Point points[4];
 
@@ -2307,8 +2194,6 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 	if (y0 == y1) {
 		/* area is a rectangle -- optimize for speed */
 		win->FillRect(x0, 0, x1 - x0, y0);
-		if (c0 == XorColor)
-		  win->SetCopyMode();
 	} else {
 		points[0].x = x0;
 		points[0].y = y0;
@@ -2319,8 +2204,6 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 		points[3].x = x0;
 		points[3].y = 0;
 		win->FillPoly(points, 4);
-		if (c0 == XorColor)
-		  win->SetCopyMode();
 	}
 	} else {
 
@@ -2338,13 +2221,8 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 		points[3].y = 0;
 		win->FillPoly(points, 4);
 	}
-	if (c0 == XorColor)
-	  win->SetCopyMode();
 
-	if (c1 == XorColor)
-	  win->SetXorMode();
-	else
-	  win->SetFgColor(c1);
+	win->SetForeground(c1);
 
 	if (y0 == y1) {
 		/* area is a rectangle -- optimize for speed */
@@ -2360,8 +2238,6 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 		points[3].y = 0;
 		win->FillPoly(points, 4);
 	}
-	if (c1 == XorColor)
-	  win->SetCopyMode();
 
 	}
 
@@ -2374,10 +2250,8 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 	   The line is now variable width & placed on top of the fill so that
 	   you get a solid line to cap the line & the fill pattern below.
 	*/
-
 	FullMapping_LineShape::DrawConnectingLine(win, view, Pattern0, line_width,
-						  x0, y0, c0,
-						  x1, y1, c1);
+						  x0, y0, c0, x1, y1, c1);
 }
 
-//---------------------------------------------------------------------------
+//******************************************************************************

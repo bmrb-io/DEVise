@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/11/12 15:45:23  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.21.6.1  1997/10/30 20:15:38  wenger
   Got DEVise to compile, link, and run on sun and linux; compiles but
   doesn't link on hp (can't find memory mapping functions).  This includes
@@ -42,6 +46,9 @@
   let Tk determine the appropriate size for the new window, by sending
   width and height values of 0 to ETk. 3) devise can send Tcl commands to
   the Tcl interpreters running inside the ETk process.
+
+  Revision 1.17.6.1  1997/05/21 20:39:59  weaver
+  Changes for new ColorManager
 
   Revision 1.17  1997/05/05 19:40:37  wenger
   Oops!  Forgot to remove PSWindowReps from _winList when they're destroyed!
@@ -171,47 +178,20 @@ PSDisplay::PSDisplay(char *name)
   _outputYMargin = _userYMargin = 1.0;
 }
 
-/*******************************************************************
-Allocate color by name
-********************************************************************/
-
-void PSDisplay::AllocColor(char *name, GlobalColor globalColor, RgbVals &rgb)
-{
-#ifdef DEBUG
-  printf("PSDisplay::AllocColor(%s)\n", name);
-#endif
-
-  /* do something */
-}
-
-/*********************************************************************
-Allocate color by RGB
-*********************************************************************/
-
-void PSDisplay::AllocColor(RgbVals &rgb, GlobalColor globalColor)
-{
-#ifdef DEBUG
-  printf("PSDisplay::AllocColor(%.2f,%.2f,%.2f)\n", r, g, b);
-#endif
-
-  /* do something */
-}
-
 /*************************************************************
 Create a new window 
 ***************************************************************/
 
 WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
-				     GlobalColor fgnd, GlobalColor bgnd, 
 				     WindowRep *parentRep,
 				     Coord min_width, Coord min_height,
 				     Boolean relative, Boolean winBoundary)
 {
   DO_DEBUG(printf("PSDisplay::CreateWindowRep(%s)\n", name));
 
-  PSWindowRep *psWin = new PSWindowRep((DeviseDisplay *) this, fgnd, bgnd,
-    (PSWindowRep *) parentRep, (int) x, (int) y, (int) width, (int) height);
+  PSWindowRep*	psWin = new PSWindowRep((DeviseDisplay*)this,
+    (PSWindowRep*)parentRep, (int)x, (int)y, (int)width, (int)height);
 
   _winList.Insert(psWin);
 

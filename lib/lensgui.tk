@@ -15,8 +15,14 @@
 # $Id$
 
 # $Log$
+# Revision 1.3  1997/05/28 15:39:52  wenger
+# Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 # Revision 1.2.4.1  1997/05/20 16:11:28  ssl
 # Added layout manager to DEVise
+#
+# Revision 1.2.6.1  1997/05/21 20:41:13  weaver
+# Changes for new ColorManager
 #
 # Revision 1.2  1997/03/28 16:11:24  wenger
 # Added headers to all source files that didn't have them; updated
@@ -359,7 +365,6 @@ proc ToggleMode { mode val1 val2} {
 }
 #puts "name.."     
 proc CreateEditLensInfo { new name lenslist mode link oldList } {
-   global DEViseColors
    if { $lenslist == "" } {
       return
    }
@@ -388,11 +393,7 @@ proc CreateEditLensInfo { new name lenslist mode link oldList } {
    }
    # do other editing stuff 
    #puts "$name $mode $lenslist"
-   set bgColor [DEVise getBgColor $firstview]
-   #puts "bgColor = $bgColor"
-   set deviseColor [lindex [lindex $DEViseColors [expr $bgColor + 1]] 1]
-   #puts "color = $deviseColor"
-   eval "DEVise setViewLensParams $name $mode {$link} $bgColor $lenslist"
+   eval "DEVise setViewLensParams $name $mode {$link} $lenslist"
    InsertDeleteLinks $link $oldList $lenslist
    if { $new == 1 } {
      DEVise insertLink $link $name

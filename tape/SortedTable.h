@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.10.1  1997/05/21 20:42:29  weaver
+  Change for new ColorManager
+
+  Revision 1.6  1996/04/16 20:56:24  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.5  1996/04/09 18:12:07  jussi
   Minor fixes.
 
@@ -32,9 +38,10 @@
 #ifndef SORTEDTABLE_H
 #define SORTEDTABLE_H
 
-#ifdef __GNUG__
-#pragma interface
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma interface
+//#endif
 
 #include <iostream.h>
 

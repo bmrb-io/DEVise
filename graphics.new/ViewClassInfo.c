@@ -16,12 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/08/20 22:11:13  wenger
+  Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
+  (all mods for interrupted draw and user-friendly stop).
+
   Revision 1.11.8.2  1997/08/20 19:33:08  wenger
   Removed/disabled debug output for interruptible drawing.
 
   Revision 1.11.8.1  1997/08/07 16:56:45  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
+
+  Revision 1.11.6.1  1997/05/21 20:40:51  weaver
+  Changes for new ColorManager
 
   Revision 1.11  1997/02/03 19:45:37  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
@@ -83,8 +90,13 @@
 #include "ActionDefault.h"
 #include "VisualLink.h"
 #include "QueryProc.h"
-#include "ColorMgr.h"
 #include "Parse.h"
+
+#include "Color.h"
+
+#define DEBUG
+
+//******************************************************************************
 
 static char buf[7][64];
 static char *args[7];
@@ -101,25 +113,18 @@ QueryProc *GetQueryProc()
 ViewClassInfo::ViewClassInfo()
 {
   _name = NULL;
-  _fgName = NULL;
-  _bgName = NULL;
   _view = NULL;
 }
 
-ViewClassInfo::ViewClassInfo(char *name, char *fgName,
-			     char *bgName, ViewGraph *view)
+ViewClassInfo::ViewClassInfo(char *name, ViewGraph *view)
 {
   _name = name;
-  _fgName = fgName;
-  _bgName = bgName;
   _view = view;
 }
 
 ViewClassInfo::~ViewClassInfo()
 {
   delete _name;
-  delete _fgName;
-  delete _bgName;
   delete _view;
 }
 
@@ -131,7 +136,7 @@ void ViewClassInfo::ParamNames(int &argc, char **&argv)
   char **defaults;
   GetDefaultParams(numDefaults, defaults);
 
-  argc = 7;
+  argc = 5;
   argv = args;
 
   for(int i = 0; i < argc; i++)
@@ -150,14 +155,11 @@ void ViewClassInfo::ParamNames(int &argc, char **&argv)
     strcpy(buf[3], "ylow -10.0");
     strcpy(buf[4], "yhigh 10.0");
   }
-
-  sprintf(buf[5], "fgcolor {%s}", _fgName);
-  sprintf(buf[6], "bgcolor {%s}", _bgName);
 }
 
 void ViewClassInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 7;
+  argc = 5;
   argv = args;
 
   for(int i = 0; i < argc; i++)
@@ -182,9 +184,6 @@ void ViewClassInfo::CreateParams(int &argc, char **&argv)
     sprintf(buf[3], "%f", filter->yLow);
     sprintf(buf[4], "%f", filter->yHigh);
   }
-
-  strcpy(buf[5], _fgName);
-  strcpy(buf[6], _bgName);
 }
 
 void ViewClassInfo::ChangeParams(int argc, char **argv)
@@ -192,31 +191,22 @@ void ViewClassInfo::ChangeParams(int argc, char **argv)
   if (!_view)
     return;
 
-  if (argc != 6) {
+  if (argc != 4) {
     fprintf(stderr, "ViewClassInfo::ChangeParams: wrong args\n");
     return;
   }
 
-  delete _fgName;
-  delete _bgName;
-
-  _fgName = CopyString(argv[4]);
-  _bgName = CopyString(argv[5]);
-  GlobalColor fgColor = ColorMgr::AllocColor(_fgName);
-  GlobalColor bgColor = ColorMgr::AllocColor(_bgName);
-
-  _view->SetFgBgColor(fgColor, bgColor);
+  _view->SetColors(GetPColorID(defForeColor), GetPColorID(defBackColor));
 }
 
-ViewXInfo::ViewXInfo(char *name, char *fgName, char *bgName,
-		     TDataViewX *view) :
-     ViewClassInfo(name, fgName, bgName, view)
+ViewXInfo::ViewXInfo(char *name, TDataViewX *view)
+	: ViewClassInfo(name, view)
 {
 }
 
 ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 6 && argc != 7) {
+  if (argc != 4 && argc != 5 && argc != 6 && argc != 7) {
     fprintf(stderr, "ViewXInfo::CreateWithParams: wrong args\n");
     return NULL;
   }
@@ -230,34 +220,18 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
   
-  // old style lists bgcolor but no fgcolor; new style
-  // lists fgcolor first, followed by bgcolor
-
-  char *fgName, *bgName;
-  if (argc == 6) {
-    fgName = CopyString("Black");
-    bgName = CopyString(argv[5]);
-  } else {
-    fgName = CopyString(argv[5]);
-    bgName = CopyString(argv[6]);
-  }
-  GlobalColor fgColor = ColorMgr::AllocColor(fgName);
-  GlobalColor bgColor = ColorMgr::AllocColor(bgName);
-
-  TDataViewX *view = new TDataViewX(name, filter, GetQueryProc(), 
-				    fgColor, bgColor, NULL, NULL, NULL);
-  return new ViewXInfo(name, fgName, bgName, view);
+  TDataViewX *view = new TDataViewX(name, filter, GetQueryProc());
+  return new ViewXInfo(name, view);
 }
 
-ViewScatterInfo::ViewScatterInfo(char *name, char *fgName, char *bgName,
-				 ViewScatter *view) :
-     ViewClassInfo(name, fgName, bgName, view)
+ViewScatterInfo::ViewScatterInfo(char *name, ViewScatter *view)
+	: ViewClassInfo(name, view)
 {
 }
 
 ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 6 && argc != 7) {
+  if (argc != 4 && argc != 5 && argc != 6 && argc != 7) {
     fprintf(stderr, "ViewScatterInfo::CreateWithParams: wrong args\n");
     return NULL;
   }
@@ -271,37 +245,18 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
   
-  // old style lists bgcolor but no fgcolor; new style
-  // lists fgcolor first, followed by bgcolor
-
-  char *fgName, *bgName;
-  if (argc == 6) {
-    fgName = CopyString("Black");
-    bgName = CopyString(argv[5]);
-  } else {
-    fgName = CopyString(argv[5]);
-    bgName = CopyString(argv[6]);
-  }
-  GlobalColor fgColor = ColorMgr::AllocColor(fgName);
-  GlobalColor bgColor = ColorMgr::AllocColor(bgName);
-
-  ViewScatter *view = new ViewScatter(name, filter, GetQueryProc(), 
-				      fgColor, bgColor, NULL, NULL, NULL);
-  return new ViewScatterInfo(name, fgName, bgName, view);
+  ViewScatter *view = new ViewScatter(name, filter, GetQueryProc());
+  return new ViewScatterInfo(name, view);
 }
 
-
-
-ViewLensInfo::ViewLensInfo(char *name, char *fgName, char *bgName,
-			   ViewLens *view) :
-     ViewClassInfo(name, fgName, bgName, view)
+ViewLensInfo::ViewLensInfo(char *name, ViewLens *view)
+	: ViewClassInfo(name, view)
 {
 }
-
 
 ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
 {
-  if (argc != 5 && argc != 6 && argc != 7) {
+  if (argc != 4 && argc != 5 && argc != 6) {
     fprintf(stderr, "ViewLensInfo::CreateWithParams: wrong args\n");
     return NULL;
   }
@@ -315,24 +270,8 @@ ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
   (void)ParseFloatDate(argv[4], filter.yHigh);
   filter.flag = VISUAL_LOC;
   
-  // old style lists bgcolor but no fgcolor; new style
-  // lists fgcolor first, followed by bgcolor
-
-  char *fgName, *bgName;
-  if (argc == 5) {
-    fgName = CopyString("Black");
-    bgName = CopyString("AntiqueWhite");
-  } else if (argc == 6) {
-    fgName = CopyString("Black");
-    bgName = CopyString(argv[5]);
-  } else {
-    fgName = CopyString(argv[5]);
-    bgName = CopyString(argv[6]);
-  }
-  GlobalColor fgColor = ColorMgr::AllocColor(fgName);
-  GlobalColor bgColor = ColorMgr::AllocColor(bgName);
-
-  ViewLens *view = new ViewLens(name, filter,  GetQueryProc(),
-				fgColor, bgColor, NULL, NULL, NULL);
-  return new ViewLensInfo(name, fgName, bgName, view);
+  ViewLens *view = new ViewLens(name, filter,  GetQueryProc());
+  return new ViewLensInfo(name, view);
 }
+
+//******************************************************************************

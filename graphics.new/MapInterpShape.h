@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/11/18 23:26:54  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.38  1997/08/20 22:11:00  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -27,6 +31,9 @@
   Revision 1.37  1997/07/18 20:24:55  wenger
   Orientation now works on Rect and RectX symbols; code also includes
   some provisions for locating symbols other than at their centers.
+
+  Revision 1.36.6.1  1997/05/21 20:40:38  weaver
+  Changes for new ColorManager
 
   Revision 1.36  1997/04/29 17:35:11  wenger
   Minor fixes to new text labels; added fixed text label shape;
@@ -172,6 +179,9 @@
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
+//#include "StringStorage.h"
+
+#include "Color.h"
 
 class ViewGraph;
 
@@ -443,8 +453,8 @@ class FullMapping_LineShape
 
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
-				    Coord x0, Coord y0, GlobalColor c0,
-				    Coord x1, Coord y1, GlobalColor c1);
+				    Coord x0, Coord y0, PColorID c0,
+				    Coord x1, Coord y1, PColorID c1);
 };
 
 // -----------------------------------------------------------------
@@ -459,10 +469,9 @@ class FullMapping_LineShadeShape
     
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
-				    Coord x0, Coord y0, GlobalColor c0,
-				    Coord x1, Coord y1, GlobalColor c1);
+				    Coord x0, Coord y0, PColorID c0,
+				    Coord x1, Coord y1, PColorID c1);
 };
 
-// -----------------------------------------------------------------
-
+//******************************************************************************
 #endif

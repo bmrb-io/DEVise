@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/05/21 22:05:08  andyt
+  *** empty log message ***
+
+  Revision 1.48.6.1  1997/05/21 20:39:26  weaver
+  Changes for new ColorManager
+
   Revision 1.48  1997/04/18 17:52:32  wenger
   Argh!  Forgot to remove debug output.
 
@@ -214,7 +220,6 @@
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "Display.h"
-#include "ColorMgr.h"
 #include "Control.h"
 #include "Init.h"
 #include "WinClassInfo.h"
@@ -236,6 +241,7 @@
 #include "DevError.h"
 #include "StateMap.h"
 #include "Util.h"
+#include "XDisplay.h"
 
 static time_t GetTime(struct tm &now)
 {
@@ -423,7 +429,7 @@ public:
     /* decode date */
     time_t *datePtr = (time_t *)(buf + attrOffset[3]);
     char *dash1 = strchr(buf + attrOffset[0], '-');
-    char *dash2 = (!dash1 ? (char *) NULL : strchr(dash1 + 1, '-'));
+    char *dash2 = (!dash1 ? (char*)NULL : strchr(dash1 + 1, '-'));
     char *colon = strchr(buf + attrOffset[1], ':');
     char ampm = *(buf + attrOffset[2]);
     if (islower(ampm))
@@ -1166,7 +1172,11 @@ public:
     float *totalPtr = (float *)(buf + attrOffset[4]);
     *totalPtr = 0.2 + *totalAmount / 8000.0;
 
+	// I don't have any idea what this stuff is. CEW 5/14/97
     int *colorPtr = (int *)(buf + attrOffset[5]);
+
+	*colorPtr = 0;	// Probably shouldn't be doing this at all
+/*
     if (*totalAmount < 250)
       *colorPtr = RedColor;
     else if (*totalAmount < 500)
@@ -1185,6 +1195,7 @@ public:
       *colorPtr = BlackColor;
     else
       *colorPtr = KhakiColor;
+*/
   }
 
 private:
@@ -1600,7 +1611,6 @@ int main(int argc, char **argv)
   	else if (parserName.matches("ISODate2Composite"))
   		CompositeParser::Register(schemaChar,new ISODate2Composite);
    }
-
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new TileLayoutInfo);
   ControlPanel::RegisterClass(new ViewXInfo);
@@ -1630,7 +1640,13 @@ int main(int argc, char **argv)
   /* Start session (possibly restoring an old one */
   ctrl->StartSession();
 
+  // Color code gets called before main() in a static method or global ctor
+  // somewhere. I've put a workaround in GPColorID to handle it. CEW 971118.
+  InitColor(((XDisplay*)disp)->GetDisplay());
+
   Dispatcher::RunNoReturn();
 
+  TermColor();	// Never reaches here...
+  
   return 1;
 }

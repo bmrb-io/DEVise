@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/11/24 16:22:30  wenger
+  Added GUI for saving GData; turning on GData to socket now forces
+  redraw of view; GData to socket params now saved in session files;
+  improvement to waitForQueries command.
+
   Revision 1.39  1997/11/18 23:27:06  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -31,6 +36,9 @@
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
   Mitre demo.
+
+  Revision 1.35.6.1  1997/05/21 20:40:52  weaver
+  Changes for new ColorManager
 
   Revision 1.35  1997/04/21 23:01:56  guangshu
   Small changes.
@@ -171,13 +179,20 @@
   Added CVS header.
 */
 
-#ifndef ViewGraph_h
-#define ViewGraph_h
+//******************************************************************************
+//
+//******************************************************************************
+
+#ifndef __VIEWGRAPH_H
+#define __VIEWGRAPH_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 //#include "HashTable.h"
 #include "View.h"
 #include "DList.h"
-#include "Color.h"
 #include "BasicStats.h"
 #include "GdataStat.h"
 #include "DataSourceFixedBuf.h"
@@ -187,7 +202,12 @@
 #include "GDataSock.h"
 #include "Util.h"
 
-const int MAXCOLOR = 43;
+#include "Color.h"
+
+// Trouble, as the palette is now variable size. I've temporarily added a
+// constant gMaxNumColors to Color.h to replace it (and replaced it
+// everywhere it appears (this file and TDataViewX.c)). CEW 5/1/97
+// const int MAXCOLOR = 43;
 
 /* Set this to 1 to implement "big" statistics (this was needed for the
  * March '97 demo in Washington, but at least right now should generally
@@ -256,15 +276,26 @@ DefinePtrDList(RecordLinkList, RecordLink *);
 
 class GDataBin;
 
-class ViewGraph
-: public View, QueryCallback
-{
-public:
-  ViewGraph(char *name, VisualFilter &initFilter, QueryProc *qp,
-	    AxisLabel *xAxis, AxisLabel *yAxis,
-	    GlobalColor fg, GlobalColor bg, Action *action = 0);
+//******************************************************************************
+// class ViewGraph
+//******************************************************************************
 
-  virtual ~ViewGraph();
+class ViewGraph : public View
+{
+		friend class ViewGraph_QueryCallback;
+
+	private:
+
+		// Callback Adapters
+		ViewGraph_QueryCallback*	queryCallback;
+
+	public:
+
+		// Constructors and Destructors
+		ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
+				  AxisLabel* xAxis, AxisLabel* yAxis,
+				  PColorID fgid, PColorID bgid, Action* action = 0);
+		virtual ~ViewGraph(void);
 
   /* Make view a master/slave of a link */
   virtual void AddAsMasterView(RecordLink *link);
@@ -379,25 +410,10 @@ public:
   // it depends upon master
   void MasterRecomputed(ViewGraph* master);
 
-  void PrintLinkInfo();
-
   /* Write color statistics to memory buffer */
   void PrepareStatsBuffer(TDataMap *map);
   void setHistViewname(char *name) { histViewName = name; }
   char *getHistViewname() { return histViewName; }
-
-  /* From QueryCallback. */
-  /* Query data ready to be returned. Do initialization here.*/
-  virtual void QueryInit(void *userData) {}
-
-  virtual void ReturnGData(TDataMap *mapping, RecId id,
-                           void *gdata, int numGData,
-                           int &recordsProcessed)
-  { DOASSERT(false, "Can only call this function in derived class"); }
-
-  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
-
-  virtual void *GetObj() { return this; }
 
   Boolean GetDrawToScreen() { return _drawToScreen; }
   Boolean GetSendToSocket() { return _sendToSocket; }
@@ -433,8 +449,8 @@ public:
   char _DisplayStats[STAT_NUM + 1];
   char *histViewName;
 
-  BasicStats _allStats;            /* basic stats for all categories */
-  BasicStats _stats[MAXCOLOR];     /* basic stats per category */
+  BasicStats _allStats;            	/* basic stats for all categories */
+  BasicStats _stats[gMaxNumColors];     /* basic stats per category */
 
   DataSourceFixedBuf* _statBuffer;         /* view statistics */
   DataSourceFixedBuf* _histBuffer;	   /* histograms */
@@ -474,24 +490,92 @@ public:
   Boolean ToRemoveStats(char *oldset, char *newset);
   void StatsXOR(char *oldstat, char *newstat, char *result);
 
-  /* Handle button press event */
-  virtual void HandlePress(WindowRep * w, int xlow,
-			   int ylow, int xhigh, int yhigh, int button);
-
-  /* Handle key event */
-  virtual void HandleKey(WindowRep *w ,int key, int x, int y);
-
-  /* Handle pop-up */
-  virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
-			      char **&msgs, int &numMsgs);
-
   ViewHomeInfo _homeInfo;
   ViewPanInfo _horPanInfo;
-
   GDataSock *_gds;
   Boolean _drawToScreen;
   Boolean _sendToSocket;
   GDataSock::Params _gdsParams;
+
+	protected:
+
+		// Callback methods (QueryCallback)
+		virtual void	QueryInit(void* userData) {}
+		virtual void	QueryDone(int bytes, void* userData,
+								  TDataMap* map = NULL);
+		virtual void*	GetObj(void) { return this; }
+		virtual RecordLinkList*		GetMasterLinkList()
+		{ DOASSERT(false, "Call in derived class only"); return NULL; }
+		virtual RecordLinkList*		GetRecordLinkList()
+		{ DOASSERT(false, "Call in derived class only"); return NULL; }
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed)
+		{ DOASSERT(false, "Call in derived class only"); }
+		virtual void	PrintLinkInfo(void);
+
+		// Callback methods (WindowRepCallback)
+		virtual void	HandlePress(WindowRep* w, int xlow, int ylow,
+									int xhigh, int yhigh, int button);
+		virtual void	HandleKey(WindowRep* w ,int key, int x, int y);
+		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
+									char**& msgs, int& numMsgs);
 };
 
+//******************************************************************************
+// class ViewGraph_QueryCallback
+//******************************************************************************
+
+class ViewGraph_QueryCallback : public QueryCallback
+{
+	private:
+
+		ViewGraph*	_parent;
+		
+	public:
+
+		ViewGraph_QueryCallback(ViewGraph* parent)
+			: _parent(parent) {}
+
+		virtual void	QueryInit(void* userData)
+		{
+			_parent->QueryInit(userData);
+		}
+
+		virtual void	QueryDone(int bytes, void* userData,
+								  TDataMap* map = NULL)
+		{
+			_parent->QueryDone(bytes, userData, map);
+		}
+
+		virtual void*	GetObj(void)
+		{
+			return _parent->GetObj();
+		}
+
+		virtual RecordLinkList*		GetMasterLinkList()
+		{
+			return _parent->GetMasterLinkList();
+		}
+
+		virtual RecordLinkList*		GetRecordLinkList()
+		{
+			return _parent->GetRecordLinkList();
+		}
+
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed)
+		{
+			_parent->ReturnGData(mapping, id, gdata, numGData,
+								 recordsProcessed);
+		}
+
+		virtual void	PrintLinkInfo(void)
+		{
+			_parent->PrintLinkInfo();
+		}
+};
+
+//******************************************************************************
 #endif

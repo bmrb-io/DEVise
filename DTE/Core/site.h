@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/11/24 06:01:27  donjerko
+  Added more odbc files.
+
   Revision 1.35  1997/11/13 22:19:26  okan
   Changes about compilation on NT
 
@@ -106,6 +109,7 @@
 // #include "FunctionRead.h"	// temporarily broken
 #include "url.h"
 #include <string>
+#include <set>
 #include <assert.h>
 
 #include <set>

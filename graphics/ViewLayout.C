@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/01/08 19:01:44  wenger
+  Fixed bug 064 and various other problems with drawing piled views;
+  added related debug code.
+
   Revision 1.7  1996/04/16 19:49:40  jussi
   Replaced assert() calls with DOASSERT().
 
@@ -40,23 +44,30 @@
   Initial revision.
 */
 
+//******************************************************************************
+
 #include <math.h>
 
 #include "ViewLayout.h"
 
 //#define DEBUG
 
-ViewLayout:: ViewLayout(char *name,  Coord x, Coord y, Coord w, Coord h) :
-	ViewWin(name), verRequested(-1), horRequested(-1),
-	_stacked(false)
+//******************************************************************************
+// Constructors and Destructors
+//******************************************************************************
+
+ViewLayout:: ViewLayout(char* name,  Coord x, Coord y, Coord w, Coord h)
+	: ViewWin(name), verRequested(-1), horRequested(-1), _stacked(false)
 {
 }
 
-ViewLayout::~ViewLayout()
+ViewLayout::~ViewLayout(void)
 {
-  DeleteFromParent();
-  Unmap();
+	DeleteFromParent();
+	Unmap();
 }
+
+//******************************************************************************
 
 void ViewLayout::Map(int x, int y, unsigned w, unsigned h)
 {
@@ -147,19 +158,6 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
   child2->MoveResize(x1, y1, w1, h1);
 }
 
-void ViewLayout::HandleResize(WindowRep *win, int x, int y,
-			      unsigned w, unsigned h)
-{
-#if defined(DEBUG)
-  printf("ViewLayout::HandleResize 0x%x at %d,%d, size %u,%u\n",
-	 this, x, y, w, h);
-#endif
-
-  ViewWin::HandleResize(win, x, y, w, h);
-  if (Mapped())
-    MapChildren(0, true);
-}
-
 void ViewLayout::Iconify(Boolean iconified)
 {
   int index;
@@ -179,3 +177,23 @@ void ViewLayout::UnmapChildren()
   }
   DoneIterator(index);
 }
+
+//******************************************************************************
+// Callback Methods (WindowRepCallback)
+//******************************************************************************
+
+void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
+								 unsigned w, unsigned h)
+{
+#if defined(DEBUG)
+	printf("ViewLayout::HandleResize 0x%x at %d,%d, size %u,%u\n",
+		   this, x, y, w, h);
+#endif
+
+	ViewWin::HandleResize(win, x, y, w, h);
+
+	if (Mapped())
+		MapChildren(0, true);
+}
+
+//******************************************************************************

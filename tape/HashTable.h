@@ -19,6 +19,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/07/16 15:49:29  wenger
+  Moved string allocation/deallocation within StringStorage class, fixed
+  memory leak of strings.
+
+  Revision 1.8.6.1  1997/05/21 20:42:28  weaver
+  Change for new ColorManager
+
   Revision 1.8  1997/03/20 22:39:48  guangshu
   Added function RetrieveIndex.
 
@@ -46,9 +53,10 @@
 #ifndef HASH_H
 #define HASH_H
 
-#ifdef __GNUG__
-#pragma interface
-#endif
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma interface
+//#endif
 
 #include <iostream.h>
 

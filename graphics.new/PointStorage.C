@@ -15,14 +15,21 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1.10.1  1997/05/21 20:40:43  weaver
+  Changes for new ColorManager
 
-#ifdef __GNUG__
-#pragma implementation "HashTable.h"
-#endif
+  Revision 1.1  1996/07/19 03:23:58  jussi
+  Initial revision.
+*/
+
+// Changed to non-pragma templates method. CEW 5/12/97
+//#ifdef __GNUG__
+//#pragma implementation "HashTable.h"
+//#endif
 
 #include "PointStorage.h"
 
-#ifdef __GNUG__
-template class HashTable<RecId, PointStorage::PointRec>;
-#endif
+//#ifdef __GNUG__
+//template class HashTable<RecId, PointStorage::PointRec>;
+//#endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/11/18 23:27:01  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.29  1997/08/20 22:11:09  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -23,6 +27,9 @@
   Revision 1.28.8.1  1997/08/07 16:56:42  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
+
+  Revision 1.28.6.1  1997/05/21 20:40:45  weaver
+  Changes for new ColorManager
 
   Revision 1.28  1997/02/26 16:31:45  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
@@ -149,6 +156,8 @@
 #include "Temp.h"
 #include "ViewGraph.h"
 
+#include "Color.h"
+
 #define GetAttr(ptr, attrName, attrType, offset) \
 	*((attrType *)(ptr+offset->attrName))
 
@@ -180,16 +189,12 @@ inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, zOffset, Coord, offset);
 }
 
-inline GlobalColor GetColor(ViewGraph *view, char *ptr, TDataMap *map,
-		      GDataAttrOffset *offset)
+inline PColorID	GetPColorID(char* ptr, TDataMap* map, GDataAttrOffset* offset)
 {
-  Boolean active;
-  GlobalColor color = view->GetOverrideColor(active);
-  if (active)
-    return color;
-  if (offset->colorOffset < 0)
-    return map->GetDefaultColor();
-  return GetAttr(ptr, colorOffset, GlobalColor , offset);
+	if (offset->colorOffset < 0)
+		return map->GetColoring().GetForeground();
+	else
+		return map->GetPColorID(ptr);
 }
 
 inline Coord GetSize(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -336,13 +341,16 @@ class Shape {
       int count = 1;
       _x[0] = ShapeGetX(gdata, map, offset);
       _y[0] = ShapeGetY(gdata, map, offset);
-      GlobalColor firstColor = GetColor(view, gdata, map, offset);
+
+      PColorID	fgid = GetPColorID(gdata, map, offset);
       
       int colorIndex;
       for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	char *colorGData = (char *)gdataArray[colorIndex];
-	if (GetColor(view, colorGData, map, offset) != firstColor)
+
+	if (GetPColorID(colorGData, map, offset) != fgid)
 	  break;
+
 	_x[count] = ShapeGetX(colorGData, map, offset);
 	_y[count] = ShapeGetY(colorGData, map, offset);
         count++;
@@ -360,7 +368,7 @@ class Shape {
           RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
       }
 
-      win->SetFgColor(firstColor);
+      win->SetForeground(fgid);
       win->DrawPixelArray(_x, _y, count, pixelSize);
       
       i = colorIndex;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/08/28 18:21:15  wenger
+  Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
+  up into ViewGraph (parent class).
+
   Revision 1.19  1997/08/20 22:11:12  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -23,6 +27,9 @@
   Revision 1.18.8.1  1997/08/07 16:56:45  wenger
   Partially-complete code for improved stop capability (includes some
   debug code).
+
+  Revision 1.18.6.1  1997/05/21 20:40:50  weaver
+  Changes for new ColorManager
 
   Revision 1.18  1997/03/20 22:23:18  guangshu
   Changed QueyDone.
@@ -102,69 +109,117 @@
   Added CVS header.
 */
 
-#ifndef TDataViewX_h
-#define TDataViewX_h
+//******************************************************************************
+//
+//******************************************************************************
+
+#ifndef __TDATAVIEWX_H
+#define __TDATAVIEWX_H
+
+//******************************************************************************
+// Libraries
+//******************************************************************************
 
 #include "ViewGraph.h"
 #include "TDataCMap.h"
-#include "Color.h"
 #include "DList.h"
 
-class TDataViewX: public ViewGraph,
-	private GDataBinCallback {
-public:
+#include "Color.h"
 
-  TDataViewX(char *name, VisualFilter &initFilter, QueryProc *qp, 
-	     GlobalColor fg = ForegroundColor,
-	     GlobalColor bg = BackgroundColor,
-	     AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
-	     Action *action = NULL);
+//******************************************************************************
+// class TDataViewX
+//******************************************************************************
 
-  ~TDataViewX();
-	
-  virtual void InsertMapping(TDataMap *map);
-  virtual void PrintLinkInfo() { ViewGraph::PrintLinkInfo();}
-  virtual void *GetObj() { return this; }
+class TDataViewX : public ViewGraph
+{
+		friend class TDataViewX_GDataBinCallback;
 
-protected:
-  /* from View */
-  virtual void DerivedAbortQuery();
+	private:
+
+		TDataCMap*	_cMap;
+		int			_totalGData;
+		int			_numBatches;
+		Boolean		_batchRecs;
+		Boolean		_dispSymbols;
+		Boolean		_dispConnectors;
+
+		// Callback Adapters
+		TDataViewX_GDataBinCallback*	gDataBinCallback;
+
+	public:
+
+		// Constructors and Destructors
+		TDataViewX(char* name, VisualFilter& initFilter, QueryProc* qp,
+				   PColorID fgid = GetPColorID(defForeColor),
+				   PColorID bgid = GetPColorID(defBackColor),
+				   AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+				   Action* action = NULL);
+		virtual ~TDataViewX(void);
+
+		// Public Methods
+		virtual void	InsertMapping(TDataMap *map);
+
+	protected:
+
+		virtual Boolean		DisplaySymbols() { return _dispSymbols; }
+		virtual Boolean		DisplaySymbols(Boolean state);
+		virtual Boolean		DisplayConnectors() { return _dispConnectors; }
+		virtual Boolean		DisplayConnectors(Boolean state);
+
+		virtual void		PrintStat();
+
+		// Override methods (View)
+		virtual void	DerivedAbortQuery(void);
+
+	protected:
   
-  /* Get record link */
-  virtual RecordLinkList *GetRecordLinkList() { return &_slaveLink; }
+		// Callback methods (GDataBinCallback)
+		virtual void	ReturnGDataBinRecs(TDataMap* map, void** recs,
+										   int numRecs, int& recordsProcessed);
 
-  virtual Boolean DisplaySymbols() { return _dispSymbols; }
-  virtual Boolean DisplaySymbols(Boolean state);
-  virtual Boolean DisplayConnectors() { return _dispConnectors; }
-  virtual Boolean DisplayConnectors(Boolean state);
+		virtual void	ReturnGDataBinConnectors(TDataCMap* cmap,
+												 Connector** connectors,
+												 int num);
 
-  virtual void PrintStat();
-
-private:
-  /* From GDataBinCallback */
-  virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,
-				  int &recordsProcessed);
-  virtual void ReturnGDataBinConnectors(TDataCMap *cmap,
-					Connector **connectors, int num);
-
-  /* from QueryCallback */
-  /* Query data ready to be returned. Do initialization here.*/
-  virtual void QueryInit(void *userData);
-  
-  virtual void ReturnGData(TDataMap *mapping, RecId id,
-			   void *gdata, int numGData,
-			   int &recordsProcessed);
-  
-  /* Done with query */
-  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
-  
-  int          _totalGData;
-  int          _numBatches;
-  Boolean      _batchRecs;
-
-  Boolean      _dispSymbols;
-  Boolean      _dispConnectors;
-  TDataCMap    *_cMap;
+		// Callback methods (QueryCallback)
+		virtual void	QueryInit(void* userData);
+		virtual void	QueryDone(int bytes, void* userData,
+								  TDataMap* map = NULL);
+		virtual void*	GetObj(void)	{ return this; }
+		virtual RecordLinkList*	GetRecordLinkList(void) { return &_slaveLink; }
+		virtual void	ReturnGData(TDataMap* mapping, RecId id,
+									void* gdata, int numGData,
+									int& recordsProcessed);
 };
 
+//******************************************************************************
+// class TDataViewX_GDataBinCallback
+//******************************************************************************
+
+class TDataViewX_GDataBinCallback : public GDataBinCallback
+{
+	private:
+
+		TDataViewX*		_parent;
+
+	public:
+
+		TDataViewX_GDataBinCallback(TDataViewX* parent)
+			: _parent(parent) {}
+
+		virtual void	ReturnGDataBinRecs(TDataMap* map, void** recs,
+										   int numRecs, int& recordsProcessed)
+		{
+			_parent->ReturnGDataBinRecs(map, recs, numRecs, recordsProcessed);
+		}
+
+		virtual void	ReturnGDataBinConnectors(TDataCMap* cmap,
+												 Connector** connectors,
+												 int num)
+		{
+			_parent->ReturnGDataBinConnectors(cmap, connectors, num);
+		}
+};
+
+//******************************************************************************
 #endif

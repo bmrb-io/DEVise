@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14.10.1  1997/05/21 20:38:26  weaver
+#  Changes for new ColorManager
+#
+#  Revision 1.14  1996/11/23 20:59:20  jussi
+#  The Makefile now uses the ARCH_SYSLIBS macro.
+#
 #  Revision 1.13  1996/08/06 20:10:56  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -60,7 +66,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
-	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
+	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX
 
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm -L../DTE \

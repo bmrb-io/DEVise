@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/11/18 23:26:34  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
  */
 
 #include <stdio.h>
@@ -182,7 +186,9 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
       Coord y = ShapeGetY(gdata, map, offsets);
       Coord z = GetZ(gdata, map, offsets);
 
-      Coord color = GetColor(view, gdata, map, offsets);
+//      Coord color = GetColor(view, gdata, map, offsets);
+      Coord		pcid = GetPColorID(gdata, map, offsets);
+
       Coord size = GetSize(gdata, map, offsets);
       Coord pattern = GetPattern(gdata, map, offsets);
       Coord orientation = GetOrientation(gdata, map, offsets);
@@ -256,7 +262,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 	}
 
 	if (tmpResult.IsComplete()) {
-	  if (sprintf(&buf[offset], "%g%c%g%c%g%c%g%c%g", color, sep, size,
+	  if (sprintf(&buf[offset], "%g%c%g%c%g%c%g%c%g", pcid, sep, size,
 	      sep, pattern, sep, orientation, sep, symbolType) < 0) {
 	    reportErrSys("Error formatting output");
 	    tmpResult = StatusFailed;

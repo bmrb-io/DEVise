@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/06/25 17:05:24  wenger
+  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+  function, disabled updating of record links during print, print dialog
+  grabs input.
+
   Revision 1.17  1997/06/18 15:33:00  wenger
   Fixed bug 177; improved workaround of bug 137; incremented version
   number (because of Unidata being added).
@@ -28,6 +33,9 @@
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
   implemented but pixmap printing is not.
+
+  Revision 1.14.6.1  1997/05/21 20:39:37  weaver
+  Changes for new ColorManager
 
   Revision 1.14  1997/03/25 17:58:50  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
@@ -134,9 +142,6 @@ DeviseDisplay::DeviseDisplay()
 {
   DO_DEBUG(printf("DeviseDisplay::DeviseDisplay()\n"));
 
-  _numColors = 0;
-  _colorMapSize = InitColorMapSize;
-  _colorMap = new LocalColor[InitColorMapSize];
   _displays.Append(this);
 
   DO_DEBUG(printf("Number of displays = %d\n", _displays.Size()));
@@ -155,39 +160,7 @@ DeviseDisplay::~DeviseDisplay()
   Dispatcher::Current()->Unregister(this);
 #endif
 
-  delete _colorMap;
   _displays.Delete(this);
-}
-
-/***************************************************************
- map local color to global color.
- TEMPTEMPXXX: Need to check for duplicate globalColor 
-********************************************************************/
-
-void DeviseDisplay::MapColor(LocalColor localColor, GlobalColor globalColor)
-{
-  if (globalColor >= _colorMapSize - 1){
-    /* overflow, create a new array  */
-    _colorMapSize = globalColor + AdditionalColorMapSize + 1;
-    LocalColor *tempMap = new LocalColor[_colorMapSize];
-    for(unsigned int i = 0; i < _numColors; i++)
-      tempMap[i] = _colorMap[i];
-    delete _colorMap;
-    _colorMap = tempMap;
-  }
-  _numColors = globalColor + 1;
-  _colorMap[globalColor] = localColor;
-}
-
-/**************************************************************************
-get local color given global color. 
-***************************************************************************/
-
-LocalColor DeviseDisplay::GetLocalColor(GlobalColor globalColor)
-{
-  if ((globalColor < 0) || (globalColor >= _numColors))
-      return _colorMap[BlackColor];
-  return _colorMap[globalColor];
 }
 
 char *DeviseDisplay::DispatchedName()
@@ -301,4 +274,8 @@ DeviseDisplay::ExportToPS(DisplayExportFormat format, char *filename)
   result.Print();
 #endif
 }
+
 #endif
+
+
+
