@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/09/28 00:00:12  ravim
+  Fixed some bugs. Added some new functions for handling groups.
+
   Revision 1.8  1995/09/26 23:06:22  jussi
   Did some reformatting.
 
@@ -54,6 +57,8 @@ extern GroupDir *gdir;
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
 ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
@@ -158,6 +163,9 @@ void TkControlPanel::StartSession()
 
   /* Create a new tcl command for Compustat data */
   Tcl_CreateCommand(_interp, "cstat_extract", comp_extract, 0, 0);
+
+  /* Create a new tcl command for CRSP data */
+  Tcl_CreateCommand(_interp, "crsp_extract", crsp_extract, 0, 0);
 
   char *envPath = getenv("DEVISE_LIB");
   char *control;
