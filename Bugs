@@ -649,6 +649,14 @@ Num Date        Status  Description
 156 02/10/97	FIXED	Pile links should be deleted when views are unpiled.
 			(ml/rkw)
 
+157 02/09/97	OPEN	An object is not drawn if its center falls outside
+			the visual filter, even if part of the object would
+			fall inside the visual filter if it were drawn.
+			(kb/rkw)
+
+158 02/19/97	OPEN	Merging a template sometimes puts duplicate data
+			stream definitions into the catalog. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -22,6 +22,13 @@ Make automated test scripts. (rr/rkw 1/9/97)
 
 HIGH PRIORITY
 -------------
+Get PostScript output of full screen working. (ml/rkw 2/19/97)
+
+GUI for printing needs improvement. (ml/rkw 2/19/97)
+
+Fix speed problem for some sessions in Linux (try the LL.tk sesssion).
+(rr/ml/rkw 2/19/97)
+
 Major source code reorganization. (rkw 1/9/97)
 
 Make mapping dialog work like the query dialog in that you can select
@@ -358,6 +365,13 @@ Allow adding a legend to piled views to distinguish the various traces.
 
 Default view title should always be 'attr1 vs. attr2', not the data stream
 name. (ma/rkw 2/14/97)
+
+If you press the 'Stop' button, the system should give some kind of
+visual indication that the graphics you see do not represent all of
+the data. (ml?/rkw 2/17/97)
+
+The view list in 'Bring View Back' should indicate which views are not
+currently displayed in a window. (rkw 2/17/97)
 
 
 COMPLETED
