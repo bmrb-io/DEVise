@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1996/04/30 15:52:17  jussi
+#  Removed all custom color settings (-bg and -fg). The schema
+#  browser and editor now uses the global/default colors.
+#
 #  Revision 1.17  1996/03/24 19:09:41  jussi
 #  Added support for separator/whitespace and composite attributes.
 #
@@ -617,6 +621,10 @@ proc writelogical {name} {
     global tgrps schemadir physchema
 
     set f [open $schemadir/logical/$name w]
+
+    set header [DEVise getFileHeader logSchema]
+    puts $f $header
+    unset header
     
     puts $f "physical $schemadir/physical/$physchema"
 
@@ -633,6 +641,10 @@ proc writeDefaultLogical {sname} {
 
     set f [open $schemadir/logical/$sname w]
 
+    set header [DEVise getFileHeader logSchema]
+    puts $f $header
+    unset header
+
     # Only one line in this default logical file
     puts $f "physical $schemadir/physical/$sname"
     close $f
@@ -642,6 +654,10 @@ proc writephysical {name type comm issep sep alist} {
     global schemadir
 
     set f [open $schemadir/physical/$name w]
+
+    set header [DEVise getFileHeader physSchema]
+    puts $f $header
+    unset header
 
     if {$comm == ""} {
 	set comm "//"
@@ -698,19 +714,16 @@ proc readlogical {filename} {
     set f [open $schemadir/logical/$filename r]
 
     # First line specifies the physical schema
-    set line [gets $f]
+    set line ""
+    readSchemaLine $f line
 
     # Group declarations
-    set len [gets $f line]
+    set len [readSchemaLine $f line]
     while {$len >= 0} {
 	set nm [lindex $line 1]
-	if {[lindex $line 0] == ""} {
-	    # skip blank lines
-	} else {
-	    set tgrps [lappend tgrps $nm]
-	    ginput $f $nm
-	}
-	set len [gets $f line]
+	set tgrps [lappend tgrps $nm]
+	ginput $f $nm
+	set len [readSchemaLine $f line]
     }
     # Close file
     close $f
@@ -724,15 +737,16 @@ proc readphysical {filename} {
     set f [open $schemadir/physical/$filename r]
 
     # First line is the schema name and type
-    set line [gets $f]
+    set line ""
+    readSchemaLine $f line
     scan $line "type %s %s" sname ftype
 
     # Second line is comment
-    set line [gets $f]
+    readSchemaLine $f line
     scan $line "comment %s" comm
 
     # Third line is separator or whitespace
-    set line [gets $f]
+    readSchemaLine $f line
     set issepar 1
     if {[lindex $line 0] == "whitespace"} {
 	set issepar 0
@@ -743,7 +757,7 @@ proc readphysical {filename} {
     set separ [string range $line $lstart $lend]
 
     # Following are all attr declarations
-    set len [gets $f line]
+    set len [readSchemaLine $f line]
     set num 0
     while {$len != -1} {
 
@@ -789,13 +803,32 @@ proc readphysical {filename} {
 		$astrlen]
 	#	puts "Inserting .. $attr"
 	set attrlist [linsert $attrlist $num $attr]
-	set len [gets $f line]
+	set len [readSchemaLine $f line]
 	set num [expr $num+1]
     }
 
     close $f
     set sname $filename
 }
+
+###################################################################
+
+# Read a line from a schema file, skipping blank and comment lines.
+proc readSchemaLine { fileId bufRef } {
+    upvar $bufRef buf
+
+    set len 0
+    set buf ""
+    while {[lindex $buf 0] == "" || [string range $buf 0 0] == "#"} {
+        set len [gets $fileId buf]
+	if {$len == -1} {
+	    return $len
+	}
+    }
+
+    return $len
+}
+
 ###################################################################
 
 proc gbrowse {} {
@@ -1375,6 +1408,11 @@ proc writecatalog {} {
     global Logical schemadir
 
     set f [open $schemadir/catalog.tcl w]
+
+    set header [DEVise getFileHeader schemaCat]
+    puts $f $header
+    unset header
+
     puts $f "# Association between physical and logical schemas"
     puts $f ""
 

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/01 19:31:34  jussi
+  Added an asynchronous I/O interface to the data source classes.
+  Added a third parameter (char *param) to data sources because
+  the DataSegment template requires that all data sources have the
+  same constructor (DataSourceWeb requires the third parameter).
+
   Revision 1.2  1996/06/27 15:50:59  jussi
   Added IsOk() method which is used by TDataAscii and TDataBinary
   to determine if a file is still accessible. Also moved GetModTime()
@@ -44,6 +50,8 @@
 
 
 #include "DeviseTypes.h"
+
+#define DATA_LENGTH_UNDEFINED (-1)
 
 
 template<class TYPE>

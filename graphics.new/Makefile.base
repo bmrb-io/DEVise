@@ -70,7 +70,7 @@ CMDOBJ =  $(CMDSRC:.c=.o)
 
 # Misc.
 
-MISCSRC =  Version.c
+MISCSRC =  Version.c DevFileHeader.c
 MISCOBJ =  $(MISCSRC:.c=.o)
 
 LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC) $(MISCSRC)

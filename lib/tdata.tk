@@ -15,6 +15,14 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1996/06/12 14:57:59  wenger
+#	Added GUI and some code for saving data to templates; added preliminary
+#	graphical display of TDatas; you now have the option of closing a session
+#	in template mode without merging the template into the main data catalog;
+#	removed some unnecessary interdependencies among include files; updated
+#	the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+#	ParseAPI.C.
+#
 
 ############################################################
 
@@ -38,8 +46,6 @@ proc ShowTDatas {} {
 	    lappend tDataList $inst
 	}
     }
-
-    puts "tDataList = $tDataList"
 
     # Build the window to show them in.
     toplevel .tdlist

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.38  1996/07/08 17:50:54  jussi
+#	Further change to fix derived data source.
+#
 #	Revision 1.37  1996/07/08 17:24:41  jussi
 #	Replaced STAT source type with UNIXFILE.
 #
@@ -222,6 +225,11 @@ proc saveSources {} {
     catch { exec mv $sourceFile $sourceFile.bak }
 
     set f [open $sourceFile w]
+
+    set header [DEVise getFileHeader dataCat]
+    puts $f $header
+    unset header
+
     puts $f "# Data source types"
     puts $f ""
     foreach type [lsort [array names sourceTypes]] {

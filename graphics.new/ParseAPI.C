@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/07/10 19:01:14  jussi
+  Get3DLocation now reports fix_focus and perspective flags.
+
   Revision 1.16  1996/07/09 16:00:16  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -100,6 +103,7 @@
 #include "DataSeg.h"
 #include "Version.h"
 #include "CompDate.h"
+#include "DevFileHeader.h"
 
 //#define DEBUG
 
@@ -815,6 +819,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       view->Lower();
       control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "getFileHeader")) {
+      control->ReturnVal(API_ACK, DevFileHeader::Get(argv[1]));
       return 1;
     }
   }

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/01 20:23:13  jussi
+  Added #ifdef conditionals to exclude the Web data source from
+  being compiled into the Attribute Projection executable.
+
   Revision 1.3  1996/07/01 19:31:34  jussi
   Added an asynchronous I/O interface to the data source classes.
   Added a third parameter (char *param) to data sources because
@@ -164,13 +168,24 @@ DataSourceSegment<TYPE>::gotoEnd()
 
 	int		result = 0;
 
-	if (TYPE::Seek(_dataOffset + _dataLength, SEEK_SET) < 0)
+	if (_dataLength == DATA_LENGTH_UNDEFINED)
 	{
-		reportError("Cannot seek to end of file", devNoSyserr);
-		result = -1;
-		DOASSERT(false, "");
+		if (TYPE::gotoEnd() < 0)
+		{
+			result = -1;
+		}
 	}
 	else
+	{
+		if (TYPE::Seek(_dataOffset + _dataLength, SEEK_SET) < 0)
+		{
+			reportError("Cannot seek to end of file", devNoSyserr);
+			result = -1;
+			DOASSERT(false, "");
+		}
+	}
+
+	if (result != -1)
 	{
 		result = TYPE::Tell() - _dataOffset;
 	}

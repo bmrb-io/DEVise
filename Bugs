@@ -1,5 +1,5 @@
-							Bugs in DEVise
-							$Revision$
+				Bugs in DEVise
+				$Revision$
 
 Num Date        Status  Description
 --- --------    ------  -------------------------------------------------------
@@ -8,7 +8,7 @@ Num Date        Status  Description
 002 05/14/96	FIXED	DEVise hogs an awful lot of CPU cycles even when
 			you are not doing anything. (rkw/kb) (jpm)
 
-003	05/14/96	OPEN	Numeric keypad keys don't always work correctly
+003 05/14/96	OPEN	Numeric keypad keys don't always work correctly
 						on Suns running SunOS 4.x. (rkw)
 
 004 05/16/96	OPEN	Physical schema editor does not support the length
@@ -27,19 +27,26 @@ Num Date        Status  Description
 008 05/16/96	OPEN	View window cannot be destroyed through the
 			window manager causes Devise to crash. (jpm)
 
-009	05/22/96	OPEN	OBJ in generic/Makefile.base doesn't get the
-						right list; causes 'make clean' to try to delete
-						source files. (rkw)
+009 05/22/96	OPEN	OBJ in generic/Makefile.base doesn't get the
+			right list; causes 'make clean' to try to delete
+			source files. (rkw)
 
-010	05/31/96	OPEN	In TDataMap.c, call to ConvertToGData with _tmpPtr
-						as argument may not be work correctly (alignment of
-						_tmpPtr). (rkw)
+010 05/31/96	OPEN	In TDataMap.c, call to ConvertToGData with _tmpPtr
+			as argument may not be work correctly (alignment of
+			_tmpPtr). (rkw)
 
-011	06/06/96	OPEN	DEVise doesn't deal well with bar charts where data
-						is all zeros -- sometimes crashes. (rkw)
+011 06/06/96	OPEN	DEVise doesn't deal well with bar charts where data
+			is all zeros -- sometimes crashes. (rkw)
 
-012	06/06/96	OPEN	All TData's ever used in a session get saved, even
-						if they're no longer used. (rkw)
+012 06/06/96	OPEN	All TData's ever used in a session get saved, even
+			if they're no longer used. (rkw)
+
+013 07/10/96	FIXED	Schema editing code doesn't seem to recognize comment
+			lines in the schema files -- tries to interpret them
+			as attributes. (rkw)
+
+014 07/11/96	OPEN	Schema editor doesn't allow entry of string lengths
+			(always forces them to 10). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
