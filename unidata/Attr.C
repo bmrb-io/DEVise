@@ -193,7 +193,7 @@ Attr *Attr::dup()
     if (!this)
         return NULL;
 
-    cerr << "Warning: " __FUNCTION__ " - Not yet implemented.\n";
+    cerr << "Warning: " << __FUNCTION__ << " - Not yet implemented.\n";
     return NULL;
 }
 

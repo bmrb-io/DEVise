@@ -1342,7 +1342,7 @@ void Schema::setup_perl(PerlInterpreter *perl)
 // duplicate this schema (deep-copy)
 Schema *Schema::dup()
 {
-    cerr << "Warning: " __FUNCTION__ " - Not yet implemented.\n";
+    cerr << "Warning: " << __FUNCTION__ << " - Not yet implemented.\n";
     return NULL;
 }
 
