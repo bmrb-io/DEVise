@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.20  1995/11/29 15:47:26  jussi
+#	Removed constant size definition from some toplevel windows
+#	because they will produce unexpected results on some window
+#	managers.
+#
 #	Revision 1.19  1995/11/22 17:53:46  jussi
 #	Added view type selection in automatic view generation. User can
 #	now choose between a bar chart, an image, and a scatter plot.
@@ -293,7 +298,7 @@ proc MacroDefNewMapping {} {
 
     # ask DEVise to create view instance
     set sorted SortedX
-    set viewname $tdata#$view#$x#$y
+    set viewname [UniqueName "$tdata: $y vs. $x"]
     if {[lsearch [ViewSet] $viewname] >= 0} {
 	dialog .viewError "View Error" \
 		"View $viewname exists already." "" 0 OK
@@ -399,6 +404,8 @@ proc MacroDefHelp {} {
 proc MacroDefAuto {tdata} {
     global schemas modified x xtype sortedx yvar selgrp schemaname schema
     global viewsel viewselname macroSelectColor macroMenuSelectColor
+    global layoutsel layoutselname linksel winnamesel titlesel
+    global xaxissel yaxissel
 
     # see if .auto window already exists; if so, just return
     set err [catch {set exists [wm state .auto]}]
@@ -419,7 +426,7 @@ proc MacroDefAuto {tdata} {
     } else {
 	# Create window to show list of top level group names
 	toplevel .topgrps
-	wm title .topgrps "Choose AttributeGroup"
+	wm title .topgrps "Choose Attribute Group"
 	wm geometry .topgrps +100+100
 	selection clear .topgrps
 	listbox .topgrps.list -relief raised -borderwidth 2 \
@@ -448,7 +455,6 @@ proc MacroDefAuto {tdata} {
 	grab set .topgrps
 	tkwait window .topgrps
     }
-    
 
     toplevel .auto
     wm title .auto "Automatic Views"
@@ -457,24 +463,46 @@ proc MacroDefAuto {tdata} {
 
     label .auto.label -text "Select Auto Parameters"
     frame .auto.top
+    frame .auto.mid
+    frame .auto.bot
     frame .auto.ysel -relief groove -borderwidth 2
     frame .auto.but
     pack .auto.label -side top -pady 3m -fill x -expand 1
-    pack .auto.top -side top -pady 3m
+    pack .auto.top -side top -pady 3m -fill x -expand 1
+    pack .auto.mid -side top -pady 3m -fill x -expand 1
+    pack .auto.bot -side top -pady 3m -fill x -expand 1
     pack .auto.ysel -side top -pady 3m -fill x -expand 1
     pack .auto.but -side top -pady 3m -fill x -expand 1
 
+    frame .auto.winnamesel -relief groove -borderwidth 2
     frame .auto.xsel -relief groove -borderwidth 2
-    frame .auto.viewsel -relief groove -borderwidth 2
-    pack .auto.xsel -in .auto.top -side left -ipady 3m -ipadx 3m -padx 3m
-    pack .auto.viewsel -in .auto.top -side left -ipady 3m -ipadx 3m -padx 3m
+    pack .auto.winnamesel .auto.xsel -in .auto.top -side left \
+	    -ipady 3m -padx 3m -fill x -expand 1
 
-    label .auto.xsel.label -text "Select X"
+    frame .auto.viewsel -relief groove -borderwidth 2
+    frame .auto.layoutsel -relief groove -borderwidth 2
+    pack .auto.viewsel .auto.layoutsel -in .auto.mid \
+	    -side left -ipady 3m -padx 3m -fill x -expand 1
+
+    frame .auto.titlesel -relief groove -borderwidth 2
+    frame .auto.linksel -relief groove -borderwidth 2
+    frame .auto.xaxissel -relief groove -borderwidth 2
+    frame .auto.yaxissel -relief groove -borderwidth 2
+    pack .auto.titlesel .auto.linksel .auto.xaxissel .auto.yaxissel \
+	    -in .auto.bot -side left -ipady 3m -padx 3m -fill x -expand 1
+
+    label .auto.winnamesel.label -text "Window Name:"
+    entry .auto.winnamesel.entry -relief sunken -textvariable winnamesel \
+	    -width 30
+    pack .auto.winnamesel.label .auto.winnamesel.entry -side left -padx 3m
+    set winnamesel "$tdata (Auto)"
+
+    label .auto.xsel.label -text "Select X:"
     menubutton .auto.xsel.attr -relief raised \
 	    -textvariable x -menu .auto.xsel.attr.g$selgrp -width 15
     pack .auto.xsel.label .auto.xsel.attr -side left -padx 3m
 
-    label .auto.viewsel.label -text "View Type"
+    label .auto.viewsel.label -text "View Type:"
     menubutton .auto.viewsel.view -relief raised \
 	    -textvariable viewselname -menu .auto.viewsel.view.menu -width 15
     pack .auto.viewsel.label .auto.viewsel.view -side left -padx 3m
@@ -495,19 +523,53 @@ proc MacroDefAuto {tdata} {
     set viewselname "Bar Chart"
     set viewsel 2
 
-    tk_menuBar .auto.xsel .auto.xsel.attr
+    label .auto.layoutsel.label -text "Layout:"
+    menubutton .auto.layoutsel.layout -relief raised \
+	    -textvariable layoutselname -menu .auto.layoutsel.layout.menu \
+	    -width 15
+    pack .auto.layoutsel.label .auto.layoutsel.layout -side left -padx 3m
+
+    menu .auto.layoutsel.layout.menu -tearoff 0
+    .auto.layoutsel.layout.menu add radiobutton -label Vertical \
+	    -variable layoutselname -value Vertical -command {
+	set layoutsel WinVertical
+    }
+    .auto.layoutsel.layout.menu add radiobutton -label Horizontal \
+	    -variable layoutselname -value Horizontal -command {
+	set layoutsel WinHorizontal
+    }
+    set layoutselname Vertical
+    set layoutsel WinVertical
+
+    checkbutton .auto.titlesel.title -text Title -variable titlesel
+    pack .auto.titlesel.title -side left -padx 3m
+    set titlesel 0
+
+    checkbutton .auto.linksel.link -text "Link X" -variable linksel
+    pack .auto.linksel.link -side left -padx 3m
+    set linksel 1
+
+    checkbutton .auto.xaxissel.xaxis -text "X Axis" -variable xaxissel
+    pack .auto.xaxissel.xaxis -side left -padx 3m
+    set xaxissel 0
+
+    checkbutton .auto.yaxissel.yaxis -text "Y Axis" -variable yaxissel
+    pack .auto.yaxissel.yaxis -side left -padx 3m
+    set yaxissel 1
 
     if {$selgrp == "__default"} {
 	set slabel "Select Y"
 	set swidth 15
     } else {
 	set slabel "Select Y from $selgrp"
-	set swidth [expr [llength [split $selgrp {}]]+15]
+	set swidth [expr [llength [split $selgrp {}]] + 15]
     }
     label .auto.ysel.label -text $slabel -width $swidth
     pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
+
     frame .auto.ysel.sel
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
+
     setupButtons .auto.ysel.sel $selgrp $selgrp
 
     #  For selecting Y attrs - a button here will pop up a new window
@@ -624,7 +686,8 @@ proc MacroDefAuto {tdata} {
 	# puts "The value of xtype is $xtype"
 	# puts "The value of sortedx is $sortedx"
 	# puts "The ylist is $ylist"
-	MacroDefAutoActual $tdata $viewsel $x $xtype $sortedx $ylist
+	MacroDefAutoActual $tdata $viewsel $linksel $winnamesel $layoutsel \
+		$titlesel $xaxissel $yaxissel $x $xtype $sortedx $ylist
 	destroy .auto
     }
     button .auto.but.cancel -text Cancel -width 15 -command {
@@ -637,16 +700,15 @@ proc MacroDefAuto {tdata} {
 
 ############################################################
 
-proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
+proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
+                         xaxissel yaxissel x xtype sortedx ylist} {
     global schemas maps mappings views links windows modified none
     global viewDefault
 
-    set window [format "%s (Auto)" $tdata]
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
 	# ask DEVise to create window
-	set winType WinVertical
-	set result [DEVise create window $winType $window 0.3 0.0 0.5 0.95]
+	set result [DEVise create window $layout $window 0.3 0.0 0.5 0.95]
 	if {$result == ""} {
 	    dialog .windowError "Window Error" \
 		    "Error creating window $window" "" 0 OK
@@ -682,17 +744,19 @@ proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
     # puts "Auto mappings will have xlo $xlo and xhi $xhi"
 
     set linkname [format "%s Link" $x]
-    set err [catch {set exists $links($linkname)}]
-    if {$err > 0} {
-	# ask DEVise to create link
-	set result [DEVise create link Visual_Link $linkname 1]
-	if {$result == ""} {
-	    dialog .linkError "Link Error" \
-		    "Error creating link $linkname" "" 0 OK
-	    return
+    if {$linksel} {
+	set err [catch {set exists $links($linkname)}]
+	if {$err > 0} {
+	    # ask DEVise to create link
+	    set result [DEVise create link Visual_Link $linkname 1]
+	    if {$result == ""} {
+		dialog .linkError "Link Error" \
+			"Error creating link $linkname" "" 0 OK
+		return
+	    }
+	    set flag 1
+	    set links($linkname) $flag
 	}
-	set flag 1
-	set links($linkname) $flag
     }
 
     set sname [lindex $schemas($tdata) 0]
@@ -753,7 +817,7 @@ proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
 
 	# ask DEVise to create view instance
 	set sorted $sortedx
-	set viewinstance "$tdata#$viewname#$x#$name"
+	set viewinstance [UniqueName "$tdata: $name vs. $x"]
 	if {[lsearch [ViewSet] $viewinstance] >= 0} {
 	    dialog .viewError "View Error" \
 		    "View $viewinstance exists already." "" 0 OK
@@ -767,6 +831,17 @@ proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
 	    return
 	}
 	
+	# ask DEVise to turn on/off label
+	if {$titlesel} {
+	    DEVise setLabel $viewinstance 1 16 $viewinstance
+	}
+
+	# ask DEVise to turn on/off X axis
+	DEVise setAxisDisplay $viewinstance X $xaxissel
+
+	# ask DEVise to turn on/off Y axis
+	DEVise setAxisDisplay $viewinstance Y $yaxissel
+
 	if {[lsearch [DEVise get mapping] $mapname] < 0} {
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
@@ -782,8 +857,6 @@ proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
 		    "" \$$x \$$name $color $size $pattern $orient $shape \
 		    $shapeAttr0 $shapeAttr1]
 	    DEVise setPixelWidth $mapinstance 1
-	} else {
-	    puts "$mapinstance exists already -- not creating"
 	}
 
 	# ask DEVise to insert $viewinstance into $mapinstance
@@ -794,16 +867,16 @@ proc MacroDefAutoActual {tdata viewsel x xtype sortedx ylist} {
 	set result [DEVise insertWindow $viewinstance $window]
 	# seems that there's no error code returned
 
-	# ask DEVise to link $viewinstance to $linkname
-	set result [DEVise insertLink $linkname $viewinstance]
-	# seems that there's no error code returned
+	if {$linksel} {
+	    # ask DEVise to link $viewinstance to $linkname
+	    set result [DEVise insertLink $linkname $viewinstance]
+	    # seems that there's no error code returned
+	}
 
 	DEVise clearViewHistory $viewinstance
 	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
 
 	ProcessViewSelected $viewinstance
-	# DoToggleAxis X
-	DoToggleAxis Y
 
 	incr color
     }
@@ -1836,18 +1909,18 @@ proc CreateBitmapMenuButton { w file varname } {
     return $w
 }
 
-
 # Procedure for displaying Y coordinates in Auto mode
+
 proc selYAuto {grpname topgrp} {
     global yvar macroSelectColor schemaname
 
-    #Check if the window already exists
+    # Check if the window already exists
     set err [catch {set exists [wm state .selY$grpname]}]
     if {!$err} {wm deiconify .selY$grpname; return}
 
     # Create new window
     toplevel .selY$grpname
-    wm title .selY$grpname "Group : $grpname"
+    wm title .selY$grpname "Group: $grpname"
     wm geometry .selY$grpname +100+100
 	
     label .selY$grpname.label -text "Select Y parameters"
@@ -1892,11 +1965,11 @@ proc setupButtons {win grpname topgrp} {
 	incr numattrs
     }
 
-    if {$maxwidth > 10} {
+    if {$maxwidth > 15} {
 	set maxcol 1
-	set colwidth [expr $maxwidth+5]
+	set colwidth [expr $maxwidth + 2]
     } else {
-	set maxcol 4
+	set maxcol 5
 	set colwidth 15
     }
     
@@ -1942,5 +2015,5 @@ proc setupButtons {win grpname topgrp} {
 
 ############################################################
 
-# INITIALIZE  macro definition utility
+# INITIALIZE macro definition utility
 MacroDefInit
