@@ -690,6 +690,15 @@ Num Date        Status  Description
 166 02/19/97	OPEN	Merging a template sometimes puts duplicate data
 			stream definitions into the catalog. (ml/rkw)
 
+167 02/26/97    OPEN    Selecting XOR as a view foreground color causes
+                        DEVise to exit. (rkw)
+
+168 02/27/97    OPEN    A session that has statistical data displayed in
+                        a view cannot be opened as a template -- you are
+                        asked to select a data source for the statistics,
+                        rather than having the statistical data source
+                        automatically regenerated. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
