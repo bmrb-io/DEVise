@@ -1,6 +1,5 @@
-ARCH_FLAGS = -DSUN -I/usr/sup/tcl/include
-#CC = CC
-VPATH = ../../graphics.new
-include $(VPATH)/Makefile.sun
-# DO NOT DELETE THIS LINE -- make depend depends on it.
+ARCH_FLAGS = -DSUN -I/usr/sup/tcl/include -g
 
+VPATH = ../../graphics.new
+include $(VPATH)/Makefile.base
+include $(VPATH)/Makefile.sun
