@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/25 14:33:48  guangshu
+  Added member function InsertOrderly
+
   Revision 1.6  1996/04/16 20:06:54  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -129,7 +132,6 @@ listName::~listName() { DeleteAll(); delete _head; }\
 int listName::Size() { return _size; }\
 \
 void listName::Insert(valType v){\
-	DOASSERT(!_numIterators, "Cannot insert with iterator");\
 	ListElement *node = new ListElement;\
 	node->val = v;\
 	_Insert(_head, node);\
@@ -152,7 +154,6 @@ void listName::InsertOrderly(valType v, int order){\
 }\
 \
 void listName::Append(valType v){\
-	DOASSERT(!_numIterators, "Cannot append with iterator");\
 	ListElement *node = new ListElement;\
 	node->val = v;\
 	_Insert(_head->prev, node);\
@@ -274,7 +275,8 @@ void listName::InsertBeforeCurrent(int index, valType v){ \
 		_Insert(iData->current->prev->prev, node);\
 } \
 void listName::DoneIterator(int index){\
-	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
+	DOASSERT(index >= 0 && index < MaxIterators\
+		 && _iterators[index].current != NULL, "Invalid iterator");\
 	_iterators[index].current = NULL;\
 	--_numIterators;\
 	DOASSERT(_numIterators >= 0, "Invalid iterator count");\
