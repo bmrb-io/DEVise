@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.86  1997/01/17 20:31:51  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.85  1997/01/13 18:07:51  wenger
   Fixed bugs 043, 083, 084, 091, 114.
 
@@ -2409,6 +2416,7 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
   int textLength = strlen(text);
   if (textLength == 0) return;
 
+#ifdef GRAPHICS
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
 #if 1
   int direction, ascent, descent;
@@ -2508,6 +2516,7 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 
   XCopyPlane(_display, _dstBitmap.pixmap, DRAWABLE, _gc, 
 	     0, 0, dstWidth, dstHeight, startX, startY, 1);
+#endif
 }
 
 void XWindowRep::SetXorMode()

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.103  1997/01/28 16:50:40  wenger
+  Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
+  doesn't draw over them); Devise now returns a status of 0 when exiting
+  normally; cleaned up some of the exit code.
+
   Revision 1.102  1997/01/23 21:43:03  wenger
   Conditionaled out redrawing of entire background, and bug 123 workaround
   in View class.
@@ -1163,6 +1168,7 @@ void View::DrawLabel()
     win->SetFgColor(GetBgColor());
     win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
     win->SetFgColor(GetFgColor());
+    win->SetBgColor(GetBgColor());
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
   } else {

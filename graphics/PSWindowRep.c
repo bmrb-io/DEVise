@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/01/28 16:50:38  wenger
+  Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
+  doesn't draw over them); Devise now returns a status of 0 when exiting
+  normally; cleaned up some of the exit code.
+
   Revision 1.21  1997/01/24 16:38:24  wenger
   Fixed bugs 078, 103, 125; also improved X font handling (does a better
   job of finding fonts).
@@ -412,7 +417,7 @@ void PSWindowRep::SetBgColor(GlobalColor bg)
 
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
-  reportErrNosys("PSWindowRep::SetBgColor() not yet implemented");
+  //reportErrNosys("PSWindowRep::SetBgColor() not yet implemented");
     /* do something */
 #endif
 }

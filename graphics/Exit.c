@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/01/28 16:50:37  wenger
+  Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
+  doesn't draw over them); Devise now returns a status of 0 when exiting
+  normally; cleaned up some of the exit code.
+
   Revision 1.13  1996/12/30 23:51:07  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -66,8 +71,11 @@
 #include <unistd.h>
 
 #include "Exit.h"
+
+#if !defined(LIBCS)
 #include "Init.h"
 #include "Util.h"
+#endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
 #include "Control.h"
@@ -81,7 +89,7 @@
 
 void Exit::DoExit(int code)
 {
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
     printf("Exit::DoExit(%d)\n", code);
 #endif
 
@@ -89,12 +97,14 @@ void Exit::DoExit(int code)
     shutdown_system(VolumeName, RTreeFile, VolumeSize);
 #endif
 
+#if !defined(LIBCS)
     /* Clean out temp directory.  This code was moved here from Control.c,
      * replacing inline code.  The cleanup should be here, so that it
      * gets called whenever we exit (as much as is possible). */
     char *tmpDir = Init::TmpDir();
     ClearDir(tmpDir);
     (void)rmdir(tmpDir);
+#endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
     if (Init::DaliQuit()) {

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/01/17 20:31:29  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.7  1996/12/27 17:34:49  wenger
   Fixed some problems with XWindowRep::ScaledText(); added some more stuff
   to the cslib example server.
@@ -140,14 +147,16 @@ class SampleWinServer : public WinServer {
 		       WindowRep::AlignWest, false);
 
     _winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
-      _winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/8);
+    _winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/8);
     _winReps.GetWindowRep()->SetFgColor(BlackColor);
+    _winReps.GetWindowRep()->SetBgColor(PurpleColor);
     _winReps.GetWindowRep()->ScaledText("Scaled Text", x, y + h/4, w/3, h/8,
 		       WindowRep::AlignCenter, false);
 
     _winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
-      _winReps.GetWindowRep()->FillRect(x + w/2, y + h/4, w/2, h/8);
+    _winReps.GetWindowRep()->FillRect(x + w/2, y + h/4, w/2, h/8);
     _winReps.GetWindowRep()->SetFgColor(RedColor);
+    _winReps.GetWindowRep()->SetBgColor(ChocolateColor);
     _winReps.GetWindowRep()->ScaledText("abcdefg", x + w/2, y + h/4, w/2,
 		       h/8, WindowRep::AlignNorthEast, false);
 

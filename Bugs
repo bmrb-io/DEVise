@@ -578,6 +578,10 @@ Num Date        Status  Description
 			output (especially if the view is very wide in
 			relation to its height). (jpm/rkw)
 
+139 01/28/97	FIXED	Change the background color of a view, then change
+			the title font to 18 points -> the title is drawn
+			with the old background color. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
