@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.100  2001/10/05 19:26:33  xuk
+// Fixed bug 698: manipulating 3D command playback.
+//
 // Revision 1.99  2001/09/28 18:54:56  xuk
 // JavaScreen command log playback.
 // Modified run() mothod to deal with playback.
@@ -1585,7 +1588,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         try {
-            int id = Integer.parseInt(args[1]);
+            long id = Long.parseLong(args[1]);
             if (id < 0 && id != DEViseGlobals.DEFAULTID) {
                 throw new NumberFormatException();
             } else {
