@@ -85,10 +85,12 @@ BufferLru.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferLru.h
 BufferLru.o: BufferPolicy.h RecId.h RangeInfo.h /usr/include/stdio.h
 BufferLru.o: TDataAttr.h TData.h RecOrder.h ../graphics/VisualArg.h
 BufferLru.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
-BufferRnd.o: /usr/include/stdio.h RangeInfoArray.h ../graphics/DeviseTypes.h
-BufferRnd.o: BufferRnd.h BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h
-BufferRnd.o: TData.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
-BufferRnd.o: ../graphics/DList.h ../graphics/Exit.h
+BufferRnd.o: /usr/include/stdio.h /usr/include/stdlib.h
+BufferRnd.o: /usr/include/sys/stdtypes.h RangeInfoArray.h
+BufferRnd.o: ../graphics/DeviseTypes.h BufferRnd.h BufferPolicy.h RecId.h
+BufferRnd.o: RangeInfo.h TDataAttr.h TData.h RecOrder.h
+BufferRnd.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
+BufferRnd.o: ../graphics/Exit.h
 Command.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 Command.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 Command.o: /usr/include/time.h /usr/include/stdio.h /usr/include/string.h
@@ -765,16 +767,25 @@ KGraph.o: ../graphics/DevisePixmap.h ../graphics/VisualArg.h
 KGraph.o: ../graphics/Compress.h KGraph.h ../graphics/Display.h
 KGraph.o: ../graphics/Dispatcher.h ../graphics/Journal.h
 KGraph.o: ../graphics/ColorMgr.h
-Seq.o: /usr/include/stdio.h /usr/include/netdb.h /usr/include/stdlib.h
-Seq.o: /usr/include/sys/stdtypes.h /usr/include/string.h
-Seq.o: /usr/include/unistd.h /usr/include/sys/types.h
+Seq.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+Seq.o: /usr/include/string.h /usr/include/unistd.h /usr/include/sys/types.h
 Seq.o: /usr/include/sys/sysmacros.h /usr/include/assert.h
-Seq.o: /usr/include/ctype.h /usr/include/sys/socket.h
-Seq.o: /usr/include/netinet/in.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+Seq.o: /usr/include/ctype.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 Seq.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 Seq.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-Seq.o: /usr/include/stddef.h /usr/include/arpa/inet.h ../graphics/Util.h
-Seq.o: /usr/include/time.h ../graphics/Parse.h
+Seq.o: /usr/include/stddef.h machdep.h /usr/include/limits.h
+Seq.o: /usr/include/sys/param.h /usr/include/machine/param.h
+Seq.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+Seq.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+Seq.o: /usr/include/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
+Seq.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+Seq.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+Seq.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+Seq.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+Seq.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+Seq.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+Seq.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Seq.o: /usr/include/arpa/inet.h ../graphics/Util.h ../graphics/Parse.h
 ViewKGraph.o: /usr/include/stdio.h ViewKGraph.h ../graphics/DeviseTypes.h
 ViewKGraph.o: ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
 ViewKGraph.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
@@ -789,3 +800,22 @@ ViewKGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewKGraph.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
 ViewKGraph.o: BasicStats.h ViewStats.h KGraph.h ../graphics/Display.h
 ViewKGraph.o: ../graphics/ColorMgr.h
+Web.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+Web.o: /usr/include/unistd.h /usr/include/sys/types.h
+Web.o: /usr/include/sys/sysmacros.h /usr/include/string.h
+Web.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
+Web.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+Web.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+Web.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h machdep.h
+Web.o: /usr/include/limits.h /usr/include/sys/param.h
+Web.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+Web.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+Web.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/wait.h
+Web.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Web.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+Web.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+Web.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+Web.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+Web.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+Web.o: /usr/include/netdb.h /usr/include/sys/socket.h
+Web.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h

@@ -12,30 +12,10 @@ compustat.o: /usr/include/assert.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 compustat.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 compustat.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
-compustat.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
-compustat.o: /usr/include/sys/param.h /usr/include/machine/param.h
-compustat.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-compustat.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-compustat.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-compustat.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-compustat.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-compustat.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-compustat.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-compustat.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+compustat.o: /usr/include/tar.h
 extract.o: /usr/include/stdio.h
 index.o: /usr/include/stdio.h /usr/include/stdlib.h
 index.o: /usr/include/sys/stdtypes.h /usr/include/string.h
 index.o: /usr/include/ctype.h /usr/include/unistd.h /usr/include/sys/types.h
 index.o: /usr/include/sys/sysmacros.h index.h ../tape/tapedrive.h
-index.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
-index.o: /usr/include/sys/param.h /usr/include/machine/param.h
-index.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-index.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-index.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-index.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-index.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-index.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-index.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+index.o: /usr/include/tar.h

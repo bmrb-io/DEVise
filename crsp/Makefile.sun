@@ -16,58 +16,17 @@ crsp_extract.o: /usr/include/sys/sysmacros.h /usr/include/X11/X.h
 crsp_extract.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 crsp_extract.o: /usr/include/stddef.h sec.h /usr/include/sys/uio.h
 crsp_extract.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/tar.h
-crsp_extract.o: ../tape/machdep.h /usr/include/limits.h
-crsp_extract.o: /usr/include/sys/param.h /usr/include/machine/param.h
-crsp_extract.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-crsp_extract.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-crsp_extract.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-crsp_extract.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-crsp_extract.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-crsp_extract.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-crsp_extract.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-crsp_extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-crsp_extract.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 crsp_index.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 crsp_index.o: /usr/include/stdlib.h sec.h /usr/include/sys/types.h
 crsp_index.o: /usr/include/sys/sysmacros.h /usr/include/sys/uio.h
 crsp_index.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/stdio.h
-crsp_index.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
-crsp_index.o: /usr/include/sys/param.h /usr/include/machine/param.h
-crsp_index.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-crsp_index.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-crsp_index.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-crsp_index.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-crsp_index.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-crsp_index.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-crsp_index.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-crsp_index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-crsp_index.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+crsp_index.o: /usr/include/tar.h
 main.o: sec.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 main.o: /usr/include/sys/sysmacros.h /usr/include/sys/uio.h
 main.o: /usr/include/unistd.h ../tape/tapedrive.h /usr/include/stdio.h
-main.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
-main.o: /usr/include/sys/param.h /usr/include/machine/param.h
-main.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-main.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-main.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-main.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-main.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-main.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-main.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-main.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-main.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+main.o: /usr/include/tar.h
 sec.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 sec.o: /usr/include/assert.h /usr/include/ctype.h sec.h
 sec.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 sec.o: /usr/include/sys/uio.h /usr/include/unistd.h ../tape/tapedrive.h
-sec.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
-sec.o: /usr/include/sys/param.h /usr/include/machine/param.h
-sec.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
-sec.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
-sec.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-sec.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-sec.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-sec.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
-sec.o: /usr/include/sys/time.h /usr/include/sys/wait.h /usr/include/sys/ipc.h
-sec.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-sec.o: /usr/include/sys/sem.h
+sec.o: /usr/include/tar.h

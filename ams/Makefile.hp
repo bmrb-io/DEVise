@@ -66,11 +66,14 @@ ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 ams.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 ams.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-ams.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-ams.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-ams.o: /usr/include/machine/spl.h /usr/include/sys/ioctl.h
+ams.o: ../graphics.new/machdep.h /usr/include/limits.h
+ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
+ams.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
 ams.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-ams.o: /usr/include/sys/sem.h ../graphics.new/ParseCat.h
+ams.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
+ams.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+ams.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+ams.o: /usr/include/arpa/inet.h ../graphics.new/ParseCat.h
 ams.o: ../graphics.new/Command.h ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/stdsyms.h /usr/include/sys/fcntl.h

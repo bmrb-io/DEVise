@@ -89,9 +89,9 @@ BufferLru.o: /usr/include/sys/feature_tests.h TDataAttr.h TData.h RecOrder.h
 BufferLru.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
 BufferLru.o: ../graphics/Exit.h
 BufferRnd.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-BufferRnd.o: RangeInfoArray.h ../graphics/DeviseTypes.h BufferRnd.h
-BufferRnd.o: BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h TData.h
-BufferRnd.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+BufferRnd.o: /usr/include/stdlib.h RangeInfoArray.h ../graphics/DeviseTypes.h
+BufferRnd.o: BufferRnd.h BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h
+BufferRnd.o: TData.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
 BufferRnd.o: ../graphics/DList.h ../graphics/Exit.h
 Command.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 Command.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -804,27 +804,31 @@ KGraph.o: ../graphics/Compress.h KGraph.h ../graphics/Display.h
 KGraph.o: ../graphics/Dispatcher.h ../graphics/Journal.h
 KGraph.o: ../graphics/ColorMgr.h
 Seq.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-Seq.o: /usr/include/netdb.h /usr/include/stdlib.h /usr/include/string.h
-Seq.o: /usr/include/unistd.h /usr/include/sys/types.h
-Seq.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-Seq.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
-Seq.o: /usr/include/sys/unistd.h /usr/include/assert.h /usr/include/ctype.h
+Seq.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/unistd.h
+Seq.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+Seq.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+Seq.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/sys/unistd.h
+Seq.o: /usr/include/assert.h /usr/include/ctype.h /s/tcl/include/tcl.h
+Seq.o: /s/tcl/include/tk.h /usr/X11R6/include/X11/Xlib.h
+Seq.o: /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h
+Seq.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h machdep.h
+Seq.o: /usr/include/limits.h /usr/include/sys/param.h /usr/include/sys/wait.h
+Seq.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+Seq.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+Seq.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+Seq.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 Seq.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 Seq.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 Seq.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
 Seq.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
 Seq.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-Seq.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-Seq.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-Seq.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-Seq.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-Seq.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-Seq.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Seq.o: /usr/include/sys/byteorder.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
-Seq.o: /usr/X11R6/include/X11/Xlib.h /usr/X11R6/include/X11/X.h
-Seq.o: /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h
-Seq.o: /usr/include/stddef.h /usr/include/arpa/inet.h ../graphics/Util.h
-Seq.o: ../graphics/Parse.h
+Seq.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+Seq.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+Seq.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+Seq.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+Seq.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+Seq.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+Seq.o: /usr/include/arpa/inet.h ../graphics/Util.h ../graphics/Parse.h
 ViewKGraph.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h ViewGraph.h
 ViewKGraph.o: ../graphics/View.h ../graphics/Dispatcher.h
@@ -841,3 +845,29 @@ ViewKGraph.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 ViewKGraph.o: /usr/include/time.h ../graphics/Config.h ../graphics/Cursor.h
 ViewKGraph.o: BasicStats.h ViewStats.h KGraph.h ../graphics/Display.h
 ViewKGraph.o: ../graphics/ColorMgr.h
+Web.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+Web.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/types.h
+Web.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+Web.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
+Web.o: /usr/include/sys/unistd.h /usr/include/string.h /usr/include/errno.h
+Web.o: /usr/include/sys/errno.h /usr/include/assert.h /s/tcl/include/tcl.h
+Web.o: /s/tcl/include/tk.h /usr/X11R6/include/X11/Xlib.h
+Web.o: /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h
+Web.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h machdep.h
+Web.o: /usr/include/limits.h /usr/include/sys/param.h /usr/include/sys/wait.h
+Web.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+Web.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+Web.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+Web.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Web.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Web.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+Web.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+Web.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+Web.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+Web.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+Web.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+Web.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+Web.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+Web.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+Web.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+Web.o: /usr/include/arpa/inet.h

@@ -56,8 +56,11 @@ issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 issm.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-issm.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-issm.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
-issm.o: /usr/include/machine/spl.h /usr/include/sys/ioctl.h
+issm.o: ../graphics.new/machdep.h /usr/include/limits.h
+issm.o: /usr/include/sys/param.h /usr/include/machine/param.h
+issm.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
 issm.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-issm.o: /usr/include/sys/sem.h ../graphics.new/ParseCat.h
+issm.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
+issm.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+issm.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+issm.o: /usr/include/arpa/inet.h ../graphics.new/ParseCat.h

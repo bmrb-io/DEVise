@@ -69,12 +69,24 @@ ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 ams.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 ams.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-ams.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-ams.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
+ams.o: ../graphics.new/machdep.h /usr/include/limits.h
+ams.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 ams.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 ams.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 ams.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-ams.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+ams.o: /usr/include/sys/shm.h /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+ams.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ams.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+ams.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+ams.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+ams.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+ams.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+ams.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+ams.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+ams.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+ams.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+ams.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+ams.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
 ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
 ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h

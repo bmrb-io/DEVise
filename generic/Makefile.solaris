@@ -59,10 +59,22 @@ issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 issm.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-issm.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-issm.o: /usr/include/sys/unistd.h /usr/include/sys/ioctl.h
+issm.o: ../graphics.new/machdep.h /usr/include/limits.h
+issm.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 issm.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
 issm.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
 issm.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
 issm.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-issm.o: ../graphics.new/ParseCat.h
+issm.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+issm.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+issm.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+issm.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+issm.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+issm.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+issm.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+issm.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+issm.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+issm.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+issm.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+issm.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+issm.o: /usr/include/arpa/inet.h ../graphics.new/ParseCat.h

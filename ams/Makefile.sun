@@ -68,15 +68,18 @@ ams.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 ams.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 ams.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 ams.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-ams.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-ams.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-ams.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+ams.o: ../graphics.new/machdep.h /usr/include/limits.h
+ams.o: /usr/include/sys/param.h /usr/include/machine/param.h
+ams.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+ams.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+ams.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+ams.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 ams.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 ams.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 ams.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 ams.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-ams.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-ams.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+ams.o: /usr/include/netdb.h /usr/include/sys/socket.h
+ams.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
 ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
 ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/stdlib.h

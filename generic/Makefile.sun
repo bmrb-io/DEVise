@@ -60,13 +60,16 @@ issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
 issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
 issm.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-issm.o: ../tape/machdep.h /usr/include/limits.h /usr/include/sys/param.h
-issm.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-issm.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+issm.o: ../graphics.new/machdep.h /usr/include/limits.h
+issm.o: /usr/include/sys/param.h /usr/include/machine/param.h
+issm.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+issm.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+issm.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+issm.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
 issm.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
 issm.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
 issm.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 issm.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-issm.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
-issm.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+issm.o: /usr/include/netdb.h /usr/include/sys/socket.h
+issm.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
 issm.o: ../graphics.new/ParseCat.h

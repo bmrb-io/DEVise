@@ -86,11 +86,11 @@ BufferLru.o: BufferPolicy.h RecId.h RangeInfo.h /usr/include/stdio.h
 BufferLru.o: /usr/include/sys/stdsyms.h TDataAttr.h TData.h RecOrder.h
 BufferLru.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
 BufferLru.o: ../graphics/Exit.h
-BufferRnd.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h RangeInfoArray.h
-BufferRnd.o: ../graphics/DeviseTypes.h BufferRnd.h BufferPolicy.h RecId.h
-BufferRnd.o: RangeInfo.h TDataAttr.h TData.h RecOrder.h
-BufferRnd.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
-BufferRnd.o: ../graphics/Exit.h
+BufferRnd.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+BufferRnd.o: /usr/include/stdlib.h RangeInfoArray.h ../graphics/DeviseTypes.h
+BufferRnd.o: BufferRnd.h BufferPolicy.h RecId.h RangeInfo.h TDataAttr.h
+BufferRnd.o: TData.h RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
+BufferRnd.o: ../graphics/DList.h ../graphics/Exit.h
 Command.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 Command.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/string.h
 Command.o: ../graphics/Exit.h ../graphics/Time.h ../graphics/Journal.h
@@ -738,17 +738,19 @@ KGraph.o: ../graphics/DevisePixmap.h ../graphics/VisualArg.h
 KGraph.o: ../graphics/Compress.h KGraph.h ../graphics/Display.h
 KGraph.o: ../graphics/Dispatcher.h ../graphics/Journal.h
 KGraph.o: ../graphics/ColorMgr.h
-Seq.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/netdb.h
-Seq.o: /usr/include/sys/param.h /usr/include/sys/types.h
+Seq.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
+Seq.o: /usr/include/string.h /usr/include/unistd.h /usr/include/sys/unistd.h
+Seq.o: /usr/include/assert.h /usr/include/ctype.h /s/tcl/include/tcl.h
+Seq.o: /s/tcl/include/tk.h /usr/include/X11/Xlib.h /usr/include/sys/types.h
+Seq.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+Seq.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h machdep.h
+Seq.o: /usr/include/limits.h /usr/include/sys/param.h
 Seq.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
 Seq.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+Seq.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h /usr/include/sys/shm.h
+Seq.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
 Seq.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-Seq.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/unistd.h
-Seq.o: /usr/include/sys/unistd.h /usr/include/assert.h /usr/include/ctype.h
 Seq.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-Seq.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
-Seq.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-Seq.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
 Seq.o: /usr/include/arpa/inet.h ../graphics/Util.h /usr/include/time.h
 Seq.o: ../graphics/Parse.h
 ViewKGraph.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ViewKGraph.h
@@ -764,3 +766,18 @@ ViewKGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewKGraph.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 ViewKGraph.o: ViewStats.h KGraph.h ../graphics/Display.h
 ViewKGraph.o: ../graphics/ColorMgr.h
+Web.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
+Web.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h
+Web.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
+Web.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+Web.o: /usr/include/sys/types.h /usr/include/X11/X.h
+Web.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+Web.o: /usr/include/stddef.h machdep.h /usr/include/limits.h
+Web.o: /usr/include/sys/param.h /usr/include/machine/param.h
+Web.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
+Web.o: /usr/include/machine/spl.h /usr/include/sys/wait.h
+Web.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+Web.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Web.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+Web.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+Web.o: /usr/include/arpa/inet.h
