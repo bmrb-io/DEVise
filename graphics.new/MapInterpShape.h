@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/04/23 20:35:37  jussi
+  Added Segment shape which just connects two end points.
+
   Revision 1.16  1996/04/16 20:44:08  jussi
   Added HorLineShape, a 2D horizontal line shape that is used
   by statistics views.
@@ -622,4 +625,128 @@ public:
   }
 };
 
+// -----------------------------------------------------------------
+
+class FullMapping_HighLowShape: public HighLowShape {
+public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0.0;
+    height = 0.0;
+
+    return;
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord temp = fabs(GetShapeAttr0(gdata, map, offset));
+      if (temp > width) width = temp;
+      temp = GetShapeAttr1(gdata, map,  offset);
+      temp -= GetShapeAttr2(gdata, map, offset);
+      if (temp > height) height = temp;
+    }
+  }
+  
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 &&
+			    offset->shapeAttrOffset[2] < 0 ? true : false);
+
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
+
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+#ifdef DEBUG
+      printf("HighLowShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
+	return;
+      }
+    }
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      Coord width = fabs(GetShapeAttr0(gdata, map, offset));
+      Coord high = GetShapeAttr1(gdata, map, offset);
+      Coord low = GetShapeAttr2(gdata, map, offset);
+      Coord tw = width / 20.0;
+      Coord hw = width / 2.0;
+
+      win->SetFgColor(GetColor(view, gdata, map, offset));
+      win->SetPattern(GetPattern(gdata, map, offset));
+      win->FillRect(x - tw, low, 2 * tw, high - low);
+      win->Line(x - hw, y, x + hw, y, 1);
+      win->Line(x - hw, low, x + hw, low, 1);
+      win->Line(x - hw, high, x + hw, high, 1);
+    }
+  }
+};
+ 
+// -----------------------------------------------------------------
+
+class FullMapping_GifImageShape: public GifImageShape {
+public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0.0;
+    height = 0.0;
+  }
+
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    // first draw a cross mark at each GIF image location;
+    // if there is a problem in displaying the GIF image,
+    // then at least the user sees some symbol in the window
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      Color color = GetColor(view, gdata, map, offset);
+
+      win->SetFgColor(color);
+      Coord tx, ty;
+      win->Transform(x, y, tx, ty);
+      win->PushTop();
+      win->MakeIdentity();
+      win->Line(tx - 3, ty, tx + 3, ty, 1);
+      win->Line(tx, ty - 3, tx, ty + 3, 1);
+      win->PopTransform();
+
+      int off = offset->shapeAttrOffset[0];
+      if (off < 0) {
+#ifdef DEBUG
+	printf("Drawing null GIF image at %.2f,%.2f\n", x, y);
+#endif
+	continue;
+      }
+
+#ifdef DEBUG
+      printf("Drawing GIF image at %.2f,%.2f\n", x, y);
+#endif
+
+      char *filename = gdata + off;
+      win->ImportImage(x, y, GIF, filename);
+    }
+  }
+};
+ 
 #endif

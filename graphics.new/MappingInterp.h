@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/05/07 16:39:09  jussi
+  Added MapGAttr2TAttr() method for translating GData attributes
+  to TData attributes.
+
   Revision 1.15  1996/04/23 20:35:41  jussi
   Added Segment shape which just connects two end points.
 
@@ -71,6 +75,7 @@
 #define MappingInterp_h
 
 #include <tcl.h>
+
 #include "TDataMapDispatch.h"
 #include "GDataRec.h"
 #include "TData.h"
@@ -122,10 +127,11 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 10;
+const int MaxInterpShapes = 12;
 
 class MappingInterp: public TDataMapDispatch {
-  friend inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
+  friend inline double ConvertOne(char *from,
+				  MappingSimpleCmdEntry *entry,
 				  double defaultVal);
 
 public:
@@ -158,11 +164,12 @@ protected:
   /* convert from Tdata to Gdata. buf contains
      buffer for data. tRecs are pointers to variable size records only. */
   virtual void ConvertToGData(RecId startRecId, void *buf,
-			      void **tRecs, int numRecs, void *gdataPtr);
+			      void **tRecs, int numRecs,
+			      void *gdataPtr);
   
 private:
   /* Initialize command by converting _cmd into _tclCmd,
-     and initializing _tdataFlag*/
+     and initializing _tdataFlag */
   AttrList *InitCmd(char *name);
   
   /* Convert from interpreter command of the into TCL commnd 
@@ -184,7 +191,7 @@ private:
   /* Print one entry of simple command */
   void PrintSimpleCmdEntry(MappingSimpleCmdEntry *entry);
   
-  /* print command */
+  /* Print command */
   void PrintCmd();
   
   /* Do convert to GData for simple command */
@@ -199,9 +206,9 @@ private:
   
   /* command for the mapping and the associated flags */
   MappingInterpCmd *_cmd;
-  MappingInterpCmd *_tclCmd; /* actual tcl command used */
-  MappingSimpleCmd *_simpleCmd; /* simple command */
-  Boolean _isSimpleCmd; /* true to use _simpleCmd. Otherwise, use _tclCmd */
+  MappingInterpCmd *_tclCmd;     /* actual tcl command used */
+  MappingSimpleCmd *_simpleCmd;  /* simple command */
+  Boolean _isSimpleCmd;          /* true if _simpleCmd, otherwise _tclCmd */
   
   int _cmdFlag;
   int _cmdAttrFlag;
@@ -209,10 +216,10 @@ private:
   /* Offsets of GData attributes */
   GDataAttrOffset *_offsets;
   
-  AttrList *_attrList; /* list of tdata attributes */
-  Bitmap *_tdataFlag; /* bit i set if ith attribute of TData is used */
-  int _maxTDataAttrNum; /* max # of attributes in TData used */
-  int _maxGDataShapeAttrNum; /* max shape attribute number encountered */
+  AttrList *_attrList;        /* list of tdata attributes */
+  Bitmap *_tdataFlag;         /* bit i set if ith attribute of TData is used */
+  int _maxTDataAttrNum;       /* max # of attributes in TData used */
+  int _maxGDataShapeAttrNum;  /* max shape attribute number encountered */
   
   /* attributes used to evaluate tcl variables */
   static double *_tclAttrs;

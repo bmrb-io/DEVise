@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/05/07 16:39:08  jussi
+  Added MapGAttr2TAttr() method for translating GData attributes
+  to TData attributes.
+
   Revision 1.26  1996/04/23 20:35:40  jussi
   Added Segment shape which just connects two end points.
 
@@ -223,19 +227,21 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   _attrList = tdata->GetAttrList();
   _simpleCmd = new MappingSimpleCmd();
 
-  if (_interp == NULL) {
+  if (!_interp) {
     /* Init shapes */
     _shapes = new Shape *[MaxInterpShapes];
-    _shapes[0] = new FullMapping_RectShape;
-    _shapes[1] = new FullMapping_RectXShape;
-    _shapes[2] = new FullMapping_BarShape;
-    _shapes[3] = new FullMapping_PolygonShape;
-    _shapes[4] = new FullMapping_OvalShape;
-    _shapes[5] = new FullMapping_VectorShape;
-    _shapes[6] = new FullMapping_BlockShape;
-    _shapes[7] = new FullMapping_3DVectorShape;
-    _shapes[8] = new FullMapping_HorLineShape;
-    _shapes[9] = new FullMapping_SegmentShape;
+    _shapes[0]  = new FullMapping_RectShape;
+    _shapes[1]  = new FullMapping_RectXShape;
+    _shapes[2]  = new FullMapping_BarShape;
+    _shapes[3]  = new FullMapping_PolygonShape;
+    _shapes[4]  = new FullMapping_OvalShape;
+    _shapes[5]  = new FullMapping_VectorShape;
+    _shapes[6]  = new FullMapping_BlockShape;
+    _shapes[7]  = new FullMapping_3DVectorShape;
+    _shapes[8]  = new FullMapping_HorLineShape;
+    _shapes[9]  = new FullMapping_SegmentShape;
+    _shapes[10] = new FullMapping_HighLowShape;
+    _shapes[11] = new FullMapping_GifImageShape;
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {

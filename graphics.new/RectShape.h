@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/23 20:35:42  jussi
+  Added Segment shape which just connects two end points.
+
   Revision 1.7  1996/04/16 20:43:11  jussi
   Added HorLineShape, a 2D horizontal line shape that is used
   by statistics views.
@@ -92,5 +95,17 @@ class HorLineShape : public Shape {};
    Basically the same as a vector but without the arrow head. */
 
 class SegmentShape : public Shape {};
+
+/* HighLow: a high-low bar (aka error bar) which has three distinct points:
+   the data point (X,Y), a high point (X,a1), and a low point (X,a2).
+   The width of the vertical bar connecting the high and low points
+   is a0 units wide. a0 = shape attribute 0, a1 = shape attribute 1. */
+
+class HighLowShape : public Shape {};
+
+/* GifImage: draws a GIF image whose filename is given in shape
+   attribute 0 at (X,Y). */
+
+class GifImageShape : public Shape {};
 
 #endif
