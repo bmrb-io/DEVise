@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/20 18:49:41  jussi
+  Added 3D line segment shape. Improved performance of line shade shape.
+
   Revision 1.9  1996/07/19 03:23:37  jussi
   Added LineShape and LineShadeShape.
 
@@ -60,7 +63,9 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 {
     GDataAttrOffset *offset = map->GetGDataOffset();
 
-    Boolean wireframe = !view->GetSolid3D();
+    // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
+    Boolean wireframe = (view->GetSolid3D() == 0);
+    Boolean solidFrame = (view->GetSolid3D() == 2);
 
     for(int i = 0; i < numSyms; i++) {
         char *gdata = (char *)gdataArray[i];
@@ -73,6 +78,8 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
         _object3D[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
         _object3D[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
         _object3D[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
+        _object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
+        _object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
         _object3D[i].color = GetColor(view, gdata, map, offset);
 
         Map3D::AssignBlockVertices(_object3D[i]);
@@ -110,7 +117,7 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
     } else {
         Map3D::MapBlockPlanes(win, _object3D, numSyms,
                               view->GetCamera(), w, h);
-        Map3D::DrawPlanes(win);
+        Map3D::DrawPlanes(win, solidFrame);
     }
 }
 
@@ -132,6 +139,8 @@ void FullMapping_SegmentShape::Draw3DGDataArray(WindowRep *win,
         _object3D[i].W = size * GetShapeAttr0(gdata, map, offset);
         _object3D[i].H = size * GetShapeAttr1(gdata, map, offset);
         _object3D[i].D = size * GetShapeAttr2(gdata, map, offset);
+        _object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
+        _object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
         _object3D[i].color = GetColor(view, gdata, map, offset);
 
 #ifdef DEBUG
