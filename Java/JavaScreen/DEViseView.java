@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2000/08/07 20:21:24  wenger
+// Fixed problems with DEViseView.getFirstCursor() method; cleanup of
+// DEViseCanvas CVS log, and other minor cleanup.
+//
 // Revision 1.55  2000/08/07 17:46:14  wenger
 // Fixed bug 608 (NullPointerExceptions in family medicine sessions).
 //
@@ -176,6 +180,8 @@ public class DEViseView
     public boolean isFirstTime = true;
 
     private static final boolean _debug = false;
+
+    float factor = 1; // mouse position multiply factor
 
     public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, float Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, float gx, float gy, int rb, int cm, int dd, int ky)
     {
@@ -468,7 +474,7 @@ public class DEViseView
     }
 
     // Update the data range of the given axis.
-     void updateDataRange(String axis, float min, float max, String format)
+     void updateDataRange(String axis, float min, float max, String format, float f)
       throws YError
     {
       
@@ -494,6 +500,8 @@ public class DEViseView
         } else {
 	    throw new YError("Illegal axis type (" + axis + ")");
 	}
+
+	factor = f;
     }
 
     // Note: getX and getY should probably be combined into a single
