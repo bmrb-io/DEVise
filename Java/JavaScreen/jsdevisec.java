@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.93  2001/03/08 21:10:13  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.92  2001/03/05 16:47:01  xuk
 // *** empty log message ***
 //
@@ -2262,8 +2266,6 @@ class CollabDlg extends Frame
         clientList.setForeground(jsc.jsValues.uiglobals.textFg);
         clientList.setFont(jsc.jsValues.uiglobals.textFont);
 
-        setClientList(data);
-
         Button [] button = new Button[2];
         button[0] = okButton;
         button[1] = cancelButton;
@@ -2291,6 +2293,8 @@ class CollabDlg extends Frame
         add(panel);
 
         pack();
+
+        setClientList(data);
 
         // reposition the window
         Point parentLoc = null;
@@ -2350,7 +2354,30 @@ class CollabDlg extends Frame
                                     close();
 				    jsc.enterCollabPass();
                             }
-                        }
+                        } else { // no available collaboration leader
+			    // go back to normal mode
+			    if (jsc.dispatcher.dispatcherThread != null) {
+				jsc.dispatcher.dispatcherThread.stop();
+				jsc.dispatcher.dispatcherThread = null;
+			    }
+			    
+			    if (jsc.dispatcher.commSocket != null) {
+				jsc.dispatcher.commSocket.closeSocket();
+				jsc.dispatcher.commSocket = null;
+			    }
+			    jsc.dispatcher._connectedAlready = false;
+			    jsc.dispatcher.isOnline = false;
+			    
+			    jsc.animPanel.stop();
+			    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
+			    jsc.jscreen.updateScreen(false);
+			    
+	      		    jsc.dispatcher.setAbortStatus(false);
+			    jsc.dispatcher.setStatus(0);
+			    jsc.specialID = -1;
+			    jsc.socketMode();
+			    close(); 
+			}
                     }
                 });
 
@@ -2374,11 +2401,10 @@ class CollabDlg extends Frame
 			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 			jsc.jscreen.updateScreen(false);
 
-			if (jsc.dispatcher.getStatus() != 0) {
-			    jsc.dispatcher.setAbortStatus(true);
-			}
+			jsc.dispatcher.setAbortStatus(false);
 			jsc.dispatcher.setStatus(0);
 			jsc.specialID = -1;
+			jsc.socketMode();
                         close();
                     }
                 });
@@ -2399,6 +2425,7 @@ class CollabDlg extends Frame
 	}
 
         validate();
+	jsc.showMsg("No available JavaScreen for collaboration.");
     }
 
     protected void processEvent(AWTEvent event)

@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2001/03/04 22:03:04  xuk
+// Disabled some buttons when JS in "collaboration" mode.
+//
 // Revision 1.45  2001/03/03 20:14:02  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 //
@@ -1334,6 +1337,7 @@ public class jspop implements Runnable
 		command = command.trim();
 		pn("Send clients list to collaboration JS: " + command);
 		socket.sendCmd(command);
+		socket.sendCmd(DEViseCommands.DONE);
 		socket.closeSocket();	
 	    
 		return;

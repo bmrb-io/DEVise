@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.84  2001/03/09 20:24:36  wenger
+// Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
+// to the trunk; updated linux and solaris dependencies.
+//
 // Revision 1.83  2001/03/08 21:10:12  wenger
 // Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
 // to the trunk.
@@ -526,7 +530,7 @@ public class DEViseCmdDispatcher implements Runnable
 	if (jsc.specialID != -1) {
 	    jsc.pn("We entered one collabration JavaScreen.");
         }
- 
+
 	// If we don't have a connection yet, prepend a connection request
 	// command to whatever was passed in.
 
@@ -1005,6 +1009,10 @@ public class DEViseCmdDispatcher implements Runnable
                jsc.showViewDialogHelp(args[2]);
                jsc.jsValues.connection.helpBox = false ;
             }
+
+        } else if (args[0].equals(DEViseCommands.KEYPRESSED_3DVIEW)) {
+            // this command is for collaboration JS
+            jsc.jscreen.keyPressed_3D(args[1]);
 
         } else {
             throw new YException("Unsupported command (" + response +
@@ -1561,13 +1569,10 @@ public class DEViseCmdDispatcher implements Runnable
                         if (cmd.startsWith(DEViseCommands.ACK)) {
                             jsc.animPanel.setActiveImageNumber(5);
                         } else {
-			    // Note: JAVAC_Clients is a special case --
-			    // JAVAC_Done is not sent.  (I don't know
-			    // why Kai set it up that way.)  RKW 2001-03-08.
+
                             if (cmd.startsWith(DEViseCommands.DONE) ||
 			      cmd.startsWith(DEViseCommands.ERROR) ||
-			      cmd.startsWith(DEViseCommands.FAIL) ||
-			      cmd.startsWith(DEViseCommands.CLIENTS)) {
+			      cmd.startsWith(DEViseCommands.FAIL)) {
                                 isEnd = true;
                             }
 
