@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/30 15:31:56  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
  */
 
 #ifndef _VectorArray_h_
@@ -38,10 +42,10 @@ public:
 	VectorArray(int vectorCount);
 	~VectorArray();
 
-	DevStatus Init(int vectorNum, int vectorDim);
+	DevStatus Init(int vecNum, int vecDim);
 
 	int GetVecCount();
-	Vector * const GetVectors();
+	Vector *GetVector(int vecNum);
 
 private:
 	int			_vectorCount;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/04/30 15:31:55  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
  */
 
 #define _VectorArray_c_
@@ -46,6 +50,7 @@ VectorArray::VectorArray(int vectorCount)
 	DO_DEBUG(printf("VectorArray::VectorArray(%d)\n", vectorCount));
 
 	_vectorCount = vectorCount;
+	_vectors = new Vector[_vectorCount];
 }
 
 /*------------------------------------------------------------------------------
@@ -55,6 +60,8 @@ VectorArray::VectorArray(int vectorCount)
 VectorArray::~VectorArray()
 {
 	DO_DEBUG(printf("VectorArray::~VectorArray()\n"));
+
+	delete [] _vectors;
 }
 
 /*------------------------------------------------------------------------------
@@ -62,12 +69,13 @@ VectorArray::~VectorArray()
  * Initialize a Vector in the VectorArray.
  */
 DevStatus
-VectorArray::Init(int vectorNum, int vectorDim)
+VectorArray::Init(int vecNum, int vecDim)
 {
 	DO_DEBUG(printf("VectorArray::Init()\n"));
 
 	DevStatus		result = StatusOk;
 
+	_vectors[vecNum].Init(vecDim);
 
 	return result;
 }
@@ -85,15 +93,15 @@ VectorArray::GetVecCount()
 }
 
 /*------------------------------------------------------------------------------
- * function: VectorArray::GetVectors
- * Return the array of vectors.
+ * function: VectorArray::GetVector
+ * Return one of the vectors.
  */
-Vector * const
-VectorArray::GetVectors()
+Vector *
+VectorArray::GetVector(int vecNum)
 {
-	DO_DEBUG(printf("VectorArray::GetVectors()\n"));
+	DO_DEBUG(printf("VectorArray::GetVector()\n"));
 
-	return _vectors;
+	return &_vectors[vecNum];
 }
 
 /*============================================================================*/

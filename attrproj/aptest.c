@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/30 15:31:57  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.2  1996/04/25 19:25:25  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -76,14 +80,24 @@ main(
 
 	for (recId = firstId; recId <= lastId; recId++)
 	{
+		printf("\nRecord %d:\n", (int) recId);
+
 		ap.ReadRec(recId, *vecArrayP);
 		int			vecCount = vecArrayP->GetVecCount();
-		Vector *	vectors = vecArrayP->GetVectors();
 
 		int		vecNum;
 		for (vecNum = 0; vecNum < vecCount; vecNum++)
 		{
-			// cout << vectors[vecNum];
+			Vector *	vecP = vecArrayP->GetVector(vecNum);
+			int			vecDim = vecP->dim;
+			int			count;
+
+			printf("  Projection %d:\n   ", vecNum);
+			for (count = 0; count < vecDim; count++)
+			{
+				printf(" %f", vecP->value[count]);
+			}
+			printf("\n");
 		}
 	}
 

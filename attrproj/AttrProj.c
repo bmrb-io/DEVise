@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/04/30 15:31:50  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.1  1996/04/25 19:25:22  wenger
   Attribute projection code can now parse a schema, and create the
   corresponding TData object.
@@ -35,6 +39,8 @@
 #include "AttrProj.h"
 #include "ApParseCat.h"
 #include "Util.h"
+#include "TData.h"
+#include "AttrList.h"
 
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
@@ -56,7 +62,7 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 	_recBufSize = _tDataP->RecSize();
 	_recBuf = new char[_recBufSize];
 
-	_projectionCount = 5;/*TEMPTEMP*/
+	_projectionCount = 1;/*TEMPTEMP*/
 }
 
 /*------------------------------------------------------------------------------
@@ -108,13 +114,14 @@ AttrProj::LastRecId(RecId &recId)
  * records specified in the attribute projection file.
  */
 DevStatus
-AttrProj::CreateRecordList(VectorArray *&vecArray)
+AttrProj::CreateRecordList(VectorArray *&vecArrayP)
 {
 	DO_DEBUG(printf("AttrProj::CreateRecordList()\n"));
 
 	DevStatus	result = StatusOk;
 
-	vecArray = new VectorArray(_projectionCount);
+	vecArrayP = new VectorArray(_projectionCount);
+	vecArrayP->Init(0, _tDataP->GetAttrList()->NumAttrs());/*TEMPTEMP*/
 
 	return result;
 }
@@ -138,6 +145,54 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 	if (!_tDataP->GetRecs(_recBuf, _recBufSize, recId, numRecs, dataSize, NULL))
 	{
 		result = StatusFailed;
+	}
+	else
+	{
+		AttrList *	attrListP = _tDataP->GetAttrList();
+		int			attrCount = attrListP->NumAttrs();
+		int			attrNum;
+		Vector *	vectorP = vecArray.GetVector(0);
+
+		for (attrNum = 0; attrNum < attrCount; attrNum++)
+		{
+			AttrInfo *	attrInfoP = attrListP->Get(attrNum);
+			double		doubleVal;
+			float		floatVal;
+			int			intVal;
+
+			switch (attrInfoP->type)
+			{
+			case IntAttr:
+				intVal = *(int *)(_recBuf + attrInfoP->offset);
+				//printf("        %d\n", intVal);/*TEMPTEMP*/
+				vectorP->value[attrNum] = (double) intVal;
+				break;
+
+			case FloatAttr:
+				floatVal = *(float *)(_recBuf + attrInfoP->offset);
+				//printf("        %f\n", floatVal);/*TEMPTEMP*/
+				vectorP->value[attrNum] = (double) floatVal;
+				break;
+
+			case DoubleAttr:
+				doubleVal = *(double *)(_recBuf + attrInfoP->offset);
+				//printf("        %f\n", doubleVal);/*TEMPTEMP*/
+				vectorP->value[attrNum] = (double) doubleVal;
+				break;
+
+			case StringAttr:
+				DOASSERT(false, "Can't deal with string attribute");
+				break;
+
+			case DateAttr:
+				DOASSERT(false, "Can't deal with date attribute");
+				break;
+
+			default:
+				DOASSERT(false, "Illegal attribute type");
+				break;
+			}
+		}
 	}
 
 	return result;

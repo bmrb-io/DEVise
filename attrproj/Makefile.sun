@@ -131,7 +131,8 @@ AttrProj.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
 AttrProj.o: VectorArray.h ApParseCat.h ../graphics/Util.h
 AttrProj.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 AttrProj.o: /usr/include/sys/time.h /usr/include/string.h
-AttrProj.o: /usr/include/ctype.h
+AttrProj.o: /usr/include/ctype.h ../graphics/AttrList.h
+AttrProj.o: /usr/include/sys/time.h ../graphics/Config.h
 VectorArray.o: /usr/include/stdio.h VectorArray.h ../graphics/DeviseTypes.h
 VectorArray.o: ../graphics/Util.h /usr/include/stdlib.h
 VectorArray.o: /usr/include/sys/stdtypes.h /usr/include/sys/time.h

@@ -26,8 +26,8 @@ LIBOBJ = \
 	../graphics.new/CompositeParser.o \
 	../graphics.new/TData.o \
 	../tape/tapedrive.o \
+	$(BIRCH_DIR)/vector.o \
 	$(LOCALOBJ)
-#	$(BIRCH_DIR)/vector.o \
 
 LIB = AttrProjLib.o
 
