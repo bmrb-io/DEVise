@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2001/10/25 21:35:42  wenger
+// Added heartbeat count to heartbeat command (for debugging); other minor
+// cleanup and debug code additions.
+//
 // Revision 1.29  2001/10/24 17:46:07  wenger
 // Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
 // the JSPoP now has a separate thread to read from each client.
@@ -737,11 +741,6 @@ public class DEViseCommSocket
                 flag = DEViseGlobals.toUshort(dataRead, 10);
                 numberOfElement = DEViseGlobals.toUshort(dataRead, 12);
                 totalSize = DEViseGlobals.toUshort(dataRead, 14);
-
-		// for collabration JS
-		if (msgType == DEViseGlobals.API_JAVA_CID) {
-		    flag = -1; //TEMP use cgiFlag=-1 to indicate collab JS
-                }
 
                 dataRead = null;
                 isControl = false;
