@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/29 15:06:19  jussi
+  Added copyright notice.
+
   Revision 1.2  1995/09/05 21:13:19  jussi
   Added/updated CVS header.
 */
@@ -42,6 +45,11 @@
 #include "DeviseTypes.h"
 #include "WindowRep.h"
 #include "Color.h"
+
+#ifdef TK_WINDOW
+#include <tcl.h>
+#include <tk.h>
+#endif
 
 class ViewWin;
 DefinePtrDList(ViewWinList, ViewWin *);
@@ -76,7 +84,15 @@ public:
 
 	int GetWeight() { return _weight; }
 
-	/* Get current geometry of child w. r. t. parent */
+#ifdef TK_WINDOW
+	/* Get size of margin controls */
+	void GetMargins(unsigned int &lm, unsigned int &rm,
+			unsigned int &tm, unsigned int &bm);
+	/* Get real (non-margin-adjusted) geometry of window */
+	void RealGeometry(int &x, int &y, unsigned &w, unsigned &h);
+#endif
+
+	/* Get current geometry of window */
 	void Geometry(int &x, int &y, unsigned &w, unsigned &h);
 
 	/* Get absolute origin of window, if mapped */
@@ -146,7 +162,8 @@ private:
 	Boolean _iconified;
 	Boolean _winBoundary;
 	Boolean _hasGeometry; /* TRUE if we have the geometry */
-	int _x, _y; unsigned int _width, _height; /* current geometry */
+	int _x, _y;
+	unsigned int _width, _height; /* current geometry */
 	ViewWinList _children;
 	ViewWin *_parent;
 	WindowRep *_windowRep;
@@ -155,5 +172,20 @@ private:
 	Boolean _mapped; /* TRUE if this window is mapped */
 	Color _background, _foreground;
 
+#ifdef TK_WINDOW
+	void AddMarginControls();
+	void DropMarginControls();
+	void DestroyMarginControl(char *side);
+	void ReparentMarginControl(char *side, int xoff, int yoff);
+	void ResizeMargins(unsigned int w, unsigned int h);
+	void ToggleMargins();
+
+	Boolean      _marginsOn;
+	unsigned int _leftMargin;
+	unsigned int _rightMargin;
+	unsigned int _topMargin;
+	unsigned int _bottomMargin;
+	char         _tkPathName[32];
+#endif
 };
 #endif
