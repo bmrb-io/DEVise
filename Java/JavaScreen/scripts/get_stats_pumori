@@ -12,7 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  This script runs get_stats on yola and mails the results to the
+#  This script runs get_stats on pumori and mails the results to the
 #  appropriate people.
 
 ############################################################
@@ -21,14 +21,4 @@
 
 ############################################################
 
-# Note: all of these complications are needed because mail on SGI won't
-# accept more than one address on the command line.
-
-if (-f get_stats.out) then
-  rm get_stats.out
-endif
-./get_stats > get_stats.out
-mail zoo < get_stats.out
-mail eldon < get_stats.out
-mail miron@cs.wisc.edu < get_stats.out
-rm get_stats.out
+get_stats | mail -s 'JavaScreen usage on pumori' devise miron amos

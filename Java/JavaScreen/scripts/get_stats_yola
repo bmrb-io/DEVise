@@ -1,0 +1,34 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script runs get_stats on yola and mails the results to the
+#  appropriate people.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+# Note: all of these complications are needed because mail on SGI won't
+# accept more than one address on the command line.
+
+if (-f get_stats.out) then
+  rm get_stats.out
+endif
+scripts/get_stats > get_stats.out
+mail zoo < get_stats.out
+mail eldon < get_stats.out
+mail miron@cs.wisc.edu < get_stats.out
+rm get_stats.out
