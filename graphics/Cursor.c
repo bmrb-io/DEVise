@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/16 16:16:38  jussi
+  Improved code that hides and draws cursors when source
+  and/or destination changes.
+
   Revision 1.4  1995/12/29 18:26:53  jussi
   Added FilterAboutToChange() to facilitate new cursor mechanism.
 
@@ -33,20 +37,22 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag, Color color)
 {
   _name = name;
   _visFlag = flag;
-  _src = NULL;
-  _dst = NULL;
+  _src = 0;
+  _dst = 0;
   _color = color;
+
+  View::InsertViewCallback(this);
 }
 
 DeviseCursor::~DeviseCursor()
 {
+  View::DeleteViewCallback(this);
+
   Boolean redrawCursors = false;
 
   if (_dst)
     redrawCursors = _dst->HideCursors();
 
-  if (_src)
-    View::DeleteViewCallback(this);
   if (_dst)
     _dst->DeleteCursor(this);
 
@@ -64,13 +70,7 @@ void DeviseCursor::SetSource(View *view)
   if (_dst)
     redrawCursors = _dst->HideCursors();
 
-  if (_src)
-    View::DeleteViewCallback(this);
-  
   _src = view;
-
-  if (_src)
-    View::InsertViewCallback(this);
 
   if (_dst && redrawCursors)
     (void)_dst->DrawCursors();
@@ -109,7 +109,7 @@ void DeviseCursor::SetDst(View *view)
 
 Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, Color &color)
 {
-  if (_src == NULL)
+  if (!_src)
     return false;
   
   _src->GetVisualFilter(_filter);
@@ -121,35 +121,35 @@ Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter, Color &color)
 
 void DeviseCursor::FilterAboutToChange(View *view)
 {
-  if (view == _src)
+  if (_dst && view == _src)
     (void)_dst->HideCursors();
 }
 
 void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
 				 int flushed)
 {
-  if (view == _src)
+  if (_dst && view == _src)
     (void)_dst->DrawCursors();
 }
 
 void DeviseCursor::ViewDestroyed(View *view)
 {
-  if (_dst != NULL && (view == _src || view == _dst))
+  if (_dst && (view == _src || view == _dst))
     (void)_dst->HideCursors();
 
   if (view == _src)
-    _src = NULL;
+    _src = 0;
 
   if (view == _dst)
-    _dst = NULL;
+    _dst = 0;
 }
 
 void DeviseCursor::MoveSourceX(Coord x)
 {
-  if (_src == NULL)
+  if (!_src)
     return;
 
-  if (_dst != NULL)
+  if (_dst)
     (void)_dst->HideCursors();
 
   VisualFilter filter;
