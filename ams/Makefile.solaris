@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.58  2000/03/23 19:51:20  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.57  2000/01/13 23:03:29  wenger
 # Updated dependencies.
 #
@@ -156,25 +159,9 @@ ams.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
 ams.o: ../graphics.new/ViewData.h ../graphics.new/CompositeParser.h
 ams.o: ../graphics.new/RecInterp.h ../graphics.new/QueryProc.h
 ams.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-ams.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ams.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
-ams.o: /usr/include/limits.h /usr/include/sys/stat.h
-ams.o: /usr/include/sys/time_impl.h ../graphics.new/machdep.h
-ams.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-ams.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-ams.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-ams.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-ams.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-ams.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-ams.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-ams.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-ams.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-ams.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-ams.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-ams.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-ams.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-ams.o: ../graphics/CursorClassInfo.h ../graphics.new/ParseCat.h
-ams.o: ../graphics.new/DataSourceBuf.h MapClassInfo.h
+ams.o: ../graphics.new/MemMgr.h ../graphics/CursorClassInfo.h
+ams.o: ../graphics.new/ParseCat.h ../graphics.new/DataSourceBuf.h
+ams.o: MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 amsStat.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 amsStat.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -190,26 +177,10 @@ amsStat.o: ../graphics.new/PageSize.h ../graphics.new/TDataAppend.h
 amsStat.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
 amsStat.o: /usr/include/values.h ../graphics/DevStatus.h
 amsStat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-amsStat.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-amsStat.o: /usr/include/sys/shm.h /usr/include/errno.h
-amsStat.o: /usr/include/sys/errno.h /usr/include/assert.h
-amsStat.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-amsStat.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-amsStat.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-amsStat.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-amsStat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-amsStat.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-amsStat.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-amsStat.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-amsStat.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-amsStat.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-amsStat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-amsStat.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-amsStat.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-amsStat.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-amsStat.o: ../graphics/DList.h ../graphics.new/DiskFile.h
-amsStat.o: ../graphics.new/ams.h /usr/include/math.h
+amsStat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
+amsStat.o: ../graphics/Dispatcher.h ../graphics/DList.h
+amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
+amsStat.o: /usr/include/math.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 extendAms.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 extendAms.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/08/17 18:51:48  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.28  1998/02/24 22:55:25  beyer
   Fixed histogram session restore bug.
 
@@ -197,7 +201,7 @@ BufMgrFull::BufMgrFull(int bufSize)
            bufSize / 1048576.0, policy);
 
     int status;
-    _memMgr = new MemMgr(bufPages, _pageSize, Init::UseSharedMem(), status);
+    _memMgr = new MemMgr(bufPages, _pageSize, status);
     DOASSERT(_memMgr && status >= 0, "Cannot create memory manager");
 
     status = _memMgr->SetMaxUsage(MemMgr::Cache, (int)(0.8 * bufPages));

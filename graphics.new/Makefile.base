@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1998
+#  (c) Copyright 1992-2000
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.98  2000/06/05 16:22:43  wenger
+#  Basically finished command/GData/GIF caching for JavaScreen support
+#  (there are a few refinements that could still be added); changed the
+#  default to do/use caching.
+#
 #  Revision 1.97  1999/11/19 21:34:54  wenger
 #  Removed Journal class and related code (no longer works); removed various
 #  other unused or unnecessary code.
@@ -329,8 +334,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
-	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
-        StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
+	DataSourceSegment.c DataSeg.c DataSourceWeb.c DataSourceDQL.c  \
+        StringStorage.C PointStorage.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
 	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c

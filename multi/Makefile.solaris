@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.54  2000/03/23 19:51:44  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.53  2000/01/13 23:03:51  wenger
 # Updated dependencies.
 #
@@ -149,37 +152,6 @@ CycleCpuTimeMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TData.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/stat.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time_impl.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/wait.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/resource.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machsig.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/procset.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/stream.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/vnode.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/t_lock.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machlock.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/mutex.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/rwlock.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/semaphore.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/condvar.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/cred.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/uio.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/vm/seg_enum.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/poll.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/strmdep.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/model.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/byteorder.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/socket.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/netconfig.h
 CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Session.h map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h
@@ -232,35 +204,7 @@ CycleEffMappingClassInfo.o: /usr/include/ctype.h TDataCycle.h
 CycleEffMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleEffMappingClassInfo.o: ../graphics.new/TData.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-CycleEffMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
-CycleEffMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
-CycleEffMappingClassInfo.o: /usr/include/sys/time_impl.h
-CycleEffMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-CycleEffMappingClassInfo.o: /usr/include/sys/resource.h
-CycleEffMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleEffMappingClassInfo.o: /usr/include/sys/machsig.h
-CycleEffMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleEffMappingClassInfo.o: /usr/include/sys/procset.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleEffMappingClassInfo.o: /usr/include/netinet/in.h
-CycleEffMappingClassInfo.o: /usr/include/sys/stream.h
-CycleEffMappingClassInfo.o: /usr/include/sys/vnode.h
-CycleEffMappingClassInfo.o: /usr/include/sys/t_lock.h
-CycleEffMappingClassInfo.o: /usr/include/sys/machlock.h
-CycleEffMappingClassInfo.o: /usr/include/sys/mutex.h
-CycleEffMappingClassInfo.o: /usr/include/sys/rwlock.h
-CycleEffMappingClassInfo.o: /usr/include/sys/semaphore.h
-CycleEffMappingClassInfo.o: /usr/include/sys/condvar.h
-CycleEffMappingClassInfo.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-CycleEffMappingClassInfo.o: /usr/include/vm/seg_enum.h
-CycleEffMappingClassInfo.o: /usr/include/sys/poll.h
-CycleEffMappingClassInfo.o: /usr/include/sys/strmdep.h
-CycleEffMappingClassInfo.o: /usr/include/sys/model.h
-CycleEffMappingClassInfo.o: /usr/include/sys/byteorder.h
-CycleEffMappingClassInfo.o: /usr/include/sys/socket.h
-CycleEffMappingClassInfo.o: /usr/include/sys/netconfig.h
+CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h
 CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
 CycleEffMappingClassInfo.o: ../graphics/Session.h map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h
@@ -313,35 +257,7 @@ CycleOccMappingClassInfo.o: /usr/include/ctype.h TDataCycle.h
 CycleOccMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleOccMappingClassInfo.o: ../graphics.new/TData.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-CycleOccMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
-CycleOccMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
-CycleOccMappingClassInfo.o: /usr/include/sys/time_impl.h
-CycleOccMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-CycleOccMappingClassInfo.o: /usr/include/sys/resource.h
-CycleOccMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleOccMappingClassInfo.o: /usr/include/sys/machsig.h
-CycleOccMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleOccMappingClassInfo.o: /usr/include/sys/procset.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleOccMappingClassInfo.o: /usr/include/netinet/in.h
-CycleOccMappingClassInfo.o: /usr/include/sys/stream.h
-CycleOccMappingClassInfo.o: /usr/include/sys/vnode.h
-CycleOccMappingClassInfo.o: /usr/include/sys/t_lock.h
-CycleOccMappingClassInfo.o: /usr/include/sys/machlock.h
-CycleOccMappingClassInfo.o: /usr/include/sys/mutex.h
-CycleOccMappingClassInfo.o: /usr/include/sys/rwlock.h
-CycleOccMappingClassInfo.o: /usr/include/sys/semaphore.h
-CycleOccMappingClassInfo.o: /usr/include/sys/condvar.h
-CycleOccMappingClassInfo.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-CycleOccMappingClassInfo.o: /usr/include/vm/seg_enum.h
-CycleOccMappingClassInfo.o: /usr/include/sys/poll.h
-CycleOccMappingClassInfo.o: /usr/include/sys/strmdep.h
-CycleOccMappingClassInfo.o: /usr/include/sys/model.h
-CycleOccMappingClassInfo.o: /usr/include/sys/byteorder.h
-CycleOccMappingClassInfo.o: /usr/include/sys/socket.h
-CycleOccMappingClassInfo.o: /usr/include/sys/netconfig.h
+CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h
 CycleOccMappingClassInfo.o: CycleOccMappingClassInfo.h CycleRec.h
 CycleOccMappingClassInfo.o: ../graphics/Session.h map_cycle_occ.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
@@ -408,40 +324,6 @@ CycleSuspendedMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TData.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DCE.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ipc.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/sem.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
-CycleSuspendedMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/time_impl.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/wait.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/resource.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/machsig.h
-CycleSuspendedMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/procset.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/netdb.h
-CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/stream.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/vnode.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/t_lock.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/machlock.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/mutex.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/rwlock.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/semaphore.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/condvar.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/cred.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/uio.h
-CycleSuspendedMappingClassInfo.o: /usr/include/vm/seg_enum.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/poll.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/strmdep.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/model.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/byteorder.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/socket.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/netconfig.h
 CycleSuspendedMappingClassInfo.o: CycleSuspendedMappingClassInfo.h CycleRec.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Session.h map_cycle_suspended.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
@@ -503,37 +385,6 @@ CycleWorkingMappingClassInfo.o: ../graphics.new/TDataAscii.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TData.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/stat.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/time_impl.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/wait.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/resource.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/siginfo.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/machsig.h
-CycleWorkingMappingClassInfo.o: /usr/include/vm/faultcode.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/procset.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/stream.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/vnode.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/t_lock.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/machlock.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/mutex.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/rwlock.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/semaphore.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/condvar.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/cred.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/uio.h
-CycleWorkingMappingClassInfo.o: /usr/include/vm/seg_enum.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/poll.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/strmdep.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/model.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/byteorder.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/socket.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/netconfig.h
 CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
 CycleWorkingMappingClassInfo.o: ../graphics/Session.h map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h
@@ -577,27 +428,7 @@ HostMappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 HostMappingClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h
 HostMappingClassInfo.o: TDataHost.h ../graphics.new/TDataAscii.h
 HostMappingClassInfo.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-HostMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-HostMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-HostMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/assert.h
-HostMappingClassInfo.o: /usr/include/limits.h /usr/include/sys/stat.h
-HostMappingClassInfo.o: /usr/include/sys/time_impl.h
-HostMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-HostMappingClassInfo.o: /usr/include/sys/resource.h
-HostMappingClassInfo.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-HostMappingClassInfo.o: /usr/include/vm/faultcode.h
-HostMappingClassInfo.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-HostMappingClassInfo.o: /usr/include/netdb.h /usr/include/netinet/in.h
-HostMappingClassInfo.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-HostMappingClassInfo.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-HostMappingClassInfo.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-HostMappingClassInfo.o: /usr/include/sys/semaphore.h
-HostMappingClassInfo.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-HostMappingClassInfo.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-HostMappingClassInfo.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-HostMappingClassInfo.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-HostMappingClassInfo.o: /usr/include/sys/socket.h
-HostMappingClassInfo.o: /usr/include/sys/netconfig.h HostMappingClassInfo.h
+HostMappingClassInfo.o: ../graphics.new/MemMgr.h HostMappingClassInfo.h
 HostMappingClassInfo.o: HostRec.h ../graphics/Session.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MappingClassInfo.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
@@ -636,25 +467,8 @@ MappingClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
 MappingClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h TDataMulti.h
 MappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-MappingClassInfo.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-MappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
-MappingClassInfo.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-MappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-MappingClassInfo.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-MappingClassInfo.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-MappingClassInfo.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-MappingClassInfo.o: /usr/include/netdb.h /usr/include/netinet/in.h
-MappingClassInfo.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-MappingClassInfo.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-MappingClassInfo.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-MappingClassInfo.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-MappingClassInfo.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-MappingClassInfo.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-MappingClassInfo.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-MappingClassInfo.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-MappingClassInfo.o: /usr/include/sys/netconfig.h MappingClassInfo.h
-MappingClassInfo.o: MultiRec.h ../graphics/Session.h mapfile.h
+MappingClassInfo.o: MappingClassInfo.h MultiRec.h ../graphics/Session.h
+MappingClassInfo.o: mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Message.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 Message.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -664,26 +478,7 @@ Message.o: /usr/include/sys/select.h /usr/include/time.h /usr/include/math.h
 Message.o: MultiRec.h ../graphics.new/TData.h ../graphics/DeviseTypes.h
 Message.o: /usr/include/values.h ../graphics/DevStatus.h
 Message.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
-Message.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-Message.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-Message.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-Message.o: /usr/include/errno.h /usr/include/sys/errno.h
-Message.o: /usr/include/assert.h /usr/include/limits.h
-Message.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-Message.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Message.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-Message.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Message.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Message.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Message.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Message.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Message.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-Message.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-Message.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-Message.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-Message.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Message.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-Message.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Message.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 Message.o: ../graphics/Dispatcher.h ../graphics/DList.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataCycle.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -696,31 +491,12 @@ TDataCycle.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
 TDataCycle.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataCycle.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 TDataCycle.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-TDataCycle.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-TDataCycle.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TDataCycle.o: /usr/include/sys/unistd.h /usr/include/errno.h
-TDataCycle.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataCycle.o: /usr/include/limits.h /usr/include/sys/stat.h
-TDataCycle.o: /usr/include/sys/time_impl.h ../graphics.new/machdep.h
-TDataCycle.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataCycle.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataCycle.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataCycle.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataCycle.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataCycle.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataCycle.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataCycle.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataCycle.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataCycle.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataCycle.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataCycle.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataCycle.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataCycle.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataCycle.o: ../graphics/DList.h ../graphics/ClassDir.h CycleRec.h
-TDataCycle.o: ../graphics/Parse.h ../graphics/Control.h
-TDataCycle.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataCycle.o: /usr/include/string.h ../graphics/Util.h /usr/include/ctype.h
-TDataCycle.o: /usr/include/math.h ../graphics.new/DataSeg.h
+TDataCycle.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataCycle.o: ../graphics/ClassDir.h CycleRec.h ../graphics/Parse.h
+TDataCycle.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataCycle.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
+TDataCycle.o: /usr/include/ctype.h /usr/include/math.h
+TDataCycle.o: ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataHost.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataHost.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -732,31 +508,12 @@ TDataHost.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
 TDataHost.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataHost.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 TDataHost.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-TDataHost.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-TDataHost.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TDataHost.o: /usr/include/sys/unistd.h /usr/include/errno.h
-TDataHost.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataHost.o: /usr/include/limits.h /usr/include/sys/stat.h
-TDataHost.o: /usr/include/sys/time_impl.h ../graphics.new/machdep.h
-TDataHost.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataHost.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataHost.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataHost.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataHost.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataHost.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataHost.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataHost.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataHost.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataHost.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataHost.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataHost.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataHost.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataHost.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataHost.o: ../graphics/DList.h ../graphics/ClassDir.h HostRec.h
-TDataHost.o: ../graphics/Parse.h ../graphics/Control.h
-TDataHost.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataHost.o: /usr/include/string.h ../graphics/Util.h /usr/include/ctype.h
-TDataHost.o: /usr/include/math.h ../graphics.new/DataSeg.h
+TDataHost.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataHost.o: ../graphics/ClassDir.h HostRec.h ../graphics/Parse.h
+TDataHost.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataHost.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
+TDataHost.o: /usr/include/ctype.h /usr/include/math.h
+TDataHost.o: ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataMulti.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataMulti.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -768,31 +525,12 @@ TDataMulti.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
 TDataMulti.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataMulti.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 TDataMulti.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-TDataMulti.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-TDataMulti.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TDataMulti.o: /usr/include/sys/unistd.h /usr/include/errno.h
-TDataMulti.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataMulti.o: /usr/include/limits.h /usr/include/sys/stat.h
-TDataMulti.o: /usr/include/sys/time_impl.h ../graphics.new/machdep.h
-TDataMulti.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataMulti.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataMulti.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataMulti.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataMulti.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataMulti.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataMulti.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataMulti.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataMulti.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataMulti.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataMulti.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataMulti.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataMulti.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataMulti.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataMulti.o: ../graphics/DList.h ../graphics/ClassDir.h MultiRec.h
-TDataMulti.o: ../graphics/Parse.h ../graphics/Control.h
-TDataMulti.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataMulti.o: /usr/include/string.h ../graphics/Util.h /usr/include/ctype.h
-TDataMulti.o: /usr/include/math.h ../graphics.new/DataSeg.h
+TDataMulti.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataMulti.o: ../graphics/ClassDir.h MultiRec.h ../graphics/Parse.h
+TDataMulti.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataMulti.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
+TDataMulti.o: /usr/include/ctype.h /usr/include/math.h
+TDataMulti.o: ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/time.h
 disp.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 disp.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
@@ -813,24 +551,6 @@ disp.o: ../graphics.new/PointStorage.h Message.h ../graphics/WinClassInfo.h
 disp.o: ../graphics/ClassDir.h ../graphics.new/ActionClassInfo.h TDataMulti.h
 disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-disp.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h /usr/include/errno.h
-disp.o: /usr/include/sys/errno.h /usr/include/assert.h /usr/include/limits.h
-disp.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-disp.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-disp.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-disp.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-disp.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-disp.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-disp.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-disp.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-disp.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-disp.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-disp.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-disp.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-disp.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-disp.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-disp.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 disp.o: ../graphics/Dispatcher.h MappingClassInfo.h HostMappingClassInfo.h
 disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
 disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h
@@ -840,8 +560,10 @@ disp.o: ../graphics.new/ViewData.h TDataHost.h TDataCycle.h
 disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
 disp.o: ../graphics/WindowRep.h ../graphics/Transform.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-disp.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
-disp.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+disp.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
+disp.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+disp.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+disp.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 disp.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 disp.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
 disp.o: ../graphics/GraphicsDebug.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.101  2000/03/23 19:51:34  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.100  2000/01/13 23:03:42  wenger
 # Updated dependencies.
 #
@@ -211,27 +214,8 @@ ActionDefault.o: ../graphics/AttrList.h ../graphics/DList.h
 ActionDefault.o: ../graphics/Init.h ../graphics/BufPolicy.h
 ActionDefault.o: ../src/utils/ObjectValid.h ViewGraph.h PointStorage.h
 ActionDefault.o: ../tape/HashTable.h RecInterp.h QueryProc.h TData.h
-ActionDefault.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-ActionDefault.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-ActionDefault.o: /usr/include/sys/unistd.h /usr/include/errno.h
-ActionDefault.o: /usr/include/sys/errno.h /usr/include/assert.h
-ActionDefault.o: /usr/include/limits.h /usr/include/sys/stat.h
-ActionDefault.o: /usr/include/sys/time_impl.h machdep.h
-ActionDefault.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-ActionDefault.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-ActionDefault.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ActionDefault.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-ActionDefault.o: /usr/include/netdb.h /usr/include/netinet/in.h
-ActionDefault.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-ActionDefault.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-ActionDefault.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ActionDefault.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ActionDefault.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ActionDefault.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ActionDefault.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-ActionDefault.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-ActionDefault.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-ActionDefault.o: DeviseKey.h ../graphics/DepMgr.h ../graphics/PileStack.h
+ActionDefault.o: DataSource.h MemMgr.h ../graphics/Dispatcher.h DeviseKey.h
+ActionDefault.o: ../graphics/DepMgr.h ../graphics/PileStack.h
 ActionDefault.o: ../graphics/ViewWin.h ../graphics/Session.h
 ActionDefault.o: /s/tcl/include/tcl.h /usr/include/stdarg.h
 ActionDefault.o: /s/tcl/include/tclDecls.h
@@ -242,28 +226,7 @@ AmsDiskFile.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 AmsDiskFile.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 AmsDiskFile.o: /usr/include/sys/select.h /usr/include/sys/time.h
 AmsDiskFile.o: /usr/include/time.h TDataAppend.h TData.h RecId.h DataSource.h
-AmsDiskFile.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-AmsDiskFile.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-AmsDiskFile.o: /usr/include/sys/unistd.h /usr/include/errno.h
-AmsDiskFile.o: /usr/include/sys/errno.h /usr/include/assert.h
-AmsDiskFile.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-AmsDiskFile.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-AmsDiskFile.o: /usr/include/limits.h /usr/include/sys/stat.h
-AmsDiskFile.o: /usr/include/sys/time_impl.h machdep.h
-AmsDiskFile.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-AmsDiskFile.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-AmsDiskFile.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-AmsDiskFile.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-AmsDiskFile.o: /usr/include/netdb.h /usr/include/netinet/in.h
-AmsDiskFile.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-AmsDiskFile.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-AmsDiskFile.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-AmsDiskFile.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-AmsDiskFile.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-AmsDiskFile.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-AmsDiskFile.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-AmsDiskFile.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-AmsDiskFile.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
+AmsDiskFile.o: ../graphics/Exit.h MemMgr.h ../graphics/Dispatcher.h
 AmsDiskFile.o: ../graphics/DList.h ../src/utils/ObjectValid.h ams.h
 AmsDiskFile.o: /usr/include/math.h
 Bitmap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -287,28 +250,9 @@ BufHash.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 BufHash.o: /usr/include/sys/select.h /usr/include/sys/time.h
 BufHash.o: /usr/include/time.h BufMgr.h ../graphics/BufPolicy.h RecId.h
 BufHash.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h TData.h
-BufHash.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-BufHash.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-BufHash.o: /usr/include/sys/unistd.h /usr/include/errno.h
-BufHash.o: /usr/include/sys/errno.h /usr/include/assert.h
-BufHash.o: /usr/include/limits.h /usr/include/sys/stat.h
-BufHash.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
-BufHash.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-BufHash.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-BufHash.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-BufHash.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-BufHash.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-BufHash.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-BufHash.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-BufHash.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-BufHash.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-BufHash.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-BufHash.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-BufHash.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-BufHash.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-BufHash.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
-BufHash.o: RangeList.h RangeInfo.h ../graphics/AttrList.h ../graphics/Init.h
-BufHash.o: QPRange.h
+BufHash.o: DataSource.h MemMgr.h ../graphics/Dispatcher.h
+BufHash.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
+BufHash.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
 BufMech.o: BufMech.h ../graphics/DeviseTypes.h /usr/include/values.h
 BufMech.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
 BufMech.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
@@ -317,28 +261,10 @@ BufMech.o: /usr/include/sys/select.h /usr/include/sys/time.h
 BufMech.o: /usr/include/time.h RecId.h RangeInfo.h /usr/include/stdio.h
 BufMech.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
 BufMech.o: /usr/include/stdio_impl.h ../graphics/Exit.h TData.h DataSource.h
-BufMech.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-BufMech.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-BufMech.o: /usr/include/errno.h /usr/include/sys/errno.h
-BufMech.o: /usr/include/assert.h /usr/include/limits.h
-BufMech.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-BufMech.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-BufMech.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-BufMech.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-BufMech.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-BufMech.o: /usr/include/netdb.h /usr/include/netinet/in.h
-BufMech.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-BufMech.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-BufMech.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-BufMech.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-BufMech.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-BufMech.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-BufMech.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-BufMech.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-BufMech.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-BufMech.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-BufMech.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-BufMech.o: RangeInfoArray.h RangeHash.h BufferPolicy.h
+BufMech.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
+BufMech.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+BufMech.o: ../graphics/Init.h ../graphics/BufPolicy.h RangeInfoArray.h
+BufMech.o: RangeHash.h BufferPolicy.h
 BufMgr.o: BufMgr.h ../graphics/DeviseTypes.h /usr/include/values.h
 BufMgr.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
 BufMgr.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
@@ -346,28 +272,10 @@ BufMgr.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 BufMgr.o: /usr/include/sys/select.h /usr/include/sys/time.h
 BufMgr.o: /usr/include/time.h ../graphics/BufPolicy.h RecId.h BufferPolicy.h
 BufMgr.o: RangeInfoArray.h ../graphics/DList.h ../graphics/Exit.h TData.h
-BufMgr.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-BufMgr.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-BufMgr.o: /usr/include/sys/unistd.h /usr/include/errno.h
-BufMgr.o: /usr/include/sys/errno.h /usr/include/assert.h /usr/include/stdio.h
-BufMgr.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
-BufMgr.o: /usr/include/stdio_impl.h /usr/include/limits.h
-BufMgr.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-BufMgr.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-BufMgr.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-BufMgr.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-BufMgr.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-BufMgr.o: /usr/include/netdb.h /usr/include/netinet/in.h
-BufMgr.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-BufMgr.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-BufMgr.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-BufMgr.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-BufMgr.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-BufMgr.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-BufMgr.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-BufMgr.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-BufMgr.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
+BufMgr.o: DataSource.h MemMgr.h ../graphics/Dispatcher.h
 BufMgr.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
+BufMgr.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+BufMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 BufMgr.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
 BufMgrFull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 BufMgrFull.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -379,30 +287,11 @@ BufMgrFull.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 BufMgrFull.o: /usr/include/sys/time.h /usr/include/time.h
 BufMgrFull.o: ../graphics/BufPolicy.h ../graphics/Exit.h BufMgrFull.h
 BufMgrFull.o: BufMgr.h RecId.h BufferPolicy.h RangeInfoArray.h
-BufMgrFull.o: ../graphics/DList.h TData.h DataSource.h MemMgr.h DCE.h
-BufMgrFull.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-BufMgrFull.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-BufMgrFull.o: /usr/include/errno.h /usr/include/sys/errno.h
-BufMgrFull.o: /usr/include/assert.h /usr/include/limits.h
-BufMgrFull.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-BufMgrFull.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-BufMgrFull.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-BufMgrFull.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-BufMgrFull.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-BufMgrFull.o: /usr/include/netdb.h /usr/include/netinet/in.h
-BufMgrFull.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-BufMgrFull.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-BufMgrFull.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-BufMgrFull.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-BufMgrFull.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-BufMgrFull.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-BufMgrFull.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-BufMgrFull.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-BufMgrFull.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-BufMgrFull.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
-BufMgrFull.o: ../graphics/AttrList.h QPRange.h TDataRangeList.h TDataAttr.h
-BufMgrFull.o: BufferFifo.h BufferFocal.h BufferLifo.h BufferRnd.h
-BufMgrFull.o: /usr/include/stdlib.h BufferLru.h
+BufMgrFull.o: ../graphics/DList.h TData.h DataSource.h MemMgr.h
+BufMgrFull.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
+BufMgrFull.o: RangeList.h RangeInfo.h ../graphics/AttrList.h QPRange.h
+BufMgrFull.o: TDataRangeList.h TDataAttr.h BufferFifo.h BufferFocal.h
+BufMgrFull.o: BufferLifo.h BufferRnd.h /usr/include/stdlib.h BufferLru.h
 BufPage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 BufPage.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 BufPage.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -422,26 +311,7 @@ BufPageList.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 BufPageList.o: /usr/include/sys/time.h /usr/include/time.h BufMgr.h
 BufPageList.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h
 BufPageList.o: RangeInfoArray.h ../graphics/DList.h ../graphics/Exit.h
-BufPageList.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-BufPageList.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-BufPageList.o: /usr/include/sys/unistd.h /usr/include/errno.h
-BufPageList.o: /usr/include/sys/errno.h /usr/include/assert.h
-BufPageList.o: /usr/include/limits.h /usr/include/sys/stat.h
-BufPageList.o: /usr/include/sys/time_impl.h machdep.h
-BufPageList.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-BufPageList.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-BufPageList.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-BufPageList.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-BufPageList.o: /usr/include/netdb.h /usr/include/netinet/in.h
-BufPageList.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-BufPageList.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-BufPageList.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-BufPageList.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-BufPageList.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-BufPageList.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-BufPageList.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-BufPageList.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-BufPageList.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
+BufPageList.o: TData.h DataSource.h MemMgr.h ../graphics/Dispatcher.h
 BufPageList.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
 BufPageList.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
 ClientAPI.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -556,14 +426,16 @@ DataSource.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 DataSource.o: /usr/include/sys/time.h /usr/include/time.h
 DataSource.o: /usr/include/sys/unistd.h /usr/include/unistd.h DataSource.h
 DataSource.o: ../graphics/Exit.h MemMgr.h ../graphics/DeviseTypes.h
-DataSource.o: /usr/include/values.h ../graphics/DevStatus.h DCE.h
-DataSource.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DataSource.o: /usr/include/sys/shm.h /usr/include/assert.h
-DataSource.o: /usr/include/limits.h /usr/include/sys/stat.h
-DataSource.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/wait.h
+DataSource.o: /usr/include/values.h ../graphics/DevStatus.h
+DataSource.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
+DataSource.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
+DataSource.o: ../graphics/DevError.h ../tape/tapedrive.h machdep.h
+DataSource.o: /usr/include/limits.h /usr/include/sys/wait.h
 DataSource.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 DataSource.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSource.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+DataSource.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+DataSource.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+DataSource.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 DataSource.o: /usr/include/netdb.h /usr/include/netinet/in.h
 DataSource.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 DataSource.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -573,10 +445,7 @@ DataSource.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 DataSource.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 DataSource.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 DataSource.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSource.o: /usr/include/sys/netconfig.h ../graphics/Init.h
-DataSource.o: ../graphics/BufPolicy.h ../graphics/Util.h
-DataSource.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-DataSource.o: ../graphics/DevError.h ../tape/tapedrive.h
+DataSource.o: /usr/include/sys/netconfig.h
 DataSourceBuf.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceBuf.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DataSourceBuf.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -588,27 +457,25 @@ DataSourceBuf.o: /usr/include/sys/time.h /usr/include/time.h
 DataSourceBuf.o: /usr/include/sys/unistd.h /usr/include/unistd.h
 DataSourceBuf.o: DataSourceBuf.h DataSource.h ../graphics/Exit.h MemMgr.h
 DataSourceBuf.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceBuf.o: ../graphics/DevStatus.h DCE.h /usr/include/sys/ipc.h
-DataSourceBuf.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-DataSourceBuf.o: /usr/include/assert.h /usr/include/limits.h
-DataSourceBuf.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-DataSourceBuf.o: machdep.h /usr/include/sys/wait.h
-DataSourceBuf.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSourceBuf.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceBuf.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DataSourceBuf.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceBuf.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceBuf.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceBuf.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceBuf.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSourceBuf.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSourceBuf.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSourceBuf.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSourceBuf.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceBuf.o: /usr/include/sys/netconfig.h ../graphics/Util.h
+DataSourceBuf.o: ../graphics/DevStatus.h ../graphics/Util.h
 DataSourceBuf.o: /usr/include/stdlib.h /usr/include/ctype.h
 DataSourceBuf.o: /usr/include/math.h ../graphics/DevError.h
-DataSourceBuf.o: ../tape/tapedrive.h
+DataSourceBuf.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
+DataSourceBuf.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+DataSourceBuf.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+DataSourceBuf.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
+DataSourceBuf.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DataSourceBuf.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DataSourceBuf.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DataSourceBuf.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DataSourceBuf.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DataSourceBuf.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+DataSourceBuf.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DataSourceBuf.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DataSourceBuf.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DataSourceBuf.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DataSourceBuf.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+DataSourceBuf.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 DataSourceDQL.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceDQL.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DataSourceDQL.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -622,25 +489,10 @@ DataSourceDQL.o: /usr/include/time.h /usr/include/sys/param.h
 DataSourceDQL.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
 DataSourceDQL.o: DataSourceDQL.h DataSourceFileStream.h DataSource.h
 DataSourceDQL.o: ../graphics/Exit.h MemMgr.h ../graphics/DeviseTypes.h
-DataSourceDQL.o: /usr/include/values.h ../graphics/DevStatus.h DCE.h
-DataSourceDQL.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DataSourceDQL.o: /usr/include/sys/shm.h /usr/include/assert.h
-DataSourceDQL.o: /usr/include/limits.h machdep.h /usr/include/sys/wait.h
-DataSourceDQL.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSourceDQL.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceDQL.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DataSourceDQL.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceDQL.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceDQL.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceDQL.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceDQL.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSourceDQL.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSourceDQL.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSourceDQL.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSourceDQL.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceDQL.o: /usr/include/sys/netconfig.h ../graphics/Util.h
-DataSourceDQL.o: /usr/include/stdlib.h /usr/include/ctype.h
-DataSourceDQL.o: /usr/include/math.h ../graphics/DevError.h
+DataSourceDQL.o: /usr/include/values.h ../graphics/DevStatus.h
+DataSourceDQL.o: ../graphics/Util.h /usr/include/stdlib.h
+DataSourceDQL.o: /usr/include/ctype.h /usr/include/math.h
+DataSourceDQL.o: ../graphics/DevError.h
 DataSourceFileDesc.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceFileDesc.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DataSourceFileDesc.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -654,25 +506,9 @@ DataSourceFileDesc.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
 DataSourceFileDesc.o: DataSourceFileDesc.h DataSourceFileStream.h
 DataSourceFileDesc.o: DataSource.h ../graphics/Exit.h MemMgr.h
 DataSourceFileDesc.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceFileDesc.o: ../graphics/DevStatus.h DCE.h /usr/include/sys/ipc.h
-DataSourceFileDesc.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-DataSourceFileDesc.o: /usr/include/assert.h /usr/include/limits.h machdep.h
-DataSourceFileDesc.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-DataSourceFileDesc.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DataSourceFileDesc.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DataSourceFileDesc.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DataSourceFileDesc.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DataSourceFileDesc.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DataSourceFileDesc.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-DataSourceFileDesc.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DataSourceFileDesc.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DataSourceFileDesc.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DataSourceFileDesc.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DataSourceFileDesc.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-DataSourceFileDesc.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-DataSourceFileDesc.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceFileDesc.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceFileDesc.o: ../graphics/DevError.h
+DataSourceFileDesc.o: ../graphics/DevStatus.h ../graphics/Util.h
+DataSourceFileDesc.o: /usr/include/stdlib.h /usr/include/ctype.h
+DataSourceFileDesc.o: /usr/include/math.h ../graphics/DevError.h
 DataSourceFileStream.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceFileStream.o: /usr/include/sys/isa_defs.h
 DataSourceFileStream.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
@@ -687,24 +523,7 @@ DataSourceFileStream.o: /usr/include/sys/param.h /usr/include/sys/stat.h
 DataSourceFileStream.o: /usr/include/sys/time_impl.h DataSourceFileStream.h
 DataSourceFileStream.o: DataSource.h ../graphics/Exit.h MemMgr.h
 DataSourceFileStream.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceFileStream.o: ../graphics/DevStatus.h DCE.h /usr/include/sys/ipc.h
-DataSourceFileStream.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-DataSourceFileStream.o: /usr/include/assert.h /usr/include/limits.h machdep.h
-DataSourceFileStream.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-DataSourceFileStream.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DataSourceFileStream.o: /usr/include/vm/faultcode.h
-DataSourceFileStream.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DataSourceFileStream.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceFileStream.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceFileStream.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceFileStream.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceFileStream.o: /usr/include/sys/semaphore.h
-DataSourceFileStream.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DataSourceFileStream.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DataSourceFileStream.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DataSourceFileStream.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-DataSourceFileStream.o: /usr/include/sys/socket.h
-DataSourceFileStream.o: /usr/include/sys/netconfig.h ../graphics/Util.h
+DataSourceFileStream.o: ../graphics/DevStatus.h ../graphics/Util.h
 DataSourceFileStream.o: /usr/include/stdlib.h /usr/include/ctype.h
 DataSourceFileStream.o: /usr/include/math.h ../graphics/DevError.h
 DataSourceSegment.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -718,28 +537,27 @@ DataSourceSegment.o: /usr/include/sys/time.h /usr/include/time.h
 DataSourceSegment.o: /usr/include/sys/unistd.h /usr/include/unistd.h
 DataSourceSegment.o: DataSourceFileStream.h DataSource.h ../graphics/Exit.h
 DataSourceSegment.o: MemMgr.h ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceSegment.o: ../graphics/DevStatus.h DCE.h /usr/include/sys/ipc.h
-DataSourceSegment.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-DataSourceSegment.o: /usr/include/assert.h /usr/include/limits.h
-DataSourceSegment.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-DataSourceSegment.o: machdep.h /usr/include/sys/wait.h
-DataSourceSegment.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSourceSegment.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceSegment.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DataSourceSegment.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceSegment.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceSegment.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceSegment.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceSegment.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSourceSegment.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSourceSegment.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSourceSegment.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSourceSegment.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceSegment.o: /usr/include/sys/netconfig.h DataSourceTape.h
-DataSourceSegment.o: ../tape/tapedrive.h DataSourceBuf.h DataSourceSegment.h
-DataSourceSegment.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceSegment.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceSegment.o: ../graphics/DevError.h DataSourceWeb.h
+DataSourceSegment.o: ../graphics/DevStatus.h DataSourceTape.h
+DataSourceSegment.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
+DataSourceSegment.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+DataSourceSegment.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+DataSourceSegment.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
+DataSourceSegment.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DataSourceSegment.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DataSourceSegment.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DataSourceSegment.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DataSourceSegment.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DataSourceSegment.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+DataSourceSegment.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DataSourceSegment.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DataSourceSegment.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DataSourceSegment.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DataSourceSegment.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+DataSourceSegment.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DataSourceSegment.o: DataSourceBuf.h DataSourceSegment.h ../graphics/Util.h
+DataSourceSegment.o: /usr/include/stdlib.h /usr/include/ctype.h
+DataSourceSegment.o: /usr/include/math.h ../graphics/DevError.h
+DataSourceSegment.o: DataSourceWeb.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceTape.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DataSourceTape.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -751,14 +569,13 @@ DataSourceTape.o: /usr/include/sys/time.h /usr/include/time.h
 DataSourceTape.o: /usr/include/sys/unistd.h /usr/include/unistd.h
 DataSourceTape.o: DataSourceTape.h DataSource.h ../graphics/Exit.h MemMgr.h
 DataSourceTape.o: ../graphics/DeviseTypes.h /usr/include/values.h
-DataSourceTape.o: ../graphics/DevStatus.h DCE.h /usr/include/sys/ipc.h
-DataSourceTape.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-DataSourceTape.o: /usr/include/assert.h /usr/include/limits.h
-DataSourceTape.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-DataSourceTape.o: machdep.h /usr/include/sys/wait.h
+DataSourceTape.o: ../graphics/DevStatus.h ../tape/tapedrive.h machdep.h
+DataSourceTape.o: /usr/include/limits.h /usr/include/sys/wait.h
 DataSourceTape.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 DataSourceTape.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceTape.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+DataSourceTape.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+DataSourceTape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+DataSourceTape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 DataSourceTape.o: /usr/include/netdb.h /usr/include/netinet/in.h
 DataSourceTape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 DataSourceTape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -768,10 +585,9 @@ DataSourceTape.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 DataSourceTape.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 DataSourceTape.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 DataSourceTape.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceTape.o: /usr/include/sys/netconfig.h ../tape/tapedrive.h
-DataSourceTape.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceTape.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceTape.o: ../graphics/DevError.h
+DataSourceTape.o: /usr/include/sys/netconfig.h ../graphics/Util.h
+DataSourceTape.o: /usr/include/stdlib.h /usr/include/ctype.h
+DataSourceTape.o: /usr/include/math.h ../graphics/DevError.h
 DataSourceWeb.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceWeb.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DataSourceWeb.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -785,24 +601,8 @@ DataSourceWeb.o: /usr/include/time.h /usr/include/sys/param.h
 DataSourceWeb.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
 DataSourceWeb.o: DataSourceWeb.h DataSourceFileStream.h DataSource.h
 DataSourceWeb.o: ../graphics/Exit.h MemMgr.h ../graphics/DeviseTypes.h
-DataSourceWeb.o: /usr/include/values.h ../graphics/DevStatus.h DCE.h
-DataSourceWeb.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DataSourceWeb.o: /usr/include/sys/shm.h /usr/include/assert.h
-DataSourceWeb.o: /usr/include/limits.h machdep.h /usr/include/sys/wait.h
-DataSourceWeb.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DataSourceWeb.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DataSourceWeb.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DataSourceWeb.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DataSourceWeb.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DataSourceWeb.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DataSourceWeb.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DataSourceWeb.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DataSourceWeb.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DataSourceWeb.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DataSourceWeb.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DataSourceWeb.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DataSourceWeb.o: /usr/include/sys/netconfig.h ../graphics/Timer.h
-DataSourceWeb.o: ../graphics/Util.h /usr/include/stdlib.h
+DataSourceWeb.o: /usr/include/values.h ../graphics/DevStatus.h
+DataSourceWeb.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/stdlib.h
 DataSourceWeb.o: /usr/include/ctype.h /usr/include/math.h Web.h
 DataSourceWeb.o: ../graphics/DevError.h
 DebugLog.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -828,31 +628,14 @@ DerivedTable.o: /usr/include/sys/select.h /usr/include/sys/time.h
 DerivedTable.o: /usr/include/time.h /usr/include/sys/unistd.h DerivedTable.h
 DerivedTable.o: ../graphics/DevStatus.h ../graphics/DeviseTypes.h
 DerivedTable.o: /usr/include/values.h ../src/utils/ObjectValid.h TData.h
-DerivedTable.o: RecId.h DataSource.h ../graphics/Exit.h MemMgr.h DCE.h
-DerivedTable.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DerivedTable.o: /usr/include/sys/shm.h /usr/include/errno.h
-DerivedTable.o: /usr/include/sys/errno.h /usr/include/assert.h
-DerivedTable.o: /usr/include/limits.h /usr/include/sys/stat.h
-DerivedTable.o: /usr/include/sys/time_impl.h machdep.h
-DerivedTable.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-DerivedTable.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DerivedTable.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DerivedTable.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DerivedTable.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DerivedTable.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DerivedTable.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DerivedTable.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DerivedTable.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DerivedTable.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DerivedTable.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DerivedTable.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DerivedTable.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DerivedTable.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-DerivedTable.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
+DerivedTable.o: RecId.h DataSource.h ../graphics/Exit.h MemMgr.h
+DerivedTable.o: ../graphics/Dispatcher.h ../graphics/DList.h
+DerivedTable.o: ../graphics/AttrList.h ../graphics/Init.h
 DerivedTable.o: ../graphics/BufPolicy.h ../graphics/DevError.h
-DerivedTable.o: ../graphics/Util.h /usr/include/stdlib.h
-DerivedTable.o: /usr/include/string.h /usr/include/ctype.h
-DerivedTable.o: /usr/include/math.h
+DerivedTable.o: /usr/include/errno.h /usr/include/sys/errno.h
+DerivedTable.o: /usr/include/sys/param.h ../graphics/Util.h
+DerivedTable.o: /usr/include/stdlib.h /usr/include/string.h
+DerivedTable.o: /usr/include/ctype.h /usr/include/math.h
 DevFileHeader.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DevFileHeader.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DevFileHeader.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -959,57 +742,26 @@ FileIndex.o: /usr/include/sys/time_impl.h /usr/include/unistd.h
 FileIndex.o: /usr/include/sys/unistd.h /usr/include/fcntl.h
 FileIndex.o: /usr/include/sys/fcntl.h FileIndex.h RecId.h DataSource.h
 FileIndex.o: ../graphics/Exit.h MemMgr.h ../graphics/DeviseTypes.h
-FileIndex.o: /usr/include/values.h ../graphics/DevStatus.h DCE.h
-FileIndex.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-FileIndex.o: /usr/include/sys/shm.h /usr/include/errno.h
-FileIndex.o: /usr/include/sys/errno.h /usr/include/assert.h
-FileIndex.o: /usr/include/limits.h machdep.h /usr/include/sys/param.h
-FileIndex.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-FileIndex.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-FileIndex.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-FileIndex.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-FileIndex.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-FileIndex.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-FileIndex.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-FileIndex.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-FileIndex.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-FileIndex.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-FileIndex.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-FileIndex.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-FileIndex.o: /usr/include/sys/netconfig.h TData.h ../graphics/Dispatcher.h
-FileIndex.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-FileIndex.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/string.h
-FileIndex.o: /usr/include/ctype.h /usr/include/math.h ../graphics/DevError.h
+FileIndex.o: /usr/include/values.h ../graphics/DevStatus.h TData.h
+FileIndex.o: ../graphics/Dispatcher.h ../graphics/DList.h
+FileIndex.o: ../src/utils/ObjectValid.h ../graphics/Util.h
+FileIndex.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+FileIndex.o: /usr/include/math.h ../graphics/DevError.h /usr/include/errno.h
+FileIndex.o: /usr/include/sys/errno.h /usr/include/sys/param.h
 GData.o: ../graphics/Exit.h TDataAttr.h TData.h ../graphics/DeviseTypes.h
 GData.o: /usr/include/values.h /usr/include/sys/isa_defs.h
 GData.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 GData.o: /usr/include/sys/feature_tests.h /usr/include/sys/machtypes.h
 GData.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 GData.o: /usr/include/sys/time.h /usr/include/time.h RecId.h DataSource.h
-GData.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-GData.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-GData.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
+GData.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
+GData.o: ../src/utils/ObjectValid.h GData.h GDataRangeMap.h
 GData.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-GData.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-GData.o: /usr/include/limits.h /usr/include/sys/stat.h
-GData.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
-GData.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-GData.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-GData.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-GData.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-GData.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-GData.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-GData.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-GData.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-GData.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-GData.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-GData.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-GData.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-GData.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-GData.o: ../graphics/Dispatcher.h ../graphics/DList.h
-GData.o: ../src/utils/ObjectValid.h GData.h GDataRangeMap.h GDataRec.h
-GData.o: ShapeID.h ../graphics/Pattern.h UnixRecFile.h RecFile.h
-GData.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/DevError.h
+GData.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h GDataRec.h
+GData.o: ShapeID.h ../graphics/Pattern.h UnixRecFile.h /usr/include/errno.h
+GData.o: /usr/include/sys/errno.h RecFile.h ../graphics/Init.h
+GData.o: ../graphics/BufPolicy.h ../graphics/DevError.h
+GData.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 GDataBin.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 GDataBin.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 GDataBin.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1041,23 +793,38 @@ GDataRangeMap.o: /usr/include/stdio_impl.h ../graphics/DeviseTypes.h
 GDataRangeMap.o: /usr/include/values.h ../graphics/DevStatus.h RecId.h
 GDataRangeMap.o: GDataRec.h ShapeID.h ../graphics/Pattern.h FileMacro.h
 GDataRangeMap.o: ../graphics/DevError.h /usr/include/sys/param.h TData.h
-GDataRangeMap.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-GDataRangeMap.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-GDataRangeMap.o: /usr/include/assert.h machdep.h /usr/include/sys/wait.h
-GDataRangeMap.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-GDataRangeMap.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-GDataRangeMap.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-GDataRangeMap.o: /usr/include/netdb.h /usr/include/netinet/in.h
-GDataRangeMap.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-GDataRangeMap.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-GDataRangeMap.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-GDataRangeMap.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-GDataRangeMap.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-GDataRangeMap.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-GDataRangeMap.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-GDataRangeMap.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-GDataRangeMap.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
+GDataRangeMap.o: DataSource.h MemMgr.h ../graphics/Dispatcher.h
 GDataRangeMap.o: ../graphics/DList.h ../src/utils/ObjectValid.h
+JavaScreenCache.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+JavaScreenCache.o: /usr/include/sys/feature_tests.h
+JavaScreenCache.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+JavaScreenCache.o: /usr/include/sys/select.h /usr/include/sys/time.h
+JavaScreenCache.o: /usr/include/time.h /usr/include/sys/stat.h
+JavaScreenCache.o: /usr/include/sys/time_impl.h /usr/include/unistd.h
+JavaScreenCache.o: /usr/include/sys/unistd.h /usr/include/fcntl.h
+JavaScreenCache.o: /usr/include/sys/fcntl.h JavaScreenCache.h
+JavaScreenCache.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+JavaScreenCache.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+JavaScreenCache.o: ../graphics/DeviseTypes.h /usr/include/values.h
+JavaScreenCache.o: ../graphics/DevStatus.h JavaScreenCmd.h
+JavaScreenCache.o: ../graphics/DevError.h /usr/include/errno.h
+JavaScreenCache.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+JavaScreenCache.o: ../graphics/Util.h /usr/include/stdlib.h
+JavaScreenCache.o: /usr/include/string.h /usr/include/ctype.h
+JavaScreenCache.o: /usr/include/math.h ../graphics/Exit.h ../graphics/Init.h
+JavaScreenCache.o: ../graphics/BufPolicy.h ../graphics/Display.h
+JavaScreenCache.o: ../graphics/Geom.h ../graphics/Dispatcher.h
+JavaScreenCache.o: ../graphics/DList.h ../src/utils/ObjectValid.h
+JavaScreenCache.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+JavaScreenCache.o: ../graphics/Transform.h ../graphics/VisualArg.h
+JavaScreenCache.o: ../graphics/ViewDir.h ../graphics/Pattern.h
+JavaScreenCache.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+JavaScreenCache.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+JavaScreenCache.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+JavaScreenCache.o: /s/X11/include/X11/Xfuncproto.h
+JavaScreenCache.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+JavaScreenCache.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
+JavaScreenCache.o: ../src/utils/ArgList.h DebugLog.h DevFileHeader.h
 MapInterpClassInfo.o: /usr/include/ctype.h /usr/include/sys/feature_tests.h
 MapInterpClassInfo.o: /usr/include/sys/isa_defs.h ../graphics/DeviseTypes.h
 MapInterpClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -1091,32 +858,16 @@ MappingInterp.o: /usr/include/sys/time.h /usr/include/time.h Bitmap.h
 MappingInterp.o: ../graphics/AttrList.h ../graphics/DList.h
 MappingInterp.o: ../graphics/Exit.h ../graphics/Init.h
 MappingInterp.o: ../graphics/BufPolicy.h TData.h RecId.h DataSource.h
-MappingInterp.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-MappingInterp.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-MappingInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
-MappingInterp.o: /usr/include/limits.h /usr/include/sys/stat.h
-MappingInterp.o: /usr/include/sys/time_impl.h machdep.h
-MappingInterp.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-MappingInterp.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-MappingInterp.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-MappingInterp.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-MappingInterp.o: /usr/include/netdb.h /usr/include/netinet/in.h
-MappingInterp.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-MappingInterp.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-MappingInterp.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-MappingInterp.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-MappingInterp.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-MappingInterp.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-MappingInterp.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-MappingInterp.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-MappingInterp.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-MappingInterp.o: ../src/utils/ObjectValid.h ../graphics/Pattern.h
-MappingInterp.o: ../graphics/WindowRep.h ../graphics/Geom.h
-MappingInterp.o: /usr/include/math.h ../graphics/Transform.h
-MappingInterp.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-MappingInterp.o: /usr/include/string.h ../graphics/DevisePixmap.h
-MappingInterp.o: ../graphics/Compress.h ../graphics/DevError.h
-MappingInterp.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+MappingInterp.o: MemMgr.h ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
+MappingInterp.o: ../graphics/Pattern.h ../graphics/WindowRep.h
+MappingInterp.o: ../graphics/Geom.h /usr/include/math.h
+MappingInterp.o: ../graphics/Transform.h ../graphics/VisualArg.h
+MappingInterp.o: ../graphics/ViewDir.h /usr/include/string.h
+MappingInterp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+MappingInterp.o: ../graphics/DevError.h /usr/include/errno.h
+MappingInterp.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+MappingInterp.o: /usr/include/sys/unistd.h ../graphics/ETkIfc.h
+MappingInterp.o: ../graphics/ETk.h ../graphics/Xdef.h
 MappingInterp.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 MappingInterp.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 MappingInterp.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
@@ -1177,28 +928,10 @@ PageFile.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 PageFile.o: /usr/include/sys/select.h /usr/include/sys/time.h
 PageFile.o: /usr/include/time.h ../graphics/BufPolicy.h RecId.h
 PageFile.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h TData.h
-PageFile.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-PageFile.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-PageFile.o: /usr/include/sys/unistd.h /usr/include/errno.h
-PageFile.o: /usr/include/sys/errno.h /usr/include/assert.h
-PageFile.o: /usr/include/limits.h /usr/include/sys/stat.h
-PageFile.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
-PageFile.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-PageFile.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-PageFile.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-PageFile.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-PageFile.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-PageFile.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-PageFile.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-PageFile.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-PageFile.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-PageFile.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-PageFile.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-PageFile.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-PageFile.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-PageFile.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
-PageFile.o: RangeList.h RangeInfo.h ../graphics/AttrList.h ../graphics/Init.h
-PageFile.o: QPRange.h DiskFile.h PageFile.h BufHint.h PageRange.h
+PageFile.o: DataSource.h MemMgr.h ../graphics/Dispatcher.h
+PageFile.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
+PageFile.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h DiskFile.h
+PageFile.o: PageFile.h BufHint.h PageRange.h
 PageRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 PageRange.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 PageRange.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1240,9 +973,7 @@ ParseCat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 ParseCat.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
 ParseCat.o: /usr/include/values.h ../graphics/DevStatus.h
 ParseCat.o: ../graphics/ClassDir.h TDataAscii.h TData.h RecId.h DataSource.h
-ParseCat.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/errno.h
-ParseCat.o: /usr/include/sys/errno.h /usr/include/assert.h
-ParseCat.o: /usr/include/sys/stat.h ../graphics/Dispatcher.h
+ParseCat.o: ../graphics/Exit.h MemMgr.h ../graphics/Dispatcher.h
 ParseCat.o: ../graphics/DList.h ../src/utils/ObjectValid.h
 ParseCat.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
 ParseCat.o: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
@@ -1251,7 +982,8 @@ ParseCat.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
 ParseCat.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
 ParseCat.o: Group.h MapInterpClassInfo.h GroupDir.h ItemList.h
 ParseCat.o: DataSourceBuf.h DataSourceFileStream.h ParseCat.h
-ParseCat.o: ../graphics/DevError.h
+ParseCat.o: ../graphics/DevError.h /usr/include/errno.h
+ParseCat.o: /usr/include/sys/errno.h
 QPRange.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 QPRange.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 QPRange.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1273,27 +1005,8 @@ QueryProc.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
 QueryProc.o: ../src/utils/ObjectValid.h ../tape/SortedTable.h
 QueryProc.o: ../graphics/Timer.h BufMgr.h ../graphics/BufPolicy.h
 QueryProc.o: BufferPolicy.h RangeInfoArray.h TData.h DataSource.h MemMgr.h
-QueryProc.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-QueryProc.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-QueryProc.o: /usr/include/errno.h /usr/include/sys/errno.h
-QueryProc.o: /usr/include/assert.h /usr/include/limits.h
-QueryProc.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-QueryProc.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-QueryProc.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-QueryProc.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-QueryProc.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-QueryProc.o: /usr/include/netdb.h /usr/include/netinet/in.h
-QueryProc.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-QueryProc.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-QueryProc.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-QueryProc.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-QueryProc.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-QueryProc.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-QueryProc.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-QueryProc.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-QueryProc.o: /usr/include/sys/netconfig.h GData.h RangeList.h RangeInfo.h
-QueryProc.o: ../graphics/AttrList.h ../graphics/Init.h
-QueryProc.o: ../graphics/Scheduler.h ../graphics/Control.h
+QueryProc.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+QueryProc.o: ../graphics/Init.h ../graphics/Scheduler.h ../graphics/Control.h
 QueryProc.o: ../graphics/ClassDir.h ViewGraph.h Action.h PointStorage.h
 QueryProc.o: ../tape/HashTable.h TDataMap.h ../graphics/Pattern.h ShapeID.h
 QueryProc.o: GDataRec.h
@@ -1311,32 +1024,15 @@ QueryProcFull.o: QPRange.h ../graphics/DList.h ../graphics/Exit.h
 QueryProcFull.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
 QueryProcFull.o: ../tape/SortedTable.h ../graphics/Timer.h BufMgr.h
 QueryProcFull.o: ../graphics/BufPolicy.h BufferPolicy.h RangeInfoArray.h
-QueryProcFull.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-QueryProcFull.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-QueryProcFull.o: /usr/include/sys/unistd.h /usr/include/errno.h
-QueryProcFull.o: /usr/include/sys/errno.h /usr/include/assert.h
-QueryProcFull.o: /usr/include/limits.h /usr/include/sys/stat.h
-QueryProcFull.o: /usr/include/sys/time_impl.h machdep.h
-QueryProcFull.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-QueryProcFull.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-QueryProcFull.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-QueryProcFull.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-QueryProcFull.o: /usr/include/netdb.h /usr/include/netinet/in.h
-QueryProcFull.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-QueryProcFull.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-QueryProcFull.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-QueryProcFull.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-QueryProcFull.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-QueryProcFull.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-QueryProcFull.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-QueryProcFull.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-QueryProcFull.o: /usr/include/sys/netconfig.h GData.h RangeList.h RangeInfo.h
-QueryProcFull.o: ../graphics/AttrList.h ../graphics/Init.h
+QueryProcFull.o: TData.h DataSource.h MemMgr.h GData.h RangeList.h
+QueryProcFull.o: RangeInfo.h ../graphics/AttrList.h ../graphics/Init.h
 QueryProcFull.o: ../graphics/Scheduler.h ../graphics/Display.h
 QueryProcFull.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ViewWin.h
 QueryProcFull.o: ../graphics/WindowRep.h ../graphics/Transform.h
 QueryProcFull.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 QueryProcFull.o: ../graphics/Compress.h ../graphics/DevError.h
+QueryProcFull.o: /usr/include/errno.h /usr/include/sys/errno.h
+QueryProcFull.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 QueryProcFull.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 QueryProcFull.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 QueryProcFull.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
@@ -1363,28 +1059,9 @@ RangeHash.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 RangeHash.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 RangeHash.o: /usr/include/sys/select.h /usr/include/sys/time.h
 RangeHash.o: /usr/include/time.h RangeInfo.h RecId.h TData.h DataSource.h
-RangeHash.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-RangeHash.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-RangeHash.o: /usr/include/errno.h /usr/include/sys/errno.h
-RangeHash.o: /usr/include/assert.h /usr/include/limits.h
-RangeHash.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-RangeHash.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-RangeHash.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-RangeHash.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RangeHash.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RangeHash.o: /usr/include/netdb.h /usr/include/netinet/in.h
-RangeHash.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RangeHash.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RangeHash.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-RangeHash.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-RangeHash.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-RangeHash.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RangeHash.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-RangeHash.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-RangeHash.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-RangeHash.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-RangeHash.o: ../graphics/AttrList.h ../graphics/Init.h
-RangeHash.o: ../graphics/BufPolicy.h
+RangeHash.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
+RangeHash.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+RangeHash.o: ../graphics/Init.h ../graphics/BufPolicy.h
 RangeInfo.o: RangeInfo.h /usr/include/stdio.h
 RangeInfo.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 RangeInfo.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
@@ -1393,26 +1070,7 @@ RangeInfo.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeInfo.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 RangeInfo.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 RangeInfo.o: /usr/include/sys/time.h /usr/include/time.h ../graphics/Exit.h
-RangeInfo.o: RecId.h TData.h DataSource.h MemMgr.h DCE.h
-RangeInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-RangeInfo.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-RangeInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-RangeInfo.o: /usr/include/assert.h /usr/include/limits.h
-RangeInfo.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-RangeInfo.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-RangeInfo.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-RangeInfo.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RangeInfo.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RangeInfo.o: /usr/include/netdb.h /usr/include/netinet/in.h
-RangeInfo.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RangeInfo.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RangeInfo.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-RangeInfo.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-RangeInfo.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-RangeInfo.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RangeInfo.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-RangeInfo.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-RangeInfo.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
+RangeInfo.o: RecId.h TData.h DataSource.h MemMgr.h ../graphics/Dispatcher.h
 RangeInfo.o: ../graphics/DList.h ../src/utils/ObjectValid.h
 RangeInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 RangeInfo.o: ../graphics/BufPolicy.h
@@ -1428,24 +1086,7 @@ RangeInfoArray.o: /usr/include/stdio_impl.h VoidArray.h ../graphics/Exit.h
 RangeInfoArray.o: ../graphics/DevError.h /usr/include/errno.h
 RangeInfoArray.o: /usr/include/sys/errno.h /usr/include/sys/param.h
 RangeInfoArray.o: /usr/include/sys/unistd.h RangeInfo.h RecId.h TData.h
-RangeInfoArray.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-RangeInfoArray.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-RangeInfoArray.o: /usr/include/assert.h /usr/include/limits.h
-RangeInfoArray.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-RangeInfoArray.o: machdep.h /usr/include/sys/wait.h
-RangeInfoArray.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-RangeInfoArray.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RangeInfoArray.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RangeInfoArray.o: /usr/include/netdb.h /usr/include/netinet/in.h
-RangeInfoArray.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RangeInfoArray.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RangeInfoArray.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-RangeInfoArray.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-RangeInfoArray.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-RangeInfoArray.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RangeInfoArray.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-RangeInfoArray.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-RangeInfoArray.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
+RangeInfoArray.o: DataSource.h MemMgr.h ../graphics/Dispatcher.h
 RangeInfoArray.o: ../graphics/DList.h ../src/utils/ObjectValid.h
 RangeInfoArray.o: ../graphics/AttrList.h ../graphics/Init.h
 RangeInfoArray.o: ../graphics/BufPolicy.h
@@ -1458,54 +1099,18 @@ RangeList.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 RangeList.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 RangeList.o: /usr/include/sys/select.h /usr/include/sys/time.h
 RangeList.o: /usr/include/time.h RecId.h RangeInfo.h TData.h DataSource.h
-RangeList.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-RangeList.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-RangeList.o: /usr/include/assert.h /usr/include/limits.h
-RangeList.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-RangeList.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-RangeList.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-RangeList.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RangeList.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RangeList.o: /usr/include/netdb.h /usr/include/netinet/in.h
-RangeList.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RangeList.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RangeList.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-RangeList.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-RangeList.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-RangeList.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RangeList.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-RangeList.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-RangeList.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-RangeList.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-RangeList.o: ../graphics/AttrList.h ../graphics/Init.h
-RangeList.o: ../graphics/BufPolicy.h ../graphics/DevError.h
+RangeList.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
+RangeList.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+RangeList.o: ../graphics/Init.h ../graphics/BufPolicy.h
+RangeList.o: ../graphics/DevError.h /usr/include/sys/param.h
+RangeList.o: /usr/include/sys/unistd.h
 RecFile.o: UnixRecFile.h /usr/include/errno.h /usr/include/sys/errno.h
 RecFile.o: RecFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 RecFile.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
 RecFile.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 RecFile.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 RecFile.o: /usr/include/sys/select.h /usr/include/sys/time.h
-RecFile.o: /usr/include/time.h DataSource.h ../graphics/Exit.h MemMgr.h DCE.h
-RecFile.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-RecFile.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-RecFile.o: /usr/include/assert.h /usr/include/stdio.h
-RecFile.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
-RecFile.o: /usr/include/stdio_impl.h /usr/include/limits.h
-RecFile.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-RecFile.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-RecFile.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-RecFile.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RecFile.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RecFile.o: /usr/include/netdb.h /usr/include/netinet/in.h
-RecFile.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RecFile.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RecFile.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-RecFile.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-RecFile.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-RecFile.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RecFile.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-RecFile.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-RecFile.o: /usr/include/sys/netconfig.h
+RecFile.o: /usr/include/time.h DataSource.h ../graphics/Exit.h MemMgr.h
 RecInterp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 RecInterp.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 RecInterp.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1561,27 +1166,8 @@ SlaveTable.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
 SlaveTable.o: ../graphics/ViewDir.h /usr/include/string.h GDataRec.h
 SlaveTable.o: ../graphics/AttrList.h ../graphics/DList.h ../graphics/Exit.h
 SlaveTable.o: ../graphics/Init.h ../graphics/BufPolicy.h TData.h DataSource.h
-SlaveTable.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-SlaveTable.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-SlaveTable.o: /usr/include/errno.h /usr/include/sys/errno.h
-SlaveTable.o: /usr/include/assert.h /usr/include/limits.h
-SlaveTable.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-SlaveTable.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-SlaveTable.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-SlaveTable.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-SlaveTable.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-SlaveTable.o: /usr/include/netdb.h /usr/include/netinet/in.h
-SlaveTable.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-SlaveTable.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-SlaveTable.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-SlaveTable.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-SlaveTable.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-SlaveTable.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-SlaveTable.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-SlaveTable.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-SlaveTable.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-SlaveTable.o: TAttrLink.h MasterSlaveLink.h DeviseLink.h
-SlaveTable.o: ../graphics/ViewCallback.h ../graphics/Session.h
+SlaveTable.o: MemMgr.h ../graphics/Dispatcher.h TAttrLink.h MasterSlaveLink.h
+SlaveTable.o: DeviseLink.h ../graphics/ViewCallback.h ../graphics/Session.h
 SlaveTable.o: /s/tcl/include/tcl.h /usr/include/stdarg.h
 SlaveTable.o: /s/tcl/include/tclDecls.h DerivedTable.h DataSeg.h
 TAttrLink.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -1601,26 +1187,10 @@ TAttrLink.o: /usr/include/sys/errno.h /usr/include/sys/param.h
 TAttrLink.o: /usr/include/sys/unistd.h ViewGraph.h Action.h PointStorage.h
 TAttrLink.o: ../tape/HashTable.h TDataMap.h ../graphics/Pattern.h ShapeID.h
 TAttrLink.o: GDataRec.h ../graphics/AttrList.h ../graphics/Init.h
-TAttrLink.o: ../graphics/BufPolicy.h TData.h DataSource.h MemMgr.h DCE.h
-TAttrLink.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TAttrLink.o: /usr/include/sys/shm.h /usr/include/assert.h
-TAttrLink.o: /usr/include/limits.h /usr/include/sys/stat.h
-TAttrLink.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/wait.h
-TAttrLink.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TAttrLink.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TAttrLink.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TAttrLink.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TAttrLink.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TAttrLink.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TAttrLink.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TAttrLink.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TAttrLink.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TAttrLink.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TAttrLink.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TAttrLink.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TAttrLink.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TAttrLink.o: ../graphics/Control.h ../graphics/ClassDir.h
-TAttrLink.o: ../graphics/Session.h /s/tcl/include/tcl.h /usr/include/stdarg.h
+TAttrLink.o: ../graphics/BufPolicy.h TData.h DataSource.h MemMgr.h
+TAttrLink.o: ../graphics/Dispatcher.h ../graphics/Control.h
+TAttrLink.o: ../graphics/ClassDir.h ../graphics/Session.h
+TAttrLink.o: /s/tcl/include/tcl.h /usr/include/stdarg.h
 TAttrLink.o: /s/tcl/include/tclDecls.h DerivedTable.h
 TData.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TData.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -1633,12 +1203,17 @@ TData.o: /usr/include/sys/unistd.h /usr/include/errno.h
 TData.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
 TData.o: /usr/include/sys/time_impl.h TData.h ../graphics/DeviseTypes.h
 TData.o: /usr/include/values.h ../graphics/DevStatus.h RecId.h DataSource.h
-TData.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-TData.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
-TData.o: /usr/include/limits.h machdep.h /usr/include/sys/param.h
+TData.o: ../graphics/Exit.h MemMgr.h ../graphics/Dispatcher.h
+TData.o: ../graphics/DList.h ../src/utils/ObjectValid.h ../graphics/Util.h
+TData.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+TData.o: /usr/include/math.h DevFileHeader.h ../graphics/DevError.h
+TData.o: /usr/include/sys/param.h ../graphics/AttrList.h ../graphics/Init.h
+TData.o: ../graphics/BufPolicy.h DataSourceFileStream.h DataSourceSegment.h
+TData.o: DataSourceTape.h ../tape/tapedrive.h machdep.h /usr/include/limits.h
 TData.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 TData.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 TData.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+TData.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 TData.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 TData.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 TData.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
@@ -1649,12 +1224,6 @@ TData.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 TData.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 TData.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 TData.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TData.o: ../graphics/Dispatcher.h ../graphics/DList.h
-TData.o: ../src/utils/ObjectValid.h ../graphics/Util.h /usr/include/stdlib.h
-TData.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
-TData.o: DevFileHeader.h ../graphics/DevError.h ../graphics/AttrList.h
-TData.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceFileStream.h
-TData.o: DataSourceSegment.h DataSourceTape.h ../tape/tapedrive.h
 TData.o: DataSourceBuf.h DataSourceDQL.h DataSeg.h FileIndex.h
 TData.o: ../graphics/DepMgr.h ViewGraph.h Action.h PointStorage.h
 TData.o: ../tape/HashTable.h TDataMap.h ../graphics/Pattern.h ShapeID.h
@@ -1668,31 +1237,12 @@ TDataAppend.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TDataAppend.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 TDataAppend.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 TDataAppend.o: /usr/include/sys/select.h /usr/include/sys/time.h
-TDataAppend.o: /usr/include/time.h RecId.h DataSource.h MemMgr.h DCE.h
-TDataAppend.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataAppend.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-TDataAppend.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataAppend.o: /usr/include/assert.h /usr/include/limits.h
-TDataAppend.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-TDataAppend.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataAppend.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataAppend.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataAppend.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataAppend.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataAppend.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataAppend.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataAppend.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataAppend.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataAppend.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataAppend.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataAppend.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataAppend.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataAppend.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataAppend.o: ../graphics/DList.h ../src/utils/ObjectValid.h DiskFile.h
-TDataAppend.o: BufMgr.h ../graphics/BufPolicy.h BufferPolicy.h
-TDataAppend.o: RangeInfoArray.h GData.h RangeList.h RangeInfo.h
-TDataAppend.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h PageFile.h
-TDataAppend.o: BufHint.h
+TDataAppend.o: /usr/include/time.h RecId.h DataSource.h MemMgr.h
+TDataAppend.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataAppend.o: ../src/utils/ObjectValid.h DiskFile.h BufMgr.h
+TDataAppend.o: ../graphics/BufPolicy.h BufferPolicy.h RangeInfoArray.h
+TDataAppend.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+TDataAppend.o: ../graphics/Init.h QPRange.h PageFile.h BufHint.h
 TDataAscii.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataAscii.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataAscii.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1707,12 +1257,16 @@ TDataAscii.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
 TDataAscii.o: ../graphics/Parse.h TDataAscii.h TData.h
 TDataAscii.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TDataAscii.o: ../graphics/DevStatus.h RecId.h DataSource.h ../graphics/Exit.h
-TDataAscii.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataAscii.o: /usr/include/sys/shm.h /usr/include/assert.h machdep.h
-TDataAscii.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataAscii.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataAscii.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataAscii.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+TDataAscii.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
+TDataAscii.o: ../src/utils/ObjectValid.h ../graphics/Util.h
+TDataAscii.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+TDataAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
+TDataAscii.o: ../tape/tapedrive.h machdep.h /usr/include/sys/param.h
+TDataAscii.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+TDataAscii.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+TDataAscii.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+TDataAscii.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataAscii.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 TDataAscii.o: /usr/include/netdb.h /usr/include/netinet/in.h
 TDataAscii.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 TDataAscii.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -1722,11 +1276,7 @@ TDataAscii.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 TDataAscii.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 TDataAscii.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 TDataAscii.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataAscii.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataAscii.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-TDataAscii.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
-TDataAscii.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
-TDataAscii.o: DataSourceTape.h ../tape/tapedrive.h DataSourceBuf.h
+TDataAscii.o: /usr/include/sys/netconfig.h DataSourceBuf.h
 TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataAscii.o: ../graphics/VisualArg.h ../graphics/ViewDir.h FileIndex.h
 TDataAscii.o: DebugLog.h ../graphics/Init.h ../graphics/BufPolicy.h
@@ -1737,40 +1287,23 @@ TDataAsciiInterp.o: /usr/include/unistd.h /usr/include/sys/types.h
 TDataAsciiInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 TDataAsciiInterp.o: /usr/include/sys/select.h /usr/include/sys/time.h
 TDataAsciiInterp.o: /usr/include/time.h /usr/include/sys/unistd.h
-TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
+TDataAsciiInterp.o: TDataAsciiInterp.h /usr/include/stdio.h
+TDataAsciiInterp.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+TDataAsciiInterp.o: /usr/include/stdio_impl.h ../graphics/DeviseTypes.h
 TDataAsciiInterp.o: /usr/include/values.h ../graphics/DevStatus.h
 TDataAsciiInterp.o: ../graphics/ClassDir.h TDataAscii.h TData.h RecId.h
-TDataAsciiInterp.o: DataSource.h ../graphics/Exit.h MemMgr.h DCE.h
-TDataAsciiInterp.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataAsciiInterp.o: /usr/include/sys/shm.h /usr/include/errno.h
-TDataAsciiInterp.o: /usr/include/sys/errno.h /usr/include/assert.h
-TDataAsciiInterp.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-TDataAsciiInterp.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-TDataAsciiInterp.o: /usr/include/limits.h /usr/include/sys/stat.h
-TDataAsciiInterp.o: /usr/include/sys/time_impl.h machdep.h
-TDataAsciiInterp.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataAsciiInterp.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataAsciiInterp.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataAsciiInterp.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataAsciiInterp.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataAsciiInterp.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataAsciiInterp.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataAsciiInterp.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataAsciiInterp.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataAsciiInterp.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataAsciiInterp.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataAsciiInterp.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataAsciiInterp.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataAsciiInterp.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataAsciiInterp.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-TDataAsciiInterp.o: ../graphics/AttrList.h ../graphics/Init.h
-TDataAsciiInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
-TDataAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
-TDataAsciiInterp.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-TDataAsciiInterp.o: ../graphics/Util.h /usr/include/stdlib.h
-TDataAsciiInterp.o: /usr/include/math.h ../graphics/DevError.h ViewGraph.h
-TDataAsciiInterp.o: Action.h PointStorage.h ../tape/HashTable.h TDataMap.h
-TDataAsciiInterp.o: ../graphics/Pattern.h ShapeID.h GDataRec.h
+TDataAsciiInterp.o: DataSource.h ../graphics/Exit.h MemMgr.h
+TDataAsciiInterp.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataAsciiInterp.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+TDataAsciiInterp.o: ../graphics/Init.h ../graphics/BufPolicy.h RecInterp.h
+TDataAsciiInterp.o: CompositeParser.h ../graphics/Parse.h
+TDataAsciiInterp.o: ../graphics/Control.h ../graphics/VisualArg.h
+TDataAsciiInterp.o: ../graphics/ViewDir.h ../graphics/Util.h
+TDataAsciiInterp.o: /usr/include/stdlib.h /usr/include/math.h
+TDataAsciiInterp.o: ../graphics/DevError.h /usr/include/errno.h
+TDataAsciiInterp.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+TDataAsciiInterp.o: ViewGraph.h Action.h PointStorage.h ../tape/HashTable.h
+TDataAsciiInterp.o: TDataMap.h ../graphics/Pattern.h ShapeID.h GDataRec.h
 TDataBinary.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataBinary.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataBinary.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1784,13 +1317,17 @@ TDataBinary.o: /usr/include/errno.h /usr/include/sys/errno.h
 TDataBinary.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
 TDataBinary.o: ../graphics/Parse.h TDataBinary.h ../graphics/DeviseTypes.h
 TDataBinary.o: /usr/include/values.h ../graphics/DevStatus.h TData.h RecId.h
-TDataBinary.o: DataSource.h ../graphics/Exit.h MemMgr.h DCE.h
-TDataBinary.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataBinary.o: /usr/include/sys/shm.h /usr/include/assert.h machdep.h
-TDataBinary.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataBinary.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataBinary.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataBinary.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+TDataBinary.o: DataSource.h ../graphics/Exit.h MemMgr.h
+TDataBinary.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataBinary.o: ../src/utils/ObjectValid.h ../graphics/Util.h
+TDataBinary.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+TDataBinary.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
+TDataBinary.o: ../tape/tapedrive.h machdep.h /usr/include/sys/param.h
+TDataBinary.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+TDataBinary.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+TDataBinary.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+TDataBinary.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataBinary.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 TDataBinary.o: /usr/include/netdb.h /usr/include/netinet/in.h
 TDataBinary.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 TDataBinary.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -1800,15 +1337,10 @@ TDataBinary.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 TDataBinary.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 TDataBinary.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 TDataBinary.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataBinary.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataBinary.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-TDataBinary.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
-TDataBinary.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
-TDataBinary.o: DataSourceTape.h ../tape/tapedrive.h ../graphics/DevError.h
-TDataBinary.o: DataSeg.h QueryProc.h ../graphics/VisualArg.h
-TDataBinary.o: ../graphics/ViewDir.h FileIndex.h DebugLog.h
-TDataBinary.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
-TDataBinary.o: ../graphics/DepMgr.h
+TDataBinary.o: /usr/include/sys/netconfig.h ../graphics/DevError.h DataSeg.h
+TDataBinary.o: QueryProc.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataBinary.o: FileIndex.h DebugLog.h ../graphics/Init.h
+TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h ../graphics/DepMgr.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataBinaryInterp.o: /usr/include/sys/isa_defs.h /usr/include/unistd.h
 TDataBinaryInterp.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
@@ -1820,33 +1352,16 @@ TDataBinaryInterp.o: ../graphics/DevStatus.h ../graphics/ClassDir.h
 TDataBinaryInterp.o: TDataBinary.h /usr/include/stdio.h
 TDataBinaryInterp.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
 TDataBinaryInterp.o: /usr/include/stdio_impl.h TData.h RecId.h DataSource.h
-TDataBinaryInterp.o: ../graphics/Exit.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-TDataBinaryInterp.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TDataBinaryInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataBinaryInterp.o: /usr/include/assert.h /usr/include/limits.h
-TDataBinaryInterp.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-TDataBinaryInterp.o: machdep.h /usr/include/sys/param.h
-TDataBinaryInterp.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-TDataBinaryInterp.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TDataBinaryInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TDataBinaryInterp.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TDataBinaryInterp.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TDataBinaryInterp.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TDataBinaryInterp.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-TDataBinaryInterp.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TDataBinaryInterp.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TDataBinaryInterp.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TDataBinaryInterp.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TDataBinaryInterp.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-TDataBinaryInterp.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TDataBinaryInterp.o: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataBinaryInterp.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
-TDataBinaryInterp.o: ../graphics/Init.h ../graphics/BufPolicy.h RecInterp.h
-TDataBinaryInterp.o: CompositeParser.h ../graphics/Parse.h
-TDataBinaryInterp.o: ../graphics/Control.h ../graphics/VisualArg.h
-TDataBinaryInterp.o: ../graphics/ViewDir.h ../graphics/Util.h
-TDataBinaryInterp.o: /usr/include/stdlib.h /usr/include/ctype.h
-TDataBinaryInterp.o: /usr/include/math.h ../graphics/DevError.h
+TDataBinaryInterp.o: ../graphics/Exit.h MemMgr.h ../graphics/Dispatcher.h
+TDataBinaryInterp.o: ../graphics/DList.h ../src/utils/ObjectValid.h
+TDataBinaryInterp.o: ../graphics/AttrList.h ../graphics/Init.h
+TDataBinaryInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
+TDataBinaryInterp.o: ../graphics/Parse.h ../graphics/Control.h
+TDataBinaryInterp.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataBinaryInterp.o: ../graphics/Util.h /usr/include/stdlib.h
+TDataBinaryInterp.o: /usr/include/ctype.h /usr/include/math.h
+TDataBinaryInterp.o: ../graphics/DevError.h /usr/include/errno.h
+TDataBinaryInterp.o: /usr/include/sys/errno.h /usr/include/sys/param.h
 TDataMap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataMap.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataMap.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1859,29 +1374,12 @@ TDataMap.o: /usr/include/time.h ../graphics/BufPolicy.h TDataMap.h
 TDataMap.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
 TDataMap.o: ../graphics/ViewDir.h RecId.h GDataRec.h ../graphics/AttrList.h
 TDataMap.o: ../graphics/DList.h ../graphics/Exit.h ../src/utils/ObjectValid.h
-TDataMap.o: GData.h TData.h DataSource.h MemMgr.h DCE.h
-TDataMap.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataMap.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
+TDataMap.o: GData.h TData.h DataSource.h MemMgr.h ../graphics/Dispatcher.h
+TDataMap.o: GDataBin.h ../graphics/Transform.h /usr/include/math.h
+TDataMap.o: ../graphics/Geom.h QueryProc.h ../graphics/Util.h
+TDataMap.o: /usr/include/stdlib.h /usr/include/ctype.h ../graphics/DevError.h
 TDataMap.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataMap.o: /usr/include/assert.h /usr/include/limits.h
-TDataMap.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-TDataMap.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataMap.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataMap.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataMap.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataMap.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataMap.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataMap.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataMap.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataMap.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataMap.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataMap.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataMap.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataMap.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataMap.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h GDataBin.h
-TDataMap.o: ../graphics/Transform.h /usr/include/math.h ../graphics/Geom.h
-TDataMap.o: QueryProc.h ../graphics/Util.h /usr/include/stdlib.h
-TDataMap.o: /usr/include/ctype.h ../graphics/DevError.h
+TDataMap.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 TDataMap.o: ../graphics/TimeStamp.h StringStorage.h ../tape/HashTable.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 TDataMmap.o: /usr/include/sys/feature_tests.h /usr/include/sys/machtypes.h
@@ -1892,26 +1390,7 @@ TDataMmap.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
 TDataMmap.o: /usr/include/limits.h TDataMmap.h TDataAppend.h TData.h
 TDataMmap.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TDataMmap.o: ../graphics/DevStatus.h RecId.h DataSource.h ../graphics/Exit.h
-TDataMmap.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataMmap.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-TDataMmap.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataMmap.o: /usr/include/assert.h /usr/include/stdio.h
-TDataMmap.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
-TDataMmap.o: /usr/include/stdio_impl.h machdep.h /usr/include/sys/param.h
-TDataMmap.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-TDataMmap.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TDataMmap.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TDataMmap.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TDataMmap.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TDataMmap.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TDataMmap.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-TDataMmap.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TDataMmap.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TDataMmap.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TDataMmap.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TDataMmap.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-TDataMmap.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TDataMmap.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataMmap.o: MemMgr.h ../graphics/Dispatcher.h ../graphics/DList.h
 TDataMmap.o: ../src/utils/ObjectValid.h DiskFile.h
 TDataRangeList.o: TDataRangeList.h ../graphics/DeviseTypes.h
 TDataRangeList.o: /usr/include/values.h /usr/include/sys/isa_defs.h
@@ -1922,29 +1401,10 @@ TDataRangeList.o: /usr/include/sys/select.h /usr/include/sys/time.h
 TDataRangeList.o: /usr/include/time.h RangeList.h RecId.h RangeInfo.h
 TDataRangeList.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 TDataRangeList.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-TDataRangeList.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
-TDataRangeList.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataRangeList.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-TDataRangeList.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataRangeList.o: /usr/include/assert.h /usr/include/limits.h
-TDataRangeList.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-TDataRangeList.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataRangeList.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataRangeList.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataRangeList.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataRangeList.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataRangeList.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataRangeList.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataRangeList.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataRangeList.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataRangeList.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataRangeList.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataRangeList.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataRangeList.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataRangeList.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-TDataRangeList.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-TDataRangeList.o: ../graphics/AttrList.h ../graphics/Init.h
-TDataRangeList.o: ../graphics/BufPolicy.h
+TDataRangeList.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h
+TDataRangeList.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataRangeList.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+TDataRangeList.o: ../graphics/Init.h ../graphics/BufPolicy.h
 TDataSeqAscii.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TDataSeqAscii.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TDataSeqAscii.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1961,25 +1421,25 @@ TDataSeqAscii.o: ../graphics/DeviseTypes.h /usr/include/values.h
 TDataSeqAscii.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
 TDataSeqAscii.o: ../graphics/DList.h ../graphics/Exit.h
 TDataSeqAscii.o: ../src/utils/ObjectValid.h TData.h RecId.h DataSource.h
-TDataSeqAscii.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataSeqAscii.o: /usr/include/sys/shm.h /usr/include/assert.h machdep.h
-TDataSeqAscii.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-TDataSeqAscii.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-TDataSeqAscii.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-TDataSeqAscii.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-TDataSeqAscii.o: /usr/include/netdb.h /usr/include/netinet/in.h
-TDataSeqAscii.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-TDataSeqAscii.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TDataSeqAscii.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-TDataSeqAscii.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TDataSeqAscii.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-TDataSeqAscii.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TDataSeqAscii.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-TDataSeqAscii.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-TDataSeqAscii.o: /usr/include/sys/netconfig.h FileIndex.h ../graphics/Util.h
+TDataSeqAscii.o: MemMgr.h FileIndex.h ../graphics/Util.h
 TDataSeqAscii.o: /usr/include/string.h /usr/include/ctype.h
 TDataSeqAscii.o: /usr/include/math.h DataSourceFileStream.h
 TDataSeqAscii.o: DataSourceSegment.h DataSourceTape.h ../tape/tapedrive.h
+TDataSeqAscii.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
+TDataSeqAscii.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
+TDataSeqAscii.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+TDataSeqAscii.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+TDataSeqAscii.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+TDataSeqAscii.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+TDataSeqAscii.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+TDataSeqAscii.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+TDataSeqAscii.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+TDataSeqAscii.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+TDataSeqAscii.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+TDataSeqAscii.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+TDataSeqAscii.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+TDataSeqAscii.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+TDataSeqAscii.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 TDataSeqAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataSeqAscii.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 TDataSeqAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
@@ -1997,31 +1457,15 @@ TDataSeqAsciiInterp.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
 TDataSeqAsciiInterp.o: /usr/include/stdio_impl.h ../graphics/Dispatcher.h
 TDataSeqAsciiInterp.o: ../graphics/DList.h ../graphics/Exit.h
 TDataSeqAsciiInterp.o: ../src/utils/ObjectValid.h TData.h RecId.h
-TDataSeqAsciiInterp.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-TDataSeqAsciiInterp.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TDataSeqAsciiInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataSeqAsciiInterp.o: /usr/include/assert.h /usr/include/limits.h
-TDataSeqAsciiInterp.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-TDataSeqAsciiInterp.o: machdep.h /usr/include/sys/param.h
-TDataSeqAsciiInterp.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-TDataSeqAsciiInterp.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TDataSeqAsciiInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TDataSeqAsciiInterp.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TDataSeqAsciiInterp.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TDataSeqAsciiInterp.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TDataSeqAsciiInterp.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-TDataSeqAsciiInterp.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TDataSeqAsciiInterp.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TDataSeqAsciiInterp.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TDataSeqAsciiInterp.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TDataSeqAsciiInterp.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-TDataSeqAsciiInterp.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TDataSeqAsciiInterp.o: FileIndex.h ../graphics/AttrList.h ../graphics/Init.h
+TDataSeqAsciiInterp.o: DataSource.h MemMgr.h FileIndex.h
+TDataSeqAsciiInterp.o: ../graphics/AttrList.h ../graphics/Init.h
 TDataSeqAsciiInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
 TDataSeqAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
 TDataSeqAsciiInterp.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 TDataSeqAsciiInterp.o: ../graphics/Util.h /usr/include/stdlib.h
 TDataSeqAsciiInterp.o: /usr/include/math.h ../graphics/DevError.h
+TDataSeqAsciiInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
+TDataSeqAsciiInterp.o: /usr/include/sys/param.h
 TkControl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TkControl.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 TkControl.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2044,28 +1488,9 @@ TkControl.o: ../graphics/ViewCallback.h GroupDir.h ItemList.h Group.h
 TkControl.o: MapInterpClassInfo.h QueryProc.h RecId.h ParseAPI.h
 TkControl.o: DeviseCommand.h ExtStack.h ParseCat.h ../graphics/AttrList.h
 TkControl.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceBuf.h
-TkControl.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-TkControl.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-TkControl.o: /usr/include/sys/unistd.h /usr/include/errno.h
-TkControl.o: /usr/include/sys/errno.h /usr/include/assert.h
-TkControl.o: /usr/include/limits.h /usr/include/sys/stat.h
-TkControl.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
-TkControl.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-TkControl.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-TkControl.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-TkControl.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-TkControl.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-TkControl.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-TkControl.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-TkControl.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-TkControl.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-TkControl.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-TkControl.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-TkControl.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-TkControl.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-TkControl.o: ../graphics/View.h ../graphics/Util.h /usr/include/ctype.h
-TkControl.o: /usr/include/math.h Version.h CmdContainer.h DeviseServer.h
-TkControl.o: DebugLog.h
+TkControl.o: DataSource.h MemMgr.h ../graphics/View.h ../graphics/Util.h
+TkControl.o: /usr/include/ctype.h /usr/include/math.h Version.h
+TkControl.o: CmdContainer.h DeviseServer.h DebugLog.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 UnixDiskFile.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 UnixDiskFile.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2093,24 +1518,9 @@ UnixRecFile.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
 UnixRecFile.o: UnixRecFile.h /usr/include/errno.h /usr/include/sys/errno.h
 UnixRecFile.o: RecFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 UnixRecFile.o: ../graphics/DevStatus.h DataSource.h ../graphics/Exit.h
-UnixRecFile.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-UnixRecFile.o: /usr/include/sys/shm.h /usr/include/assert.h machdep.h
-UnixRecFile.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-UnixRecFile.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-UnixRecFile.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-UnixRecFile.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-UnixRecFile.o: /usr/include/netdb.h /usr/include/netinet/in.h
-UnixRecFile.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-UnixRecFile.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-UnixRecFile.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-UnixRecFile.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-UnixRecFile.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-UnixRecFile.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-UnixRecFile.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-UnixRecFile.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-UnixRecFile.o: /usr/include/sys/netconfig.h ../graphics/Util.h
-UnixRecFile.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
-UnixRecFile.o: ../graphics/DevError.h
+UnixRecFile.o: MemMgr.h ../graphics/Util.h /usr/include/string.h
+UnixRecFile.o: /usr/include/ctype.h /usr/include/math.h
+UnixRecFile.o: ../graphics/DevError.h /usr/include/sys/param.h
 Version.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Version.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 Version.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2181,33 +1591,13 @@ VisualLinkClassInfo.o: /usr/include/string.h ../graphics/DList.h
 VisualLinkClassInfo.o: ../graphics/Exit.h VisualLink.h DeviseLink.h
 VisualLinkClassInfo.o: ../graphics/ViewCallback.h ../src/utils/ObjectValid.h
 VisualLinkClassInfo.o: ../graphics/Dispatcher.h RecordLink.h RecId.h
-VisualLinkClassInfo.o: RecFile.h DataSource.h MemMgr.h DCE.h
-VisualLinkClassInfo.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-VisualLinkClassInfo.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-VisualLinkClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-VisualLinkClassInfo.o: /usr/include/assert.h /usr/include/limits.h
-VisualLinkClassInfo.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-VisualLinkClassInfo.o: machdep.h /usr/include/sys/param.h
-VisualLinkClassInfo.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-VisualLinkClassInfo.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-VisualLinkClassInfo.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-VisualLinkClassInfo.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-VisualLinkClassInfo.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-VisualLinkClassInfo.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-VisualLinkClassInfo.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-VisualLinkClassInfo.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-VisualLinkClassInfo.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-VisualLinkClassInfo.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-VisualLinkClassInfo.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-VisualLinkClassInfo.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-VisualLinkClassInfo.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-VisualLinkClassInfo.o: MasterSlaveLink.h TAttrLink.h ViewGraph.h Action.h
-VisualLinkClassInfo.o: PointStorage.h ../tape/HashTable.h TDataMap.h
-VisualLinkClassInfo.o: ../graphics/Pattern.h ShapeID.h GDataRec.h
-VisualLinkClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-VisualLinkClassInfo.o: ../graphics/BufPolicy.h ../graphics/Util.h
-VisualLinkClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h
-VisualLinkClassInfo.o: /usr/include/math.h
+VisualLinkClassInfo.o: RecFile.h DataSource.h MemMgr.h MasterSlaveLink.h
+VisualLinkClassInfo.o: TAttrLink.h ViewGraph.h Action.h PointStorage.h
+VisualLinkClassInfo.o: ../tape/HashTable.h TDataMap.h ../graphics/Pattern.h
+VisualLinkClassInfo.o: ShapeID.h GDataRec.h ../graphics/AttrList.h
+VisualLinkClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
+VisualLinkClassInfo.o: ../graphics/Util.h /usr/include/stdlib.h
+VisualLinkClassInfo.o: /usr/include/ctype.h /usr/include/math.h
 VoidArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 VoidArray.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 VoidArray.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h VoidArray.h
@@ -2272,24 +1662,8 @@ makeGData.o: /usr/include/sys/time_impl.h BufMgr.h ../graphics/DeviseTypes.h
 makeGData.o: /usr/include/values.h ../graphics/DevStatus.h
 makeGData.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RangeInfoArray.h
 makeGData.o: ../graphics/DList.h ../graphics/Exit.h TData.h DataSource.h
-makeGData.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-makeGData.o: /usr/include/sys/shm.h /usr/include/errno.h
-makeGData.o: /usr/include/sys/errno.h /usr/include/assert.h machdep.h
-makeGData.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-makeGData.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-makeGData.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-makeGData.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-makeGData.o: /usr/include/netdb.h /usr/include/netinet/in.h
-makeGData.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-makeGData.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-makeGData.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-makeGData.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-makeGData.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
-makeGData.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-makeGData.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-makeGData.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-makeGData.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
-makeGData.o: RangeList.h RangeInfo.h ../graphics/AttrList.h
+makeGData.o: MemMgr.h ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
+makeGData.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
 makeGData.o: ../graphics/Init.h QPRange.h TDataAppend.h DiskFile.h ams.h
 makeGData.o: /usr/include/math.h
 makeTest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -2357,24 +1731,8 @@ testAms1.o: ../tape/HashTable.h ../graphics/Control.h ../graphics/ClassDir.h
 testAms1.o: TDataCMap.h ConnectorShape.h Connector.h GDataBin.h
 testAms1.o: ActionDefault.h ../graphics/Util.h /usr/include/stdlib.h
 testAms1.o: /usr/include/ctype.h BufMgr.h BufferPolicy.h RangeInfoArray.h
-testAms1.o: TData.h DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-testAms1.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-testAms1.o: /usr/include/assert.h /usr/include/limits.h
-testAms1.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testAms1.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-testAms1.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-testAms1.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-testAms1.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-testAms1.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-testAms1.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-testAms1.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-testAms1.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-testAms1.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-testAms1.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-testAms1.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-testAms1.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-testAms1.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h GData.h
-testAms1.o: RangeList.h RangeInfo.h QPRange.h ams.h mapfile.h
+testAms1.o: TData.h DataSource.h MemMgr.h GData.h RangeList.h RangeInfo.h
+testAms1.o: QPRange.h ams.h mapfile.h
 testBufMgrFull.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testBufMgrFull.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testBufMgrFull.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2383,27 +1741,9 @@ testBufMgrFull.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 testBufMgrFull.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testBufMgrFull.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testBufMgrFull.o: /usr/include/time.h ../graphics/Exit.h ../graphics/Parse.h
-testBufMgrFull.o: TData.h RecId.h DataSource.h MemMgr.h DCE.h
-testBufMgrFull.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testBufMgrFull.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testBufMgrFull.o: /usr/include/errno.h /usr/include/sys/errno.h
-testBufMgrFull.o: /usr/include/assert.h /usr/include/limits.h
-testBufMgrFull.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-testBufMgrFull.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
-testBufMgrFull.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testBufMgrFull.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testBufMgrFull.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testBufMgrFull.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testBufMgrFull.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testBufMgrFull.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testBufMgrFull.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testBufMgrFull.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testBufMgrFull.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testBufMgrFull.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testBufMgrFull.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testBufMgrFull.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testBufMgrFull.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testBufMgrFull.o: ../graphics/DList.h ../src/utils/ObjectValid.h RangeInfo.h
+testBufMgrFull.o: TData.h RecId.h DataSource.h MemMgr.h
+testBufMgrFull.o: ../graphics/Dispatcher.h ../graphics/DList.h
+testBufMgrFull.o: ../src/utils/ObjectValid.h RangeInfo.h
 testBufMgrFull.o: ../graphics/AttrList.h ../graphics/Init.h
 testBufMgrFull.o: ../graphics/BufPolicy.h RangeInfoArray.h BufferPolicy.h
 testBufMgrFull.o: BufMgrFull.h BufMgr.h GData.h RangeList.h QPRange.h
@@ -2460,32 +1800,14 @@ testQueryProc.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testQueryProc.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testQueryProc.o: /usr/include/time.h ../graphics/BufPolicy.h RecId.h
 testQueryProc.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
-testQueryProc.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
-testQueryProc.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testQueryProc.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testQueryProc.o: /usr/include/errno.h /usr/include/sys/errno.h
-testQueryProc.o: /usr/include/assert.h /usr/include/stdio.h
+testQueryProc.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h
+testQueryProc.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
+testQueryProc.o: RangeList.h RangeInfo.h /usr/include/stdio.h
 testQueryProc.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
-testQueryProc.o: /usr/include/stdio_impl.h /usr/include/limits.h
-testQueryProc.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-testQueryProc.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
-testQueryProc.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testQueryProc.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testQueryProc.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testQueryProc.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testQueryProc.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testQueryProc.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testQueryProc.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testQueryProc.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testQueryProc.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testQueryProc.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testQueryProc.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testQueryProc.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testQueryProc.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testQueryProc.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
-testQueryProc.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
-testQueryProc.o: TDataAppend.h DiskFile.h TDataMap.h ../graphics/Pattern.h
-testQueryProc.o: ShapeID.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+testQueryProc.o: /usr/include/stdio_impl.h ../graphics/AttrList.h
+testQueryProc.o: ../graphics/Init.h QPRange.h TDataAppend.h DiskFile.h
+testQueryProc.o: TDataMap.h ../graphics/Pattern.h ShapeID.h
+testQueryProc.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 testQueryProc.o: /usr/include/string.h GDataRec.h QueryProc.h
 testRangeList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testRangeList.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -2496,55 +1818,18 @@ testRangeList.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
 testRangeList.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 testRangeList.o: /usr/include/sys/time.h /usr/include/time.h RecId.h
 testRangeList.o: RangeInfo.h ../graphics/Exit.h TData.h DataSource.h MemMgr.h
-testRangeList.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testRangeList.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testRangeList.o: /usr/include/errno.h /usr/include/sys/errno.h
-testRangeList.o: /usr/include/assert.h /usr/include/limits.h
-testRangeList.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-testRangeList.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
-testRangeList.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testRangeList.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testRangeList.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testRangeList.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testRangeList.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testRangeList.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testRangeList.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testRangeList.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testRangeList.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testRangeList.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testRangeList.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testRangeList.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testRangeList.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testRangeList.o: ../graphics/DList.h ../src/utils/ObjectValid.h
-testRangeList.o: ../graphics/AttrList.h ../graphics/Init.h
-testRangeList.o: ../graphics/BufPolicy.h ../graphics/Parse.h
+testRangeList.o: ../graphics/Dispatcher.h ../graphics/DList.h
+testRangeList.o: ../src/utils/ObjectValid.h ../graphics/AttrList.h
+testRangeList.o: ../graphics/Init.h ../graphics/BufPolicy.h
+testRangeList.o: ../graphics/Parse.h
 testRecFile.o: RecFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 testRecFile.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
 testRecFile.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 testRecFile.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testRecFile.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testRecFile.o: /usr/include/time.h DataSource.h ../graphics/Exit.h MemMgr.h
-testRecFile.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testRecFile.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testRecFile.o: /usr/include/errno.h /usr/include/sys/errno.h
-testRecFile.o: /usr/include/assert.h /usr/include/stdio.h
-testRecFile.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
-testRecFile.o: /usr/include/stdio_impl.h /usr/include/limits.h
-testRecFile.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testRecFile.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-testRecFile.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testRecFile.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testRecFile.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testRecFile.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testRecFile.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testRecFile.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testRecFile.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testRecFile.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testRecFile.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testRecFile.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testRecFile.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testRecFile.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testRecFile.o: /usr/include/sys/netconfig.h TestData.h
+testRecFile.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+testRecFile.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h TestData.h
 testStr.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 testStr.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
 testStr.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
@@ -2571,24 +1856,8 @@ testStr.o: Action.h PointStorage.h ../tape/HashTable.h ../graphics/Control.h
 testStr.o: ../graphics/ClassDir.h TDataCMap.h ConnectorShape.h Connector.h
 testStr.o: GDataBin.h ActionDefault.h ../graphics/Util.h
 testStr.o: /usr/include/stdlib.h /usr/include/ctype.h BufMgr.h BufferPolicy.h
-testStr.o: RangeInfoArray.h TData.h DataSource.h MemMgr.h DCE.h
-testStr.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testStr.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
-testStr.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testStr.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-testStr.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-testStr.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-testStr.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-testStr.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-testStr.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-testStr.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-testStr.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-testStr.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-testStr.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-testStr.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-testStr.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-testStr.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h GData.h
-testStr.o: RangeList.h RangeInfo.h QPRange.h StrMapFile.h
+testStr.o: RangeInfoArray.h TData.h DataSource.h MemMgr.h GData.h RangeList.h
+testStr.o: RangeInfo.h QPRange.h StrMapFile.h
 testTcl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testTcl.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testTcl.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2604,28 +1873,9 @@ testTdata.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 testTdata.o: /usr/include/sys/time.h /usr/include/time.h
 testTdata.o: ../graphics/BufPolicy.h RecId.h BufferPolicy.h RangeInfoArray.h
 testTdata.o: ../graphics/DList.h ../graphics/Exit.h TData.h DataSource.h
-testTdata.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testTdata.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testTdata.o: /usr/include/errno.h /usr/include/sys/errno.h
-testTdata.o: /usr/include/assert.h /usr/include/limits.h
-testTdata.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testTdata.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-testTdata.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testTdata.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testTdata.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testTdata.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testTdata.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testTdata.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testTdata.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testTdata.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testTdata.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testTdata.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testTdata.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testTdata.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testTdata.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testTdata.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
-testTdata.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
-testTdata.o: TDataAppend.h DiskFile.h
+testTdata.o: MemMgr.h ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
+testTdata.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+testTdata.o: ../graphics/Init.h QPRange.h TDataAppend.h DiskFile.h
 testVoidArray.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testVoidArray.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testVoidArray.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2660,23 +1910,7 @@ testXY.o: ../tape/HashTable.h ../graphics/Control.h ../graphics/ClassDir.h
 testXY.o: TDataCMap.h ConnectorShape.h Connector.h GDataBin.h ActionDefault.h
 testXY.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
 testXY.o: BufMgr.h BufferPolicy.h RangeInfoArray.h TData.h DataSource.h
-testXY.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testXY.o: /usr/include/sys/shm.h /usr/include/assert.h /usr/include/limits.h
-testXY.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testXY.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-testXY.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-testXY.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-testXY.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-testXY.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-testXY.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-testXY.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-testXY.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-testXY.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-testXY.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-testXY.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-testXY.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-testXY.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h GData.h
-testXY.o: RangeList.h RangeInfo.h QPRange.h XYmapfile.h
+testXY.o: MemMgr.h GData.h RangeList.h RangeInfo.h QPRange.h XYmapfile.h
 testbit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testbit.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testbit.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2695,28 +1929,10 @@ testbuf.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testbuf.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testbuf.o: /usr/include/time.h RecId.h BufferPolicy.h RangeInfoArray.h
 testbuf.o: ../graphics/DList.h ../graphics/Exit.h TData.h DataSource.h
-testbuf.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testbuf.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testbuf.o: /usr/include/errno.h /usr/include/sys/errno.h
-testbuf.o: /usr/include/assert.h /usr/include/limits.h
-testbuf.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testbuf.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-testbuf.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testbuf.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testbuf.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testbuf.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testbuf.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testbuf.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testbuf.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testbuf.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testbuf.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testbuf.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testbuf.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testbuf.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testbuf.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testbuf.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
-testbuf.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h UnixDiskFile.h
-testbuf.o: DiskFile.h
+testbuf.o: MemMgr.h ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
+testbuf.o: GData.h RangeList.h RangeInfo.h ../graphics/AttrList.h
+testbuf.o: ../graphics/Init.h QPRange.h UnixDiskFile.h /usr/include/errno.h
+testbuf.o: /usr/include/sys/errno.h DiskFile.h
 testhole.o: UnixDiskFile.h /usr/include/errno.h /usr/include/sys/errno.h
 testhole.o: DiskFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 testhole.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
@@ -2744,28 +1960,10 @@ testpfile.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testpfile.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testpfile.o: /usr/include/time.h ../graphics/BufPolicy.h RecId.h
 testpfile.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
-testpfile.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
-testpfile.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testpfile.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testpfile.o: /usr/include/errno.h /usr/include/sys/errno.h
-testpfile.o: /usr/include/assert.h /usr/include/limits.h
-testpfile.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-testpfile.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-testpfile.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testpfile.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testpfile.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testpfile.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testpfile.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testpfile.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testpfile.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testpfile.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testpfile.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testpfile.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testpfile.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testpfile.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testpfile.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testpfile.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
-testpfile.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
+testpfile.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h
+testpfile.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
+testpfile.o: RangeList.h RangeInfo.h ../graphics/AttrList.h
+testpfile.o: ../graphics/Init.h QPRange.h
 testpfileGap.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testpfileGap.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testpfileGap.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2776,29 +1974,10 @@ testpfileGap.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 testpfileGap.o: /usr/include/sys/time.h /usr/include/time.h PageFile.h
 testpfileGap.o: BufHint.h BufMgr.h ../graphics/BufPolicy.h RecId.h
 testpfileGap.o: BufferPolicy.h RangeInfoArray.h ../graphics/DList.h
-testpfileGap.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h DCE.h
-testpfileGap.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testpfileGap.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-testpfileGap.o: /usr/include/errno.h /usr/include/sys/errno.h
-testpfileGap.o: /usr/include/assert.h /usr/include/limits.h
-testpfileGap.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-testpfileGap.o: machdep.h /usr/include/sys/param.h /usr/include/sys/wait.h
-testpfileGap.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-testpfileGap.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testpfileGap.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-testpfileGap.o: /usr/include/netdb.h /usr/include/netinet/in.h
-testpfileGap.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-testpfileGap.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-testpfileGap.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-testpfileGap.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-testpfileGap.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-testpfileGap.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-testpfileGap.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-testpfileGap.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-testpfileGap.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-testpfileGap.o: ../src/utils/ObjectValid.h GData.h RangeList.h RangeInfo.h
-testpfileGap.o: ../graphics/AttrList.h ../graphics/Init.h QPRange.h
-testpfileGap.o: PageRange.h
+testpfileGap.o: ../graphics/Exit.h TData.h DataSource.h MemMgr.h
+testpfileGap.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h GData.h
+testpfileGap.o: RangeList.h RangeInfo.h ../graphics/AttrList.h
+testpfileGap.o: ../graphics/Init.h QPRange.h PageRange.h
 testraw.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 testraw.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
 testraw.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
@@ -2863,27 +2042,7 @@ CmdContainer.o: /usr/include/sys/errno.h /usr/include/sys/param.h DebugLog.h
 DCE.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DCE.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DCE.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-DCE.o: /usr/include/assert.h DCE.h /usr/include/sys/types.h
-DCE.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
-DCE.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
-DCE.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h /usr/include/sys/shm.h
-DCE.o: /usr/include/sys/unistd.h /usr/include/errno.h
-DCE.o: /usr/include/sys/errno.h /usr/include/limits.h /usr/include/sys/stat.h
-DCE.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
-DCE.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-DCE.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-DCE.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-DCE.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-DCE.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-DCE.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-DCE.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-DCE.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-DCE.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-DCE.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-DCE.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-DCE.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-DCE.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-DCE.o: ../graphics/Exit.h
+DCE.o: /usr/include/assert.h
 DeviseCommand.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DeviseCommand.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DeviseCommand.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2907,49 +2066,34 @@ DeviseCommand.o: ../graphics/Init.h ../graphics/BufPolicy.h
 DeviseCommand.o: ../src/utils/ObjectValid.h BasicStats.h ViewStats.h
 DeviseCommand.o: ../graphics/ViewCallback.h KGraph.h ../graphics/Util.h
 DeviseCommand.o: /usr/include/math.h ParseCat.h DataSourceBuf.h DataSource.h
-DeviseCommand.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-DeviseCommand.o: /usr/include/sys/shm.h /usr/include/errno.h
-DeviseCommand.o: /usr/include/sys/errno.h /usr/include/limits.h machdep.h
-DeviseCommand.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-DeviseCommand.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-DeviseCommand.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DeviseCommand.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DeviseCommand.o: /usr/include/netdb.h /usr/include/netinet/in.h
-DeviseCommand.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-DeviseCommand.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-DeviseCommand.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-DeviseCommand.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-DeviseCommand.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-DeviseCommand.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-DeviseCommand.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-DeviseCommand.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-DeviseCommand.o: /usr/include/sys/netconfig.h TData.h
-DeviseCommand.o: ../graphics/Dispatcher.h ../graphics/Parse.h GroupDir.h
-DeviseCommand.o: ItemList.h Group.h MapInterpClassInfo.h
-DeviseCommand.o: ../graphics/ViewLayout.h VisualLink.h DeviseLink.h
-DeviseCommand.o: RecordLink.h RecFile.h MasterSlaveLink.h
+DeviseCommand.o: MemMgr.h TData.h ../graphics/Dispatcher.h
+DeviseCommand.o: ../graphics/Parse.h GroupDir.h ItemList.h Group.h
+DeviseCommand.o: MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
+DeviseCommand.o: DeviseLink.h RecordLink.h RecFile.h MasterSlaveLink.h
 DeviseCommand.o: ../graphics/FilterQueue.h DataSeg.h Version.h
 DeviseCommand.o: DevFileHeader.h ../graphics/Display.h ../graphics/Geom.h
 DeviseCommand.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 DeviseCommand.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 DeviseCommand.o: ../graphics/Compress.h ../graphics/DevError.h
-DeviseCommand.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+DeviseCommand.o: /usr/include/errno.h /usr/include/sys/errno.h
+DeviseCommand.o: /usr/include/sys/param.h ../graphics/ETkIfc.h
+DeviseCommand.o: ../graphics/ETk.h ../graphics/Xdef.h
 DeviseCommand.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 DeviseCommand.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 DeviseCommand.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
 DeviseCommand.o: ../graphics/GraphicsDebug.h TDataAscii.h
 DeviseCommand.o: ../graphics/WinClassInfo.h VisualLinkClassInfo.h
 DeviseCommand.o: ../graphics/CursorClassInfo.h MappingInterp.h Bitmap.h
-DeviseCommand.o: QueryProc.h ../DTE/DeviseSpecific/CatalogComm.h
-DeviseCommand.o: ../graphics/SessionDesc.h StringStorage.h
+DeviseCommand.o: QueryProc.h ../graphics/SessionDesc.h StringStorage.h
 DeviseCommand.o: ../graphics/DepMgr.h ../graphics/Session.h
 DeviseCommand.o: /s/tcl/include/tcl.h /usr/include/stdarg.h
 DeviseCommand.o: /s/tcl/include/tclDecls.h ../graphics/GDataSock.h
 DeviseCommand.o: ../graphics/Timer.h CmdContainer.h DeviseServer.h
-DeviseCommand.o: JavaScreenCmd.h TAttrLink.h ../graphics/RangeDesc.h
-DeviseCommand.o: ../graphics/Layout.h ../graphics/PileStack.h
-DeviseCommand.o: ../graphics/ViewGeom.h DRUtils.h DebugLog.h
-DeviseCommand.o: ../src/utils/CommandLog.h
+DeviseCommand.o: JavaScreenCmd.h JavaScreenCache.h TAttrLink.h
+DeviseCommand.o: ../graphics/RangeDesc.h ../graphics/Layout.h
+DeviseCommand.o: ../graphics/PileStack.h ../graphics/ViewGeom.h DRUtils.h
+DeviseCommand.o: DebugLog.h ../src/utils/CommandLog.h
+DeviseCommand.o: ../graphics/MetaVisDesc.h
 DeviseKeyBinding.o: DeviseKeyBinding.h
 ETkWindowShape.o: /usr/include/sys/param.h /usr/include/sys/types.h
 ETkWindowShape.o: /usr/include/sys/isa_defs.h
@@ -3034,13 +2178,13 @@ JavaScreenCmd.o: /usr/include/sys/time_impl.h /usr/include/unistd.h
 JavaScreenCmd.o: /usr/include/sys/unistd.h /usr/include/fcntl.h
 JavaScreenCmd.o: /usr/include/sys/fcntl.h /usr/include/stdlib.h
 JavaScreenCmd.o: /usr/include/dirent.h /usr/include/sys/dirent.h
-JavaScreenCmd.o: JavaScreenCmd.h ../graphics/DeviseTypes.h
-JavaScreenCmd.o: /usr/include/values.h ../graphics/DevStatus.h DeviseServer.h
-JavaScreenCmd.o: ../graphics/Control.h ../graphics/VisualArg.h
-JavaScreenCmd.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-JavaScreenCmd.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-JavaScreenCmd.o: ../graphics/ViewDir.h /usr/include/string.h
-JavaScreenCmd.o: ../graphics/DList.h ../graphics/Exit.h
+JavaScreenCmd.o: JavaScreenCmd.h /usr/include/stdio.h
+JavaScreenCmd.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
+JavaScreenCmd.o: /usr/include/stdio_impl.h ../graphics/DeviseTypes.h
+JavaScreenCmd.o: /usr/include/values.h ../graphics/DevStatus.h
+JavaScreenCmd.o: JavaScreenCache.h DeviseServer.h ../graphics/Control.h
+JavaScreenCmd.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+JavaScreenCmd.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
 JavaScreenCmd.o: ../graphics/ClassDir.h ../graphics/Dispatcher.h
 JavaScreenCmd.o: ../src/utils/ObjectValid.h CmdContainer.h DeviseCommand.h
 JavaScreenCmd.o: ExtStack.h ClientAPI.h ParseAPI.h ../graphics/Util.h
@@ -3072,8 +2216,9 @@ MapInterpShape.o: /usr/include/sys/isa_defs.h
 MapInterpShape.o: /usr/include/sys/feature_tests.h
 MapInterpShape.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 MapInterpShape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-MapInterpShape.o: /usr/include/time.h /usr/include/sys/unistd.h ViewGraph.h
-MapInterpShape.o: Action.h /usr/include/stdio.h /usr/include/sys/va_list.h
+MapInterpShape.o: /usr/include/time.h /usr/include/sys/unistd.h
+MapInterpShape.o: /usr/include/unistd.h ViewGraph.h Action.h
+MapInterpShape.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 MapInterpShape.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 MapInterpShape.o: ../graphics/DeviseTypes.h /usr/include/values.h
 MapInterpShape.o: ../graphics/DevStatus.h RecId.h PointStorage.h
@@ -3095,34 +2240,16 @@ MapInterpShape.o: /s/X11/include/X11/Xutil.h ../graphics/GraphicsDebug.h
 MapInterpShape.o: ../graphics/Util.h /usr/include/stdlib.h
 MapInterpShape.o: /usr/include/ctype.h StringStorage.h DrawTimer.h
 MapInterpShape.o: ../graphics/Display.h ../graphics/Dispatcher.h
-MapInterpShape.o: ../graphics/ViewWin.h
+MapInterpShape.o: ../graphics/ViewWin.h ../graphics/WinClassInfo.h
+MapInterpShape.o: ../graphics/ClassDir.h
+MemMgr.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+MemMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
+MemMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
 MemMgr.o: /usr/include/memory.h /usr/include/sys/types.h
-MemMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/feature_tests.h
 MemMgr.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 MemMgr.o: /usr/include/sys/select.h /usr/include/sys/time.h
 MemMgr.o: /usr/include/time.h MemMgr.h ../graphics/DeviseTypes.h
-MemMgr.o: /usr/include/values.h ../graphics/DevStatus.h DCE.h
-MemMgr.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-MemMgr.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-MemMgr.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/assert.h
-MemMgr.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-MemMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-MemMgr.o: /usr/include/limits.h /usr/include/sys/stat.h
-MemMgr.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
-MemMgr.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-MemMgr.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-MemMgr.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-MemMgr.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-MemMgr.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-MemMgr.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-MemMgr.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-MemMgr.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-MemMgr.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-MemMgr.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-MemMgr.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-MemMgr.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-MemMgr.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-MemMgr.o: ../graphics/Exit.h
+MemMgr.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Exit.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ParseAPI.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 ParseAPI.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -3131,7 +2258,8 @@ ParseAPI.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 ParseAPI.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ParseAPI.o: /usr/include/time.h /usr/include/sys/unistd.h
 ParseAPI.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
-ParseAPI.o: /usr/include/ctype.h /usr/include/assert.h ParseAPI.h
+ParseAPI.o: /usr/include/ctype.h /usr/include/assert.h
+ParseAPI.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h ParseAPI.h
 ParseAPI.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 ParseAPI.o: /usr/include/values.h ../graphics/DevStatus.h
 ParseAPI.o: ../graphics/Control.h ../graphics/VisualArg.h
@@ -3143,33 +2271,17 @@ ParseAPI.o: ../graphics/Init.h ../graphics/BufPolicy.h
 ParseAPI.o: ../src/utils/ObjectValid.h BasicStats.h ViewStats.h
 ParseAPI.o: ../graphics/ViewCallback.h KGraph.h ../graphics/Util.h
 ParseAPI.o: /usr/include/stdlib.h /usr/include/math.h ParseCat.h
-ParseAPI.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-ParseAPI.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-ParseAPI.o: /usr/include/sys/shm.h /usr/include/errno.h
-ParseAPI.o: /usr/include/sys/errno.h /usr/include/limits.h
-ParseAPI.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-ParseAPI.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-ParseAPI.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-ParseAPI.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ParseAPI.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-ParseAPI.o: /usr/include/netdb.h /usr/include/netinet/in.h
-ParseAPI.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-ParseAPI.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-ParseAPI.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ParseAPI.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ParseAPI.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ParseAPI.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ParseAPI.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-ParseAPI.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-ParseAPI.o: /usr/include/sys/netconfig.h TData.h ../graphics/Dispatcher.h
-ParseAPI.o: ../graphics/Parse.h GroupDir.h ItemList.h Group.h
-ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
-ParseAPI.o: DeviseLink.h RecordLink.h RecFile.h MasterSlaveLink.h
-ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
-ParseAPI.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
-ParseAPI.o: ../graphics/WindowRep.h ../graphics/Transform.h
-ParseAPI.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-ParseAPI.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+ParseAPI.o: DataSourceBuf.h DataSource.h MemMgr.h TData.h
+ParseAPI.o: ../graphics/Dispatcher.h ../graphics/Parse.h GroupDir.h
+ParseAPI.o: ItemList.h Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
+ParseAPI.o: VisualLink.h DeviseLink.h RecordLink.h RecFile.h
+ParseAPI.o: MasterSlaveLink.h ../graphics/FilterQueue.h DataSeg.h Version.h
+ParseAPI.o: DevFileHeader.h ../graphics/Display.h ../graphics/Geom.h
+ParseAPI.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ParseAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ParseAPI.o: ../graphics/Compress.h ../graphics/DevError.h
+ParseAPI.o: /usr/include/errno.h /usr/include/sys/errno.h
+ParseAPI.o: /usr/include/sys/param.h ../graphics/ETkIfc.h ../graphics/ETk.h
 ParseAPI.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h
 ParseAPI.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 ParseAPI.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
@@ -3198,33 +2310,14 @@ RecordLink.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 RecordLink.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 RecordLink.o: /usr/include/sys/select.h /usr/include/sys/time.h
 RecordLink.o: /usr/include/time.h DataSource.h ../graphics/Exit.h MemMgr.h
-RecordLink.o: DCE.h /usr/include/sys/ipc.h /usr/include/sys/sem.h
-RecordLink.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-RecordLink.o: /usr/include/errno.h /usr/include/sys/errno.h
-RecordLink.o: /usr/include/assert.h /usr/include/limits.h
-RecordLink.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
-RecordLink.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-RecordLink.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-RecordLink.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-RecordLink.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-RecordLink.o: /usr/include/netdb.h /usr/include/netinet/in.h
-RecordLink.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-RecordLink.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-RecordLink.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-RecordLink.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-RecordLink.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-RecordLink.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-RecordLink.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-RecordLink.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-RecordLink.o: /usr/include/sys/netconfig.h MasterSlaveLink.h DeviseLink.h
-RecordLink.o: ../graphics/DList.h ../graphics/ViewCallback.h
-RecordLink.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
-RecordLink.o: /usr/include/string.h ../src/utils/ObjectValid.h
-RecordLink.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
-RecordLink.o: /usr/include/ctype.h /usr/include/math.h ViewGraph.h Action.h
-RecordLink.o: PointStorage.h ../tape/HashTable.h TDataMap.h
-RecordLink.o: ../graphics/Pattern.h ShapeID.h GDataRec.h
-RecordLink.o: ../graphics/AttrList.h MappingInterp.h Bitmap.h
+RecordLink.o: MasterSlaveLink.h DeviseLink.h ../graphics/DList.h
+RecordLink.o: ../graphics/ViewCallback.h ../graphics/VisualArg.h
+RecordLink.o: ../graphics/ViewDir.h /usr/include/string.h
+RecordLink.o: ../src/utils/ObjectValid.h ../graphics/Init.h
+RecordLink.o: ../graphics/BufPolicy.h ../graphics/Util.h /usr/include/ctype.h
+RecordLink.o: /usr/include/math.h ViewGraph.h Action.h PointStorage.h
+RecordLink.o: ../tape/HashTable.h TDataMap.h ../graphics/Pattern.h ShapeID.h
+RecordLink.o: GDataRec.h ../graphics/AttrList.h MappingInterp.h Bitmap.h
 SBufMgr.o: /usr/include/memory.h /usr/include/sys/types.h
 SBufMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/feature_tests.h
 SBufMgr.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
@@ -3234,16 +2327,15 @@ SBufMgr.o: /usr/include/signal.h /usr/include/sys/signal.h
 SBufMgr.o: /usr/include/sys/unistd.h /usr/include/string.h SBufMgr.h
 SBufMgr.o: /usr/include/sys/uio.h /usr/include/unistd.h
 SBufMgr.o: ../graphics/DeviseTypes.h /usr/include/values.h
-SBufMgr.o: ../graphics/DevStatus.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-SBufMgr.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
-SBufMgr.o: /usr/include/sys/errno.h /usr/include/assert.h
+SBufMgr.o: ../graphics/DevStatus.h MemMgr.h ../tape/tapedrive.h
 SBufMgr.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-SBufMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-SBufMgr.o: /usr/include/limits.h /usr/include/sys/stat.h
-SBufMgr.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
+SBufMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h machdep.h
+SBufMgr.o: /usr/include/limits.h /usr/include/sys/param.h
 SBufMgr.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 SBufMgr.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-SBufMgr.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+SBufMgr.o: /usr/include/vm/faultcode.h /usr/include/sys/time_impl.h
+SBufMgr.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+SBufMgr.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 SBufMgr.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 SBufMgr.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 SBufMgr.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
@@ -3253,10 +2345,10 @@ SBufMgr.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 SBufMgr.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 SBufMgr.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 SBufMgr.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-SBufMgr.o: /usr/include/sys/netconfig.h ../tape/tapedrive.h
-SBufMgr.o: ../tape/HashTable.h ../graphics/Exit.h ../graphics/DevError.h
-SBufMgr.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
-SBufMgr.o: /usr/include/math.h Web.h
+SBufMgr.o: /usr/include/sys/netconfig.h ../tape/HashTable.h
+SBufMgr.o: ../graphics/Exit.h ../graphics/DevError.h /usr/include/errno.h
+SBufMgr.o: /usr/include/sys/errno.h ../graphics/Util.h /usr/include/stdlib.h
+SBufMgr.o: /usr/include/ctype.h /usr/include/math.h Web.h
 StringStorage.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 StringStorage.o: /usr/include/sys/isa_defs.h /usr/include/stdio.h
 StringStorage.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
@@ -3363,15 +2455,14 @@ testSBM2.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testSBM2.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testSBM2.o: /usr/include/time.h /usr/include/sys/uio.h /usr/include/unistd.h
 testSBM2.o: /usr/include/sys/unistd.h ../graphics/DeviseTypes.h
-testSBM2.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h DCE.h
-testSBM2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testSBM2.o: /usr/include/sys/shm.h /usr/include/errno.h
-testSBM2.o: /usr/include/sys/errno.h /usr/include/limits.h
-testSBM2.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
+testSBM2.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h
+testSBM2.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 testSBM2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 testSBM2.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 testSBM2.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testSBM2.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+testSBM2.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+testSBM2.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testSBM2.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 testSBM2.o: /usr/include/netdb.h /usr/include/netinet/in.h
 testSBM2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 testSBM2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -3381,7 +2472,7 @@ testSBM2.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
 testSBM2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 testSBM2.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 testSBM2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testSBM2.o: ../tape/tapedrive.h ../tape/HashTable.h
+testSBM2.o: ../tape/HashTable.h
 testSBM3.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testSBM3.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testSBM3.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -3391,15 +2482,14 @@ testSBM3.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
 testSBM3.o: /usr/include/sys/select.h /usr/include/sys/time.h
 testSBM3.o: /usr/include/time.h /usr/include/sys/uio.h /usr/include/unistd.h
 testSBM3.o: /usr/include/sys/unistd.h ../graphics/DeviseTypes.h
-testSBM3.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h DCE.h
-testSBM3.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testSBM3.o: /usr/include/sys/shm.h /usr/include/errno.h
-testSBM3.o: /usr/include/sys/errno.h /usr/include/limits.h
-testSBM3.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
+testSBM3.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h
+testSBM3.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 testSBM3.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 testSBM3.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 testSBM3.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testSBM3.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+testSBM3.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+testSBM3.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testSBM3.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 testSBM3.o: /usr/include/netdb.h /usr/include/netinet/in.h
 testSBM3.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 testSBM3.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -3409,7 +2499,7 @@ testSBM3.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
 testSBM3.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 testSBM3.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 testSBM3.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testSBM3.o: ../tape/tapedrive.h ../tape/HashTable.h
+testSBM3.o: ../tape/HashTable.h
 testSBufMgr.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testSBufMgr.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 testSBufMgr.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -3420,15 +2510,14 @@ testSBufMgr.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 testSBufMgr.o: /usr/include/sys/time.h /usr/include/time.h
 testSBufMgr.o: /usr/include/sys/uio.h /usr/include/unistd.h
 testSBufMgr.o: /usr/include/sys/unistd.h ../graphics/DeviseTypes.h
-testSBufMgr.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h DCE.h
-testSBufMgr.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-testSBufMgr.o: /usr/include/sys/shm.h /usr/include/errno.h
-testSBufMgr.o: /usr/include/sys/errno.h /usr/include/limits.h
-testSBufMgr.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h machdep.h
+testSBufMgr.o: /usr/include/values.h ../graphics/DevStatus.h MemMgr.h
+testSBufMgr.o: ../tape/tapedrive.h machdep.h /usr/include/limits.h
 testSBufMgr.o: /usr/include/sys/param.h /usr/include/sys/wait.h
 testSBufMgr.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
 testSBufMgr.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-testSBufMgr.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
+testSBufMgr.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+testSBufMgr.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+testSBufMgr.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
 testSBufMgr.o: /usr/include/netdb.h /usr/include/netinet/in.h
 testSBufMgr.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 testSBufMgr.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
@@ -3438,4 +2527,4 @@ testSBufMgr.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
 testSBufMgr.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 testSBufMgr.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 testSBufMgr.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-testSBufMgr.o: ../tape/tapedrive.h ../tape/HashTable.h
+testSBufMgr.o: ../tape/HashTable.h

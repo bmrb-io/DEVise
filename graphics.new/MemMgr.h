@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/01/13 15:58:07  beyer
+  fixed static const
+
   Revision 1.5  1997/12/19 00:05:56  donjerko
   Changes made be Kevin to get DTE to compile.
 
@@ -39,13 +42,12 @@
 #define MemMgr_h
 
 #include "DeviseTypes.h"
-#include "DCE.h"
 
 // Memory manager
 
 class MemMgr {
   public:
-    MemMgr(int numPages, int pageSize, bool sharedMem, int &status);
+    MemMgr(int numPages, int pageSize, int &status);
     ~MemMgr();
 
     // Page types
@@ -101,17 +103,16 @@ class MemMgr {
 
   protected:
     // Allocation and initialization
-    int SetupSharedMemory();
     int SetupLocalMemory();
     int Initialize();
 
     // Acquire and release mutex
-    void AcquireMutex() { if (_sem) _sem->acquire(1); }
-    void ReleaseMutex() { if (_sem) _sem->release(1); }
+    void AcquireMutex() {}
+    void ReleaseMutex() {}
 
     // Acquire and release free semaphore
-    void AcquireFree() { if (_free) _free->acquire(1); }
-    void ReleaseFree() { if (_free) _free->release(1); }
+    void AcquireFree() {}
+    void ReleaseFree() {}
 
     // Number of memory pages, free page table size, and page size
     const int _numPages;
@@ -134,13 +135,6 @@ class MemMgr {
 
     // An instance of this class
     static MemMgr *_instance;
-
-    // Mutex for synchronization
-    SemaphoreV *_sem;
-    SemaphoreV *_free;
-
-    // Shared memory
-    SharedMemory *_shm;
 };
 
 // Data types for I/O
@@ -149,86 +143,18 @@ typedef unsigned long long streampos_t;
 typedef unsigned long long bytecount_t;
 typedef unsigned long iosize_t;
 
-// Data Pipe
-
+//TEMP?>>>
 class DataPipe {
   public:
-    DataPipe(int maxSize, int &status);
-    ~DataPipe();
+    DataPipe(int maxSize, int &status) {}
+    ~DataPipe() {}
 
-    int Consume(char *&buf, streampos_t &offset, iosize_t &bytes);
-    int Produce(char *buf, streampos_t offset, iosize_t bytes);
-    int SetSize(int size);
+    int Consume(char *&buf, streampos_t &offset, iosize_t &bytes) { return 0; }
+    int Produce(char *buf, streampos_t offset, iosize_t bytes) { return 0; }
+    int SetSize(int size) { return 0; }
 
-    int NumData() {
-        AcquireMutex();
-        int num = _count->size - _count->free;
-        ReleaseMutex();
-        return num;
-    }
-
-  protected:
-    // Initialize
-    int Initialize(int maxSize);
-
-    // Acquire and release mutex
-    void AcquireMutex() { _sem->acquire(1); }
-    void ReleaseMutex() { _sem->release(1); }
-
-    // Acquire and release free semaphore
-    void AcquireFree() { _free->acquire(1); }
-    void ReleaseFree() { _free->release(1); }
-
-    // Acquire and release data semaphore
-    void AcquireData() { _data->acquire(1); }
-    void ReleaseData() { _data->release(1); }
-
-    SemaphoreV *_sem;                   // mutex for synchronization
-    SemaphoreV *_free;
-    SemaphoreV *_data;
-
-    SharedMemory *_shm;                 // shared memory
-
-    int _maxSize;                       // maximum pipe size
-
-    char **_chunk;                      // pointers to data chunks
-    streampos_t *_offset;               // offset of data chunks
-    iosize_t *_bytes;                   // length of data chunks
-    struct CountStruct {
-        int head;                       // index of first data chunk
-        int tail;                       // index of last data chunk
-        int free;                       // number of free data chunks
-        int size;                       // current pipe size
-        int maxSize;                    // maximum pipe size
-    } *_count;
+    int NumData() { return 0; }
 };
-
-// Multi Pipe
-
-class MultiPipe {
-  public:
-    MultiPipe(int &status);
-    ~MultiPipe();
-
-    // Add and remove pipe from multipipe
-    int AddPipe(DataPipe *pipe);
-    int RemovePipe(DataPipe *pipe);
-
-    // Produce and consume data
-    int Consume(char *&buf, streampos_t &offset,
-                iosize_t &bytes, DataPipe *&pipe);
-
-  protected:
-    // Acquire and release data semaphore
-    void AcquireData() { _data->acquire(1); }
-    void ReleaseData() { _data->release(1); }
-
-    SemaphoreV *_data;
-
-    static const int _maxPipes = 32;
-    DataPipe *_pipes[_maxPipes];
-    int _numPipes;
-    int _hint;
-};
+//<<<
 
 #endif

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.104  1999/11/16 17:02:06  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.103  1999/06/29 20:24:03  wenger
   When sending GData to a file or socket, strings including the separator
   character are now surrounded by braces; DEVise color numbers are converted
@@ -467,6 +472,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <assert.h>
+#include <sys/stat.h>
 
 #include "ParseAPI.h"
 #include "ClassDir.h"

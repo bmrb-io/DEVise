@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/05/16 14:35:38  wenger
+  Added -jscache command-line argument.
+
   Revision 1.27  1999/10/05 17:55:38  wenger
   Added debug log level.
 
@@ -206,7 +209,6 @@ class Init {
     static int ScreenWidth() { return _screenWidth; }
     static int ScreenHeight() { return _screenHeight; }
 
-    static Boolean UseSharedMem() { return _useSharedMem; }
     static Boolean ForceBinarySearch() { return _forceBinarySearch; }
     static Boolean ForceTapeSearch() { return _forceTapeSearch; }
 
@@ -278,7 +280,6 @@ protected:
     static int _screenWidth;       /* requested screen width */
     static int _screenHeight;      /* requested screen height */
 
-    static Boolean _useSharedMem;  /* use shared memory */
     static Boolean _forceBinarySearch; /* force binary search on tape */
     static Boolean _forceTapeSearch;   /* force search for tape sources */
 

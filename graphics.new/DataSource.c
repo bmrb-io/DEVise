@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  2000/03/14 17:05:27  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.20  2000/01/13 23:07:02  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -357,6 +361,9 @@ DataSource::printStats()
 //
 // Kick off data source as a separate process
 //
+// Note: this no longer does anything because provision for shared memory
+// has been removed.  RKW 2000-08-10.
+//
 
 int DataSource::InitializeProc()
 {
@@ -365,89 +372,7 @@ int DataSource::InitializeProc()
         return 0;
     }
 
-    if (!Init::UseSharedMem() || SemaphoreV::numAvailable() < 4) {
-        // One semaphore needed for DataSource, and 3 more for DataPipe.
-        return -1;
-    }
-
-    int status;
-    _mutex = new SemaphoreV(Semaphore::newKey(), status, 1);
-    if (!_mutex || status < 0) {
-        fprintf(stderr, "Cannot create semaphore\n");
-        return -1;
-    }
-    _mutex->setValue(1);
-
-    if (pipe(_reqFd) < 0) {
-        perror("pipe");
-        delete _mutex;
-        return -1;
-    }
-#ifdef SOLARIS
-    // Pipes are bi-directional in Solaris
-    _replyFd[0] = _reqFd[1];
-    _replyFd[1] = _reqFd[0];
-#else
-    if (pipe(_replyFd) < 0) {
-        perror("pipe");
-        delete _mutex;
-        return -1;
-    }
-#endif
-
-    _totalCount = 0;
-    _readBytes = 0;
-    _writeBytes = 0;
-    _seekBytes = 0;
-
-    _handle = 1;
-
-    _dpipe = new DataPipe(10, status);
-    if (!_dpipe || status < 0) {
-        fprintf(stderr, "Cannot create data pipe\n");
-        delete _mutex;
-        return -1;
-    }
-
-    SynchronizeBeforeAsyncIO();
-
-    DO_DEBUG(printf("Creating data source process/thread...\n"));
-
-#ifdef DS_PROCESS
-    fflush(stdout);
-    _child = fork();
-    if (_child < 0) {
-        perror("fork");
-        delete _mutex;
-        delete _dpipe;
-        return -1;
-    }
-
-    if (!_child) {
-        (void)ProcessReq(this);
-        close(_reqFd[0]);
-        close(_reqFd[1]);
-#ifndef SOLARIS
-        close(_replyFd[0]);
-        close(_replyFd[1]);
-#endif
-        reportErrNosys("Fatal error");//TEMP -- replace with better message
-        exit(1);
-    }
-#endif
-
-#ifdef DS_THREAD
-    if (pthread_create(&_child, 0, ProcessReq, this)) {
-        perror("pthread_create");
-        delete _mutex;
-        delete _dpipe;
-        return -1;
-    }
-#endif
-
-    DO_DEBUG(printf("Created data source process/thread %ld\n", (long)_child));
-
-    return 0;
+    return -1;
 }
 
 /*============================================================================*/
@@ -498,7 +423,6 @@ int DataSource::TerminateProc()
 #endif
 
     delete _dpipe;
-    delete _mutex;
 
     _child = -1;
 
@@ -515,30 +439,8 @@ int DataSource::TerminateProc()
 
 int DataSource::ReadProc(streampos_t offset, iosize_t bytes)
 {
-    SynchronizeBeforeAsyncIO();
-
-    AcquireMutex();
-
-    DO_DEBUG(printf("Submitting read request %llu:%lu to data source 0x%p\n",
-                    offset, bytes, this));
-
-    Request req = { ReadReq, offset, bytes };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("write");
-        ReleaseMutex();
-        return -1;
-    }
-
-    Reply reply;
-    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("write");
-        ReleaseMutex();
-        return -1;
-    }
-
-    ReleaseMutex();
-
-    return reply.handle;
+    DOASSERT(false, "Shared memory no longer allowed.");
+    return -1;
 }
 
 /*============================================================================*/
@@ -549,30 +451,8 @@ int DataSource::ReadProc(streampos_t offset, iosize_t bytes)
 
 int DataSource::WriteProc(streampos_t offset, iosize_t bytes)
 {
-    SynchronizeBeforeAsyncIO();
-
-    AcquireMutex();
-
-    DO_DEBUG(printf("Submitting write request %llu:%lu to data source 0x%p\n",
-                    offset, bytes, this));
-
-    Request req = { WriteReq, offset, bytes };
-    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("write");
-        ReleaseMutex();
-        return -1;
-    }
-
-    Reply reply;
-    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("write");
-        ReleaseMutex();
-        return -1;
-    }
-
-    ReleaseMutex();
-
-    return reply.handle;
+    DOASSERT(false, "Shared memory no longer allowed.");
+    return -1;
 }
 
 /*============================================================================*/
@@ -583,11 +463,7 @@ int DataSource::WriteProc(streampos_t offset, iosize_t bytes)
 
 Boolean DataSource::IsBusy()
 {
-    int status = _mutex->test(1);
-    DOASSERT(status >= 0, "Unable to test semaphore");
-    if (!status)
-        return true;
-    _mutex->release();
+    DOASSERT(false, "Shared memory no longer allowed.");
     return false;
 }
 
@@ -611,62 +487,8 @@ void *DataSource::ProcessReq(void *arg)
 
 void *DataSource::ProcessReq()
 {
-#if defined(DS_PROCESS) && defined(DEBUG) && 0
-    char fname[64];
-    sprintf(fname, "source.fd.%d", _reqFd[0]);
-    printf("Source 0x%p log file is %s\n", this, fname);
-    FILE *out = freopen(fname, "w", stdout);
-    if (!out)
-        perror("freopen");
-#endif
-
-    while (1) {
-        Request req;
-        int status = readn(_reqFd[0], (char *)&req, sizeof req);
-        if (status < (int)sizeof req) {
-            perror("read");
-            break;
-        }
-
-        if (req.type == TerminateReq) {
-            DO_DEBUG(printf("\nSource 0x%p received quit command\n", this));
-            DO_DEBUG(printf("Data source: %llu requests, read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
-                   _totalCount, _readBytes / 1048576.0,
-                   _writeBytes / 1048576.0, _seekBytes / 1048576.0));
-            break;
-        }
-
-        DO_DEBUG(printf("\nSource 0x%p received request: %d, %llu, %lu\n",
-                        this, req.type, req.offset, req.bytes));
-
-        _totalCount++;
-
-        Reply reply = { _handle };
-        _handle++;
-
-        status = writen(_replyFd[1], (char *)&reply, sizeof reply);
-        if (status < (int)sizeof reply) {
-            perror("write");
-            break;
-        }
-
-        DO_DEBUG(printf("Source 0x%p request acknowledged\n", this));
-
-        AcquireMutex();
-
-        if (req.type == ReadReq)
-            ReadStream(req.offset, req.bytes);
-        else
-            WriteStream(req.offset, req.bytes);
-
-        ReleaseMutex();
-
-        DO_DEBUG(printf("Source 0x%p request completed\n", this));
-    }
-
-    DO_DEBUG(printf("Source 0x%p terminates\n", this));
-
-    return 0;
+    DOASSERT(false, "Shared memory no longer allowed.");
+    return NULL;
 }
 
 /*============================================================================*/

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  2000/06/16 19:45:25  wenger
+  Fixed bug 596 (height of text in JavaScreen vs. "regular" DEVise).
+
   Revision 1.72  2000/05/04 17:40:35  wenger
   Added new text object feature: GData Z value specifies max size of
   font in points (if > 1).  (Allows me to fix problems with BMRB 4096
@@ -370,6 +373,7 @@
 
 #include <sys/param.h>
 #include <iostream.h>
+#include <unistd.h>
 
 #include "ViewGraph.h"
 #include "MapInterpShape.h"

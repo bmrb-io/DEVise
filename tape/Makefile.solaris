@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.50  2000/03/23 19:51:47  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.49  1999/11/19 21:29:07  wenger
 # Removed Journal class and related code (no longer works); removed various
 # other unused or unnecessary code.
@@ -96,29 +99,10 @@ Templates.o: ../src/utils/ObjectValid.h SortedTable.h ../graphics/Timer.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
 Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
 Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-Templates.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-Templates.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-Templates.o: /usr/include/errno.h /usr/include/sys/errno.h
-Templates.o: /usr/include/assert.h /usr/include/limits.h
-Templates.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Templates.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-Templates.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-Templates.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-Templates.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-Templates.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-Templates.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Templates.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-Templates.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-Templates.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-Templates.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-Templates.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Templates.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-Templates.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-Templates.o: ../graphics.new/GData.h ../graphics.new/RangeList.h
-Templates.o: ../graphics.new/RangeInfo.h ../graphics/AttrList.h
-Templates.o: ../graphics/Init.h ../graphics/Scheduler.h
+Templates.o: ../graphics.new/MemMgr.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/RangeList.h ../graphics.new/RangeInfo.h
+Templates.o: ../graphics/AttrList.h ../graphics/Init.h
+Templates.o: ../graphics/Scheduler.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 devtype.o: /usr/include/sys/isa_defs.h /usr/include/sys/stat.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
@@ -149,10 +133,8 @@ tapedrive.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
 tapedrive.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
 tapedrive.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 tapedrive.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-tapedrive.o: ../graphics.new/DCE.h /usr/include/errno.h
-tapedrive.o: /usr/include/sys/errno.h /usr/include/assert.h
-tapedrive.o: /usr/include/sys/stat.h ../graphics/Exit.h
-tapedrive.o: ../graphics/DevError.h ../graphics/DeviseTypes.h
+tapedrive.o: ../graphics/Exit.h ../graphics/DevError.h /usr/include/errno.h
+tapedrive.o: /usr/include/sys/errno.h ../graphics/DeviseTypes.h
 tapedrive.o: /usr/include/values.h ../graphics/DevStatus.h
 testtape.o: tapedrive.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testtape.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h

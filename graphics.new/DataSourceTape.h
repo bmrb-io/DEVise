@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/01/13 23:07:04  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.4  1996/12/18 15:32:27  jussi
   Added synchronization method.
 
@@ -84,11 +87,6 @@ public:
 	virtual Boolean isTape() {return true;};
 
 private:
-        // Synchronize before issuing asynchronous I/Os
-        virtual void SynchronizeBeforeAsyncIO() {
-            _tapeP->waitForChildProcess();
-        }
-
 	char *		_filename;
 	TapeDrive *	_tapeP;
 };

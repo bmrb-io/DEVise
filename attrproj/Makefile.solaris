@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.39  2000/03/23 19:51:22  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.38  2000/01/13 23:03:39  wenger
 # Updated dependencies.
 #
@@ -85,27 +88,8 @@ ApParseCat.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ApParseCat.o: /usr/include/time.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-ApParseCat.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ApParseCat.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-ApParseCat.o: /usr/include/sys/unistd.h /usr/include/errno.h
-ApParseCat.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat.o: /usr/include/limits.h /usr/include/sys/stat.h
-ApParseCat.o: /usr/include/sys/time_impl.h ../graphics.new/machdep.h
-ApParseCat.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-ApParseCat.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-ApParseCat.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ApParseCat.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-ApParseCat.o: /usr/include/netdb.h /usr/include/netinet/in.h
-ApParseCat.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-ApParseCat.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-ApParseCat.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ApParseCat.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ApParseCat.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ApParseCat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ApParseCat.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-ApParseCat.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-ApParseCat.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-ApParseCat.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
+ApParseCat.o: ../graphics/Dispatcher.h ../graphics/DList.h
+ApParseCat.o: ../graphics/AttrList.h ../graphics/Init.h
 ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
@@ -126,27 +110,8 @@ ApParseCat2.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ApParseCat2.o: /usr/include/time.h ../graphics.new/TData.h
 ApParseCat2.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-ApParseCat2.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ApParseCat2.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-ApParseCat2.o: /usr/include/sys/unistd.h /usr/include/errno.h
-ApParseCat2.o: /usr/include/sys/errno.h /usr/include/assert.h
-ApParseCat2.o: /usr/include/limits.h /usr/include/sys/stat.h
-ApParseCat2.o: /usr/include/sys/time_impl.h ../graphics.new/machdep.h
-ApParseCat2.o: /usr/include/sys/param.h /usr/include/sys/wait.h
-ApParseCat2.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
-ApParseCat2.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-ApParseCat2.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-ApParseCat2.o: /usr/include/netdb.h /usr/include/netinet/in.h
-ApParseCat2.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-ApParseCat2.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-ApParseCat2.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-ApParseCat2.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-ApParseCat2.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-ApParseCat2.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-ApParseCat2.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-ApParseCat2.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-ApParseCat2.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-ApParseCat2.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
+ApParseCat2.o: ../graphics/Dispatcher.h ../graphics/DList.h
+ApParseCat2.o: ../graphics/AttrList.h ../graphics/Init.h
 ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat2.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
@@ -168,26 +133,7 @@ AttrProj.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
 AttrProj.o: /usr/include/sys/time.h /usr/include/time.h
 AttrProj.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
 AttrProj.o: ApParseCat.h ../graphics.new/TData.h ../graphics.new/DataSource.h
-AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-AttrProj.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-AttrProj.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-AttrProj.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrProj.o: /usr/include/assert.h /usr/include/limits.h
-AttrProj.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-AttrProj.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-AttrProj.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-AttrProj.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-AttrProj.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-AttrProj.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-AttrProj.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-AttrProj.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-AttrProj.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-AttrProj.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-AttrProj.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-AttrProj.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-AttrProj.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-AttrProj.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-AttrProj.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
 AttrProj.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
 AttrProj.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
@@ -203,30 +149,11 @@ AttrProj2.o: /usr/include/sys/time.h /usr/include/time.h
 AttrProj2.o: ../graphics.new/RecId.h VectorArray.h Vector.h ProjectionList.h
 AttrProj2.o: ApParseCat.h ../graphics.new/TData.h
 AttrProj2.o: ../graphics.new/DataSource.h ../graphics/Exit.h
-AttrProj2.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-AttrProj2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-AttrProj2.o: /usr/include/sys/shm.h /usr/include/sys/unistd.h
-AttrProj2.o: /usr/include/errno.h /usr/include/sys/errno.h
-AttrProj2.o: /usr/include/assert.h /usr/include/limits.h
-AttrProj2.o: /usr/include/sys/stat.h /usr/include/sys/time_impl.h
-AttrProj2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-AttrProj2.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-AttrProj2.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-AttrProj2.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-AttrProj2.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-AttrProj2.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-AttrProj2.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-AttrProj2.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-AttrProj2.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-AttrProj2.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-AttrProj2.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-AttrProj2.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-AttrProj2.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
-AttrProj2.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-AttrProj2.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
-AttrProj2.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-AttrProj2.o: ../graphics/AttrList.h ../graphics/Init.h
-AttrProj2.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+AttrProj2.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+AttrProj2.o: ../graphics/DList.h ../graphics/Util.h /usr/include/stdlib.h
+AttrProj2.o: /usr/include/ctype.h /usr/include/math.h ../graphics/AttrList.h
+AttrProj2.o: ../graphics/Init.h ../graphics/BufPolicy.h
+AttrProj2.o: ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ProjectionList.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 ProjectionList.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  2000/02/16 18:51:45  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.16  2000/01/11 22:28:34  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -90,6 +93,8 @@
 
 #ifndef TDataAsciiInterp_h
 #define TDataAsciiInterp_h
+
+#include <stdio.h>
 
 #include "DeviseTypes.h"
 #include "ClassDir.h"

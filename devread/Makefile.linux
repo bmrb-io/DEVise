@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  2000/03/23 19:58:29  wenger
+# Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+# g++ 2.95.2).
+#
 # Revision 1.8  1999/07/12 19:01:50  wenger
 # Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -71,27 +75,10 @@ DevRead.o: /usr/include/ctype.h /usr/include/math.h
 DevRead.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 DevRead.o: /usr/include/bits/mathcalls.h ../graphics/Exit.h
 DevRead.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-DevRead.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-DevRead.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-DevRead.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-DevRead.o: /usr/include/sys/shm.h /usr/include/unistd.h
-DevRead.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-DevRead.o: /usr/include/getopt.h /usr/include/bits/shm.h /usr/include/errno.h
-DevRead.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-DevRead.o: /usr/include/asm/errno.h /usr/include/sys/stat.h
-DevRead.o: /usr/include/bits/stat.h ../graphics.new/machdep.h
-DevRead.o: /usr/include/sys/param.h /usr/include/linux/param.h
-DevRead.o: /usr/include/asm/param.h /usr/include/sys/time.h
-DevRead.o: /usr/include/bits/time.h /usr/include/sys/wait.h
-DevRead.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
-DevRead.o: /usr/include/bits/siginfo.h /usr/include/sys/ioctl.h
-DevRead.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-DevRead.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
-DevRead.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
-DevRead.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-DevRead.o: ../graphics/Dispatcher.h ../graphics/DList.h
-DevRead.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-DevRead.o: ../graphics.new/DataSeg.h
+DevRead.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+DevRead.o: ../graphics/DList.h ../graphics/AttrList.h /usr/include/sys/time.h
+DevRead.o: /usr/include/bits/time.h ../graphics/Init.h
+DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/features.h
 drtest.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 drtest.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h

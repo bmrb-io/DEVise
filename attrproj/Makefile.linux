@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  2000/03/23 19:58:23  wenger
+# Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+# g++ 2.95.2).
+#
 # Revision 1.14  2000/03/14 21:56:32  wenger
 # Updated solaris and linux dependencies.
 #
@@ -103,31 +107,9 @@ ApParseCat.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 ApParseCat.o: /usr/include/sys/sysmacros.h ../graphics.new/TData.h
 ApParseCat.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-ApParseCat.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ApParseCat.o: /usr/include/bits/ipc.h /usr/include/sys/sem.h
-ApParseCat.o: /usr/include/bits/sem.h /usr/include/sys/shm.h
-ApParseCat.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-ApParseCat.o: /usr/include/bits/confname.h /usr/include/getopt.h
-ApParseCat.o: /usr/include/bits/shm.h /usr/include/errno.h
-ApParseCat.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-ApParseCat.o: /usr/include/asm/errno.h /usr/include/assert.h
-ApParseCat.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-ApParseCat.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-ApParseCat.o: /usr/include/linux/param.h /usr/include/asm/param.h
-ApParseCat.o: /usr/include/sys/time.h /usr/include/bits/time.h
-ApParseCat.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-ApParseCat.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-ApParseCat.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-ApParseCat.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-ApParseCat.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-ApParseCat.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-ApParseCat.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-ApParseCat.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-ApParseCat.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-ApParseCat.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-ApParseCat.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 ApParseCat.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ApParseCat.o: ../graphics/AttrList.h ../graphics/Init.h
+ApParseCat.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ApParseCat.o: /usr/include/bits/time.h ../graphics/Init.h
 ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat.o: /usr/include/stdlib.h /usr/include/alloca.h
@@ -158,31 +140,9 @@ ApParseCat2.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 ApParseCat2.o: /usr/include/sys/sysmacros.h ../graphics.new/TData.h
 ApParseCat2.o: ../graphics.new/RecId.h ../graphics.new/DataSource.h
 ApParseCat2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-ApParseCat2.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-ApParseCat2.o: /usr/include/bits/ipc.h /usr/include/sys/sem.h
-ApParseCat2.o: /usr/include/bits/sem.h /usr/include/sys/shm.h
-ApParseCat2.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-ApParseCat2.o: /usr/include/bits/confname.h /usr/include/getopt.h
-ApParseCat2.o: /usr/include/bits/shm.h /usr/include/errno.h
-ApParseCat2.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-ApParseCat2.o: /usr/include/asm/errno.h /usr/include/assert.h
-ApParseCat2.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-ApParseCat2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-ApParseCat2.o: /usr/include/linux/param.h /usr/include/asm/param.h
-ApParseCat2.o: /usr/include/sys/time.h /usr/include/bits/time.h
-ApParseCat2.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-ApParseCat2.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-ApParseCat2.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-ApParseCat2.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-ApParseCat2.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-ApParseCat2.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-ApParseCat2.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-ApParseCat2.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-ApParseCat2.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-ApParseCat2.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-ApParseCat2.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 ApParseCat2.o: ../graphics/Dispatcher.h ../graphics/DList.h
-ApParseCat2.o: ../graphics/AttrList.h ../graphics/Init.h
+ApParseCat2.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ApParseCat2.o: /usr/include/bits/time.h ../graphics/Init.h
 ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat2.o: /usr/include/stdlib.h /usr/include/alloca.h
@@ -214,36 +174,14 @@ AttrProj.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 AttrProj.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h
 AttrProj.o: VectorArray.h Vector.h ProjectionList.h ApParseCat.h
 AttrProj.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-AttrProj.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-AttrProj.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-AttrProj.o: /usr/include/sys/shm.h /usr/include/unistd.h
-AttrProj.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-AttrProj.o: /usr/include/getopt.h /usr/include/bits/shm.h
-AttrProj.o: /usr/include/errno.h /usr/include/bits/errno.h
-AttrProj.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-AttrProj.o: /usr/include/assert.h /usr/include/sys/stat.h
-AttrProj.o: /usr/include/bits/stat.h ../graphics.new/machdep.h
-AttrProj.o: /usr/include/sys/param.h /usr/include/linux/param.h
-AttrProj.o: /usr/include/asm/param.h /usr/include/sys/time.h
-AttrProj.o: /usr/include/bits/time.h /usr/include/sys/wait.h
-AttrProj.o: /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h
-AttrProj.o: /usr/include/bits/siginfo.h /usr/include/sys/ioctl.h
-AttrProj.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-AttrProj.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
-AttrProj.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
-AttrProj.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-AttrProj.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-AttrProj.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-AttrProj.o: /usr/include/netinet/in.h /usr/include/stdint.h
-AttrProj.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
-AttrProj.o: /usr/include/bits/byteswap.h ../graphics/Dispatcher.h
-AttrProj.o: ../graphics/DList.h ../graphics/Util.h /usr/include/stdlib.h
-AttrProj.o: /usr/include/alloca.h /usr/include/ctype.h /usr/include/math.h
-AttrProj.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-AttrProj.o: /usr/include/bits/mathcalls.h ../graphics/AttrList.h
-AttrProj.o: ../graphics/Init.h ../graphics/BufPolicy.h
-AttrProj.o: ../graphics.new/DataSeg.h
+AttrProj.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
+AttrProj.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
+AttrProj.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+AttrProj.o: /usr/include/math.h /usr/include/bits/huge_val.h
+AttrProj.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+AttrProj.o: ../graphics/AttrList.h /usr/include/sys/time.h
+AttrProj.o: /usr/include/bits/time.h ../graphics/Init.h
+AttrProj.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 AttrProj2.o: /usr/include/stdio.h /usr/include/features.h
 AttrProj2.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 AttrProj2.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -263,34 +201,12 @@ AttrProj2.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h
 AttrProj2.o: VectorArray.h Vector.h ProjectionList.h ApParseCat.h
 AttrProj2.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
 AttrProj2.o: ../graphics/Exit.h ../graphics.new/MemMgr.h
-AttrProj2.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-AttrProj2.o: /usr/include/bits/ipc.h /usr/include/sys/sem.h
-AttrProj2.o: /usr/include/bits/sem.h /usr/include/sys/shm.h
-AttrProj2.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-AttrProj2.o: /usr/include/bits/confname.h /usr/include/getopt.h
-AttrProj2.o: /usr/include/bits/shm.h /usr/include/errno.h
-AttrProj2.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-AttrProj2.o: /usr/include/asm/errno.h /usr/include/assert.h
-AttrProj2.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-AttrProj2.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-AttrProj2.o: /usr/include/linux/param.h /usr/include/asm/param.h
-AttrProj2.o: /usr/include/sys/time.h /usr/include/bits/time.h
-AttrProj2.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-AttrProj2.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-AttrProj2.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-AttrProj2.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-AttrProj2.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-AttrProj2.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-AttrProj2.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-AttrProj2.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-AttrProj2.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-AttrProj2.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-AttrProj2.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 AttrProj2.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Util.h
 AttrProj2.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
 AttrProj2.o: /usr/include/math.h /usr/include/bits/huge_val.h
 AttrProj2.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-AttrProj2.o: ../graphics/AttrList.h ../graphics/Init.h
+AttrProj2.o: ../graphics/AttrList.h /usr/include/sys/time.h
+AttrProj2.o: /usr/include/bits/time.h ../graphics/Init.h
 AttrProj2.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
 ProjectionList.o: /usr/include/stdio.h /usr/include/features.h
 ProjectionList.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h

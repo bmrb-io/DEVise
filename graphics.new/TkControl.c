@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.97  2000/03/14 17:05:34  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.96  2000/02/16 18:51:46  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -411,7 +415,6 @@
 #include "Util.h"
 #include "Init.h"
 #include "Version.h"
-#include "DCE.h"
 #include "CmdContainer.h"
 #include "DebugLog.h"
 
@@ -450,10 +453,6 @@ TkControlPanel::TkControlPanel()
     fprintf(stderr, "the directory with the Tcl initialization files?\n");
     reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
-  }
-
-  if (!Init::UseSharedMem()) {
-    fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
   }
 
   if (Init::BatchFile()) {

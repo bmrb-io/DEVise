@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.228  2000/07/20 18:52:53  wenger
+  Added support for blank floating-point format for axes and mouse location.
+
   Revision 1.227  2000/07/12 20:49:15  wenger
   Added first version of metavisualization session description; changed
   DEVise version to 1.7.1.
@@ -1005,6 +1008,8 @@
 
 //#define DEBUG
 #define DEBUG_LOG
+
+#include <unistd.h>
 
 #include "Geom.h"
 #include "WindowRep.h"

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  2000/03/23 19:58:41  wenger
+  Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+  g++ 2.95.2).
+
   Revision 1.46  2000/02/16 18:51:42  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -291,10 +295,6 @@ ServerAPI::ServerAPI()
 	
   _busy = false;
   _dataFd = -1;
-
-  if (!Init::UseSharedMem()) {
-    fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
-  }
 
   _server = new DeviseServer("DEVise",
 #ifdef SERV_ANYPORT

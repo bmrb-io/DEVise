@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  2000/03/23 19:51:31  wenger
+# Updated dependencies for Solaris 2.7.
+#
 # Revision 1.14  2000/01/13 23:03:41  wenger
 # Updated dependencies.
 #
@@ -68,17 +71,9 @@ DevRead.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h marshal.h
 DevRead.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
 DevRead.o: /usr/include/math.h ../graphics/Exit.h ../graphics.new/TData.h
 DevRead.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-DevRead.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-DevRead.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/errno.h
-DevRead.o: /usr/include/sys/errno.h /usr/include/limits.h
-DevRead.o: /usr/include/sys/stat.h ../graphics.new/machdep.h
-DevRead.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-DevRead.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-DevRead.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-DevRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
-DevRead.o: /usr/include/sys/netconfig.h ../graphics/Dispatcher.h
-DevRead.o: ../graphics/DList.h ../graphics/AttrList.h ../graphics/Init.h
-DevRead.o: ../graphics/BufPolicy.h ../graphics.new/DataSeg.h
+DevRead.o: ../graphics/Dispatcher.h ../graphics/DList.h
+DevRead.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
+DevRead.o: ../graphics.new/DataSeg.h
 drtest.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 drtest.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 drtest.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h

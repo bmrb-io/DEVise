@@ -87,16 +87,15 @@ dbJussi.o: ../../src/setup.h /usr/include/assert.h ../../src/dbinterface.h
 dbJussi.o: /usr/include/stddef.h ../../../graphics.new/SBufMgr.h
 dbJussi.o: /usr/include/sys/uio.h ../../../graphics/DeviseTypes.h
 dbJussi.o: /usr/include/values.h ../../../graphics/DevStatus.h
-dbJussi.o: ../../../graphics.new/MemMgr.h ../../../graphics.new/DCE.h
-dbJussi.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-dbJussi.o: /usr/include/sys/shm.h /usr/include/errno.h
-dbJussi.o: /usr/include/sys/errno.h /usr/include/stdio.h
-dbJussi.o: /usr/include/sys/va_list.h /usr/include/stdio_tag.h
-dbJussi.o: /usr/include/stdio_impl.h /usr/include/limits.h
-dbJussi.o: ../../../graphics.new/machdep.h /usr/include/sys/param.h
-dbJussi.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-dbJussi.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-dbJussi.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+dbJussi.o: ../../../graphics.new/MemMgr.h ../../../tape/tapedrive.h
+dbJussi.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+dbJussi.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
+dbJussi.o: ../../../graphics.new/machdep.h /usr/include/limits.h
+dbJussi.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+dbJussi.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
+dbJussi.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+dbJussi.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+dbJussi.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 dbJussi.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 dbJussi.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 dbJussi.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
@@ -106,8 +105,7 @@ dbJussi.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
 dbJussi.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 dbJussi.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
 dbJussi.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-dbJussi.o: /usr/include/sys/netconfig.h ../../../tape/tapedrive.h
-dbJussi.o: ../../../tape/HashTable.h
+dbJussi.o: /usr/include/sys/netconfig.h ../../../tape/HashTable.h
 
 alignedsortedpage.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 alignedsortedpage.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
@@ -198,32 +196,30 @@ test_rtree_jussi.o: /usr/include/time.h /usr/include/sys/uio.h
 test_rtree_jussi.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 test_rtree_jussi.o: ../../../graphics/DeviseTypes.h /usr/include/values.h
 test_rtree_jussi.o: ../../../graphics/DevStatus.h
-test_rtree_jussi.o: ../../../graphics.new/MemMgr.h
-test_rtree_jussi.o: ../../../graphics.new/DCE.h /usr/include/sys/ipc.h
-test_rtree_jussi.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
-test_rtree_jussi.o: /usr/include/errno.h /usr/include/sys/errno.h
+test_rtree_jussi.o: ../../../graphics.new/MemMgr.h ../../../tape/tapedrive.h
 test_rtree_jussi.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 test_rtree_jussi.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-test_rtree_jussi.o: /usr/include/limits.h /usr/include/sys/stat.h
-test_rtree_jussi.o: /usr/include/sys/time_impl.h
-test_rtree_jussi.o: ../../../graphics.new/machdep.h /usr/include/sys/param.h
-test_rtree_jussi.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
-test_rtree_jussi.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-test_rtree_jussi.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-test_rtree_jussi.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-test_rtree_jussi.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-test_rtree_jussi.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-test_rtree_jussi.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
-test_rtree_jussi.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-test_rtree_jussi.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-test_rtree_jussi.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-test_rtree_jussi.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
-test_rtree_jussi.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
-test_rtree_jussi.o: /usr/include/sys/netconfig.h ../../../tape/tapedrive.h
-test_rtree_jussi.o: ../../../tape/HashTable.h /usr/include/fcntl.h
-test_rtree_jussi.o: /usr/include/sys/fcntl.h ../../src/RTree/rtree.h
-test_rtree_jussi.o: ../../src/index.h ../../src/Common/int_key.h
-test_rtree_jussi.o: /usr/include/math.h ../../src/Common/bit_vec.h
+test_rtree_jussi.o: ../../../graphics.new/machdep.h /usr/include/limits.h
+test_rtree_jussi.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+test_rtree_jussi.o: /usr/include/sys/resource.h /usr/include/sys/siginfo.h
+test_rtree_jussi.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+test_rtree_jussi.o: /usr/include/sys/time_impl.h /usr/include/sys/procset.h
+test_rtree_jussi.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+test_rtree_jussi.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+test_rtree_jussi.o: /usr/include/netdb.h /usr/include/netinet/in.h
+test_rtree_jussi.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+test_rtree_jussi.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+test_rtree_jussi.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+test_rtree_jussi.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+test_rtree_jussi.o: /usr/include/sys/cred.h /usr/include/vm/seg_enum.h
+test_rtree_jussi.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+test_rtree_jussi.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+test_rtree_jussi.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+test_rtree_jussi.o: ../../../tape/HashTable.h /usr/include/sys/stat.h
+test_rtree_jussi.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
+test_rtree_jussi.o: ../../src/RTree/rtree.h ../../src/index.h
+test_rtree_jussi.o: ../../src/Common/int_key.h /usr/include/math.h
+test_rtree_jussi.o: ../../src/Common/bit_vec.h
 test_rtree_jussi.o: ../../src/PageClasses/int_keyed_p.h
 test_rtree_jussi.o: ../../src/PageClasses/fixed_entrysz_p.h
 test_rtree_jussi.o: ../../src/PageClasses/stackpage.h

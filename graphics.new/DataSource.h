@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/01/13 23:07:02  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.12  1997/02/07 22:01:10  liping
   Fixed complile problem
 
@@ -88,6 +91,7 @@
 
 #include "Exit.h"
 #include "MemMgr.h"
+#include "DevStatus.h"
 
 
 /* Select data source process to be implemented as a process or thread */
@@ -246,9 +250,6 @@ class DataSource
         static void *ProcessReq(void *arg);
         void *ProcessReq();
 
-        // Synchronize before issuing asynchronous I/Os
-        virtual void SynchronizeBeforeAsyncIO() {}
-
         // Read and write streaming
         void ReadStream(streampos_t offset, iosize_t bytes);
         void WriteStream(streampos_t offset, iosize_t bytes);
@@ -264,12 +265,6 @@ class DataSource
 #ifdef DS_THREAD
         pthread_t _child;               // thread id of child
 #endif
-
-        SemaphoreV *_mutex;             // flag indicating busy device
-
-        // Acquire and release mutex
-        void AcquireMutex() { _mutex->acquire(1); }
-        void ReleaseMutex() { _mutex->release(1); }
 };
 
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.61  2000/06/05 16:22:09  wenger
+  Basically finished command/GData/GIF caching for JavaScreen support
+  (there are a few refinements that could still be added); changed the
+  default to do/use caching.
+
   Revision 1.60  2000/05/16 14:35:38  wenger
   Added -jscache command-line argument.
 
@@ -333,7 +338,6 @@ float Init::_tasvirTimeout = 1.0;
 int Init::_screenWidth = -1;
 int Init::_screenHeight = -1;
 
-Boolean Init::_useSharedMem = false;
 Boolean Init::_forceBinarySearch = false;
 Boolean Init::_forceTapeSearch = false;
 Boolean Init::_useOpenGL = false;
@@ -406,7 +410,6 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
   fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
-  fprintf(stderr, "\t-sharedMem 0|1: use shared memory or not\n");
   fprintf(stderr, "\t-forceBinarySearch: force binary search on tape files\n");
   fprintf(stderr, "\t-forceTapeSearch: force searching on tape files\n");
   fprintf(stderr, "\t-drawTO <value>: symbol drawing timeout\n");
@@ -760,15 +763,6 @@ void Init::DoInit(int &argc, char **argv)
 	_imageDelay = atoi(argv[i+1]);
 	// Make sure delay value is non-negative.
 	_imageDelay = MAX(0, _imageDelay);
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "sharedMem") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_useSharedMem = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 

@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.14  2000/03/23 19:58:33  wenger
+# Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+# g++ 2.95.2).
+#
 # Revision 1.13  1999/07/12 19:02:55  wenger
 # Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 #
@@ -138,38 +142,6 @@ CycleCpuTimeMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/TData.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/ipc.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/sem.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/sem.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/unistd.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/posix_opt.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/confname.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/getopt.h /usr/include/bits/shm.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/stat.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/wait.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/waitflags.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/waitstatus.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/siginfo.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/ioctls.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/asm/ioctls.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/asm/ioctl.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/ioctl-types.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/ttydefaults.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/sys/socket.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/socket.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/sockaddr.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/asm/socket.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/asm/sockios.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/netinet/in.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/stdint.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/wordsize.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/in.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/bits/byteswap.h
 CycleCpuTimeMappingClassInfo.o: CycleCpuTimeMappingClassInfo.h CycleRec.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Session.h map_cycle_cpu_time.h
 CycleEffMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
@@ -237,35 +209,7 @@ CycleEffMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
 CycleEffMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleEffMappingClassInfo.o: ../graphics.new/TData.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-CycleEffMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-CycleEffMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/unistd.h
-CycleEffMappingClassInfo.o: /usr/include/bits/posix_opt.h
-CycleEffMappingClassInfo.o: /usr/include/bits/confname.h
-CycleEffMappingClassInfo.o: /usr/include/getopt.h /usr/include/bits/shm.h
-CycleEffMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-CycleEffMappingClassInfo.o: /usr/include/bits/stat.h
-CycleEffMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-CycleEffMappingClassInfo.o: /usr/include/bits/waitflags.h
-CycleEffMappingClassInfo.o: /usr/include/bits/waitstatus.h
-CycleEffMappingClassInfo.o: /usr/include/bits/siginfo.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleEffMappingClassInfo.o: /usr/include/bits/ioctls.h
-CycleEffMappingClassInfo.o: /usr/include/asm/ioctls.h
-CycleEffMappingClassInfo.o: /usr/include/asm/ioctl.h
-CycleEffMappingClassInfo.o: /usr/include/bits/ioctl-types.h
-CycleEffMappingClassInfo.o: /usr/include/sys/ttydefaults.h
-CycleEffMappingClassInfo.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-CycleEffMappingClassInfo.o: /usr/include/sys/socket.h
-CycleEffMappingClassInfo.o: /usr/include/bits/socket.h
-CycleEffMappingClassInfo.o: /usr/include/bits/sockaddr.h
-CycleEffMappingClassInfo.o: /usr/include/asm/socket.h
-CycleEffMappingClassInfo.o: /usr/include/asm/sockios.h
-CycleEffMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
-CycleEffMappingClassInfo.o: /usr/include/bits/wordsize.h
-CycleEffMappingClassInfo.o: /usr/include/bits/in.h
-CycleEffMappingClassInfo.o: /usr/include/bits/byteswap.h
+CycleEffMappingClassInfo.o: ../graphics.new/MemMgr.h
 CycleEffMappingClassInfo.o: CycleEffMappingClassInfo.h CycleRec.h
 CycleEffMappingClassInfo.o: ../graphics/Session.h map_cycle_eff.h
 CycleOccMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
@@ -333,35 +277,7 @@ CycleOccMappingClassInfo.o: /usr/include/alloca.h /usr/include/ctype.h
 CycleOccMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleOccMappingClassInfo.o: ../graphics.new/TData.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSource.h
-CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-CycleOccMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-CycleOccMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/unistd.h
-CycleOccMappingClassInfo.o: /usr/include/bits/posix_opt.h
-CycleOccMappingClassInfo.o: /usr/include/bits/confname.h
-CycleOccMappingClassInfo.o: /usr/include/getopt.h /usr/include/bits/shm.h
-CycleOccMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-CycleOccMappingClassInfo.o: /usr/include/bits/stat.h
-CycleOccMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-CycleOccMappingClassInfo.o: /usr/include/bits/waitflags.h
-CycleOccMappingClassInfo.o: /usr/include/bits/waitstatus.h
-CycleOccMappingClassInfo.o: /usr/include/bits/siginfo.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleOccMappingClassInfo.o: /usr/include/bits/ioctls.h
-CycleOccMappingClassInfo.o: /usr/include/asm/ioctls.h
-CycleOccMappingClassInfo.o: /usr/include/asm/ioctl.h
-CycleOccMappingClassInfo.o: /usr/include/bits/ioctl-types.h
-CycleOccMappingClassInfo.o: /usr/include/sys/ttydefaults.h
-CycleOccMappingClassInfo.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-CycleOccMappingClassInfo.o: /usr/include/sys/socket.h
-CycleOccMappingClassInfo.o: /usr/include/bits/socket.h
-CycleOccMappingClassInfo.o: /usr/include/bits/sockaddr.h
-CycleOccMappingClassInfo.o: /usr/include/asm/socket.h
-CycleOccMappingClassInfo.o: /usr/include/asm/sockios.h
-CycleOccMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
-CycleOccMappingClassInfo.o: /usr/include/bits/wordsize.h
-CycleOccMappingClassInfo.o: /usr/include/bits/in.h
-CycleOccMappingClassInfo.o: /usr/include/bits/byteswap.h
+CycleOccMappingClassInfo.o: ../graphics.new/MemMgr.h
 CycleOccMappingClassInfo.o: CycleOccMappingClassInfo.h CycleRec.h
 CycleOccMappingClassInfo.o: ../graphics/Session.h map_cycle_occ.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h
@@ -445,43 +361,6 @@ CycleSuspendedMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/TData.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/DCE.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ipc.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/ipc.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/sem.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/sem.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
-CycleSuspendedMappingClassInfo.o: /usr/include/unistd.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/posix_opt.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/confname.h
-CycleSuspendedMappingClassInfo.o: /usr/include/getopt.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/shm.h
-CycleSuspendedMappingClassInfo.o: /usr/include/assert.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/stat.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/wait.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/waitflags.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/waitstatus.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/siginfo.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/ioctls.h
-CycleSuspendedMappingClassInfo.o: /usr/include/asm/ioctls.h
-CycleSuspendedMappingClassInfo.o: /usr/include/asm/ioctl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/ioctl-types.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/ttydefaults.h
-CycleSuspendedMappingClassInfo.o: /usr/include/netdb.h
-CycleSuspendedMappingClassInfo.o: /usr/include/rpc/netdb.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/socket.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/socket.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/sockaddr.h
-CycleSuspendedMappingClassInfo.o: /usr/include/asm/socket.h
-CycleSuspendedMappingClassInfo.o: /usr/include/asm/sockios.h
-CycleSuspendedMappingClassInfo.o: /usr/include/netinet/in.h
-CycleSuspendedMappingClassInfo.o: /usr/include/stdint.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/wordsize.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/in.h
-CycleSuspendedMappingClassInfo.o: /usr/include/bits/byteswap.h
 CycleSuspendedMappingClassInfo.o: CycleSuspendedMappingClassInfo.h CycleRec.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Session.h map_cycle_suspended.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h
@@ -559,38 +438,6 @@ CycleWorkingMappingClassInfo.o: TDataCycle.h ../graphics.new/TDataAscii.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/TData.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/DataSource.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/MemMgr.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/ipc.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/sem.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/sem.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/unistd.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/posix_opt.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/confname.h
-CycleWorkingMappingClassInfo.o: /usr/include/getopt.h /usr/include/bits/shm.h
-CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/stat.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/wait.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/waitflags.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/waitstatus.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/siginfo.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/ioctl.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/ioctls.h
-CycleWorkingMappingClassInfo.o: /usr/include/asm/ioctls.h
-CycleWorkingMappingClassInfo.o: /usr/include/asm/ioctl.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/ioctl-types.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/ttydefaults.h
-CycleWorkingMappingClassInfo.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-CycleWorkingMappingClassInfo.o: /usr/include/sys/socket.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/socket.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/sockaddr.h
-CycleWorkingMappingClassInfo.o: /usr/include/asm/socket.h
-CycleWorkingMappingClassInfo.o: /usr/include/asm/sockios.h
-CycleWorkingMappingClassInfo.o: /usr/include/netinet/in.h
-CycleWorkingMappingClassInfo.o: /usr/include/stdint.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/wordsize.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/in.h
-CycleWorkingMappingClassInfo.o: /usr/include/bits/byteswap.h
 CycleWorkingMappingClassInfo.o: CycleWorkingMappingClassInfo.h CycleRec.h
 CycleWorkingMappingClassInfo.o: ../graphics/Session.h map_cycle_working.h
 HostMappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
@@ -648,29 +495,8 @@ HostMappingClassInfo.o: /usr/include/stdlib.h /usr/include/alloca.h
 HostMappingClassInfo.o: /usr/include/ctype.h TDataHost.h
 HostMappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 HostMappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-HostMappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-HostMappingClassInfo.o: /usr/include/bits/ipc.h /usr/include/sys/sem.h
-HostMappingClassInfo.o: /usr/include/bits/sem.h /usr/include/sys/shm.h
-HostMappingClassInfo.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-HostMappingClassInfo.o: /usr/include/bits/confname.h /usr/include/getopt.h
-HostMappingClassInfo.o: /usr/include/bits/shm.h /usr/include/assert.h
-HostMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-HostMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-HostMappingClassInfo.o: /usr/include/bits/waitflags.h
-HostMappingClassInfo.o: /usr/include/bits/waitstatus.h
-HostMappingClassInfo.o: /usr/include/bits/siginfo.h /usr/include/sys/ioctl.h
-HostMappingClassInfo.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-HostMappingClassInfo.o: /usr/include/asm/ioctl.h
-HostMappingClassInfo.o: /usr/include/bits/ioctl-types.h
-HostMappingClassInfo.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
-HostMappingClassInfo.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-HostMappingClassInfo.o: /usr/include/bits/socket.h
-HostMappingClassInfo.o: /usr/include/bits/sockaddr.h
-HostMappingClassInfo.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-HostMappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
-HostMappingClassInfo.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
-HostMappingClassInfo.o: /usr/include/bits/byteswap.h HostMappingClassInfo.h
-HostMappingClassInfo.o: HostRec.h ../graphics/Session.h map_host.h
+HostMappingClassInfo.o: HostMappingClassInfo.h HostRec.h
+HostMappingClassInfo.o: ../graphics/Session.h map_host.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/features.h
 MappingClassInfo.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 MappingClassInfo.o: /usr/include/time.h
@@ -721,27 +547,8 @@ MappingClassInfo.o: /usr/include/stdlib.h /usr/include/alloca.h
 MappingClassInfo.o: /usr/include/ctype.h TDataMulti.h
 MappingClassInfo.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-MappingClassInfo.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
-MappingClassInfo.o: /usr/include/bits/ipc.h /usr/include/sys/sem.h
-MappingClassInfo.o: /usr/include/bits/sem.h /usr/include/sys/shm.h
-MappingClassInfo.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-MappingClassInfo.o: /usr/include/bits/confname.h /usr/include/getopt.h
-MappingClassInfo.o: /usr/include/bits/shm.h /usr/include/assert.h
-MappingClassInfo.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-MappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/wait.h
-MappingClassInfo.o: /usr/include/bits/waitflags.h
-MappingClassInfo.o: /usr/include/bits/waitstatus.h
-MappingClassInfo.o: /usr/include/bits/siginfo.h /usr/include/sys/ioctl.h
-MappingClassInfo.o: /usr/include/bits/ioctls.h /usr/include/asm/ioctls.h
-MappingClassInfo.o: /usr/include/asm/ioctl.h /usr/include/bits/ioctl-types.h
-MappingClassInfo.o: /usr/include/sys/ttydefaults.h /usr/include/netdb.h
-MappingClassInfo.o: /usr/include/rpc/netdb.h /usr/include/sys/socket.h
-MappingClassInfo.o: /usr/include/bits/socket.h /usr/include/bits/sockaddr.h
-MappingClassInfo.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
-MappingClassInfo.o: /usr/include/netinet/in.h /usr/include/stdint.h
-MappingClassInfo.o: /usr/include/bits/wordsize.h /usr/include/bits/in.h
-MappingClassInfo.o: /usr/include/bits/byteswap.h MappingClassInfo.h
-MappingClassInfo.o: MultiRec.h ../graphics/Session.h mapfile.h
+MappingClassInfo.o: MappingClassInfo.h MultiRec.h ../graphics/Session.h
+MappingClassInfo.o: mapfile.h
 Message.o: /usr/include/stdio.h /usr/include/features.h
 Message.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 Message.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -762,29 +569,8 @@ Message.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 Message.o: /usr/include/endian.h /usr/include/bits/endian.h
 Message.o: /usr/include/sys/sysmacros.h ../graphics.new/RecId.h
 Message.o: ../graphics.new/DataSource.h ../graphics/Exit.h
-Message.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-Message.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-Message.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-Message.o: /usr/include/sys/shm.h /usr/include/unistd.h
-Message.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-Message.o: /usr/include/getopt.h /usr/include/bits/shm.h /usr/include/errno.h
-Message.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-Message.o: /usr/include/asm/errno.h /usr/include/assert.h
-Message.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-Message.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-Message.o: /usr/include/linux/param.h /usr/include/asm/param.h
-Message.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-Message.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-Message.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-Message.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-Message.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-Message.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-Message.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-Message.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-Message.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-Message.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-Message.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-Message.o: ../graphics/Dispatcher.h ../graphics/DList.h
+Message.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+Message.o: ../graphics/DList.h
 TDataCycle.o: /usr/include/stdio.h /usr/include/features.h
 TDataCycle.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -804,36 +590,14 @@ TDataCycle.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 TDataCycle.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 TDataCycle.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 TDataCycle.o: ../graphics.new/DataSource.h ../graphics/Exit.h
-TDataCycle.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-TDataCycle.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-TDataCycle.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-TDataCycle.o: /usr/include/sys/shm.h /usr/include/unistd.h
-TDataCycle.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-TDataCycle.o: /usr/include/getopt.h /usr/include/bits/shm.h
-TDataCycle.o: /usr/include/errno.h /usr/include/bits/errno.h
-TDataCycle.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-TDataCycle.o: /usr/include/assert.h /usr/include/sys/stat.h
-TDataCycle.o: /usr/include/bits/stat.h ../graphics.new/machdep.h
-TDataCycle.o: /usr/include/sys/param.h /usr/include/linux/param.h
-TDataCycle.o: /usr/include/asm/param.h /usr/include/sys/time.h
-TDataCycle.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-TDataCycle.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-TDataCycle.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-TDataCycle.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-TDataCycle.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-TDataCycle.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-TDataCycle.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-TDataCycle.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-TDataCycle.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-TDataCycle.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-TDataCycle.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-TDataCycle.o: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataCycle.o: ../graphics/ClassDir.h CycleRec.h ../graphics/Parse.h
-TDataCycle.o: ../graphics/Control.h ../graphics/VisualArg.h
-TDataCycle.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
-TDataCycle.o: /usr/include/ctype.h /usr/include/math.h
-TDataCycle.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-TDataCycle.o: /usr/include/bits/mathcalls.h ../graphics.new/DataSeg.h
+TDataCycle.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+TDataCycle.o: ../graphics/DList.h ../graphics/ClassDir.h CycleRec.h
+TDataCycle.o: ../graphics/Parse.h ../graphics/Control.h
+TDataCycle.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataCycle.o: /usr/include/string.h ../graphics/Util.h /usr/include/ctype.h
+TDataCycle.o: /usr/include/math.h /usr/include/bits/huge_val.h
+TDataCycle.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+TDataCycle.o: ../graphics.new/DataSeg.h
 TDataHost.o: /usr/include/stdio.h /usr/include/features.h
 TDataHost.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -853,36 +617,14 @@ TDataHost.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 TDataHost.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 TDataHost.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 TDataHost.o: ../graphics.new/DataSource.h ../graphics/Exit.h
-TDataHost.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-TDataHost.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-TDataHost.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-TDataHost.o: /usr/include/sys/shm.h /usr/include/unistd.h
-TDataHost.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-TDataHost.o: /usr/include/getopt.h /usr/include/bits/shm.h
-TDataHost.o: /usr/include/errno.h /usr/include/bits/errno.h
-TDataHost.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-TDataHost.o: /usr/include/assert.h /usr/include/sys/stat.h
-TDataHost.o: /usr/include/bits/stat.h ../graphics.new/machdep.h
-TDataHost.o: /usr/include/sys/param.h /usr/include/linux/param.h
-TDataHost.o: /usr/include/asm/param.h /usr/include/sys/time.h
-TDataHost.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-TDataHost.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-TDataHost.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-TDataHost.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-TDataHost.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-TDataHost.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-TDataHost.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-TDataHost.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-TDataHost.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-TDataHost.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-TDataHost.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-TDataHost.o: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataHost.o: ../graphics/ClassDir.h HostRec.h ../graphics/Parse.h
-TDataHost.o: ../graphics/Control.h ../graphics/VisualArg.h
-TDataHost.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
-TDataHost.o: /usr/include/ctype.h /usr/include/math.h
-TDataHost.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-TDataHost.o: /usr/include/bits/mathcalls.h ../graphics.new/DataSeg.h
+TDataHost.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+TDataHost.o: ../graphics/DList.h ../graphics/ClassDir.h HostRec.h
+TDataHost.o: ../graphics/Parse.h ../graphics/Control.h
+TDataHost.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataHost.o: /usr/include/string.h ../graphics/Util.h /usr/include/ctype.h
+TDataHost.o: /usr/include/math.h /usr/include/bits/huge_val.h
+TDataHost.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+TDataHost.o: ../graphics.new/DataSeg.h
 TDataMulti.o: /usr/include/stdio.h /usr/include/features.h
 TDataMulti.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/stddef.h
@@ -902,36 +644,14 @@ TDataMulti.o: /usr/include/linux/limits.h /usr/include/bits/posix2_lim.h
 TDataMulti.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
 TDataMulti.o: ../graphics/DevStatus.h ../graphics.new/RecId.h
 TDataMulti.o: ../graphics.new/DataSource.h ../graphics/Exit.h
-TDataMulti.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-TDataMulti.o: /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-TDataMulti.o: /usr/include/sys/sem.h /usr/include/bits/sem.h
-TDataMulti.o: /usr/include/sys/shm.h /usr/include/unistd.h
-TDataMulti.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
-TDataMulti.o: /usr/include/getopt.h /usr/include/bits/shm.h
-TDataMulti.o: /usr/include/errno.h /usr/include/bits/errno.h
-TDataMulti.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-TDataMulti.o: /usr/include/assert.h /usr/include/sys/stat.h
-TDataMulti.o: /usr/include/bits/stat.h ../graphics.new/machdep.h
-TDataMulti.o: /usr/include/sys/param.h /usr/include/linux/param.h
-TDataMulti.o: /usr/include/asm/param.h /usr/include/sys/time.h
-TDataMulti.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-TDataMulti.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-TDataMulti.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-TDataMulti.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-TDataMulti.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-TDataMulti.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-TDataMulti.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-TDataMulti.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-TDataMulti.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-TDataMulti.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-TDataMulti.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
-TDataMulti.o: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataMulti.o: ../graphics/ClassDir.h MultiRec.h ../graphics/Parse.h
-TDataMulti.o: ../graphics/Control.h ../graphics/VisualArg.h
-TDataMulti.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Util.h
-TDataMulti.o: /usr/include/ctype.h /usr/include/math.h
-TDataMulti.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-TDataMulti.o: /usr/include/bits/mathcalls.h ../graphics.new/DataSeg.h
+TDataMulti.o: ../graphics.new/MemMgr.h ../graphics/Dispatcher.h
+TDataMulti.o: ../graphics/DList.h ../graphics/ClassDir.h MultiRec.h
+TDataMulti.o: ../graphics/Parse.h ../graphics/Control.h
+TDataMulti.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+TDataMulti.o: /usr/include/string.h ../graphics/Util.h /usr/include/ctype.h
+TDataMulti.o: /usr/include/math.h /usr/include/bits/huge_val.h
+TDataMulti.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+TDataMulti.o: ../graphics.new/DataSeg.h
 disp.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
 disp.o: /usr/include/gnu/stubs.h /usr/include/bits/huge_val.h
 disp.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
@@ -963,27 +683,6 @@ disp.o: ../graphics.new/PointStorage.h Message.h ../graphics/WinClassInfo.h
 disp.o: ../graphics/ClassDir.h ../graphics.new/ActionClassInfo.h TDataMulti.h
 disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/bits/ipc.h
-disp.o: /usr/include/sys/sem.h /usr/include/bits/sem.h /usr/include/sys/shm.h
-disp.o: /usr/include/unistd.h /usr/include/bits/posix_opt.h
-disp.o: /usr/include/bits/confname.h /usr/include/getopt.h
-disp.o: /usr/include/bits/shm.h /usr/include/errno.h
-disp.o: /usr/include/bits/errno.h /usr/include/linux/errno.h
-disp.o: /usr/include/asm/errno.h /usr/include/assert.h
-disp.o: /usr/include/sys/stat.h /usr/include/bits/stat.h
-disp.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-disp.o: /usr/include/linux/param.h /usr/include/asm/param.h
-disp.o: /usr/include/sys/wait.h /usr/include/bits/waitflags.h
-disp.o: /usr/include/bits/waitstatus.h /usr/include/bits/siginfo.h
-disp.o: /usr/include/sys/ioctl.h /usr/include/bits/ioctls.h
-disp.o: /usr/include/asm/ioctls.h /usr/include/asm/ioctl.h
-disp.o: /usr/include/bits/ioctl-types.h /usr/include/sys/ttydefaults.h
-disp.o: /usr/include/netdb.h /usr/include/rpc/netdb.h
-disp.o: /usr/include/sys/socket.h /usr/include/bits/socket.h
-disp.o: /usr/include/bits/sockaddr.h /usr/include/asm/socket.h
-disp.o: /usr/include/asm/sockios.h /usr/include/netinet/in.h
-disp.o: /usr/include/stdint.h /usr/include/bits/wordsize.h
-disp.o: /usr/include/bits/in.h /usr/include/bits/byteswap.h
 disp.o: ../graphics/Dispatcher.h MappingClassInfo.h HostMappingClassInfo.h
 disp.o: CycleOccMappingClassInfo.h CycleEffMappingClassInfo.h
 disp.o: CycleWorkingMappingClassInfo.h CycleSuspendedMappingClassInfo.h
@@ -993,7 +692,10 @@ disp.o: ../graphics.new/ViewData.h TDataHost.h TDataCycle.h
 disp.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ViewWin.h
 disp.o: ../graphics/WindowRep.h ../graphics/Transform.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-disp.o: ../graphics/DevError.h ../graphics/ETkIfc.h ../graphics/ETk.h
+disp.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/bits/errno.h
+disp.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+disp.o: /usr/include/sys/param.h /usr/include/linux/param.h
+disp.o: /usr/include/asm/param.h ../graphics/ETkIfc.h ../graphics/ETk.h
 disp.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 disp.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 disp.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
