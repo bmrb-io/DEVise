@@ -2211,8 +2211,14 @@ Num Date        Status  Description
 			and jss are on different machines, and the devised
 			gets switched to a different JavaScreen and back. (rkw)
 
-566 02/21/00	OPEN	Jss can't restart a devised if the jspop and jss
+566 02/21/00	FIXED	Jss can't restart a devised if the jspop and jss
 			are on different machines. (rkw)
+			(Fixed by Hongyu, 2/23/00.)
+
+567 02/23/00	OPEN	Load FamMed_pre_post_natal.ds in the JavaScreen,
+			then do JAVAC_ResetFilter; after this, the devised
+			doesn't properly execute/respond to further commands.
+			(hy/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
