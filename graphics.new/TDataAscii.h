@@ -1,12 +1,30 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:50  jussi
+  Added CVS header.
+*/
 
 /* Textual data virtual base class */
 
 #ifndef TDataAscii_h
 #define TDataAscii_h
+
 #include <stdio.h>
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
@@ -14,14 +32,15 @@
 #include "RecId.h"
 #include "RecOrder.h"
 
-const int INIT_INDEX_SIZE= 50000; /* initial index size */
-const int INDEX_ALLOC_INCREMENT = 25000; /* allocation increment for index */
-const int LINESIZE = 4096; /* maximum size of each line */
+const int INIT_INDEX_SIZE= 50000;            // initial index size
+const int INDEX_ALLOC_INCREMENT = 25000;     // allocation increment for index
+const int LINESIZE = 4096;                   // maximum size of each line
 
 /* We cache the first FILE_CONTENT_COMPARE_BYTES from the
-file in the cache. The next time we start up, this cache is
-compared with what's in the file to determine if they are
-the same file. */
+   file in the cache. The next time we start up, this cache is
+   compared with what's in the file to determine if they are
+   the same file. */
+
 const int FILE_CONTENT_COMPARE_BYTES = 4096;
 
 /* offset for the cache */
@@ -30,6 +49,7 @@ const int SUBCLASS_OFFSET = 4096;
 const int LAST_POS_OFFSET = 5120;
 const int TOTAL_RECS_OFFSET = 5124;
 const int INDEX_OFFSET = 5128;
+
 class TDataAscii: public TData, private DispatcherCallback {
 public:
 	TDataAscii(char *name, int recSize);
@@ -43,26 +63,26 @@ public:
 	or -1 if unknown */
 	virtual int Dimensions(int *sizeDimension);
 
-	/* Return record size, or -1 if variable record size */
-	virtual int RecSize();
+	// Return record size, or -1 if variable record size
+	virtual int RecSize() { return _recSize; }
 
-	/* Return page size of TDataAscii, or -1 if no paging structure */
-	virtual int PageSize();
+	// Return page size of TDataAscii, or -1 if no paging structure
+	virtual int PageSize() { return -1; }
 
-	/* Return true if TDataAscii deletes records from the beginning
-	due to limited disk/memory buffer. */
-	virtual Boolean HasDeletion();
+	// Return true if TDataTape deletes records from the beginning
+	// due to limited disk/memory buffer.
+	virtual Boolean HasDeletion() { return false; }
 
-	/* Return true if TDataAscii appends records */
-	virtual Boolean HasAppend();
+	// Return true if TDataTape appends records
+	virtual Boolean HasAppend() { return true; }
 
-	/* Use this to get user defined attributes.
-	We reserve attributes 0-SysAttrNum for internal use.
-	A -1 is returned for none-existing attrNum*/
-	virtual int UserAttr(int attrNum){ return -1;};
+	// Use this to get user defined attributes.
+	// We reserve attributes 0-SysAttrNum for internal use.
+	// A -1 is returned for none-existing attrNum
+	virtual int UserAttr(int attrNum) { return -1; }
 
-	/* Get name */
-	virtual char *GetName();
+	// Get name
+	virtual char *GetName() { return _name; }
 
 	/* convert RecId into index */
 	virtual void GetIndex(RecId id, int *&indices);
@@ -98,7 +118,7 @@ public:
 	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
 		int &numRecs, int &dataSize, void **recPtrs);
 
-	virtual void DoneGetRecs();
+	virtual void DoneGetRecs() {}
 
 	/* Given buffer space and RecId, set the array "recPtrs" to
 	the address of individual records. For varialbe size records. */
@@ -125,12 +145,15 @@ protected:
 	/* should be called by the constructors of derived classes */
 	void Initialize();
 
+	// Decode a record; return false if this line is not valid
+	virtual Boolean IsValid(char *line) = 0;
+
 	/* Decode a record and put data into buffer. Return false if
 	this line is not valid. */
 	virtual Boolean Decode(RecId id, void *recordBuf, char *line)=0;
 
-	/* Read/Write specific to each subclass cache. The cached information is
-	to be read during file start up, and written when file closes,
+	/* Read/Write specific to each subclass cache. The cached information
+	is to be read during file start up, and written when file closes,
 	so as to get the TData back to the state at the last
 	file close. Return false and the index will be rebuilt
 	from scratch every time. Return true and the base class
@@ -140,9 +163,8 @@ protected:
 
 private:
 	/* From DispatcherCallback */
-	char *DispatchedName() {
-		return "TDataAscii";
-	}
+	char *DispatchedName() { return "TDataAscii"; }
+
 	virtual void Cleanup();
 
 	/* Build index */
@@ -156,28 +178,28 @@ private:
 	/* Print indices */
 	void PrintIndices();
 
-	unsigned _totalRecs;
-	char *_name;
-	char *_cacheFileName;
-	int _recSize;	/* size of record */
-	FILE *_file;	
-	RecId _lowId, _highId, _nextId, _endId; /*current range to read data */
+	unsigned _totalRecs;            // total number of records
+	char *_name;                    // name of file/dataset
+	char *_cacheFileName;           // name of cache file
+	int _recSize;                   // size of record
+	Boolean _fileGrown;             // true if file has grown
+	FILE *_file;                    // file pointer
 
-	/* index containing pointers to the file */
-	long *_index;
-	int _indexSize;
+	RecId _lowId, _highId;          // current range to read data
+	RecId _nextId, _endId;          // range of next retrieval
 
-	long _lastPos;
+	long *_index;                   // index to records
+	int _indexSize;                 // size of index
 
-	char *_recBuf;
+	long _lastPos;                  // position of last record in file
 
-	int _cacheFd; /* file descriptor of cache */
+	char *_recBuf;                  // record buffer
 
-	/* initial # of records stored in the cache */
-	int _initTotalRecs;
+	int _cacheFd;                   // file descriptor of cache
 
-	/* initial last postion in the file */
-	int _initLastPos;
+	int _initTotalRecs;             // initial # of records in cache
+
+	int _initLastPos;               // initial last position in file
 
 	/* total # of bytes fetched */
 	int _bytesFetched;
