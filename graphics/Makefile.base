@@ -17,6 +17,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  1997/02/03 19:39:55  ssl
+#  1) Added a new Layout interface which handles user defined layouts
+#  2) Added functions to set geometry and remap views as changes in the
+#     layout editor
+#  3) Added a function to notify the front end of some change so that it
+#     can execute a Tcl command
+#  4) The old TileLayout.[Ch] files still exist but are commented out
+#     conditionally using #ifdef NEW_LAYOUT
+#
 #  Revision 1.37  1997/01/23 17:01:53  wenger
 #  Restored revisisions 1.32 - 1.34 (somehow got lost).
 #
@@ -81,7 +90,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
-	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
+	Util.c View.c ViewWin.c ViewLayout.C \
 	Layout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
