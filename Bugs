@@ -617,6 +617,9 @@ Num Date        Status  Description
 147 01/30/97	OPEN	When drilling down, it's often too hard to hit the
 			place that will get a record. (ml/rkw)
 
+148 02/03/97	OPEN	Try to create a window with the same name as an
+			existing window -> Devise exits. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
