@@ -8,11 +8,12 @@ x- Build released software:
     x- Ask everyone to confirm that they don't have any other things that
       need to go into the release.
     x- Build on Linux
-- Test set_up_user
-- Untar dist.tar into /p/devise/dist (or tar /p/devise/dist and see
+x- Test set_up_user
+x- Untar dist.tar into /p/devise/dist (or tar /p/devise/dist and see
   whether it has changed)
-- Generate distribution files
-- Test distribution files (re-run at least some of the user interface
+a- Build and release to /p/devise/public deviseb, devisec, devised.
+a- Generate distribution files
+a- Test distribution files (re-run at least some of the user interface
   tests on each architecure, running Devise untarred from the distribution
   files)
 - Tag sources (but not html and doc directories)
@@ -23,6 +24,7 @@ x- Build released software:
 a- Update user manual
 - Update web page
 - Tag html and doc directories
+- Generate "official" sources1.3.0.tar.gz file
 - Release documentation and re-generate distribution files with up-to-date
   documentation.
 - Put 1.3.0 release on FTP site
