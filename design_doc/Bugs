@@ -2338,6 +2338,14 @@ Num Date        Status  Description
 			when opening AWON session. (rkw)
 			(Fixed by rkw, 6/6/00.)
 
+596 06/14/00	OPEN	Fixed text based on a fraction of the screen height
+			doesn't come out to the same relative size in the
+			JavaScreen as in "regular" DEVise. (rkw)
+
+597 6/14/00	OPEN	Jss doesn't seem to be able to start a devised
+			(or maybe the problem is in connecting to the
+			jspop) other than when the jss is started. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
