@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/02/02 21:52:20  jussi
+  Removed SetFgColor() right after SetXorMode() which changed the
+  effect of the xor function.
+
   Revision 1.8  1996/01/30 21:12:56  jussi
   Minor changes in visual appearance.
 
@@ -45,6 +49,8 @@
 #include "WindowRep.h"
 #include "KGraph.h"
 
+//#define DEBUG
+
 #define MAX_POPUP_LEN 30
 
 KGraph::KGraph(DeviseDisplay *dis)
@@ -64,34 +70,26 @@ KGraph::KGraph(DeviseDisplay *dis)
 
 KGraph::~KGraph()
 {
-  delete [] _pts;
-  delete [] _xyarr;
+  delete _pts;
+  delete _xyarr;
   if (msgBuf) {
     for(int i = 0; i < _naxes+3; i++)
       delete msgBuf[i];
   }
-  delete [] msgBuf;
+  delete msgBuf;
 }
 
 void KGraph::Init(char *winname, char *statname)
 {
   _naxes = 0;
-  delete [] _pts;
-  delete [] _xyarr;
+
+  delete _pts;
+  delete _xyarr;
   if (msgBuf) {
     for(int i = 0; i < _naxes + 3; i++)
       delete msgBuf[i];
   }
-  delete [] msgBuf;
-
-  // Clear up any existing display on the windowrep.
-  // We want to reuse the window for displaying a different graph.
-  int x0, y0;
-  unsigned int w,h;
-  _win->Origin(x0, y0);
-  _win->Dimensions(w, h);
-  _win->SetFgColor(BackgroundColor);
-  _win->FillRect(x0, y0, w, h);
+  delete msgBuf;
 
   // Copy window name
   _winame = winname;
@@ -122,6 +120,8 @@ void KGraph::Display()
   if (!_naxes)
     return;
 
+  // Clear graph
+  ClearGraph();
   // Draw the circle
   DrawCircle();
   // Plot points
@@ -130,24 +130,28 @@ void KGraph::Display()
   DrawAxes();
 }
 
+void KGraph::ClearGraph()
+{
+  unsigned int w, h;
+  _win->Dimensions(w, h);
+  _win->SetFgColor(BackgroundColor);
+  _win->FillRect(0, 0, w, h);
+}
+
 void KGraph::DrawCircle()
 {
-  _win->SetFgColor(BlueColor);
-
-  int x0, y0;
-  unsigned int w,h;
-  _win->Origin(x0, y0);
+  unsigned int w, h;
   _win->Dimensions(w, h);
 
-  h = (w > h)? h : w;
-  // Compute center of circle
-  cy = y0 + h / 2;
-  cx = x0 + h / 2;
+  // Compute size and center of circle
+  h = (w > h) ? h : w;
+  cy = h / 2;
+  cx = h / 2;
+  diam = h - 10;
 
-  rad = h - 10;
   // Draw Circle
-  _win->Arc(cx, -cy + 9, rad, rad, 0, 2 * PI);
-
+  _win->SetFgColor(BlueColor);
+  _win->Arc(cx, cy, diam, diam, 0, 2 * PI);
 }    
 
 void KGraph::DrawAxes()
@@ -159,7 +163,7 @@ void KGraph::DrawAxes()
 
   // Draw axes
   for(int i = 0; i < _naxes; i++) {
-    Rotate(rad / 2, i * theta, x, y);
+    Rotate(diam / 2, i * theta, x, y);
     _win->Line(cx, cy, x, y, 1);
   }
 
@@ -198,15 +202,13 @@ void KGraph::PlotPoints()
 
 void KGraph::ShowVal()
 {
-  int x0, y0;
   unsigned int w,h;
-  _win->Origin(x0, y0);
   _win->Dimensions(w, h);
 
   // Show the plotted values by the side
   // xval to start at
-  Coord startx = x0 + h + 10;
-  Coord starty = y0 + 10;
+  Coord startx = h + 10;
+  Coord starty = 10;
   
   // First a generic message
   
@@ -234,7 +236,7 @@ void KGraph::ShowVal()
 
 Coord KGraph::Scale(Coord xval, Coord max)
 {
-  return (xval * rad) / (2 * max);
+  return (xval * diam) / (2 * max);
 }
 
 void KGraph::Rotate(Coord xval, int degree, Coord &retx, Coord &rety)
@@ -246,7 +248,9 @@ void KGraph::Rotate(Coord xval, int degree, Coord &retx, Coord &rety)
 void KGraph::HandlePress(WindowRep *w, int xlow, int ylow, int xhigh, 
 			 int yhigh, int button)
 {
+#ifdef DEBUG
   printf("HandlePress : button %d\n",button);
+#endif
 }
 
 Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button, 
