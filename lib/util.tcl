@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  1997/01/23 00:07:14  jussi
+#  Added WindowExists procedure.
+#
 #  Revision 1.37  1997/01/17 20:32:31  wenger
 #  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
 #  simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -866,3 +869,16 @@ proc statusWindow {w title msg} {
     pack $w.msg -side top -padx 8m -pady 4m
     update
 }
+
+############################################################
+
+proc stringCaseCmp {s1 s2} {
+    return [string compare [string tolower $s1] [string tolower $s2]];
+}
+
+############################################################
+
+proc lsortCase {l} {
+    return [lsort -command stringCaseCmp $l];
+}
+
