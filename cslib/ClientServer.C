@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/02 18:38:59  wenger
+  Fixed memory leak in client/server library.
+
   Revision 1.3  1996/11/23 00:24:00  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -288,169 +291,396 @@ void TclClient::ControlCmd(int argc, char **argv)
   delete cmd;
 }
 
-Server::Server(char *name, int port)
-{
-  _name = strdup(name);
-  DOASSERT(_name, "Out of memory");
-  _port = port;
+//-----------------------------------------------------------------------
+// BEGIN Server class
+//-----------------------------------------------------------------------
 
-  _listenFd = -1;
-  _clientFd = -1;
+#if defined(SINGLE_CLIENT)
+Server::Server(char *name, int port)
+#else
+Server::Server(char *name, int port, int maxClients)
+#endif
+{
+    _name = strdup(name);
+    DOASSERT(_name, "Out of memory");
+    _port = port;
+    _listenFd = -1;
+#if defined(SINGLE_CLIENT)
+    _clientFd = -1;
+#else
+    _clients = new ClientInfo[maxClients];
+    _numClients = 0;
+    _maxClients = maxClients;
+#endif
 }
 
 Server::~Server()
 {
-  CloseClient();
-  delete _name;
+#if defined(SINGLE_CLIENT)
+    CloseClient();
+#else
+    for (int i = 0; i < _maxClients; i++)
+    {
+	CloseClient(i);
+    }
+    delete [] _clients;
+#endif
+    delete _name;
 }
 
 void Server::DoAbort(char *reason)
 {
-  fprintf(stderr, "%s\n", reason);
-  char *args[] = { "AbortProgram", reason };
-  (void)NetworkSend(_clientFd, API_CTL, 0, 2, args);
-  fprintf(stderr, "Server aborts.\n");
-  exit(0);
+    fprintf(stderr, "%s\n", reason);
+    char *args[] = { "AbortProgram", reason };
+    
+#if defined(SINGLE_CLIENT)
+    (void)NetworkSend(_clientFd, API_CTL, 0, 2, args);
+#else
+    for (int i = 0; i < _maxClients; i++)
+    {
+	if (_clients[i].valid)
+	{
+	    (void)NetworkSend(_clients[i].fd, API_CTL, 0, 2, args);
+	}
+    }
+#endif
+    fprintf(stderr, "Server aborts.\n");
+    exit(0);
 }
 
 void Server::MainLoop()
 {
-  while(1) {
-    WaitForConnection();
-    while(_clientFd >= 0)
-      ReadCmd();
-  }
+    while(1)
+    {
+	WaitForConnection();
+#if defined(SINGLE_CLIENT)
+	while(_clientFd >= 0)
+#else
+	while (_numClients > 0)
+#endif
+	{
+	    ReadCmd();
+	}
+    }
 }
+
+void Server::InitializeListenFd()
+{
+    DOASSERT(_listenFd < 0, "Invalid socket");
+    _listenFd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_listenFd < 0)
+    {
+	perror("socket() failed");
+    }
+    DOASSERT(_listenFd >= 0, "Cannot create socket");
+    
+    // allow listening port number to be reused
+    int enable = 1;
+    int result = setsockopt(_listenFd, SOL_SOCKET, SO_REUSEADDR,
+			    (char *)&enable, sizeof enable);
+    if (result < 0)
+    {
+	perror("setsockopt() failed");
+    }
+    DOASSERT(result >= 0, "Cannot set socket options");
+    
+    // Now bind these to the address..
+    
+    struct sockaddr_in servAddr;
+    memset(&servAddr, 0, sizeof servAddr);
+    servAddr.sin_family = AF_INET;
+    servAddr.sin_port = htons(_port);
+#ifdef DEBUG
+    printf("Server listening at port %u.\n", _port);
+#endif
+    servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    
+    result = bind(_listenFd, (struct sockaddr *)&servAddr,
+		  sizeof(struct sockaddr));
+    if (result < 0)
+    {
+	perror("bind() failed");
+    }
+    DOASSERT(result >= 0, "Cannot bind to address");
+    
+    result = listen(_listenFd, 5);
+    if (result < 0)
+    {
+	perror("listen() failed");
+    }
+    DOASSERT(result >= 0, "Cannot listen");
+    
+    printf("Listening fd has been initialized\n");
+    
+}
+
+#if !defined(SINGLE_CLIENT)
+int Server::FindIdleClientSlot()
+{
+    for (int i = 0; i < _maxClients; i++)
+    {
+	if (!_clients[i].valid)
+	{
+	    return i;
+	}
+    }
+    return -1;
+}
+#endif
 
 void Server::WaitForConnection()
 {
-  DOASSERT(_listenFd < 0, "Invalid socket");
-  _listenFd = socket(AF_INET, SOCK_STREAM, 0);
-  if (_listenFd < 0)
-    perror("socket");
-  DOASSERT(_listenFd >= 0, "Cannot create socket");
-
-  // allow listening port number to be reused
-  int enable = 1;
-  int result = setsockopt(_listenFd, SOL_SOCKET, SO_REUSEADDR,
-		      (char *)&enable, sizeof enable);
-  if (result < 0)
-    perror("setsockopt");
-  DOASSERT(result >= 0, "Cannot set socket options");
-
-  // Now bind these to the address..
-
-  struct sockaddr_in servAddr;
-  memset(&servAddr, 0, sizeof servAddr);
-  servAddr.sin_family = AF_INET;
-  servAddr.sin_port = htons(_port);
-#ifdef DEBUG
-  printf("Server listening at port %u.\n", _port);
+    int clientfd;
+#if defined(SINGLE_CLIENT)
+    DOASSERT(_listenFd < 0, "Invalid socket");
 #endif
-  servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-  result = bind(_listenFd, (struct sockaddr *)&servAddr,
-		sizeof(struct sockaddr));
-  if (result < 0)
-    perror("bind");
-  DOASSERT(result >= 0, "Cannot bind to address");
-
-  result = listen(_listenFd, 5);
-  if (result < 0)
-    perror("listen");
-  DOASSERT(result >= 0, "Cannot listen");
-
-  printf("\nServer waiting for client connection.\n");
-
-  struct sockaddr_in tempaddr;
-  int len = sizeof(tempaddr);
-  _clientFd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
-  if (_clientFd < 0) {
-    perror("accept");
-    if (errno == EINTR) {
-      fprintf(stderr, "Server exits.\n");
-      exit(1);
+    if (_listenFd < 0)
+    {
+	InitializeListenFd();
     }
-    DOASSERT(0, "Error in network interface");
-  }
-  
-  close(_listenFd);
-  _listenFd = -1;
-
-  printf("Client connection established.\n\n");
-  BeginConnection();
+    printf("Server waiting for client connection\n");
+    struct sockaddr_in tempaddr;
+    int len = sizeof(tempaddr);
+    clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
+    if (clientfd < 0)
+    {
+	perror("accept() failed");
+	if (errno == EINTR)
+	{
+	    fprintf(stderr, "Server exits.\n");
+	    exit(1);
+	}
+	DOASSERT(0, "Error in network interface");
+    }
+#if defined(SINGLE_CLIENT)
+    _clientFd = clientfd;
+    close(_listenFd);
+    _listenFd = -1;
+    printf("Client connection established.\n\n");
+    BeginConnection();
+#else
+    int slot = FindIdleClientSlot();
+    if (slot < 0)
+    {
+	fprintf(stderr, "WARNING: Too many clients. Connection denied\n");
+	close(clientfd);
+	return;
+    }
+    _clients[slot].valid = true;
+    _clients[slot].fd = clientfd;
+    _numClients++;
+    printf("Connection established to client %d\n", slot);
+    BeginConnection(slot);
+#endif
 }
 
+#if defined(SINGLE_CLIENT)
+void Server::ProcessCmd(int argc, char **argv)
+#else
+void Server::ProcessCmd(ClientID clientID, int argc, char **argv)
+#endif
+{
+    char *cmd = NetworkPaste(argc, argv);
+    DOASSERT(cmd, "Out of memory");
+    printf("Received command from client: \"%s\"\n", cmd);
+    delete cmd;
+    int result;
+    bool doClose = false;
+    char *args[] = { "done" };
+#if defined(SINGLE_CLIENT)
+    result = NetworkSend(_clientFd, API_ACK, 0, 1, args);
+#else
+    result = NetworkSend(_clients[clientID].fd, API_ACK, 0, 1, args);
+#endif
+
+    if (result < 0)
+    {
+	fprintf(stderr, "Client error.\n");
+	doClose = true;
+    }
+    else if (argc == 1 && !strcmp(argv[0], "exit"))
+    {
+	doClose = true;
+    }
+    
+    if (doClose)
+    {
+#if defined(SINGLE_CLIENT)
+	CloseClient();
+#else
+	CloseClient(clientID);
+#endif
+    }
+
+}
+
+#if defined(SINGLE_CLIENT)
+void Server::CloseClient()
+#else
+void Server::CloseClient(ClientID clientID)
+#endif
+{
+#if defined(SINGLE_CLIENT)
+    if (_clientFd >= 0) {
+	EndConnection();
+	printf("Closing client connection.\n");
+	(void)NetworkClose(_clientFd);
+    }
+    _clientFd = -1;
+#else
+    if (!_clients[clientID].valid)
+    {
+	return;
+    }
+    if (_clients[clientID].fd >= 0)
+    {
+	EndConnection(clientID);
+	printf("Closing client connection.\n");
+	(void)NetworkClose(_clients[clientID].fd);
+    }
+    _clients[clientID].fd = -1;
+    _clients[clientID].valid = false;
+    _numClients--;
+#endif
+}
+
+#if defined(SINGLE_CLIENT)
+//
+// Reading client commands when only a SINGLE client is allowed
+//
 void Server::ReadCmd()
 {
-  DOASSERT(_clientFd >= 0, "Invalid socket");
-
-  u_short flag;
-  int argc;
-  char **argv;
-  int result = NetworkReceive(_clientFd, 1, flag, argc, argv);
-  if (result < 0) {
-    perror("recv");
-    goto error;
-  }
-
-  if (!result) {
+    DOASSERT(_clientFd >= 0, "Invalid socket");
+    u_short flag;
+    int argc;
+    char **argv;
+    int result = NetworkReceive(_clientFd, 1, flag, argc, argv);
+    if (result < 0) {
+	perror("recv");
+	goto error;
+    }
+    if (!result) {
 #ifdef DEBUG
-    printf("End of client data.\n");
+	printf("End of client data.\n");
 #endif
-    goto error;
-  }
-
-  if (flag != API_CMD) {
-    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
-    goto error;
-  }
-
+	goto error;
+    }
+    if (flag != API_CMD) {
+	fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+	goto error;
+    }
 #ifdef DEBUG
-  printf("Executing command\n");
+    printf("Executing command\n");
 #endif
-
-  ProcessCmd(argc, argv);
-
+    ProcessCmd(argc, argv);
 #ifdef DEBUG
-  printf("Done executing command\n");
+    printf("Done executing command\n");
 #endif
-
-  return;
-
- error:
-  CloseClient();
-}
-
-void Server::ProcessCmd(int argc, char **argv)
-{
-  char *cmd = NetworkPaste(argc, argv);
-  DOASSERT(cmd, "Out of memory");
-  printf("Received command from client: \"%s\"\n", cmd);
-  delete cmd;
-
-  char *args[] = { "done" };
-  if (NetworkSend(_clientFd, API_ACK, 0, 1, args) < 0) {
-    fprintf(stderr, "Client error.\n");
-    CloseClient();
     return;
-  }
-
-  if (argc == 1 && !strcmp(argv[0], "exit"))
+  error:
     CloseClient();
 }
-
-void Server::CloseClient()
+#else
+//
+// Reading client commands when MULTIPLE clients are allowed
+//
+void Server::ReadCmd()
 {
-  if (_clientFd >= 0) {
-    EndConnection();
-    printf("Closing client connection.\n");
-    (void)NetworkClose(_clientFd);
-  }
-  _clientFd = -1;
+    fd_set fdset;
+    int maxFdCheck;
+    int numFds;
+    bool error = false;
+    //
+    // Initialize the fd set
+    //
+    memset(&fdset, 0, sizeof fdset);
+    FD_SET(_listenFd, &fdset);
+    maxFdCheck = _listenFd;
+    for (int i = 0; i < _maxClients; i++)
+    {
+	if (_clients[i].valid)
+	{
+	    FD_SET(_clients[i].fd, &fdset);
+	    if (_clients[i].fd > maxFdCheck)
+	    {
+		maxFdCheck = _clients[i].fd;
+	    }
+	}
+    }
+    //
+    // select()
+    //
+    numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
+    if (numFds < 0)
+    {
+	perror("select() failed");
+    }
+    DOASSERT(numFds > 0, "Internal error");
+    //
+    // Handle a new connection request
+    //
+    if (FD_ISSET(_listenFd, &fdset))
+    {
+	WaitForConnection();
+    }
+    //
+    // Process incoming commands on all client fds
+    //
+    ExecClientCmds(&fdset);
 }
+void Server::ExecClientCmds(fd_set *fdset)
+{
+    u_short flag;
+    int result;
+    int argc;
+    char **argv;
+    for (int i = 0; i < _maxClients; i++)
+    {
+	if (!_clients[i].valid || !FD_ISSET(_clients[i].fd, fdset))
+	{
+	    continue;
+	}
+	result = NetworkReceive(_clients[i].fd, 1, flag, argc, argv);
+	if (result < 0)
+	{
+	    CloseClient(i);
+	}
+	else if (!result)
+	{
+#ifdef DEBUG
+	    printf("End of client data.\n");
+#endif
+	    CloseClient(i);
+	}
+	else if (flag != API_CMD)
+	{
+	    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+	    CloseClient(i);
+	}
+	else
+	{
+#ifdef DEBUG
+	    printf("Executing command\n");
+#endif
+	    ProcessCmd(i, argc, argv);
+#ifdef DEBUG
+	    printf("Done executing command\n");
+#endif
+	}
+    }
+}
+#endif
 
+//-----------------------------------------------------------------------
+// BEGIN WinServer class
+//-----------------------------------------------------------------------
+
+#if defined(SINGLE_CLIENT)
 WinServer::WinServer(char *name, int port) : Server(name, port)
+#else
+WinServer::WinServer(char *name, int port, int maxClients)
+: Server(name, port, maxClients)
+#endif
 {
   _screenDisp = DeviseDisplay::DefaultDisplay();
   _fileDisp = DeviseDisplay::GetPSDisplay();
@@ -466,26 +696,81 @@ WinServer::~WinServer()
 
 void WinServer::MainLoop()
 {
-  while(1) {
-    WaitForConnection();
-
-    while(_clientFd >= 0) {
-      int wfd = _screenDisp->fd();
-      fd_set fdset;
-      memset(&fdset, 0, sizeof fdset);
-      FD_SET(wfd, &fdset);
-      FD_SET(_clientFd, &fdset);
-      
-      int maxFdCheck = (wfd > _clientFd ? wfd : _clientFd);
-      int numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
-      if (numFds < 0)
-	perror("select");
-      DOASSERT(numFds > 0, "Internal error");
-
-      if (FD_ISSET(_clientFd, &fdset))
-	ReadCmd();
-      else
-	_screenDisp->InternalProcessing();
+    int wfd;
+    fd_set fdset;
+    int maxFdCheck;
+    int numFds;
+    while (1)
+    {
+	WaitForConnection();
+#if defined(SINGLE_CLIENT)
+	while (_clientFd >= 0)
+#else
+	while (_numClients > 0)
+#endif
+	{
+	    //
+	    // Initialize the fd set
+	    //
+	    memset(&fdset, 0, sizeof fdset);
+	    wfd = _screenDisp->fd();
+	    FD_SET(wfd, &fdset);
+#if defined(SINGLE_CLIENT)
+	    FD_SET(_clientFd, &fdset);
+	    maxFdCheck = (wfd > _clientFd ? wfd : _clientFd);
+#else
+	    FD_SET(_listenFd, &fdset);
+	    maxFdCheck = (wfd > _listenFd ? wfd :_listenFd);
+	    for (int i = 0; i < _maxClients; i++)
+	    {
+		if (_clients[i].valid)
+		{
+		    FD_SET(_clients[i].fd, &fdset);
+		    if (_clients[i].fd > maxFdCheck)
+		    {
+			maxFdCheck = _clients[i].fd;
+		    }
+		}
+	    }
+#endif
+	    //
+	    // select()
+	    //
+	    numFds = select(maxFdCheck + 1, &fdset, 0, 0, 0);
+	    if (numFds < 0)
+	    {
+		perror("select");
+	    }
+	    DOASSERT(numFds > 0, "Internal error");
+#if defined(SINGLE_CLIENT)
+	    //
+	    // Process the client command
+	    //
+	    if (FD_ISSET(_clientFd, &fdset))
+	    {
+		ReadCmd();
+	    }
+#else
+	    //
+	    // Handle a new connection request
+	    //
+	    if (FD_ISSET(_listenFd, &fdset))
+	    {
+		WaitForConnection();
+	    }
+	    //
+	    // Process commands on all client fds
+	    //
+	    ExecClientCmds(&fdset);
+#endif
+	    //
+	    // Process window events
+	    //
+	    if (FD_ISSET(wfd, &fdset))
+	    {
+                _screenDisp->InternalProcessing();
+	    }
+	}
     }
-  }
 }
+

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/23 00:24:01  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.2  1996/10/18 15:19:44  jussi
   Added CompDate class.
 
@@ -77,76 +83,131 @@ class TclClient : public Client {
   Tk_Window _mainWindow;                // Tcl main window
 };
 
+//-----------------------------------------------------------------------
+// BEGIN Server class
+//-----------------------------------------------------------------------
+
+#if !defined(SINGLE_CLIENT)
+//
+// Each Server can serve multiple clients. Client state is stored
+// in a ClientInfo object. A Server instance will have an array of
+// ClientInfo objects, indexed by ClientID values.
+//
+class ClientInfo
+{
+  public:
+    ClientInfo()
+    : fd(-1), valid(false)
+    {}
+    int fd;
+    bool valid;
+};
+typedef int ClientID;
+#endif
+
 class Server {
- public:
-  Server(char *name, int port);
-  virtual ~Server();
 
-  virtual void MainLoop();              // main loop of server
+  public:
 
- protected:
-  virtual void DoAbort(char *reason);   // print error message and abort
-  virtual void WaitForConnection();     // wait for client connection
-  virtual void BeginConnection() {}     // executed when connection starts
-  virtual void EndConnection() {}       // executed when connection ends
-  virtual void ReadCmd();               // read client command
-  virtual void ProcessCmd(int argc,
-			  char **argv); // process client command
-  virtual void CloseClient();           // close client connection
+#if defined(SINGLE_CLIENT)
+    Server(char *name, int port);
+#else
+    Server(char *name, int port, int maxClients = 10);
+#endif
+    virtual ~Server();
+    virtual void MainLoop();              // main loop of server
 
-  char *_name;                          // name of server
-  int _port;                            // port number of server
-  int _listenFd;                        // fd of listen socket
-  int _clientFd;                        // fd of client socket
+  protected:
+    virtual void DoAbort(char *reason);   // print error message and abort
+    virtual void WaitForConnection();     // wait for client connection
+    virtual void ReadCmd();               // read client command
+    char *_name;                          // name of server
+    int _port;                            // port number of server
+    int _listenFd;                        // fd of listen socket
+  private:
+    void InitializeListenFd();             // initialize the fd for listening
+    
+#if defined(SINGLE_CLIENT)
+  protected:
+    virtual void BeginConnection() {}     // executed when connection starts
+    virtual void EndConnection() {}       // executed when connection ends
+    virtual void ProcessCmd(int argc,
+			    char **argv); // process client command
+    virtual void CloseClient();           // close client connection
+    int _clientFd;                        // fd of client socket
+#else
+  protected:
+    virtual void BeginConnection(ClientID)
+    {}                                     // executed when a connection starts
+    virtual void EndConnection(ClientID)
+    {}                                     // executed when a connection ends
+    virtual void ExecClientCmds(fd_set *); // run incoming client commands
+    virtual void ProcessCmd(ClientID,
+			    int argc,
+			    char **argv);  // process a single client command
+    virtual void CloseClient(ClientID);    // close client connection
+    ClientInfo *_clients;                  // array of ClientInfo structs
+    int _numClients;                       // current number of clients
+    int _maxClients;                       // maximum number of clients
+  private:
+    int FindIdleClientSlot();              // search for slot in client array
+#endif
 };
 
 class WinServer : public Server, public WindowRepCallback {
- public:
-  WinServer(char *name, int port);
-  virtual ~WinServer();
 
-  virtual void MainLoop();              // main loop of server
+  public:
+
+#if defined(SINGLE_CLIENT)
+    WinServer(char *name, int port);
+#else
+    WinServer(char *name, int port, int maxClients = 10);
+#endif
+    virtual ~WinServer();
+    virtual void MainLoop();              // main loop of server
 
  protected:
-  /* Draw in the exposed area */
-  virtual void HandleExpose(WindowRep *w, int x, int y,
-			    unsigned width, unsigned height) {}
 
+    /* Draw in the exposed area */
+    virtual void HandleExpose(WindowRep *w, int x, int y,
+			      unsigned width, unsigned height) {}
+    
 #ifdef RAWMOUSEEVENTS
-  /* Handle button event */
-  virtual void HandleButton(WindowRep *w, int x, int y,
-			    int button, int state, int type) {}
+    /* Handle button event */
+    virtual void HandleButton(WindowRep *w, int x, int y,
+			      int button, int state, int type) {}
 #else
-  /* Handle button press event */
-  virtual void HandlePress(WindowRep *w, int xlow,
-			   int ylow, int xhigh, int yhigh,
-			   int button) {}
+    /* Handle button press event */
+    virtual void HandlePress(WindowRep *w, int xlow,
+			     int ylow, int xhigh, int yhigh,
+			     int button) {}
 #endif
-
-  /* Handle resize */
-  virtual void HandleResize(WindowRep *w, int xlow,
-			    int ylow, unsigned width,
-			    unsigned height) {}
-
-  /* Handle keypress */
-  virtual void HandleKey(WindowRep *w, char key, int x, int y) {}
-
+    
+    /* Handle resize */
+    virtual void HandleResize(WindowRep *w, int xlow,
+			      int ylow, unsigned width,
+			      unsigned height) {}
+    
+    /* Handle keypress */
+    virtual void HandleKey(WindowRep *w, char key, int x, int y) {}
+    
 #ifndef RAWMOUSEEVENTS
-  /* Handle pop-up */
-  virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button,
-			      char **&msgs, int &numMsgs) {
-    return false;
-  }
+    /* Handle pop-up */
+    virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button,
+				char **&msgs, int &numMsgs) {
+	return false;
+    }
 #endif
+    
+    /* Handle map/unmap info.
+       mapped : means window has been mapped.
+       unmapped: means window has been unmapped. (This can also mean
+       that window has been iconified) */
+    virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped) {}
+    
+    DeviseDisplay *_screenDisp;            // display to draw to screen
+    DeviseDisplay *_fileDisp;              // display to draw to file
 
-  /* Handle map/unmap info.
-     mapped : means window has been mapped.
-     unmapped: means window has been unmapped. (This can also mean
-     that window has been iconified) */
-  virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped) {}
-
-  DeviseDisplay *_screenDisp;            // display to draw to screen
-  DeviseDisplay *_fileDisp;              // display to draw to file
 };
 
 #endif
