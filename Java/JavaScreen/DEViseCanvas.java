@@ -1141,7 +1141,7 @@ public class DEViseCanvas extends Container
 
             writer.write("\"Bond Limit\" 2.3 2.7\n");
 
-            writer.close();
+            //writer.close();
 
             String string = writer.toString();
 
