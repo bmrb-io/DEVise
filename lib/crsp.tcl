@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/11/10 22:01:25  jussi
+#	Another small change.
+#
 #	Revision 1.2  1995/11/10 22:00:44  jussi
 #	Minor fix.
 #
@@ -146,10 +149,10 @@ proc crsp_updateFirmListBox {listb} {
     set n 0
     foreach sel $crsp_seclst {
 	set name [string trim [lindex $sel 6] "\""]
-	set cusip [lindex $sel 2]
+	set cusip [lindex $sel 3]
 	set begindate [lindex $sel 7]
 	set enddate [lindex $sel 8]
-	set listitem [format "%-32.32s  %-6d  %-4.4s  %-4.4s" \
+	set listitem [format "%-32.32s  %-6.6s  %-4.4s  %-4.4s" \
 		$name $cusip $begindate $enddate]
 	$listb insert end $listitem
 	if {$n % 500 == 0} { update }
