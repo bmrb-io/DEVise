@@ -24,6 +24,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/03/11 18:25:39  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.2  1998/01/08 19:44:00  wenger
   Updated copyright to 1998.
 
@@ -76,6 +82,12 @@ glDepthFunc(GLenum func)
 
 void
 glDisable(GLenum cap)
+{
+}
+
+void
+glDrawPixels( GLsizei width, GLsizei height, GLenum format,
+    GLenum type, const GLvoid *pixels )
 {
 }
 
@@ -178,6 +190,12 @@ glRasterPos3d(GLdouble x, GLdouble y, GLdouble z)
 }
 
 void
+glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height,
+    GLenum format, GLenum type, GLvoid *pixels)
+{
+}
+
+void
 glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 {
 }
@@ -270,6 +288,11 @@ glXWaitGL(void)
 
 void
 glXWaitX(void)
+{
+}
+
+void
+gluDeleteQuadric(GLUquadricObj *state)
 {
 }
 
