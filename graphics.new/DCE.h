@@ -7,6 +7,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/09/26 19:00:21  jussi
+  Added virtual semaphore class SemaphoreV which tries to get
+  around the limited number of semaphore vectors allowed by
+  the operating system. Various bug fixes.
+
   Revision 1.3  1996/09/08 05:35:20  jussi
   Added semaphore number as parameter to Semaphore::test().
 
@@ -116,6 +121,7 @@ public:
 
   int getValue(int sem = 0) {           // get value of semaphore
 #ifdef __linux
+    static const union semun NullSemUnion = { 0 };
     int result = semctl(id, sem, GETVAL, NullSemUnion);
 #else
     int result = semctl(id, sem, GETVAL, 0);
