@@ -2486,6 +2486,10 @@ Num Date        Status  Description
 628 12/21/00	OPEN	JavaScreen: when running as an application under				Linux, redrawing text is incredibly slow when JS
 			window is hidden and then exposed. (rkw)
 
+629 12/22/00	OPEN	JavaScreen: closing a session in CGI mode when
+			running applet in Netscape produces a communication
+			error. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
