@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/02/02 21:54:25  jussi
+  Removed reference to HightlightColor. All highlighting is
+  done with xor'ing so foreground color won't matter.
+
   Revision 1.5  1996/01/30 21:15:27  jussi
   Changed HighlightColor.
 
@@ -71,7 +75,7 @@ const Color DeepSkyBlueColor	= 31;
 const Color SkyBlueColor	= 32;
 const Color RedColor1		= 33;
 const Color RedColor2		= 34;
-const Color GreenColor1		= 35;
+const Color DarkSeaGreen	= 35;
 const Color GreenColor2		= 36;
 const Color BlueColor1		= 37;
 const Color BlueColor2		= 38;

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.73  1996/06/16 01:54:43  jussi
+#	Added PolylineShape, PolylineFileShape, and TextLabelShape.
+#
 #	Revision 1.72  1996/06/15 14:26:01  jussi
 #	Added View/Foreground and View/Background menu commands.
 #
@@ -286,7 +289,7 @@ set DEViseColors \
 	{21 LightCoral} {22 AntiqueWhite} {23 LemonChiffon} {24 LightGray}\
 	{25 Lavender} {26 LavenderBlush} {27 MistyRose} {28 NavyBlue} \
 	{29 SlateBlue} {30 MediumBlue} {31 DeepSkyBlue} {32 SkyBlue} \
-	{33 red1} {34 red2} {35 green1} {36 green2} {37 blue1} \
+	{33 red1} {34 red2} {35 DarkSeaGreen} {36 green2} {37 blue1} \
 	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
 
 set DEViseShapes \

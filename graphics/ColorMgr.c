@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/16 19:49:38  jussi
+  Replaced assert() calls with DOASSERT().
+
   Revision 1.5  1996/01/30 00:01:57  jussi
   Added a few colors and removed duplicate ones.
 
@@ -76,7 +79,7 @@ static struct {
   { SkyBlueColor, "SkyBlue" },
   { RedColor1, "red1" },
   { RedColor2, "red2" },
-  { GreenColor1, "green1" },
+  { DarkSeaGreen, "DarkSeaGreen" },
   { GreenColor2, "green2" },
   { BlueColor1, "blue1" },
   { BlueColor2, "blue2" },
