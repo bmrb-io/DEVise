@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.224  2000/06/16 18:28:32  wenger
+  Fixed bug 598 (JavaScreen crashing on bmrb/4096_side3f.ds session).
+
   Revision 1.223  2000/05/16 14:35:53  wenger
   Fixed minor typo.
 
@@ -1065,6 +1068,7 @@ Boolean View::_drawCursors = true;
 Boolean View::_jsCursors = false;
 Boolean View::_showNames = false;
 Boolean View::_drawingEnabled = true;
+Boolean View::_globalShowMouseLocation = true;
 
 //******************************************************************************
 // Constructors and Destructors
@@ -1150,6 +1154,8 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_isHighlightView = false;
 
 	_displaySymbol = true;
+
+	_showMouseLocation = true;
 
 #if 0
 	_filter.camera.x_ = 4.6;
@@ -4609,6 +4615,8 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
   }
   printf(")\n");
 #endif
+
+  if (!_showMouseLocation || !_globalShowMouseLocation) return;
 
   Coord dataX = 0.0;
   Coord dataY = 0.0;

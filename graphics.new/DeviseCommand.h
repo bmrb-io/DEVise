@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.56  2000/03/30 16:27:12  wenger
+  Added printInstances command; destroy command now reports an error
+  if the instance is not found.
+
   Revision 1.55  2000/02/23 21:31:11  wenger
   Re-implemented session description capability.
 
@@ -1931,6 +1935,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(printInstances)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setShowMouseLocation)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getShowMouseLocation)
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

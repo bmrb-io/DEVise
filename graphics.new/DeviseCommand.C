@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.101  2000/04/18 16:47:47  wenger
+  Removed compile dependencies on DTE header files.
+
   Revision 1.100  2000/03/30 16:27:11  wenger
   Added printInstances command; destroy command now reports an error
   if the instance is not found.
@@ -6494,6 +6497,67 @@ IMPLEMENT_COMMAND_BEGIN(printInstances)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in printInstances\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setShowMouseLocation)
+    // Arguments: [view name] <enable (0 or 1)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2 || argc == 3) {
+	    if (argc == 2) {
+		    Boolean show = atoi(argv[1]);
+			View::SetGlobalShowMouseLocation(show);
+		} else {
+            View *view = (View *)_classDir->FindInstance(argv[1]);
+            if (!view) {
+    	        ReturnVal(API_NAK, "Cannot find view");
+    	        return -1;
+            }
+		    Boolean show = atoi(argv[2]);
+			view->SetShowMouseLocation(show);
+		}
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setShowMouseLocation\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getShowMouseLocation)
+    // Arguments: [view name]
+    // Returns: <enabled (0 or 1)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1 || argc == 2) {
+		Boolean show;
+	    if (argc == 1) {
+		    show = View::GetGlobalShowMouseLocation();
+		} else {
+            View *view = (View *)_classDir->FindInstance(argv[1]);
+            if (!view) {
+    	        ReturnVal(API_NAK, "Cannot find view");
+    	        return -1;
+            }
+		    show = view->GetShowMouseLocation();
+		}
+
+		char buf[100];
+		sprintf(buf, "%d", show ? 1 : 0);
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getShowMouseLocation\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

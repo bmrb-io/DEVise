@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.213  2000/03/20 21:08:12  wenger
+#	Added mouse/key help.
+#	
 #	Revision 1.212  2000/02/23 21:31:18  wenger
 #	Re-implemented session description capability.
 #	
@@ -1079,6 +1082,7 @@ source $libdir/nice_axes.tcl
 source $libdir/fixed_cursor.tcl
 source $libdir/action_disable.tcl
 source $libdir/view_help.tcl
+source $libdir/show_mouse.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1691,6 +1695,8 @@ menu .mbar.view.menu.statMenu -tearoff 0
 .mbar.view.menu add command -label "Auto Filter Update..." -command EditAutoFilter
 .mbar.view.menu add command -label "Disable Actions..." \
   -command EditActionDisable
+.mbar.view.menu add command -label "Show Mouse Location..." \
+  -command EditShowMouse
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.107  2000/03/21 17:12:26  wenger
+  Removed various unused methods from the View class.
+
   Revision 1.106  2000/03/21 16:24:47  wenger
   'f' or 'F' key in a view now flips the appropriate pile or stack, if
   there is one.
@@ -858,6 +861,13 @@ class View : public ViewWin
 	const char *GetViewHelp() { return _viewHelp; }
 	void SetViewHelp(const char *helpStr);
 
+	Boolean GetShowMouseLocation() { return _showMouseLocation; }
+	void SetShowMouseLocation(Boolean show) { _showMouseLocation = show; }
+	static Boolean GetGlobalShowMouseLocation() {
+	    return _globalShowMouseLocation; }
+	static void SetGlobalShowMouseLocation(Boolean show) {
+	    _globalShowMouseLocation = show; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -1062,6 +1072,8 @@ protected:
 		static Boolean _drawingEnabled;
 		
 		const char *_viewHelp;
+		Boolean _showMouseLocation;
+		static Boolean _globalShowMouseLocation;
 
     private:
         ObjectValid _objectValid;

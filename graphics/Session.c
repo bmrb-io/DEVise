@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.84  2000/04/19 16:16:28  wenger
+  Found and fixed bug 579 (crash if opening session fails); found bug
+  580; better handling of session opening errors on the Tcl side;
+  improved WindowVisible and WindowExists procedures.
+
   Revision 1.83  2000/04/07 17:36:00  wenger
   String file path in session file is specified with $DEVISE_SESSION.
 
@@ -1561,6 +1566,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getViewHelp", "setViewHelp", instance,
       NULL, NULL, true);
 
+  status += SaveParams(saveData, "getShowMouseLocation",
+      "setShowMouseLocation", instance, NULL, NULL, true);
+
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
@@ -1981,7 +1989,8 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
     const char *arg0, const char *arg1, const char *arg2, Boolean addBraces)
 {
 #if defined(DEBUG)
-  printf("Session::SaveParams(%s)\n", arg0);
+  printf("Session::SaveParams(%s, %s, %s, %s, %s)\n", getCommand, setCommand,
+      arg0, arg1 ? arg1 : "null", arg2 ? arg2 : "null");
 #endif
 
   DevStatus status = StatusOk;

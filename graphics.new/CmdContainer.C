@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.62  2000/03/30 16:27:11  wenger
+  Added printInstances command; destroy command now reports an error
+  if the instance is not found.
+
   Revision 1.61  2000/02/23 21:31:07  wenger
   Re-implemented session description capability.
 
@@ -624,6 +628,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setSessionDesc)
 	REGISTER_COMMAND(getSessionDesc)
 	REGISTER_COMMAND(printInstances)
+	REGISTER_COMMAND(setShowMouseLocation)
+	REGISTER_COMMAND(getShowMouseLocation)
 }
 
 CmdContainer::~CmdContainer()
