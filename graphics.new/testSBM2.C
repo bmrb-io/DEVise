@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/12 17:23:41  jussi
+  Renamed SBufMgr class to CacheMgr and MemPool to MemMgr. This is
+  to reflect the new terms (cache manager, memory manager) used in
+  the documentation.
+
   Revision 1.4  1996/11/11 15:51:39  jussi
   Names of IOTask classes have changed.
 
@@ -138,11 +143,10 @@ void ReaderP(CacheMgr *cacheMgr, IOTask *task, int fileSize)
                 exit(1);
             }
             assert(page);
-            if (MemMgr::Instance()->Release(MemMgr::Buffer, page) < 0) {
+            if (MemMgr::Instance()->Deallocate(MemMgr::Buffer, page) < 0) {
                 perror("Reader dealloc");
                 exit(1);
             }
-            assert(!page);
 #if defined(THREAD_TASK) && defined(SOLARIS)
             // Circumvent stupid scheduling policy in Solaris thread package
             thr_yield();
