@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/02/26 16:31:42  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.10  1997/02/03 19:45:34  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -72,6 +75,8 @@
 
 //#define DEBUG
 
+Boolean RecordLink::_disableUpdates = false;
+
 static const int RecordChunkSize = 1024;
 
 static char *MakeFileName(char *linkname)
@@ -97,8 +102,8 @@ static int RecordRangeCompare(const void *r1, const void *r2)
 RecordLink::RecordLink(char *name, VisualFlag flag, RecordLinkType type) :
 	VisualLink(name, flag)
 {
-#ifdef DEBUG
-  printf("New record link %s created\n", name);
+#if defined(DEBUG)
+  printf("RecordLink::RecordLink(%s)\n", name);
 #endif
 
   _file = 0;
@@ -115,6 +120,9 @@ RecordLink::RecordLink(char *name, VisualFlag flag, RecordLinkType type) :
 
 RecordLink::~RecordLink()
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::~RecordLink()\n", _name);
+#endif
   if (_masterView)
     _masterView->DropAsMasterView(this);
 
@@ -131,6 +139,9 @@ RecordLink::~RecordLink()
 
 void RecordLink::SetMasterView(ViewGraph *view)
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::SetMasterView()\n", _name);
+#endif
   if (_masterView)
     _masterView->DropAsMasterView(this);
 
@@ -141,6 +152,9 @@ void RecordLink::SetMasterView(ViewGraph *view)
 }
 Boolean RecordLink::CheckTData(ViewGraph *view, Boolean isMaster) 
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::CheckTData()\n", _name);
+#endif
   ViewGraph *mview, *sview;
   TDataMap *mmap, *smap;
   mmap = smap  = NULL;
@@ -183,6 +197,17 @@ Boolean RecordLink::CheckTData(ViewGraph *view, Boolean isMaster)
 
 void RecordLink::Initialize()
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::Initialize()\n", _name);
+#endif
+
+  if (_disableUpdates) {
+#if defined(DEBUG)
+  printf("  record link updates disabled -- returning\n");
+#endif
+    return;
+  }
+
   if (_file) {
 #ifdef DEBUG
     printf("Closing record link file %s from last query\n", _file->GetName());
@@ -220,6 +245,17 @@ void RecordLink::Initialize()
 
 void RecordLink::InsertRecs(RecId recid, int num)
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::InsertRecs()\n", _name);
+#endif
+
+  if (_disableUpdates) {
+#if defined(DEBUG)
+  printf("  record link updates disabled -- returning\n");
+#endif
+    return;
+  }
+
 #ifdef DEBUG
   printf("Adding record range [%ld,%ld], now at %d\n",
 	 recid, recid + num - 1, _num);
@@ -247,6 +283,9 @@ void RecordLink::InsertRecs(RecId recid, int num)
 
 int RecordLink::FetchRecs(RecId recid, RecId &rec, int &num)
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::FetchRecs()\n", _name);
+#endif
   // if no file has been opened by the master yet, return EOF
   if (!_file)
     return 0;
@@ -266,6 +305,17 @@ int RecordLink::FetchRecs(RecId recid, RecId &rec, int &num)
 
 void RecordLink::Done()
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::Done()\n", _name);
+#endif
+
+  if (_disableUpdates) {
+#if defined(DEBUG)
+  printf("  record link updates disabled -- returning\n");
+#endif
+    return;
+  }
+
   if (_num > 0)
     FlushToDisk();
 
@@ -312,6 +362,9 @@ void RecordLink::Abort()
 
 void RecordLink::InsertView(ViewGraph *view)
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::InsertView()\n", _name);
+#endif
   VisualLink::InsertView(view);
   view->AddAsSlaveView(this);
 }
@@ -321,7 +374,7 @@ void RecordLink::InsertView(ViewGraph *view)
 bool RecordLink::DeleteView(ViewGraph *view)
 {
 #if defined(DEBUG) 
-  printf("RecordLink::DeleteView(0x%p, 0x%p)\n", this, view);
+  printf("RecordLink(%s)::DeleteView(0x%p, 0x%p)\n", _name, this, view);
 #endif
   if( view == _masterView ) {
       view->DropAsMasterView(this);
@@ -337,6 +390,9 @@ bool RecordLink::DeleteView(ViewGraph *view)
 
 void RecordLink::FlushToDisk()
 {
+#if defined(DEBUG)
+  printf("RecordLink(%s)::FlushToDisk()\n", _name);
+#endif
   DOASSERT(_file, "Invalid file");
 
 #ifdef DEBUG

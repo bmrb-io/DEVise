@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/06/04 15:50:30  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.36  1997/05/30 20:42:27  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -203,6 +207,7 @@
 #include "Util.h"
 #include "PSDisplay.h"
 #include "ETkIfc.h"
+#include "RecordLink.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
@@ -268,6 +273,9 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
       printWinP = printWinP->_parent;
     }
 
+    /* Disable record links so printing doesn't force unnecessary redraws. */
+    RecordLink::DisableUpdates();
+
     DeviseDisplay *psDispP = DeviseDisplay::GetPSDisplay();
     if (!psDispP->OpenPrintFile(filename).IsComplete())
     {
@@ -299,7 +307,10 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
       psDispP->PrintPSTrailer();
       result += psDispP->ClosePrintFile();
       printf("Done generating print file\n");
+
     }
+    /* Re-enable record links. */
+    RecordLink::EnableUpdates();
   }
   else
 #endif
@@ -993,14 +1004,6 @@ ViewWin::PrintPS()
     DrawMargins();
     SetScreenOutput();
   }
-#endif
-#if 0//TEMPTEMP
-  int xVal, yVal;
-  unsigned int width, height;
-  RealGeometry(xVal, yVal, width, height);
-  Coord centerX = xVal + width / 2.0;
-  Coord centerY = yVal + height / 2.0;
-  _winReps.GetFileWinRep()->FillPixelRect(centerX, centerY, (Coord) width, (Coord) height);
 #endif
 
 #if defined(DEBUG)

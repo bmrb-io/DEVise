@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/06/18 15:33:00  wenger
+  Fixed bug 177; improved workaround of bug 137; incremented version
+  number (because of Unidata being added).
+
   Revision 1.16  1997/06/04 15:50:22  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -95,6 +99,7 @@
 #include "Init.h"
 #include "WinClassInfo.h"
 #include "ViewWin.h"
+#include "RecordLink.h"
 #endif
 
 DeviseDisplayList DeviseDisplay::_displays;
@@ -245,6 +250,9 @@ DeviseDisplay::ExportToPS(DisplayExportFormat format, char *filename)
     winBot);
 #endif
 
+  /* Disable record links so printing doesn't force unnecessary redraws. */
+  RecordLink::DisableUpdates();
+
   /* Open the output file and print the PostScript header. */
   if (!psDisplay->OpenPrintFile(filename).IsComplete()) {
     reportError("Can't open print file", errno);
@@ -284,6 +292,9 @@ DeviseDisplay::ExportToPS(DisplayExportFormat format, char *filename)
 
   result += psDisplay->ClosePrintFile();
   printf("Done generating print file\n");
+
+  /* Re-enable record links. */
+  RecordLink::EnableUpdates();
 
 #if defined(DEBUG)
   printf("  DeviseDisplay::ExportToPS(): ");

@@ -791,6 +791,10 @@ Num Date        Status  Description
 			result in an error message as opposed to a crash.
 			(rkw)
 
+192 06/23/97	FIXED	Load the demo session BankFace.tk, try to print
+			the display or the deposits2 window -- that window
+			is not printed correctly (and the window is erased
+			on the screen, if you print the display). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/02/26 16:31:43  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.5  1997/02/03 19:45:34  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -81,6 +84,9 @@ class RecordLink : public VisualLink {
   void SetLinkType(RecordLinkType type) { _linkType = type; }
   Boolean CheckTData(ViewGraph *view, Boolean isMaster);
 
+  static void EnableUpdates() { _disableUpdates = false; }
+  static void DisableUpdates() { _disableUpdates = true; }
+
  protected:
   void FlushToDisk();                   // write array contents to disk
 
@@ -93,6 +99,8 @@ class RecordLink : public VisualLink {
 
   ViewGraph   *_masterView;             // master of record link
   RecordLinkType _linkType;            // positive or negative
+
+  static Boolean _disableUpdates;	// disable all record links
 };
 
 #endif

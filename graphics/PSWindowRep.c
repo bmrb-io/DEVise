@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/06/13 18:07:26  wenger
+  Orientation is now working for text labels and fixed text labels.
+
   Revision 1.29  1997/05/21 22:09:56  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -1031,9 +1034,9 @@ void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
   height = MAX(height, minHeight);
 
   Coord x1 = x - width / 2;
-  Coord y1 = y - width / 2;
+  Coord y1 = y - height / 2;
   Coord x2 = x + width / 2;
-  Coord y2 = y + width / 2;
+  Coord y2 = y + height / 2;
 
   Coord tx1, ty1, tx2, ty2;
 

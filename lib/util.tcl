@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.47  1997/04/29 14:34:52  wenger
+#  User interface improvments: Quit and Close don't ask for confirmation
+#  if there is no session open; the file selection box gives better info
+#  as to what you are doing; Save and Save as aren't allowed if there is
+#  no session open; changed default print filename from
+#  /u/g/u/guangshu/public/html/pictures/map/ back to /tmp/devise again.
+#
 #  Revision 1.46  1997/04/21 23:11:02  guangshu
 #  Improved code of UniqueName.
 #
@@ -744,6 +751,9 @@ proc PrintView {} {
     pack .printdef.bot.but.ok .printdef.bot.but.cancel -side left -padx 7m
 
     tkwait visibility .printdef
+    # Grab here so user can't do something like resize windows during the
+    # printing process.
+    grab set .printdef
 }
 
 ##########################################################################

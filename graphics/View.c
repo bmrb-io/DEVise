@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.112  1997/06/04 15:50:29  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.111  1997/05/28 15:38:57  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -502,6 +506,7 @@
 #include "DevError.h"
 #include "Util.h"
 #include "View.h"
+#include "RecordLink.h"
 #if 0
 #include "DataSourceFixedBuf.h"
 #endif
@@ -755,6 +760,9 @@ void View::SetVisualFilter(VisualFilter &filter)
 	 _filter.xHigh, _filter.yHigh);
 #endif
 
+  /* Just in case record links didn't get re-enabled after printing. */
+  RecordLink::EnableUpdates();
+
   // check the new filter for safety & sanity
   if (is_safe(filter.xLow) && is_safe(filter.xHigh) &&
       is_safe(filter.yLow) && is_safe(filter.yHigh) &&
@@ -850,6 +858,9 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
 #if defined(DEBUG)
   printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
 #endif
+
+  /* Just in case record links didn't get re-enabled after printing. */
+  RecordLink::EnableUpdates();
 
 #if USE_BUG123_WORKAROUND
   /* If we have backing store, all Expose events should be for the whole
@@ -956,6 +967,9 @@ void View::SetPileMode(Boolean mode)
   _pileMode = mode;
   _pileViewHold = true;
 
+  /* Just in case record links didn't get re-enabled after printing. */
+  RecordLink::EnableUpdates();
+
   Refresh();
 }
 
@@ -968,6 +982,10 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
 #if defined(DEBUG)
   printf("view: setting geometry done....%d %d %u %u\n", x , y, wd, ht);
 #endif
+
+  /* Just in case record links didn't get re-enabled after printing. */
+  RecordLink::EnableUpdates();
+
   Refresh();
 }
 
@@ -1626,6 +1644,10 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
    * it wakes up the one after it, etc.  This is done to be sure that the
    * various views are drawn in the correct order.  RKW 1/7/97. */
 
+  /* Note: when we're printing, we shouldn't really have to refresh the
+   * next piled view here, but if we don't, things don't work right.
+   * RKW June 25, 1997. */
+
   if (_pileMode) {
     /* The piled view was actually drawn into this window */
     win = GetFirstSibling()->GetWindowRep();
@@ -2081,6 +2103,9 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
   printf("View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(), xlow, ylow,
     width, height);
 #endif
+
+  /* Just in case record links didn't get re-enabled after printing. */
+  RecordLink::EnableUpdates();
   
   /* is this a real size change? */
   if (_hasGeometry && _x == xlow && _y == ylow &&
