@@ -15,6 +15,11 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.24  1997/04/16 18:53:47  wenger
+#       Text labels can now show non-string attributes; fixed a bug in constant
+#       strings in mapping (non-terminated string); added constant attributes to
+#       GData attribute list; commented out some debug code in mapping dialog.
+#
 #       Revision 1.23  1997/04/11 18:49:30  wenger
 #       Added dashed line support to the cslib versions of WindowReps; added
 #       option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -321,9 +326,9 @@ proc UpdateMappingDialog { w curView } {
 
      if {$error > 0} {
 
-	set nextToLast [string length $tdata]
-	set nextToLast [expr $nextToLast - 2]
-	set tdata [string range $tdata 0 $nextToLast]
+#	set nextToLast [string length $tdata]
+#	set nextToLast [expr $nextToLast - 2]
+#	set tdata [string range $tdata 0 $nextToLast]
 
 	set sourcedef [DEVise dteShowCatalogEntry $tdata]
 # 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
