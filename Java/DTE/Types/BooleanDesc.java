@@ -26,10 +26,10 @@ public class BooleanDesc implements TypeDesc {
         if ( ! arg.getString( ).equals(name) )
 	    throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 
 
-        if ( opStr.equals("&&") ) 
+        if ( opStr.equals("AND") || opStr.equals("and") ) 
             return new BoolAndOp( );
 
-        if ( opStr.equals("||") ) 
+        if ( opStr.equals("OR") || opStr.equals("or") ) 
             return new BoolOrOp( );
 
 	throw new TypeCheckException(msg1+msg2+msg3+msg4+msg5); 
