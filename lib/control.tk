@@ -1,6 +1,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.7  1995/09/08 20:35:25  jussi
+#	Added definition of data source and size of new windows.
+#
 #	Revision 1.6  1995/09/07 22:59:41  jussi
 #	Implemented saving and loading sessions (new type) and automatic
 #	view creation.
@@ -35,7 +38,7 @@ set DEViseColors {{0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{22 blue} {23 orange} {24 LightGray} {25 red1} {26 red2} \
 	{27 green1} {28 green2} {29 blue1} {30 blue2} {31 gold1} {32 gold2} \
 	{33 blue1} {34 blue2} {35 blue3} {36 blue4}}
-set DEViseShapes  {{0 Rect} {1 RectX} {2 Bar}}
+set DEViseShapes {{0 Rect} {1 RectX} {2 Bar}}
 
 # global to control.tk: curView: current view selected.
 # lastView: last view selected.
@@ -44,9 +47,6 @@ set curView ""
 set lastView ""
 set historyWinOpened false
 # not reading files as template
-
-# global to control.tk: sessionModified
-set sessionModifiedVar false
 
 if { [info exists env(DEVISE_LIB)] } {
     set libdir $env(DEVISE_LIB)
@@ -64,18 +64,6 @@ source $libdir/dialogCkBut.tk
 source $libdir/dialogMapping.tk
 source $libdir/help.tk
 source $libdir/issm.tk
-
-# mark session modified
-proc sessionModified {} {
-    global sessionModifiedVar
-    set sessionModifiedVar true
-}
-
-# mark session clean of modifications
-proc sessionUnmodified {} {
-    global sessionModifiedVar
-    set sessionModifiedVar false
-}
 
 # abstract data type for dictionary
 # Insert name and val into dictionary. Return new dictionary.
@@ -140,12 +128,18 @@ proc GetClass { category instance } {
 }
 
 # All instances of tdata that we have
+# Form: {tdatafilebasename1 tdatafilebasename2 ...}
 proc TdataSet { } {
+    puts "TDataSet:"
+    puts [CategoryInstances "tdata" ]
     return [CategoryInstances "tdata" ]
 }
 
 # All instances of GData
+# Form: {gdataname1 gdataname2 ...}
 proc GdataSet { } {
+    puts "GDataSet:"
+    puts [CategoryInstances "mapping" ]
     return [ CategoryInstances "mapping" ]
 }
 
@@ -223,16 +217,16 @@ menu .mbar.import.menu
 .mbar.import.menu add command -label "Stock Data" -command issmMain
 .mbar.import.menu add command -label "SEQ Data" -command NotImplemented
 .mbar.import.menu add command -label "SQL Query" -command NotImplemented
-.mbar.import.menu add separator
-.mbar.import.menu add cascade -label "Experimental" -menu .mbar.import.menu.exp
-
-menu .mbar.import.menu.exp
-.mbar.import.menu.exp add command -label "Definitions" -command TestMacroDef
 
 menu .mbar.file.menu
 .mbar.file.menu add command -label "File" -command DoVisualizeFile
 .mbar.file.menu add command -label "TData" -command DoVisualizeTData
 .mbar.file.menu add command -label "GData" -command DoVisualizeGData
+.mbar.file.menu add separator
+.mbar.file.menu add cascade -label "Experimental" -menu .mbar.file.menu.exp
+
+menu .mbar.file.menu.exp
+.mbar.file.menu.exp add command -label "Definitions" -command TestMacroDef
 
 menu .mbar.view.menu
 .mbar.view.menu add command -label "Remove From Window" -command DoViewRemove
@@ -449,7 +443,7 @@ proc DoCreateTData { file type } {
     set params $dialogParamVar(params)
     set params [linsert $params 0 $file ]
     set cmd "DEVise create tdata $type $params"
-
+ 
     set result [ eval $cmd]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .createError "CreateError" \
@@ -457,8 +451,6 @@ proc DoCreateTData { file type } {
 		"" 0 {OK} ]
 	return
     }
-
-    sessionModified
 
     return $result
 }
@@ -510,7 +502,6 @@ proc DoSelectFile { } {
 		Please use Visualize/TData menu" "" 0 Continue]
 	return
     }
-
 
     # find file type (TData class name )
     while { 1 } {
@@ -929,6 +920,8 @@ proc DoActualCreateWindow { winType } {
 	return
     }
     set cmd "DEVise create window $winType $dialogParamVar(params)"
+    puts "create window cmd:"
+    puts $cmd
     set result [ eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .winError "winError" \
@@ -1500,8 +1493,6 @@ proc DoActualSave { infile } {
 
     ChangeStatus 0
     close $f
-
-    sessionUnmodified
 }
 
 proc DoSave { } {
@@ -3080,7 +3071,6 @@ proc TestMacroDef {} {
     global tdatas schemas maps mappings views links windows session modified
 
     MacroDefClear
-    source Test.tk
     set modified 0
     MacroDef
 }
@@ -3415,6 +3405,14 @@ proc MacroDefAutoActual {tdata x} {
     set window "$tdata Auto"
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
+	# ask DEVise to create window
+	set winType WinVertical
+	set result [DEVise create window $winType $window 0.1 0.3 0.5 0.5]
+	if {$result == ""} {
+	    dialog .windowError "Window Error" \
+		    "Error creating window $window" "" 0 OK
+	    return ""
+	}
 	set windows($window) {0.1 0.3 0.5 0.5}
     }
     
@@ -3425,6 +3423,13 @@ proc MacroDefAutoActual {tdata x} {
     set linkname "$x link"
     set err [catch {set exists $links($linkname)}]
     if {$err > 0} {
+	# ask DEVise to create link
+	set result [DEVise create link Visual_Link $linkname 1]
+	if {$result == ""} {
+	    dialog .linkError "Link Error" \
+		    "Error creating link $linkname" "" 0 OK
+	    return ""
+	}
 	set defn [list 1 0 0 0 0 0 0]
 	set links($linkname) $defn
     }
@@ -3505,12 +3510,13 @@ proc MacroDefTdata {m default} {
 	.map.but.auto configure -state normal
     }
 
-    $m.mbar.menu add command -label "Other..." \
+    $m.mbar.menu add command -label "Open..." \
 	    -command {
 	set sname [DefSource]
 	if {$sname != ""} {
 	    # fix this: .map.tdata s.b. $m
 	    MacroDefTdata .map.tdata $sname
+	    MacroDefMaps .map.gdata $none
 	    set modified 1
 	}
     }
@@ -3702,7 +3708,6 @@ proc DefSource {} {
     if {$source == ""} { return }
     if {![file isfile $source]} { return }
 
-    set schema ""
     foreach tdata $tdatas {
 	set name [lindex $tdata 0]
 	set file [lindex $tdata 1]
@@ -3716,40 +3721,56 @@ proc DefSource {} {
 	}
     }
 
-    set fsBox(pattern) *.schema
-    set schema [FSBox]
-
+    set schemaTypes [DEVise get tdata]
+    set schema ""
+    if {![llength $schemaTypes]} {
+	set schema [ImportFileType]
+    } else {
+	set fname [file tail $source]
+	set but [dialogList .schemaType "Schema" \
+		"Select schema type for file $fname." \
+		"" 2 {OK New Cancel} $schemaTypes]
+	if {!$but} {
+	    set schema $dialogListVar(selected)
+	} elseif {$but == 1} {
+	    set schema [ImportFileType]
+	}
+    }
     if {$schema == ""} { return }
-    if {![file isfile $schema]} { return }
+
+    set err [catch {set sdef $maps($schema)}]
+    if {$err > 0} {
+	set maps($schema) ""
+    }
 
     toplevel .source
     wm minsize .source 400 200
     wm maxsize .source 1000 200
     wm title .source "Define Source"
-    wm geometry .source =750x200+100+100
+    wm geometry .source =400x200+100+100
     selection clear .source
 
     label .source.label -text "Enter name of data source"
     frame .source.mid -relief groove -borderwidth 2
-    frame .source.but -relief groove -borderwidth 2
+    frame .source.but
     pack .source.label .source.mid .source.but -side top -pady 3m \
 	    -fill both -expand 1
 
-    frame .source.left -relief groove -borderwidth 2
-    frame .source.right -relief groove -borderwidth 2
+    frame .source.left
+    frame .source.right
     pack .source.left -in .source.mid -side left
-    pack .source.right -in .source.mid -side left -fill x -expand 1
+    pack .source.right -in .source.mid -side left -padx 3m -fill x -expand 1
 
-    label .source.left.sname -text "Source name" -width 12
-    label .source.left.source -text "Source file" -width 12
-    label .source.left.schema -text "Schema file" -width 12
+    label .source.left.sname -text "Source name" -width 15
+    label .source.left.source -text "Source file" -width 15
+    label .source.left.schema -text "Schema" -width 15
     pack .source.left.sname -side top -fill x -pady 3m
     pack .source.left.source .source.left.schema -side top -fill x
 
-    set sname ""
-    entry .source.right.sname -relief sunken -textvariable sname -width 20
-    label .source.right.source -text $source -width 60 -anchor w
-    label .source.right.schema -text $schema -width 60 -anchor w
+    set sname [file tail $source]
+    entry .source.right.sname -relief sunken -textvariable sname
+    label .source.right.source -text [file tail $source] -anchor w
+    label .source.right.schema -text $schema -anchor w
     pack .source.right.sname -side top -fill x -pady 3m
     pack .source.right.source .source.right.schema -side top -fill x
 
@@ -3782,13 +3803,16 @@ proc DefSource {} {
     tkwait window .source
 
     if {$sname != ""} {
-	lappend tdatas [list $sname $source]
-	set err [catch {set sdef $maps($schema)}]
-	if {$err > 0} {
-	    # read schema here and put it in $sdef
-	    set sdef "{Xattr double 1} {Yattr int 0}"
-	    set maps($schema) ""
+	# ask DEVise to create tdata
+	set result [DEVise create tdata $schema $source $sname]
+	if {$result == ""} {
+	    set fname [file tail $source]
+	    dialog .fileError "File Error" \
+		    "Error reading file $fname" "" 0 OK
+	    return ""
 	}
+	set sdef [DEVise getSchema $sname]
+	lappend tdatas [list $sname $source]
 	set schemas($sname) [list $schema $sdef]
     }
 
@@ -3858,8 +3882,6 @@ proc DefWindow {} {
 			"Window $winname exists already." \
 			"" 0 {OK}
 	    } else {
-		set defn [list $x $y $w $h]
-		set windows($winname) $defn
 		destroy .def
 	    }
 	}
@@ -3874,6 +3896,19 @@ proc DefWindow {} {
     tkwait visibility .def
     grab set .def
     tkwait window .def
+
+    if {$winname != ""} {
+	# ask DEVise to create window
+	set winType WinVertical
+	set result [DEVise create window $winType $winname $x $y $w $h]
+	if {$result == ""} {
+	    dialog .windowError "Window Error" \
+		    "Error creating window $winname" "" 0 OK
+	    return ""
+	}
+	set defn [list $x $y $w $h]
+	set windows($winname) $defn
+    }
 
     return $winname
 }
@@ -4127,8 +4162,7 @@ proc DefView {} {
     return $viewname
 }
 proc DefLink {} {
-    global links
-    global linkname x y color shape size pattern orientation
+    global links x y color shape size pattern orient linkname
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
@@ -4148,7 +4182,7 @@ proc DefLink {} {
     set shape 0
     set size 0
     set pattern 0
-    set orientation 0
+    set orient 0
 
     label .def.label -text "Enter link parameters"
     frame .def.link
@@ -4165,10 +4199,10 @@ proc DefLink {} {
     checkbutton .def.link.shape -text Shape -variable shape -anchor w
     checkbutton .def.link.size -text Size -variable size -anchor w
     checkbutton .def.link.pattern -text Pattern -variable pattern -anchor w
-    checkbutton .def.link.orientation -text Orientation \
-	    -variable orientation -anchor w
+    checkbutton .def.link.orient -text Orientation \
+	    -variable orient -anchor w
     pack .def.link.x .def.link.y .def.link.color .def.link.shape \
-	    .def.link.size .def.link.pattern .def.link.orientation \
+	    .def.link.size .def.link.pattern .def.link.orient \
 	    -side top -fill x -expand 1
 
     label .def.name.label -text "Name"
@@ -4189,8 +4223,6 @@ proc DefLink {} {
 			"Link $linkname exists already." \
 			"" 0 {OK}
 	    } else {
-		set defn [list $x $y $color $shape $size $pattern $orientation]
-		set links($linkname) $defn
 		destroy .def
 	    }
 	}
@@ -4205,6 +4237,20 @@ proc DefLink {} {
     tkwait visibility .def
     grab set .def
     tkwait window .def
+
+    if {$linkname != ""} {
+	# ask DEVise to create link
+	set flag [expr $x | ($y << 1) | ($color << 2) | ($size << 3) | \
+		       ($pattern << 4) | ($orient << 5) | ($shape << 6)]
+	set result [DEVise create link Visual_Link $linkname $flag]
+	if {$result == ""} {
+	    dialog .linkError "Link Error" \
+		    "Error creating link $linkname" "" 0 OK
+	    return ""
+	}
+	set defn [list $x $y $color $shape $size $pattern $orient]
+	set links($linkname) $defn
+    }
 
     return $linkname
 }
