@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/30 15:58:46  jussi
+  Added #ifdef USE_SELECT which can be used to disable the use
+  of select(). The display update problem still plagues the
+  system when select() is used. The query processor also seems
+  slower.
+
   Revision 1.10  1996/04/20 19:52:07  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead
@@ -217,6 +223,9 @@ public:
 
   /* Cleanup all dispatchers */
   static void Cleanup() {
+  // Temporary hack..
+  	exit(0);
+
     for (int index = _dispatchers.InitIterator();_dispatchers.More(index);) {
       Dispatcher *dispatcher = _dispatchers.Next(index);
       dispatcher->DoCleanup();

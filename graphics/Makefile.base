@@ -5,10 +5,10 @@ CC = g++
 #	-DGRAPHICS: set this to draw grpahics. Don't set if no graphics
 #		is to be sent to xlib. file affected: XWindowRep.c
 
-CFLAGS = $(ARCH_FLAGS)  -Wall -Wno-unused -O -DUNIX -DGRAPHICS \
+CFLAGS = $(ARCH_FLAGS)   -Wall -Wno-unused -O -DUNIX -DGRAPHICS \
 	-fexternal-templates
 
-LD = ld
+LD = ld 
 
 .c.o:
 	$(CC) -c $(CFLAGS) $<

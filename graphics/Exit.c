@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/22 21:10:42  jussi
+  Error message printed to console includes file name and line
+  number.
+
   Revision 1.4  1996/04/16 19:45:35  jussi
   Added DoAbort() method and DOASSERT macro.
 
@@ -35,11 +39,11 @@
 
 void Exit::DoExit(int code)
 {
-  if (Init::DoAbort()) {
+  //if (Init::DoAbort()) {
     fflush(stdout);
     fflush(stderr);
     abort();
-  }
+ // }
   exit(code);
 }
 
@@ -51,7 +55,12 @@ void Exit::DoAbort(char *reason, char *file, int line)
   fprintf(stderr, "An internal error has occurred. The reason is:\n");
   fprintf(stderr, "  %s\n", fulltext);
 
+//
+//  char res[256];
+//  sprintf(res, "%s (%s:%d)", reason, file, line);
+// ControlPanel::Instance()->DoAbort(res);
+//
   ControlPanel::Instance()->DoAbort(fulltext);
-
+  
   DoExit(2);
 }

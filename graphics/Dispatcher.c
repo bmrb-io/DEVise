@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/30 15:58:52  jussi
+  Added #ifdef USE_SELECT which can be used to disable the use
+  of select(). The display update problem still plagues the
+  system when select() is used. The query processor also seems
+  slower.
+
   Revision 1.12  1996/04/20 19:52:04  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead
@@ -190,6 +196,7 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
 			  StateFlag flag, Boolean allDispatchers,
 			  int fd)
 {
+
 #ifdef DEBUG
   printf("Dispatcher::Register: %s: 0x%p, fd %d\n",
 	 c->DispatchedName(), c, fd);
@@ -199,7 +206,7 @@ void Dispatcher::Register(DispatcherCallback *c, int priority,
   info->callBack = c;
   info->flag = flag;
   info->priority = priority;
-  info->fd = fd;
+  info->fd =  fd; // fd;
 
 #ifdef DEBUG
   printf("In Register, fd = %d\n", fd);

@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/16 19:45:11  jussi
+  Added DoAbort() method.
+
   Revision 1.3  1996/01/27 00:21:45  jussi
   Added ExecuteScript() method.
 
@@ -184,13 +187,13 @@ protected:
 	Boolean DoInit();
 
 	ControlPanel();
+	static ControlPanel *_controlPanel; /* one and only control panel */
 
 private:
 	/* update current view to reflect current dispatcher */
 	void UpdateNewDispatcher();
 
 
-	static ControlPanel *_controlPanel; /* one and only control panel */
 
 	static ClassDir *_classDir;
 

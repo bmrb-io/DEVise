@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/05/07 16:32:40  jussi
+  Moved Action member variable to ViewGraph. Move implementation of
+  HandleKey, HandlePress and HandlePopup to ViewGraph as well.
+
   Revision 1.34  1996/04/22 20:25:46  jussi
   Added calls to Dispatcher::InsertMarker() to a few additional places
   where a View redisplay must be initiated.
@@ -263,7 +267,8 @@ void View::Init(char *name, VisualFilter &filter,
 
   Dispatcher::CreateMarker(readFd,writeFd);
   
-  Dispatcher::Current()->Register(this,10,GoState,false,readFd);
+  //Dispatcher::Current()->Register(this,10,GoState,false,readFd);
+  Dispatcher::Current()->Register(this,10,GoState,false,-1);
 
   Dispatcher::InsertMarker(writeFd);
 }
@@ -1549,6 +1554,7 @@ void View::Highlight(Boolean flag)
   winRep->SetXorMode();
   DrawHighlight();
   winRep->SetCopyMode();
+  winRep->Flush();
 }
 
 void View::DrawHighlight()
@@ -1573,6 +1579,7 @@ void View::DrawHighlight()
     winRep->AbsoluteLine(x + _label.extent / 2, y + _label.extent, 
 			 x + _label.extent / 2, labelH, _label.extent);
   }
+  winRep->Flush();
 }
 
 void View::SetXAxisAttrType(AttrType type)

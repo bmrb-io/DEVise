@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/09 18:05:49  jussi
+  Added Flush() method.
+
   Revision 1.6  1996/04/08 16:56:44  jussi
   Minor fixes.
 
@@ -135,6 +138,7 @@ protected:
   Dispatcher * ReturnDispatcher(){
 	return _dispatcher;
   }
+
 
 private:
   virtual char *DispatchedName();

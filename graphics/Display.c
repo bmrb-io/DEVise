@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/08 16:57:02  jussi
+  Minor fixes.
+
   Revision 1.5  1996/04/04 05:18:27  kmurli
   Major modification: The dispatcher now receives the register command
   from the displays directly (i.e. from XDisplay instead of from
@@ -54,6 +57,7 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
 DeviseDisplay::DeviseDisplay()
 {
   _dispatcher = Dispatcher::Current();
+
  
   // A derived class must register with the Dispatcher in order
   // to get a chance to inspect event queues; use a call similar
