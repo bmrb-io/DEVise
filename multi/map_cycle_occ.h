@@ -209,6 +209,22 @@ public:
     attrs[0] = 5; attrs[1] = 250;
     TDataMap::SetDefaultShape(CycleOccMapping_RectShapeID,2,attrs);
     TDataMap::SetDefaultColor(ColorMgr::AllocColor("black"));
+
+    /*
+       offsets of GData attributes must correspond to the dynamic
+       GData attributes listed in the next section
+    */
+    GDataAttrOffset *_offsets = new GDataAttrOffset;
+    _offsets->xOffset = 0;
+    _offsets->yOffset = sizeof(double);
+    _offsets->zOffset = -1;
+    _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
+    _offsets->patternOffset = _offsets->orientationOffset = -1;
+    _offsets->shapeAttrOffset[0] = 2 * sizeof(double);
+    _offsets->shapeAttrOffset[1] = 3 * sizeof(double);
+    for(int i = 2; i < MAX_GDATA_ATTRS; i++)
+      _offsets->shapeAttrOffset[i] = -1;
+    TDataMap::SetGDataOffset(_offsets);
   
 	_shapes[0] = new CycleOccMapping_RectShape;
 	}
