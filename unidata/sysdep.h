@@ -646,6 +646,15 @@ INCLUDE FILES
    existance is discovered by configure.
    
  */
+// ODBC Related Staff
+
+typedef void* HENV;
+typedef void* HDBC;
+typedef void* HSTMT;
+typedef short SQLRETURN;
+
+// End of ODBC Related Staff
+
 /* stdio.h */
 
 #ifdef HAVE_STDIO_H
