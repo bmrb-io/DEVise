@@ -1,4 +1,5 @@
 #! /bin/csh -f
+rm jsa1.jar jsa2.jar
 rm *.class
 javac DEViseJSLoader.java
 javac jsa.java

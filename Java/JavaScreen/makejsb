@@ -1,5 +1,6 @@
 #! /bin/csh -f
 rm *.class
+rm jsb1.jar jsb2.jar
 javac DEViseJSBLoader.java
 javac jsb.java
 # splitting the jar files into two.
