@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/08/05 19:49:02  wenger
+  Fixed compile errors caused by some of Kevin's recent changes; changed
+  the attrproj stuff to make a .a file instead of a .o; added some more
+  TData file writing stuff; misc. cleanup.
+
   Revision 1.35  1996/08/05 18:41:48  beyer
   - Color stats only print an entry for each color that is in it source view.
   (I.e., if the count for a color is zero, it doesn't have a record in the
@@ -394,7 +399,7 @@ void ViewGraph::DrawLegend()
     int w, h;
     GetDataArea(x, y, w, h);
 
-    y += (int)(0.2 * h);
+    y += (int)(0.05 * h);
     int yInc = 12;
 
     int index = InitMappingIterator();
