@@ -2297,6 +2297,10 @@ Num Date        Status  Description
 586 05/01/00	OPEN	Cursors with spaces in their names do not work right
 			in the JavaScreen (cannot be moved). (rkw)
 
+587 05/15/00	FIXED	Clicking to move a cursor changes its size (see
+			4096_side_newselect.ds). (rkw)
+			(Fixed by rkw, 5/16/00.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

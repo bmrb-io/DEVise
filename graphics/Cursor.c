@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  2000/02/16 18:51:19  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.35  2000/02/15 16:16:05  wenger
   Cursors in child views "remember" their size and location when
   switching TDatas or parent attributes.
@@ -407,6 +410,15 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
   // so that the flag is correct.
   _src->GetVisualFilter(filter);
   VisualFilter oldFilter = filter;
+
+  // If width or height is less than 0 (default argument value) keep it
+  // the same.
+  if (width < 0.0) {
+    width = filter.xHigh - filter.xLow;
+  }
+  if (height < 0.0) {
+    height = filter.yHigh - filter.yLow;
+  }
 
   if (_fixedSize) {
     // Force the new width and height to be the same as the old ones.
@@ -1011,6 +1023,11 @@ void
 DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
     VisualFilter &filter)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::MatchGrid(%f, %f, %f, %f)\n", GetName(), x, y,
+      width, height);
+#endif
+
   if (_visFlag & VISUAL_X) {
     if (_useGrid && (_gridX != 0.0)) {
       /* Round location to nearest grid point. */
@@ -1031,9 +1048,6 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
         int tmp = (int)floor((x / _gridX) + 0.5);
         x = _gridX * tmp;
 	  }
-    }
-    if (width < 0.0) {
-      width = filter.xHigh - filter.xLow;
     }
     Coord newXLow = x - width / 2.0;
     filter.xLow = newXLow;
@@ -1060,9 +1074,6 @@ DeviseCursor::MatchGrid(Coord x, Coord y, Coord width, Coord height,
         int tmp = (int)floor((y / _gridY) + 0.5);
         y = _gridY * tmp;
 	  }
-    }
-    if (height < 0.0) {
-      height = filter.yHigh - filter.yLow;
     }
     Coord newYLow = y - height / 2.0;
     filter.yLow = newYLow;
