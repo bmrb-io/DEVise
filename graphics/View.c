@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.157  1999/02/22 19:07:34  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.156  1999/02/17 15:10:17  wenger
   Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
   in mapping dialog updating when a view is selected.
@@ -842,7 +847,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	int		flushed = _filterQueue->Enqueue(initFilter);
 
 	ReportFilterChanged(initFilter, flushed);
-	_highlight = false; 
+	_selected = false; 
 
 	_view_locks = 0;
 
@@ -863,7 +868,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_pileMode = false;
 	_pileViewHold = true;
 	_printing = false;
-	_isHighlight = false;
+	_isHighlightView = false;
 
 	_displaySymbol = true;
 
@@ -1123,8 +1128,23 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
   // if view is not selected, no cursor movement is induced;
   // mouse click is intended for selecting the view as current;
   // the next mouse click in this view will move the cursor
-  if (!_highlight)
-    return false;
+  if (IsInPileMode()) {
+	Boolean pileHighlighted = false;
+    int index = GetParent()->InitIterator();
+	while (GetParent()->More(index)) {
+	  View *tmpView = (View *)GetParent()->Next(index);
+	  if (tmpView->IsSelected()) pileHighlighted = true;
+	}
+	GetParent()->DoneIterator(index);
+
+    if (!pileHighlighted) {
+      return false;
+    }
+  } else {
+    if (!_selected) {
+      return false;
+    }
+  }
 
   /* change the X and Y coordinates of the cursor */
   // Why the heck do we do this?  Why not just move the center of the
@@ -1914,6 +1934,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
    * next piled view here, but if we don't, things don't work right.
    * RKW June 25, 1997. */
 
+  Boolean lastInPile = true;
   if (_pileMode) {
     if (!aborted) {
       ViewWin *parent = GetParent();
@@ -1939,6 +1960,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
 #endif
         view->_pileViewHold = false;
         view->Refresh(false);
+        lastInPile = false;
       }
 
       parent->DoneIterator(index);
@@ -1957,7 +1979,23 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
 
   if (_numDimensions == 3)
     Draw3DAxis();
-  DrawCursors();
+
+  //
+  // If we're in a pile, postpone drawing cursors until all views of the pile
+  // have been drawn; then draw all cursors in the pile.  (This fixes bug
+  // 446.)  RKW 1999-02-22.
+  if (IsInPileMode()) {
+    if (lastInPile) {
+	  int index = GetParent()->InitIterator();
+	  while (GetParent()->More(index)) {
+	    View *tmpView = (View *)GetParent()->Next(index);
+		tmpView->DrawCursors();
+	  }
+	  GetParent()->DoneIterator(index);
+	}
+  } else {
+    DrawCursors();
+  }
 
   win->PopClip();
   win->Flush();
@@ -2006,6 +2044,16 @@ void View::GetLabelParam(Boolean &occupyTop, int &extent, char *&name)
 
 void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
 {
+  //
+  // Note: we could eventually make this work by changing all views in
+  // the pile appropriately, but I didn't want to deal with that right
+  // now.  RKW 1999-02-23.
+  //
+  if (IsInPileMode()) {
+    fprintf(stderr, "Label parameters cannot be changed in a piled view\n");
+    return;
+  }
+
   delete _label.name;
 
   /* CopyString() now handles NULL okay. */
@@ -2024,7 +2072,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
    * to re-draw the whole view. */
   if (occupyTop == oldOccupyTop) {
     if (_winReps.GetWindowRep()) {
-	  if (_highlight) {
+	  if (_selected) {
         // Undraw highlight.
         WindowRep *winRep = GetWindowRep();
         winRep->SetXorMode();
@@ -2034,7 +2082,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
       DrawLabel();
       _winReps.GetWindowRep()->Flush();
       _winReps.GetWindowRep()->SetGifDirty(true);
-	  if (_highlight) {
+	  if (_selected) {
         // Redraw highlight.
         WindowRep *winRep = GetWindowRep();
         winRep->SetXorMode();
@@ -2241,7 +2289,7 @@ void View::Refresh(Boolean refreshPile)
 #if defined(DEBUG)
   printf("View(%s)::Refresh(%d)\n", GetName(), refreshPile);
 #endif
-  if (refreshPile && _pileMode && !_isHighlight && GetFirstSibling()) {
+  if (refreshPile && _pileMode && !_isHighlightView && GetFirstSibling()) {
     GetFirstSibling()->Refresh(false);
   } else {
     _doneRefresh = false;
@@ -2382,7 +2430,7 @@ void View::Iconify(Boolean iconified)
   Refresh();
 }
 
-void View::Highlight(Boolean flag)
+void View::DoSelect(Boolean flag)
 {
 #if defined(DEBUG)
   printf("Highlight view %s %d\n", GetName(), flag);
@@ -2390,10 +2438,10 @@ void View::Highlight(Boolean flag)
 
   if (_numDimensions == 3)
     return;
-  if (_highlight == flag)
+  if (_selected == flag)
     return;
 
-  _highlight = flag;
+  _selected = flag;
 
   WindowRep *winRep = GetWindowRep();
   if (!winRep) {
@@ -3468,7 +3516,7 @@ void	View::Run(void)
 
 		if (this != vw)
 		{
-			if (_pileViewHold && !_isHighlight)
+			if (_pileViewHold && !_isHighlightView)
 			{
 #if defined(DEBUG)
 				printf("View %s cannot continue\n", GetName());
@@ -3613,10 +3661,10 @@ void	View::Run(void)
 			winRep->SetForeground(savePColorID);
 		}
 
-		Boolean		oldHighlight = _highlight;
+		Boolean		oldSelected = _selected;
 
-		_highlight = false;
-		Highlight(oldHighlight);		// Draw highlight border
+		_selected = false;
+		DoSelect(oldSelected);		// Draw highlight border
 		winRep->PopTransform();			// Pop the transform
 
 		_cursorsOn = false;
@@ -3766,10 +3814,10 @@ void	View::Run(void)
 			winRep->SetForeground(savePColorID);
 		}
 
-		Boolean		oldHighlight = _highlight;
+		Boolean		oldSelected = _selected;
 
-		_highlight = false;
-		Highlight(oldHighlight);		// Draw highlight border
+		_selected = false;
+		DoSelect(oldSelected);		// Draw highlight border
 	}
 
 	// Push clip region using this transform
@@ -3965,10 +4013,10 @@ void	View::Run2(void)
 			winRep->SetForeground(savePColorID);
 		}
 
-		Boolean		oldHighlight = _highlight;
+		Boolean		oldSelected = _selected;
 
-		_highlight = false;
-		Highlight(oldHighlight);		// Draw highlight border
+		_selected = false;
+		DoSelect(oldSelected);		// Draw highlight border
 		winRep->PopTransform();			// Pop the transform
 
 		_cursorsOn = false;
@@ -4066,10 +4114,10 @@ void	View::Run2(void)
 			winRep->SetForeground(savePColorID);
 		}
 
-		Boolean		oldHighlight = _highlight;
+		Boolean		oldSelected = _selected;
 
-		_highlight = false;
-		Highlight(oldHighlight);		// Draw highlight border
+		_selected = false;
+		DoSelect(oldSelected);		// Draw highlight border
 	}
 
 	// Push clip region using this transform
@@ -4249,7 +4297,7 @@ View::FindSelectedView()
   int index = InitViewIterator();
   while (MoreView(index) && selectedView == NULL) {
     View *tmpView = NextView(index);
-    if (tmpView->IsHighlighted()) selectedView = tmpView;
+    if (tmpView->IsSelected()) selectedView = tmpView;
   }
   DoneViewIterator(index);
 
@@ -4267,8 +4315,8 @@ View::SelectView()
   // newly-selected view (do nothing if they are the same view).
   View *prevSelView = FindSelectedView();
   if (prevSelView != this) {
-    if (prevSelView != NULL) prevSelView->Highlight(false);
-    Highlight(true);
+    if (prevSelView != NULL) prevSelView->DoSelect(false);
+    DoSelect(true);
   }
   ControlPanel::Instance()->SelectView(this);
 }

@@ -26,6 +26,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/02/22 19:07:33  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.3  1999/02/16 20:20:28  wenger
   Fixed bug 463 (data sometimes overdraws axes in piles).
 
@@ -317,21 +322,6 @@ PileStack::SetPiled(Boolean doLink)
     }
 
     //
-    // Set window layout to stacked.
-    //
-    _window->SetPreferredLayout(-1, -1, true);
-
-    //
-    // Set all views to piled mode.
-    //
-    int index = GetViewList()->InitIterator();
-    while (GetViewList()->More(index)) {
-      View *view = (View *)GetViewList()->Next(index);
-      view->SetPileMode(true);
-    }
-    GetViewList()->DoneIterator(index);
-
-    //
     // Make sure that all views in the pile have the same axes enabled and
     // disabled, so that data doesn't overdraw the axes.
     //
@@ -343,7 +333,7 @@ PileStack::SetPiled(Boolean doLink)
     //
     LabelInfo title;
     Boolean first = true;
-    index = GetViewList()->InitIterator();
+    int index = GetViewList()->InitIterator();
     while (GetViewList()->More(index)) {
       View *view = (View *)GetViewList()->Next(index);
       if (first) {
@@ -354,6 +344,21 @@ PileStack::SetPiled(Boolean doLink)
         view->SetLabelParam(title.occupyTop, title.extent, tmpStr);
 	delete [] tmpStr;
       }
+    }
+    GetViewList()->DoneIterator(index);
+
+    //
+    // Set window layout to stacked.
+    //
+    _window->SetPreferredLayout(-1, -1, true);
+
+    //
+    // Set all views to piled mode.
+    //
+    index = GetViewList()->InitIterator();
+    while (GetViewList()->More(index)) {
+      View *view = (View *)GetViewList()->Next(index);
+      view->SetPileMode(true);
     }
     GetViewList()->DoneIterator(index);
 

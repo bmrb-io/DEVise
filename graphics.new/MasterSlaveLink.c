@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/02/17 15:09:44  wenger
+  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
+  in mapping dialog updating when a view is selected.
+
   Revision 1.5  1998/11/11 14:31:00  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -206,7 +210,7 @@ MasterSlaveLink::ClearHighlightViews()
   int index = InitIterator();
   while(More(index)) {
     ViewGraph *view = Next(index);
-    if (view->IsHighlight() && view->IsInPileMode()) {
+    if (view->IsHighlightView() && view->IsInPileMode()) {
       MappingInterp *map = (MappingInterp *)view->GetFirstMap();
 
       ViewGraph *bgView = (ViewGraph *)view->GetFirstSibling();

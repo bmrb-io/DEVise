@@ -1712,9 +1712,10 @@ Num Date        Status  Description
 
 445 12/15/98	OPEN	Text symbols don't work in OpenGL. (rkw)
 
-446 12/18/98	OPEN	A cursor in a piled view is not drawn correctly
+446 12/18/98	FIXED	A cursor in a piled view is not drawn correctly
 			if the view is not the "front" one in the pile.
 			(ml/rkw)
+			(Fixed by rkw, 2/23/99.)
 
 447 12/23/98	FIXED	Setting data pattern to 1 prevents view name from
 			showing up. (rkw)
@@ -1782,8 +1783,9 @@ Num Date        Status  Description
 			right. (rkw)
 			(Fixed by rkw, 2/19/99.)
 
-465 02/22/99	OPEN	Can't move cursor in in OverView window in
+465 02/22/99	FIXED	Can't move cursor in in OverView window in
 			jsdemo Condor/cant_move_cursor.ds session. (ml/rkw)
+			(Fixed by rkw, 2/23/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

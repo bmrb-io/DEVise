@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.75  1999/02/22 19:07:37  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.74  1999/02/17 15:10:18  wenger
   Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
   in mapping dialog updating when a view is selected.
@@ -457,7 +462,7 @@ class View : public ViewWin
 
 
 		/* Highlight a view of depending on flag.*/
-	void Highlight(Boolean flag);
+	void DoSelect(Boolean flag);
 
 	int GetId() { return _id; }
 
@@ -565,8 +570,10 @@ class View : public ViewWin
 	Boolean IsInPileMode() { return _pileMode; }
 	void SetPileMode(Boolean mode);
 
-	Boolean IsHighlight() { return _isHighlight; }
-	void SetHighlight(Boolean highlight) { _isHighlight = highlight; }
+	Boolean IsHighlightView() { return _isHighlightView; }
+	void SetHighlightView(Boolean highlightView) {
+	  _isHighlightView = highlightView;
+	}
 
 	Boolean DoneRefresh() { return _doneRefresh;}
 
@@ -657,7 +664,7 @@ class View : public ViewWin
 	  }
 	}
 
-    Boolean IsHighlighted() { return _highlight; }
+    Boolean IsSelected() { return _selected; }
 
 	// Note: this is temporary, should get moved into mapping.
 	// RKW Feb. 5, 1998.
@@ -792,7 +799,7 @@ protected:
 	   LayoutMode that requires a refresh. It is resent only when a query
 	   is sent. */
 	Boolean _modeRefresh;
-	Boolean _highlight;
+	Boolean _selected;
 	AttrType _xAxisAttrType;
 	AttrType _yAxisAttrType;
 	AttrType _zAxisAttrType;
@@ -837,7 +844,7 @@ protected:
 	DevFont _yAxisFont;
 	DevFont _zAxisFont;
 
-	Boolean _isHighlight;
+	Boolean _isHighlightView;
 
 
 

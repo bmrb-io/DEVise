@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/02/11 21:43:29  wenger
+  Avoid inserting views into old-style pile links.
+
   Revision 1.44  1999/02/11 19:54:55  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -3535,7 +3538,7 @@ DeviseCommand_highlightView::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
-          view->Highlight(atoi(argv[2]));
+          view->DoSelect(atoi(argv[2]));
           ReturnVal(API_ACK, "done");
           return 1;
         }
@@ -4987,7 +4990,7 @@ IMPLEMENT_COMMAND_BEGIN(viewSetIsHighlight)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
-		view->SetHighlight(atoi(argv[2]));
+		view->SetHighlightView(atoi(argv[2]));
 
         ReturnVal(API_ACK, "done");
 	    return 1;
@@ -5013,7 +5016,7 @@ IMPLEMENT_COMMAND_BEGIN(viewGetIsHighlight)
           return -1;
         }
 		char buf[128];
-		sprintf(buf, "%d", view->IsHighlight());
+		sprintf(buf, "%d", view->IsHighlightView());
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
