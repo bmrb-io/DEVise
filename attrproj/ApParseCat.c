@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/08/15 19:54:46  wenger
+  Added 'pure' targets for attrproj and devread; fixed some dynamic
+  memory problems.  Found some bugs while demo'ing for soils science
+  people.
+
   Revision 1.7  1996/07/01 20:36:59  jussi
   Minor changes to reflect the new TDataAscii/TDataBinary constructor
   interface.
@@ -584,7 +589,9 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 				}
 				else
 				{
-				  printf("Adding schema %s to directory \n", StripPath(catFile));
+#ifdef    DEBUG
+				  printf("Adding schema %s to directory\n", StripPath(catFile));
+#endif
 				  gdir->add_entry(StripPath(catFile));
 				  GLoad = true;
 				}
@@ -740,13 +747,17 @@ ParseCatPhysical(char *catFile, char *dataFile, Boolean physicalOnly,
 		// strdups because TData destructor will try to free type
 		// strings -- make sure they're dynamic.
 		if (isAscii) {
+#ifdef    DEBUG
 		  printf("default source, recSize %d\n",recSize);
+#endif
 		  tDataP = new TDataAsciiInterp(catFile, strdup("UNIXFILE"), dataFile,
 			recSize, attrs, sep, numSep, hasSeparator, commentString);
 		}
 		else
 		{
+#ifdef    DEBUG
 		  printf("default binary source, recSize %d\n",recSize);
+#endif
 		  // Note: the second use of recSize is for the physical
 		  // record size.  This needs to get changed.  RKW 96/06/27.
 		  tDataP = new TDataBinaryInterp(catFile, strdup("UNIXFILE"), dataFile,
