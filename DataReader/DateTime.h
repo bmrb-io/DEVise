@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/01/18 18:07:40  beyer
+  minor mods
+
   Revision 1.2  1998/06/16 16:30:53  wenger
   Added standard headers to DataReader sources.
 
@@ -180,13 +183,13 @@ public:
 		time = etf.time;
 		nanosec = etf.nanosec;
 	}
-	operator ==(const EncodedDTF& x) const {
+	bool operator ==(const EncodedDTF& x) const {
 		return date == x.date && time == x.time && nanosec == x.nanosec;
 	}
-	operator <(const EncodedDTF& x) const {
+	bool operator <(const EncodedDTF& x) const {
 		return compare(x) < 0;
 	}
-	operator >(const EncodedDTF& x) const {
+	bool operator >(const EncodedDTF& x) const {
 		return compare(x) > 0;
 	}
 	EncodedIDT operator-(const EncodedDTF& x) const ;
@@ -312,13 +315,13 @@ public:
 		EncodedDTF ret_EDTF(day,time,nanosec) ;
 		return ret_EDTF ;
 	}
-	operator ==(const EncodedIDT& x) const {
+	bool operator ==(const EncodedIDT& x) const {
 		return day == x.day && time == x.time && nanosec == x.nanosec ;
 	}
-	operator <(const EncodedIDT& x) const {
+	bool operator <(const EncodedIDT& x) const {
 		return (EncodedDTF(*this) < EncodedDTF(x)) ;
 	}
-	operator >(const EncodedIDT& x) const {
+	bool operator >(const EncodedIDT& x) const {
 		return ((EncodedDTF)(*this) > (EncodedDTF)(x)) ;
 	}
 	EncodedIDT operator-(const EncodedIDT& arg) ;

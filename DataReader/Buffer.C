@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/04/26 18:18:25  beyer
+  fixed rewind
+
   Revision 1.23  1999/04/08 22:43:13  beyer
   Added null termination when extracting because strings were not
   getting terminated.
@@ -276,13 +279,13 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 					cerr << "InValid attribute type\n";
 					break;
 				case TYPE_INT:
-					extFunc[i] = &getIntLen;
+					extFunc[i] = &Buffer::getIntLen;
 					break;
 				case TYPE_DOUBLE:
-					extFunc[i] = &getDoubleLen;
+					extFunc[i] = &Buffer::getDoubleLen;
 					break;
 				case TYPE_STRING:
-					extFunc[i] = &getStringLen;
+					extFunc[i] = &Buffer::getStringLen;
 					break;
 				case TYPE_DATE:
 					break;
@@ -291,7 +294,7 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 					break;
 			}
 		} else if (myDRSchema->tableAttr[i]->getQuote() != -1) {
-			extFunc[i] = &getStringQuote;
+			extFunc[i] = &Buffer::getStringQuote;
 		} else {
 			//TEMP -- why two switches????
 			//TEMPANS -- The first one is for variable length fields and this one is for
@@ -301,16 +304,16 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 					cerr << "InValid attribute type\n";
 					break;
 				case TYPE_INT:
-					extFunc[i] = &getIntTo;
+					extFunc[i] = &Buffer::getIntTo;
 					break;
 				case TYPE_DOUBLE:
-					extFunc[i] = &getDoubleTo;
+					extFunc[i] = &Buffer::getDoubleTo;
 					break;
 				case TYPE_STRING:
-					extFunc[i] = &getStringTo;
+					extFunc[i] = &Buffer::getStringTo;
 					break;
 				case TYPE_DATE:
-					extFunc[i] = &getDate;
+					extFunc[i] = &Buffer::getDate;
 					break;
 				default:
 					cerr << "Illegal attribute type\n";
