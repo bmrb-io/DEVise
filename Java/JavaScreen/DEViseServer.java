@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2001/01/08 20:31:53  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.42.4.13  2000/12/27 19:38:34  wenger
 // Merged changes from js_restart_improvements thru zero_js_cache_check from
 // the trunk onto the js_cgi_br branch.
@@ -437,6 +441,32 @@ public class DEViseServer implements Runnable
                 boolean isEnd = false;
                 while (!isEnd) {
                     try {
+
+			if (client.collabSocket != null 
+			    && client.collabInit == 1) {
+
+      			    pop.pn("We send the save-session command.");
+			    processClientCmd(DEViseCommands.SAVE_SESSION + " {" + client.savedSessionName + "}", false, serverDatas);
+
+			    pop.pn("We send the close-session command.");
+			    //server.serverCmds = null;
+			    processClientCmd(DEViseCommands.CLOSE_SESSION, false, serverDatas);
+			    // keep the current session opened
+			    if ( ! client.isSessionOpened )
+				client.isSessionOpened = true;
+
+			    pop.pn("We send the open-session command.");
+			    sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}");
+	    
+			    serverDatas.removeAllElements();	
+			    processServerCmd(serverDatas);
+
+			    client.sendCmd(serverCmds);
+			    client.sendData(serverDatas);
+			    serverDatas.removeAllElements();
+			    serverCmds = null;
+			}
+
 			// Get a command from the client.
                         // This method will not block, if no command it just
 			// returns null.
