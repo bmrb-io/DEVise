@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/07/02 22:47:07  jussi
+  Rewrote interface for setting and querying maximum symbol
+  size (bounding box).
+
   Revision 1.14  1996/06/16 01:54:19  jussi
   Added IsComplexShape() method.
 
@@ -91,6 +95,7 @@ class WindowRep;
 /* Offsets for GData attributes. Not all offsets are valid (negative). */
 
 struct GDataAttrOffset {
+  int recidOffset;
   int xOffset;
   int yOffset;
   int zOffset;
@@ -140,9 +145,11 @@ public:
      needs to get rid of cached mappings */
   void ResetGData(int gRecSize);
   
+  RecId GetDefaultRecId() { return 0; }
+
   VisualFlag GetDynamicArgs() { return _dynamicArgs; }
   int GetDynamicShapeAttrs() { return _dynamicAttrs; }
-  void GetDefaultLocation(Coord &x, Coord &y){ x = _x; y = _y; }
+  void GetDefaultLocation(Coord &x, Coord &y) { x = _x; y = _y; }
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
   Coord GetDefaultZ() { return _z; }
@@ -218,7 +225,7 @@ public:
     width = _maxSymWidth; height = _maxSymHeight; depth = _maxSymDepth;
   }
 
-  virtual void DrawGDataArray(View *view, WindowRep *win,
+  virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num) = 0;
 
   virtual AttrInfo *MapGAttr2TAttr(char *attrName) { return 0; }
