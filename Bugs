@@ -1253,8 +1253,9 @@ Num Date        Status  Description
 			GUI when joining a group causes the DEVise server
 			to crash. (rkw)
 
-329 03/18/98	OPEN	Sending an incorrect command name to DEVise causes
+329 03/18/98	FIXED	Sending an incorrect command name to DEVise causes
 			a core dump. (rkw)
+			(Fixed by Dongbin 3/19/98)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
