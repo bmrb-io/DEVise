@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/06/15 14:43:16  jussi
+#  Added yuc's 3D procedures.
+#
 #  Revision 1.1  1996/04/11 18:13:34  jussi
 #  Initial revision.
 #
@@ -120,6 +123,10 @@ proc SetQuery {} {
     pack .query.xyRange.top .query.xyRange.bottom -side top \
 	    -expand $expand -fill $fill
 
+#    button .query.xyRange.top.yDummy.stat -text "Toggle Statistics" \
+#	    -command DoStat
+#    pack .query.xyRange.top.yDummy.stat -side left -expand $expand
+
     # set up selection area
 
     frame .query.sel
@@ -162,9 +169,9 @@ proc SetQuery {} {
     button .query.bot.but.history -text "History" -width 10 \
 	    -command { DoHistoryToggle }
     button .query.bot.but.close -text Close -width 10 \
-	    -command "global queryWinOpened; \
-	              set queryWinOpened false; \
-	              destroy .query"
+	    -command { global queryWinOpened; \
+	               set queryWinOpened 0; \
+	               destroy .query }
 
     pack .query.bot.but.exec .query.bot.but.undo .query.bot.but.back \
 	    .query.bot.but.history .query.bot.but.close \
