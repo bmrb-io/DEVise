@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/30 21:10:48  jussi
+  Replaced references to specific colors with references to
+  BackgrounColor and ForegroundColor.
+
   Revision 1.5  1996/01/29 23:57:42  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -89,7 +93,7 @@ void ViewXInfo::ParamNames(int &argc, char **&argv)
   argc = 6;
   argv = arg;
   arg[0] = buf1;
-  sprintf(buf1, "name %s", ControlPanel::Instance()->ViewName());
+  strcpy(buf1, "name {foobar}");
   arg[1] = buf2;
   arg[2] = buf3;
   arg[3] = buf4;
@@ -209,7 +213,7 @@ void ViewScatterInfo::ParamNames(int &argc, char **&argv)
   arg[4] = buf5;
   arg[5] = buf6;
 
-  sprintf(buf1, "name %s", ControlPanel::Instance()->ViewName());
+  strcpy(buf1, "name {foobar}");
   
   int numDefaults;
   char **defaults;
