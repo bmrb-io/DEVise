@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/12 19:40:12  jussi
+  View statistics are now printed into a memory buffer.
+
   Revision 1.22  1996/06/27 15:46:12  jussi
   Moved key '5' functionality to ViewGraph::UpdateAutoScale().
 
@@ -468,8 +471,22 @@ void ViewGraph::PrepareStatsBuffer()
     /* initialize statistics buffer */
     _statBuffer[0] = 0;
 
+    /* find last non-zero count */
+    int j;
+    for(j = MAXCOLOR - 1; j >= 0; j--) {
+        if (_stats[j].GetStatVal(STAT_COUNT) > 0)
+            break;
+    }
+    if (j < 0)
+        j = 0;
+
+    /* print one extra record */
+    j++;
+    if (j >= MAXCOLOR)
+        j = MAXCOLOR - 1;
+
     /* put the statistics in the stat buffer */
-    for(int i = 0; i < MAXCOLOR; i++) {
+    for(int i = 0; i <= j; i++) {
         char line[128];
         sprintf(line, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
                 i, (int)_stats[i].GetStatVal(STAT_COUNT),	
