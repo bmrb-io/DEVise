@@ -20,8 +20,8 @@ include ../../Makefile.common
 
 DTE_DIR = ../../DTE
 
-#NO_RTREE =
-NO_RTREE = 1
+NO_RTREE =
+#NO_RTREE = 1
 
 DTE_INCLUDES = \
 	-I$(DTE_DIR)/Core \
@@ -42,10 +42,11 @@ ifdef NO_RTREE
 	CFLAGS += -DNO_RTREE
 endif
 
-CORE_SRC = DevRead.c resolve.c my.yacc.tab.c lex.yy.c site.c types.c \
+CORE_SRC = DevRead.c resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	listop.c catalog.c SockStream.c url.c StandardRead.c FunctionRead.c \
 	Engine.c Aggregates.c joins.c QueryTree.c IndexParse.c Util.c \
-	InsertParse.c DeleteParse.c SchemaParse.c ApParseCat.c
+	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c ApParseCat.c \
+	Sort.c
 
 ifdef NO_RTREE
 	CORE_SRC += RTreeRead.dummy.c

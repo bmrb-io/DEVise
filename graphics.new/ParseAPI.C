@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/02/03 19:45:29  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.49  1997/02/03 04:12:16  donjerko
   Catalog management moved to DTE
 
@@ -407,6 +413,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
      return 1;
   }
   if (argc == 1) {
+
+    if(!strcmp(argv[0], "dteListAllIndexes")){
+    	 char* retVal = dteListAllIndexes();
+      control->ReturnVal(API_ACK, retVal);
+      return 1;
+    }
+
     if (!strcmp(argv[0], "date")) {
       time_t tm = time((time_t *)0);
       control->ReturnVal(API_ACK, DateString(tm));
@@ -516,10 +529,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
 
-	if (!strcmp(argv[0],"createIndex")){
-		dqlCreateIndex(argv[1]);
-		return 1;
-	}	
     if (!strcmp(argv[0], "abortQuery")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -1297,6 +1306,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
   }
   if (argc == 3) {
+    if(!strcmp(argv[0], "dteDeleteIndex")){
+    	 dteDeleteIndex(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, "");
+      return 1;
+    }
+    if(!strcmp(argv[0], "dteShowIndexDesc")){
+    	 char* indexDesc = dteShowIndexDesc(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, indexDesc);
+      return 1;
+    }
     if(!strcmp(argv[0], "dteShowAttrNames")){
     	 char* attrListing = dteShowAttrNames(argv[1], argv[2]);
       control->ReturnVal(API_ACK, attrListing);
@@ -2041,6 +2060,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 6) {
+
+	if (!strcmp(argv[0],"dteCreateIndex")){
+		dteCreateIndex(argv[1], argv[2], argv[3], argv[4], argv[5]);
+		control->ReturnVal(API_ACK, "");
+		return 1;
+	}	
+
     if (!strcmp(argv[0], "setWinGeometry")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {

@@ -108,6 +108,7 @@ CatalogComm.o: ../Core/Utility.h ../Core/Engine.h ../Core/site.h
 CatalogComm.o: ../Core/myopt.h ../Core/url.h ../Core/SockStream.h
 CatalogComm.o: ../Core/listop.h ../Core/Iterator.h ../Core/StandardRead.h
 CatalogComm.o: ../Core/FunctionRead.h ../Core/DevRead.h ../Core/catalog.h
+CatalogComm.o: ../Core/Inserter.h
 Dql.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Dql.o: /usr/include/sys/va_list.h /usr/include/stdlib.h /usr/include/string.h
 Dql.o: /usr/include/unistd.h /usr/include/sys/types.h
@@ -470,7 +471,7 @@ Aggregates.o: /usr/include/stdio.h /usr/include/sys/va_list.h Utility.h
 Aggregates.o: myopt.h /s/gcc-2.7.2/lib/g++-include/strstream.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h
 Aggregates.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
-Aggregates.o: StandardRead.h FunctionRead.h catalog.h
+Aggregates.o: StandardRead.h FunctionRead.h catalog.h Inserter.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -512,7 +513,8 @@ DeleteParse.o: /usr/include/values.h ../../graphics/DevStatus.h
 DeleteParse.o: ../../graphics/DList.h ../../graphics/Exit.h
 DeleteParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 DeleteParse.o: url.h /usr/include/unistd.h SockStream.h listop.h site.h
-DeleteParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h ParseTree.h
+DeleteParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h Inserter.h
+DeleteParse.o: ParseTree.h
 DevRead.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DevRead.o: /usr/include/sys/va_list.h /usr/include/string.h
 DevRead.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -597,6 +599,47 @@ DevRead.dummy.o: ../../graphics/Util.h /usr/include/stdlib.h
 DevRead.dummy.o: /usr/include/ctype.h /usr/include/math.h
 DevRead.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 DevRead.dummy.o: ../../graphics.new/DataSeg.h
+DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h
+DropIndexParse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+DropIndexParse.o: /usr/include/sys/va_list.h myopt.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/String.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/strfile.h types.h
+DropIndexParse.o: /usr/include/string.h /usr/include/sys/types.h
+DropIndexParse.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DropIndexParse.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DropIndexParse.o: /usr/include/sys/time.h /usr/include/netinet/in.h
+DropIndexParse.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+DropIndexParse.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+DropIndexParse.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+DropIndexParse.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+DropIndexParse.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+DropIndexParse.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+DropIndexParse.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DropIndexParse.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DropIndexParse.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DropIndexParse.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DropIndexParse.o: /usr/include/sys/byteorder.h exception.h
+DropIndexParse.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+DropIndexParse.o: ../../graphics.new/machdep.h /usr/include/limits.h
+DropIndexParse.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+DropIndexParse.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+DropIndexParse.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DropIndexParse.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DropIndexParse.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DropIndexParse.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DropIndexParse.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+DropIndexParse.o: /usr/include/values.h ../../graphics/DevStatus.h
+DropIndexParse.o: ../../graphics/DList.h ../../graphics/Exit.h
+DropIndexParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
+DropIndexParse.o: url.h /usr/include/unistd.h SockStream.h listop.h site.h
+DropIndexParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h
+DropIndexParse.o: Inserter.h Engine.h
 Engine.o: /usr/include/memory.h /usr/include/string.h
 Engine.o: /usr/include/sys/feature_tests.h /usr/include/assert.h
 Engine.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -637,7 +680,7 @@ Engine.o: ../../graphics/DevStatus.h ../../graphics/DList.h
 Engine.o: ../../graphics/Exit.h ../../graphics/Init.h
 Engine.o: ../../graphics/BufPolicy.h Utility.h url.h /usr/include/unistd.h
 Engine.o: SockStream.h listop.h Engine.h site.h Iterator.h StandardRead.h
-Engine.o: FunctionRead.h ParseTree.h catalog.h joins.h
+Engine.o: FunctionRead.h ParseTree.h catalog.h Inserter.h joins.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 FunctionRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -717,7 +760,8 @@ IndexParse.o: /usr/include/values.h ../../graphics/DevStatus.h
 IndexParse.o: ../../graphics/DList.h ../../graphics/Exit.h
 IndexParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 IndexParse.o: url.h /usr/include/unistd.h SockStream.h listop.h site.h
-IndexParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h ParseTree.h
+IndexParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h Inserter.h
+IndexParse.o: ParseTree.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 InsertParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -759,7 +803,8 @@ InsertParse.o: /usr/include/values.h ../../graphics/DevStatus.h
 InsertParse.o: ../../graphics/DList.h ../../graphics/Exit.h
 InsertParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 InsertParse.o: url.h /usr/include/unistd.h SockStream.h listop.h site.h
-InsertParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h ParseTree.h
+InsertParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h Inserter.h
+InsertParse.o: ParseTree.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 QueryTree.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -800,7 +845,7 @@ QueryTree.o: /usr/include/values.h ../../graphics/DevStatus.h
 QueryTree.o: ../../graphics/DList.h ../../graphics/Exit.h
 QueryTree.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h url.h
 QueryTree.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
-QueryTree.o: StandardRead.h FunctionRead.h catalog.h DevRead.h
+QueryTree.o: StandardRead.h FunctionRead.h catalog.h Inserter.h DevRead.h
 QueryTree.o: ../../graphics.new/RecId.h Aggregates.h ParseTree.h joins.h
 RTreeRead.o: RTreeRead.h StandardRead.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -890,7 +935,43 @@ SchemaParse.o: /usr/include/values.h ../../graphics/DevStatus.h
 SchemaParse.o: ../../graphics/DList.h ../../graphics/Exit.h
 SchemaParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 SchemaParse.o: url.h /usr/include/unistd.h SockStream.h listop.h site.h
-SchemaParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h
+SchemaParse.o: Iterator.h StandardRead.h FunctionRead.h catalog.h Inserter.h
+Sort.o: Sort.h Iterator.h types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/String.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
+Sort.o: /usr/include/sys/feature_tests.h /usr/include/sys/types.h
+Sort.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+Sort.o: /usr/include/sys/select.h /usr/include/sys/time.h
+Sort.o: /usr/include/sys/time.h /usr/include/netinet/in.h
+Sort.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+Sort.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+Sort.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+Sort.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+Sort.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+Sort.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+Sort.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+Sort.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+Sort.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Sort.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+Sort.o: /usr/include/sys/byteorder.h exception.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics.new/machdep.h
+Sort.o: /usr/include/limits.h /usr/include/sys/wait.h
+Sort.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+Sort.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+Sort.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
+Sort.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+Sort.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Sort.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
+Sort.o: /usr/include/values.h ../../graphics/DevStatus.h
+Sort.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
+Sort.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h
+Sort.o: /usr/include/sys/va_list.h Utility.h StandardRead.h Inserter.h url.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/strfile.h /usr/include/unistd.h
+Sort.o: SockStream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -958,7 +1039,15 @@ Util.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 Util.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 Util.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 Util.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Util.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h Utility.h
+Util.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h ParseTree.h
+Util.o: queue.h /usr/include/stdio.h /usr/include/sys/va_list.h myopt.h
+Util.o: types.h /usr/include/string.h ../../graphics/AttrList.h
+Util.o: ../../graphics/DeviseTypes.h /usr/include/values.h
+Util.o: ../../graphics/DevStatus.h ../../graphics/DList.h
+Util.o: ../../graphics/Exit.h ../../graphics/Init.h
+Util.o: ../../graphics/BufPolicy.h Utility.h url.h /usr/include/unistd.h
+Util.o: SockStream.h listop.h site.h Iterator.h StandardRead.h FunctionRead.h
+Util.o: catalog.h Inserter.h
 catalog.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -996,7 +1085,7 @@ catalog.o: ../../graphics/BufPolicy.h Utility.h myopt.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 catalog.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/unistd.h
 catalog.o: SockStream.h listop.h Iterator.h StandardRead.h FunctionRead.h
-catalog.o: DevRead.h ../../graphics.new/RecId.h Engine.h
+catalog.o: Inserter.h DevRead.h ../../graphics.new/RecId.h Engine.h
 joins.o: joins.h site.h /usr/include/assert.h queue.h /usr/include/stdio.h
 joins.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h types.h
 joins.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1109,7 +1198,7 @@ listop.o: ../../graphics/DevStatus.h ../../graphics/DList.h
 listop.o: ../../graphics/Exit.h ../../graphics/Init.h
 listop.o: ../../graphics/BufPolicy.h Utility.h url.h /usr/include/unistd.h
 listop.o: SockStream.h listop.h site.h Iterator.h StandardRead.h
-listop.o: FunctionRead.h catalog.h
+listop.o: FunctionRead.h catalog.h Inserter.h
 my.yacc.tab.o: myopt.h /usr/include/assert.h
 my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/String.h
 my.yacc.tab.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1149,7 +1238,7 @@ my.yacc.tab.o: ../../graphics/DList.h ../../graphics/Exit.h
 my.yacc.tab.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 my.yacc.tab.o: url.h /usr/include/unistd.h SockStream.h listop.h ParseTree.h
 my.yacc.tab.o: site.h Iterator.h StandardRead.h FunctionRead.h catalog.h
-my.yacc.tab.o: joins.h
+my.yacc.tab.o: Inserter.h joins.h
 resolve.o: myopt.h /usr/include/assert.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/String.h
 resolve.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
@@ -1226,6 +1315,7 @@ site.o: ../../graphics/BufPolicy.h Utility.h myopt.h
 site.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 site.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/unistd.h
 site.o: SockStream.h listop.h Iterator.h StandardRead.h FunctionRead.h
+site.o: catalog.h Inserter.h ParseTree.h
 types.o: types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 types.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 types.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
@@ -1262,7 +1352,7 @@ types.o: /usr/include/sys/va_list.h Utility.h myopt.h
 types.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 types.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/unistd.h
 types.o: SockStream.h listop.h catalog.h site.h Iterator.h StandardRead.h
-types.o: FunctionRead.h
+types.o: FunctionRead.h Inserter.h
 url.o: url.h /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 url.o: /usr/include/sys/select.h /usr/include/sys/time.h

@@ -552,27 +552,7 @@ View.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 View.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 View.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h Util.h
 View.o: /usr/include/ctype.h View.h ViewWin.h DualWindowRep.h ViewCallback.h
-View.o: AttrList.h Cursor.h DevFont.h ../graphics.new/DataSourceFixedBuf.h
-View.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
-View.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
-View.o: /usr/include/sys/sem.h /usr/include/sys/shm.h /usr/include/assert.h
-View.o: /usr/include/limits.h /usr/include/sys/stat.h
-View.o: ../graphics.new/machdep.h /usr/include/sys/param.h
-View.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-View.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-View.o: /usr/include/sys/procset.h /usr/include/sys/ioctl.h
-View.o: /usr/include/netdb.h /usr/include/sys/socket.h
-View.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-View.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-View.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-View.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-View.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-View.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-View.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-View.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-View.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-View.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-View.o: /usr/include/sys/byteorder.h
+View.o: AttrList.h Cursor.h DevFont.h
 ViewWin.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 ViewWin.o: /usr/include/sys/va_list.h /usr/include/string.h
 ViewWin.o: /usr/include/errno.h /usr/include/sys/errno.h ViewWin.h DList.h
