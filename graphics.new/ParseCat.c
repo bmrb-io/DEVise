@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/05/07 16:04:20  wenger
+  Added final version of code for reading schemas from session files;
+  added an error-reporting class to improve error info.
+
   Revision 1.22  1996/04/26 17:51:15  wenger
   Fixed up schema parsing code to also handle logical schemas in
   session files; restored parseSchema command to
@@ -865,8 +869,6 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 
 	schemaSource->fclose();
 
-	if (physicalOnly) InsertCatFile(CopyString(schemaSource->getName()));
-
 	if (Init::PrintTDataAttr())
 		attrs->Print();
 	return fileType;
@@ -1023,24 +1025,25 @@ ParseCat(char *catFile)
     if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
 	{
       fclose(fp);
-	  DataSourceFile	schemaSource(catFile, StripPath(catFile));
+      DataSourceFile	schemaSource(catFile, StripPath(catFile));
       result = ParseCatPhysical(&schemaSource, true);
+      InsertCatFile(CopyString(catFile));
     }
-	else
-	{
+    else
+      {
       // Read in the file name
       fscanf(fp, "%s", buf);
       fclose(fp);
 
       char *sname;
-	  DataSourceFile	schemaSource(buf, StripPath(buf));
+      DataSourceFile	schemaSource(buf, StripPath(buf));
       if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
 
       InsertCatFile(CopyString(catFile));
 
-	  DataSourceFile	logSchemaSource(catFile, StripPath(catFile));
+      DataSourceFile	logSchemaSource(catFile, StripPath(catFile));
       result = ParseCatLogical(&logSchemaSource, sname);
-	}
+    }
   }
 
   return result;
