@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2002/02/28 16:35:59  xuk
+// Added "reloadapplet" parameter to load old jsb applet instance into new HTML page.
+//
 // Revision 1.10  2002/02/22 21:51:10  xuk
 // Added an applet parameter to hide all of the applet buttons in browser.
 // param name="disablebuttons" value="true|false"
@@ -163,6 +166,10 @@ public final class DEViseJSValues
 	public boolean playbackDisplay = true;
 	public boolean disableButtons = false;
 	public boolean reloadApplet = true;
+	public String collabLeaderName = null;
+	public String collabLeaderPass = DEViseGlobals.DEFAULTPASS;
+	public String collabName = null;
+	public String collabPass = null;
     }
 
     public Canvas canvas = new Canvas();
