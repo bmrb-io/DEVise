@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/06/27 00:01:39  jussi
+  Changed number of parameters of set3DLocation.
+
   Revision 1.14  1996/06/20 21:47:30  jussi
   Added additional parameters to the return string of command
   get3DLocation. Command set3DLocation now switches to rectangular
@@ -90,6 +93,8 @@
 #include "VisualLink.h"
 #include "FilterQueue.h"
 #include "DataSeg.h"
+#include "Version.h"
+#include "CompDate.h"
 
 //#define DEBUG
 
@@ -231,6 +236,18 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     if (!strcmp(argv[0], "sync")) {
       control->SetSyncNotify();
       control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "version")) {
+      control->ReturnVal(API_ACK, (char *) Version::Get());
+      return 1;
+    }
+    if (!strcmp(argv[0], "copyright")) {
+      control->ReturnVal(API_ACK, (char *) Version::GetCopyright());
+      return 1;
+    }
+    if (!strcmp(argv[0], "compDate")) {
+      control->ReturnVal(API_ACK, (char *) CompDate::Get());
       return 1;
     }
   }

@@ -8,7 +8,7 @@ CC = g++
 OPTFLAG = -O
 #OPTFLAG = -g
 
-CFLAGS = $(ARCH_FLAGS) -Wall -I../../graphics -I../../graphics.new \
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX
 
 LDFLAGS = -L../graphics.new -L../graphics -L../tape -L../issm \
@@ -30,20 +30,24 @@ MONOLITHLIB = ../graphics.new/libmonolith.a
 
 all: generic devise devised deviseb
 
+# Note: the first line below forces CompDate.c to always be compiled when
+# we link this module.
 generic: generic.o $(ALLLIBS) $(MONOLITHLIB)
-	$(CC) -o $@ $@.o $(ARCH_LDFLAGS) -L../graphics.new -lmonolith \
-		$(LDFLAGS) $(ARCH_LDPOST)
+	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
+	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+		-lmonolith $(LDFLAGS) $(ARCH_LDPOST)
 
 devised: generic.o $(ALLLIBS) $(SERVERLIB)
-	$(CC) -o $@ generic.o $(ARCH_LDFLAGS) -L../graphics.new -lserver \
-		$(LDFLAGS) $(ARCH_LDPOST)
+	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
+	$(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+		-lserver $(LDFLAGS) $(ARCH_LDPOST)
 
 devise: devise.o $(CLIENTLIB)
-	$(CC) -o $@ $@.o $(ARCH_LDFLAGS) -L../graphics.new -lclient \
+	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new -lclient \
 		$(LDFLAGS) $(ARCH_LDPOST)
 
 deviseb: deviseb.o $(CLIENTLIB)
-	$(CC) -o $@ $@.o $(ARCH_LDFLAGS) -L../graphics.new -lclient \
+	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new -lclient \
 		$(ARCH_LDPOST)
 
 .PHONY: clean mostlyclean

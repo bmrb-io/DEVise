@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.57  1996/07/01 19:24:42  jussi
+  The Web data transfer routines are now caller from DataSourceWeb.c,
+  and not TkControl.c. The Web interface is now in the server, not
+  in the client.
+
   Revision 1.56  1996/06/24 19:47:05  jussi
   TkControl now passes the fd of the open X connection to the
   Dispatcher. Added a call to Run() to a few places which are
@@ -230,6 +235,7 @@
 #include "View.h"
 #include "Util.h"
 #include "Init.h"
+#include "Version.h"
 
 //#define DEBUG
 
@@ -299,10 +305,7 @@ TkControlPanel::~TkControlPanel()
 
 void TkControlPanel::StartSession()
 {
-  printf("DEVise Data Visualization Software\n");
-  printf("(c) Copyright 1992-1996\n");
-  printf("By the DEVise Development Group\n");
-  printf("All Rights Reserved.\n");
+  Version::PrintInfo();
   printf("\n");
 
   Tcl_LinkVar(_interp, "argv0", (char *)&_argv0, TCL_LINK_STRING);

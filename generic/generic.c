@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/06/07 19:36:15  wenger
+  Further improvements to the composite parser for the fourth set of
+  IBM traces.
+
   Revision 1.25  1996/06/06 21:43:25  wenger
   Added composite attributes for each type of miss in IBM trace 4 composite
   parser.
@@ -712,8 +716,6 @@ private:
 
 class IBMAddressTraceComposite2 : public UserComposite {
 public:
-//TEMPTEMP
-
   IBMAddressTraceComposite2() {
     _init = false;
     attrOffset = 0;

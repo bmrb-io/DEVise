@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:46:36  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/05/15 16:40:01  jussi
   Improved support for idle scripts; the client now uses the
   new server synchronization mechanism.
@@ -56,6 +59,7 @@
 #include <tk.h>
 
 #include "ClientAPI.h"
+#include "Version.h"
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
@@ -164,10 +168,7 @@ void ReadServer(ClientData cd, int mask)
 
 void SetupConnection()
 {
-  printf("DEVise Data Visualization Software\n");
-  printf("(c) Copyright 1992-1996\n");
-  printf("By the DEVise Development Group\n");
-  printf("All Rights Reserved.\n");
+  Version::PrintInfo();
   printf("\n");
 
   _interp = Tcl_CreateInterp();

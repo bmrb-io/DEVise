@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/18 18:12:45  jussi
+  Replaced 'postScript' member variable and method with more appropriate
+  name 'batchFile.'
+
   Revision 1.11  1996/04/16 20:06:58  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -64,6 +68,7 @@
 #include "Timer.h"
 #include "BufPolicy.h"
 #include "Util.h"
+#include "Version.h"
 
 
 /*************************************************************
@@ -152,15 +157,40 @@ static void Usage(char *prog)
 {
   fprintf(stderr, "Usage: %s [options]\n", prog);
   fprintf(stderr, "\nOptions are:\n");
-  fprintf(stderr, "\t-journal file: name of journal file\n");
-  fprintf(stderr, "\t-play file: journal file to play back\n");
-  fprintf(stderr, "\t-buffer size: buffer size in pages\n");
-  fprintf(stderr, "\t-prefetch yes_no: do prefetch or not\n");
-  fprintf(stderr, "\t-policy policy: buffer replacement policy, one of:\n");
-  fprintf(stderr, "\t                lru, fifo, lifo, focal, or rnd\n");
-  fprintf(stderr, "\t-existing yes_no: use existing buffers first or not\n");
+  fprintf(stderr, "\t-journal <file>: name of journal file\n");
+  fprintf(stderr, "\t-playback <file>: journal file to play back\n");
+  fprintf(stderr, "\t-buffer <size>: buffer size in pages\n");
+  fprintf(stderr, "\t-prefetch 0|1: do prefetch or not\n");
+  fprintf(stderr, "\t-policy <policy>: buffer replacement policy, one of:\n");
+  fprintf(stderr, "\t                  lru, fifo, lifo, focal, or rnd\n");
+  fprintf(stderr, "\t-existing 0|1: use existing buffers first or not\n");
   fprintf(stderr, "\t-norandom: don't randomize record retrieval\n");
-  fprintf(stderr, "\t-batch file: batch file to execute\n");
+  fprintf(stderr, "\t-batch <file>: batch file to execute\n");
+  fprintf(stderr, "\t-version: print version number and compile date\n");
+  fprintf(stderr, "\t-usage: print this message\n");
+  fprintf(stderr, "\t-queryProc <name>: name of query procedure\n");
+  fprintf(stderr, "\t-session <file>: name of session file to open\n");
+  fprintf(stderr, "\t-pagesize <size>: size of page to use (must be a\n");
+  fprintf(stderr, "\t                  multiple of 4096)\n");
+  fprintf(stderr, "\t-printViewStat 0|1: print view statistics or not\n");
+  fprintf(stderr, "\t-batchRecs 0|1: batch records or not\n");
+  fprintf(stderr, "\t-dispGraphics 0|1: display graphics or not\n");
+  fprintf(stderr, "\t-elimOverlap 0|1: eliminate overlapping GData or not\n");
+  fprintf(stderr, "\t-gdata 0|1: data is GData (vs. TData) or not\n");
+  fprintf(stderr, "\t-gdatapages <number>: max. number of GData disk pages\n");
+  fprintf(stderr, "\t-convert 0|1: convert TData to GData while idle or not\n");
+  fprintf(stderr, "\t-iconify 0|1: iconify windows when restoring a\n");
+  fprintf(stderr, "\t              session or not\n");
+  fprintf(stderr, "\t-printTDataAttr 0|1: print TData attribute list or not\n");
+  fprintf(stderr, "\t-simpleInterpreter 0|1: use simple interpreter or not\n");
+  fprintf(stderr, "\t-nologo: don't display logo\n");
+  fprintf(stderr, "\t-abort: abort instead of exit when program quits\n");
+  fprintf(stderr, "\t-savePopup: save popup window and wait for button event\n");
+  fprintf(stderr, "\t-xlow <value>: not yet implemented\n");
+  fprintf(stderr, "\t-ylow <value>: not yet implemented\n");
+  fprintf(stderr, "\t-xhigh <value>: not yet implemented\n");
+  fprintf(stderr, "\t-yhigh <value>: not yet implemented\n");
+
   Exit::DoExit(1);
 }
 
@@ -402,6 +432,16 @@ void Init::DoInit(int &argc, char **argv)
       else if (strcmp(&argv[i][1], "norandom") == 0) {
 	_randomize = false;
 	MoveArg(argc,argv,i,1);
+      }
+
+      else if (strcmp(&argv[i][1], "version") == 0) {
+	Version::PrintInfo();
+  	Exit::DoExit(1);
+      }
+
+      else if (strcmp(&argv[i][1], "usage") == 0) {
+	Usage(argv[0]);
+  	Exit::DoExit(1);
       }
 
       else if (strcmp(&argv[i][1], "xlow") == 0) {

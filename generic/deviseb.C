@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:46:37  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/05/15 16:40:09  jussi
   Improved support for idle scripts; the client now uses the
   new server synchronization mechanism.
@@ -45,6 +48,7 @@
 #include <string.h>
 
 #include "ClientAPI.h"
+#include "Version.h"
 
 #define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
@@ -251,10 +255,7 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  printf("DEVise Data Visualization Software\n");
-  printf("(c) Copyright 1992-1996\n");
-  printf("By the DEVise Development Group\n");
-  printf("All Rights Reserved.\n");
+  Version::PrintInfo();
   printf("\n");
 
   printf("Batch client running.\n");

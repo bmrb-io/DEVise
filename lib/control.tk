@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.81  1996/07/09 14:27:21  jussi
+#	Added missing parameter to OpenNewDataSource call.
+#
 #	Revision 1.80  1996/07/02 22:37:53  jussi
 #	Added missing global variable declaration.
 #
@@ -701,16 +704,25 @@ button .panel.query.button2 -text "Mapping" -width 7 -relief raised \
 pack   .panel.query.button .panel.query.button2 -side top -padx 2m -pady 1m
 
 label .panel.center.dummy -text "" -font 5x7 -fg red
+
 button .panel.center.label -text DEVise \
         -font -*-times-medium-i-normal--*-300-*-*-*-*-*-* \
 	-bd 0 -highlightthickness 2 -activebackground $backGround \
 	-highlightcolor red -command { AboutDevise }
+
+set version [DEVise version]
+set compDate [DEVise compDate]
+label .panel.center.version -text "Version $version: $compDate" \
+        -font -*-times-medium-r-normal--*-120-*-*-*-*-*-*
+
+set copyright [DEVise copyright]
 label .panel.center.copyright \
-	-text "Copyright 1996 DEVise Development Team" -font 5x7
+	-text "$copyright DEVise Development Group" -font 5x7
 
 pack  .panel.center.dummy -side top -expand 0 -fill x
 pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
 	-pady 0
+pack  .panel.center.version -side top -expand 0 -fill x
 pack  .panel.center.copyright -side top -expand 0 -fill x
 
 label .panel.messages.mode -text "" \

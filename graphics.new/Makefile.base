@@ -14,7 +14,7 @@ OPTFLAG = -O
 #OPTFLAG = -g
 
 CFLAGS =  $(ARCH_FLAGS)  -Wall -Wno-unused $(OPTFLAG) -DUNIX -I../../graphics \
-	-I../../graphics.new -I../../tape -fexternal-templates
+	-I../../graphics.new -I../../tape -I../../generic -fexternal-templates
 
 .c.o: 
 	$(CC) $(CFLAGS) -c $<
@@ -68,9 +68,14 @@ VIEWOBJ += $(VIEWSRC3:.h=.o)
 CMDSRC =  Command.c
 CMDOBJ =  $(CMDSRC:.c=.o)
 
-LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC)
+# Misc.
 
-LIBOBJ = $(BufMgrObj) $(QPObj) $(VIEWOBJ) $(CMDOBJ)
+MISCSRC =  Version.c
+MISCOBJ =  $(MISCSRC:.c=.o)
+
+LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC) $(MISCSRC)
+
+LIBOBJ = $(BufMgrObj) $(QPObj) $(VIEWOBJ) $(CMDOBJ) $(MISCOBJ)
 
 TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testTdata.c testbit.c testPageRange.c testPageRangeMap.c \
@@ -79,8 +84,6 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testBufMgrNull.c test2d.c testraw.c testVoidArray.c testRecRange.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
 	StringHash.c testViewRanges.c testXY.c
-
-LIBOBJS = $(VIEWOBJ) $(QPObj) $(CMDOBJ) $(BufMgrObj)
 
 LIBNAME = libgraphics.new.a
 
@@ -94,16 +97,16 @@ libmonolith.a: TkControl.o
 	ar cr $@ TkControl.o
 	ranlib $@
 
-libclient.a: ClientAPI.o
-	ar cr $@ ClientAPI.o
+libclient.a: ClientAPI.o Version.o
+	ar cr $@ ClientAPI.o Version.o
 	ranlib $@
 
 libserver.a: ServerAPI.o ClientAPI.o
 	ar cr $@ ServerAPI.o ClientAPI.o
 	ranlib $@
 
-$(LIBNAME): $(LIBOBJS)
-	ar cr $@ $(LIBOBJS)
+$(LIBNAME): $(LIBOBJ)
+	ar cr $@ $(LIBOBJ)
 	ranlib $@
 
 libbufmgr.a: $(BufMgrObj)

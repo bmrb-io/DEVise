@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/27 16:39:30  jussi
+  With the new dispatching scheme in place, the server uses blocking-mode
+  I/O with interrupts generated from the select() call in the dispatcher.
+  The switching between server-listen and server-connected mode was
+  streamlined.
+
   Revision 1.15  1996/06/12 14:56:27  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -102,6 +108,7 @@
 #include "ParseCat.h"
 #include "View.h"
 #include "Util.h"
+#include "Version.h"
 
 #ifdef SUN
 #include "missing.h"
@@ -119,10 +126,7 @@ ControlPanel *GetNewControl()
 
 ServerAPI::ServerAPI()
 {
-  printf("DEVise Data Visualization Software\n");
-  printf("(c) Copyright 1992-1996\n");
-  printf("By the DEVise Development Group\n");
-  printf("All Rights Reserved.\n");
+  Version::PrintInfo();
 
   ControlPanel::_controlPanel = (ControlPanel *)this;
   _interpProto = new MapInterpClassInfo();

@@ -8,8 +8,8 @@ CC = g++
 OPTFLAG = -O
 #OPTFLAG = -g
 
-CFLAGS = $(ARCH_FLAGS)   -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS \
-	-fexternal-templates
+CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../generic -Wall \
+	-Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS -fexternal-templates
 
 LD = ld 
 

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  1996/07/08 18:15:18  wenger
+#  Fixed multi makefiles with ARCH_SYSLIBS macro like generic so that
+#  multi will compile for HP.
+#
 #  Revision 1.12  1996/05/22 21:16:44  jussi
 #  Changed Devise from using composite .o files to using .a files.
 #  The old approach did not work in AIX whereas the new approach
@@ -55,7 +59,8 @@ ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
 all: disp
 
 disp: $(ALLOBJ) $(ALLLIBS)
-	$(CC) -o $@ $(ALLOBJ) $(LDFLAGS)
+	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
+	$(CC) -o $@ $(ALLOBJ) CompDate.o $(LDFLAGS)
 
 mapefile.h: map
 	../parser/parser -o $@ < $?
