@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.67  1999/10/26 16:29:33  wenger
+  Fixed bug 519 (problems with opening various sequences of soil science
+  sessions, caused by stupid composite parsers not getting reset when a
+  session is closed).
+
   Revision 1.66  1999/10/18 15:36:30  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -876,7 +881,7 @@ Session::CreateTData(const char *name)
     if (isDteSource) {
 	  // TEMP -- memory may be leaked in here
 #if !defined(NO_DTE)
-      result = dteImportFileType(name);
+      result = dteImportFileType((char *)name);
 #else
       result = NULL;
 #endif
