@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.35  1995/12/08 23:47:46  ravim
+#	Window name is passed as parameter in creating KGraph.
+#
 #	Revision 1.34  1995/12/07 02:17:07  ravim
 #	User can choose the stats to be displayed.
 #
@@ -655,8 +658,8 @@ proc DoCreateTData { file type } {
 #Return name of file type, or ""
 proc ImportFileType {} {
     global fsBox schemadir
-    set fsBox(path) $schemadir
-    set fsBox(pattern) *.schema*
+    set fsBox(path) $schemadir/logical
+    set fsBox(pattern) *
     set ftypeFile [FSBox "Select schema file"]
     if {$ftypeFile == ""} {
 	return

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.11  1995/12/11 18:02:56  ravim
+#	Physical/logical schema distinction handled.
+#
 #	Revision 1.10  1995/11/29 15:53:29  jussi
 #	Made inclusion of sourcedef.tcl conditional. Provided default values for
 #	sourceTypes. Removed constant window size definitions because they
@@ -60,15 +63,15 @@
 
 # Default values for data source types, redefined in sourcedef.tcl.
 
-set sourceTypes(COMMAND) {{Unix Command Output} /p/devise/schema/command.schema}
-set sourceTypes(COMPUSTAT) {{Annual and Quarterly Company Financial Data} /p/devise/schema/compustat.schema compustat.idx}
-set sourceTypes(CRSP) {{Security Data} /p/devise/schema/crsp.schema crsp_dsm94.idx}
-set sourceTypes(ISSM) {{Historical Stock Data (Trades and Quotes} /p/devise/schema/issm-t.schema issm.idx}
-set sourceTypes(NETWORK) {{Network Server Output} /p/devise/schema/network.schema}
-set sourceTypes(SEQ) {{SEQ Query Output} /p/devise/schema/seq.schema}
-set sourceTypes(SQL) {{SQL Query Output} /p/devise/schema/sql.schema}
-set sourceTypes(UNIXFILE) {{Unix File} /p/devise/schema/unixfile.schema}
-set sourceTypes(WWW) {{World Wide Web} /p/devise/schema/www.schema}
+set sourceTypes(COMMAND) {{Unix Command Output} /p/devise/schema/schema/logical/COMMAND}
+set sourceTypes(COMPUSTAT) {{Annual and Quarterly Company Financial Data} /p/devise/schema/schema/logical/COMPUSTAT compustat.idx}
+set sourceTypes(CRSP) {{Security Data} /p/devise/schema/schema/logical/CRSP crsp_dsm94.idx}
+set sourceTypes(ISSM) {{Historical Stock Data (Trades and Quotes} /p/devise/schema/schema/logical/ISSM-T issm.idx}
+set sourceTypes(NETWORK) {{Network Server Output} /p/devise/schema/schema/logical/NETWORK}
+set sourceTypes(SEQ) {{SEQ Query Output} /p/devise/schema/schema/logical/SEQ}
+set sourceTypes(SQL) {{SQL Query Output} /p/devise/schema/schema/logical/SQL}
+set sourceTypes(UNIXFILE) {{Unix File} /p/devise/schema/schema/logical/UNIXFILE}
+set sourceTypes(WWW) {{World Wide Web} /p/devise/schema/schema/logical/WWW}
 
 set sourceFile $datadir/sourcedef.tcl
 if {[file exists $sourceFile]} {
@@ -235,8 +238,8 @@ proc defineStream {base edit} {
 	    -width 40
     button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
 	global schemadir fsBox
-	set fsBox(path) $schemadir
-	set fsBox(pattern) *.schema*
+	set fsBox(path) $schemadir/logical
+	set fsBox(pattern) *
 	set file [FSBox "Select schema file"]
 	if {$file != ""} { set schemafile $file }
     }
@@ -563,8 +566,8 @@ proc selectUnixFile {} {
 	return ""
     }
 
-    set fsBox(path) $schemadir
-    set fsBox(pattern) *.schema*
+    set fsBox(path) $schemadir/logical
+    set fsBox(pattern) *
     set file2 [FSBox "Select schema file"]
     
     if {$file2 == ""} {
