@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1995/11/30 02:21:06  ravim
+#  Changed some colors and removed debugging puts.
+#
 #  Revision 1.7  1995/11/20 22:18:35  jussi
 #  Changed from datadir to schemadir.
 #
@@ -94,7 +97,16 @@ proc SchemaUser {} {
     }    
 
     # Button to Open or Quit
-    button .psch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
+    button .psch.bot.attr -text "Attributes" -bg gray75 -fg IndianRed4 \
+	    -command {
+	set physchema [.psch.mid.list get active]
+	if {$physchema == ""} {
+	    showmesg "Please choose a schema by clicking on the entry"
+	} else {
+	    displayattrs $physchema
+	}
+    }
+    button .psch.bot.view -text "Views" -bg gray75 -fg IndianRed4 -command {
 	set physchema [.psch.mid.list get active]
 	if {$physchema == ""} {
 	    showmesg "Please choose a schema by clicking on the entry"
@@ -106,7 +118,8 @@ proc SchemaUser {} {
     button .psch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
 	destroy .psch
     }
-    pack .psch.bot.open .psch.bot.quit -side left -padx 3m -pady 1m -expand 1
+    pack .psch.bot.attr .psch.bot.view .psch.bot.quit \
+	    -side left -padx 3m -pady 1m -expand 1
 
     # Finally grab focus
     tkwait visibility .psch
@@ -162,10 +175,30 @@ proc SchemaSuperuser {} {
 	    openschema $sel
 	}
     }
+    button .psch.bot.del -text Remove -bg gray75 -fg IndianRed4 -command {
+	set sel [.psch.mid.list get active]
+	if {$sel == ""} {
+	    showmesg "Select the schema to remove by clicking once on the entry"
+	} else {
+	    dialog .rem "Remove Schema" \
+		    "This will remove the schema and all defined views." \
+		    "" 0 Yes No
+	    if {$button == 0} {
+		exec rm $schemadir/schema/physical/$sel
+		foreach log $Logical($sel) {
+		    exec rm $schemadir/schema/logical/$log
+		}
+		unset Logical($sel)
+		writecatalog
+		.psch.mid.list delete active
+	    }
+	}
+    }
+
     button .psch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
 	destroy .psch
     }
-    pack .psch.bot.new .psch.bot.open .psch.bot.quit -side left \
+    pack .psch.bot.new .psch.bot.open .psch.bot.del .psch.bot.quit -side left \
 	    -padx 3m -pady 1m -expand 1
 
     # Finally grab focus
@@ -387,7 +420,13 @@ button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
 	writephysical $sname $ftype $comm $separ $attrlist
 	# Update catalog with this new physical schema (if new).
 	if {[info exists Logical($sname)] == 0} {
-	    set Logical($sname) ""
+	    # Since this is the initial version of the physical schema
+	    # we will create a default logical schema. This is simply
+	    # a file in the logical schema dir which has the same name
+	    # and points to this as its physical schema. No groups are
+	    # defined yet.
+	    writeDefaultLogical $sname
+	    set Logical($sname) [list $sname]
 	    writecatalog
 	}
 	destroy .newschema
@@ -477,11 +516,21 @@ proc writelogical {name} {
     set f [open $schemadir/schema/logical/$name w]
     
     # First output the physical schema name
-    puts $f "physical $physchema"
+    puts $f "physical $schemadir/schema/physical/$physchema"
 
     foreach nm $tgrps {
 	goutput $f $nm
     }
+    close $f
+}
+
+proc writeDefaultLogical {sname} {
+    global schemadir
+
+    set f [open $schemadir/schema/logical/$sname w]
+    
+    # Only one line in this default logical file
+    puts $f "physical $schemadir/schema/physical/$sname"
     close $f
 }
 
@@ -510,6 +559,7 @@ proc writephysical {name type comm sep alist} {
 ##################################################################
 proc readlogical {filename} {
     global tgrps schemadir
+    set tgrps ""
 
     # Open file for reading
     set f [open $schemadir/schema/logical/$filename r]
@@ -577,16 +627,41 @@ proc readphysical {filename} {
 ###################################################################
 
 proc gbrowse {} {
-    global tgrps glist resgrp logschema physchema Logical
+    global tgrps glist logschema physchema Logical attrlist iname
 
     toplevel .gbrowse -bg red4
-    wm title .gbrowse "Group Browser"
+    wm title .gbrowse "$physchema View : $logschema"
     wm iconname .gbrowse "Groups"
 
     # Toplevel rows
+    frame .gbrowse.attrs -relief raised -bg honeydew2
     frame .gbrowse.list -relief raised -bg honeydew2 
     frame .gbrowse.ops -relief raised -bg honeydew2 
-    pack .gbrowse.list .gbrowse.ops -side top -fill x -padx 3m -pady 1m
+    pack .gbrowse.attrs .gbrowse.list .gbrowse.ops \
+	    -side top -fill x -padx 3m -pady 1m
+
+    #----------------------------------------------------------
+    # Create a listbox with all the attrs in the physical schema
+    readphysical $physchema
+    label .gbrowse.attrs.label -text "List of Attributes" -bg honeydew2 -fg red4
+    pack .gbrowse.attrs.label -side top -fill x
+    listbox .gbrowse.attrs.list -relief raised -bd 1 \
+	    -yscrollcommand ".gbrowse.attrs.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .gbrowse.attrs.scroll -command ".gbrowse.attrs.list yview" \
+	    -bg honeydew2
+    pack .gbrowse.attrs.scroll -side right -fill y
+    pack .gbrowse.attrs.list -fill x
+
+    # Populate the list with all the attrs 
+    foreach attr $attrlist {
+	.gbrowse.attrs.list insert end [lindex $attr 2]
+    }
+
+    # Bind the double click on this list
+    bind .gbrowse.attrs.list <Double-1> {
+	set iname [.gbrowse.attrs.list get active]
+    }
 
     #-----------------------------------------------------------
     # Create a listbox displaying list of groups
@@ -596,7 +671,7 @@ proc gbrowse {} {
 
     listbox .gbrowse.list.list -relief raised -bd 1 \
 	    -yscrollcommand ".gbrowse.list.scroll set" \
-	    -font 9x15 -selectmode extended  -bg honeydew2
+	    -font 9x15 -selectmode single  -bg honeydew2
     scrollbar .gbrowse.list.scroll \
 	    -command ".gbrowse.list.list yview" -bg honeydew2
     pack .gbrowse.list.scroll  -side right -fill y
@@ -635,13 +710,7 @@ proc gbrowse {} {
 	    set gname ""
 	} else {
 	    set glist($gname) ""
-	    set resgrp ""
 	    dispgrp $gname
-	    if {$resgrp != ""} {
-		set tgrps [lappend tgrps $resgrp]
-		.gbrowse.list.list insert end $resgrp
-	    } 
-	    set gname ""
 	}
     }
     button .gbrowse.ops.op.delete -text "Delete" \
@@ -674,7 +743,6 @@ proc gbrowse {} {
 	    showmesg "Group with this name does not exist."
 	} else {
 	    dispgrp $gname
-	    set gname ""
 	}
     }
     button .gbrowse.ops.op.quit -text "Quit" \
@@ -697,13 +765,13 @@ proc gbrowse {} {
 
     #-----------------------------------------------------------
     # Finally grab focus
-    tkwait visibility .gbrowse
-    grab set .gbrowse
-    tkwait window .gbrowse
+#    tkwait visibility .gbrowse
+#    grab set .gbrowse
+#    tkwait window .gbrowse
 }
 
 proc dispgrp {gname } {
-    global glist resgrp tgrps currgrp cnt
+    global glist tgrps currgrp cnt iname
     # Displays the group information and allows modification
 
     set currgrp $gname 
@@ -731,7 +799,7 @@ proc dispgrp {gname } {
 
 
     # Insert all the existing members of the group into the list
-    glinsert $gname
+    glinsert $gname 0
 
     # Frame containing item and nested grp info
     frame .grp.curr -relief raised -bg honeydew2 
@@ -778,7 +846,12 @@ proc dispgrp {gname } {
 	    endpos $gname $currgrp 
 	    # Actual position got by decrementing
 	    set cnt [expr $cnt-1]
-	    .grp.list.list insert $cnt $iname
+	    # Have to calculate prefix blanks before inserting into listbox
+	    set level [getLevel $gname $currgrp]
+	    set level [expr $level*2]
+	    set s s
+	    set prefix [format "%$level$s" " "]
+	    .grp.list.list insert $cnt $prefix$iname
 	    set iname ""
 	}
     }
@@ -799,9 +872,11 @@ proc dispgrp {gname } {
 		#  Also remove from the listbox
 		set idx 0
 		set elem [.grp.list.list get $idx]
+		set elem [string trim $elem]
 		while {$elem != $iname} {
 		    set idx [expr $idx+1]
 		    set elem [.grp.list.list get $idx]
+		    set elem [string trim $elem]
 		}
 		.grp.list.list delete $idx
 	    }
@@ -836,12 +911,20 @@ proc dispgrp {gname } {
 	    set elem [list $ngname g]
 	    set glist($currgrp) [lappend glist($currgrp) $elem]
 	    set glist($ngname) ""
+	    set level [getLevel $gname $currgrp]
+	    set level [expr $level*2]
+	    set s s
+	    set prefix [format "%$level$s" " "]
+
 	    set cnt -1
 	    endpos $gname $currgrp
 	    # Actual position by subtracting 2
 	    set cnt [expr $cnt-2]
-	    .grp.list.list insert $cnt "end group $ngname"
-	    .grp.list.list insert $cnt "begin group $ngname"
+
+	    set line "end group $ngname"
+	    .grp.list.list insert $cnt $prefix$line
+	    set line "begin group $ngname"
+	    .grp.list.list insert $cnt $prefix$line
 	    set nlist [lappend nlist $currgrp]
 	    set currgrp $ngname
 	    set ngname ""
@@ -863,15 +946,18 @@ proc dispgrp {gname } {
 		# Now remove from the listbox
 		set idx 0
 		set elem [.grp.list.list get $idx]
+		set elem [string trim $elem]
 		set start "begin group $ngname"
 		while {$elem != $start} {
 		    set idx [expr $idx+1]
 		    set elem [.grp.list.list get $idx]
+		    set elem [string trim $elem]
 		}
 		set dest "end group $ngname"
 		while {$elem != $dest} {
 		    .grp.list.list delete $idx
 		    set elem [.grp.list.list get $idx]
+		    set elem [string trim $elem]
 		}
 		.grp.list.list delete $idx
 		set ngname ""
@@ -884,6 +970,7 @@ proc dispgrp {gname } {
     # Bind the double-click on the listbox
     bind .grp.list.list <Double-1> {
 	set selec [.grp.list.list get active]
+	set selec [string trim $selec]
 	set first [lindex $selec 0]
 	if {$first == "begin"} {
 	    set ngname [lindex $selec 2]
@@ -898,8 +985,17 @@ proc dispgrp {gname } {
     button .grp.bot.save -text "Save" \
 	    -bg gray75 -fg IndianRed4 -command {
 	destroy .grp
-	# Finally return the group name
-	set resgrp $gname
+	# Insert gname into main group list if not already present
+	set len [.gbrowse.list.list index end]
+	set i 0
+	while {($i < $len) && ([.gbrowse.list.list get $i] != $gname)} {
+	    incr i
+	}
+	if {$i >= $len} {
+	    set tgrps [lappend tgrps $gname]
+	    .gbrowse.list.list insert end $gname
+	}
+
 	# reset nlist
 	set nlist ""
 	set ngname ""
@@ -908,8 +1004,6 @@ proc dispgrp {gname } {
     button .grp.bot.cancel -text "Cancel" \
 	    -bg gray75 -fg IndianRed4 -command {
 	destroy .grp
-	# Return empty string
-	set resgrp ""
 	set ngname ""
 	set iname ""
     }
@@ -917,9 +1011,9 @@ proc dispgrp {gname } {
 	    -padx 3m -pady 1m    
 
     # Finally grab focus
-    tkwait visibility .grp
-    grab set .grp
-    tkwait window .grp
+#    tkwait visibility .grp
+#    grab set .grp
+#    tkwait window .grp
 }
 
 
@@ -949,19 +1043,25 @@ proc printgrp {name} {
     puts "End of group $name"
 }
 
-proc glinsert {name} {
+proc glinsert {name level} {
     global glist 
+
+    # At this level the prefix consists of "level" spaces
+    set s s
+    set prefix [format "%$level$s" " "]
+
     # inserts members of the group into a listbox
-    
     foreach elem $glist($name) {
 	set nm [lindex $elem 0]
 	set ty [lindex $elem 1]
 	if {$ty == "i"} {
-	    .grp.list.list insert end $nm
+	    .grp.list.list insert end $prefix$nm
 	} else {
-	    .grp.list.list insert end "begin group $nm"
-	    glinsert $nm
-	    .grp.list.list insert end "end group $nm"
+	    set line "begin group $nm"
+	    .grp.list.list insert end $prefix$line
+	    glinsert $nm [expr $level+2]
+	    set line "end group $nm"
+	    .grp.list.list insert end $prefix$line
 	}
     }
 }
@@ -1120,7 +1220,9 @@ proc writecatalog {} {
 ##########################################################################
 
 proc displogical {pname} {
-    global schemadir tgrps logschema Logical
+    global schemadir tgrps logschema Logical physchema button
+
+    set physchema $pname
     
     # Display the logical schema corr. to the passed physical schema
     toplevel .lsch -bg red4
@@ -1184,14 +1286,109 @@ proc displogical {pname} {
 	    gbrowse
 	}
     }
+
+    button .lsch.bot.del -text Remove -bg gray75 -fg IndianRed4 -command {
+	if {$logschema == ""} {
+	    showmesg "Please select the view to remove by double clicking on \
+		    the entry"
+	} else {
+	    dialog .rem "Remove View" \
+		    "This will remove the view permanently. Proceed ? " \
+		    "" 0 Yes No
+	    if {$button == 0} {
+		set idx [lsearch $Logical($physchema) $logschema]
+		if {$idx == -1} {
+		    dialog .note "Unknown View" \
+			    " The view does not exist. Cannot remove it." \
+			    "" 0 OK
+		    return
+		}
+		set Logical($physchema) [lreplace $Logical($physchema) $idx $idx]
+		writecatalog
+		# Remove the entry from the listbox 
+		set len [.lsch.mid.list index end]
+		set i 0
+		while {[.lsch.mid.list get $i] != $logschema} {
+		    incr i
+		}
+		.lsch.mid.list delete $i
+		exec rm $schemadir/schema/logical/$logschema
+		set logschema ""
+	    }
+	}
+    }
     button .lsch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
 	destroy .lsch
     }
-    pack .lsch.bot.new .lsch.bot.open .lsch.bot.quit \
+    pack .lsch.bot.new .lsch.bot.open .lsch.bot.del .lsch.bot.quit \
 	    -side left -padx 3m -pady 1m -expand 1
 
     # Finally grab focus
     tkwait visibility .lsch
     grab set .lsch
     tkwait window .lsch
+}
+
+proc displayattrs {pname} {
+    global attrlist
+
+    # Create a window with a listbox showing the names of all the attrs
+    # in the physical schema pname
+    
+    toplevel .slist -bg red4
+    wm title .slist "Attributes in $pname"
+    wm iconname .slist "$pname"
+
+    frame .slist.top -relief raised -bg honeydew2
+    frame .slist.bot -relief raised -bg honeydew2
+    pack .slist.top .slist.bot -fill x -padx 1m -pady 1m
+
+    # label + listbox +scroll
+    label .slist.top.label -text "List of attributes" -bg honeydew2 -fg red4
+    pack .slist.top.label -side top -fill x 
+    listbox .slist.top.list -relief raised -bd 1 \
+	    -yscrollcommand ".slist.top.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .slist.top.scroll -command ".slist.top.list yview" \
+	    -bg honeydew2
+    pack .slist.top.scroll -side right -fill y
+    pack .slist.top.list -fill x
+
+    # Populate the list
+    readphysical $pname
+    foreach attr $attrlist {
+	.slist.top.list insert end [lindex $attr 2]
+    }
+
+    # OK button
+    button .slist.bot.ok -text OK -bg gray75 -fg IndianRed4 -command {
+	destroy .slist
+    }
+    pack .slist.bot.ok
+    # Finally grab focus
+    tkwait visibility .slist
+    grab set .slist
+    tkwait window .slist
+
+}
+
+
+proc getLevel {gnm ngnm} {
+    global glist
+
+    foreach elem $glist($gnm) {
+	set nm [lindex $elem 0]
+	set ty [lindex $elem 1]
+	if {$nm == $ngnm} {
+	    return 1
+	}
+
+	if {$ty == "g"} {
+	    set ret [getLevel $nm $ngnm]
+	    if {$ret >= 1} {
+		return [expr $ret+1]
+	    }
+	}
+    }
+    return 0
 }
