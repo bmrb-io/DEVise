@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/11/19 17:17:41  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.35  1999/10/08 19:57:55  wenger
   Fixed bugs 470 and 513 (crashes when closing a session while a query
   is running), 510 (disabling actions in piles), and 511 (problem in
@@ -229,10 +233,6 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   Boolean symbolsOn = view->DisplaySymbols();
   Boolean connectorsOn = view->DisplayConnectors();
 
-  Boolean isScatterPlot = 
-    (view->IsScatterPlot() || view->GetNumDimensions() != 2)
-      && view->IsXYZoom();
-
   Boolean zoomInX  = false;
   Boolean zoomOutX = false;
   Boolean zoomInY  = false;
@@ -298,7 +298,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::HOME:
   case DeviseKey::KP_HOME: {
     zoomInX = true;
-    zoomInY = isScatterPlot;
+    zoomInY = false;
     break;
   }
   case '9':
@@ -306,7 +306,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::PAGE_UP:
   case DeviseKey::KP_PAGE_UP: {
     zoomOutX = true;
-    zoomOutY = isScatterPlot;
+    zoomOutY = false;
     break;
   }
   case '1':
@@ -314,7 +314,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::END:
   case DeviseKey::KP_END: {
     zoomInY = true;
-    zoomInX = isScatterPlot;
+    zoomInX = false;
     break;
   }
   case '3':
@@ -322,7 +322,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::PAGE_DOWN:
   case DeviseKey::KP_PAGE_DOWN: {
     zoomOutY = true;
-    zoomOutX = isScatterPlot;
+    zoomOutX = false;
     break;
   }
   case 'w':
