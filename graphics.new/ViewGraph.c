@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/14 20:18:52  jussi
+  Fixed initialization of _DisplayStat and added more checking to
+  SetViewStatistics (string passed to function can be shorter than
+  _DisplayStats).
+
   Revision 1.5  1995/12/14 15:26:23  jussi
   Added a "return false" statement to ToRemoveStat.
 
@@ -30,6 +35,8 @@
   Revision 1.2  1995/09/05 22:16:17  jussi
   Added CVS header.
 */
+
+#include <assert.h>
 
 #include "ViewGraph.h"
 #include "TDataMap.h"
@@ -46,6 +53,9 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
   // initialize statistics toggles to ASCII zero (not binary zero)
   memset(_DisplayStats, '0', STAT_NUM);
+
+  // add terminating null
+  _DisplayStats[STAT_NUM] = 0;
 }
 
 void ViewGraph::InsertMapping(TDataMap *map)
@@ -88,28 +98,30 @@ void ViewGraph::DoneMappingIterator()
 /* Turn On/Off DisplayStats */
 void ViewGraph::SetDisplayStats(char *stat)
 {
-  // must use strlen in strncpy below to avoid having stat's
-  // terminating NULL overwrite existing stat settings
-  // in _DisplayStats
-
-  int statlen = strlen(stat);
+  if (strlen(stat) != STAT_NUM) {
+    fprintf(stderr, "ViewGraph::SetDisplayStats: incorrect length: %d\n",
+	    (int)strlen(stat));
+    return;
+  }
 
   if (ToRemoveStats(_DisplayStats, stat) == true)
   {
-    strncpy(_DisplayStats, stat, (statlen < STAT_NUM ? statlen : STAT_NUM));
+    strncpy(_DisplayStats, stat, STAT_NUM);
     Refresh();
   }
   else 
   {
-    strncpy(_DisplayStats, stat, (statlen < STAT_NUM ? statlen : STAT_NUM));
+    strncpy(_DisplayStats, stat, STAT_NUM);
     _stats.Report();
   }
 }
 
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
 {
-  /* Check if a 1 in "old" has become 0 in "new" - means that a stat previously
-     being displayed should now be removed. */
+  assert(strlen(oldset) == STAT_NUM && strlen(newset) == STAT_NUM);
+
+  /* Check if a 1 in "old" has become 0 in "new" - means that a stat
+     previously being displayed should now be removed. */
   for (int i = 0; i < STAT_NUM; i++)
     if ((oldset[i] == '1') && (newset[i] == '0'))
       return true;
