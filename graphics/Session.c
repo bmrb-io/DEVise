@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/10/03 16:01:28  wenger
+  Enabled session opening and saving from back end; incremented version; a
+  few more minor fixes to session-related code.
+
   Revision 1.7  1997/10/03 14:36:57  wenger
   Various fixes to get session opening/saving to work with client/server
   version; reading old-style (Tcl) session files now works in back end;
@@ -360,7 +364,10 @@ Session::CreateTData(char *name)
         reportErrNosys(interp->result);
         status = StatusFailed;
       } else {
-	if (argcOut <= 5) {
+	if (isDteType(argvOut[1])) {
+
+		//if (argcOut <= 5)	// this does not work. DD
+
 	  // This should be a DTE-type data source.
 	  if (!isDteType(argvOut[1])) {
 	    reportErrNosys(
