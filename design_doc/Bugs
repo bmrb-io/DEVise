@@ -1625,7 +1625,7 @@ Num Date        Status  Description
 424 10/20/98	CD	Create an SQLView -- it doesn't get added to the
 			data source catalog. (rr/rkw)
 
-425 10/20/98	OPEN	Creating an SQLView -- "Select All" and "Mirror"
+425 10/20/98	FIXED (donko) Creating an SQLView -- "Select All" and "Mirror"
 			put recId in the AS clause, but this query is
 			then rejected because recId is a reserved name. (rkw)
 
