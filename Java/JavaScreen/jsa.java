@@ -47,7 +47,6 @@ public class jsa extends Applet
     String host = null;
     String user = null;
     String pass = null;
-    int port = 0;
 
     String sessionName = null;
 
@@ -78,13 +77,13 @@ public class jsa extends Applet
                     {
                         if (jsc == null) {
                             startInfo.append("Start Java Screen ...\n");
-                            jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                            jsc = new jsdevisec(host, user, pass, sessionName, images);
                             //startButton.setEnabled(false);
                         } else {
                             if (jsc.getQuitStatus()) {
                                 startInfo.append("Start Java Screen ...\n");
                                 jsc = null;
-                                jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                                jsc = new jsdevisec(host, user, pass, sessionName, images);
                                 //startButton.setEnabled(false);
                             } else {
                                 startInfo.append("Java Screen already started!\n");
@@ -190,7 +189,7 @@ public class jsa extends Applet
         if (jsc == null) {
             if (flag) {
                 startInfo.append("Start Java Screen ...\n");
-                jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                jsc = new jsdevisec(host, user, pass, sessionName, images);
                 //startButton.setEnabled(false);
             }
         } else {
@@ -198,7 +197,7 @@ public class jsa extends Applet
                 if (flag) {
                     startInfo.append("Start new Java Screen ...\n");
                     jsc = null;
-                    jsc = new jsdevisec(host, user, pass, port, sessionName, images);
+                    jsc = new jsdevisec(host, user, pass, sessionName, images);
                     //startButton.setEnabled(false);
                 }
             } else {
@@ -209,23 +208,6 @@ public class jsa extends Applet
 
     private void checkParameters()
     {
-        String str = null;
-        str = getParameter("port");
-        if (str != null) {
-            try {
-                port = Integer.parseInt(str);
-                if (port < 1024 || port > 65535)
-                    throw new NumberFormatException();
-                startInfo.append("Parameter port " + port + " is used\n");
-            } catch (NumberFormatException e) {
-                port = DEViseGlobals.DEFAULTCMDPORT;
-                startInfo.append("Incorrect port value specified! Default value is used\n");
-            }
-        } else {
-            port = DEViseGlobals.DEFAULTCMDPORT;
-            startInfo.append("Parameter port is not specified! Default value is used\n");
-        }
-
         sessionName = getParameter("session");
         if (sessionName == null) {
             startInfo.append("Parameter session is not specified!\n");
@@ -240,6 +222,30 @@ public class jsa extends Applet
             } catch (NumberFormatException e) {
             }
         }
+        
+        String cmdport = getParameter("cmdport");
+        if (cmdport != null) {
+            try {
+                int port = Integer.parseInt(cmdport);
+                if (port < 1024 || port > 65535)
+                    throw new NumberFormatException();
+                DEViseGlobals.CMDPORT = port;
+                startInfo.append("Parameter cmdport " + port + " is used\n");
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        String imgport = getParameter("imgport");
+        if (imgport != null) {
+            try {
+                int port = Integer.parseInt(imgport);
+                if (port < 1024 || port > 65535)
+                    throw new NumberFormatException();
+                DEViseGlobals.IMGPORT = port;
+                startInfo.append("Parameter imgport " + port + " is used\n");
+            } catch (NumberFormatException e) {
+            }
+        }
     }
 
     public String[][] getParameterInfo()
@@ -247,7 +253,8 @@ public class jsa extends Applet
         String [][] info = {
                // Parameter Name   Type of Value      Description
                //   {"debug",           "int",        "whether or not display debug information"},
-               //   {"port",            "int",        "jspop command port"},
+               //   {"cmdport",            "int",        "jspop command port"},
+               //   {"imgport",            "int",        "jspop image port"},
                   {"session",        "String",      "session file name"},
                };
 

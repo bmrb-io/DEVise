@@ -42,8 +42,7 @@ public class DEViseCmdDispatcher implements Runnable
     public String username = DEViseGlobals.DEFAULTUSER;
     public String password = DEViseGlobals.DEFAULTPASS;
     public String hostname = DEViseGlobals.DEFAULTHOST;
-    public int cmdPort = DEViseGlobals.DEFAULTCMDPORT;
-    public int imgPort = DEViseGlobals.DEFAULTIMGPORT;
+    public int cmdPort, imgPort;
     private int cmdSocketTimeout = 1000;
     private int imgSocketTimeout = 1000;
 
@@ -63,7 +62,7 @@ public class DEViseCmdDispatcher implements Runnable
     private DEViseOpenDlg openDlg = null;
     private RecordDlg recordDlg = null;
 
-    public DEViseCmdDispatcher(jsdevisec what, String host, String user, String pass, int port)
+    public DEViseCmdDispatcher(jsdevisec what, String host, String user, String pass)
     {
         jsc = what;
         jscreen = jsc.jscreen;
@@ -76,9 +75,9 @@ public class DEViseCmdDispatcher implements Runnable
 
         if (pass != null)
             password = pass;
-
-        if (port > 1023 && port < 65535)
-            cmdPort = port;
+        
+        imgPort = DEViseGlobals.IMGPORT;
+        cmdPort = DEViseGlobals.CMDPORT;
     }
 
     public synchronized int getStatus()

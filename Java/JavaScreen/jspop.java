@@ -4,10 +4,13 @@ import  java.util.*;
 
 public class jspop implements Runnable
 {
-    private String usage = new String("usage: java jspop -port[port] -server[number] -timeout[time] -userfile[filename] -logfile[filename] -debug[number]");
-    // -PORT[port]:
+    private String usage = new String("usage: java jspop -cmdport[port] -imgport[port] -server[number] -timeout[time] -userfile[filename] -logfile[filename] -debug[number]");
+    // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
     //      default: 6666
+    // -IMGPORT[port]:
+    //      port: The image port, if blank, use the defaults
+    //      default: 6688
     // -SERVER[number]:
     //      number: The maximum number of active DEVise server, if blank, use defualts
     //      default: 1
@@ -24,8 +27,7 @@ public class jspop implements Runnable
     //      number: The debug level for writing debug information to console
     //      default: No Debug information is written
     //
-    private int cmdPort = DEViseGlobals.DEFAULTCMDPORT;
-    private int imgPort = DEViseGlobals.DEFAULTIMGPORT;
+    private int cmdPort, imgPort; 
     private ServerSocket cmdServerSocket = null;
     private ServerSocket imgServerSocket = null;
 
@@ -73,7 +75,9 @@ public class jspop implements Runnable
     public jspop(String[] args)
     {
         System.out.println("\nChecking command line arguments ...\n");
-        checkArguments(args);
+        checkArguments(args); 
+        imgPort = DEViseGlobals.IMGPORT;
+        cmdPort = DEViseGlobals.CMDPORT;
 
         YGlobals.start();
 
@@ -318,15 +322,30 @@ public class jspop implements Runnable
     private void checkArguments(String[] args)
     {
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-port")) {
-                if (!args[i].substring(5).equals("")) {
+            if (args[i].startsWith("-cmdport")) {
+                if (!args[i].substring(8).equals("")) {
                     try {
-                        cmdPort = Integer.parseInt(args[i].substring(5));
-                        if (cmdPort < 1024 || cmdPort > 65535) {
+                        int port = Integer.parseInt(args[i].substring(8));
+                        if (port < 1024 || port > 65535) {
                             throw new NumberFormatException();
                         }
+                        DEViseGlobals.CMDPORT = port;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid command port number " + args[i].substring(5) + " specified in arguments!\n");
+                        System.out.println("Invalid command port number " + args[i].substring(8) + " specified in arguments!\n");
+                        System.out.println(usage);
+                        System.exit(1);
+                    }
+                }
+            } else if (args[i].startsWith("-imgport")) {
+                if (!args[i].substring(8).equals("")) {
+                    try {
+                        int port = Integer.parseInt(args[i].substring(8));
+                        if (port < 1024 || port > 65535) {
+                            throw new NumberFormatException();
+                        }
+                        DEViseGlobals.IMGPORT = port;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid command port number " + args[i].substring(8) + " specified in arguments!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }

@@ -976,7 +976,7 @@ public class DEViseServer implements Runnable
 
     public synchronized static int getPort()
     {
-        if (Port == DEViseGlobals.DEFAULTCMDPORT || Port == DEViseGlobals.DEFAULTIMGPORT)
+        if (Port == DEViseGlobals.CMDPORT || Port == DEViseGlobals.IMGPORT)
             Port++;
 
         if (Port > 60000)
@@ -990,7 +990,7 @@ public class DEViseServer implements Runnable
             } catch (IOException e) {
                 Port++;
 
-                if (Port == DEViseGlobals.DEFAULTCMDPORT || Port == DEViseGlobals.DEFAULTIMGPORT)
+                if (Port == DEViseGlobals.CMDPORT || Port == DEViseGlobals.IMGPORT)
                     Port++;
 
                 if (Port > 60000)

@@ -35,15 +35,18 @@ import java.io.*;
 public class js
 {
     private static String usage = new String("usage: java js -host[hostname]"
-        + " -port[port] -user[username] -pass[password] -session[filename]"
+        + " -cmdport[port] -imgport[port] -user[username] -pass[password] -session[filename]"
         + " -debug[number]");
     // -HOST[hostname]:
     //      hostname: The IP address of the machine where jspop or Devise Server
     //                is running, if bland, use the defaults
     //      default: "localhost"
-    // -PORT[port]:
+    // -CMDPORT[port]:
     //      port: The command port, if blank, use the defaults
     //      default: 6666
+    // -IMGPORT[port]:
+    //      port: The img port, if blank, use the defaults
+    //      default: 6688
     // -USER[username]:
     //      username: the name of user, if blank, use the defaults
     //      default: 'guest'
@@ -63,7 +66,6 @@ public class js
     //      default: No Debug information is written
     //
     private static String hostname = null;
-    private static int port = 0;
     private static boolean isAutoConnect = true;
     private static String sessionName = null;
     private static String username = null;
@@ -90,8 +92,6 @@ public class js
 
         if (hostname == null)
             hostname = DEViseGlobals.DEFAULTHOST;
-        if (port == 0)
-            port = DEViseGlobals.DEFAULTCMDPORT;
         if (username == null)
             username = DEViseGlobals.DEFAULTUSER;
         if (password == null)
@@ -100,7 +100,7 @@ public class js
         if (sessionName != null)
             isAutoConnect = true;
 
-        jsdevisec newClient = new jsdevisec(hostname, username, password, port, sessionName, null, isAutoConnect);
+        jsdevisec newClient = new jsdevisec(hostname, username, password, sessionName, null, isAutoConnect);
     }
 
     private static void checkArguments(String[] args)
@@ -110,15 +110,30 @@ public class js
                 if (!args[i].substring(5).equals("")) {
                     hostname = args[i].substring(5);
                 }
-            } else if (args[i].startsWith("-port")) {
-                if (!args[i].substring(5).equals("")) {
+            } else if (args[i].startsWith("-cmdport")) {
+                if (!args[i].substring(8).equals("")) {
                     try {
-                        port = Integer.parseInt(args[i].substring(5));
+                        int port = Integer.parseInt(args[i].substring(8));
                         if (port < 1024 || port > 65535) {
                             throw new NumberFormatException();
-                        }
+                        } 
+                        DEViseGlobals.CMDPORT = port;
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid command port number " + args[i].substring(5) + " specified in arguments!\n");
+                        System.out.println("Invalid command port number " + args[i].substring(8) + " specified in arguments!\n");
+                        System.out.println(usage);
+                        System.exit(1);
+                    }
+                }
+            } else if (args[i].startsWith("-imgport")) {
+                if (!args[i].substring(8).equals("")) {
+                    try {
+                        int port = Integer.parseInt(args[i].substring(8));
+                        if (port < 1024 || port > 65535) {
+                            throw new NumberFormatException();
+                        } 
+                        DEViseGlobals.IMGPORT = port;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid image port number " + args[i].substring(8) + " specified in arguments!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }

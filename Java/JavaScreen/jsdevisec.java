@@ -65,12 +65,12 @@ public class jsdevisec extends Frame
     public boolean isSessionOpened = false;
     private boolean isQuit = false;
 
-    public jsdevisec(String host, String user, String pass, int port, String sessionName, Vector images)
+    public jsdevisec(String host, String user, String pass, String sessionName, Vector images)
     {
-        this(host, user, pass, port, sessionName, images, true);
+        this(host, user, pass, sessionName, images, true);
     }
 
-    public jsdevisec(String host, String user, String pass, int port, String sessionName, Vector images, boolean isAuto)
+    public jsdevisec(String host, String user, String pass, String sessionName, Vector images, boolean isAuto)
     {
         if (images == null) {
             if (!YGlobals.YISAPPLET) {
@@ -172,7 +172,7 @@ public class jsdevisec extends Frame
         pack();
         show();
 
-        dispatcher = new DEViseCmdDispatcher(this, host, user, pass, port);
+        dispatcher = new DEViseCmdDispatcher(this, host, user, pass);
 
         if (isAuto) {
             dispatcher.startDispatcher();

@@ -13,6 +13,7 @@ public final class DEViseGlobals
 
     // global variables
     public static int DEBUGLEVEL = -1; // no debug information is written
+    public static int CMDPORT = DEFAULTCMDPORT, IMGPORT = DEFAULTIMGPORT;
     // GUI parameter used by js and jsa
     public static Dimension SCREENSIZE = new Dimension(640, 480); // physical screen size
     public static Color uibgcolor = new Color(64, 96, 0);
