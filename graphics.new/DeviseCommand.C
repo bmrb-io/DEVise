@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.77  1999/08/13 17:22:45  wenger
+  Custom view layouts are now saved to session files; removed now unused
+  TileLayout code.
+
   Revision 1.76  1999/07/21 18:51:09  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -609,8 +613,8 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_MouseAction_Click)
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
-IMPLEMENT_COMMAND_BEGIN(JAVAC_MouseAction_DoubleClick)
-	JavaScreenCmd jc(_control,JavaScreenCmd::MOUSEACTION_DOUBLECLICK,
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ShowRecords)
+	JavaScreenCmd jc(_control,JavaScreenCmd::SHOW_RECORDS,
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END

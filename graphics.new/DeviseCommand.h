@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  1999/08/13 17:22:47  wenger
+  Custom view layouts are now saved to session files; removed now unused
+  TileLayout code.
+
   Revision 1.41  1999/07/21 18:51:11  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -313,25 +317,25 @@ DECLARE_CLASS_DeviseCommand_(JAVAC_OpenSession)
 DECLARE_CLASS_END
 
 //
-//Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_Click
+//Class definition: DeviseCommand_JAVAC_MouseAction_Click
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_Click)
 DECLARE_CLASS_END
 
 //
-//Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_DoubleClick
+//Class definition: DeviseCommand_JAVAC_ShowRecords
 //
-DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_DoubleClick)
+DECLARE_CLASS_DeviseCommand_(JAVAC_ShowRecords)
 DECLARE_CLASS_END
 
 //
-//Class definition: DeviseCommand_JAVAC_JAVAC_MouseAction_RubberBand
+//Class definition: DeviseCommand_JAVAC_MouseAction_RubberBand
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_MouseAction_RubberBand)
 DECLARE_CLASS_END
 
 //
-//Class definition: DeviseCommand_JAVAC_JAVAC_SetDisplaySize
+//Class definition: DeviseCommand_JAVAC_SetDisplaySize
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_SetDisplaySize)
 DECLARE_CLASS_END

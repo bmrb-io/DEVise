@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.22  1999/06/22 19:46:59  wenger
+  Devised support for JavaScreen improvements: cursors are now drawn in any
+  view of a pile; mouse actions can be disabled in views; cursor grid info
+  is sent; JAVAC_CursorChanged command sends cursor name instead of view
+  name; added dummy mouse grid info (not yet implemented).  Fixed some
+  problems with how the devised deals with piles for the JavaScreen.
+
   Revision 1.21  1999/06/10 19:59:22  wenger
   Devised sends axis type info to JS even if axes aren't drawn (so JS can
   display cursor position properly); added code to send cursor grid info
@@ -139,7 +146,7 @@ class JavaScreenCmd
 			GETSESSIONLIST, 
 			OPENSESSION, 
 			MOUSEACTION_CLICK,
-			MOUSEACTION_DOUBLECLICK, 
+			SHOW_RECORDS, 
 			MOUSEACTION_RUBBERBAND,
 			JAVAEXIT,
 			CLOSECURRENTSESSION,
@@ -199,7 +206,7 @@ class JavaScreenCmd
 		void CloseCurrentSession();
 		void OpenSession();
 		void MouseAction_Click();
-		void MouseAction_DoubleClick();
+		void ShowRecords();
 		void MouseAction_RubberBand();
 		void SetDisplaySize();
 		void KeyAction();

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/08/13 17:22:18  wenger
+  Custom view layouts are now saved to session files; removed now unused
+  TileLayout code.
+
   Revision 1.11  1999/06/29 20:23:49  wenger
   When sending GData to a file or socket, strings including the separator
   character are now surrounded by braces; DEVise color numbers are converted
@@ -244,8 +248,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *tdMap,
     AttrList *attrList = tdMap->GDataAttrList();
 
     AttrInfo *attrInfos[MAX_SHAPE_ATTRS];
-    //TEMPTEMP for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
-    for (int attrNum = 0; attrNum < 10; attrNum++) {//TEMPTEMP
+    for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
       char buf[128];
       sprintf(buf, "shapeAttr_%d", attrNum);
       attrInfos[attrNum] = attrList->Find(buf);
@@ -306,8 +309,7 @@ GDataSock::GetRecordVals(AttrInfo **attrInfos, TDataMap *tdMap, char *gdata,
   vals._orientation = tdMap->GetOrientation(gdata);
   vals._symbolType = tdMap->GetShape(gdata);
 
-  //TEMPTEMP for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
-  for (int attrNum = 0; attrNum < 10; attrNum++) {//TEMPTEMP
+  for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
     result += GetShapeAttr(attrNum, attrInfos[attrNum], tdMap, gdata,
         stringTable, vals._shapeAttrs[attrNum]);
   }
@@ -424,8 +426,7 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
   }
 
   for (int attrNum = 0;
-      //TEMPTEMP attrNum < MAX_SHAPE_ATTRS && result.IsComplete(); attrNum++) {
-      attrNum < 10 && result.IsComplete(); attrNum++) {//TEMPTEMP
+      attrNum < MAX_SHAPE_ATTRS && result.IsComplete(); attrNum++) {
     result += PrintShapeAttr(vals._shapeAttrs[attrNum], buf, offset,
       bufSize);
   }

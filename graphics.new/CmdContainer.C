@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1999/08/13 17:22:45  wenger
+  Custom view layouts are now saved to session files; removed now unused
+  TileLayout code.
+
   Revision 1.44  1999/07/21 18:51:09  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -295,7 +299,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_CloseCurrentSession)
 	REGISTER_COMMAND(JAVAC_Exit)
 	REGISTER_COMMAND(JAVAC_MouseAction_Click)
-	REGISTER_COMMAND(JAVAC_MouseAction_DoubleClick)
+	REGISTER_COMMAND(JAVAC_ShowRecords)
 	REGISTER_COMMAND(JAVAC_MouseAction_RubberBand)
 	REGISTER_COMMAND(JAVAC_SetDisplaySize)
 	REGISTER_COMMAND(JAVAC_KeyAction)

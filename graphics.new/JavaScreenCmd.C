@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1999/08/12 16:03:55  wenger
+  Implemented "inverse" zoom -- alt-drag zooms out instead of in.
+
   Revision 1.66  1999/08/09 20:08:21  wenger
   Better error message if failure to open session directory; re-tries with
   "base" directory.
@@ -880,8 +883,8 @@ JavaScreenCmd::Run()
 		case MOUSEACTION_CLICK:
 			MouseAction_Click();
 			break;
-		case MOUSEACTION_DOUBLECLICK:
-			MouseAction_DoubleClick();
+		case SHOW_RECORDS:
+			ShowRecords();
 			break;
 		case MOUSEACTION_RUBBERBAND:
 			MouseAction_RubberBand();
@@ -1146,10 +1149,10 @@ JavaScreenCmd::MouseAction_Click()
 
 //====================================================================
 void
-JavaScreenCmd::MouseAction_DoubleClick()
+JavaScreenCmd::ShowRecords()
 {
 #if defined (DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("JavaScreenCmd::MouseAction_DoubleClick(",
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::ShowRecords(",
       _argc, _argv, ")\n");
 #endif
 
@@ -1157,7 +1160,7 @@ JavaScreenCmd::MouseAction_DoubleClick()
 	// DEVise window, but now it's the view.
 	if (_argc != 3)
 	{
-		errmsg = "Usage: MouseAction_DoubleClick <view name> <x> <y>";
+		errmsg = "Usage: ShowRecords <view name> <x> <y>";
 		_status = ERROR;
 		return;
 	}
@@ -1189,10 +1192,10 @@ JavaScreenCmd::MouseAction_RubberBand()
       _argc, _argv, ")\n");
 #endif
 
-	if (_argc != 5)
+	if (_argc != 5 && _argc != 6)
 	{
 		errmsg = "Usage: MouseAction_RubberBand <view name>"
-				 " <x1> <y1> <x2> <y2>";
+				 " <x1> <y1> <x2> <y2> [zoom out]";
 		// Note: (x1, y1) is where mouse started; Y is down from the top of
 		// the view/GIF.
 		_status = ERROR;
@@ -1203,6 +1206,17 @@ JavaScreenCmd::MouseAction_RubberBand()
 	int startY = atoi(_argv[2]);
 	int endX = atoi(_argv[3]);
 	int endY = atoi(_argv[4]);
+
+	int state; // controls zoom in/out
+	if (_argc > 5) {
+		if (atoi(_argv[5]) != 0) {
+		    state = 8; // alt
+		} else {
+		    state = 0;
+		}
+	} else {
+	    state = 0;
+	}
 
     ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
 	if (view == NULL) {
@@ -1226,7 +1240,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 	int xHigh = MAX(startX, endX);
 	int yHigh = MAX(startY, endY);
 	// button = 3 for XY zoom
-    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, 3, 0);
+    view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, 3, state);
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
