@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/12/27 17:01:06  wenger
+#  Got latest code to compile for sun, solsparc, and hp; updated dependencies;
+#  changed 'Import' to 'New Table' in main window GUI to reflect change of
+#  function.
+#
 #  Revision 1.4  1996/11/23 23:01:48  jussi
 #  Fixed to operate properly on HP.
 #
@@ -40,7 +45,7 @@ include $(DTE_DIR)/Makefile.sun
 
 dte: $(STAND_ALONE_OBJ)
 	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread \
-		-lm -lsocket -lnsl
+		-lm
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@
