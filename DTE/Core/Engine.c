@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/24 21:00:51  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.9  1996/12/21 22:21:43  donjerko
   Added hierarchical namespace.
 
@@ -81,8 +84,14 @@ int Engine::optimize(){
 	return 0;
 }
 
-void printString(String & str){
+void sp(String & str){
 	
-	cout << str.chars() << endl;
+	if (str)
+		cout << str.chars() << endl;
+}
 
+void bp(BaseSelection *sel){
+
+	if (sel)
+		sel->display(cout);
 }

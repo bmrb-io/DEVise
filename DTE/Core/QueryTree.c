@@ -224,11 +224,12 @@ Site* QueryTree::createSite(){
 	cout << " Near joinList " << endl;
 	if (joinList && !joinList->isEmpty()){
 		List<Site*>* joinGroups = new List<Site *>;
-		while(!joinList->atEnd()){
+		if (1){
+		//while(!joinList->atEnd()){
 			JoinTable * jTable = joinList->get();
 			joinList->step();
-			SiteGroup * st;
-			TRY( st = (SiteGroup*)jTable->Plan(sites,selectList,predicateList),0);
+			Site* st;
+			TRY( st = jTable->Plan(sites,selectList,predicateList),0);
 			joinGroups->append(st);
 		}
 		sites->addList(joinGroups);

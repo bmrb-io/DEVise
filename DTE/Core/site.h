@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/12/24 21:00:54  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.8  1996/12/21 22:21:51  donjerko
   Added hierarchical namespace.
 
@@ -413,6 +416,8 @@ public:
 				if(sites->atEnd()){
 					return false;
 				}
+				//cout << " SiteGroup comp -- " << sites->get() << "  checkSite ";
+				//cout << checkSite << endl;
 				if(sites->get() == checkSite){
 					break;
 				}
