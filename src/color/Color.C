@@ -156,8 +156,11 @@ bool	InitColor(Display* display)
 		palette->NewColor(pc);
 	}
 
-	if (!AllocPalette(pid))
+	if (!AllocPalette(pid)) {
+		cerr << "AllocPalette() failed at " << __FILE__ << ": " <<
+		  __LINE__ << "\n";
 		return false;
+	}
 
 	gCorePaletteID		= pid;
 	gCorePalette		= palette;
@@ -174,8 +177,11 @@ bool	InitColor(Display* display)
 		palette->NewColor(pc);
 	}
 
-	if (!AllocPalette(pid))
+	if (!AllocPalette(pid)) {
+		cerr << "AllocPalette() failed at " << __FILE__ << ": " <<
+		  __LINE__ << "\n";
 		return false;
+	}
 
 	gDefaultPaletteID	= pid;
 	gDefaultPalette		= palette;
@@ -514,8 +520,10 @@ bool		AllocPalette(PaletteID pid)
 
 	Palette*	palette = gPaletteManager->GetPalette(pid);
 
-	if (palette == NULL)
+	if (palette == NULL) {
+		cerr << "Can't get palette\n";
 		return false;
+	}
 
 	for (int i=0; i<palette->GetSize(); i++)
 	{
@@ -523,13 +531,15 @@ bool		AllocPalette(PaletteID pid)
 
 		if (!gColorManager->AllocColor(rgb))
 		{
-			for (int j=0; j<i; j++)
-			{
-				rgb = palette->GetColor(j)->GetColor();
-				gColorManager->FreeColor(rgb);
-			}
-
-			return false;
+			// Note: I don't quite understand the connection between the
+			// color allocation and the palette here; but if you don't
+			// successfully allocate a color for a given palette entry,
+			// you seem to end up with the first core color.  Anyhow,
+			// if some color allocations fail we want to go ahead and
+			// put _something_ on the screen, as opposed to just exiting.
+			// RKW Jan. 25, 1998.
+			cerr << "Cannot allocate color " << rgb.ToString() <<
+			  " -- mapping to " << gCoreColors[0] << "\n";
 		}
 	}
 

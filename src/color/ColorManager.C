@@ -28,6 +28,8 @@
 //#define INLINE_TRACE
 #include "debug.h"
 
+//#define DEBUG
+
 //******************************************************************************
 // Static Member Definitions
 //******************************************************************************
@@ -68,15 +70,25 @@ bool	ColorManager::AllocColor(const RGB& rgb)
 		color = lmap.Find(cid);					// Get logical entry
 
 		if (color == NULL)
+		{
+			cerr << "Internal inconsistency at " << __FILE__ << ": " <<
+			  __LINE__ << "\n";
 			return false;						// Bad things happening...
+		}
 
 		color->refs++;							// Incr references		
 
 		return true;
 	}
 
-	if (!XAllocColor(rgb, xcid))				// Physical allocation
-		return false;							// Allocation failed
+	if (!XAllocColor(rgb, xcid))
+	{
+#if defined(DEBUG)
+		cerr << "Physical color allocation failed for color " <<
+		  rgb.ToString() << "\n";
+#endif
+		return false;
+    }
 
 	cid = lmap.GetID();							// Create new logical entry
 	color = lmap.Find(cid);						// Get new entry

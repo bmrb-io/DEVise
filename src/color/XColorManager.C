@@ -26,6 +26,8 @@
 //#define INLINE_TRACE
 #include "debug.h"
 
+//#define DEBUG
+
 //******************************************************************************
 // Special Purpose Code for XColorManager::XAllocColor
 //******************************************************************************
@@ -48,7 +50,8 @@ bool	Compare_RGBDistance(const RGB& rgb1, const RGB& rgb2)
 // Constructors & Destructors
 //******************************************************************************
 
-XColorManager::XColorManager(Display* d)
+XColorManager::XColorManager(Display* d) :
+  ColorManager(DefaultDepth(d, DefaultScreen(d)))
 {
 	Trace("XColorManager::XColorManager()");
 
@@ -126,16 +129,13 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 {
 	Trace("XColorManager::XAllocColor()");
 
-	if (display == NULL)
+	if (display == NULL) {
+		cerr << "NULL Display at " << __FILE__ << ": " << __LINE__ << "\n";
 		return false;
+	}
 
 	int			scr_num = DefaultScreen(display);
 	Visual*		vis = DefaultVisual(display, scr_num);
-
-    // Haven't thought through / don't have machines to try / don't want
-    // to do this case.
-	if (vis->c_class != PseudoColor || DefaultDepth(display, scr_num) != 8)
-		return false;
 
 	Colormap	map = DefaultColormap(display, DefaultScreen(display));
 	XColor		xcolor;
@@ -149,10 +149,18 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 	{
 		xcid = xcolor.pixel;
 		error = 0.0;
-//		printf("Allocating RGB %s: no error\n", rgb.ToString().c_str());
+#if defined(DEBUG)
+		cout << "Allocating RGB " << rgb.ToString().c_str() << ": no error\n";
+#endif
 		
 		return true;
 	}
+#if defined(DEBUG)
+	else
+	{
+		cout << "Allocating RGB " << rgb.ToString().c_str() << " failed\n";
+	}
+#endif
 
 	RGBList		list(pmap.size());		// Argument is an allocation hint
 	bool		isGray = rgb.IsGray();
@@ -166,8 +174,10 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 	while (i != list.end())
 	{
 		error = (*i).Error(rgb);
-//		printf("Trying RGB %s: %g error\n", (*i).ToString().c_str(),
-//			   error);
+#if defined(DEBUG)
+		cout << "Trying RGB " << (*i).ToString().c_str() << ": " << error <<
+		  " error\n";
+#endif
 
 		if (error > gMaxColorErr)
 			break;
@@ -186,16 +196,26 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 		{
 			xcid = xcolor.pixel;
 			error = (*i).Error(rgb);
-//			printf("Allocating RGB %s: %g error\n", rgb.ToString().c_str(),
-//				   error);
+#if defined(DEBUG)
+			cout << "Allocating RGB " << (*i).ToString().c_str() << ": " <<
+			  error << " error\n";
+#endif
 
 			return true;
 		}
+#if defined(DEBUG)
+		else
+		{
+		    cout << "Allocating RGB " << rgb.ToString().c_str() << " failed\n";
+		}
+#endif
 
 		i++;
 	}
 
-//	printf("Allocating RGB %s: failed\n", rgb.ToString().c_str());
+#if defined(DEBUG)
+    cout << "Allocating RGB " << rgb.ToString().c_str() << " failed\n";
+#endif
 
 	return false;
 }
