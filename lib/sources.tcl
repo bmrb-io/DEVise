@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.17  1996/01/11 21:00:59  jussi
+#	No major changes -- improvements in coding style and organization.
+#
 #	Revision 1.16  1996/01/11 16:04:08  jussi
 #	Added button for uncaching data.
 #
@@ -170,7 +173,7 @@ proc updateStreamDef {} {
     set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 
     if {$source == "SEQ"} {
-	set oldCommand $sourceList($dispname)
+	set oldCommand [lindex $sourceList($dispname) 7]
 	if {$oldCommand != $command} {
 	    uncacheData $oldDispName "Query changed."
 	}
