@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/26 16:10:50  guangshu
+  Modified the function Histogram.
+
   Revision 1.21  1996/07/25 15:14:24  guangshu
   Fixed compiling Warning.
 
@@ -85,6 +88,8 @@
   Initial Version.
 */
 
+//#define DEBUG
+
 #include <stdio.h>
 
 #include "BasicStats.h"
@@ -95,6 +100,7 @@ const int StatLineWidth = 1;
 BasicStats::BasicStats()
 {
   _vw = 0;
+  hist_min = hist_max = width = 0;
 }
 
 BasicStats::~BasicStats()
@@ -117,7 +123,6 @@ void BasicStats::Init(ViewGraph *vw)
   for(int j=0; j<HIST_NUM; j++){
 	hist[j]=0;
   }
-/*  width = 0; */
 }
 
 void BasicStats::Sample(double x, double y)
@@ -157,12 +162,18 @@ void BasicStats::Sample(double x, double y)
   int_x = int_y = 0;
 }
 
-void BasicStats::Histogram(double y, double yMin)
+void BasicStats::Histogram(double y)
 {
-       int index = (int) ((y - yMin)/width);
-       if(index>=HIST_NUM) index = HIST_NUM-1;
-       DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
-       hist[index]++;
+  if( y >= hist_min && y <= hist_max && width > 0 ) {
+    int index = int( (y - hist_min)/width );
+    if(index>=HIST_NUM) index = HIST_NUM-1;
+#if defined(DEBUG)
+    printf("y:%g index:%d min:%g max:%g width:%g\n",
+	   y, index, hist_min, hist_max, width);
+#endif
+    DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
+    hist[index]++;
+  }
 }
 
 void BasicStats::Done()
@@ -243,11 +254,14 @@ void BasicStats::Report()
   win->SetCopyMode();
 }
 
+
 void BasicStats::ReturnHist()
 {
   for(int j = 0; j<HIST_NUM; j++) printf("%d ", hist[j]);
   printf("\n");
 }
+
+
 Coord BasicStats::GetStatVal(int statnum)
 {
   switch (statnum) {
@@ -272,6 +286,7 @@ Coord BasicStats::GetStatVal(int statnum)
 
 int BasicStats::GetHistVal(int index)
 {
+    DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
     return hist[index];
 }
 
@@ -280,9 +295,29 @@ Coord BasicStats::GetHistWidth()
     return width;
 }
 
-void BasicStats::SetHistWidth(Coord max, Coord min)
+Coord BasicStats::GetHistMin()
 {
-    width = (max-min)/HIST_NUM;
+    return hist_min;
+}
+
+Coord BasicStats::GetHistMax()
+{
+    return hist_max;
+}
+
+void BasicStats::SetHistWidth(Coord min, Coord max)
+{
+    DOASSERT(min <= max, "histogram min > max");
+    if( min == max ) {
+	hist_min -= 0.5;
+	hist_max += 0.5;
+    }
+    hist_min = min;
+    hist_max = max;
+    width = (max - min) / HIST_NUM;
+#if defined(DEBUG)
+    printf("set width: min:%g max:%g width:%g\n", min, max, width);
+#endif
 }
 
 char *BasicStats::GetStatName(int statnum)

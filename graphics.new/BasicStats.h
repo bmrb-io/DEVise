@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/26 16:10:55  guangshu
+  Modified the function Histogram.
+
   Revision 1.13  1996/07/22 23:42:42  guangshu
   Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
 
@@ -112,7 +115,7 @@ public:
 
   virtual void Init(ViewGraph *vw = 0);
   virtual void Sample(double x, double y);
-  virtual void Histogram(double y, double yMin);
+  virtual void Histogram(double y);
   virtual void Done();
   virtual void Report();
   virtual void ReturnHist();
@@ -120,19 +123,23 @@ public:
   virtual Coord GetStatVal(int statnum);
   virtual int GetHistVal(int index);
   virtual Coord GetHistWidth();
-  virtual void SetHistWidth(Coord max, Coord min);
+  virtual Coord GetHistMin();
+  virtual Coord GetHistMax();
+  virtual void SetHistWidth(Coord min, Coord max);
   virtual char *GetStatName(int statnum);
 
+protected:
 
-private:
   double ysum, xsum;
   double ysum_sqr, xsum_sqr;
   double ymin, xmin, ymax, xmax;
   double xatymax, xatymin;
   double int_x, int_y;
   int nsamples, nval;
-  int hist[HIST_NUM];   /* the histogram counts for each class, make it static for now */
-  double width; /* width = (ymax-ymin) divided by 50 */
+  int hist[HIST_NUM];   // the histogram counts for each class, 
+			// make it static for now 
+  double width;		// width of each histogram bucket
+  double hist_min, hist_max; // min and max 
   
   // Stat values
   double avg, var, std;
