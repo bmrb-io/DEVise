@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/11 17:28:39  jussi
+  Reorganized the code somewhat in order to match the ParseAPI
+  interface.
+
   Revision 1.7  1996/05/11 03:14:12  jussi
   Removed some control panel variables like FileName, GDataName,
   WindowName etc.
@@ -90,7 +94,14 @@ public:
   /* Get MapInterpClassInfo info */
   virtual MapInterpClassInfo *GetInterpProto() { return _interpProto; }
 
+  /* Add replica server */
+  virtual int AddReplica(char *hostName, int port) { return 1; }
+
+  /* Remove replica server */
+  virtual int RemoveReplica(char *hostName, int port) { return 1; }
+
 protected:
+
   virtual void SubclassInsertDisplay(DeviseDisplay *disp,
 				     Coord x, Coord y,
 				     Coord w, Coord h) {}
