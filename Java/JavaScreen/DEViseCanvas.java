@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2000/07/20 15:51:12  wenger
+// Fixed bug 586 (can't move cursors with spaces in the names).
+//
 // Revision 1.59  2000/07/19 20:11:35  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -145,6 +148,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.60  2000/07/20 15:51:12  wenger
+// Fixed bug 586 (can't move cursors with spaces in the names).
+//
 // Revision 1.59  2000/07/19 20:11:35  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -523,6 +529,7 @@ public class DEViseCanvas extends Container
         paintHelpMsg(gc);
     }
 
+/* - untouched
     private void paintHelpMsg(Graphics gc)
     {
         if (helpMsg == null) {
@@ -578,6 +585,8 @@ public class DEViseCanvas extends Container
         //helpMsg = null;
     } 
 
+*/
+
 
     private synchronized void paintBackground(Graphics gc)
     {
@@ -588,6 +597,148 @@ public class DEViseCanvas extends Container
             gc.fillRect(0, 0, canvasDim.width, canvasDim.height);
         }
     }
+// Venpaint
+
+    private void paintHelpMsg(Graphics gc)
+    {
+	boolean testPrint = false;
+        if (helpMsg == null) {
+            return;
+        }
+
+        if (helpMsgX < 0) {
+            helpMsgX = 0;
+        }
+        if (helpMsgY < 0) {
+            helpMsgY = 0;
+        }
+	helpMsgX = 0; helpMsgY = 0;
+ 
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        FontMetrics fm = tk.getFontMetrics(DEViseUIGlobals.textFont);
+        int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
+        int width = fm.stringWidth(helpMsg) + 12;
+	int minHeight = height + height/3; int minWidth = fm.stringWidth("THIS IS THE MINIMUM");
+
+	if(canvasDim.width < minWidth || canvasDim.height < minHeight){
+	   return;
+        }
+     
+        StringTokenizer st = new StringTokenizer(helpMsg, "\n");
+	Vector sv = new Vector();
+	String back = "";
+
+        while(st.hasMoreTokens()|| !back.equals("")){
+	      String tmp = back + " ";
+	   if(st.hasMoreTokens()){
+	       tmp  +=  st.nextToken(); 
+           }
+	   
+	   int tokenWidth = fm.stringWidth(tmp) + 12;
+	   if(tokenWidth > canvasDim.width){
+	     // testPrint = true;
+             String[] a = stringSplit(tmp, fm);
+	     tmp = a[0];
+	     back = a[1];
+	     // System.out.println(tmp);
+	     // System.out.println(back);
+	     sv.addElement(tmp);
+
+           }
+	   else{
+	      sv.addElement(tmp);
+	      back = "";
+	   }    
+        }
+
+	if(testPrint){
+	   // System.out.println(helpMsg);
+	}
+
+	if( back.equals("")); 
+	else{
+	   sv.addElement(back);
+        }
+	   
+        int totHeight = height * sv.size() ;
+        if( sv.size () > 3 ){ 
+	   totHeight += sv.size() * (-5);
+        }
+
+	int allowedHeight = 4* canvasDim.height/5;
+        if(totHeight> allowedHeight ){
+	   // may want to put some message;
+	   return;
+         }
+
+
+//      int dispLength = canvasDim.width;	
+//      computing display length
+
+        int dispLength = 0;
+        for(int i = 0; i < sv.size(); i++){
+	  String s = (String) sv.elementAt(i);
+	  int w = fm.stringWidth(s);
+	  if(dispLength < w ){
+	     dispLength = w;
+          } 
+        }   
+        dispLength += 12;
+        if( dispLength < canvasDim.width){
+	 int j = canvasDim.width - dispLength;
+	 if( j  > 6){
+	     dispLength +=6;
+         }
+	 else{
+	     dispLength += j;
+         }
+        } 
+
+        // setting up the color background and text color.
+
+        gc.setColor(Color.black);
+        gc.drawRect(helpMsgX, helpMsgY, dispLength -1, totHeight);
+        gc.setColor(new Color(255, 255, 192));
+        gc.fillRect(helpMsgX + 1, helpMsgY + 1,dispLength - 2, totHeight- 1);
+        gc.setColor(Color.black);
+        gc.setFont(DEViseUIGlobals.textFont);
+
+        // printing each of the line from the Vector of lines.
+        for( int i = 0 ; i < sv.size(); i++){	
+           gc.drawString(((String) sv.elementAt(i)), helpMsgX + 6, helpMsgY + height - dc - 6);
+	   helpMsgY += (height - dc -6);
+	}
+	  
+
+    }	
+
+   private String[]  stringSplit(String a, FontMetrics fm){
+       StringTokenizer st = new StringTokenizer(a, " "); 
+       int defWidth = 0;
+       String tmp ="";
+       String[] res = new String[2];
+       res[0] = ""; res[1] = "";
+       while( st.hasMoreTokens()){
+	 tmp = st.nextToken();
+	 defWidth = fm.stringWidth(res[0]) + fm.stringWidth(tmp + " ") ;
+	 if((defWidth + 5) > canvasDim.width){
+           break;
+         }
+	 else{
+	    res[0] = res[0] + " " + tmp;
+         }
+       }
+       res[1] = tmp + " " ;
+       while( st.hasMoreTokens()){
+	  res[1] += (st.nextToken() + " "); 
+       }
+       // System.out.println( a + " split as " + res[0] + " and " + res[1]);
+
+       return res;
+   }
+
+	   
+          
 
     private synchronized boolean paintCrystal(Graphics gc)
     {
