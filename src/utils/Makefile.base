@@ -1,12 +1,15 @@
 ##******************************************************************************
 ## Utilities Makefile
-## Copyright (c) 1997 DEVise Group
+## Copyright (c) 1997-1998 DEVise Group
 ## DEVise Color Management
 ##******************************************************************************
 
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1998/02/24 21:39:10  beyer
+#  added 'depend' target
+#
 #  Revision 1.8  1998/02/20 20:44:18  wenger
 #  Changed color and utils libraries to new export directory scheme for
 #  dealing with include files (email with complete explanation forthcoming).
@@ -62,13 +65,14 @@ include ../../Makefile.common
 UTILS_INCLUDES = -I../../src/color/export -I../../src/utils/export \
 	-I../../graphics -I../../graphics.new -I../../tape -I../../unidata
 
-TEMPLATE_FLAGS = -fno-implicit-templates
-
 CFLAGS_T = $(ARCH_FLAGS) $(UTILS_INCLUDES) $(OPTFLAG) \
 	-Wall -Wno-unused -DHAVE_CONFIG_H
 CFLAGS = $(CFLAGS_T) $(TEMPLATE_FLAGS)
 
-UTILS_SRC = templates.C BooleanArray.c
+UTILS_SRC = BooleanArray.c
+ifneq ($(IMPLICIT_TEMPLATES),1)
+    UTILS_SRC += templates.C
+endif
 
 SRCc = $(filter %.c,$(UTILS_SRC))
 SRCC = $(filter %.C,$(UTILS_SRC))
@@ -84,6 +88,7 @@ $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
 
 depend Makefile.depend: $(VPATH)/*.[cCh]
+	echo $(UTILS_SRC)
 	-rm Makefile.depend
 	-$(CC) -M $(ARCH_FLAGS) $(UTILS_INCLUDES) $(VPATH)/*.[cC] \
 		> Makefile.depend
@@ -94,7 +99,8 @@ $(LIBNAME)(templates.o):
 	$(CC) -c $(CFLAGS_T) $(VPATH)/templates.C $<
 	$(AR) cr $@ $%
 
-#	$(RM) $%
+templates.o: templates.C
+	$(CC) -c $(CFLAGS_T) $(VPATH)/templates.C $<
 
 clean:	mostlyclean
 	-rm $(LIBNAME)

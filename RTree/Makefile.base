@@ -30,10 +30,11 @@ RTREE_INCLUDES = \
 	-I../../graphics.new \
 	-I../../tape
 
+# Note: we're using implicit templates here.
 CFLAGS = $(ARCH_ENDIAN) $(RTREE_INCLUDES) $(ARCH_FLAGS) \
 	$(OPTFLAG) \
 	-DUNIX -DLIBCS -D_DEBUG
-#	-fexternal-templates \
+#	$(TEMPLATE_FLAGS) \
 #	-Wall
 
 ifdef RTREE_DEBUG

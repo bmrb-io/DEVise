@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1995/12/29 18:54:42  jussi
+#  Removed -fno-for-scope compiler flag.
+#
 #  Revision 1.2  1995/12/28 20:53:38  jussi
 #  Updated ARCH_FLAGS to reflect SGI platform.
 #
@@ -23,6 +26,9 @@
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS = -DSGI -I../../parser
 

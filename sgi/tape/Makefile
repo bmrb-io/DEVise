@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1995/12/29 18:54:43  jussi
+#  Removed -fno-for-scope compiler flag.
+#
 #  Revision 1.3  1995/12/28 22:00:32  jussi
 #  Added -I/usr/include compiler flag.
 #
@@ -26,6 +29,9 @@
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
 	-I/usr/include

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/01/07 19:31:18  wenger
+#  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+#  server library into Devise); updated solaris, sun, linux, and hp
+#  dependencies.
+#
 #  Revision 1.3.4.1  1997/12/29 22:12:52  wenger
 #  Got DEVise 1.4.7 to compile, link, and run on SGI.
 #
@@ -30,6 +35,9 @@
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
 

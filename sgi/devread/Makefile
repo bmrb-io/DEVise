@@ -15,11 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1997/03/25 18:01:32  wenger
+#  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+#
 #  Revision 1.2.4.1  1997/03/18 14:43:28  wenger
 #  Various minor changes to get 1.3 to compile on SGI.
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS   = -DSGI -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib

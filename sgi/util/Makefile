@@ -15,8 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/01/13 03:26:11  jussi
+#  Initial revision.
+#
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS = -DSGI
 

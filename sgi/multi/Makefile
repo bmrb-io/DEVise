@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1998/02/23 23:23:53  wenger
+#  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
+#
 #  Revision 1.8  1998/01/07 19:31:41  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #  server library into Devise); updated solaris, sun, linux, and hp
@@ -54,6 +57,9 @@
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
 

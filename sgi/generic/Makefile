@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1998/02/23 23:23:28  wenger
+#  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
+#
 #  Revision 1.9  1998/01/07 19:31:34  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #  server library into Devise); updated solaris, sun, linux, and hp
@@ -56,6 +59,9 @@
 
 ############################################################
 
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
+
 PERL_CORE = /usr/freeware/lib/perl5/irix/CORE
 
 ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include \
@@ -64,7 +70,11 @@ ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include \
 # Having -L /usr/local/lib here makes strstreams core dump! RKW Dec. 29, 1997.
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/freeware/lib
 
-ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
+# Putting -lclient in here is a kludge, because for some ****ed-up reason
+# we need to link it on the SGI even though we don't need it on the
+# other architectures.
+ARCH_SYSLIBS = -lclient -lGL -lGLU -ltk4.0 -ltcl7.4 -lX11 -lm
+
 ARCH_LDPOST  =
 ARCH_STATIC_LDPOST  = -static
 

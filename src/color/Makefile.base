@@ -7,6 +7,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1998/02/24 21:39:28  beyer
+#  added 'depend' target
+#
 #  Revision 1.6  1998/02/20 20:43:55  wenger
 #  Changed color and utils libraries to new export directory scheme for
 #  dealing with include files (email with complete explanation forthcoming).
@@ -53,8 +56,6 @@ include ../../Makefile.common
 
 COLOR_INCLUDES = -I../../src/color -I../../src/color/export \
 	-I../../src/utils/export
-
-TEMPLATE_FLAGS = -fno-implicit-templates
 
 CFLAGS = $(ARCH_FLAGS) $(COLOR_INCLUDES) $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-Wall -Wno-unused

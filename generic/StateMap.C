@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1997/01/30 19:47:39  jussi
+  Initial revision.
+*/
 
 #ifdef __GNUG__
 #pragma implementation "HashTable.h"
@@ -35,6 +38,10 @@ int GenStringComp(char *&string1, char *&string2)
 {
   return strcmp(string1, string2);
 }
+
+#if defined(SGI)
+template class HashTable<char *, stateMapRec *>;
+#endif
 
 HashTable<char *, stateMapRec *> genStateMap(50, GenStringHash,
                                              GenStringComp);

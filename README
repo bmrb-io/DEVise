@@ -42,6 +42,26 @@ DEV_DEBUG to a non-zero value.  You don't have to change any of the
 makefiles.
 
 
+*** Templates
+
+Unfortunately (?) we make some use of templates in DEVise.  g++ (as of
+this writing) does not deal with templates very well at all, meaning
+we have to do a lot of extra work.
+
+In most cases, we're not using implicit templates, so that we can ensure
+that there's only one copy of the code for each template instance.  The
+template instances are instantiated in various templates.c<c> files.
+This means that if you add a template, or make use of a new instance of
+a template, you have to add stuff to the appropriate file to instantiate
+what you use.
+
+HOWEVER, on the SGIs templates are even more ****ed up than on the other
+architectures, and it seems that the only way to get them to work is to
+use implicit templates everywhere.  Therefore, there are special provisions
+in the makefiles to allow the SGI makefiles to force everything to use
+implicit templates, and to avoid linking in the templates.o files.
+
+
 *** Adding Source Files
 
 When you add new source files, the files should start with the standard

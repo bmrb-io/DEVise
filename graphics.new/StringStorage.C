@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/02 18:26:16  wenger
+  Strings file can now be loaded manually; name of strings file is now
+  stored in session file; added 'serverExit' command and kill_devised
+  script to cleanly kill devised; fixed bug 249; more info is now
+  printed for unrecognized commands.
+
   Revision 1.5  1997/11/24 23:15:17  weaver
   Changes for the new ColorManager.
 
@@ -49,6 +55,11 @@
 #include "DevError.h"
 
 //#define DEBUG_STRINGS
+
+#if defined(SGI)
+template class HashTable<char *, int>;
+template class HashTable<int, char *>;
+#endif
 
 int StringStorage::_stringNum = 0;
 HashTable<char *, int> StringStorage::_strings(100, StringHash, StringComp);

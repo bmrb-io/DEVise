@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1998/02/23 23:23:42  wenger
+#  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
+#
 #  Revision 1.5  1998/02/20 17:03:11  wenger
 #  Updated all architectures to use new dependency scheme in graphics and
 #  graphics.new directories.
@@ -36,6 +39,9 @@
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
 	-I/usr/include -I/usr/freeware/include

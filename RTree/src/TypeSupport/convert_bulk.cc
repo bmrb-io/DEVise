@@ -12,7 +12,7 @@ main()
   char line[160], line2[160];
   char extra[30000];
   char entry_val[10000];
-  int point_data, num_elem, num_dim, data_size, new_data_size;
+  int point_data, num_dim, data_size, new_data_size;
 
   gets(line);
   sscanf(line, "%d %d %d\n", &num_dim, &data_size, &point_data);

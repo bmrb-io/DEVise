@@ -15,8 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1998/02/26 18:55:14  wenger
+#  Got everything to compile on haha -- still have a link problem, though.
+#
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11
 

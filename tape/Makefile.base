@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1998/02/20 20:44:36  wenger
+#  Changed color and utils libraries to new export directory scheme for
+#  dealing with include files (email with complete explanation forthcoming).
+#
 #  Revision 1.14  1998/02/19 23:26:35  wenger
 #  Improved color library and got client/server test code to work
 #  (except for setting colors by RGB): reduced compile interdependencies,
@@ -57,7 +61,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-I../../src/color/export \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX
 
-LIBSRC = tapedrive.C Templates.C
+LIBSRC = tapedrive.C
 
 LIBOBJ = $(LIBSRC:.C=.o)
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.76  1998/02/26 17:19:29  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.75  1998/02/26 00:19:34  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -380,6 +383,10 @@ static char* _gdataBuf = (char *)_gdataDoubleBuf;
 
 static const int TDATA_BUF_SIZE = 40960;
 static char _tdataBuf[TDATA_BUF_SIZE];
+
+#if defined(SGI)
+template class SortedTable<Coord, RecId>;
+#endif
 
 /*
    Max number of records retrieved from buffer manager before query

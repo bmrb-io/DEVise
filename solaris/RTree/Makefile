@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/02/26 17:20:06  wenger
+#  Fixed problems with yesterday's commit.
+#
 
 ############################################################
 
@@ -24,10 +27,10 @@ ARCH_SYSLIBS = -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_ENDIAN =
 
-DTE_DIR = ../../RTree
-VPATH = $(DTE_DIR) $(DTE_DIR)/src $(DTE_DIR)/src/Common \
-	$(DTE_DIR)/src/DBJussi $(DTE_DIR)/src/PageClasses \
-	$(DTE_DIR)/src/Progs $(DTE_DIR)/src/RTree $(DTE_DIR)/src/TypeSupport
+SRC_DIR = ../../RTree
+VPATH = $(SRC_DIR) $(SRC_DIR)/src $(SRC_DIR)/src/Common \
+	$(SRC_DIR)/src/DBJussi $(SRC_DIR)/src/PageClasses \
+	$(SRC_DIR)/src/Progs $(SRC_DIR)/src/RTree $(SRC_DIR)/src/TypeSupport
 
-include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.solaris
+include $(SRC_DIR)/Makefile.base
+include $(SRC_DIR)/Makefile.solaris

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1998/02/26 00:16:27  zhenhai
+#  Implementation for spheres and line segments in OpenGL 3D graphics.
+#
 #  Revision 1.25  1998/01/30 21:54:19  wenger
 #  Changed from -g back to -gstabs.
 #
@@ -125,17 +128,17 @@ else
   GLINCLUDE = -I/s/mesa-2.4/include
 endif
 
-ifeq ($(SPECIFIC_PATH),TRUE)
-  LD = ld
-  CC = /s/gcc-2.7.2/bin/g++
-  C  = /s/gcc-2.7.2/bin/gcc
-  AR = ar
-else
-  LD = ld
-  CC = g++
-  C  = gcc
+LD = ld
+
+CC = g++
+
+C  = gcc
+
+# Allow architecture-specific makefiles to specify commands for AR if necessary.
+ifeq ($(AR),)
   AR = ar
 endif
+
 RANLIB = ranlib
 
 # Set up for optimize or debug compiling.
@@ -149,9 +152,11 @@ else
     endif
 endif
 
-#TEMPLATE_FLAGS = -fexternal-templates
-TEMPLATE_FLAGS = -fno-implicit-templates
-#TEMPLATE_FLAGS = -fno-implicit-templates -fhuge-objects
+ifeq ($(IMPLICIT_TEMPLATES),1)
+    TEMPLATE_FLAGS =
+else
+    TEMPLATE_FLAGS = -fno-implicit-templates
+endif
 
 # Set up for profiling.
 ifneq ($(DEV_PROFILE),)

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1998/02/23 23:23:14  wenger
+#  Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
+#
 #  Revision 1.3.16.1  1998/02/23 19:52:37  wenger
 #  Got DEVise 1.4.7 to compile and link on haha; fixed bug 268.
 #
@@ -29,6 +32,9 @@
 #
 
 ############################################################
+
+IMPLICIT_TEMPLATES = 1
+AR = /usr/gnu/bin/ar
 
 ARCH_FLAGS = -DSGI -I/usr/include/X11 -I/usr/local/include \
 	-I/usr/freeware/include
