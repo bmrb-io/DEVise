@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/07/15 21:14:06  jussi
+  Minor cleanup.
+
   Revision 1.35  1996/07/15 17:02:01  jussi
   Added support for string attributes in GData.
 
@@ -188,7 +191,9 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
 				 unsigned long int attrFlag)
 {
   _attrList = attrList;
-  int size = 0;
+
+  /* Record ID is always first GData attribute */
+  int size = sizeof(RecId);
   double val;
 
   if (flag & MappingCmd_X && !IsConstCmd(cmd->xCmd, val)) {
@@ -278,6 +283,8 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[10] = new FullMapping_GifImageShape;
     _shapes[11] = new FullMapping_PolylineFileShape;
     _shapes[12] = new FullMapping_TextLabelShape;
+    _shapes[13] = new FullMapping_LineShape;
+    _shapes[14] = new FullMapping_LineShadeShape;
 
     _interp = Tcl_CreateInterp();
     if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {
@@ -421,7 +428,7 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
 #endif
 }
 
-void MappingInterp::DrawGDataArray(View *view, WindowRep *win,
+void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 				   void **gdataArray, int num)
 {
   if (_offsets->shapeOffset < 0) {
@@ -488,6 +495,10 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
   _tclRecId = startRecId;
 
   for(int i = 0; i < numRecs; i++) {
+
+    /* Store ID of current record */
+    *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
+
     /* Initialize tdata variables into tcl variables.*/
 #if 0
     printf("setting attr values\n");
@@ -698,10 +709,14 @@ AttrList *MappingInterp::InitCmd(char *name)
 {
   AttrList *attrList = new AttrList(name);
 
-  /* Init offsets to GData attributes */
+  /* Record ID is always first GData attribute */
+  _offsets->recidOffset = 0;
+
+  /* Init offsets to other GData attributes */
   _offsets->xOffset = _offsets->yOffset = _offsets->zOffset = -1;
   _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
   _offsets->patternOffset = _offsets->orientationOffset = -1;
+
   int i;
   for(i = 0; i < MAX_GDATA_ATTRS; i++)
     _offsets->shapeAttrOffset[i] = -1;
@@ -709,7 +724,8 @@ AttrList *MappingInterp::InitCmd(char *name)
   _tdataFlag->ClearBitmap();
   _maxTDataAttrNum = 0;
   
-  int offset = 0;
+  int offset = sizeof(RecId);
+
   _isSimpleCmd = true;
   Boolean isSorted;
   AttrType attrType;
@@ -882,7 +898,10 @@ AttrList *MappingInterp::InitCmd(char *name)
   return attrList;
   
  complexCmd:
-  /* Init offsets to GData attributes */
+  /* Record ID is always first GData attribute */
+  _offsets->recidOffset = 0;
+
+  /* Init offsets to other GData attributes */
   _offsets->xOffset = _offsets->yOffset = _offsets->zOffset = -1;
   _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
   _offsets->patternOffset = _offsets->orientationOffset = -1;
@@ -897,7 +916,10 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   _tdataFlag->ClearBitmap();
   _maxTDataAttrNum = 0;
-  offset = 0;
+
+  offset = sizeof(RecId);
+  offset = WordBoundary(offset, sizeof(double));
+
   double constVal;
 
   if (_cmdFlag & MappingCmd_X) {
@@ -1420,7 +1442,7 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   printf("ConvertToGdataSimple\n");
 #endif
 
-  DOASSERT(((int) gdataPtr % (int) sizeof(double)) == 0, "gdataPtr misaligned");
+  DOASSERT(((int)gdataPtr % (int)sizeof(double)) == 0, "gdataPtr misaligned");
 
   int tRecSize = TDataRecordSize();
   int gRecSize = GDataRecordSize();
@@ -1429,6 +1451,10 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
   _tclRecId = startRecId;
 
   for(int i = 0; i < numRecs; i++) {
+
+    /* Store ID of current record */
+    *((RecId *)(gPtr + _offsets->recidOffset)) = startRecId + i;
+
     double *dPtr;
 
     if (_offsets->xOffset >= 0) {
@@ -1476,6 +1502,7 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 
     tPtr += tRecSize;
     gPtr += gRecSize;
+
     _tclRecId++;
   }
 }

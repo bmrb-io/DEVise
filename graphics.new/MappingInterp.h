@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/15 17:02:02  jussi
+  Added support for string attributes in GData.
+
   Revision 1.22  1996/07/10 00:03:38  jussi
   Replaced TDataMapDispatch with TDataMap.
 
@@ -155,7 +158,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 13;
+const int MaxInterpShapes = 15;
 
 class MappingInterp: public TDataMap {
   friend inline double ConvertOne(char *from,
@@ -190,7 +193,7 @@ public:
   /* Update maximum symbol size */
   void UpdateMaxSymSize(void *gdata, int numSyms);
   
-  virtual void DrawGDataArray(View *view, WindowRep *win,
+  virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num);
 
   virtual AttrInfo *MapGAttr2TAttr(char *attrName);
