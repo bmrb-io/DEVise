@@ -1,0 +1,125 @@
+\section{An overview of the DEVise framework}
+\label{sec:devise}
+
+We present a brief introduction to the visual idioms in DEVise. We focus
+on the currently implemented version.
+
+The unit of visualization in DEVise is called a {\it chart}. Visualization 
+of a chart is based on {\it mapping} each data record of a table
+to a visual symbol on the screen. The source table is an ascii
+or binary file with a specified schema. We call this table a {\it TData}.  The
+result of applying a mapping to a TData is {\it GData} which is a high-level
+representation of what is to be painted on the screen. A GData record has
+visual attributes such as {\it x, y, size, color, pattern orientation and symbol-type}. For instance, if data has to be represented as a bar chart, then 
+the symbol type would be {\it bar} and x and y would specify the location and
+height of the bar. The actual attributes that are mapped to x and y are
+specified by the mapping. The range of GData attributes visible in a chart
+is called its {\it visual filter}. A visual filter is a selection query on 
+the GData, whose result is all records with values of attributes lying with
+the ranges specified by the filter. In fact, every DEVise chart is 
+the result of a query on the underlying data records. 
+
+One of more charts may be organized into windows. DEVise supports automatic
+layout modes such as {\it grid, stack and overlay(pile)}. Grids and stacks 
+have no query-related semantics but aid in grouping related charts together. 
+Overlays have the  semantics that they have a implicit visual link on x and y 
+attribute. 
+
+Cursors and links are mechanisms that can create an interdependency 
+between the queries corresponding to different charts. We do not discuss
+the formal semantics of these mechanisms here but instead present an 
+informal description. For a more detailed formal treatment the reader is
+referred to the \cite{ref:sigmod}.
+
+A cursor allows the visual filter of one view to appear as a highlight in
+another view. A cursor is useful to zoom in on a small portion (source) of a
+larger view(destination). The zoomed in portion appears as the highlight
+in the destination. A visual link between two views ensures that their visual 
+filters show identical ranges of the linking attributes. Currently, DEVise 
+supports visual links on x and y attributes of GData. If two views are linked
+by a visual link on x, when a user zooms or scrolls in one of them, the other
+updates itself to show the same range of x. A record link from view V1 to view
+V2 on attribute A of TData means that the projection of A from records
+displayed in V2 is a subset of the projection of A in V2. 
+(The subset relationship comes from the fact that some of the records may lie 
+outside the visual filter of V2). Here, V1 is said to be the master and V2 
+a slave of the record link. Among other things, a record link can be used to
+view different attributes of the same data records in two views. 
+
+To understand these concepts better, we use the visualization shown in
+Fig. \ref{fig:vis}. We use this example throughout the report.
+
+%%%!!! Fig here and explanation 
+\begin{figure}[tbp]
+\centerline{\psfig{figure=vis.ps, width=6in}}
+\caption{\label{fig:vis}{A DEVise Visualization}}
+\end{figure}
+
+This visualization shows information about documents from different sources
+(A, B, C, D and E) and categories (A, B, C, D). The documents are from 
+years 1988 to 1997 and are ranked. The "Rank vs Title" view shows all 
+documents in yellow. All documents organized by year and category are
+shown by "Category v/s Year" view in DEViseWn0 in red. All documents organized
+by category and source are shown by "Category v/s Source" view in red. (Note
+that multiple documents from a given category and year (or source) are plotted 
+with randomization so that they appear as a cloud instead of a single point).
+The window DEViseWn0 actually contains three views overlaid so that 
+they have an implicit visual link on x and y attributes. The green rectangles
+highlighting some of the records in DEViseWn0 and DEViseWn4 are because
+of overlays. Fig. \ref{fig:visunpiled} shows the same visualization with all
+overlays "unpiled". 
+
+%%%!!! Fig here and explanation 
+\begin{figure}[tbp]
+\centerline{\psfig{figure=visunpiled.ps, width=6in}}
+\caption{\label{fig:visunpiled}{Visualization in Fig. \ref{fig:vis} with no overlays}}
+\end{figure}
+
+There is a cursor between the "Category v/s Year" views in DEViseWn0 and 
+CatYear windows. All records of a year and category are shown in the
+"CatYear" window in red (source of the cursor). The same documents are
+highlighted by the yellow  the "Category v/s Year" view (destination of the
+cursor). The yellow cursor in DEViseWn0 can be moved around and the 
+records in the CatYear window change appropriately. These documents are shown
+in navy blue in the "Rank v/s Title" view.  They are also highlighted in white
+in the "Category v/s Source" view. Thus, we have a visualization which can
+be navigated and interactively queried in multiple dimensions.
+
+Another cursor in "Rank v/s Title" view selects one out of all documents. 
+The title and other information of this document is shown in the "TITLE" and
+"TEXTINFO" views.  This document is shown as the single tall line in the
+"Rank v/s Title(Master)" view. There is a record link from the 
+"Rank v/s Title(Master)" view(master) to views in "TITLE" and "TEXTINFO" window
+and a number of other views(slaves). Only those records seen in the master
+view can appear in the slave views. All other documents from the same year and
+category are highlighted by the green rectangles in the "Category v/s Year" 
+view and "Category v/s Source" views. 
+
+The "Rank v/s Year" and "Rank v/s Source" gives information about the 
+quality (defined by rank) of the documents from different sources and years.
+These views are linked by a visual link on the Y axis which means that
+the two views show the same range of ranks. 
+
+This presentation is an extremely powerful browser for the document 
+information. Hopefully the reader must have realized that a sophisticated
+visual presentation has a lot of underlying semantics that is not apparent in
+the presentation itself. If the creator of this presentation wishes to
+collaborate with a colleague, the latter has to understand how links and
+cursors behave so as to navigate and enhance the presentation. This is the
+motivation for the work presented in this thesis.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

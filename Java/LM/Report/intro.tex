@@ -1,0 +1,46 @@
+\section{Introduction}
+\label{sec:intro}
+
+DEVise is a data exploration system that allows users to visualize and 
+browse tabular data. The DEVise framework is intended for use in an 
+environment where multiple users wish to analyze data in an interactive
+and collaborative manner. In a typical application of DEVise, users would
+want to examine data in several levels of detail, understand relationships
+between various attributes and visualize the data in multiple (logical)
+dimensions. DEVise has simple but extremely powerful mechanisms to create
+sophisticated visualizations and allows interactive querying of the 
+visualized data.
+
+There are two aspects to visualizing data using DEVise. The first is 
+creating a {\it visual presentation}. This is the process of determining
+which attributes of data to visualize and how they would appear in 
+relationship with one another. For instance, the user may want to plot
+attribute Y v/s X on a bar chart with attribute Z indicated by the color
+of the bar. The user may also want to plot attribute W v/s X and link
+the two charts so that the X axes show the same ranges of values. DEVise
+provides visual idioms such as {\it Visual Links}, {\it Record Links}
+and {\it Cursors} to establish visual and logical relationships between
+multiple charts.
+After the presentation is created, the user can interactively browse the data
+by zooming in on a region of the chart, scrolling and so on. Now, in a 
+collaborative environment, users would want to share a visualization
+and even modify it concurrently. Hence, it becomes essential to understand
+an {\bf existing} visual presentation. There is a lot of meta-information
+associated
+with a visualization and it is important to be able to convey all of it in an
+unambiguous and complete manner. This thesis addresses the problem of 
+representing the meta-information about a DEVise presentation in an 
+intuitive manner, {\bf visually}. We call this a {\it meta-visualization} i.e.
+visualization of data about a  visual presentation. We have developed a tool
+to aid a DEVise user in creating as well as deciphering visual presentations
+of data. 
+
+The remainder of the report is organized as follows. Section \ref{sec:devise}
+gives a brief introduction to the visual idioms of DEVise with an example
+and motivates the need for a meta-visualization tool.  Section \ref{sec:issues}
+discusses the issues in creating an intuitive meta-presentation
+framework. Section \ref{sec:impl} describes the tool we have developed
+and how it can be used to understand a presentation. We discuss some ideas for
+future work in Section \ref{sec:future} and conclude in Section \ref{sec:concl}. 
+
+

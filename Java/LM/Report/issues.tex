@@ -1,0 +1,56 @@
+\section{Issues}
+\label{sec:issues}
+
+In order to create a visual presentation, a user must determine the following:
+\begin{itemize}
+\item the visual organization of charts and windows so that they are laid 
+out on the screen in a visually useful manner.
+\item the attributes to visualize and the form of display such as bar graph,
+scatter plot etc. In order words, the mapping of the TData to GData has
+to be chosen. Note that the mapping can be changed at any time, once
+the chart is created.
+\item the navigational behavior of the charts i.e. what should happen when 
+a zoom/scroll operation is done in any one of them. This "browser" aspect of
+the presentation involves linking two or more views appropriately. In some 
+cases helper views may be required to obtain the desired behavior. The user may
+wish to hide these views in the final presentation but link/cursor information
+must be explicitly shown in any meta-visualization.
+\end{itemize}
+
+A very important distinction between a actual visual presentation of data
+and a visual representation of the meta-information is that in the latter
+data need not be drawn. Hence it can be much faster to change the look and feel
+of the presentation without evaluating the query to draw the data repeatedly.
+However, the meta-presentation must contain all information necessary to get 
+the required visualization.
+
+\subsection{Views as Tables}
+
+Recall that the key idea in DEVise is to map each record of a table to
+a symbol. The symbol can be arbitrarily complex, such as an image or 
+a video (though we do not support it yet) or a text document. Going a 
+step further, a symbol can be a DEVise view itself. Thus an arrangement
+of two views in a window can be thought of as mapping a table
+of two records to GData. Each record would contain all information
+to create one view, such as x, y, background and foreground color etc.
+In main memory the record can  contain a pointer to a view object and
+on saving to a file, this can be replaced by a object id or name. The
+properties of a View symbol would be its TData, Mapping and Visual Filter
+and some auxiliary information such as axes labels and title. Generalizing
+this to a hierarchy, we can place views in an arbitrary layout on screen.
+
+\subsection{Separation of visual representation from the back end}
+
+The visual representation of the visual primitives of DEVise presents
+some very tough user-interface issues. There may be multiple ways
+to represent the same meta-information depending on the complexity of
+the visualization or the sophistication of the user. So it is important
+to separate the back end data structures which deal with the semantics of the 
+idiom from its visual representation. This makes the representation 
+extensible and easily modifiable. For instance, a overlay in DEVise 
+lays out multiple views at exactly the same location. This makes it
+hard to distinguish the links that connect a view in the overlay to others.
+However, in a meta-representation, the overlay can be represented as a
+cascade of views each offset by a small amount from the preceding one. Thus,
+some layout information (actual coordinates of views) is lost, gaining
+a more intuitive meta-representation of information.

@@ -1,0 +1,104 @@
+\section{Description of the meta-visualization tool}
+\label{sec:impl}
+
+In this section, we describe the look and feel of the tool we have
+developed to create and understand DEVise visualizations. The
+tool has been implemented in Java. It is currently a standalone tool
+which means that a DEVise presentation created through it cannot be actually 
+visualized. This will be possible once it is unified into the DEVise 
+client-server architecture.
+
+The top level entity in our tool is a Session. A session
+has its own name-space and so multiple sessions can contain views with
+the same names. A session can be made persistent by saving to a file.
+The unit of visualization is a View. A view is a hierarchical structure
+which can contain other views. The tool provides automatic layout
+modes to place a view within its parent view or to overlay all children
+of a view. 
+
+\begin{figure}[tbp]
+\centerline{\psfig{figure=vislayout.ps, height=8in}}
+\caption{\label{fig:vislayout}{A Meta-Visualization}}
+\end{figure}
+
+Fig. \ref{fig:vislayout} shows a meta-representation of the layout 
+of the visualization presented in Fig. \ref{fig:vis}. The correspondence
+between a view and its representation is quite intuitive here. Notice
+that overlays have been represented as stacks of rectangles. This
+information is not evident in the original visualization without some
+effort.
+
+A visual link between two views is shown by a line segment between
+their centers. 
+A record link is represented as a directed line segment from
+the master to the slave. A cursor is very intuitively represented with
+a rectangle to indicate the destination. All existing links and cursors
+in a visualization are shown on a side panel. Selecting a link/cursor on
+its side panel highlights the corresponding segment(s) in the display window. 
+
+Fig. \ref{fig:vislinks}, Fig. \ref{fig:reclinks} and Fig. \ref{fig:viscur}
+shows visual links, record links and cursors for the document visualization
+described earlier. All links can also be shown simultaneously.
+
+\begin{figure}[tbp]
+\centerline{\psfig{figure=vislinks.ps, height=8in}}
+\caption{\label{fig:vislinks}{A meta-representation of visual links}}
+\end{figure}
+
+\begin{figure}[tbp]
+\centerline{\psfig{figure=reclinks.ps, height=8in}}
+\caption{\label{fig:reclinks}{A meta-representation of record links}}
+\end{figure}
+
+\begin{figure}[tbp]
+\centerline{\psfig{figure=viscur.ps, height=8in}}
+\caption{\label{fig:viscur}{A meta-representation of cursors}}
+\end{figure}
+
+In the presence of links between overlaid views, the representation is
+slightly different. Fig. \ref{fig:pilelinks} shows an example (not from
+the visualization in Fig. \ref{fig:vis}). The entire meta-visualization
+for links and cursors for Fig. \ref{fig:vis} is shown in
+Fig. \ref{fig:alllinks}.
+
+\begin{figure}[tbp]
+\centerline{\psfig{figure=vispilelink.ps, height=8in}}
+\caption{\label{fig:pilelinks}{Representation of links between overlaid views}}
+\end{figure}
+
+\begin{figure}[tbp]
+\centerline{\psfig{figure=alllinks.ps, height=8in}}
+\caption{\label{fig:alllinks}{ The meta-visualization for Fig. \ref{fig:vis}}}
+\end{figure}
+
+Mappings and TData are represented as strings. In future a more intuitive
+representation may be used. Similar to links, mappings and TData
+tables are shown in  side panels and selecting one of them highlights
+all views that are associated with it. Note that mappings and tdata can
+exist without being associated with views. A view must necessarily
+have a mapping/tdata only when the data has to be actually visualized.
+
+\subsection{Layout Editor}
+
+We have designed an editor to create a custom layout of views. Views
+are drawn as rectangles using rubberbands. Operations such as resizing,
+moving and alignment are supported. Multiple views can be grouped together to
+move/resize them as a single entity. 
+
+A special kind of grouping called a {\it rivet } has been developed to
+restrict the movement/resizing of views in certain ways. A rivet joins
+edges parallel to each other such that that they cannot move relative to
+each other in a direction perpendicular to themselves.
+Thus, the distance between the edges is fixed. The riveted edges can however
+move parallel to each other.
+Fig. \ref{fig:visrivet} shows riveted edges with a white cloud around the
+edges. Moving the horizontal rivets changes the relative heights of views
+keeping the total height constant.  The vertical rivets can change the relative
+width of the views keeping the respective edges aligned. 
+
+\begin{figure}[tbp]
+\centerline{\epsfbox{visrivet.ps}}
+\caption{\label{fig:visrivet}{A riveted layout}}
+\end{figure}
+
+

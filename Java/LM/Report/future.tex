@@ -1,0 +1,202 @@
+\section{Comments and Future work}
+\label{sec:future}
+
+The current implementation of the Meta-Visualization tool follows the
+actual DEVise implementation as much as possible. However, the implementation
+of some of the idioms is slightly improved. This has lead to the development 
+of a better user interface and cleaner maintenance of back-end information.
+These changes should be also implemented in the DEVise server eventually 
+so that the two can work together. In this section, we will comment on some
+implementation differences between DEVise and the meta-visualizer and 
+suggest a few ideas for future work.
+
+\subsection{Catalog Information}
+
+The meta-visualization tool is a standalone tool right now, yet has
+information about the DEVise data catalogs. This is not quite true because,
+it uses its own dummy catalog as a placeholder. This has to be changed
+in future by either having it communicate to a catalog server or a DEVise
+server for table information. Another option would be to have the tool
+be able to read catalogs itself. This will make it significantly more
+complex so the first alternative may be better, at the cost of losing 
+the standalone capability.
+
+\subsection{Visual Links}
+
+In the current implementation of DEVise, Visual Links have to be explicitly
+created (and named) by the user. To link two views by a link, the user adds
+each view to that instance of the link.  Thus a link can exist without
+linking any views. Also, the semantics is transitive
+which means that there is an implicit binary link between all views linked
+by a link. (This is significant when view is deleted; transitivity implies
+that all other views linked to it by the same visual link, remain linked to
+each other). However, the intuitive semantics of a link is essentially a
+binary relationship between two views, which restricts their visual filters to
+be the same (for the linking attribute). Also, notice that the ability to
+create multiple visual links on the same attribute between a pair of views,
+does not add any power to the visual idiom. We can restrict that any two views
+can have at most one instance of a visual link on a particular attribute. In 
+other words, we can think of the views as being linked by a specific type of
+link rather than a named instance.
+We preserve the transitivity of links, by creating an implicit equivalence
+classes of all views linked to each other by the same type of link.
+Thus, we may have many equivalence classes corresponding to disjoint sets
+of views linked by a link type.  We do this by created an  instance of the
+appropriate type of link and add all views linked by that link as
+its members. Now, deletion of a view from a link means deleting that view from
+the equivalence class. We can also have a split operation in which multiple
+views can disassociate from a link but remain linked to each other by
+splitting the equivalence class into two. Note that all this can proceed
+without the knowledge of the user who always creates a binary link.
+This difference in implementation does not buy us any more power or change the
+formal semantics of a link but simplifies the user interface significantly. 
+This new implementation could be done in the DEVise server.
+
+\subsection{Mapping and TData}
+
+DEVise treats a mapping and tdata as inseparable entities. Thus, to define a 
+mapping, a tdata has to be created. However, closer examination of the
+formal semantics of tdata and mapping shows that to create a mapping all
+that is required is the schema of the tdata. (In fact a mapping is a function
+of a subset of attributes of the schema). Thus, if we separate mapping from
+tdata, we can define a single mapping which may be shared by multiple views.
+Experience with using DEVise indicates that this is indeed a very common
+requirement. In order to associate a given mapping and tdata with a view, 
+it is mandatory that all attributes used by the mapping be present in the
+schema of the tdata. We have implemented tdata and mapping as independent
+first class entities in our tool and this can be done in DEVise in the
+future.
+
+\subsection{Session as a top-level entity}
+
+The current implementation of DEVise does not have session as a first-class
+entity. A session is an implicit entity that comprises of all views, links
+and other information. Thus, two sessions cannot be open at the same time
+because of possible name-space collision. 
+
+We have implemented a Session as the top-level entity. This has several
+advantages. Each session has its own name-space and multiple sessions can be
+opened separately. If the session name-space is made hierarchical then, we
+could share views across sessions. Also, now the concept of a session as a 
+symbol comes as a very natural extension. 
+
+\subsection{Macros}
+
+A number of DEVise sessions use views linked by cursors and record links
+in common ways. It could be useful to provide a mechanism by which 
+such a combination could be created as a macro with parameters indicating
+how the links should be. A very neat way to implement this would be to
+support the saving of parameterized sessions. Thus, a macro could be 
+just a saved session which needs to be instantiated with appropriate
+parameters. This along with the implementation of fully hierarchical
+sessions, gives us macros for free. DEVise could provide to users a library
+of common used macros to develop on. Sessions as templates are also useful
+when the same visualization has to be applied for multiple data sets.
+The template is instantiated with table names at the time of opening it.
+Also, because of disjoint name spaces, multiple instantiations of the same
+session templates could be open at the same time.   
+
+Macros could also be useful to re-use screen layouts. For
+instance a customized layout can be created once and re-used multiple
+times by instantiating it with views. The layout macro will essentially
+determine all views except the leaf views and hence would save the
+user a lot of duplicate effort.
+
+In the DEVise framework, a mapping is a function from TData to GData 
+attributes. A lot of times, one finds that mappings need to be shared
+either completely or partially. The meta-visualization tool currently
+supports shared mappings. This can be done very simply in DEVise by
+the separation of TData and Mapping. The other aspect is partially
+specified mappings. In this case, a mapping is also like a macro, which
+has to be instantiated. A very common application is identical mappings
+using different colors. The user has the power to change the base
+macro mapping which changes the  mapping instance for each view that uses
+it or just change the color. 
+
+A framework for creating and instantiating macros will be a challenging
+issue for future work. This will reduce the work required to create a 
+presentation significantly. The basic question to answer is how much of the
+DEVise framework can be abstracted out to make the session reusable without
+a lot of cumbersome hard work for the user.
+
+\subsection{Meta-visualization}
+
+The current meta-visualization framework is only a prototype and needs
+to be made more sophisticated both in terms of the visual representation
+of the idioms of DEVise and also in terms of effective communication of the
+semantics. Some minor enhancements would be a drag and drop user interface
+for links and cursors. 
+
+Currently there is no intuitive representation for mappings and tdata. 
+Secondly, the existence of links is shown in a static manner. It would
+be very useful to have an operation that can show the execution of a 
+visual query i.e. which views would get updated as a result of a visual
+query and in what order if any. 
+
+One interesting issue in terms of meta-visualization, is 
+visual representation of macros. It is an interesting and challenging
+issue to come up with compact ``macro meta-representations'' for
+combinations of visual idioms. Taking it to the full generality, we
+could eventually have a way for the user to build a macro-representation
+and have the meta-visualizer use it in place of the macro.
+
+\subsubsection{Rivet as a link} 
+
+Notice that riveting two views restricts them positionally in a certain
+way. This in conjunction with other DEVise idioms can be considered to be 
+a link mechanism. For instance, if two views riveted at the vertical sides, 
+(such as the middle views in Fig. \ref{fig:visrivet}) show rainfall and
+incidence of flu respectively offset by a day, we can think of the views to 
+collectively represent a visual join when the same x position corresponds to
+rainfall on a particular day in one view and incidence of illness on the next
+day in the other. This can be used to correlate different data which otherwise
+cannot be linked meaningfully. This mechanism can be implemented as
+a new kind of link in the DEVise server.
+
+\subsection{Web interface to DEVise}
+
+There are some interesting issues to handle in supporting a web client
+for DEVise. The Java implementation of the meta-visualizer is a first
+step in this direction. Due to restrictions on applets, such as access
+to the file system, the DEVise session would have to be passed to the
+client by the server. Now, the DEVise server does not need to know some of
+the information in the session file - for example, the layout style. 
+This is a question that has to be resolved in future.
+
+Notice that the meta-visualization tool has all information to create
+the visualization except the query engine. Thus, this tool is effectively
+an intelligent DEVise client. This tool can be used as the front end
+to display visualizations at varying granularity - the highest
+being the actual presentation (with all data) and the lowest being just
+the layout (no data). The meta-visualization capability can co-exist
+independently.  In other words, the entire visual presentation can be
+displayed, annotated by the meta-visualization. This may be an exciting
+problem for future work. With some work, this may also enable DEVise 
+visualizations to be embedded as an active Java applet into html documents.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

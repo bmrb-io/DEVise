@@ -1,0 +1,45 @@
+\documentclass[10pt]{article}
+\usepackage{epsfig}
+\usepackage{latexsym,a4wide}
+\NeedsTeXFormat{LaTeX2e}
+\pagenumbering{arabic}
+\bibliographystyle{alpha} 
+\nocite{*}
+\setlength{\headheight}{0in}
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{6.5in}
+\setlength{\oddsidemargin}{0in}
+\renewcommand{\baselinestretch}{2}  % (for wider spacing)
+
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+\vspace{2in}
+{\Huge \bf A Meta-Visualization Framework for DEVise }\\
+\vspace{0.75in}
+by \\
+{\Large Shilpa Lawande}\\
+\vspace{1in}
+Thesis submitted in partial fulfillment of the requirements for the degree of\\
+{\large \bf Master of Science} \\
+approved by \\
+{\Large Miron Livny} and {\Large Raghu Ramakrishnan} \\
+\vspace{2in}
+{\large Department of Computer Sciences} \\
+{\large University of Wisconsin-Madison}\\
+\today
+\end{center}
+
+\pagebreak
+% 
+\input{intro.tex}
+\input{devise.tex}
+\input{issues.tex}
+\input{implementation.tex}
+\input{future.tex}
+\input{concl.tex}
+\input{acks.tex}
+%
+\bibliography{refer}
+%
+\end{document}
