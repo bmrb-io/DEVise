@@ -10,16 +10,29 @@
 
 ############################################################
 
+set path = ( /s/std/bin /usr/ucb /usr/bin /bin $path )
+
 set outfile = /tmp/top.out
 
 if (-e $outfile) then
     rm $outfile
 endif
 
-/s/std/bin/top >& $outfile
+set arch = `uname`
+if ($arch == "Linux") then
+  set top_cmd = "top b n 1"
+else
+  set top_cmd = "top"
+endif
+
+$top_cmd >& $outfile
 
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    /s/std/bin/cat $outfile | /usr/ucb/mail -s "top from cron" `/s/std/bin/whoami`
+    cat $outfile | mail -s "top from cron on `hostname`" `whoami`
+endif
+
+if (-e $outfile) then
+    rm $outfile
 endif
