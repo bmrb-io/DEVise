@@ -30,6 +30,12 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/04/22 19:29:54  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.14  1999/04/16 20:59:25  wenger
   Fixed various bugs related to view symbols, including memory problem
   with MappingInterp dimensionInfo; updated create_condor_session script
@@ -274,7 +280,7 @@ void VisualLink::Run()
   int index;
   for(index = InitIterator(); More(index);) {
     View *viewInList = Next(index);
-    if (viewInList!= _originatingView) {
+    if (viewInList != _originatingView) {
       /* Change this view */
       SetVisualFilter(viewInList);
     }

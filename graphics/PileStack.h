@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/11/10 18:48:31  wenger
+  Changing view dimenion now changes all views in a pile; PileStack makes
+  sure all views in pile have the same number of dimensions; fixed 'bad
+  query' problem with highlight views.
+
   Revision 1.17  1999/10/22 20:54:02  wenger
   Major changes to how view refreshes are handled (prevents "extra" queries
   from being run in piled views, fixes bug 520); also fixed bug 517.
@@ -215,6 +220,7 @@ public:
 protected:
   ViewWinList *GetViewList();
   Boolean PileOk();
+  Boolean IsHighlightView(View *view);
 
 private:
   char *_name;

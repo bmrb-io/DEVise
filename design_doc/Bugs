@@ -2080,8 +2080,9 @@ Num Date        Status  Description
 533 11/11/99	OPEN	'Restart' in the JavaScreen seems to not throw
 			away all info and regenerate from scratch. (rkw)
 
-534 11/11/99	OPEN	Drag time cursor in TwoStation5Var.ds -> second
+534 11/11/99	FIXED	Drag time cursor in TwoStation5Var.ds -> second
 			station view shows no data. (ml/rkw)
+			(Fixed by rkw, 11/15/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

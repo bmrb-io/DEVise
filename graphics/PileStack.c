@@ -26,6 +26,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/11/10 18:48:17  wenger
+  Changing view dimenion now changes all views in a pile; PileStack makes
+  sure all views in pile have the same number of dimensions; fixed 'bad
+  query' problem with highlight views.
+
   Revision 1.20  1999/10/22 20:54:01  wenger
   Major changes to how view refreshes are handled (prevents "extra" queries
   from being run in piled views, fixes bug 520); also fixed bug 517.
@@ -1314,7 +1319,7 @@ PileStack::Refresh(View *view)
     // Figure out which view we really want to refresh.
     //
     View *refreshView = NULL;
-    if (view->IsHighlightView()) {
+    if (IsHighlightView(view)) {
       //
       // Get the second view in the pile (the first if only one view).
       // We don't want the first because then we'd be refreshing the
@@ -1670,15 +1675,55 @@ PileStack::CancelAllRefreshes()
   int index = InitIterator();
   while (More(index)) {
     View *view = (View *)Next(index);
-    if (view->RefreshPending()) {
-      view->CancelRefresh();
-    }
+    view->CancelRefresh();
   }
   DoneIterator(index);
 
   if (_currentQueryView) {
     _currentQueryView->AbortQuery();
   }
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::IsHighlightView
+ * Decide whether a view "really" is a highlight view.
+ */
+Boolean
+PileStack::IsHighlightView(View *view)
+{
+#if (DEBUG >= 3)
+  printf("PileStack()::IsHighlightView()\n");
+#endif
+
+  Boolean isHighlight = view->IsHighlightView();
+
+  // If the given view is declared a highlight view, check for any non-
+  // highlight views coming after it in the pile.  If there are any, treat
+  // the given view as a non-highlight view.
+  if (isHighlight) {
+    Boolean foundView = false;
+    int index = InitIterator();
+    while (More(index) && isHighlight) {
+      View *tmpView = (View *)Next(index);
+      if (foundView) {
+        if (!tmpView->IsHighlightView()) {
+#if (DEBUG >= 4)
+          printf("Highlight view <%s> has non-highlight view <%s> after it "
+	      "in pile <%s>\n", view->GetName(), tmpView->GetName(),
+	      GetName());
+#endif
+	  isHighlight = false;
+	}
+      }
+      if (tmpView == view) foundView = true;
+    }
+    DoneIterator(index);
+
+    // Return false if view isn't in this pile.
+    if (!foundView) isHighlight = false;
+  }
+
+  return isHighlight;
 }
 
 /*============================================================================*/

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1999/10/14 16:07:23  wenger
+  Improvements to debug logging.
+
   Revision 1.58  1999/10/12 17:59:25  wenger
   Fixed bug in code for checking if the mouse is on a cursor that caused
   devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
@@ -478,7 +481,9 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     i++;
     DispatcherInfo *current = _callbacks.Next(index);
-    printf("dispatcher current %p %d\t%d\n", current, i, current->priority);
+    char *name = current->flag ? current->callBack->DispatchedName() : "";
+    printf("  callback %d: %p (%s)\t%d\n", i, current, name,
+        current->priority);
   }
   _callbacks.DoneIterator(index);
 #endif

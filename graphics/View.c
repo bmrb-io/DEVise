@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.203  1999/11/10 22:46:56  wenger
+  More fixes to dimension-changing.
+
   Revision 1.202  1999/11/10 18:48:32  wenger
   Changing view dimenion now changes all views in a pile; PileStack makes
   sure all views in pile have the same number of dimensions; fixed 'bad
@@ -2295,8 +2298,6 @@ void View::AbortQuery()
 #if defined(DEBUG)
   printf("View(%s)::AbortQuery()\n", _name);
 #endif
-
-  _refreshPending = false;
 
   // If the View object is really anything other than a
   // ViewData or maybe ViewLens, and _querySent is true,
