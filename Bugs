@@ -1029,6 +1029,8 @@ Num Date        Status  Description
 
 261 12/17/97	OPEN	3d_test.ds session doesn't work (error in expression
 			analysis, possibly other problems). (rkw)
+261.1		FIXED	Expresson analysis errors.
+261.2		OPEN	Other problems.
 
 262 12/18/97	FIXED	All text seems to be drawn in background color.
 			(kb/rkw)
@@ -1042,7 +1044,7 @@ Num Date        Status  Description
 
 265 12/19/97	OPEN	Devise now takes an awfully long time to quit. (rkw)
 
-266 12/19/97	OPEN	Expression evaluation fails on mappings with string
+266 12/19/97	CD	Expression evaluation fails on mappings with string
 			variables. (rkw)
 
 267 12/19/97	FIXED	Tick marks and numbers on axes are drawn at the wrong
@@ -1058,7 +1060,7 @@ Num Date        Status  Description
 270 01/14/98	OPEN	dev/mul script doesn't work for starting multi on
 			Linux. (rkw)
 
-271 01/23/98	OPEN	Color allocation fails on anything but 8 bit displays.
+271 01/23/98	FIXED	Color allocation fails on anything but 8 bit displays.
 			(rkw)
 
 272 01/23/98	OPEN	Trying to create an index causes a core dump. (rkw)

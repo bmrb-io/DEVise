@@ -1,8 +1,7 @@
-
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/12/23 23:35:30  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.2  1997/12/04 21:00:37  wenger
   Added standard DEVise headers.
 
@@ -36,6 +44,8 @@
 
 //#define MAX_GDATA_ATTRS 10
 #define HUGE_NUMBER  1e30
+
+//#define DEBUG
 
 
 /****************************  DATA STRUCTURE ********************************/
@@ -58,7 +68,9 @@ static int InitExpr( void );
 // int InitAttrList( void );
 static double GetVarValue( char *pszName );
 static double GetSymbolValue( char *pszName );
+#if defined(EXPR_TEST)
 static int TestValue( void );
+#endif
 static int ExtractNumber( char **ppszStr );
 static int PushOperator( enum TokenType iToken, char *pszToken, int iUnary );
 static int Inversible( struct Node *pExpr );
@@ -79,7 +91,7 @@ static struct AttrValue *pAttrValList = 0;
 
 
 /*********************** Test Driver  ****************************************/
-#if 0
+#if defined(EXPR_TEST)
 int main( void )
 {
   struct Node *pExprRoot, *pInverseExpr;
@@ -113,7 +125,7 @@ int main( void )
 }
 #endif
 
-// only for test!!
+#if defined(EXPR_TEST)
 static int TestValue( void )
 {
   InsertAttr( "$a", 1 );
@@ -124,6 +136,8 @@ static int TestValue( void )
   
   return 0;
 }
+#endif
+/*********************** end of Test Driver  *********************************/
 
 CGraphicExpr::CGraphicExpr( MappingInterpCmd *cmd )
 {
@@ -448,7 +462,7 @@ int InverseExpr( struct Node *pExpr, struct Node **ppInverseExpr,
     {
       // should be an operator at the top node
       // but we should deal with functions also later!
-      fprintf( stderr, "Expression analysis internal error!\n" );
+      fprintf(stderr, "Expression analysis internal error inverting {?}\n");
       return 0;
     }
 
@@ -521,7 +535,7 @@ int InverseExpr( struct Node *pExpr, struct Node **ppInverseExpr,
 	}
       else
       {
-	fprintf( stderr, "Expression analysis internal error!\n" );
+        fprintf(stderr, "Expression analysis internal error inverting {?}\n");
 	return 0;  // invalid expression
       }
 
@@ -595,7 +609,7 @@ int InverseExpr( struct Node *pExpr, struct Node **ppInverseExpr,
 	  }
 	else
 	  {
-	    fprintf( stderr, "Expression analysis internal error!\n" );
+            fprintf(stderr, "Expression analysis internal error inverting {?}\n");
 	    return 0;
 	  }
 
@@ -604,7 +618,7 @@ int InverseExpr( struct Node *pExpr, struct Node **ppInverseExpr,
       }
     else
       {
-	fprintf( stderr, "Expression analysis internal error!\n" );
+        fprintf(stderr, "Expression analysis internal error inverting {?}\n");
 	return 0;
       }     
   }  // end of while
@@ -913,8 +927,8 @@ int PushOperand( enum TokenType iToken, char *pszToken )
   iOperandStackTop ++;  // always add 1 before insert
   if( iOperatorStackTop >= MAX_STACK_SIZE )
   {
-    fprintf( stderr, "Expression stack overflow!" );
-    abort();
+    fprintf( stderr, "Expression stack overflow.\n" );
+    return -1;
   }
 
   // initialize pointers
@@ -948,8 +962,9 @@ int PushOperand( enum TokenType iToken, char *pszToken )
       break;
 
     default:
-      fprintf( stderr, "Expression analysis internal error!");
-      abort();
+      fprintf( stderr,
+	"Expression analysis internal error pushing token {%s}.\n", pszToken);
+      return -1;
     }
 
   return 0;
@@ -1011,8 +1026,9 @@ MorePop:
       return -1;  // still not find left bracket, error
 
     default:
-      fprintf( stderr, "Expression analysis internal error!" );
-      abort();
+      fprintf(stderr, "Expression analysis internal error pushing token {%s}",
+	pszToken );
+      return -1;
     }
 
   return 0;
@@ -1073,7 +1089,7 @@ int AddOperator( char *pszToken, int iUnary )
   if( iOperatorStackTop > MAX_STACK_SIZE )
   {
     fprintf( stderr, "Expression stack overflow.\n" );
-    abort();
+    return -1;
   }
 	
   OperatorStack[iOperatorStackTop].pszOperator = 
@@ -1130,16 +1146,25 @@ int GetPriority( char *pszOperator )
 // RETURN 0 if success, -1 if failed
 int ParseExpression( char *pszExpr, struct Node **ppExprRoot  )
 {
+#if defined(DEBUG)
+  printf("\nParseExpression(%s)\n", pszExpr);
+#endif
+
   char *pRunPtr = pszExpr;
-  char *pszToken;  // point to token returned
+  char *pszToken = NULL;  // point to token returned
   enum TokenType iPrevToken = TK_NIL;  // start of expression
   enum TokenType iNowToken;
   
   InitExpr();
 
   while( *pRunPtr != 0 )
-  {  // not reaching the end of the expreesion yet
-    switch( iNowToken = GetNextToken( &pRunPtr, &pszToken ) )
+  {  // not reaching the end of the expression yet
+    iNowToken = GetNextToken( &pRunPtr, &pszToken );
+#if defined(DEBUG)
+    printf("  token = {%s}; token type = %d\n", pszToken != NULL ? pszToken :
+      "NULL", iNowToken);
+#endif
+    switch( iNowToken )
       {
       case TK_VAR:
 	if( 0 != PushOperand( TK_VAR, pszToken ) )
@@ -1191,7 +1216,10 @@ int ParseExpression( char *pszExpr, struct Node **ppExprRoot  )
 	break;
 
       default:
-	fprintf( stderr, "expression analysis internal error!\n" );
+	fprintf(stderr, "Expression analysis internal error evaluating {%s}\n",
+	  pszExpr);
+        fprintf(stderr, "  Can't recognize token in {%s}\n",
+	  pRunPtr != NULL ? pRunPtr : "NULL");
 	return -1;
       }  // end of switch
 
@@ -1231,8 +1259,14 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
   enum TokenType RetTok = TK_END;
   int iCount;
 
-  if( ( ppszStr == NULL ) || ( *ppszStr == NULL ) )
+  if( ( ppszStr == NULL ) || ( *ppszStr == NULL ) ) {
+    printf("NULL input string to GetNextToken().\n");
     return TK_ERROR;
+  }
+
+#if defined(DEBUG)
+  printf("GetNextToken(%s)\n", *ppszStr);
+#endif
 
   SkipSpace( ppszStr );
 
@@ -1267,17 +1301,22 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
       iCount = 1;   // number of chars in the variable 
       (*ppszStr) ++;
       
-      while(isalnum(**ppszStr))
+      // Underscore is a valid character in a variable name.  RKW.
+      while(isalnum(**ppszStr) || **ppszStr == '_')
       {
 	(*ppszStr) ++;
 	iCount ++;
       }
 
-      if(iCount == 1)
+      if(iCount == 1) {
+        fprintf(stderr, "Only $, no variable name.\n");
 	return TK_NIL;  // only $, no chars
+      }
 
-      if(-1 == DupStr(ppszStr, ppszToken, iCount))
+      if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
+	fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
 	return TK_ERROR;
+      }
 
       return TK_VAR;
 
@@ -1294,8 +1333,10 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
 	  (*ppszStr) ++;
 	}
 
-	if(-1 == DupStr(ppszStr, ppszToken, iCount))
+	if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
+	  fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
 	  return TK_ERROR;
+	}
 
 	return TK_SYMBOL;
       }
@@ -1305,19 +1346,24 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
 	  // candidate for number
 	  iCount = ExtractNumber( ppszStr );
 
-	  if(-1 == DupStr(ppszStr, ppszToken, iCount))
+	  if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
+	    fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
 	    return TK_ERROR;
+	  }
 
 	  return TK_NUMBER;
 	}
 
+      fprintf(stderr, "Unrecognized character {%c}\n", **ppszStr);
       return TK_NIL;  // unrecognized character
     }  // end of switch
   
     // continue from all cases except default & $
     *ppszToken = (char *)malloc(2);
-    if(*ppszToken == NULL)
+    if(*ppszToken == NULL) {
+      fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
       return TK_ERROR;
+    }
 
     **ppszToken = **ppszStr;  // copy the character
     *(*ppszToken + 1) = 0;
