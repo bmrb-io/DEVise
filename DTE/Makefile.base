@@ -30,6 +30,7 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 	-I../../graphics \
 	-I../../graphics.new \
+	-I../../tape \
 	-I../../devread -I../../attrproj 
 
 CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
@@ -53,7 +54,7 @@ RTREE_SRC = \
 
 RTREE_UTIL = FormatVolume.c
 
-STAND_ALONE_SRC = main.c
+STAND_ALONE_SRC = main.c 
 
 LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
