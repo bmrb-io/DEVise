@@ -1,0 +1,33 @@
+		High-Level Documentation of the JavaScreen
+		$Id$
+
+* Overall purpose:
+
+* Startup:
+
+* Threads:
+
+The JavaScreen has two threads:
+- The default thread, which does the drawing.
+- The command handling thread (see DEViseCmdDispatcher).
+
+
+* Ports:
+
+[See DEViseGlobals for port numbers.]
+
+
+* Main operation:
+
+* Other:
+
+When the command dispatcher gets a command that requires changing a
+canvas, it first sends the command to the DEViseServer object (which
+may do some processing), which then sends the request to the DEViseCanvas
+object.  The change requests are queued up, and Hongyu says that there
+may be problems if more than one request is in the queue at a time.
+(This is a problem only for the applet version of the JavaScreen, not
+the stand-alone version.)  Hongyu says that JDK 1.2 will allow us to
+fix this problem.  The result of the problem is that the image that
+ends up in a canvas may not be correct (for example, cursors not correctly
+XOR'ing text drawn by the JavaScreen).

@@ -1,0 +1,7 @@
+		General JavaScreen Setup Documentation
+		$Id$
+
+* Sockets
+In some places there may still be code that reads byte-by-byte from a
+socket.  The reason for this is to handle the case of the connection
+being preempted.

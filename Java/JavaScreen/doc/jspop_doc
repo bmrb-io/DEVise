@@ -1,0 +1,86 @@
+		High-Level Documentation of the JSPoP
+			(JavaScreen Point of Presence)
+		$Id$
+
+* Overall purpose:
+
+The JSPoP (JavaScreen Point of Presence) acts as a multiplexer between
+JavaScreens and deviseds.  When there are fewer deviseds than JSAs,
+the JSPoP gives each JSA (and its user) the impression that it has a
+dedicated devised by connecting the JSA to a devised when it requests
+a service, and breaking the connection when necessary to service another
+JSA.  (The devised's state associated with a particular JSA is saved
+and restored as needed.)
+
+This functionality is needed partly because a devised can only support
+one client at a time.  Furthermore, allowing one JSPoP to have multiple
+deviseds running on different machines allows us to spread the processing
+load over several machines, not just the web server.
+
+
+* Startup:
+
+At startup, the JSPoP waits for connections from JSAs and JSSs.  It doesn't
+really do anything until there's a connection from one or the other.
+When a JSS connects to the JSPoP, the JSPoP creates a DEViseServer object
+for each devised started by that JSS.  When a JSA connects to the JSPoP,
+the JSPoP checks that the JSA is not at a prohibited IP address, and
+possibly does some other legality checks.  The JSPoP sends a unique ID
+back to the JSA.  [Note: we need more details on how this ID is used.]
+
+[Note: I'm not sure what happens if a JSA connects and no deviseds are
+running.]
+
+
+* Overall organization
+
+There are four main components of the JSPoP:
+- The JSS handler.
+- The DEViseServer objects.
+- The scheduler.
+- Logging and checkpointing.
+
+
+* Threads:
+
+The following threads exist in the JSPoP:
+- One for the JSS handler.
+- One for each DEViseServer object.
+- One for the scheduler.
+- One for logging and checkpointing.
+
+
+* Ports:
+
+[See DEViseGlobals for port numbers.]
+
+
+* Main operation:
+
+The JSPoP receives commands from the JavaScreen; in a few cases it is able
+to reply to the command itself, but in most cases it simply forwards the
+command to a devised.
+
+Note that when the JSPoP receives a command from the JavaScreen, it
+immediately acknowledges the command.  The JavaScreen changes the background
+of the revolving gears from white to blue when it receives the acknowledgement.
+
+The JSPoP maintains a list of JavaScreens and a list of DEViseServers;
+the list of JavaScreens is broken into those that are running and those
+that are waiting (have a pending command and are not connected to a
+DEViseServer).  Each time the scheduler runs, it checks for JSAs on
+the waiting list, and removes one from the running list if necessary.
+In order to guarantee forward progress, a JSA is never removed from the
+running list until at least one command has completed.  (Hongyu
+suggests that we might want to add a command-line argument for the
+time interval at which the scheduler runs.)
+
+The JSPoP DEViseServer class detects a devised crashing or hanging in two
+ways:
+- By timing out since the last command from the devised.
+- By receiving a message it cannot understand.
+When either of these cases happen, the DEViseServer requests that the
+JSS kill the devised and start a new one.
+
+
+* Other:

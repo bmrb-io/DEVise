@@ -1,0 +1,39 @@
+		High-Level Documentation of the JSS
+			(JavaScreen Server)
+		$Id$
+
+* Overall purpose:
+
+The JSS (JavaScreen Server) launches and kills deviseds on command from
+the JSPoP.
+
+The functionality of the JSS was originally incorporated into the JSPoP,
+but was moved to a separate process so that the JSPoP and deviseds can
+run on separate machines.
+
+
+* Startup:
+
+When a JSS starts, it first attempts to start one or more deviseds (the
+number is specified as a command-line argument).  It then attempts to
+connect to a JSPoP.  If it is unable to connect to a JSPoP, it kills
+its deviseds and then exits.
+
+
+* Threads:
+
+Each JSS has only a single thread.
+
+
+* Ports:
+
+[See DEViseGlobals for port numbers.]
+
+
+* Main operation:
+
+The JSS does not detect when a devised crashes or hangs.  This is done
+by the JSPoP.
+
+
+* Other:
