@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  2001/08/29 17:39:44  wenger
+#  Major changes to DEVise and JavaScreen release scripts.
+#
 
 ############################################################
 
@@ -136,6 +139,13 @@ foreach file ($files)
   cp -p $file $dest
   chmod 755 $dest/$file
 end
+
+set files = (jsa.html jsb.html)
+foreach file ($files)
+  cp -p $file $dest
+  chmod 644 $dest/$file
+end
+
 popd >& /dev/null
 
 #-----------------------------------------------------------
@@ -145,3 +155,11 @@ echo ""
 echo "Releasing GIFs"
 cp -p $src/*.gif $dest
 chmod 644 $dest/*.gif
+
+#-----------------------------------------------------------
+# Release the cron entry files.
+
+echo ""
+echo "Releasing cron entry files"
+cp -p $src/cron_entry.* $dest
+chmod 644 $dest/cron_entry.*

@@ -18,6 +18,7 @@
 
 ############################################################
 
+#-----------------------------------------------------------
 # Check argument and set install destination directories.
 
 if ($#argv == 1) then
@@ -86,7 +87,7 @@ else
     exit 1
 endif
 
-
+#-----------------------------------------------------------
 # Make sure we have the files we need.
 
 set files = (JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class \
@@ -98,7 +99,7 @@ foreach file ($files)
   endif
 end
 
-
+#-----------------------------------------------------------
 # Make sure we've sent an appropriate warning email.
 
 echo -n "Have you send an appropriate email warning? [n] "
@@ -108,7 +109,7 @@ if ($answer != y && $answer != Y) then
   exit 1
 endif
 
-
+#-----------------------------------------------------------
 # Make sure the jspop has been killed.
 
 echo -n "Have you killed the appropriate jspop and associated processes? [n] "
@@ -118,7 +119,7 @@ if ($answer != y && $answer != Y) then
   exit 1
 endif
 
-
+#-----------------------------------------------------------
 # Final confirmation.
 
 echo ""
@@ -132,17 +133,23 @@ if ($answer != y && $answer != Y) then
   exit 1
 endif
 
-
+#-----------------------------------------------------------
 # Temporarily disable the cron checking so that we don't get a restart
 # in the middle of the install (note that this will cause an error message
 # if the cron job happens to run before the new jspop is installed).
+
+echo ""
+echo "Temporarily disabling cron checking during installation"
 
 if (-f $popdir/run_check) then
   rm $popdir/run_check
 endif
 
-
+#-----------------------------------------------------------
 # Install the jar and html files.
+
+echo ""
+echo "Installing jar and html files"
 
 if (! -d $jardir) then
   mkdir $jardir
@@ -154,8 +161,11 @@ cp -p jsa.html $jardir
 cp -p jsb.html $jardir
 chmod 644 $jardir/*.html
 
-
+#-----------------------------------------------------------
 # Install the cgi file.
+
+echo ""
+echo "Installing CGI file"
 
 if (! -d $cgidir) then
   mkdir $cgidir
@@ -164,8 +174,11 @@ endif
 cp -p js.cgi $cgidir
 chmod 755 $cgidir/js.cgi
 
-
+#-----------------------------------------------------------
 # Install the jss, devised, and Tasvir.
+
+echo ""
+echo "Installing server programs (jss, devised, and Tasvir)"
 
 if (! -d $servdir) then
   mkdir $servdir
@@ -210,8 +223,11 @@ endif
 cp -p bin/Tasvir $servdir/bin
 chmod 755 $servdir/bin/Tasvir
 
-
+#-----------------------------------------------------------
 # Install the jspop.
+
+echo ""
+echo "Installing the JSPoP"
 
 if (! -d $popdir) then
   mkdir $popdir
@@ -234,7 +250,8 @@ endif
 # Keep run_check last because of cron job.
 set files = (check_connect check_jsall check_jspop jspop js js_cgi \
     restart_jspop jspop.kill kill_jsall ports+files get_stats get_timestamp \
-    run_top run_check jspop_savepid)
+    run_top jspop_savepid)
+set files = ($files run_check)
 foreach file ($files)
   cp -p $file $popdir
   chmod 755 $popdir/$file
