@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/04/07 22:43:12  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.4  2000/04/05 06:25:26  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -53,6 +57,7 @@ public class DEVise3DLCS
         this(v, 0.0f);
     }
 
+    // v is value (?), o is origin
     public DEVise3DLCS(float v, float o) throws YException
     {
         //YGlobals.yassert(v > 0.0, "Incorrect coordinate system parameters", "DEVise3DLCS::constructor");

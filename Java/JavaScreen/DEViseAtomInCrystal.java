@@ -12,13 +12,20 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// Objects of this class hold information about atoms in 3D views
+// (only information particular to a given *atom*; information related
+// to all atoms of a given element is in DEViseAtomType.)
+
+// There is one instance of this class for each atom in a 3D view.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.6  2000/04/05 06:25:36  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.5  2000/03/23 16:26:12  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -36,19 +43,26 @@ public class DEViseAtomInCrystal
 {
     public DEViseAtomType type = null;
 
-    public boolean status;
+    public boolean status; // ADD COMMENT -- what is this?
     public int isSelected;
     public Color color = null;
 
+    // pos is position as specified in GData; lcspos is position after
+    // translation, rotation, scaling.
     float[] pos = new float[3], lcspos = new float[3];
 
-    public int bondNumber;
-    // From physics point of view, number of bond for an atom will not exceed 8,
-    // and is rarely exceed 4;
+    public int bondNumber; // current number of bonds in bond array
+
+    // From physics point of view, number of bond for an atom will not
+    // exceed 8, and is rarely exceed 4;
     public int[] bond = new int[4];
+
+    // ADD COMMENT -- what is this?
     public boolean[] selectedBond = new boolean[4];
     public int lastSelectedBondIndex = -1;
 
+    // Apparently the location (in transformed coordinates) and the size
+    // (all in pixels) at which this atom should be drawn.
     public int drawX, drawY, drawSize;
 
     public DEViseAtomInCrystal(DEViseAtomType t, float x, float y, float z)
@@ -65,8 +79,11 @@ public class DEViseAtomInCrystal
         isSelected = 0;
     }
 
+    // I think that index is the index in the DEViseCrystal's atomList
+    // of the atom that this atom is bonded to.
     public void removeBond(int index)
     {
+	// Remove the given bond (if we find it).
         int idx = -1;
         for (int i = 0; i < bondNumber; i++) {
             if (bond[i] == index) {
@@ -75,6 +92,8 @@ public class DEViseAtomInCrystal
             }
         }
 
+	// Move the following bonds toward the front of the array
+	// so that the bonds are contiguous in the array.
         if (idx != -1) {
             for (int i = idx; i < bondNumber - 1; i++) {
                 bond[i] = bond[i + 1];
@@ -85,8 +104,11 @@ public class DEViseAtomInCrystal
         }
     }
 
+    // I think that index is the index in the DEViseCrystal's atomList
+    // of the atom that this atom is bonded to.
     public void addBond(int index)
     {
+	// Enlarge the bonds array if necessary.
         if (bondNumber == bond.length) {
             int[] tmp = new int[bondNumber * 2];
             boolean[] tmp1 = new boolean[bondNumber * 2];
@@ -96,6 +118,7 @@ public class DEViseAtomInCrystal
             selectedBond = tmp1;
         }
 
+	// Enter the bond in the bonds array.
         bond[bondNumber] = index;
         selectedBond[bondNumber] = false;
         bondNumber++;

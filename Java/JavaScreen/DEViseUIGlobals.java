@@ -15,6 +15,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/05/22 17:52:50  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.4  2000/05/11 20:59:50  wenger
 // More comments.
 //
@@ -60,6 +64,9 @@ public final class DEViseUIGlobals
     public static Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
     public static Color textBg = new Color(160, 160, 160);
     public static Color textFg = Color.black;
+    public static final int COLOR_MIN = 0; // min. integer RGB value
+    public static final int COLOR_MAX = 255; // max. integer RGB value
+
     public static Font textFont = DEViseFonts.getFont(14, DEViseFonts.SERIF,
       0, 0);
 
