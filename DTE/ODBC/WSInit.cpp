@@ -9,7 +9,6 @@ class WSInitSocket {
 public:
 	WSInitSocket() {
 	
-		cerr << "Yukledi" << endl ;
 		WORD wVersionRequested;
 		WSADATA wsaData;
 		int err;
