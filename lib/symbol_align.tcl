@@ -20,6 +20,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1998/02/05 23:46:16  wenger
+# Added view-level specification of symbol alignment, API commands, simple
+# GUI for Sanjay.
+#
 
 ############################################################
 
@@ -32,7 +36,6 @@ proc EditSymbolAlignment {} {
 
   set align [DEVise viewGetAlign $curView]
   set align [ChooseSymbolAlignment $align]
-  #DEVise viewSetAlign $curView $align
 }
 
 #-----------------------------------------------------------
@@ -77,19 +80,21 @@ proc ChooseSymbolAlignment {align} {
     DEVise viewSetAlign $curView [lindex [.chooseAlign.align configure -text] 4]
     destroy .chooseAlign
   }
+  button .chooseAlign.cancel -text "Cancel" -width 10 -command {
+    destroy .chooseAlign
+  }
 
-  pack .chooseAlign.row1 -side top -padx 70 -pady 5
-  pack .chooseAlign.row2 -side top -padx 70 -pady 5
+  pack .chooseAlign.row1 -side top -padx 30 -pady 10
+  pack .chooseAlign.row2 -side top -padx 30 -pady 10
 
   pack .chooseAlign.lab -in .chooseAlign.row1 -side left
   pack .chooseAlign.align -in .chooseAlign.row1 -side left
-  pack .chooseAlign.ok -in .chooseAlign.row2
+  pack .chooseAlign.ok -in .chooseAlign.row2 -side left
+  pack .chooseAlign.cancel -in .chooseAlign.row2 -side left
 
   tkwait visibility .chooseAlign
   grab set .chooseAlign
   tkwait window .chooseAlign
-
-  #set align [lindex [.chooseAlign.align configure -text] 4]
 }
 
 #============================================================================

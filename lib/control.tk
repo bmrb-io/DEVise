@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.160  1998/03/12 18:25:50  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.159  1998/03/08 00:01:30  wenger
 #	Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
 #	update problems) -- major changes to visual links.
@@ -1375,7 +1378,7 @@ menu .mbar.view.menu.statMenu -tearoff 0
     global curView
     DestroyView $curView
 }
-.mbar.view.menu add command -label "Alignment" -command EditSymbolAlignment
+.mbar.view.menu add command -label "Symbol Alignment" -command EditSymbolAlignment
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
@@ -1462,8 +1465,9 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Stack Control" \
 	-command { DoWindowStackControl }
 ######################MODIFIED SSL 2/6########################################
-.mbar.window.menu add command -label "Lens Control" \
-	-command { DoLensControl }
+# Disabled this because it doesn't work -- RKW Mar. 12, 1998
+#.mbar.window.menu add command -label "Lens Control" \
+#	-command { DoLensControl }
 ######################MODIFIED SSL 2/6########################################
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Swap Views" -command DoSwapView
