@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  1999/06/23 20:59:20  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -145,8 +148,30 @@ public class jsa extends Applet
             startInfo.append("Trying to load DEVise animation symbol ...\n");
             MediaTracker tracker = new MediaTracker(this);
             Image image = null;
+            String imageName = null;
+            byte[] imageData = new byte[2000];
             for (int i = 0; i < 11; i++)  {
-                image = getImage(baseURL, "devise" + i + ".gif");
+                //image = getImage(baseURL, "devise" + i + ".gif");
+
+                // get image from JAR file
+                try {
+                    imageName = "devise" + i + ".gif";
+                    InputStream is = getClass().getResourceAsStream(imageName);
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    int count = bis.read(imageData, 0, 2000);
+                    //byte idata;
+                    //int count = 0;
+                    //while ((idata = bis.read()) != -1) {
+                    //    imageData[count] = idata;
+                    //    count++;
+                    //}
+                    image = Toolkit.getDefaultToolkit().createImage(imageData, 0, count);
+                } catch (IOException e) {
+                    startInfo.append("Can not load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
+                    images = null;
+                    break;
+                }
+
                 tracker.addImage(image, 0);
                 try  {
                     tracker.waitForID(0);
@@ -363,7 +388,7 @@ class jscframe extends Frame
     public jsdevisec jsc = null;
 
     public jscframe(Vector images, int debugLevel, String sessionName)
-    {           
+    {
         // determine the "screen size" for JavaScreen
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
@@ -373,15 +398,15 @@ class jscframe extends Frame
         if (DEViseGlobals.screenSize.width < 360
             || DEViseGlobals.screenSize.width > (w - 80)) {
             DEViseGlobals.screenSize.width = w - 80;
-        }        
+        }
         DEViseGlobals.actualScreenSize.width = DEViseGlobals.screenSize.width + 80;
 
         if (DEViseGlobals.screenSize.height < 240
             || DEViseGlobals.screenSize.height > (h - 120)) {
             DEViseGlobals.screenSize.height = h - 120;
-        }        
-        DEViseGlobals.actualScreenSize.height = DEViseGlobals.screenSize.height + 120;       
-        
+        }
+        DEViseGlobals.actualScreenSize.height = DEViseGlobals.screenSize.height + 120;
+
         jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
         setTitle("DEVise JavaScreen");

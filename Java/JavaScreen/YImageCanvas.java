@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  1999/08/03 05:56:50  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.8  1999/06/23 20:59:19  wenger
 // Added standard DEVise header.
 //
@@ -30,9 +33,10 @@ public class YImageCanvas extends Canvas
 {
     //Image image = null;
     Vector image = new Vector();
-    Image offScrImg = null;
+    Image offScrImg = null, lastImage = null;
     //String string = null;
     Vector string = new Vector();
+    String lastString = null;
     Font font = new Font("Monospaced", Font.BOLD, 14);
     Color fgcolor = new Color(255, 0, 0);
     Color bgcolor = new Color(255, 255, 255);
@@ -194,8 +198,13 @@ public class YImageCanvas extends Canvas
             //    g.drawImage(image, 0, 0, this);
             //}
             while (image.size() > 0) {
-                g.drawImage((Image)image.firstElement(), 0, 0, this);
+                lastImage = (Image)image.firstElement();
+                g.drawImage(lastImage, 0, 0, this);
                 image.removeElementAt(0);
+            }
+
+            if (lastImage != null) {
+                g.drawImage(lastImage, 0, 0, this);
             }
         } else {
             //if (string != null) {
@@ -208,14 +217,23 @@ public class YImageCanvas extends Canvas
             //}
 
             while (string.size() > 0) {
-                String s = (String)string.firstElement();
+                lastString = (String)string.firstElement();
                 g.setColor(bgcolor);
                 g.fillRect(0, 0, imageWidth, imageHeight);
                 g.setColor(fgcolor);
                 g.setFont(font);
-                int xstart = (imageWidth - s.length() * mx) / 2 + xshift;
-                g.drawString(s, xstart, imageHeight - 3);
+                int xstart = (imageWidth - lastString.length() * mx) / 2 + xshift;
+                g.drawString(lastString, xstart, imageHeight - 3);
                 string.removeElementAt(0);
+            }
+
+            if (lastString != null) {
+                g.setColor(bgcolor);
+                g.fillRect(0, 0, imageWidth, imageHeight);
+                g.setColor(fgcolor);
+                g.setFont(font);
+                int xstart = (imageWidth - lastString.length() * mx) / 2 + xshift;
+                g.drawString(lastString, xstart, imageHeight - 3);
             }
         }
     }

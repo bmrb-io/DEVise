@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  1999/06/23 20:59:20  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -89,8 +92,30 @@ public class jsb extends Applet
             startInfo.append("Trying to load DEVise animation symbol ...\n");
             MediaTracker tracker = new MediaTracker(this);
             Image image = null;
+            String imageName = null;
+            byte[] imageData = new byte[2000];
             for (int i = 0; i < 11; i++)  {
-                image = getImage(baseURL, "devise" + i + ".gif");
+                //image = getImage(baseURL, "devise" + i + ".gif");
+
+                // get image from JAR file
+                try {
+                    imageName = "devise" + i + ".gif";
+                    InputStream is = getClass().getResourceAsStream(imageName);
+                    BufferedInputStream bis = new BufferedInputStream(is);
+                    int count = bis.read(imageData, 0, 2000);
+                    //byte idata;
+                    //int count = 0;
+                    //while ((idata = bis.read()) != -1) {
+                    //    imageData[count] = idata;
+                    //    count++;
+                    //}
+                    image = Toolkit.getDefaultToolkit().createImage(imageData, 0, count);
+                } catch (IOException e) {
+                    startInfo.append("Can not load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
+                    images = null;
+                    break;
+                }
+
                 tracker.addImage(image, 0);
                 try  {
                     tracker.waitForID(0);
@@ -231,12 +256,18 @@ public class jsb extends Applet
                 }
 
                 DEViseGlobals.screenSize.width = x;
-                DEViseGlobals.screenSize.height = y;
+                DEViseGlobals.screenSize.height = y - 60;
                 DEViseGlobals.actualScreenSize.width = x + 80;
                 DEViseGlobals.actualScreenSize.height = y + 120;
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
+        } else {
+            DEViseGlobals.screenSize.width = 800;
+            DEViseGlobals.screenSize.height = 600;
+            DEViseGlobals.actualScreenSize.width = 880;
+            DEViseGlobals.actualScreenSize.height = 720;
+            startInfo.append("Default screen size (" + 800 + ", " + 600 + ") is used\n");
         }
 
         String rsize = getParameter("rubberbandlimit");
