@@ -15,13 +15,19 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/11/23 00:24:01  wenger
+#  Incorporated all of the PostScript-related stuff into the client/server
+#  library; added printing to PostScript to the example client and server;
+#  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+#  a result of testing with client/server stuff.
+#
 #  Revision 1.1  1996/10/17 20:42:18  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-set backGround darkOliveGreen
+set backGround black
 set foreGround white
 
 tk_setPalette background $backGround foreground $foreGround \

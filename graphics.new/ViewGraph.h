@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/11/24 23:15:24  weaver
+  Changes for the new ColorManager.
+
   Revision 1.40  1997/11/24 16:22:30  wenger
   Added GUI for saving GData; turning on GData to socket now forces
   redraw of view; GData to socket params now saved in session files;
@@ -296,6 +299,9 @@ class ViewGraph : public View
 				  AxisLabel* xAxis, AxisLabel* yAxis,
 				  PColorID fgid, PColorID bgid, Action* action = 0);
 		virtual ~ViewGraph(void);
+
+		// Utility Function (Color)
+		double	CalcDataColorEntropy(void);
 
   /* Make view a master/slave of a link */
   virtual void AddAsMasterView(RecordLink *link);

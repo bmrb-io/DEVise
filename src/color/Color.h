@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: Color.h
-// Last modified: Tue Nov 18 19:07:22 1997 by Chris Weaver
+// Last modified: Thu Dec 11 18:45:17 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -14,6 +14,9 @@
 // 971017 [weaver]: Added lensBackColor.
 // 971106 [weaver]: Added basic palette-handling methods.
 // 971107 [weaver]: Improved palette initialization, alloc/free and swapping.
+// 971203 [weaver]: Added PM_GetRGBList().
+// 971204 [weaver]: Added AP_GetRawXColorID().
+// 971211 [weaver]: Changed InitColor() return type to bool.
 //
 //******************************************************************************
 //
@@ -114,8 +117,10 @@ enum GlobalColor
 
 // Initializes the ColorManager and supporting default and active palettes
 // given an X display (which must be set previously). The colors in the default
-// palette are allocated in X.
-void		InitColor(Display* display);
+// palette are allocated in X. Returns true if initialization completed, false
+// if an error occurred (some colors in the default palette could not be
+// allocated).
+bool		InitColor(Display* display);
 
 // Terminates the ColorManager and supporting palettes. Any colors in the
 // manager are freed in X.
@@ -156,11 +161,7 @@ bool		CM_GetRGB(ColorID cid, RGB& rgb);
 bool		CM_GetColorID(const RGB& rgb, ColorID& cid);
 
 // Returns a list of all RGBs currently allocated by the ColorManager.
-RGBList		CM_GetRGBList();
-
-// Palette Manager
-// Creates a new palette.
-PaletteID	CM_NewPalette(const string& s);
+RGBList		CM_GetRGBList(void);
 
 //******************************************************************************
 // Function Prototypes (Utilities, Palette Manager)
@@ -169,6 +170,9 @@ PaletteID	CM_NewPalette(const string& s);
 // Maps (via the current palette) a PColorID to an RGB. Returns false if the
 // PColorID is invalid (not in the current palette), true if valid.
 bool		PM_GetRGB(PColorID pcid, RGB& rgb);
+
+// Returns a list of all RGBs in the current palette.
+RGBList		PM_GetRGBList(void);
 
 // Maps (via the current palette) an RGB to a PColorID. Returns false if the
 // RGB is invalid (not in the current palette), true if valid.
@@ -198,11 +202,15 @@ bool		PM_DeletePalette(PaletteID pid);
 // Function Prototypes (Utilities, Active Palette)
 //******************************************************************************
 
-// Active Palette
-// Maps (via the Active Palette) a PColorID to an XColorID. Returns nullXColorID
-// (invalid XColorID) if the PColorID is invalid (not in the active palette).
-// This is a simple array lookup operation - use whenever possible for speed.
+// Maps (via the Active Palette) a PColorID (modulus the current palette size)
+// to an XColorID. ALWAYS returns a valid XColorID.
+// The mapping is an array lookup operation - use whenever possible for speed.
 XColorID	AP_GetXColorID(PColorID cid);
+
+// Maps (via the Active Palette) to an XColorID. Returns nullXColorID (invalid
+// XColorID) if the PColorID is invalid (not in the active palette). This is a
+// simple array lookup operation - use whenever possible for speed.
+XColorID	AP_GetRawXColorID(PColorID pcid);
 
 //******************************************************************************
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1997/11/24 23:14:35  weaver
+  Changes for the new ColorManager.
+
   Revision 1.54  1997/09/05 22:36:06  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -352,6 +355,11 @@ class View : public ViewWin
 	public:
 
 		// Constructors and Destructors
+//		View(char* name, VisualFilter& initFilter,
+//			 PColorID fgid = nullPColorID,
+//			 PColorID bgid = nullPColorID,
+//			 AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+//			 int weight = 1, Boolean boundary = false);
 		View(char* name, VisualFilter& initFilter,
 			 PColorID fgid = GetPColorID(defForeColor),
 			 PColorID bgid = GetPColorID(defBackColor),

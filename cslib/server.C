@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/12/08 18:17:59  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_4 tag
+  into the trunk (split of libcs into libdevcs and libdevwin).
+
   Revision 1.17.4.1  1997/12/06 17:43:02  wenger
   Split libcs.a into libdevcs.a and libdevwin.a in preparation for
   incorporating client/server part into DEVise.
@@ -167,8 +171,9 @@ class SampleWinServer : public WinServer {
 	    Coord y = 100.0;
 	    Coord width = 400.0;
 	    Coord height = 400.0;
-	    GlobalColor foreground = BlackColor;
-	    GlobalColor background = WhiteColor;
+
+		PColorID	fgid = GetColorID(blackColor);
+		PColorID	bgid = GetColorID(whiteColor);
 	    WindowRep *parent = NULL;
 	    Coord minWidth = 10.0;
 	    Coord minHeight = 10.0;
@@ -176,36 +181,34 @@ class SampleWinServer : public WinServer {
 	    Boolean winBoundary = true;
 	    
 	    win = _screenDisp->CreateWindowRep(_name, x, y, width, height,
-					       foreground, background,
-					       parent, minWidth, minHeight,
-					       relative, winBoundary);
+										   fgid, bgid, parent, minWidth,
+										   minHeight, relative, winBoundary);
 	    assert(win);
 	    win->RegisterCallback(this);
 	    _winReps.SetScreenWinRep(win);
 	    
 	    win = _fileDisp->CreateWindowRep(_name, x, y, width, height,
-					     foreground, background,
-					     parent, minWidth, minHeight,
-					     relative, winBoundary);
-	    _winReps.SetFileWinRep(win);
-	    
+										 fgid, bgid, parent, minWidth,
+										 minHeight, relative, winBoundary);
+	    _winReps.SetFileWinRep(win); 
 	    _winReps.SetScreenOutput();
 	    
 	    Redraw();
 	}
     }
     
-    virtual void Redraw()
-    {
-	int x, y;
-	unsigned int w, h;
-	
+		virtual void Redraw()
+		{
+			int				x, y;
+			unsigned int	w, h;
+			PColorID		fgid = GetColorID(blackColor);
+
 	assert(_winReps.GetWindowRep());
 	_winReps.GetWindowRep()->Origin(x, y);
 	_winReps.GetWindowRep()->Dimensions(w, h);
 	
 	/* outline the whole window */
-	_winReps.GetWindowRep()->SetFgColor(BlackColor);
+	_winReps.GetWindowRep()->SetForeground(fgid);
 	_winReps.GetWindowRep()->Line(x, y, x + w - 1, y, 1);
 	_winReps.GetWindowRep()->Line(x + w - 1, y, x + w - 1, y + h - 1, 1);
 	_winReps.GetWindowRep()->Line(x + w - 1, y + h - 1, x, y + h - 1, 1);
@@ -268,10 +271,11 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->DrawRubberband(10, 10, 100, 100);
 	
 	/* use color from local colormap (see Color.h) */
-	_winReps.GetWindowRep()->SetFgColor(SeaGreenColor);
-	float red, green, blue;
-	_winReps.GetWindowRep()->GetFgRGB(red, green, blue);
-	printf("SeaGreenColor RGB: %f %f %f\n", red, green, blue);
+//	_winReps.GetWindowRep()->SetFgColor(SeaGreenColor);
+
+//	float	red, green, blue;
+//	_winReps.GetWindowRep()->GetFgRGB(red, green, blue);
+//	printf("SeaGreenColor RGB: %f %f %f\n", red, green, blue);
 	_winReps.GetWindowRep()->FillRect(x + 0.25 * w, y + 0.25 * h, 0.5 * w,
 					  0.5 * h);
 	
@@ -280,10 +284,10 @@ class SampleWinServer : public WinServer {
 					  0.3 * h);
 	_winReps.GetWindowRep()->SetCopyMode();
 	
-	_winReps.GetWindowRep()->SetFgColor(BlackColor);
-	_winReps.GetWindowRep()->SetBgColor(SlateBlueColor);
-	_winReps.GetWindowRep()->GetFgRGB(red, green, blue);
-	printf("BlackColor RGB: %f %f %f\n", red, green, blue);
+//	_winReps.GetWindowRep()->SetFgColor(BlackColor);
+//	_winReps.GetWindowRep()->SetBgColor(SlateBlueColor);
+//	_winReps.GetWindowRep()->GetFgRGB(red, green, blue);
+//	printf("BlackColor RGB: %f %f %f\n", red, green, blue);
 	_winReps.GetWindowRep()->SetNormalFont();
 	_winReps.GetWindowRep()->AbsoluteText("Server Display", x, y, w, h,
 					      WindowRep::AlignCenter, false);
@@ -291,41 +295,41 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->AbsoluteText("AlignWest", x, y, w, h,
 					      WindowRep::AlignWest, false);
 	
-	_winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
+//	_winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
 	_winReps.GetWindowRep()->FillRect(x, y + h/4, w/3, h/45);
-	_winReps.GetWindowRep()->SetFgColor(BlackColor);
-	_winReps.GetWindowRep()->SetBgColor(PurpleColor);
+//	_winReps.GetWindowRep()->SetFgColor(BlackColor);
+//	_winReps.GetWindowRep()->SetBgColor(PurpleColor);
 	_winReps.GetWindowRep()->ScaledText("Scaled Text", x, y + h/4,
 					    w/3, h/45,
 					    WindowRep::AlignCenter, false);
 	
-	_winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
+//	_winReps.GetWindowRep()->SetFgColor(GoldenRodColor);
 	_winReps.GetWindowRep()->FillRect(x + w/2, y + h/4, w/2, h/8);
-	_winReps.GetWindowRep()->SetFgColor(RedColor);
-	_winReps.GetWindowRep()->SetBgColor(DarkSeaGreen);
+//	_winReps.GetWindowRep()->SetFgColor(RedColor);
+//	_winReps.GetWindowRep()->SetBgColor(DarkSeaGreen);
 	_winReps.GetWindowRep()->ScaledText("abcdefg", x + w/2, y + h/4,
 					    w/2, h/8,
 					    WindowRep::AlignNorthEast, false);
 	
 	/* bypass local colormap */
 	for(float i = 0; i < 1.0; i += 0.1) {
-	    _winReps.GetWindowRep()->SetFgRGB(1 - i, 0, 0);
+//	    _winReps.GetWindowRep()->SetFgRGB(1 - i, 0, 0);
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.80 * h, 0.1 * w,
 					      0.05 * h);
-	    _winReps.GetWindowRep()->SetFgRGB(0, i, 0);
+//	    _winReps.GetWindowRep()->SetFgRGB(0, i, 0);
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.85 * h, 0.1 * w,
 					      0.05 * h);
-	    _winReps.GetWindowRep()->SetFgRGB(0, 0, 1 - i);
+//	    _winReps.GetWindowRep()->SetFgRGB(0, 0, 1 - i);
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.90 * h, 0.1 * w,
 					      0.05 * h);
-	    _winReps.GetWindowRep()->SetFgRGB(i, i, i);
+//	    _winReps.GetWindowRep()->SetFgRGB(i, i, i);
 	    _winReps.GetWindowRep()->FillRect(x + i * w, y + 0.95 * h, 0.1 * w,
 					      0.05 * h);
 	}
 	
 	/* test the Arc() and Pattern() functions */
-	_winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 1.0);
-	_winReps.GetWindowRep()->SetBgRGB(1.0, 0.0, 0.0);
+//	_winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 1.0);
+//	_winReps.GetWindowRep()->SetBgRGB(1.0, 0.0, 0.0);
 	
 	Coord xCenter1 = x + 0.25 * w;
 	Coord yCenter1 =  y + 0.12 * h;
@@ -346,7 +350,7 @@ class SampleWinServer : public WinServer {
 	_winReps.GetWindowRep()->SetLineWidth(0);
 	_winReps.GetWindowRep()->SetPattern(Pattern0);
 	
-	_winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 0.0);
+//	_winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 0.0);
 	
 	Coord size = 0.03;
 	Coord lineWidth = 2.0;

@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: Coloring.h
-// Last modified: Tue Nov 18 18:06:32 1997 by Chris Weaver
+// Last modified: Thu Dec  4 18:31:52 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -13,6 +13,7 @@
 // 970513 [weaver]: Updated to standard C++ class String.
 // 970925 [weaver]: Updated to C++ standard libraries.
 // 971118 [weaver]: Changed from ColorID to PColorID for palette operations.
+// 971203 [weaver]: Added RMSDistance() methods.
 //
 //******************************************************************************
 //
@@ -38,6 +39,11 @@
 //******************************************************************************
 // Types and Constants
 //******************************************************************************
+
+typedef unsigned long	ulong;
+
+typedef vector<double>	DoubleVector;
+typedef vector<ulong>	IntVector;
 
 //******************************************************************************
 // class Coloring
@@ -75,8 +81,14 @@ class Coloring
 
 		PColorID		GetDataColor(ulong n) const;
 
-		// Utility Functions
+		// Utility Functions (Data Colors)
 		void		AddDataColor(PColorID pcid);
+
+		// Utility Functions (Color Heuristics)
+		double		ForeBackRMSDistance(void);
+		double		DataRMSDistance(void);
+		double		RMSDistance(void);
+		double		Entropy(IntVector count);
 
 		// Conversions and Operators
 		bool		operator==(const Coloring& t) const;

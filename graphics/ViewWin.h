@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/11/24 23:14:36  weaver
+  Changes for the new ColorManager.
+
   Revision 1.24  1997/06/04 15:50:31  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -190,6 +193,10 @@ class ViewWin : public Coloring
 	public:
 
 		// Constructors and Destructors
+//		ViewWin(char* name,
+//				PColorID fgid = nullPColorID,
+//				PColorID bgid = nullPColorID,
+//				int weight = 1, Boolean boundary = true);
 		ViewWin(char* name,
 				PColorID fgid = GetPColorID(defForeColor),
 				PColorID bgid = GetPColorID(defBackColor),

@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: XColorManager.C
-// Last modified: Thu Nov 20 18:01:30 1997 by Chris Weaver
+// Last modified: Thu Dec 11 19:40:39 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -30,7 +30,7 @@
 // Special Purpose Code for XColorManager::XAllocColor
 //******************************************************************************
 
-static const double		gMaxColorErr = 0;
+static const double		gMaxColorErr = 0.25;
 static RGB				gRefRGB;
 
 static bool		Compare_RGBDistance(const RGB& rgb1, const RGB& rgb2);
@@ -166,13 +166,18 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 	while (i != list.end())
 	{
 		error = (*i).Error(rgb);
+//		printf("Trying RGB %s: %g error\n", (*i).ToString().c_str(),
+//			   error);
 
 		if (error > gMaxColorErr)
 			break;
 
 		if (!(!isGray ^ (*i).IsGray()))
+		{
+			i++;
 			continue;
-			
+		}
+
 		xcolor.red		= (*i).r;
 		xcolor.green	= (*i).g;
 		xcolor.blue		= (*i).b;

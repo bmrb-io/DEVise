@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.83  1997/12/05 18:42:23  wenger
+  Timers are now stopped whenever we're doing anything with the data
+  socket.
+
   Revision 1.82  1997/12/01 21:21:32  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
   into the trunk.
@@ -3128,7 +3132,7 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 
 		RGBList		rgbList = CM_GetRGBList();
 		string		s;
-		
+
 		for (unsigned int i=0; i<rgbList.size(); i++)
 		{
 			s += rgbList[i].ToString();
@@ -3248,6 +3252,27 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 		string		s = palette->ToString();
 
 		strcpy(result, s.c_str());
+		control->ReturnVal(API_ACK, result);
+		return 1;
+	}
+
+	if (!strcmp(argv[1], "CheckColoring"))
+	{
+		Trace("    Command: color CheckColoring");
+
+//		View*		view = (View*)classDir->FindInstance(argv[2]);
+		ViewGraph*	view = (ViewGraph*)classDir->FindInstance(argv[2]);
+
+		if (!view)
+		{
+			control->ReturnVal(API_NAK, "Cannot find view");
+			return -1;
+		}
+
+		double	distance = view->RMSDistance();
+//		double	distance = view->CalcDataColorEntropy();
+
+		sprintf(result, "%f", distance);
 		control->ReturnVal(API_ACK, result);
 		return 1;
 	}

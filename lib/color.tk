@@ -61,7 +61,7 @@ set curPaletteDir $paletteDir
 ##******************************************************************************
 
 proc InitColor {} {
-	global monochrome colors palettes
+	global monochrome colors
 
 	if {$monochrome} {
 		tk colormodel . monochrome
@@ -162,7 +162,7 @@ proc ColorDialog { varname background current {type "A"} } {
 	set foo text
     set row -1
     set col -1
-    set maxcol 8
+    set maxcol 16
     set size 1
 
     toplevel .colorDialog
@@ -228,6 +228,13 @@ proc ColorDialog { varname background current {type "A"} } {
 proc SetColor { rgb isForeground {scope 0} } {
     global curView
 
+	set min0 1000.0
+	set min1 12000.0
+	set min2 24000.0
+	set danger 0
+	set conflict 0
+	set similar 0
+
     if {$scope == "2"} {
 		set viewList [DEVise getAllViews]
 	} elseif {$scope == "1"} {
@@ -239,12 +246,30 @@ proc SetColor { rgb isForeground {scope 0} } {
     foreach viewName $viewList {
         set curViewClass [GetClass view $viewName]
 		
-		if ($isForeground) {
+		if {$isForeground} {
 			DEVise color SetForeground $viewName $rgb
 		} else {
 			DEVise color SetBackground $viewName $rgb
 		}
-    }
+
+		set distance [DEVise color CheckColoring $viewName]
+
+		if { $distance < $min0 } {
+			incr danger
+		} elseif { $distance < $min1 } {
+			incr conflict
+		} elseif { $distance < $min2 } {
+			incr similar
+		}
+	}
+
+	if { $danger > 0 } {
+		set answer [dialog .colorAlertDialog "" "DANGER! Color selection in $conflict views contains indistinguishable colors" "" 0 { OK }]
+	} elseif { $conflict > 0 } {
+		set answer [dialog .colorAlertDialog "" "WARNING: Color selection in $conflict views may contain conflicting colors" "" 0 { OK }]
+	} elseif { $similar > 0 } {
+		set answer [dialog .colorAlertDialog "" "CAUTION: Color selection in $similar views may contain similar colors" "" 0 { OK }]
+	}
 }
 
 #*******************************************************************************
@@ -279,7 +304,9 @@ proc DoPaletteDialog {} {
 
 	if { $pid != $pids($curpalette) } {
 		set curpalette $oldpalette
-		puts "Couldn't change palettes (old one retained)."
+
+		set answer [dialog .paletteWarningDialog "" \
+	      "WARNING: Couldn't allocate all colors in the selected palette. The previous palette has been restored." "" 0 { OK }]
 	}
 }
 

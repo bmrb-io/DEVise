@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1997/11/24 23:15:23  weaver
+  Changes for the new ColorManager.
+
   Revision 1.62  1997/11/24 16:22:29  wenger
   Added GUI for saving GData; turning on GData to socket now forces
   redraw of view; GData to socket params now saved in session files;
@@ -420,6 +423,31 @@ ViewGraph::~ViewGraph(void)
     delete _gds;
 	delete queryCallback;
 }
+
+//******************************************************************************
+// Utility Functions (Color)
+//******************************************************************************
+
+double	ViewGraph::CalcDataColorEntropy(void)
+{
+	Coloring	coloring;
+	IntVector	count;
+
+	for(int i=0; i<gMaxNumColors; i++)
+	{
+		int		n = (int)(_stats[i].GetStatVal(STAT_COUNT));
+
+		if (n > 0)
+		{
+			coloring.AddDataColor(i);
+			count.push_back(n);
+		}
+	}
+
+	return coloring.Entropy(count);
+}
+
+//******************************************************************************
 
 void ViewGraph::AddAsMasterView(RecordLink *link)
 {

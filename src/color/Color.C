@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: Color.h
-// Last modified: Mon Nov 24 14:09:48 1997 by Chris Weaver
+// Last modified: Thu Dec 11 18:44:03 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -16,6 +16,8 @@
 // 971017 [weaver]: Added lensBackColor.
 // 971106 [weaver]: Added basic palette-handling methods.
 // 971107 [weaver]: Improved palette initialization, alloc/free and swapping.
+// 971203 [weaver]: Added PM_GetRGBList().
+// 971204 [weaver]: Added AP_GetRawXColorID().
 //
 //******************************************************************************
 
@@ -130,7 +132,7 @@ static bool		FreePalette(PaletteID pid);
 // Initialization Functions
 //******************************************************************************
 
-void	InitColor(Display* display)
+bool	InitColor(Display* display)
 {
 	Trace("InitColor()");
 
@@ -155,7 +157,7 @@ void	InitColor(Display* display)
 	}
 
 	if (!AllocPalette(pid))
-		return;
+		return false;
 
 	gCorePaletteID		= pid;
 	gCorePalette		= palette;
@@ -173,7 +175,7 @@ void	InitColor(Display* display)
 	}
 
 	if (!AllocPalette(pid))
-		return;
+		return false;
 
 	gDefaultPaletteID	= pid;
 	gDefaultPalette		= palette;
@@ -187,6 +189,8 @@ void	InitColor(Display* display)
 	// Initialize "hard-coded" color scheme
 	SetupColors();
 	InitKGraphDefaultColoring();
+
+	return true;
 }
 
 void	TermColor(void)
@@ -370,10 +374,20 @@ bool		PM_GetRGB(PColorID pcid, RGB& rgb)
 
 	if (pc == NULL)
 		return false;					// Couldn't find id in palette
-	
+
 	rgb = pc->GetColor();
 
 	return true;
+}
+
+RGBList		PM_GetRGBList(void)
+{
+	RGBList		rgbList;
+
+	for (int i=0; i<gCurrentPalette->GetSize(); i++)
+		rgbList.push_back(gCurrentPalette->GetColor(i)->GetColor());
+
+	return rgbList;
 }
 
 bool		PM_GetPColorID(const RGB& rgb, PColorID& pcid)
@@ -559,8 +573,13 @@ XColorID	AP_GetXColorID(PColorID pcid)
 		rpcid = -pcid;
 
 	return (*gActivePalette)[rpcid % gActivePalette->GetSize()];
+}
 
-//	return (*gActivePalette)[pcid];
+XColorID	AP_GetRawXColorID(PColorID pcid)
+{
+	Trace("AP_GetRawXColorID()");
+
+	return (*gActivePalette)[pcid];
 }
 
 //******************************************************************************

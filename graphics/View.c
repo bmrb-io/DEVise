@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.117  1997/11/24 23:14:33  weaver
+  Changes for the new ColorManager.
+
   Revision 1.116  1997/09/05 22:36:04  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -1277,7 +1280,7 @@ void View::DrawLabel()
     win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
 
     win->SetForeground(GetForeground());
-    win->SetBackground(GetBackground());
+//    win->SetBackground(GetBackground());
     win->AbsoluteText(_label.name, labelX, labelY, labelWidth - 1,
 		      labelHeight - 1, WindowRep::AlignCenter, true);
   } else {
@@ -3472,7 +3475,7 @@ void	View::Run(void)
 
 //******************************************************************************
 
-// This is a pruned version for pedagogical purposes
+// This is a pruned version for pedagogical purposes. CEW 971211.
 void	View::Run2(void)
 {
     if (_pileMode)

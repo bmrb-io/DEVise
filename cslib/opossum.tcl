@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 20:42:19  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-set backGround darkOliveGreen
+set backGround black
 set foreGround white
 
 tk_setPalette background $backGround foreground $foreGround \

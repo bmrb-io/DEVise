@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: templates.C
-// Last modified: Wed Nov 26 17:17:11 1997 by Chris Weaver
+// Last modified: Thu Dec  4 18:00:32 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -37,16 +37,6 @@
 //******************************************************************************
 // Changed to non-pragma templates method in these files (leaving the pragmas
 // in may be OK, as they serve other purposes - see the g++ man pages).
-//
-// DTE/Core/QueryTree.c
-// DTE/Core/queue.h
-// DTE/DeviseSpecific/TuplePtr.Plex.c		<-- Change back (GNU code)?
-// DTE/DeviseSpecific/TuplePtr.Plex.h		<-- Change back (GNU code)?
-// DTE/DeviseSpecific/TuplePtr.XPlex.c		<-- Change back (GNU code)?
-// DTE/DeviseSpecific/TuplePtr.XPlex.h		<-- Change back (GNU code)?
-// DTE/RTree/bulk_data.C
-// DTE/RTree/port_genrtree.C
-// DTE/RTree/solaris_stats.[hC]
 //
 // graphics/AssoArray.h
 //
@@ -82,7 +72,6 @@
 // Template Instantiations (Easy Stuff, Main Code)
 //******************************************************************************
 
-// DTE/Core/QueryTree.c (and a slew of other files)
 #include "queue.h"
 #include "HashTable.h"
 #include "Array.h"
@@ -90,13 +79,6 @@
 // From Exit.h, needed for a #define dependency in SortedTable.h
 #define DOASSERT(c,r)	{}
 #include "SortedTable.h"
-
-class BaseSelection;
-class Site;
-class JoinTable;
-class String;
-class TableAlias;
-class ConstantSelection;
 
 // graphics.new/GdataStat.C
 class BasicStats;
@@ -132,12 +114,14 @@ template class vector<PColorID>;	// long
 
 // ColorManager.h
 template class vector<RGB>;
-template class less<ColorID>;	// ulong
+template class less<ColorID>;		// ulong
 template class manager<ColorID, ColorManager::Color, less<ColorID> >;
 template class less<RGB>;
 template class map<RGB, ColorID, less<RGB> >;
 
 // Coloring.h
+template class vector<double>;
+template class vector<unsigned long>;
 template class vector<ColorID>;
 
 // Palette.h
@@ -146,34 +130,6 @@ template class vector<PaletteColor>;
 // PaletteManger.h
 //template class less<PaletteID>;	// ulong (REDUNDANT)
 template class manager<PaletteID, Palette, less<PaletteID> >;
-
-// XColorManager.h
-
-//******************************************************************************
-// Template Instantiations (Painful Stuff, Main Code)
-//******************************************************************************
-
-static void		template_junk1(void);
-
-/*
-void template_junk1(void)
-{
-	set<string, ltstr>	tmp, tables, tables2;
-	bool				incl = includes(tables.begin(), tables.end(),
-										tmp.begin(), tmp.end());
-
-	string		alias;
-
-	tables.insert(alias);
-
-	set_union(tables.begin(), tables.end(), 
-		tables2.begin(), tables.end(), inserter(tables, tables.end()));
-
-	Array<ExecExpr*>*	mySelect;
-
-	destroyArray(*mySelect);
-}
-*/
 
 //******************************************************************************
 // Template Instantiations (Painful Stuff, Color Management)

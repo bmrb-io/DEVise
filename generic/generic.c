@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1997/11/24 23:14:06  weaver
+  Changes for the new ColorManager.
+
   Revision 1.49  1997/05/21 22:05:08  andyt
   *** empty log message ***
 
@@ -1641,8 +1644,15 @@ int main(int argc, char **argv)
   ctrl->StartSession();
 
   // Color code gets called before main() in a static method or global ctor
-  // somewhere. I've put a workaround in GPColorID to handle it. CEW 971118.
-  InitColor(((XDisplay*)disp)->GetDisplay());
+  // somewhere. I've put a workaround in to handle it. CEW 971118.
+  // "Closest color" allocation is currently off in the color manager, so
+  // initialization may fail, e.g. with netscape running. I'll fix this
+  // when I return. CEW 971211.
+  if (!InitColor(((XDisplay*)disp)->GetDisplay()))
+  {
+	  fprintf(stderr, "\nColor initialization failed.\n");
+	  return 1;
+  }
 
   Dispatcher::RunNoReturn();
 

@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: ColorManager.C
-// Last modified: Fri Nov  7 13:12:15 1997 by Chris Weaver
+// Last modified: Thu Dec 11 18:49:18 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -77,6 +77,7 @@ bool	ColorManager::AllocColor(const RGB& rgb)
 
 	if (!XAllocColor(rgb, xcid))				// Physical allocation
 		return false;							// Allocation failed
+
 	cid = lmap.GetID();							// Create new logical entry
 	color = lmap.Find(cid);						// Get new entry
 

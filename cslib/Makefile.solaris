@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.9  1997/11/24 23:13:59  weaver
+# Changes for the new ColorManager.
+#
 # Revision 1.8  1997/08/28 18:22:47  wenger
 # Re-made solaris dependencies.
 #
@@ -81,6 +84,27 @@ ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
 ClientServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 ClientServer.o: /s/X11/include/X11/Xutil.h
+WinServer.o: WinServer.h ClientServer.h /s/tcl/include/tcl.h
+WinServer.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+WinServer.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
+WinServer.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+WinServer.o: /usr/include/sys/select.h /usr/include/sys/time.h
+WinServer.o: /usr/include/time.h /s/X11/include/X11/X.h
+WinServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+WinServer.o: /usr/include/stddef.h ../graphics/Display.h
+WinServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+WinServer.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/stdio.h
+WinServer.o: /usr/include/sys/va_list.h /usr/include/math.h
+WinServer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
+WinServer.o: ../graphics/Pattern.h ../graphics/ViewWin.h
+WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+WinServer.o: ../graphics/DevError.h /usr/include/errno.h
+WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
+WinServer.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
+WinServer.o: /s/X11/include/X11/Xutil.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 client.o: /usr/include/string.h ClientServer.h /s/tcl/include/tcl.h
@@ -102,11 +126,12 @@ client.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 client.o: ../graphics/Xdef.h /s/X11/include/X11/Xutil.h
 server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
-server.o: /usr/include/string.h /usr/include/assert.h ClientServer.h
-server.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
-server.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-server.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-server.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
+server.o: /usr/include/string.h /usr/include/assert.h WinServer.h
+server.o: ClientServer.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+server.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
+server.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+server.o: /usr/include/sys/select.h /usr/include/sys/time.h
+server.o: /usr/include/time.h /s/X11/include/X11/X.h
 server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 server.o: /usr/include/stddef.h ../graphics/Display.h
 server.o: ../graphics/DeviseTypes.h /usr/include/values.h

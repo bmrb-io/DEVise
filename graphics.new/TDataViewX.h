@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/11/24 23:15:21  weaver
+  Changes for the new ColorManager.
+
   Revision 1.20  1997/08/28 18:21:15  wenger
   Moved duplicate code from ViewScatter, TDataViewX, and ViewLens classes
   up into ViewGraph (parent class).
@@ -149,6 +152,11 @@ class TDataViewX : public ViewGraph
 	public:
 
 		// Constructors and Destructors
+//		TDataViewX(char* name, VisualFilter& initFilter, QueryProc* qp,
+//				   PColorID fgid = nullPColorID,
+//				   PColorID bgid = nullPColorID,
+//				   AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
+//				   Action* action = NULL);
 		TDataViewX(char* name, VisualFilter& initFilter, QueryProc* qp,
 				   PColorID fgid = GetPColorID(defForeColor),
 				   PColorID bgid = GetPColorID(defBackColor),

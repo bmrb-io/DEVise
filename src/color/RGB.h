@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: RGB.h
-// Last modified: Thu Sep 25 16:35:26 1997 by Chris Weaver
+// Last modified: Thu Dec 11 19:28:23 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
@@ -14,6 +14,8 @@
 // 970407 [weaver]: Added Distance(), Error(), Invert(), and IsGray().
 // 970513 [weaver]: Updated to standard C++ class String.
 // 970925 [weaver]: Updated to C++ standard libraries.
+// 971204 [weaver]: Corrected Error().
+// 971211 [weaver]: Corrected Error().
 //
 //******************************************************************************
 //
@@ -40,8 +42,9 @@
 
 typedef unsigned short	RGBValue;
 
-const RGBValue	minRGBValue =     0;
-const RGBValue	maxRGBValue = 65535;
+const RGBValue	minRGBValue		=     0;
+const RGBValue	maxRGBValue		= 65535;
+const double	maxRGBDistance	= sqrt(3.0 * maxRGBValue * maxRGBValue);
 
 //******************************************************************************
 // class RGB
@@ -133,11 +136,15 @@ inline double	RGB::Distance(const RGB& rgb) const
 	return sqrt(dr*dr + dg*dg + db*db);
 }
 
-// Returns the percentage of distance compared to the maximum, taken as the
-// RGB distance between black and white.
+// Returns the ratio of distance to maximum distance, taken as the RGB distance
+// between black and white.
 inline double	RGB::Error(const RGB& rgb) const
 {
-	return (Distance(rgb) / (sqrt(3) * maxRGBValue));
+	double	dr = double(r) - double(rgb.r);
+	double	dg = double(g) - double(rgb.g);
+	double	db = double(b) - double(rgb.b);
+
+	return sqrt(dr*dr + dg*dg + db*db) / maxRGBDistance;
 }
 
 inline void		RGB::Invert(void)
