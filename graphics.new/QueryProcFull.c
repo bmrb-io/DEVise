@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/06/27 15:52:45  jussi
+  Added functionality which allows TDataAscii and TDataBinary to request
+  that views using a given TData be refreshed (existing queries are
+  aborted and new queries are issued). Fixed a few bugs in QueryProcFull
+  which became visible only when this new functionality was tested.
+
   Revision 1.21  1996/06/24 19:48:53  jussi
   Improved the interaction between query processors and the dispatcher.
   The query processors now also get called every time a 1-second timer
@@ -456,6 +462,7 @@ void QueryProcFull::InitQPFullX(QPFullData *qData)
     qData->hintId = (qData->high + qData->current) / 2;
     qData->mgr->FocusHint(qData->hintId, qData->tdata, qData->gdata);
     qData->state = QPFull_ScanState;
+    qData->map->SetFocusId(qData->current);
     qData->low = qData->current;
     if (Init::Randomize() && qData->high - qData->low > QPFULL_RANDOM_RECS) {
 #ifdef DEBUG
@@ -490,6 +497,7 @@ void QueryProcFull::InitQPFullScatter(QPFullData *qData)
   TData *tdata = qData->tdata;
   if (tdata->HeadID(qData->current) && tdata->LastID(qData->high)) {
     qData->state = QPFull_ScanState;
+    qData->map->SetFocusId(qData->current);
     qData->isRandom = false;
 #ifdef DEBUG
     printf("InitQPFullScatter search [%ld,%ld]\n", qData->current, qData->high);
@@ -502,14 +510,16 @@ void QueryProcFull::InitQPFullScatter(QPFullData *qData)
   }
 }
 
-/* Initialize all queries. Return false if no query is in initial state */
+/* Initialize one query. Return false if no query is in initial state */
 Boolean QueryProcFull::InitQueries()
 {
   int index;
-  Boolean hasInit = false;
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qData = (QPFullData *)_queries->Next(index);
     if (qData->state == QPFull_InitState) {
+      // must terminate iterator because query initialization may
+      // cause query to be aborted
+      _queries->DoneIterator(index);
       switch(qData->qType) {
       case QPFull_X:
 	InitQPFullX(qData);
@@ -524,14 +534,13 @@ Boolean QueryProcFull::InitQueries()
 	DOASSERT(0, "Unknown query type");
 	break;
       }
-      hasInit = true;
-      qData->map->SetFocusId(qData->current);
+      return true;
     }
   }
 
   _queries->DoneIterator(index);
 
-  return hasInit;
+  return false;
 }
 
 /*********************************************************
