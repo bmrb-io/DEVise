@@ -1,6 +1,7 @@
 depend:
 	makedepend -fMakefile.aix -I../graphics -I../graphics.new \
-		-I../tape -I../issm -I../crsp -I../compustat *.c *.C
+		-I../graphics -I../tape -I../issm -I../crsp \
+		-I../compustat *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/17 20:01:07  wenger
+  First version of 'show' program for dumping projections to stdout.
+
   Revision 1.5  1996/05/14 15:34:48  wenger
   Added GetDataSize method to AttrProj class; removed vector.o from
   AttrProjLib.o; various cleanups.
@@ -265,59 +268,6 @@ AttrProj::ReadRec(RecId recId, VectorArray &vecArray)
 			projP = _projList.GetNextProj();
 			projNum++;
 		}
-
-
-
-
-
-
-
-#if 0
-		int			attrCount = attrListP->NumAttrs();
-		int			attrNum;
-		Vector *	vectorP = vecArray.GetVector(0);
-
-		for (attrNum = 0; attrNum < attrCount; attrNum++)
-		{
-			AttrInfo *	attrInfoP = attrListP->Get(attrNum);
-			double		doubleVal;
-			float		floatVal;
-			int			intVal;
-
-			switch (attrInfoP->type)
-			{
-			case IntAttr:
-				intVal = *(int *)(_recBuf + attrInfoP->offset);
-				DO_DEBUG(printf("        %d\n", intVal));
-				vectorP->value[attrNum] = (double) intVal;
-				break;
-
-			case FloatAttr:
-				floatVal = *(float *)(_recBuf + attrInfoP->offset);
-				DO_DEBUG(//printf("        %f\n", floatVal));
-				vectorP->value[attrNum] = (double) floatVal;
-				break;
-
-			case DoubleAttr:
-				doubleVal = *(double *)(_recBuf + attrInfoP->offset);
-				DO_DEBUG(//printf("        %f\n", doubleVal));
-				vectorP->value[attrNum] = (double) doubleVal;
-				break;
-
-			case StringAttr:
-				DOASSERT(false, "Can't deal with string attribute");
-				break;
-
-			case DateAttr:
-				DOASSERT(false, "Can't deal with date attribute");
-				break;
-
-			default:
-				DOASSERT(false, "Illegal attribute type");
-				break;
-			}
-		}
-#endif
 	}
 
 	return result;

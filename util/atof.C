@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/16 18:18:22  jussi
+  Replaced calls to ftime() with calls to gettimeofday().
+
   Revision 1.1  1996/04/16 18:24:12  jussi
   Moved file from tape subdirectory.
 
@@ -37,11 +40,27 @@
 #include <math.h>
 #include <sys/time.h>
 
+#include "Util.h"
+
+void Exit::DoAbort(char *reason, char *file, int line)
+{
+  char fulltext[256];
+  sprintf(fulltext, "%s (%s:%d)", reason, file, line);
+
+  fprintf(stderr, "An internal error has occurred. The reason is:\n");
+  fprintf(stderr, "  %s\n", fulltext);
+
+  exit(2);
+}
+
+
 //#define MYATOI
 
+#if 0
 static const double power10[] = { 1, 10, 100, 1000, 10000, 100000,
 				  1e6, 1e7, 1e8, 1e9 };
 static const int maxDecimals = sizeof power10 / sizeof power10[0];
+#endif
 static const double maxErr = 1e-15;
 
 #ifdef MYATOI
@@ -66,6 +85,7 @@ inline long myatol(char *&str)
 }
 #endif
 
+#if 0
 inline double myatof(char *str)
 {
   int sign = 1;
@@ -120,25 +140,30 @@ inline double myatof(char *str)
   double ret = sign * (integer + fraction / power10[decimals]) * scale;
   return ret;
 }
+#endif
 
 int main(int argc, char **argv)
 {
   char *strings[] = { "1.2345", "1234.1232", "-0.65464", "6",
 		      "-10", "+523423.34234", "-23423.24234",
 		      "+2302022", "-12340922", "+20322.23232",
-		      "-.234234", "2334234.", "1e6", "1e-6",
+		      "-.234234", "2334234.",
+		      "1e6", "1e-6",
 		      "1.1234e-22", "+5.23e+24", "-.3422e-2",
-		      "+5e+2", "-4e-2", "-87654321.87654321",
-		      "-987654321.987654321" };
+		      "+5e+2", "-4e-2",
+		      "-87654321.87654321",
+		      "-987654321.987654321",
+		      "1230000000000000000000000000.0",
+		      "0.000000000000000000000456" };
   int numbers = sizeof strings / sizeof strings[0];
 
-  cout << "Verifying accuracy of myatof()..." << endl;
+  cout << "Verifying accuracy of UtilAtof()..." << endl;
   int i;
   for(i = 0; i < numbers; i++) {
-    if (fabs(myatof(strings[i]) - atof(strings[i])) > maxErr) {
+    if (fabs(UtilAtof(strings[i]) - atof(strings[i])) > maxErr) {
       cout << "Failure at number " << i << endl;
-      cout << "myatof(" << strings[i] << ") == "
-	   << myatof(strings[i])
+      cout << "UtilAtof(" << strings[i] << ") == "
+	   << UtilAtof(strings[i])
 	   << ", should be " << atof(strings[i]) << endl;
       exit(1);
     }
@@ -146,13 +171,13 @@ int main(int argc, char **argv)
 
   const int numIter = 1000000;
 
-  cout << "Starting measurement of myatof() and atof()..." << endl;
+  cout << "Starting measurement of UtilAtof() and atof()..." << endl;
 
   struct timeval start;
   gettimeofday(&start, 0);
 
   for(i = 0; i < numIter; i++)
-    double z = myatof(strings[i % numbers]);
+    double z = UtilAtof(strings[i % numbers]);
   
   struct timeval stop;
   gettimeofday(&stop, 0);
@@ -160,7 +185,7 @@ int main(int argc, char **argv)
   double secs = stop.tv_sec - start.tv_sec
                 + (stop.tv_usec - start.tv_usec) / 1e6;
 
-  cout << secs << " seconds for myatof(), "
+  cout << secs << " seconds for UtilAtof(), "
        << 1e6 * secs / numIter << " usec per call." << endl;
 
   gettimeofday(&start, 0);

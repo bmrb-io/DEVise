@@ -1,6 +1,6 @@
 depend:
-	makedepend -fMakefile.sgi -I../graphics.new -I/usr/include/X11 \
-		-I/usr/local/include *.C
+	makedepend -fMakefile.sgi -I../graphics.new -I../graphics \
+		-I/usr/include/X11 -I/usr/local/include *.C
 # DO NOT DELETE
 
 atof.o: /usr/include/stdlib.h /usr/include/sgidefs.h

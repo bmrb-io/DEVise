@@ -1,7 +1,8 @@
 CPP = g++
 CC = gcc
 
-CFLAGS = $(ARCH_FLAGS) -O -Wall -Wno-unused -I../../graphics.new
+CFLAGS = $(ARCH_FLAGS) -O -Wall -Wno-unused -I../../graphics.new \
+	-I../../graphics
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
 
 .c.o:

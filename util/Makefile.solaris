@@ -1,6 +1,6 @@
 depend:
-	makedepend -fMakefile.solaris -I../graphics.new -I/s/X11/include \
-		-I/s/tcl/include *.C
+	makedepend -fMakefile.solaris -I../graphics.new -I../graphics \
+		-I/s/X11/include -I/s/tcl/include *.C
 # DO NOT DELETE
 
 atof.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
@@ -9,6 +9,8 @@ atof.o: /usr/include/math.h /usr/include/floatingpoint.h
 atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
 atof.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 atof.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+atof.o: ../graphics/Util.h /usr/include/stdio.h /usr/include/string.h
+atof.o: ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 http_url.o: /usr/include/stdlib.h /usr/include/unistd.h
 http_url.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

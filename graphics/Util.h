@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/30 15:30:36  wenger
+  Attrproj code now reads records via TData object; interface to Birch
+  code now in place (but not fully functional).
+
   Revision 1.6  1996/04/16 19:49:39  jussi
   Replaced assert() calls with DOASSERT().
 
@@ -46,6 +50,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <iostream.h>
+#include <math.h>
 
 #include "Exit.h"
 
@@ -102,75 +107,91 @@ const double _UtilPower10[] = { 1, 10, 100, 1000, 10000, 100000,
 				1e6, 1e7, 1e8, 1e9, 1e10, 1e11,
 			        1e12, 1e13 };
 const int _UtilMaxDecimals = sizeof _UtilPower10 / sizeof _UtilPower10[0];
-const int _UtilMaxIntPart = 9;
 
 inline double UtilAtof(char *str)
 {
-  const char *origStr = str;
-
+  /* Deal with leading +/- sign, if any. */
   int sign = 1;
-  if (*str == '-') {
+  if (*str == '-')
+  {
     sign = -1;
     str++;
-  } else if (*str == '+')
+  }
+  else if (*str == '+')
+  {
     str++;
+  }
 
-  long int integer = atol(str);
-  char *start = str;
+  /* Deal with the digits before the decimal point. */
+  double wholePart = 0.0;
   while(isdigit(*str))
+  {
+    wholePart *= 10.0;
+    wholePart += *str - '0';
     str++;
-  if (str - start > _UtilMaxIntPart) {
-    // integer part is too long for this function to handle
-    // -- use libc version of atof to do the conversion
-    return atof(origStr);
   }
 
   if (*str != '.' && *str != 'e')
-    return sign * integer;
+  {
+    double value = sign * wholePart;
+    return value;
+  }
 
-  long int fraction = 0;
-  int decimals = 0;
+  /* Deal with digits after the decimal point. */
+  double fractPart = 0.0;
+  double placeValue = 0.1;
 
-  if (*str == '.') {
-    char *start = ++str;
-    fraction = atol(str);
+  if (*str == '.')
+  {
+    str++;
     while(isdigit(*str))
+    {
+      fractPart += placeValue * (*str - '0');
+      placeValue *= 0.1;
       str++;
-    decimals = str - start;
+    }
+  }
+  if (*str != 'e')
+  {
+    double value = sign * (wholePart + fractPart);
+    return value;
   }
 
-  if (decimals > _UtilMaxIntPart) {
-    // integer part is too long for this function to handle
-    // -- use libc version of atof to do the conversion
-    return atof(origStr);
-  }
-
-  DOASSERT(decimals >= 0 && decimals < _UtilMaxDecimals, "Too many decimals");
-
-  if (*str != 'e') {
-    double ret = sign * (integer + fraction / _UtilPower10[decimals]);
-    return ret;
-  }
-
-  double scale = 1.0;
-  int esign = 1;
+  /* Deal with the exponent... */
   str++;
-  if (*str == '-') {
-    esign = -1;
-    str++;
-  } else if (*str == '+')
-    str++;
-  int escale = atoi(str);
-  while (escale >= _UtilMaxDecimals) {
-    scale *= _UtilPower10[_UtilMaxDecimals - 1];
-    escale -= _UtilMaxDecimals - 1;
-  }
-  scale *= _UtilPower10[escale];
-  if (esign < 0)
-    scale = 1 / scale;
 
-  double ret = sign * (integer + fraction / _UtilPower10[decimals]) * scale;
-  return ret;
+  /* ...sign of exponent... */
+  int expSign = 1;
+  if (*str == '-')
+  {
+    expSign = -1;
+    str++;
+  }
+  else if (*str == '+')
+  {
+    str++;
+  }
+
+  /* ...value of exponent... */
+  long exponent = 0;
+  while(isdigit(*str))
+  {
+    exponent *= 10;
+    exponent += (*str - '0');
+    str++;
+  }
+
+  /* ...10**exponent. */
+  double scale = 1.0;
+  while (exponent >= _UtilMaxDecimals) {
+    scale *= _UtilPower10[_UtilMaxDecimals - 1];
+    exponent -= _UtilMaxDecimals - 1;
+  }
+  scale *= _UtilPower10[exponent];
+  if (expSign < 0) scale = 1.0 / scale;
+
+  double value = sign * (wholePart + fractPart) * scale;
+  return value;
 }
 
 

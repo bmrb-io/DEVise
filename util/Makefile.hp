@@ -1,6 +1,6 @@
 depend:
-	makedepend -fMakefile.hp -I../graphics.neww -I/s/X11/include \
-		-I/s/tcl/include *.C
+	makedepend -fMakefile.hp -I../graphics.new -I../graphics \
+		-I/s/X11/include -I/s/tcl/include *.C
 
 # DO NOT DELETE
 

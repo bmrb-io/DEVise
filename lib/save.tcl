@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/06/15 14:26:44  jussi
+#  Added saving of mapping legends.
+#
 #  Revision 1.7  1996/06/12 14:57:58  wenger
 #  Added GUI and some code for saving data to templates; added preliminary
 #  graphical display of TDatas; you now have the option of closing a session
@@ -499,7 +502,7 @@ proc DoActualSave { infile asTemplate asExport withData } {
 
 # save data here
     if {$withData} {
-	SaveData $f
+	SaveAllData $f
     }
 
     if {$asTemplate || $asExport} {
@@ -664,8 +667,8 @@ proc DoTemplateMerge {} {
 
 ############################################################
 
-# Save TDatas to the given file.
-proc SaveData {fileId} {
+# Save all TDatas to the given file.
+proc SaveAllData { fileId } {
 
     # Keep from making duplicates by keeping a list of what we have saved.
     set dataSaved ""
@@ -675,11 +678,45 @@ proc SaveData {fileId} {
         set instances [ DEVise get tdata $class ]
         foreach inst $instances {
 	    if {[lsearch $dataSaved $inst] == -1} {
-                puts $fileId "### $inst"
+		SaveOneData $fileId $inst
 	        lappend dataSaved $inst
 	    }
         }
     }
+
+    return
+}
+
+############################################################
+
+# Save the given TData to the given file.
+proc SaveOneData { fileId tdata } {
+    global sourceList
+
+    #TEMPTEMP -- probably need a catch here?
+    set source $sourceList($tdata)
+
+    # Make sure this TData is a UNIXFILE, otherwise we can't save it yet.
+    set type [lindex $source 0]
+puts "DIAG type = $type"
+    if {$type != "UNIXFILE"} {
+	puts "TData $tdata is not a UNIXFILE -- can't write to template"
+	return
+    }
+
+    set filename [lindex $source 1]
+    set dirname [lindex $source 7]
+    set tdFile [open $dirname/$filename r]
+
+    puts $fileId ""
+    puts $fileId "### $tdata"
+
+#TEMPTEMP -- need to deal with tdatas that are only part of a file
+    set data [read $tdFile]
+    puts $fileId $data
+    unset fileId
+
+    close $tdFile
 
     return
 }
