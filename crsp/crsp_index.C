@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/09 15:30:53  ravim
+  Initial revision
+*/
 
 // File containing routine that generates the index file for a CRSP tape
 
@@ -37,48 +40,65 @@
 #include <fcntl.h>
 
 #include "sec.h"
+#include "tapedrive.h"
 
-#define CRSP_DATA "/afs/cs.wisc.edu/p/miron/miron/DEVise/crsp/dsm94.dat"
-#define CRSP_INDEX "crsp.index"
+void crsp_index(char *tapeName, char *indexName);
 
-void crsp_index();
-
-main()
+main(int argc, char **argv)
 {
-  crsp_index();
+  if (argc != 3) {
+    cerr << "Usage: " << argv[0]
+         << " <input tape device> <output index file>" << endl;
+    exit(0);
+  }
+
+  crsp_index(argv[1], argv[2]);
 }
 
 //***********************************************************************
 
-void crsp_index()
+void crsp_index(char *tapeName, char *indexName)
 {
-  int recno = 0;
-  Security *s;
   // Open data file
-  int fd = open(CRSP_DATA, O_RDONLY);
-  // Open index file
-  FILE *fdi = fopen(CRSP_INDEX, "w");
+  TapeDrive tape(tapeName, "r", -1, 32768);
+  if (!tape)  {
+    cerr << "Error: could not open tape device " << tapeName << endl;
+    exit(0);
+  }
+  tape.readTarHeader();
+  unsigned long int beginning = tape.tell();
 
-  s = new Security(fd);
+  // Open index file
+  FILE *fdi = fopen(indexName, "w");
+  if (!fdi)  {
+    cerr << "Error: could not create index file " << indexName << endl;
+    exit(0);
+  }
+
+  int recno = 0;
+  unsigned long int tapepos = tape.tell();
+  Security *s = new Security(tape);
+
   while (s->reccount) 
   {
-    fprintf(fdi, "%d ", recno);
-    fprintf(fdi, "%d ", s->header.permno);
-    fprintf(fdi, "%s ", s->header.cusip);
-    fprintf(fdi, "%d ", s->header.hexcd);
-    fprintf(fdi, "%d ", s->header.hsiccd);
-    fprintf(fdi, "%s ", s->names[s->header.numnam - 1].comnam);
-    fprintf(fdi, "%d ", s->header.begdat);
+    fprintf(fdi, "%lu,", tapepos);
+    fprintf(fdi, "%d,", recno);
+    fprintf(fdi, "%d,", s->header.permno);
+    fprintf(fdi, "%s,", s->header.cusip);
+    fprintf(fdi, "%d,", s->header.hexcd);
+    fprintf(fdi, "%d,", s->header.hsiccd);
+    fprintf(fdi, "\"%s\",", s->names[s->header.numnam - 1].comnam);
+    fprintf(fdi, "%d,", s->header.begdat);
     fprintf(fdi, "%d\n", s->header.enddat);
 
     recno += s->reccount;
     delete s;
 
-    if (lseek(fd, CRSP_DATA_RLEN * recno, SEEK_SET) == -1)
+    tapepos = beginning + CRSP_DATA_RLEN * recno;
+    if (tape.seek(tapepos) != tapepos)
       break;
-    s = new Security(fd);
+    s = new Security(tape);
   }
 
-  close(fd);
   fclose(fdi);
 }
