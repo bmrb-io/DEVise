@@ -102,8 +102,10 @@ Num Date        Status  Description
 
 035 08/29/96	OPEN	Files in temp and work directories don't get
 			cleaned up. (ssl/rkw)
+			(Actually, the temp directory gets cleaned up if
+			Devise exits normally.) (rkw 8/30/96)
 
-036 08/30/96	OPEN	Run LandsEnd/a2.tk session with client/server
+036 08/30/96	FIXED	Run LandsEnd/a2.tk session with client/server
 			Devise -> crashes (assertion fails in View.c). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.

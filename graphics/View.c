@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.71  1996/08/30 15:56:02  wenger
+  Modified View and QueryProcessor code to work correctly with current
+  dispatcher semantics (call back forever unless cancelled).
+
   Revision 1.70  1996/08/28 00:19:37  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -1350,7 +1354,7 @@ void View::Run()
   Dispatcher::Current()->CancelCallback(_dispatcherID);
 
 #if defined(DEBUG)
-  printf("\nView::Run for view %s (0x%p)\n", GetName(), _dispatcherID);
+  printf("\nView::Run for view '%s' (0x%p)\n", GetName(), _dispatcherID);
 #endif
   /* if view is in pile mode but not the top view, it has to wait until
      the top view has erased the window and drawn axes and other
@@ -1359,7 +1363,12 @@ void View::Run()
 
   if (_pileMode) {
     ViewWin *parent = GetParent();
-    DOASSERT(parent, "View has no parent");
+
+    // If we're running client/server Devise, we may get here before this
+    // view's parent has been created, so don't bomb out.  RKW 8/30/96.
+    if (parent == NULL) return;
+    //DOASSERT(parent, "View has no parent");
+
     int index = parent->InitIterator();
     DOASSERT(parent->More(index), "Parent view has no children");
     ViewWin *vw = parent->Next(index);
