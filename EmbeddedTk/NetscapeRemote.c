@@ -41,7 +41,7 @@
 #include <X11/Xmu/WinUtil.h>	/* for XmuClientWindow() */
 
 #if !defined(LINUX)
-extern "C" gethostname(char *, int);
+extern "C" int gethostname(char *, int);
 #endif
 
 
