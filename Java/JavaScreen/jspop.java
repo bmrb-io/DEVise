@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2001/02/21 17:49:37  xuk
+// Added the collaboration security features.
+// Changes in OnCollab() for checking collaboration password.
+//
 // Revision 1.41  2001/02/20 20:02:26  wenger
 // Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 // to the trunk.
@@ -1307,14 +1311,14 @@ public class jspop implements Runnable
 		for (int i = 0; i < activeClients.size(); i++) {
 		    DEViseClient tmpClient =
 			(DEViseClient) activeClients.elementAt(i);
-		    if (tmpClient != null) 
+		    if (tmpClient != null && tmpClient.isAbleCollab) 
 			command = command + " {" + tmpClient.getConnectionID().intValue() + "}";
 		}
 
 		for (int i = 0; i < suspendClients.size(); i++) {
 		    DEViseClient tmpClient =
 			(DEViseClient) suspendClients.elementAt(i);
-		    if (tmpClient != null) 
+		    if (tmpClient != null && tmpClient.isAbleCollab) 
 			command = command + " {" + tmpClient.getConnectionID().intValue() + "}";
 		}    
 		command = command.trim();
