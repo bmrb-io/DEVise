@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/06/04 23:06:52  donjerko
+  Added DataReader.
+
   Revision 1.54  1998/04/16 22:58:17  donjerko
   *** empty log message ***
 
@@ -174,6 +177,8 @@
 #  include <values.h>
 #  define DBL_MAX MAXDOUBLE
 #endif
+
+const string Stats::KEYWD = "stats";
 
 string DteEnvVars::getDirectory(const string& envVar) const {
 	const char* dmd = NULL;
@@ -604,15 +609,8 @@ void interfaceRead(istream& in, Type*& adt){
 	if(typeNm == CatalogInterface::typeName){
 		interf = new (adt) CatalogInterface();
 		TRY(interf->read(in), NVOID );
-		string semicolon;
-		in >> semicolon;
-		if(semicolon != ";"){
-			string msg = "Semicolon expected instead of: " + semicolon;
-			THROW(new Exception(msg), NVOID );
-		}
-		return;
 	}
-	if(typeNm == DeviseInterface::typeName){
+	else if(typeNm == DeviseInterface::typeName){
 		interf = new (adt) DeviseInterface();
 		TRY(interf->read(in), NVOID );
 	}
@@ -637,32 +635,20 @@ void interfaceRead(istream& in, Type*& adt){
 		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == MaterViewInterface::typeName){
-		interf = (ViewInterface*) new (adt) MaterViewInterface();
+		interf =  new (adt) MaterViewInterface();
 		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == DBServerInterface::typeName){
-          interf = (DBServerInterface*) new (adt) DBServerInterface();
+          interf =  new (adt) DBServerInterface();
 		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == ODBCInterface::typeName){
-		interf = (ODBCInterface*) new (adt) ODBCInterface();
+		interf =  new (adt) ODBCInterface();
 		TRY(interf->read(in), NVOID );
 	}
 	else{
 		interf = NULL;
 		string msg = "Interface type: " + typeNm + " not defined";
-		THROW(new Exception(msg), NVOID );
-	}
-	string indexStr;
-	in >> indexStr;
-	while(in && indexStr != ";"){
-		string msg = 
-			"Invalid catalog format: \";\" expected instead of \"" +
-			indexStr + "\"";
-		THROW(new Exception(msg), NVOID );
-	}
-	if(!in){
-		string msg = "Premature end of catalog";
 		THROW(new Exception(msg), NVOID );
 	}
 }
@@ -1684,9 +1670,9 @@ DestroyPtr* newDestroyPtrs(const TypeID* types, int numFlds){ // throws
 	return retVal;
 }
 
-Type* duplicateObject(TypeID type, Type* obj){
+Type* duplicateObject(TypeID type, const Type* obj){
 	if(type == "int" || type == "bool"){
-		return obj;
+		return (Type*) obj;
 	}
 	else if(type == "string"){
 		return strdup((char*) obj);

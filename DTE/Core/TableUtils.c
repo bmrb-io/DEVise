@@ -8,10 +8,11 @@ Iterator* createIteratorFor(
 {
 	assert(in && in->good());
 	int numFlds = schema.getNumFlds();
-	StandReadExec* fs = new StandReadExec(numFlds, schema.getTypeIDs(), in);
+	const TypeID* types = schema.getTypeIDs();
+	StandReadExec* fs = new StandReadExec(numFlds, types, in);
 	Array<ExecExpr*>* select = new Array<ExecExpr*>(numFlds);
 	for(int i = 0; i < numFlds; i++){
-		(*select)[i] = new ExecSelect(0, i);
+		(*select)[i] = new ExecSelect(types[i], 0, i);
 	}
 
 	BaseSelection* name = new EnumSelection(0, "string");

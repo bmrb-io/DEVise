@@ -9,16 +9,24 @@ using namespace std;
 #endif
 
 class ExecExpr {
+protected:
+	TypeID typeID;
 public:
+	ExecExpr(const TypeID& type) : typeID(type) {}
 	virtual ~ExecExpr() {};
 	virtual const Type* evaluate(const Tuple* left, const Tuple* right) = 0;
+	const TypeID& getTypeID(){
+		return typeID;
+	}
+	// static ExecExpr* createExpr(const string& fnname, const ExprList& args);
 };
 
 class ExecSelect : public ExecExpr {
      int leftRight;
      int fieldNo;
 public:	
-     ExecSelect(int lr, int field) : leftRight(lr), fieldNo(field) {}
+     ExecSelect(const TypeID& type, int lr, int field) : 
+		ExecExpr(type), leftRight(lr), fieldNo(field) {}
 	virtual ~ExecSelect() {}
      const Type* evaluate(const Tuple* left, const Tuple* right) {
           const Type* base = (leftRight ? right[fieldNo] : left[fieldNo]);
@@ -28,13 +36,13 @@ public:
 
 class ExecConst : public ExecExpr {
 	Type* value;
-	DestroyPtr destroyPtr;
 public:
-	ExecConst(Type* value, DestroyPtr destroyPtr) : 
-		value(value), destroyPtr(destroyPtr) {
-		assert(destroyPtr);
+	ExecConst(const TypeID& type, const Type* val) : ExecExpr(type) {
+		value = duplicateObject(typeID, val);
 	}
 	virtual ~ExecConst(){
+		DestroyPtr destroyPtr = getDestroyPtr(typeID);
+		assert(destroyPtr);
 		destroyPtr(value);
 	}
      const Type* evaluate(const Tuple* left, const Tuple* right) {
@@ -49,20 +57,15 @@ class ExecTypeCast : public ExecExpr {
      size_t valueSize;
 	DestroyPtr destroyPtr;
 public:
-	ExecTypeCast(ExecExpr* input, PromotePtr promotePtr,
-			Type* value, size_t valueSize, DestroyPtr destroyPtr) :
-		input(input), promotePtr(promotePtr), value(value),
-		valueSize(valueSize), destroyPtr(destroyPtr) {
-		assert(input);
-		assert(promotePtr);
-		assert(destroyPtr);
-	}	
+	ExecTypeCast(ExecExpr* input, const TypeID& type);
 	virtual ~ExecTypeCast(){
 		delete input;
+		assert(destroyPtr);
 		destroyPtr(value);
 	}
 	const Type* evaluate(const Tuple* left, const Tuple* right){
 		const Type* tmp = input->evaluate(left, right);
+		assert(promotePtr);
 		promotePtr(tmp, value);
 		return value;
 	}
@@ -75,14 +78,7 @@ class ExecMember : public ExecExpr {
      size_t valueSize;
 	DestroyPtr destroyPtr;
 public:
-	ExecMember(ExecExpr* input, MemberPtr memberPtr,
-			Type* value, size_t valueSize, DestroyPtr destroyPtr) :
-		input(input), memberPtr(memberPtr), value(value),
-		valueSize(valueSize), destroyPtr(destroyPtr) {
-		assert(input);
-		assert(memberPtr);
-		assert(destroyPtr);
-	}	
+	ExecMember(ExecExpr* input, const string& name);
 	virtual ~ExecMember(){
 		delete input;
 		destroyPtr(value);
@@ -101,17 +97,7 @@ class ExecOperator : public ExecExpr{
 	size_t valueSize;
 	DestroyPtr destroyPtr;
 public:
-	ExecOperator(ExecExpr* l, ExecExpr* r, 
-		OperatorPtr opPtr, Type* value, size_t valueSize,
-		DestroyPtr destroyPtr) :
-		left(l), right(r), opPtr(opPtr), value(value), 
-		valueSize(valueSize), destroyPtr(destroyPtr) {
-	
-		assert(left);
-		assert(right);
-		assert(opPtr);
-		assert(destroyPtr);
-	}
+	ExecOperator(ExecExpr* l, ExecExpr* r, const string& name);
 	virtual ~ExecOperator(){
 		delete left;
 		delete right;
@@ -133,20 +119,11 @@ class ExecConstructor : public ExecExpr{
 	DestroyPtr destroyPtr;
 	Array<const Type*>* inputVals;
 public:
-	ExecConstructor(Array<ExecExpr*>* input,
-		ConstructorPtr consPtr, Type* value, size_t valueSize,
-		DestroyPtr destroyPtr) :
-		input(input), consPtr(consPtr), value(value), 
-		valueSize(valueSize), destroyPtr(destroyPtr) {
-	
-		inputVals = new Array<const Type*>(input->length);
-		assert(input);
-		assert(consPtr);
-		assert(destroyPtr);
-	}
+	ExecConstructor(Array<ExecExpr*>* input, const string& name);
 	virtual ~ExecConstructor(){
 		delete input;
 		delete inputVals;
+		assert(destroyPtr);
 		destroyPtr(value);
 	}
 	const Type* evaluate(const Tuple* leftT, const Tuple* rightT) {

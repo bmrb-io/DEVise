@@ -70,50 +70,47 @@ MaterViewInterface::MaterViewInterface(
 	int numFlds, const TypeID* typeIDs, const string* attributeNames,
 	const string& url, const string& query)
 {
-	StandardInterface::schema = ISchema(numFlds, typeIDs, attributeNames);
-	StandardInterface::urlString = url;
-	ViewInterface::numFlds = numFlds;
-	ViewInterface::attributeNames = new string[numFlds];
+	schema = ISchema(numFlds, typeIDs, attributeNames);
+	urlString = url;
+	this->numFlds = numFlds;
+	this->attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
-		ViewInterface::attributeNames[i] = attributeNames[i];
+		this->attributeNames[i] = attributeNames[i];
 	}
-	ViewInterface::schema = NULL;
-	ViewInterface::query = query;
+	this->query = query;
 }
 
 MaterViewInterface::MaterViewInterface(const MaterViewInterface& a){
-	StandardInterface::schema = a.StandardInterface::schema;
-	StandardInterface::urlString = a.StandardInterface::urlString;
-	ViewInterface::numFlds = a.ViewInterface::numFlds;
-	ViewInterface::attributeNames = new string[numFlds];
+	schema = a.schema;
+	urlString = a.urlString;
+	numFlds = a.numFlds;
+	attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
-		ViewInterface::attributeNames[i] = a.attributeNames[i];
+		attributeNames[i] = a.attributeNames[i];
 	}
-	ViewInterface::schema = NULL;
-	ViewInterface::query = a.ViewInterface::query;
+	query = a.query;
 }
 
 istream& MaterViewInterface::read(istream& in){
-	StandardInterface::read(in);
-	numFlds = StandardInterface::schema.getNumFlds();
-	const string* attrs = StandardInterface::schema.getAttributeNames();
-	ViewInterface::attributeNames = new string[numFlds];
+	in >> schema;
+	in >> urlString;
+	numFlds = schema.getNumFlds();
+	const string* attrs = schema.getAttributeNames();
+	attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
-		ViewInterface::attributeNames[i] = attrs[i];
+		attributeNames[i] = attrs[i];
 	}
 	CHECK(stripQuotes(in, query), 
 		"Incorrect MaterViewInterface format", in);
-	ViewInterface::schema = NULL;
-	return in;
+	return Interface::read(in);
 }
 
 void MaterViewInterface::write(ostream& out) const {
 	out << typeName;
-	out << " " << StandardInterface::schema;
+	out << " " << schema;
 	out << " " << urlString;
 	out << " " << addQuotes(query);
-//	ViewInterface::Interface::write(out);	// does not work for some reason
-	out << " ;";
+	Interface::write(out);
 }
 
 Site* MaterViewInterface::getSite(){ // Throws a exception
@@ -123,7 +120,7 @@ Site* MaterViewInterface::getSite(){ // Throws a exception
 	delete url;
 
 	StandardRead* sr = new StandardRead();
-	TRY(sr->open(StandardInterface::schema, in, urlString), NULL);
+	TRY(sr->open(schema, in, urlString), NULL);
 
 	RidAdder* planOp = new RidAdder(sr);
      return new LocalTable("", planOp, urlString);	
@@ -274,7 +271,7 @@ istream& CGIInterface::read(istream& in){  // throws
 	for(int i = 0; i < entryLen; i++){
 		TRY(entries[i].read(in), in);
 	}
-	return in;
+	return Interface::read(in);
 }
 
 istream& ViewInterface::read(istream& in){ // throws
@@ -524,14 +521,14 @@ istream& DummyInterface::read(istream& in){
 		"Incorrect DummyInterface format", in);
 	CHECK(stripQuotes(in, segment), 
 		"Incorrect DummyInterface format", in);
-	return in;
+	return Interface::read(in);
 }
 
 istream& DeviseInterface::read(istream& in){
 	in >> schemaNm >> dataNm;
 	CHECK(stripQuotes(in, viewNm), 
-		"Incorrect ViewInterface format", in);
-	return in;
+		"Incorrect DeviseInterface format", in);
+	return Interface::read(in);
 }
 
 Inserter* Interface::getInserter(TableName* table){ // throws
@@ -563,7 +560,7 @@ istream& DBServerInterface::read(istream& in){
 	if(!in){
 		THROW(new Exception("Incorrect DBServerInterface format"), in);
 	}
-	return in;
+	return Interface::read(in);
 }
 
 void DBServerInterface::write(ostream& out) const {
@@ -602,7 +599,7 @@ istream& ODBCInterface::read(istream& in){
 	if(!in){
 		THROW(new Exception("Incorrect ODBCInterface format"), in);
 	}
-	return in;
+	return Interface::read(in);
 }
 
 void ODBCInterface::write(ostream& out) const {
@@ -627,3 +624,42 @@ void DeviseInterface::write(ostream& out) const{
 	out << " " << addQuotes(viewNm);
 	Interface::write(out);
 }
+
+istream& Interface::read(istream& in)
+{
+     string next;
+     in >> next;
+	while(in && !(next == string(";"))){
+		if(next == Stats::KEYWD){
+		
+			// read in statistics
+		}
+		else{
+			string msg = "Invalid catalog format: " + Stats::KEYWD +
+				" expected instead of \"" + next + "\"";
+			THROW(new Exception(msg), in);
+		}
+	}
+	if(!in){
+		string msg = "Catalog entry must end with semicolon";
+		THROW(new Exception(msg), in);
+	}
+}
+
+istream& StandardInterface::read(istream& in){
+	in >> schema;
+	in >> urlString;
+	return Interface::read(in);
+}
+
+istream& QueryInterface::read(istream& in){
+	in >> urlString;
+	return Interface::read(in);
+}
+
+istream& CatalogInterface::read(istream& in){
+	in >> fileName;
+	return Interface::read(in);
+}
+
+

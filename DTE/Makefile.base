@@ -78,7 +78,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
-	RelationId.c DataRead.c
+	RelationId.c DataRead.c ExecExpr.c
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c

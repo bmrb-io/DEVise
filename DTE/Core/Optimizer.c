@@ -571,7 +571,7 @@ void LogPropTable::initialize(const Query& query)
 	int mu = atoi(muS);
 
 	char* ratioS = getenv("RATIO");
-	assert(ratioS || !"please ste env var RATIO");
+	assert(ratioS || !"please set env var RATIO");
 	double ratio = atof(ratioS);
 
 	double singleRatio = pow(ratio, double(1.0) / numTables);

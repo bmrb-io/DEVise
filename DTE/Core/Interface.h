@@ -31,16 +31,7 @@ public:
 	virtual Interface* duplicate() const = 0;
 	virtual ~Interface(){}
 	virtual Site* getSite() = 0;
-	virtual istream& read(istream& in) = 0;
-	virtual ostream* getOutStream(){
-		assert(0);
-		return NULL;
-	}
-	virtual string getFileName(){
-		assert(0);
-		string tmp;
-		return tmp;
-	}
+	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << " ;";
 	}
@@ -106,10 +97,7 @@ public:
 		return new StandardInterface(*this);
 	}
 	virtual Site* getSite();
-	virtual istream& read(istream& in){
-		in >> schema;
-		return in >> urlString;
-	}
+	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
 		out << " " << schema;
@@ -171,7 +159,13 @@ public:
 	}
 };
 
-class MaterViewInterface : public ViewInterface, public StandardInterface {
+class MaterViewInterface : public Interface {
+	ISchema schema;
+	string urlString;
+
+	int numFlds;
+	string* attributeNames;
+	string query;
 public:
 	static string typeName;
 public:
@@ -185,22 +179,22 @@ public:
 		return typeName;
 	}
 	virtual Interface* duplicate() const {
-		return (ViewInterface*) new MaterViewInterface(*this);
+		return new MaterViewInterface(*this);
 	}
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
 	virtual const ISchema* getISchema(TableName* table){
-		return ViewInterface::getISchema(table);
+		return &schema;
 	}
 	virtual Type getType(){
-		return ViewInterface::getType();
+		return VIEW;
 	}
 	virtual const string* getAttributeNames() const {
-		return StandardInterface::schema.getAttributeNames();
+		return schema.getAttributeNames();
 	}
 	virtual Interface* copyTo(void* space){
-		return (ViewInterface*) new (space) MaterViewInterface(*this);
+		return new (space) MaterViewInterface(*this);
 	}
 };
 
@@ -266,10 +260,7 @@ public:
 		return new QueryInterface(*this);
 	}
 	virtual Site* getSite();
-	virtual istream& read(istream& in){
-		in >> urlString;
-		return in;
-	}
+	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
 		out << " " << urlString;
@@ -327,13 +318,11 @@ public:
 		return typeName;
 	}
 	virtual Interface* duplicate() const; 
-	virtual string getFileName(){
+	string getFileName(){
 		return fileName;
 	}
 	virtual Site* getSite();
-	virtual istream& read(istream& in){
-		return in >> fileName;
-	}
+	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const {
 		out << typeName;
 		out << " " << fileName;

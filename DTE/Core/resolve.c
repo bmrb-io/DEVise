@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/06/04 23:26:28  donjerko
+  *** empty log message ***
+
   Revision 1.35  1998/04/09 20:26:24  donjerko
   *** empty log message ***
 
@@ -187,8 +190,10 @@ ExecExpr* BaseSelection::createExec(Site* site1, Site* site2)
 	selList->rewind();
 	int i = 0;
 	while(!selList->atEnd()){
-		if(match(selList->get())){
-			return new ExecSelect(leftRight, i);
+		BaseSelection* curr = selList->get();
+		assert(curr);
+		if(match(curr)){
+			return new ExecSelect(curr->getTypeID(), leftRight, i);
 		}
 		selList->step();
 		i++;
@@ -206,15 +211,12 @@ ExecExpr* Operator::createExec(Site* site1, Site* site2)
      TRY(l = left->createExec(site1, site2), NULL);
 	ExecExpr* r;
      TRY(r = right->createExec(site1, site2), NULL);
-	size_t objSz = 0;
-	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
-	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
-	return new ExecOperator(l, r, opPtr, value, objSz, destroyPtr);
+	return new ExecOperator(l, r, name);
 }
 
 ExecExpr* EnumSelection::createExec(Site* site1, Site* site2)
 {
-	return new ExecSelect(0, position);
+	return new ExecSelect(getTypeID(), 0, position);
 }
 
 ExecExpr* PrimeSelection::createExec(Site* site1, Site* site2)
@@ -266,9 +268,7 @@ BaseSelection* ConstantSelection::duplicate() {
 
 ExecExpr* ConstantSelection::createExec(Site* site1, Site* site2)
 {
-	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
-	TRY(Type* newvalue = duplicateObject(typeID, value), NULL);
-	return new ExecConst(newvalue, destroyPtr);
+	return new ExecConst(typeID, value);
 }
 
 bool PrimeSelection::match(BaseSelection* x){
@@ -373,10 +373,7 @@ ExecExpr* TypeCast::createExec(Site* site1, Site* site2)
 	}
 	ExecExpr* execInp;
 	TRY(execInp = input->createExec(site1, site2), NULL);
-	size_t valueSize;
-	Type* value = allocateSpace(typeID, valueSize);
-	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
-	return new ExecTypeCast(execInp, promotePtr, value, valueSize, destroyPtr);
+	return new ExecTypeCast(execInp, typeID);
 }
 
 ExecExpr* Member::createExec(Site* site1, Site* site2)
@@ -387,11 +384,7 @@ ExecExpr* Member::createExec(Site* site1, Site* site2)
 	}
 	ExecExpr* execInp;
 	TRY(execInp = input->createExec(site1, site2), NULL);
-	size_t valueSize;
-	Type* value = allocateSpace(typeID, valueSize);
-	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
-	return new ExecMember(
-		execInp, memberPtr, value, valueSize, destroyPtr);
+	return new ExecMember(execInp, *name);
 }
 
 bool Operator::match(BaseSelection* x){
@@ -472,10 +465,7 @@ ExecExpr* Constructor::createExec(Site* site1, Site* site2)
 		TRY((*input)[i] = args->get()->createExec(site1, site2), NULL);
 		args->step();
 	}
-	size_t objSz;
-	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
-	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
-	return new ExecConstructor(input, consPtr, value, objSz, destroyPtr);
+	return new ExecConstructor(input, *name);
 }
 
 void TypeCast::collect(Site* site, List<BaseSelection*>* to){

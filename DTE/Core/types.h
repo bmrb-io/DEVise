@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/06/08 04:09:53  okan
+  *** empty log message ***
+
   Revision 1.49  1998/04/16 22:58:18  donjerko
   *** empty log message ***
 
@@ -258,10 +261,13 @@ public:
 
 extern const NewStat DEFAULT_STAT;
 
-struct Stats{
+class Stats{
+public:
 	int* fldSizes;
 	int cardinality;
 	int numFlds;
+public:
+	const static string KEYWD;
 	Stats(int numFlds, int* fldSizes, int c) :
 		fldSizes(fldSizes), cardinality(c), numFlds(numFlds) {}
 	Stats(int numflds){
@@ -1087,7 +1093,7 @@ PromotePtr getPromotePtr(TypeID from, TypeID to); // throws
 
 ADTCopyPtr getADTCopyPtr(TypeID adt); // throws
 
-Type* duplicateObject(TypeID type, Type* obj);   // throws
+Type* duplicateObject(TypeID type, const Type* obj);   // throws
 
 void updateHighLow(int _numFlds, const OperatorPtr* lessPtrs, 
 	const OperatorPtr* greaterPtrs, const Tuple* tup, 
