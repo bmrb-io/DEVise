@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/04/10 15:33:30  jussi
+  Cleaned up some debugging statements.
+
   Revision 1.13  1996/04/10 02:22:32  jussi
   Added support for > 1 mappings in a view.
 
@@ -123,7 +126,7 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
 
   InitMappingIterator(true);            // open iterator backwards
   if (MoreMapping()) {
-    _map = NextMapping();
+    _map = NextMapping()->map;
 #ifdef DEBUG
     printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
 #endif
@@ -257,7 +260,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
   if (MoreMapping()) {
-    _map = NextMapping();
+    _map = NextMapping()->map;
 #ifdef DEBUG
     printf("Submitting next query 0x%p\n", _map);
 #endif
@@ -271,6 +274,9 @@ void TDataViewX::QueryDone(int bytes, void *userData)
   _stats.Done();
   _stats.Report();
   _dataBin->Final();
+
+  DrawLegend();
+
   ReportQueryDone(bytes);
 }
 
