@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2001/01/31 22:19:02  xuk
+// Modify onCollab(), for wrong collaboration JS ID. Send JAVAC_ERROR to client.
+//
 // Revision 1.36  2001/01/30 03:04:46  xuk
 // Add collabration function onCollab().
 //
@@ -1256,8 +1259,7 @@ public class jspop implements Runnable
 	
 	try {			
        	    if (client != null) {
-		client.setCollabSocket(socket);
-		client.collabInit = 1;
+		client.addCollabSocket(socket);
 	    } else {
 		pn("No client for ID: " + id);
 		socket.sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
