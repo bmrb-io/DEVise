@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1996/09/25 18:36:49  wenger
+#  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
+#
 #  Revision 1.42  1996/08/12 18:43:44  flisakow
 #    Makefiles changed to use AR and RANLIB vars from Makefile.common.
 #
@@ -56,8 +59,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
-        StringStorage.C PointStorage.C ExtBufMgr.C MapIntToInt.C
-
+        StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C
+	
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
 QPObj = $(QPSrcc:.c=.o)
@@ -97,15 +100,11 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testGData.c testGDataVar.c testBufPage.c testRecFile.c testTDataRec.c \
 	testBufMgrNull.c test2d.c testraw.c testVoidArray.c testRecRange.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
-	StringHash.c testViewRanges.c testXY.c testExtBufMgr.C
+	StringHash.c testViewRanges.c testXY.c testSBufMgr.C
 
 LIBNAME = libgraphicsnew.a
 
 all: $(LIBNAME) libclient.a libserver.a libmonolith.a
-
-#TkControl.o: TkControl.c
-#	$(CC) $(CFLAGS) -fno-inline -fno-default-inline \
-#		-fkeep-inline-functions -c $<
 
 libmonolith.a: TkControl.o
 	$(AR) cr $@ TkControl.o
@@ -127,10 +126,9 @@ libbufmgr.a: $(BufMgrObj)
 	$(AR) cr $@ $(BufMgrObj)
 	$(RANLIB) $@
 
-testExtBufMgr: testExtBufMgr.o ExtBufMgr.o DCE.o
-	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o ExtBufMgr.o DCE.o \
-		../graphics/ExitClean.o ../graphics/DList.o \
-		-lpthread
+testSBufMgr: testSBufMgr.o SBufMgr.o DCE.o
+	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o SBufMgr.o DCE.o \
+		../graphics/ExitClean.o ../graphics/DList.o
 
 testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
@@ -269,10 +267,10 @@ testpage: $(LIBOBJ) testpage.o
 
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
-		libmonolith.a testExtBufMgr testGDataRange \
+		libmonolith.a testSBufMgr testGDataRange \
                 testRecFile testRecRange testViewRanges testVoidArray
 
 mostlyclean:
 	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \
 	testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o\
-	ClientAPI.o ServerAPI.o TkControl.o testExtBufMgr.o
+	ClientAPI.o ServerAPI.o TkControl.o testSBufMgr.o
