@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/09/10 20:07:12  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.17  1996/09/06 06:59:44  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -90,6 +97,7 @@
 #include "DevError.h"
 #include "Version.h"
 #include "Util.h"
+#include "PSDisplay.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
@@ -110,6 +118,8 @@ ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
   _iconified = true;
   _background = bg;
   _foreground = fg;
+
+  _hasPrintIndex = false;
 
 #ifdef MARGINS
   _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
@@ -146,21 +156,17 @@ ViewWin::ExportImage(DisplayExportFormat format, char *filename)
       printWinP = printWinP->_parent;
     }
 
-    FILE *file = fopen(filename, "w");
-    if (file == NULL)
+    // Note: get rid of cast -- not safe.  RKW 9/19/96.
+    PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+    if (!psDispP->OpenPrintFile(filename).IsComplete())
     {
       reportError("Can't open print file", errno);
       result += StatusFailed;
     }
     else
     {
-      result += printWinP->PrintPS(file);
-
-      if (fclose(file) != 0)
-      {
-	reportError("Error closing print file", errno);
-	result += StatusWarn;
-      }
+      psDispP->PrintPSHeader();
+      result += printWinP->PrintPS();
     }
   }
   else
@@ -738,18 +744,50 @@ void ViewWin::ToggleMargins()
 }
 #endif
 
+/*------------------------------------------------------------------------------
+ * function: ViewWin::PrintPS
+ * Prints all children of this object (and their children, etc.).
+ *
+ * This works as follows:
+ *   It prints the first child of this object.
+ *   When that child is done printing (including printing any of its
+ *     children) it calls this function again, and the next child of
+ *     this object (and its children) are printed.  And so on...
+ */
 DevStatus
-ViewWin::PrintPS(FILE *file)
+ViewWin::PrintPS()
 {
+  DO_DEBUG(printf("ViewWin::PrintPS(%s)\n", _name));
   DevStatus result = StatusOk;
 
-  int index = _children.InitIterator();
-  while (_children.More(index))
+  if (!_hasPrintIndex)
   {
-    ViewWin *child = _children.Next(index);
-    result += child->PrintPS(file);
+    _printIndex = _children.InitIterator();
+    _hasPrintIndex = true;
   }
-  _children.DoneIterator(index);
+
+  if (_children.More(_printIndex))
+  {
+    ViewWin *child = _children.Next(_printIndex);
+    result += child->PrintPS();
+  }
+  else
+  {
+    _children.DoneIterator(_printIndex);
+    _hasPrintIndex = false;
+
+    if (_parent != NULL)
+    {
+      _parent->ViewWin::PrintPS();
+    }
+    else
+    {
+      // Note: get rid of cast -- not safe.  RKW 9/19/96.
+      PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+      psDispP->PrintPSTrailer();
+      result += psDispP->ClosePrintFile();
+    }
+  }
 
   return result;
 }

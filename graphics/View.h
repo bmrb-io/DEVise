@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/09/10 20:07:11  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.39  1996/08/04 22:18:37  jussi
   Changed return type of ToggleViewLocks from bool to void.
 
@@ -412,7 +419,7 @@ class View
 	}
 
 	// Print this view (and any child views) to PostScript.
-	virtual DevStatus PrintPS(FILE *file);
+	virtual DevStatus PrintPS();
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
@@ -597,6 +604,8 @@ protected:
 
 	/* 3D data structures */
 	Camera _camera;
+
+	virtual DevStatus PrintPSDone();
 };
 
 #endif

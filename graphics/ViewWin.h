@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/09/10 20:07:12  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.13  1996/07/14 16:52:30  jussi
   Added handling of window destroy events from window manager.
 
@@ -184,7 +191,7 @@ public:
     Color GetFgColor() { return _foreground; }
     virtual void SetFgBgColor(Color fg, Color bg);
 
-    virtual DevStatus PrintPS(FILE *file);
+    virtual DevStatus PrintPS();
 
 protected:
     /* called by base class when it has been mapped/unmapped */
@@ -238,6 +245,10 @@ protected:
     unsigned int _topMargin;
     unsigned int _bottomMargin;
 #endif
+
+private:
+    Boolean _hasPrintIndex;
+    int _printIndex;
 };
 
 #endif

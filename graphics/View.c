@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.75  1996/09/10 20:07:10  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.74  1996/09/06 06:59:43  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -310,8 +317,12 @@
 #include "Jpeg.h"
 #endif
 #include "Display.h"
+#include "PSDisplay.h"
 #include "Init.h"
 #include "DaliIfc.h"
+
+// Whether to draw view borders -- must eventually be controlled by GUI.
+static const Boolean viewBorder = false;
 
 /* width/height of sensitive area for cursor */
 static const int VIEW_CURSOR_SENSE = 10;
@@ -1354,6 +1365,11 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   GetWindowRep()->PopClip();
   GetWindowRep()->Flush();
 
+  if (_windowRep == _fileWinRep)
+  {
+    (void) PrintPSDone();
+  }
+
   ControlPanel::Instance()->SetIdle();
 
 #if defined(DEBUG)
@@ -1506,6 +1522,16 @@ void View::Run()
     /* Draw axes */
     DrawAxesLabel(winRep, scrnX, scrnY, sW, sH);
     
+    /* Draw view border. */
+    if (viewBorder)
+    {
+      Color oldColor = winRep->GetFgColor();
+      winRep->SetFgColor(RedColor/*TEMPTEMP*/);
+      winRep->SetFgColor((winRep->GetBgColor()+1) % 43/*TEMPTEMP*/);
+      DrawHighlight();
+      winRep->SetFgColor(oldColor);
+    }
+
     /* Draw highlight border */
     Boolean oldHighlight = _highlight;
     _highlight = false;
@@ -1633,7 +1659,21 @@ void View::Run()
   if (!piledDisplay) {
     /* Draw axes */
     DrawAxesLabel(winRep, scrnX, scrnY, scrnWidth, scrnHeight);
-  
+
+    /* Draw view border. */
+    if (viewBorder)
+    {
+      Color oldColor = winRep->GetFgColor();
+      winRep->SetFgColor(RedColor/*TEMPTEMP*/);
+      Color junk = winRep->GetBgColor();
+/*TEMPTEMP*/printf("Background color = %d\n", (int) junk);
+      junk = (junk + 1) % 43;
+/*TEMPTEMP*/printf("  Highlight color = %d\n", (int) junk);
+      winRep->SetFgColor(junk);
+      DrawHighlight();
+      winRep->SetFgColor(oldColor);
+    }
+
     /* Draw highlight border */
     Boolean oldHighlight = _highlight;
     _highlight = false;
@@ -2802,22 +2842,40 @@ void View::SetViewDir(int H, int V)
 }
 
 DevStatus
-View::PrintPS(FILE *file)
+View::PrintPS()
 {
   DO_DEBUG(printf("View::PrintPS(%s)\n", _name));
-  DevStatus result = StatusOk;
+  DevStatus result(StatusOk);
 
-  // Switch over to PostScript drawing mode.
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+
+  // Switch this view over to PostScript drawing mode.
   _windowRep = _fileWinRep;
 
-  // Print this view.
-  fprintf(file, "Dumping view %s\n", _name);//TEMPTEMP
+  // Force a refresh to print the PostScript.
+  fprintf(psDispP->GetPrintFile(), "\n%% Start of view '%s'\n", _name);
+  Refresh();
 
-  // Switch back to screen drawing mode.
+  return result;
+}
+
+DevStatus
+View::PrintPSDone()
+{
+  DO_DEBUG(printf("View::PrintPSDone(%s)\n", _name));
+  DevStatus result(StatusOk);
+
+  // Note: get rid of cast -- not safe.  RKW 9/19/96.
+  PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
+
+  fprintf(psDispP->GetPrintFile(), "%% End of view '%s'\n", _name);
+
+  // Switch this view back to screen drawing mode.
   _windowRep = _screenWinRep;
 
-  // Print any children of this view.
-  result += ViewWin::PrintPS(file);
+  // Continue printing any more views that need to be printed.
+  result += ViewWin::PrintPS();
 
   return result;
 }

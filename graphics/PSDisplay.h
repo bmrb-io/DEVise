@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/09/18 20:13:30  guangshu
+  Added function ExportView and modified function ExportGIF.
+
   Revision 1.3  1996/09/16 21:30:18  wenger
   Added ExportImageAndMap() member function (needed for compatibility with
   Guangshun's latest update).
@@ -40,6 +43,8 @@
 class PSDisplay: public DeviseDisplay {
 public:
     PSDisplay(char *name = 0);
+    //TEMPTEMP -- what about destructor?
+    // destructor should close _printFile if its open
 
     /* get file descriptor for connection */
     virtual int fd() { return -1; }
@@ -80,6 +85,13 @@ public:
     virtual void ExportGIF(FILE *fp, int isView = 0) {}
     virtual void ExportView(DisplayExportFormat format, char *f) {}
 
+    DevStatus OpenPrintFile(char *filename);
+    DevStatus ClosePrintFile();
+    FILE *GetPrintFile() { return _printFile; }
+
+    void PrintPSHeader();
+    void PrintPSTrailer();
+
 protected:
 #ifndef LIBCS
     /* Register with the dispatcher */
@@ -88,6 +100,9 @@ protected:
 
     virtual void AllocColor(char *name, Color globalColor);
     virtual void AllocColor(float r, float g, float b, Color globalColor);
+
+private:
+    FILE *_printFile;
 };
 
 #endif

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:23:02  jussi
+  Initial revision.
+*/
 
 #include "PSWindowRep.h"
 #include "PSDisplay.h"
@@ -41,11 +44,14 @@ typedef struct {
 Initializer
 ***********************************************************************/
 
-PSWindowRep:: PSWindowRep(DeviseDisplay *display,
+PSWindowRep::PSWindowRep(DeviseDisplay *display,
                           Color fgndColor, Color bgndColor,
                           PSWindowRep *parent, int x, int y) :
 	WindowRep(display, fgndColor, bgndColor)
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::PSWindowRep(%p)\n", this);
+#endif
   _parent = parent;
   if (_parent)
     _parent->_children.Append(this);
@@ -58,6 +64,9 @@ PSWindowRep:: PSWindowRep(DeviseDisplay *display,
 
 void PSWindowRep::Init()
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::Init(%p)\n", this);
+#endif
   UpdateWinDimensions();
 }
 
@@ -67,6 +76,9 @@ void PSWindowRep::Init()
 
 PSWindowRep::~PSWindowRep()
 {
+#if defined(DEBUG)
+  printf("PSWindowRep::~PSWindowRep(%p)\n", this);
+#endif
   if (_parent) {
     if (!_parent->_children.Delete(this))
       fprintf(stderr, "Cannot remove child from parent window\n");
@@ -768,7 +780,7 @@ void PSWindowRep::Iconify()
 void PSWindowRep::Raise()
 {
 #ifdef DEBUG
-  printf("PSWindowRep::Raise window 0x%lx:\n", _win);
+  printf("PSWindowRep::Raise window %p\n", this);
 #endif
 
   /* do something */
@@ -779,7 +791,7 @@ void PSWindowRep::Raise()
 void PSWindowRep::Lower()
 {
 #ifdef DEBUG
-  printf("PSWindowRep::Lower window 0x%lx:\n", _win);
+  printf("PSWindowRep::Lower window %p:\n", this);
 #endif
 
   /* do something */

@@ -16,15 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/09/10 20:07:08  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.1  1996/07/10 16:23:01  jussi
   Initial revision.
 */
 
 //#define DEBUG
 
+#include <errno.h>
+
 #include "PSDisplay.h"
 #include "PSWindowRep.h"
 #include "Util.h"
+#include "DevError.h"
 #ifndef LIBCS
 #include "Control.h"
 #include "Journal.h"
@@ -305,4 +315,79 @@ void PSDisplay::DestroyWindowRep(WindowRep *win)
 #endif //TEMPTEMP
 
   delete win;
+}
+
+/**************************************************************
+Open the print file.
+**************************************************************/
+
+DevStatus
+PSDisplay::OpenPrintFile(char *filename)
+{
+  DevStatus result(StatusOk);
+
+  _printFile = fopen(filename, "w");
+  if (_printFile == NULL)
+  {
+    reportError("Can't open print file", errno);
+    result += StatusFailed;
+  }
+
+  return result;
+}
+
+/**************************************************************
+Close the print file.
+**************************************************************/
+
+DevStatus
+PSDisplay::ClosePrintFile()
+{
+  DevStatus result(StatusOk);
+
+  if (_printFile != NULL)
+  {
+    if (fclose(_printFile) != 0)
+    {
+       reportError("Error closing print file", errno);
+       result += StatusWarn;
+    }
+
+    _printFile = NULL;
+  }
+
+  return result;
+}
+
+/**************************************************************
+Print PostScript header.
+**************************************************************/
+
+void PSDisplay::PrintPSHeader()
+{
+  DOASSERT(_printFile != NULL, "No print file");
+
+  //TEMPTEMP
+  fprintf(_printFile, "%%!PS-Adobe-1.0\n");
+  fprintf(_printFile, "%%%%BoundingBox: 0 0 558 480\n");
+  fprintf(_printFile, "%%%%Creator: trigger:wenger (R. Kent Wenger)\n");
+  fprintf(_printFile, "%%%%Title: stdin (xwdump)\n");
+  fprintf(_printFile, "%%%%CreationDate: Tue Sep 17 14:43:11 1996\n");
+  fprintf(_printFile, "%%%%EndComments\n");
+  fprintf(_printFile, "%%%%Pages: 1\n");
+  fprintf(_printFile, "%%%%EndProlog\n");
+  fprintf(_printFile, "%%%%Page: 1 1\n");
+}
+
+/**************************************************************
+Print PostScript trailer.
+**************************************************************/
+
+void PSDisplay::PrintPSTrailer()
+{
+  DOASSERT(_printFile != NULL, "No print file");
+
+  //TEMPTEMP?
+  fprintf(_printFile, "\nshowpage\n");
+  fprintf(_printFile, "%%%%Trailer\n");
 }
