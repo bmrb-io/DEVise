@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/09/04 21:24:48  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.2  1996/08/28 00:19:36  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -44,7 +51,8 @@ class DaliIfc
 public:
   static DevStatus ShowImage(char *daliServer, Window win, int centerX,
     int centerY, int width, int height, char *filename, int imageLen,
-    char *image, int &handle);
+    char *image, int &handle, float timeoutFactor = 1.0,
+    int maxImageSize = 1000);
   static DevStatus FreeImage(char *daliServer, int handle);
   static DevStatus Reset(char *daliServer);
   static DevStatus Quit(char *daliServer);

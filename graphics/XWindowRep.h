@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/12/30 23:51:15  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.36  1996/12/15 20:22:33  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -235,7 +240,7 @@ public:
   	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                         Coord width, Coord height,
                                         char *filename, int imageLen,
-                                        char *image);
+                                        char *image, float timeoutFactor = 1.0);
 	virtual DevStatus DaliFreeImages();
 	virtual int DaliImageCount() { return _daliImages.Size(); };
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.95  1997/01/08 19:01:42  wenger
+  Fixed bug 064 and various other problems with drawing piled views;
+  added related debug code.
+
   Revision 1.94  1996/12/30 23:51:11  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -616,6 +620,10 @@ int View::FindViewId(View *view)
 
 void View::SubClassMapped()
 {
+#if defined(DEBUG)
+  printf("View(%s)::SubClassMapped()\n", GetName());
+#endif
+
   _updateTransform = true;
 
   // cause pending Expose events to be retrieved from the X server
@@ -633,6 +641,9 @@ void View::SubClassUnmapped()
 
 void View::SetVisualFilter(VisualFilter &filter)
 {
+#if defined(DEBUG)
+  printf("View(%s)::SetVisualFilter()\n", GetName());
+#endif
 #if defined(DEBUG)
   printf("%s View::SetVisualFilter %f %f %f %f %f, %f, %f, %f\n", GetName(),
 	 filter.xLow, filter.yLow,
@@ -729,6 +740,9 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 void View::HandleExpose(WindowRep *w, int x, int y, unsigned width, 
 			unsigned height)
 {
+#if defined(DEBUG)
+  printf("View(%s)::HandleExpose()\n", GetName());
+#endif
 #if defined(DEBUG)
   printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
 #endif
@@ -1861,6 +1875,9 @@ void View::Run()
       _timeStamp = TimeStamp::NextTimeStamp();
     _hasTimestamp = false;
     _bytes = 0;
+#if defined(DEBUG)
+    printf("View %s sending query\n", GetName());
+#endif
     DerivedStartQuery(_queryFilter, _timeStamp);
   } else {
     winRep->PopClip();
@@ -2119,6 +2136,9 @@ void View::AbortQuery()
 
 void View::Refresh()
 {
+#if defined(DEBUG)
+  printf("View(%s)::Refresh()\n", GetName());
+#endif
   _doneRefresh = false;
   _refresh = true;
   Dispatcher::Current()->RequestCallback(_dispatcherID);

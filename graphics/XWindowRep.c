@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.83  1997/01/08 19:01:45  wenger
+  Fixed bug 064 and various other problems with drawing piled views;
+  added related debug code.
+
   Revision 1.82  1996/12/30 23:51:15  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -858,7 +862,8 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
  */
 DevStatus
 XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
-	Coord height, char *filename, int imageLen, char *image)
+	Coord height, char *filename, int imageLen, char *image,
+	float timeoutFactor)
 {
 #if defined(DEBUG)
   printf("XWindowRep::DaliShowImage(%s)\n", filename);
@@ -878,7 +883,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
     int handle;
     result += DaliIfc::ShowImage(_daliServer, _win, (int) centerX,
       (int) centerY, (int) width, (int) height, filename, imageLen, image,
-      handle);
+      handle, timeoutFactor);
     if (result.IsComplete())
     {
 #if defined(DEBUG)

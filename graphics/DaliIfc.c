@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/18 18:52:00  wenger
+  Devise requests Tasvir not to use subwindows for its images; sizing of
+  Tasvir images now basically works like a RectX, except that the aspect
+  ratio is fixed by the image itself; fixed a bug in action of +/- keys
+  for RectX shapes; Devise won't request Tasvir images smaller than two
+  pixels (causes error in Tasvir).
+
   Revision 1.5  1996/11/21 19:13:45  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -91,18 +98,29 @@ static char *	srcFile = __FILE__;
 DevStatus
 DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   int centerY, int width, int height, char *filename, int imageLen,
-  char *image, int &handle)
+  char *image, int &handle, float timeoutFactor, int maxImageSize)
 {
   DOASSERT(daliServer != NULL, "No Dali server specified");
 
-  DO_DEBUG(printf("DaliIfc::ShowImage(%s, 0x%lx, %d, %d, %d, %d, %s)\n",
-    daliServer, (long) win, centerX, centerY, width, height, filename));
+#if defined(DEBUG)
+  printf("DaliIfc::ShowImage(%s, 0x%lx, %d, %d, %d, %d, %s)\n",
+    daliServer, (long) win, centerX, centerY, width, height, filename);
+#endif
 
   DevStatus result = StatusOk;
 
   const int minTasvirSize = 2;
   width = MAX(width, minTasvirSize);
   height = MAX(height, minTasvirSize);
+
+  if ((width > maxImageSize) || (height > maxImageSize)) {
+    printf("Tasvir requested image size too large (%d x %d pixels)\n",
+      width, height);
+    printf("You should probably change your mapping\n");
+    width = MIN(width, maxImageSize);
+    height = MIN(height, maxImageSize);
+    printf("Requested size changed to %d x %d pixels\n", width, height);
+  }
 
   int topLeftX = centerX - (width / 2);
   int topLeftY = centerY - (height / 2);
@@ -126,6 +144,7 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   }
 
   double timeout = (image == NULL) ? 5.0 : 30.0;
+  timeout *= timeoutFactor;
   result += SendCommand(daliServer, commandBuf, imageLen, image, replyBuf,
     timeout);
 

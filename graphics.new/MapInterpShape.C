@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/12/30 23:57:34  andyt
+  First version with support for Embedded Tcl/Tk windows. Added new
+  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+  function to handle all GData attributes (used to only handle a subset).
+
   Revision 1.29  1996/12/18 18:52:08  wenger
   Devise requests Tasvir not to use subwindows for its images; sizing of
   Tasvir images now basically works like a RectX, except that the aspect
@@ -1464,7 +1469,15 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	  width = height = MAX(width, height);
 #endif
 
-	  win->DaliShowImage(tx, ty, width, height, file, imageDataSize, image);
+	  // Increase Dali/Tasvir timeout by a factor of 10 if we're drawing
+	  // a view that's in piled mode, because it's more important in
+	  // this case to not time out so that the actual drawing of the
+	  // views occurs in the correct order.
+	  float timeoutFactor = 1.0;
+	  View *view2 = View::FindViewByName(view->GetName());
+	  if (view2->IsInPileMode()) timeoutFactor = 10.0;
+	  win->DaliShowImage(tx, ty, width, height, file, imageDataSize, image,
+	    timeoutFactor);
 	}
 	else
 	{
