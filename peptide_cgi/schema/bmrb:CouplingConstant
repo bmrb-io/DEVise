@@ -5,6 +5,8 @@
 # DEVise date: Oct 26 1999
 # DEVise endHeader
 
+# $Id$
+
 type CouplingConstant ascii
 comment //
 whitespace ' '

@@ -5,6 +5,8 @@
 # DEVise date: Dec  1 1999
 # DEVise endHeader
 
+# $Id$
+
 type bmrb:AxisLabel ascii
 comment //
 whitespace ' '

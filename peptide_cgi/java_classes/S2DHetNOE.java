@@ -13,7 +13,7 @@
 // ------------------------------------------------------------------------
 
 // This class implements the output of heteronuclear NOE data.  For each set
-// of heternoclear NOE data, it creates a data file, a session file, an
+// of heteronuclear NOE data, it creates a data file, a session file, an
 // individual html file, and a link in the summary html file.
 
 // ------------------------------------------------------------------------
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/03/08 20:33:24  wenger
+// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+// to the trunk.
+//
 // Revision 1.1.2.1  2001/02/09 16:57:12  wenger
 // Added heteronuclear NOE; made T1 and T2 relaxation errors optional
 // (conversion doesn't fail if they are not found); added an X margin of

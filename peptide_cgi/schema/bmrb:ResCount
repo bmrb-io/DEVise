@@ -7,6 +7,8 @@
 
 # Schema for showing the residue counts for a given save frame
 
+# $Id$
+
 type ResCount ascii
 comment #
 whitespace ' '

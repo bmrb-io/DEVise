@@ -5,6 +5,8 @@
 # DEVise date: Jun 11 1999
 # DEVise endHeader
 
+# $Id$
+
 type s2 ascii
 comment #
 whitespace ' '

@@ -5,6 +5,8 @@
 # DEVise date: Jun 30 1999
 # DEVise endHeader
 
+# $Id$
+
 type DeltaShift ascii
 comment #
 whitespace ' '

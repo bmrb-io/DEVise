@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Oct 02 2001 15:11:56
+# file date: Dec 10 2001 12:40:08
 # DEVise version: 1.7.4
-# DEVise date: Sep 19 2001
+# DEVise date: Nov 28 2001
 # DEVise endHeader
 
 # Session description
@@ -12,51 +12,51 @@ DEVise setSessionDesc {Atomic coordinates}
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/bond_color.str
 
 # Load color palette
-DEVise color SessionPalette {#000000000000      black
-#000000008b00      DarkBlue
-#00000000cd00      MediumBlue
-#00000000ff00      blue
-#000064000000      DarkGreen
-#00008b000000      green4
-#0000bf00ff00      DeepSkyBlue1
-#0000ff000000      green
-#0000ff00ff00      cyan
-#190019007000      MidnightBlue
-#1e009000ff00      DodgerBlue
-#1f001f001f00      gray12
-#22008b002200      ForestGreen
-#400040004000      gray25
-#610061006100      gray38
-#7f007f007f00      gray50
-#8b0000000000      DarkRed
-#8b0045001300      SaddleBrown
-#99003200cc00      DarkOrchid
-#a100a100a100      gray63
-#b20022002200      firebrick
-#b4005200cd00      MediumOrchid3
-#bf00bf00bf00      gray75
-#c000ff003e00      OliveDrab
-#e000e000e000      gray88
-#ee00ad000e00      Goldenrod2
-#ee00e800aa00      PaleGoldenrod
-#f000e6008c00      khaki
-#f500de00b300      wheat
-#fa00fa00d200      LightGoldenrodYellow
-#fd00f500e600      OldLace
-#ff0000000000      red
-#ff000000ff00      magenta
-#ff007f000000      DarkOrange1
-#ff00a5000000      orange
-#ff00d7000000      gold
-#ff00ff000000      yellow
-#ffffffffffff      white
+DEVise color SessionPalette {#000000000000         black
+#000000008b00         DarkBlue
+#00000000cd00         MediumBlue
+#00000000ff00         blue
+#000064000000         DarkGreen
+#00008b000000         green4
+#0000bf00ff00         DeepSkyBlue1
+#0000ff000000         green
+#0000ff00ff00         cyan
+#190019007000         MidnightBlue
+#1e009000ff00         DodgerBlue
+#1f001f001f00         gray12
+#22008b002200         ForestGreen
+#400040004000         gray25
+#610061006100         gray38
+#7f007f007f00         gray50
+#8b0000000000         DarkRed
+#8b0045001300         SaddleBrown
+#99003200cc00         DarkOrchid
+#a100a100a100         gray63
+#b20022002200         firebrick
+#b4005200cd00         MediumOrchid3
+#bf00bf00bf00         gray75
+#c000ff003e00         OliveDrab
+#e000e000e000         gray88
+#ee00ad000e00         Goldenrod2
+#ee00e800aa00         PaleGoldenrod
+#f000e6008c00         khaki
+#f500de00b300         wheat
+#fa00fa00d200         LightGoldenrodYellow
+#fd00f500e600         OldLace
+#ff0000000000         red
+#ff000000ff00         magenta
+#ff007f000000         DarkOrange1
+#ff00a5000000         orange
+#ff00d7000000         gold
+#ff00ff000000         yellow
+#ffffffffffff         white
 }
 
 # Set color mode (modulus or truncation)
 DEVise setColorMode 0
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4096ac1" UNIXFILE 4096ac1.dat bmrb:atom_coord /p/devise/wenger/schema/schema/physical/bmrb:atom_coord "" 100 50 "/p/devise/wenger/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4096ac1" UNIXFILE 4096ac1.dat bmrb:atom_coord $DEVISE_SCHEMA/physical/bmrb:atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {Scatter} {View 1} -21.955000 21.927999 -17.695000 20.226999 4 0
@@ -92,7 +92,7 @@ DEVise setShowMouseLocation {View 1} {1}
 DEVise createMappingClass {Atom_coord_y_vs_Atom_coord_x}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4096ac1 .4096ac1#Atom_coord_y_vs_Atom_coord_x {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$Atom_type} 1 0 0 4 1 1 {$Atom_type} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4096ac1 .4096ac1#Atom_coord_y_vs_Atom_coord_x {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$Atom_type} 1 0 0 7 {$Bond_rel_x} {$Bond_rel_y} {$Bond_rel_z} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4096ac1#Atom_coord_y_vs_Atom_coord_x} 1
 
 # Create windows
@@ -141,8 +141,11 @@ DEVise insertViewHistory {View 1} {-21.95} {-17.69} {21.93} {20.23} 0
 DEVise insertViewHistory {View 1} {-21.95} {-17.70} {21.93} {20.23} 28
 DEVise insertViewHistory {View 1} {-21.95} {-17.70} {21.93} {20.23} 28
 DEVise insertViewHistory {View 1} {-21.95} {-17.70} {21.93} {20.23} 28
+DEVise insertViewHistory {View 1} {-21.95} {-17.70} {21.93} {20.23} 6
+DEVise insertViewHistory {View 1} {-21.95} {-17.70} {21.93} {20.23} 6
+DEVise insertViewHistory {View 1} {-21.95} {-17.70} {21.93} {20.23} 6
 
 # Set camera location for each view
-DEVise set3DLocation {View 1} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {View 1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view

@@ -64,8 +64,8 @@ DEVise color SessionPalette {#000000000000                black
 DEVise setColorMode 0
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4267hn1" UNIXFILE 4267hn1.dat HvsN /p/devise/demo/schema/schema/physical/bmrb:HvsN "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267rc1" UNIXFILE 4267rc1.dat ResCount /p/devise/demo/schema/schema/physical/bmrb:ResCount "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267hn1" UNIXFILE 4267hn1.dat HvsN $DEVISE_SCHEMA/physical/bmrb:HvsN "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267rc1" UNIXFILE 4267rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb:ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 3} -0.500000 1.500000 -0.500000 19.500000 4 0

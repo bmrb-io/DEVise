@@ -177,6 +177,8 @@ cp -p cgi-bin/set_modes $targetdir
 chmod a+rx $targetdir/set_modes
 cp -p cgi-bin/s2d.props $targetdir
 chmod a+rx $targetdir/s2d.props
+cp -p cgi-bin/connections $targetdir
+chmod a+rx $targetdir/connections
 
 cd cgi-bin
 # Line below only works with GNU tar.
