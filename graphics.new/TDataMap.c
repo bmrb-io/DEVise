@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/21 19:33:21  jussi
+  Replaced MinMax calls with MIN() and MAX().
+
   Revision 1.13  1996/03/25 23:01:37  jussi
   Removed reference to _view.
 
@@ -63,7 +66,6 @@
 #include "TDataMap.h"
 #include "GData.h"
 #include "GDataBin.h"
-#include "Bitmap.h"
 #include "TData.h"
 #include "QueryProc.h"
 
@@ -88,18 +90,6 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   
   _focusId = 0;
   _maxGDataPages = maxGDataPages;
-  
-#ifdef OLD_CODE
-  /* should make it work even if NumPages in tdata > MAX_MAPPING_PAGES
-     by checking for bounding box f those pages not in the bitmap */
-  if (tdata->NumPages() > MAX_MAPPING_PAGES) {
-    fprintf(stderr,"TDataMap can't handle tdata with %d pages, max = %d\n",
-	    tdata->NumPages(), MAX_MAPPING_PAGES);
-    Exit::DoExit(2);
-  }
-  
-  _boundingBoxBitmap = new Bitmap(MAX_MAPPING_PAGES);
-#endif
   
   /* set defaults */
   _dimensionInfo = dimensionInfo;
@@ -140,17 +130,15 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   for(unsigned int i = 0; i < MAX_GDATA_ATTRS; i++)
     _shapeAttrs[i] = 0.1;
   
-  _boundWidth = 9.0; _boundHeight = 9.0;
-  
+  _maxSymWidth = 0.0;
+  _maxSymHeight = 0.0;
+  _maxSymDepth = 0.0;
+
   _hintInitialized = false;
 }
 
 TDataMap::~TDataMap()
 {
-#ifdef OLD_CODE
-  delete _boundingBoxBitmap;
-#endif
-
   if (_gdata)
     delete _gdata;
   delete _shapeAttrs;
@@ -297,28 +285,6 @@ char *TDataMap::CreateGDataPath(char *gdataName)
   char *name = new char[strlen(gdataName) + strlen(tmpDir) + 2];
   sprintf(name, "%s/%s", tmpDir, gdataName);
   return name;
-}
-
-/* return the max bounding box found so far */
-void TDataMap::MaxBoundingBox(Coord &width, Coord &height)
-{
-  /*
-     printf("TDataMap::MaxBoundingBox\n");
-  */
-  width = _boundWidth;
-  height = _boundHeight;
-  /*
-     _gdata->GetBoundingBox(width,height);
-  */
-}
-
-void TDataMap::UpdateBoundingBox(Coord width, Coord height)
-{
-  _boundWidth = width;
-  _boundHeight = height;
-  /*
-     _gdata->UpdateBoundingBox(width, height);
-  */
 }
 
 int TDataMap::TDataRecordSize()

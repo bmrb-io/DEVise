@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/16 01:54:19  jussi
+  Added IsComplexShape() method.
+
   Revision 1.13  1996/06/15 14:05:34  jussi
   Cleaned up a little bit.
 
@@ -74,7 +77,6 @@
 #include "Pattern.h"
 #include "ShapeID.h"
 #include "VisualArg.h"
-#include "Bitmap.h"
 #include "RecId.h"
 #include "GDataRec.h"
 #include "ViewGraph.h"
@@ -85,7 +87,6 @@ class TData;
 class GData;
 class Symbol;
 class WindowRep;
-class Bitmap;
 
 /* Offsets for GData attributes. Not all offsets are valid (negative). */
 
@@ -166,9 +167,6 @@ public:
   void MapToSymbol(TData *tdata, RecId recID, void *rec, Symbol *sym);
 #endif
 
-  /* return the max bounding box found so far */
-  void MaxBoundingBox(Coord &width, Coord &height);
-  
   /*************************************************************
     User Defined Map function.
   **************************************************************/
@@ -214,15 +212,15 @@ public:
   virtual Boolean PageHint(TData *tdata, Coord x, Boolean isPrefetch,
 			   RecId &hintId);
 
-  /* find the max box bounding for all records */
-#if 0
-  virtual void UpdateBoundingBox(int pageNum, void **gdataArray,
-				 int numRecs) = 0;
-#endif
+  /* Update/get maximum symbol size */
+  virtual void UpdateMaxSymSize(void *gdata, int numSyms) = 0;
+  virtual void GetMaxSymSize(Coord &width, Coord &height, Coord &depth) {
+    width = _maxSymWidth; height = _maxSymHeight; depth = _maxSymDepth;
+  }
 
   virtual void DrawGDataArray(View *view, WindowRep *win,
 			      void **gdataArray, int num) = 0;
-  
+
   virtual AttrInfo *MapGAttr2TAttr(char *attrName) { return 0; }
 
   /* Hint for current focus in GData */
@@ -250,15 +248,10 @@ protected:
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
   void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
-  
-  void UpdateBoundingBox(Coord width, Coord height);
-  
-  Boolean TestAndSetPage(int pageNum){
-    Boolean result;
-    if (!(result=_boundingBoxBitmap->TestBit(pageNum)))
-      _boundingBoxBitmap->SetBit(pageNum);
-    return result;
-  }
+
+  Coord _maxSymWidth; /* bounding box for symbol */
+  Coord _maxSymHeight;
+  Coord _maxSymDepth;
 
 private:
   GDataAttrOffset *_gOffset; /* offset of GData attributes */
@@ -301,9 +294,6 @@ private:
 		      Set to 1 for drawing 1 pixel. Set to > 1 to 
 		      enhance the points. */
   
-  Bitmap *_boundingBoxBitmap; /* keeps track which pages have
-				 been tested for bounding box */
-  
   VisualFlag *_dimensionInfo;
   int _numDimensions;
   
@@ -319,8 +309,6 @@ private:
   
   /* user data. used by QueryProcessor to insert its own info. */
   void *_userData;
-  
-  Coord _boundWidth, _boundHeight; /* bounding box width/height */
 };
 
 #endif
