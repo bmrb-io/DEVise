@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/08/07 19:24:51  jussi
+  Added extra check so that client-server synchronization doesn't
+  take place too early (must wait until first query started, at
+  least, before a synchronization can take place).
+
   Revision 1.29  1996/08/07 15:29:56  guangshu
   Fixed bugs in iterating the mappings. Check _convertIndex before iterating in
   DoGDataConvert().
@@ -1066,12 +1071,20 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
       _memFetched += numRecs * gRecSize;
     }
     mgr->FreeRecs(buf, NoChange);
-    
+
+#if 0
+    // ksb: stopping scans in the middle due to too much data returned
+    // is not working, so the scan is not stopped right now.  
+    // I believe this feature is used to allow the user to interact with
+    // the session while scans are in progress, rather than waiting until
+    // the end.  We should figure out why this isn't working, rather than
+    // disabling it, but this was a quick fix.
     if (_memFetched >= QPFULL_MAX_FETCH) {
       /* exceeded max amount to fetch */
       exceedMem = true;
       break;
     }
+#endif
   }
 
   mgr->DoneGetRecs();
