@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1997/06/16 16:05:33  donjerko
+#  New memory management in exec phase. Unidata included.
+#
 #  Revision 1.32  1997/06/13 18:56:08  wenger
 #  Added xvertext lib to ALLLIBS.
 #
@@ -82,7 +85,7 @@ LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
 	-lgraphicsnew -ldte \
 	-llm -lXrot \
 	-lissm -lcrsp -lcstat -ltape \
-	-L$(PERL_CORE) -lperl -L../unidata -lunidata $(ARCH_SYSLIBS)
+	-L$(PERL_CORE) -L../unidata -lunidata -lperl $(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lX11
 
