@@ -1137,6 +1137,17 @@ Num Date        Status  Description
 
 296 02/16/98	OPEN	Blanks in schema names cause problems. (ag/rkw)
 
+297 02/17/98	OPEN	Cannot create or edit data source definitions. (am/rkw)
+
+298 02/18/98	OPEN	If you accidentally specify a UNIXFILE-type schema
+			for a Table, the UniData code core dumps. (rkw)
+
+299 02/18/98	OPEN	GUI lets you specify a UNIXFILE-type schema for a
+			Table and vice-versa. (rkw)
+
+300 02/18/98	OPEN	When printing to PostScript, views within a window
+			are printed in reversed order top-to-bottom. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
