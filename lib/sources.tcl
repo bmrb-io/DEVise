@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.25  1996/01/19 18:33:40  jussi
+#	Function selectStream now takes an optional title parameter
+#	which is displayed at the top of the data stream list if
+#	it is non-empty.
+#
 #	Revision 1.24  1996/01/18 17:22:28  jussi
 #	Minor fix.
 #
@@ -200,7 +205,7 @@ proc updateStreamDef {} {
     set cachefile [getCacheName $source $key]
     set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 
-    if {$source == "SEQ" || $source == "WWW"} {
+    if {$editonly && ($source == "SEQ" || $source == "WWW")} {
 	set oldCommand [lindex $sourceList($oldDispName) 7]
 	if {$oldCommand != $command} {
 	    uncacheData $oldDispName "Query changed."
