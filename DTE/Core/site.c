@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/09/29 02:51:59  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.27  1997/09/17 02:35:50  donjerko
   Fixed the broken remote DTE interface.
 
@@ -98,6 +101,7 @@
 #include "Interface.h"
 #include "ExecOp.h"
 #include "RTreeRead.h"
+#include "MemoryMgr.h"
 
 #include <string>		// for strtok
 #include <set>

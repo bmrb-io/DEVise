@@ -1,4 +1,5 @@
 #include "Aggregates.h"
+#include "MemoryMgr.h"
 
 bool Aggregates::isApplicable(){
 	
@@ -262,3 +263,24 @@ const Tuple* MovAggsExec::getNext(){
 	return retTuple;
 }
 
+void ExecMovMinMax::dequeue(int n){
+	bool recalculate = false;
+	for(int i = 0; i < n; i++){
+		assert(!tupLoad->empty());
+		const Tuple* front = tupLoad->front();
+		Type* boolVal;
+		eqPtr(front[0], minMax, boolVal);
+		if(boolVal){
+			recalculate = true;
+		}
+		tupLoad->pop_front();
+	}
+	if(!tupLoad->empty() && recalculate){
+		TupleLoader::iterator it = tupLoad->begin();
+		ExecMinMax::initialize((*it)[0]);
+		while(!(it == tupLoad->end())){
+			ExecMinMax::update((*it)[0]);
+			++it;
+		}
+	}
+}

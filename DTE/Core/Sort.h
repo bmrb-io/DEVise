@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/09/05 22:20:12  donjerko
+  Made changes for port to NT.
+
   Revision 1.12  1997/08/21 21:04:26  donjerko
   Implemented view materialization
 
@@ -67,6 +70,7 @@ using namespace std;
 #define NUM_RUNS       	1000
 
 class Inserter;
+class TupleLoader;
 
 class SortExec : public Iterator {
 	Iterator* inpIter;

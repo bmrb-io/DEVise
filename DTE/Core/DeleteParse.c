@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/09/29 02:51:54  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.11  1997/09/05 22:20:01  donjerko
   Made changes for port to NT.
 
@@ -63,6 +66,7 @@
 #include "ParseTree.h"
 #include "ExecExpr.h"
 #include "sysdep.h"
+#include "MemoryMgr.h"
 
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/09/17 02:35:43  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.14  1997/09/05 22:20:12  donjerko
   Made changes for port to NT.
 
@@ -56,6 +59,7 @@
 #include "StandardRead.h"
 #include "Inserter.h"
 #include "types.h"
+#include "MemoryMgr.h"
 
 inline void SortExec::swap(Tuple *&left, Tuple *&right) 
 {

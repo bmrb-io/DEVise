@@ -1,10 +1,10 @@
 #include <strstream.h>
+#include "types.h"
 #include "UniData.h"
 
 #undef assert
 #include <assert.h>
 
-#include "types.h"
 #include "DevRead.h"
 
 

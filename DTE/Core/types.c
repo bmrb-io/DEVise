@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/09/17 02:35:51  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.34  1997/09/05 22:20:21  donjerko
   Made changes for port to NT.
 
@@ -104,12 +107,6 @@
 #include "DateTime.h"
 #include "catalog.h" 	// for root catalog
 #include <string>
-//#include <time.h>   erased for sysdep.h
-//#include <strstream.h>   erased for sysdep.h
-//#include <stdlib.h>   erased for sysdep.h
-//#include <limits.h>   erased for sysdep.h
-
-size_t MemoryLoader::PAGE_SZ = 1 * 1024;
 
 const DteEnvVars DTE_ENV_VARS;
 
@@ -1396,7 +1393,7 @@ bool sameType(TypeID t1, TypeID t2){
 };
 
 int domain(TypeID adt){	// throws exception
-	if(adt.substr(0, 6) == "string" && adt != STRING_TP){
+	if(adt.substr(0, 6) == "string" && !(adt == STRING_TP)){
 		return 0;
 	}
 	else if(adt == STRING_TP){
@@ -1534,32 +1531,6 @@ char* allocateSpace(TypeID type, size_t& size){
 	}
 }
 
-MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
-	MemoryLoader** retVal = new MemoryLoader*[numFlds];
-	for(int i = 0; i < numFlds; i++){
-		if(types[i] == INT_TP){
-			retVal[i] = new IntLoader();
-		}
-		else if(types[i] == DOUBLE_TP){
-			retVal[i] = new DoubleLoader();
-		}
-		else if(types[i] == INTERFACE_TP){
-			retVal[i] = new InterfaceLoader;
-		}
-		else if(strncmp(types[i].c_str(), "string", 6) == 0){
-			retVal[i] = new StringLoader();
-		}
-		else if(types[i] == DATE_TP){
-			retVal[i] = new MemoryLoaderTemplate<EncodedDTF>;
-		}
-		else{
-			cerr << "Loader not implemented for type: " << types[i] << endl;
-			exit(1);
-		}
-	}
-	return retVal;
-}
-
 istream& operator>>(istream& in, ISchema& s){
 	
 	in >> s.numFlds;
@@ -1599,11 +1570,6 @@ ostream& operator<<(ostream& out, const ISchema& s){
 		out << " " << s.attributeNames[i];
 	}
 	return out;
-}
-
-Type* InterfaceLoader::load(const Type* arg){
-	char* space = (char*) allocate(INITIAL_INTERFACE_SIZE);
-	return ((Interface*) arg)->copyTo(space);
 }
 
 void dateConstructor

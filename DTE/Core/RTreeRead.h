@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/09/05 22:20:09  donjerko
+  Made changes for port to NT.
+
   Revision 1.12  1997/08/21 21:04:25  donjerko
   Implemented view materialization
 
@@ -126,7 +129,7 @@ struct RTreePred {
 		else if(pred.bounded[0] && bounded[0]){
 			assert(pred.values[0]);
 			assert(values[0]);
-			if(*pred.values[0] > *values[0]){
+			if(!(*pred.values[0] < *values[0])){
 				values[0] = pred.values[0];
 				closed[0] = pred.closed[0];
 			}

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/09/17 02:35:52  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.35  1997/09/05 22:20:23  donjerko
   Made changes for port to NT.
 
@@ -127,11 +130,7 @@
 
 #include <string>
 
-//#include <iostream.h>   erased for sysdep.h
 #include <assert.h>
-//#include <sys/types.h>   erased for sysdep.h
-//#include <netinet/in.h>   erased for sysdep.h
-//#include <time.h>   erased for sysdep.h
 #include <new.h>
 #include "exception.h"
 #include "Utility.h"
@@ -915,139 +914,6 @@ public:
 
 const ISchema DIR_SCHEMA("2 string name interface interf");
 const ISchema INDEX_SCHEMA("3 string table string name indexdesc descriptor");
-
-class MemoryLoader {
-protected:
-	static size_t PAGE_SZ;
-	size_t remainSpace;
-	List<void*> pagePtrs;
-	void* spacePtr;
-public:
-	MemoryLoader(){
-		remainSpace = 0;
-		spacePtr = NULL;
-	}
-	virtual ~MemoryLoader(){
-		for(pagePtrs.rewind(); !pagePtrs.atEnd(); pagePtrs.step()){
-			delete [] pagePtrs.get();
-		}
-	}
-	void* allocate(size_t spaceNeed){
-		void* retVal;	
-		if(remainSpace < spaceNeed){
-			if(!pagePtrs.atEnd()){
-				spacePtr = pagePtrs.get();
-				pagePtrs.step();
-			}
-			else {
-				spacePtr = (Type*) new char[PAGE_SZ];
-				pagePtrs.append(spacePtr);
-				pagePtrs.step();
-				assert(pagePtrs.atEnd());
-			}
-			remainSpace = PAGE_SZ;
-		}
-		assert(remainSpace >= spaceNeed);
-		retVal = spacePtr;
-		spacePtr = (char*)(spacePtr) + spaceNeed;
-		remainSpace -= spaceNeed;
-		return retVal;
-	}
-	virtual void reset(){
-		pagePtrs.rewind();
-	}
-	virtual Type* load(const Type*){
-		assert(0);
-		return NULL;
-	}
-};
-
-class IntLoader : public MemoryLoader {
-public:
-	virtual Type* load(const Type* arg){
-		return (Type*) arg;
-	}
-};
-
-class DoubleLoader : public MemoryLoader {
-public:
-	virtual Type* load(const Type* arg){
-		IDouble* retVal = (IDouble*) allocate(sizeof(IDouble));
-		*retVal = *((IDouble*) arg);
-		return retVal;
-	}
-};
-
-class StringLoader : public MemoryLoader {
-public:
-	virtual Type* load(const Type* arg){
-		char* retVal = (char*) allocate(strlen((char*) arg) + 1);
-		strcpy(retVal, (char*) arg);
-		return retVal;
-	}
-};
-
-class InterfaceLoader : public MemoryLoader {
-public:
-	virtual Type* load(const Type* arg);
-};
-
-template <class T>
-class MemoryLoaderTemplate : public MemoryLoader {
-public:
-	virtual Type* load(const Type* arg){
-		assert(sizeof(T) % sizeof(int) == 0);
-		void* space = allocate(sizeof(T));
-		T* retVal = new (space) T;
-		*retVal = *((T*) arg);
-		return retVal;
-	}
-	~MemoryLoaderTemplate(){
-		for(pagePtrs.rewind(); !pagePtrs.atEnd(); pagePtrs.step()){
-			void* base = pagePtrs.get();
-			for(unsigned i = 0; i <= PAGE_SZ - sizeof(T); i += sizeof(T)){
-				((T*) (base + i))->~T();
-			}
-		}
-	}
-};
-
-MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds);    // throws
-
-class TupleLoader : public MemoryLoader {
-	int numFlds;
-	MemoryLoader** typeLoaders;
-public:
-	TupleLoader(){
-		typeLoaders = NULL;
-	}
-	virtual ~TupleLoader(){
-		if(typeLoaders){
-			for(int i = 0; i < numFlds; i++){
-				delete typeLoaders[i];
-			}
-		}
-		delete [] typeLoaders;
-	}
-	void open(int numFlds, const TypeID* typeIDs){ // throws
-		this->numFlds = numFlds;
-		TRY(typeLoaders = newTypeLoaders(typeIDs, numFlds), NVOID );
-	}
-	Tuple* insert(const ConstTuple* tuple){ // throws
-		size_t spaceNeed = numFlds * sizeof(Type*);
-		Tuple* retVal = (Tuple*) allocate(spaceNeed);
-		for(int i = 0; i < numFlds; i++){
-			retVal[i] = typeLoaders[i]->load(tuple[i]);
-		}
-		return retVal;
-	}
-	virtual void reset(){
-		for(int i = 0; i < numFlds; i++){
-			typeLoaders[i]->reset();
-		}
-		MemoryLoader::reset();
-	}
-};
 
 int packSize(string type);    // throws exception
 

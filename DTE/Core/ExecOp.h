@@ -11,6 +11,7 @@ using namespace std;
 #endif
 
 class RTreeReadExec;
+class TupleLoader;
 
 class SelProjExec : public Iterator {
 protected:
@@ -93,16 +94,7 @@ public:
           outerTup = NULL;
 		next = new Tuple[mySelect->length];
 	}
-	~NLJoinExec(){
-		delete left;
-		delete right;
-		destroyArray(*mySelect);
-		delete mySelect;
-		destroyArray(*myWhere);
-		delete myWhere;
-		delete [] next;
-		delete tupleLoader;
-	}
+	~NLJoinExec();
      virtual void initialize(){
           if (left){
                left->initialize();

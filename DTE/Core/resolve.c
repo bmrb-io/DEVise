@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/09/29 02:51:58  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.25  1997/09/17 02:35:49  donjerko
   Fixed the broken remote DTE interface.
 
@@ -290,19 +293,19 @@ bool PrimeSelection::match(BaseSelection* x){
 	PrimeSelection* y = (PrimeSelection*) x;
 	assert(y->alias);
 	assert(alias);
-	if(*alias != *y->alias){
+	if(!(*alias == *y->alias)){
 		return false;
 	}
 	assert(y->fieldNm);
 	assert(fieldNm);
-	if(*fieldNm != *y->fieldNm){
+	if(!(*fieldNm == *y->fieldNm)){
 		return false;
 	}
 	return true;
 }
 
 TypeID Operator::typify(List<Site*>* sites){
-	if(sites && BaseSelection::typify(sites) != ""){
+	if(sites && !(BaseSelection::typify(sites) == "")){
 		return typeID;
 	}
 	TRY(left->typify(sites), "");
@@ -389,7 +392,7 @@ bool Operator::match(BaseSelection* x){
 		return false;
 	}
 	Operator* y = (Operator*) x;
-	if(name != y->name){
+	if(!(name == y->name)){
 		return false;
 	}
 	if(!left->match(y->left)){
@@ -442,7 +445,7 @@ QuoteAlias::~QuoteAlias(){
 }
 
 TypeID Constructor::typify(List<Site*>* sites){
-	if(sites && BaseSelection::typify(sites) != ""){
+	if(sites && !(BaseSelection::typify(sites) == "")){
 		return typeID;
 	}
 	assert(args);

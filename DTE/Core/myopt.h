@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/09/29 02:51:57  donjerko
+  Eliminated class GlobalSelect.
+
   Revision 1.33  1997/09/17 02:35:48  donjerko
   Fixed the broken remote DTE interface.
 
@@ -622,7 +625,7 @@ public:
           return typeID;
      }
 	virtual int getSize(){
-		assert(typeID != UNKN_TYPE);
+		assert(!(typeID == UNKN_TYPE));
 		return packSize(typeID);
 	}
 	virtual bool checkOrphan(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/21 21:04:27  donjerko
+  Implemented view materialization
+
   Revision 1.5  1997/07/30 21:39:21  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -50,7 +53,7 @@ Site* UnionParse::createSite(){	// throws exception;
 	const TypeID* types1 = iter1->getTypeIDs();
 	const TypeID* types2 = iter2->getTypeIDs();
 	for(int i = 0; i < numFlds1; i++){
-		if(types1[i] != types2[i]){
+		if(!(types1[i] == types2[i])){
 			string msg = "Cannot do UNION because types do not match";
 		}
 	}

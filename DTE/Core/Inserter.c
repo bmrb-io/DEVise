@@ -1,6 +1,7 @@
 #include "url.h"
 #include "Inserter.h"
 #include "StandardRead.h"
+#include "MemoryMgr.h"
 
 void Inserter::open(const ISchema& schema, string urlString, int mode)
 { // throws

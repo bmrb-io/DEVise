@@ -5,6 +5,7 @@
 #include "ExecOp.h"
 #include "listop.h"
 #include "RTreeRead.h"
+#include "MemoryMgr.h"
 
 Array<ExecExpr*>* dummy3; // Just needed for pragma implementation
 
@@ -126,4 +127,15 @@ IndexScanExec::~IndexScanExec(){
 	destroyArray(*myWhere);
 	delete myWhere;
 	delete [] next;
+}
+
+NLJoinExec::~NLJoinExec(){
+	delete left;
+	delete right;
+	destroyArray(*mySelect);
+	delete mySelect;
+	destroyArray(*myWhere);
+	delete myWhere;
+	delete [] next;
+	delete tupleLoader;
 }

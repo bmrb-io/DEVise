@@ -42,8 +42,9 @@ DTE_INCLUDES = \
 #no-comment is for the perl files
 
 CFLAGS = $(ARCH_ENDIAN) $(DTE_INCLUDES) $(ARCH_FLAGS) \
-	-Wall -Wno-unused -Wno-comment -pedantic $(OPTFLAG) \
+	-pedantic $(OPTFLAG) \
 	-DUNIX -DLIBCS -DHAVE_CONFIG_H
+#	-Wall -Wno-unused -Wno-comment \
 #	-fexternal-templates \
 
 ifdef DTE_DEBUG
@@ -56,7 +57,7 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	InsertParse.c DeleteParse.c SchemaParse.c DropIndexParse.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
 	ExecOp.c Inserter.c TypeCheck.c joins.c \
-	Interface.c MaterializeParse.c
+	Interface.c MaterializeParse.c MemoryMgr.c
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 

@@ -4,6 +4,7 @@
 #include "types.h"
 #include "myopt.h"
 #include "site.h"
+#include "MemoryMgr.h"
 
 #ifndef __GNUG__
 using namespace std;
@@ -20,6 +21,7 @@ public:
 // Standard aggregate execs
 
 class ExecMinMax : public ExecAggregate {
+protected:
   OperatorPtr opPtr;
   ADTCopyPtr copyPtr;
   Type* minMax;
@@ -164,22 +166,27 @@ public:
 
 // Moving aggregate Execs
 
-class ExecMovMinMax : public ExecAggregate {
-  OperatorPtr opPtr;
-  ADTCopyPtr copyPtr;
+class ExecMovMinMax : public ExecMinMax {
+	TupleLoader* tupLoad;
 	OperatorPtr eqPtr;
-	Type* prevTuple;
-  Type* minMax;
-  size_t valueSize;
-
 public:
-  ExecMovMinMax(OperatorPtr opPtr, ADTCopyPtr copyPtr, Type* value, 
-	     size_t valueSize) :
-    opPtr(opPtr), copyPtr(copyPtr), minMax(value), valueSize(valueSize) {}
-  virtual void initialize(const Type* input){}
-  virtual void update(const Type* input){}
-  virtual Type* getValue(){return NULL;}
-  virtual void dequeue(int n){}
+	ExecMovMinMax(OperatorPtr opPtr, ADTCopyPtr copyPtr, Type* value, 
+		size_t valueSize, TupleLoader* tupLoad, OperatorPtr eqPtr) : 
+		ExecMinMax(opPtr, copyPtr, value, valueSize),
+		tupLoad(tupLoad), eqPtr(eqPtr) {}
+	virtual void initialize(const Type* input){
+		ExecMinMax::initialize(input);
+		tupLoad->insert(&input);
+	}
+	virtual void update(const Type* input){
+		ExecMinMax::update(input);
+		tupLoad->insert(&input);
+	}
+	Type* getValue(){
+		assert(!tupLoad->empty());
+		return minMax;
+	}
+	virtual void dequeue(int n);
 };
 
 class ExecMovCount : public ExecAggregate {
@@ -434,7 +441,7 @@ public:
     size_t valueSize;
     Type *value = allocateSpace(typeID, valueSize);
 
-    return new ExecMovMinMax(opPtr, copyPtr, value, valueSize);
+//    return new ExecMovMinMax(opPtr, copyPtr, value, valueSize);
   }
 };
 
@@ -448,7 +455,7 @@ public:
     size_t valueSize;
     Type *value = allocateSpace(typeID, valueSize);
 
-    return new ExecMovMinMax(opPtr, copyPtr, value, valueSize);
+//    return new ExecMovMinMax(opPtr, copyPtr, value, valueSize);
   }
 }; 
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/09/05 22:20:15  donjerko
+  Made changes for port to NT.
+
   Revision 1.8  1997/08/25 15:28:13  donjerko
   Added minmax table
 
@@ -39,8 +42,8 @@
 
  */
 
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#ifndef DTE_EXCEPTION_H
+#define DTE_EXCEPTION_H
 
 #include <string>
 
