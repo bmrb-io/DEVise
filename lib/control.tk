@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.21  1995/11/19 06:03:59  ravim
+#	New schema options - user/superuser
+#
 #	Revision 1.20  1995/11/14 22:53:17  jussi
 #	Moved stream selection dialog to be part of macro definition
 #	utility (DefSource in macrodef.tk). Elimininated 'Source'
@@ -125,6 +128,18 @@ if { [info exists env(DEVISE_LIB)] } {
 set datadir "."
 if { [info exists env(DEVISE_DAT)] } {
     set datadir $env(DEVISE_DAT)
+}
+set cachedir "."
+if { [info exists env(DEVISE_CACHE)] } {
+    set cachedir $env(DEVISE_CACHE)
+}
+set schemadir "."
+if { [info exists env(DEVISE_SCHEMA)] } {
+    set schemadir $env(DEVISE_SCHEMA)
+}
+set sessiondir "."
+if { [info exists env(DEVISE_SESSION)] } {
+    set sessiondir $env(DEVISE_SESSION)
 }
 
 set mode 0
@@ -514,8 +529,8 @@ proc DoCreateTData { file type } {
 #import a new file type
 #Return name of file type, or ""
 proc ImportFileType {} {
-    global fsBox datadir
-    set fsBox(path) $datadir
+    global fsBox schemadir
+    set fsBox(path) $schemadir
     set fsBox(pattern) *.schema*
     set ftypeFile [FSBox "Select schema file"]
     if {$ftypeFile == ""} {
@@ -1603,10 +1618,10 @@ proc DoSave {} {
 }
 
 proc DoSaveAs { asTemplate } {
-    global sessionName fsBox datadir
+    global sessionName fsBox sessiondir
 
     # Get file name
-    set fsBox(path) $datadir
+    set fsBox(path) $sessiondir
     set fsBox(pattern) *.tk
     set file [ FSBox ]
     
@@ -2596,7 +2611,7 @@ proc DoClose {} {
 
 # Do open a session file
 proc DoOpen { asTemplate } {
-    global fsBox datadir
+    global fsBox sessiondir
 
     if {[DEVise get tdata] != "" && ![DoClose]} {
 	# abort opening a new session
@@ -2604,7 +2619,7 @@ proc DoOpen { asTemplate } {
     }
     
     # Get a session file name
-    set fsBox(path) $datadir
+    set fsBox(path) $sessiondir
     set fsBox(pattern) *.tk
     set file [ FSBox "Select session file" ]
     
