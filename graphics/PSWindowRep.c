@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/10/28 15:55:43  wenger
+  Scaling and clip masks now work for printing multiple views in a window
+  to PostScript; (direct PostScript printing still disabled pending correct
+  text positioning and colors); updated all dependencies except Linux.
+
   Revision 1.4  1996/10/18 20:34:06  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -42,6 +47,8 @@
 #endif
 
 //#define DEBUG
+//#define PS_DEBUG	// Define this to generate debug info in the
+			// PostScript output.
 #define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
@@ -757,83 +764,134 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   }
   
   int textLength = strlen(text);
-  if (!textLength)
-    return;
+  if (textLength <= 0) return;
 
 #if 0 //TEMPTEMP
   if (textWidth > winWidth || textHeight > winHeight) {
     ScaledText(text, x, y, width, height, alignment, skipLeadingSpace);
     return;
   }
+#endif
 
-  int startX = 0, startY = 0;
-  int widthDiff = winWidth - textWidth;
-  int halfWidthDiff = widthDiff / 2;
-  int heightDiff = winHeight - textHeight;
-  int halfHeightDiff = heightDiff / 2;
+  char *comment;
+  char *calculation;
 
+  /* Here, instead of actually calculating the text position, we generate
+   * the correct PostScript code to calculate the position. */
   switch(alignment) {
   case AlignNorthWest:
-    startX = winX; 
-    startY = winY + fontStruct->max_bounds.ascent;
+    comment = "% AlignNorthWest";
+    calculation = "/textX winX def\n"
+      "/textY winY heightDiff add def\n";
     break;
 
   case AlignNorth:
-    startX = winX + halfWidthDiff; 
-    startY = winY + fontStruct->max_bounds.ascent;
+    comment = "% AlignNorth";
+    calculation = "/textX winX halfWidthDiff add def\n"
+      "/textY winY heightDiff add def\n";
     break;
 
   case AlignNorthEast:
-    startX = winX + widthDiff; 
-    startY = winY + fontStruct->max_bounds.ascent;
+    comment = "% AlignNorthEast";
+    calculation = "/textX winX widthDiff add def\n"
+      "/textY winY heightDiff add def\n";
     break;
 
   case AlignWest: 
-    startX = winX; 
-    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
+    comment = "% AlignWest";
+    calculation = "/textX winX def\n"
+      "/textY winY halfHeightDiff add def\n";
     break;
 
   case AlignCenter: 
-    startX = winX + halfWidthDiff; 
-    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
+    comment = "% AlignCenter";
+    calculation = "/textX winX halfWidthDiff add def\n"
+      "/textY winY halfHeightDiff add def\n";
     break;
 
   case AlignEast:
-    startX = winX + widthDiff; 
-    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
+    comment = "% AlignEast";
+    calculation = "/textX winX widthDiff add def\n"
+      "/textY winY halfHeightDiff add def\n";
     break;
 
   case AlignSouthWest:
-    startX = winX; 
-    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
+    comment = "% AlignSouthWest";
+    calculation = "/textX winX def\n"
+      "/textY winY def\n";
     break;
 
   case AlignSouth:
-    startX = winX + halfWidthDiff; 
-    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
+    comment = "% AlignSouth";
+    calculation = "/textX winX halfWidthDiff add def\n"
+      "/textY winY def\n";
     break;
 
   case AlignSouthEast:
-    startX = winX + widthDiff; 
-    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
+    comment = "% AlignSouthEast";
+    calculation = "/textX winX widthDiff add def\n"
+      "/textY winY def\n";
+    break;
+
+  default:
+    comment = "error";
+    DOASSERT(false, "Illegal alignment option");
     break;
   }
-#endif
 
 #ifdef GRAPHICS
   // Note: get rid of cast -- not safe.  RKW 9/19/96.
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
-  fprintf(printFile, "/Times-Roman findfont\n");//TEMPTEMP
-  fprintf(printFile, "15 scalefont\n");//TEMPTEMP
+#if defined(PS_DEBUG)
+  /* Draw the "text window" within which the text is positioned -- for
+   * debugging purposes. */
+  fprintf(printFile, "[3] 0 setdash\n");
+  DrawLine(printFile, tx1, ty1, tx1, ty2);
+  DrawLine(printFile, tx1, ty2, tx2, ty2);
+  DrawLine(printFile, tx2, ty2, tx2, ty1);
+  DrawLine(printFile, tx2, ty1, tx1, ty1);
+  fprintf(printFile, "[] 0 setdash\n");
+#endif
+
+  /* Set up the font.  For right now we're just using a fixed font, but
+   * that should be changed eventually.  RKW 11/6/96. */
+  fprintf(printFile, "/Times-Roman findfont\n");
+  fprintf(printFile, "15 scalefont\n");
   fprintf(printFile, "setfont\n");
-  fprintf(printFile, "/textX %f def\n", tx1);
-  fprintf(printFile, "/textY %f def\n", ty1);
 
-//TEMPTEMP -- position text here
-  //TEMPTEMPfprintf(printFile, "(%s) stringwidth textWidth textHeight\n", text);
+  /* Get the width and height of the given string in the given font. */
+  fprintf(printFile, "(%s) stringwidth\n", text);
+  fprintf(printFile, "/textHeight exch def\n");
+  fprintf(printFile, "/textWidth exch def\n");
 
+  /* Note: we're forcing textHeight to be 15 because stringwidth seems
+   * to return zero for the height. RKW 11/6/96. */
+  fprintf(printFile, "/textHeight 15 def\n");
+
+  fprintf(printFile, "/winX %d def\n", winX);
+  fprintf(printFile, "/winY %d def\n", winY);
+  fprintf(printFile, "/winWidth %d def\n", winWidth);
+  fprintf(printFile, "/winHeight %d def\n", winHeight);
+
+  /* Calculate some values based on the "text window" size and the size
+   * of the text. */
+  fprintf(printFile, "/widthDiff winWidth textWidth sub def\n");
+  fprintf(printFile, "/halfWidthDiff widthDiff 0.5 mul def\n");
+  fprintf(printFile, "/heightDiff winHeight textHeight sub def\n");
+  fprintf(printFile, "/halfHeightDiff heightDiff 0.5 mul def\n");
+
+#if defined(PS_DEBUG)
+  /* Print the comment if necessary to help debug the PostScript output. */
+  fprintf(printFile, "%s\n", comment);
+#endif
+
+  /* Now calculate the location of the text according to the
+   * specified alignment and the size of the text. */
+  fprintf(printFile, "%s", calculation);
+
+  /* Move to the actual location and print the text. */
   fprintf(printFile, "textX textY moveto\n");
   fprintf(printFile, "(%s) show\n", text);
 #endif
@@ -875,10 +933,12 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
   FILE * printFile = psDispP->GetPrintFile();
 
-  fprintf(printFile, "/Times-Roman findfont\n");//TEMPTEMP
-  fprintf(printFile, "15 scalefont\n");//TEMPTEMP
-  fprintf(printFile, "setfont\n");//TEMPTEMP
-  fprintf(printFile, "%f %f moveto\n", tx1, ty1);//TEMPTEMP
+  /* Note: this is a temporary expedient only -- does not scale or
+   * properly position the text. RKW 11/6/96. */
+  fprintf(printFile, "/Times-Roman findfont\n");
+  fprintf(printFile, "15 scalefont\n");
+  fprintf(printFile, "setfont\n");
+  fprintf(printFile, "%f %f moveto\n", tx1, ty1);
   fprintf(printFile, "(%s) show\n", text);
 #endif
 }
