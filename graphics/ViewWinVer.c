@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/29 15:13:11  jussi
+  Commented out #define DEBUG.
+
   Revision 1.3  1995/11/29 15:08:52  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -28,177 +31,13 @@
 
 //#define DEBUG
 
-/* top level window */
-
 ViewWinVer:: ViewWinVer(char *name,  Coord x, Coord y, Coord w, Coord h) :
-	ViewWin(name)
+	ViewLayout(name, x, y, w, h)
 {
   Coord width, height;
   DeviseDisplay::DefaultDisplay()->Dimensions(width, height);
   Map((int)(x * width), (int)(y * height),
       (unsigned)(w * width), (unsigned)(h * height));
-}
-
-/* sub window */
-
-ViewWinVer::ViewWinVer(char *name, int weight) :
-	ViewWin(name, weight, 1)
-/*
-   shouldn't the call to ViewWin have foreground and background colors
-   etc. in addition to weight? This is probably a left-over from earlier
-   when ViewWin took fewer parameters.
-*/
-{
-}
-
-ViewWinVer::~ViewWinVer()
-{
-  DeleteFromParent();
-  Unmap();
-}
-
-inline unsigned WidthHeightToUse(unsigned h)
-{
-  if (h > 2)
-    return h-2;
-  else
-    return 1;
-}
-
-void ViewWinVer::Map(int x, int y, unsigned w, unsigned h)
-{
-  ViewWin::Map(x,y,w,h);
-
-  /* Map the children */
-  int x,y; unsigned int w,h;
-  Geometry(x,y,w,h);
-  MapChildren(TotalWeight(), w, h);
-}
-
-void ViewWinVer::Unmap()
-{
-  /* Unmap the children */
-  UnmapChildren();
-  
-  ViewWin::Unmap();
-}
-
-void ViewWinVer::Append(ViewWin *child)
-{
-  if (Mapped()) {
-    /* Resize the children */
-    int num = NumChildren();
-    int x,y; unsigned int w,h;
-    Geometry(x,y,w,h);
-    int weight = TotalWeight()+ child->GetWeight();
-    int finalY= DoResize(weight,w,h);
-    
-    /* move/resize the new child */
-    Coord heightIncrement= ((Coord)child->GetWeight())/weight*h;
-    child->Map(0,finalY,
-	       WidthHeightToUse(w),
-	       WidthHeightToUse((unsigned)heightIncrement));
-  }
-
-  /* append child */
-  ViewWin::Append(child);
-}
-
-void ViewWinVer::Delete(ViewWin *child)
-{
-  ViewWin::Delete(child);
-
-  if (Mapped()) {
-    child->Unmap();
-    int x,y; unsigned int w,h;
-    Geometry(x,y,w,h);
-    DoResize(TotalWeight(),w,h);
-  }
-}
-
-void ViewWinVer::HandleResize(WindowRep * w, int xlow,
-			      int ylow, unsigned width, unsigned height)
-{
-  ViewWin::HandleResize(w,xlow,ylow,width,height);
-  if (Mapped())
-    DoResize(TotalWeight(), width, height);
-}
-
-/* Do actual resize of each child, assuming that the
-   total weight is as given. Return the final Y position */
-
-int ViewWinVer::DoResize(int totalWeight, unsigned int width,
-			 unsigned int height)
-{
-  int num = NumChildren();
-  int currentY = 0;
-  if (num > 0){
-    int index;
-    for (index=InitIterator(); More(index);){
-      ViewWin *vw = Next(index);
-      Coord heightIncrement= ((Coord)vw->GetWeight())/totalWeight*height;
-      vw->MoveResize(0,currentY, 
-		     WidthHeightToUse(width), 
-		     WidthHeightToUse((unsigned)heightIncrement));
-      currentY += (int)heightIncrement;
-    }
-    DoneIterator(index);
-  }
-
-  return currentY;
-}
-
-/* Do actual mapping of each child, assuming
-   total weight is as given. Return the final Y position  */
-
-void ViewWinVer::MapChildren(int totalWeight, unsigned int width,
-			     unsigned int height)
-{
-#ifdef DEBUG
-  printf("ViewWinVer 0x%x mapping children\n", this);
-#endif
-
-int num = NumChildren();
-  int currentY = 0;
-  if (num > 0){
-    int index;
-    for (index=InitIterator(); More(index);){
-      ViewWin *vw = Next(index);
-      Coord heightIncrement= ((Coord)vw->GetWeight())/totalWeight*height;
-      vw->Map(0,currentY, 
-	      WidthHeightToUse(width), 
-	      WidthHeightToUse((unsigned)heightIncrement));
-      currentY += (int)heightIncrement;
-    }
-    DoneIterator(index);
-  }
-}
-
-void ViewWinVer::UnmapChildren()
-{
-  int index;
-  for (index=InitIterator(); More(index);){
-    ViewWin *vw = Next(index);
-    vw->Unmap();
-  }
-  DoneIterator(index);
-}
-
-#if 0
-void ViewWinVer::HandleKey(WindowRep * ,char key, int x, int y)
-{
-  printf("Key 0x%x,%c,%d,%d\n",this,key,x,y);
-}
-#endif
-
-void ViewWinVer::Iconify(Boolean iconified)
-{
-  int index;
-  for (index=InitIterator(); More(index);){
-    ViewWin *vw = Next(index);
-    vw->Iconify(iconified);
-  }
-  DoneIterator(index);
 }
 
 /* Replace child1 by child2. child1 must be a valid child. */
@@ -216,47 +55,105 @@ void ViewWinVer::Replace(ViewWin *child1, ViewWin *child2)
   printf("ViewWinVer::Replace 2\n");
 #endif
 
-  if (Mapped()) {
-#ifdef DEBUG
-    printf("viewWin mapped\n");
-#endif
-    int num = NumChildren();
-    int currentY = 0;
-    int totalWeight = TotalWeight();
-    int x,y; unsigned int width,height;
-    Geometry(x,y,width,height);
-    
-    if (num > 0){
-      int index;
-      for (index=InitIterator(); More(index);){
-	ViewWin *vw = Next(index);
-	Coord heightIncrement= ((Coord)vw->GetWeight())/totalWeight*height;
-	if (vw == child2){
-	  printf("map 0 %d %d %f\n", currentY, width, heightIncrement);
-	  vw->Map(0,currentY, 
-		  WidthHeightToUse(width), 
-		  WidthHeightToUse((unsigned)heightIncrement));
-	  break;
-	}
-	currentY += (int)heightIncrement;
-      }
-      DoneIterator(index);
-    }
-  } else
+  if (!Mapped()) {
     printf("not mapped\n");
+    return;
+  }
+
+#ifdef DEBUG
+  printf("viewWin mapped\n");
+#endif
+
+  if (NumChildren() <= 0)
+    return;
+
+  int totalWeight = TotalWeight();
+  int x, y;
+  unsigned int width, height;
+  Geometry(x, y, width, height);
+
+  for(int index = InitIterator(); More(index);) {
+    ViewWin *vw = Next(index);
+    int heightIncrement = (int)(((Coord)vw->GetWeight()) / totalWeight
+				* height);
+    if (vw == child2) {
+      printf("map %d %d %d %d\n", x, y, width, heightIncrement);
+      vw->Map(x, y, width, heightIncrement);
+      break;
+    }
+    y += heightIncrement;
+  }
+  DoneIterator(index);
 }
 
-/* Replace child1 by child2 */
+/* Swap position of child1 and child2 */
 
 void ViewWinVer::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
   ViewWin::SwapChildren(child1,child2);
-  if (Mapped()) {
-    int x1,y1,x2,y2;
-    unsigned w1,w2,h1,h2;
-    child1->Geometry(x1,y1,w1,h1);
-    child2->Geometry(x2,y2,w2,h2);
-    child1->MoveResize(x2,y2,w1,h1);
-    child2->MoveResize(x1,y1,w2,h2);
+
+  if (!Mapped())
+    return;
+
+  int x1, y1, x2, y2;
+  unsigned w1, w2, h1, h2;
+#ifdef TK_WINDOW
+  child1->RealGeometry(x1, y1, w1, h1);
+  child2->RealGeometry(x2, y2, w2, h2);
+#else
+  child1->Geometry(x1, y1, w1, h1);
+  child2->Geometry(x2, y2, w2, h2);
+#endif
+  child1->GetWindowRep()->Origin(x1, y1);
+  child2->GetWindowRep()->Origin(x2, y2);
+  child1->MoveResize(x2, y2, w1, h1);
+  child2->MoveResize(x1, y1, w2, h2);
+}
+
+/* Do actual mapping of each child. */
+
+void ViewWinVer::MapChildren()
+{
+#ifdef DEBUG
+  printf("ViewWinVer 0x%x mapping children\n", this);
+#endif
+
+  int totalWeight = TotalWeight();
+
+  int x, y;
+  unsigned int w, h;
+  Geometry(x, y, w, h);
+
+  for(int index = InitIterator(); More(index);) {
+    ViewWin *vw = Next(index);
+    int heightIncrement= (int)(((Coord)vw->GetWeight()) / totalWeight * h);
+    vw->Map(x, y, w, heightIncrement);
+    y += heightIncrement;
   }
+  DoneIterator(index);
+}
+
+/* Resize each child. Return remaining space to caller. */
+
+void ViewWinVer::DoResize(int totalWeight, int &x, int &y,
+			  unsigned int &w, unsigned int &h)
+{
+#ifdef DEBUG
+  printf("ViewWinVer 0x%x resizing children\n", this);
+#endif
+
+  Geometry(x, y, w, h);
+
+  int remainingH = h;
+
+  for(int index = InitIterator(); More(index);) {
+    ViewWin *vw = Next(index);
+    int heightIncrement = (int)(((Coord)vw->GetWeight()) / totalWeight * h);
+    vw->MoveResize(x, y, w, heightIncrement);
+    y += heightIncrement;
+    remainingH -= heightIncrement;
+  }
+  DoneIterator(index);
+
+  h = remainingH;
 }
