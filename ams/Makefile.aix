@@ -5,22 +5,22 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 MapClassInfo: ../graphics/DeviseTypes.h ../graphics/Display.h
-MapClassInfo: ../graphics/Geom.h ../graphics/Dispatcher.h ../graphics/DList.h
-MapClassInfo: ../graphics/Exit.h ../graphics/Journal.h
-MapClassInfo: ../graphics/VisualArg.h ../graphics/Color.h
-MapClassInfo: ../graphics/Pattern.h ../graphics/ColorMgr.h
-MapClassInfo: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MapClassInfo: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-MapClassInfo: ../graphics.new/Bitmap.h ../graphics.new/RecId.h
-MapClassInfo: ../graphics.new/GDataRec.h ../graphics.new/ViewGraph.h
-MapClassInfo: ../graphics/View.h ../graphics/ViewWin.h
-MapClassInfo: ../graphics/WindowRep.h ../graphics/Transform.h
-MapClassInfo: ../graphics/DevisePixmap.h ../graphics/Compress.h
-MapClassInfo: ../graphics/Control.h ../graphics/ClassDir.h
-MapClassInfo: ../graphics/ViewCallback.h ../graphics/AttrList.h
-MapClassInfo: ../graphics/Config.h ../graphics/Cursor.h
-MapClassInfo: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-MapClassInfo: ../graphics.new/Action.h ../graphics.new/Temp.h
+MapClassInfo: ../graphics/Geom.h ../graphics/Color.h ../graphics/Dispatcher.h
+MapClassInfo: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+MapClassInfo: ../graphics/VisualArg.h ../graphics/Pattern.h
+MapClassInfo: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
+MapClassInfo: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MapClassInfo: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+MapClassInfo: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
+MapClassInfo: ../graphics.new/ViewGraph.h ../graphics/View.h
+MapClassInfo: ../graphics/ViewWin.h ../graphics/WindowRep.h
+MapClassInfo: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MapClassInfo: ../graphics/Compress.h ../graphics/Control.h
+MapClassInfo: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+MapClassInfo: ../graphics/AttrList.h ../graphics/Config.h
+MapClassInfo: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+MapClassInfo: ../graphics.new/ViewStats.h ../graphics.new/Action.h
+MapClassInfo: ../graphics/Temp.h ../graphics/Map3D.h
 MapClassInfo: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo: ../graphics.new/ActionDefault.h ../graphics/Util.h

@@ -33,15 +33,15 @@ Dispatcher: Color.h Pattern.h Control.h ClassDir.h Init.h BufPolicy.h
 Dispatcher: Selection.h View.h ViewWin.h WindowRep.h Geom.h Transform.h
 Dispatcher: DevisePixmap.h Compress.h ViewCallback.h AttrList.h Config.h
 Dispatcher: Cursor.h Time.h
-Display: XDisplay.h Display.h DeviseTypes.h Geom.h Dispatcher.h DList.h
-Display: Exit.h Journal.h VisualArg.h Color.h Pattern.h ColorMgr.h Xdef.h
+Display: XDisplay.h Display.h DeviseTypes.h Geom.h Color.h Dispatcher.h
+Display: DList.h Exit.h Journal.h VisualArg.h Pattern.h ColorMgr.h Xdef.h
 Display: XWindowRep.h WindowRep.h Transform.h DevisePixmap.h Compress.h
 Display: XBitmap.h
 Exit: Exit.h Init.h DeviseTypes.h BufPolicy.h Control.h VisualArg.h Color.h
 Exit: Pattern.h DList.h ClassDir.h
 ExitClean: Exit.h
 FilterQueue: Exit.h FilterQueue.h VisualArg.h DeviseTypes.h Color.h Pattern.h
-Geom: Geom.h DeviseTypes.h
+Geom: Geom.h DeviseTypes.h Color.h
 Init: Dispatcher.h DeviseTypes.h DList.h Exit.h Journal.h VisualArg.h Color.h
 Init: Pattern.h Init.h BufPolicy.h Time.h Timer.h Util.h
 Journal: Journal.h DeviseTypes.h VisualArg.h Color.h Pattern.h Init.h
@@ -53,6 +53,8 @@ Selection: Selection.h View.h DeviseTypes.h Dispatcher.h DList.h Exit.h
 Selection: Journal.h VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h
 Selection: Geom.h Transform.h DevisePixmap.h Compress.h Control.h ClassDir.h
 Selection: ViewCallback.h AttrList.h Config.h Cursor.h
+Temp: Temp.h DeviseTypes.h WindowRep.h Geom.h Color.h Transform.h VisualArg.h
+Temp: Pattern.h DList.h Exit.h DevisePixmap.h Compress.h Map3D.h
 Time: Time.h Journal.h DeviseTypes.h VisualArg.h Color.h Pattern.h
 Time: ../graphics.new/machdep.h
 TimeStamp: TimeStamp.h
@@ -61,26 +63,26 @@ Util: Util.h Exit.h
 View: Util.h Exit.h View.h DeviseTypes.h Dispatcher.h DList.h Journal.h
 View: VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h Geom.h Transform.h
 View: DevisePixmap.h Compress.h Control.h ClassDir.h ViewCallback.h
-View: AttrList.h Config.h Cursor.h FilterQueue.h TimeStamp.h Parse.h
-ViewWin: ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h Geom.h
-ViewWin: Transform.h VisualArg.h Color.h Pattern.h DevisePixmap.h Compress.h
+View: AttrList.h Config.h Cursor.h FilterQueue.h TimeStamp.h Parse.h Map3D.h
+ViewWin: ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h Geom.h Color.h
+ViewWin: Transform.h VisualArg.h Pattern.h DevisePixmap.h Compress.h
 ViewWin: Display.h Dispatcher.h Journal.h ColorMgr.h Init.h BufPolicy.h
-WinClassInfo: Display.h DeviseTypes.h Geom.h Dispatcher.h DList.h Exit.h
-WinClassInfo: Journal.h VisualArg.h Color.h Pattern.h ColorMgr.h Control.h
+WinClassInfo: Display.h DeviseTypes.h Geom.h Color.h Dispatcher.h DList.h
+WinClassInfo: Exit.h Journal.h VisualArg.h Pattern.h ColorMgr.h Control.h
 WinClassInfo: ClassDir.h WinClassInfo.h TileLayout.h ViewLayout.h ViewWin.h
 WinClassInfo: WindowRep.h Transform.h DevisePixmap.h Compress.h Util.h
-WindowRep: WindowRep.h Geom.h DeviseTypes.h Transform.h VisualArg.h Color.h
+WindowRep: WindowRep.h Geom.h DeviseTypes.h Color.h Transform.h VisualArg.h
 WindowRep: Pattern.h DList.h Exit.h DevisePixmap.h Compress.h Display.h
 WindowRep: Dispatcher.h Journal.h ColorMgr.h
 XBitmap: XBitmap.h
-XDisplay: XDisplay.h Display.h DeviseTypes.h Geom.h Dispatcher.h DList.h
-XDisplay: Exit.h Journal.h VisualArg.h Color.h Pattern.h ColorMgr.h Xdef.h
+XDisplay: XDisplay.h Display.h DeviseTypes.h Geom.h Color.h Dispatcher.h
+XDisplay: DList.h Exit.h Journal.h VisualArg.h Pattern.h ColorMgr.h Xdef.h
 XDisplay: XWindowRep.h WindowRep.h Transform.h DevisePixmap.h Compress.h
 XDisplay: XBitmap.h Control.h ClassDir.h Init.h BufPolicy.h
-XWindowRep: XWindowRep.h WindowRep.h Geom.h DeviseTypes.h Transform.h
-XWindowRep: VisualArg.h Color.h Pattern.h DList.h Exit.h DevisePixmap.h
-XWindowRep: Compress.h Xdef.h XDisplay.h Display.h Dispatcher.h Journal.h
-XWindowRep: ColorMgr.h XBitmap.h Init.h BufPolicy.h xv.h
+XWindowRep: XWindowRep.h WindowRep.h Geom.h DeviseTypes.h Color.h Transform.h
+XWindowRep: VisualArg.h Pattern.h DList.h Exit.h DevisePixmap.h Compress.h
+XWindowRep: Xdef.h XDisplay.h Display.h Dispatcher.h Journal.h ColorMgr.h
+XWindowRep: XBitmap.h Init.h BufPolicy.h xv.h
 XawControl: XawControl.h Control.h DeviseTypes.h VisualArg.h Color.h
 XawControl: Pattern.h DList.h Exit.h ClassDir.h Dispatcher.h Journal.h
 XawControl: XawWidget.h Xdef.h
@@ -96,10 +98,12 @@ xv24to8: xv.h
 xvgif: xv.h
 xvgifwr: xv.h
 xvgrab: xv.h
+Map3D: Map3D.h DeviseTypes.h Transform.h VisualArg.h Color.h Pattern.h Geom.h
+Map3D: WindowRep.h DList.h Exit.h DevisePixmap.h Compress.h Temp.h
 TileLayout: TileLayout.h ViewLayout.h ViewWin.h DList.h Exit.h DeviseTypes.h
-TileLayout: WindowRep.h Geom.h Transform.h VisualArg.h Color.h Pattern.h
+TileLayout: WindowRep.h Geom.h Color.h Transform.h VisualArg.h Pattern.h
 TileLayout: DevisePixmap.h Compress.h Display.h Dispatcher.h Journal.h
 TileLayout: ColorMgr.h
 ViewLayout: ViewLayout.h ViewWin.h DList.h Exit.h DeviseTypes.h WindowRep.h
-ViewLayout: Geom.h Transform.h VisualArg.h Color.h Pattern.h DevisePixmap.h
+ViewLayout: Geom.h Color.h Transform.h VisualArg.h Pattern.h DevisePixmap.h
 ViewLayout: Compress.h
