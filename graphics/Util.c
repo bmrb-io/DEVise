@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/10 19:11:17  jussi
+  Added error checking to CopyString.
+
   Revision 1.6  1995/12/28 18:48:14  jussi
   Small fixes to remove compiler warnings.
 
@@ -35,7 +38,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#if defined(PENTIUM) || defined(HPUX)
+#if defined(PENTIUM) || defined(HPUX) || defined(AIX)
 #include <dirent.h>
 #else
 #include <sys/dir.h>
@@ -93,13 +96,13 @@ void ClearDir(char *dir)
 
   DIR *dirp = opendir(dir);
   if (dirp != NULL){
-#if defined(PENTIUM) || defined(HPUX)
+#if defined(PENTIUM) || defined(HPUX) || defined(AIX)
     struct dirent *dp;
 #else
     struct direct *dp;
 #endif
     for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)){
-#if defined(IBM_POWER_STATION) || defined(PENTIUM) || defined(HPUX)
+#if defined(PENTIUM) || defined(HPUX) || defined(AIX)
       struct dirent *realdp = (struct dirent *)dp;
 #else
       struct direct *realdp = dp;
