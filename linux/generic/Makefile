@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/05/31 21:35:56  wenger
+#  Fixed core dump in SPARC/Solaris version caused by GData buffer
+#  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+#  version to link correctly and eliminate special Makefile.base.aix.
+#
 #  Revision 1.1  1996/03/27 18:04:01  wenger
 #  Changes to get DEVise to compile and run on Linux.
 #
@@ -26,14 +31,13 @@
 #
 #  Revision 1.1  1995/10/15 19:12:16  jussi
 #  Initial revision.
-#
 
 ############################################################
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
-ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
-ARCH_LDPOST  = -lSM -lICE -static
+ARCH_LDPOST  =
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/03/27 18:03:50  wenger
+#  Changes to get DEVise to compile and run on Linux.
+#
 #  Revision 1.3  1996/01/12 18:00:03  jussi
 #  Switched to newer compiler version with all necessary header files.
 #
@@ -24,14 +27,13 @@
 #
 #  Revision 1.1  1995/10/15 19:12:14  jussi
 #  Initial revision.
-#
 
 ############################################################
 
-ARCH_FLAGS   = -DHPUX -I/s/tcl/include
-ARCH_LDFLAGS = -L/s/tcl/lib
+ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
+ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
 ARCH_LDPOST  =
 
 VPATH = ../../ams
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.hp
+include $(VPATH)/Makefile.linux
