@@ -2,6 +2,9 @@
 
 rmmem
 
+# For latest gcc.
+setenv LD_LIBRARY_PATH /s/gcc/lib
+
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/qclic/Code/Qclic/bin.common )
 set path = ( $path /p/devise/public/bin )
