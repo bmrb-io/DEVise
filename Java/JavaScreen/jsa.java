@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2000/04/24 20:22:01  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.37  2000/03/23 16:26:18  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -370,6 +373,17 @@ public class jsa extends Applet
                 startInfo.append("Parameter fgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
+        }
+
+        String dl = getParameter("log");
+        if (dl != null) {
+            try {
+		DEViseGlobals.debugLog = (Integer.parseInt(dl) != 0);
+            } catch (NumberFormatException e) {
+		DEViseGlobals.debugLog = false;
+            }
+        } else {
+	    DEViseGlobals.debugLog = false;
         }
     }
 

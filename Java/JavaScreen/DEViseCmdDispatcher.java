@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2000/06/12 22:13:55  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.56  2000/05/11 20:19:33  wenger
 // Cleaned up jsdevisec.java and added comments; eliminated
 // jsdevisec.lastCursor (not really needed).
@@ -428,6 +433,8 @@ public class DEViseCmdDispatcher implements Runnable
 
 	    jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
 	      rsp[i]);
+            DEViseDebugLog.log("Processing command (" +
+	      (rsp.length - 1 - i) + ") " + rsp[i]);
 
             if (rsp[i].startsWith(DEViseCommands.DONE)) { // this command will guaranteed to be the last
                 if (command.startsWith(DEViseCommands.OPEN_SESSION)) {
@@ -803,6 +810,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.pn("  Done with command " + rsp[i]);
 	    jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
 	      " Total mem: " + Runtime.getRuntime().totalMemory());
+	    DEViseDebugLog.log("  Done with command " + rsp[i]);
         }
 
         // turn off the 'process' light
@@ -825,6 +833,9 @@ public class DEViseCmdDispatcher implements Runnable
 
         jsc.pn("Trying to receive data (" + size + ") from socket ...");
 	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
+        DEViseDebugLog.log("Trying to receive data (" + size +
+	  ") from socket ...");
+	DEViseDebugLog.log("  Bytes available: " + commSocket.dataAvailable());
         while (!isFinish) {
             try {
                 imgData = commSocket.receiveData(size);
@@ -832,6 +843,8 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.pn("Successfully received data (" + size + ") from socket ...");
 		jsc.pn("  Last byte = " + imgData[imgData.length - 1]);
 		jsc.pn("  Bytes available: " + commSocket.dataAvailable());
+                DEViseDebugLog.log("Successfully received data (" + size +
+		  ") from socket ...");
             } catch (InterruptedIOException e) {
                 if (getAbortStatus()) {
                     // since at this point, server already finish processing request

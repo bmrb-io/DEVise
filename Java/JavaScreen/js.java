@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2000/04/24 20:22:01  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.35  2000/04/05 06:25:40  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -404,6 +407,8 @@ public class js extends Frame
             } else if (args[i].startsWith("-usage")) {
                 System.out.println(usage);
                 System.exit(0);
+            } else if (args[i].startsWith("-log")) {
+	        DEViseGlobals.debugLog = true;
             } else {
                 System.out.println("Invalid js option \"" + args[i]
                     + "\" is given!\n");

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2000/06/22 20:51:25  wenger
+// Changed colors and font in drill-down dialog to make text more
+// readable.
+//
 // Revision 1.64  2000/06/12 22:14:39  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -148,8 +152,13 @@ public class jsdevisec extends Panel
 	// images[0-9] are the gears; 10 and 11 are "traffic lights"
 	//   (devise[0-10].gif).
 	// sessionName is non-null only in jsb.
-    public jsdevisec(Frame frame, Vector images, int dbgLvl, String sessionName)
+    public jsdevisec(Frame frame, Vector images, int dbgLvl,
+	  String sessionName)
     {
+		if (DEViseGlobals.debugLog) {
+		    DEViseDebugLog.create();
+		}
+
         // frame might be null if JavaScreen is running inside a browser
         parentFrame = frame;
         if (parentFrame == null) {

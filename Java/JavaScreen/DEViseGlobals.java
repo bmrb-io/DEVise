@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2000/04/24 20:22:00  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.37  2000/04/07 22:43:14  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -108,6 +111,7 @@ public final class DEViseGlobals
     public static int cmdport = 0, imgport = 0;
     public static int connectionID = -1;
     public static String username = null, password = null, hostname = null;
+    public static boolean debugLog = false;
 
     // global functions
     public static String[] parseString(String inputStr, char startChar,

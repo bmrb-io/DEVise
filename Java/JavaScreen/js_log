@@ -1,0 +1,55 @@
+#! /s/std/bin/perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This is a CGI script for logging commands from the JavaScreen client.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+print "Content-type: text/plain\n\n";
+
+read(STDIN, $buffer, $ENV{'CONTENT_LENGTH'});
+@pairs = split(/&/, $buffer);
+
+$js_id = -1;
+$command = "";
+
+foreach $pair (@pairs)
+{
+    # Undo URL encoding.
+    $pair =~ s/\+/ /g;
+    ($name, $value) = split(/=/, $pair);
+    $name =~ s/%(..)/pack("c",hex($1))/ge;
+    $value =~ s/%(..)/pack("c",hex($1))/ge;
+
+    if ($name eq "js_id") {
+        $js_id = $value;
+    }
+    if ($name eq "command") {
+        $command = $value;
+    }
+}
+
+if ($js_id >= 0 && $command ne "") {
+    open(OUT, ">>js_debug_log/js_log.$js_id") or die "Can't open file";
+    print OUT "$command\n";
+}
+
+print "Logged\n";
+exit 0;
