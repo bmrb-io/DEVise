@@ -153,6 +153,11 @@ TkWindowRep::GetLocation(int &xleft, int &ytop,
 		 &xleft, &ytop,
 		 &width, &height,
 		 &borderWidth, &depth);
+    
+    if (_parent == 0)
+    {
+	Tk_GetRootCoords(_mainwin, &xleft, &ytop);
+    }
 
     return ETk_OK;
 
@@ -362,6 +367,10 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
 	Tk_MakeWindowExist(tkwin);
 	XReparentWindow(Tk_Display(tkwin), Tk_WindowId(tkwin), parent, x, y);
     }
+    else
+    {
+	Tk_MoveToplevelWindow(tkwin, x, y);
+    }
 
     char command[100];	
     do {
@@ -419,7 +428,9 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
 	//
 	sprintf(command, ". config -width %d -height %d", width, height);
 	if ((status = win->Eval(command, tclResult)) != ETk_OK)
+	{
 	    break;
+	}
 	
 	//
 	// Now the window is anchored with the top-left corner at (x,y).

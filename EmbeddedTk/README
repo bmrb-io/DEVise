@@ -1,0 +1,96 @@
+
+DEVise Embedded Tk server
+Andy Therber
+5/20/97
+-------------------
+
+The EmbeddedTk (ETk) server manages a collection of Tcl/Tk windows,
+each with its own Tcl interpreter, and can place the windows inside
+windows created by other applications.
+
+The ETk code is stored in the DEVise cvs repository. To obtain a copy
+of the code:
+
+setenv CVSROOT /p/devise/cvs
+cvs checkout EmbeddedTk
+
+To complile the ETk server:
+
+cd EmbeddedTk
+make EmbeddedTk
+
+You will get an executable named EmbeddedTk.
+
+To see a sample ETk client:
+
+make client
+EmbeddedTk &
+SampleClient
+at the client's % prompt, type 'demo'
+
+This will you show you the syntax for creating, destroying, moving,
+resizing, mapping, and unmapping ETk windows. You will also see how
+the client can send Tcl commands to one of the interpreters running
+inside the server.
+
+Some notes on the ETk implementation:
+
+* main.c contains all the networking code for the server. For each
+command that arrives from a client, a Process<command-name> procedure
+exists in main.c. These Process procedures parse the client commands,
+then usually just call one of the functions in EmbeddedTk.c. The code
+in EmbeddedTk.c manages the collection of windows, so each function
+will do something like: locate the appropriate object in a global
+array of window objects, then call one of the window's member
+functions. Each element of this window array is a TkWindowRep object
+(see TkWindowRep.[hc]), and the "handles" that clients use to
+reference ETk windows are indeces into the global window array. See
+EmbeddedTk.h for the global variable declarations (includes the window
+array, limits on the number of windows allowed, the name of the X
+display, and some other stuff).
+
+* Every ETk window is created with its own Tcl interpreter, to avoid
+naming conflicts among the Tcl scripts.
+
+* Each Tcl interpreter is given an ETk_Coords command which returns
+the coordinates of the ETk window. The return value is a list of 4
+integers: "x-center y-center width height". Example: "100 100 300 300"
+
+* Each interpreter will have a global array named ETk. Currently the
+only variable that is being set in this array is ETk(handle). This is
+an integer handle for the ETk window, and ETk clients use these
+handles to identify a particular ETk window when communicating with
+the ETk server.
+
+* I added a couple of extensions to ETk, which by default are not
+compiled into the server.
+
+Extension 1: Each ETk application can act as a client of a server
+created with the DEVise client-server library. This requires compiling
+ETk with a -DLIBCS flag, and setting the location of the DEVise
+client-server code in the ETk Makefile. Each Tcl interpreter will
+contain an "ETk_Server" command that allows commands to be sent to a
+DEVise server. See ETkCommands.c for the code that implements the
+ETk_Server Tcl command.
+
+  IMPORTANT: Currently the ETk_Server command looks at the Tcl
+  global variables ETk(ServerHost) and ETk(ServerPort) for the
+  location of the DEVise server. These variables are NOT set by
+  default in all interpreters. One way to set them is to include the
+  host and port values in the command-line arguments sent to the ETk
+  script. A better solution would be for the ETk server to
+  automatically create these global variables in each interpreter.
+
+Extension 2: Each ETk application can send queries to the Zoo database
+server horse. This requires compiling with a -DZOOQUERY flag, and
+setting the location of the Zoo shipping code in the ETk Makefile. All
+Zoo functionality is implemented by adding some new commands to the
+Tcl language, and all code for these new commands is in ZooCommands.c.
+
+  IMPORTANT: ZooCommands.c is a COPY of a file that is part of the Zoo
+  cvs repository, within the 'zoo-tclsh' module. The syntax of the Zoo
+  query commands is documented in the Zoo repository (probably in a
+  README file in the zoo-tclsh directory). See Natassa or Arvind
+  (natassa,arvind@cs) if you need to know more about the Zoo query
+  commands that I have added to Tcl.
+

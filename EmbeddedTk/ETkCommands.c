@@ -10,6 +10,13 @@ ETk_GetCoordsCmd(ClientData clientData,     /* TkWindowRep *     */
 		 Tcl_Interp *interp,        /* Tcl interpreter   */
 		 int argc, char *argv[])    /* A Tcl command     */
 {
+    //
+    // This Tcl commands returns the coordinates of the ETk window
+    // relative to its parent. The x-y values returned are the coords
+    // of the CENTER of the window, NOT the upper-left corner. The
+    // result will be a list of 4 integers: x y width height.
+    //
+    
     int i;
     int result = TCL_OK;
     ETkStatus status;
@@ -48,6 +55,13 @@ ETk_ServerCmd(ClientData clientData,    /* Not used          */
 	      Tcl_Interp *interp,       /* Tcl interpreter   */
 	      int argc, char *argv[])   /* A Tcl command     */
 {
+    //
+    // This Tcl command sets up a connection with a DEVise server
+    // (created with the DEVise client-server library), sends a command
+    // to the server, reads a reply from the server, then closes
+    // the connection.
+    //
+    
     int i;
     char *server;
     char *temp;
@@ -60,21 +74,24 @@ ETk_ServerCmd(ClientData clientData,    /* Not used          */
     {
 	printf("  arg: %s\n", argv[i]);
     }
-    
+
+    //
+    // Assuming that the location of the DEVise server (hostname, port)
+    // is stored in the Tcl ETk array
+    //
     if ((server = Tcl_GetVar2(interp,
 			      "ETk", "ServerHost",
 			      TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG)) == NULL)
     {
-	printf("Error executing ETkServer command: %s\n",
+	printf("Error executing ETk_Server command: %s\n",
 	       interp->result);
 	return TCL_ERROR;
     }
-    
     if ((temp = Tcl_GetVar2(interp,
 			    "ETk", "ServerPort",
 			    TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG)) == NULL)
     {
-	printf("Error executing ETkServer command: %s\n",
+	printf("Error executing ETk_Server command: %s\n",
 	       interp->result);
 	return TCL_ERROR;
     }
