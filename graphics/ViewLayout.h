@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/12/02  20:53:06  jussi
+  Initial revision.
+*/
 
 #ifndef ViewLayout_h
 #define ViewLayout_h
@@ -27,30 +30,39 @@ class ViewLayout: public ViewWin {
 public:
   ViewLayout(char *name, Coord x = 0.1, Coord y = 0.0, 
 	     Coord w = 0.8, Coord h = 0.9);
-
   ~ViewLayout();
 
   virtual void Map(int x, int y, unsigned w, unsigned h);
   virtual void Unmap();
-  virtual void Iconify(Boolean iconified);
-  
+
   virtual void Append(ViewWin *child);
   virtual void Delete(ViewWin *child);
-  virtual void Replace(ViewWin *child1, ViewWin *child2) = 0;
-  virtual void SwapChildren(ViewWin *child1, ViewWin *child2) = 0;
-
-protected:
-  virtual void SubClassMapped() {};
-  virtual void SubClassUnmapped() {};
   
-  virtual void DoResize(int totalWeight, int &x, int &y,
-			unsigned int &w, unsigned int &h) = 0;
-
-  virtual void MapChildren() = 0;
-  virtual void UnmapChildren();
+  virtual void Replace(ViewWin *child1, ViewWin *child2);
+  virtual void SwapChildren(ViewWin *child1, ViewWin *child2);
 
   virtual void HandleResize(WindowRep *w, int xlow, int ylow,
 			    unsigned width, unsigned height);
+  virtual void Iconify(Boolean iconified);
+
+  virtual void SetPreferredLayout(int v, int h) {
+    verRequested = v; horRequested = h;
+  }
+  virtual void GetPreferredLayout(int &v, int &h) {
+    v = verRequested; h = horRequested;
+  }
+
+protected:
+  virtual void SubClassMapped() {}
+  virtual void SubClassUnmapped() {}
+  
+  virtual void MapChildren(ViewWin *single = 0, Boolean resize = false,
+			   int extraWeight = 0, int *x = 0, int *y = 0,
+			   unsigned int *w = 0, unsigned int *h = 0) = 0;
+  virtual void UnmapChildren();
+
+  int verRequested;                     // requested height of view layout
+  int horRequested;                     // requested width of view layout
 };
 
 #endif
