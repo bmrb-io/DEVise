@@ -22,8 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2002/06/17 19:40:15  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.56  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.55.2.3  2002/06/19 18:01:19  sjlong
+// Fixed Bug 742: (bug: mouse location would flicker even when
+// no numbers were being displayed.)
 //
 // Revision 1.55.2.2  2002/06/04 14:19:08  sjlong
 // Fixed bug 785 (The displayed mouse position is sometimes missing 0s after the decimal point)
@@ -182,15 +189,19 @@ public class DEViseViewInfo extends Panel
                 jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle + "     \"" + name + "\"");
             }
         }
-
-        if (x == null) {
-            mouseX.setText("");
+        if ((x == null) || (x == "")) {
+	    // This 'if' is added to avoid flickering when no values to display
+	    if(!mouseX.getText().equals("")) {
+		mouseX.setText("");
+	    }
         } else {
             mouseX.setText(x);
         }
 
-        if (y == null) {
-            mouseY.setText("");
+        if ((y == null) || (y == "")) {
+	    if(!mouseY.getText().equals("")) {
+		mouseY.setText("");
+	    }
         } else {
             mouseY.setText(y);
         }

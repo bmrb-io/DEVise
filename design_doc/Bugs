@@ -2791,9 +2791,10 @@ Num Date        Status  Description
 			command playback. (xuk/rkw)
 			(Fixed by xuk, 10/05/01.)
 
-699 10/05/01	OPEN	JavaScreen: if you specify a non-existant log file
+699 10/05/01	FIXED	JavaScreen: if you specify a non-existant log file
 			with the -clientlog argument, the JS totally locks
 			up. (rkw)
+			(Fixed by sjl, 6/19/02.)
 
 700 10/05/01	FIXED	JavaScreen: if you specify -autoplayback or
 			-playbackoriginal without specifying a log file,
@@ -2823,9 +2824,10 @@ Num Date        Status  Description
 			command. (rkw)
 			(Fixed by xuk, 10/05/01.)
 
-706 10/05/01	OPEN	JavaScreen: if you quit while the JS is talking to
+706 10/05/01	FIXED?	JavaScreen: if you quit while the JS is talking to
 			the server, the JS process doesn't seem to actually
 			exit. (rkw)
+			(This seems to be fixed now.  rkw 6/27/02.)
 
 707 10/08/01	OPEN	Collaboration (non-JavaScreen-based) no longer works.
 			(rkw)
@@ -2992,9 +2994,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 741 12/13/01	OPEN	Displaying a TData from the Edit dialog does not
 			work. (gk/rkw)
 
-742 12/18/01	OPEN	JavaScreen: change of mouse location causes
+742 12/18/01	FIXED	JavaScreen: change of mouse location causes
 			irritating flickering of the mouse location display
 			area even if display is disabled. (rkw)
+			(Fixed by sjl, 6/19/02.)
 
 743 12/28/01	OPEN	Visual filter does not select records for line and
 			line shade (all records are passed to drawing
@@ -3056,9 +3059,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			right in the GUI -- the schema parser should complain
 			about them. (rkw)
 
-757 3/11/02	OPEN	'Home' (5 key) doesn't seem to be working very well in
+757 3/11/02	FIXED	'Home' (5 key) doesn't seem to be working very well in
 			the Y direction on the antares session. (See
 			session.js/test/antares_bad_y_home.ds.) (rkw)
+			(Re-tested by rkw, 6/11/02.)
 
 758 3/11/02	FIXED	JavaScreen: moving a 3D object produces the error
 			message "Cannot find view". (rkw)  (I thought I
@@ -3269,6 +3273,58 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			red from the first push. <sjl>
 			(Fixed by sjl, 6/14/2002)
 
+795 6/17/02	FIXED	JavaScreen: A group is formed by a leader.  Another JS tries to also start
+			a group with the same name as the existing group.  It will get a message
+			saying the name is already used.  If it then hits "OK" then "Cancel" on the
+			"Setting Collaboration Name & Password" box, the JS will believe that
+			it is a leader, even though it isn't. <sjl>
+			(Fixed by sjl, 6/17/2002)
+
+796 6/17/02	OPEN	JavaScreen: when becoming a collaboration leader,
+			I got the "JavaScreen is busy working Please try again
+			later" message (I think maybe the collaboration command
+			overlapped with a heartbeat).  Anyhow, the JS GUI
+			showed that it was a collaboration leader, but it
+			did not show up as a leader when I tried to become a
+			follower with a different JS. (rkw)
+
+797 6/17/02	OPEN	JavaScreen: figure out how to make things work if
+			the JS window is too narrow to show all of the GUI
+			elements as they are currently laid out. (rkw)
+
+798 6/26/02	OPEN	JavaScreen: JS reports mouse location even when mouse
+			is outside the data area of a view. (rkw)
+
+799 6/28/02	OPEN	JavaScreen: zoom in too much and axis labels get
+			goofed up (load test/bad_js_axes.ds, zoom in 2-3
+			times). (rkw)  (Note: this bug seems to show up
+			differently in Netscape than when you just runn the
+			JS as a stand-alone program.)
+
+800 6/28/02	OPEN	Zoom in too far and symbol disappears!!  (See
+			test/symbol_disappears.ds, test/symbol_disappears2.ds.)
+			(rkw)
+
+801 7/3/02	OPEN	JavaScreen: if you try to view a directory that has
+			too many session files (e.g., the BMRB dynamic
+			sessions directory), you run into problems: it takes
+			a really long time to get the session file list, and
+			if you click Cancel on the dialog while getting the
+			list, you get hung. (rkw)
+
+802 7/3/02	OPEN	JavaScreen: do a collaboration on the 4096 3D session,
+			show all residues in the 3D view, do various
+			manipulations -> things eventually lock up (at least
+			on yola). (rkw)
+
+803 7/3/02	OPEN	JavaScreen: in log playback GUI, "Set" should be
+			"Play" or something like that. (rkw)
+
+804 7/3/02	OPEN	JavaScreen: error message for bad log file doesn't
+			work on yola. (rkw)
+
+805 7/3/02	OPEN	JavaScreen: 4096_full.ds (with balls) caused lockup				on yola. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
@@ -3276,7 +3332,3 @@ NB = not (really) a bug.
 CD = can't duplicate (reproduce).
 DUP = duplicate of another bug
 NLR = no longer relevant
-
-
-
-

@@ -19,6 +19,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  2002/06/17 19:41:46  wenger
+#  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+#
+#  Revision 1.10.2.2  2002/06/27 18:29:51  wenger
+#  Fixed this so it doesn't clobber stuff already in the bin directory
+#  (e.g., Tasvir and EmbeddedTk).
+#
 #  Revision 1.10.2.1  2002/06/05 14:14:14  wenger
 #  Changed DEVise release scripts to fix RedHat 7.1/7.2 compatibility
 #  problem.
@@ -183,7 +190,9 @@ foreach arch ($arches)
     if (! -d $mainarch) then
       mkdir $mainarch
     else
-      \rm $mainarch/*
+      if ($archdir == dyn_lib_arch) then
+        \rm $mainarch/*
+      endif
     endif
 
     foreach dir ($otherarches)

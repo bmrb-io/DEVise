@@ -75,5 +75,6 @@ $(SELECT_HTML_FILE): bmrb_select.tmpl
 	-rm $(SELECT_HTML_FILE)
 	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select.tmpl > $(SELECT_HTML_FILE)
 
-collab_info:
+collab_info: html/collab.html
+html/collab.html:
 	cd html; ln -s ../../Java/JavaScreen/collab.html .

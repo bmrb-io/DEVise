@@ -140,6 +140,14 @@ endif
 cp -p js.cgi $cgidir
 chmod 755 $cgidir/js.cgi
 
+set logdir = $cgidir/devise
+if (! -d $logdir) then
+  mkdir $logdir
+  chmod 755 $logdir
+endif
+cp js_log $logdir
+chmod 755 $logdir/js_log
+
 #-----------------------------------------------------------
 # Install the jss, devised, and Tasvir.
 
@@ -309,8 +317,6 @@ end
 
 cp -p cron_entry.* $popdir
 chmod 644 $popdir/cron_entry.*
-
-#TEMP -- js_log?
 
 echo ""
 echo "Please be sure that the jspop and all associated processes are"

@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.1  2002/07/19 16:05:21  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.5  2002/01/24 22:58:53  xuk
+// *** empty log message ***
+//
 // Revision 1.4  2001/10/25 21:35:42  wenger
 // Added heartbeat count to heartbeat command (for debugging); other minor
 // cleanup and debug code additions.
@@ -70,6 +79,7 @@ public class DEViseThreadChecker implements Runnable
 	_threadList = new Vector();
 
         _thread = new Thread(this);
+	_thread.setName("Thread checker");
 	_thread.start();
     }
 

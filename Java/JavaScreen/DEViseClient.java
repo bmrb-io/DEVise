@@ -24,8 +24,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.66  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.65.2.13  2002/07/19 16:05:20  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.65.2.12  2002/07/17 17:55:15  wenger
+// Leader heartbeat during collaboration follower initialization no longer
+// causes the leader to lock up.
+//
+// Revision 1.65.2.11  2002/07/17 16:47:19  wenger
+// Responses to collaboration leader heartbeats no longer get sent to the
+// collaboration followers.
 //
 // Revision 1.65.2.10  2002/06/17 17:30:36  wenger
 // Added a bunch more error reporting and put timestamps on check_pop logs
@@ -519,7 +536,18 @@ public class DEViseClient
 	    // Note: this must be dealt with here so we don't generate
 	    // unnecessary server switches.
 	    try {
-	        sendCmd(DEViseCommands.DONE);
+		if (false) {
+		    // For testing only!!!
+		    try {
+		        Thread.sleep(3 * 1000);
+		    } catch (InterruptedException ex) {
+		        System.out.println("Sleep interrupted: " +
+			  ex.getMessage());
+		    }
+		}
+		// Note: special case here -- this should not be sent to
+		// followers if we're in collaboration mode.
+	        sendCmd(DEViseCommands.DONE, false);
 	    } catch (YException ex) {
 	        System.err.println("YException in " +
 		  "DEViseClient.addNewCmd(): " + ex.getMessage());
@@ -933,64 +961,23 @@ public class DEViseClient
     public synchronized void sendCmd(String[] cmds) throws YException
     {
 	for (int i = 0; i < cmds.length; i++) {
-	    sendCmd(cmds[i]);
+	    sendCmd(cmds[i], true);
 	}
     }
-
-
-    // TEMP: send a single command in String[] formats
-    /*
-    public synchronized void sendCmd(String[] cmds) throws YException
-    {
-        if (status != CLOSE) {
-	    if (cmds != null && cmds.length != 0) {
-
-		if (!collabClients.isEmpty()) { // also send to collab JS
-		    if (collabInit) {
-			//
-			// Send command only to the most-recently-connected
-			// collaboration client.
-			//
-			DEViseClient client =
-			  (DEViseClient)collabClients.lastElement();
-
-			pop.pn("Sending command to collabration client: " + cmds);
-			client.sendCmd(cmds);
-		    } else {
-			//
-			// Send commands to all collaboration clients.
-			//
-			for (int i = 0; i < collabClients.size(); i++) {
-			    DEViseClient client =
-			      (DEViseClient)collabClients.elementAt(i);		
-
-			    pop.pn("Sending command to collabration client" + " " + i);
-			    client.sendCmd(cmds);
-			}
-		    }
-                }
-
-		if (!collabInit) {
-		    //
-		    // Send command to "normal" client.
-		    //
-		    pop.pn("Sending command to client(" + ID + " " + hostname +
-		       ") :  \"" + cmds + "\"");
-		    clientSock.sendCommand(cmds);
-		}
-	    }
-        } else {
-            throw new YException("Invalid client");
-        }
-    }
-    */
 
     // Send a single command to the client.
     public synchronized void sendCmd(String cmd) throws YException
     {
+        sendCmd(cmd, true);
+    }
+
+    // Send a single command to the client.
+    public synchronized void sendCmd(String cmd, boolean sendToFollowers)
+      throws YException
+    {
 	if (DEBUG >= 1) {
 	    System.out.println("DEViseClient(" + ID + ").sendCmd(" +
-	      cmd + ")");
+	      cmd + ", " + sendToFollowers + ")");
 	}
 
         if (status != CLOSE) {
@@ -998,7 +985,7 @@ public class DEViseClient
 
 		// Here we send commands to followers firstly (if any)
 		// since we may change the JAVAC_CollabState command.
-		if (!collabClients.isEmpty()) { // also send to collab JS
+		if (sendToFollowers && !collabClients.isEmpty()) { // also send to collab JS
 		    if (collabInit) {
 			// if command = DEViseCommands.ERROR here,
 			// means leader has no session opened.
@@ -1021,7 +1008,11 @@ public class DEViseClient
 		    }
                 }
 
-		if (!collabInit) {
+		// Note: the !sendToFollowers check here is so that if
+		// the leader sends a heartbeat during a collab follower
+		// initialization, the reply to the heartbeat still gets
+		// sent back to the leader.
+		if (!collabInit || !sendToFollowers) {
 		    //
 		    // Send command to "normal" client.
 		    //

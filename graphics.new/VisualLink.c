@@ -30,8 +30,15 @@
   $Id$
 
   $Log$
+  Revision 1.25  2002/06/17 19:41:08  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.24  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.23.4.3  2002/06/27 18:15:08  wenger
+  Fixed problem with the setDoHomeOnVisLink command, more link home
+  diagnostics.
 
   Revision 1.23.4.2  2002/06/11 17:27:39  wenger
   Added an option for a view to not "contribute" to home on its visual
@@ -354,10 +361,17 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
   int index = _viewList->InitIterator();
   while (_viewList->More(index)) {
     ViewGraph *tmpView = (ViewGraph *)_viewList->Next(index);
+#if (DEBUG >= 5)
+    printf("  view of link is = <%s>\n", tmpView->GetName());
+#endif
 
     // Note: we're excluding view here just for efficiency.  RKW 2002-04-25.
     if ((tmpView != view) && (tmpView->GetNumDimensions() == 2) &&
         tmpView->GetDoHomeOnVisLink()) {
+#if (DEBUG >= 4)
+      printf("  Getting home on view <%s>\n", tmpView->GetName());
+#endif
+
       VisualFilter tmpFilter;
       tmpView->GetHome2D(explicitRequest, tmpFilter);
       if (_linkAttrs & VISUAL_X) {

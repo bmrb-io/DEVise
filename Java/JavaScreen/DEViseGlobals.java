@@ -20,8 +20,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.67  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.66.2.8  2002/07/17 15:08:24  wenger
+// Incremented JS version to 5.1.
 //
 // Revision 1.66.2.7  2002/05/20 21:21:33  wenger
 // Fixed bug 779 (client switching problem with multiple DEViseds).
@@ -328,7 +334,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.0");
+    public static final String VERSION = new String("5.1");
 
     public static final String PROTOCOL_VERSION = new String("12.0");
 

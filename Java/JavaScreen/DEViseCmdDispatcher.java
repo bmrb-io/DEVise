@@ -23,8 +23,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.122  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.121  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.120.2.12  2002/07/19 16:05:20  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.120.2.11  2002/06/26 17:29:32  wenger
+// Improved various error messages and client debug log messages; very
+// minor bug fixes; js_log script is now part of installation.
 //
 // Revision 1.120.2.10  2002/06/17 15:50:35  sjlong
 // Fixed Bug 795 (Bug: By choosing to become the leader of a group that already
@@ -604,7 +617,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     public Thread dispatcherThread = null;
 
-    private String[] commands = null;
+    private String[] _commands = null;
 
     public DEViseCommSocket commSocket = null;
 
@@ -614,9 +627,10 @@ public class DEViseCmdDispatcher implements Runnable
 
     public String errMsg = null;
 
-    // status = 0, dispatcher is not running
-    // status = 1, dispatcher is running
-    private int status = 0;
+    public static int STATUS_IDLE = 0;
+    public static int STATUS_RUNNING_HB = 1; // running a heartbeat command
+    public static int STATUS_RUNNING_NON_HB = 2; // running a non-heartbeat command
+    private int _status = STATUS_IDLE;
 
     // isOnline = true, successfully established connection to server, i.e.
     //                  get a valid connection ID
@@ -634,25 +648,44 @@ public class DEViseCmdDispatcher implements Runnable
     // want to sort that out right now.  RKW 2000-10-18.
     public boolean _connectedAlready = false;
 
+    private boolean _cmdWaiting = false;
+
+    //---------------------------------------------------------------------
     public DEViseCmdDispatcher(jsdevisec what)
     {
         jsc = what;
     }
 
+    //---------------------------------------------------------------------
     // This must *not* be a synchronized method, to avoid deadlock between
     // the GUI and command-processing threads (via
     // DEViseCanvas.checkMousePos().
+    // Return value: STATUS_* above.
     public int getStatus()
     {
-        return status;
+        return _status;
     }
 
-    public synchronized void setStatus(int arg)
+    //---------------------------------------------------------------------
+    public void clearStatus()
     {
-        status = arg;
-        jsc.jscreen.reEvaluateMousePosition();
+        setStatus(STATUS_IDLE);
     }
 
+    //---------------------------------------------------------------------
+    private synchronized void setStatus(int arg)
+    {
+        _status = arg;
+	if (_commands == null || _commands.length < 1 ||
+	  !_commands[0].startsWith(DEViseCommands.HEART_BEAT)) {
+	    // We must NOT do this for a heartbeat command; otherwise, if you are in the
+	    // middle of dragging a cursor, and there's a heartbeat, things get totally
+	    // goofed up.
+            jsc.jscreen.reEvaluateMousePosition();
+	}
+    }
+
+    //---------------------------------------------------------------------
     // Changed this to not check whether we have a socket, since we may
     // now have a "virtual" connection even if a socket isn't open.
     // RKW 2000-10-18.
@@ -662,41 +695,86 @@ public class DEViseCmdDispatcher implements Runnable
         return isOnline;
     }
 
+    //---------------------------------------------------------------------
     private synchronized void setOnlineStatus(boolean flag)
     {
         isOnline = flag;
     }
 
+    //---------------------------------------------------------------------
     public synchronized boolean getAbortStatus()
     {
         return isAbort;
     }
 
+    //---------------------------------------------------------------------
     public synchronized void setAbortStatus(boolean flag)
     {
         isAbort = flag;
     }
 
-    // it is assumed that status = 0 while method start() is called
-    // it is also assumed that while status = 0, dispatcher thread is not running
-
+    //---------------------------------------------------------------------
     // Initiate a command from the JavaScreen to the jspop or devised.
     // Note that cmd may actually contain more than one command (separated
     // by newlines).
+
+    // Note: this method must be syncronized so we don't have a race
+    // condition between two commands getting in here at the same time,
+    // and both trying to modify the status flag, etc.
+
+    // Note: this method MUST call notify() if it exits in any way other 
+    // than the normal exit from the end (so that we don't get stuck in
+    // the wait() in another thread.
+
+    // This command now allows an incoming command during a pending
+    // heartbeat to be postponed, rather than rejected:
+    // - If no command is pending, any new command starts immediately;
+    // - If a heartbeat is pending, any new command is postponed until
+    //   the heartbeat finishes;
+    // - If a non-heartbeat command is pending, any new command is
+    //   rejected.
+
     public synchronized void start(String cmd)
     {
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.start(" + cmd + ")");
+            System.out.println("  In thread: " + Thread.currentThread());
         }
+	jsc.jsValues.debug.log("Sending command (" + cmd + ")");
 
-        if (getStatus() != 0) {
+        if (getStatus() == STATUS_RUNNING_NON_HB || _cmdWaiting) {
             if (!cmd.startsWith(DEViseCommands.HEART_BEAT) && 
-		!jsc.jsValues.session.autoPlayback)
+		!jsc.jsValues.session.autoPlayback) {
 		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
+	    }
+            if (_debug) {
+	        System.out.println("Command rejected because one is already pending or waiting");
+	    }
             return;
-        }
+        } else if (getStatus() == STATUS_RUNNING_HB) {
+	    if (_debug) {
+	        System.out.println("Starting another command while a heartbeat is pending");
+	    }
 
-        setStatus(1);
+	    // Note: we wait here because otherwise a second command could
+	    // sneak in between the end of start() and the beginning of
+	    // the corresponding run() and overwrite the _commands array.
+	    try { 
+		_cmdWaiting = true;
+	        wait();
+		_cmdWaiting = false;
+            } catch (InterruptedException ex) {
+	        System.out.println("Interrupted exception: " +
+		  ex.getMessage());
+	    }
+	}
+
+        if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
+            setStatus(STATUS_RUNNING_HB);
+	} else {
+            setStatus(STATUS_RUNNING_NON_HB);
+	}
+
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
@@ -720,7 +798,8 @@ public class DEViseCmdDispatcher implements Runnable
 			    jsc.animPanel.stop();
 			    jsc.stopButton.setBackground(
 			      jsc.jsValues.uiglobals.bg);
-			    setStatus(0);
+			    setStatus(STATUS_IDLE);
+			    notify();
 			    return;
 			}
 		    } else {
@@ -761,12 +840,13 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
         }
 
-	commands = DEViseGlobals.parseStr(cmd);
-	if (commands == null || commands.length == 0) {
+	_commands = DEViseGlobals.parseStr(cmd);
+	if (_commands == null || _commands.length == 0) {
 	    jsc.showMsg("Invalid command: \"" + cmd + "\"");
 	    jsc.animPanel.stop();
 	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-	    setStatus(0);
+	    setStatus(STATUS_IDLE);
+	    notify();
 	    return;
 	}
 
@@ -774,14 +854,21 @@ public class DEViseCmdDispatcher implements Runnable
 	// Note: command(s) will actually be sent by the run() method
 	// of this class.
         dispatcherThread = new Thread(this);
+        dispatcherThread.setName("Command thread for " + cmd);
         dispatcherThread.start();
+
+        if (_debug) {
+            System.out.println("Done with DEViseCmdDispatcher.start()");
+        }
     }
 
+    //---------------------------------------------------------------------
     public void stop()
     {
         stop(false);
     }
 
+    //---------------------------------------------------------------------
     // Note: this method doesn't really seem to do much, because it never
     // seems to get called with isDisconnect true.  RKW 2000-12-29.
     public void stop(boolean isDisconnect)
@@ -792,7 +879,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         if (isDisconnect) {
-            if (getStatus() != 0) {
+            if (getStatus() == STATUS_RUNNING_NON_HB) {
                 String result = jsc.confirmMsg("Abort request already send to the server!\nAre you so impatient that you want to close the connection right away?");
 
                 if (result.equals(YMsgBox.YIDNO)) {
@@ -809,7 +896,7 @@ public class DEViseCmdDispatcher implements Runnable
                     jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
                     jsc.jscreen.updateScreen(false);
 
-                    setStatus(0);
+                    setStatus(STATUS_IDLE);
 
                     return;
                 }
@@ -818,13 +905,14 @@ public class DEViseCmdDispatcher implements Runnable
             }
         }
 
-        if (getStatus() != 0) {
-           setAbortStatus(true);
-         }
+        if (getStatus() != STATUS_IDLE) {
+            setAbortStatus(true);
+        }
 
 	return;
     }
 
+    //---------------------------------------------------------------------
     // Note: this must *not* be synchronized (fixes bug 642).  RKW 2001-02-19.
     public void destroy()
     {
@@ -879,7 +967,7 @@ public class DEViseCmdDispatcher implements Runnable
 	//
 	// Kill the dispatcher thread and disconnect.
 	//
-	if (getStatus() != 0 && dispatcherThread != null) {
+	if (getStatus() != STATUS_IDLE && dispatcherThread != null) {
 	    dispatcherThread.stop();
 	    dispatcherThread = null;
 	}
@@ -895,12 +983,13 @@ public class DEViseCmdDispatcher implements Runnable
 	//
 	// Set the status appropriately.
 	//
-        if (getStatus() != 0) {
+        if (getStatus() != STATUS_IDLE) {
             setAbortStatus(true);
         }
-	setStatus(0);
+	setStatus(STATUS_IDLE);
     }
 
+    //---------------------------------------------------------------------
     private synchronized boolean connect()
     {
         try {
@@ -918,6 +1007,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     // for disconnected client
     private synchronized boolean reconnect()
     {
@@ -960,6 +1050,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     public synchronized void disconnect()
     {
         if (commSocket != null) {
@@ -974,40 +1065,46 @@ public class DEViseCmdDispatcher implements Runnable
         jsc.jsValues.connection.connectionID = DEViseGlobals.DEFAULTID;
     }
 
+    //---------------------------------------------------------------------
+    // This method is called to do the actual sending of a command, and
+    // the receving and processing of replies to that command.
+
+    // Note: this method MUST call notify() when it exits (so that we don't
+    // get stuck in the wait() in another thread.
     public synchronized void run()
     {
         if (_debug) {
-            System.out.println("DEViseCmdDispatcher.run(" + commands[0] + ")");
+            System.out.println("DEViseCmdDispatcher.run(" + _commands[0] + ")");
         }
 		
 	if (jsc.specialID == -1) { // for formal JS
 	    try {
-		for (int i = 0; i < commands.length; i++) {
+		for (int i = 0; i < _commands.length; i++) {
 		    if (getAbortStatus()) {
 			setAbortStatus(false);
 			break;
 		    }
 		    
-		    if (commands[i].length() == 0) {
+		    if (_commands[i].length() == 0) {
 			continue;
-		    } else if (!commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
-			jsc.pn("Invalid command: " + commands[i]);
+		    } else if (!_commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
+			jsc.pn("Invalid command: " + _commands[i]);
 			continue;
 		    }
 
-		    if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
+		    if (_commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
 			jsc.jscreen.updateScreen(false);
 			try {
-			    processCmd(commands[i]);
+			    processCmd(_commands[i]);
 			} catch (YException e1) {
 			    jsc.showMsg(e1.getMsg());
 			    disconnect();
 			}
-		    } else if (commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
+		    } else if (_commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
 			jsc.jscreen.updateScreen(false);
-			processCmd(commands[i]);
+			processCmd(_commands[i]);
 		    } else {
-			processCmd(commands[i]);
+			processCmd(_commands[i]);
 		    }
 		}
 
@@ -1052,28 +1149,32 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
 	    
 	    setAbortStatus(false);
-	    setStatus(0);
+	    setStatus(STATUS_IDLE);
 	}
 	// Collabration JavaScreen, waiting for incoming commands
 	else {
 	    try {
-		for (int i = 0; i < commands.length; i++) {
-		    processCmd(commands[i]); 
+		for (int i = 0; i < _commands.length; i++) {
+		    processCmd(_commands[i]); 
 		}
 		while (jsc.specialID != -1) {
 		    processCmd(null);
 		}
+	    } catch (YException e) {
 	    }
-	    catch (YException e) {
-	    }
-      }
+        }
 
-      if (_debug) {
-	  System.out.println("  Done with DEViseCmdDispatcher.run(" +
-			     commands[0] + ")");
-      }
+	notify();
+
+        if (_debug) {
+	    System.out.println("  Done with DEViseCmdDispatcher.run(" +
+			     _commands[0] + ")");
+        }
+	jsc.jsValues.debug.log("  Done sending " + _commands[0] +
+	  " and getting replies");
     }
 
+    //---------------------------------------------------------------------
     // Send a command to the server, wait for the replies, and process
     // them.
     private void processCmd(String command) throws YException
@@ -1122,6 +1223,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    //Runtime.getRuntime().totalMemory());
     }
 
+    //---------------------------------------------------------------------
     // command is the command we sent; response is the command we got
     // in response.
     private synchronized void processReceivedCommand(String command, String response)
@@ -1174,7 +1276,7 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.animPanel.stop();
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 		jsc.jscreen.updateScreen(false);
-		jsc.dispatcher.setStatus(0);
+		setStatus(STATUS_IDLE);
 		
 		jsc.restorePreCollab();
 
@@ -1407,6 +1509,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     private void createView(String command, String[] args) throws YException
     {
         if (args.length < 25) {
@@ -1566,6 +1669,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     }
 
+    //---------------------------------------------------------------------
     private void updateViewImage(String command, String[] args)
       throws YException
     {
@@ -1619,6 +1723,7 @@ public class DEViseCmdDispatcher implements Runnable
         jsc.jscreen.updateViewImage(viewname, image);
     }
 
+    //---------------------------------------------------------------------
     private void updateGData(String command, String[] args) throws YException
     {
         if (args.length != 7) {
@@ -1736,6 +1841,7 @@ public class DEViseCmdDispatcher implements Runnable
 //              Runtime.getRuntime().totalMemory());
     }
 
+    //---------------------------------------------------------------------
     private void drawCursor(String command, String[] args) throws YException
     {
         if (args.length != 14) {
@@ -1779,6 +1885,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     private void viewDataArea(String command, String[] args) throws YException
     {
         if (args.length != 12) {
@@ -1818,6 +1925,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     private void user(String[] args) throws YException
     {
         if (args.length != 2) {
@@ -1841,6 +1949,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     private byte[] sockReceiveData(int size) throws YException
     {
 	if (_debug) {
@@ -1881,12 +1990,14 @@ public class DEViseCmdDispatcher implements Runnable
         return imgData;
     }
 
+    //---------------------------------------------------------------------
     // Send a command and receive any responses.
     private String[] sendRcvCmd(String command) throws YException
     {
         return sendRcvCmd(command, true);
     }
 
+    //---------------------------------------------------------------------
     // Send a command and receive any responses.
     private String[] sendRcvCmd(String command, boolean expectResponse)
       throws YException
@@ -2060,6 +2171,7 @@ public class DEViseCmdDispatcher implements Runnable
         return rspstr;
     }
 
+    //---------------------------------------------------------------------
     private void sendCmd(String command) throws YException
     {
         if (_debug) {
@@ -2076,6 +2188,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    //---------------------------------------------------------------------
     // Send a command in socket mode.
     // Note: I don't really like having this be a public method, because
     // if we call it from another class we're bypassing part of the "normal"
@@ -2142,6 +2255,7 @@ public class DEViseCmdDispatcher implements Runnable
 	}
     }
 
+    //---------------------------------------------------------------------
     // Test whether a CGI connection to the JSPoP works.  Returns true if
     // it does.
     boolean testCgi() {

@@ -16,8 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.154  2002/06/17 19:41:08  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.153  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.152.4.5  2002/06/27 18:15:08  wenger
+  Fixed problem with the setDoHomeOnVisLink command, more link home
+  diagnostics.
 
   Revision 1.152.4.4  2002/06/11 17:27:38  wenger
   Added an option for a view to not "contribute" to home on its visual
@@ -1376,6 +1383,12 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
     }
 
     GetVisualFilter(filter);
+
+
+	// Note: data ranges are invalid if either the query for this view
+	// didn't run to completion, or the X attribute of the query is sorted
+	// (because in either case the query didn't look at all of the data).
+	// RKW 2002-06-27.
 
     switch (homeInfo->mode) {
     case HomeAuto: {

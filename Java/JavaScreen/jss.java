@@ -19,6 +19,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.20.2.1  2002/07/19 16:05:22  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.20  2002/01/24 23:03:36  xuk
+// *** empty log message ***
+//
 // Revision 1.19  2001/11/27 18:14:31  xuk
 // Return error message to JS, when there is no devised running on JSPoP side.
 //
@@ -155,6 +164,7 @@ public class jss implements Runnable
 
         jss server = new jss(args);
         Thread thread = new Thread(server);
+        thread.setName("JSS server");
         thread.start();
     }
 

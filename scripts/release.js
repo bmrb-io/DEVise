@@ -19,6 +19,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  2002/06/17 19:41:46  wenger
+#  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+#
+#  Revision 1.7.4.2  2002/06/26 17:29:42  wenger
+#  Improved various error messages and client debug log messages; very
+#  minor bug fixes; js_log script is now part of installation.
+#
 #  Revision 1.7.4.1  2002/05/08 16:09:26  wenger
 #  Added collaboration follower page; changed html targets from "new" to
 #  "_blank" so we get the desired behavior; added link from collab help
@@ -170,7 +177,7 @@ set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     js.cgi check_connect check_jsall check_jspop jspop \
     js js_cgi restart_jspop jspop.kill kill_jsall ports+files \
     get_timestamp run_top run_check jspop_savepid users.cfg install_js \
-    Tasvir)
+    Tasvir js_log)
 foreach file ($files)
   cp -p $file $dest
   chmod 755 $dest/$file

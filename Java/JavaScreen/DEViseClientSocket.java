@@ -28,6 +28,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.2.1  2002/06/26 17:29:32  wenger
+// Improved various error messages and client debug log messages; very
+// minor bug fixes; js_log script is now part of installation.
+//
+// Revision 1.4  2002/02/06 18:59:37  wenger
+// Got the JavaScreen to work on RedHat 7.2 (by running with Java 1.2,
+// but still compiling with Java 1.1); added debug code.
+//
 // Revision 1.3  2001/11/13 17:57:01  xuk
 // Could send command in String[] format, no need to compose a long command string before sending.
 //
@@ -286,13 +294,13 @@ public class DEViseClientSocket implements Runnable
 		}
 
 	    } catch (YException ex) {
-	        System.err.println("Error receiving client command: " +
-		  ex.getMessage());
+	        System.err.println("Error receiving client " + _id +
+		  " command: " + ex.getMessage());
 		break;
 	    } catch(InterruptedIOException ex) {
 		if (!partCmd.equals("")) {
 		    System.err.println(
-		      "Interruption receiving client command: " +
+		      "Interruption receiving client " + _id + " command: " +
 		      ex.getMessage());
 		}
 	    } catch (InterruptedException ex) {

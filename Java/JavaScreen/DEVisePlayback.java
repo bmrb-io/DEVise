@@ -17,6 +17,15 @@
 
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.14  2002/05/01 21:28:59  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.13.2.3  2002/07/19 16:05:21  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
 // Revision 1.13.2.2  2002/04/19 20:47:23  xuk
 // Process JAVAC_CollabExit and JAVAC_Collaborate commands before sending out.
 // Set proper state for JS.
@@ -93,6 +102,7 @@ public class DEVisePlayback implements Runnable
 	_jsc = jsc;
 
 	_thread = new Thread(this);
+	_thread.setName("Playback");
 	_thread.start();
     }
 
@@ -182,7 +192,7 @@ public class DEVisePlayback implements Runnable
 		    _jsc.animPanel.stop();
 		    _jsc.stopButton.setBackground(_jsc.jsValues.uiglobals.bg);
 		    _jsc.jscreen.updateScreen(false);
-		    _jsc.dispatcher.setStatus(0);
+		    _jsc.dispatcher.clearStatus();
 		    
 		    if (_jsc.sessionSaved) {
 			_jsc.isSessionOpened = true;
@@ -236,7 +246,8 @@ public class DEVisePlayback implements Runnable
 		    // Check whether dispatcher is still running.
 		    // If so, sleep one more ms.
 		    //
-		    while (_dispatcher.getStatus() == 1) {
+		    while (_dispatcher.getStatus() ==
+		      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
 		        Thread.sleep(1);
 		    }		
 

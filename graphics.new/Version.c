@@ -20,8 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.66  2002/06/17 19:41:08  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.65  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.64.2.4  2002/06/26 18:25:37  wenger
+  This should be the "official" 1.7.8 version.
 
   Revision 1.64.2.3  2002/05/16 17:11:30  wenger
   Version is now 1.7.8x.
@@ -373,7 +379,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.8x";
+static const char *	version = "1.7.8";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2002";

@@ -22,3 +22,18 @@ Num Date        Status  Description
 			assigned sessions don't default to showing all
 			residues. (rkw)
 			(Fixed by rkw, 6/5/02.)
+
+007 6/19/00	CD	When you zoom into the chemical shift distribution
+			by amino acid table, then click onto another atom
+			(say you zoomed in the C table, then click > to the
+			N atom distribution), the vertical axis doesn't
+			update properly. (ks/rkw)
+			(Tested by rkw, 6/24/02.)
+
+OPEN = problem/bug exists and needs to be addressed.
+FIXED = bug fixed.
+WORK = workaround for bug in place
+NB = not (really) a bug.
+CD = can't duplicate (reproduce).
+DUP = duplicate of another bug
+NLR = no longer relevant

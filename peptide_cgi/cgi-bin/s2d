@@ -11,5 +11,5 @@ rm -f s2d.out
 rm -f error.log
 
 setenv CLASSPATH ./java_classes:./java_classes/starlibj.jar
-bin/java S2DMain $* data_dir session_dir connections >& s2d.out
-chmod 644 s2d.out
+bin/java S2DMain $* data_dir session_dir connections >& data_dir/s2d.out
+chmod 644 data_dir/s2d.out

@@ -149,7 +149,13 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 cp -p html/* $targetdir
-find $targetdir -name \* -type f -exec chmod a+r {} \;
+chmod a+r $targetdir/help*
+chmod a+r $targetdir/*.jpg
+chmod a+r $targetdir/*.gif
+chmod a+r $targetdir/*.txt
+chmod a+r $targetdir/label.dat
+chmod a+r $targetdir/*.base
+#find $targetdir -name \* -type f -exec chmod a+r {} \;
 
 
 # Create the link that we use to have the browser find the summary page.
@@ -168,7 +174,7 @@ set targetdir = $cgihome
 if (! -e $targetdir) then
   mkdir $targetdir
 endif
-chmod a+rwx $targetdir
+chmod a+rx $targetdir
 cp -p cgi-bin/make_view $targetdir
 chmod a+rx $targetdir/make_view
 cp -p cgi-bin/s2d $targetdir

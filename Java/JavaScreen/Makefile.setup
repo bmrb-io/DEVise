@@ -48,7 +48,8 @@ bin2p:
 dyn_lib:
 	scripts/make_dyn_lib
 
-install_info: Makefile.config
+.PHONY: install_info
+install_info:
 	-rm install_info
 	touch install_info
 	echo "set popdir = \"$(POP_DIR)\"" >> install_info

@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.1  2002/07/19 16:05:21  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.2  2002/03/12 19:59:21  wenger
+// Added RCS Id and Log.
+//
 
 // ========================================================================
 
@@ -37,6 +46,7 @@ public class DEViseJSTimer implements Runnable
         applet = a;
 
 	thread = new Thread(this);
+	thread.setName("Visibility timer");
     }
 
     public void start() 

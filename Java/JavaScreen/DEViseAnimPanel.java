@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.42.8.1  2002/07/19 16:05:17  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.42  2001/05/11 20:36:03  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.41  2001/01/08 20:31:50  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -198,6 +207,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
 
         if (animator == null) {
             animator = new Thread(this);
+            animator.setName("Animator panel");
             animator.start();
         }
     }

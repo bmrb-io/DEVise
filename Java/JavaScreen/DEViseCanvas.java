@@ -27,8 +27,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.93  2002/06/17 19:40:13  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.92  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.91.2.9  2002/07/19 16:05:19  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.91.2.8  2002/06/26 17:29:31  wenger
+// Improved various error messages and client debug log messages; very
+// minor bug fixes; js_log script is now part of installation.
 //
 // Revision 1.91.2.7  2002/05/17 17:13:09  wenger
 // Did some cleanup of the JavaScreen axis labeling code (including fixing
@@ -1029,7 +1042,8 @@ public class DEViseCanvas extends Container
 	//jsc.pn("DEViseCanvas.processMouseEvent()");
         if (id == MouseEvent.MOUSE_PRESSED || id == MouseEvent.MOUSE_RELEASED
 	  || id == MouseEvent.MOUSE_CLICKED) {
-            if (dispatcher.getStatus() != 0) {
+            if (dispatcher.getStatus() ==
+	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                 if (id == MouseEvent.MOUSE_PRESSED) {
                     jsc.showMsg("JavaScreen still talking to the Server!\nPlease try again later or press STOP button!");
                 }
@@ -1054,7 +1068,8 @@ public class DEViseCanvas extends Container
         jsc.jscreen.finalMousePosition.y = view.viewLoc.y + event.getY();
 
         if (id == MouseEvent.MOUSE_DRAGGED) {
-            if (dispatcher.getStatus() != 0) {
+            if (dispatcher.getStatus() ==
+	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                 return;
             }
         }
@@ -1065,7 +1080,8 @@ public class DEViseCanvas extends Container
     protected void processKeyEvent(KeyEvent event)
     {
         if (view.viewDimension != 3) {
-            if (dispatcher.getStatus() != 0) {
+            if (dispatcher.getStatus() ==
+	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                 //if (event.getID() == KeyEvent.KEY_PRESSED) {
                 //    jsc.showMsg("Java Screen still talking to the Server!\nPlease try again later or press STOP button!");
                 //}
@@ -1194,7 +1210,8 @@ public class DEViseCanvas extends Container
 		  " {" + crystal.shiftedY + "}";
 			
 
-		if (jsc.dispatcher.getStatus() == 0)
+		if (jsc.dispatcher.getStatus() ==
+		  DEViseCmdDispatcher.STATUS_IDLE)
 		    dispatcher.start(cmd);	
 	    }	
 	}
@@ -1784,7 +1801,8 @@ public class DEViseCanvas extends Container
 
         if (checkMousePos(p, view)) { // activeView will not be null
 	    Cursor tmpCursor = null;
-            if (checkDispatcher && jsc.dispatcher.getStatus() != 0) {
+            if (checkDispatcher && jsc.dispatcher.getStatus() ==
+	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                 // dispatcher still busy
                 tmpCursor = DEViseUIGlobals.waitCursor;
             } else if (isInViewDataArea && selectedCursor == null) {
@@ -1885,7 +1903,7 @@ public class DEViseCanvas extends Container
             }
 
             // show the data at current mouse position
-	    if (activeView != null) {
+	    if (activeView != null && jsc.viewInfo != null) {
                 jsc.viewInfo.updateInfo(activeView.viewName,
 		  activeView.getX(p.x), activeView.getY(p.y));
 	    }
@@ -1897,10 +1915,11 @@ public class DEViseCanvas extends Container
             activeView = null;
 
 	    Cursor tmpCursor = null;
-            if (!checkDispatcher || jsc.dispatcher.getStatus() == 0) {
-                tmpCursor = DEViseUIGlobals.defaultCursor;
-            } else {
+            if (!checkDispatcher || jsc.dispatcher.getStatus() ==
+	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                 tmpCursor = DEViseUIGlobals.waitCursor;
+            } else {
+                tmpCursor = DEViseUIGlobals.defaultCursor;
             }
 
             setCursor(tmpCursor);

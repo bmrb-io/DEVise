@@ -20,6 +20,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.1  2002/07/19 16:05:21  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.5  2001/11/25 03:41:46  xuk
+// Sent heartbeat in collaboration mode.
+// Using DEViseCommSocket.sendCmd() to send heartbeat in collaboration mode.
+//
 // Revision 1.4  2001/10/25 21:35:42  wenger
 // Added heartbeat count to heartbeat command (for debugging); other minor
 // cleanup and debug code additions.
@@ -61,6 +71,7 @@ public class DEViseHeartbeat implements Runnable
         _dispatcher = dispatcher;
 
 	_hbThread = new Thread(this);
+	_hbThread.setName("Heartbeat");
 	_hbThread.start();
     }
 
@@ -84,6 +95,8 @@ public class DEViseHeartbeat implements Runnable
 		_dispatcher.start(DEViseCommands.HEART_BEAT + " " +
 				  " " + _hbCount);
 	    } else {
+		//TEMP -- I don't like that we're bypassing the whole
+		// command dispatcher here.  RKW 2002-07-18.
 		try {
 		    _dispatcher.commSocket.sendCmd(new String[] 
 			{DEViseCommands.HEART_BEAT,

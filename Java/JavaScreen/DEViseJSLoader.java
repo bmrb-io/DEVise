@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.1  2002/07/19 16:05:21  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.5  2002/02/28 16:37:03  xuk
+// Keep old jsb applet instance when reloading a new HTML page.
+//
 // Revision 1.4  2001/05/11 20:36:08  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -181,6 +190,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
         if (appletThread == null) {
             appletThread = new Thread(this);
+            appletThread.setName("JS loader");
             appletThread.start();
         } else {
 	    realApplet.start();

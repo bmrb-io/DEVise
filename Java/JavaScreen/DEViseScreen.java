@@ -32,6 +32,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2002/05/01 21:28:59  wenger
+// Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.72.2.3  2002/07/19 16:05:21  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
 // Revision 1.72.2.2  2002/04/24 20:06:37  xuk
 // Fixed bug 777: avoid long waiting time for repainting in DEViseCanvas
 // Handle double-buffering in paint();
@@ -281,7 +290,8 @@ public class DEViseScreen extends Panel
                 {
                     Point p = event.getPoint();
 
-                    if (jsc.dispatcher.getStatus() != 0) {
+                    if (jsc.dispatcher.getStatus() ==
+		      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                         setCursor(DEViseUIGlobals.waitCursor);
                     } else {
                         setCursor(DEViseUIGlobals.defaultCursor);

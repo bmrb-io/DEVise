@@ -20,8 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.127  2002/06/17 19:41:06  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.126  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.125.4.5  2002/06/27 18:15:07  wenger
+  Fixed problem with the setDoHomeOnVisLink command, more link home
+  diagnostics.
 
   Revision 1.125.4.4  2002/06/11 17:27:38  wenger
   Added an option for a view to not "contribute" to home on its visual
@@ -7605,7 +7612,7 @@ IMPLEMENT_COMMAND_BEGIN(setDoHomeOnVisLink)
    	        ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
-	    Boolean doHome = (atoi(argv[1]) != 0);
+	    Boolean doHome = (atoi(argv[2]) != 0);
 		view->SetDoHomeOnVisLink(doHome);
 
         ReturnVal(API_ACK, "done");

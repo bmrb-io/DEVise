@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.12.2.2  2002/06/25 17:37:01  wenger
+// (Hopefully) fixed DEViseCheckPop timeout problems that sometimes led to
+// the JSPoP being restarted when it shouldn't have been.
+//
 // Revision 1.12.2.1  2002/06/17 17:30:36  wenger
 // Added a bunch more error reporting and put timestamps on check_pop logs
 // to try to diagnose JSPoP restarts.
@@ -255,7 +262,20 @@ public class DEViseCheckPop
             }
             _bytesWritten = sock.bytesWritten();
 
-	    String answer = sock.receiveCmd();
+	    String answer = "";
+	    while (true) {
+		try {
+	            answer += sock.receiveCmd();
+		    // If we get here, we've received the whole command.
+		    break;
+	        } catch(InterruptedIOException ex) {
+	            if (DEBUG >= 3) {
+		    System.out.println("InterruptedIOException receiving " +
+		      "command: " + ex.getMessage());
+		    }
+		}
+	    }
+
 	    if (DEBUG >= 3) {
 	        System.out.println("Received from jspop: <" + answer + ">");
 	    }
@@ -271,16 +291,6 @@ public class DEViseCheckPop
 	    }
             if (DEBUG_LOG >= 1) {
 	        _log.write("YException: " + ex.getMessage() + "\n");
-	    }
-	    result = false;
-	}
-        catch (InterruptedIOException ex) {
-            if (DEBUG >= 1) {
-	        System.err.println(ex.getMessage());
-	    }
-            if (DEBUG_LOG >= 1) {
-	        _log.write("InterruptedIOException: " + ex.getMessage() +
-		  "\n");
 	    }
 	    result = false;
 	}
@@ -370,7 +380,7 @@ public class DEViseCheckPop
     // the DEViseCheckPop processes run for a long time.)
     class TimeLimit implements Runnable
     {
-	private int MAX_TIME = 10 * 1000; // millisec
+	private int MAX_TIME = 50 * 1000; // millisec
 
 	private Thread _thread = null;
 
@@ -382,10 +392,15 @@ public class DEViseCheckPop
 
         public void run()
 	{
+//TEMPTEMP -- should I have this sleep twice before failing, in case
+// it gets swapped out and then the first thing that happens after getting
+// swapped back in is that this thread wakes up?
+
 	    try {
 	        Thread.sleep(MAX_TIME);
 	    } catch (InterruptedException ex) {
 	        _log.write("Sleep interrupted in DEViseCheckPop.run()");
+//TEMPTEMP -- hmm -- maybe I should sleep again here?
 	    }
 
 	    _log.write("DEViseCheckPop timed out\n");

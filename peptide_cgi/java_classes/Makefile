@@ -20,7 +20,7 @@
 
 include ../Makefile.config
 
-JAVAC = $(JAVA_BIN)/javac
+JAVAC = $(JAVA_BIN)/javac -target 1.1
 
 all:
 	$(JAVAC) -classpath ./starlibj.jar *.java

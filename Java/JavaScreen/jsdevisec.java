@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,8 +22,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.143  2002/06/17 19:40:18  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.142  2002/05/01 21:29:00  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.141.2.14  2002/07/19 16:05:22  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.141.2.13  2002/06/19 17:59:22  sjlong
+// Fixed Bug 699 - (fix: JS will give a warning if a non-existant
+// log file is attempted to be played back.)
+//
+// Revision 1.141.2.12  2002/06/18 14:03:42  wenger
+// Shorted collaboration labels because of space clash with mouse location
+// display.
 //
 // Revision 1.141.2.11  2002/06/14 14:37:35  sjlong
 // Fixed Bug 793 (Fix: It is no longer possible to have two "Current Active
@@ -850,7 +867,8 @@ public class jsdevisec extends Panel
 			    return;
 			}
 
-                        if (dispatcher.getStatus() != 0) {
+                        if (dispatcher.getStatus() !=
+			  DEViseCmdDispatcher.STATUS_IDLE) {
                             stopNumber++;
                             if (stopNumber > 1) {
                                 dispatcher.stop(true);
@@ -942,7 +960,8 @@ public class jsdevisec extends Panel
 			// Don't call showAllHelp() until we know that the dispatcher is not busy.
 			// This is to avoid lock-ups caused by calling showAllHelp() twice before
 			// getting a response
-			while(dispatcher.getStatus() !=0 ) {}
+			while(dispatcher.getStatus() !=
+			  DEViseCmdDispatcher.STATUS_IDLE) {}
 
 			jscreen.showAllHelp();
                     }
@@ -1301,7 +1320,8 @@ public class jsdevisec extends Panel
         boolean reallyQuit = true;
 
 	if (specialID == -1) { 
-	    if (dispatcher.getStatus() != 0) {
+	    if (dispatcher.getStatus() ==
+	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
 		String result = confirmMsg("JavaScreen still busy talking " +
 					   "to server!\nDo you wish to exit anyway?");
 		if (result.equals(YMsgBox.YIDNO)) {
@@ -1362,13 +1382,13 @@ public class jsdevisec extends Panel
     public void collabModeL()
     {
 	commMode.setForeground(Color.white);
-        commMode.setText("Collaboration (L)");
+        commMode.setText("Collab (L)");
     }
 
     public void collabModeF()
     {
 	commMode.setForeground(Color.white);
-        commMode.setText("Collaboration (F)");
+        commMode.setText("Collab (F)");
     }
 
     public void cgiMode()
@@ -1410,7 +1430,7 @@ public class jsdevisec extends Panel
     {
 	pn("Quit from collaboration mode.");
 
-	dispatcher.setStatus(0);
+	dispatcher.clearStatus();
 	if ( !dispatcher.dispatcherThread.isInterrupted() )
 	    dispatcher.dispatcherThread.interrupt();
 	animPanel.stop();
@@ -2684,10 +2704,17 @@ class SetLogFileDlg extends Dialog
                     public void actionPerformed(ActionEvent event)
                     {
 			jsc.logFileName = file.getText();
-			jsc.isDisplay = display.getState();
-			jsc.isOriginal = original.getState();
-			close();
-			jsc.logPlayBack();
+
+			File file = new File(jsc.logFileName);
+			if(!file.exists()) {
+			    jsc.showMsg("File not found: " + jsc.logFileName);
+			}
+			else {
+			    jsc.isDisplay = display.getState();
+			    jsc.isOriginal = original.getState();
+			    close();
+			    jsc.logPlayBack();
+			}
                     }
                 });
 
@@ -3067,7 +3094,7 @@ class CollabSelectDlg extends Dialog
 			jsc.animPanel.stop();
 			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 			jsc.jscreen.updateScreen(false);
-			jsc.dispatcher.setStatus(0);
+			jsc.dispatcher.clearStatus();
 			
 			jsc.restorePreCollab();
 
@@ -3265,7 +3292,7 @@ class CollabIdDlg extends Frame
                 public void actionPerformed(ActionEvent event)
                 {
                     close();
-	            jsc.dispatcher.setStatus(0);
+	            jsc.dispatcher.clearStatus();
 		    jsc.restorePreCollab();
                 }
             });

@@ -20,6 +20,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.38.2.3  2002/07/19 16:05:20  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
+// Revision 1.38.2.2  2002/06/26 17:29:32  wenger
+// Improved various error messages and client debug log messages; very
+// minor bug fixes; js_log script is now part of installation.
+//
 // Revision 1.38.2.1  2002/06/17 17:30:37  wenger
 // Added a bunch more error reporting and put timestamps on check_pop logs
 // to try to diagnose JSPoP restarts.
@@ -948,7 +961,7 @@ public class DEViseCommSocket
                     b = is.read();
                     if (b < 0) {
                         closeSocket();
-                        throw new YException("Abrupt end of input stream reached", "DEViseCommSocket.receiveCmd()");
+                        throw new YException("Abrupt end of input stream reached (3)", "DEViseCommSocket.receiveCmd()");
                     }
 
                     dataRead[numberRead] = (byte)b;
@@ -982,7 +995,7 @@ public class DEViseCommSocket
                 b = is.read();
                 if (b < 0) {
                     closeSocket();
-                    throw new YException("Abrupt end of input stream reached",
+                    throw new YException("Abrupt end of input stream reached (4)",
 		      "DEViseCommSocket.receiveCmd()");
                 }
 
@@ -1064,7 +1077,7 @@ public class DEViseCommSocket
                     b = is.read();
                     if (b < 0) {
                         closeSocket();
-                        throw new YException("Abrupt end of input stream reached 1", "DEViseCommSocket.receiveCmd()");
+                        throw new YException("Abrupt end of input stream reached (1)", "DEViseCommSocket.receiveCmd()");
                     }
 
                     dataRead[numberRead] = (byte)b;
@@ -1098,7 +1111,7 @@ public class DEViseCommSocket
                 b = is.read();
                 if (b < 0) {
                     closeSocket();
-                    throw new YException("Abrupt end of input stream reached 2",
+                    throw new YException("Abrupt end of input stream reached (2)",
 		      "DEViseCommSocket.receiveCmd()");
                 }
 
@@ -1290,6 +1303,7 @@ public class DEViseCommSocket
 	    _timeout = to;
 
 	    _thread = new Thread(this); 
+	    _thread.setName("Socket creator");
 	    _thread.start();
 	    _threadRunning = true;
 

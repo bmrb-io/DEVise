@@ -30,7 +30,7 @@ else
   exit
 endif
 
-set outfile = "set_modes.out"
+set outfile = "data_dir/set_modes.out"
 if (-e $outfile) then
   rm $outfile
 endif

@@ -19,6 +19,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.1.2.7  2002/07/19 16:05:20  wenger
+// Changed command dispatcher so that an incoming command during a pending
+// heartbeat is postponed, rather than rejected (needed some special-case
+// stuff so that heartbeats during a cursor drag don't goof things up);
+// all threads are now named to help with debugging.
+//
 // Revision 1.1.2.6  2002/05/10 14:46:20  wenger
 // Added normal header.
 //
@@ -42,6 +51,7 @@ public class DEViseCollabDlg implements Runnable
 	args = msgs;
 
 	thread = new Thread(this);
+	thread.setName("Collab dialog 1");
 	thread.start();
     }
 
@@ -51,6 +61,7 @@ public class DEViseCollabDlg implements Runnable
 	arg = msg;
 
 	thread = new Thread(this);
+	thread.setName("Collab dialog 2");
 	thread.start();
     }
 
