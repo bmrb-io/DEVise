@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/08/12 19:58:42  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.9  1997/07/30 21:39:18  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -41,30 +44,6 @@
 #include "ParseTree.h"
 #include "site.h"
 #include "catalog.h"
-
-Catalog* getRootCatalog(){
-	String catalogName;
-	char* dev_schema = getenv("DEVISE_HOME_TABLE");
-	if(dev_schema){
-		catalogName = String(dev_schema);
-	}
-	else {
-		catalogName = "./catalog.dte";
-	}
-	return new Catalog(catalogName);
-}
-
-String getIndexCatName(){
-	String catalogName;
-	char* dev_schema = getenv("DEVISE_INDEX_TABLE");
-	if(dev_schema){
-		catalogName = String(dev_schema);
-	}
-	else {
-		catalogName = "./index.dte";
-	}
-	return catalogName;	
-}
 
 class ISchemaExec : public Iterator {
 	bool done;

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/08/12 19:58:47  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.27  1997/08/04 14:50:50  donjerko
   Fixed the bug in insert and delete queries.
 
@@ -868,10 +871,11 @@ public:
 };
 
 extern ISchema DIR_SCHEMA;
+const ISchema INDEX_SCHEMA("3 string table string name indexdesc descriptor");
 
 class MemoryLoader {
 protected:
-	const size_t PAGE_SZ = 4 * 1024;
+	const size_t PAGE_SZ = 1 * 1024;
 	size_t remainSpace;
 	List<void*> pagePtrs;
 	void* spacePtr;
@@ -887,22 +891,23 @@ public:
 	}
 	void* allocate(size_t spaceNeed){
 		void* retVal;	
-		if(remainSpace >= spaceNeed){
-			remainSpace -= spaceNeed;
-		}
-		else {
+		if(remainSpace < spaceNeed){
 			if(!pagePtrs.atEnd()){
 				spacePtr = pagePtrs.get();
+				pagePtrs.step();
 			}
 			else {
 				spacePtr = (Type*) new char[PAGE_SZ];
 				pagePtrs.append(spacePtr);
+				pagePtrs.step();
+				assert(pagePtrs.atEnd());
 			}
-			pagePtrs.step();
 			remainSpace = PAGE_SZ;
 		}
+		assert(remainSpace >= spaceNeed);
 		retVal = spacePtr;
 		spacePtr = (char*)(spacePtr) + spaceNeed;
+		remainSpace -= spaceNeed;
 		return retVal;
 	}
 	virtual void reset(){

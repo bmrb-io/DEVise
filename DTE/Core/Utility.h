@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/07/30 21:39:22  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.4  1997/06/16 16:04:47  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -31,6 +34,13 @@
 
 #include<String.h>
 #include<iostream.h>
+
+class Catalog;
+
+String selectFileName(const String& env, const String& def);
+Catalog* getRootCatalog();
+istream* getIndexTableStream();
+ostream* getIndexTableOutStream(int mode = ios::out);
 
 String& stripQuotes(char* str);	// can throw excetion
 

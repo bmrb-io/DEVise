@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/07/30 21:39:25  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.27  1997/07/22 15:00:56  donjerko
   *** empty log message ***
 
@@ -112,7 +115,7 @@ class ExecExpr;
 
 typedef enum SelectID {
 	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
-	CAST_ID, MEMBER_ID
+	CAST_ID, MEMBER_ID, ENUM_SELECT_ID
 };
 
 class BaseSelection{
@@ -180,8 +183,7 @@ public:
 		assert(0);
 	}
 	virtual int getSize(){
-		assert(0);
-		return 0; // avoid compiler warning
+		return 10;	// not used really
 	}
 	virtual void setTypeID(TypeID type){
 		assert(0);
@@ -694,6 +696,49 @@ public:
 	}
 };
 
+class EnumSelection : public BaseSelection {
+	TypeID typeID;
+	int position;	// position of this selection in the input stream
+public:
+	EnumSelection(int position, TypeID typeID) :
+		typeID(typeID), position(position) {}
+	virtual TypeID getTypeID(){
+		return typeID;
+	}
+	virtual TypeID typify(List<Site*>* sites){
+		return typeID;
+	}
+     virtual ExecExpr* createExec(
+          String site1, List<BaseSelection*>* list1,
+          String site2, List<BaseSelection*>* list2);
+     virtual SelectID selectID(){
+          return ENUM_SELECT_ID;
+     }
+	virtual BaseSelection* filter(Site* site){
+		assert(0);
+		return NULL;
+	}
+	virtual bool exclusive(Site* site){
+		assert(0);
+		return false;
+	}
+	virtual bool exclusive(String* attributeNames, int numFlds){
+		assert(0);
+		return false;
+	}
+	virtual BaseSelection* duplicate(){
+		assert(0);
+		return NULL;
+	}
+	virtual void collect(Site* s, List<BaseSelection*>* to){
+		assert(0);
+	}
+	virtual bool match(BaseSelection* x){
+		assert(0);
+		return false;
+	}
+};
+
 class PrimeSelection : public BaseSelection{
 	String* alias;
 	String* fieldNm;
@@ -710,7 +755,7 @@ public:
 		String* a, String* fieldNm = NULL, TypeID typeID = "Unknown",
 		int avgSize = 0): 
           BaseSelection(), alias(a), fieldNm(fieldNm), typeID(typeID), 
-		avgSize(avgSize) {}
+		avgSize(avgSize){}
 	~PrimeSelection(){
 		delete alias;
 		delete fieldNm;

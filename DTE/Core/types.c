@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/08/12 19:58:46  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.27  1997/08/04 14:50:49  donjerko
   Fixed the bug in insert and delete queries.
 
@@ -106,7 +109,7 @@
 
 #include "types.h"
 #include "exception.h"
-#include "myopt.h"		// for TableName
+//#include "myopt.h"		// for TableName
 #include "catalog.h"	// for Interface
 #include "Utility.h"
 #include "DateTime.h"
@@ -114,6 +117,7 @@
 #include <time.h>
 #include <string.h>		// for strdup
 #include <strstream.h>
+#include <stdlib.h>
 
 ISchema DIR_SCHEMA("1 catentry entry");
 
@@ -1494,7 +1498,8 @@ istream& operator>>(istream& in, ISchema& s){
 
 ISchema::ISchema(const String& str) :
 	typeIDs(NULL), attributeNames(NULL) {
-	istrstream in(str.chars());
+//	istrstream in(strdup(str.chars()));
+	istrstream in(str.chars());	// trying to free the string??
 	in >> *this;
 }
 

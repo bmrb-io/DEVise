@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/08/12 19:58:40  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.5  1997/06/21 22:47:59  donjerko
   Separated type-checking and execution into different classes.
 
@@ -56,7 +59,7 @@ public:
 		this->numFlds = numFlds;
 		TRY(writePtrs = newWritePtrs(typeIDs, numFlds), );
 	}
-	void insert(Tuple* tuple){ // throws
+	void insert(const Tuple* tuple){ // throws
 		assert(out);
 		for(int i = 0; i < numFlds; i++){
 			writePtrs[i](*out, tuple[i]);

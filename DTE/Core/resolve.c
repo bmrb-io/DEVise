@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/08/12 19:58:45  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.19  1997/07/30 21:39:26  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -290,6 +293,13 @@ TypeID PrimeSelection::typify(List<Site*>* sites){
 		" does not have attribute \"" + *fieldNm + "\"";
 	delete tmpc;
 	THROW(new Exception(msg), (char *) NULL);
+}
+
+ExecExpr* EnumSelection::createExec(
+	String site1, List<BaseSelection*>* list1,
+	String site2, List<BaseSelection*>* list2)
+{
+	return new ExecSelect(0, position);
 }
 
 ExecExpr* PrimeSelection::createExec(

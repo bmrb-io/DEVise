@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/08/04 14:50:48  donjerko
+  Fixed the bug in insert and delete queries.
+
   Revision 1.25  1997/07/31 14:17:47  donjerko
   *** empty log message ***
 
@@ -78,6 +81,7 @@
 #include "url.h"
 
 class RTreeIndex;
+class CGIEntry;
 
 List<BaseSelection*>* createSelectList(String nm, PlanOp* iterator);
 List<BaseSelection*>* createSelectList(PlanOp* iterator);
@@ -391,19 +395,11 @@ public:
 };
 
 class CGISite : public LocalTable {
-
-	struct Entry{
-		String option;
-		String value;
-		istream& read(istream& in);	// throws
-		void write(ostream& out);
-	};
-
-	Entry* entry;
+	CGIEntry* entry;
 	int entryLen;
 	String urlString;
 public:
-	CGISite(String url, Entry* entry, int entryLen) : 
+	CGISite(String url, CGIEntry* entry, int entryLen) : 
 		LocalTable("", (PlanOp*) NULL), entry(entry), 
 		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){

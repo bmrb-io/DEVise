@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/06/21 22:47:59  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.12  1997/06/16 16:04:43  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -36,9 +39,6 @@
 
 class Catalog;
 class Site;
-
-Catalog* getRootCatalog();
-// String getIndexCatName();
 
 class ParseTree {
 public:

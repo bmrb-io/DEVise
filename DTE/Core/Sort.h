@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/07/30 21:39:19  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.9  1997/06/21 22:48:03  donjerko
   Separated type-checking and execution into different classes.
 
@@ -131,11 +134,15 @@ public:
 		return input->getStats();
 	}
 	virtual void typify(String option){
-		List<Site*>* tmpL = new List<Site*>;
-		tmpL->append(input);
-		TRY(typifyList(mySelect, tmpL), );
+		mySelect = new List<BaseSelection*>;
+		mySelect->addList(input->getSelectList());
 		numFlds = mySelect->cardinality();
-		attrTypes = getTypesFromList(mySelect);
+		const TypeID* tmp = input->getTypeIDs();
+		attrTypes = new TypeID[numFlds];
+		for(int i = 0; i < numFlds; i++){
+			attrTypes[i] = tmp[i];
+//			cerr << "attrTypes[" << i << "] = " << attrTypes[i] << endl;
+		}
 	}
 
 	virtual Iterator* createExec();

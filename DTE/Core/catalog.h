@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/08/12 19:58:44  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.19  1997/08/10 20:30:56  donjerko
   Fixed the NO_RTREE option.
 
@@ -67,12 +70,15 @@
 #include <limits.h>
 #include "queue.h"
 #include "exception.h"
-#include "site.h"
+// #include "site.h"
 #include "Utility.h"
 
 const int INFINITY = INT_MAX;
 
 class Inserter;
+class Site;
+class TableName;
+class Interface;
 
 class Catalog {
 private:
@@ -199,23 +205,7 @@ public:
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out);
-	virtual const ISchema* getISchema(TableName* table){
-		if(schema){
-			return schema;
-		}
-		assert(table);
-		assert(table->isEmpty());
-		assert(attributeNames);
-		String* retVal = new String[numFlds + 1];
-		retVal[0] = "recId";
-		for(int i = 0; i < numFlds; i++){
-			retVal[i + 1] = attributeNames[i];
-		}
-		// to do: typecheck the query
-
-		schema = new ISchema(NULL, retVal, numFlds + 1);
-		return schema;
-	}
+	virtual const ISchema* getISchema(TableName* table);
 };
 
 class DeviseInterface : public Interface{
@@ -308,9 +298,7 @@ public:
 	virtual QueryInterface* duplicate() const {
 		return new QueryInterface(*this);
 	}
-	virtual Site* getSite(){
-		return new Site(urlString);
-	}
+	virtual Site* getSite();
 	virtual istream& read(istream& in){
 		in >> urlString;
 		return in;
@@ -325,45 +313,29 @@ public:
 	virtual const ISchema* getISchema(TableName* table);	// throws exception
 };
 
+
+struct CGIEntry{
+	String option;
+	String value;
+	istream& read(istream& in);	// throws
+	void write(ostream& out);
+};
+
 class CGIInterface : public Interface{
 	String tableNm;
 	String urlString;
 	int entryLen;
-	CGISite::Entry* entries;
+	CGIEntry* entries;
 public:
 	CGIInterface(String tableNm) : tableNm(tableNm), entries(NULL) {}
-	virtual ~CGIInterface(){
-		delete [] entries;
-	}
-	CGIInterface(const CGIInterface& a){
-		tableNm = a.tableNm;
-		urlString = a.urlString;
-		entryLen = a.entryLen;
-		entries = new CGISite::Entry[entryLen];
-		for(int i = 0; i < entryLen; i++){
-			entries[i] = a.entries[i];
-		}
-	}
+	virtual ~CGIInterface();
+	CGIInterface(const CGIInterface& a);
 	virtual CGIInterface* duplicate() const {
 		return new CGIInterface(*this);
 	}
-	virtual Site* getSite(){
-		assert(entries);
-		Site* site = new CGISite(urlString, entries, entryLen);
-		// CGISite is the owner of the entries
-		return site;
-	}
+	virtual Site* getSite();
 	virtual istream& read(istream& in);  // throws
-	virtual void write(ostream& out){
-		assert(entries);
-		out << " " << urlString << " " << entryLen;
-		for(int i = 0; i < entryLen; i++){
-			out << endl;
-			out << "\t";
-			entries[i].write(out);
-		}
-		Interface::write(out);
-	}
+	virtual void write(ostream& out);
 	virtual const ISchema* getISchema(TableName* table){
 		String msg = "ISchema lookup not yet implemented for CGIs";
 		THROW(new Exception(msg), NULL);
@@ -374,9 +346,7 @@ class CatalogInterface : public Interface {
 	String fileName;
 public:
 	CatalogInterface() {}
-	virtual CatalogInterface* duplicate() const {
-		return new CatalogInterface(*this);
-	}
+	virtual CatalogInterface* duplicate() const; 
 	virtual String getFileName(){
 		return fileName;
 	}

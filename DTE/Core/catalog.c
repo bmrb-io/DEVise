@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/08/12 19:58:43  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.22  1997/08/09 00:54:44  donjerko
   Added indexing of select-project unmaterialized views.
 
@@ -209,7 +212,7 @@ istream& CGIInterface::read(istream& in){  // throws
 		THROW(new Exception(e), in);
 	}
 
-	entries = new CGISite::Entry[entryLen];
+	entries = new CGIEntry[entryLen];
 	for(int i = 0; i < entryLen; i++){
 		TRY(entries[i].read(in), in);
 	}
@@ -343,4 +346,126 @@ Interface* Catalog::findInterface(TableName* path){ // Throws Exception
 	String msg = "Table " + firstPathNm + " not defined in file: " +
 		fileName;
 	THROW(new Exception(msg), NULL);
+}
+
+Site* QueryInterface::getSite(){
+	return new Site(urlString);
+}
+
+Site* CGIInterface::getSite(){
+	assert(entries);
+	Site* site = new CGISite(urlString, entries, entryLen);
+	// CGISite is the owner of the entries
+	return site;
+}
+
+CGIInterface::~CGIInterface(){
+	delete [] entries;
+}
+
+CGIInterface::CGIInterface(const CGIInterface& a){
+	tableNm = a.tableNm;
+	urlString = a.urlString;
+	entryLen = a.entryLen;
+	entries = new CGIEntry[entryLen];
+	for(int i = 0; i < entryLen; i++){
+		entries[i] = a.entries[i];
+	}
+}
+
+void CGIInterface::write(ostream& out){
+	assert(entries);
+	out << " " << urlString << " " << entryLen;
+	for(int i = 0; i < entryLen; i++){
+		out << endl;
+		out << "\t";
+		entries[i].write(out);
+	}
+	Interface::write(out);
+}
+
+const ISchema* ViewInterface::getISchema(TableName* table){
+	if(schema){
+		return schema;
+	}
+	assert(table);
+	assert(table->isEmpty());
+	assert(attributeNames);
+	String* retVal = new String[numFlds + 1];
+	retVal[0] = "recId";
+	for(int i = 0; i < numFlds; i++){
+		retVal[i + 1] = attributeNames[i];
+	}
+	// to do: typecheck the query
+
+	schema = new ISchema(NULL, retVal, numFlds + 1);
+	return schema;
+}
+
+istream& CGIEntry::read(istream& in){	// throws
+	in >> option;
+	char tmp;
+	in >> tmp;
+	if(tmp != '"'){
+		THROW(new Exception(
+			"Wrong format in the CGIInterface"), in);
+	}
+	bool escape = false;
+	while(1){
+		in.get(tmp);
+		if(!in){
+			String e = "Catalog ends while reading CGIInterface";
+			THROW(new Exception(e), in);
+		}
+		if(tmp == '\\'){
+			if(escape){
+				value += '\\';
+				escape = false;
+			}
+			else{
+				escape = true;
+			}
+		}
+		else if(tmp == '"'){
+			if(escape){
+				value += '"';
+				escape = false;
+			}
+			else{
+				break;
+			}
+		}
+		else{
+			if(escape){
+				value += '\\' + tmp;
+				escape = false;
+			}
+			else{
+				value += tmp;
+			}
+		}
+	}
+	return in;
+}
+
+void CGIEntry::write(ostream& out){
+	assert(!value.contains('"'));		// encode these characters!
+	assert(!value.contains('\\'));
+	out << option << " " << "\"" << value << "\"";
+}
+
+void insert(String tableStr, Tuple* tuple){	// throws exception
+	Catalog* catalog = getRootCatalog();
+	assert(catalog);
+	TableName tableName(tableStr.chars());
+	TRY(Interface* interf = catalog->findInterface(&tableName), );
+	delete catalog;
+	TRY(Inserter* inserter = interf->getInserter(&tableName), );
+	delete interf;
+	inserter->insert(tuple);
+	delete inserter;
+}
+
+CatalogInterface* CatalogInterface::duplicate() const {
+	return new CatalogInterface(*this);
 }

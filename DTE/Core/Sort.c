@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/07/30 21:39:18  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.10  1997/06/21 22:48:02  donjerko
   Separated type-checking and execution into different classes.
 
@@ -278,19 +281,18 @@ SortExec::~SortExec(){
 Iterator* Sort::createExec(){
 	assert(input);
 
-//	List<BaseSelection*>* baseISchema = input->getSelectList();
-//	TRY(enumerateList(mySelect, name, baseISchema), NULL);		// why ??
-
 	TRY(Iterator* inpIter = input->createExec(), NULL);
 	TRY(int* sortFlds = findPositions(mySelect, orderBy), NULL);
 	int numSortFlds = orderBy->cardinality();
 
-	cout << "Sort fields are (index, type) = ";
+#if defined(DEBUG)
+	cerr << "Sort fields are (index, type) = ";
 	for(int i = 0; i < numSortFlds; i++){
-		cout << "(" << sortFlds[i] << ", ";
-		cout << attrTypes[sortFlds[i]] << ") ";
+		cerr << "(" << sortFlds[i] << ", ";
+		cerr << attrTypes[sortFlds[i]] << ") ";
 	}
-	cout << endl;
+	cerr << endl;
+#endif
 
 	GeneralPtr** comparePtrs  = new (GeneralPtr *)[numFlds];
 	TypeID retVal;  // is a dummy	       

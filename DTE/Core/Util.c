@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/07/30 21:39:22  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.5  1997/06/16 16:04:46  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -26,15 +29,55 @@
 
  */
 
-#include <String.h>
-#include <iostream.h>
-#include <strstream.h>
+#include "types.h"
 #include "exception.h"
-#include "ParseTree.h"	// for getRootCatalog
 #include "catalog.h"
 #include "Inserter.h"
 
 #include "Utility.h"
+
+#include <String.h>
+#include <fstream.h>
+#include <strstream.h>
+#include <stdlib.h>
+
+String selectFileName(const String& env, const String& def){
+	char* nm = getenv(env);
+	if(nm){
+		return String(nm);
+	}
+	else{
+		return def;
+	}
+}
+
+Catalog* getRootCatalog(){
+	String catalogName;
+	catalogName = selectFileName("DEVISE_HOME_TABLE", "./catalog.dte");
+	return new Catalog(catalogName);
+}
+
+istream* getIndexTableStream(){
+	String catalogName;
+	catalogName = selectFileName("DEVISE_INDEX_TABLE", "./sysind.dte");
+	istream* in = new ifstream(catalogName);
+	if(!in || !in->good()){
+		cerr << "Warning: could not open index file \"" << catalogName
+			<< "\"\n";
+	}
+	return in;
+}
+
+ostream* getIndexTableOutStream(int mode){
+	String catalogName;
+	catalogName = selectFileName("DEVISE_INDEX_TABLE", "./sysind.dte");
+	ostream* in = new ofstream(catalogName, mode);
+	if(!in || !in->good()){
+		cerr << "Warning: could not open index file \"" << catalogName
+			<< "\"\n";
+	}
+	return in;
+}
 
 String& stripQuotes(char* str){
 	strstream tmp;
@@ -162,18 +205,6 @@ String& addQuotes(String in){	// can throw excetion
 	}
 	value += '"';
 	return value;
-}
-
-void insert(String tableStr, Tuple* tuple){	// throws exception
-	Catalog* catalog = getRootCatalog();
-	assert(catalog);
-	TableName tableName(tableStr.chars());
-	TRY(Interface* interf = catalog->findInterface(&tableName), );
-	delete catalog;
-	TRY(Inserter* inserter = interf->getInserter(&tableName), );
-	delete interf;
-	inserter->insert(tuple);
-	delete inserter;
 }
 
 String* dupStrArr(const String* inp, int numFlds){

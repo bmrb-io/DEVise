@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/08/12 19:58:45  donjerko
+  Moved StandardTable headers to catalog.
+
   Revision 1.20  1997/08/10 20:30:57  donjerko
   Fixed the NO_RTREE option.
 
@@ -381,58 +384,6 @@ void LocalTable::writeOpen(int mode = ios::app){
 	}
 }
 
-istream& CGISite::Entry::read(istream& in){	// throws
-	in >> option;
-	char tmp;
-	in >> tmp;
-	if(tmp != '"'){
-		THROW(new Exception(
-			"Wrong format in the CGIInterface"), in);
-	}
-	bool escape = false;
-	while(1){
-		in.get(tmp);
-		if(!in){
-			String e = "Catalog ends while reading CGIInterface";
-			THROW(new Exception(e), in);
-		}
-		if(tmp == '\\'){
-			if(escape){
-				value += '\\';
-				escape = false;
-			}
-			else{
-				escape = true;
-			}
-		}
-		else if(tmp == '"'){
-			if(escape){
-				value += '"';
-				escape = false;
-			}
-			else{
-				break;
-			}
-		}
-		else{
-			if(escape){
-				value += '\\' + tmp;
-				escape = false;
-			}
-			else{
-				value += tmp;
-			}
-		}
-	}
-	return in;
-}
-
-void CGISite::Entry::write(ostream& out){
-	assert(!value.contains('"'));		// encode these characters!
-	assert(!value.contains('\\'));
-	out << option << " " << "\"" << value << "\"";
-}
-
 void LocalTable::setStats(){
 	double selectivity = listSelectivity(myWhere);
 	assert(directSite);
@@ -443,23 +394,28 @@ void LocalTable::setStats(){
 	stats = new Stats(numFlds, sizes, cardinality);
 }
 
-Site* findIndexFor(String tableStr){	// throws
-	Catalog* catalog = getRootCatalog();
-	assert(catalog);
-	TableName* tableName = new TableName(".sysind");
-	TRY(Interface* interf = catalog->findInterface(tableName), NULL);
-	delete catalog;
-	assert(interf);
-	TRY(Site* site = interf->getSite(), NULL);
-	delete interf;
-	BaseSelection* name = new PrimeSelection("t", "table");
+Iterator* createIteratorFor(
+	const ISchema& schema, istream* in, const String& tableStr)
+{
+	assert(in && in->good());
+	StandReadExec* fs = new StandReadExec(schema, in);
+	int numFlds = schema.getNumFlds();
+	Array<ExecExpr*>* select = new Array<ExecExpr*>(numFlds);
+	for(int i = 0; i < numFlds; i++){
+		(*select)[i] = new ExecSelect(0, i);
+	}
+
+	BaseSelection* name = new EnumSelection(0, "string");
 	BaseSelection* value = new ConstantSelection(
 		"string", strdup(tableStr.chars()));
 	BaseSelection* predicate = new Operator("=", name, value);
-	site->addPredicate(predicate);
-	site->addTable(new TableAlias(".sysind", "t"));
-	TRY(site->typify("execute"), NULL);
-	return site;
+	assert(predicate);
+	predicate->typify(NULL);
+
+	Array<ExecExpr*>* where = new Array<ExecExpr*>(1);
+	(*where)[0] = predicate->createExec("", NULL, "", NULL);
+	assert((*where)[0]);
+	return new SelProjExec(fs, select, where);
 }
 
 List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
@@ -468,10 +424,13 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 	assert(myFrom);
 	assert(myFrom->cardinality() == 1);
 	String tableNm = getFullNm();
-	TRY(Site* indexForTable = findIndexFor(tableNm), NULL);
-	int tmpNumFlds = indexForTable->getNumFlds();
-	assert(tmpNumFlds == 3);
-	Iterator* indexIt = indexForTable->createExec();
+	Iterator* indexIt;
+	istream* indexStream = getIndexTableStream();
+	if(!indexStream || !indexStream->good()){
+		return retVal;
+	}
+	indexIt = createIteratorFor(INDEX_SCHEMA, indexStream, tableNm);
+	assert(INDEX_SCHEMA.getNumFlds() == 3);
 	indexIt->initialize();
 	const Tuple* tup;
 	while((tup = indexIt->getNext())){
@@ -537,7 +496,6 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		}
 	}
 	delete indexIt;
-	delete indexForTable;
 	return retVal;
 }
 

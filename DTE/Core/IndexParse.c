@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/08/10 20:30:54  donjerko
+  Fixed the NO_RTREE option.
+
   Revision 1.13  1997/07/30 21:39:17  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -57,6 +60,7 @@
 #include "Utility.h"
 #include "Iterator.h"
 #include "Aggregates.h"
+#include "Inserter.h"
 
 #include "RTree.h"
 
@@ -280,9 +284,14 @@ Site* IndexParse::createSite(){
 	Tuple tuple[3];
 	tuple[0] = (Type*) tablename.chars();
 	tuple[1] = (Type*) indexName->chars();
-	tuple[2] = new IndexDesc(numKeyFlds, keyFlds, numAddFlds, addFlds,
+	IndexDesc tmpid(numKeyFlds, keyFlds, numAddFlds, addFlds,
 			!standAlone, root1.pid, keyTypes, addTypes);	
-	TRY(insert(".sysind", tuple), NULL);
+	tuple[2] = &tmpid;
+	Inserter inserter;
+	ostream* out = getIndexTableOutStream(ios::app);
+	inserter.open(out, INDEX_SCHEMA.getNumFlds(), INDEX_SCHEMA.getTypeIDs());
+	inserter.insert(tuple);
+
 	delete catalog;
 
 	Tuple tupleM[2];
