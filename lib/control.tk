@@ -1,4 +1,4 @@
-#  ========================================================================
+#========================================================================
 #  DEVise Data Visualization Software
 #  (c) Copyright 1992-1996
 #  By the DEVise Development Group
@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.74  1996/06/20 16:48:20  jussi
+#	Replaced green1 with DarkSeaGreen.
+#
 #	Revision 1.73  1996/06/16 01:54:43  jussi
 #	Added PolylineShape, PolylineFileShape, and TextLabelShape.
 #
@@ -325,6 +328,18 @@ set helpWindowCreated 0
 set UserMode 1
 set templateMode 0
 
+# set statistics defaults
+set statmean 0 
+set statmax 1
+set statmin 0
+set statcurr 1
+set statcilevel "000"
+
+# set Kiviat graph defaults
+set kval 0
+set kcurr 1
+set knew 0
+
 set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
     set libdir $env(DEVISE_LIB)
@@ -445,7 +460,7 @@ if {0} {
 frame .mbar  -relief raised -bd 4 -bg green
 frame .panel -bg white
 
-pack .panel -side top -expand 1 -fill both
+pack .panel -side top -expand 0 -fill both
 pack .mbar  -side top -expand 0 -fill x
 
 menubutton .mbar.session -text Session -underline 0 \
@@ -484,16 +499,17 @@ menu .mbar.session.menu.exportMenu -tearoff 0
 .mbar.session.menu add command -label "Merge Template" \
 	-command {DoTemplateMerge}
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Toggle mode" -command { ChangeMode }
+.mbar.session.menu add command -label "Toggle Mode" -command { ChangeMode }
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Add Replica" -command { AddReplica }
-.mbar.session.menu add command -label "Remove Replica" -command { NotImplemented }
+.mbar.session.menu add command -label "Remove Replica" \
+	-command { NotImplemented }
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Print" -command PrintView
 .mbar.session.menu add command -label "Quit" -command DoExit
 
 menu .mbar.tdata.menu -tearoff 0
-.mbar.tdata.menu add command -label "Import" -command { MacroImport 0 }
+.mbar.tdata.menu add command -label "Import" -command { MacroImport 0 0 }
 
 .mbar.tdata.menu add cascade -label "Schema" \
 	-menu .mbar.tdata.menu.schemaMenu 
@@ -511,8 +527,10 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 .mbar.tdata.menu add cascade -label "Mapping" \
 	-menu .mbar.tdata.menu.mappingMenu
 
-.mbar.tdata.menu add command -label "Define" -command { MacroImport 1 }
+.mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
 .mbar.tdata.menu add command -label "Show TDatas" -command { ShowTDatas }
+.mbar.tdata.menu add separator
+.mbar.tdata.menu add command -label "Derived Data" -command { MacroImport 0 1 }
 
 menu .mbar.tdata.menu.mappingMenu -tearoff 0
 
@@ -563,8 +581,7 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 	-command DoSetCursorDst
 
 .mbar.view.menu add separator
-.mbar.view.menu add cascade -label "Toggle Statistics" \
-	-menu .mbar.view.menu.statmenu
+.mbar.view.menu add command -label "Statistics" -command { DoStat }
 .mbar.view.menu add cascade -label "Kiviat Graph" \
 	-menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
@@ -592,34 +609,6 @@ menu .mbar.view.menu.yaxismenu -tearoff 0
 .mbar.view.menu.yaxismenu add command -label "All Views" \
 	-command { DoToggleAxisAllViews Y }
 
-menu .mbar.view.menu.statmenu -tearoff 1
-.mbar.view.menu.statmenu add checkbutton -label Mean -variable statmean
-.mbar.view.menu.statmenu add checkbutton -label Max -variable statmax
-.mbar.view.menu.statmenu add checkbutton -label Min -variable statmin
-.mbar.view.menu.statmenu add separator
-.mbar.view.menu.statmenu add radiobutton -label "No Conf. Intervals" \
-	-variable statcilevel -value "000"
-.mbar.view.menu.statmenu add radiobutton -label "85% CI" \
-	-variable statcilevel -value "100"
-.mbar.view.menu.statmenu add radiobutton -label "90% CI" \
-	-variable statcilevel -value "010"
-.mbar.view.menu.statmenu add radiobutton -label "95% CI" \
-	-variable statcilevel -value "001"
-.mbar.view.menu.statmenu add separator
-.mbar.view.menu.statmenu add radiobutton -label "Current View" \
-	-variable statcurr -value 1
-.mbar.view.menu.statmenu add radiobutton -label "All Views" \
-	-variable statcurr -value 0
-.mbar.view.menu.statmenu add separator
-.mbar.view.menu.statmenu add command -label "Apply..." \
-	-command { DoToggleStatistics }
-#defaults
-set statmean 1
-set statmax 0
-set statmin 0
-set statcurr 1
-set statcilevel "000"
-
 menu .mbar.view.menu.kmenu -tearoff 1
 .mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
 .mbar.view.menu.kmenu add radiobutton -label Max -variable kval -value 1
@@ -638,10 +627,6 @@ menu .mbar.view.menu.kmenu -tearoff 1
 .mbar.view.menu.kmenu add separator
 .mbar.view.menu.kmenu add command -label "Apply..." \
 	-command {ShowKGraph}
-#defaults
-set kval 0
-set kcurr 1
-set knew 0
 
 menu .mbar.view.menu.dimmenu -tearoff 0
 .mbar.view.menu.dimmenu add command -label "Two Dimensions" \
@@ -800,7 +785,7 @@ proc FindDefaultXAttr { attrs } {
 # Do editing for mapping
 proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
-    global sourceList
+    global sourceList derivedSourceList
 
     if {![CurrentView]} {
 	return
@@ -852,7 +837,10 @@ proc DoEditMapping {} {
 
     set tdata [lindex [lindex $params 0] 1]
 
-    set sfname [lindex $sourceList($tdata) 3]
+    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
+    if {$err > 0} {
+	set sfname [lindex $derivedSourceList($tdata) 3]
+    }
     set schemaname [file tail $sfname]
 
     # set attrs [DEVise getSchema $tdata]
@@ -1051,7 +1039,7 @@ proc GetMapping { tdata mapClass} {
 # of the current one
 
 proc DoSwitchTData {} {
-    global curView sourceList dialogListVar
+    global curView dialogListVar
 
     if {![CurrentView]} {
 	return
