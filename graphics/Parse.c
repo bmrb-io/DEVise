@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/12 16:21:05  jussi
+  Replaced signed int with unsigned int.
+
   Revision 1.8  1996/01/11 21:43:40  jussi
   Replaced libc.h with stdlib.h.
 
@@ -48,6 +51,8 @@
 
 #include "Config.h"
 #include "Exit.h"
+
+//#define DEBUG
 
 static const char *monthNames[] = { "JAN", "FEB", "MAR", "APR",
 				    "MAY", "JUN", "JUL", "AUG",
@@ -102,6 +107,10 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
 	str++;
       }
       
+#ifdef DEBUG
+      printf("Parsed whitespace separated field \"%s\"\n", start);
+#endif
+
       if (numArgs >= MAXARGS - 1) {
 	fprintf(stderr, "parse: too many arguments\n");
 	Exit::DoExit(1);
@@ -126,6 +135,10 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
       str++;
     }
     
+#ifdef DEBUG
+    printf("Parsed separator separated field \"%s\"\n", start);
+#endif
+
     if (numArgs >= MAXARGS - 1) {
       fprintf(stderr, "parse: too many arguments\n");
       Exit::DoExit(1);
