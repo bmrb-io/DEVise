@@ -54,7 +54,8 @@
 #endif /* _RS6000 */
 
 #ifdef _IRIX
-#include <sys/select.h>
+#include <bstring.h>
+#define FD_CLEAR FD_ZERO
 #endif /* _IRIX */
 
 #ifdef _PENTIUM

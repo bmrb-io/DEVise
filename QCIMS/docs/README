@@ -4,10 +4,12 @@ Solaris on Pentium
 Solaris on Sun Sparc
 AIX on RS6000
 LINUX on Pentium
+IRIX on SGI
 
 Send me mail if you need binaries for any other unix platform.. 
 
-There are two tools here, ImCjpeg and ImRdopt. Both can
+There are two tools here (I've added a third now: ImCjpegCompress--read
+ImCjpegCompress.doc for its description), ImCjpeg and ImRdopt. Both can
 do optimized, RD-OPT-based JPEG compression. Which one to
 use depends upon what you are trying to do.
 
@@ -34,6 +36,9 @@ to the optimal as given by RD-OPT, use ImRdopt, and from the
 command interface, compress until you meet the target exactly,
 using a little searching. For example, here is how you could
 compress lena.pgm to exactly 40000 bytes using ImRdopt: 
+
+(ImRdoptCompress, the newly added script does this. You might
+want to refine it for your needs).
 
 % ImRdopt -coarse 2 -thresh 30 lena.pgm
 Command> cfile lena.jpg
