@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1998/02/20 18:06:51  wenger
+#  Updated client/server and window library distribution for version 1.5.
+#
 #  Revision 1.8  1997/05/21 22:03:58  andyt
 #  Added EmbeddedTk and Tasvir functionality to cslib. Modified tarcslib
 #  script to include necessary files.
@@ -93,6 +96,7 @@ ln -s	../../cslib/*.h \
 	.
 ln -s ../../graphics.new/ClientAPI.h \
         ../../graphics.new/ParseAPI.h \
+        ../../graphics.new/missing.h \
 	.
 ln -s	../../src/include/BooleanArray.h \
 	../../src/include/Color.h \
