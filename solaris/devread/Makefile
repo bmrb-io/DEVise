@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/10/29 16:19:50  wenger
+#  Fixed devread Makefiles in the architecture subdirectories to include
+#  the proper dependency files.
+#
 #  Revision 1.2  1996/10/04 17:11:27  wenger
 #  Added -lpthread for thread support.
 #
@@ -39,7 +43,7 @@
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  = -lpthread
+ARCH_LDPOST  =
 
 VPATH = ../../devread:../../graphics:../../graphics.new
 include ../../devread/Makefile.base
