@@ -58,9 +58,9 @@ vector<OptExpr*> StandardAM::getProjectList(const string& alias) const
 }
 
 DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile)
-  : dr(NULL)//, ud(NULL)
+  : dr(NULL), ud(NULL)
 {
-	if(schemaFile.substr(schemaFile.size() - 3) == "ddr"){
+	if(schemaFile.compare("ddr", schemaFile.length() - 3) == 0){
 
 		// datareader
 
@@ -74,7 +74,6 @@ DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile)
 		DataReadExec::translateSchema(dr, schema);
 	}
 	else{
-
 		// unidata
 		// this path is obsolete
 
