@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/04/11 18:48:34  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.11  1997/03/25 17:58:10  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -224,6 +230,7 @@ class SampleWinServer : public WinServer {
     _winReps.GetWindowRep()->SetLineWidth(2);
     _winReps.GetWindowRep()->Arc(xCenter2, yCenter2, horizDiam, vertDiam,
       0.0, 6.3);
+    _winReps.GetWindowRep()->SetLineWidth(0);
     _winReps.GetWindowRep()->SetPattern(Pattern0);
 
     _winReps.GetWindowRep()->SetFgRGB(0.0, 0.0, 0.0);
