@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/04/14 20:44:11  donjerko
+  Removed class Path and introduced new BaseSelection class Member.
+
   Revision 1.15  1997/04/10 21:50:22  donjerko
   Made integers inlined, added type cast operator.
 
@@ -256,7 +259,8 @@ class GenFunction{
 			TypeID dumb;
 			// Get the add and division operators..
 			TRY(addPtr = getOperatorPtr("+",attribType,attribType,retType),);
-			TRY(divPtr = getOperatorPtr("/",retType,"double",retType),);
+			TRY(promotePtr = getPromotePtr(retType, "double"),);
+			TRY(divPtr = getOperatorPtr("/","double","double",retType),);
 			assert(addPtr);
 			assert(divPtr);
 		}
@@ -298,7 +302,8 @@ class GenFunction{
 			
 			// Get the < operators..
 			TRY(addPtr = getOperatorPtr("+",attribType,attribType,retType),);
-			TRY(divPtr = getOperatorPtr("/",retType,"double",retType),);
+			TRY(promotePtr = getPromotePtr(retType, "double"),);
+			TRY(divPtr = getOperatorPtr("/","double","double",retType),);
 			assert(addPtr);
 			assert(divPtr);
 		}
@@ -358,6 +363,7 @@ class GenFunction{
 		GeneralPtr * addPtr;
 		GeneralPtr * lessPtr;
 		GeneralPtr * divPtr;
+		PromotePtr promotePtr;
 		GeneralPtr * grtrPtr;
 		
 		// Actual functions..

@@ -763,8 +763,12 @@ Type * GenFunction::avg()
 		next = scanNext(); 
 	}
 		
-	if (count != 0.0)
-		return divPtr->opPtr(sum,& IDouble(count));
+	if (count != 0.0){
+		Type* sumDouble = promotePtr(sum); 
+		Type* retVal = divPtr->opPtr(sumDouble,& IDouble(count));
+		delete sumDouble;
+		return retVal;
+	}
 	else 
 		return getNullValue(attribType);
 }
