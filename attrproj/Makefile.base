@@ -7,16 +7,15 @@ CC = g++
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused -O -DUNIX -DATTRPROJ
 
-TESTSRC = aptest.c
+TESTSRC = aptest.c vector.c
 TESTOBJ = $(TESTSRC:.c=.o)
 
-SHOWSRC = show.c
+SHOWSRC = show.c vector.c
 SHOWOBJ = $(SHOWSRC:.c=.o)
 
 LOCALSRC = AttrProj.c ApExit.c ApGroup.c ApGroupDir.c ApInit.c \
 	ApItemList.c ApParseCat.c ApTDataAsciiInterp.c ApTDataAscii.c \
-	ApTDataBinaryInterp.c ApTDataBinary.c VectorArray.c ProjectionList.c \
-	vector.c
+	ApTDataBinaryInterp.c ApTDataBinary.c VectorArray.c ProjectionList.c
 LOCALOBJ = $(LOCALSRC:.c=.o)
 
 LIBOBJ = \
