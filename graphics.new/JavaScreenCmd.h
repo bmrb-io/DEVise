@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.43  2001/10/03 19:09:57  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.42  2001/04/02 16:09:58  wenger
   Devised now saves configuration for 3D JavaScreen views to sessions,
   and passes it to the JavaScreen when necessary (note: JS protocol
@@ -286,6 +290,8 @@ class JavaScreenCmd
 
 		int Run(); // 1 = OK, -1 = error
 		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
+		static void CmdInit();
+		static void CmdTerminate();
 
 	protected:
 		// < 0 if error
@@ -305,6 +311,8 @@ class JavaScreenCmd
 		const char		*errmsg;
 
 		static Boolean	_postponeCursorCmds;
+
+		static Boolean _properCmdTermination;
 
 		static JavaScreenCache _cache;
 

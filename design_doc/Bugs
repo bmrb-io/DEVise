@@ -2803,10 +2803,11 @@ Num Date        Status  Description
 			command log playback. (rkw)
 			(Fixed by xuk, 10/05/01.)
 
-702 10/05/01	OPEN	JavaScreen: bad command in log file being played
+702 10/05/01	FIXED	JavaScreen: bad command in log file being played
 			back gets the JS permanently stuck in playback
 			mode, seems to get jspop and/or devised into a
 			non-responsive state. (rkw)
+			(Fixed by rkw, 10/08/01.)
 
 703 10/05/01	OPEN	JavaScreen: _pid files don't get deleted correctly
 			if the machine goes down. (rkw)

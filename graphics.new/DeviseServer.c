@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  2001/10/03 19:09:56  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.16  2001/09/24 15:29:11  wenger
   Added warning if you close or quit with unsaved session changes (note
   that visual filter changes are not considered "changes").
@@ -220,6 +224,10 @@ DeviseServer::Run()
 void 
 DeviseServer::RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
 {
+#if defined(DEBUG)
+    printf("DeviseServer::RunCmd(%s)\n", argv[0]);
+#endif
+
     // Note: an error will be logged at a lower level if the return value
     // indicates an error.
     (void)CmdContainer::GetCmdContainer()->Run(argc, argv, _control, cmdDes);

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.121  2001/10/05 15:49:02  wenger
+  Turn off error logging while checking session files.
+
   Revision 1.120  2001/10/04 19:03:49  wenger
   JavaScreen support allows session files without .ds extension; various
   improvements to session file processing.
@@ -574,6 +577,7 @@
 #define ROUND_TO_INT(value) ((int)(value + 0.5))
 
 Boolean JavaScreenCmd::_postponeCursorCmds = false;
+Boolean JavaScreenCmd::_properCmdTermination = false;
 
 // Buffer for debug logging.
 static char logBuf[MAXPATHLEN * 2];
@@ -796,7 +800,7 @@ JSSessionInit()
 
 	// Turn off collaboration; otherwise the collaboration stuff
 	// interferes with some commands from the JavaScreen.
-	CmdContainer::GetCmdContainer()->setMake(CmdContainer::MONOLITHIC);
+	CmdContainer::GetCmdContainer()->DisableCollab();
 }
 
 //====================================================================
@@ -2016,9 +2020,54 @@ JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 }
 
 //====================================================================
+// Call this method when ANY command is received from the JavaScreen.
+// (This method should be called before doing any processing on the
+// command.)
+void
+JavaScreenCmd::CmdInit()
+{
+#if defined(DEBUG)
+  printf("JavaScreenCmd::CmdInit()\n");
+#endif
+
+  _properCmdTermination = false;
+}
+
+//====================================================================
+// Call this method after doing processing on ANY command received
+// from the JavaScreen.  (This ensures that the response to the
+// JavaScreen includes a proper "termination" command, such as
+// JAVAC_Done -- part of the fix for bug 702.)
+void
+JavaScreenCmd::CmdTerminate()
+{
+#if defined(DEBUG)
+  printf("JavaScreenCmd::CmdTerminate()\n");
+#endif
+
+  if (!_properCmdTermination) {
+	JSArgs args(2);
+	args.FillString(_controlCmdName[ERROR]);
+	args.FillString("Improperly processed command from JavaScreen");
+
+    //
+    // This JavaScreenCmd object is created only to send the command.
+    //
+    JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
+    args.ReturnVal(&jsc);
+  }
+}
+
+//====================================================================
 int // 1 = OK, -1 = error
 JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 {
+#if defined(DEBUG)
+    printf("JavaScreenCmd::ControlCmd(%d)\n", status);
+#endif
+
+	_properCmdTermination = true;
+
 	// return either DONE/ERROR/FAIL to current JAVA client
 	if (status == DONE)
 	{

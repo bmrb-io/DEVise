@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.77  2001/10/03 19:09:56  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.76  2001/09/24 15:29:11  wenger
   Added warning if you close or quit with unsaved session changes (note
   that visual filter changes are not considered "changes").
@@ -395,6 +399,7 @@
 #include "ControlPanelSimple.h"
 #include "Session.h"
 #include "Init.h"
+#include "JavaScreenCmd.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -448,6 +453,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	cmdContainerP = this;
 
 	_server = server;
+
+	_collabEnabled = true;
 
 	// JAVA Screen commands
 	REGISTER_COMMAND(JAVAC_GetSessionList)
@@ -774,7 +781,7 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 	
 	// no command logging & broadcasting for log file replay and session replay
 	// control command routing 
-	CmdSource::SrcType srcType =cmdDes.getCmdsource()->getSrctype();
+	CmdSource::SrcType srcType = cmdDes.getCmdsource()->getSrctype();
 	if (cmdDes.getCmdsource()->isFromLog()) {
 		srcType = CmdSource::LOGFILE;
 	} else if (getMake() == MONOLITHIC) {
@@ -790,10 +797,13 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 		case CmdSource::NETWORK:
 			if (cmdDes.getDest() == CmdDescriptor::FOR_CLIENT)
 			{
-				// send control commands to its client
-				// which CLIENT?
-				//TEMP -- remove typecast on argv
-				((Server*)_server)->SendControl(API_CTL, argc, (char **)argv, true);
+				if (_collabEnabled) {
+				    // send control commands to its client
+				    // which CLIENT?
+				    //TEMP -- remove typecast on argv
+				    ((Server*)_server)->SendControl(API_CTL, argc,
+					  (char **)argv, true);
+				}
 			}
 			else
 			if (cmdDes.getDest() == CmdDescriptor::FOR_SERVER)
@@ -804,7 +814,9 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 
 		case CmdSource::JAVACLIENT:
 			// run JAVA commands with logging turned off
+			JavaScreenCmd::CmdInit();
 			retval = RunOneCommand(argc, argv, control);
+			JavaScreenCmd::CmdTerminate();
 			break;
 
 		case CmdSource::USER:

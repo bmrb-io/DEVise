@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  2001/01/08 20:32:52  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.10.2.1  2000/12/27 19:39:19  wenger
   Merged changes from js_restart_improvements thru zero_js_cache_check from
   the trunk onto the js_cgi_br branch.
@@ -93,7 +97,8 @@ class CmdContainer
 		void deleteCmd(char* cmdName);
 
 		Make	getMake(){return make;}
-		void	setMake(Make newMake) {make = newMake;}
+
+		void DisableCollab() { _collabEnabled = false; }
 
 		DeviseServer* getDeviseServer(){ return _server;}
 
@@ -109,6 +114,7 @@ class CmdContainer
 
 		Make	make;
 		DeviseServer*	_server;
+		Boolean _collabEnabled;
 };
 ostream& operator <<(ostream& os, const CmdContainer& cc);
 
