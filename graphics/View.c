@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.89  1996/12/02 16:54:22  wenger
+  Fixed compile warning; added standard headers to some files;
+  conditionaled out debug code.
+
   Revision 1.88  1996/11/26 16:47:45  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -2185,7 +2189,6 @@ void View::DeleteViewCallback(ViewCallback *callBack)
   printf("Removing 0x%p from view callback list\n", callBack);
 #endif
 
-  _viewCallbackList->PrintIterators( );
   _viewCallbackList->Delete(callBack);
 }
 
