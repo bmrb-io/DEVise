@@ -1,0 +1,238 @@
+			JavaScreen-Related Commands
+		$Id$
+
+Version: this document refers to the JavaScreen communication protocol
+version 4.1.
+
+
+1. JavaScreen to JSPoP
+
+
+2. JavaScreen to devised (via JSPoP)
+
+    2.1 JAVAC_GetSessionList
+    Purpose:
+    Arguments:
+        <directory name> (optional, default is ??):
+
+    2.2 JAVAC_Exit
+    Purpose:
+    Arguments: (none)
+
+    2.3 JAVAC_CloseCurrentSession
+    Purpose:
+    Arguments: (none)
+
+    2.4 JAVAC_OpenSession
+    Purpose:
+    Arguments:
+        <session file>: full path?? of session file to open.
+
+    2.5 JAVAC_MouseAction_Click
+    Purpose:
+    Arguments:
+        <view name>: name of view in which mouse click occurred.
+	<x location>: x location of mouse click in pixels??, relative to left edge of view.
+	<y location>: y location of mouse click in pixels??, relatvie to top?? edge of view.
+
+    2.6 JAVAC_ShowRecords
+    Purpose:
+    Arguments:
+        <view name>: view name for which records are to be shown.
+	<x location>: x location of event causing records to be shown, in
+	    pixels??, relative to the left edge of the view.
+	<y location>: y location of event causing records to be shown, in
+	    pixels??, relative to the top?? edge of the view.
+
+    2.7 JAVAC_MouseAction_RubberBand
+    Purpose:
+    Arguments:
+        <view name>: view in which the rubberband took place.
+	<x location 1>: x location of the start of the rubberband, in
+	    pixels??, relative to the left edge of the view.
+	<y location 1>: y location of the start of the rubberband, in
+	    pixels??, relative to the top edge of the view.
+	<x location 2>: x location of the end of the rubberband, in
+	    pixels??, relative to the left edge of the view.
+	<y location 2>: y location of the end of the rubberband, in
+	    pixels??, relative to the top edge of the view.
+
+
+    2.8 JAVAC_SetDisplaySize
+    Purpose:
+    Arguments:
+        <width>
+	<height>
+
+    2.9 JAVAC_KeyAction
+    Purpose:
+    Arguments:
+        <view name>
+	<key>
+
+    2.10 JAVAC_SaveSession
+    Purpose:
+    Arguments:
+        <session file>: file to which the session should be saved.
+	<save selected view> (optional, default is 1): 1 if the session
+	    should save which view is selected, 0 otherwise.
+
+    2.11 JAVAC_ServerExit
+    Purpose:
+    Arguments: (none)
+
+    2.12 JAVAC_ServerCloseSocket
+    Purpose: this command currently does nothing.
+    Arguments: (none)
+
+    2.13 JAVAC_ImageChannel
+    Purpose: this command currently does nothing.
+    Arguments: (none)
+
+    2.14 JAVAC_CursorChanged
+    Purpose: sent when the user moves or resizes a cursor.
+    Arguments:
+        <cursor name>
+	<x location>
+	<y location>
+	<width>
+	<height>
+
+    2.15 JAVAC_ProtocolVersion
+    Purpose: used to check whether the JavaScreen and the devised implement
+        compatible versions of the communication protocol.
+    Arguments:
+        <version>: version of the protocol implemented by the JavaScreen.
+
+    2.16 JAVAC_ShowRecords3D
+    Purpose:
+    Arguments:
+        <view name>
+	<x location>
+	<y location>
+	<z location>
+
+    2.17 JAVAC_ResetFilters
+    Purpose:
+    Arguments: (none)
+
+    2.18 JAVAC_GetViewHelp
+    Purpose:
+    Arguments:
+        <view name>
+	<x location>
+	<y location>
+
+
+3. Devised to JavaScreen (via JSPoP)
+
+    3.1 JAVAC_UpdateSessionList
+    Purpose:
+    Arguments:
+	Any number of sets of the following three arguments:
+        <name>: name of file or directory.
+	<is directory>: 1 iff this is a directory.
+	<priority>: always 0 for now.
+
+    3.2 JAVAC_UpdateRecordValue
+    Purpose:
+    Arguments:
+        <data x>:
+	<data y>:
+	Any number of the following:
+	<attribute-value pair>:
+
+    3.3 JAVAC_UpdateGData
+    Purpose:
+    Arguments:
+        <view name>
+	<x multiplier>
+	<x offset>
+	<y multiplier>
+	<y offset>
+	<gdata size>
+
+    3.4 JAVAC_DrawCursor
+    Purpose:
+    Arguments:
+        <cursor name>: the name of the cursor.
+	<view name>: name of view cursor is to be drawn in.
+	<x location>: location of center?? of cursor, in pixels??, relative to ??
+	<y location>
+	<width>
+	<height>
+	<movement>: "X", "Y", or "XY" designating which directions the cursor
+	    can be moved in.
+	<fixed size>
+	<grid x>: cursor x grid size if grid is used, otherwise 0.0.
+	<grid y>: cursor y grid size if grid is used, otherwise 0.0.
+	<edge grid>: 1 if grid applies to cursor edges, otherwise 0 (grid
+	    applies to cursor center).
+	<color>
+	<draw type>: how cursor should be drawn (curently always "xor").
+
+    3.5 JAVAC_EraseCursor
+    Purpose:
+    Arguments:
+        <cursor name>: the name of the cursor.
+	<view name>: the name of the view the cursor was drawn in.
+
+    3.6 JAVAC_CreateView
+    Purpose:
+    Arguments:
+        <view name>
+	<parent name>
+	<pile name>
+	<pile mode>
+	<x location>
+	<y location>
+	<width>
+	<height>
+	<z location>
+	<dimensions>
+	<data x>
+	<data y>
+	<data width>
+	<data height>
+	<foreground color>
+	<background color>
+	<x axis type>
+	<y axis type>
+	<grid x>
+	<grid Y>
+	<rubberband enabled>
+	<cursor move enabled>
+	<drill down enabled>
+	<keys enabled>
+
+    3.7 JAVAC_DeleteChildViews
+    Purpose: tells the JavaScreen to delete all child views of the given
+        parent view.
+    Arguments:
+        <parent view name>
+
+    3.8 JAVAC_ViewDataArea
+    Purpose:
+    Arguments:
+        <view name>
+	<axis?>
+	<low value>
+	<high value>
+
+    3.9 JAVAC_UpdateViewImage
+    Purpose:
+    Arguments:
+        <view name>
+	<image size>: size of image in bytes.
+
+    3.10 JAVAC_ShowViewHelp
+    Purpose:
+    Arguments:
+        <view name>
+	<help string>
+
+
+4. JSPoP to JSS
+
+
+5. JSS to JSPoP
