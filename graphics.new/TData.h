@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.13  1996/12/18 19:34:04  jussi
+   Fixed minor bugs in ReadRecAsync(). Added FlushDataPipe().
+
    Revision 1.12  1996/12/18 15:29:45  jussi
    Added TDataRequest constructor. Added two methods.
 
@@ -103,6 +106,7 @@ class TDataRequest {
     }
 
     Boolean IsDirectIO() { return (iohandle == 0); }
+    Boolean IsActiveIO() { return IsDirectIO() || !pipeFlushed; }
 
     RecId nextId;                       // next record to return in GetRecs()
     RecId endId;                        // where current GetRecs() should end
@@ -110,6 +114,7 @@ class TDataRequest {
     int iohandle;                       // handle for data source I/O
     Boolean pipeFlushed;                // true if pipe flushed of data
 
+    streampos_t nextChunk;              // offset of next data chunk
     char *lastChunk;                    // beginning of unused pipe data chunk
     char *lastOrigChunk;                // beginning of pipe data chunk
     int lastChunkBytes;                 // size of pipe data chunk
