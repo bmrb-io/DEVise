@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/07/15 14:38:59  wenger
+#  More links of stuff needed to run cslib test programs.
+#
 #  Revision 1.8  1997/04/09 18:24:06  wenger
 #  Fixed various makefiles (removed extra -gstabs flags, etc.);
 #  setup script now links client.tcl into all cslib directories;
@@ -84,22 +87,40 @@ endif
 ln -fs /p/devise/dat/*.idx . >& /dev/null
 ln -fs /p/devise/dat/dsi94.dat . >& /dev/null
 
-cd ../solsparc
+cd ../solaris
+ln -s dev mul
+cd ../solsparc >& /dev/null
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../sun
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../hp
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../sgi
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../linux
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../aix
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../alpha_osf20
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 cd ../pmax_ul43a
 ln -s ../solaris/Makefile . >& /dev/null
+ln -s ../solaris/dev . >& /dev/null
+ln -s ../solaris/dev mul >& /dev/null
 
 cd ..
 

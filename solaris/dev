@@ -1,0 +1,63 @@
+#! /bin/csh -f
+
+setenv DEVISE_ROOT		/p/devise
+
+if ($#argv > 0) then
+  if ($1 == "p") then
+    # Use personal data, sessions, etc.
+    set personal_file = ~/.dev.personal
+    if (-f $personal_file) then
+      source $personal_file
+    else
+      echo "DEVise personal info file $personal_file doesn't exist"
+      exit 1
+    endif
+  else if ($1 == "d") then
+    # Use demo data, sessions, etc.
+    setenv DEVISE_DAT		$DEVISE_ROOT/demo/dat
+    setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/demo/schema/schema/catalog.dte
+    setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/demo/schema/schema/sysind.dte
+    setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/demo/schema/schema/minmax.dte
+    setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/demo/dat
+    setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/demo/dat
+    setenv DEVISE_CACHE   	$DEVISE_ROOT/cache
+    setenv DEVISE_SCHEMA  	$DEVISE_ROOT/demo/schema/schema
+    setenv DEVISE_SESSION 	$DEVISE_ROOT/demo/session
+  else if ($1 == "u") then
+    echo "Usage: dev|mul [p|d|u] [DEVise args]"
+    exit 1
+  endif
+
+  shift
+else
+  # Use 'default' data, sessions, etc.
+  setenv DEVISE_DAT		$DEVISE_ROOT/dat
+  setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.dte
+  setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.dte
+  setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.dte
+  setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
+  setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
+  setenv DEVISE_CACHE		$DEVISE_ROOT/cache
+  setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
+  setenv DEVISE_SESSION		$DEVISE_ROOT/session
+endif
+
+setenv DEVISE_TMP		/tmp/$USER-devise-tmp
+setenv DEVISE_WORK		/tmp/$USER-devise-work
+setenv LM_DAT			/tmp/LM/dat
+setenv LM_TMP			/tmp/LM/dat
+
+setenv DEVISE_LIB		$cwd/../lib
+setenv LM_LIB			$DEVISE_LIB/LM
+if ($0 == "mul") then
+  setenv DEVISE_EXEC		$cwd/multi/disp
+else
+  setenv DEVISE_EXEC		$cwd/generic/generic
+endif
+
+if (! -f $DEVISE_EXEC) then
+  echo "Cannot find Devise executable. Perhaps this platform is not supported?"
+  exit 1
+endif
+
+$DEVISE_EXEC $*
