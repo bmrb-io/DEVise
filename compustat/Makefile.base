@@ -1,3 +1,4 @@
+CC = g++
 CPPFLAGS = $(ARCH_FLAGS) -O -I../../tape -Wall -Wno-unused \
 	-fexternal-templates
 
