@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.22  1996/01/15 18:06:42  jussi
+#	Minor fix.
+#
 #	Revision 1.21  1996/01/13 23:54:53  jussi
 #	Recent changes had caused Unix files to show up as uncached
 #	in the stream selection list. Fixed this.
@@ -341,8 +344,11 @@ proc defineStream {base edit} {
     entry .srcdef.top.row3.e1 -relief sunken -textvariable schemafile \
 	    -width 40
     button .srcdef.top.row3.b1 -text "Select..." -width 10 -command {
-	global schemadir fsBox
+	global schemadir fsBox UserMode
 	set fsBox(path) $schemadir/logical
+	if {!$UserMode} {
+	    set fsBox(path) $schemadir/physical
+	}
 	set fsBox(pattern) *
 	set file [FSBox "Select schema file"]
 	if {$file != ""} { set schemafile $file }
@@ -736,7 +742,7 @@ proc selectSourceKey {source} {
 ############################################################
 
 proc selectUnixFile {} {
-    global schemafile fsBox datadir schemadir
+    global schemafile fsBox datadir schemadir UserMode
 
     # Get file name
     set fsBox(path) $datadir
@@ -749,6 +755,9 @@ proc selectUnixFile {} {
     }
 
     set fsBox(path) $schemadir/logical
+    if {!$UserMode} {
+	set fsBox(path) $schemadir/physical
+    }
     set fsBox(pattern) *
     set file2 [FSBox "Select schema file"]
     
