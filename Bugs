@@ -135,7 +135,7 @@ Num Date        Status  Description
 043 09/24/96	OPEN	XWindowRep, PSWindowRep don't always check that they
 			aren't overflowing points, rectAngles arrays. (rkw)
 
-044 09/25/96	OPEN	GDataBin objects take way too much memory (256K
+044 09/25/96	FIXED	GDataBin objects take way too much memory (256K
 			for Connectors). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
