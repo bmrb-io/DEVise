@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/06/24 19:45:42  jussi
+  TDataAscii no longer passes the fd of the open file to the
+  Dispatcher. TDataAscii only needs the Dispatcher to call
+  it when it's time to shut down; Cleanup() -> Checkpoint()
+  functions get called at that time.
+
   Revision 1.23  1996/06/04 19:58:47  wenger
   Added the data segment option to TDataBinary; various minor cleanups.
 
@@ -38,8 +44,8 @@
   to the Decode() function call.
 
   Revision 1.18  1996/04/20 19:56:56  kmurli
-  QueryProcFull now uses the Marker calls of Dispatcher class to call itself when
-  needed instead of being continuosly polled by the Dispatcher.
+  QueryProcFull now uses the Marker calls of Dispatcher class to call
+  itself when needed instead of being continuosly polled by the Dispatcher.
 
   Revision 1.17  1996/04/18 17:12:04  jussi
   Added missing #include <errno.h>.
@@ -118,6 +124,7 @@
 #include "DataSourceTape.h"
 #include "DevError.h"
 #include "DataSeg.h"
+#include "QueryProc.h"
 
 # define  _STREAM_COMPAT
 
@@ -128,7 +135,7 @@ static char *   srcFile = __FILE__;
 TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 {
   DO_DEBUG(printf("TDataAscii::TDataAscii(%s, %s, %d)\n", name, alias,
-	recSize));
+                  recSize));
 
   _name = name;
   _alias = alias;
@@ -155,6 +162,7 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
   // Now instantiate the appropriate type of object, according to
   // whether this is a tape or disk file, and whether or not the
   // data occupies the entire file.
+
   if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
      || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
 
@@ -165,7 +173,7 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
      else
      {
 	_data = new DataSourceSegment<DataSourceTape>(name, NULL,
-	  segOffset, segLength);
+						      segOffset, segLength);
      }
   } else {
      if ((segOffset == 0) && (segLength == 0))
@@ -175,22 +183,17 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
      else
      {
 	_data = new DataSourceSegment<DataSourceFileStream>(name, NULL,
-	  segOffset, segLength);
+							    segOffset,
+							    segLength);
      }
   }
 
-  if (_data == NULL)
-  {
-    DOASSERT(0, "Cannot open data file");
-  }
-  else
-  {
-    if (_data->Open("r") != StatusOk)
-    {
-      DOASSERT(0, "Cannot open data file");
-    }
-  }
+  DOASSERT(_data, "Out of memory");
 
+  _fileOkay = true;
+  if (_data->Open("r") != StatusOk)
+    _fileOkay = false;
+  
   _bytesFetched = 0;
   
   _lastPos = 0;
@@ -198,11 +201,9 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 
   _totalRecs = 0;
 
-  _indexSize = INIT_INDEX_SIZE;
-  _index = new long[_indexSize];
+  _indexSize = 0;
+  _index = 0;
 
-  _fileGrown = false;
-  
   Dispatcher::Current()->Register(this);
 }
 
@@ -218,6 +219,37 @@ TDataAscii::~TDataAscii()
   delete _index;
   delete _alias;
   delete _name;
+  delete _cacheFileName;
+}
+
+Boolean TDataAscii::CheckFileStatus()
+{
+  // see if file is (still) okay
+  if (!_data->IsOk()) {
+    // if file used to be okay, close it
+    if (_fileOkay) {
+      printf("Data stream %s is no longer available\n", _alias);
+      _data->Close();
+      QueryProc::Instance()->ClearTData(this);
+      _fileOkay = false;
+    }
+    Boolean old = DevError::SetEnabled(false);
+    if (_data->Open("r") != StatusOk) {
+      // file access failure, get rid of index
+      delete _index;
+      _initTotalRecs = _totalRecs = 0;
+      _initLastPos = _lastPos = 0;
+      _indexSize = 0;
+      _index = 0;
+      (void)DevError::SetEnabled(old);
+      return false;
+    }
+    (void)DevError::SetEnabled(old);
+    printf("Data stream %s has become available\n", _alias);
+    _fileOkay = true;
+  }
+
+  return true;
 }
 
 int TDataAscii::Dimensions(int *sizeDimension)
@@ -234,14 +266,29 @@ Boolean TDataAscii::HeadID(RecId &recId)
 
 Boolean TDataAscii::LastID(RecId &recId)
 {
+  if (!CheckFileStatus()) {
+    recId = _totalRecs - 1;
+    return false;
+  }
+
   if (!_data->isTape()) {
-    // see if file has grown
+    // see if file has shrunk or grown
     _currPos = _data->gotoEnd();
-    if (_currPos > _lastPos)
+    if (_currPos < _lastPos) {
+      // file has shrunk, rebuild index from scratch
+#ifdef DEBUG
+      printf("Rebuilding index...\n");
+#endif
+      RebuildIndex();
+      QueryProc::Instance()->ClearTData(this);
+    } else if (_currPos > _lastPos) {
+      // file has grown, build index for new records
+#ifdef DEBUG
+      printf("Extending index...\n");
+#endif
       BuildIndex();
-  } else {
-    if (_fileGrown)
-      BuildIndex();
+      QueryProc::Instance()->RefreshTData(this);
+    }
   }
   
   recId = _totalRecs - 1;
@@ -303,44 +350,34 @@ void TDataAscii::GetIndex(RecId id, int *&indices)
 
 int TDataAscii::GetModTime()
 {
-  int		result;
-  struct stat sbuf;
+  if (!CheckFileStatus())
+    return -1;
 
-  if (_data->isTape())
-  {
-	reportError("Can't get modification time for tape data", devNoSyserr);
-	result = -1;
-  }
-  else
-  {
-  	int status = fstat(_data->Fileno(), &sbuf);
-  	DOASSERT(status >= 0, "Cannot get file statistics");
-	result = (long) sbuf.st_mtime;
-  }
-
-  return result;
+  return _data->GetModTime();
 }
 
 char *TDataAscii::MakeCacheName(char *alias)
 {
   char *fname = StripPath(alias);
   int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
-  char *name = new char[nameLen];
+  char *name = new char [nameLen];
   sprintf(name, "%s/%s", Init::WorkDir(), fname);
   return name;
 }
 
 void TDataAscii::Initialize()
 {
-  int i = 0;
-
-  /* Read file contents into buffer */
   _cacheFileName = MakeCacheName(_alias);
 
+  if (!CheckFileStatus())
+    return;
+
   Boolean fileOpened = false;
+
   int cacheFd;
   if ((cacheFd = open(_cacheFileName, O_RDONLY, 0)) <0)
     goto error;
+
   fileOpened = true;
   
   unsigned long magicNumber;
@@ -349,7 +386,7 @@ void TDataAscii::Initialize()
     goto error;
   }
   if (magicNumber != 0xdeadbeef) {
-    printf("Cache file incompatible; rebuilding\n");
+    printf("Cache file incompatible\n");
     goto error;
   }
 
@@ -370,7 +407,7 @@ void TDataAscii::Initialize()
     goto error;
   }
   if (memcmp(cachedFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES)) {
-    printf("Cache file invalid; rebuilding\n");
+    printf("Cache file invalid\n");
     goto error;
   }
   
@@ -394,11 +431,12 @@ void TDataAscii::Initialize()
 
   if (_totalRecs >= _indexSize) {
     delete _index;
-    _indexSize = _totalRecs + INDEX_ALLOC_INCREMENT;
+    _indexSize = _totalRecs;
 #ifdef DEBUG
-    printf("Initialize:allocating %ld index elements\n", _indexSize);
+    printf("Allocating %ld index elements\n", _indexSize);
 #endif
-    _index = new long[_indexSize];
+    _index = new long [_indexSize];
+    DOASSERT(_index, "Out of memory");
   }
 
   /* read the index */
@@ -408,9 +446,9 @@ void TDataAscii::Initialize()
     goto error;
   }
   
-  for(i = 1; i < _totalRecs; i++) {
+  for(int i = 1; i < _totalRecs; i++) {
     if (_index[i - 1] > _index[i]) {
-      printf("Cached index inconsistent; rebuilding\n");
+      printf("Cached index inconsistent\n");
       goto error;
     }
   }
@@ -425,18 +463,24 @@ void TDataAscii::Initialize()
   return;
 
  error:
-  /* recover frome error by building index from scratch  */
+  /* recover from error by building index from scratch  */
   if (fileOpened)
     close(cacheFd);
+  (void)unlink(_cacheFileName);
 
-  _initTotalRecs = _totalRecs = 0;
-  _initLastPos = _lastPos = 0;
-
-  BuildIndex();
+#ifdef DEBUG
+  printf("Rebuilding index...\n");
+#endif
+  RebuildIndex();
 }
 
 void TDataAscii::Checkpoint()
 {
+  if (!CheckFileStatus()) {
+    printf("Cannot checkpoint %s\n", _alias);
+    return;
+  }
+
   printf("Checkpointing %s: %ld total records, %ld new\n", _alias,
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
@@ -445,13 +489,19 @@ void TDataAscii::Checkpoint()
     return;
   
   Boolean fileOpened = false;
+  unsigned long magicNumber = 0xdeadbeef;
+
   int cacheFd;
   if ((cacheFd = open(_cacheFileName, O_CREAT| O_RDWR,
 		      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP
-		      | S_IROTH | S_IWOTH)) < 0)
+		      | S_IROTH | S_IWOTH)) < 0) {
+    fprintf(stderr, "Cannot create cache file %s\n", _cacheFileName);
+    perror("open");
+    goto error;
+  }
+    
   fileOpened = true;
   
-  unsigned long magicNumber = 0xdeadbeef;
   if (write(cacheFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
     perror("write");
     goto error;
@@ -520,18 +570,14 @@ void TDataAscii::Checkpoint()
 
 void TDataAscii::BuildIndex()
 {
-#ifdef DEBUG
-  printf("Entering BuildIndex\n");
-#endif
-
   char buf[LINESIZE];
   char recBuf[_recSize];
   int oldTotal = _totalRecs;
   
-  // File has been appended, extend index
+  // First go to current last position of file
   if (_data->Seek(_lastPos, SEEK_SET) < 0) {
     perror("fseek");
-    DOASSERT(0, "Cannot perform file seek");
+    return;
   }
 
   _currPos = _lastPos;
@@ -568,10 +614,23 @@ void TDataAscii::BuildIndex()
     _lastPos = _data->Tell();
     DOASSERT(_lastPos >= _currPos, "Incorrect file position");
 
-  _fileGrown = false;
-
   printf("Index for %s: %ld total records, %ld new\n", _alias,
 	 _totalRecs, _totalRecs - oldTotal);
+}
+
+/* Rebuild index */
+
+void TDataAscii::RebuildIndex()
+{
+  InvalidateCache();
+
+  delete _index;
+  _initTotalRecs = _totalRecs = 0;
+  _initLastPos = _lastPos = 0;
+  _indexSize = 0;
+  _index = 0;
+
+  BuildIndex();
 }
 
 void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
@@ -617,61 +676,61 @@ void TDataAscii::ExtendIndex()
 {
 #ifdef DEBUG
   printf("ExtendIndex:allocating %ld index elements\n",
-	 _indexSize + INDEX_ALLOC_INCREMENT);
+	 _indexSize + INDEX_ALLOC_INC);
 #endif
 
-  long *newIndex = new long[_indexSize + INDEX_ALLOC_INCREMENT];
+  long *newIndex = new long [_indexSize + INDEX_ALLOC_INC];
+  DOASSERT(newIndex, "Out of memory");
   memcpy(newIndex, _index, _indexSize * sizeof(long));
   delete _index;
   _index = newIndex;
-  _indexSize += INDEX_ALLOC_INCREMENT;
+  _indexSize += INDEX_ALLOC_INC;
 }
 
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
   DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
 
+  _totalRecs += numRecs;
   if (_totalRecs >= _indexSize)         // index buffer too small?
     ExtendIndex();                      // extend it
 
-  _index[_totalRecs++] = _lastPos;
+  _index[_totalRecs - 1] = _lastPos;
   int len = strlen((char *)buf);
 
   if (_data->append(buf, len) != len) {
     perror("append");
-    DOASSERT(0, "Cannot append to file/tape");
+    DOASSERT(0, "Cannot append to file");
   }
+
   _lastPos = _data->Tell();
-
   _currPos = _lastPos;
-
-  _fileGrown = true;
 }
 
 void TDataAscii::WriteLine(void *line)
 {
+  DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
+
   int len = strlen((char *)line);
 
   if (_data->append(line, len) != len) {
     perror("append");
-    DOASSERT(0, "Cannot append to file/tape");
+    DOASSERT(0, "Cannot append to file");
   }
+
   _lastPos = _data->Tell();
-
   _currPos = _lastPos;
-
-  _fileGrown = true;
 }
 
 void TDataAscii::Cleanup()
 {
   Checkpoint();
 
-  if (_data->isTape()) {
+  if (_data->isTape())
     _data->printStats();
-    delete _data;
-    _data = NULL;
-  }
+
+  delete _data;
+  _data = NULL;
 }
 
 void TDataAscii::PrintIndices()

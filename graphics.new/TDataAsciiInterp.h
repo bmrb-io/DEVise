@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/07 16:46:01  jussi
+  This class now makes a copy of the attribute list so that attribute
+  hi/lo values can be maintained per data stream, not per schema.
+  Hi/lo values are now computed after composite parser is executed.
+
   Revision 1.6  1996/05/05 03:07:46  jussi
   Removed array of pointers to attribute info for matching values.
 
@@ -103,6 +108,7 @@ protected:
      this line is not valid. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
+  virtual void InvalidateCache();
   virtual Boolean WriteCache(int fd);
   virtual Boolean ReadCache(int fd);
 

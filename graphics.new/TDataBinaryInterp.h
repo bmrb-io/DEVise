@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/07 16:46:21  jussi
+  This class now makes a copy of the attribute list so that attribute
+  hi/lo values can be maintained per data stream, not per schema.
+  Hi/lo values are now computed after composite parser is executed.
+
   Revision 1.2  1996/05/05 03:08:37  jussi
   Added support for composite attributes. Also added tape drive
   support.
@@ -86,6 +91,7 @@ protected:
   /* Copy record to buffer. Return false if invalid record. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line);
   
+  virtual void InvalidateCache();
   virtual Boolean WriteCache(int fd);
   virtual Boolean ReadCache(int fd);
 

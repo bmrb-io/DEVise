@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/06/12 14:56:35  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.5  1996/05/22 17:52:18  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -52,8 +60,7 @@
 #include "RecId.h"
 #include "RecOrder.h"
 
-const int BIN_INIT_INDEX_SIZE= 50000;        // initial index size
-const int BIN_INDEX_ALLOC_INCREMENT = 25000; // allocation increment for index
+const int BIN_INDEX_ALLOC_INC = 25000; // allocation increment for index
 
 /* We cache the first BIN_CONTENT_COMPARE_BYTES from the
    file in the cache. The next time we start up, this cache is
@@ -163,8 +170,12 @@ protected:
      file close. Return false and the index will be rebuilt
      from scratch every time. Return true and the base class
      will reuse the index it has cached. */
-  virtual Boolean WriteCache(int fd){ return false; }
-  virtual Boolean ReadCache(int fd){ return false; }
+  virtual Boolean WriteCache(int fd) { return false; }
+  virtual Boolean ReadCache(int fd) { return false; }
+
+  /* This function is called by this class to ask the derived
+     class to invalidate all cached information */
+  virtual void InvalidateCache() {}
 
   static char *MakeCacheName(char *alias);
 
@@ -172,10 +183,12 @@ private:
   /* From DispatcherCallback */
   char *DispatchedName() { return "TDataBinary"; }
 
+  Boolean CheckFileStatus();
   virtual void Cleanup();
 
-  /* Build index */
+  /* Build or rebuild index */
   void BuildIndex();
+  void RebuildIndex();
 
   /* Extend index to hold more */
   void ExtendIndex();
@@ -191,8 +204,7 @@ private:
   char *_cacheFileName;           // name of cache file
   int _recSize;                   // size of record
   int _physRecSize;               // physical record size
-  DataSource *_data;			  // Source of data (disk file or tape)
-  Boolean _fileGrown;             // true if file has grown
+  DataSource *_data;              // Source of data (disk file or tape)
 
   RecId _lowId, _highId;          // current range to read data
   RecId _nextId, _endId;          // range of next retrieval
@@ -205,11 +217,12 @@ private:
 
   char *_recBuf;                  // record buffer
 
+  Boolean _fileOkay;              // true if file is okay
+
   long _initTotalRecs;            // initial # of records in cache
   int _initLastPos;               // initial last position in file
 
-  /* total # of bytes fetched */
-  int _bytesFetched;
+  int _bytesFetched;              // total # of bytes fetched
 };
 
 #endif

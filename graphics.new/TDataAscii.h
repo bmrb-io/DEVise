@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/12 14:56:33  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.9  1996/05/22 17:52:15  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -60,9 +68,8 @@
 #include "RecId.h"
 #include "RecOrder.h"
 
-const int INIT_INDEX_SIZE= 50000;            // initial index size
-const int INDEX_ALLOC_INCREMENT = 25000;     // allocation increment for index
-const int LINESIZE = 4096;                   // maximum size of each line
+const int INDEX_ALLOC_INC = 10000;      // allocation increment for index
+const int LINESIZE = 4096;              // maximum size of each line
 
 /* We cache the first FILE_CONTENT_COMPARE_BYTES from the
    file in the cache. The next time we start up, this cache is
@@ -174,13 +181,17 @@ protected:
 	virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
 	/* Read/Write specific to each subclass cache. The cached information
-	is to be read during file start up, and written when file closes,
-	so as to get the TData back to the state at the last
-	file close. Return false and the index will be rebuilt
-	from scratch every time. Return true and the base class
-	will reuse the index it has cached. */
+           is to be read during file start up, and written when file closes,
+           so as to get the TData back to the state at the last
+           file close. Return false and the index will be rebuilt
+           from scratch every time. Return true and the base class
+           will reuse the index it has cached. */
 	virtual Boolean WriteCache(int fd) { return false; }
 	virtual Boolean ReadCache(int fd) { return false; }
+
+        /* This function is called by this class to ask the derived
+           class to invalidate all cached information */
+        virtual void InvalidateCache() {}
 
 	static char *MakeCacheName(char *alias);
 
@@ -188,10 +199,12 @@ private:
 	/* From DispatcherCallback */
 	char *DispatchedName() { return "TDataAscii"; }
 
+	Boolean CheckFileStatus();
 	virtual void Cleanup();
 
-	/* Build index */
+	/* Build or rebuild index */
 	void BuildIndex();
+	void RebuildIndex();
 
 	/* Extend index to hold more */
 	void ExtendIndex();
@@ -206,8 +219,7 @@ private:
 	char *_alias;                   // alias of file/dataset
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
-	DataSource *_data;				// Source of data (disk file or tape)
-	Boolean _fileGrown;             // true if file has grown
+	DataSource *_data;              // Source of data (disk file or tape)
 
 	RecId _lowId, _highId;          // current range to read data
 	RecId _nextId, _endId;          // range of next retrieval
@@ -218,13 +230,12 @@ private:
 	long _lastPos;                  // position of last record in file
 	long _currPos;                  // current file position
 
-	int _cacheFd;                   // file descriptor of cache
+        Boolean _fileOkay;              // true if file is okay
 
 	long _initTotalRecs;            // initial # of records in cache
-
 	int _initLastPos;               // initial last position in file
 
-	/* total # of bytes fetched */
-	int _bytesFetched;
+	int _bytesFetched;              // total # of bytes fetched
 };
+
 #endif

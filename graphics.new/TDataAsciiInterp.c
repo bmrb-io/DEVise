@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/05/11 03:14:40  jussi
+  Made this code independent of some control panel variables like
+  _fileAlias and _fileName.
+
   Revision 1.15  1996/05/07 16:46:00  jussi
   This class now makes a copy of the attribute list so that attribute
   hi/lo values can be maintained per data stream, not per schema.
@@ -211,6 +215,15 @@ TDataAsciiInterp::TDataAsciiInterp(char *name, char *alias, int recSize,
 
 TDataAsciiInterp::~TDataAsciiInterp()
 {
+}
+
+void TDataAsciiInterp::InvalidateCache()
+{
+    for(int i = 0; i < _attrList.NumAttrs(); i++) {
+        AttrInfo *info = _attrList.Get(i);
+        info->hasHiVal = false;
+        info->hasLoVal = false;
+    }
 }
 
 Boolean TDataAsciiInterp::WriteCache(int fd)

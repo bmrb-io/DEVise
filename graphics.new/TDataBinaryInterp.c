@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/11 03:14:52  jussi
+  Made this code independent of some control panel variables like
+  _fileAlias and _fileName.
+
   Revision 1.5  1996/05/07 16:46:20  jussi
   This class now makes a copy of the attribute list so that attribute
   hi/lo values can be maintained per data stream, not per schema.
@@ -171,6 +175,15 @@ TDataBinaryInterp::TDataBinaryInterp(char *name, char *alias, int recSize,
 
 TDataBinaryInterp::~TDataBinaryInterp()
 {
+}
+
+void TDataBinaryInterp::InvalidateCache()
+{
+    for(int i = 0; i < _attrList.NumAttrs(); i++) {
+        AttrInfo *info = _attrList.Get(i);
+        info->hasHiVal = false;
+        info->hasLoVal = false;
+    }
 }
 
 Boolean TDataBinaryInterp::WriteCache(int fd)
