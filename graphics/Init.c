@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/12/02 23:46:29  wenger
+  Changes as per request from Miron: minimum window size is now 1x1; default
+  is to not show trademark notice in windows.
+
   Revision 1.49  1998/11/16 18:58:59  wenger
   Added options to compile without DTE code (NO_DTE), and to warn whenever
   the DTE is called (DTE_WARN).
@@ -354,7 +358,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\nOptions are:\n");
   fprintf(stderr, "\t-journal <file>: name of journal file\n");
   fprintf(stderr, "\t-playback <file>: journal file to play back\n");
-  fprintf(stderr, "\t-buffer <size>: buffer size in pages\n");
+  fprintf(stderr, "\t-buffer <size>: buffer size in 4k pages\n");
   fprintf(stderr, "\t-sbuffer <size>: stream buffer size in pages\n");
   fprintf(stderr, "\t-policy <policy>: buffer replacement policy, one of:\n");
   fprintf(stderr, "\t                  lru, fifo, lifo, focal, or rnd\n");
