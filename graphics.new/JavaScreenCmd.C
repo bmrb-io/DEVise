@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/09/08 20:52:18  wenger
+  Oops!  Forgot to change SaveSession usage message.
+
   Revision 1.28  1998/09/08 20:26:17  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -340,7 +343,15 @@ JavaScreenCmd::OpenSession()
 
         string winName(window->GetName());
         string imageName(Init::TmpDir());
-        imageName += "/" + winName + ".gif";
+		// Remove slashes from window name, so when it's used as part of
+		// a file path it won't goof things up.
+		string winName2(winName);
+		for (int index = 0; index < (int)winName2.length(); index++) {
+			if (winName2[index] == '/') {
+				winName2[index] = '_';
+			}
+		}
+        imageName += "/" + winName2 + ".gif";
 #if defined(DEBUG)
         cout << "imageName = " << imageName << endl;
 #endif
@@ -693,7 +704,7 @@ JavaScreenCmd::SaveSession()
 
 	Boolean saveSelView;
 	if (_argc == 1) {
-		saveSelView = false;
+		saveSelView = true;
 	} else if (_argc == 2) {
 		saveSelView = atoi(_argv[1]);
 	} else {
@@ -1097,12 +1108,16 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 			server = cmdContainerp->getDeviseServer();
 			if (server->WriteImagePort(buf, nbytes) <0)
 			{
+				reportErrSys("write image port");
 				status = FAIL;
 				break;
 			}
 			filesize += nbytes;
 		}
 		close(fd);
+#if defined(DEBUG)
+        printf("  Image file size = %d\n", filesize);
+#endif
 	}
 
 #if defined(DEBUG)
@@ -1141,6 +1156,9 @@ JavaScreenCmd::SendChangedWindows()
 	
 			int	filesize;
 			filesize = getFileSize(fileName);
+#if defined(DEBUG)
+            printf("  Image file size = %d\n", filesize);
+#endif
 			if (filesize >0)
 			{
 				if (result == DONE) {
@@ -1181,7 +1199,8 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 	winInfo._winName.c_str());
 #endif
 
-	const char*	fileName = winInfo._imageName.c_str();
+	char*	fileName = CopyString(winInfo._imageName.c_str());
+
 	ControlCmdType	status = DONE;
 	int		filesize = 0;
 
@@ -1252,6 +1271,9 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 		}
 		delete [] argv;
 	}
+
+	delete [] fileName;
+
 #if defined(DEBUG)
     printf("exiting JavaScreenCmd::RequestCreateWindow(); status = %d\n",
 	  status);

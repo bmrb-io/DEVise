@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.115  1998/09/04 17:26:13  wenger
+  Got Tasvir images to work in pixmaps (when running the JavaScreen, for
+  example) -- fixes bug 385.
+
   Revision 1.114  1998/08/24 14:57:32  wenger
   Added misc. debug output.
 
@@ -973,6 +977,7 @@ void XWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
 
   FILE *fp = fopen(gifFile, "wb");
   if (!fp) {
+      reportErrSys("open");
       fprintf(stderr, "Cannot open file %s for writing\n", gifFile);
       return;
   }

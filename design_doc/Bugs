@@ -1468,6 +1468,15 @@ Num Date        Status  Description
 			'.MarsM16_dat#CENTER_LATITUDE_vs_CENTER_LONGITUDE'.
 			(rkw)
 
+387 09/09/98	OPEN	Can't open BAA.tk, MolBio.tk, NIMA.tk, or WordCount.tk
+			demo sessions with JavaScreen. (rkw)
+
+388 09/09/98	FIXED	The 'Mars airbrush images: 4 pixels/degree' window
+			is missing when the MarsDemo.ds session is opened
+			in the JavaScreen.  (rkw)
+
+389 09/09/98	OPEN	EmbeddedTk doesn't work with JavaScreen. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

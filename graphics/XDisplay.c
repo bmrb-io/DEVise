@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.69  1998/05/05 15:14:55  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.68  1998/04/16 21:50:53  wenger
   Committed Sanjay's text code.
 
@@ -525,6 +530,7 @@ void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
   if (format == GIF) {
     FILE *fp = fopen(filename, "wb");
     if (!fp) {
+	reportErrSys("open");
         fprintf(stderr, "Cannot open file %s for writing\n", filename);
         return;
     }
@@ -567,6 +573,7 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 #endif
 	      FILE *fp = fopen(fn, "wb");
 	      if (!fp) {
+	         reportErrSys("open");
 		 fprintf(stderr, "Cannot open file %s for writing.\n", fn);
 		 return;
 	      }
@@ -595,6 +602,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
   if (format == GIF) {
      FILE *fp1 = fopen(gifFilename,"wb");
      if (!fp1) {
+	reportErrSys("open");
 	fprintf(stderr, "Cannot open file %s for writing\n", gifFilename);
 	return;
       }
@@ -613,6 +621,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
 #endif
      FILE *fp2 = fopen(mapFileName,"wb");
      if (!fp2) {
+	reportErrSys("open");
         fprintf(stderr, "Cannot open file %s for writing\n", mapFileName);
         return;
       }
