@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/15 17:00:53  jussi
+  Initial revision.
+*/
 
 #ifndef StringStorage_h
 #define StringStorage_h
@@ -32,7 +35,10 @@ class StringStorage {
         key = _stringNum++;
         int code = _strings.insert(string, key);
         if (code < 0) return code;
-        return _keys.insert(key, string);
+        code = _keys.insert(key, string);
+        if (code >= 0)
+          return 1;
+        return code;
     }
 
     static int Lookup(char *string, int &key) {
