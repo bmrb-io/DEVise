@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/27 00:20:51  jussi
+  Added -postscript command option.
+
   Revision 1.8  1996/01/11 21:53:06  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -104,6 +107,7 @@ char *Init::_progName = 0; /* name of program */
 char *Init::_workDir = 0; /* name of work directory */
 char *Init::_tmpDir = 0;/* name of temp directory */
 char *Init::_sessionName = "session.tk";	/* name of program */
+Boolean Init::_dispLogo = true;
 char *Init::_postScript = 0;
 char *Init::_qpName = "default"; /* name of query processor */
 Boolean Init::_restore = false; /* TRUE if we need to restore a session file */
@@ -383,6 +387,11 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	_simpleInterpreter = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1],"nologo") == 0) {
+	_dispLogo = false;
+	MoveArg(argc,argv,i,1);
       }
 
       else if (strcmp(&argv[i][1],"abort") == 0) {

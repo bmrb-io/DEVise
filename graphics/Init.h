@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/27 00:22:11  jussi
+  Added _postScript variable.
+
   Revision 1.2  1995/09/05 21:12:53  jussi
   Added/updated CVS header.
 */
@@ -79,6 +82,7 @@ public:
   static Boolean DispGraphics() { return _dispGraphics; }
   static Boolean BatchRecs() { return _batchRecs; }
   static Boolean PrintViewStat() { return _printViewStat; }
+  static Boolean DisplayLogo() { return _dispLogo; }
 
   /*
      return name of script file to be executed
@@ -104,6 +108,7 @@ private:
   static char *_tmpDir;    /* name of temp directory */
   static char *_workDir;    /* name of program */
   static char *_sessionName;
+  static Boolean _dispLogo;
   static char *_postScript;
   static long _progModTime; /* last time program was modified */
   static Boolean _randomize; /* TRUE if TData retrieval is randomized */

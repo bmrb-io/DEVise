@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/02/02 21:53:45  jussi
+  Removed SetFgColor() right after SetXorMode() which changed the
+  effect of the xor function.
+
   Revision 1.21  1996/02/01 20:28:52  jussi
   Axis areas were cleared even if axes were not displayed. Fixed
   this.
@@ -103,6 +107,7 @@
 #include "Control.h"
 #include "TimeStamp.h"
 #include "Parse.h"
+#include "Init.h"
 #ifdef JPEG
 #include "Jpeg.h"
 #endif
@@ -953,6 +958,8 @@ void View::ReportQueryDone(int bytes)
 
   GetWindowRep()->PopClip();
 
+  DrawLogo();
+
   _hasLastFilter = false;
   
   ControlPanel::Instance()->SetIdle();
@@ -1043,6 +1050,7 @@ void View::Run()
     /* Draw cursors */
     _cursorsOn = false;
     (void)DrawCursors();
+    DrawLogo();
 
     _hasExposure = false;
     _filterChanged = false;
@@ -1538,6 +1546,43 @@ void View::DrawHighlight()
     winRep->AbsoluteLine(x + _label.extent / 2, y + _label.extent, 
 			 x + _label.extent / 2, labelH, _label.extent);
   }
+}
+
+void View::DrawLogo()
+{
+#ifdef DEBUG
+  printf("DrawLogo\n");
+#endif
+
+  if (!Init::DisplayLogo())
+    return;
+
+  // logo gets displayed in small font (default: 5x7)
+  char *logo = "DEVise v0.9";
+  const int logoWidth = 5 * strlen(logo) + 2 - 1;
+  const int logoHeight = 7 + 2 - 1;
+
+  int x, y;
+  unsigned int w, h;
+  Geometry(x, y, w, h);
+
+  w--;
+
+  WindowRep *win = GetWindowRep();
+  win->PushTop();
+  win->MakeIdentity();
+
+  win->SetSmallFont();
+  win->SetFgColor(GetFgColor());
+  win->FillRect(x + w - logoWidth, y, logoWidth, logoHeight);
+  win->SetFgColor(GetBgColor());
+  win->FillRect(x + w - logoWidth + 1, y + 1, logoWidth - 2, logoHeight - 2);
+  win->SetFgColor(GetFgColor());
+  win->AbsoluteText(logo, x + w - logoWidth + 1, y + 1, logoWidth - 2,
+		    logoHeight - 2, WindowRep::AlignWest, true);
+  win->SetNormalFont();
+
+  win->PopTransform();
 }
 
 void View::SetXAxisAttrType(AttrType type)

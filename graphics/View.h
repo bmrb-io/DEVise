@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/01/30 00:02:41  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.12  1996/01/16 17:06:47  jussi
   Minor updates.
 
@@ -273,8 +277,8 @@ protected:
 	void GetDataArea(int &x, int &y, int &width,int &height);
 
 private:
-	/* Draw highlight */
 	void DrawHighlight();
+	void DrawLogo();
 
 	/* from ControlPanelCallback */
 	void ModeChange(ControlPanel::Mode mode);
