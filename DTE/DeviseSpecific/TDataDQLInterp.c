@@ -103,7 +103,7 @@ void TDataDQLInterpClassInfo::ParamNames(int &argc, char **&argv)
 ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 {
 
-#if defined(DEBUG) || 0
+#if defined(DEBUG)
 	cout << "In TDataDQLInterpClassInfo::CreateWithParams(";
 	cout << argc << ", {";
 	for(int i = 0; i < argc; i++){
@@ -169,6 +169,11 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
   DataSeg::Set(_name, _query, 0, 0);
 
   TDataDQLInterp *tdata = new TDataDQLInterp(_name, attrList, _query);
+  if (currExcept) {
+    CATCH(cerr << currExcept->toString())
+    delete tdata;
+    return NULL;
+  }
 
 //  bool tdataFailed = tdata->fail();
 

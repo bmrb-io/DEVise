@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/10/21 17:16:39  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.28  1998/10/20 19:46:15  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -790,10 +796,12 @@ DeviseCommand_create::Run(int argc, char** argv)
         printf("Create - return value = %s\n", name);
     #endif
         control->SetIdle();
-        if (!name)
-          ReturnVal(API_ACK, "");
-        else
+        if (!name) {
+          ReturnVal(API_NAK, "cannot create object");
+	  return -1;
+        } else {
           ReturnVal(API_ACK, name);
+	}
         return 1;
       }
     }

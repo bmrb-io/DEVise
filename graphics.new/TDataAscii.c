@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1998/03/04 19:11:04  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.62  1997/12/23 23:35:38  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -359,8 +362,11 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
       _data->Seek(0, SEEK_SET);
     
-      if (i > 0)
+      if (i > 0) {
         estNumRecs = 1.2 * _data->DataSize() / (recSizeSum / i);
+      } else {
+	estNumRecs = 0;
+      }
     }
 
     _indexP = new FileIndex((unsigned long)estNumRecs);

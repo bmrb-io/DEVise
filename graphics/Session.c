@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/10/20 19:46:00  wenger
+  Mapping dialog now displays the view's TData name; "Next in Pile" button
+  in mapping dialog allows user to edit the mappings of all views in a pile
+  without actually flipping them; user has the option to show all view names;
+  new GUI to display info about all links and cursors; added API and GUI for
+  count mappings.
+
   Revision 1.31  1998/09/30 17:44:32  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -532,7 +539,7 @@ Session::CreateTData(char *name)
     }
   }
 #if defined(DEBUG)
-  printf("  catEntry = <%s>\n", catEntry);
+  printf("  catEntry = <%s>\n", catEntry != NULL ? catEntry : "NULL");
 #endif
 
   // Get rid of braces surrounding the whole catalog entry and semicolon at
@@ -602,12 +609,22 @@ Session::CreateTData(char *name)
     if (isDteSource) {
 	  // TEMP -- memory may be leaked in here
       result = dteImportFileType(name);
+      if (result == NULL) {
+	char buf[2048];
+	sprintf(buf, "Error parsing schema %s", name);
+	reportErrNosys(buf);
+	status = StatusFailed;
+      }
     } else {
       result = ParseCat(schemaFile);
-      if (strcmp(schema, result)) {
-        printf("File %s appears to contain schema %s, not %s\n", schemaFile,
-	    result, schema);
-        strcpy(schema, result);
+      if (result == NULL) {
+	status = StatusFailed;
+      } else {
+        if (strcmp(schema, result)) {
+          printf("File %s appears to contain schema %s, not %s\n", schemaFile,
+	      result, schema);
+          strcpy(schema, result);
+        }
       }
     }
   }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1998/07/24 04:37:47  donjerko
+  *** empty log message ***
+
   Revision 1.25  1998/07/06 21:07:02  wenger
   More memory leak hunting -- partly tracked down some in the DTE.
 
@@ -114,11 +117,18 @@ Engine::~Engine(){
 }
 
 const ParseTree* Engine::parse(){
+#if 0 // This assertion sometimes fails if there were previously problems
+      // opening a data source.  RKW 1998-10-28.
 	assert(globalParseTree == 0);
+#else
+	delete globalParseTree;
+	globalParseTree = 0;
+#endif
 	queryString = query.c_str();
 	rescan = true;
 	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
+		globalParseTree = 0;
 		string msg = "Failed to parse the query: " + query;
 		THROW(new Exception(msg), 0);
 		// throw Exception(msg);

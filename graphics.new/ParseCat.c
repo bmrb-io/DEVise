@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.45  1998/09/08 16:06:50  wenger
+  Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
+  the creation of multiple classes with the same name; fixed session file.
+
   Revision 1.44  1998/06/28 21:41:13  beyer
   changed from gcc String to stl string
 
@@ -520,8 +524,7 @@ ParseAttr(
 		{
 			char buf[1024];
 			sprintf(buf, "string attr '%s' needs length", args[1]);
-			DOASSERT(0, buf);
-			fprintf(stderr, "%s", buf);
+			reportErrNosys(buf);
 			result = StatusFailed;
 			return result;
 		}
@@ -536,8 +539,12 @@ ParseAttr(
 	}
 
 	char *attrName = CopyString(args[1]);
-	DOASSERT(strchr(attrName, '/') == NULL,
-	  "Cannot have '/' in attribute name");
+    if (strchr(attrName, '/') != NULL) {
+	  char buf[256];
+	  sprintf(buf, "Cannot have '/' in attribute name (%s)", attrName);
+	  reportErrNosys(buf);
+	  return StatusFailed;
+	}
 
 	Boolean hasMatchVal = false;
 	AttrVal matchVal;
@@ -1257,12 +1264,14 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
     {
       char *sname;
       DataSourceFileStream	schemaSource(token2, StripPath(token2));
-      if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
+      if (!(sname = ParseCatPhysical(&schemaSource, false))) {
+		result = NULL;
+	  } else {
+        InsertCatFile(CopyString(catFile));
 
-      InsertCatFile(CopyString(catFile));
-
-      DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
-      result = ParseCatLogical(&logSchemaSource, sname);
+        DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
+        result = ParseCatLogical(&logSchemaSource, sname);
+	  }
     }
   }
 
@@ -1318,12 +1327,14 @@ ParseCat(char *catFile)
     {
       char *sname;
       DataSourceFileStream	schemaSource(token2, StripPath(token2));
-      if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
+      if (!(sname = ParseCatPhysical(&schemaSource, false))) {
+		result = NULL;
+      } else {
+        InsertCatFile(CopyString(catFile));
 
-      InsertCatFile(CopyString(catFile));
-
-      DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
-      result = ParseCatLogical(&logSchemaSource, sname);
+        DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
+        result = ParseCatLogical(&logSchemaSource, sname);
+	  }
     }
   }
 
@@ -1359,7 +1370,7 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
 
 
 /*------------------------------------------------------------------------------
- * function: ParseCat
+ * function: ParseCatDQL
  * Read and parse a schema file.
  */
 int

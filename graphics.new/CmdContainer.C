@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/10/21 17:16:36  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.18  1998/10/20 19:46:12  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -457,7 +463,7 @@ int
 CmdContainer::Run(int argc, char** argv, ControlPanel* control, 
 	CmdDescriptor& cmdDes)
 {
-	bool	success = true;
+	int		retval = 1;
 	char*	errmsg = NULL;
 	int		cid;
 	bool	inGroup = false;
@@ -478,7 +484,7 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 	switch (srcType)
 	{
 		case CmdSource::LOGFILE:
-				success = RunOneCommand(argc, argv, control);
+				retval = RunOneCommand(argc, argv, control);
 				break;
 
 		case CmdSource::NETWORK:
@@ -491,7 +497,7 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 			else
 			if (cmdDes.getDest() == CmdDescriptor::FOR_SERVER)
 			{
-				success = RunOneCommand(argc, argv, control);
+				retval = RunOneCommand(argc, argv, control);
 			}
 
 			//we do not log network commands at this stage
@@ -499,12 +505,12 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 			break;
 		case CmdSource::JAVACLIENT:
 			// run JAVA commands with logging turned off
-			success = RunOneCommand(argc, argv, control);
+			retval = RunOneCommand(argc, argv, control);
 			break;
 		case CmdSource::USER:
 		case CmdSource::CLIENT:
 			cid = cmdDes.getCmdsource()->getClientid();
-			success = false;
+			retval = -1;
 
 			// access-control, this is a temporary hack
 			// we need better solution!
@@ -525,12 +531,12 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 			if (!inGroup)
 			{
 				// always allowed
-				success = RunOneCommand(argc, argv, control);
+				retval = RunOneCommand(argc, argv, control);
 
 				// we do not log this command
 				if (strcmp(argv[0],"playLog"))
 				{
-					if (success)
+					if (retval > 0)
 						logCommand(argc, argv, cmdDes);
 					else
 						cerr <<"Commands failed, not logged"<<endl;
@@ -540,35 +546,35 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 			if (!activeGroup)
 			{
 				// commands are disallowd
-				success = false;
+				retval = -1;
 				errmsg = "Non-leader should not operate!";
 				_server->ReturnVal(cid, (u_short)API_NAK, errmsg);
 			}
 			else
 			{
 				// group cast commands first
-				success = _server->GroupCast(cInfo->gname, cInfo->cname,
+				retval = _server->GroupCast(cInfo->gname, cInfo->cname,
 						SS_CSS_Cmd,
-						argc, argv, errmsg);
+						argc, argv, errmsg) ? 1 : -1;
 
 				// run it locally
-				if (!success)
+				if (retval <= 0)
 					cerr <<"Error in groupcast:"<<errmsg<<endl;
-				success = RunOneCommand(argc, argv, control);
-				if (success)
+				retval = RunOneCommand(argc, argv, control);
+				if (retval > 0)
 					logCommand(argc, argv, cmdDes);
 			}
 			break;
 		case CmdSource::INTERNAL:
-			success = RunOneCommand(argc, argv, control);
-			if (success)
+			retval = RunOneCommand(argc, argv, control);
+			if (retval > 0)
 				logCommand(argc, argv, cmdDes);
 			else
 					cerr <<"Commands failed, not logged"<<endl;
 			break;
 		case CmdSource::SESSION_PLAY:
 		case CmdSource::SESSION_SAVE:
-			success = RunOneCommand(argc, argv, control);
+			retval = RunOneCommand(argc, argv, control);
 			break;
 		default:
 			errmsg = "Illegal command source type";
@@ -576,10 +582,10 @@ CmdContainer::Run(int argc, char** argv, ControlPanel* control,
 	}
 
 	// set return value
-	cmdDes.setRetval(success, errmsg);
-	if (!success)
+	cmdDes.setRetval(retval>0 ? true : false, errmsg);
+	if (retval <= 0)
 		cerr << cmdDes.getErrmsg();
-	return success;
+	return retval;
 }
 
 int

@@ -15,6 +15,13 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.168  1998/10/20 19:46:28  wenger
+#	Mapping dialog now displays the view's TData name; "Next in Pile" button
+#	in mapping dialog allows user to edit the mappings of all views in a pile
+#	without actually flipping them; user has the option to show all view names;
+#	new GUI to display info about all links and cursors; added API and GUI for
+#	count mappings.
+#
 #	Revision 1.167  1998/07/17 15:33:47  wenger
 #	Improved link creation GUI as per request from Raghu; started on
 #	DataReader schema GUI; changed version to 1.5.4.
@@ -1299,6 +1306,11 @@ menu .mbar.tdata.menu.filterMenu -tearoff 0
 
 .mbar.tdata.menu add cascade -label "Schema" \
 	-menu .mbar.tdata.menu.schemaMenu 
+
+.mbar.tdata.menu add separator
+
+.mbar.tdata.menu add command -label "Check Data Sources" \
+	-command { CheckDataSources }
 
 menu .mbar.tdata.menu.import -tearoff 0
 foreach sourcetype [lsort [array names sourceTypes]] {

@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.75  1998/07/17 15:33:55  wenger
+#	Improved link creation GUI as per request from Raghu; started on
+#	DataReader schema GUI; changed version to 1.5.4.
+#
 #	Revision 1.74  1998/02/20 08:46:31  beyer
 #	resurected histograms
 #
@@ -2390,3 +2394,113 @@ proc mapFollow {newtype} {
 	    clicking on Edit." "" 0 OK
 
 }
+
+############################################################
+# Check data sources (allow user to delete those that cannot be
+# successfully opened).
+
+proc CheckDataSources {} {
+    global env
+
+    # Open and initialize the log file and "bad source" file.
+    # When the checking is done, open the "bad source" file as a session
+    # to delete the bad sources.
+    set logfile [open "data_source_check" w]
+    set badfile [open "bad_data_sources" w]
+
+    set catfile $env(DEVISE_HOME_TABLE)
+    puts $logfile "Checking data sources in $catfile"
+    set curdate [exec date]
+    puts $logfile $curdate
+
+    puts $badfile "# Bad data sources ($catfile, $curdate)"
+
+    # Get the last source previously checked, if any (allows us to start
+    # the check from the middle of the catalog somewhere if we previously
+    # hit a source that crashes DEVise).
+    global lastChecked
+    set lastChecked ""
+    set indexfileName "source_check_index"
+    if {[file exists $indexfileName]} {
+	set indexfile [open $indexfileName r]
+	gets $indexfile lastChecked
+	close $indexfile
+    }
+    set indexfile [open $indexfileName w]
+
+    CheckDataSourceDir [CWD] $logfile $badfile $indexfile
+
+    puts "\nAll data sources checked"
+    puts $logfile "\nAll data sources checked"
+
+    close $indexfile
+    exec rm $indexfileName
+    close $badfile
+    close $logfile
+}
+
+############################################################
+# Check all data sources in the given directory.
+
+proc CheckDataSourceDir {directory logfile badfile indexfile} {
+
+    set errCode [catch {DEVise dteListCatalog $directory} dataSources]
+    if {$errCode != 0} {
+        dialog .noName "DTE Error" $dataSources "" 0 OK
+        return
+    }
+
+    if {$directory != "."} {
+	set directory "$directory."
+    }
+
+    foreach dataSource $dataSources {
+	set name [lindex $dataSource 0]
+	if {[lindex $dataSource 1] == "Directory"} {
+	    CheckDataSourceDir $directory$name $logfile $badfile $indexfile
+	} else {
+	    TryDataSource $directory$name $logfile $badfile $indexfile
+	}
+    }
+}
+
+############################################################
+
+proc TryDataSource {sourceName logfile badfile indexfile} {
+    global lastChecked
+
+    if {$lastChecked != ""} {
+	if {$sourceName == $lastChecked} {
+	    set lastChecked ""
+	}
+    } else {
+	seek $indexfile 0
+	puts $indexfile $sourceName
+	DoTryDataSource $sourceName $logfile $badfile
+    }
+}
+
+############################################################
+# Test the given data source; write info to the log file, and write
+# a delete command to the badfile if this source can't be opened.
+
+proc DoTryDataSource {sourceName logfile badfile} {
+
+    puts ""
+    puts "Testing data source $sourceName:"
+    puts $logfile ""
+    puts $logfile "Testing data source $sourceName:"
+
+    if { [catch { DEVise createTData $sourceName }] } {
+	puts "Data source $sourceName could not be opened"
+	puts $logfile "Data source $sourceName could not be opened"
+	puts $badfile "DEVise dteDeleteCatalogEntry $sourceName"
+    } else {
+	puts "Data source $sourceName successfully opened"
+	puts $logfile "Data source $sourceName successfully opened"
+    }
+
+    DEVise clearAll
+}
+
+############################################################

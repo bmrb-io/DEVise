@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/08/17 18:52:10  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.17  1997/01/09 18:46:53  jussi
   Flush stdout before forking a process.
 
@@ -262,6 +266,11 @@ long long TapeDrive::seek(long long offset)
   TAPEDBG(cout << "Seek to offset " << offset << " of tape "
           << fileno(file) << endl);
 
+  if (!initialized) {
+    fprintf(stderr, "TapeDrive object not initialized\n");
+    return -1;
+  }
+
   DOASSERT(offset >= 0, "Invalid tape offset");
 
   if (bufferType == writeBuffer) {      // flush out write buffer
@@ -301,9 +310,14 @@ int TapeDrive::read(void *buf, int recSize, int binary)
            << (binary ? "binary" : "ASCII")
            << " bytes to " << (void *)buf << endl);
 
+  if (!initialized) {
+    fprintf(stderr, "TapeDrive object not initialized\n");
+    return -1;
+  }
+
   if (bufferType != readBuffer) {
     cerr << "Must do a seek before switching from writing to reading" << endl;
-    exit(1);
+    return -1;
   }
 
   DOASSERT(bufferOffset >= 0 && bufferOffset <= blockSize,

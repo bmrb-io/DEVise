@@ -1629,6 +1629,13 @@ Num Date        Status  Description
 			put recId in the AS clause, but this query is
 			then rejected because recId is a reserved name. (rkw)
 
+426 10/21/98	OPEN	Doing the '5' (home) key on a view with a constant
+			mapping does not work and may cause a crash. (rkw)
+
+427 10/27/98	OPEN	It's impossible to add a data source to an empty
+			directory with the GUI, because you always get the
+			message 'Discarding selection of ".."'. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
