@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.75  1997/01/23 17:02:23  wenger
+  Changed startup code in TkControl so that '-sharedMem' argument works
+  in batch mode.
+
   Revision 1.74  1996/12/20 16:26:26  jussi
   Removed call to SemaphoreV::create().
 
@@ -333,7 +337,7 @@ TkControlPanel::TkControlPanel()
   
   View::InsertViewCallback(this);
 
-  _busy = false;
+  _busy = 0;
   _argv0 = CopyString(Init::ProgName());
 
   _interp = Tcl_CreateInterp();

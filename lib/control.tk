@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.112  1997/01/24 16:38:34  wenger
+#	Fixed bugs 078, 103, 125; also improved X font handling (does a better
+#	job of finding fonts).
+#
 #	Revision 1.111  1997/01/22 23:47:27  jussi
 #	Removed references to queryWinOpened, query3dWinOpened,
 #	historyWinOpened, stackWinOpened, and helpWinOpened.
@@ -924,9 +928,11 @@ proc ChangeStatus { status } {
         Update3DLocation
         Update2DQueryWindow
         UpdateHistoryWindow
+	EnableStackControl
     } else {
 	.panel.messages.status configure -text "Stop" -fg red \
                 -activeforeground red -relief raised -state normal
+	DisableStackControl
     }
 }
 

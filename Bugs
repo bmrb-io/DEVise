@@ -570,6 +570,11 @@ Num Date        Status  Description
 
 136 01/23/97	FIXED	'5' key doesn't work for negative values. (rkw)
 
+137 01/27/97	WORK	Pile two or more views, click the 'Flip' button
+			while the pile is drawing -> you get a PopClip
+			underflow error. (See test/3view_pile.tk for an
+			example session.) (ssl/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

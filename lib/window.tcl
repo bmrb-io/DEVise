@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1997/01/23 21:47:45  wenger
+#  Fixed a couple more OK/Cancel button pairs.
+#
 #  Revision 1.23  1997/01/23 19:28:27  jussi
 #  Removed debugging messages. Fixed bug #126.
 #
@@ -682,6 +685,26 @@ proc DoWindowStackControl {} {
     if {$curView != ""} {
 	.stack.title.text configure -text "View: $curView"
     }
+}
+
+############################################################
+
+proc EnableStackControl {} {
+    .stack.bot.row1.but.pile config -state normal
+    .stack.bot.row2.but.unpile config -state normal
+    .stack.bot.row1.but.stack config -state normal
+    .stack.bot.row2.but.unstack config -state normal
+    .stack.bot.row1.but.flip config -state normal
+}
+
+############################################################
+
+proc DisableStackControl {} {
+    .stack.bot.row1.but.pile config -state disabled
+    .stack.bot.row2.but.unpile config -state disabled
+    .stack.bot.row1.but.stack config -state disabled
+    .stack.bot.row2.but.unstack config -state disabled
+    .stack.bot.row1.but.flip config -state disabled
 }
 
 ############################################################
