@@ -98,7 +98,7 @@ Num Date        Status  Description
 
 031 08/15/96	OPEN	Rotation of stacked views doesn't seem to work. (rkw)
 
-032 08/15/96	OPEN	After removing a view from a window, the remaining
+032 08/15/96	FIXED	After removing a view from a window, the remaining
 			views aren't redrawn until you click in that window.
 			(rkw)
 
@@ -287,7 +287,7 @@ Num Date        Status  Description
 084 11/25/96	OPEN	Temporary print file isn't removed after printing.
 			(rkw)
 
-085 11/26/96	OPEN	Record links to window with map not working right in
+085 11/26/96	FIXED	Record links to window with map not working right in
 			session test/a2.tk (_all_ records are initially
 			drawn; then if you force a redraw, only the correct
 			ones are drawn). (rkw)
@@ -295,7 +295,7 @@ Num Date        Status  Description
 086 11/27/96	OPEN	Can't print session wenger/session/PrintTest6.tk
 			(never finishes). (rkw)
 
-087 12/02/96	OPEN	Removing a view causes DEVise to exit. (rkw)
+087 12/02/96	FIXED	Removing a view causes DEVise to exit. (rkw)
 
 088 12/02/96	OPEN	If you click on a view to select it while data is
 			being drawn, the XOR'ing of the selection box gets

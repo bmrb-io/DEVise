@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/12/03 17:00:26  jussi
+  Added SetFont() for generic font support. Removed SetSmallFont().
+
   Revision 1.36  1996/11/26 16:47:48  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -189,6 +192,7 @@
 #include "Exit.h"
 #include "DevisePixmap.h"
 #include "VisualArg.h"
+#include "DevError.h"
 
 enum DisplayExportFormat { POSTSCRIPT, EPS, GIF };
 
@@ -438,7 +442,7 @@ public:
   /* Push a copy of the top of stack onto the stack */
   void PushTop() {
     if (_current >= WindowRepTransformDepth-1 ){
-      fprintf(stderr,"WindowRep::PushTop: overflow\n");
+      reportErrNosys("WindowRep::PushTop: overflow");
       Exit::DoExit(1);
     };
     _transforms[_current+1].Copy(_transforms[_current]);
@@ -448,7 +452,7 @@ public:
   /* pop transformation matrix */
   void PopTransform() {
     if (_current <= 0){
-      fprintf(stderr,"WindowRep::PopTransform: underflow\n");
+      reportErrNosys("WindowRep::PopTransform: underflow");
       Exit::DoExit(1);
     }
     _current--;
@@ -498,7 +502,7 @@ public:
   /* Push a copy of the top of stack onto the stack */
   void PushTop3() {
     if (_current3 >= WindowRepTransformDepth-1 ){
-      fprintf(stderr,"WindowRep::PushTop: overflow\n");
+      reportErrNosys("WindowRep::PushTop: overflow");
       Exit::DoExit(1);
     };
     _transforms3[_current3+1].Copy(_transforms3[_current3]);
@@ -508,7 +512,7 @@ public:
   /* pop transformation matrix */
   void PopTransform3() {
     if (_current3 <= 0){
-      fprintf(stderr,"WindowRep::PopTransform: underflow\n");
+      reportErrNosys("WindowRep::PopTransform: underflow");
       Exit::DoExit(1);
     }
     _current3--;
@@ -595,7 +599,7 @@ protected:
   /* called by derived class to cache current clip region */
   void _PushClip(Coord x, Coord y, Coord w, Coord h) {
     if (_clipCurrent >= WindowRepClipDepth - 1){
-      fprintf(stderr,"WindowRep::PushClip: overflow\n");
+      reportErrNosys("WindowRep::PushClip: overflow");
       Exit::DoExit(1);
     };
     ClipRect *rect = &_clippings[++_clipCurrent];
@@ -605,7 +609,7 @@ protected:
   /* called by derived class to pop clip region */
   void _PopClip(){
     if (_clipCurrent < 0){
-      fprintf(stderr,"WindowRep::PopClip: underflow\n");
+      reportErrNosys("WindowRep::PopClip: underflow");
       Exit::DoExit(1);
     }
     _clipCurrent--;

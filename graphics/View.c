@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.91  1996/12/03 17:01:10  jussi
+  Adjusted location of axis labels.
+
   Revision 1.90  1996/12/03 16:02:25  jussi
   Disabled a debugging message.
 
@@ -1581,7 +1584,6 @@ void View::Run()
 #if defined(DEBUG)
     printf("View not refreshed and filter not changed, nothing to do\n");
 #endif
-    ReportQueryDone(0, false);
     return;
   }
 
