@@ -1,0 +1,68 @@
+		Things to (possibly) do to DEVise
+			$Revision$
+
+
+ACTIVE
+------
+Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
+
+
+HIGH PRIORITY
+-------------
+
+Add true PostScript printing capability. (yi/rkw 7/9/96)
+
+Set up makefiles to easily be able to compile with debugging or Purify.
+(kb/rkw 7/31/96)
+
+
+LOW PRIORITY
+------------
+Work on putting "handles" on symbols (rectangles, etc.) in DEVise.
+Eventually be able to drag them with mouse, but first step is just showing/
+hiding them.  Must be a method of object(s). (ml ?/?/96)
+
+
+NOT YET PRIORITIZED
+-------------------
+Allow changing all views using a given TData to another TData. (ml/rkw 6/13/96)
+
+Allow multiple TData catalogs. (ml/rkw 6/13/96)
+
+Make a GUI for defining portions of files as data sources. (ml/rkw 6/4/96)
+
+Make a GUI for specifying which TDatas to save to session file when
+exporting a template with data. (ml/rkw 6/4/96)
+
+Make some kind of graphical browser/editor for session files. (ml/rkw 6/4/96?)
+
+Improve error handling (rkw/jpm/gc 6/28/96)
+
+Port DEVise to Windows NT.
+
+Reduce unnecessary interclass dependencies/extra includes (rkw/jpm ?/?/96)
+
+Avoid seeks for advancing short distances by reading and throwing away
+data (jpm/rkw ?/?/96)
+
+Make depends need to be improved so that they find include files in other
+devise directories. (kb/rkw 7/31/96)
+
+Clean up unused/unneeded sources. (kb/rkw 7/31/96)
+
+Have the ability to have null values in records. (kb/rkw 7/31/96)
+
+Improvements to selection/projection, etc., as per meetings of 5/13/96.
+
+Move handling of web data to V-engine.
+
+Move handling of special format (e.g. business school) data to V-engine.
+
+
+COMPLETED
+---------
+Add attrproj member function to read entire record. (tz/rkw 7/31/96)
+
+
+CANCELLED
+---------
