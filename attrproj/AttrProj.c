@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/10/10 16:45:19  wenger
+  Changed function names, etc., in ApParseCat.c to get rid of name clashes
+  when Donko puts transformation engine code into DEVise.
+
   Revision 1.12  1996/08/23 16:54:59  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -370,20 +374,25 @@ AttrProj::ParseProjection(char *attrProjFile)
 	}
 	else
 	{
-		const int	bufSize = 256;
+		const int	bufSize = 4096;
 		char		buf[bufSize];
 		char		separators[] = " \t";
 
 		/* Get each line in the attribute projection file. */
 		while (fgets(buf, bufSize, file) != NULL)
 		{
+			DOASSERT(buf[strlen(buf)-1] == '\n',
+				"Projection file line too long");
+
 			/* TEMPTEMP -- we should look for some kind of comment char. */
 
 			StripTrailingNewline(buf);
 			DO_DEBUG(printf("%s\n", buf));
 
 			Projection	projection;
-			projection.attrCount = atoi(strtok(buf, separators));
+			char *		token = strtok(buf, separators);
+			if (token == NULL) continue;
+			projection.attrCount = atoi(token);
 			DO_DEBUG(printf("projection.attrCount = %d\n",
 				projection.attrCount));
 			projection.attrList = new int[projection.attrCount];
@@ -391,7 +400,6 @@ AttrProj::ParseProjection(char *attrProjFile)
 			AttrList *	attrListP = _tDataP->GetAttrList();
 			int			attrCount = attrListP->NumAttrs();
 			int			projAttrNum = 0;
-			char *		token;
 
 			/* Find each attribute specified for this projection. */
 			while ((token = strtok(NULL, separators)) != NULL)

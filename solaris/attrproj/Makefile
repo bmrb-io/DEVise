@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/09/26 18:54:00  jussi
+#  Added -lpthread to get thread support.
+#
 #  Revision 1.5  1996/07/18 14:27:48  jussi
 #  We now produce dynamically linked executables.
 #
@@ -38,7 +41,8 @@
 
 ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  = -lpthread
+ARCH_LDPOST  = 
+#ARCH_LDPOST  = -lpthread
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base
