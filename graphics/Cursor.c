@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/04/29 17:36:32  wenger
+  Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+
   Revision 1.24  1999/02/09 22:30:52  wenger
   Fixed bug in MoveSource() (wrong filter flag value).
 
@@ -358,7 +361,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
   if (_visFlag & VISUAL_X) {
     if (_useGrid && (_gridX != 0.0)) {
       /* Round location to nearest grid point. */
-      int tmp = (int) ((x / _gridX) + 0.5);
+      int tmp = (int)floor((x / _gridX) + 0.5);
       x = _gridX * tmp;
     }
     if (width < 0.0) {
@@ -372,7 +375,7 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height)
   if (_visFlag & VISUAL_Y) {
     if (_useGrid && (_gridY != 0.0)) {
       /* Round location to nearest grid point. */
-      int tmp = (int) ((y / _gridY) + 0.5);
+      int tmp = (int)floor((y / _gridY) + 0.5);
       y = _gridY * tmp;
     }
     if (height < 0.0) {
