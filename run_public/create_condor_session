@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1999/04/16 20:59:30  wenger
+#  Fixed various bugs related to view symbols, including memory problem
+#  with MappingInterp dimensionInfo; updated create_condor_session script
+#  to take advantage of view symbol TData switching capability.
+#
 #  Revision 1.4  1999/04/02 22:27:21  wenger
 #  Modified session to allow comparison of two users, as per request from
 #  Miron.
@@ -218,31 +223,31 @@ sub DefineData {
 sub CreateViews {
   print SES_OUT "\n# Create views\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} UserList_view 0 1 0 1 36 1\n";
+  print SES_OUT "DEVise create {view} {Scatter} UserList_view 0 1 0 1 36 9\n";
   print SES_OUT "DEVise viewSetHome {UserList_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} Select1_view 0 1 0 1 36 1\n";
+  print SES_OUT "DEVise create {view} {Scatter} Select1_view 0 1 0 1 36 2\n";
   print SES_OUT "DEVise viewSetHome {Select1_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter Select1_view 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} Select2_view 0 1 0 1 36 1\n";
+  print SES_OUT "DEVise create {view} {Scatter} Select2_view 0 1 0 1 36 9\n";
   print SES_OUT "DEVise viewSetHome {Select2_view} 1 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter Select2_view 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} User1_view 0 1 -1 -2 36 1\n";
+  print SES_OUT "DEVise create {view} {Scatter} User1_view 0 1 -1 -2 36 2\n";
   print SES_OUT "DEVise viewSetHome {User1_view} 1 1 2 1 0.5 0.5 -0.5 0.5 ",
       "0.5 1.5\n";
   print SES_OUT "DEVise setViewAutoFilter User1_view 1\n";
   print SES_OUT "\n";
 
-  print SES_OUT "DEVise create {view} {Scatter} User2_view 0 1 -1 -2 36 1\n";
+  print SES_OUT "DEVise create {view} {Scatter} User2_view 0 1 -1 -2 36 9\n";
   print SES_OUT "DEVise viewSetHome {User2_view} 1 1 2 1 0.5 0.5 -0.5 1.5 ",
       "0.5 2.5\n";
   print SES_OUT "DEVise setViewAutoFilter User2_view 1\n";
@@ -252,10 +257,14 @@ sub CreateViews {
   $users[0] = "User1";
   $users[1] = "User2";
   $users[2] = "Total";
+  my %bgColor;
+  $bgColor{$users[0]} = 2;
+  $bgColor{$users[1]} = 9;
+  $bgColor{$users[2]} = 9;
   my $user;
   foreach $user (@users) {
     # Create the view.
-    print SES_OUT "DEVise create {view} {Scatter} ${user}_viewsym 0 1 0 1 36 3\n";
+    print SES_OUT "DEVise create {view} {Scatter} ${user}_viewsym 0 1 0 1 36 $bgColor{$user}\n";
 
     # Force the bottom of the visual filter to be set to 0 on home.
     print SES_OUT "DEVise viewSetHome {${user}_viewsym} 1 1 1 1 0.0 0.0 0.0 0.0 ",
@@ -267,6 +276,8 @@ sub CreateViews {
     # Turn on the X and Y axes.
     print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {X} 1\n";
     print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {Y} 1\n";
+
+    print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsym {%b %d %H:%M}";
 
     print SES_OUT "\n";
   }
@@ -292,7 +303,7 @@ sub CreateMappings {
       "AllUser#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\$ViewName} ",
       "1 1 {} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "UserList#$mappingClass {} {0} {\$X} {} 8 0.015 0 0 16 {\$UserName} ",
+      "UserList#$mappingClass {} {0} {\$X} {} 37 0.015 0 0 16 {\$UserName} ",
       "{} {} {} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
@@ -303,10 +314,10 @@ sub CreateMappings {
       "{} {} {} {} {} {} {} {}\n";
 
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User1#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\"User1_viewsym\"} 1 ",
+      "User1#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User1_viewsym\"} 1 ",
       "1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
-      "User2#$mappingClass {} {0} {\$X} {} 8 0.9 0 0 17 {\"User2_viewsym\"} 1 ",
+      "User2#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
       "1 {\$TDataName} {} {} {} {} {} {}\n";
 
   # Note: this is really a "dummy" TData -- it will get switched when the
@@ -390,12 +401,12 @@ sub CreateWindows {
 
   print SES_OUT "\n# Create windows and insert views\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.07 0.20 ",
-      "0.23 0.60 0 0\n";
+  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.06 0.20 ",
+      "0.25 0.60 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} Total 0.02 0.84 0.96 ",
-      "0.10 0 0\n";
+  print SES_OUT "DEVise create {window} {TileLayout} Total 0.02 0.80 0.96 ",
+      "0.14 0 0\n";
   #TEMP -- maybe we should use a view symbol here
   print SES_OUT "DEVise insertWindow {Total_viewsym} {Total}\n";
 
@@ -407,12 +418,12 @@ sub CreateWindows {
       "0.04 0.60 0 0\n";
   print SES_OUT "DEVise insertWindow {Select2_view} {Select2}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} User1 0.36 0.20 0.62 ",
-      "0.28 0 0\n";
+  print SES_OUT "DEVise create {window} {TileLayout} User1 0.35 0.20 0.63 ",
+      "0.30 0 0\n";
   print SES_OUT "DEVise insertWindow {User1_view} {User1}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} User2 0.36 0.52 0.62 ",
-      "0.28 0 0\n";
+  print SES_OUT "DEVise create {window} {TileLayout} User2 0.35 0.50 0.63 ",
+      "0.30 0 0\n";
   print SES_OUT "DEVise insertWindow {User2_view} {User2}\n";
 }
 
