@@ -59,6 +59,9 @@ struct CycleEffMapping_GData {
 
 
 
+
+
+
 class CycleEffMapping_RectShape  : public RectShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -119,7 +122,8 @@ public:
 
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  CycleEffMapping_GData  *gdata = (CycleEffMapping_GData  *)gdataArray[colorIndex];
 
 
@@ -157,7 +161,8 @@ public:
 
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  CycleEffMapping_GData  *gdata = (CycleEffMapping_GData  *)gdataArray[colorIndex];
 
 

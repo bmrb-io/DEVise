@@ -60,6 +60,9 @@ struct HostMapping_GData {
 
 
 
+
+
+
 class HostMapping_RectShape  : public RectShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -120,7 +123,8 @@ public:
 	Color lastColor = (gdata->color) ;
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  HostMapping_GData  *gdata = (HostMapping_GData  *)gdataArray[colorIndex];
 
 	  if ((gdata->color)  != lastColor)
@@ -158,7 +162,8 @@ public:
 	Color lastColor = (gdata->color) ;
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  HostMapping_GData  *gdata = (HostMapping_GData  *)gdataArray[colorIndex];
 
 	  if ((gdata->color)  != lastColor)

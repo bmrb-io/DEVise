@@ -58,6 +58,9 @@ struct CycleSuspendedMapping_GData {
 
 
 
+
+
+
 class CycleSuspendedMapping_RectShape  : public RectShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -118,7 +121,8 @@ public:
 
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  CycleSuspendedMapping_GData  *gdata = (CycleSuspendedMapping_GData  *)gdataArray[colorIndex];
 
 
@@ -156,7 +160,8 @@ public:
 
 
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  CycleSuspendedMapping_GData  *gdata = (CycleSuspendedMapping_GData  *)gdataArray[colorIndex];
 
 
