@@ -11,9 +11,7 @@ public:
   // if lo and/or hi is null, +/- infinity will be used.
   Range(const TypeID& type, Type* lo, Type* hi)
     : _type(type), _lo(lo), _hi(hi) {
-      if(lo && !hi)        _hi = createPosInf(_type);
-      else if( hi && !lo ) _lo = createNegInf(_type);
-      else                 assert(lo && hi);
+      if( type != INT_TP ) assert(lo && hi);
   }
 
   // +infinity : -infinity
@@ -133,23 +131,25 @@ char* BoundingBox::rtreePack()
   int d = dims();
   vector<MarshalPtr> marshal = getMarshalPtrs(_types);
   int sz = 0;
+  vector<int> sizes(d);
   for(int i = 0; i < d ; i++) {
-    sz += packSize(_range[i]->getLow(), _types[i]);
-    sz += packSize(_range[i]->getHigh(), _types[i]);
+    sizes[i] = packSize(_types[i]);
+    sz += sizes[i] * 2;
   }
-  char* data = new char[sz];
+  char* data = new char[sz+1];  // +1 for check
+  memset(data, 0, sz+1);
   int offset = 0;
   for(int i = 0; i < d ; i++) {
     Type* t = _range[i]->getLow();
-    int l = packSize(t, _types[i]);
     marshal[i](t, data + offset);
-    offset += l;
+    offset += sizes[i];
+    assert(data[offset] == '\0');
   }
   for(int i = 0; i < d ; i++) {
     Type* t = _range[i]->getHigh();
-    int l = packSize(t, _types[i]);
     marshal[i](t, data + offset);
-    offset += l;
+    offset += sizes[i];
+    assert(data[offset] == '\0');
   }
   return data;
 }

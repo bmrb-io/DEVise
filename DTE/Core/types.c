@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1998/07/24 04:38:03  donjerko
+  *** empty log message ***
+
   Revision 1.58  1998/06/28 21:47:47  beyer
   major changes to the interfaces all of the execution classes to make it easier
   for the plan reader.
@@ -806,7 +809,7 @@ int packSize(const Type* adt, string type){
 	}
 	else if(type.substr(0, 6) == "string"){
 		int len = atoi(type.substr(6).c_str());
-		return len;
+		return len + 1; // leave room for that null!
 	}
 	else if (type == SEQSV_TP){	
 		return sizeof (SeqSimVec);
@@ -856,6 +859,7 @@ void intMarshal(const Type* adt, char* to){
 }
 
 void stringMarshal(const Type* adt, char* to){
+  //kb: this wont work with rtree unless all strings are exactly the fixed len!
 	strcpy(to, (char*) adt);
 }
 
@@ -1193,7 +1197,7 @@ Type* createPosInf(TypeID type){
 		return new IDouble(DBL_MAX);
 	}
 	else if(type.substr(0, 6) == "string"){
-		return strdup("0xff0xff0xff0xff");
+		return strdup("0xff");
 	}
 	else{
 		string msg = "Don't know what is +Infinity for type: " + type;
