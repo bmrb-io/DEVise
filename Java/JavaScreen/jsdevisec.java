@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.115  2001/09/28 18:53:55  xuk
+// JavaScreen command log playback.
+// Added isPlayback, isDisplay, isOriginal, logFileName variables;
+// Added setLogFile() and logPlayback() methods;
+// Modified setModeDlg() to add "Playback" button.
+//
 // Revision 1.114  2001/09/27 19:52:33  wenger
 // Fixed bug 688 (problem dealing with links in session directories);
 // improved JS error handling for session open; eliminated a bunch of
@@ -753,6 +759,14 @@ public class jsdevisec extends Panel
 	      DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
 	      currentSession + "}");
         }
+
+	if (jv.session.autoPlayback) {
+	    logFileName = jv.session.clientLogName;
+	    isPlayback = true;
+	    isDisplay = true;
+	    isOriginal = jv.session.playbackOriginal;
+	    logPlayBack();
+	}
     } // end of constructor
 
     public void hideDebug() {
