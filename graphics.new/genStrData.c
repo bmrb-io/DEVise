@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:33:46  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:28  jussi
   Added CVS header.
 */
@@ -62,19 +65,19 @@ main(int argc, char **argv)
   int i;
   for (i=0; i < numProcs; i++){
     sprintf(procRecs[i].name,"proc%d",i);
-    procRecs[i].meanUser = (double)(random() % 100);
-    procRecs[i].meanCpu = (double)(random() % 100);
-    procRecs[i].meanIo =  (double)(random() % 100);
+    procRecs[i].meanUser = (double)(rand() % 100);
+    procRecs[i].meanCpu = (double)(rand() % 100);
+    procRecs[i].meanIo =  (double)(rand() % 100);
   }
   
   /* generate records */
   for (i=0; i < NumRecords; i++){
-    int proc = random() % numProcs;
+    int proc = rand() % numProcs;
     struct StrData rec;
     strcpy(rec.name,procRecs[proc].name);
-    rec.user = procRecs[proc].meanUser + (random() % 10)-5;
-    rec.cpu= procRecs[proc].meanCpu+ (random() % 10)-5;
-    rec.io= procRecs[proc].meanIo+ (random() % 10)-5;
+    rec.user = procRecs[proc].meanUser + (rand() % 10)-5;
+    rec.cpu= procRecs[proc].meanCpu+ (rand() % 10)-5;
+    rec.io= procRecs[proc].meanIo+ (rand() % 10)-5;
 
     if (write(fd,(char *)&rec, sizeof(rec))!= sizeof(rec)){
       perror("write");

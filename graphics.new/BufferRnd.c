@@ -16,17 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 20:42:50  jussi
+  Added "ad hoc" definition of random() and cleaned up the code
+  a bit. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:14:32  jussi
   Added CVS header.
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "RangeInfoArray.h"
 #include "BufferRnd.h"
 #include "RangeInfo.h"
 #include "TDataAttr.h"
-
-extern "C" long random();
 
 BufferRnd::BufferRnd()
 {
@@ -48,7 +52,7 @@ Boolean BufferRnd::PickVictim(RangeInfoArrays *rangeArrays,
   size = maxTimes = rangeArrays->Size(0);
 
   for(; maxTimes > 0; maxTimes--) {
-    int testPos = random()%  size;
+    int testPos = rand() % size;
     RangeInfo *rangeInfo = rangeArrays->GetRange(0, testPos);
     if ( !rangeInfo->InUse()) {
       /* found one */
