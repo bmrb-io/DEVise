@@ -418,6 +418,9 @@ Allow PostScript printing in landscape mode. (rkw 9/25/97)
 Implement a shape like a Rect or RectX, but with the size specified in
 pixels rather than user coordinates. (dk/rkw 9/30/97)
 
+Allow port number server listens on to be specified on command line of
+devised, devisec, and deviseb. (ma/rkw 11/24/97)
+
 
 
 COMPLETED
