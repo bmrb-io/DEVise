@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/10/08 21:49:09  wenger
+  ClassDir now checks for duplicate instance names; fixed bug 047
+  (problem with FileIndex class); fixed various other bugs.
+
   Revision 1.21  1996/10/07 22:54:01  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -177,7 +181,12 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
 
   _totalRecs = 0;
 
-  _indexP = new FileIndex(BIN_INDEX_ALLOC_INC);
+  float estNumRecs = _data->DataSize() / _physRecSize;
+  _indexP = new FileIndex((unsigned long)estNumRecs);
+
+#ifdef DEBUG
+  printf("Allocated %lu index entries\n", (unsigned long)estNumRecs);
+#endif
 
   Dispatcher::Current()->Register(this, 10, AllState, false, _data->AsyncFd());
 }
