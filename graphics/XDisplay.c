@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.62  1997/12/16 17:53:55  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.61  1997/11/24 23:14:40  weaver
   Changes for the new ColorManager.
 
@@ -415,7 +418,7 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
     */
     for(float p = pointSize; p <= pointSize + 5.0; p += 1.0) {
         char fname[128];
-        sprintf(fname, "*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
+        sprintf(fname, "-*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
                 family, weight, slant, width, (int) (p * 10.0));
 #if 0
         printf("  Trying font %s\n", fname);
