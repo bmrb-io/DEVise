@@ -63,7 +63,7 @@ print "DEBUG: ports are $cmdPort, $dataPort, $imgPort.\n" if $debug;
 #
 $ENV{PATH} = $ENV{PATH} . ':/p/devise/public/bin';
 Spawn("/p/devise/demo/run/devised -quit 1 -clientTimeout 30 -port $cmdPort -switchport $dataPort -imageport $imgPort");
-sleep(5); # Make sure devised gets going before JavaScreen tries to connect.
+sleep(20); # Make sure devised gets going before JavaScreen tries to connect.
 
 #
 # Launch JavaScreen.
