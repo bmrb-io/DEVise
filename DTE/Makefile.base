@@ -47,6 +47,7 @@ DTE_INCLUDES = \
 	-I../../unidata \
 	-I../../DataReader \
 	-I../unidata \
+	-I.. \
 	$(PERL_INCL)
 
 # must include unidata for config.h, otherwise /s/perl/lib/CORE/config.h is used
@@ -80,7 +81,9 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	Interface.c MaterializeParse.c MemoryMgr.c SeqSimVecAggregate.c\
 	ODBCInterface.dummy.c Optimizer.c TableUtils.c \
 	CreateTableParse.c RelationManager.c GlobalConstructors.c \
-	RelationId.c DataRead.c ODBCParse.c ODBCInfo.c ODBCList.dummy.c Iterator.c
+	RelationId.c Iterator.c DataRead.c ODBCParse.dummy.c ODBCInfo.c \
+	ODBCCatalogParse.c
+	
 
 ifneq ($(IMPLICIT_TEMPLATES),1)
     CORE_SRC += Templates.c
