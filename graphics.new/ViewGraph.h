@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/22 21:38:09  jussi
+  Fixed problem with simultaneous view refresh and record query
+  activities. Previously, there was a single iterator over the
+  mappings of a view, which caused the system to crash when a record
+  was queried while the data was still being displayed. Each activity
+  now gets its own iterator.
+
   Revision 1.11  1996/04/15 15:14:05  jussi
   A mapping label is now stored as part of the mapping list data
   structure. Added GetMappingLegend() accessor method.
@@ -60,6 +67,7 @@
 #include "DList.h"
 #include "Color.h"
 #include "BasicStats.h"
+#include "Action.h"
 
 class TDataMap;
 
@@ -105,6 +113,11 @@ public:
   void SetDisplayStats(char *stat);
   BasicStats *GetStatObj() { return &_stats; }
 
+  void SetAction(Action *action) { _action = action; }
+  Action *GetAction() { return _action; }
+	
+  Boolean IsScatterPlot();
+      
 protected:
   MappingInfoList _mappings;
 
@@ -112,9 +125,22 @@ protected:
   char _DisplayStats[STAT_NUM + 1];
   BasicStats _stats;
 
+  Action *_action;
+
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
   void StatsXOR(char *oldstat, char *newstat, char *result);
+
+  /* Handle button press event */
+  virtual void HandlePress(WindowRep * w, int xlow,
+			   int ylow, int xhigh, int yhigh, int button);
+
+  /* handle key event */
+  virtual void HandleKey(WindowRep *w ,char key, int x, int y);
+
+  /* handle pop-up */
+  virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
+			      char **&msgs, int &numMsgs);
 };
 
 #endif
