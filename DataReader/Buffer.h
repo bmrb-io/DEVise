@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/10/06 20:06:32  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.7  1998/10/02 17:19:59  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -50,7 +56,7 @@ struct DateInfo {
 	int min;
 	int sec;
 	AmPm ampm;
-	int nanosec;
+	int nanosec;//TEMP -- I think this is really microsec!!  RKW 1998-10-09
 	bool adbc;
 };
 
@@ -72,7 +78,7 @@ private:
 
 	// temporary values
 	DateInfo _curDate;
-	int _posTarget;
+	int _posTarget; // Applies only while reading a string attribute
 	int _iRetVal;
 	double _fRetVal;
 	bool _sign;
@@ -91,7 +97,7 @@ private:
 	Status checkComment(); // Check if this record begins with a comment
 	
 	// Reads n characters from file stream and calculates the integer value
-	Status getInt(int valLen, int& value);
+	Status getInt(int maxValLen, int& value);
 
 	// This function is used to match a given string in a given array of strings
 	// I use this function to find the number of the given month
@@ -116,7 +122,7 @@ public:
 	void getDoubleVal(char* dest);
 	void getIntVal(char* dest);
 	void getDateVal(char* dest);
-	void getPosTarget(char* dest);
+	void getStringVal(char* dest); // terminates string
 
 	Status setBufferPos(int cPos); // moves the pointer in a data file
 
@@ -148,6 +154,10 @@ public:
 	// used for reading fields, this function calls proper
 	// extractors using void function pointer arrays
 	Status extractField(Attribute* myAttr, char* dest);
+
+	// consume any remaining characters before the end of the current
+	// field; does nothing if no field separator is defined
+	Status consumeField(Attribute *attr);
 
 	// consume any remaining charaters before the end of the current
 	// record; does nothing if no record delimiter is defined

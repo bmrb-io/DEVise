@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/06/16 16:30:53  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #ifndef _DataReader_PARSER_H_
@@ -66,7 +69,12 @@ class DataReaderParser
 
     int line_nr;
 
-    ostringstream myString;
+    // This is kind of a primitive way of doing this, but it works -- the
+    // old code was not fully resetting the string each time a new string
+    // started, so if the previous string was longer the next string got
+    // garbage on the end.
+    char stringBuf[1024];
+    int stringIndex;
 
     int yylex();
 

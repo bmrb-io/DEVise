@@ -1,0 +1,23 @@
+schema test2_schema {
+	delimiter = [\n]+;
+	separator = [ 	]+ ;
+	comment = "#";
+	
+	attr sci_const {
+		type = double;
+	}
+
+	attr date1 {
+		type = date;
+		date_format = "MM/DD/YY hh:mm:ss.ff";
+	}
+
+	attr str1 {
+		type = string;
+		maxlen = 10;
+	}
+
+	attr last {
+		type = int;
+	}
+}

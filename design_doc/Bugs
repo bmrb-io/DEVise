@@ -1550,15 +1550,48 @@ Num Date        Status  Description
 			a record is different than it expects. (rkw)
 			(Fixed by rkw 10/2/98.)
 
-405 10/05/98	OPEN	Comment lines don't work in DataReader data files.
+405 10/05/98	FIXED	Comment lines don't work in DataReader data files.
 			(rkw)
+			(Fixed by rkw, 10/12/98.)
 
-406 10/05/98	OPEN	Date attributes don't work in DataReader. (rkw)
+406 10/05/98	FIXED	Date attributes don't work in DataReader. (rkw)
+			(Fixed by rkw 10/9/98.)
 
 407 10/05/98	OPEN	Skip attributes don't work in DataReader. (rkw)
 
-408 10/06/98	OPEN	String field in data longer than maxlen goofs up
+408 10/06/98	FIXED	String field in data longer than maxlen goofs up
 			subsequent fields in DataReader. (rkw)
+			(Fixed by rkw, 10/12/98.)
+
+409 10/09/98	OPEN	DataReader needs to be more robust when there are
+			errors parsing data recods. (rkw)
+			(Partly fixed by rkw, 10/12/98.)
+
+410 10/09/98	OPEN	DataReader allows duplicate attribute names without
+			complaint. (rkw)
+
+411 10/09/98	OPEN	Fractional seconds in dates doesn't work right in
+			DataReader ('1.1' is read as 1.000001, for example).
+			(rkw)
+
+412 10/09/98	OPEN	DataReader should look for comments in data only at
+			the beginning of lines. (rkw)
+
+413 10/12/98	OPEN	If a comment line is the last line of a data file,
+			the DataReader gives no indication that no fields
+			were actually read. (rkw)
+
+414 10/12/98	OPEN	DataReader should recognize blank lines in data file
+			as being like comment lines (skip them). (rkw)
+
+415 10/12/98	OPEN	In DataReader, record separators/delimiters other than
+			tab and newline (or trying not to have a record
+			separator at all) don't seem to work. (rkw)
+
+416 10/12/98	OPEN	'float' type should be implemented in DataReader. (rkw)
+
+417 10/12/98	OPEN	DTE should not exit if DataReader schema cannot be
+			parsed. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

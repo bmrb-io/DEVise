@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/10/06 20:06:35  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.5  1998/10/02 17:20:01  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -44,6 +50,7 @@ int main(int ARGV, char **ARGC) {
 	char* sf = ARGC[2];
 
 	TestResult testResult = TEST_OK;
+	int exitVal;
 
 	int aa;
 	char* results = new char[2048];
@@ -81,23 +88,31 @@ int main(int ARGV, char **ARGC) {
 	} 
  **********************************************************************/
 
+	int recordNum = 0;
 	while (true) {
-//*TEMP*/cout << "\nBefore getRecord()\n";
+#if defined(DEBUG)
+		cout << "\nBefore getRecord()\n";
+#endif
 		status = myDataReader->getRecord(results);
-//*TEMP*/cout << "  After getRecord()\n";
+#if defined(DEBUG)
+		cout << "  After getRecord(); status = " << status << endl;
+#endif
 		if (status == OK || status == FOUNDEOL || status == FOUNDEOF) {
 			// these are okay
 		} else if (status == FAIL) {
-			cerr << "Error Occured in DataReader" << endl ;
+			cerr << "Error occured in DataReader at record " << recordNum <<
+			  endl ;
 			testResult = TEST_ERROR;
-			goto end;
 		} else {
-			cerr << "Possible error in DataReader" << endl;
+			cerr << "Possible error in DataReader at record " << recordNum <<
+			  endl;
 			cerr << "  status = " << status << endl;
-			testResult = TEST_PROB_ERROR;
+			if (testResult != TEST_ERROR) testResult = TEST_PROB_ERROR;
 		}
 
 #ifndef TESTDATAREADER
+		cout << "Record " << recordNum << ": ";
+
 		for (int i = 0 ; i < aa ; i++) {
 			char* tmp;
 			EncodedDTF tmpDate;
@@ -106,26 +121,35 @@ int main(int ARGV, char **ARGC) {
 					cerr << "Invalid attribute type\n";
 					break;
 				case TYPE_INT:
-					cout << *(int*)(results+(myDataReader->myDRSchema->tableAttr[i]->offset)) << " " ;
+					cout << "{" << *(int*)(results+
+					  (myDataReader->myDRSchema->tableAttr[i]->offset)) <<
+					  "} " ;
 					break;
 
 				case TYPE_DOUBLE:
-					cout << *(double*)(results+(myDataReader->myDRSchema->tableAttr[i]->offset)) << " " ;
+					cout << "{" << *(double*)(results+
+					  (myDataReader->myDRSchema->tableAttr[i]->offset)) <<
+					  "} " ;
 					break;
 
 				case TYPE_STRING:
-					tmp = results + (myDataReader->myDRSchema->tableAttr[i]->offset);
-					cout << tmp << " " ;
+					tmp = results +
+					  (myDataReader->myDRSchema->tableAttr[i]->offset);
+					cout << "{" << tmp << "} " ;
 					break;
 
 				case TYPE_DATE:
 					memcpy(&tmpDate,
 					  results+(myDataReader->myDRSchema->tableAttr[i]->offset),
 					  sizeof(tmpDate));
-					cout << tmpDate.getYear() << "-" <<
-					  tmpDate.getMonth() << "-" << tmpDate.getDay() << " " <<
-					  tmpDate.getHour() << ":" << tmpDate.getMin() << ":" <<
-					  tmpDate.getSec() << "." << tmpDate.getNanoSec() << " ";
+					{
+						double secs = tmpDate.getSec() +
+						  tmpDate.getNanoSec() * 1.0e-6;
+						cout << "{" << tmpDate.getYear() << "-" <<
+						  tmpDate.getMonth() << "-" << tmpDate.getDay() << " " <<
+						  tmpDate.getHour() << ":" << tmpDate.getMin() << ":" <<
+						  secs << "} ";
+					}
 					break;
 
 				default:
@@ -133,13 +157,15 @@ int main(int ARGV, char **ARGC) {
 					break;
 			}
 		}
-		cout << "->  Got One" << endl ;
+		cout << endl << endl;
 #endif
 
 		if (status == FOUNDEOF) {
 			cerr << "End of file" << endl;
 			break;
 		}
+
+		recordNum++;
 	}
 
 end:
@@ -149,16 +175,18 @@ end:
 	switch (testResult) {
 	case TEST_OK:
 		cout << "OK";
+		exitVal = 0;
 		break;
 	case TEST_ERROR:
 		cout << "Error";
+		exitVal = 1;
 		break;
 	case TEST_PROB_ERROR:
 		cout << "Possible error";
+		exitVal = 1;
 		break;
 	}
 	cout << endl;
 	
-	return 1;
+	return exitVal;
 }
-

@@ -19,6 +19,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.5  1998/06/25 23:00:34  okan
+# *** empty log message ***
+#
 # Revision 1.4  1998/06/16 16:30:54  wenger
 # Added standard headers to DataReader sources.
 #
@@ -54,7 +57,7 @@ DATAREAD_INCL = -I../../DataReader -I. -I/s/flex/include -I.. -I../../src/includ
 CFLAGS = $(ARCH_FLAGS) -Wall $(OPTFLAG) $(DATAREAD_INCL) \
 	-DHAVE_CONFIG_H $(OPTFLAG)
 
-.PHONY: all default clean
+.PHONY: all default clean test test1 test2 test3 test4
 .PRECIOUS: %.o %.lex.C %.tab.C %.tab.h
 
 PURE_OPTS = -g++=yes -collector=/p/coral/bin/hp_ld -windows=no -chain-length=12 -output-limit=160000 -inuse-at-exit -copy-fd-output-to-logfile=1 -log-file=/u/f/l/flisakow/devise/DataReader/try/pure.log -cache-dir=/p/coral/people/tmp -always-use-cache-dir=yes
@@ -98,5 +101,29 @@ clean:
 	
 %.lex.C: %.l %.tab.h
 	flex -t $< > $@
+
+###############################################################################
+
+test: test1 test2 test3 test4
+
+test1: testParser
+	testParser ../../DataReader/test/test1.dat \
+		../../DataReader/test/test1.schema 
+
+test2: testParser
+	testParser ../../DataReader/test/test2.dat \
+		../../DataReader/test/test2.schema
+
+test3: testParser
+	testParser ../../DataReader/test/test3.dat \
+		../../DataReader/test/test3.schema
+
+test4: testParser
+	testParser ../../DataReader/test/test4.dat \
+		../../DataReader/test/test4.schema
+
+test5: testParser
+	testParser ../../DataReader/test/test5.dat \
+		../../DataReader/test/test5.schema
 
 ###############################################################################

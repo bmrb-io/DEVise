@@ -33,7 +33,7 @@ char* tmpKey;
 %token NOESCAPESTYLE_TOKEN
 %token COMMENT_TOKEN
 %token <string_val> BRACKET_TOKEN
-%token <string_val> STRING_TOKEN
+%token <string_val> STRINGVAL_TOKEN
 %token <int_val> INTVAL_TOKEN
 %token <string_val> IDENT_TOKEN
 %token ';'
@@ -85,7 +85,7 @@ getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getDelimiter() != NULL
                                             myDRSchema->setDelimiter(tmpHolder);
                                         }
 			;
-getcomment: COMMENT_TOKEN '=' STRING_TOKEN {	if (myDRSchema->getComment() != NULL)
+getcomment: COMMENT_TOKEN '=' STRINGVAL_TOKEN {	if (myDRSchema->getComment() != NULL)
 												drerror("DRSchema Comment can't be entered twice !...");
 											if ($3 == NULL)
 												drerror("DRSchema Comment NULL ??? ") ;
@@ -242,7 +242,7 @@ getwhatencod: CSTYLE_TOKEN {tmpAttr->setEncoding(ENCODING_CSTYLE);}
 			  | NOESCAPESTYLE_TOKEN {tmpAttr->setEncoding(ENCODING_NOESCAPE);}
 			  ;
 
-getdateformat: DATE_FORMAT '='  STRING_TOKEN { char* tmpD = new char[strlen($3)+1];
+getdateformat: DATE_FORMAT '='  STRINGVAL_TOKEN { char* tmpD = new char[strlen($3)+1];
 				   							   strcpy(tmpD,$3);
 											   tmpAttr->setDateFormat(tmpD);
 			   								 }

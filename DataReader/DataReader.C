@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/10/06 20:06:33  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.7  1998/10/02 17:20:00  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -118,23 +124,67 @@ Status DataReader::getRecord(char* dest) {
 	cout << "DataReader::getRecord()\n";
 #endif
 
-	Status status;
+	Status status = OK;
 	char* tmpPoint;
 
-//TEMP -- check for comment here only???
+	int lastAttrProcessed;
+	bool endOfRecord = false;
+	for (int attrNum = 0 ; attrNum < (int)(myDRSchema->qAttr) && !endOfRecord;
+	  attrNum++) {
+		lastAttrProcessed = attrNum;
 
-	for (int i = 0 ; i < (int)(myDRSchema->qAttr); i++) {
-		//cout << "  Getting attribute " << i << endl;//TEMP
-		tmpPoint = dest + myDRSchema->tableAttr[i]->offset; 
-		status = myBuffer->extractField(myDRSchema->tableAttr[i],tmpPoint);
-		if (status != FOUNDSEPARATOR) {
-			return status;
+		tmpPoint = dest + myDRSchema->tableAttr[attrNum]->offset; 
+		Status tmpStatus = myBuffer->extractField(
+		  myDRSchema->tableAttr[attrNum], tmpPoint);
+
+		switch (tmpStatus) {
+		case OK:
+			// I don't think we should actually ever get OK here.
+			// RKW 1998-10-12.
+		case FOUNDSEPARATOR:
+			// Everything's OK, just keep going.
+			if (status == OK || status == FOUNDSEPARATOR) status = tmpStatus;
+			break;
+
+		case FOUNDEOF:
+		case FOUNDEOL:
+		case FOUNDCOMMENT:
+			// Done with this record.
+			endOfRecord = true;
+			if (status == OK || status == FOUNDSEPARATOR) status = tmpStatus;
+			break;
+
+		case FAIL:
+		case NOQUOTE:
+			// Zero out this field, try to keep going.
+			memset(tmpPoint, 0, myDRSchema->tableAttr[attrNum]->getLength());
+			status = tmpStatus;
+			break;
+
+		default:
+			assert(0 && "Illegal status value");
+			break;
 		}
 	}
 
+	if (lastAttrProcessed < (int)(myDRSchema->qAttr) - 1) {
+		cerr << "Not enough fields in record\n";
+	}
+
+	// Zero out any fields that weren't read.
+	for (int clearAttr = lastAttrProcessed + 1;
+	  clearAttr < (int)(myDRSchema->qAttr); clearAttr++) {
+		tmpPoint = dest + myDRSchema->tableAttr[clearAttr]->offset; 
+		memset(tmpPoint, 0, myDRSchema->tableAttr[clearAttr]->getLength());
+	}
+
 	// Consume the rest of this record (does nothing if record delimiter
-	// not defined.
-	return myBuffer->consumeRecord();
+	// not defined).
+	if (!endOfRecord) {
+		status = myBuffer->consumeRecord();
+	}
+
+	return status;
 }
 
 Status DataReader::getRndRec(char* dest, int fileOffset) {

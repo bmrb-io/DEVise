@@ -1,0 +1,26 @@
+schema test1_schema {
+	delimiter = [\n]+;
+	separator = [ 	]+ ;
+	comment = "#";
+	
+// a comment
+# a comment
+/* a comment */
+
+	attr x {
+		type = int ;
+	}
+	
+	skip {
+		type = int;
+	}
+	
+	attr y {
+		type = int ;
+		separator = [%	];
+	}
+
+	attr z {
+		type = int ;
+	}
+}

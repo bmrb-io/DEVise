@@ -1,0 +1,12 @@
+3.14159	10/5/98 11:23	'He\ l
+lo'aaa	999
+# See how well the data reader can deal with a bad record.
+Marco Pantani Lance Armstrong
+183000	05/22/00 01:23	'Abraham\ L\'incoln'	888
+# Comment 1
+2.718	1/31/91 15:36	'\'Ben\ F\'ranklin'	777
+6.02e23	5/6/53 3:01	'John Adams'
+9.8
+2.54	12/31/99 1:1	''	666
+39.37	02/03/01 2:2	foo	555
+# Comment 2

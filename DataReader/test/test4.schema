@@ -1,0 +1,20 @@
+schema test2_schema {
+	delimiter = [\n]+;
+	separator = [ 	]+ ;
+	comment = "#";
+	
+	attr date1 {
+		type = date;
+		date_format = "YYYYMMDD";
+	}
+
+	attr date2 {
+		type = date;
+		date_format = "MON-YY";
+	}
+
+	attr date3 {
+		type = date;
+		date_format = "MONTH-YYYY";
+	}
+}

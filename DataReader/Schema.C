@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/10/06 20:06:34  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.9  1998/10/02 17:20:01  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -125,7 +131,6 @@ Attribute::~Attribute() {
 	cout << "Attribute::~Attribute(" << _fieldName << ")\n";
 #endif
 
-	//TEMP -- are we sure we 'own' _fieldName and _dateFormat?
 	delete [] _fieldName;
 	_fieldName = NULL;
 	delete [] _dateFormat;
@@ -150,7 +155,6 @@ operator<<(ostream &out, const Attribute &attr)
 	out << "  Max. length: " << attr._maxLen << endl;
 	out << "  Quote: {" << attr._quote << "} (" << (int)attr._quote << ")\n";
 	out << "  Field length: " << attr._fieldLen << endl;
-	//TEMP -- hidden =? skip
 	out << "  Hidden: {" << attr._hidden << "} (" << (int)attr._hidden <<
 	  ")\n";
 
@@ -233,8 +237,6 @@ Status DRSchema::finalizeDRSchema() {
 		}
 	}
 
-	//TEMP -- what the !@#$ ???  having no delimiter does NOT seem
-	// to work this way!!
 	if (_delimiter == NULL) { //default delimiter = [\n]+
 		char* tmpC = new char[2];
 		tmpC[0] = '\n';
@@ -347,7 +349,8 @@ Status DRSchema::finalizeDRSchema() {
 			// normalize date format
 			char* tmpDF = tableAttr[i]->getDateFormat();
 			if (tmpDF == NULL) {
-				tableAttr[i]->setDateFormat(_dateFormat);
+				// strdup() so Attribute object 'owns' the date format string.
+				tableAttr[i]->setDateFormat(strdup(_dateFormat));
 			} else {
 				if (normalizeDate(tmpDF) != OK) {
 					cerr << "Default date format is not correct for : " << tableAttr[i]->getFieldName() << " !" << endl;

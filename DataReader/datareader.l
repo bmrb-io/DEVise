@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/09/30 17:26:59  beyer
+  remove 'y' and 'n' as key words.
+
   Revision 1.6  1998/06/25 23:41:20  okan
   *** empty log message ***
 
@@ -85,16 +88,16 @@ url			return URLSTYLE_TOKEN;
 noescape	return NOESCAPESTYLE_TOKEN;
 comment     return COMMENT_TOKEN;
 
-\[			{ 	myString.seekp(0);
+\[			{ 	stringIndex = 0;
 				escCheck = 0;
 				BEGIN BRACKET;
 			}
 
 <BRACKET>\][\+]? { if (yytext[1] == '+') {
-					myString << '+' ;
+					stringBuf[stringIndex++] = '+' ;
 				}
-				myString << '\0' ;
-				yylval.string_val = myString.str();
+				stringBuf[stringIndex++] = '\0' ;
+				yylval.string_val = stringBuf;
 				escCheck = 0;
 				BEGIN INITIAL;
 				return BRACKET_TOKEN;
@@ -102,33 +105,34 @@ comment     return COMMENT_TOKEN;
 <BRACKET>.	{	if (escCheck == 1) {
 					switch (yytext[0]) {
 						case 'n':
-							myString << '\n';
+							stringBuf[stringIndex++] = '\n';
 							break;
 						case 't':
-							myString << '\t';
+							stringBuf[stringIndex++] = '\t';
 							break;
 						default:
-							myString << yytext[0];
+							stringBuf[stringIndex++] = yytext[0];
 					}
 					escCheck = 0;
 				} else {
 					if (yytext[0] == '\\')
 						escCheck = 1;
-					else 
-						myString << yytext[0] ;
+					else {
+						stringBuf[stringIndex++] = yytext[0] ;
+					}
 				}
 			}
 
-\"			{	myString.seekp(0);
+\"			{	stringIndex = 0;
 				BEGIN STR;
 			}
 
-<STR>\"		{	myString << "\0";
-				yylval.string_val = myString.str();
+<STR>\"		{	stringBuf[stringIndex++] = '\0';
+				yylval.string_val = stringBuf;
 				BEGIN INITIAL;
-				return STRING_TOKEN;
+				return STRINGVAL_TOKEN;
 			}
-<STR>.		{	myString << yytext[0];
+<STR>.		{	stringBuf[stringIndex++] = yytext[0];
 			}
 
 {digit}		{	yylval.int_val = atoi(yytext);

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/10/06 20:06:32  wenger
+  Partially fixed bug 406 (dates sometimes work); cleaned up DataReader
+  code without really changing functionality: better error handling,
+  removed unused class members, added debug output, close data file (never
+  closed before), various other cleanups.
+
   Revision 1.13  1998/10/02 17:19:57  wenger
   Fixed bug 404 (DataReader gets out-of-sync with records); made other
   cleanups and simplifications to DataReader code.
@@ -55,6 +61,7 @@
 #include "DateTime.h"
 
 //#define DEBUG
+//#define DEBUG_DATE
 
 Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 #if defined(DEBUG)
@@ -149,8 +156,8 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 			_separatorCheck[i] = NULL;
         }
 
-		//TEMP -- why do we copy all of this shit into here instead
-		// of just keeping a pointer to the schema?
+		//TEMP -- why do we copy all of this stuff into here instead
+		// of just referencing the schema?
 		maxLens[i] = myDRSchema->tableAttr[i]->getMaxLen();
 		fieldLens[i] = myDRSchema->tableAttr[i]->getFieldLen();
 		quoteChars[i] = myDRSchema->tableAttr[i]->getQuote();
@@ -170,7 +177,7 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 					break;
 				case TYPE_STRING:
 					extFunc[i] = &getStringLen;
-					valFunc[i] = &getPosTarget;
+					valFunc[i] = &getStringVal;
 					break;
 				case TYPE_DATE:
 					break;
@@ -180,7 +187,7 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 			}
 		} else if (myDRSchema->tableAttr[i]->getQuote() != -1) {
 			extFunc[i] = &getStringQuote;
-			valFunc[i] = &getPosTarget;
+			valFunc[i] = &getStringVal;
 		} else {
 			//TEMP -- why two switches????
 			switch (myDRSchema->tableAttr[i]->getType()) {
@@ -197,7 +204,7 @@ Buffer::Buffer(const char* fileName, DRSchema* myDRSchema, Status &status) {
 					break;
 				case TYPE_STRING:
 					extFunc[i] = &getStringTo;
-					valFunc[i] = &getPosTarget;
+					valFunc[i] = &getStringVal;
 					break;
 				case TYPE_DATE:
 					extFunc[i] = &getDate;
@@ -282,6 +289,11 @@ void Buffer::getDoubleVal(char* dest) {
 		retExp = _exponent * (_expSign == true ? -1.0 : 1.0);
 		retVal = (retVal == 0 ? 1 : retVal * pow(10.0,retExp));
 	}
+
+#if defined(DEBUG)
+	cout << "Buffer::getDoubleVal(" << retVal << ")\n";
+#endif
+
 	// We MUST use memcpy() here in case dest is not aligned.
 	memcpy(dest, &retVal, sizeof(retVal));
 }
@@ -289,6 +301,11 @@ void Buffer::getDoubleVal(char* dest) {
 void Buffer::getIntVal(char* dest) {
 	int retVal = 0;
 	retVal = _iRetVal * (_sign == true ? -1 : 1);
+
+#if defined(DEBUG)
+	cout << "Buffer::getIntVal(" << retVal << ")\n";
+#endif
+
 	// We MUST use memcpy() here in case dest is not aligned.
 	memcpy(dest, &retVal, sizeof(retVal));
 }
@@ -310,12 +327,20 @@ void Buffer::getDateVal(char* dest) {
 	
 	tmpDate.setNanoSec(_curDate.nanosec);
 
+#if defined(DEBUG)
+	cout << "Buffer::getDateVal(" << tmpDate << ")\n";
+#endif
+
 	// We MUST use memcpy() here in case dest is not aligned.
 	memcpy(dest, &tmpDate, sizeof(tmpDate));
 }
 
-void Buffer::getPosTarget(char* dest) {
+void Buffer::getStringVal(char* dest) {
 	dest[_posTarget] = '\0';
+#if defined(DEBUG)
+	cout << "Buffer::getStringVal(" << dest << ")\n";
+#endif
+	_posTarget = 0;
 }
 
 char Buffer::getChar() {
@@ -329,6 +354,10 @@ Status Buffer::checkEOL(char curChar) {
 // checks if the next character sequence in the data file is
 // an EOL or not, if EOL is defined as repeating, finds several
 // matches
+
+#if defined(DEBUG)
+	cout << "Buffer::checkEOL('" << curChar << "')\n";
+#endif
 
 	if (_EOLCheck[curChar] == 1) {
 		if (_EOL->repeating) {
@@ -397,6 +426,11 @@ Status Buffer::checkSeparator(char curChar, Attribute* myAttr) {
 // a separator or not, if separator is defined as repeating, finds several
 // matches
 
+#if defined(DEBUG)
+	cout << "Buffer::checkSeparator('" << curChar << "', " <<
+	  myAttr->getFieldName() << ")\n";
+#endif
+
     if (_separatorCheck[myAttr->whichAttr][curChar] == 1) {
         if (repeatings[myAttr->whichAttr]) {
             if ((curChar = getChar()) == 0)
@@ -418,6 +452,11 @@ Status Buffer::checkAll(char curChar, Attribute* myAttr) {
 
 // Combination of Check EOL & Separator, added for decreasing 
 // time lost in function calls
+
+#if defined(DEBUG)
+	cout << "Buffer::checkAll('" << curChar << "', " <<
+	  myAttr->getFieldName() << ")\n";
+#endif
 
 	if (_EOLCheck[curChar] == 1) {
 		if (_EOL->repeating) {
@@ -451,16 +490,22 @@ Status Buffer::checkAll(char curChar, Attribute* myAttr) {
 	return OK;
 }
 
-Status Buffer::getInt(int valLen, int& value) {
+Status Buffer::getInt(int maxValLen, int& value) {
 
 	value = 0;
-	for (int i = 0; i < valLen; i++) {
+	for (int i = 0; i < maxValLen; i++) {
 
 		if ((_curChar = getChar()) == 0) {
 			return FOUNDEOF;
 		}
-		if (!isdigit(_curChar))
+		if (!isdigit(_curChar)) {
+			// If we got to here, we presumably hit a separator character,
+			// so put it back.  This allows '1/1/98', for example, to be a
+			// legal date field if the format is 'm/d/y'; '01/01/98' is still
+			// okay.  RKW 1998-10-09
+			_in.putback(_curChar);
 			return OK;
+		}
 
 		value = value*10 + (int)(_curChar - DIGITSTART);
 	}
@@ -659,54 +704,33 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 // target : destination buffer to put the string read from data file
 // myAttr : Attribute object assigned to current field
 
+#if defined(DEBUG)
+	cout << "Buffer::getStringTo(" << myAttr->getFieldName() << ")\n";
+#endif
+
 	_posTarget = 0;
 	int maxLen = maxLens[myAttr->whichAttr];
-	int count = 0;
 	Status status;
 
-	if ((_curChar = getChar()) == 0)
-		return FOUNDEOF;
-
-	if (_curChar == ESCAPE) {
-		if ((_curChar = getChar()) == 0)
-			return FOUNDEOF;
-	}
-
-        target[0] = '\0'; //kb: should get null at return
 	while (true) {
-
-		status = checkAll(_curChar, myAttr);
-		if (status != OK) 
-			return status;
-
-		target[_posTarget] = _curChar;
-		_posTarget++;
-                target[_posTarget] = '\0'; //kb: should get null at return
-
-		count++;
-
-		if ((_curChar = getChar()) == 0)
+		if ((_curChar = getChar()) == 0) {
 			return FOUNDEOF;
-
-		if (count >= maxLen) {
-			return FOUNDSEPARATOR;
 		}
 
 		if (_curChar == ESCAPE) {
-			if ((_curChar = getChar()) == 0)
+			if ((_curChar = getChar()) == 0) {
 				return FOUNDEOF;
+			}
+		} else {
+			status = checkAll(_curChar, myAttr);
+			if (status != OK) {
+				return status;
+			}
+		}
 
+		if (_posTarget < maxLen) {
 			target[_posTarget] = _curChar;
 			_posTarget++;
-			count++;
-                        target[_posTarget] = '\0'; //kb: should get null at return
-			
-			if (count >= maxLen) {
-				return FOUNDSEPARATOR;
-			}
-
-			if ((_curChar = getChar()) == 0)
-				return FOUNDEOF;
 		}
 	}
 	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
@@ -783,8 +807,6 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 }
 
 Status Buffer::getDoubleLen(Attribute* myAttr, char* target = NULL) {
-
-
 
 // reads a double from data file with a given length
 // this function checks e/E for exponents
@@ -890,6 +912,10 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 // target : destination buffer to put the string read from data file
 // myAttr : Attribute object assigned to current field
 
+#if defined(DEBUG)
+	cout << "Buffer::getStringLen(" << myAttr->getFieldName() << ")\n";
+#endif
+
 	_posTarget = 0;
 	int fieldLen = fieldLens[myAttr->whichAttr];
 	Status status;
@@ -902,7 +928,7 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 			return FOUNDEOF;
 	}
 
-        target[0] = '\0'; //kb: should get null at return
+	target[0] = '\0'; //kb: should get null at return
 	while (true) {
 		status = checkEOL(_curChar);
 		if (status != OK)
@@ -910,7 +936,7 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 
 		target[_posTarget] = _curChar;
 		_posTarget++ ;
-                target[_posTarget] = '\0'; //kb: should get null at return
+		target[_posTarget] = '\0'; //kb: should get null at return
 
 		if (_posTarget >= fieldLen) {
 				if ((_curChar = getChar()) == 0) 
@@ -962,79 +988,49 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 // target : destination buffer to put the string read from data file
 // myAttr : Attribute object assigned to current field
 
+#if defined(DEBUG)
+	cout << "Buffer::getStringQuote(" << myAttr->getFieldName() << ")\n";
+#endif
+
 	_posTarget = 0;
-	bool ignoreRest = false;
 	int maxLen = maxLens[myAttr->whichAttr];
 	int count = 0;
 	char quoteChar = quoteChars[myAttr->whichAttr];
-	Status status;
-
-	if ((_curChar = getChar()) == 0)
-		return FOUNDEOF;
-	
-	if (_curChar != quoteChar) {
-		cerr << "Field : " << myAttr->getFieldName() << " doesn't have quote char : " << quoteChar << endl;
-		return FAIL;
-	} else {
-		if ((_curChar = getChar()) == 0)
-			return FOUNDEOF;
-	}
 
 	while (true) {
-		count ++;
-		if (_curChar == quoteChar) {
-			if (myAttr->getSeparator() != NULL) {
-				while (true) {
-					if ((_curChar = getChar()) == 0)
-						return FOUNDEOF;
-
-					status = checkAll(_curChar, myAttr);
-					if (status != OK)
-						return status;
-				}
-			} else 
-
-				if ((_curChar = getChar()) == 0)
-					return FOUNDEOF;
-
-				status = checkEOL(_curChar);
-				if (status == OK)
-					return FOUNDSEPARATOR;
-				else
-					return status;
-		}
-
-		if (!ignoreRest) {
-			target[_posTarget] = _curChar;
-			_posTarget++;
-		}
-
-		if (count >= maxLen) 
-			ignoreRest = true;
-
-		if ((_curChar = getChar()) == 0)
+		if ((_curChar = getChar()) == 0) {
 			return FOUNDEOF;
+		}
 
-		if (_curChar == ESCAPE) {
-			if ((_curChar = getChar()) == 0)
-				return FOUNDEOF;
+		if (count == 0) {
+			// Check for quote character and skip it.
+			if (_curChar != quoteChar) {
+				cerr << "Field : " << myAttr->getFieldName() <<
+				  " doesn't have quote char : " << quoteChar << endl;
+				(void) consumeField(myAttr);
+				return FAIL;
+			}
+		} else {
+			// Check for escape character and skip it if it's there.
+			if (_curChar == ESCAPE) {
+				if ((_curChar = getChar()) == 0) {
+					return FOUNDEOF;
+				}
+			} else if (_curChar == quoteChar) {
+				// Consume characters up to next field or record separator.
+				return consumeField(myAttr);
+			}
 
-			if (!ignoreRest) {
+			if (_posTarget < maxLen) {
 				target[_posTarget] = _curChar;
 				_posTarget++;
 			}
-
-			count++;
-
-			if (count >= maxLen)
-				ignoreRest = true;
-
-			if ((_curChar = getChar()) == 0)
-				return FOUNDEOF;
-
 		}
+		count++;
 	}
-	cerr << "Couldn't Extract field : " << myAttr->getFieldName() << " from data file" << endl;
+
+	cerr << "Couldn't Extract field : " << myAttr->getFieldName() <<
+	  " from data file" << endl;
 	return FAIL;
 }
 
@@ -1046,6 +1042,11 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 // User may define any date component with more than one char (e.g. yyyy : year)
 // To speed up extraction, user given format is converted to a different format with 
 // single character for each component definition
+
+#if defined(DEBUG)
+	cout << "Buffer::getDate(" << myAttr->getFieldName() << " (" <<
+	  myAttr->getDateFormat() << ") )\n";
+#endif
 
 	_curDate.day = 0;
 	_curDate.mon = 0;
@@ -1062,15 +1063,24 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 	Status err;
 	char* dFormat = myAttr->getDateFormat();
 	while (*dFormat != '\0') {
+#if defined(DEBUG_DATE)
+		cout << "*dFormat = '" << *dFormat << "'\n";
+#endif
 		switch (*dFormat) {
 			case 'd':
 				err = getInt(2,_curDate.day);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.day = " << _curDate.day << endl;
+#endif
 				if ( err != OK)
 					return err;
 				break;
 
 			case 'h':
 				err = getInt(2,_curDate.hour);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.hour = " << _curDate.hour << endl;
+#endif
 				if (err != OK)
 					return err;
 
@@ -1078,12 +1088,18 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 			
 			case 'm':
 				err = getInt(2,_curDate.mon);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.mon = " << _curDate.mon << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
 
 			case 'i':
 				err = getInt(2,_curDate.min);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.min = " << _curDate.min << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
@@ -1098,8 +1114,9 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				} else if ((_curChar == 'P') || (_curChar == 'p')) {
 					_curDate.ampm = PM;
 				} else {
-					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << "Date format for: " << myAttr->getFieldName() <<
+					  " doesn't match the given date format: " <<
+					  myAttr->getDateFormat() << endl;
 					return FAIL;
 				}
 
@@ -1107,27 +1124,42 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 					return FOUNDEOF;
 				}
 				if ((_curChar != 'M') && (_curChar != 'm')) {
-					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << "Date format for: " << myAttr->getFieldName() <<
+					  " doesn't match the given date format: " <<
+					  myAttr->getDateFormat() << endl;
 					return FAIL;
 				}
+#if defined(DEBUG_DATE)
+				cout << "_curDate.ampm = " << _curDate.ampm << endl;
+#endif
 
 				break;
 
 			case 's':
 				err = getInt(2,_curDate.sec);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.sec = " << _curDate.sec << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
 
 			case 'f':
+				//TEMP -- does this really mean nanosec or microsec????
+				// RKW 1998-10-09
 				err = getInt(6,_curDate.nanosec);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.nanosec = " << _curDate.nanosec << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
 				
 			case 'y':
 				err = getInt(2,_curDate.year);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.year = " << _curDate.year << endl;
+#endif
 				if (err != OK)
 					return err;
 				_curDate.year += 1900;
@@ -1135,6 +1167,9 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 
 			case 'Y':
 				err = getInt(4,_curDate.year);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.year = " << _curDate.year << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
@@ -1150,8 +1185,9 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 				} else if ((_curChar == 'A') || (_curChar == 'a')) {
 					_curDate.adbc = true;
 				} else {
-					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << "Date format for: " << myAttr->getFieldName() <<
+					  " doesn't match the given date format: " <<
+					  myAttr->getDateFormat() << endl;
 					return FAIL;
 				}
 
@@ -1159,21 +1195,31 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 					return FOUNDEOF;
 				}
 				if ((_curChar != 'D') && (_curChar != 'd') && (_curChar != 'C') && (_curChar != 'c')) {
-					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
+					cerr << "Date format for: " << myAttr->getFieldName() <<
+					  " doesn't match the given date format: " <<
+					  myAttr->getDateFormat() << endl;
 					return FAIL;
 				}
+#if defined(DEBUG_DATE)
+				cout << "_curDate.adbc = " << _curDate.adbc << endl;
+#endif
 			
 				break;
 
 			case 'M':
 				err = checkString(_months,3,12,_curDate.mon);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.mon = " << _curDate.mon << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
 
 			case 'N':
 				err = checkString(_monthAbbr,3,12,_curDate.mon);
+#if defined(DEBUG_DATE)
+				cout << "_curDate.mon = " << _curDate.mon << endl;
+#endif
 				if (err != OK)
 					return err;
 				break;
@@ -1183,10 +1229,9 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 					return FOUNDEOF;
 				}
 				if (_curChar != *dFormat) {
-					cerr << "Date Format for : " << myAttr->getFieldName() << " doesn't match the given date format : " << endl;
-					cerr << __FILE__ << ": " << __LINE__ << "\n";//TEMP
-					cerr << "dFormat = " << dFormat << "\n";//TEMP
-					cerr << "_curChar = " << _curChar << "\n";//TEMP
+					cerr << "Date format for: " << myAttr->getFieldName() <<
+					  " doesn't match the given date format: " <<
+					  myAttr->getDateFormat() << endl;
 					return FAIL;
 				}
 		}
@@ -1214,7 +1259,14 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 
 Status Buffer::extractField(Attribute* myAttr, char* dest) {
 
+#if defined(DEBUG)
+	cout << "Buffer::extractField(" << myAttr->getFieldName() << ")\n";
+#endif
+
 	Status retSt;
+
+	// Clear out the destination in case we don't find anything
+	memset(dest, 0, myAttr->getLength());
 
 	// check for comment at the beginning of the record
 	if (_comment != NULL) {
@@ -1223,6 +1275,9 @@ Status Buffer::extractField(Attribute* myAttr, char* dest) {
 			if (retSt == OK) {
 				break;
 			} else if (retSt == FOUNDEOF) {
+#if defined(DEBUG)
+				cout << "  Buffer::extractField() retSt: " << retSt << endl;
+#endif
 				return retSt;
 			}
 		}
@@ -1230,10 +1285,44 @@ Status Buffer::extractField(Attribute* myAttr, char* dest) {
 		
 	retSt = (this->*(extFunc[myAttr->whichAttr]))(myAttr,dest);
 	(this->*(valFunc[myAttr->whichAttr]))(dest);
+
+#if defined(DEBUG)
+	cout << "  Buffer::extractField() retSt: " << retSt << endl;
+#endif
 	return retSt;
 }
 
+Status
+Buffer::consumeField(Attribute *attr)
+{
+#if defined(DEBUG)
+	cout << "Buffer::consumeField()\n";
+#endif
+
+	if (attr->getSeparator() == NULL) {
+		return OK;
+	} else {
+		char curChar;
+		while (true) {
+			curChar = getChar();
+			Status status;
+			if (curChar == 0) {
+				return FOUNDEOF;
+			} else if ((status = checkAll(curChar, attr)) != OK) {
+				return status;
+			}
+		}
+	}
+}
+
 Status Buffer::consumeRecord() {
+#if defined(DEBUG)
+	cout << "Buffer::consumeRecord()\n";
+#endif
+
+// Note: this could get confused if a record separator character is in a
+// string and/or escaped.
+
 	if (_EOL == NULL) {
 		return FOUNDSEPARATOR;
 	} else {
