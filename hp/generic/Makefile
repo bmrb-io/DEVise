@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/05/31 21:35:46  wenger
+#  Fixed core dump in SPARC/Solaris version caused by GData buffer
+#  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+#  version to link correctly and eliminate special Makefile.base.aix.
+#
 #  Revision 1.3  1996/02/26 16:44:32  jussi
 #  Makes a statically linked executable.
 #
@@ -30,7 +35,8 @@
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm
-ARCH_LDPOST  = -lSM -lICE -static
+ARCH_LDPOST  =
+#ARCH_LDPOST  = -lSM -lICE -static
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base
