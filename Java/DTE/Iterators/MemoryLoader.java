@@ -33,15 +33,19 @@ public class MemoryLoader implements Iterator
   public void load() throws IOException
   {
     Tuple t;
+    curr = 0;
+
     for(int i = 0; i < size; i++)
       {
 	if((t = reln.getNext()) != null)
 	    t.copyTo(TupleArray[i]);
 	else
-	  TupleArray[i] = null;
+	  {
+	    for(int j = i; j < size; j++)
+	      TupleArray[j] = null;
+	    return;
+	  }
       }
-
-    curr = 0;
   }
   
  

@@ -76,6 +76,7 @@ public class NLjoinIterator implements Iterator
       try
 	  {
 	      temp_file = (String)stack.pop();
+	      //	      System.out.println(temp_file+"is allocated");
 	  }
       
       catch(EmptyStackException ex)
@@ -161,8 +162,15 @@ public class NLjoinIterator implements Iterator
 
 	if( outerTup==null || innerTup==null )
 	 {
-	   stack.push(temp_file);
-	   f.delete();
+	   if(temp_file != null)
+	     {
+	       stack.push(temp_file);
+	       f.delete();
+	       temp_file = null;
+	     }
+	   
+	   //	       System.out.println(temp_file+"is deleted.");
+	  
 	   return null;
 	 }
 
