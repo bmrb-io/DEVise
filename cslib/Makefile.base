@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/11/24 23:13:58  weaver
+#  Changes for the new ColorManager.
+#
+#  Revision 1.8.6.1  1997/12/06 17:42:59  wenger
+#  Split libcs.a into libdevcs.a and libdevwin.a in preparation for
+#  incorporating client/server part into DEVise.
+#
 #  Revision 1.8  1997/06/13 18:02:48  wenger
 #  Got client/server library to compile with latest changes.
 #
@@ -61,60 +68,67 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape -I../../cslib \
+	-I../../tape -I../../cslib -I../../src/color -I../../src/utils \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS
 
 TESTSRC = client.C server.C
 TESTOBJ = $(TESTSRC:.C=.o)
 
-LOCALSRC = ClientServer.C
-SRCc = $(filter %.c,$(LOCALSRC))
-SRCC = $(filter %.C,$(LOCALSRC))
-LOCALOBJ = $(SRCc:.c=.o)
-LOCALOBJ += $(SRCC:.C=.o)
-LOCALOBJ += \
-        Display.o \
-		Exit.o \
-        WindowRep.o \
-        XWindowRep.o \
-        XDisplay.o \
-        PSWindowRep.o \
-        PSDisplay.o \
-		DualWindowRep.o
+LOCALCSSRC = ClientServer.C WinServer.C
 
-LIBOBJ = \
-        ../graphics/DevisePixmap.o \
-        ../graphics/DList.o \
-        ../graphics/Geom.o \
-        ../graphics/XBitmap.o \
+CSSRCC = $(filter %.C,$(LOCALCSSRC))
+
+LOCALCSOBJ = $(CSSRCC:.C=.o) \
+	Exit.o
+
+LOCALWINOBJ = \
+	Display.o \
+	Exit.o \
+	WindowRep.o \
+	XWindowRep.o \
+	XDisplay.o \
+	PSWindowRep.o \
+	PSDisplay.o \
+	DualWindowRep.o
+
+LIBCSOBJ = \
+	../graphics.new/ClientAPI.o \
+	$(LOCALCSOBJ)
+
+LIBWINOBJ = \
+	../graphics/DevisePixmap.o \
+	../graphics/DList.o \
+	../graphics/Geom.o \
+	../graphics/XBitmap.o \
 	../graphics/xv24to8.o \
-        ../graphics/xvgifwr.o \
-        ../graphics/xvgrab.o \
-        ../graphics/Compress.o \
-        ../graphics/Util.o \
-        ../graphics.new/ClientAPI.o \
-        ../graphics.new/Version.o \
-        ../graphics/DevError.o \
-        ../graphics/DevStatus.o \
-        ../graphics/ETkIfc.o \
-        ../graphics/DaliIfc.o \
-        ../graphics/ETkClient.o \
-        ../graphics/DaliPatron.o \
-        ../graphics.new/MapIntToInt.o \
+	../graphics/xvgifwr.o \
+	../graphics/xvgrab.o \
+	../graphics/Compress.o \
+	../graphics/Util.o \
+	../graphics.new/Version.o \
+	../graphics/DevError.o \
+	../graphics/DevStatus.o \
+	../graphics/ETkIfc.o \
+	../graphics/DaliIfc.o \
+	../graphics/ETkClient.o \
+	../graphics/DaliPatron.o \
+	../graphics.new/MapIntToInt.o \
 	../xvertext/rotated.o \
-        $(LOCALOBJ)
+	$(LOCALWINOBJ)
 
-LIB = libcs.a
+LIBCS = libdevcs.a
+LIBWIN = libdevwin.a
 
 all: client server
 
-lib: $(LIB)
+lib: $(LIBCS) $(LIBWIN)
 
 pure: client.pure server.pure
 
-CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) client.o -L. -lcs $(ARCH_SYSLIBS)
-SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) server.o -L. -lcs $(ARCH_SYSLIBS)
+CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) client.o -L. -ldevcs $(ARCH_SYSLIBS)
+SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) server.o -L. -ldevcs -ldevwin \
+	 $(ARCH_SYSLIBS)
 
 client: client.o $(LIB)
 	$(CLIENT) $(ARCH_LDPOST)
@@ -128,8 +142,12 @@ server: server.o $(LIB)
 server.pure: server.o $(LIB)
 	$(PURIFY) $(PURE_OPT) $(SERVER) $(ARCH_LDPOST)
 
-$(LIB): $(LIBOBJ)
-	$(AR) cr $@ $(LIBOBJ)
+$(LIBCS): $(LIBCSOBJ)
+	$(AR) cr $@ $(LIBCSOBJ)
+	$(RANLIB) $@
+
+$(LIBWIN): $(LIBWINOBJ)
+	$(AR) cr $@ $(LIBWINOBJ)
 	$(RANLIB) $@
 
 Exit.o: ../../graphics/Exit.c
@@ -165,4 +183,4 @@ clean: mostlyclean
 	-rm -f client client.pure server server.pure
 
 mostlyclean:
-	-rm -f $(TESTOBJ) $(LOCALOBJ) $(LIB)
+	-rm -f $(TESTOBJ) $(LOCALOBJ) $(LIBCS) $(LIBWIN)

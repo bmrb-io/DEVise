@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.17.4.1  1997/12/06 17:43:02  wenger
+  Split libcs.a into libdevcs.a and libdevwin.a in preparation for
+  incorporating client/server part into DEVise.
+
+  Revision 1.17  1997/08/07 19:42:55  wenger
+  Got this to compile for sun.
+
   Revision 1.16  1997/08/07 19:28:25  wenger
   Get this to compile on hpux.
 
@@ -107,7 +114,7 @@
 #include <sys/unistd.h>	// for getcwd()
 #endif
 
-#include "ClientServer.h"
+#include "WinServer.h"
 #include "DualWindowRep.h"
 
 static char *_progName = 0;
