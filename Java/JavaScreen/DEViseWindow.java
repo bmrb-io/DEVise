@@ -803,7 +803,7 @@ public class DEViseWindow extends Container
                         g.drawRect(viewCursor[whichCursor].x, viewCursor[whichCursor].y, viewCursor[whichCursor].width, viewCursor[whichCursor].height);
                         g.drawRect(viewCursor[whichCursor].x + edge, viewCursor[whichCursor].y + edge, viewCursor[whichCursor].width - edge * 2, viewCursor[whichCursor].height - edge * 2);
                         edge++;
-                        g.setColor(Color.red);                        
+                        g.setColor(Color.red);
                         g.drawRect(viewCursor[whichCursor].x + edge, viewCursor[whichCursor].y + edge, viewCursor[whichCursor].width - edge * 2, viewCursor[whichCursor].height - edge * 2);
                         edge++;
                         g.drawRect(viewCursor[whichCursor].x + edge, viewCursor[whichCursor].y + edge, viewCursor[whichCursor].width - edge * 2, viewCursor[whichCursor].height - edge * 2);
@@ -1151,7 +1151,11 @@ public class DEViseWindow extends Container
 
             if (currentView != null) {
                 ep = adjustViewPoint(p);
-                jsc.viewInfo.updateInfo(ep.x, ep.y);
+
+                String xpos = "" + currentView.getDataX(ep.x);
+                String ypos = "" + currentView.getDataY(ep.y);
+
+                jsc.viewInfo.updateInfo(xpos, ypos);
 
                 if (isWithinCursor || isMovingCursor) {
                     updateCursorPosition(new Point(ep.x - op.x, ep.y - op.y));
@@ -1178,7 +1182,10 @@ public class DEViseWindow extends Container
 
             if (currentView != null && currentView.isCurrent(p)) {
                 //isViewFirstTime = false;
-                jsc.viewInfo.updateInfo(p.x, p.y);
+                String xpos = "" + currentView.getDataX(p.x);
+                String ypos = "" + currentView.getDataY(p.y);
+
+                jsc.viewInfo.updateInfo(xpos, ypos);
 
                 if (jsc.dispatcher.getStatus() != 0) {
                     int state = checkCursor(p);
@@ -1219,7 +1226,10 @@ public class DEViseWindow extends Container
                         setCursor(DEViseGlobals.waitcursor);
                     }
 
-                    jsc.viewInfo.updateInfo(getName(), view.getName(), p.x, p.y);
+                    String xpos = "" + currentView.getDataX(p.x);
+                    String ypos = "" + currentView.getDataY(p.y);
+
+                    jsc.viewInfo.updateInfo(getName(), view.getName(), xpos, ypos);
                     repaint();
                     return;
                 }
@@ -1231,7 +1241,11 @@ public class DEViseWindow extends Container
                 setCursor(DEViseGlobals.waitcursor);
             }
 
-            jsc.viewInfo.updateInfo(getName(), null, p.x, p.y);
+            //String xpos = "" + ((p.x - currentView.dataLoc.x) * currentView.dataXStep + currentView.dataXMin);
+            //String ypos = "" + ((p.y - currentView.dataLoc.y) * currentView.dataYStep + currentView.dataYMin);
+
+            //jsc.viewInfo.updateInfo(getName(), null, xpos, ypos);
+            jsc.viewInfo.updateInfo(getName(), null, "", "");
             repaint();
         }
     }

@@ -480,7 +480,7 @@ public class DEViseCmdDispatcher implements Runnable
         String[] rsp = sendCommand(command);
 
         String[] cmd = null;
-        jsc.viewControl.updateImage(4, 1);
+        jsc.viewControl.updateImage(3, 1);
         for (int i = 0; i < rsp.length; i++) {
             jsc.viewControl.updateCount(rsp.length - 1 - i);
 
@@ -577,9 +577,9 @@ public class DEViseCmdDispatcher implements Runnable
                     }
 
                     YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
-                    jsc.viewControl.updateImage(3, 1);
+                    jsc.viewControl.updateImage(2, 1);
                     byte[] imageData = receiveImg(imageSize);
-                    jsc.viewControl.updateImage(3, 0);
+                    jsc.viewControl.updateImage(2, 0);
                     YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
 
                     if (imageData == null)
@@ -627,9 +627,9 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 YGlobals.Ydebugpn("Retrieving image data for window " + winname + " ... ");
-                jsc.viewControl.updateImage(3, 1);
+                jsc.viewControl.updateImage(2, 1);
                 byte[] imageData = receiveImg(imageSize);
-                jsc.viewControl.updateImage(3, 0);
+                jsc.viewControl.updateImage(2, 0);
                 YGlobals.Ydebugpn("Successfully retrieve image data for window " + winname);
 
                 if (imageData == null)
@@ -665,9 +665,9 @@ public class DEViseCmdDispatcher implements Runnable
                     int gdataSize = Integer.parseInt(cmd[6]);
 
                     YGlobals.Ydebugpn("Retrieving GData for view " + viewname + " ... ");
-                    jsc.viewControl.updateImage(3, 1);
+                    jsc.viewControl.updateImage(2, 1);
                     byte[] gdata = receiveImg(gdataSize);
-                    jsc.viewControl.updateImage(3, 0);
+                    jsc.viewControl.updateImage(2, 0);
                     YGlobals.Ydebugpn("Successfully retrieve GData for view " + viewname);
 
                     if (gdata == null || gdata.length != gdataSize)
@@ -770,9 +770,56 @@ public class DEViseCmdDispatcher implements Runnable
                 //    throw new YException("Dispatcher::processCmd: Incorrect command: " + rsp[i], 3);
                 //}
             } else if (rsp[i].startsWith("JAVAC_ViewInfo")) {
-                // not yet implemented
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 11) {
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
+                }
+
+                try {
+                    String viewname = cmd[1];
+                    String viewtitle = cmd[10];
+                    int x0 = Integer.parseInt(cmd[2]);
+                    int y0 = Integer.parseInt(cmd[3]);
+                    int w = Integer.parseInt(cmd[4]);
+                    int h = Integer.parseInt(cmd[5]);
+                    Rectangle rect = new Rectangle(x0, y0, w, h);
+                    String fg = cmd[6];
+                    String bg = cmd[7];
+                    String xt = cmd[8];
+                    String yt = cmd[9];
+                    
+                    DEViseView view = jscreen.getView(viewname);
+                    if (view == null) {
+                        throw new YException("Can not find the view {" + viewname + "}!", 5);
+                    } else {
+                        view.updateViewInfo(viewtitle, fg, bg, xt, yt);
+                        view.updateDataLoc(rect);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new YException("Incorrect view data location " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5] + "!", 5);
+                }
+                    
             } else if (rsp[i].startsWith("JAVAC_DrawAxis")) {
-                // not yet implemented
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 5) {
+                    throw new YException("Ill-formated command " + rsp[i] + "!", 5);
+                }
+
+                try {
+                    String viewname = cmd[1];
+                    String viewaxis = cmd[2];
+                    float min = (Float.valueOf(cmd[3])).floatValue();
+                    float max = (Float.valueOf(cmd[4])).floatValue();
+                   
+                    DEViseView view = jscreen.getView(viewname);
+                    if (view == null) {
+                        throw new YException("Can not find the view {" + viewname + "}!", 5);
+                    } else {
+                        view.updateDataRange(viewaxis, min, max);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new YException("Incorrect view data range " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5] + "!", 5);
+                }                    
             } else if (rsp[i].startsWith("JAVAC_User")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
@@ -799,7 +846,7 @@ public class DEViseCmdDispatcher implements Runnable
             }
         }
 
-        jsc.viewControl.updateImage(4, 0);
+        jsc.viewControl.updateImage(3, 0);
     }
 
     private byte[] receiveImg(int size) throws YException
@@ -834,8 +881,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         jsc.viewControl.updateImage(1, 0);
         jsc.viewControl.updateCount(0);
+        //jsc.viewControl.updateImage(2, 1);
         jsc.viewControl.updateImage(2, 1);
-        jsc.viewControl.updateImage(3, 1);
         while (!isEnd) {
             isFinish = false;
 
@@ -852,7 +899,7 @@ public class DEViseCmdDispatcher implements Runnable
                 }
             }
 
-            jsc.viewControl.updateImage(2, 0);
+            //jsc.viewControl.updateImage(2, 0);
 
             if (response == null || response.length() == 0) {
                 throw new YException("Null response received!", 5);
@@ -867,15 +914,19 @@ public class DEViseCmdDispatcher implements Runnable
                         cmd = cmd + " {" + cmds[j] + "}";
 
                     if (cmd.startsWith("JAVAC_")) {
-                        if (cmd.startsWith("JAVAC_Done") || cmd.startsWith("JAVAC_Error")
-                            || cmd.startsWith("JAVAC_Fail") || cmd.startsWith("JAVAC_Exit")
-                            || cmd.startsWith("JAVAC_LastSavedState")) {
-                            isEnd = true;
-                        }
+                        if (cmd.startsWith("JAVAC_Ack")) {
+                            jsc.animPanel.setActiveImageNumber(5);
+                        } else {                            
+                            if (cmd.startsWith("JAVAC_Done") || cmd.startsWith("JAVAC_Error")
+                                || cmd.startsWith("JAVAC_Fail") || cmd.startsWith("JAVAC_Exit")
+                                || cmd.startsWith("JAVAC_LastSavedState")) {
+                                isEnd = true;
+                            }
 
-                        rspbuf.addElement(cmd);
+                            rspbuf.addElement(cmd);
 
-                        jsc.viewControl.updateCount(rspbuf.size());
+                            jsc.viewControl.updateCount(rspbuf.size());
+                        }                        
                     } else {
                         throw new YException("Unrecognized command " + response + "!", 5);
                     }
@@ -884,7 +935,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         //jsc.viewControl.updateImage(2, 0);
-        jsc.viewControl.updateImage(3, 0);
+        jsc.viewControl.updateImage(2, 0);
 
         if (rspbuf.size() > 0) {
             String[] rspstr = new String[rspbuf.size()];

@@ -4,13 +4,13 @@ import java.awt.event.*;
 public class DEViseTrafficLight extends Panel
 {
     Image onImage = null, offImage = null;
-    YImageCanvas [] canvas = new YImageCanvas[5];
+    YImageCanvas [] canvas = new YImageCanvas[4];
     //Label [] label = new Label[4];
-    YImageCanvas [] label = new YImageCanvas[4];
-    String[] c = {"S", "W", "R", "P"};
+    YImageCanvas [] label = new YImageCanvas[3];
+    String[] c = {"S", "R", "P"};
     String string = null;
 
-    public DEViseTrafficLight (Image offi, Image oni, String s) throws YException
+    public DEViseTrafficLight(Image offi, Image oni, String s) throws YException
     {
         this(offi, oni, s, null);
     }
@@ -20,7 +20,7 @@ public class DEViseTrafficLight extends Panel
         onImage = oni;
         offImage = offi;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             canvas[i] = new YImageCanvas(onImage);
             if (!canvas[i].setImage(offImage))
                 throw new YException("Invalid Image!");
@@ -28,7 +28,7 @@ public class DEViseTrafficLight extends Panel
             label[i] = new YImageCanvas(c[i], null, DEViseGlobals.uibgcolor, DEViseGlobals.uifgcolor, 12, 12, 1, 1);
         }
         string = s;
-        canvas[4] = new YImageCanvas(string);
+        canvas[3] = new YImageCanvas(string);
         if (align == null) {
             align = "RIGHT";
         }
@@ -42,9 +42,9 @@ public class DEViseTrafficLight extends Panel
         panel.setFont(new Font("Monospaced", Font.BOLD, 14));
         panel.setBackground(DEViseGlobals.uibgcolor);
         panel.setForeground(DEViseGlobals.uifgcolor);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
             panel.add(label[i]);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
             panel.add(canvas[i]);
 
         if (align == "TOP" || align == "BOTTOM") {
@@ -66,32 +66,32 @@ public class DEViseTrafficLight extends Panel
             setLayout(gridbag);
 
             if (align == "TOP") {
-                gridbag.setConstraints(canvas[4], c);
-                add(canvas[4]);
+                gridbag.setConstraints(canvas[3], c);
+                add(canvas[3]);
                 gridbag.setConstraints(panel, c);
                 add(panel);
             } else {
                 gridbag.setConstraints(panel, c);
                 add(panel);
-                gridbag.setConstraints(canvas[4], c);
-                add(canvas[4]);
+                gridbag.setConstraints(canvas[3], c);
+                add(canvas[3]);
             }
         } else if (align == "LEFT") {
-            add(canvas[4]);
+            add(canvas[3]);
             add(panel);
         } else {
             add(panel);
-            add(canvas[4]);
+            add(canvas[3]);
         }
     }
 
     public void updateImage(int type, int isOn)
     {
-        if (type < 0 || type > 4)
+        if (type < 0 || type > 3)
             return;
 
         if (type == 0) {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 3; i++) {
                 canvas[i].setImage(offImage);
             }
         } else {
@@ -106,7 +106,7 @@ public class DEViseTrafficLight extends Panel
     public void updateCount(String s)
     {
         string = s;
-        canvas[4].setString(string);
+        canvas[3].setString(string);
     }
 }
 

@@ -1,6 +1,7 @@
+rm *.class
 javac jsb.java
 jar cf jsb.jar *.class
+rm /var/home/www/public/jsb.jar
 mv jsb.jar /var/home/www/public
-chmod 755 /var/home/www/public/*.jar
+chmod 755 /var/home/www/public/jsb.jar
 rm *.class
-javac jspop.java

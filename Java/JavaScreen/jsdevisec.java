@@ -89,7 +89,7 @@ public class jsdevisec extends Panel
                 Toolkit toolkit = this.getToolkit();
                 images = new Vector();
                 Image image = null;
-                for (int i = 0; i < 7; i++) {
+                for (int i = 0; i < 11; i++) {
                     image = toolkit.getImage("devise" + i + ".gif");
                     tracker.addImage(image, 0);
                     try  {
@@ -144,17 +144,23 @@ public class jsdevisec extends Panel
         setForeground(DEViseGlobals.uifgcolor);
         setFont(DEViseGlobals.uifont);
         setLayout(new BorderLayout(2, 2));
-
-        Panel titlePanel = new Panel(new FlowLayout(FlowLayout.LEFT));
+        
+        Panel titlePanel = null;
+        if (inBrowser) {
+            titlePanel = new Panel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        } else {
+            titlePanel = new Panel(new FlowLayout(FlowLayout.LEFT));
+        }
         titlePanel.add(animPanel);
 
         Component[] button = null;
 
         if (inBrowser) {
-            button = new Component[3];
-            button[0] = openButton;
-            button[1] = closeButton;
-            button[2] = stopButton;
+            //button = new Component[3];
+            //button[0] = openButton;
+            //button[1] = closeButton;
+            button = new Component[1];
+            button[0] = stopButton;
         } else {
             button = new Component[8];
             button[0] = openButton;
@@ -171,7 +177,7 @@ public class jsdevisec extends Panel
         titlePanel.add(panel);
         if (inBrowser) {
             try {
-                light = new DEViseTrafficLight((Image)images.elementAt(5), (Image)images.elementAt(6), "0");
+                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0");
                 titlePanel.add(light);
             } catch (YException e) {
                 light = null;
@@ -185,7 +191,11 @@ public class jsdevisec extends Panel
         }
 
         viewControl = new DEViseViewControl(this, images);
+                
         viewInfo = new DEViseViewInfo(this);
+        if (inBrowser) {
+            titlePanel.add(viewInfo);
+        }
 
         add(titlePanel, BorderLayout.NORTH);
         add(jscreen, BorderLayout.CENTER);

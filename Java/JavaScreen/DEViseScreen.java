@@ -93,7 +93,8 @@ public class DEViseScreen extends Panel
                     } else {
                         setCursor(DEViseGlobals.handcursor);
                     }
-                    jsc.viewInfo.updateInfo(null, null, p.x, p.y);
+                    //jsc.viewInfo.updateInfo(null, null, p.x, p.y);
+                    jsc.viewInfo.updateInfo();
                     setCurrentWindow(null);
                     //requestFocus();
                 }

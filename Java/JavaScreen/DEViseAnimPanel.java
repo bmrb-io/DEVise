@@ -41,8 +41,8 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     private Image currentImg = null, offScrImg = null;
     private Vector images = null;
     private Dimension minSize = null;
-    private int imageCount = 0, frameNum = 1;
-    private int imageWidth = 47, imageHeight = 50;
+    private int imageCount = 0, frameNum = 0, activeImageNumber = 1;
+    private int imageWidth = 24, imageHeight = 25;
     private Thread animator = null;
     private boolean isAnimated = false;
     private int waitInterval;
@@ -68,13 +68,13 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         minSize = new Dimension(imageWidth, imageHeight);
 
         imageCount = images.size();
-        if (imageCount < 4) {
+        if (imageCount < 9) {
             isAnimated = false;
             YGlobals.Ydebugpn("Empty image list received in DEViseAnimPanel constructor!");
             return;
         }
 
-        imageCount = 4;
+        imageCount = 9;
 
         // all image in the list must has same size
         currentImg = (Image)images.elementAt(0);
@@ -149,14 +149,15 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         Thread me = Thread.currentThread();
         me.setPriority(Thread.MIN_PRIORITY);
 
+        setActiveImageNumber(1);
         frameNum = 1;
         while (animator == me)  {
-            currentImg = (Image)images.elementAt(frameNum);
-
-            if (frameNum == imageCount - 1)
-                frameNum = 1;
-            else
-                frameNum++;
+            //nextFrame();
+            currentImg = (Image)images.elementAt(nextFrame());
+            //if (frameNum == imageCount - 1)
+            //    frameNum = 1;
+            //else
+            //    frameNum++;
 
             repaint();
 
@@ -166,7 +167,30 @@ public class DEViseAnimPanel extends Canvas implements Runnable
             }
         }
     }
-
+    
+    public synchronized void setActiveImageNumber(int number) 
+    {
+        if (number != 1 && number != 5)
+            return;
+        
+        activeImageNumber = number;
+    }
+    
+    public synchronized int nextFrame()
+    {
+        if (activeImageNumber == 1) {
+            if (frameNum == 5) 
+                return (frameNum = 1);
+            else
+                return frameNum++;
+        } else {
+            if (frameNum == 9) 
+                return (frameNum = 5);
+            else
+                return frameNum++;
+        }
+    }
+     
     public void start()
     {
         if (!isAnimated)
@@ -200,6 +224,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         // since at this point, the thread animator is already stopped
         animator = null;
         currentImg = (Image)images.elementAt(0);
+        //setActiveImageNumber(1);
         repaint();
     }
 }

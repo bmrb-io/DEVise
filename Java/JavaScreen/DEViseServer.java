@@ -466,7 +466,7 @@ public class DEViseServer implements Runnable
                 // erase the command from client command buffer, so if any error happens,
                 // this command will be losted
                 client.removeCmd();
-
+                
                 // convert client command to command that DEVise server can understand
                 if (clientCmd.startsWith("JAVAC_SaveCurrentState")) {
                     clientCmd = new String("JAVAC_SaveSession {" + client.savedSessionName + "}");

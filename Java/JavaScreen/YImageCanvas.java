@@ -122,6 +122,10 @@ public final class YImageCanvas extends Canvas
         if (offScrImg == null)
             offScrImg = createImage(imageWidth, imageHeight);
 
+        if (offScrImg == null) {
+            return;
+        }
+        
         Graphics og = offScrImg.getGraphics();
         if (og == null) {
             offScrImg = null;

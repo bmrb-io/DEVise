@@ -39,7 +39,14 @@ public class DEViseView
     DEViseScreen jscreen = null;
     DEViseWindow window = null;
     String viewName = null;
+    String viewTitle = null;
     Rectangle viewLoc = null;
+    Rectangle dataLoc = null;
+    float dataXMin = 0.0f, dataXMax = 0.0f, dataXStep = 0.0f;
+    float dataYMin = 0.0f, dataYMax = 0.0f, dataYStep = 0.0f;
+    String viewBackground = null;
+    String viewForeground = null;
+    String viewXType = "real", viewYType = "real";
     DEViseGData[] viewGData = null;
     DEViseCursor[] viewCursor = null;
     Button[] GDataButton = null;
@@ -52,6 +59,57 @@ public class DEViseView
         viewLoc = loc;
     }
 
+    public void updateViewInfo(String title, String fg, String bg, String xt, String yt)
+    {
+        viewTitle = title;
+        viewXType = xt;
+        viewYType = yt;
+        viewBackground = bg;
+        viewForeground = fg;
+    }
+    
+    public void updateDataLoc(Rectangle rect)
+    {
+        dataLoc = rect;
+    }
+    
+    public void updateDataRange(String axis, float min, float max)
+    {
+        if (axis.equals("X")) {
+            dataXMin = min;
+            dataXMax = max;
+            if (dataLoc.width > 0) {
+                dataXStep = (dataXMax - dataXMin) / dataLoc.width;
+            }
+        } else if (axis.equals("Y")) {
+            dataYMin = min;
+            dataYMax = max;
+            if (dataLoc.height > 0) {
+                dataYStep = (dataYMax - dataYMin) / dataLoc.height;               
+            }
+        }
+    }
+    
+    public float getDataX(int x)
+    {
+        float x0 = (x - dataLoc.x) * dataXStep + dataXMin;
+        if (x0 > 0) {
+            return (int)(x0 * 100 + 0.5) / (float)100;
+        } else {
+            return (int)(x0 * 100 - 0.5) / (float)100;
+        }
+    }
+
+    public float getDataY(int y)
+    {
+        float y0 = -(y - dataLoc.y) * dataYStep + dataYMax;
+        if (y0 > 0) {
+            return (int)(y0 * 100 + 0.5) / (float)100;
+        } else {
+            return (int)(y0 * 100 - 0.5) / (float)100;
+        }
+    }
+        
     public void setWindow(DEViseWindow win)
     {
         window = win;

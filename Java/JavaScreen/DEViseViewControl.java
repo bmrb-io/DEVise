@@ -40,7 +40,7 @@ public class DEViseViewControl extends Panel
 
     public TextField screenX = new TextField(4);
     public TextField screenY = new TextField(4);
-    public Button setButton = new Button("Set Size");
+    public Button setButton = new Button("Set");
     Label screenSizeTitle = new Label("");
     YImageCanvas canvas = null;
     DEViseTrafficLight light = null;
@@ -88,9 +88,9 @@ public class DEViseViewControl extends Panel
         */
 
         isCanvas = false;
-        if (images != null && images.size() > 6) {
+        if (images != null && images.size() == 11) {
             try {
-                light = new DEViseTrafficLight((Image)images.elementAt(5), (Image)images.elementAt(6), "0", "BOTTOM");
+                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0", "BOTTOM");
                 isCanvas = true;
             } catch (YException e) {
                 light = null;

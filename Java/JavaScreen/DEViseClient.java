@@ -77,7 +77,7 @@ public class DEViseClient
         imgSocket = img;
     }
 
-    public synchronized void insertCmd(String cmd, int pos)
+    public synchronized void insertCmd(String cmd, int pos) throws YException
     {
         if (cmd == null)
             return;
@@ -90,10 +90,12 @@ public class DEViseClient
             cmdBuffer.insertElementAt(cmd, 0);
         } else {
             cmdBuffer.insertElementAt(cmd, pos);
+            // tell client that command has been received
+            sendCmd(new String[] {"JAVAC_Ack"});
         }
     }
 
-    public synchronized void insertCmd(String cmd)
+    public synchronized void insertCmd(String cmd) throws YException
     {
         insertCmd(cmd, -1);
     }
@@ -122,7 +124,7 @@ public class DEViseClient
         if (cmdSocket != null) {
             if (isWait) {
                 String cmd = cmdSocket.receiveRsp();
-                insertCmd(cmd);
+                insertCmd(cmd);                
                 while (!cmdSocket.isEmpty()) {
                     cmd = cmdSocket.receiveRsp();
                     insertCmd(cmd);

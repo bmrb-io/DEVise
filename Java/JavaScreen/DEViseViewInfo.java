@@ -43,10 +43,17 @@ public class DEViseViewInfo extends Panel
     {
         jsc = what;
 
+        boolean inBrowser = YGlobals.YISAPPLET && YGlobals.YINBROWSER;
+        
         setBackground(DEViseGlobals.uibgcolor);
         setForeground(DEViseGlobals.uifgcolor);
         setFont(DEViseGlobals.uifont);
-
+        
+        if (inBrowser) {
+            winName = new TextField(10);
+            viewName = new TextField(10);
+        }
+        
         winName.setBackground(DEViseGlobals.textbgcolor);
         winName.setForeground(DEViseGlobals.textfgcolor);
         winName.setFont(DEViseGlobals.textfont);
@@ -61,27 +68,34 @@ public class DEViseViewInfo extends Panel
         mouseY.setFont(DEViseGlobals.textfont);
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        Label label = new Label("");
-        add(label);
-        label = new Label("Window:");
-        add(label);
-        add(winName);
-        label = new Label("  ");
-        add(label);
-        label = new Label("View:");
-        add(label);
-        add(viewName);
-        label = new Label("    ");
-        add(label);
-        label = new Label("MouseX:");
-        add(label);
-        add(mouseX);
-        label = new Label("  ");
-        add(label);
-        label = new Label("MouseY:");
-        add(label);
-        add(mouseY);
+        
+        if (inBrowser) {
+            add(winName);
+            add(viewName);
+            add(mouseX);
+            add(mouseY);
+        } else {
+            Label label = new Label("");
+            add(label);
+            label = new Label("Window:");
+            add(label);
+            add(winName);
+            label = new Label("  ");
+            add(label);
+            label = new Label("View:");
+            add(label);
+            add(viewName);
+            label = new Label("    ");
+            add(label);
+            label = new Label("MouseX:");
+            add(label);
+            add(mouseX);
+            label = new Label("  ");
+            add(label);
+            label = new Label("MouseY:");
+            add(label);
+            add(mouseY);
+        }
     }
 
     public void updateInfo(String wname, String vname, int x, int y)
@@ -102,10 +116,35 @@ public class DEViseViewInfo extends Panel
         validate();
     }
 
+    public void updateInfo(String wname, String vname, String x, String y)
+    {
+        if (wname == null)
+            winName.setText("");
+        else
+            winName.setText(wname);
+
+        if (vname == null)
+            viewName.setText("");
+        else
+            viewName.setText(vname);
+
+        mouseX.setText(x);
+        mouseY.setText(y);
+
+        validate();
+    }
+    
     public void updateInfo(int x, int y)
     {
         mouseX.setText(String.valueOf(x));
         mouseY.setText(String.valueOf(y));
+        validate();
+    }
+
+    public void updateInfo(String x, String y)
+    {
+        mouseX.setText(x);
+        mouseY.setText(y);
         validate();
     }
 
