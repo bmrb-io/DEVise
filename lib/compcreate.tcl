@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/11/24 07:49:03  ravim
+#  Initial version.
+#
 
 ############################################################
 
@@ -23,8 +26,8 @@
 
 proc compcreate {ifname rel ofname} {
     global datadir
-    set infile [open $datadir/$ifname r]
-    set outfile [open $datadir/$ofname w]
+    set infile [open $ifname r]
+    set outfile [open $ofname w]
 
     # Output initial portion of program
     puts $outfile "set(insert_mode)."
