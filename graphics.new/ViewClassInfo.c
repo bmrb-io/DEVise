@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/29 23:57:42  jussi
+  Made code refer to ForegroundColor and BackgroundColor instead
+  of black and white.
+
   Revision 1.4  1995/12/29 22:40:34  jussi
   Changed default foreground color to black instead of white.
 
@@ -126,7 +130,7 @@ ClassInfo *ViewXInfo::CreateWithParams(int argc, char **argv)
   Color bgColor = ColorMgr::AllocColor(bgName);
 
   TDataViewX *view = new TDataViewX(name, filter, GetQueryProc(), 
-				    BlackColor, bgColor,
+				    ForegroundColor, bgColor,
 				    NULL, NULL, NULL);
   return new ViewXInfo(name, bgName, view);
 }
@@ -244,7 +248,8 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   Color bgColor = ColorMgr::AllocColor(bgName);
 
   ViewScatter *view = new ViewScatter(name, filter, GetQueryProc(), 
-				      BlackColor, bgColor, NULL, NULL, NULL);
+				      ForegroundColor, bgColor,
+				      NULL, NULL, NULL);
   return new ViewScatterInfo(name, bgName, view);
 }
 
