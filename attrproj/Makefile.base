@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1996/11/26 21:41:11  wenger
+#  Fixed various makefile problems; updated dependencies.
+#
 #  Revision 1.28  1996/11/25 18:15:05  wenger
 #  Changes to non-indexed attrproj to match other changes to TData;
 #  changes to compile non-index attrproj and to get the rest of Devise
@@ -98,11 +101,11 @@ endif
 ifeq (yes, $(USE_SEQ))
 LOCALSRC += Exit.c TData.c TDataSeqAscii.c TDataSeqAsciiInterp.c \
         TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
-        TDataBinaryInterp.c DataSourceSegment.c
+        TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 else
 LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c \
         TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
-        TDataBinaryInterp.c DataSourceSegment.c
+        TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 endif
 
 SRCc = $(filter %.c,$(LOCALSRC))
