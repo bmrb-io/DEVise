@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/11/30  01:55:51  ravim
+  Fixed a bug with computing tape offsets.
+
   Revision 1.10  1995/11/20 22:39:21  jussi
   Base tape offset received from calling program.
 
@@ -124,7 +127,8 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
                                   malloc(num*sizeof(unsigned long int));
   int *spos_arr = (int *)malloc(num*sizeof(int));
 
-  for (int i = 0; i < num; i++)
+  int i;
+  for(i = 0; i < num; i++)
   {
     spos_arr[i] = i * 2;
     offset_arr[i] = find_rec(idxfile, argv[i * 2]);
@@ -133,8 +137,8 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   }
 
   /* Now sort offset_arr - bubble sort for now.*/
-  for (i = 0; i < num; i++)
-    for (int j = i+1; j < num; j++)
+  for(i = 0; i < num; i++)
+    for(int j = i+1; j < num; j++)
       if (offset_arr[i] > offset_arr[j])
       {
 	unsigned long int tmp = offset_arr[i];
@@ -153,7 +157,7 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   }
 
   /* Call create_comp_dat for every symbol in turn */
-  for (i = 0; i < num; i++)
+  for(i = 0; i < num; i++)
   {
     if (create_comp_dat(tape, offset_arr[i],
 			argv[spos_arr[i] + 1]) != TCL_OK) {
@@ -196,7 +200,7 @@ int create_comp_dat(TapeDrive &tape, unsigned long int recoffset, char *file)
                          record 5 -                      176 - 350
      and so on */
 
-  for (i = 0; i < 4; i++)
+  for(i = 0; i < 4; i++)
   {
     /* Read record for first record into memory */
     tape.seek(recoffset);
@@ -213,7 +217,7 @@ int create_comp_dat(TapeDrive &tape, unsigned long int recoffset, char *file)
 
     /* Loop  for five years - pass in pointers to data arrays for each of
        the two sets of attrs */
-    for (j = 0; j < 5; j++)
+    for(j = 0; j < 5; j++)
       generate_dat(recbuf1 + COMP_DARR_OFF + j*COMP_DARR_LEN,
 		   recbuf2 + COMP_DARR_OFF + j*COMP_DARR_LEN,
 		   year++, outfile);
@@ -280,7 +284,7 @@ void generate_dat(char *dat1, char *dat2, int year,
 
   /* output values of fields from the first data array */
   pos = 0;
-  for (i = 0; i < COMP_DAT_FIELDS_1; i++)
+  for(i = 0; i < COMP_DAT_FIELDS_1; i++)
   {
     len = comp_dat_1[i*COMP_NUM_PER_DAT];
     pre = comp_dat_1[i*COMP_NUM_PER_DAT + 1];
@@ -293,7 +297,7 @@ void generate_dat(char *dat1, char *dat2, int year,
 
   /* output values of fields from the second data array */
   pos = 0;
-  for (i = 0; i < COMP_DAT_FIELDS_2; i++)
+  for(i = 0; i < COMP_DAT_FIELDS_2; i++)
   {
     len = comp_dat_2[i*COMP_NUM_PER_DAT];
     pre = comp_dat_2[i*COMP_NUM_PER_DAT + 1];
