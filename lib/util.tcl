@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1996/03/26 21:16:40  jussi
+#  Added ScaleUpper and ScaleLower.
+#
 #  Revision 1.11  1996/03/06 00:00:02  jussi
 #  Index number of color displayed in colored button in getColor.
 #
@@ -557,7 +560,7 @@ proc ScaleUpper {val} {
                1000 2000 3000 4000 5000 10000 50000 100000}
     foreach s $scale {
 	if {$val < $s} {
-	    puts "$val, upper $s"
+	    # puts "$val, upper $s"
 	    return $s
 	}
     }
@@ -570,7 +573,7 @@ proc ScaleLower {val} {
     set prevs $val
     foreach s $scale {
 	if {$val < $s} {
-	    puts "$val, lower $prevs"
+	    # puts "$val, lower $prevs"
 	    return $prevs
 	}
 	set prevs $s
