@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/18 22:29:01  jussi
+  Added DataSize() method.
+
   Revision 1.7  1996/10/07 22:53:57  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -171,6 +174,7 @@ DevStatus
 DataSourceFileStream::Close()
 {
 	DO_DEBUG(printf("DataSourceFileStream::Close()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	DevStatus	result = StatusOk;
 
@@ -192,6 +196,7 @@ char *
 DataSourceFileStream::Fgets(char *buffer, int bufSize)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Fgets()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	errno = 0;
 	char *result = fgets(buffer, bufSize, _file);
@@ -208,6 +213,7 @@ size_t
 DataSourceFileStream::Fread(char *buf, size_t size, size_t itemCount)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Fread()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	return fread(buf, size, itemCount, _file);
 }
@@ -220,6 +226,7 @@ size_t
 DataSourceFileStream::Read(char *buf, int byteCount)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Read()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	return read(fileno(_file), buf, byteCount);
 }
@@ -232,6 +239,7 @@ size_t
 DataSourceFileStream::Fwrite(const char *buf, size_t size, size_t itemCount)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Fwrite()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	return fwrite(buf, size, itemCount, _file);
 }
@@ -244,6 +252,7 @@ size_t
 DataSourceFileStream::Write(const char *buf, size_t byteCount)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Write()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	return write(fileno(_file), buf, byteCount);
 }
@@ -256,6 +265,7 @@ int
 DataSourceFileStream::Seek(long offset, int from)
 {
 	DO_DEBUG(printf("DataSourceFileStream::Seek()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	return fseek(_file, offset, from);
 }
@@ -268,6 +278,7 @@ long
 DataSourceFileStream::Tell()
 {
 	DO_DEBUG(printf("DataSourceFileStream::Tell()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	return ftell(_file);
 }
@@ -281,6 +292,7 @@ int
 DataSourceFileStream::gotoEnd()
 {
 	//DO_DEBUG(printf("DataSourceFileStream::gotoEnd()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
 
 	int		result = 0;
 
@@ -313,6 +325,8 @@ int
 DataSourceFileStream::append(void *buf, int recSize)
 {
 	DO_DEBUG(printf("DataSourceFileStream::append()\n"));
+        DOASSERT(_file != NULL, "Invalid file pointer");
+
 	int		result = 0;
 
 	if (gotoEnd() < 0)
@@ -336,6 +350,7 @@ int
 DataSourceFileStream::GetModTime()
 {
     DO_DEBUG(printf("DataSourceFileStream::GetModTime()\n"));
+    DOASSERT(_file != NULL, "Invalid file pointer");
 
     struct stat sbuf;
     int status = fstat(fileno(_file), &sbuf);
@@ -354,7 +369,7 @@ DataSourceFileStream::GetModTime()
  * function: DataSourceFileStream::DataSize
  * Return file size.
  */
-unsigned long
+bytecount_t
 DataSourceFileStream::DataSize()
 {
     if (!_file)
@@ -364,5 +379,5 @@ DataSourceFileStream::DataSize()
     if (stat(_filename, &sbuf) < 0)
         return 0;
 
-    return (unsigned long)sbuf.st_size;
+    return (bytecount_t)sbuf.st_size;
 }

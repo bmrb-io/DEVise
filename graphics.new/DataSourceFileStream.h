@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/18 22:29:02  jussi
+  Added DataSize() method.
+
   Revision 1.4  1996/08/04 21:23:24  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -92,7 +95,7 @@ public:
 
 	int DataSourceFileStream::GetModTime();
 
-        virtual unsigned long DataSize();
+        virtual bytecount_t DataSize();
 
       protected:
 

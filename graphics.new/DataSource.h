@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/18 22:29:01  jussi
+  Added DataSize() method.
+
   Revision 1.7  1996/08/04 21:23:23  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -67,8 +70,24 @@
 
 
 #include <sys/types.h>
+
 #include "DeviseTypes.h"
 #include "Exit.h"
+#include "MemMgr.h"
+
+
+/* Select data source process to be implemented as a process or thread */
+
+#define DS_PROCESS
+//#define DS_THREAD
+
+#if !defined(DS_PROCESS) && !defined(DS_THREAD)
+#error "Must use either processes or threads"
+#endif
+
+#if defined(DS_PROCESS) && defined(DS_THREAD)
+#error "Cannot use both processes and threads"
+#endif
 
 
 class ViewGraph;
@@ -76,8 +95,8 @@ class ViewGraph;
 
 class DataSource
 {
-public:
-	DataSource(char *label = "", ViewGraph* controlling_view = NULL);
+      public:
+        DataSource(char *label = "", ViewGraph* controlling_view = NULL);
 
 	virtual ~DataSource();
 
@@ -92,14 +111,6 @@ public:
 	virtual DevStatus Open(char *mode) = 0;
 	virtual Boolean IsOk() = 0;
 	virtual DevStatus Close() = 0;
-
-        // These functions allow the dispacher to fetch data from a data
-        // source asynchronously. The data source provides a file descriptor
-        // which the dispatcher can use in a select() to determine when
-        // a (read) I/O can take place, at which time AsyncIO() is
-        // called.
-	virtual int AsyncFd() {return -1;};
-        virtual void AsyncIO() {}
 
 	virtual char *Fgets(char *buffer, int size);
 	virtual size_t Fread(char *buf, size_t size, size_t itemCount);
@@ -149,18 +160,98 @@ public:
 
 	void AddRef();
 
-	// returns true if the caller should delete this object
+	// Returns true if the caller should delete this object
 	bool DeleteRef();
 
         // Return (estimated) data size
-        virtual unsigned long DataSize() { return 0; }
+        virtual bytecount_t DataSize() { return 0; }
+
+        // Initialize and terminate data source process.
+        int InitializeProc();
+        int TerminateProc();
+        Boolean SupportsAsyncIO() { return (_child >= 0 ? true : false); }
+        
+        // Read and write from/to data source process.
+        int ReadProc(streampos_t offset, iosize_t bytes);
+        int WriteProc(streampos_t offset, iosize_t bytes);
+
+        // Produce or consume data to/from data pipe.
+        int Produce(char *buf, streampos_t offset, iosize_t bytes) {
+	    DOASSERT(_dpipe, "Invalid data pipe");
+            return _dpipe->Produce(buf, offset, bytes);
+        }
+        int Consume(char *&buf, streampos_t &offset, iosize_t &bytes) {
+	    DOASSERT(_dpipe, "Invalid data pipe");
+            return _dpipe->Consume(buf, offset, bytes);
+        }
+        int NumPipeData() {
+	    DOASSERT(_dpipe, "Invalid data pipe");
+            return _dpipe->NumData();
+        }
 
       protected:
-
+        
 	int             _ref_count;
 	char *		_label;
 	int             _version;
 	ViewGraph*      _controlling_view;
+
+        //
+        // The remaining variables and methods are used when DataSource
+        // operates as a separate process and communicates with Devise
+        // through pipes.
+        //
+
+        // Statistics of request types and data traffic.
+        bytecount_t  _totalCount;       // total # requests processed
+        bytecount_t _readBytes;         // # bytes read
+        bytecount_t _writeBytes;        // # bytes written
+        bytecount_t _seekBytes;         // total seek distance in bytes
+        
+        // Request types
+        enum ReqType { ReadReq, WriteReq, ReadStreamReq,
+                       WriteStreamReq, TerminateReq };
+
+        // Request structure
+        struct Request {
+            ReqType type;
+            streampos_t offset;
+            iosize_t bytes;
+        };
+
+        // Reply structure
+        struct Reply {
+            int handle;
+        };
+
+        // Current request handle value
+        int _handle;
+
+        // Child process for communicating with parent
+        static void *ProcessReq(void *arg);
+        void *ProcessReq();
+
+        // Read and write streaming
+        void ReadStream(streampos_t offset, iosize_t bytes);
+        void WriteStream(streampos_t offset, iosize_t bytes);
+        DataPipe *_dpipe;
+
+        // Fd's of pipes for requests
+        int _reqFd[2];
+        int _replyFd[2];
+
+#ifdef DS_PROCESS
+        pid_t _child;                   // pid of child process
+#endif
+#ifdef DS_THREAD
+        pthread_t _child;               // thread id of child
+#endif
+
+        SemaphoreV *_mutex;             // flag indicating busy device
+
+        // Acquire and release mutex
+        void AcquireMutex() { _mutex->acquire(1); }
+        void ReleaseMutex() { _mutex->release(1); }
 };
 
 
