@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2001/10/05 15:51:35  wenger
+// Minor cleanup: fixed usage messages, improved argument checking.
+//
 // Revision 1.42  2001/10/02 22:02:11  xuk
 // Added new command-line option for client log playback.
 // Modified checkArguments() to check -clientlog, -autoplayback and playbackoriginal arguments.
@@ -474,6 +477,8 @@ public class js extends Frame
 		jsValues.session.autoPlayback = true;
 	    } else if (args[i].startsWith("-playbackoriginal")) {
 		jsValues.session.playbackOriginal = true;
+	    } else if (args[i].startsWith("-playbackdisplayoff")) {
+		jsValues.session.playbackDisplay = false;
             } else {
                 System.out.println("Invalid js option \"" + args[i]
                     + "\" is given!\n");

@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/10/02 21:59:44  xuk
+// Added new parameters for client log playback.
+// Modified checkParameter() to check clientlog, autoplayback, playbackoriginal parameters.
+// cvs: ----------------------------------------------------------------------
+//
 // Revision 1.5  2001/05/11 20:36:07  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -299,6 +304,17 @@ public class DEViseJSApplet extends Applet
 	    }
         } else {
             jsValues.session.playbackOriginal = false;
+        }
+
+        String playbackDisplay = getParameter("playbackdisplay");
+        if (playbackDisplay != null) {
+	    if (playbackDisplay.equals("true")) {
+		jsValues.session.playbackDisplay = true;
+	    } else {
+		jsValues.session.playbackDisplay = false;
+	    }
+        } else {
+            jsValues.session.playbackDisplay = true;
         }
     }
 

@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/10/02 21:57:48  xuk
+// Added command-line option for command log playback.
+// Added clientLogName, for client log URL;
+// Added autoPlayback, for automatically playback;
+// Added playbackOriginal, for auto playback in original rate.
+//
 // Revision 1.5  2001/08/20 18:20:08  wenger
 // Fixes to various font problems: XDisplay calculates point sizes correctly
 // and uses screen resolution in specifying font; JS passes *its* screen
@@ -129,6 +135,7 @@ public final class DEViseJSValues
 	public String clientLogName = null;
 	public boolean autoPlayback = false;
 	public boolean playbackOriginal = false;
+	public boolean playbackDisplay = true;
     }
 
     public Canvas canvas = new Canvas();

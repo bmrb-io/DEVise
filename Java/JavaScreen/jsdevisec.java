@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.117  2001/10/05 20:00:26  xuk
+// Fixed bug 701: command log playwork can work for URL and simple file path.
+//
 // Revision 1.116  2001/10/02 22:00:58  xuk
 // Added command-line opition for client log playback.
 // Modified jsdevisec() for auto playback.
@@ -769,6 +772,7 @@ public class jsdevisec extends Panel
 	    isPlayback = true;
 	    isDisplay = true;
 	    isOriginal = jv.session.playbackOriginal;
+	    isDisplay = jv.session.playbackDisplay;
 	    logPlayBack();
 	}
     } // end of constructor
