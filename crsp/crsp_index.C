@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/10 19:01:22  jussi
+  Updated comments to reflect the new format of the index file.
+
   Revision 1.2  1995/11/09 22:44:44  jussi
   Converted to use tape drive instead of regular file. Changed
   output to comma-delimited with quotes surrounding company name
@@ -87,10 +90,15 @@ void crsp_index(char *tapeName, char *indexName)
 
   while (s->reccount) 
   {
+    char tmpbuf[7];
     fprintf(fdi, "%lu,", tapepos);
     fprintf(fdi, "%d,", recno);
     fprintf(fdi, "%d,", s->header.permno);
-    fprintf(fdi, "%s,", s->header.cusip);
+    // Output only the first six chars of the cusip number since this is 
+    // used in coral program to map with the compustat companies
+    memcpy(tmpbuf, s->header.cusip, 6);
+    tmpbuf[6] = '\0';
+    fprintf(fdi, "%s,", tmpbuf);
     fprintf(fdi, "%d,", s->header.hexcd);
     fprintf(fdi, "%d,", s->header.hsiccd);
     fprintf(fdi, "\"%s\",", s->names[s->header.numnam - 1].comnam);
