@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2000/03/31 19:29:04  wenger
+// Changed code so that views and GData objects get garbage collected when
+// a session is closed; added debug code for tracking construction and
+// finalization of DEViseView and DEViseGData objects; other minor GData-
+// related improvements.
+//
 // Revision 1.46  2000/03/23 16:26:13  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -557,6 +563,10 @@ public class DEViseCmdDispatcher implements Runnable
                 } else {
 		    // ADD COMMENT -- what is this doing?  Just stripping
 		    // off the control-D??
+
+		    // YHY-COMMENT
+		    // this is used to handle the case when JSPoP sending all the GData in one command (I know currently devised is sending one
+		    // GData per command) and separate them use \x04.
                     String[] GData = DEViseGlobals.parseStr(gdataStr, "\u0004", false);
                     if (GData == null) {
                         throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -570,6 +580,9 @@ public class DEViseCmdDispatcher implements Runnable
 
 			// ADD COMMENT -- this is splitting the GData into
 			// records, right?
+
+			// YHY-COMMENT
+			// Yes, this is used to split GData into records
                         String[] results = DEViseGlobals.parseStr(GData[j]);
                         if (results == null || results.length == 0) {
                             throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);

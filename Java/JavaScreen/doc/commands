@@ -1,337 +1,393 @@
-			JavaScreen-Related Commands
-		$Id$
+            JavaScreen-Related Commands
+        $Id$
 
 Version: this document refers to the JavaScreen communication protocol
 version 4.1.
 
 
-1. JavaScreen to JSPoP
-
-    1.1 JAVAC_Connect
-    Purpose: TEMP
-    Arguments: TEMP
-
-    TEMP -- add the proper commands here
+0. Convention
 
 
-2. JavaScreen to devised (via JSPoP)
+1. Status report between JSPoP, JavaScreen and devised
 
-    2.1 JAVAC_GetSessionList
+    1.1 JAVAC_Done
+    Purpose: indicate end of complete(successful) command sequence
+    Arguments: 0
+
+    1.2 JAVAC_Error
+    Purpose: indicate end of incomplete(recoverable error) command sequence
+    Arguments: 1
+        <err_msg>: error message indicating what happened
+
+    1.3 JAVAC_Fail
+    Purpose: indicate end of incomplete(unrecoverable error) command sequence
+    Arguments: 1
+        <err_msg>: error message indicating what happened
+
+
+2. JavaScreen to JSPoP
+
+    2.1 JAVAC_Connect
+    Purpose: establish connection between JavaScreen and JSPoP
+    Arguments: 3
+        <username>: default is "guest"
+        <password>: default is ""
+        <protocol-version>:
+
+    2.2 JAVAC_GetServerState
+    Purpose: get current JSPoP status
+    Arguments: 0
+
+    2.3 JAVAC_Abort
+    Purpose: tells JSPoP that user willing to abort the last command
+    Arguments: 0
+
+
+3. JSPoP to JavaScreen
+
+    3.1 JAVAC_User
+    Purpose: Acknowledge connection request from JavaScreen and grant an
+             unique ID
+    Arguments: 1
+        <id>: an integer value indicating an unique ID
+
+    3.2 JAVAC_Ack
+    Purpose: Acknowledge the receipt of JavaScreen command
+    Arguments: 0
+
+    3.3 JAVAC_UpdateServerState
+    Purpose: send the JSPoP status back to JavaScreen
+    Arguments: 1
+        <status>: a string containing a list of values indicating JSPoP
+                  status.
+
+
+4. JavaScreen to devised (via JSPoP)
+
+    4.1 JAVAC_GetSessionList
     Purpose: get a list of available sessions.
-    Arguments:
-        <directory name> (optional, default is $DEVISE_SESSION): session
-	    directory to list, relative to $DEVISE_SESSION.
+    Arguments: 0 or 1
+        <directory name>: session directory to list, relative to
+                          $DEVISE_SESSION. if empty, use default directory
+                          $DEVISE_SESSION.
 
-    2.2 JAVAC_Exit
+    4.2 JAVAC_Exit
     Purpose: tells the devised to close the client connection.
-    Arguments: (none)
+    Arguments: 0
 
-    2.3 JAVAC_CloseCurrentSession
-    Purpose: tells the devised to close the current session (without
-        saving it).
-    Arguments: (none)
+    4.3 JAVAC_CloseCurrentSession
+    Purpose: tells the devised to close the current session (without saving
+             it).
+    Arguments: 0
 
-    2.4 JAVAC_OpenSession
+    4.4 JAVAC_OpenSession
     Purpose: tells the devised to open the specified session file.
-    Arguments:
+    Arguments: 1
         <session file>: path of session file to open, relative to
-	    $DEVISE_SESSION.
+                        $DEVISE_SESSION.
 
-    2.5 JAVAC_MouseAction_Click
+    4.5 JAVAC_MouseAction_Click
     Purpose: tells the devised that the user has clicked at the specified
-        location; this command is not sent if the click results in a cursor
-	movement.  Note: I'm not sure there are any remaining cases where
-	this command is actually used.
-    Arguments:
+             location; this command is not sent if the click results in a
+             cursor movement.
+             Note: I'm not sure there are any remaining cases where this
+                   command is actually used.
+    Arguments: 3
         <view name>: name of view in which mouse click occurred.
-	<x location>: x location of mouse click in pixels, relative to left
-	    edge of view.
-	<y location>: y location of mouse click in pixels, relative to top
-	    edge of view.
+        <x location>: x location of mouse click in pixels, relative to left
+                      edge of view.
+        <y location>: y location of mouse click in pixels, relative to top
+                      edge of view.
 
-    2.6 JAVAC_ShowRecords
+    4.6 JAVAC_ShowRecords
     Purpose: requests that the devised return TData record information for
-        the given location (drill down) in a two-dimensional view.
-    Arguments:
+             the given location (drill down) in a two-dimensional view.
+    Arguments: 3
         <view name>: name of view for which records are to be shown.
-	<x location>: x location of event causing records to be shown, in
-	    pixels, relative to the left edge of the view.
-	<y location>: y location of event causing records to be shown, in
-	    pixels, relative to the top edge of the view.
+        <x location>: x location of event causing records to be shown, in
+                      pixels, relative to the left edge of the view.
+        <y location>: y location of event causing records to be shown, in
+                      pixels, relative to the top edge of the view.
 
-    2.7 JAVAC_MouseAction_RubberBand
-    Purpose: tells the devised that the user drew the specified
-        rubber band line with the mouse; this normally results in the
-	view being zoomed in or out.
-    Arguments:
+    4.7 JAVAC_MouseAction_RubberBand
+    Purpose: tells the devised that the user drew the specified rubber band
+             line with the mouse; this normally results in the view being
+             zoomed in or out.
+    Arguments: 5 or 6
         <view name>: name of view in which the rubberband took place.
-	<x location 1>: x location of the start of the rubberband, in
-	    pixels, relative to the left edge of the view.
-	<y location 1>: y location of the start of the rubberband, in
-	    pixels, relative to the top edge of the view.
-	<x location 2>: x location of the end of the rubberband, in
-	    pixels, relative to the left edge of the view.
-	<y location 2>: y location of the end of the rubberband, in
-	    pixels, relative to the top edge of the view.
-        <zoom out> (optional, default is 0): 1 iff view is to be zoomed
-	    out.
+        <x location 1>: x location of the start of the rubberband, in pixels,
+                        relative to the left edge of the view.
+        <y location 1>: y location of the start of the rubberband, in pixels,
+                        relative to the top edge of the view.
+        <x location 2>: x location of the end of the rubberband, in pixels,
+                        relative to the left edge of the view.
+        <y location 2>: y location of the end of the rubberband, in pixels,
+                        relative to the top edge of the view.
+        <zoom factor>: optional. 1 if view is to be zoomed out, 0 if zoomed
+                       in. default is 0 if empty.
 
-
-    2.8 JAVAC_SetDisplaySize
+    4.8 JAVAC_SetDisplaySize
     Purpose: tells the devised the size of the area in which the JavaScreen
-        can display views, so that the view sizes can be adjusted to fit
-	within that area.
-    Arguments:
+             can display views, so that the view sizes can be adjusted to fit
+             within that area.
+    Arguments: 2
         <width>: width of the display area, in pixels.
-	<height>: height of the display area, in pixels.
+        <height>: height of the display area, in pixels.
 
-    2.9 JAVAC_KeyAction
-    Purpose: tells the devised that the user has pressed a key with the
-        mouse in the specified view.
-    Arguments:
+    4.9 JAVAC_KeyAction
+    Purpose: tells the devised that the user has pressed a key with the mouse
+             in the specified view.
+    Arguments: 2
         <view name>: name of the view in which the key press occurred.
-	<key>: the key that was pressed (integer value sent as string).
+        <key>: the key that was pressed (integer value sent as string).
 
-    2.10 JAVAC_SaveSession
+    4.10 JAVAC_SaveSession
     Purpose: tells the devised to save the current session to the specified
-        file.
-    Arguments:
+             file.
+             Notes: currently only used by JSPoP
+    Arguments: 1 or 2
         <session file>: file to which the session should be saved.
-	<save selected view> (optional, default is 1): 1 if the session
-	    should save which view is selected, 0 otherwise.
+        <save selected view>: optional. 1 if the session should save which
+                              view is selected, 0 otherwise. default is 0
+                              if empty.
 
-    2.11 JAVAC_ServerExit
+    4.11 JAVAC_ServerExit
     Purpose: tells the devised to quit.
-    Arguments: (none)
+             Notes: currently not used
+    Arguments: 0
 
-    2.12 JAVAC_ServerCloseSocket
+    4.12 JAVAC_ServerCloseSocket
     Purpose: this command currently does nothing.
-    Arguments: (none)
+             Notes: currently not used
+    Arguments: 0
 
-    2.13 JAVAC_ImageChannel
+    4.13 JAVAC_ImageChannel
     Purpose: this command currently does nothing.
-    Arguments: (none)
+             Notes: currently not used
+    Arguments: 0
 
-    2.14 JAVAC_CursorChanged
+    4.14 JAVAC_CursorChanged
     Purpose: sent when the user moves or resizes a cursor.
-    Arguments:
+    Arguments: 5
         <cursor name>: name of the cursor that was moved.
-	<x location>: x location of the left edge of the cursor, in pixels,
-	    relative to the left edge of the destination view.
-	<y location>: y location of the top edge of the cursor, in pixels,
-	    relative to the top edge of the destination view.
-	<width>: width of the cursor, in pixels.
-	<height>: height of the cursor, in pixels.
+        <x location>: x location of the left edge of the cursor, in pixels,
+                      relative to the left edge of the destination view.
+        <y location>: y location of the top edge of the cursor, in pixels,
+                      relative to the top edge of the destination view.
+        <width>: width of the cursor, in pixels.
+        <height>: height of the cursor, in pixels.
 
-    2.15 JAVAC_ProtocolVersion
+    4.15 JAVAC_ProtocolVersion
     Purpose: used to check whether the JavaScreen and the devised implement
-        compatible versions of the communication protocol.
-    Arguments:
-        <version>: version of the protocol implemented by the JavaScreen,
-	    in the form <major>.<minor>.
+             compatible versions of the communication protocol.
+             Notes: currently only used by JSPoP
+    Arguments: 1
+        <version>: version of the protocol implemented by the JavaScreen, in
+                   the form <major>.<minor>.
 
-    2.16 JAVAC_ShowRecords3D
+    4.16 JAVAC_ShowRecords3D
     Purpose: requests that the devised return TData record information for
-        the given location (drill down) in a three-dimensional view.
-	(Note: this command is not yet fully implemented.)
-    Arguments:
+             the given location (drill down) in a three-dimensional view.
+             Note: this command is not yet fully implemented.
+    Arguments: 4
         <view name>: name of view for which records are to be shown.
-	<x location>: x location of event causing records to be shown,
-	    in data units.
-	<y location>: y location of event causing records to be shown,
-	    in data units.
-	<z location>: z location of event causing records to be shown,
-	    in data units.
+        <x location>: x location of event causing records to be shown, in
+                      data units.
+        <y location>: y location of event causing records to be shown, in
+                      data units.
+        <z location>: z location of event causing records to be shown, in
+                      data units.
 
-    2.17 JAVAC_ResetFilters
+    4.17 JAVAC_ResetFilters
     Purpose: tells the devised to reset the visual filters of all views to
-        the values specified in the session file.
-    Arguments: (none)
+             the values specified in the session file.
+    Arguments: 0
 
-    2.18 JAVAC_GetViewHelp
+    4.18 JAVAC_GetViewHelp
     Purpose: tells the devised to return the help information for the
-        specified view.
-    Arguments:
+             specified view.
+    Arguments: 3
         <view name>: name of view for which help information is to be
-	    returned.
-	<x location>: x location of event causing help info to be shown,
-	    in pixels, relative to the left edge of the view.
-	<y location>: y location of event causing help info to be shown,
-	    in pixels, relative to the top edge of the view.
+                     returned.
+        <x location>: x location of event causing help info to be shown,
+                      in pixels, relative to the left edge of the view.
+        <y location>: y location of event causing help info to be shown,
+                      in pixels, relative to the top edge of the view.
 
 
-3. Devised to JavaScreen (via JSPoP)
+5. Devised to JavaScreen (via JSPoP)
 
-    3.1 JAVAC_UpdateSessionList
-    Purpose: tells the JavaScreen what sessions are available.  This command
-        is sent in response to a JAVAC_GetSessionList command.
-    Arguments:
-	Any number of sets of the following three arguments:
+    5.1 JAVAC_UpdateSessionList
+    Purpose: tells the JavaScreen what sessions are available. This command
+             is sent in response to a JAVAC_GetSessionList command.
+    Arguments: variable number of sets of the following three arguments
         <name>: name of file or directory.
-	<is directory>: 1 iff this is a directory.
-	<priority>: always 0 for now.
+        <is directory>: 1 iff this is a directory.
+        <priority>: always 0 for now.
 
-    3.2 JAVAC_UpdateRecordValue
-    Purpose:
-    Arguments:
-        <data x>: x location of the mouse event, in data units, in the
-	    form "x: <value>".
-	<data y>: y location of the mouse event, in data units, in the
-	    form "y: <value>".
-	Any number of the following:
-	<attribute-value pair>: TData attribute and the corresponding
-	    value, in the form "<attribute>: <value>" (or blank argument).
+    5.2 JAVAC_UpdateRecordValue
+    Purpose: tells the JavaScreen the current record value. This command is
+             sent in response to a JAVAC_ShowRecords command.
+    Arguments: variable, at least 3
+        <data x>: x location of the mouse event, in data units, in the form
+                  "x: <value>".
+        <data y>: y location of the mouse event, in data units, in the form
+                  "y: <value>".
+        variable number of the following:
+        <attribute-value pair>: TData attribute and the corresponding value,
+                                in the form "<attribute>: <value>" (or blank
+                                argument).
 
-    3.3 JAVAC_UpdateGData
-    Purpose: tells the JavaScreen that a new set of GData is being sent
-        for the specified view.
-    Arguments:
+    5.3 JAVAC_UpdateGData
+    Purpose: tells the JavaScreen that a new set of GData is being sent for
+             the specified view.
+    Arguments: 6
         <view name>: name of view for which GData is being sent.
-	<x multiplier>: multiplier for conversion of x values from data
-	    units to pixels (xpix = (xdata * xmult) + xoffset).
-	<x offset>: offset for conversion of x values from data units to
-	    pixels (xpix = (xdata * xmult) + xoffset).
-	<y multiplier>: multiplier for conversion of y values from data
-	    units to pixels (ypix = (ydata * ymult) + yoffset).
-	<y offset>: offset for conversion of y values from data units to
-	    pixels (ypix = (ydata * ymult) + yoffset).
-	<gdata size>: size of GData, in bytes.
+        <x multiplier>: multiplier for conversion of x values from data
+                        units to pixels (xpix = (xdata * xmult) + xoffset).
+        <x offset>: offset for conversion of x values from data units to
+                    pixels (xpix = (xdata * xmult) + xoffset).
+        <y multiplier>: multiplier for conversion of y values from data
+                        units to pixels (ypix = (ydata * ymult) + yoffset).
+        <y offset>: offset for conversion of y values from data units to
+                    pixels (ypix = (ydata * ymult) + yoffset).
+        <gdata size>: size of GData, in bytes.
 
-    3.4 JAVAC_DrawCursor
+    5.4 JAVAC_DrawCursor
     Purpose: tells the JavaScreen to draw the specified cursor in the
-        specified view.
-    Arguments:
+             specified view.
+    Arguments: 13
         <cursor name>: name of the cursor to be drawn.
-	<view name>: name of view cursor is to be drawn in (destination
-	    view).
-	<x location>: location of left edge of cursor, in pixels, relative
-	    to the left edge of the destination view.
-	<y location>: location of top edge of cursor, in pixels, relative
-	    to the top edge of the destination view.
-	<width>: width of cursor, in pixels.
-	<height>: height of cursor, in pixels.
-	<movement>: "X", "Y", or "XY" designating which directions the cursor
-	    can be moved in.
-	<fixed size>: "XY" if the cursor is fixed size, "none" otherwise.
-	<grid x>: cursor x grid size if grid is used, otherwise 0.0.
-	<grid y>: cursor y grid size if grid is used, otherwise 0.0.
-	<edge grid>: 1 if grid applies to cursor edges, otherwise 0 (grid
-	    applies to cursor center).
-	<color>
-	<draw type>: how cursor should be drawn (curently always "xor").
+        <view name>: name of view cursor is to be drawn in (destination
+                     view).
+        <x location>: location of left edge of cursor, in pixels, relative to
+                      the left edge of the destination view.
+        <y location>: location of top edge of cursor, in pixels, relative to
+                      the top edge of the destination view.
+        <width>: width of cursor, in pixels.
+        <height>: height of cursor, in pixels.
+        <movement>: "X", "Y", or "XY" designating which directions the cursor
+                    can be moved in.
+        <fixed size>: "XY" if the cursor is fixed size, "none" otherwise.
+        <grid x>: cursor x grid size if grid is used, otherwise 0.0.
+        <grid y>: cursor y grid size if grid is used, otherwise 0.0.
+        <edge grid>: 1 if grid applies to cursor edges, otherwise 0 (grid
+                     applies to cursor center).
+        <color>: XOR color for this cursor
+        <draw type>: how cursor should be drawn (curently always "xor").
 
-    3.5 JAVAC_EraseCursor
-    Purpose:
-    Arguments:
+    5.5 JAVAC_EraseCursor
+    Purpose: tells the JavaScreen to erase the specified cursor in the
+             specified view.
+    Arguments: 2
         <cursor name>: name of the cursor to be erased.
-	<view name>: the name of the view the cursor was drawn in.
+        <view name>: the name of the view the cursor was drawn in.
 
-    3.6 JAVAC_CreateView
-    Purpose:
-    Arguments:
+    5.6 JAVAC_CreateView
+    Purpose: tells the JavaScreen to create a new view with the specified
+             properties.
+    Arguments: variable, at least 24
         <view name>: name of the view to be created.
-	<parent name>: name of this view's parent view, if any; blank
-	    otherwise.
-	<pile name>: if this view is piled, the name of the first (bottom)
-	    view in the pile; blank otherwise.
-	<x location>: x location of view, in pixels, relative to the left
-	    edge of the display area for top-level views and the left edge of
-	    the parent view for child views.
-	<y location>: y location of view, in pixels, relative to the top
-	    edge of the display area for top-level views and the top edge of
-	    the parent view for child views.
-	<width>: width of view, in pixels.
-	<height>: height of view, in pixels.
-	<z location>: z location in view; used to specify stacking order
-	    in piles (positive z is out of the screen).
-	<dimensions>: specifies whether view has 2 or 3 dimensions.
-	<data x>: x location of the view's data area, in pixels, relative
-	    to the left edge of the view.
-	<data y>: y location of the view's data area, in pixels, relative
-	    to the top edge of the view.
-	<data width>: width of the view's data area, in pixels.
-	<data height>: height of the view's data area, in pixels.
-	<foreground color>: view foreground color (the color of the title,
-	    axes, etc.) in the form "#rrrrggggbbbb", where r, g, and b are
-	    hexadecimal digits.
-	<background color>: view background color in the form "#rrrrggggbbbb",
-	    where r, g, and b are hexadecimal digits.
-	<x axis type>: the type of data on the x axis ("real" or "date").
-	<y axis type>: the type of data on the y axis ("real" or "date").
-	<grid x>: x size of mouse movement grid.
-	<grid y>: y size of mouse movement grid.
-	<rubberband enabled>: 1 if rubberbanding (zooming) is allowed in
-	    this view, 0 otherwise.
-	<cursor move enabled>: 1 if cursor moving is allowed in this view,
-	    0 otherwise.
-	<drill down enabled>: 1 if drill down (showing record values) is
-	    allowed in this view, 0 otherwise.
-	<keys enabled>: 1 if key actions are allowed in this view, 0 otherwise
+        <parent name>: name of this view's parent view, if any; empty if
+                       this view is a top level view (without parent view).
+        <pile name>: if this view is piled, the name of the first (bottom)
+                     view in the pile; blank otherwise.
+        <x location>: x location of view, in pixels, relative to the left
+                      edge of the display area for top-level views and the
+                      left edge of the parent view for child views.
+        <y location>: y location of view, in pixels, relative to the top edge
+                      of the display area for top-level views and the top edge
+                      of the parent view for child views.
+        <width>: width of view, in pixels.
+        <height>: height of view, in pixels.
+        <z location>: z location in view; used to specify stacking order in
+                        piles (positive z is out of the screen).
+        <dimensions>: specifies whether view has 2 or 3 dimensions.
+        <data x>: x location of the view's data area, in pixels, relative to
+                  the left edge of the view.
+        <data y>: y location of the view's data area, in pixels, relative to
+                  the top edge of the view.
+        <data width>: width of the view's data area, in pixels.
+        <data height>: height of the view's data area, in pixels.
+        <foreground color>: view foreground color (the color of the title,
+                            axes, etc.) in the form "#rrrrggggbbbb", where r,
+                            g, and b are hexadecimal digits.
+        <background color>: view background color in the form "#rrrrggggbbbb",
+                            where r, g, and b are hexadecimal digits.
+        <x axis type>: the type of data on the x axis ("real" or "date").
+        <y axis type>: the type of data on the y axis ("real" or "date").
+        <grid x>: x size of mouse movement grid.
+        <grid y>: y size of mouse movement grid.
+        <rubberband enabled>: 1 if rubberbanding (zooming) is allowed in
+                              this view, 0 otherwise.
+        <cursor move enabled>: 1 if cursor moving is allowed in this view,
+                               0 otherwise.
+        <drill down enabled>: 1 if drill down (showing record values) is
+                              allowed in this view, 0 otherwise.
+        <keys enabled>: 1 if key actions are allowed in this view, 0
+                        otherwise
+        <view title>: optional. if not empty, then the following arguments
+                      are required.
+        <title x position>:
+        <title y position>:
+        <title font type>:
+        <title font size>:
+        <title font bold>:
+        <title font italic>:
 
-    3.7 JAVAC_DeleteChildViews
+    5.7 JAVAC_DeleteChildViews
     Purpose: tells the JavaScreen to delete all child views of the given
-        parent view.
-    Arguments:
+             parent view.
+    Arguments: 1
         <parent view name>: name of view whose children are to be deleted.
 
-    3.8 JAVAC_ViewDataArea
+    5.8 JAVAC_ViewDataArea
     Purpose: defines the size of a view in data units so that the JavaScreen
-        can convert mouse location to data units to display it.
-    Arguments:
+             can convert mouse location to data units to display it.
+    Arguments: 4
         <view name>: name of view for which data area is being specified.
-	<axis>: "X" or "Y".
-	<low value>: low (left or bottom of axis) data value.
-	<high value>: high (right or top of axis) data value.
+        <axis>: "X" or "Y".
+        <low value>: low (left or bottom of axis) data value.
+        <high value>: high (right or top of axis) data value.
 
-    3.9 JAVAC_UpdateViewImage
+    5.9 JAVAC_UpdateViewImage
     Purpose: tells the JavaScreen that a new GIF is being sent for the
-        specified view.
-    Arguments:
+             specified view.
+    Arguments: 2
         <view name>: name of view for which image is being sent.
-	<image size>: size of image in bytes.
+        <image size>: size of image in bytes.
 
-    3.10 JAVAC_ShowViewHelp
+    5.10 JAVAC_ShowViewHelp
     Purpose: tells the JavaScreen to display the specified help string in
-        the specified view.  This command is sent in response to a
-	JAVAC_GetViewHelp command.
-    Arguments:
+             the specified view.  This command is sent in response to a
+             JAVAC_GetViewHelp command.
+    Arguments: 2
         <view name>: name of view for which help is to be shown.
-	<help string>: the string which is to be shown.
+        <help string>: the string which is to be shown.
+
+    5.11 JAVAC_DeleteView
+    Purpose: tells the JavaScreen to delete the specified view and all of its
+             child views.
+    Arguments: 1
+        <view name>: name of view be deleted.
 
 
-4. JSPoP to JavaScreen
+6. JSPoP to JSS
 
-    4.1 JAVAC_User
-    Purpose: TEMP
-    Arguments: TEMP
-
-    4.2 JAVAC_Ack
-    Purpose: TEMP
-    Arguments: (none)
+    6.1 JSS_Restart
+    Purpose: tells the specified JSS server to restart the specified devised
+    Arguments: 2
+        <cmd port>: the command port used by the specified devised
+        <img port>: the data port used by the specified devised
 
 
-5. JSPoP to JSS
+7. JSS to JSPoP
 
-    TEMP -- add the proper commands here
-
-
-6. JSS to JSPoP
-
-    TEMP -- add the proper commands here
-
-
-7. Return values
-
-    7.1 JAVAC_Done: indicates that the command executed correctly.
-
-    7.2 JAVAC_Error: indicates that an error occurred while processing
-        the command.
-
-    7.3 JAVAC_Fail: indicates that a severe error occurred while
-        processing the command, and the connection will be terminated.
+    7.1 JSS_Add
+    Purpose: tells JSPoP to add a new devised in its devised_server list
+    Arguments: 3
+        <jss port>: the port used by this JSS to listen to JSPoP request
+        <cmd port>: the command port used by the specified devised
+        <img port>: the data port used by the specified devised
 
 
-TEMP -- move these to the correct category
-    JAVAC_Abort
-    JAVAC_GetServerState
-    JAVAC_UpdateServerState
