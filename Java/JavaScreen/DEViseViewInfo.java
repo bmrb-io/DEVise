@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2000/04/07 22:44:10  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.43  2000/03/23 16:26:15  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -65,21 +69,21 @@ public class DEViseViewInfo extends Panel
         jsc = what;
         images = array;
 
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
 
-        viewName.setBackground(DEViseGlobals.textBg);
-        viewName.setForeground(DEViseGlobals.textFg);
-        viewName.setFont(DEViseGlobals.textFont);
+        viewName.setBackground(DEViseUIGlobals.textBg);
+        viewName.setForeground(DEViseUIGlobals.textFg);
+        viewName.setFont(DEViseUIGlobals.textFont);
 
-        mouseX.setBackground(DEViseGlobals.textBg);
-        mouseX.setForeground(DEViseGlobals.textFg);
-        mouseX.setFont(DEViseGlobals.textFont);
+        mouseX.setBackground(DEViseUIGlobals.textBg);
+        mouseX.setForeground(DEViseUIGlobals.textFg);
+        mouseX.setFont(DEViseUIGlobals.textFont);
 
-        mouseY.setBackground(DEViseGlobals.textBg);
-        mouseY.setForeground(DEViseGlobals.textFg);
-        mouseY.setFont(DEViseGlobals.textFont);
+        mouseY.setBackground(DEViseUIGlobals.textBg);
+        mouseY.setForeground(DEViseUIGlobals.textFg);
+        mouseY.setFont(DEViseUIGlobals.textFont);
 
         setLayout(new FlowLayout(FlowLayout.LEFT, 2, 12));
 
@@ -105,12 +109,12 @@ public class DEViseViewInfo extends Panel
         if (name == null) {
             //viewName.setText("");
             if (jsc.parentFrame != null) {
-                jsc.parentFrame.setTitle(DEViseGlobals.javaScreenTitle);
+                jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle);
             }
         } else {
             //viewName.setText(name);
             if (jsc.parentFrame != null) {
-                jsc.parentFrame.setTitle(DEViseGlobals.javaScreenTitle + "     \"" + name + "\"");
+                jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle + "     \"" + name + "\"");
             }
         }
 
@@ -138,7 +142,7 @@ public class DEViseViewInfo extends Panel
     {
         //viewName.setText("");
         if (jsc.parentFrame != null) {
-            jsc.parentFrame.setTitle(DEViseGlobals.javaScreenTitle);
+            jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle);
         }
 
         mouseX.setText("");

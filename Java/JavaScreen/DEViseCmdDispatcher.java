@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2000/04/05 15:42:22  wenger
+// Changed JavaScreen version to 3.3 because of memory fixes; other minor
+// improvements in code; conditionaled out some debug code.
+//
 // Revision 1.50  2000/04/05 06:25:38  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -177,7 +181,7 @@ public class DEViseCmdDispatcher implements Runnable
                     if (result.equals(YMsgBox.YIDNO)) {
                         //jsc.jscreen.setCursor(jsc.lastCursor);
                         jsc.animPanel.stop();
-                        jsc.stopButton.setBackground(DEViseGlobals.bg);
+                        jsc.stopButton.setBackground(DEViseUIGlobals.bg);
                         setStatus(0);
                         return;
                     }
@@ -197,7 +201,7 @@ public class DEViseCmdDispatcher implements Runnable
         if (commands == null || commands.length == 0) {
             jsc.showMsg("Invalid command: \"" + cmd + "\"");
             jsc.animPanel.stop();
-            jsc.stopButton.setBackground(DEViseGlobals.bg);
+            jsc.stopButton.setBackground(DEViseUIGlobals.bg);
             setStatus(0);
             return;
         }
@@ -235,7 +239,7 @@ public class DEViseCmdDispatcher implements Runnable
                     disconnect();
 
                     jsc.animPanel.stop();
-                    jsc.stopButton.setBackground(DEViseGlobals.bg);
+                    jsc.stopButton.setBackground(DEViseUIGlobals.bg);
                     jsc.jscreen.updateScreen(false);
 
                     setStatus(0);
@@ -329,12 +333,12 @@ public class DEViseCmdDispatcher implements Runnable
             }
 
             jsc.animPanel.stop();
-            jsc.stopButton.setBackground(DEViseGlobals.bg);
+            jsc.stopButton.setBackground(DEViseUIGlobals.bg);
 
             //jsc.jscreen.reEvaluateMousePosition();
         } catch (YException e) {
             jsc.animPanel.stop();
-            jsc.stopButton.setBackground(DEViseGlobals.bg);
+            jsc.stopButton.setBackground(DEViseUIGlobals.bg);
 
             // turn off the counter and the traffic light
             jsc.viewInfo.updateImage(0, 0);
@@ -431,13 +435,13 @@ public class DEViseCmdDispatcher implements Runnable
                     Rectangle dataloc = new Rectangle(x, y, w, h);
 
                     int bg, fg;
-                    Color color = DEViseGlobals.convertColor(cmd[14]);
+                    Color color = DEViseUIGlobals.convertColor(cmd[14]);
                     if (color != null) {
                         fg = color.getRGB();
                     } else {
                         throw new NumberFormatException();
                     }
-                    color = DEViseGlobals.convertColor(cmd[15]);
+                    color = DEViseUIGlobals.convertColor(cmd[15]);
                     if (color != null) {
                         bg = color.getRGB();
                     } else {
@@ -489,7 +493,7 @@ public class DEViseCmdDispatcher implements Runnable
                             dti = Integer.parseInt(cmd[30]);
                         }
 
-                        dtf = DEViseGlobals.getFont(dtfs, dtff, dtb, dti);
+                        dtf = DEViseUIGlobals.getFont(dtfs, dtff, dtb, dti);
                         if (dtf != null) {
                             Toolkit tk = Toolkit.getDefaultToolkit();
                             FontMetrics fm = tk.getFontMetrics(dtf);
@@ -674,7 +678,7 @@ public class DEViseCmdDispatcher implements Runnable
                     float gridx = (Float.valueOf(cmd[9])).floatValue();
                     float gridy = (Float.valueOf(cmd[10])).floatValue();
                     int isedge = Integer.parseInt(cmd[11]);
-                    Color color = DEViseGlobals.convertColor(cmd[12]);
+                    Color color = DEViseUIGlobals.convertColor(cmd[12]);
                     //TEMP int type = Integer.parseInt(cmd[13]);
 					int type = 0;//TEMP
 

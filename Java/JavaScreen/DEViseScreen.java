@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2000/04/07 22:43:14  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.50  2000/04/05 06:25:39  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -128,12 +132,12 @@ public class DEViseScreen extends Panel
     {
         jsc = what;
 
-        screenDim = new Dimension(DEViseGlobals.screenSize.width, DEViseGlobals.screenSize.height);
+        screenDim = new Dimension(DEViseUIGlobals.screenSize.width, DEViseUIGlobals.screenSize.height);
 
         setLayout(null);
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
 
         this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
         this.enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -145,9 +149,9 @@ public class DEViseScreen extends Panel
                     Point p = event.getPoint();
 
                     if (jsc.dispatcher.getStatus() != 0) {
-                        setCursor(DEViseGlobals.waitCursor);
+                        setCursor(DEViseUIGlobals.waitCursor);
                     } else {
-                        setCursor(DEViseGlobals.defaultCursor);
+                        setCursor(DEViseUIGlobals.defaultCursor);
                     }
 
                     if (currentView != null) {
@@ -191,7 +195,7 @@ public class DEViseScreen extends Panel
             return;
         }
 
-        //if (!DEViseGlobals.isApplet) {
+        //if (!DEViseUIGlobals.isApplet) {
         //    MouseEvent finishEvent = new MouseEvent(this, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, finalMousePosition.x, finalMousePosition.y, 0, false);
         //    Toolkit tk = getToolkit();
         //    //EventQueue queue = new EventQueue();
@@ -214,7 +218,7 @@ public class DEViseScreen extends Panel
                 setCurrentView(null);
             }
 
-            setCursor(DEViseGlobals.defaultCursor);
+            setCursor(DEViseUIGlobals.defaultCursor);
         //}
     }
 
@@ -240,8 +244,8 @@ public class DEViseScreen extends Panel
         screenDim.width = width;
         screenDim.height = height;
 
-        DEViseGlobals.screenSize.width = screenDim.width;
-        DEViseGlobals.screenSize.height = screenDim.height;
+        DEViseUIGlobals.screenSize.width = screenDim.width;
+        DEViseUIGlobals.screenSize.height = screenDim.height;
 
         isDimChanged = true;
 
@@ -610,7 +614,7 @@ public class DEViseScreen extends Panel
             jsc.viewInfo.updateImage(0, 0);
             jsc.viewInfo.updateCount(0);
 
-            jsc.lastCursor = DEViseGlobals.defaultCursor;
+            jsc.lastCursor = DEViseUIGlobals.defaultCursor;
             setCursor(jsc.lastCursor);
 
             offScrImg = null;
@@ -663,7 +667,7 @@ public class DEViseScreen extends Panel
             isDimChanged = false;
             setSize(screenDim);
 
-            if (DEViseGlobals.inBrowser) {
+            if (DEViseUIGlobals.inBrowser) {
                 jsc.validate();
             } else {
                 jsc.parentFrame.pack();

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2000/03/23 16:26:18  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.55  2000/02/23 10:44:02  hongyu
 // *** empty log message ***
 //
@@ -102,7 +105,7 @@ public class jsdevisec extends Panel
     public String currentDir = "DEViseSession";
     public String currentSession = null;
 
-    public Cursor lastCursor = DEViseGlobals.defaultCursor;
+    public Cursor lastCursor = DEViseUIGlobals.defaultCursor;
 
 
     public jsdevisec(Frame frame, Vector images, int level, String sessionName)
@@ -120,23 +123,23 @@ public class jsdevisec extends Panel
         }
 
         // determine the font size according to JavaScreen size
-        int width = DEViseGlobals.maxScreenSize.width;
-        int height = DEViseGlobals.maxScreenSize.height;
+        int width = DEViseUIGlobals.maxScreenSize.width;
+        int height = DEViseUIGlobals.maxScreenSize.height;
 
         if (width > 800 ) {
-            DEViseGlobals.font = new Font("Serif", Font.PLAIN, 12);
-            DEViseGlobals.textFont = new Font("Serif", Font.PLAIN, 12);
+            DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 12);
+            DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 12);
         } else if (width <= 800 && width > 640) {
-            DEViseGlobals.font = new Font("Serif", Font.PLAIN, 10);
-            DEViseGlobals.textFont = new Font("Serif", Font.PLAIN, 10);
+            DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 10);
+            DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 10);
         } else if (width <= 640) {
-            DEViseGlobals.font = new Font("Serif", Font.PLAIN, 8);
-            DEViseGlobals.textFont = new Font("Serif", Font.PLAIN, 8);
+            DEViseUIGlobals.font = new Font("Serif", Font.PLAIN, 8);
+            DEViseUIGlobals.textFont = new Font("Serif", Font.PLAIN, 8);
         }
 
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
         setLayout(new BorderLayout(2, 2));
 
         Panel topPanel = new Panel(new BorderLayout(2, 2));
@@ -159,7 +162,7 @@ public class jsdevisec extends Panel
         }
 
         Component[] button = null;
-        if (DEViseGlobals.inBrowser) {
+        if (DEViseUIGlobals.inBrowser) {
             button = new Component[3];
             button[0] = restartButton;
             button[1] = stopButton;
@@ -185,30 +188,30 @@ public class jsdevisec extends Panel
         topPanel.add(mainPanel, BorderLayout.WEST);
         topPanel.add(viewInfo, BorderLayout.EAST);
 
-        if (DEViseGlobals.inBrowser) {
+        if (DEViseUIGlobals.inBrowser) {
             topPanel.setFont(new Font("Serif", Font.PLAIN, 14));
-            topPanel.add(new Label("                       " + DEViseGlobals.javaScreenTitle), BorderLayout.CENTER);
+            topPanel.add(new Label("                       " + DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
 
-        if (DEViseGlobals.screenSize.width <= 0) {
-            DEViseGlobals.screenSize.width = DEViseGlobals.maxScreenSize.width;
-        } else if (DEViseGlobals.screenSize.width < DEViseGlobals.minScreenSize.width && DEViseGlobals.screenSize.width > 0) {
-            DEViseGlobals.screenSize.width = DEViseGlobals.minScreenSize.width;
-        } else if (DEViseGlobals.screenSize.width > DEViseGlobals.maxScreenSize.width) {
-            DEViseGlobals.screenSize.width = DEViseGlobals.maxScreenSize.width;
+        if (DEViseUIGlobals.screenSize.width <= 0) {
+            DEViseUIGlobals.screenSize.width = DEViseUIGlobals.maxScreenSize.width;
+        } else if (DEViseUIGlobals.screenSize.width < DEViseUIGlobals.minScreenSize.width && DEViseUIGlobals.screenSize.width > 0) {
+            DEViseUIGlobals.screenSize.width = DEViseUIGlobals.minScreenSize.width;
+        } else if (DEViseUIGlobals.screenSize.width > DEViseUIGlobals.maxScreenSize.width) {
+            DEViseUIGlobals.screenSize.width = DEViseUIGlobals.maxScreenSize.width;
         }
 
-        if (DEViseGlobals.screenSize.height <= 0) {
-            DEViseGlobals.screenSize.height = DEViseGlobals.maxScreenSize.height;
-        } else if (DEViseGlobals.screenSize.height < DEViseGlobals.minScreenSize.height && DEViseGlobals.screenSize.height > 0) {
-            DEViseGlobals.screenSize.height = DEViseGlobals.minScreenSize.height;
-        } else if (DEViseGlobals.screenSize.height > DEViseGlobals.maxScreenSize.height) {
-            DEViseGlobals.screenSize.height = DEViseGlobals.maxScreenSize.height;
+        if (DEViseUIGlobals.screenSize.height <= 0) {
+            DEViseUIGlobals.screenSize.height = DEViseUIGlobals.maxScreenSize.height;
+        } else if (DEViseUIGlobals.screenSize.height < DEViseUIGlobals.minScreenSize.height && DEViseUIGlobals.screenSize.height > 0) {
+            DEViseUIGlobals.screenSize.height = DEViseUIGlobals.minScreenSize.height;
+        } else if (DEViseUIGlobals.screenSize.height > DEViseUIGlobals.maxScreenSize.height) {
+            DEViseUIGlobals.screenSize.height = DEViseUIGlobals.maxScreenSize.height;
         }
 
         jscreen = new DEViseScreen(this);
         Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-        //int r = DEViseGlobals.bg.getRed() + 32, g = DEViseGlobals.bg.getGreen() + 32, b = DEViseGlobals.bg.getBlue() + 32;
+        //int r = DEViseUIGlobals.bg.getRed() + 32, g = DEViseUIGlobals.bg.getGreen() + 32, b = DEViseUIGlobals.bg.getBlue() + 32;
         //if (r > 255) r = 255;
         //if (g > 255) g = 255;
         //if (b > 255) b = 255;
@@ -323,7 +326,7 @@ public class jsdevisec extends Panel
                 currentSession = sessionName;
             }
 
-            dispatcher.start("JAVAC_SetDisplaySize " + DEViseGlobals.screenSize.width + " " + DEViseGlobals.screenSize.height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
+            dispatcher.start("JAVAC_SetDisplaySize " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
         }
     }
 
@@ -356,13 +359,13 @@ public class jsdevisec extends Panel
     public String showMsg(String msg, String title, int style)
     {
         if (msgbox == null) {
-            msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseGlobals.font, DEViseGlobals.bg, DEViseGlobals.fg);
+            msgbox = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
             msgbox.open();
             String result = msgbox.getResult();
             msgbox = null;
             return result;
         } else {
-            YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseGlobals.font, DEViseGlobals.bg, DEViseGlobals.fg);
+            YMsgBox box = new YMsgBox(parentFrame, isCenterScreen, true, msg, title, style, DEViseUIGlobals.font, DEViseUIGlobals.bg, DEViseUIGlobals.fg);
             box.open();
             String result = box.getResult();
             box = null;
@@ -441,8 +444,8 @@ public class jsdevisec extends Panel
         isQuit = true;
         dispatcher = null;
 
-        if (!DEViseGlobals.inBrowser) {
-            if (DEViseGlobals.isApplet)
+        if (!DEViseUIGlobals.inBrowser) {
+            if (DEViseUIGlobals.isApplet)
                 parentFrame.dispose();
             else
                 System.exit(0);
@@ -463,15 +466,15 @@ class RecordDlg extends Dialog
 
         attrs = data;
 
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
 
         setTitle("Record Attributes");
 
-        okButton.setBackground(DEViseGlobals.bg);
-        okButton.setForeground(DEViseGlobals.fg);
-        okButton.setFont(DEViseGlobals.font);
+        okButton.setBackground(DEViseUIGlobals.bg);
+        okButton.setForeground(DEViseUIGlobals.fg);
+        okButton.setFont(DEViseUIGlobals.font);
 
         int size = attrs.length - 1;
         Label[] label = null;
@@ -513,13 +516,13 @@ class RecordDlg extends Dialog
         pack();
 
         Dimension panesize = panel.getPreferredSize();
-        if (panesize.width > (DEViseGlobals.maxScreenSize.width - 120) || panesize.height > (DEViseGlobals.maxScreenSize.height - 80)) {
-            if (panesize.width > (DEViseGlobals.maxScreenSize.width - 120)) {
-                panesize.width = DEViseGlobals.maxScreenSize.width - 120;
+        if (panesize.width > (DEViseUIGlobals.maxScreenSize.width - 120) || panesize.height > (DEViseUIGlobals.maxScreenSize.height - 80)) {
+            if (panesize.width > (DEViseUIGlobals.maxScreenSize.width - 120)) {
+                panesize.width = DEViseUIGlobals.maxScreenSize.width - 120;
             }
 
-            if (panesize.height > (DEViseGlobals.maxScreenSize.height - 80)) {
-                panesize.height = DEViseGlobals.maxScreenSize.height - 80;
+            if (panesize.height > (DEViseUIGlobals.maxScreenSize.height - 80)) {
+                panesize.height = DEViseUIGlobals.maxScreenSize.height - 80;
             }
 
             ScrollPane pane = new ScrollPane();
@@ -625,22 +628,22 @@ class SessionDlg extends Frame
     {
         jsc = what;
 
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
 
         setTitle("JavaScreen Open Dialog");
 
         label.setFont(new Font("Serif", Font.BOLD, 16));
-        //label.setFont(DEViseGlobals.font);
+        //label.setFont(DEViseUIGlobals.font);
         directory.setText("/" + jsc.currentDir);
-        directory.setFont(DEViseGlobals.font);
+        directory.setFont(DEViseUIGlobals.font);
 
         fileList = new java.awt.List(8, false);
-        fileList.setBackground(DEViseGlobals.textBg);
+        fileList.setBackground(DEViseUIGlobals.textBg);
         //fileList.setBackground(Color.white);
-        fileList.setForeground(DEViseGlobals.textFg);
-        fileList.setFont(DEViseGlobals.textFont);
+        fileList.setForeground(DEViseUIGlobals.textFg);
+        fileList.setFont(DEViseUIGlobals.textFont);
 
         setSessionList(data);
 
@@ -737,7 +740,7 @@ class SessionDlg extends Frame
                                         jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
                                     } else {
                                         jsc.currentSession = sessionName;
-                                        jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseGlobals.screenSize.width + " " + DEViseGlobals.screenSize.height
+                                        jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
                                                                  + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
                                         close();
                                     }
@@ -781,7 +784,7 @@ class SessionDlg extends Frame
                                     jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
                                 } else {
                                     jsc.currentSession = sessionName;
-                                    jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseGlobals.screenSize.width + " " + DEViseGlobals.screenSize.height
+                                    jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
                                                              + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
                                     close();
                                 }
@@ -895,32 +898,32 @@ class SettingDlg extends Dialog
 
         jsc = what;
 
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
 
         setTitle("JavaScreen Setting");
 
-        setButton.setBackground(DEViseGlobals.bg);
-        setButton.setForeground(DEViseGlobals.fg);
-        setButton.setFont(DEViseGlobals.font);
+        setButton.setBackground(DEViseUIGlobals.bg);
+        setButton.setForeground(DEViseUIGlobals.fg);
+        setButton.setFont(DEViseUIGlobals.font);
 
-        screenX.setBackground(DEViseGlobals.textBg);
-        screenX.setForeground(DEViseGlobals.textFg);
-        screenX.setFont(DEViseGlobals.textFont);
+        screenX.setBackground(DEViseUIGlobals.textBg);
+        screenX.setForeground(DEViseUIGlobals.textFg);
+        screenX.setFont(DEViseUIGlobals.textFont);
 
-        screenY.setBackground(DEViseGlobals.textBg);
-        screenY.setForeground(DEViseGlobals.textFg);
-        screenY.setFont(DEViseGlobals.textFont);
+        screenY.setBackground(DEViseUIGlobals.textBg);
+        screenY.setForeground(DEViseUIGlobals.textFg);
+        screenY.setFont(DEViseUIGlobals.textFont);
 
-        screenX.setText("" + DEViseGlobals.screenSize.width);
-        screenY.setText("" + DEViseGlobals.screenSize.height);
+        screenX.setText("" + DEViseUIGlobals.screenSize.width);
+        screenY.setText("" + DEViseUIGlobals.screenSize.height);
 
-        statButton.setBackground(DEViseGlobals.bg);
-        statButton.setForeground(DEViseGlobals.fg);
-        statButton.setFont(DEViseGlobals.font);
+        statButton.setBackground(DEViseUIGlobals.bg);
+        statButton.setForeground(DEViseUIGlobals.fg);
+        statButton.setFont(DEViseUIGlobals.font);
 
-        if (DEViseGlobals.inBrowser) {
+        if (DEViseUIGlobals.inBrowser) {
             screenX.setEditable(false);
             screenY.setEditable(false);
             setButton.setEnabled(false);
@@ -1010,8 +1013,8 @@ class SettingDlg extends Dialog
                             x = Integer.parseInt(screenX.getText());
                             y = Integer.parseInt(screenY.getText());
 
-                            if (x < DEViseGlobals.minScreenSize.width || x > DEViseGlobals.maxScreenSize.width
-                                || y < DEViseGlobals.minScreenSize.height || y > DEViseGlobals.maxScreenSize.height) {
+                            if (x < DEViseUIGlobals.minScreenSize.width || x > DEViseUIGlobals.maxScreenSize.width
+                                || y < DEViseUIGlobals.minScreenSize.height || y > DEViseUIGlobals.maxScreenSize.height) {
                                 throw new NumberFormatException();
                             } else {
                                 jsc.jscreen.setScreenDim(x, y);
@@ -1019,9 +1022,9 @@ class SettingDlg extends Dialog
                             }
                         } catch (NumberFormatException e) {
                             jsc.showMsg("Invalid screen size specified!\nJavaScreen size must be larger than ("
-                                         + DEViseGlobals.minScreenSize.width + ", " + DEViseGlobals.minScreenSize.height
+                                         + DEViseUIGlobals.minScreenSize.width + ", " + DEViseUIGlobals.minScreenSize.height
                                          + ") and smaller than ("
-                                         + DEViseGlobals.maxScreenSize.width + ", " + DEViseGlobals.maxScreenSize.height + ")");
+                                         + DEViseUIGlobals.maxScreenSize.width + ", " + DEViseUIGlobals.maxScreenSize.height + ")");
                         }
                     }
                 });
@@ -1121,9 +1124,9 @@ class ServerStateDlg extends Dialog
             }
         }
 
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
-        setFont(DEViseGlobals.font);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
+        setFont(DEViseUIGlobals.font);
 
         setTitle("JSPOP current state");
 
@@ -1132,36 +1135,36 @@ class ServerStateDlg extends Dialog
         label3.setFont(new Font("Serif", Font.BOLD, 16));
 
         serverList = new java.awt.List(4, false);
-        serverList.setBackground(DEViseGlobals.textBg);
-        serverList.setForeground(DEViseGlobals.textFg);
-        serverList.setFont(DEViseGlobals.textFont);
+        serverList.setBackground(DEViseUIGlobals.textBg);
+        serverList.setForeground(DEViseUIGlobals.textFg);
+        serverList.setFont(DEViseUIGlobals.textFont);
         if (list1 != null) {
             for (int i = 0; i < list1.length; i++) {
                 serverList.add(list1[i]);
             }
         }
         activeClientList = new java.awt.List(6, false);
-        activeClientList.setBackground(DEViseGlobals.textBg);
-        activeClientList.setForeground(DEViseGlobals.textFg);
-        activeClientList.setFont(DEViseGlobals.textFont);
+        activeClientList.setBackground(DEViseUIGlobals.textBg);
+        activeClientList.setForeground(DEViseUIGlobals.textFg);
+        activeClientList.setFont(DEViseUIGlobals.textFont);
         if (list2 != null) {
             for (int i = 0; i < list2.length; i++) {
                 activeClientList.add(list2[i]);
             }
         }
         suspendClientList = new java.awt.List(6, false);
-        suspendClientList.setBackground(DEViseGlobals.textBg);
-        suspendClientList.setForeground(DEViseGlobals.textFg);
-        suspendClientList.setFont(DEViseGlobals.textFont);
+        suspendClientList.setBackground(DEViseUIGlobals.textBg);
+        suspendClientList.setForeground(DEViseUIGlobals.textFg);
+        suspendClientList.setFont(DEViseUIGlobals.textFont);
         if (list3 != null) {
             for (int i = 0; i < list3.length; i++) {
                 suspendClientList.add(list3[i]);
             }
         }
 
-        okButton.setBackground(DEViseGlobals.bg);
-        okButton.setForeground(DEViseGlobals.fg);
-        okButton.setFont(DEViseGlobals.font);
+        okButton.setBackground(DEViseUIGlobals.bg);
+        okButton.setForeground(DEViseUIGlobals.fg);
+        okButton.setFont(DEViseUIGlobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2000/04/07 22:43:12  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.38  2000/03/23 16:26:11  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -126,7 +130,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         if (currentImg != null) {
             g.drawImage(currentImg, 0, 0, this);
         } else {
-            g.setColor(DEViseGlobals.bg);
+            g.setColor(DEViseUIGlobals.bg);
             g.fillRect(0, 0, imageWidth, imageHeight);
         }
     }

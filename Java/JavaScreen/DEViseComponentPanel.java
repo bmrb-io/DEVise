@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2000/03/23 16:26:13  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.3  1999/06/23 20:59:16  wenger
 // Added standard DEVise header.
 //
@@ -55,18 +58,18 @@ public class DEViseComponentPanel extends Panel
         int i;
         for (i = 0; i < component.length; i++) {
             if (component[i] instanceof Button) {
-                component[i].setBackground(DEViseGlobals.bg);
-                component[i].setForeground(DEViseGlobals.fg);
-                component[i].setFont(DEViseGlobals.font);
+                component[i].setBackground(DEViseUIGlobals.bg);
+                component[i].setForeground(DEViseUIGlobals.fg);
+                component[i].setFont(DEViseUIGlobals.font);
                 ((Button)component[i]).setActionCommand(((Button)component[i]).getLabel());
             } else if ((component[i] instanceof TextField) || (component[i] instanceof TextArea)) {
-                component[i].setBackground(DEViseGlobals.textBg);
-                component[i].setForeground(DEViseGlobals.textFg);
-                component[i].setFont(DEViseGlobals.textFont);
+                component[i].setBackground(DEViseUIGlobals.textBg);
+                component[i].setForeground(DEViseUIGlobals.textFg);
+                component[i].setFont(DEViseUIGlobals.textFont);
             } else {
-                component[i].setBackground(DEViseGlobals.bg);
-                component[i].setForeground(DEViseGlobals.fg);
-                component[i].setFont(DEViseGlobals.font);
+                component[i].setBackground(DEViseUIGlobals.bg);
+                component[i].setForeground(DEViseUIGlobals.fg);
+                component[i].setFont(DEViseUIGlobals.font);
                 if (component[i] instanceof Label)
                     ((Label)component[i]).setAlignment(Label.CENTER);
             }

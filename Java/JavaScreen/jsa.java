@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2000/03/23 16:26:18  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.36  1999/10/10 08:49:54  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -63,12 +66,12 @@ public class jsa extends Applet
 
     public void init()
     {
-        DEViseGlobals.isApplet = true;
-        DEViseGlobals.inBrowser = false;
+        DEViseUIGlobals.isApplet = true;
+        DEViseUIGlobals.inBrowser = false;
 
         isInit = true;
 
-        DEViseGlobals.browser = getAppletContext();
+        DEViseUIGlobals.browser = getAppletContext();
 
         setLayout(new BorderLayout(0, 10));
 
@@ -97,9 +100,9 @@ public class jsa extends Applet
                 });
 
         startInfo = new TextArea(8, 50);
-        startInfo.setBackground(DEViseGlobals.textBg);
-        startInfo.setForeground(DEViseGlobals.textFg);
-        startInfo.setFont(DEViseGlobals.textFont);
+        startInfo.setBackground(DEViseUIGlobals.textBg);
+        startInfo.setForeground(DEViseUIGlobals.textFg);
+        startInfo.setFont(DEViseUIGlobals.textFont);
         add(startInfo, BorderLayout.CENTER);
 
         setVisible(true);
@@ -291,9 +294,9 @@ public class jsa extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                DEViseGlobals.screenSize.width = x;
-                DEViseGlobals.screenSize.height = y;
-                
+                DEViseUIGlobals.screenSize.width = x;
+                DEViseUIGlobals.screenSize.height = y;
+
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -318,8 +321,8 @@ public class jsa extends Applet
                     y = 0;
                 }
 
-                DEViseGlobals.rubberBandLimit.width = x;
-                DEViseGlobals.rubberBandLimit.height = y;
+                DEViseUIGlobals.rubberBandLimit.width = x;
+                DEViseUIGlobals.rubberBandLimit.height = y;
                 startInfo.append("Parameter rubber band limit (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -341,7 +344,7 @@ public class jsa extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.bg = c;
+                DEViseUIGlobals.bg = c;
                 startInfo.append("Parameter bgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -363,7 +366,7 @@ public class jsa extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.fg = c;
+                DEViseUIGlobals.fg = c;
                 startInfo.append("Parameter fgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -401,14 +404,14 @@ class jscframe extends Frame
     {
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
-        DEViseGlobals.maxScreenSize.width = dim.width - 80;
-        DEViseGlobals.maxScreenSize.height = dim.height - 120;
-        DEViseGlobals.minScreenSize.width = 300;
-        DEViseGlobals.minScreenSize.height = 240;
+        DEViseUIGlobals.maxScreenSize.width = dim.width - 80;
+        DEViseUIGlobals.maxScreenSize.height = dim.height - 120;
+        DEViseUIGlobals.minScreenSize.width = 300;
+        DEViseUIGlobals.minScreenSize.height = 240;
 
         jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
-        setTitle(DEViseGlobals.javaScreenTitle);
+        setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
 
         Point loc = new Point(0, 0);

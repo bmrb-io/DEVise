@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/03/23 16:26:18  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.8  1999/10/10 19:59:26  hongyu
 // *** empty log message ***
 //
@@ -68,19 +71,19 @@ public class jsb extends Applet
 
     public void init()
     {
-        DEViseGlobals.isApplet = true;
-        DEViseGlobals.inBrowser = true;
+        DEViseUIGlobals.isApplet = true;
+        DEViseUIGlobals.inBrowser = true;
 
         isInit = true;
 
-        DEViseGlobals.browser = getAppletContext();
+        DEViseUIGlobals.browser = getAppletContext();
 
         setLayout(new BorderLayout(0, 10));
 
         startInfo = new TextArea(8, 50);
-        startInfo.setBackground(DEViseGlobals.textBg);
-        startInfo.setForeground(DEViseGlobals.textFg);
-        startInfo.setFont(DEViseGlobals.textFont);
+        startInfo.setBackground(DEViseUIGlobals.textBg);
+        startInfo.setForeground(DEViseUIGlobals.textFg);
+        startInfo.setFont(DEViseUIGlobals.textFont);
         add(startInfo, BorderLayout.CENTER);
 
         setVisible(true);
@@ -270,8 +273,8 @@ public class jsb extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                DEViseGlobals.maxScreenSize.width = x;
-                DEViseGlobals.maxScreenSize.height = y;
+                DEViseUIGlobals.maxScreenSize.width = x;
+                DEViseUIGlobals.maxScreenSize.height = y;
 
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
@@ -279,22 +282,22 @@ public class jsb extends Applet
             }
         }
 
-        DEViseGlobals.minScreenSize.width = 300;
-        DEViseGlobals.minScreenSize.height = 240;
+        DEViseUIGlobals.minScreenSize.width = 300;
+        DEViseUIGlobals.minScreenSize.height = 240;
 
-        if (DEViseGlobals.maxScreenSize.width > 0 && DEViseGlobals.maxScreenSize.height > 0) {
-            DEViseGlobals.maxScreenSize.width -= 6;
-            DEViseGlobals.maxScreenSize.height -= 60;
+        if (DEViseUIGlobals.maxScreenSize.width > 0 && DEViseUIGlobals.maxScreenSize.height > 0) {
+            DEViseUIGlobals.maxScreenSize.width -= 6;
+            DEViseUIGlobals.maxScreenSize.height -= 60;
         } else {
-            DEViseGlobals.maxScreenSize.width = 640;
-            DEViseGlobals.maxScreenSize.height = 480;
+            DEViseUIGlobals.maxScreenSize.width = 640;
+            DEViseUIGlobals.maxScreenSize.height = 480;
         }
 
-        if (DEViseGlobals.maxScreenSize.width < DEViseGlobals.minScreenSize.width) {
-            DEViseGlobals.maxScreenSize.width = DEViseGlobals.minScreenSize.width;
+        if (DEViseUIGlobals.maxScreenSize.width < DEViseUIGlobals.minScreenSize.width) {
+            DEViseUIGlobals.maxScreenSize.width = DEViseUIGlobals.minScreenSize.width;
         }
-        if (DEViseGlobals.maxScreenSize.height < DEViseGlobals.minScreenSize.height) {
-            DEViseGlobals.maxScreenSize.height = DEViseGlobals.minScreenSize.height;
+        if (DEViseUIGlobals.maxScreenSize.height < DEViseUIGlobals.minScreenSize.height) {
+            DEViseUIGlobals.maxScreenSize.height = DEViseUIGlobals.minScreenSize.height;
         }
 
         String rsize = getParameter("rubberbandlimit");
@@ -316,8 +319,8 @@ public class jsb extends Applet
                     y = 0;
                 }
 
-                DEViseGlobals.rubberBandLimit.width = x;
-                DEViseGlobals.rubberBandLimit.height = y;
+                DEViseUIGlobals.rubberBandLimit.width = x;
+                DEViseUIGlobals.rubberBandLimit.height = y;
                 startInfo.append("Parameter rubber band limit (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -339,7 +342,7 @@ public class jsb extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.bg = c;
+                DEViseUIGlobals.bg = c;
                 startInfo.append("Parameter bgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }
@@ -361,7 +364,7 @@ public class jsb extends Applet
                 }
 
                 Color c = new Color(r, g, b);
-                DEViseGlobals.fg = c;
+                DEViseUIGlobals.fg = c;
                 startInfo.append("Parameter fgcolor (" + r + ", " + g + ", " + b + ") is used\n");
             } catch (NumberFormatException e) {
             }

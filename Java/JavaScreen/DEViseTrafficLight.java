@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/03/23 16:26:15  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.4  1999/06/23 20:59:17  wenger
 // Added standard DEVise header.
 //
@@ -54,7 +57,7 @@ public class DEViseTrafficLight extends Panel
             if (!canvas[i].setImage(offImage))
                 throw new YException("Invalid Image!");
             //label[i] = new Label(c[i]);
-            label[i] = new YImageCanvas(c[i], null, DEViseGlobals.bg, DEViseGlobals.fg, 12, 12, 1, 1);
+            label[i] = new YImageCanvas(c[i], null, DEViseUIGlobals.bg, DEViseUIGlobals.fg, 12, 12, 1, 1);
         }
         string = s;
         canvas[3] = new YImageCanvas(string);
@@ -63,14 +66,14 @@ public class DEViseTrafficLight extends Panel
         }
 
         setFont(new Font("Monospaced", Font.BOLD, 14));
-        setBackground(DEViseGlobals.bg);
-        setForeground(DEViseGlobals.fg);
+        setBackground(DEViseUIGlobals.bg);
+        setForeground(DEViseUIGlobals.fg);
 
         Panel panel = new Panel();
         panel.setLayout(new GridLayout(2, 4));
         panel.setFont(new Font("Monospaced", Font.BOLD, 14));
-        panel.setBackground(DEViseGlobals.bg);
-        panel.setForeground(DEViseGlobals.fg);
+        panel.setBackground(DEViseUIGlobals.bg);
+        panel.setForeground(DEViseUIGlobals.fg);
 
         for (int i = 0; i < 3; i++)
             panel.add(label[i]);

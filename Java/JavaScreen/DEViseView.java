@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2000/04/07 22:44:10  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.42  2000/04/05 15:42:24  wenger
 // Changed JavaScreen version to 3.3 because of memory fixes; other minor
 // improvements in code; conditionaled out some debug code.
@@ -130,7 +134,7 @@ public class DEViseView
         viewFg = fg;
 
         viewDataLoc = dl;
-        //viewDataLoc.x += DEViseGlobals.screenEdge.width;
+        //viewDataLoc.x += DEViseUIGlobals.screenEdge.width;
         //viewDataLoc.y += DEViseGlobals.
         viewDataXType = xt;
         viewDataYType = yt;

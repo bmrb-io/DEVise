@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2000/04/05 06:25:40  hongyu
+// fix excessive memory usage problem associated with gdata
+//
 // Revision 1.34  2000/03/23 16:26:18  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -128,10 +131,10 @@ public class js extends Frame
     {
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension dim = kit.getScreenSize();
-        DEViseGlobals.maxScreenSize.width = dim.width - 80;
-        DEViseGlobals.maxScreenSize.height = dim.height - 120;
-        DEViseGlobals.minScreenSize.width = 300;
-        DEViseGlobals.minScreenSize.height = 240;
+        DEViseUIGlobals.maxScreenSize.width = dim.width - 80;
+        DEViseUIGlobals.maxScreenSize.height = dim.height - 120;
+        DEViseUIGlobals.minScreenSize.width = 300;
+        DEViseUIGlobals.minScreenSize.height = 240;
 
         // get the animation symbol images from server
         MediaTracker tracker = new MediaTracker(this);
@@ -167,7 +170,7 @@ public class js extends Frame
         // start JavaScreen
         jsc = new jsdevisec(this, images, debugLevel, sessionName);
         add(jsc);
-        setTitle(DEViseGlobals.javaScreenTitle);
+        setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
 
         // reposition JavaScreen so it is in the center of the screen
@@ -211,8 +214,8 @@ public class js extends Frame
 
         checkArguments(args);
 
-        DEViseGlobals.isApplet = false;
-        DEViseGlobals.inBrowser = false;
+        DEViseUIGlobals.isApplet = false;
+        DEViseUIGlobals.inBrowser = false;
         DEViseGlobals.connectionID = DEViseGlobals.DEFAULTID;
 
         if (DEViseGlobals.hostname == null)
@@ -286,7 +289,7 @@ public class js extends Frame
                         }
 
                         Color c = new Color(r, g, b);
-                        DEViseGlobals.bg = c;
+                        DEViseUIGlobals.bg = c;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid RGB values specified for"
                             + " bgcolor \"" + args[i].substring(8) + "\"!\n"
@@ -312,7 +315,7 @@ public class js extends Frame
                         }
 
                         Color c = new Color(r, g, b);
-                        DEViseGlobals.fg = c;
+                        DEViseUIGlobals.fg = c;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid RGB values specified for"
                             + " fgcolor \"" + args[i].substring(8) + "\"!\n"
@@ -336,8 +339,8 @@ public class js extends Frame
                             throw new NumberFormatException();
                         }
 
-                        DEViseGlobals.rubberBandLimit.width = width;
-                        DEViseGlobals.rubberBandLimit.height = height;
+                        DEViseUIGlobals.rubberBandLimit.width = width;
+                        DEViseUIGlobals.rubberBandLimit.height = height;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid width or height values"
                             + " specified for rubberbandlimit: \""
@@ -362,8 +365,8 @@ public class js extends Frame
                             throw new NumberFormatException();
                         }
 
-                        DEViseGlobals.screenSize.width = width;
-                        DEViseGlobals.screenSize.height = height;
+                        DEViseUIGlobals.screenSize.width = width;
+                        DEViseUIGlobals.screenSize.height = height;
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid width or height values "
                             + "specified for screen size: \""

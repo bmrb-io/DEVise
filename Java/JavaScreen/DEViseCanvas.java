@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2000/04/07 22:43:13  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.38  2000/04/05 06:25:36  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -57,6 +61,10 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.39  2000/04/07 22:43:13  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.38  2000/04/05 06:25:36  hongyu
 // fix excessive memory usage problem associated with gdata
 //
@@ -340,7 +348,7 @@ public class DEViseCanvas extends Container
         }
 
         Toolkit tk = Toolkit.getDefaultToolkit();
-        FontMetrics fm = tk.getFontMetrics(DEViseGlobals.textFont);
+        FontMetrics fm = tk.getFontMetrics(DEViseUIGlobals.textFont);
         int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
         int width = fm.stringWidth(helpMsg) + 12;
 
@@ -349,7 +357,7 @@ public class DEViseCanvas extends Container
         gc.setColor(new Color(255, 255, 192));
         gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
         gc.setColor(Color.black);
-        gc.setFont(DEViseGlobals.textFont);
+        gc.setFont(DEViseUIGlobals.textFont);
         gc.drawString(helpMsg, helpMsgX + 6, helpMsgY + height - dc - 6);
 
         //helpMsg = null;
@@ -852,7 +860,7 @@ public class DEViseCanvas extends Container
             ep.y = op.y = sp.y = p.y;
 
             if (view.viewDimension == 3) {
-                jsc.lastCursor = DEViseGlobals.rbCursor;
+                jsc.lastCursor = DEViseUIGlobals.rbCursor;
                 setCursor(jsc.lastCursor);
 
                 activeView = view;
@@ -940,7 +948,7 @@ public class DEViseCanvas extends Container
                     if (h < 0)
                         h = -h;
 
-                    if (w > DEViseGlobals.rubberBandLimit.width || h > DEViseGlobals.rubberBandLimit.height) {
+                    if (w > DEViseUIGlobals.rubberBandLimit.width || h > DEViseUIGlobals.rubberBandLimit.height) {
                         cmd = cmd + "JAVAC_MouseAction_RubberBand " + activeView.getCurlyName() + " "
                               + activeView.translateX(sp.x, 2) + " " + activeView.translateY(sp.y, 2) + " " + activeView.translateX(ep.x, 2) + " " + activeView.translateY(ep.y, 2);
 
@@ -1116,7 +1124,7 @@ public class DEViseCanvas extends Container
                 point.x = p.x;
                 point.y = p.y;
 
-                jsc.lastCursor = DEViseGlobals.rbCursor;
+                jsc.lastCursor = DEViseUIGlobals.rbCursor;
                 setCursor(jsc.lastCursor);
 
                 activeView = view;
@@ -1157,43 +1165,43 @@ public class DEViseCanvas extends Container
         if (checkMousePos(p, view)) { // activeView will not be null
             if (checkDispatcher && jsc.dispatcher.getStatus() != 0) {
                 // dispatcher still busy
-                jsc.lastCursor = DEViseGlobals.waitCursor;
+                jsc.lastCursor = DEViseUIGlobals.waitCursor;
             } else if (isInViewDataArea && selectedCursor == null) {
                 // inside the date area but not within any cursor, you can draw rubber band or
                 // get the records at that data point
-                jsc.lastCursor = DEViseGlobals.rbCursor;
+                jsc.lastCursor = DEViseUIGlobals.rbCursor;
             } else if (isInViewDataArea && selectedCursor != null) {
                 switch (whichCursorSide) {
                 case 0: // inside a cursor, you can move that cursor
-                    jsc.lastCursor = DEViseGlobals.moveCursor;
+                    jsc.lastCursor = DEViseUIGlobals.moveCursor;
                     break;
                 case 1: // on left side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.lrsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.lrsCursor;
                     break;
                 case 2: // on right side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.rrsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.rrsCursor;
                     break;
                 case 3: // on top side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.trsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.trsCursor;
                     break;
                 case 4: // on bottom side of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.brsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.brsCursor;
                     break;
                 case 5: // on left-top corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.tlrsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.tlrsCursor;
                     break;
                 case 6: // on left-bottom corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.blrsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.blrsCursor;
                     break;
                 case 7: // on right-top corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.trrsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.trrsCursor;
                     break;
                 case 8: // on right-bottom corner of a cursor, you can resize this cursor
-                    jsc.lastCursor = DEViseGlobals.brrsCursor;
+                    jsc.lastCursor = DEViseUIGlobals.brrsCursor;
                     break;
                 }
             } else { // inside the view but not within the data area of that view
-                jsc.lastCursor = DEViseGlobals.defaultCursor;
+                jsc.lastCursor = DEViseUIGlobals.defaultCursor;
             }
 
             setCursor(jsc.lastCursor);
@@ -1216,9 +1224,9 @@ public class DEViseCanvas extends Container
             activeView = null;
 
             if (!checkDispatcher || jsc.dispatcher.getStatus() == 0) {
-                jsc.lastCursor = DEViseGlobals.defaultCursor;
+                jsc.lastCursor = DEViseUIGlobals.defaultCursor;
             } else {
-                jsc.lastCursor = DEViseGlobals.waitCursor;
+                jsc.lastCursor = DEViseUIGlobals.waitCursor;
             }
 
             setCursor(jsc.lastCursor);

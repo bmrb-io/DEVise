@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2000/04/07 22:43:13  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.30  2000/04/05 15:42:23  wenger
 // Changed JavaScreen version to 3.3 because of memory fixes; other minor
 // improvements in code; conditionaled out some debug code.
@@ -293,16 +297,16 @@ public class DEViseGData
             height = -height;
 	}
 
-        color = DEViseGlobals.convertColor(data[3]);
+        color = DEViseUIGlobals.convertColor(data[3]);
 
         // Note: not using the default font here is probably less
         // efficient, but the previous version of this code failed
         // if we needed different fonts for different symbols.
         // RKW 1999-11-02.
         if (w < 0.0f) {
-            font = DEViseGlobals.getFont(string, height, ff, fw, fs);
+            font = DEViseUIGlobals.getFont(string, height, ff, fw, fs);
         } else {
-            font = DEViseGlobals.getFont(string, width, height, ff, fw, fs);
+            font = DEViseUIGlobals.getFont(string, width, height, ff, fw, fs);
         }
 
         if (color == null || font == null) {
@@ -360,7 +364,7 @@ public class DEViseGData
         width = 0;
         height = 0;
 
-        color = DEViseGlobals.convertColor(data[3]);
+        color = DEViseUIGlobals.convertColor(data[3]);
 
         // Note: not using the default font here is probably less
         // efficient, but the previous version of this code failed
@@ -370,9 +374,9 @@ public class DEViseGData
         if (size > 1.0f) {
             fsize = (int)(size + 0.25f);
         } else {
-            fsize = (int)(size * DEViseGlobals.screenSize.height + 0.25f);
+            fsize = (int)(size * DEViseUIGlobals.screenSize.height + 0.25f);
         }
-        font = DEViseGlobals.getFont(fsize, ff, fw, fs);
+        font = DEViseUIGlobals.getFont(fsize, ff, fw, fs);
 
         if (color == null || font == null) {
             string = null;
@@ -415,12 +419,12 @@ public class DEViseGData
             {
                 public void actionPerformed(ActionEvent event)
                 {
-                    if (DEViseGlobals.isApplet) {
-                        if (DEViseGlobals.browser != null) {
+                    if (DEViseUIGlobals.isApplet) {
+                        if (DEViseUIGlobals.browser != null) {
                             try {
                                 URL url = new URL(event.getActionCommand());
-                                //DEViseGlobals.browser.showDocument(url, "_blank");
-                                DEViseGlobals.browser.showDocument(url, "_parent");
+                                //DEViseUIGlobals.browser.showDocument(url, "_blank");
+                                DEViseUIGlobals.browser.showDocument(url, "_parent");
                             } catch (MalformedURLException e) {
                                 //YGlobals.Ydebugpn("Invalid URL {" + event.getActionCommand() + "}");
                             }
@@ -443,7 +447,7 @@ public class DEViseGData
         if (height < 0)
             height = -height;
 
-        color = DEViseGlobals.convertColor(data[3]);
+        color = DEViseUIGlobals.convertColor(data[3]);
 
 	// ADD COMMENT -- is this the name of the element??
         string = data[10];
@@ -460,7 +464,7 @@ public class DEViseGData
         if (height < 0)
             height = -height;
 
-        color = DEViseGlobals.convertColor(data[3]);
+        color = DEViseUIGlobals.convertColor(data[3]);
 
         x1 = x0 + size * (Float.valueOf(data[8])).floatValue();
         y1 = y0 + size * (Float.valueOf(data[9])).floatValue();
