@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.45  1996/07/22 23:50:57  guangshu
+#	Added statistics for gdata. The statistics includes count, ysum, max, mean, min.
+#
 #	Revision 1.44  1996/07/19 18:29:45  guangshu
 #	Added support for histograms.
 #
@@ -193,7 +196,7 @@ set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 set sourceFile $datadir/sourcedef.tcl
 if {[file exists $sourceFile]} {
-    puts "Using data stream catalog $sourceFile"
+    Puts "Using data stream catalog $sourceFile"
     source $sourceFile
 }
 

@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.90  1996/08/28 00:20:01  wenger
+#	Improved use of Dali to correctly free images (use of Dali is now fully
+#	functional with filenames in data).
+#
 #	Revision 1.89  1996/08/07 15:34:44  guangshu
 #	Add an menu item in SourceData to view the statistics in text form.
 #
@@ -334,6 +338,8 @@
 #	Updated CVS header.
 
 ############################################################
+set libdir $env(DEVISE_LIB)
+source $libdir/tool.tcl
 
 set DEViseColors \
 	{{1000 XOR} {0 black} {1 white} {2 red} {3 blue} {4 orange} \
@@ -420,13 +426,13 @@ set hostCfg $libdir/config.tcl
 if {![file exists $hostCfg]} {
     puts "Cannot read configuration file $hostCfg"
 } else {
-    puts "Reading configuration file $hostCfg"
+    Puts "Reading configuration file $hostCfg"
     source $hostCfg
 }
 
 if {![catch {set hostCfg $libdir/config.$env(HOSTNAME)}]} {
     if {[file exists $hostCfg]} {
-	puts "Reading configuration file $hostCfg"
+	Puts "Reading configuration file $hostCfg"
 	source $hostCfg
     }
 }
@@ -486,7 +492,7 @@ if { [ info exists env($envName)] && [file exists $env($envName) ] } {
 }
 
 if {$rcFile != ""} {
-    puts "Reading initialization file $rcFile"
+    Puts "Reading initialization file $rcFile"
     source $rcFile
 }
 
@@ -824,7 +830,6 @@ proc FileExist { file } {
 proc FindDefaultXAttr { attrs } {
     set numAttrs 0
     foreach attr $attrs {
-	# puts "attr= $attr"
 	if { [lindex $attr 2] > 0 } {
 	    set temp($numAttrs) [lindex $attr 0]
 	    incr numAttrs
@@ -998,7 +1003,7 @@ proc DoClose {} {
 	unset sourceList
 	set sourceFile $datadir/sourcedef.tcl
 	if {[file exists $sourceFile]} {
-	    puts "Using data stream catalog $sourceFile"
+	    Puts "Using data stream catalog $sourceFile"
 	    source $sourceFile	
 	}
 	set templateMode 0
@@ -1030,7 +1035,7 @@ proc DoOpen { asTemplate } {
     if {$asTemplate} {
 	set template 1
     }
-    puts "Restoring session from $file"
+    Puts "Restoring session from $file"
     set err [ catch { source $file } ]
     set restoring 0
     set template 0
