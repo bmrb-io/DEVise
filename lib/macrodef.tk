@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.83  1997/04/03 16:37:07  wenger
+#	Reduced memory and CPU usage in statistics; fixed a memory leak in the
+#	statistics code; switched devised back to listening on port 6100
+#	(changed accidentally?); turned off a bunch of debug output.
+#
 #	Revision 1.82  1997/03/25 17:59:41  wenger
 #	Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 #
@@ -1165,8 +1170,15 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
 #    puts "The ylist is $ylist"
     
     if {$is_dte_type} {
-            set result [DEVise create tdata $tdata $tdata "$x $ylist"]
-            set tdata $result
+
+		# see if data stream already open
+		if {[lsearch [TdataSet] $tdata] < 0} {
+
+			# not open
+
+			set result [DEVise create tdata $tdata $tdata "$x $ylist"]
+			set tdata $result
+		}
 	}
     MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
 	    $titlesel $xaxissel $yaxissel $x $ylist $newgdata
