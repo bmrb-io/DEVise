@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2000
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/12/10 21:53:16  wenger
+  Devised now sends GIFs to JavaScreen on a per-view rather than per-window
+  basis; GIF "dirty" flags are now also referenced by view rather than by
+  window.
+
   Revision 1.11  1998/09/22 17:23:39  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -176,7 +181,7 @@ void listName::InsertOrderly(valType v, int order){\
    	} else if(order == 0) {\
 	    for (node = this->_head->next; node != this->_head && v <= node->val; node = node->next){}\
 	} else {\
-	    DOASSERT(0, "Invalid order");\
+	    DOASSERT(0, "DList::InsertOrderly(): invalid order");\
 	    return;\
 	}\
 	_Insert(node->prev, new_node);\
@@ -190,13 +195,13 @@ void listName::Append(valType v){\
 \
 /* Return the first element */\
 valType listName::GetFirst() {\
-	DOASSERT(_head->next != _head, "Empty list");\
+	DOASSERT(_head->next != _head, "DList::GetFirst(): empty list");\
 	return _head->next->val;\
 }\
 \
 /* Return the last element */\
 valType listName::GetLast() {\
-	DOASSERT(_head->prev != _head, "Empty list");\
+	DOASSERT(_head->prev != _head, "DList::GetLast(): empty list");\
 	return _head->prev->val;\
 }\
 \
@@ -211,7 +216,7 @@ void listName::Swap(valType val1, valType val2) {\
 			node2 = node;\
 		}\
 	}\
-	DOASSERT(node1 && node2, "Empty lists");\
+	DOASSERT(node1 && node2, "DList::Swap(): empty lists");\
 	node1->val = val2;\
 	node2->val = val1;\
 }\
@@ -232,7 +237,7 @@ int listName::InitIterator(int backwards) {\
 			return i;\
 		}\
 	}\
-	DOASSERT(0, "No more space for iterators");\
+	DOASSERT(0, "DList::InitIterator(): no more space for iterators");\
 	return -1; /* to keep compiler happy */\
 }\
 \
@@ -248,7 +253,7 @@ void listName::PrintIterators() { \
 \
 /* Init iterator to return the last N records */\
 int listName::InitIteratorLastN(int n){\
-	DOASSERT(n >= 1, "Invalid parameter");\
+	DOASSERT(n >= 1, "DList::InitIteratorLastN(): invalid parameter");\
 	/* find an empty slot in the array of active iterators */\
 	for(int i = 0; i < MaxIterators; i++) {\
 		if (_iterators[i].current == NULL){\
@@ -266,17 +271,17 @@ int listName::InitIteratorLastN(int n){\
 			return i;\
 		}\
 	}\
-	DOASSERT(0, "No more space for iterators");\
+	DOASSERT(0, "DList::InitIteratorLastN(): no more space for iterators");\
 	return -1; /* to keep compiler happy */\
 }\
 \
 int listName::More(int index) {\
-	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
+	DOASSERT(index >= 0 && index < MaxIterators, "DList::More(): invalid iterator");\
 	return _iterators[index].current != _head;\
 }\
 \
 valType listName::Next(int index) { \
-	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
+	DOASSERT(index >= 0 && index < MaxIterators, "DList::Next(): invalid iterator");\
 	IteratorData *iData = &_iterators[index];\
 	valType v = iData->current->val;\
 	if (iData->backwards)\
@@ -286,15 +291,15 @@ valType listName::Next(int index) { \
 }\
 \
 void listName::DeleteCurrent(int index) {\
-	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
-	DOASSERT(_numIterators <= 1, "Cannot delete with iterator");\
+	DOASSERT(index >= 0 && index < MaxIterators, "DList::DeleteCurrent(): invalid iterator");\
+	DOASSERT(_numIterators <= 1, "DList::DeleteCurrent: cannot delete with multiple iterators");\
 	if (_iterators[index].backwards)\
 		_DListDelete(_iterators[index].current->next);\
 	else\
 		_DListDelete(_iterators[index].current->prev);\
 }\
 void listName::InsertAfterCurrent(int index, valType v){ \
-	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
+	DOASSERT(index >= 0 && index < MaxIterators, "DList::InsertAfterCurrent(): invalid iterator");\
 	IteratorData *iData = &_iterators[index];\
 	ListElement *node = new ListElement;\
 	node->val = v;\
@@ -304,7 +309,7 @@ void listName::InsertAfterCurrent(int index, valType v){ \
 		_Insert(iData->current->prev, node);\
 } \
 void listName::InsertBeforeCurrent(int index, valType v){ \
-	DOASSERT(index >= 0 && index < MaxIterators, "Invalid iterator");\
+	DOASSERT(index >= 0 && index < MaxIterators, "DList::InsertBeforeCurrent(): invalid iterator");\
 	IteratorData *iData = &_iterators[index];\
 	ListElement *node = new ListElement;\
 	node->val = v;\
@@ -315,10 +320,10 @@ void listName::InsertBeforeCurrent(int index, valType v){ \
 } \
 void listName::DoneIterator(int index){\
 	DOASSERT(index >= 0 && index < MaxIterators\
-		 && _iterators[index].current != NULL, "Invalid iterator");\
+		 && _iterators[index].current != NULL, "DList::DoneIterator(): invalid iterator");\
 	_iterators[index].current = NULL;\
 	--_numIterators;\
-	DOASSERT(_numIterators >= 0, "Invalid iterator count");\
+	DOASSERT(_numIterators >= 0, "DList::DoneIterator(): invalid iterator count");\
 }\
 \
 /* insert node2 after node 1 */\
@@ -332,7 +337,7 @@ void listName::_Insert(ListElement *node1, ListElement*node2){\
 \
 /* delete node */\
 void listName::_DListDelete(ListElement *node){\
-	DOASSERT(node != _head, "Cannot delete head of list");\
+	DOASSERT(node != _head, "DList::_DListDelete(): cannot delete head of list");\
 	node->next->prev = node->prev;\
 	node->prev->next = node->next;\
 	node->next = node->prev = NULL;\
@@ -357,7 +362,7 @@ int listName::Find(valType v) {\
 }\
 \
 int listName::Delete(valType v){\
-	DOASSERT(!_numIterators, "Cannot delete with iterator");\
+	DOASSERT(!_numIterators, "DList::Delete(): cannot delete with iterator");\
 	ListElement *node;\
 	for (node = this->_head->next; node != this->_head; node = node->next){\
 		if (node->val == v){\
