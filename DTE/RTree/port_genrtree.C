@@ -897,6 +897,7 @@ int port_genrtree_m::scan_pages()
   my_timer.stop();
   return my_timer.usertime();
   */
+  return 0;
 }
 
 
