@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.42  1997/06/21 22:47:48  donjerko
+# Separated type-checking and execution into different classes.
+#
 # Revision 1.41  1997/06/16 16:04:26  donjerko
 # New memory management in exec phase. Unidata included.
 #
@@ -1484,6 +1487,7 @@ types.o: queue.h /usr/include/stdio.h /usr/include/sys/va_list.h myopt.h
 types.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 types.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/unistd.h
 types.o: SockStream.h listop.h catalog.h site.h Iterator.h
+types.o: ../../unidata/DateTime.h
 url.o: url.h /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 url.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h

@@ -24,7 +24,6 @@ DTE_DIR = ../../DTE
 
 PERL_INCL = -I$(PERL_CORE)
 
-#READ_FLAGS = -L../devread -ldevread
 READ_FLAGS = -L../unidata -lunidata -L$(PERL_CORE) -lperl
 
 DTE_INCLUDES = \
@@ -38,12 +37,11 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/GUI \
 	-I$(DTE_DIR)/Script \
 	-I../../unidata \
-	$(PERL_INCL) \
- 	-I../../attrproj
+	$(PERL_INCL)
 
 CFLAGS = $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused $(OPTFLAG) \
-	-DUNIX -DATTRPROJ -DLIBCS \
+	-DUNIX -DLIBCS \
 	-fexternal-templates \
 	-G
 
@@ -149,26 +147,31 @@ STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) dte FormatVolume convert_bulk gui
+all: $(LIBNAME) unidata dte FormatVolume convert_bulk
 lib: $(LIBNAME)
 
-dte: $(STAND_ALONE_OBJ)
+.PHONY: unidata 
+
+unidata:
+	cd ../unidata/; make libunidata.a; cd ../DTE
+
+dte: $(STAND_ALONE_OBJ) ../unidata/libunidata.a
 	$(CC) -o dte $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-pure: $(STAND_ALONE_OBJ)
+pure: $(STAND_ALONE_OBJ) unidata
 	purify $(CC) -o dte.pure $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-quant: $(STAND_ALONE_OBJ)
+quant: $(STAND_ALONE_OBJ) unidata
 	quantify $(CC) -o dte.quant $(STAND_ALONE_OBJ) $(ARCH_LDFLAGS) \
 	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-script: $(SCRIPT_OBJ)
+script: $(SCRIPT_OBJ) unidata
 	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) \
 	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-scriptServer:	$(SCRIPTSERVER_OBJ)
+scriptServer:	$(SCRIPTSERVER_OBJ) unidata
 	$(CC) -o scriptServer $(SCRIPTSERVER_OBJ) $(ARCH_LDFLAGS) \
 	$(READ_FLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
 
@@ -185,11 +188,6 @@ FormatVolume: FormatVolume.C
 
 convert_bulk: convert_bulk.C correct_math.C heap.o
 	$(CC) $(ARCH_ENDIAN) heap.o $< -o $@
-
-devread: 
-	$(foreach item, $(DEVREAD_OBJ), \
-		cd $(dir $(item)); make $(notdir $(item));) \
-	cd ../devread/; make lib; cd ../DTE
 
 $(LIBNAME): $(LIBOBJ)
 	ar cr $@ $(LIBOBJ)
