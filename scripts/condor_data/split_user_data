@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1999/08/10 15:51:57  wenger
+#  Kind of kludgey fix for columns running together in data.
+#
 #  Revision 1.3  1999/06/04 20:54:12  wenger
 #  split_user_data script now takes output directory as a command-line
 #  argument.
@@ -42,7 +45,7 @@ die "usage: split_user_data <data file> <data directory>\n", if ($#ARGV != 1);
 $data_file = shift(@ARGV);
 $data_dir = shift(@ARGV);
 
-open(DATA_IN, "$data_file") || die "Couldn't open data file $data_file: $!\n";
+open(DATA_IN, "$data_file") or die "Couldn't open data file $data_file: $!\n";
 
 
 # Find all of the users listed in the data file.
@@ -100,7 +103,7 @@ sub GetUserFromLine {
 sub UserTopLevel {
   $userNum = 0;
   $outfile = $data_dir . "/" . $top_level_file;
-  open(TOP_OUT, ">$outfile") || die "Can't create file $outfile: $!";
+  open(TOP_OUT, ">$outfile") or die "Can't create file $outfile: $!";
   foreach $user (@userarray) {
     print "User: $user\n" if ($debug);
     print TOP_OUT "$user\t.Condor_${user}\t${user}_view\t$userNum\t0\n";
@@ -116,7 +119,7 @@ sub SplitUserData {
     seek DATA_IN, 0, 0;
 
     $userfile = "$data_dir/" . $user . ".dat";
-    open(USER_OUT, ">$userfile") || die "Can't create file $userfile: $!\n";
+    open(USER_OUT, ">$userfile") or die "Can't create file $userfile: $!\n";
 
     while ($line = <DATA_IN>) {
       #TEMP? fix for columns running together

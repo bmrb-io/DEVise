@@ -25,7 +25,7 @@ endif
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    cat $outfile | /usr/ucb/mail -s "Error message from create_condor_sessions" `whoami`
+    /s/std/bin/cat $outfile | /usr/ucb/mail -s "Error message from create_condor_sessions" `/s/std/bin/whoami`
 endif
 
 /usr/ucb/touch /tmp/ran_condor_update2

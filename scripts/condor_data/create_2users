@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1999/11/03 16:24:03  wenger
+#  Put text alignment, etc., back the way it was -- now works because of
+#  fixes to JS.
+#
 #  Revision 1.17  1999/11/01 17:32:28  wenger
 #  Moved user names over to the right some until text alignment in JS gets
 #  fixed.
@@ -148,7 +152,7 @@ CreateSession($session_file);
 
 sub GetUsers {
 
-  open(DATA_IN, "${data_dir}/UserList") ||
+  open(DATA_IN, "${data_dir}/UserList") or
       die "Couldn't open data file $data_file: $!\n";
 
   while ($line = <DATA_IN>) {
@@ -177,7 +181,7 @@ sub GetUserFromLine {
 sub CreateSession {
   my $session_file = shift(@_);
 
-  open(SES_OUT, ">$session_file") ||
+  open(SES_OUT, ">$session_file") or
       die "Can't create session_file $session_file: $!";
 
   #TEMP -- add std header??
