@@ -2006,6 +2006,13 @@ Num Date        Status  Description
 			cursor.  (We should make these consistent.) (rkw)
 			(Fixed by rkw, 10/8/99.)
 
+515 10/15/99	OPEN	Drag cursor -> DEVise sometimes doesn't realize that
+			the mouse is still on the cursor until you move
+			the mouse again. (rkw)
+
+516 10/18/99	OPEN	Code to write GData should make sure that no strings
+			in the GData contain a control-d. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
