@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  1999/10/10 08:49:54  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.3  1999/06/23 20:59:20  wenger
 // Added standard DEVise header.
 //
@@ -46,7 +54,7 @@ public class YLogGUI extends Frame
     protected boolean isValid = false;
 
     static {
-        max = 10000;
+        max = 60000;
     }
 
     public YLogGUI(int width, int height, String title, int level, boolean isClosable, Font font, Color bg, Color fg)

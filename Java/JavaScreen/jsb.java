@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  1999/10/10 09:51:01  hongyu
+// *** empty log message ***
+//
 // Revision 1.6  1999/10/10 08:49:54  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -247,20 +250,6 @@ public class jsb extends Applet
             DEViseGlobals.imgport = DEViseGlobals.DEFAULTIMGPORT;
         }
 
-        //Dimension dim = getMaximumSize();
-        //DEViseGlobals.maxScreenSize.width = dim.width - 20;
-        //DEViseGlobals.maxScreenSize.height = dim.height - 60;
-        DEViseGlobals.maxScreenSize.width = 794;
-        DEViseGlobals.maxScreenSize.height = 540;
-        DEViseGlobals.minScreenSize.width = 300;
-        DEViseGlobals.minScreenSize.height = 240;
-        if (DEViseGlobals.maxScreenSize.width < DEViseGlobals.minScreenSize.width) {
-            DEViseGlobals.maxScreenSize.width = DEViseGlobals.minScreenSize.width;
-        }
-        if (DEViseGlobals.maxScreenSize.height < DEViseGlobals.minScreenSize.height) {
-            DEViseGlobals.maxScreenSize.height = DEViseGlobals.minScreenSize.height;
-        }
-
         String screen = getParameter("screensize");
         if (screen != null) {
             try {
@@ -272,8 +261,8 @@ public class jsb extends Applet
                 int x = Integer.parseInt(str[0]);
                 int y = Integer.parseInt(str[1]);
 
-                DEViseGlobals.screenSize.width = x;
-                DEViseGlobals.screenSize.height = y;
+                DEViseGlobals.maxScreenSize.width = x;
+                DEViseGlobals.maxScreenSize.height = y;
 
                 startInfo.append("Parameter screen size (" + x + ", " + y + ") is used\n");
             } catch (NumberFormatException e) {
@@ -281,6 +270,23 @@ public class jsb extends Applet
             }
         }
 
+        DEViseGlobals.minScreenSize.width = 300;
+        DEViseGlobals.minScreenSize.height = 240;
+
+        if (DEViseGlobals.maxScreenSize.width > 0 && DEViseGlobals.maxScreenSize.height > 0) {
+            DEViseGlobals.maxScreenSize.width -= 6;
+            DEViseGlobals.maxScreenSize.height -= 60;
+        } else {
+            DEViseGlobals.maxScreenSize.width = 640;
+            DEViseGlobals.maxScreenSize.height = 480;
+        }
+
+        if (DEViseGlobals.maxScreenSize.width < DEViseGlobals.minScreenSize.width) {
+            DEViseGlobals.maxScreenSize.width = DEViseGlobals.minScreenSize.width;
+        }
+        if (DEViseGlobals.maxScreenSize.height < DEViseGlobals.minScreenSize.height) {
+            DEViseGlobals.maxScreenSize.height = DEViseGlobals.minScreenSize.height;
+        }
 
         String rsize = getParameter("rubberbandlimit");
         if (rsize != null) {

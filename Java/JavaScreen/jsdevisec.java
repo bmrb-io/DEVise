@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  1999/10/10 09:51:01  hongyu
+// *** empty log message ***
+//
 // Revision 1.51  1999/10/10 08:49:54  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -160,13 +163,12 @@ public class jsdevisec extends Panel
         viewInfo = new DEViseViewInfo(this, images);
 
         topPanel.add(mainPanel, BorderLayout.WEST);
+        topPanel.add(viewInfo, BorderLayout.EAST);
 
         if (DEViseGlobals.inBrowser) {
             topPanel.setFont(new Font("Serif", Font.PLAIN, 14));
-            topPanel.add(new Label("               DEVise Screen -- Version " + DEViseGlobals.VERSION), BorderLayout.CENTER);
+            topPanel.add(new Label("                       " + DEViseGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
-
-        topPanel.add(viewInfo, BorderLayout.EAST);
 
         if (DEViseGlobals.screenSize.width <= 0) {
             DEViseGlobals.screenSize.width = DEViseGlobals.maxScreenSize.width;
@@ -191,7 +193,7 @@ public class jsdevisec extends Panel
         //if (g > 255) g = 255;
         //if (b > 255) b = 255;
         //screenPanel.setBackground(new Color(r, g, b));
-        screenPanel.setBackground(Color.white);
+        screenPanel.setBackground(new Color(64, 192, 0));
         screenPanel.add(jscreen);
 
         add(topPanel, BorderLayout.NORTH);

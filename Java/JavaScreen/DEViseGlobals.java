@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  1999/10/10 08:49:52  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.25  1999/09/24 17:11:47  hongyu
 // adding support for 3-d molecule view
 //
@@ -63,8 +71,8 @@ public final class DEViseGlobals
 
     public static AppletContext browser = null;
 
-    public static Dimension maxScreenSize = new Dimension(640, 480);
-    public static Dimension minScreenSize = new Dimension(320, 240);
+    public static Dimension maxScreenSize = new Dimension(0, 0);
+    public static Dimension minScreenSize = new Dimension(0, 0);
     public static Dimension screenSize = new Dimension(0, 0);
     public static Dimension rubberBandLimit = new Dimension(4, 4);
 
