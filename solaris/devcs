@@ -63,12 +63,8 @@ setenv LM_TMP			/tmp/LM/dat
 setenv DEVISE_LIB		$cwd/../lib
 setenv LM_LIB			$DEVISE_LIB/LM
 
-generic/devised -port 6102 &
+generic/devised -port 6102 -quit 1 &
 
 generic/devise -p 6102
-
-sleep 2
-
-echo "DEVise serverExit" | generic/deviseb -p 6102
 
 rmmem
