@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/04 15:25:35  jussi
+  Updated to reflect new interface to TDataAscii. Added type
+  parameter (UNIXFILE).
+
   Revision 1.6  1996/06/13 17:35:48  jussi
   Added calls to DataSeg::Set().
 
@@ -58,6 +62,11 @@ MultiClassInfo::MultiClassInfo(char *name, char *type,
   _type = type;
   _param = param;
   _tdata = tdata;
+}
+
+MultiClassInfo::~MultiClassInfo()
+{
+  delete _tdata;
 }
 
 static char buf[3][256];

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/07/04 15:25:38  jussi
+  Updated to reflect new interface to TDataAscii. Added type
+  parameter (UNIXFILE).
+
   Revision 1.4  1996/05/07 21:13:40  jussi
   Added record position parameter to Decode(). Added alias parameter
   to constructor.
@@ -42,7 +46,7 @@ public:
 
   /* for creating instance */
   MultiClassInfo(char *name, char *type, char *param, TDataMulti *tdata); 
-  virtual ~MultiClassInfo() {}
+  virtual ~MultiClassInfo();
 
   /* Info for category */
   virtual char *CategoryName() { return "tdata"; }
