@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/02/26 00:18:48  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.52  1998/02/19 23:24:36  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -225,9 +228,7 @@
 #include <errno.h>
 #include <time.h>
 #include <string.h>
-#ifndef SGI
 #include <math.h>
-#endif
 
 #include <sys/time.h>
 #include <sys/types.h>

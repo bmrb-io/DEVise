@@ -47,10 +47,10 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSGI -I/usr/freeware/include -I/usr/freeware/src/perl5.002
+ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 
 VPATH = ../../devread:../../graphics:../../graphics.new
 include ../../devread/Makefile.base
-include ../../devread/Makefile.sgi
+include ../../devread/Makefile.solaris

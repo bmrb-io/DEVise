@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/26 00:19:45  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.5  1996/04/16 20:56:37  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -32,10 +35,7 @@
   Initial revision of archive.
 */
 
-#ifndef SGI
 #include <math.h>
-#endif
-
 
 #include "binconv.h"
 #include "Exit.h"

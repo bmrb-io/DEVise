@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/02/26 00:19:20  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.33  1998/02/24 22:55:24  beyer
   Fixed histogram session restore bug.
 
@@ -130,10 +133,7 @@
 //#define DEBUG
 
 #include <stdio.h>
-#ifndef SGI
 #include <math.h>
-#endif
-
 
 #include "BasicStats.h"
 #include "ViewGraph.h"

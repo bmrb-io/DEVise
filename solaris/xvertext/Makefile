@@ -21,10 +21,10 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/src/perl5.002
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include
 ARCH_LDFLAGS = 
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../xvertext
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sgi
+include $(VPATH)/Makefile.solaris

@@ -24,9 +24,9 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/usr/freeware/src/perl5.002
+ARCH_FLAGS = -DSOLARIS
 ARCH_LDPOST = -lsocket -lnsl
 
 VPATH = ../../util
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sgi
+include $(VPATH)/Makefile.solaris

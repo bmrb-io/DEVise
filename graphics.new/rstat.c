@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 00:19:38  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.3  1996/01/12 15:38:54  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -39,10 +42,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef SGI
 #include <math.h>
-#endif
-
 
 #include "Parse.h"
 

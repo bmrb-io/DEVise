@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/02/26 00:18:40  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.10  1998/02/09 18:09:46  wenger
   Removed ViewScatter class (totally replaced by ViewData, which is a
   renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -48,9 +51,7 @@
 
 #include <sys/time.h>
 #include <time.h>
-#ifndef SGI
 #include <math.h>
-#endif
 
 #include "tcl.h"
 #include "DeviseTypes.h"

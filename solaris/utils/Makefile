@@ -29,7 +29,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/src/perl5.002
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include
 ARCH_LDFLAGS = 
 ARCH_LDPOST  =
 

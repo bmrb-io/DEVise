@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/02/26 00:19:37  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.3  1997/03/28 16:10:30  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -26,10 +29,7 @@
 
 #ifndef ams_h
 #define ams_h
-#ifndef SGI
 #include <math.h>
-#endif
-
 
 /* missing data values */
 const double Missing_SolDn = -1.0;

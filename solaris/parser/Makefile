@@ -24,8 +24,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I../../parser -I/usr/freeware/src/perl5.002
+ARCH_FLAGS = -DSOLARIS -I../../parser
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sgi
+include $(VPATH)/Makefile.solaris

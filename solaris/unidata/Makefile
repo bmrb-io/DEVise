@@ -27,10 +27,10 @@
 
 PERL_CORE = /s/perl/lib/CORE
 
-ARCH_FLAGS   = -DSGI -I/usr/freeware/src/perl5.002
+ARCH_FLAGS   = -DSOLARIS
 ARCH_LDFLAGS =
 ARCH_LDPOST  = -lsocket -lnsl
 
 VPATH = ../../unidata
 include ../../unidata/Makefile.base
-include ../../unidata/Makefile.sgi
+include ../../unidata/Makefile.solaris

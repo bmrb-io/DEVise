@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/02/26 00:19:25  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.18  1997/12/16 17:57:48  zhenhai
   Added OpenGL features.
 
@@ -116,10 +119,7 @@
 */
 
 #include <stdio.h>
-#ifndef SGI
 #include <math.h>
-#endif
-
 
 #include "Exit.h"
 #include "GDataBin.h"

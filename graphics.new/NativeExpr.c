@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/02/26 00:19:30  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.5  1998/01/30 21:53:18  wenger
   Did some cleaning up of the MappingInterp and NativeExpr code
   (NativeExpr still needs a lot more); NativeExpr code can now
@@ -48,9 +51,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#ifndef SGI
 #include <math.h>
-#endif
 
 #include "MappingInterp.h"
 #include "NativeExpr.h"

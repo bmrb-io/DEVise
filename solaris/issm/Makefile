@@ -27,8 +27,8 @@
 
 ############################################################
 
-ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/include -I/usr/freeware/src/perl5.002
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 
 VPATH = ../../issm
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.sgi
+include $(VPATH)/Makefile.solaris

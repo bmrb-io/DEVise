@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.75  1998/02/26 00:19:34  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.74  1998/02/13 15:51:34  wenger
   Changed ViewData to be based on old ViewScatter class instead of
   TDataViewX; ViewData now returns a list of the records drawn to
@@ -783,8 +786,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Note: the 'if' part of the code is the bug fix.  I've left the old
    * code in place for now just in case there is some problem with the
    * fix.  RKW 5/7/97. */
-#if 0
-//TEMPTEMP
+#if 0 //TEMPTEMP
   if (!DoBinarySearch(query, query->filter.xLow, false, query->low,
     false, 0, 0, false)) {
 #else
@@ -806,8 +808,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Note: the 'if' part of the code is the bug fix.  I've left the old
    * code in place for now just in case there is some problem with the
    * fix.  RKW 5/7/97. */
-#if 0
-//TEMPTEMP
+#if 0 //TEMPTEMP
       if (DoBinarySearch(query, query->filter.xHigh, false,
                          lastId, true, query->low, query->high, true))
 #else

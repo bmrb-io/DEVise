@@ -1,8 +1,6 @@
 #include "LMLayout.h"
 #include <stdio.h>
-#ifndef SGI
 #include <math.h>
-#endif
 
 #include "LMWindow.h"
 

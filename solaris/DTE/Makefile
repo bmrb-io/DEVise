@@ -61,7 +61,7 @@
 
 PERL_CORE = /s/perl/lib/CORE
 
-ARCH_FLAGS = -DSGI -I/s/X11/include -I/usr/freeware/include -I/usr/freeware/src/perl5.002
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
 ARCH_LDFLAGS =
 ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -lm
@@ -74,6 +74,6 @@ VPATH = $(DTE_DIR)/Core $(DTE_DIR)/DeviseSpecific $(DTE_DIR)/StandAlone \
 	$(DTE_DIR)/Script $(DTE_DIR)/GUI
 
 include $(DTE_DIR)/Makefile.base
-include $(DTE_DIR)/Makefile.sgi
+include $(DTE_DIR)/Makefile.solaris
 
 # DO NOT DELETE

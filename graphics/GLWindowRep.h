@@ -13,7 +13,9 @@
 */
 
 /*
+  $Id$
 
+  $Log$
 */
 
 #ifndef GLWindowRep_h
@@ -30,6 +32,7 @@
 #include "Util.h"
 
 #include "Color.h"
+#include "XColor.h"
 
 class GLWindowRep;
 

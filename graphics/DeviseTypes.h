@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/02/26 00:18:53  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.16  1997/12/23 23:34:54  liping
   The class Range was replaced by Interval
 
@@ -79,9 +82,6 @@
 #define DeviseTypes_h
 
 #include <values.h>
-#ifdef SGI
-#include <sys/param.h>
-#endif
 
 
 typedef double Coord;
@@ -114,20 +114,16 @@ inline int trunc(double num) {
 }
 #endif
 
-#ifndef SGI
 #ifndef MIN
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
-#endif
 #endif
 
 #ifndef MIN3
 #define MIN3(a,b,c) ((a) < (b) ? MIN(a,c) : MIN(b,c))
 #endif
 
-#ifndef SGI
 #ifndef MAX
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
 #endif
 
 #ifndef MAX3

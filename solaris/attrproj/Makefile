@@ -50,10 +50,10 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DSGI -I/usr/freeware/include -I/usr/freeware/src/perl5.002
+ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = 
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new:../../DTE/RTree
 include ../../attrproj/Makefile.base
-include ../../attrproj/Makefile.sgi
+include ../../attrproj/Makefile.solaris

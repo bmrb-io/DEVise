@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/02/26 00:19:38  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.19  1997/03/20 19:56:12  wenger
   Minor mods to get latest version to compile on HP and SunOS; cleaned
   up DTE makefiles (moved all targets from architecture-specific makefiles
@@ -185,14 +188,12 @@
 #include <sys/types.h>
 #include <sys/param.h>
 
-#ifndef SGI
 #ifndef MIN
   #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
   
 #ifndef MAX
   #define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
 #endif
 
 #ifdef __cplusplus
