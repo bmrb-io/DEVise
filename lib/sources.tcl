@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.9  1995/11/24 21:39:42  jussi
+#	Changed width of schema filename to 40. Added code to extract the
+#	command (pathname actually) for UNIXFILE source type from a text
+#	widget.
+#
 #	Revision 1.8  1995/11/24  07:44:49  ravim
 #	Mapping between different types of data sources incorporated using
 #	mapping tables.
@@ -48,12 +53,23 @@
 
 ############################################################
 
-set sourceFile $libdir/sourcedef.tcl
-if {![file exists $sourceFile]} {
-    puts "Cannot read definition file $sourceFile"
-    exit 1
+# Default values for data source types, redefined in sourcedef.tcl.
+
+set sourceTypes(COMMAND) {{Unix Command Output} /p/devise/schema/command.schema}
+set sourceTypes(COMPUSTAT) {{Annual and Quarterly Company Financial Data} /p/devise/schema/compustat.schema compustat.idx}
+set sourceTypes(CRSP) {{Security Data} /p/devise/schema/crsp.schema crsp_dsm94.idx}
+set sourceTypes(ISSM) {{Historical Stock Data (Trades and Quotes} /p/devise/schema/issm-t.schema issm.idx}
+set sourceTypes(NETWORK) {{Network Server Output} /p/devise/schema/network.schema}
+set sourceTypes(SEQ) {{SEQ Query Output} /p/devise/schema/seq.schema}
+set sourceTypes(SQL) {{SQL Query Output} /p/devise/schema/sql.schema}
+set sourceTypes(UNIXFILE) {{Unix File} /p/devise/schema/unixfile.schema}
+set sourceTypes(WWW) {{World Wide Web} /p/devise/schema/www.schema}
+
+set sourceFile $datadir/sourcedef.tcl
+if {[file exists $sourceFile]} {
+    puts "Using source definition file $sourceFile"
+    source $sourceFile
 }
-source $sourceFile
 
 source $libdir/mapdef.tcl
 source $libdir/autosrc.tcl
@@ -125,9 +141,7 @@ proc defineStream {base edit} {
     } else {
 	wm title .srcdef "Define Data Stream"
     }
-    wm minsize .srcdef 630 320
-    wm maxsize .srcdef 630 520
-    wm geometry .srcdef =630x320+150+150
+    wm geometry .srcdef +150+150
     selection clear .srcdef
 
     set editonly $edit
@@ -570,9 +584,7 @@ proc selectStream {} {
 
     toplevel .srcsel
     wm title .srcsel "Data Streams"
-    wm minsize .srcsel 575 300
-    wm maxsize .srcsel 575 800
-    wm geometry .srcsel =575x500+100+100
+    wm geometry .srcsel +100+100
     selection clear .srcsel
 
     frame .srcsel.mbar -relief raised -borderwidth 2
@@ -679,7 +691,7 @@ proc selectStream {} {
 
     listbox .srcsel.top.list -relief raised -borderwidth 2 \
 	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
-	    -selectmode single
+	    -selectmode single -width 61 -height 22
     scrollbar .srcsel.top.scroll -command ".srcsel.top.list yview"
     pack .srcsel.top.list -side left -fill both -expand 1
     pack .srcsel.top.scroll -side right -fill y
