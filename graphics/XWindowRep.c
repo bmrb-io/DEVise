@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/02/26 23:46:08  jussi
+  Added GetSmallFontHeight().
+
   Revision 1.23  1996/02/26 16:42:54  jussi
   Makes 10 attempts to export an image.
 
@@ -1989,7 +1992,7 @@ void XWindowRep::DetachFromTkWindow()
   x -= _leftMargin;
   w += _leftMargin + _rightMargin;
   y -= _topMargin;
-  h += _topMargin + _bottomMargin;
+  H += _topMargin + _bottomMargin;
   MoveResize(x, y, w, h);
 
   XReparentWindow(_display, _win, DefaultRootWindow(_display), x, y);
@@ -2008,4 +2011,163 @@ void XWindowRep::DetachFromTkWindow()
   _tkPathName[0] = 0;
   _tkWindow = 0;
 }
+
 #endif
+
+// #define YLC
+
+// ----------------------------------------------------------
+POINT XWindowRep::CompLocationOnViewingSpace(POINT pt)
+{
+	double Wvec[4], // vector in world coordinates
+		  Vvec[4], // vector in viewing coordinates
+		  sum;
+	POINT  NewPt;
+	Wvec[0] = pt.x_;
+	Wvec[1] = pt.y_;
+	Wvec[2] = pt.z_;
+	Wvec[3] = 1.0;
+
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		sum = 0.0;
+		for (j = 0; j < 4; j++)
+			sum += Wvec[j] * _TransformViewMatrix[j][i];
+		Vvec[i] = sum;
+	}
+	NewPt.x_ = Vvec[0];
+	NewPt.y_ = Vvec[1];
+	NewPt.z_ = Vvec[2];
+	return (NewPt);
+} // end of CompLocationOnViewingSpace
+
+// ---------------------------------------------------------- 
+XPoint XWindowRep::CompProjectionOnViewingPlane(POINT viewPt)
+{
+	XPoint screenPt;
+	double z_over_dvs = viewPt.z_ / _dvs;
+
+	if (_perspective == 1) {
+		screenPt.x = (short)(fabs(viewPt.z_) == 0 ? viewPt.x_ :
+								viewPt.x_ / z_over_dvs);
+		screenPt.y = (short)(fabs(viewPt.z_) == 0 ? viewPt.y_ :
+								viewPt.y_ / z_over_dvs);
+	} else {
+		screenPt.x = (short)viewPt.x_;
+		screenPt.y = (short)viewPt.y_;
+	}
+	return (screenPt);
+}  // end of CompProjectionOnViewingPlane
+
+
+// ---------------------------------------------------------- 
+void XWindowRep::DrawXSegments()
+{
+	int  index = 0,
+		requestSize = (int)((XMaxRequestSize(_display) - 3) / 2),
+		evenAmount = (_NumXSegs / requestSize) * requestSize,
+		remainder  = _NumXSegs - evenAmount;
+
+	while (index < evenAmount) {
+		XDrawSegments (_display, _win, _gc, &_xsegs[index], requestSize);
+		index += requestSize;
+	}
+	if (remainder)
+		XDrawSegments (_display, _win, _gc, &_xsegs[index], remainder);
+
+} // end of MapAllPoints()
+
+// ---------------------------------------------------------- 
+// map the actual user data points, use XFillArcs to make the 
+// points a little bigger
+void XWindowRep::MapAllPoints(BLOCK *block_data, int numSyms)
+{
+	POINT tmppt;
+	int arc_size = 5;
+	XPoint lxpts[numSyms]; // local xpts
+	int xsize = sizeof (XPoint), ang1 = 0, ang2 = 64 * 360,
+		H = _width / 2, V = _height / 2;
+	XArc x_arcs[numSyms];
+
+#ifdef YLC
+	printf ("--------------> _width/4 = %d  _height/4 = %d\n", H, V);
+#endif
+
+	for (int i = 0; i < numSyms; i++) {
+		tmppt = CompLocationOnViewingSpace(block_data[i].pt);
+		lxpts[i] = CompProjectionOnViewingPlane(tmppt);
+		lxpts[i].x += H;
+		lxpts[i].y =(lxpts[i].y < 0 ? V+abs(lxpts[i].y) 
+									: V-lxpts[i].y);
+#ifdef YLC
+	printf("\tx = %d        y = %d\n", lxpts[i].x, lxpts[i].y);
+#endif
+		x_arcs[i].x = lxpts[i].x;
+		x_arcs[i].y = lxpts[i].y;
+		x_arcs[i].width = x_arcs[i].height = arc_size;
+		x_arcs[i].angle1 = ang1;
+		x_arcs[i].angle2 = ang2;
+	} // end of for-loop
+	XFillArcs (_display, _win, _gc, x_arcs, numSyms);
+} // end of MapAllPoints()
+
+// ---------------------------------------------------------- 
+void XWindowRep::MapAllSegments(BLOCK *block_data, int numSyms)
+{
+	POINT tmppt;
+	int vsize = sizeof (XPoint), ssize = sizeof(XSegment), 
+		i, j, H = _width / 2, V = _height / 2;
+	XPoint xpts[numSyms][BLOCK_VERTEX];
+
+	_NumXSegs = 0;
+	for (i = 0; i < numSyms; i++) {
+		for (j = 0; j < BLOCK_VERTEX; j++) {
+			tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
+			xpts[i][j] = CompProjectionOnViewingPlane(tmppt);
+			xpts[i][j].x += H;
+			xpts[i][j].y = (xpts[i][j].y < 0 ?
+				V + abs(xpts[i][j].y) : V - xpts[i][j].y);
+		} // 1st inner for-loop
+
+		for (j = 0; j < BLOCK_EDGES; j++) {
+			_xsegs[_NumXSegs].x1 = xpts[i][block_data[i].ed[j].p].x;
+			_xsegs[_NumXSegs].y1 = xpts[i][block_data[i].ed[j].p].y;
+			_xsegs[_NumXSegs].x2 = xpts[i][block_data[i].ed[j].q].x;
+			_xsegs[_NumXSegs].y2 = xpts[i][block_data[i].ed[j].q].y;
+			_NumXSegs++;
+		} // 2nd inner for-loop
+	} // end of for-loop
+#ifdef YLC
+	printf ("\n.................... NumXSegs = %d\n\n", NumXSegs);
+#endif
+} // end of MapAllPoints()
+
+// ---------------------------------------------------------- 
+void XWindowRep::DrawRefAxis()
+{
+	int H = _width / 2, V = _height / 2;
+     POINT sa_pts; // screen axis pts
+     XPoint xtmp[4];  // temp XPoints for axis pts
+
+     for (int i = 0; i < 4; i++) {
+          // clipping alg should goes here or before the loop
+          sa_pts = CompLocationOnViewingSpace(_AxisPt[i]);
+          xtmp[i]   = CompProjectionOnViewingPlane(sa_pts);
+          xtmp[i].x += H;
+          xtmp[i].y = (xtmp[i].y < 0 ? V + abs(xtmp[i].y) : V - xtmp[i].y);
+     }
+     char string[3][5]={"X", "Y", "Z"};
+     int  len = strlen(string[0]);
+     for (i = 0; i < 3; i++) {
+          // draw the axis
+          XDrawLine(_display, _win, _gc,
+               xtmp[_Axis[i].p].x, xtmp[_Axis[i].p].y,
+               xtmp[_Axis[i].q].x, xtmp[_Axis[i].q].y);
+          // label the axis
+          XDrawString(_display, _win, _gc, xtmp[_Axis[i].q].x + 1,
+               xtmp[_Axis[i].q].y + 1, string[i], len);
+     }
+} // end of DrawRefAxis
+
+
+
