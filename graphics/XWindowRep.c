@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.82  1996/12/30 23:51:15  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.81  1996/12/27 17:36:28  wenger
   Fixed some problems with XWindowRep::ScaledText(); added some more stuff
   to the cslib example server.
@@ -1251,7 +1256,7 @@ void XWindowRep::CoalescePixmaps(XWindowRep *root)
 void XWindowRep::SetFgColor(GlobalColor fg)
 {
 #if defined(DEBUG)
-  printf("XWindowRep::SetFgColor(%d)\n", fg);
+  printf("XWindowRep(0x%p)::SetFgColor(%d)\n", this, fg);
 #endif
 
   WindowRep::SetFgColor(fg);

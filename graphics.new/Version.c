@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/12/27 17:00:13  wenger
+  Got latest code to compile for sun, solsparc, and hp; updated dependencies;
+  changed 'Import' to 'New Table' in main window GUI to reflect change of
+  function.
+
   Revision 1.20  1996/12/15 20:23:08  wenger
   Incremented revision; prints current architecture at startup.
 
@@ -128,7 +133,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.5";
+static const char *	version = "1.2.6";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

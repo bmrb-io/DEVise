@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.94  1996/12/30 23:51:11  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.93  1996/12/20 16:50:13  wenger
   Fonts for view label, x axis, and y axis can now be changed.
 
@@ -804,6 +809,10 @@ void View::SetDisplayDataValues(Boolean disp)
 
 void View::SetPileMode(Boolean mode)
 {
+#if defined(DEBUG)
+  printf("View(%s)::SetPileMode()\n", GetName());
+#endif
+
   if (mode == _pileMode)
     return;
 
@@ -1441,24 +1450,37 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
      them to redraw; also, first view erases window and draws
      axes and other decorations, so it has to go first */
 
+  /* Rather than the top view waking up all other views, now the top
+   * view only wakes up the next view, and then when that view finishes
+   * it wakes up the one after it, etc.  This is done to be sure that the
+   * various views are drawn in the correct order.  RKW 1/7/97. */
+
   if (!aborted && _pileMode) {
     ViewWin *parent = GetParent();
     DOASSERT(parent, "View has no parent");
+
     int index = parent->InitIterator();
     DOASSERT(parent->More(index), "Parent view has no children");
-    ViewWin *vw = parent->Next(index);
-    if ((ViewWin *)this == vw) {        /* first view will refresh others */
-      while(parent->More(index)) {
-        vw = parent->Next(index);
-        View *view = FindViewByName(vw->GetName());
-        DOASSERT(view, "Cannot find view");
+
+    /* Skip over all views in order up to and including this view. */
+    while (parent->More(index) && (parent->Next(index) != this)) {}
+
+    /* Now refresh the next view. */
+    if (parent->More(index)) {
+      ViewWin *vw = parent->Next(index);
+
+      /* FindViewByName is a type-safe way to convert from a ViewWin to
+       * a View, which is necessary to call Refresh(). */
+      View *view = FindViewByName(vw->GetName());
+      DOASSERT(view, "Cannot find view");
+      DOASSERT(vw == view, "ViewWin != View");
 #if defined(DEBUG)
-        printf("View %s refreshes view %s\n", GetName(), view->GetName());
+      printf("View %s refreshes view %s\n", GetName(), view->GetName());
 #endif
-        view->_pileViewHold = false;
-        view->Refresh();
-      }
+      view->_pileViewHold = false;
+      view->Refresh();
     }
+
     parent->DoneIterator(index);
   }
 
@@ -1511,7 +1533,7 @@ void View::Run()
     ViewWin *parent = GetParent();
 
     // If we are running client/server Devise, we may get here before this
-    // view''s parent has been created, so do not bomb out.  RKW 8/30/96.
+    // view's parent has been created, so do not bomb out.  RKW 8/30/96.
     if (parent == NULL) return;
     //DOASSERT(parent, "View has no parent");
 
@@ -1854,7 +1876,8 @@ void View::HandleResize(WindowRep *w, int xlow, int ylow,
 			unsigned width, unsigned height)
 {
 #if defined(DEBUG)
-  printf("View::HandleResize(%d,%d,%d,%d)\n", xlow, ylow, width, height);
+  printf("View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(), xlow, ylow,
+    width, height);
 #endif
   
   /* is this a real size change? */

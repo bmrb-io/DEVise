@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/12/30 23:51:12  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.29  1996/12/15 20:22:34  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -148,6 +153,7 @@
 //#define DEBUG
 
 #include "ViewWin.h"
+#include "View.h"
 #include "Display.h"
 #include "WindowRep.h"
 #include "ClassDir.h"
@@ -612,13 +618,55 @@ void ViewWin::Replace(ViewWin *child1, ViewWin *child2)
 
 void ViewWin::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
+#if defined(DEBUG)
+  printf("ViewWin::SwapChildren()\n");
+#endif
+
+  DOASSERT(child1 != child2, "Swapping the same child");
+  DOASSERT(child1->GetParent() == child2->GetParent(),
+    "Children have different parents");
+
   _children.Swap(child1, child2);
+
+  /* If one of these children becomes the top view in a pile, we need
+   * to refresh it. */
+  /* Note: I kind of hate having this View-class-specific code in the
+   * ViewWin class, but I don't see an easy way of avoiding it.  RKW
+   * 1/7/97. */
+  ViewWin *parent = child1->GetParent();
+  DOASSERT(parent, "View has no parent");
+
+  int index = parent->InitIterator();
+  DOASSERT(parent->More(index), "Parent view has no children");
+
+  if (parent->More(index)) {
+    ViewWin *topVw = parent->Next(index);
+    if (topVw == child1 || topVw == child2) {
+
+      /* FindViewByName is a type-safe way to convert from a ViewWin to
+       * a View, which is necessary to call Refresh(). */
+      View *view = View::FindViewByName(topVw->GetName());
+      DOASSERT(view, "Cannot find view");
+      DOASSERT(topVw == view, "ViewWin != View");
+      if (view->IsInPileMode()) {
+#if defined(DEBUG)
+        printf("ViewWin::SwapChildren() refreshes view %s\n", view->GetName());
+#endif
+        view->Refresh();
+      }
+    }
+  }
+  parent->DoneIterator(index);
 }
 
 /* Raise window to top of stacking order */
 
 void ViewWin::Raise()
 {
+#if defined(DEBUG)
+  printf("ViewWin(0x%p)::Raise()\n", this);
+#endif
+
   if (_windowRep) {
     _windowRep->Raise();
     _windowRep->Flush();
@@ -789,6 +837,10 @@ void ViewWin::ReparentMarginControl(char *side, int xoff, int yoff)
 
 void ViewWin::ResizeMargins(unsigned int w, unsigned int h)
 {
+#if defined(DEBUG)
+  printf("ViewWin::ResizeMargins()\n");
+#endif
+
   char cmd[256];
   sprintf(cmd, "UpdateTkControlMargins %s %s %u %u",
 	  _tkPathName, (_parent ? "View" : "Window"),

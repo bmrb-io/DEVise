@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/12/20 16:50:14  wenger
+  Fonts for view label, x axis, and y axis can now be changed.
+
   Revision 1.46  1996/11/26 16:47:46  ssl
   Added support for Stacked Opaque and Transparent views
 
@@ -399,7 +402,8 @@ class View
 
 	Boolean DoneRefresh() { return _doneRefresh;}
 
-	void SetPileViewHold(Boolean mode) { _pileViewHold = mode;}
+	/* This isn't used anywhere. RKW 1/7/97. */
+	//void SetPileViewHold(Boolean mode) { _pileViewHold = mode;}
 	/* Get/set override color */
 	GlobalColor GetOverrideColor(Boolean &active) {
 	  active = _hasOverrideColor;

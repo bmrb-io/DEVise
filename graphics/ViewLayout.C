@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/16 19:49:40  jussi
+  Replaced assert() calls with DOASSERT().
+
   Revision 1.6  1996/04/11 18:04:08  jussi
   Added initialization of _stacked member variable. Fixed bug
   in computation of window geometry in SwapChildren().
@@ -112,6 +115,10 @@ void ViewLayout::Replace(ViewWin *child1, ViewWin *child2)
 
 void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 {
+#if defined(DEBUG)
+  printf("ViewLayout::SwapChildren()\n");
+#endif
+
   ViewWin::SwapChildren(child1,child2);
 
   if (!Mapped())
@@ -143,7 +150,7 @@ void ViewLayout::SwapChildren(ViewWin *child1, ViewWin *child2)
 void ViewLayout::HandleResize(WindowRep *win, int x, int y,
 			      unsigned w, unsigned h)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ViewLayout::HandleResize 0x%x at %d,%d, size %u,%u\n",
 	 this, x, y, w, h);
 #endif
