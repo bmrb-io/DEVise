@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/10 15:27:09  jussi
+  Added RemoveMapping() method.
+
   Revision 1.9  1996/04/10 02:24:14  jussi
   Added direction parameter to InitMappingIterator(), and
   added SwapMappings() method.
@@ -55,7 +58,13 @@
 #include "BasicStats.h"
 
 class TDataMap;
-DefinePtrDList(TDataMapList, TDataMap *)
+
+struct MappingInfo {
+  TDataMap *map;
+  char *label;
+};
+
+DefinePtrDList(MappingInfoList, MappingInfo *);
 
 class ViewGraph: public View {
 public:
@@ -64,14 +73,17 @@ public:
 	    Color fg, Color bg,
 	    Action *action = NULL);
 
-  virtual void InsertMapping(TDataMap *map);
+  virtual void InsertMapping(TDataMap *map, char *label = "");
   virtual void RemoveMapping(TDataMap *map);
-  virtual void SwapMappings(TDataMap *map1, TDataMap *map2);
+  virtual char *GetMappingLegend(TDataMap *map);
 
   void InitMappingIterator(Boolean backwards = false);
   Boolean MoreMapping();
-  TDataMap *NextMapping();
+  MappingInfo *NextMapping();
   void DoneMappingIterator();
+
+  /* Draw legend */
+  virtual void DrawLegend();
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -79,7 +91,7 @@ public:
   BasicStats *GetStatObj() { return &_stats; }
 
 protected:
-  TDataMapList _mappings;
+  MappingInfoList _mappings;
   int _index;
 
   /* TRUE if Statistics need to be displayed along with data */

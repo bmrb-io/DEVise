@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/04/10 15:27:22  jussi
+  Added RemoveMapping() method.
+
   Revision 1.10  1996/04/10 02:23:34  jussi
   Added direction parameter to InitMappingIterator(), and added
   SwapMappings() method.
@@ -56,13 +59,15 @@
 #include "TDataMap.h"
 #include "ActionDefault.h"
 
+//#define DEBUG
+
 ViewGraph::ViewGraph(char *name, VisualFilter &initFilter, 
 		     AxisLabel *xAxis, AxisLabel *yAxis,
 		     Color fg, Color bg,
 		     Action *action) :
 	View(name, action, initFilter, fg, bg, xAxis, yAxis)
 {
-  if (action == NULL)
+  if (!action)
     SetAction(new ActionDefault("default"));
 
   // initialize statistics toggles to ASCII zero (not binary zero)
@@ -74,17 +79,22 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
   _index = -1;
 }
 
-void ViewGraph::InsertMapping(TDataMap *map)
+void ViewGraph::InsertMapping(TDataMap *map, char *label)
 {
-  _mappings.Append(map);
+  MappingInfo *info = new MappingInfo;
+  assert(info);
+
+  info->map = map;
+  info->label = CopyString(label);
+  _mappings.Append(info);
 
   AttrList *attrList = map->GDataAttrList();
-  if (attrList != NULL) {
+  if (attrList) {
     AttrInfo *info = attrList->Find("x");
-    if (info != NULL && info->type == DateAttr)
+    if (info && info->type == DateAttr)
       SetXAxisAttrType(DateAttr);
     info = attrList->Find("y");
-    if (info != NULL && info->type == DateAttr)
+    if (info && info->type == DateAttr)
       SetYAxisAttrType(DateAttr);
   }
   
@@ -93,7 +103,35 @@ void ViewGraph::InsertMapping(TDataMap *map)
 
 void ViewGraph::RemoveMapping(TDataMap *map)
 {
-  _mappings.Delete(map);
+  InitMappingIterator();
+
+  while(MoreMapping()) {
+    MappingInfo *info = NextMapping();
+    if (info->map == map) {
+      DoneMappingIterator();
+      _mappings.Delete(info);
+      delete info->label;
+      delete info;
+      return;
+    }
+  }
+
+  DoneMappingIterator();
+}
+
+char *ViewGraph::GetMappingLegend(TDataMap *map)
+{
+  InitMappingIterator();
+  while(MoreMapping()) {
+    MappingInfo *info = NextMapping();
+    if (info->map == map) {
+      DoneMappingIterator();
+      return info->label;
+    }
+  }
+  DoneMappingIterator();
+
+  return "";
 }
 
 void ViewGraph::InitMappingIterator(Boolean backwards)
@@ -108,7 +146,7 @@ Boolean ViewGraph::MoreMapping()
   return _mappings.More(_index);
 }
 
-TDataMap *ViewGraph::NextMapping()
+MappingInfo *ViewGraph::NextMapping()
 {
   assert(_index >= 0);
   return _mappings.Next(_index);
@@ -121,13 +159,42 @@ void ViewGraph::DoneMappingIterator()
   _index = -1;
 }
 
-void ViewGraph::SwapMappings(TDataMap *map1, TDataMap *map2)
+void ViewGraph::DrawLegend()
 {
-  assert(_index < 0);
-  _mappings.Swap(map1, map2);
+  WindowRep *win = GetWindowRep();
+
+  win->PushTop();
+  win->MakeIdentity();
+  
+  int x, y;
+  int w, h;
+  GetDataArea(x, y, w, h);
+
+  y += (int)(0.2 * h);
+  int yInc = 12;
+
+  InitMappingIterator();
+
+  while(MoreMapping()) {
+    MappingInfo *info = NextMapping();
+    char *label = info->label;
+    if (!strlen(label))
+      continue;
+
+    TDataMap *map = info->map;
+    if (map->GetGDataOffset()->colorOffset < 0)
+      win->SetFgColor(map->GetDefaultColor());
+    else
+      win->SetFgColor(BlueColor);
+    win->AbsoluteText(label, x, y, w - 4, yInc, WindowRep::AlignEast, true);
+    y += yInc;
+  }
+
+  DoneMappingIterator();
+
+  win->PopTransform();
 }
 
-/* Turn On/Off DisplayStats */
 void ViewGraph::SetDisplayStats(char *stat)
 {
   if (strlen(stat) != STAT_NUM) {
