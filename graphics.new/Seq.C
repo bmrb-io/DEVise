@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/11 21:00:02  jussi
+  Added parsing of range information and reduced data buffer
+  size to 16 kB.
+
   Revision 1.2  1996/01/10 00:40:52  jussi
   Added computation of hi/lo values in schema. Improved data buffering
   so that data can be read in small (32 kB) chunks instead of reading
@@ -515,7 +519,8 @@ int seq_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 #endif
 
   // send query plus terminating null to SEQ server
-  if (write(sock, cmdbuf, strlen(cmdbuf) + 1) != strlen(cmdbuf) + 1) {
+  int bytes = strlen(cmdbuf) + 1;
+  if (write(sock, cmdbuf, bytes) != bytes) {
     perror("Error in SEQ server connection: write");
     return TCL_ERROR;
   }
@@ -523,7 +528,6 @@ int seq_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   delete cmdbuf;
 
   char recvBuf[16 * 1024];
-  int bytes;
   if ((bytes = readn(sock, recvBuf, sizeof recvBuf)) < 0) {
     perror("Error in SEQ server connection: read");
     return TCL_ERROR;
