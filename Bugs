@@ -896,7 +896,7 @@ Num Date        Status  Description
 222 09/12/97	OPEN	Wrong line in comment file is highlighed in Maps_Tk
 			demo. (rkw)
 
-223 09/15/97	OPEN	In bank1 BankOneChecks demo -- try to view mapping
+223 09/15/97	KLUDGED	In bank1 BankOneChecks demo -- try to view mapping
 			in 'Weekly Histo' or 'Yearly Histo' view -> DTE fails
 			an assertion. (rkw)
 

@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.32  1997/06/18 15:33:35  wenger
+#       Fixed bug 177; improved workaround of bug 137; incremented version
+#       number (because of Unidata being added).
+#
 #       Revision 1.31  1997/06/13 18:01:25  wenger
 #       Added 'Clear' option to mapping dialog menus.
 #
@@ -310,6 +314,7 @@ proc BringUpMappingDialog { w curview } {
 
 proc UpdateMappingDialog { w curView } {
      global DEViseOldColors DEViseShapes
+puts "DIAG UpdateMappingDialog"
 
      if {! [winfo exists $w] } {
 	 return
@@ -365,6 +370,14 @@ proc UpdateMappingDialog { w curView } {
 	 #	set nextToLast [expr $nextToLast - 2]
 	 #	set tdata [string range $tdata 0 $nextToLast]
 	 
+         # Kludge fix for bug 223...
+	 if {[string index $tdata 0] != "."} {
+	   puts "Can't view mapping of statistics view"
+	   destroy $w
+	   return
+	 }
+	 # ...end of kludge.
+
 	 set sourcedef [DEVise dteShowCatalogEntry $tdata]
 	 # 	puts "hack: ********** tdata: $tdata  sourcedef: $sourcedef"
 	 set sourcedef [lindex $sourcedef 0]
