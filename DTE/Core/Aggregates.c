@@ -479,7 +479,7 @@ void AggWindow::fillWindow()
 			bool match = true;
 			while(match == true){
 				
-				TupleList->remove();
+				TupleList->remove();	// del_low
 				presentPos -- ;	
 
 				Tuple * nextTuple = TupleList->get();
@@ -779,6 +779,26 @@ Type * GenFunction::count()
 	return new IInt(count);
 }
 
+Type * GenFunction::sum()
+{
+	
+	Tuple* next = scanNew();
+
+	Type* currentSum = NULL;
+
+	if (next){
+		currentSum = next[pos];
+	}
+
+	next = scanNext(); 
+	while(next != NULL){
+		currentSum = addPtr->opPtr(currentSum, next[pos]);
+		next = scanNext(); 
+	}
+
+	return currentSum;
+}
+
 Tuple * GenFunction::scanNew()
 {
 	
@@ -895,7 +915,7 @@ Tuple *Grouping::getNext(){
 
 		TupleList->rewind();
 		next = TupleList->get();
-		TupleList->remove();
+		TupleList->remove();	// del_low
 		state = NORMAL;
 		return next;
 	}
@@ -906,7 +926,7 @@ Tuple *Grouping::getNext(){
 		
 		Tuple * nextInList = TupleList->get();
 		if (tupleCompare(positions,lessPtrs,equalPtrs,count,next,nextInList)== 0){
-			TupleList->remove();
+			TupleList->remove();	// del_low
 			return nextInList;
 		}
 		else{

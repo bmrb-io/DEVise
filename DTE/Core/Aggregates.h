@@ -277,6 +277,15 @@ class GenFunction{
 			// Get the < operators..
 			retType = "int";
 		}
+		else if(funcName == "sum"){
+
+			// Need position, type and + operator of the attribute to sum.
+			// position is recorded in var pos.
+
+			funcPtr = sum;
+			TRY(addPtr = getOperatorPtr("+",attribType,attribType,retType),);
+			assert(addPtr);
+		}
 		else
 			assert(!" Non implemented averaging function ");
 	}
@@ -315,6 +324,7 @@ class GenFunction{
 		Type *min();
 		Type *max();
 		Type *count();
+		Type* sum();
 
 		// Position in the tuple on which to operate
 		int pos;
