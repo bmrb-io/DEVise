@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1998/04/14 17:03:26  donjerko
+  *** empty log message ***
+
   Revision 1.29  1998/03/17 17:19:08  donjerko
   Added new namespace management through relation ids.
 
@@ -128,10 +131,9 @@ static int my_yyinput(char* buf, int max_size){
 
 %}
 
-Digit        [0-9]
-IntLit       {Digit}+
-DecLit       {Digit}*"."{Digit}+
-SignedIntLit [+\-]{Digit}+
+IntLit       [0-9]+
+DecLit       (([0-9]+)|([0-9]*\.[0-9]+))([eE][+-]?[0-9]+)?
+SignedIntLit [+\-][0-9]+
 String       [A-Za-z][A-Za-z0-9_]*
 LessGreat    ">="|">"|"<="|"<"
 %%
