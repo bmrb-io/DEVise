@@ -69,7 +69,7 @@ Query query() :
 {
 	java.util.Vector selectClause;
 	java.util.Vector fromClause;
-	Expression whereClause = ( Expression ) ( new Constant( new DTE_String(" ") ));;
+	Expression whereClause = null;
 }
 {
         <SELECT> selectClause = SelectClause() 
