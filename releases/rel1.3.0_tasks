@@ -26,6 +26,7 @@ a- Update user manual
 - Fix bug 148
 - Fix problem with mapping dialog not getting updated when user selects
   a new view.
+- Redo internal release and distribution file generation.
 - Update web page
 - Tag html and doc directories
 - Generate "official" sources1.3.0.tar.gz file
