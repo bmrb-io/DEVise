@@ -69,6 +69,6 @@ generic/devise -p 6102
 
 sleep 2
 
-kill_devised -p 6102
+echo "DEVise serverExit" | generic/deviseb -p 6102
 
 rmmem
