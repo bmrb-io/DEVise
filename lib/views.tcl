@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.58  1999/07/14 18:43:04  wenger
+#  Added the capability to have axes without ticks and tick labels.
+#
 #  Revision 1.57  1999/04/07 18:42:18  wenger
 #  Fixed bug 481 and other problems in view copying.
 #
@@ -552,7 +555,6 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setFont {$newView} {{y axis}} [DEVise getFont $view "y axis"]
     eval DEVise setViewGDS {$newView} [DEVise getViewGDS $view]
     eval DEVise setHistogram {$newView} [DEVise getHistogram $view]
-    eval DEVise viewSetAlign {$newView} [DEVise viewGetAlign $view]
     eval DEVise setCountMapping {$newView} [DEVise getCountMapping $view]
     eval DEVise viewSetIsHighlight {$newView} [DEVise viewGetIsHighlight $view]
     eval DEVise setXAxisDateFormat {$newView} \

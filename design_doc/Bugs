@@ -1961,7 +1961,8 @@ Num Date        Status  Description
 503 07/22/99	OPEN	EmbeddedTk doesn't work on Linux/Intel with Tcl/Tk
 			8.0. (rkw)
 
-504 07/27/99	OPEN	Copying a view fails. (rkw)
+504 07/27/99	FIXED	Copying a view fails. (rkw)
+			(Fixed by rkw, 7/27/99.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
