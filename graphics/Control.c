@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/11 19:10:48  jussi
+  Moved a bunch of empty functions to header file.
+
   Revision 1.6  1996/04/16 19:45:10  jussi
   Added DoAbort() method.
 
@@ -44,6 +47,8 @@
 
 ControlPanel *ControlPanel::_controlPanel; 
 ClassDir *ControlPanel::_classDir = 0;
+ControlPanel::Mode ControlPanel::_mode = ControlPanel::DisplayMode;
+Boolean ControlPanel::_batchMode = false;
 
 ClassDir *ControlPanel::GetClassDir()
 {
@@ -76,6 +81,7 @@ void ControlPanel::RegisterClass(ClassInfo *cInfo, Boolean transient)
 ControlPanel::ControlPanel()
 {
   _callbacks = new ControlPanelCallbackList();
+  _batchMode = false;
 }
 
 extern ControlPanel *GetTkControl();
