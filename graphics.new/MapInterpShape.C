@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/07/15 21:32:07  jussi
+  Added support for the 'size' gdata parameter.
+
   Revision 1.7  1996/07/10 19:00:40  jussi
   Updated to reflect new transformation interface.
 
@@ -54,7 +57,7 @@
 void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
                                              void **gdataArray,
                                              int numSyms, TDataMap *map,
-                                             View *view, int pixelSize)
+                                             ViewGraph *view, int pixelSize)
 {
   GDataAttrOffset *offset = map->GetGDataOffset();
 

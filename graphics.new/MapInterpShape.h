@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/07/15 21:33:01  jussi
+  Added support for the 'size' gdata parameter. Fixed problem
+  with patterns and Rect shapes.
+
   Revision 1.25  1996/07/15 18:22:29  jussi
   Fixed stupid bug introduced in last check-in.
 
@@ -123,8 +127,11 @@
 
 class FullMapping_RectShape: public RectShape {
 public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual int NumShapeAttrs() { return 2; }
+
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -212,16 +219,20 @@ public:
   }
 
 protected:
-  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-                                TDataMap *map, View *view, int pixelSize);
+  virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
+                                int numSyms, TDataMap *map,
+                                ViewGraph *view, int pixelSize);
 };
  
 // -----------------------------------------------------------------
 
 class FullMapping_RectXShape: public RectXShape {
 public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual int NumShapeAttrs() { return 1; }
+
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -291,6 +302,8 @@ public:
 
 class FullMapping_BarShape: public BarShape {
 public:
+  virtual int NumShapeAttrs() { return 1; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0.0;
@@ -310,8 +323,9 @@ public:
     }
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -361,8 +375,11 @@ public:
 
 class FullMapping_RegularPolygonShape: public RegularPolygonShape {
 public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual int NumShapeAttrs() { return 3; }
+
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -433,8 +450,11 @@ public:
 
 class FullMapping_OvalShape: public OvalShape {
 public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual int NumShapeAttrs() { return 2; }
+
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -492,8 +512,11 @@ public:
 
 class FullMapping_VectorShape: public VectorShape {
 public:
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual int NumShapeAttrs() { return 2; }
+
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -528,8 +551,10 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord w = GetSize(gdata, map, offset) * GetShapeAttr0(gdata, map, offset);
-      Coord h = GetSize(gdata, map, offset) * GetShapeAttr1(gdata, map, offset);
+      Coord w = GetSize(gdata, map, offset)
+                * GetShapeAttr0(gdata, map, offset);
+      Coord h = GetSize(gdata, map, offset)
+                * GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
@@ -591,8 +616,9 @@ public:
     height = 0.0;
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -626,6 +652,8 @@ public:
 
 class FullMapping_SegmentShape: public SegmentShape {
 public:
+  virtual int NumShapeAttrs() { return 2; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0.0;
@@ -648,8 +676,9 @@ public:
     }
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -684,8 +713,10 @@ public:
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord w = GetSize(gdata, map, offset) * GetShapeAttr0(gdata, map, offset);
-      Coord h = GetSize(gdata, map, offset) * GetShapeAttr1(gdata, map, offset);
+      Coord w = GetSize(gdata, map, offset)
+                * GetShapeAttr0(gdata, map, offset);
+      Coord h = GetSize(gdata, map, offset)
+                * GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
       Color color = GetColor(view, gdata, map, offset);
@@ -705,6 +736,8 @@ public:
 
 class FullMapping_HighLowShape: public HighLowShape {
 public:
+  virtual int NumShapeAttrs() { return 3; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0.0;
@@ -725,8 +758,9 @@ public:
     }
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -791,6 +825,8 @@ public:
 
 class FullMapping_PolylineShape: public PolylineShape {
 public:
+  virtual int NumShapeAttrs() { return MAX_GDATA_ATTRS; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0;
@@ -825,8 +861,9 @@ public:
     }
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -908,14 +945,17 @@ public:
 
 class FullMapping_GifImageShape: public GifImageShape {
 public:
+  virtual int NumShapeAttrs() { return 1; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
   }
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -977,14 +1017,17 @@ public:
 
 class FullMapping_PolylineFileShape: public PolylineFileShape {
 public:
+  virtual int NumShapeAttrs() { return 1; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0;
     height = 0;
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -1082,14 +1125,17 @@ public:
 
 class FullMapping_TextLabelShape: public TextLabelShape {
 public:
+  virtual int NumShapeAttrs() { return 1; }
+
   virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
                           Coord &width, Coord &height) {
     width = 0;
     height = 0;
   }
   
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, View *view, int pixelSize) {
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
 		 
     if (view->GetNumDimensions() == 3) {
       Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
@@ -1135,6 +1181,188 @@ public:
       if (color == XorColor)
         win->SetCopyMode();
     }
+  }
+};
+
+// -----------------------------------------------------------------
+
+class FullMapping_LineShape: public LineShape {
+public:
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
+    width = 0.0;
+    height = 0.0;
+  }
+  
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+                              int numSyms, TDataMap *map,
+                              ViewGraph *view, int pixelSize) {
+		 
+    if (view->GetNumDimensions() == 3) {
+      Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
+      return;
+    }
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    /* get coordinates of first data point in this batch and insert
+       into point storage */
+
+    char *gdata = (char *)gdataArray[0];
+    RecId recId = GetRecId(gdata, map, offset);
+    Coord x0 = GetX(gdata, map, offset);
+    Coord y0 = GetY(gdata, map, offset);
+    Color c0 = GetColor(view, gdata, map, offset);
+
+    view->GetPointStorage()->Insert(recId, x0, y0, c0);
+
+    /* draw line connecting last point of previous batch to
+       first point of this batch */
+
+    if (recId > 0) {
+        Coord xp, yp;
+        Color cp;
+        if (view->GetPointStorage()->Find(recId - 1, xp, yp, cp)) {
+            DrawConnectingLine(win, GetPattern(gdata, map, offset),
+                               xp, yp, cp, x0, y0, c0);
+            (void)view->GetPointStorage()->Remove(recId - 1);
+        }
+    }
+
+    /* now draw line connecting rest of points */
+
+    for(int i = 1; i < numSyms; i++) {
+        char *gdata = (char *)gdataArray[i];
+        Coord x = GetX(gdata, map, offset);
+        Coord y = GetY(gdata, map, offset);
+        Color color = GetColor(view, gdata, map, offset);
+        DrawConnectingLine(win, GetPattern(gdata, map, offset),
+                           x0, y0, c0, x, y, color);
+        x0 = x;
+        y0 = y;
+        c0 = color;
+        if (color == XorColor)
+            win->SetCopyMode();
+    }
+
+    /* draw line connecting last point of this batch to
+       first point of next batch */
+
+    Coord xn, yn;
+    Color cn;
+    if (view->GetPointStorage()->Find(recId + numSyms, xn, yn, cn)) {
+        DrawConnectingLine(win, Pattern0, x0, y0, c0, xn, yn, cn);
+        (void)view->GetPointStorage()->Remove(recId + numSyms);
+    } else {
+        if (numSyms > 1) {
+            view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
+        }
+    }
+  }
+
+  virtual void DrawConnectingLine(WindowRep *win, Pattern pattern,
+                                  Coord x0, Coord y0, Color c0,
+                                  Coord x1, Coord y1, Color c1) {
+      win->SetPattern(pattern);
+      if (c0 == XorColor)
+          win->SetXorMode();
+      else
+          win->SetFgColor(c0);
+
+      if (c0 == c1) {
+          win->Line(x0, y0, x1, y1, 1);
+          if (c0 == XorColor)
+              win->SetCopyMode();
+          return;
+      }
+
+      win->Line(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2, 1);
+      if (c0 == XorColor)
+          win->SetCopyMode();
+
+      if (c1 == XorColor)
+          win->SetXorMode();
+      else
+          win->SetFgColor(c1);
+      win->Line((x0 + x1) / 2, (y0 + y1) / 2, x1, y1, 1);
+      if (c1 == XorColor)
+          win->SetCopyMode();
+  }
+};
+
+// -----------------------------------------------------------------
+
+class FullMapping_LineShadeShape: public FullMapping_LineShape {
+public:
+  virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+                          Coord &width, Coord &height) {
+    width = 0.0;
+    height = 0.0;
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+    int gRecSize = map->GDataRecordSize();
+    char *ptr = (char *)gdata;
+
+    for(int i = 0; i < numSyms; i++) {
+      Coord temp = fabs(GetY(ptr, map, offset));
+      if (temp > height) height = temp;
+      ptr += gRecSize;
+    }
+  }
+  
+  virtual void DrawConnectingLine(WindowRep *win, Pattern pattern,
+                                  Coord x0, Coord y0, Color c0,
+                                  Coord x1, Coord y1, Color c1) {
+      win->SetPattern(pattern);
+      if (c0 == XorColor)
+          win->SetXorMode();
+      else
+          win->SetFgColor(c0);
+
+      Point points[4];
+
+      if (c0 == c1) {
+          points[0].x = x0;
+          points[0].y = y0;
+          points[1].x = x1;
+          points[1].y = y1;
+          points[2].x = x1;
+          points[2].y = 0;
+          points[3].x = x0;
+          points[3].y = 0;
+          win->FillPoly(points, 4);
+          if (c0 == XorColor)
+              win->SetCopyMode();
+          return;
+      }
+
+      points[0].x = x0;
+      points[0].y = y0;
+      points[1].x = (x0 + x1) / 2;
+      points[1].y = (y0 + y1) / 2;
+      points[2].x = (x0 + x1) / 2;
+      points[2].y = 0;
+      points[3].x = x0;
+      points[3].y = 0;
+      win->FillPoly(points, 4);
+      if (c0 == XorColor)
+          win->SetCopyMode();
+
+      if (c1 == XorColor)
+          win->SetXorMode();
+      else
+          win->SetFgColor(c1);
+      points[0].x = (x0 + x1) / 2;
+      points[0].y = (y0 + y1) / 2;
+      points[1].x = x1;
+      points[1].y = y1;
+      points[2].x = x1;
+      points[2].y = 0;
+      points[3].x = x0;
+      points[3].y = 0;
+      win->FillPoly(points, 4);
+      if (c1 == XorColor)
+          win->SetCopyMode();
   }
 };
 
