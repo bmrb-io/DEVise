@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/05/22 21:06:14  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.12  1996/03/27 15:27:01  jussi
   Added computation of min/max values for composite date.
 
@@ -72,7 +75,6 @@
 #include "RecInterp.h"
 #include "AttrList.h"
 #include "QueryProc.h"
-#include "QueryProcTape.h"
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "TData.h"
@@ -421,11 +423,6 @@ private:
 	int _obsTimeOffset;
 };
 
-QueryProc *genQueryProcTape()
-{
-  return new QueryProcTape;
-}
-
 int main(int argc, char **argv)
 {
   Init::DoInit(argc, argv);
@@ -433,9 +430,6 @@ int main(int argc, char **argv)
   /* Register composite parser */
   CompositeParser::Register("Soil", new AmsComposite);
   CompositeParser::Register("Basel92", new BaselComposite);
-  
-  /* Register known query processors */
-  QueryProc::Register("Tape", genQueryProcTape);
   
   /* Register known classes with control panel */
   ControlPanel::RegisterClass(new TileLayoutInfo);

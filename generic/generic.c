@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/11/01 19:04:32  kmurli
+  Makefile changed to include DQL sources
+
   Revision 1.37  1996/10/23 14:55:20  wenger
   Renamed LandsendDateDiffComposite composite parser to
   MailorderDateDiffComposite as part of getting rid of the "Land's
@@ -180,8 +183,6 @@
 #include "CompositeParser.h"
 #include "RecInterp.h"
 #include "AttrList.h"
-#include "QueryProc.h"
-#include "QueryProcTape.h"
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "TData.h"
@@ -1177,11 +1178,6 @@ private:
 };
 
 
-QueryProc *genQueryProcTape()
-{
-  return new QueryProcTape;
-}
-
 int main(int argc, char **argv)
 {
   Init::DoInit(argc,argv);
@@ -1241,9 +1237,6 @@ int main(int argc, char **argv)
   	else if (parserName.matches("MailorderDateDiffComposite"))
   		CompositeParser::Register(schemaChar,new MailorderDateDiffComposite);
    }
-  /* Register known query processors */
-  
-  QueryProc::Register("Tape", genQueryProcTape);
 
   /* Register known classes  with control panel */
   ControlPanel::RegisterClass(new TileLayoutInfo);
