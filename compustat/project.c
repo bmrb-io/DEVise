@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/02/15 16:19:35  jussi
+  Fixed tape offset and improved performance of data extraction
+  routine by an order of magnitude.
+
   Revision 1.1  1996/02/15 04:09:46  jussi
   Initial revision.
 
@@ -31,8 +35,15 @@
 #include "compustat.h"
 #include "tapedrive.h"
 
+#define FIRST_120
+
+#ifdef FIRST_120
+const int extractFields = 120;
+#else
 static int fieldNum[] = { 35, 52, 21, 22, 198 };
 const int extractFields = sizeof fieldNum / sizeof fieldNum[0];
+#endif
+
 static int pos[extractFields];
 static int len[extractFields];
 static int pre[extractFields];
@@ -78,12 +89,16 @@ void generate_dat(char *dat1, char *dat2, unsigned long int recid,
 
   for(int i = 0; i < extractFields; i++) {
     double val = 0;
+#ifdef FIRST_120
+    if (i < COMP_DAT_FIELDS_1) {
+#else
     if (fieldNum[i] < COMP_DAT_FIELDS_1) {
+#endif
       val = comp_get_val(dat1 + pos[i], len[i], pre[i]);
     } else {
       val = comp_get_val(dat2 + pos[i], len[i], pre[i]);
     }
-    printf(",%g", val);
+    printf(",%lf", val);
   }
 
   printf("\n");
@@ -198,8 +213,13 @@ int main(int argc, char **argv)
   char *tapeBsize = argv[4];
   char *idxFile = argv[5];
 
+#ifdef FIRST_120
+  for(int i = 0; i < extractFields; i++)
+    findAttrInfo(i, pos[i], len[i], pre[i]);
+#else
   for(int i = 0; i < extractFields; i++)
     findAttrInfo(fieldNum[i], pos[i], len[i], pre[i]);
+#endif
 
   return comp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile);
 }
