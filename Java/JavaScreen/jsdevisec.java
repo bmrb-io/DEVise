@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.119  2001/10/12 02:05:56  xuk
+// Using timestamp-based client ID.
+// Expanded specialID to long.
+//
 // Revision 1.118  2001/10/10 19:28:24  xuk
 // Added display control command line argument/parameter for auto playback.
 // For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
@@ -429,6 +433,7 @@ public class jsdevisec extends Panel
     public boolean isCollab = false;
 
     // for command log playback
+    //TEMP -- these seem to duplicate values in DEViseJSValues.Session
     public boolean isPlayback = false;
     public String logFileName = null;
     public boolean isDisplay = true;
@@ -774,8 +779,6 @@ public class jsdevisec extends Panel
 
 	if (jv.session.autoPlayback) {
 	    logFileName = jv.session.clientLogName;
-	    isPlayback = true;
-	    isDisplay = true;
 	    isOriginal = jv.session.playbackOriginal;
 	    isDisplay = jv.session.playbackDisplay;
 	    logPlayBack();
@@ -2313,7 +2316,6 @@ class SetLogFileDlg extends Dialog
 			jsc.logFileName = file.getText();
 			jsc.isDisplay = display.getState();
 			jsc.isOriginal = original.getState();
-			jsc.isPlayback = true;
 			close();
 			jsc.logPlayBack();
                     }

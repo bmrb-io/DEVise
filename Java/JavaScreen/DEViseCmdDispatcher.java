@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.101  2001/10/12 02:07:21  xuk
+// Using timestamp-based client ID.
+// In user(), id has been expanded to long.
+//
 // Revision 1.100  2001/10/05 19:26:33  xuk
 // Fixed bug 698: manipulating 3D command playback.
 //
@@ -829,6 +833,10 @@ public class DEViseCmdDispatcher implements Runnable
 
     public synchronized void run()
     {
+        if (_debug) {
+            System.out.println("DEViseCmdDispatcher.run(" + commands[0] + ")");
+        }
+
       if (jsc.specialID == -1) { // for formal JS
         try {
 	    for (int i = 0; i < commands.length; i++) {
@@ -866,54 +874,12 @@ public class DEViseCmdDispatcher implements Runnable
 		} else {
 		    processCmd(commands[i]);
 		}
-
-		// for command log playback
-		if (jsc.isPlayback) 
-		    if ( commands[i].startsWith(DEViseCommands.SET_3D_CONFIG) ) {
-			jsc.pn("command = " + commands[i]);
-			String[] args = DEViseGlobals.parseString(commands[i]);
-			jsc.jscreen.collab3DView(args);
-		    }
-
-		if (jsc.isPlayback && jsc.isDisplay) {
-		    jsc.repaint(); 
-		    jsc.jscreen.repaint();
-		
-		    for (int n = 0; n < jsc.jscreen.allCanvas.size(); n++) {
-			DEViseCanvas canvas = (DEViseCanvas)jsc.jscreen.allCanvas.elementAt(n);
-			canvas.repaint();
-		    }	
-		}
-		
-		if (jsc.isPlayback && !jsc.isDisplay) {	
-		    for (int n = 0; n < jsc.jscreen.allCanvas.size(); n++) {
-			DEViseCanvas canvas = (DEViseCanvas)jsc.jscreen.allCanvas.elementAt(n);
-			canvas.removeAll();
-			canvas.repaint();
-		    }	
-		    jsc.jscreen.removeAll();
-		    jsc.jscreen.repaint();
-		}
 	    }
 
 	    // Note: this is the "standard" place where the GUI gets
 	    // changed to indicate that the command is finished.
 	    jsc.animPanel.stop();
 	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-
-    	    if (jsc.isPlayback && !jsc.isDisplay) {	
-		jsc.jscreen.updateScreen(false);	
-		try {
-		    processCmd(DEViseCommands.CLOSE_SESSION);
-		} catch (YException e1) {
-		    jsc.showMsg(e1.getMsg());
-		    disconnect();
-		}
-	    }		
-
-	    if (jsc.isPlayback)
-		jsc.isPlayback = false;
-
 	} catch (YException e) {
 	    jsc.animPanel.stop();
 	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
@@ -965,6 +931,10 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
       }
 
+        if (_debug) {
+            System.out.println("  Done with DEViseCmdDispatcher.run(" +
+	      commands[0] + ")");
+        }
     }
 
     // Send a command to the server, wait for the replies, and process

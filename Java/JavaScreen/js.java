@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2001/10/10 19:28:25  xuk
+// Added display control command line argument/parameter for auto playback.
+// For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
+// For JS applet: parameter playbackdisplay = true|false to turn on|off display.
+//
 // Revision 1.43  2001/10/05 15:51:35  wenger
 // Minor cleanup: fixed usage messages, improved argument checking.
 //
@@ -150,6 +155,7 @@ public class js extends Frame
 	  "    (default: false)\n" +
 	"  -playbackoriginal: play back client log file at original speed\n" +
 	  "    (default: false)\n" +
+	"  -playbackdisplayoff: turn off display during command log playback\n" +
 	"  -usage: print this message");
 
     // -host[hostname]:

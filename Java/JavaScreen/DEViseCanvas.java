@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2001/09/28 18:57:28  xuk
+// JavaScreen command log playback.
+// Modified in paint() mothod.
+//
 // Revision 1.80  2001/09/26 15:11:57  wenger
 // Fixed bugs 694 (JS rubberband line now reflects X-only zoom) and 695
 // (JS now properly deals with disallowed cursor movement).
@@ -497,8 +501,9 @@ public class DEViseCanvas extends Container
     public void paint(Graphics gc)
     {
 	// for command log playback
-	if (jsc.isPlayback && !jsc.isDisplay)
+	if (jsc.isPlayback && !jsc.isDisplay) {
 	    return;
+        }
 	
         if (jsc.jsValues.canvas.isInteractive) {
             if (jsc.jsValues.canvas.sourceCanvas != this) {
