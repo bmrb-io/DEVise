@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/31 20:59:07  jussi
+  Added ClearGraph() method and renamed 'rad' to 'diam'.
+
   Revision 1.4  1995/12/16 00:48:20  ravim
   Handles window events for popup and resize.
 
@@ -30,28 +33,27 @@
 #define KGraph_h
 
 #include "Geom.h"
-#include "Display.h"
+#include "WindowRep.h"
 
 class KGraph: protected WindowRepCallback
 {
 public:
-  KGraph(DeviseDisplay *dis);
+  KGraph();
   virtual ~KGraph();
 
   // Initialize the settings
-  void Init(char *winname, char *statname);
+  void InitGraph(char *winname, char *statname);
 
   // Set the number of axes to display
-  void setAxes(int num);
+  void SetAxes(int num);
 
   // Specify points along the axes = number of axes in the graph
-  void setPoints(Coord *pts, int num);
+  void SetPoints(Coord *pts, int num);
 
   // Display on the graph
-  void Display();
+  void DisplayGraph();
 
-private:
-  DeviseDisplay *_dis;
+protected:
   WindowRep *_win;
   char *_winame;
   char *_statname;
@@ -60,8 +62,8 @@ private:
   Point *_xyarr;
 
   // Coords of center of circle and diameter
-  Coord cx, cy;
-  int diam;
+  Coord _cx, _cy;
+  int _diam;
 
   void ClearGraph();
   void DrawCircle();
@@ -74,13 +76,12 @@ private:
   // Handle window events
   virtual void HandlePress(WindowRep *w, int xlow, int ylow, int xhigh,
 			   int yhigh, int button);
-  
+  virtual void HandleResize(WindowRep *w, int xlow, int ylow,
+                            unsigned width, unsigned height);
   virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button, 
 			      char **&msgs, int &numMsgs);
-  virtual void HandleResize(WindowRep *w, int xlow, int ylow, unsigned width,
-			    unsigned height);
 
-  char **msgBuf;
+  char **_msgBuf;
 };
 
 #endif
