@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/04/16 20:38:50  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.14  1996/03/27 15:31:01  jussi
   Small fixes for tape TData.
 
@@ -400,7 +403,10 @@ void TDataAscii::Checkpoint()
       goto error;
     }
     if (fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
-      perror("fread");
+      if (!errno)
+	fprintf("File not checkpointed due to its small size\n");
+      else
+	perror("fread");
       goto error;
     }
   }
