@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/02/15 04:09:46  jussi
+  Initial revision.
+
 */
 
 #include <stdio.h>
@@ -41,7 +44,6 @@ static int pre[extractFields];
 
 double comp_get_val(char *str, int len, int pre)
 {
-#if 1
   char tmp = str[len];
   str[len] = 0;
   double d = atof(str);
@@ -60,38 +62,6 @@ double comp_get_val(char *str, int len, int pre)
   }
 
   return d / denom;
-#else
-  int intval, decval;
-  double denom;
-
-  /* Extract the first (len - pre) characters out - integer part */
-  char tmp = str[len - pre];
-  str[len - pre] = 0;
-  intval = atoi(str);
-  str[len - pre] = tmp;
-
-  /* Extract the last pre characters out - decimal part */
-  tmp = str[len];
-  str[len] = 0;
-  decval = atoi(str[len - pre]);
-  str[len] = tmp;
-
-  /* Now add up the two parts of the float number adjusting for the 
-     implied decimal point */
-  /* We will optimize for the case pre=3, 4 and 6*/
-  if (pre == 3)
-    denom = 1e3;
-  else if (pre == 4)
-    denom = 1e4;
-  else if (pre == 6)
-    denom = 1e6;
-  else {
-    printf("Error : precision %d is not supported\n", pre);
-    exit(0);
-  }
-
-  return (double)intval + (double)decval / denom;
-#endif
 }
 
 /*-------------------------------------------------------------------*/
@@ -126,33 +96,23 @@ int create_comp_dat(TapeDrive &tape, unsigned long int recoffset,
 {
   static unsigned long int recid = 0;
 
-  /* Loop through sets of five years-
-     First loop looks at record 1 - first five years for 1 - 175 and
-                         record 5 -                      176 - 350
-     and so on */
+  tape.seek(recoffset);
+
+  char recbuf1[4 * COMP_REC_LENGTH];
+  char recbuf2[4 * COMP_REC_LENGTH];
+
+  /* Read first four records into memory */
+  tape.read(recbuf1, sizeof recbuf1);
+
+  /* Read next four records for the other set of attrs eg : (1,5), (2,6), .. */
+  tape.read(recbuf2, sizeof recbuf2);
 
   for(int i = 0; i < 4; i++) {
-    char recbuf1[COMP_REC_LENGTH];
-    char recbuf2[COMP_REC_LENGTH];
-
-    /* Read record for first record into memory */
-    tape.seek(recoffset);
-    tape.read(recbuf1, (size_t)COMP_REC_LENGTH);
-
-    /* Read record for the other set of attrs eg : (1,5), (2,6), .. */
-    tape.seek(recoffset + 4*COMP_REC_LENGTH);
-    tape.read(recbuf2, (size_t)COMP_REC_LENGTH);
-
-    /* Loop  for five years - pass in pointers to data arrays for each of
-       the two sets of attrs */
     for(int j = 0; j < 5; j++) {
-      generate_dat(recbuf1 + COMP_DARR_OFF + j*COMP_DARR_LEN,
-		   recbuf2 + COMP_DARR_OFF + j*COMP_DARR_LEN,
+      generate_dat(&recbuf1[i * COMP_REC_LENGTH] + COMP_DARR_OFF + j*COMP_DARR_LEN,
+		   &recbuf2[i * COMP_REC_LENGTH] + COMP_DARR_OFF + j*COMP_DARR_LEN,
 		   recid++, firm);
     }
-
-    /* Increment recoffset - pass on to next set of five years */
-    recoffset += COMP_REC_LENGTH;
   }
 
   return 0;
@@ -180,8 +140,9 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   unsigned long int offset;
   unsigned long int firm = 0;
 
-  while(firm++ < 10 && fscanf(idxfile, "%lu,%*[^\n]", &offset) == 1) {
-    if (create_comp_dat(tape, offset, firm) < 0) {
+  while(fscanf(idxfile, "%lu,%*[^\n]", &offset) == 1) {
+    offset += atoi(tapeOff);
+    if (create_comp_dat(tape, offset, ++firm) < 0) {
       fprintf(stderr, "Error extracting at offset %lu\n", offset);
     }
   }
@@ -237,11 +198,8 @@ int main(int argc, char **argv)
   char *tapeBsize = argv[4];
   char *idxFile = argv[5];
 
-  for(int i = 0; i < extractFields; i++) {
+  for(int i = 0; i < extractFields; i++)
     findAttrInfo(fieldNum[i], pos[i], len[i], pre[i]);
-    printf("Field %d is at %d, len %d, precision %d\n",
-	   fieldNum[i], pos[i], len[i], pre[i]);
-  }
 
   return comp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile);
 }
