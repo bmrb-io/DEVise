@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.88  1996/07/23 20:13:34  wenger
+#	Preliminary version of code to save TData (schema(s) and data) to a file.
+#
 #	Revision 1.87  1996/07/19 03:34:01  jussi
 #	Added Line and LineShape shapes.
 #
@@ -579,7 +582,8 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 .mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
 .mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
 .mbar.tdata.menu add separator
-.mbar.tdata.menu add command -label "Derived Data" -command { MacroImport 0 1 }
+.mbar.tdata.menu add command -label "Derived Data Text" -command { MacroImport 1 1 } 
+.mbar.tdata.menu add command -label "Derived Data View" -command { MacroImport 0 1 }
 
 menu .mbar.tdata.menu.mappingMenu -tearoff 0
 
