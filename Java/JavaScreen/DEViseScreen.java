@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2001/04/01 03:51:17  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.67  2001/03/25 20:39:29  xuk
 // Added collab3DView() method to process 3D view collaboration commands.
 //
@@ -697,12 +700,12 @@ public class DEViseScreen extends Panel
     }
 
     public void updateViewDataRange(String viewName, String axis,
-      float min, float max, String format)
+      float min, float max, String format, float factor)
     {
         DEViseView view = getView(viewName);
 
         if (view != null && axis != null) {
-            view.updateDataRange(axis, min, max, format);
+            view.updateDataRange(axis, min, max, format, factor);
         }
     }
 
