@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  1999/08/17 19:47:10  wenger
+#  Converted Condor UserMonth session from high/low symbols to piles for
+#  better representation of data; fixed some cursor/pile drawing bugs and
+#  TData switching bugs that I found in the process.
+#
 #  Revision 1.10  1999/08/10 18:30:18  wenger
 #  Reduced font size for user names; user names now drawn by the JavaScreen;
 #  reduced size of user name window.
@@ -334,10 +339,14 @@ sub CreateViews {
     print SES_OUT "DEVise setViewAutoFilter ${user}_viewsymA 1\n";
 
     # Turn on the X and Y axes.
-    if ($user ne "User1" && $user ne "User2") {
+    #if ($user ne "User1" && $user ne "User2") {
       print SES_OUT "DEVise setAxisDisplay ${user}_viewsymA {X} 1\n";
-    }
+    #}
     print SES_OUT "DEVise setAxisDisplay ${user}_viewsymA {Y} 1\n";
+
+    if ($user eq "User1" || $user eq "User2") {
+      print SES_OUT "DEVise setAxisTicks ${user}_viewsymA {X} 0\n";
+    }
 
     print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsymA {%b %d %H:%M}\n";
 
