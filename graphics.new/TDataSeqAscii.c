@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/25 18:15:15  wenger
+  Changes to non-indexed attrproj to match other changes to TData;
+  changes to compile non-index attrproj and to get the rest of Devise
+  to compile with that.
+
   Revision 1.2  1996/11/22 20:41:14  flisakow
   Made variants of the TDataAscii classes for sequential access,
   which build no indexes.
@@ -97,8 +102,7 @@ TDataSeqAscii::TDataSeqAscii(char *name, char *type, char *param, int recSize)
 
     _data->Seek(0, SEEK_SET);
 
-    Dispatcher::Current()->Register(this, 10, AllState, 
-				    false, _data->AsyncFd());
+    Dispatcher::Current()->Register(this, 10, AllState, false, -1);
 }
 
 TDataSeqAscii::~TDataSeqAscii()
@@ -134,8 +138,7 @@ Boolean TDataSeqAscii::CheckFileStatus()
     (void)DevError::SetEnabled(old);
     printf("Data stream %s has become available\n", _name);
     _fileOpen = true;
-    Dispatcher::Current()->Register(this, 10, AllState,
-                                    false, _data->AsyncFd());
+    Dispatcher::Current()->Register(this, 10, AllState, false, -1);
   }
 
   return true;
@@ -157,22 +160,30 @@ Boolean TDataSeqAscii::LastID(RecId &recId)
   return false;
 }
 
-void TDataSeqAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
+TData::TDHandle TDataSeqAscii::InitGetRecs(RecId lowId, RecId highId,
+                                           Boolean asyncAllowed,
+                                           ReleaseMemoryCallback *callback)
 {
 #if defined(DEBUG)
   cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
-    << order << endl;
+       << order << endl;
 #endif
 
-  _lowId = lowId;
-  _highId = highId;
-  _nextId = lowId;
-  _endId = highId;
+  TDataRequest *req = new TDataRequest;
+  DOASSERT(req, "Out of memory");
+
+  req->nextId = lowId;
+  req->endId = highId;
+  req->relcb = callback;
+
+  return req;
 }
 
-Boolean TDataSeqAscii::GetRecs(void *buf, int bufSize, 
-			    RecId &startRid,int &numRecs, int &dataSize)
+Boolean TDataSeqAscii::GetRecs(TDHandle req, void *buf, int bufSize,
+                               RecId &startRid, int &numRecs, int &dataSize)
 {
+  DOASSERT(req, "Invalid request handle");
+
 #ifdef DEBUG
   printf("TDataSeqAscii::GetRecs buf = 0x%p\n", buf);
 #endif
@@ -180,30 +191,31 @@ Boolean TDataSeqAscii::GetRecs(void *buf, int bufSize,
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs, "Not enough record buffer space");
 
-  if (_nextId > _endId)
+  if (req->nextId > req->endId)
     return false;
   
-  int num = _endId - _nextId + 1;
+  int num = req->endId - req->nextId + 1;
   if (num < numRecs)
     numRecs = num;
   
-  TD_Status status = ReadRec(_nextId, numRecs, buf);
+  TD_Status status = ReadRec(req->nextId, numRecs, buf);
   if (status != TD_OK)
     return false;
  
-  startRid = _nextId;
+  startRid = req->nextId;
   dataSize = numRecs * _recSize;
-  _nextId += numRecs;
+  req->nextId += numRecs;
   
   _bytesFetched += dataSize;
   
   return true;
 }
 
-void TDataSeqAscii::GetRecPointers(RecId startId, int numRecs,
-				void *buf, void **recPtrs)
+void TDataSeqAscii::DoneGetRecs(TDHandle req)
 {
-  DOASSERT(0, "Feature not implemented");
+  DOASSERT(req, "Invalid request handle");
+
+  delete req;
 }
 
 void TDataSeqAscii::GetIndex(RecId id, int *&indices)
@@ -361,17 +373,6 @@ void TDataSeqAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 void TDataSeqAscii::WriteLine(void *line)
 {
   DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
-}
-
-void TDataSeqAscii::Run()
-{
-    int fd = _data->AsyncFd();
-    _data->AsyncIO();
-    if (_data->AsyncFd() != fd) {
-        Dispatcher::Current()->Unregister(this);
-        Dispatcher::Current()->Register(this, 10, AllState,
-                                        false, _data->AsyncFd());
-    }
 }
 
 void TDataSeqAscii::Cleanup()

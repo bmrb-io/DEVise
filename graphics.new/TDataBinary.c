@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/11/23 21:14:24  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.24  1996/11/22 20:41:10  flisakow
   Made variants of the TDataAscii classes for sequential access,
   which build no indexes.
@@ -148,8 +151,6 @@
 #   include "DataSourceWeb.h"
 #endif
 
-static const int BIN_INDEX_ALLOC_INC = 25000; // allocation increment for index
-
 /* We cache the first BIN_CONTENT_COMPARE_BYTES from the file.
    The next time we start up, this cache is compared with what's in
    the file to determine if they are the same file. */
@@ -194,16 +195,16 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
   float estNumRecs = _data->DataSize() / _physRecSize;
   _indexP = new FileIndex((unsigned long)estNumRecs);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Allocated %lu index entries\n", (unsigned long)estNumRecs);
 #endif
 
-  Dispatcher::Current()->Register(this, 10, AllState, false, _data->AsyncFd());
+  Dispatcher::Current()->Register(this, 10, AllState, false, -1);
 }
 
 TDataBinary::~TDataBinary()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("TDataBinary destructor\n");
 #endif
 
@@ -240,8 +241,7 @@ Boolean TDataBinary::CheckFileStatus()
     }
     printf("Data stream %s has become available\n", _name);
     _fileOpen = true;
-    Dispatcher::Current()->Register(this, 10, AllState,
-                                    false, _data->AsyncFd());
+    Dispatcher::Current()->Register(this, 10, AllState, false, -1);
   }
 
   return true;
@@ -271,7 +271,7 @@ Boolean TDataBinary::LastID(RecId &recId)
   DOASSERT(_currPos >= 0, "Error finding end of data");
 
   if (_currPos < _lastPos) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Rebuilding index...\n");
 #endif
     RebuildIndex();
@@ -279,7 +279,7 @@ Boolean TDataBinary::LastID(RecId &recId)
     QueryProc::Instance()->ClearTData(this);
 #endif
   } else if (_currPos > _lastPos) {
-#ifdef DEBUG
+#if defined(DEBUG)
     printf("Extending index...\n");
 #endif
     BuildIndex();
@@ -292,43 +292,58 @@ Boolean TDataBinary::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-void TDataBinary::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
+TData::TDHandle TDataBinary::InitGetRecs(RecId lowId, RecId highId,
+                                         Boolean asyncAllowed,
+                                         ReleaseMemoryCallback *callback)
 {
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
-  _lowId = lowId;
-  _highId = highId;
-  _nextId = lowId;
-  _endId = highId;
+  TDataRequest *req = new TDataRequest;
+  DOASSERT(req, "Out of memory");
+
+  req->nextId = lowId;
+  req->endId = highId;
+  req->relcb = callback;
+
+  return req;
 }
 
-Boolean TDataBinary::GetRecs(void *buf, int bufSize, 
-			     RecId &startRid, int &numRecs, int &dataSize)
+Boolean TDataBinary::GetRecs(TDHandle req, void *buf, int bufSize,
+                             RecId &startRid, int &numRecs, int &dataSize)
 {
-#ifdef DEBUG
+  DOASSERT(req, "Invalid request handle");
+
+#if defined(DEBUG)
   printf("TDataBinary::GetRecs buf = 0x%p\n", buf);
 #endif
 
   numRecs = bufSize / _recSize;
-  DOASSERT(numRecs, "Not enough record buffer space");
+  DOASSERT(numRecs > 0, "Not enough record buffer space");
 
-  if (_nextId > _endId)
+  if (req->nextId > req->endId)
     return false;
   
-  int num = _endId - _nextId + 1;
+  int num = req->endId - req->nextId + 1;
   if (num < numRecs)
     numRecs = num;
   
-  ReadRec(_nextId, numRecs, buf);
+  ReadRec(req->nextId, numRecs, buf);
   
-  startRid = _nextId;
+  startRid = req->nextId;
   dataSize = numRecs * _recSize;
-  _nextId += numRecs;
+  req->nextId += numRecs;
   
   _bytesFetched += dataSize;
   
   return true;
+}
+
+void TDataBinary::DoneGetRecs(TDHandle req)
+{
+  DOASSERT(req, "Invalid request handle");
+
+  delete req;
 }
 
 void TDataBinary::GetIndex(RecId id, int *&indices)
@@ -379,7 +394,7 @@ void TDataBinary::Initialize()
 
  error:
   /* recover from error by building index from scratch  */
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Rebuilding index...\n");
 #endif
   RebuildIndex();
@@ -449,13 +464,13 @@ void TDataBinary::BuildIndex()
       if (Decode(recBuf, _currPos / _physRecSize, physRec)) {
 	_indexP->Set(_totalRecs++, _currPos);
       } else {
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("Ignoring invalid or non-matching record\n");
 #endif
       }
       _lastIncompleteLen = 0;
     } else {
-#ifdef DEBUG
+#if defined(DEBUG)
       printf("Ignoring incomplete record (%d bytes)\n", len);
 #endif
       _lastIncompleteLen = len;
@@ -475,12 +490,9 @@ void TDataBinary::BuildIndex()
 	 _totalRecs, _totalRecs - oldTotal);
 #endif
 
-  if (_totalRecs <= 0) {
-    char errBuf[1024];
-    sprintf(errBuf, "No valid records for data stream %s\n"
-      "    (check schema/data correspondence)\n", _name);
-    //Exit::DoAbort(errBuf, __FILE__, __LINE__);
-  }
+  if (_totalRecs <= 0)
+      fprintf(stderr, "No valid records for data stream %s\n"
+              "    (check schema/data correspondence)\n", _name);
 }
 
 /* Rebuild index */
@@ -499,7 +511,7 @@ void TDataBinary::RebuildIndex()
 
 TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("TDataBinary::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif
 
@@ -554,17 +566,6 @@ void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 void TDataBinary::WriteLine(void *rec)
 {
   WriteRecs(0, 1, rec);
-}
-
-void TDataBinary::Run()
-{
-    int fd = _data->AsyncFd();
-    _data->AsyncIO();
-    if (_data->AsyncFd() != fd) {
-        Dispatcher::Current()->Unregister(this);
-        Dispatcher::Current()->Register(this, 10, AllState,
-                                        false, _data->AsyncFd());
-    }
 }
 
 void TDataBinary::Cleanup()

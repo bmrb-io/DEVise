@@ -28,7 +28,6 @@
 #endif
 #include "TData.h"
 #include "RecId.h"
-#include "RecOrder.h"
 #include "DataSource.h"
 #include "FileIndex.h"
 #include "AttrList.h"
@@ -70,7 +69,9 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual void InitGetRecs(RecId lowId, RecId highId, RecordOrder order);
+	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+                                     Boolean asyncAllowed,
+                                     ReleaseMemoryCallback *callback);
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -84,10 +85,10 @@ public:
 		dataSize: # of bytes taken up by data.
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
-	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-                                int &numRecs, int &dataSize);
+	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
+                                RecId &startRid, int &numRecs, int &dataSize);
 
-	virtual void DoneGetRecs() {}
+	virtual void DoneGetRecs(TDHandle handle);
 
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */
@@ -150,7 +151,7 @@ private:
 	void PrintIndices();
 
 	long _totalRecs;                // total number of records
-    long _lastIncompleteLen;        // length of last incomplete record
+        long _lastIncompleteLen;        // length of last incomplete record
 
 	long _initTotalRecs;            // initial # of records in cache
 	int _initLastPos;               // initial last position in file

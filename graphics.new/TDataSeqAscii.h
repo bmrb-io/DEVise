@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/25 18:15:15  wenger
+  Changes to non-indexed attrproj to match other changes to TData;
+  changes to compile non-index attrproj and to get the rest of Devise
+  to compile with that.
+
   Revision 1.2  1996/11/22 20:41:15  flisakow
   Made variants of the TDataAscii classes for sequential access,
   which build no indexes.
@@ -41,7 +46,6 @@
 #endif
 #include "TData.h"
 #include "RecId.h"
-#include "RecOrder.h"
 #include "DataSource.h"
 #include "FileIndex.h"
 
@@ -79,7 +83,9 @@ public:
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual void InitGetRecs(RecId lowId, RecId highId, RecordOrder order);
+	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+                                     Boolean asyncAllowed,
+                                     ReleaseMemoryCallback *callback);
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -92,15 +98,10 @@ public:
 		numRecs: number of records.
 		dataSize: # of bytes taken up by data.
 	**************************************************************/
-	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-		int &numRecs, int &dataSize);
+	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
+                                RecId &startRid, int &numRecs, int &dataSize);
 
-	virtual void DoneGetRecs() {}
-
-	/* Given buffer space and RecId, set the array "recPtrs" to
-	the address of individual records. For varialbe size records. */
-	virtual void GetRecPointers(RecId startId, int numRecs,
-				    void *buf, void **recPtrs);
+	virtual void DoneGetRecs(TDHandle handle);
 
 	/* get the time file is modified. We only require that
 	files modified later has time > files modified earlier. */
@@ -148,7 +149,6 @@ protected:
 private:
 	/* From DispatcherCallback */
 	char *DispatchedName() { return "TDataSeqAscii"; }
-        virtual void Run();
 	virtual void Cleanup();
 
 	Boolean CheckFileStatus();

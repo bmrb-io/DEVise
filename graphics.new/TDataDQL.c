@@ -111,39 +111,47 @@ Boolean TDataDQL::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-void TDataDQL::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
+TData::TDHandle TDataDQL::InitGetRecs(RecId lowId, RecId highId,
+                                      Boolean asyncAllowed,
+                                      ReleaseMemoryCallback *callback)
 {
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
-  _lowId = lowId;
-  _highId = highId;
-  _nextId = lowId;
-  _endId = highId;
+  TDataRequest *req = new TDataRequest;
+  DOASSERT(req, "Out of memory");
+
+  req->nextId = lowId;
+  req->endId = highId;
+  req->relcb = callback;
 
 #ifdef DEBUG
   cout << "TDataDQL::InitGetRecs(" << lowId << ", " << highId << ")\n";
 #endif
+
+  return req;
 }
 
-Boolean TDataDQL::GetRecs(void *buf, int bufSize, 
-			    RecId &startRid,int &numRecs, int &dataSize)
+Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize, 
+                          RecId &startRid, int &numRecs, int &dataSize)
 {
+  DOASSERT(req, "Invalid request handle");
+
   numRecs = bufSize / _recSize;
   DOASSERT(numRecs, "Not enough record buffer space");
 
-  if (_nextId > _endId)
+  if (req->nextId > req->endId)
     return false;
   
-  int num = _endId - _nextId + 1;
+  int num = req->endId - req->nextId + 1;
   if (num < numRecs)
     numRecs = num;
   
-  ReadRec(_nextId, numRecs, buf);
+  ReadRec(req->nextId, numRecs, buf);
   
-  startRid = _nextId;
+  startRid = req->nextId;
   dataSize = numRecs * _recSize;
-  _nextId += numRecs;
+  req->nextId += numRecs;
   
   _bytesFetched += dataSize;
 
@@ -159,6 +167,13 @@ Boolean TDataDQL::GetRecs(void *buf, int bufSize,
 
   
   return true;
+}
+
+void TDataDQL::DoneGetRecs(TDHandle req)
+{
+  DOASSERT(req, "Invalid request handle");
+
+  delete req;
 }
 
 void TDataDQL::GetIndex(RecId id, int *&indices)

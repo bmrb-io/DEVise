@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/11/23 21:14:24  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.13  1996/11/22 20:41:11  flisakow
   Made variants of the TDataAscii classes for sequential access,
   which build no indexes.
@@ -99,7 +102,6 @@
 #endif
 #include "TData.h"
 #include "RecId.h"
-#include "RecOrder.h"
 #include "DataSource.h"
 #include "FileIndex.h"
 
@@ -150,7 +152,9 @@ public:
   /**************************************************************
     Init getting records.
   ***************************************************************/
-  virtual void InitGetRecs(RecId lowId, RecId highId, RecordOrder order);
+  virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+                               Boolean asyncAllowed,
+                               ReleaseMemoryCallback *callback);
 
   /**************************************************************
     Get next batch of records, as much as fits into buffer. 
@@ -163,10 +167,10 @@ public:
       numRecs: number of records.
       dataSize: # of bytes taken up by data.
     **************************************************************/
-  virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-			  int &numRecs, int &dataSize);
+  virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
+                          RecId &startRid, int &numRecs, int &dataSize);
 
-  virtual void DoneGetRecs() {}
+  virtual void DoneGetRecs(TDHandle handle);
 
   /* get the time file is modified. We only require that
      files modified later has time > files modified earlier. */
@@ -209,7 +213,6 @@ protected:
 private:
   /* From DispatcherCallback */
   char *DispatchedName() { return "TDataBinary"; }
-  virtual void Run();
   virtual void Cleanup();
 
   Boolean CheckFileStatus();
