@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1996/12/03 20:26:38  jussi
+#  Added DCE and MemMgr.
+#
 #  Revision 1.29  1996/11/26 21:41:11  wenger
 #  Fixed various makefile problems; updated dependencies.
 #
@@ -75,7 +78,8 @@ include ../../Makefile.common
 USE_SEQ = yes
 
 CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
-	-I../../graphics.new -I../../tape -I../../DTE -I../../DTE/Core \
+	-I../../graphics.new -I../../tape -I../../DTE/RTree -I../../DTE/RTree/tools \
+	-I../../DTE -I../../DTE/Core \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DATTRPROJ -DLIBCS
 
@@ -101,10 +105,12 @@ endif
 ifeq (yes, $(USE_SEQ))
 LOCALSRC += Exit.c TData.c TDataSeqAscii.c TDataSeqAsciiInterp.c \
         TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
+	   RTree.c \
         TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 else
 LOCALSRC += Exit.c TData.c TDataAscii.c TDataAsciiInterp.c \
         TDataBinary.c TDataDQL.c TDataDQLInterp.c DataSourceDQL.c \
+	   RTree.c \
         TDataBinaryInterp.c DataSourceSegment.c DCE.C MemMgr.C
 endif
 
