@@ -35,7 +35,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
-        DerivedDataSource.C StringStorage.C PointStorage.C
+        DerivedDataSource.C StringStorage.C PointStorage.C \
+        ExtBufMgr.C
 	
 QPSrc1 = $(filter %.c,$(QPSrc))
 QPSrc2 = $(filter %.C,$(QPSrc))
@@ -75,7 +76,7 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testGData.c testGDataVar.c testBufPage.c testRecFile.c testTDataRec.c \
 	testBufMgrNull.c test2d.c testraw.c testVoidArray.c testRecRange.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
-	StringHash.c testViewRanges.c testXY.c
+	StringHash.c testViewRanges.c testXY.c testExtBufMgr.C
 
 LIBNAME = libgraphicsnew.a
 
@@ -104,6 +105,11 @@ $(LIBNAME): $(LIBOBJ)
 libbufmgr.a: $(BufMgrObj)
 	ar cr $@ $(BufMgrObj)
 	ranlib $@
+
+testExtBufMgr: testExtBufMgr.o ExtBufMgr.o DCE.o
+	$(CC) -o $@ $(ARCH_LDFLAGS) $@.o ExtBufMgr.o DCE.o \
+		../graphics/ExitClean.o ../graphics/DList.o \
+		-lpthread
 
 testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
@@ -242,9 +248,10 @@ testpage: $(LIBOBJ) testpage.o
 
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
-		libmonolith.a
+		libmonolith.a testExtBufMgr testGDataRange \
+                testRecFile testRecRange testViewRanges testVoidArray
 
 mostlyclean:
 	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \
 	testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o\
-	ClientAPI.o ServerAPI.o TkControl.o
+	ClientAPI.o ServerAPI.o TkControl.o testExtBufMgr.o
