@@ -1,6 +1,0 @@
-#! /bin/csh -f
-
-foreach i (graphics graphics.new tape issm compustat crsp parser \
-           ams generic multi)
-  echo $i; cd $i; make; cd ..
-end
