@@ -10,11 +10,9 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
+ARCH_FLAGS = -DSOLARIS
 ARCH_LDFLAGS =
-ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
 ARCH_SYSLIBS = -lm
-ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_ENDIAN =
 
