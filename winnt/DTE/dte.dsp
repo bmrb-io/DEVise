@@ -85,7 +85,7 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE="C:\Program Files\DevStudio\MyProjects\DTE\windows\config.h"
+SOURCE=.\config.h
 # End Source File
 # End Group
 # Begin Source File
