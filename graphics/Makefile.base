@@ -4,7 +4,8 @@ OPTFLAG = -O
 #OPTFLAG = -g
 #OPTFLAG = -gstabs
 
-CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../generic -Wall \
+CFLAGS = $(ARCH_FLAGS) -Wall -I../../graphics.new -I../../generic \
+	-I../../util -I../../tape \
 	-Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS -fexternal-templates
 
 LD = ld 
