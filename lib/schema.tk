@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.33  1997/09/04 17:56:43  donjerko
+#  Removed separator button from unidata definition.
+#
 #  Revision 1.32  1997/09/04 17:52:57  wenger
 #  Fixed bug 216.
 #
@@ -461,7 +464,7 @@ proc newschemawin {} {
     
     label .newschema.ftype.label -text "File Type"
     radiobutton .newschema.ftype.ascii -text Text -variable ftype \
-	    -value text -anchor nw
+	    -value ascii -anchor nw
     radiobutton .newschema.ftype.binary -text Binary -variable ftype \
 	    -value binary -anchor nw
     pack .newschema.ftype.label .newschema.ftype.ascii .newschema.ftype.binary \

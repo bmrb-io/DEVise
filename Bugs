@@ -811,7 +811,7 @@ Num Date        Status  Description
 197 07/15/97	OPEN	You can't select data sources from the 'active tables'
 			window. (rkw)
 
-198 07/15/97	OPEN	Schema editor (non-UniData version) now has 'text'
+198 07/15/97	FIXED	Schema editor (non-UniData version) now has 'text'
 			instead of 'ascii' -- produces unuseable schema file.
 			(rkw)
 

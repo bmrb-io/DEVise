@@ -405,6 +405,9 @@ should be changed so that there is only one. (rkw 7/31/97)
 Allow multiple clients to connect to a single Devise server simultaneously.
 (rkw/dk 8/19/97)
 
+Have some kind of concurrency control on the data source catalog. (lz/rkw
+9/8/97)
+
 
 COMPLETED
 ---------
