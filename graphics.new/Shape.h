@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/13 23:10:13  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.9  1996/01/09 22:08:33  jussi
   Added GetZ() function.
 
@@ -81,8 +84,13 @@ inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, zOffset, Coord, offset);
 }
 
-inline Color GetColor(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+inline Color GetColor(View *view, char *ptr, TDataMap *map,
+		      GDataAttrOffset *offset)
 {
+  Boolean active;
+  Color color = view->GetOverrideColor(active);
+  if (active)
+    return color;
   if (offset->colorOffset < 0)
     return map->GetDefaultColor();
   return GetAttr(ptr, colorOffset, Color , offset);
@@ -151,15 +159,14 @@ class Shape {
 
   /* Draw GData symbols. */
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
-  }
+			      TDataMap *map, View *view, int pixelSize) {}
 
  protected:
   /* Draw each GData symbol as a single pixel. Used by derived classes
      as a common method in cases where symbols are smaller than one
      pixel. */
   virtual void DrawPixelArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
     GDataAttrOffset *offset = map->GetGDataOffset();
     int i = 0;
     while (i < numSyms) {
@@ -167,12 +174,12 @@ class Shape {
       int count = 1;
       _x[0] = GetX(gdata, map, offset);
       _y[0] = GetY(gdata, map, offset);
-      Color lastColor = GetColor(gdata, map, offset);
+      Color lastColor = GetColor(view, gdata, map, offset);
       
       int colorIndex;
       for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	char *colorGData = (char *)gdataArray[colorIndex];
-	if (GetColor(colorGData,map,offset) != lastColor)
+	if (GetColor(view, colorGData, map, offset) != lastColor)
 	  break;
 	_x[count] = GetX(colorGData, map, offset);
 	_y[count++] = GetY(colorGData, map, offset);
@@ -181,7 +188,7 @@ class Shape {
       win->SetFgColor(lastColor);
       win->DrawPixelArray(_x, _y, count, pixelSize);
       
-      lastColor = GetColor((char *)gdataArray[colorIndex], map, offset);
+      lastColor = GetColor(view, (char *)gdataArray[colorIndex], map, offset);
       i = colorIndex;
     }
   }

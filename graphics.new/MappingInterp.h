@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/02/13 16:30:01  jussi
+  Made declaration of friend ConvertOne use the inline keyword.
+
   Revision 1.11  1996/02/05 02:53:49  yuc
   Update MaxInterpShapes to 8, for adding
   3d vector
@@ -132,18 +135,18 @@ public:
   MappingInterpCmd *GetCmd(int &cmdFlag, int &attrFlag);
   
   /* find the max box bounding for all records */
-  /*
-     virtual void UpdateBoundingBox(int pageNum,
-     void **gdataArray, int numRecs);
-  */
+#if 0
+  virtual void UpdateBoundingBox(int pageNum, void **gdataArray, int numRecs);
+#endif
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int num);
+  virtual void DrawGDataArray(View *view, WindowRep *win,
+			      void **gdataArray, int num);
 
 protected:	
   /* convert from Tdata to Gdata. buf contains
      buffer for data. tRecs are pointers to variable size records only. */
-  virtual void ConvertToGData(RecId startRecId,void *buf,
-			      void **tRecs,int numRecs,void *gdataPtr);
+  virtual void ConvertToGData(RecId startRecId, void *buf,
+			      void **tRecs, int numRecs, void *gdataPtr);
   
 private:
   /* Initialize command by converting _cmd into _tclCmd,

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/03/25 23:02:23  jussi
+  Removed references to _view. A more comprehensive mechanism is needed
+  for storing views that the map is associated with (right now is stores
+  just one).
+
   Revision 1.7  1996/03/07 16:52:56  jussi
   Added association of TDataMap and ViewGraph.
 
@@ -193,12 +198,13 @@ public:
 			   RecId &hintId);
 
   /* find the max box bounding for all records */
-  /*
-     virtual void UpdateBoundingBox(int pageNum, 
-     void **gdataArray, int numRecs)= 0;
-  */
+#if 0
+  virtual void UpdateBoundingBox(int pageNum, void **gdataArray,
+				 int numRecs) = 0;
+#endif
 
-  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int num) = 0;
+  virtual void DrawGDataArray(View *view, WindowRep *win,
+			      void **gdataArray, int num) = 0;
   
   /* Hint for current focus in GData */
   void SetFocusId(RecId id);

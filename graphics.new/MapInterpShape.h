@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/02/28 17:30:32  yuc
+  Add 3D BlockShape.
+
   Revision 1.13  1996/02/05 02:53:48  yuc
   Update MaxInterpShapes to 8, for adding
   3d vector
@@ -80,7 +83,7 @@
 class FullMapping_RectShape: public RectShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -111,7 +114,7 @@ public:
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
       }
     }
@@ -125,11 +128,11 @@ public:
       for(; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
 
-	if (count > 0 && GetColor(gdata, map, offset) != firstColor)
+	if (count > 0 && GetColor(view, gdata, map, offset) != firstColor)
 	  break;
 	
 	if (count == 0)
-	  firstColor = GetColor(gdata, map, offset);
+	  firstColor = GetColor(view, gdata, map, offset);
 
 	_width[count] = fabs(GetShapeAttr0(gdata, map, offset));
 	_height[count] = fabs(GetShapeAttr1(gdata, map, offset));
@@ -154,7 +157,7 @@ public:
 class FullMapping_RectXShape: public RectXShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -175,7 +178,7 @@ public:
 #endif
 
       if (maxWidth <= pixelWidth) {
-	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
       }
     }
@@ -201,7 +204,7 @@ public:
       if (height < pixelSize)
 	height = pixelSize;
 
-      win->SetFgColor(GetColor(gdata, map, offset));
+      win->SetFgColor(GetColor(view, gdata, map, offset));
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillPixelRect(tx, ty, width, height);
     }
@@ -228,7 +231,7 @@ public:
   }
   
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map,  int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -255,7 +258,7 @@ public:
 	x -= width / 2.0;
       Coord y = GetY(gdata, map, offset);
 
-      win->SetFgColor(GetColor(gdata, map, offset));
+      win->SetFgColor(GetColor(view, gdata, map, offset));
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillRect(x, 0.0, width, y);
     }
@@ -267,7 +270,7 @@ public:
 class FullMapping_PolygonShape: public PolygonShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -290,7 +293,7 @@ public:
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
       }
     }
@@ -312,7 +315,7 @@ public:
 	points[seg].y = y + height / 2 * sin(angle);
       }
       
-      win->SetFgColor(GetColor(gdata, map, offset));
+      win->SetFgColor(GetColor(view, gdata, map, offset));
       win->SetPattern(GetPattern(gdata, map, offset));
       win->FillPoly(points, segments);
     }
@@ -324,7 +327,7 @@ public:
 class FullMapping_OvalShape: public OvalShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -347,7 +350,7 @@ public:
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
       }
     }
@@ -358,7 +361,7 @@ public:
       Coord height = fabs(GetShapeAttr1(gdata, map, offset));
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      win->SetFgColor(GetColor(gdata, map, offset));
+      win->SetFgColor(GetColor(view, gdata, map, offset));
       win->SetPattern(GetPattern(gdata, map, offset));
       win->Arc(x, y, width, height, 0, 2 * PI);
     }
@@ -370,7 +373,7 @@ public:
 class FullMapping_VectorShape: public VectorShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -393,14 +396,14 @@ public:
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
       }
     }
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Color color = GetColor(gdata, map, offset);
+      Color color = GetColor(view, gdata, map, offset);
       Coord w = GetShapeAttr0(gdata, map, offset);
       Coord h = GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
@@ -449,7 +452,7 @@ public:
 class FullMapping_BlockShape: public BlockShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize);
+			      TDataMap *map, View *view, int pixelSize);
 
 private:
 	void MapBlockVertex(int);
@@ -462,7 +465,7 @@ private:
 class FullMapping_3DVectorShape: public VectorShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
-			      TDataMap *map, int pixelSize) {
+			      TDataMap *map, View *view, int pixelSize) {
 		 
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -485,14 +488,14 @@ public:
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-	DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
       }
     }
 
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Color color = GetColor(gdata, map, offset);
+      Color color = GetColor(view, gdata, map, offset);
       Coord w = GetShapeAttr0(gdata, map, offset);
       Coord h = GetShapeAttr1(gdata, map, offset);
       Coord x = GetX(gdata, map, offset);
