@@ -14,7 +14,7 @@
 ###################################################################
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {Chemical shift deltas}
 
 # Per-session data source definitions
 DEVise dteInsertCatalogEntry . {"4081d1" UNIXFILE 4081d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb:DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
@@ -28,9 +28,9 @@ DEVise setViewDimensions {View 1} 2
 DEVise setViewSolid3D {View 1} 2
 DEVise setViewXYZoom {View 1} 1
 DEVise setViewDisplayDataValues {View 1} 0
-DEVise setFont {View 1} {title} 2 12 0 0
+DEVise setFont {View 1} {title} 2 14 0 0
 DEVise setFont {View 1} {x axis} 2 12 0 0
-DEVise setFont {View 1} {y axis} 2 8 0 0
+DEVise setFont {View 1} {y axis} 2 10 0 0
 DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 1} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
@@ -56,9 +56,9 @@ DEVise setViewDimensions {View 2} 2
 DEVise setViewSolid3D {View 2} 2
 DEVise setViewXYZoom {View 2} 1
 DEVise setViewDisplayDataValues {View 2} 0
-DEVise setFont {View 2} {title} 2 12 0 0
+DEVise setFont {View 2} {title} 2 14 0 0
 DEVise setFont {View 2} {x axis} 2 12 0 0
-DEVise setFont {View 2} {y axis} 2 8 0 0
+DEVise setFont {View 2} {y axis} 2 10 0 0
 DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 2} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
@@ -84,9 +84,9 @@ DEVise setViewDimensions {View 3} 2
 DEVise setViewSolid3D {View 3} 2
 DEVise setViewXYZoom {View 3} 1
 DEVise setViewDisplayDataValues {View 3} 0
-DEVise setFont {View 3} {title} 2 12 0 0
+DEVise setFont {View 3} {title} 2 14 0 0
 DEVise setFont {View 3} {x axis} 2 12 0 0
-DEVise setFont {View 3} {y axis} 2 8 0 0
+DEVise setFont {View 3} {y axis} 2 10 0 0
 DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 3} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
@@ -112,9 +112,9 @@ DEVise setViewDimensions {View 4} 2
 DEVise setViewSolid3D {View 4} 2
 DEVise setViewXYZoom {View 4} 1
 DEVise setViewDisplayDataValues {View 4} 0
-DEVise setFont {View 4} {title} 2 12 0 0
-DEVise setFont {View 4} {x axis} 2 8 0 0
-DEVise setFont {View 4} {y axis} 2 8 0 0
+DEVise setFont {View 4} {title} 2 14 0 0
+DEVise setFont {View 4} {x axis} 2 10 0 0
+DEVise setFont {View 4} {y axis} 2 10 0 0
 DEVise viewSetHome {View 4} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 4} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 4} 1 0.500000 1.000000
@@ -322,15 +322,15 @@ DEVise create {mapping} {CB_DeltaShift_vs_CurrSeqNum} .4081d1 .4081d1#CB_DeltaSh
 DEVise setPixelWidth {.4081d1#CB_DeltaShift_vs_CurrSeqNum} 1
 DEVise create {mapping} {CurrSeqNum_vs_recId} .4081d1 .4081d1#CurrSeqNum_vs_recId {} {$recId} {$CurrSeqNum} {} 4 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081d1#CurrSeqNum_vs_recId} 1
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 14 0 0 16 {"Sequence number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
-DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 8 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 12 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
-DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 0 0 {} 37 8 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 0 0 {} 37 12 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 3} 1
-DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 4} {} 0 0 {} 37 8 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 4} {} 0 0 {} 37 12 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 4} 1
-DEVise create {mapping} {Label_text_vs_Label_text} .label .label#Label_text_vs_Label_text {} 0 0 {} 37 8 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_Label_text} .label .label#Label_text_vs_Label_text {} 0 0 {} 37 12 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text} 1
 
 # Create windows

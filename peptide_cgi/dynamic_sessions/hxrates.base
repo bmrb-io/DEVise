@@ -14,7 +14,7 @@
 ###################################################################
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {Hydrogen exchange rates}
 
 # Per-session data source definitions
 DEVise dteInsertCatalogEntry . {"4096r" UNIXFILE 4096r.dat HXRates $DEVISE_SCHEMA/physical/bmrb:HXRatesLog "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}

@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: May 08 2001 09:37:38
-# DEVise version: 1.7.2
-# DEVise date: May  8 2001
+# file date: Sep 20 2001 16:14:17
+# DEVise version: 1.7.4
+# DEVise date: Sep 19 2001
 # DEVise endHeader
 
 # H vs. N (simulated 1H-15N backbone HSQC spectrum) session template.
@@ -14,55 +14,58 @@
 ###################################################################
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {Simulated 1H-15N backbone HSQC spectrum}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/amino.str
 
 # Load color palette
-DEVise color SessionPalette {#000000000000               black
-#000000008b00               DarkBlue
-#00000000cd00               MediumBlue
-#00000000ff00               blue
-#000064000000               DarkGreen
-#00008b000000               green4
-#0000bf00ff00               DeepSkyBlue1
-#0000ff000000               green
-#0000ff00ff00               cyan
-#190019007000               MidnightBlue
-#1e009000ff00               DodgerBlue
-#1f001f001f00               gray12
-#22008b002200               ForestGreen
-#400040004000               gray25
-#610061006100               gray38
-#7f007f007f00               gray50
-#8b0000000000               DarkRed
-#8b0045001300               SaddleBrown
-#99003200cc00               DarkOrchid
-#a100a100a100               gray63
-#b20022002200               firebrick
-#b4005200cd00               MediumOrchid3
-#bf00bf00bf00               gray75
-#c000ff003e00               OliveDrab
-#e000e000e000               gray88
-#ee00ad000e00               Goldenrod2
-#ee00e800aa00               PaleGoldenrod
-#f000e6008c00               khaki
-#f500de00b300               wheat
-#fa00fa00d200               LightGoldenrodYellow
-#fd00f500e600               OldLace
-#ff0000000000               red
-#ff000000ff00               magenta
-#ff007f000000               DarkOrange1
-#ff00a5000000               orange
-#ff00d7000000               gold
-#ff00ff000000               yellow
-#ffffffffffff               white
+DEVise color SessionPalette {#000000000000                black
+#000000008b00                DarkBlue
+#00000000cd00                MediumBlue
+#00000000ff00                blue
+#000064000000                DarkGreen
+#00008b000000                green4
+#0000bf00ff00                DeepSkyBlue1
+#0000ff000000                green
+#0000ff00ff00                cyan
+#190019007000                MidnightBlue
+#1e009000ff00                DodgerBlue
+#1f001f001f00                gray12
+#22008b002200                ForestGreen
+#400040004000                gray25
+#610061006100                gray38
+#7f007f007f00                gray50
+#8b0000000000                DarkRed
+#8b0045001300                SaddleBrown
+#99003200cc00                DarkOrchid
+#a100a100a100                gray63
+#b20022002200                firebrick
+#b4005200cd00                MediumOrchid3
+#bf00bf00bf00                gray75
+#c000ff003e00                OliveDrab
+#e000e000e000                gray88
+#ee00ad000e00                Goldenrod2
+#ee00e800aa00                PaleGoldenrod
+#f000e6008c00                khaki
+#f500de00b300                wheat
+#fa00fa00d200                LightGoldenrodYellow
+#fd00f500e600                OldLace
+#ff0000000000                red
+#ff000000ff00                magenta
+#ff007f000000                DarkOrange1
+#ff00a5000000                orange
+#ff00d7000000                gold
+#ff00ff000000                yellow
+#ffffffffffff                white
 }
 
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4267hn1" UNIXFILE 4267hn1.dat HvsN $DEVISE_SCHEMA/physical/bmrb:HvsN "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267rc1" UNIXFILE 4267rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb:ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267hn1" UNIXFILE 4267hn1.dat HvsN /p/devise/demo/schema/schema/physical/bmrb:HvsN "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267rc1" UNIXFILE 4267rc1.dat ResCount /p/devise/demo/schema/schema/physical/bmrb:ResCount "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 3} -0.500000 1.500000 -0.500000 19.500000 4 0
@@ -149,7 +152,7 @@ DEVise setDupElim {View 5} {1}
 DEVise setNiceAxes {View 5} 0 0
 DEVise viewSetDisabledActions {View 5} 1 0 0 1
 DEVise setShowMouseLocation {View 5} {1}
-DEVise create {view} {Scatter} {View 1} -10.200000 -6.310000 -132.960007 -104.430000 37 0
+DEVise create {view} {Scatter} {View 1} -10.225000 -6.285000 -133.210007 -104.180000 37 0
 DEVise setLabel {View 1} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -157,8 +160,8 @@ DEVise setViewSolid3D {View 1} 2
 DEVise setViewXYZoom {View 1} 1
 DEVise setViewDisplayDataValues {View 1} 0
 DEVise setFont {View 1} {title} 2 14 0 0
-DEVise setFont {View 1} {x axis} 2 8 0 0
-DEVise setFont {View 1} {y axis} 2 8 0 0
+DEVise setFont {View 1} {x axis} 2 10 0 0
+DEVise setFont {View 1} {y axis} 2 10 0 0
 DEVise viewSetHome {View 1} 1 1 1 0 0.250000 0.250000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 1} 1 1 1 0 0.25 0.25 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
@@ -177,7 +180,7 @@ DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
 DEVise setShowMouseLocation {View 1} {1}
-DEVise create {view} {Scatter} {View 2} -10.200000 -6.310000 -132.960007 -104.430000 37 0
+DEVise create {view} {Scatter} {View 2} -10.225000 -6.285000 -133.210007 -104.180000 37 0
 DEVise setLabel {View 2} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 2} 00000000
 DEVise setViewDimensions {View 2} 2
@@ -185,8 +188,8 @@ DEVise setViewSolid3D {View 2} 2
 DEVise setViewXYZoom {View 2} 1
 DEVise setViewDisplayDataValues {View 2} 0
 DEVise setFont {View 2} {title} 2 14 0 0
-DEVise setFont {View 2} {x axis} 2 8 0 0
-DEVise setFont {View 2} {y axis} 2 8 0 0
+DEVise setFont {View 2} {x axis} 2 10 0 0
+DEVise setFont {View 2} {y axis} 2 10 0 0
 DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
@@ -217,9 +220,9 @@ DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 {.4267hn1#Hshift_vs_Nshift 2
 DEVise setPixelWidth {.4267hn1#Hshift_vs_Nshift 2} 1
 DEVise create {mapping} {AcidName_vs_ResNum} .4267hn1 {.4267hn1#AcidName_vs_ResNum 2} {} 0 {19-$AcidName} {} 37 1 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#AcidName_vs_ResNum 2} 1
-DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 {.4267rc1#View 3} {} 0 {19-$ResLabel} {} 37 0.03 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 {.4267rc1#View 3} {} 0 {19-$ResLabel} {} 37 14 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#View 3} 1
-DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 .4267rc1#AcidName_vs_ResNum {} 1 {19-$ResLabel} {} 37 0.03 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 .4267rc1#AcidName_vs_ResNum {} 1 {19-$ResLabel} {} 37 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#AcidName_vs_ResNum} 1
 
 # Create windows
@@ -331,11 +334,15 @@ DEVise insertViewHistory {View 1} {-10.20} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 1} {-10.20} {-132.96} {-6.31} {-104.43} 0
 DEVise insertViewHistory {View 1} {-10.20} {-132.96} {-6.31} {-104.43} -25
 DEVise insertViewHistory {View 1} {-10.20} {-132.96} {-6.31} {-104.43} 0
+DEVise insertViewHistory {View 1} {-10.20} {-132.96} {-6.31} {-104.43} 71
+DEVise insertViewHistory {View 1} {-10.22} {-133.21} {-6.28} {-104.18} 0
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-10.20} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 2} {-10.20} {-132.96} {-6.31} {-104.43} 0
 DEVise insertViewHistory {View 2} {-10.20} {-132.96} {-6.31} {-104.43} -25
 DEVise insertViewHistory {View 2} {-10.20} {-132.96} {-6.31} {-104.43} 0
+DEVise insertViewHistory {View 2} {-10.20} {-132.96} {-6.31} {-104.43} 71
+DEVise insertViewHistory {View 2} {-10.22} {-133.21} {-6.28} {-104.18} 0
 
 # Set camera location for each view
 DEVise set3DLocation {View 3} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
@@ -345,7 +352,3 @@ DEVise set3DLocation {View 1} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5
 DEVise set3DLocation {View 2} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
 
 # Set string tables for each view
-
-DEVise updateFilters
-DEVise waitForQueries
-DEVise updateFilters

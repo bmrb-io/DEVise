@@ -7,3 +7,6 @@ Num Date        Status  Description
 			we don't deal with that correctly. (rkw)
 
 002 01/17/01	OPEN	Need help for coupling constants. (rkw)
+
+003 09/21/01	OPEN	hxrates.base and order.base should be working
+			session files. (rkw)

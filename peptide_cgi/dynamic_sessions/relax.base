@@ -14,7 +14,7 @@
 ###################################################################
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {Relaxation values}
 
 # Per-session data source definitions
 DEVise dteInsertCatalogEntry . {"4267t11" UNIXFILE 4267t11.dat relax $DEVISE_SCHEMA/physical/bmrb:relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
@@ -29,8 +29,8 @@ DEVise setViewSolid3D {View 1} 2
 DEVise setViewXYZoom {View 1} 1
 DEVise setViewDisplayDataValues {View 1} 0
 DEVise setFont {View 1} {title} 2 14 0 0
-DEVise setFont {View 1} {x axis} 2 8 0 0
-DEVise setFont {View 1} {y axis} 2 8 0 0
+DEVise setFont {View 1} {x axis} 2 10 0 0
+DEVise setFont {View 1} {y axis} 2 10 0 0
 DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 1} 1 1 1 1 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
@@ -85,7 +85,7 @@ DEVise createMappingClass {Label_text_vs_recId}
 # Create mapping instances (GData)
 DEVise create {mapping} {relax_value_vs_Residue_seq_code} .4267t11 .4267t11#relax_value_vs_Residue_seq_code {} {$Residue_seq_code} {$relax_value} {} 6 1 0 0 2 {} {$relax_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267t11#relax_value_vs_Residue_seq_code} 1
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 50 50 {} 37 14 0 0 16 {"Sequence Number"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 50 50 {} 37 12 0 0 16 {"Sequence Number"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 
 # Create windows

@@ -14,7 +14,7 @@
 ###################################################################
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {Coupling constants}
 
 # Per-session data source definitions
 DEVise dteInsertCatalogEntry . {"4096g1" UNIXFILE 4096g1.dat CouplingConstant $DEVISE_SCHEMA/physical/bmrb:CouplingConstant "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
@@ -29,8 +29,8 @@ DEVise setViewSolid3D {View 1} 2
 DEVise setViewXYZoom {View 1} 1
 DEVise setViewDisplayDataValues {View 1} 0
 DEVise setFont {View 1} {title} 2 14 0 0
-DEVise setFont {View 1} {x axis} 2 8 0 0
-DEVise setFont {View 1} {y axis} 2 8 0 0
+DEVise setFont {View 1} {x axis} 2 12 0 0
+DEVise setFont {View 1} {y axis} 2 12 0 0
 DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 1} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
@@ -56,9 +56,9 @@ DEVise setViewDimensions {View 2} 2
 DEVise setViewSolid3D {View 2} 2
 DEVise setViewXYZoom {View 2} 1
 DEVise setViewDisplayDataValues {View 2} 0
-DEVise setFont {View 2} {title} 0 12 0 0
-DEVise setFont {View 2} {x axis} 0 12 0 0
-DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise setFont {View 2} {title} 2 12 0 0
+DEVise setFont {View 2} {x axis} 2 10 0 0
+DEVise setFont {View 2} {y axis} 2 10 0 0
 DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
@@ -84,9 +84,9 @@ DEVise setViewDimensions {View 3} 2
 DEVise setViewSolid3D {View 3} 2
 DEVise setViewXYZoom {View 3} 1
 DEVise setViewDisplayDataValues {View 3} 0
-DEVise setFont {View 3} {title} 0 12 0 0
-DEVise setFont {View 3} {x axis} 0 12 0 0
-DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise setFont {View 3} {title} 2 12 0 0
+DEVise setFont {View 3} {x axis} 2 10 0 0
+DEVise setFont {View 3} {y axis} 2 10 0 0
 DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
 DEVise viewSetImplicitHome {View 3} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 3} 1 0.500000 1.000000

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2001/07/25 21:32:53  wenger
+// Various distribution-related cleanups and fixes; added a few missing
+// help files.
+//
 // Revision 1.20  2001/07/25 19:56:23  wenger
 // Started adding configuration setup stuff; s2d gets URLs from properties
 // file.
@@ -127,7 +131,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.12";
+    public static final String PEP_CGI_VERSION = "2.13";
 
     private int _accessionNum;
     private String _dataDir;
