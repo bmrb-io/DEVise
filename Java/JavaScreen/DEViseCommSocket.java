@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2001/02/16 17:45:57  xuk
+// Changed variable cgiFlag to flag.
+//
 // Revision 1.15  2001/01/30 18:42:47  wenger
 // Cleaned up formatting.
 //
