@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1996/12/30 23:51:08  andyt
+#  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+#  now have member functions for creating and destroying Tk windows.
+#  Interface to the EmbeddedTk server is in ETkIfc.h
+#
 #  Revision 1.31  1996/11/26 16:47:43  ssl
 #  Added support for Stacked Opaque and Transparent views
 #
@@ -58,7 +63,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c DevError.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
-	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
+	Util.c View.c ViewWin.c ViewLayout.C \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
