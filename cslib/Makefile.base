@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/10/17 20:47:03  jussi
+#  Initial revision.
+#
 
 ############################################################
 
@@ -67,24 +70,19 @@ all: client server
 
 pure: client.pure server.pure
 
-COMPDATE = $(CC) -c $(CFLAGS) ../../generic/CompDate.c
-CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o CompDate.o -L. -lcs $(ARCH_SYSLIBS)
-SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o CompDate.o -L. -lcs $(ARCH_SYSLIBS)
+CLIENT = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -lcs $(ARCH_SYSLIBS)
+SERVER = $(CC) -o $@ $(ARCH_LDFLAGS) $@.o -L. -lcs $(ARCH_SYSLIBS)
 
 client: client.o $(LIB)
-	$(COMPDATE)
 	$(CLIENT) $(ARCH_LDPOST)
 
 client.pure: client.o $(LIB)
-	$(COMPDATE)
 	$(PURIFY) $(PURE_OPT) $(CLIENT) $(ARCH_LDPOST)
 
 server: server.o $(LIB)
-	$(COMPDATE)
 	$(SERVER) $(ARCH_LDPOST)
 
 server.pure: server.o $(LIB)
-	$(COMPDATE)
 	$(PURIFY) $(PURE_OPT) $(SERVER) $(ARCH_LDPOST)
 
 $(LIB): $(LIBOBJ)
@@ -121,4 +119,4 @@ clean: mostlyclean
 	-rm -f client client.pure server server.pure
 
 mostlyclean:
-	-rm -f CompDate.o $(TESTOBJ) $(LOCALOBJ) $(LIB)
+	-rm -f $(TESTOBJ) $(LOCALOBJ) $(LIB)
