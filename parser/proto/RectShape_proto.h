@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/12 23:35:08  jussi
+  Added View * parameter to DrawGDataArray(), corresponding to changes
+  made to graphics.new/MapInterpShape.h and MappingInterp.c.
+
   Revision 1.2  1995/12/28 20:37:01  jussi
   Small fixes to remove compiler warnings.
 
@@ -56,8 +60,8 @@
 
 class CLASSNAME : public RectShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
+                          Coord &width, Coord &height) {
 #ifdef DYNAMIC_SHAPEATTR_0
     width = 0.0;
 #else
@@ -71,7 +75,7 @@ public:
 
 #ifdef DYNAMIC_SHAPEATTR
     for(int i = 0; i < numSyms; i++) {
-      GDATANAME *gdata = (GDATANAME *)gdataArray[i];
+      GDATANAME *gdata = &((GDATANAME *)gdataPtr)[i];
       Coord temp;
 #ifdef DYNAMIC_SHAPEATTR_0
       temp = GDATA_SHAPEATTR_0;
@@ -88,8 +92,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
+    if (view->GetNumDimensions() == 3)
+      return;
+
+    Coord maxWidth, maxHeight, maxDepth;
+    map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
