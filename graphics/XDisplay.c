@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.86  2001/07/31 15:53:22  wenger
+  Added -fontkludge argument to allow bypassing of font families that
+  don't work with Xvfb on SPARC/Solaris.
+
   Revision 1.85  2001/05/08 14:14:49  wenger
   Improved error message if we can't connect to X server.
 
@@ -457,17 +461,13 @@ XDisplay::XDisplay(char *name, Boolean fontKludge)
     Exit::DoExit(1);
   }
 
+  GetScreenRes();
+
   _fontKludge = fontKludge;
 
-  /* set normal font to be the current font */
   _fontStruct = NULL;
-  SetFont("Courier", "Medium", "r", "Normal", 12.0);
-  _normalFontStruct = _fontStruct;
-  if (!_normalFontStruct) {
-      fprintf(stderr, "Cannot load 12-point Courier font\n");
-      reportErrNosys("Fatal error");//TEMP -- replace with better message
-      Exit::DoExit(1);
-  }
+  _normalFontStruct = NULL;
+  SetDefaultFont();
 
   /* init stipples for patterns */
   Window win = XCreateSimpleWindow(_display, DefaultRootWindow(_display),
@@ -534,36 +534,47 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
     pointSize);
 #endif
 
-  if (_fontKludge) {
-	// Helvetica and Times fonts don't work with Xvfb on SPARC/Solaris.
-    if (!strcmp(family, "Helvetica") || !strcmp(family, "Times")) {
-	  family = "New Century Schoolbook";
-	}
-  }
+    if (_fontKludge) {
+	    // Helvetica and Times fonts don't work with Xvfb on SPARC/Solaris.
+        if (!strcmp(family, "Helvetica") || !strcmp(family, "Times")) {
+	        family = "New Century Schoolbook";
+	    }
+    }
 
-  /* figure out the required point size from the size of the 
-     display and the filter information ... do the necessary
-     pixel to point conversion depending on the resolution of the
-     screen  -  hope that works fine and everywhere .... sanj */
-
-  float pixelSize = pointSize / PointsPerPixel();
-  
     XFontStruct *oldFont = _fontStruct;
 
     /* Special case for Courier or Helvetica italic. */
     if (((!strcasecmp(family, "courier")) ||
       (!strcasecmp(family, "helvetica"))) && !strcasecmp(slant, "i")) {
-      slant = "o";
+        slant = "o";
     }
 
     /*
        Attempt to load font as specified. If font cannot be loaded,
        increase point size by one unit and try again.
     */
-    for(float p = pixelSize; p <= pixelSize + 5.0; p += 1.0) {
-        char fname[128];
-                sprintf(fname, "-*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
-                  family, weight, slant, width, (int) (p * 10.0));
+    for(float p = pointSize; p <= pointSize + 5.0; p += 1.0) {
+	    const int bufSize = 256;
+	    char fname[bufSize];
+
+	    // Note: fields of font name are as follows:
+	    //   foundry
+	    //   font family
+	    //   weight
+	    //   slant
+	    //   set width
+	    //   additional style
+	    //   pixels
+	    //   points (in tenths of a point)
+	    //   horizontal resolution (dpi)
+	    //   vertical resolution (dpi)
+	    //   spacing
+	    //   average width (in tenths of a pixel)
+	    //   character set
+        int formatted = snprintf(fname, bufSize,
+	      "-*-%s-%s-%s-%s-*-*-%d-%d-%d-*-*-*-*", family, weight, slant, width,
+		  (int) (p * 10.0), _desiredScreenXRes, _desiredScreenYRes);
+        checkAndTermBuf(fname, bufSize, formatted);
 
 #if 0
         printf("  Trying font %s\n", fname);
@@ -582,7 +593,7 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
             return;
         }
     }
-    fprintf(stderr, "Warning: could not find font %s %f\n", family, pixelSize);
+    fprintf(stderr, "Warning: could not find font %s %f\n", family, pointSize);
     _fontStruct = _normalFontStruct;
 }
 
@@ -1368,30 +1379,10 @@ void XDisplay::InternalProcessing()
 
 Coord XDisplay::PointsPerPixel()
 {
-  int screen_number  = XDefaultScreen(_display);
+  const int pointsPerInch = 72;
 
-  int display_height_inPixels = XDisplayHeight(_display,screen_number);
-  int display_height_inMM = XDisplayHeightMM(_display,screen_number);
-
-  int display_width_inPixels = XDisplayWidth(_display,screen_number);
-  int display_width_inMM = XDisplayWidthMM(_display,screen_number);
-
-#if defined (DEBUG)
-  cout << "height(pixels) =" <<  display_height_inPixels << endl;
-  cout << "height(MM) =" <<   display_height_inMM << endl;
-
-  cout << "width(pixels) = " <<   display_width_inPixels << endl;
-  cout << "width(MM) = " <<   display_width_inMM << endl;
-#endif
-
-  /* 25.4 from inches to mm conversion 
-     72   point  is  1/72 of an inch  */
- 
-  Coord pointsPerPixelHor = ((float)(display_width_inMM * 72)) /
-    ((float)(display_width_inPixels * 25.4));
-
-  Coord pointsPerPixelVert = ((float)(display_height_inMM * 72)) /
-    ((float)(display_height_inPixels * 25.4));
+  Coord pointsPerPixelHor = (float)pointsPerInch / (float)_desiredScreenXRes;
+  Coord pointsPerPixelVert = (float)pointsPerInch / (float)_desiredScreenYRes;
 
   if (fabs(pointsPerPixelHor - pointsPerPixelVert) > 0.01) {
     fprintf(stderr,
@@ -1404,4 +1395,71 @@ Coord XDisplay::PointsPerPixel()
 #endif
 
   return pointsPerPixelHor;
+}
+
+void
+XDisplay::GetScreenRes()
+{
+#if defined(DEBUG)
+  printf("XDisplay::GetScreenRes()\n");
+#endif
+
+  int screen_number  = XDefaultScreen(_display);
+
+  int dpyWdPixel = XDisplayWidth(_display,screen_number);
+  int dpyWdMm = XDisplayWidthMM(_display,screen_number);
+
+  int dpyHtPixel = XDisplayHeight(_display,screen_number);
+  int dpyHtMm = XDisplayHeightMM(_display,screen_number);
+
+#if defined (DEBUG)
+  cout << "  width (pixels) = " << dpyWdPixel << endl;
+  cout << "  width (mm) = " << dpyWdMm << endl;
+
+  cout << "  height (pixels) = " << dpyHtPixel << endl;
+  cout << "  height (mm) = " << dpyHtMm << endl;
+#endif
+
+  const double mmPerInch = 25.4;
+
+  double dpyHtIn = dpyHtMm / mmPerInch;
+  double dpyWdIn = dpyWdMm / mmPerInch;
+
+  _desiredScreenXRes = (int)(dpyWdPixel / dpyWdIn + 0.5);
+  _desiredScreenYRes = (int)(dpyHtPixel / dpyHtIn + 0.5);
+
+#if defined(DEBUG)
+  printf("  screen resolution: %d %d\n", _desiredScreenXRes,
+      _desiredScreenYRes);
+#endif
+}
+
+void
+XDisplay::SetDesiredScreenXRes(int resolution)
+{
+  DeviseDisplay::SetDesiredScreenXRes(resolution);
+  SetDefaultFont();
+}
+
+void
+XDisplay::SetDesiredScreenYRes(int resolution)
+{
+  DeviseDisplay::SetDesiredScreenYRes(resolution);
+  SetDefaultFont();
+}
+
+void
+XDisplay::SetDefaultFont()
+{
+  if (_normalFontStruct != NULL) {
+    XFreeFont(_display, _normalFontStruct);
+  }
+
+  SetFont("Courier", "Medium", "r", "Normal", 12.0);
+  _normalFontStruct = _fontStruct;
+  if (!_normalFontStruct) {
+      fprintf(stderr, "Cannot load 12-point Courier font\n");
+      reportErrNosys("Fatal error");//TEMP -- replace with better message
+      Exit::DoExit(1);
+  }
 }

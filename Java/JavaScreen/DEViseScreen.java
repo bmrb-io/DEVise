@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.70  2001/05/11 20:36:08  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.69  2001/05/03 16:25:56  xuk
 // Added multiply factor for displaying mouse postion.
 // Changed updateViewDataRange() function;
@@ -242,7 +245,8 @@ public class DEViseScreen extends Panel
     {
         jsc = what;
 
-        screenDim = new Dimension(jsc.jsValues.uiglobals.screenSize.width, jsc.jsValues.uiglobals.screenSize.height);
+        screenDim = new Dimension(jsc.jsValues.uiglobals.screenSize.width,
+	  jsc.jsValues.uiglobals.screenSize.height);
 
         setLayout(null);
         setBackground(jsc.jsValues.uiglobals.bg);

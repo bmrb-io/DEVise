@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.111  2001/08/17 19:01:37  wenger
+// Cleaned up formatting.
+//
 // Revision 1.110  2001/05/11 20:36:14  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -522,10 +525,10 @@ public class jsdevisec extends Panel
 	      DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
 
-		//
-		// Constrain the screen width to be within the min and max width,
-		// if they are valid; width is set to max if not already set.
-		//
+	//
+	// Constrain the screen width to be within the min and max width,
+	// if they are valid; width is set to max if not already set.
+	//
         if (jsValues.uiglobals.screenSize.width <= 0) {
 
             jsValues.uiglobals.screenSize.width =
@@ -546,10 +549,10 @@ public class jsdevisec extends Panel
 
         }
 
-		//
-		// Constrain the screen height to be within the min and max height,
-		// if they are valid; height is set to max if not already set.
-		//
+	//
+	// Constrain the screen height to be within the min and max height,
+	// if they are valid; height is set to max if not already set.
+	//
         if (jsValues.uiglobals.screenSize.height <= 0) {
 
             jsValues.uiglobals.screenSize.height =
@@ -569,6 +572,12 @@ public class jsdevisec extends Panel
 			  jsValues.uiglobals.maxScreenSize.height;
 
         }
+
+	//
+	// Determine the screen resolution.
+	//
+        Toolkit kit = Toolkit.getDefaultToolkit();
+	jsValues.uiglobals.screenRes = kit.getScreenResolution();
 
         jscreen = new DEViseScreen(this);
         Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
@@ -712,7 +721,13 @@ public class jsdevisec extends Panel
                 currentSession = sessionName;
             }
 
-            dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + jsValues.uiglobals.screenSize.width + " " + jsValues.uiglobals.screenSize.height + "\n" + DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
+            dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
+	      jsValues.uiglobals.screenSize.width + " " +
+	      jsValues.uiglobals.screenSize.height + " " +
+	      jsValues.uiglobals.screenRes + " " +
+	      jsValues.uiglobals.screenRes + "\n" +
+	      DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
+	      currentSession + "}");
         }
     } // end of constructor
 
@@ -1355,7 +1370,9 @@ class SessionDlg extends Frame
                             jsc.dispatcher.start(
 			      DEViseCommands.SET_DISPLAY_SIZE + " " +
 			      jsc.jsValues.uiglobals.screenSize.width + " " +
-			      jsc.jsValues.uiglobals.screenSize.height + "\n" +
+			      jsc.jsValues.uiglobals.screenSize.height + " " +
+	                      jsc.jsValues.uiglobals.screenRes + " " +
+	                      jsc.jsValues.uiglobals.screenRes + "\n" +
 			      DEViseCommands.OPEN_SESSION + " {" +
 			      jsc.currentDir + "/" + sessionName + "}");
                             close();
@@ -1403,7 +1420,9 @@ class SessionDlg extends Frame
                             jsc.dispatcher.start(
 			      DEViseCommands.SET_DISPLAY_SIZE + " " +
 			      jsc.jsValues.uiglobals.screenSize.width + " " +
-			      jsc.jsValues.uiglobals.screenSize.height + "\n" +
+			      jsc.jsValues.uiglobals.screenSize.height + " " +
+	                      jsc.jsValues.uiglobals.screenRes + " " +
+	                      jsc.jsValues.uiglobals.screenRes + "\n" +
 			      DEViseCommands.OPEN_SESSION + " {" +
 			      jsc.currentDir + "/" + sessionName + "}");
                             close();

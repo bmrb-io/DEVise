@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.116  2001/05/18 19:25:35  wenger
+  Implemented the DEVise end of 3D drill-down; changed DEVise version to
+  1.7.3.
+
   Revision 1.115  2001/05/03 19:39:11  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -570,8 +574,8 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 6;
-static const int protocolMinorVersion = 2;
+static const int protocolMajorVersion = 7;
+static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -1619,14 +1623,17 @@ JavaScreenCmd::SetDisplaySize()
 	  "JavaScreenCmd::SetDisplaySize(", _argc, _argv, ")\n");
 #endif
 
-	if (_argc != 2) {
-		errmsg = "Usage: SetDisplaySize <width> <height>";
+	if (_argc != 4) {
+		errmsg = "Usage: SetDisplaySize <width> <height> <x resolution> "
+		  "<y resolution>";
 		_status = ERROR;
 		return;
 	}
 
     DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(_argv[0]);
     DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = atoi(_argv[1]);
+    DeviseDisplay::DefaultDisplay()->SetDesiredScreenXRes(atoi(_argv[2]));
+    DeviseDisplay::DefaultDisplay()->SetDesiredScreenYRes(atoi(_argv[3]));
 
 	_status = DONE;
 	return;

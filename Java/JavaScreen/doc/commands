@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 6.2.
+version 7.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -186,9 +186,11 @@ see comments in DEViseCommSocket.java.
     Purpose: tells the devised the size of the area in which the JavaScreen
              can display views, so that the view sizes can be adjusted to fit
              within that area.
-    Arguments: 2
+    Arguments: 4
         <width>: width of the display area, in pixels.
         <height>: height of the display area, in pixels.
+	<x resolution>: X resolution of display, in pixels per inch.
+	<y resolution>: Y resolution of display, in pixels per inch.
 
     4.9 JAVAC_KeyAction
     Purpose: tells the devised that the user has pressed a key with the mouse

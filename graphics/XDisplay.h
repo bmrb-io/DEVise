@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  2001/07/31 15:53:22  wenger
+  Added -fontkludge argument to allow bypassing of font families that
+  don't work with Xvfb on SPARC/Solaris.
+
   Revision 1.36  1999/09/02 17:25:53  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -240,6 +244,12 @@ class XDisplay : public DeviseDisplay
 
     virtual Coord PointsPerPixel();
 
+#ifndef LIBCS
+  virtual void SetDesiredScreenXRes(int resolution);
+  virtual void SetDesiredScreenYRes(int resolution);
+
+#endif
+
 protected:
 #if !defined(LIBCS)
     /* Register display with the dispatcher */
@@ -292,13 +302,17 @@ protected:
       realHeight = height * winHeight;
     }
 
+    void GetScreenRes();
+
+    // Set normal font to be default.
+    void SetDefaultFont();
+
 private:
     Display *_display;		    /* X display */
     XWindowRepList _winList;        /* list of X windows created */
     Pixmap _stipples[XNumBitmaps];  /* bitmaps for patterns */
     XFontStruct *_fontStruct;       /* current font */
     XFontStruct *_normalFontStruct; /* big font used in window */
-    XFontStruct *_smallFontStruct;  /* small font used in window */
     Boolean _fontKludge;            /* use SPARC/Solaris/Xvfb kludge */
 };
 

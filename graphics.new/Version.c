@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.61  2001/05/18 19:25:35  wenger
+  Implemented the DEVise end of 3D drill-down; changed DEVise version to
+  1.7.3.
+
   Revision 1.60  2001/02/20 20:02:54  wenger
   Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
   to the trunk.
@@ -335,7 +339,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.3";
+static const char *	version = "1.7.4";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2001";

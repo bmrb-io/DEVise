@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/12/15 18:47:11  wenger
+  New option in fixed text symbol: if size is <=1, it is assumed to be a
+  fraction of the screen height, rather than the font size in points.
+
   Revision 1.30  1998/05/14 18:21:01  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -252,9 +256,18 @@ public:
   virtual void SetTasvirServer(const char *server) = 0;
 
 #ifndef LIBCS
-/* Get/set desired screen size */
+/* Get/set desired screen size and resolution */
   virtual int &DesiredScreenWidth() { return _desiredScreenWidth; }
   virtual int &DesiredScreenHeight() { return _desiredScreenHeight; }
+
+  // Resolution is dots per inch.
+  virtual int DesiredScreenXRes() { return _desiredScreenXRes; }
+  virtual int DesiredScreenYRes() { return _desiredScreenYRes; }
+
+  virtual void SetDesiredScreenXRes(int resolution) { _desiredScreenXRes =
+    resolution; }
+  virtual void SetDesiredScreenYRes(int resolution) { _desiredScreenYRes =
+    resolution; }
 #endif
 
   virtual Coord PointsPerPixel() = 0;
@@ -279,6 +292,8 @@ protected:
 #ifndef LIBCS
   int _desiredScreenWidth;
   int _desiredScreenHeight;
+  int _desiredScreenXRes;
+  int _desiredScreenYRes;
 #endif
 };
 

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2001/05/21 17:15:19  wenger
+// Changed JS version to 4.3 because of package.
+//
 // Revision 1.54  2001/05/11 20:36:07  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -212,7 +215,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("4.3");
-    public static final String PROTOCOL_VERSION = new String("6.2");
+    public static final String PROTOCOL_VERSION = new String("7.0");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

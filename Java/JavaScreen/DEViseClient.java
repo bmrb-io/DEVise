@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2001/05/11 20:36:04  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.41  2001/04/21 20:53:54  xuk
 // Added functionality to disable collaboration.
 // Changed getCmd().
@@ -232,6 +235,8 @@ public class DEViseClient
 
     public int screenDimX = -1;
     public int screenDimY = -1;
+    public int screenResX = -1;
+    public int screenResY = -1;
 
     public long lastActiveTime = -1;
     public long lastSuspendTime = -1;

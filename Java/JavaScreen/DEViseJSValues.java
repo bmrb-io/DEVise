@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/05/11 20:36:08  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.3  2001/05/07 21:53:25  wenger
 // Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
 // Xvfb.
@@ -102,6 +105,7 @@ public final class DEViseJSValues
 	public Dimension maxScreenSize = new Dimension(0, 0);
 	public Dimension minScreenSize = new Dimension(0, 0);
 	public Dimension screenSize = new Dimension(0, 0);
+	public int screenRes = -1;
 	public Dimension rubberBandLimit = new Dimension(4, 4);
 	public Color bg = new Color(64, 96, 0);
 	public Color bg_warn = new Color(255, 0, 0);

@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2001/05/11 20:36:08  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.65  2001/04/25 19:41:49  xuk
 // Fixed bug 661: when a JS goes into Collaboration mode from Socket mode,
 // It will not become an available collaboration leader.
@@ -871,11 +874,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     {
         boolean error = false;
         String[] cmds = DEViseGlobals.parseString(clientCmd);
-        if (cmds != null && cmds.length == 3) {
+        if (cmds != null && cmds.length == 5) {
             try {
                 client.screenDimX = Integer.parseInt(cmds[1]);
                 client.screenDimY = Integer.parseInt(cmds[2]);
-                if (client.screenDimX < 1 || client.screenDimY < 1) {
+                client.screenResX = Integer.parseInt(cmds[3]);
+                client.screenResY = Integer.parseInt(cmds[4]);
+                if (client.screenDimX < 1 || client.screenDimY < 1 ||
+		  client.screenResX < 1 || client.screenResY < 1) {
 		    throw new NumberFormatException();
 	        }
             } catch (NumberFormatException e) {
@@ -891,6 +897,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	      clientCmd + "\"}";
             client.screenDimX = -1;
             client.screenDimY = -1;
+            client.screenResX = -1;
+            client.screenResY = -1;
         } else {
             sendCmd(clientCmd);
         }
@@ -913,9 +921,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             client.sessionName = p;
 
             boolean error = false;
-            if (client.screenDimX > 0 && client.screenDimY > 0) {
+            if (client.screenDimX > 0 && client.screenDimY > 0 &&
+	      client.screenResX > 0 && client.screenResY > 0) {
                 if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " +
-		  client.screenDimX + " " + client.screenDimY)) {
+		  client.screenDimX + " " + client.screenDimY + " " +
+		  client.screenResX + " " + client.screenResY)) {
                     error = true;
                 }
             }
@@ -989,7 +999,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 boolean error = false;
                 if (client.screenDimX > 0 && client.screenDimY > 0) {
                     if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " +
-		      client.screenDimX + " " + client.screenDimY)) {
+		      client.screenDimX + " " + client.screenDimY + " " +
+		      client.screenResX + " " + client.screenResY)) {
                         error = true;
                     //} else {
                     //    pop.pn("Switch error: can not send " +
