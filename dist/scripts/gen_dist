@@ -118,7 +118,7 @@ if (-f $logfile) then
 endif
 set src = demo
 set dest = $target/demo.tar.gz
-tar cvfz $dest $src > $logfile
+tar cvfzX $dest scripts/tar_exclude $src > $logfile
 
 echo ""
 echo Done!

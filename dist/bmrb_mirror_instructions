@@ -1,0 +1,115 @@
+	Instructions for DEVise/JavaScreen/Peptide-CGI Installation
+		$Id$
+
+* CONTENTS
+
+This file contains instructions for installing the DEVise-related software
+at BMRB web sites.
+
+
+* OVERALL INSTALLATION
+
+Installation of the DEVise-related software should be done after installing
+the rest of the web site mirror, so that you can test the software after
+it is installed.
+
+There are four main parts to the DEVise-related mirror installation:
+- Demo area skeleton
+- DEVise itself
+- JavaScreen
+- Peptide-cgi
+
+The parts should be installed in that order.
+
+
+* FILES
+
+To get the distribution files, go to:
+
+    ftp://ftp.cs.wisc.edu/pub/devise
+
+Then go to the directory containing the most recent DEVise distribution.
+The directory is of the form Devise-x.x.x, where x.x.x is the DEVise version.
+(At the time of writing, the most recent version is 1.7.4.)
+
+You should get the following files:
+- demo.tar.gz
+- JavaScreen.tar.gz
+- linux-intel.tar.gz, solaris-intel.tar.gz, or solaris-sparc.tar.gz, depending
+  on your machine architecture
+- peptide-cgi_x.x.tgz (where x.x is the peptide-cgi version)
+
+
+* DEMO AREA INSTALLATION
+
+At the present time, the demo area skeleton must be installed in /p/devise.
+(We hope to fix that limitation soon.)
+
+To install the demo area skeleton, simply create a /p/devise directory.
+Then go to that directory and untar the demo.tar.gz file.
+
+
+* DEVISE INSTALLATION
+
+Note: the linux-intel distribution may not work on versions of Linux other
+than RedHat 6.2.  If you have a different version of Linux, and experience
+problems, please contact the DEVise Development group (devise-sup@cs.wisc.edu).
+We are working on a fix for this problem.
+
+First, untar the linux-intel.tar.gz, solaris-intel.tar.gz, or
+solaris-sparc.tar.gz file.
+
+To make sure that DEVise itself runs properly, go to the run directory,
+and run the script devise.loc.  When DEVise starts up, select Open from
+the Session menu, and then select one of the DEVise session (*.ds) files.
+When you open the session file, one or more windows with graphs should
+be displayed.  You should also run the script devise.ldemo to make sure
+that the demo area skeleton works correctly.
+
+Note: in the current form of the distribution, DEVise itself is not
+configured to be installed other that as part of the JavaScreen installation.
+This limitation should be removed in the near future.
+
+
+* JAVASCREEN INSTALLATION
+
+First, untar the JavaScreen.tar.gz file.  You MUST untar this file in the
+same directory where you untarred the DEVise distribution file (because
+the JavaScreen distribution relies on relative links to some of the DEVise
+files).
+
+Then copy the appropriate Makefile.config.* file to Makefile.config,
+and edit Makefile.config appropriately.  After doing this, run the
+command 'make -f Makefile.setup clean setup'.
+
+If you are running on a SPARC/Solaris system, edit DEVise_savepid,
+and replace '-fontkludge 0' with '-fontkludge 1'.  (This is a workaround
+for a limitation in Xvfb on SPARC/Solaris).
+
+You can test the JavaScreen as follows:
+- Run the command 'restart_jspop'.
+- This should start the following processes:
+    - java jspop
+    - java jss
+    - Xvfb
+    - devised
+- Then run js.  You should be able to open a session file in the JavaScreen.
+- Run 'kill_jsall' to kill off the JavaScreen processes before doing the
+  actual install.
+
+Run the command 'make -f Makefile.setup install'.  Then edit your crontab
+file to create a cron job that automatically checks the JSPop.  Look at
+the supplied cron_entry.* files for examples.  After installing the cron
+job, you should get an email stating that no jspop process was found;
+after that, the JavaScreen-related processes should be running.
+
+
+* PEPTIDE-CGI INSTALLATION
+
+See the INSTALL file in the peptide-cgi directory for installation instructions.
+
+
+* CONCLUSION
+
+After all of this has been done, you should be able to access DEVise/JavaScreen
+visualizations via the NMR Browser.
