@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:31:02  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:16:13  jussi
   Added CVS header.
 */
@@ -40,7 +43,7 @@ UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
 {
   /* open file */
   int fd;
-  if ((fd = open(name,/* O_FSYNC| */O_RDWR,
+  if ((fd = open(name, /* O_FSYNC| */O_RDWR,
 		 S_IRUSR | S_IWUSR | S_IROTH | S_IWOTH)) >= 0) {
     /* file already exists */
     close(fd);
@@ -66,8 +69,8 @@ UnixRecFile *UnixRecFile::OpenFile(char *name, int recSize, Boolean trunc)
 {
   /* open file */
   int fd;
-  if ((fd=open(name, /* O_FSYNC| */ O_RDWR |(trunc? O_TRUNC: 0),
-	       S_IRUSR|S_IWUSR))<0)
+  if ((fd = open(name, /* O_FSYNC| */ O_RDWR | (trunc? O_TRUNC : 0),
+		 S_IRUSR|S_IWUSR))<0)
     /* can't open file */
     return NULL;
 
@@ -110,6 +113,7 @@ Destructor
 
 UnixRecFile::~UnixRecFile()
 {
+  printf("~UnixRecFile fd %d\n", _fd);
   close(_fd);
 }
 
