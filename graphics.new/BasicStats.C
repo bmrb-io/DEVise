@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/11/25 22:24:21  beyer
+  Minor bug fix in SetWidth
+
   Revision 1.24  1996/08/07 15:23:20  guangshu
   Simplified the calculation of statistics and Added support for regression lines.
 
@@ -107,6 +110,26 @@ BasicStats::BasicStats()
 {
   _vw = 0;
   hist_min = hist_max = width = 0;
+  numBuckets = DEFAULT_NUM;  //default number of buckets = 50
+
+  xsum = xsum_sqr = xmax = xmin = 0;
+  ysum = ysum_sqr = ymin = ymax = 0;
+  avg_x = var_x = std_x = xysum = avg_xy = 0;
+  xatymax = xatymin = 0;
+  int_x = int_y = 0;
+  avg = std = var = 0;
+  line_a = line_b = 0;
+  for (int i = 0; i < NUM_Z_VALS; i++)
+    clow[i] = chigh[i] = 0;
+
+  nval = 0;
+  nsamples = 0;
+  if (numBuckets > 0 ){
+    hist = new int[numBuckets];
+    for(int j=0; j<numBuckets; j++){
+        hist[j]=0;
+    }
+  }
 }
 
 BasicStats::~BasicStats()
@@ -128,8 +151,12 @@ void BasicStats::Init(ViewGraph *vw)
   nval = 0;
   nsamples = 0;
   if (vw) ViewStats::Init(vw);
-  for(int j=0; j<HIST_NUM; j++){
+//  numBuckets = DEFAULT_NUM;
+  if (numBuckets > 0 ){
+    hist = new int[numBuckets];
+    for(int j=0; j<numBuckets; j++){
 	hist[j]=0;
+    }
   }
 }
 
@@ -146,7 +173,7 @@ void BasicStats::Sample(double x, double y)
   if (x > xmax) xmax = x;
   if (x < xmin) xmin = x;
 
-  ysum += y; 
+  ysum += y;
   ysum_sqr += y * y;
 
   xsum += x;
@@ -162,12 +189,12 @@ void BasicStats::Histogram(double y)
 {
     if( y >= hist_min && y <= hist_max && width > 0 ) {
        int index = (int) ((y - hist_min)/width);
-#if defined(DEBUG)
+#if defined(DEBUG) || 0 
     printf("y:%g index:%d min:%g max:%g width:%g\n",
 	      y, index, hist_min, hist_max, width);
 #endif
-       if(index>=HIST_NUM) index = HIST_NUM-1;
-       DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
+       if(index>=numBuckets) index = numBuckets-1;
+       DOASSERT(index >= 0 && index < numBuckets, "Invalid histogram index!");
        hist[index]++;
      }
 }
@@ -270,7 +297,8 @@ void BasicStats::Report()
 
 void BasicStats::ReturnHist()
 {
-  for(int j = 0; j<HIST_NUM; j++) printf("%d ", hist[j]);
+  DOASSERT(numBuckets>0, "numBuckets less than 1");
+  for(int j = 0; j<numBuckets; j++) printf("%d ", hist[j]);
   printf("\n");
 }
 
@@ -299,7 +327,7 @@ Coord BasicStats::GetStatVal(int statnum)
 
 int BasicStats::GetHistVal(int index)
 {
-    DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
+    DOASSERT(index >= 0 && index < numBuckets, "Invalid histogram index!");
     return hist[index];
 }
 
@@ -320,6 +348,7 @@ Coord BasicStats::GetHistMax()
 
 void BasicStats::SetHistWidth(Coord min, Coord max)
 {
+    if(numBuckets == 0) numBuckets = DEFAULT_NUM; 
 #if defined(DEBUG)
     printf("set width: min:%g max:%g\n", min, max);
 #endif
@@ -330,12 +359,44 @@ void BasicStats::SetHistWidth(Coord min, Coord max)
     }
     hist_min = min;
     hist_max = max;
-    width = (max - min) / HIST_NUM;
+    DOASSERT(numBuckets > 0, "numBuckets less than 1");
+    width = (max - min) / numBuckets;
 #if defined(DEBUG)
     printf("width: %g\n", width);
 #endif
 }
 
+void BasicStats::SetnumBuckets(int num)
+{
+#if defined(DEBUG)
+	printf("SetnumBuckets num=%d for BasicStats %p\n",num, this);
+#endif
+  if(num > 0) 
+  {
+     numBuckets = num;
+#if defined(DEBUG) || 0
+     printf("hist_max=%g, hist_min=%g\n", hist_max, hist_min);
+#endif
+     // update the histogram width accordingly
+     if(num > 0 && hist_max > hist_min) 
+	width = (hist_max - hist_min)/numBuckets; 
+     if ( hist) delete [] hist;
+#if defined(DEBUG)
+     printf("****** Old hist=%p\n", hist);
+#endif
+     hist = new int[numBuckets];
+     if (!hist) 
+     {fprintf(stderr, "Run out of memory. Exitting now\n"); exit(1);}
+     for(int i = 0; i < numBuckets; i++) {
+       hist[i] = 0;
+     }
+#if defined(DEBUG)
+     printf("****** New hist=%p width=%g\n", hist, width);
+#endif
+  } else {
+     fprintf(stderr, "Wrong number of buckets\n");
+  }
+}
 char *BasicStats::GetStatName(int statnum)
 {
   switch (statnum) {

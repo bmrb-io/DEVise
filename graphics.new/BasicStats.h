@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/08/07 15:23:20  guangshu
+  Simplified the calculation of statistics and Added support for regression lines.
+
   Revision 1.15  1996/08/04 21:14:40  beyer
   Changed histogram code a little.
 
@@ -85,7 +88,7 @@ class ViewKGraph;
 // Total number of stats
 #define STAT_NUM   8 
 //Total number of classes for histogram
-#define HIST_NUM    50
+//#define HIST_NUM    50
 
 // Maximum length of the name of any stat
 #define STATNAMELEN 10
@@ -113,6 +116,7 @@ class ViewKGraph;
 
 const double zval[NUM_Z_VALS] = { 1.464, 1.645, 1.960 };
 const int num_per_batch = 1;
+const int DEFAULT_NUM = 50;
 
 class BasicStats: public ViewStats
 {
@@ -133,6 +137,8 @@ public:
   virtual Coord GetHistMin();
   virtual Coord GetHistMax();
   virtual void SetHistWidth(Coord min, Coord max);
+  virtual void SetnumBuckets(int num);
+  virtual int GetnumBuckets(){ return numBuckets;}
   virtual char *GetStatName(int statnum);
 
 protected:
@@ -144,7 +150,9 @@ private:
   double xatymax, xatymin;
   double int_x, int_y;
   int nsamples, nval;
-  int hist[HIST_NUM];   // the histogram counts for each class, 
+
+  int numBuckets;
+  int *hist;		// the histogram counts for each class, 
 			// make it static for now 
   double width;		// width of each histogram bucket
   double hist_min, hist_max; // min and max 
