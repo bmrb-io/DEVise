@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/01/09 20:45:20  wenger
+  Merged cleanup_1_4_7_br_5 thru cleanup_1_4_7_br_6; fixed error in
+  previous merge.
+
   Revision 1.15.16.1  1998/01/09 16:33:47  wenger
   Updated copyright date and version number; minor mods to compile for
   hp and sun; fixed problem with _batchMode flag getting improperly
@@ -118,6 +122,20 @@ Register class info with control panel
 
 void ControlPanel::RegisterClass(ClassInfo *cInfo, Boolean transient)
 {
+#if defined(DEBUG)
+  char *catName = cInfo->CategoryName();
+  if (catName == NULL) catName = "NULL";
+
+  char *className = cInfo->ClassName();
+  if (className == NULL) className = "NULL";
+
+  char *instName = cInfo->InstanceName();
+  if (instName == NULL) instName = "NULL";
+
+  printf("ControlPanel::RegisterClass(%s, %s, %s)\n", catName, className,
+    instName);
+#endif
+
   cInfo->SetTransient(transient);
   GetClassDir()->InsertClass(cInfo);
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/06/28 21:41:13  beyer
+  changed from gcc String to stl string
+
   Revision 1.43  1998/01/14 16:39:19  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -661,7 +664,8 @@ ParseAttr(
  * schema and a logical schema) is being read.
  */
 static char *
-ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly= false)
+ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,
+  Boolean typeOnly= false)
 {
 	Boolean hasSource = false;
 	char *source = 0; /* source of data. Which interpreter we use depends
@@ -777,6 +781,37 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly,Boolean typeOnly
 			
 			// In case only the type information is needed return that...
 			if (typeOnly){
+				schemaSource->Close();
+				return fileType;
+			}
+
+			// Figure out whether we've already parsed a schema of this "type";
+			// if we have, just return without doing anything else, because
+			// even if we parse the schema, the parse information won't get
+			// used because the previously-created TDataAsciiInterpClassInfo
+			// object will show up first in the ClassDir data structures,
+			// so it will be the one used to actually create the new TData
+			// object (what a ****ing mess!).  (Note that all of this means
+			// that if we have two different schemas of the same "type" only
+			// the first one will work.)  RKW 1998-09-08.
+			//
+			Boolean haveSchema = false;
+			{
+				int argc;
+				char **argv;
+				ControlPanel::GetClassDir()->ClassNames("tdata", argc, argv);
+				for (int index = 0; index < argc; index++) {
+					if (!strcmp(fileType, argv[index])) {
+						haveSchema = true;
+						break;
+					}
+				}
+			}
+            if (haveSchema) {
+#if defined(DEBUG)
+				printf("Already parsed schema of type %s; using existing "
+				  "TDataAsciiInterpClassInfo object\n", fileType);
+#endif
 				schemaSource->Close();
 				return fileType;
 			}
@@ -982,41 +1017,6 @@ error:
 	fprintf(stderr,"error at line %d\n", _line);
 	return NULL;
 }
-
-/*------------------------------------------------------------------------------
- * function: ParseDQL	DEAD
-
-char *
-ParseDQL(char * name, char * schema, char *schemaFile, char * fileType,
-	 char *dataFile,char * query)
-{
-
-    gdir->add_entry(name);
-	TDataDQLInterpClassInfo * DQLclass = 
-		new TDataDQLInterpClassInfo(schema,schemaFile,fileType,dataFile,query);
-	
-	ControlPanel::RegisterClass(DQLclass,true);
-	
-	if (Init::PrintTDataAttr())
-		attrs->Print();
-
-	if (gdir->num_topgrp(name) == 0)
-	{
-	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(name,newgrp);
-
-	  AttrList attrs(*DQLclass->GetAttrList());
-	  int numAttrs = attrs.NumAttrs(); 
-
-	  for (int i=0; i < numAttrs; i++) {
-	    AttrInfo *iInfo = attrs.Get(i);
-            newgrp->insert_item(iInfo->name);
-	  }
-
-	}
-	return schema;
-}
-*/
 
 /*------------------------------------------------------------------------------
  * function: ParseCatLogical
@@ -1329,6 +1329,7 @@ ParseCat(char *catFile)
 
   return result;
 }
+
 /*------------------------------------------------------------------------------
  * function: ParseSchema
  * Parse a schema from buffer(s).

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/06/28 21:41:14  beyer
+  changed from gcc String to stl string
+
   Revision 1.15  1996/11/19 02:42:23  kmurli
   Changed to include original importFileType parameters..This means that
   the those using the importFileType with a single parameter cannot use
@@ -86,8 +89,6 @@
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *fileType,char *catFile,char *dataFile);
 extern char *ParseCat(char *);
-extern char *ParseDQL(char *name,char *schema,char * schemaFile,\
-					  char *fileType,char *dataFile,char * query);
 
 extern int ParseCatDQL(char*, string&, string&);
 extern int ParseDQLCatPhysical(DataSource*, string &);

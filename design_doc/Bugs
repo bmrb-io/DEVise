@@ -1461,6 +1461,13 @@ Num Date        Status  Description
 385 09/03/98	FIXED	Tasvir images don't work in batch mode (with
 			JavaScreen, for example). (rr/rkw)
 
+386 09/04/98	FIXED	Open MarsDemo.ds, save to another session file; try
+			to open the saved session file and you get: An
+			internal error has occurred. The reason is: Attempt
+			to add duplicate instance name
+			'.MarsM16_dat#CENTER_LATITUDE_vs_CENTER_LONGITUDE'.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/05/14 18:20:58  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.17  1998/05/06 22:04:40  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -81,6 +85,7 @@
 #include "ClassDir.h"
 #include "Exit.h"
 #include "Util.h"
+#include "DevError.h"
 
 //#define DEBUG
 #define CHECK_CLASS_RECS 0
@@ -93,8 +98,23 @@ ClassDir::ClassDir()
 
 void ClassDir::InsertCategory(char *name)
 {
+#if defined(DEBUG)
+  printf("ClassDir::InsertCategory(%s)\n", name);
+#endif
+
   DOASSERT(_numCategories < MaxCategories, "Too many categories");
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+
+  // Check for duplicate category here
+  for(int catIndex = 0; catIndex < _numCategories; catIndex++) {
+    CategoryRec *catRec = _categories[catIndex];
+    if (!strcmp(catRec->name, name)) {
+      char errBuf[1024];
+      sprintf(errBuf, "Attempt to add duplicate category name '%s'\n",
+        name);
+      Exit::DoAbort(errBuf, __FILE__, __LINE__);
+    }
+  }
 
   CategoryRec *rec = new CategoryRec;
   rec->name = name;
@@ -109,7 +129,31 @@ void ClassDir::InsertCategory(char *name)
 
 void ClassDir::InsertClass(ClassInfo *cInfo)
 {
+  char *catName = cInfo->CategoryName();
+  char *className = cInfo->ClassName();
+#if defined(DEBUG)
+  printf("ClassDir::InsertClass(%s, %s)\n", catName, className);
+#endif
+
   DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+
+  // Check for duplicate category/class here
+  for(int catIndex = 0; catIndex < _numCategories; catIndex++) {
+    CategoryRec *catRec = _categories[catIndex];
+    if (!strcmp(catRec->name, catName)) {
+      for(int classIndex = 0; classIndex < catRec->_numClasses; classIndex++) {
+	ClassRec *classRec = catRec->_classRecs[classIndex];
+	if (!strcmp(classRec->classInfo->ClassName(), className)) {
+	  char errBuf[1024];
+	  sprintf(errBuf, "Attempt to add duplicate class name '%s::%s'\n",
+	    catName, className);
+	  reportErrNosys(errBuf);
+	  return;
+	}
+      }
+    }
+  }
+
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, cInfo->CategoryName())) {
