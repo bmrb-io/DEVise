@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.49  1996/05/11 17:28:07  jussi
+  Moved all API command parsing to ParseAPI.C so that TkControl.c
+  and ServerAPI.c would not have to duplicate the effort.
+  Reorganized the code somewhat to match the ParseAPI interface.
+
   Revision 1.48  1996/05/11 03:13:34  jussi
   Added clearAll command verb. Removed openSession and openTemplate
   command verbs. Removed control panel variables like fileName
@@ -190,30 +195,7 @@
 #include <stdlib.h>
 
 #include "TkControl.h"
-#include "QueryProc.h"
 #include "ParseCat.h"
-
-#if 0
-#include "ClassDir.h"
-#include "ViewGraph.h"
-#include "View.h"
-#include "TData.h"
-#include "TDataMap.h"
-#include "Init.h"
-#include "Util.h"
-#include "VisualArg.h"
-#include "VisualLink.h"
-#include "FilterQueue.h"
-#include "Action.h"
-#include "AttrList.h"
-#include "MapInterpClassInfo.h"
-#include "Parse.h"
-#include "GroupDir.h"
-#include "Cursor.h"
-#include "Group.h"
-#include "ViewLayout.h"
-#include "ViewKGraph.h"
-#endif
 
 //#define DEBUG
 
@@ -223,7 +205,7 @@ Tk_Window ControlPanelMainWindow = 0;
 #endif
 
 extern GroupDir *gdir;
-ViewKGraph *vkg = NULL;
+ViewKGraph *vkg = 0;
 
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -254,12 +236,12 @@ TkControlPanel::TkControlPanel()
   _argv0 = CopyString(Init::ProgName());
 
   _interp = Tcl_CreateInterp();
-  _mainWindow = Tk_CreateMainWindow(_interp, NULL, "DEVise", "DEVise");
-  if (_mainWindow == NULL) {
+  _mainWindow = Tk_CreateMainWindow(_interp, 0, "DEVise", "DEVise");
+  if (!_mainWindow) {
     fprintf(stderr, "%s\n", _interp->result);
     exit(1);
   }
-  Tk_MoveWindow(_mainWindow, 0,0);
+  Tk_MoveWindow(_mainWindow, 0, 0);
   Tk_GeometryRequest(_mainWindow, 100, 200);
 
 #ifdef TK_WINDOW
@@ -268,11 +250,11 @@ TkControlPanel::TkControlPanel()
 #endif
 
   if (Tcl_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr,"Cannot initialize Tcl.\n");
+    fprintf(stderr, "Cannot initialize Tcl.\n");
     Exit::DoExit(1);
   }
   if (Tk_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr,"Cannot initialize Tk.\n");
+    fprintf(stderr, "Cannot initialize Tk.\n");
     Exit::DoExit(1);
   }
 
@@ -323,7 +305,7 @@ void TkControlPanel::StartSession()
 
   printf("Control panel file is: %s\n", control);
 
-  int code = Tcl_EvalFile(_interp,control);
+  int code = Tcl_EvalFile(_interp, control);
   if (code != TCL_OK) {
     fprintf(stderr,"%s\n", _interp->result);
     Exit::DoExit(1);
@@ -331,13 +313,13 @@ void TkControlPanel::StartSession()
 
   if (Init::Restore()) {
     /* restore session */
-    Tcl_SetVar(_interp,"restoring","1",0);
+    Tcl_SetVar(_interp, "restoring", "1", 0);
     char *sessionName = Init::SessionName();
-    int code = Tcl_EvalFile(_interp,sessionName);
-    Tcl_SetVar(_interp,"restoring","0",0);
+    int code = Tcl_EvalFile(_interp, sessionName);
+    Tcl_SetVar(_interp, "restoring", "0", 0);
     if (code != TCL_OK) {
-      fprintf(stderr,"Can't restore session file %s\n",sessionName);
-      fprintf(stderr,"%s\n", _interp->result);
+      fprintf(stderr, "Can't restore session file %s\n", sessionName);
+      fprintf(stderr, "%s\n", _interp->result);
       Exit::DoExit(1);
     }
   }
