@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2001/09/25 14:38:55  wenger
+#  Modified all JS-related scripts, etc., to work without '.' in path;
+#  fixed some problems in the JSS related to starting and killing deviseds.
+#
 #  Revision 1.5  2001/09/05 19:33:26  wenger
 #  Added bin2 and dyn_lib directories in JavaScreen release and install,
 #  and made corresponding changes to scripts; other distribution-related
@@ -163,7 +167,7 @@ foreach file ($files)
   chmod 755 $dest/$file
 end
 
-set files = (jsa.html jsb.html)
+set files = (jsa.html jsb.html keyboard.html collab.html)
 foreach file ($files)
   cp -p $file $dest
   chmod 644 $dest/$file
