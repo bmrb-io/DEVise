@@ -25,6 +25,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2001/10/30 17:39:15  xuk
+// reated DEViseClient object for collaborating clients in jspop.
+// 1. In processFirstCommand(), no need to check collaboration flag;
+// 2. Deleted onCollab();
+// 3. Changed sendCollabLeaders() to getCollabLeaders(), which is called by
+// DEViseClient object when getting JAVAC_AskCollabLeader command;
+// 4. Modified setUpCollab(), which is called by DEViseClient object when
+// getting JAVAC_Collaborate command.
+//
 // Revision 1.68  2001/10/24 22:15:33  wenger
 // More collaboration-related fixes.
 //
@@ -1535,7 +1544,12 @@ public class jspop implements Runnable
 			// RKW 2001-10-23.
 			leaderClient.addCollabClients(client, hostname);
 			client.collabLeader = leaderClient;
-			
+
+			client.sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + 
+				       leaderClient.screenDimX + " " + 
+				       leaderClient.screenDimY+ " " + 
+				       leaderClient.screenResX+ " " + 
+				       leaderClient.screenResY);
 			client.sendCmd(DEViseCommands.DONE);
 			
 			DEViseServer server = getNextAvailableServer();

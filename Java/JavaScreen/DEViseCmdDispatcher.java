@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.107  2001/10/30 17:29:35  xuk
+// *** empty log message ***
+//
 // Revision 1.106  2001/10/30 17:20:13  xuk
 // Created DEViseClient object for collaborating clients in jspop.
 // 1. Modified sockSendCmd(), no difference between normal and collaborating modes;
@@ -572,7 +575,10 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
             return;
         }
-	
+
+	jsc.pn("Screen Width = " + jsc.jsValues.uiglobals.screenSize.width);
+	jsc.pn("Screen Height = " + jsc.jsValues.uiglobals.screenSize.height);
+
         setStatus(1);
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
@@ -733,6 +739,7 @@ public class DEViseCmdDispatcher implements Runnable
 		commSocket.sendCmd(DEViseCommands.COLLAB_EXIT, 
 				   DEViseGlobals.API_JAVA, 
 				   jsc.jsValues.connection.connectionID);
+		jsc.restoreDisplaySize();
             } catch (YException e) {
                 jsc.showMsg(e.getMsg());
             }
@@ -975,23 +982,24 @@ public class DEViseCmdDispatcher implements Runnable
         // turn on the 'process' light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
 
-        for (int i = 0; i < rsp.length; i++) {
-            // adjust the counter
-            jsc.viewInfo.updateCount(rsp.length - 1 - i);
-
-	    jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
-	      rsp[i]);
-            jsc.jsValues.debug.log("Processing command (" +
-	      (rsp.length - 1 - i) + ") " + rsp[i]);
-
-	    processReceivedCommand(command, rsp[i]);
-
-	    jsc.pn("  Done with command " + rsp[i]);
-	    jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
-	      " Total mem: " + Runtime.getRuntime().totalMemory());
-	    jsc.jsValues.debug.log("  Done with command " + rsp[i]);
-        }
-
+	if (rsp != null) // rsp == null means interrupted from collaboration mode 
+	    for (int i = 0; i < rsp.length; i++) {
+		// adjust the counter
+		jsc.viewInfo.updateCount(rsp.length - 1 - i);
+		
+		jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
+		       rsp[i]);
+		jsc.jsValues.debug.log("Processing command (" +
+				       (rsp.length - 1 - i) + ") " + rsp[i]);
+		
+		processReceivedCommand(command, rsp[i]);
+		
+		jsc.pn("  Done with command " + rsp[i]);
+		jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
+		       " Total mem: " + Runtime.getRuntime().totalMemory());
+		jsc.jsValues.debug.log("  Done with command " + rsp[i]);
+	    }
+	
 	_commCgi = null;
 
         // turn off the 'process' light
@@ -1059,13 +1067,15 @@ public class DEViseCmdDispatcher implements Runnable
 		    jsc.showSession(new String[] {response}, false);
 		}
 	    }
+        } else if (args[0].equals(DEViseCommands.SET_DISPLAY_SIZE)) {
+            jsc.setDisplaySize(response);
 
         } else if (args[0].equals(DEViseCommands.CLIENTS)) {
             jsc.showClientList(response);
 
         } else if (args[0].equals(DEViseCommands.COLLAB_EXIT)) {
 	    jsc.collabQuit();
-
+	    jsc.restoreDisplaySize();
         } else if (args[0].equals(DEViseCommands.COLLAB_STATE)) {
             if (jsc.specialID == -1) { // only for normal JS	    
 		jsc.showCollabState(response);
@@ -1741,6 +1751,7 @@ public class DEViseCmdDispatcher implements Runnable
 					   DEViseGlobals.API_JAVA, 
 					   jsc.jsValues.connection.connectionID);
 			jsc.pn("Sent out Collab_Exit command after interrupt.");
+			jsc.restoreDisplaySize();
 			return null;
 		    }
                     if (getAbortStatus()) {

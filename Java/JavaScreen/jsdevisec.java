@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.126  2001/11/02 19:38:38  xuk
+// Added "Collaborate" and "Playback" buttons on menu.
+//
 // Revision 1.125  2001/10/30 17:35:43  xuk
 // Created DEViseClient object for collaborating clients in jspop.
 // 1. Deleted showCollab();
@@ -468,6 +471,10 @@ public class jsdevisec extends Panel
     public boolean isDisplay = true;
     public boolean isOriginal = true;
     private DEVisePlayback playback = null;
+
+    private int oldScreenWidth = -1;
+    private int oldScreenHeight = -1;
+    private int oldScreenRes = -1;
 
     // images[0-9] are the gears; 10 and 11 are "traffic lights"
     //   (devise[0-10].gif).
@@ -1177,6 +1184,28 @@ public class jsdevisec extends Panel
 	specialID = -1;
 	socketMode();
     }	
+
+    public void setDisplaySize(String command) 
+    {
+	String[] cmds = DEViseGlobals.parseString(command);
+	
+	oldScreenWidth = jsValues.uiglobals.screenSize.width;
+	oldScreenHeight = jsValues.uiglobals.screenSize.height;
+	oldScreenRes = jsValues.uiglobals.screenRes;
+	
+	jsValues.uiglobals.screenSize.width = Integer.parseInt(cmds[1]);
+	jsValues.uiglobals.screenSize.height = Integer.parseInt(cmds[2]); 
+	jsValues.uiglobals.screenRes = Integer.parseInt(cmds[3]);
+    }
+
+    public void restoreDisplaySize() 
+    {
+	jsValues.uiglobals.screenSize.width = oldScreenWidth;
+	jsValues.uiglobals.screenSize.height = oldScreenHeight; 
+	jsValues.uiglobals.screenRes = oldScreenRes;
+    }
+    
+
 }
 
 // ------------------------------------------------------------------------
