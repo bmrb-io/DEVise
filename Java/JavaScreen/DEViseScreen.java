@@ -32,6 +32,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2001/08/20 18:20:08  wenger
+// Fixes to various font problems: XDisplay calculates point sizes correctly
+// and uses screen resolution in specifying font; JS passes *its* screen
+// resolution to the devised so that fonts show up correctly in the JS
+// (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+//
 // Revision 1.70  2001/05/11 20:36:08  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -712,12 +718,14 @@ public class DEViseScreen extends Panel
     }
 
     public void updateViewDataRange(String viewName, String axis,
-      float min, float max, String format, float factor)
+	   float min, float max, String format, float factor, 
+	   int label, int type, int size, int bold, int italic)
     {
         DEViseView view = getView(viewName);
 
         if (view != null && axis != null) {
-            view.updateDataRange(axis, min, max, format, factor);
+            view.updateDataRange(axis, min, max, format, factor, 
+				 label, type, size, bold, italic);
         }
     }
 
