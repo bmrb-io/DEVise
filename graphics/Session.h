@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  2001/09/24 15:29:03  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.26  2001/03/23 18:06:31  wenger
   Color palettes are now associated with sessions; added borders to
   color chooser buttons so they're visible even if they're the same
@@ -199,6 +203,7 @@ public:
   // Session description.
   static void SetDescription(const char *description);
   static const char *GetDescription();
+  static DevStatus GetDescription(const char *filename, char * &description);
 
   static void SetDefaultPalette();
   static DevStatus CreateSessionPalette(const char *colors);
@@ -221,13 +226,19 @@ protected:
       char *argv[]);
   static DevStatus FilterCommand(ControlPanelSimple *control, int argc,
       char *argv[]);
+  static DevStatus DescriptionCommand(ControlPanelSimple *control, int argc,
+      char *argv[]);
 
 private:
   typedef DevStatus (*CommandProc)(ControlPanelSimple *control, int argc,
       char *argv[]);
   static DevStatus ReadSession(ControlPanelSimple *control,
       const char *filename, CommandProc cp);
-  static Boolean ReadCommand(FILE *fp, char buf[], int bufSize);
+  static DevStatus ReadSession(ControlPanelSimple *control,
+      FILE *fp, CommandProc cp);
+  static DevStatus CheckHeader(FILE *fp);
+  static Boolean ReadCommand(FILE *fp, char buf[], int bufSize,
+      DevStatus &status);
 
   static DevStatus DEViseCmd(ControlPanel *control, int argc,
       const char * const *argv);

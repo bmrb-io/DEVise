@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.119  2001/10/03 19:09:56  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.118  2001/09/27 19:52:46  wenger
   Fixed bug 688 (problem dealing with links in session directories);
   improved JS error handling for session open; eliminated a bunch of
@@ -668,15 +672,23 @@ PointInRect(int px, int py, int rx1, int ry1, int rx2, int ry2)
 
 //====================================================================
 static Boolean
-IsSessionFile(const char *filename)
+IsSessionFile(const char *fullPath, const char *filename)
 {
 	Boolean isSession = false;
 
-	// We assume that a file is a session file if it ends in ".ds" or ".tk".
-	int length = strlen(filename);
-	if (!strcmp(&filename[length-3], ".ds") ||
-	  !strcmp(&filename[length-3], ".tk")) {
-		isSession = true;
+	// Note: there are many valid session files with the extension .ds.bak,
+	// but we don't want to show them to the user (also exclude anything
+	// with .bak in it).  .str, .ds.commands, and .ds.data files would
+	// be excluded by Session::GetDescription(), but we can save work
+	// by not looking at them at all.
+    if (!strstr(filename, ".bak") && !EndsWith(filename, ".str") &&
+	  !EndsWith(filename, ".ds.commands") &&
+	  !EndsWith(filename, ".ds.data")) {
+		char *description;
+		if (Session::GetDescription(fullPath, description).IsComplete()) {
+		    isSession = true;
+			FreeString(description);
+		}
 	}
 
 	return isSession;
@@ -2759,7 +2771,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		    args.AddArg(file);
 			args.AddArg("1"); // is a directory
 		    args.AddArg("0"); // priority
-		} else if (IsSessionFile(file)) {
+		} else if (IsSessionFile(fullpath, file)) {
 		    args.AddArg(file);
 			args.AddArg("0"); // is not a directory
 		    args.AddArg("0"); // priority

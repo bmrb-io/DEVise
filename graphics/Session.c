@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.99  2001/10/03 19:09:50  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.98  2001/09/24 15:28:57  wenger
   Added warning if you close or quit with unsaved session changes (note
   that visual filter changes are not considered "changes").
@@ -1222,7 +1226,7 @@ Session::SetDescription(const char *description)
 
 /*------------------------------------------------------------------------------
  * function: Session::GetDescription
- * Get session description.
+ * Get current session description.
  */
 const char *
 Session::GetDescription()
@@ -1232,6 +1236,30 @@ Session::GetDescription()
 #endif
 
   return _description ? _description : "";
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::GetDescription
+ * Get the session description of the named session file (returns StatusFailed
+ * if the file is not a session file; description is "" if the file is a
+ * session file but has no description).  Description should be freed with
+ * FreeString().
+ */
+DevStatus
+Session::GetDescription(const char *filename, char * &description)
+{
+#if defined(DEBUG)
+  printf("Session::GetDescription(%s)\n", filename);
+#endif
+
+  DevStatus result(StatusOk);
+  ControlPanelSimple control;
+
+  result += ReadSession(&control, filename, DescriptionCommand);
+
+  description = CopyString(control.GetResult());
+
+  return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -1350,7 +1378,8 @@ Session::GetDataCatalog()
  * Read and execute a DEVise session file.
  */
 DevStatus
-Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandProc cp)
+Session::ReadSession(ControlPanelSimple *control, const char *filename,
+    CommandProc cp)
 {
 #if defined(DEBUG)
   printf("Session::ReadSession(%s)\n", filename);
@@ -1365,38 +1394,105 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandP
     reportErrSys(errBuf);
 	result += StatusFailed;
   } else {
-    const int bufSize = 1024 * 4;
-	char lineBuf[bufSize];
-
-	while (ReadCommand(fp, lineBuf, bufSize) && result.IsComplete()) {
-#if defined(DEBUG)
-      printf("  read line: %s", lineBuf);
-#endif
-
-      RemoveTrailingSemicolons(lineBuf);
-
-#if defined(DEBUG)
-      printf("  semicolons removed: %s", lineBuf);
-#endif
-
-	  if (!IsBlankOrComment(lineBuf)) {
-		ArgList args;
-	    if (args.ParseString(lineBuf).IsComplete()) {
-#if defined(DEBUG)
-	      printf("Arguments: ");
-          PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
-#endif
-		  result += cp(control, args.GetCount(),
-		      (char **)args.GetArgs());
-	    }
-	  }
-	}
+    result += ReadSession(control, fp, cp);
 
     if (fclose(fp) != 0) {
 	  char errBuf[MAXPATHLEN * 2];
 	  sprintf("Error closing session file <%s>", filename);
       reportErrSys(errBuf);
 	}
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::ReadSession
+ * Read and execute a DEVise session file.
+ */
+DevStatus
+Session::ReadSession(ControlPanelSimple *control, FILE *fp, CommandProc cp)
+{
+#if defined(DEBUG)
+  printf("Session::ReadSession()\n");
+#endif
+
+  DevStatus result = StatusOk;
+
+  result += CheckHeader(fp);
+
+  if (result.IsComplete()) {
+    int cmdCount = 0;
+    const int bufSize = 1024 * 4;
+    char lineBuf[bufSize];
+
+    while (ReadCommand(fp, lineBuf, bufSize, result) && result.IsComplete()) {
+#if defined(DEBUG)
+      printf("  read line: %s\n", lineBuf);
+#endif
+
+      RemoveTrailingSemicolons(lineBuf);
+
+#if defined(DEBUG)
+      printf("  semicolons removed: %s\n", lineBuf);
+#endif
+
+      if (!IsBlankOrComment(lineBuf)) {
+	    ArgList args;
+		DevStatus tmpResult = args.ParseString(lineBuf);
+		result += tmpResult;
+	    if (tmpResult.IsComplete()) {
+#if defined(DEBUG)
+	      printf("Arguments: ");
+          PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
+#endif
+		  cmdCount++;
+	      result += cp(control, args.GetCount(), (char **)args.GetArgs());
+	    }
+	  }
+    }
+
+    if (cmdCount == 0) {
+	  reportErrNosys("No DEVise commands in file -- not a session file");
+      result += StatusFailed;
+    }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::CheckHeader
+ * Check the header of the given file to see whether it's a session file.
+ */
+DevStatus
+Session::CheckHeader(FILE *fp)
+{
+#if defined(DEBUG)
+  printf("Session::CheckHeader()\n");
+#endif
+
+  DevStatus result(StatusOk);
+
+  DevFileHeader::Info info;
+  DevStatus tmpResult = DevFileHeader::Read(fp, info);
+  if (tmpResult.IsComplete()) {
+    if (strcmp(info.fileType, FILE_TYPE_SESSION)) {
+	  const int bufLen = 256;
+	  char buf[bufLen];
+	  int formatted = snprintf(buf, bufLen, "File is type %s, not %s",
+	      info.fileType, FILE_TYPE_SESSION);
+	  checkAndTermBuf(buf, bufLen, formatted);
+	  reportErrNosys(buf);
+	  result += StatusFailed;
+	}
+	result += tmpResult; // in case of warning
+  } else {
+	//TEMP -- we may eventually want to change this to a hard failure,
+	// once we've made sure all session files have the right header.
+	reportErrNosys("No header information in file; may not be a "
+	    "DEVise session file");
+    result += StatusWarn;
   }
 
   return result;
@@ -1410,7 +1506,7 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandP
  * Returns true if a command was successfully read.
  */
 Boolean
-Session::ReadCommand(FILE *fp, char buf[], int bufSize)
+Session::ReadCommand(FILE *fp, char buf[], int bufSize, DevStatus &status)
 {
   Boolean result = true;
 
@@ -1424,6 +1520,16 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize)
     int tmpC = getc(fp);
 
 	if (tmpC == EOF) {
+      *ptr = '\0';
+	  if (leftBraces != rightBraces) {
+		const int errBufLen = 1024 * 4;
+		char errBuf[errBufLen];
+		int formatted = snprintf(errBuf, errBufLen,
+		    "Incomplete command: <%s>", buf);
+		checkAndTermBuf(errBuf, errBufLen, formatted);
+	    reportErrNosys(errBuf);
+		status += StatusFailed;
+	  }
 	  done = true;
 	  result = false;
 	} else if (tmpC == ';' || tmpC == '\n') {
@@ -1446,6 +1552,7 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize)
 	  if (ptr >= last) {
 	    done = true;
 		reportErrNosys("Command buffer too short");
+		status += StatusFailed;
 		result = false;
 	  }
 	}
@@ -1526,6 +1633,8 @@ Session::RunCommand(ControlPanelSimple *control, int argc, char *argv[])
   DevStatus result = StatusOk;
   char errBuf[1024];
 
+  // Note: OpenDataSource, scanDerivedSources, and SetDescription are
+  // here for backwards compatibility with old session files.
   if (!strcmp(argv[0], "DEVise")) {
     result += DEViseCmd(control, argc, argv);
   } else if (!strcmp(argv[0], "OpenDataSource")) {
@@ -1584,6 +1693,41 @@ Session::FilterCommand(ControlPanelSimple *control, int argc, char *argv[])
     // Don't check result here, otherwise we stop if a view is missing, for
     // example.
     DEViseCmd(control, args.GetCount(), args.GetArgs());
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::DescriptionCommand
+ * Save the session description.
+ */
+DevStatus
+Session::DescriptionCommand(ControlPanelSimple *control, int argc, char *argv[])
+{
+#if defined(DEBUG)
+  printf("Session::DescriptionCommand(");
+  PrintArgs(stdout, argc, argv, false);
+  printf(")\n");
+#endif
+
+  DevStatus result = StatusOk;
+  
+  //TEMP -- can we avoid reading the rest of the session file once we
+  // fine the description?
+
+  if (!strcmp(argv[0], "DEVise")) {
+    if (argc >= 3 && !strcmp(argv[1], "setSessionDesc")) {
+	  control->ReturnVal(API_ACK, argv[2]);
+    }
+
+    // Note: OpenDataSource, scanDerivedSources, and SetDescription are
+    // here for backwards compatibility with old session files.
+  } else if (strcmp(argv[0], "OpenDataSource") &&
+      strcmp(argv[0], "scanDerivedSources") &&
+	  strcmp(argv[0], "SetDescription")) {
+	reportErrArgs("Illegal command", argc, argv, devNoSyserr);
+    result += StatusFailed;
   }
 
   return result;
@@ -2173,11 +2317,10 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
 
   const char *result;
   ArgList args;
-  status += CallParseAPI(saveData->control, result, true, args,
+  status += CallParseAPI(saveData->control, result, false, args,
       "get3DLocation", instance);
   if (status.IsComplete()) {
-    fprintf(saveData->fp, "DEVise set3DLocation {%s} ", instance);
-    PrintArgs(saveData->fp, 9, args.GetArgs());
+    fprintf(saveData->fp, "DEVise set3DLocation {%s} %s\n", instance, result);
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");

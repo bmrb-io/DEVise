@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  2001/05/27 18:51:08  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.30  2001/05/18 19:25:25  wenger
   Implemented the DEVise end of 3D drill-down; changed DEVise version to
   1.7.3.
@@ -245,6 +248,21 @@ inline Boolean ContainsSpace(const char *string)
     }
 
     return false;
+}
+
+// Returns true iff string main ends with string suffix.
+inline Boolean EndsWith(const char *main, const char *suffix)
+{
+  Boolean result = false;
+
+  char *start = strstr(main, suffix);
+  if (start != NULL) {
+    if (!strcmp(start, suffix)) {
+      result = true;
+    }
+  }
+
+  return result;
 }
 
 const char *GetDefaultDateFormat();

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.122  2001/10/03 19:09:56  wenger
+  Various improvements to error logging; fixed problem with return value
+  from JavaScreenCmd::Run().
+
   Revision 1.121  2001/09/24 15:29:11  wenger
   Added warning if you close or quit with unsaved session changes (note
   that visual filter changes are not considered "changes").
@@ -4909,10 +4913,9 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
             ReturnVal(API_NAK, "Cannot find view");
             return -1;
           }
-          if (argc ==11)  {
-
+          if (argc == 11)  {
 	    ViewDir dir;
-            Camera c=view->GetCamera();
+            Camera c = view->GetCamera();
 
             if (Char2ViewDir(dir, argv[2])) {
 	      c.view_dir = dir;
@@ -4924,10 +4927,16 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
               c.far = atof(argv[8]);
               c.pan_right = atof(argv[9]);
               c.pan_up = atof(argv[10]);
-            }
 
-            view->SetCamera(c);
-          }
+              view->SetCamera(c);
+            } else {
+	      //TEMP reportErrNosys("Unrecognized view direction");
+	    }
+          } else {
+            fprintf(stderr,"Wrong # of arguments: %d in set3DLocation\n", argc);
+            ReturnVal(API_NAK, "Wrong # of arguments");
+            return -1;
+	  }
           ReturnVal(API_ACK, "done");
           return 1;
         }
@@ -5120,24 +5129,15 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 2) {
-        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
-        if (!view) {
-    	    ReturnVal(API_NAK, "Cannot find view");
+		char *description;
+		DevStatus result = Session::GetDescription(argv[1], description);
+	    if (result.IsComplete()) {
+    	    ReturnVal(API_ACK, description);
+    	    return 1;
+		} else {
+    	    ReturnVal(API_NAK, "Error getting description");
     	    return -1;
-        }
-
-        string fgColorStr, bgColorStr;
-        PColorID pColor = view->GetForeground();
-		printf("pColor = %ld\n", pColor);
-        RGB rgb;
-        if (PM_GetRGB(pColor, rgb)) {
-            fgColorStr = rgb.ToString();
-			cout << "fgColorStr = " << fgColorStr << endl;
-        } else {
-		    printf("Unable to get RGB\n");
-        }
-
-    	return 1;
+		}
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
