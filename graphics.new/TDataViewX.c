@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/08/04 21:59:55  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.37  1996/08/03 15:19:38  jussi
   The visual filter is not applied in 3D views.
 
@@ -369,13 +376,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       // Compute statistics only for records that match the filter's
       // X range, regardless of the Y boundary
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
-	if (color < MAXCOLOR)
-	  _stats[color].Sample(x, y);
-	_allStats.Sample(x, y);
-	_allStats.Histogram(y);
-      }
-
-      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
+	  if (color < MAXCOLOR)
+	    _stats[color].Sample(x, y);
+	  _allStats.Sample(x, y);
+	  _allStats.Histogram(y);
 	  if(_glist.Size() <= MAX_GSTAT) {
 	      int X = (int) x;
 	      BasicStats *bs;
