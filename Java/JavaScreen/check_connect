@@ -13,7 +13,7 @@ if (`hostname` == "yola") then
   unsetenv LD_LIBRARY_PATH
 endif
 
-limit cputime 10
+limit cputime 1
 limit coredumpsize 0
 
 set javaexec = `cat bin2/java`
