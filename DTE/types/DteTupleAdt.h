@@ -9,6 +9,8 @@
 class DteTupleAdt
 : public DteAdt
 {
+  int numFields;
+
   DteAdtList types;
 
   int pointerSize;
@@ -62,16 +64,21 @@ public:
   static Type** cast(Type* x) { return pointers(x); }
   static const Tuple* cast(const Type* x) { return pointers(x); }
 
-  int getNumFields() const { return types.size(); }
+  int getNumFields() const { return numFields; }
 
-  const DteAdt& getAdt(int i) const { return *(types[i]); }
+  const DteAdt& getAdt(int i) const {
+    assert(i>=0 && i < numFields); 
+    return *(types[i]);
+  }
 
   const Type* getField(Type* x, int i) { return pointers(x)[i]; }
 
   virtual int copyNonNull(const Type* x, char* to, int size) const;
 
-  int copyNonNull(const Type* x, PageBuf& to) const {
-    return DteTupleAdt::copyNonNull(x, to.data, DTE_PAGESIZE);
+  const Tuple* copyNonNull(const Tuple* x, PageBuf& to) const {
+    int used = DteTupleAdt::copyNonNull(x, to.data, DTE_PAGESIZE);
+    assert(used >= 0 && "Tuple did not fit on a page!");
+    return (Tuple*)(to.data);
   }
 
   virtual void deallocate(void* x) const;
@@ -99,8 +106,10 @@ public:
 
   virtual int fromAscii(istream& s, char* to, int size) const;
 
-  int fromAscii(istream& s, PageBuf& p) const {
-    return DteTupleAdt::fromAscii(s, p.data, DTE_PAGESIZE);
+  const Tuple* fromAscii(istream& s, PageBuf& to) const {
+    int used = DteTupleAdt::fromAscii(s, to.data, DTE_PAGESIZE);
+    assert(used >= 0 && "Tuple did not fit on a page!");
+    return (Tuple*)(to.data);
   }
 
 
@@ -108,16 +117,20 @@ public:
 
   virtual int fromBinary(istream& s, char* to, int size) const;
 
-  int fromBinary(istream& s, PageBuf& p) const {
-    return DteTupleAdt::fromBinary(s, p.data, DTE_PAGESIZE);
+  const Tuple* fromBinary(istream& s, PageBuf& to) const {
+    int used = DteTupleAdt::fromBinary(s, to.data, DTE_PAGESIZE);
+    assert(used >= 0 && "Tuple did not fit on a page!");
+    return (Tuple*)(to.data);
   }
 
   virtual void toNet(ostream& s, const Type* x) const;
 
   virtual int fromNet(istream& s, char* to, int size) const;
 
-  int fromNet(istream& s, PageBuf& p) const {
-    return DteTupleAdt::fromNet(s, p.data, DTE_PAGESIZE);
+  const Tuple* fromNet(istream& s, PageBuf& to) const {
+    int used = DteTupleAdt::fromNet(s, to.data, DTE_PAGESIZE);
+    assert(used >= 0 && "Tuple did not fit on a page!");
+    return (Tuple*)(to.data);
   }
 
   virtual int getMaxSize() const;

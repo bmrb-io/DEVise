@@ -7,6 +7,7 @@
 void DteTupleAdt::precompute()
 {
   int n = types.size();
+  numFields = n;
   pointerSize = n * sizeof(Type*);
   maxSize = sizeof(int4) + pointerSize;
     
@@ -37,6 +38,7 @@ void DteTupleAdt::precompute()
 DteTupleAdt::DteTupleAdt()
   : DteAdt(false, POINTER_ALIGN)
 {
+  numFields = 0;
   pointerSize = 0;
   maxSize = 0;
   allNonNull = allFixedSize = allCanCompare = allCanHash = true;
@@ -46,6 +48,7 @@ DteTupleAdt::DteTupleAdt()
 DteTupleAdt::DteTupleAdt(const DteTupleAdt& x)
   : DteAdt(x), types(x.types)
 {
+  numFields = x.numFields;
   pointerSize = x.pointerSize;
   maxSize = x.maxSize;
   allNonNull = x.allNonNull;
@@ -72,6 +75,7 @@ DteTupleAdt::~DteTupleAdt()
 DteTupleAdt& DteTupleAdt::operator=(const DteTupleAdt& x)
 {
   DteAdt::operator=(x);
+  numFields = x.numFields;
   types = x.types;
   pointerSize = x.pointerSize;
   maxSize = x.maxSize;
@@ -128,7 +132,7 @@ string DteTupleAdt::getTypeSpec() const
 {
   string s(typeName);
   s += "(";
-  int n = types.size();
+  int n = numFields;
   if( n > 0 ) {
     s += types[0]->getTypeSpec();
     for(int i = 1 ; i < n ; i++) {
@@ -149,7 +153,7 @@ DteAdt* DteTupleAdt::clone() const
 
 int DteTupleAdt::copyNonNull(const Type* x, char* to, int size) const
 {
-  int n = types.size();
+  int n = numFields;
   const Tuple* tup = pointers(x);
 
   char* endTo = to + size;
@@ -198,7 +202,7 @@ bool DteTupleAdt::canCompare() const
 
 int DteTupleAdt::compareNonNull(const Type* x, const Type* y) const
 {
-  int n = types.size();
+  int n = numFields;
   const Tuple* xtup = pointers(x);
   const Tuple* ytup = pointers(y);
   for(int i = 0 ; i < n ; i++) {
@@ -218,7 +222,7 @@ bool DteTupleAdt::canHash() const
 // returns a hash value for this tuple
 int DteTupleAdt::hashNonNull(const Type* x) const
 {
-  int n = types.size();
+  int n = numFields;
   int h = 0;
   const Tuple* xtup = pointers(x);
   for(int i = 0 ; i < n ; i++) {
@@ -230,7 +234,7 @@ int DteTupleAdt::hashNonNull(const Type* x) const
 
 void DteTupleAdt::swizzle(Type* x, char* page) const
 {
-  int n = types.size();
+  int n = numFields;
   Type** xtup = pointers(x);
   for(int i = 0 ; i < n ; i++) {
     if( xtup[i] ) {
@@ -244,12 +248,14 @@ void DteTupleAdt::swizzle(Type* x, char* page) const
 
 void DteTupleAdt::unswizzle(Type* x, char* page) const
 {
-  int n = types.size();
+  int n = numFields;
   Type** xtup = pointers(x);
   for(int i = 0 ; i < n ; i++) {
     if( xtup[i] ) {
       xtup[i] = page + (int)(xtup[i]);
-      types[i]->unswizzle(xtup[i], page);
+      //kb: attributes don't get swizzled right now....
+      //kb: this will probably get me later...
+      //types[i]->unswizzle(xtup[i], page);
     }
   }
 }
@@ -258,7 +264,7 @@ void DteTupleAdt::unswizzle(Type* x, char* page) const
 // prints the tuple without braces
 void DteTupleAdt::print(ostream& s, const Tuple* tup) const
 {
-  int n = types.size();
+  int n = numFields;
   if( n > 0 ) {
     types[0]->print(s, tup[0]);
     for(int i = 1 ; i < n ; i++) {
@@ -279,7 +285,7 @@ void DteTupleAdt::printNonNull(ostream& s, const Type* x) const
 
 void DteTupleAdt::toAscii(ostream& s, const Type* x) const
 {
-  int n = types.size();
+  int n = numFields;
   const Tuple* xtup = pointers(x);
   for(int i = 0 ; i < n ; i++) {
     if( types[i]->isNullable() ) { // 0 = non-null, 1 = null
@@ -295,7 +301,7 @@ void DteTupleAdt::toAscii(ostream& s, const Type* x) const
 
 int DteTupleAdt::fromAscii(istream& s, char* to, int size) const
 {
-  int n = types.size();
+  int n = numFields;
   char* endTo = to + size;
   Tuple* ptrs = (Tuple*)to;
   to += pointerSize;
@@ -329,7 +335,7 @@ int DteTupleAdt::fromAscii(istream& s, char* to, int size) const
 
 void DteTupleAdt::toBinary(ostream& s, const Type* x) const
 {
-  int n = types.size();
+  int n = numFields;
   const Tuple* xtup = pointers(x);
   for(int i = 0 ; i < n ; i++) {
     if( types[i]->isNullable() ) { // 0 = non-null, 1 = null
@@ -344,7 +350,7 @@ void DteTupleAdt::toBinary(ostream& s, const Type* x) const
 
 int DteTupleAdt::fromBinary(istream& s, char* to, int size) const
 {
-  int n = types.size();
+  int n = numFields;
   char* endTo = to + size;
   Tuple* ptrs = (Tuple*)to;
   to += pointerSize;
@@ -377,7 +383,7 @@ int DteTupleAdt::fromBinary(istream& s, char* to, int size) const
 
 void DteTupleAdt::toNet(ostream& s, const Type* x) const
 {
-  int n = types.size();
+  int n = numFields;
   const Tuple* xtup = pointers(x);
   for(int i = 0 ; i < n ; i++) {
     if( types[i]->isNullable() ) { // 0 = non-null, 1 = null
@@ -392,7 +398,7 @@ void DteTupleAdt::toNet(ostream& s, const Type* x) const
 
 int DteTupleAdt::fromNet(istream& s, char* to, int size) const
 {
-  int n = types.size();
+  int n = numFields;
   char* endTo = to + size;
   Tuple* ptrs = (Tuple*)to;
   to += pointerSize;
