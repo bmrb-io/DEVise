@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.139  2002/03/04 19:55:31  xuk
+// Hide JS version string in jsb, due to limited space.
+//
 // Revision 1.138  2002/03/01 19:58:53  xuk
 // Added new command DEViseCommands.UpdateJS to update JavaScreen after
 // a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
@@ -666,8 +669,9 @@ public class jsdevisec extends Panel
 	}
 	buttonPanel.add(commMode);
 
-	if (! jsValues.session.disableButtons)
+	if (! jsValues.session.disableButtons) {
 	    mainPanel.add(buttonPanel);
+        }
 
         viewInfo = new DEViseViewInfo(this, images);
 

@@ -141,8 +141,9 @@ see comments in DEViseCommSocket.java.
         <leader ID>: client ID of the leader of this collaborator
 
     3.9 JAVAC_UpdateJS
-    Purpose: update JavaScreen after a JAVAC_Open_Session or 
-	     JAVAC_Close_Session command
+    Purpose: updates JavaScreen after a JAVAC_Open_Session or 
+	     JAVAC_Close_Session command.  (What this really does is
+	     discard all session-related state on the client end.)
     Arguments: 0
 
 
