@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/04/01 17:11:26  wenger
+  4/left arrow, 5 (home), and 6/right arrow keys, and cursor movements
+  now get sent to slaves during collaboration.
+
   Revision 1.12  1998/03/26 15:21:20  zhenhai
   The cursor drawings now use CursorStore as backup instead of using
   XOR mode for drawing and erasing.
@@ -87,6 +91,8 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
 {
   _name = name;
   _visFlag = flag;
+  _src = 0;
+  _dst = 0;
   _src = 0;
   _dst = 0;
   _useGrid = useGrid;
@@ -252,29 +258,57 @@ void DeviseCursor::MoveSource(Coord x, Coord y)
 void DeviseCursor::ReadCursorStore(WindowRep*w)
 {
   VisualFilter *filter;
-  Coord xLow, yLow, xHigh, yHigh;
 
   GetVisualFilter(filter);
-  xLow = MAX(filter->xLow, filter->xLow);
-  xHigh = MIN(filter->xHigh, filter->xHigh);
-  yLow = MAX(filter->yLow, filter->yLow);
-  yHigh = MIN(filter->yHigh, filter->yHigh);
 
-  w->ReadCursorStore(xLow, yLow, xHigh-xLow, yHigh-yLow, _cursor_store);
+  if (_src && _src->GetNumDimensions()==2
+   && _dst&& _dst->GetNumDimensions()==2) {
+    w->Line(filter->xLow, filter->yLow, filter->xLow, filter->yHigh, 1,
+            &_cursor_store[0]);
+    w->Line(filter->xHigh/2+filter->xLow/2, filter->yLow,
+              filter->xHigh/2+filter->xLow/2, filter->yHigh, 1,
+              &_cursor_store[1]);
+    w->Line(filter->xHigh, filter->yLow, filter->xHigh, filter->yHigh, 1,
+              &_cursor_store[2]);
+
+    w->Line(filter->xLow, filter->yLow, filter->xHigh, filter->yLow, 1,
+              &_cursor_store[3]);
+    w->Line(filter->xLow, filter->yLow/2+filter->yHigh/2,
+              filter->xHigh, filter->yLow/2+filter->yHigh/2, 1,
+              &_cursor_store[4]);
+    w->Line(filter->xLow, filter->yHigh, filter->xHigh, filter->yHigh, 1,
+              &_cursor_store[5]);
+/*
+     w->FillRect(filter->xLow, filter->yLow,
+                 filter->xHigh-filter->xLow,
+	         filter->yHigh-filter->yLow, &_cursor_store);
+*/
+    for (int i=0; i<6; i++) {
+     w->ReadCursorStore(_cursor_store[i]);
+    }
+  }
+  if (_src && _src->GetNumDimensions()==3
+   && _dst&& _dst->GetNumDimensions()==3) {
+    w->PushTop();
+    w->SetCamCursorTransform(filter->camera);
+    w->FillCone(0, 0, 2, 0, 0, 1.5, 0.25, &_cursor_store[0]);
+    w->PopTransform();
+    w->ReadCursorStore(_cursor_store[0]);
+  }
 }
 
 void DeviseCursor::DrawCursorStore(WindowRep*w)
 {
-  VisualFilter *filter;
-  GetVisualFilter(filter);
-
-  Coord xLow, yLow, xHigh, yHigh;
-  xLow = MAX(filter->xLow, filter->xLow);
-  xHigh = MIN(filter->xHigh, filter->xHigh);
-  yLow = MAX(filter->yLow, filter->yLow);
-  yHigh = MIN(filter->yHigh, filter->yHigh);
-
-  w->DrawCursorStore(xLow, yLow, xHigh-xLow, yHigh-yLow, _cursor_store);
+  if (_src && _src->GetNumDimensions()==2
+   && _dst&& _dst->GetNumDimensions()==2) {
+    for (int i=0; i<6; i++) {
+      w->DrawCursorStore(_cursor_store[i]);
+    }
+  }
+  if (_src && _src->GetNumDimensions()==3
+   && _dst&& _dst->GetNumDimensions()==3) {
+    w->DrawCursorStore(_cursor_store[0]);
+  }
 }
 
 void DeviseCursor::DrawCursor(WindowRep* w)
@@ -282,23 +316,28 @@ void DeviseCursor::DrawCursor(WindowRep* w)
   VisualFilter *filter;
   GetVisualFilter(filter);
 
-  Coord xLow, yLow, xHigh, yHigh;
-  xLow = MAX(filter->xLow, filter->xLow);
-  xHigh = MIN(filter->xHigh, filter->xHigh);
-  yLow = MAX(filter->yLow, filter->yLow);
-  yHigh = MIN(filter->yHigh, filter->yHigh);
-
   w->SetForeground(whiteColor);
-  w->Line(xLow, yLow, xLow, yHigh, 1);
-  w->Line(xHigh/2+xLow/2, yLow,
-              xHigh/2+xLow/2, yHigh, 1);
-  w->Line(xHigh, yLow, xHigh, yHigh, 1);
 
-  w->SetForeground(blackColor);
-  w->Line(xLow, yLow, xHigh, yLow, 1);
-  w->Line(xLow, yLow/2+yHigh/2,
-              xHigh, yLow/2+yHigh/2, 1);
-  w->Line(xLow, yHigh, xHigh, yHigh, 1);
+  if (_src && _src->GetNumDimensions()==2
+   && _dst&& _dst->GetNumDimensions()==2) {
+    w->Line(filter->xLow, filter->yLow, filter->xLow, filter->yHigh, 1);
+    w->Line(filter->xHigh/2+filter->xLow/2, filter->yLow,
+              filter->xHigh/2+filter->xLow/2, filter->yHigh, 1);
+    w->Line(filter->xHigh, filter->yLow, filter->xHigh, filter->yHigh, 1);
+
+    w->SetForeground(blackColor);
+    w->Line(filter->xLow, filter->yLow, filter->xHigh, filter->yLow, 1);
+    w->Line(filter->xLow, filter->yLow/2+filter->yHigh/2,
+              filter->xHigh, filter->yLow/2+filter->yHigh/2, 1);
+    w->Line(filter->xLow, filter->yHigh, filter->xHigh, filter->yHigh, 1);
+  }
+  if (_src && _src->GetNumDimensions()==3
+   && _dst&& _dst->GetNumDimensions()==3) {
+    w->PushTop();
+    w->SetCamCursorTransform(filter->camera);
+    w->FillCone(0, 0, 2, 0, 0, 1.5, 0.25);
+    w->PopTransform();
+  }
 }
 
 

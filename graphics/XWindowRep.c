@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.107  1998/03/13 18:10:42  wenger
+  Fixed bug 327 (gaps in view background colors).
+
   Revision 1.106  1998/03/12 22:58:44  wenger
   Fixed bug 324 (view sometimes not fully redrawing); turned off some
   OpenGL debug code.
@@ -2023,7 +2026,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 }
 
 void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, 
-			  Coord height)
+			  Coord height, CursorStore *cstore)
 {
 #if defined(DEBUG)
   printf("XWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
@@ -2318,7 +2321,7 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 /***********************************************************************/
 
 void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
-		      Coord width)
+		      Coord width, CursorStore * cstore)
 {
 #if defined(DEBUG) || 0
   printf("XWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/02/26 00:19:02  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.12  1997/12/16 17:53:49  zhenhai
   Added OpenGL features to graphics.
 
@@ -346,8 +349,6 @@ public:
   void Rotate(Coord theta) {
   }
 
-#if 0
-  // These are never used(!).  RKW 10/15/96.
   /* Return the transformed X,Y,Z coordinates */
   void Transform(Coord x, Coord y, Coord z, 
 		 Coord &newX, Coord &newY, Coord &newZ) {
@@ -385,7 +386,6 @@ public:
 			Coord &oldX, Coord &oldY, Coord &oldZ) {
     oldX = x; oldY = y; oldZ = z;
   }
-#endif
 
   /* Multiply other matrix after this one matrix. Store the
      result in this */

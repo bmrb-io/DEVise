@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.132  1998/03/26 15:21:39  zhenhai
+  The cursor drawings now use CursorStore as backup instead of using
+  XOR mode for drawing and erasing.
+
   Revision 1.131  1998/03/18 08:19:42  zhenhai
   Added visual links between 3D graphics.
 
@@ -1797,9 +1801,8 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   
   _cursorsOn = false;
 
-  if (_numDimensions == 2)
-    (void)DrawCursors();
-  else
+  DrawCursors();
+  if (_numDimensions == 3)
     Draw3DAxis();
 
   win->PopClip();
@@ -2277,7 +2280,6 @@ void View::DeleteCursor(DeviseCursor *cursor)
 
 Boolean View::DrawCursors()
 {
-  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
 
 #if defined(DEBUG)
   printf("DrawCursors for %s\n", GetName());
@@ -2362,6 +2364,9 @@ void View::DoDrawCursors()
 #if defined(DEBUG)
   printf("DoDrawCursors\n");
 #endif
+
+  if (_numDimensions == 3)
+    return;
 
   WindowRep *winRep = GetWindowRep();
   winRep->SetPattern(Pattern0);
@@ -2558,9 +2563,9 @@ void View::SavePixmaps(FILE *file)
   if (!saved) {
     /* Return cursors to original state */
     if (cursorState)
-      (void)DrawCursors();
-    (void)DisplaySymbols(dispSymbol);
-    (void)DisplayConnectors(dispConnector);
+      DrawCursors();
+    DisplaySymbols(dispSymbol);
+    DisplayConnectors(dispConnector);
     return;
   }
   
@@ -2618,9 +2623,9 @@ void View::SavePixmaps(FILE *file)
     }
     /* Return cursors to original state */
     if (cursorState)
-      (void)DrawCursors();
-    (void)DisplaySymbols(dispSymbol);
-    (void)DisplayConnectors(dispConnector);
+      DrawCursors();
+    DisplaySymbols(dispSymbol);
+    DisplayConnectors(dispConnector);
     return;
   }
   
@@ -2690,9 +2695,9 @@ void View::SavePixmaps(FILE *file)
 
   /* Return cursors to original state */
   if (cursorState)
-    (void)DrawCursors();
-  (void)DisplaySymbols(dispSymbol);
-  (void)DisplayConnectors(dispConnector);
+    DrawCursors();
+  DisplaySymbols(dispSymbol);
+  DisplayConnectors(dispConnector);
 }
 
 /* Restore pixmaps from an open file into pixmap buffer */
@@ -3357,9 +3362,8 @@ void	View::Run(void)
 
 		_cursorsOn = false;
 
-		if (_numDimensions == 2)
-			(void)DrawCursors();		// Draw cursors
-		else
+		DrawCursors();		// Draw cursors
+		if (_numDimensions == 3)
 			Draw3DAxis();
 
 		_hasExposure = false;
@@ -3709,9 +3713,8 @@ void	View::Run2(void)
 
 		_cursorsOn = false;
 
-		if (_numDimensions == 2)
-			(void)DrawCursors();		// Draw cursors
-		else
+		DrawCursors();		// Draw cursors
+		if (_numDimensions == 3)
 			Draw3DAxis();
 
 		_hasExposure = false;

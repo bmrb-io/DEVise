@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/03/27 15:08:40  wenger
+  Added dumping of logical session description, added GUI for dumping
+  logical or physical description; cleaned up some of the command code
+  a little.
+
   Revision 1.12  1998/03/26 15:21:25  zhenhai
   The cursor drawings now use CursorStore as backup instead of using
   XOR mode for drawing and erasing.
@@ -142,7 +147,7 @@ private:
   Boolean _useGrid;
   Coord _gridX;
   Coord _gridY;
-  CursorStore _cursor_store;
+  CursorStore _cursor_store[6];
 };
 
 //******************************************************************************

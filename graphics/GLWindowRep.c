@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/03/26 15:21:30  zhenhai
+  The cursor drawings now use CursorStore as backup instead of using
+  XOR mode for drawing and erasing.
+
   Revision 1.12  1998/03/23 18:44:44  zhenhai
   Fixed copy mode problem.
 
@@ -41,7 +45,9 @@
 #include <ctype.h>
 #include <X11/keysym.h>
 #include <GL/gl.h>
-
+#include <limits.h>
+#define DEPTH_NEAR -100.0
+#define DEPTH_FAR 100.0
 #include "GLWindowRep.h"
 #include "GLDisplay.h"
 #include "Compress.h"
@@ -69,7 +75,6 @@ extern "C" {
 #include "DeviseKey.h"
 // xv.h has a conflict DEBUG - it has a variable called int DEBUG
 // so this define must come after xv.h.
-//#define DEBUG
 
 #include "GraphicsDebug.h"
 
@@ -1112,49 +1117,65 @@ void GLWindowRep::SetLineWidth(int w)
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::SetLineWidth()\n",this);
 #endif
+  
   WindowRep::SetLineWidth(w);
-  GLCHECKERROR();
   MAKECURRENT();
   if (w>1.0)
   	glLineWidth(GLfloat(w));
   else
   	glLineWidth(GLfloat(1.0));
-  GLCHECKERROR();
+  
 }
 #ifdef LIBCS
 void GLWindowRep::SetDashes(int dashCount, int dashes[], int startOffset);
 #endif
 
 void GLWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
-			   Coord height)
+			   Coord height, CursorStore *cstore=0)
 {
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",this,
          xlow, ylow, width, height);
 #endif
 #ifdef GRAPHICS
+  
   MAKECURRENT();
-  bool filled = (GetPattern() != -Pattern1);
-  if (filled) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    GLCHECKERROR();
-    GLBEGIN(GL_QUADS);
-    glVertex2f(xlow, ylow);
-    glVertex2f(xlow+width, ylow);
-    glVertex2f(xlow+width, ylow+height);
-    glVertex2f(xlow, ylow+height);
-    GLEND();
+
+  if (!cstore) {
+    bool filled = (GetPattern() != -Pattern1);
+    if (filled) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      GLBEGIN(GL_QUADS);
+      glVertex2f(xlow, ylow);
+      glVertex2f(xlow+width, ylow);
+      glVertex2f(xlow+width, ylow+height);
+      glVertex2f(xlow, ylow+height);
+      GLEND();
+    }
+    if( GetLineWidth() >= 0 || !filled) {
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      GLBEGIN(GL_QUADS);
+      glVertex2f(xlow, ylow);
+      glVertex2f(xlow+width, ylow);
+      glVertex2f(xlow+width, ylow+height);
+      glVertex2f(xlow, ylow+height);
+      GLEND();
+    }
   }
-  if( GetLineWidth() >= 0 || !filled) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    GLCHECKERROR();
-    GLBEGIN(GL_QUADS);
-    glVertex2f(xlow, ylow);
-    glVertex2f(xlow+width, ylow);
-    glVertex2f(xlow+width, ylow+height);
-    glVertex2f(xlow, ylow+height);
-    GLEND();
+  else {
+    Coord logicalx[4]={xlow, xlow+width, xlow+width, xlow},
+          logicaly[4]={ylow, ylow, ylow+height, ylow+height},
+          physicalx[4], physicaly[4];
+	  
+    Transform(4, logicalx, logicaly, physicalx, physicaly);
+    cstore->Clear();
+    cstore->OneCoord(int(physicalx[0]), int(physicaly[0]));
+    cstore->OneCoord(int(physicalx[1]), int(physicaly[1]));
+    cstore->OneCoord(int(physicalx[2]), int(physicaly[2]));
+    cstore->OneCoord(int(physicalx[3]), int(physicaly[3]));
+    cstore->Expand(0, 0, _width-1, _height-1);
   }
+  
 #endif
 }
 
@@ -1170,7 +1191,7 @@ void GLWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
 
 #ifdef GRAPHICS
 
-  GLCHECKERROR();
+  
   MAKECURRENT(); // draw on my graphical context
   float point_x[4], point_y[4];
   
@@ -1197,7 +1218,7 @@ void GLWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
       glVertex2f(point_x[3], point_y[3]);
     GLEND();
   }
-  GLCHECKERROR();
+  
 #endif
 }
 
@@ -1229,11 +1250,12 @@ void GLWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 #endif
 #ifdef GRAPHICS
-  GLCHECKERROR();
+  
   for (int i=0; i<num; i++) {
 	FillRectAlign(xlow[i], ylow[i], width[i], height[i],
 			alignment, orientation);
   }
+  
 #endif
 }
 
@@ -1262,11 +1284,12 @@ void GLWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 
 #ifdef GRAPHICS
-  GLCHECKERROR();
+  
   for (int i=0; i<num; i++) {
 	FillRectAlign(xlow[i], ylow[i], width, height,
 			alignment, orientation);
   }
+  
 #endif
 
 }
@@ -1277,12 +1300,13 @@ void GLWindowRep::DrawPixel(Coord x, Coord y)
   printf("GLWindowRep(0x%p)::DrawPixel: %.2f %.2f\n",this, x, y);
 #endif
 #ifdef GRAPHICS
+  MAKECURRENT();
   if (_dispGraphics) {
-    GLCHECKERROR();
+    
     GLBEGIN(GL_POINTS);
     glVertex2d(x,y);
     GLEND();
-    GLCHECKERROR();
+    
   }
 #endif
 }
@@ -1307,13 +1331,14 @@ void GLWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #endif
 #endif
 #ifdef GRAPHICS
+  MAKECURRENT();
   if (_dispGraphics) {
-    GLCHECKERROR();
+    
     GLBEGIN(GL_POINTS);
     for (int i=0; i<num; i++)
       glVertex2d(x[i],y[i]);
     GLEND();
-    GLCHECKERROR();
+    
   }
 #endif
 }
@@ -1341,89 +1366,71 @@ void GLWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 
 void GLWindowRep::FillPoly(Point *points, int n)
 {
-  GLCHECKERROR();
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::FillPoly %d points\n",this, n);
 #endif
 
 #ifdef GRAPHICS
+  
   MAKECURRENT();
   if (_dispGraphics) {
       // special-case the no-fill rectangle
       bool fill = (GetPattern() != -Pattern1);
       if( fill ) {
 
-  GLCHECKERROR();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  GLCHECKERROR();
 #if defined(DEBUG)
 	PrintTransform();
 #endif
 
-  	GLCHECKERROR();
 	GLBEGIN(GL_POLYGON);
-  	GLCHECKERROR();
 	for (int i=0; i<n; i++) {
 	  glVertex2d(points[i].x, points[i].y);
-  GLCHECKERROR();
 #if defined(DEBUG)
 	  printf("vertex[%d]=(%.2f,%.2f)\n", i, points[i].x, points[i].y);
 #endif
 	}
-  GLCHECKERROR();
 	GLEND();
-  GLCHECKERROR();
       }
-  GLCHECKERROR();
 
 #if defined(DEBUG)
-  PrintTransform();
+  	PrintTransform();
 #endif
-  GLCHECKERROR();
       if( GetLineWidth() >= 0 || !fill ) {
-  GLCHECKERROR();
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  GLCHECKERROR();
-  GLBEGIN(GL_POLYGON);
-  GLCHECKERROR();
+  	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  	GLBEGIN(GL_POLYGON);
 	for (int i=0; i<n; i++) {
 	  glVertex2d(points[i].x, points[i].y);
-  GLCHECKERROR();
 #if defined(DEBUG)
 	  printf("vertex[%d]=(%.2f,%.2f)\n", i, points[i].x, points[i].y);
 #endif
 	}
 	GLEND();
-  GLCHECKERROR();
       }
   }
+  
 #endif
-  GLCHECKERROR();
 }
 
 void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
 {
 #ifdef GRAPHICS
+  
   MAKECURRENT();
   if (_dispGraphics) {
     // special-case the no-fill rectangle
     bool fill = (GetPattern() != -Pattern1);
     if( fill ) {
       
-      GLCHECKERROR();
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-      GLCHECKERROR();
 #if defined(DEBUG)
       PrintTransform();
 #endif
       
-      GLCHECKERROR();
       GLBEGIN(GL_POLYGON);
-      GLCHECKERROR();
       glVertex3d(p1.x_, p1.y_, p1.z_);
       glVertex3d(p2.x_, p2.y_, p2.z_);
       glVertex3d(p3.x_, p3.y_, p3.z_);
-      GLCHECKERROR();
 #if defined(DEBUG)
       printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
 	     p1.x_, p1.y_, p1.z_);
@@ -1433,27 +1440,19 @@ void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
 	     p3.x_, p3.y_, p3.z_);
 #endif
       
-      GLCHECKERROR();
       GLEND();
-      GLCHECKERROR();
     }
-    GLCHECKERROR();
     
     
 #if defined(DEBUG)
     PrintTransform();
 #endif
-    GLCHECKERROR();
     if( GetLineWidth() >= 0 || !fill ) {
-      GLCHECKERROR();
       glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      GLCHECKERROR();
       GLBEGIN(GL_POLYGON);
-      GLCHECKERROR();
       glVertex3d(p1.x_, p1.y_, p1.z_);
       glVertex3d(p2.x_, p2.y_, p2.z_);
       glVertex3d(p3.x_, p3.y_, p3.z_);
-      GLCHECKERROR();
 #if defined(DEBUG)
       printf("vertex[%d]=(%.2f,%.2f,%.2f)\n",
 	     p1.x, p1.y, p1.z);
@@ -1463,13 +1462,15 @@ void GLWindowRep::FillTriangle3D(Point3D p1, Point3D p2, Point3D p3)
 	     p3.x, p3.y, p3.z);
 #endif
       GLEND();
-      GLCHECKERROR();
     }
   }
+  
 #endif
 }
 
 void GLWindowRep::FillSphere(Coord x, Coord y, Coord z, Coord r)
+  // (x, y, z) = origin of sphere
+  //        r  = radius of sphere
 {
   MAKECURRENT();
   GLMATRIXMODE(GL_MODELVIEW);
@@ -1480,16 +1481,105 @@ void GLWindowRep::FillSphere(Coord x, Coord y, Coord z, Coord r)
 
   GLUquadricObj* qObj;
   qObj=gluNewQuadric();
-  gluQuadricDrawStyle(qObj, (GLenum)GLU_FILL);
-  gluQuadricNormals(qObj, (GLenum)GLU_SMOOTH);
-  gluSphere(qObj, r, 36, 36);
+//  gluQuadricDrawStyle(qObj, (GLenum)GLU_FILL);
+//  gluQuadricNormals(qObj, (GLenum)GLU_SMOOTH);
+  gluSphere(qObj, r, 20, 20);
+  gluDeleteQuadric(qObj);
 
   glPopMatrix();
 }
 
+void GLWindowRep::FillCone
+  (Coord x0, Coord y0, Coord z0,
+   Coord x1, Coord y1, Coord z1, Coord r,
+   CursorStore* cstore)
+  // (x0, y0, z0) = center of base of cone
+  // (x1, y1, z1) = top point of cone
+{
+  int sides=30, i;
+  Coord sine, cosine, vecx, vecy, vecz, axisx, axisy, axisz;
+  Coord angle, radians;
+  Coord logicalx[sides+1], logicaly[sides+1], logicalz[sides+1],
+        physicalx[sides+1], physicaly[sides+1];
+
+  if (x0==x1 && y0==y1 && z0==z1)
+    return;
+  // try to figure out how much rotation to do
+  // from (0, 0, 1) to (x1-x0, y1-y0, z1-z0)
+  vecx = x1-x0;
+  vecy = y1-y0;
+  vecz = z1-z0;
+  
+  // now calculate the axis around which to rotate
+  // axis = (0, 0, 1) x (vecx, vecy, vecz) 
+  MAKECURRENT();
+
+
+  GLMATRIXMODE(GL_MODELVIEW);
+
+  DEBUGE(glTranslated(x0, y0, z0));
+
+  if (vecx != 0 || vecy !=0) {
+    axisx = - 1 * vecy;
+    axisy = 1*vecx;
+    axisz = 0;
+    cosine = vecz / sqrt(vecx*vecx+vecy*vecy+vecz*vecz);
+    angle = acos(cosine)/M_PI*180;
+
+    glPushMatrix();
+    glRotatef(angle, axisx, axisy, axisz);
+  }
+  else if (vecz<0) {
+    glPushMatrix();
+    glRotatef(180, 1, 0, 0);
+  }
+  logicalx[0]=0;
+  logicaly[0]=0;
+  logicalz[0]=sqrt(vecx*vecx+vecy*vecy+vecz*vecz);
+
+  for (i=0; i<sides; i++) {
+    radians = i * 2 * M_PI / sides;
+    logicalx[i+1]=cos(radians)*r;
+    logicaly[i+1]=sin(radians)*r;
+    logicalz[i+1]=0;
+  }
+  
+  if (!cstore) {
+    GLBEGIN(GL_TRIANGLE_FAN);
+    glVertex3d(0,0,logicalz[0]);
+
+    for (i=1; i<=sides; i++) {
+      glVertex3d(logicalx[i], logicaly[i], 0);
+    }
+    glVertex3d(logicalx[1], logicaly[1], 0);
+    GLEND();
+
+    GLBEGIN(GL_POLYGON);
+    for (i=1; i<=sides; i++) {
+      glVertex3d(logicalx[i], logicaly[i], 0);
+    }
+    glVertex3d(logicalx[1], logicaly[1], 0);
+    GLEND();
+  }
+  else {
+    cstore->Clear();
+    Transform3(sides+1, logicalx, logicaly, logicalz, physicalx, physicaly);
+    for (i=0; i<sides+1; i++) {
+      cstore->OneCoord(int(physicalx[i]), int(physicaly[i]));
+    }
+    cstore->Expand(0, 0, _width-1, _height-1);
+  }
+
+  if (vecx != 0 || vecy !=0 || vecz<0) {
+    glPopMatrix();
+  }
+}
+
+
 void GLWindowRep::FillPixelPoly(Point *p, int n)
 {
-  GLCHECKERROR();
+#ifdef GRAPHICS
+  
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::FillPixelPoly: %d points\n",this,n);
 
@@ -1503,49 +1593,81 @@ void GLWindowRep::FillPixelPoly(Point *p, int n)
 #endif
 #endif
   FillPoly(p, n);
-  GLCHECKERROR();
+  
+#endif
 }
 
 /* Draw an arc.  Angles are in radians. */
 void GLWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 		      Coord vertDiam, Coord startAngle, Coord endAngle)
 {
-  GLCHECKERROR();
+  
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::Arc %.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",this,
 	 xCenter, yCenter, horizDiam, vertDiam, startAngle, endAngle);
 #endif
-  GLCHECKERROR();
+  
 }
 
-void GLWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width)
+void GLWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width,
+                       CursorStore *cstore=0)
 {
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::Line %.2f,%.2f,%.2f,%.2f\n",this, x1, y1, x2, y2);
 #endif
-  GLCHECKERROR();
+
+#ifdef GRAPHICS
+  
   MAKECURRENT();
-  GLCHECKERROR();
-  GLBEGIN(GL_LINES);
-  GLCHECKERROR();
-  glVertex2d(x1,y1);
-  GLCHECKERROR();
-  glVertex2d(x2,y2);
-  glEnd();
-  GLCHECKERROR();
+
+  if (!cstore) {
+    GLBEGIN(GL_LINES);
+    glVertex2d(x1,y1);
+    glVertex2d(x2,y2);
+    GLEND();
+  }
+  else {
+    Coord logicalx[2]={x1, x2},
+          logicaly[2]={y1, y2},
+          physicalx[2],
+          physicaly[2];
+    Transform(2, logicalx, logicaly, physicalx, physicaly);
+    cstore->Clear();
+    cstore->OneCoord(int(physicalx[0]), int(physicaly[0]));
+    cstore->OneCoord(int(physicalx[1]), int(physicaly[1]));
+    cstore->Expand(0, 0, _width-1, _height-1);
+  }
+  
+#endif
 }
 
 void GLWindowRep::Line3D(Coord x1, Coord y1, Coord z1,
-	Coord x2, Coord y2, Coord z2, Coord width)
+	Coord x2, Coord y2, Coord z2, Coord width,
+        CursorStore *cstore=0)
 {
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::Line %.2f,%.2f,%.2f,%.2f\n",this, x1, y1, x2, y2);
 #endif
   MAKECURRENT();
-  GLBEGIN(GL_LINES);
-  glVertex3d(x1,y1,z1);
-  glVertex3d(x2,y2,z2);
-  GLEND();
+  if (!cstore) {
+    GLBEGIN(GL_LINES);
+    glVertex3d(x1,y1,z1);
+    glVertex3d(x2,y2,z2);
+    GLEND();
+  }
+  else {
+    Coord logicalx[2]={x1, x2},
+          logicaly[2]={y1, y2},
+          logicalz[2]={z1, z2},
+          physicalx[2],
+          physicaly[2],
+          physicalz[2];
+    Transform3(2, logicalx, logicaly, logicalz, physicalx, physicaly);
+    cstore->Clear();
+    cstore->OneCoord(int(physicalx[0]), int(physicaly[0]));
+    cstore->OneCoord(int(physicalx[1]), int(physicaly[1]));
+    cstore->Expand(0, 0, _width-1, _height-1);
+  }
 }
 
 void GLWindowRep::Text3D(Coord x, Coord y, Coord z, char* text)
@@ -1558,28 +1680,21 @@ void GLWindowRep::Text3D(Coord x, Coord y, Coord z, char* text)
 
 void GLWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
-  GLCHECKERROR();
+  
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::AbsoluteLine %d,%d,%d,%d\n",this, x1, y1, x2, y2);
 #endif
+  
   MAKECURRENT();
-  GLCHECKERROR();
   GLMATRIXMODE(GL_MODELVIEW);
-  GLCHECKERROR();
   glPushMatrix();
-  GLCHECKERROR();
   glLoadIdentity();
-  GLCHECKERROR();
   GLBEGIN(GL_LINES);
-  GLCHECKERROR();
   glVertex2i(x1,y1);
-  GLCHECKERROR();
   glVertex2i(x2,y2);
-  GLCHECKERROR();
   GLEND();
-  GLCHECKERROR();
   glPopMatrix();
-  GLCHECKERROR();
+  
 }
 
 void GLWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
@@ -1587,14 +1702,16 @@ void GLWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 			     Boolean skipLeadingSpaces = false,
 			     Coord orientation = 0.0)
 {
-  GLCHECKERROR();
 #if defined (DEBUG)
   printf("GLWindowRep(0x%p)::ScaledText: <%s> at %.2f, %.2f, %.2f, %.2f, orientation %.2f\n",this,
 	 text, x, y, width, height, orientation);
 #endif
+#ifdef GRAPHICS
+  
   DrawText(true, text, x, y, width, height, alignment,
     skipLeadingSpaces, orientation);
-  GLCHECKERROR();
+  
+#endif
 }
 
 void GLWindowRep::AbsoluteText(char *text, Coord x, Coord y, Coord width, 
@@ -1603,14 +1720,16 @@ void GLWindowRep::AbsoluteText(char *text, Coord x, Coord y, Coord width,
 			       Boolean skipLeadingSpaces = false,
 			       Coord orientation = 0.0)
 {
-  GLCHECKERROR();
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::AbsoluteText: <%s> at %.2f,%.2f,%.2f,%.2f, orientation %.2f\n",this,
 	 text, x, y, width, height, orientation);
 #endif
+#ifdef GRAPHICS
+  
   DrawText(false, text, x, y, width, height, alignment,
     skipLeadingSpaces, orientation);
-  GLCHECKERROR();
+  
+#endif
 }
 
 /* Set XOR or normal drawing mode on */
@@ -1619,10 +1738,13 @@ void GLWindowRep::SetXorMode()
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::SetXorMode\n",this);
 #endif
+#ifdef GRAPHICS
+  
   MAKECURRENT();
   glEnable(GL_INDEX_LOGIC_OP);
   glLogicOp(GL_XOR);
-
+  
+#endif
 }
 
 void GLWindowRep::SetCopyMode()
@@ -1630,9 +1752,13 @@ void GLWindowRep::SetCopyMode()
 #ifdef DEBUG
   printf("GLWindowRep(0x%p)::SetCopyMode\n",this);
 #endif
+#ifdef GRAPHICS
+  
   MAKECURRENT();
   glDisable(GL_INDEX_LOGIC_OP);
 //  glLogicOp(GL_COPY);
+  
+#endif
 }
 
 void GLWindowRep::SetOrMode()
@@ -1652,14 +1778,15 @@ void GLWindowRep::SetFont(char *family, char *weight, char *slant,
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::SetFont(%s,%f)\n", this, family, pointSize);
 #endif
-  GLCHECKERROR();
+#ifdef GRAPHICS
+  
+  MAKECURRENT();
   GetDisplay()->SetFont(family, weight, slant, width, pointSize);
   XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   if (!_specialfontstruct || _specialfontstruct->fid != fontStruct->fid) {
     if (_specialfontstruct) // need to free the display list of fonts
       glDeleteLists(_specialfont+32,96);
     // now create display lists of fonts
-    MAKECURRENT();
     _specialfontstruct=fontStruct;
     _specialfont=glGenLists(256);
     glXUseXFont(_specialfontstruct->fid, 32, 96, _specialfont+32);
@@ -1669,23 +1796,25 @@ void GLWindowRep::SetFont(char *family, char *weight, char *slant,
     _currentfontstruct=_specialfontstruct;
     glListBase(_specialfont);
   }
-  GLCHECKERROR();
+  
+#endif
 }
 
 void GLWindowRep::SetNormalFont()
 {
-  GLCHECKERROR();
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::SetNormalFont()\n", this);
 #endif
-  GLCHECKERROR();
+#ifdef GRAPHICS
+  
+
+  MAKECURRENT();
 
   XFontStruct *fontStruct = GetDisplay()->GetNormalFontStruct();
   if (!_normalfontstruct || _normalfontstruct->fid != fontStruct->fid) {
     if (_normalfontstruct) // need to free the display list of fonts
       glDeleteLists(_normalfont,96);
     // now create display lists of fonts
-    MAKECURRENT();
     _normalfontstruct=fontStruct;
     _normalfont=glGenLists(256);
     glXUseXFont(_normalfontstruct->fid, 32, 96, _normalfont+32);
@@ -1695,15 +1824,19 @@ void GLWindowRep::SetNormalFont()
     _currentfontstruct=_normalfontstruct;
     glListBase(_normalfont);
   }
+  
+#endif
 }
 
 /* Draw rubberbanding rectangle */
 void GLWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
 {
   DOASSERT(_win, "Cannot draw rubberband in pixmap");
+#ifdef GRAPHICS
+  
+  MAKECURRENT();
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  GLCHECKERROR();
   GLBEGIN(GL_QUADS);
   glVertex2f(x1, y1);
   glVertex2f(x1, y2);
@@ -1711,6 +1844,8 @@ void GLWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
   glVertex2f(x2, y1);
   GLEND();
   this->Flush();
+  
+#endif
 }
 
 /* Get window rep dimensions */
@@ -1875,14 +2010,10 @@ void GLWindowRep::Init()
   _unobscured = false;
   // use double buffer. Use color index mode instead of RGB mode
 
-  GLCHECKERROR();
   SetLineWidth(0);
-  GLCHECKERROR();
   WindowRep::SetPattern(Pattern0);
-  GLCHECKERROR();
   
   SetNormalFont();
-  GLCHECKERROR();
   // font pixmap creating elimated.
   MAKECURRENT();
   glViewport(0, 0, (GLsizei)_width, (GLsizei)_height);
@@ -1931,18 +2062,22 @@ GLWindowRep::~GLWindowRep()
 
 void    GLWindowRep::SetForeground(PColorID fgid)
 {
+  MAKECURRENT();
+  
         XColorID        xfgid = AP_GetXColorID(fgid);
 
         WindowRep::SetForeground(fgid);
 
 #ifdef GRAPHICS
-        if (_dispGraphics)
-                glIndexi(xfgid);
+        if (_dispGraphics) {
+	  glIndexi(xfgid);
+	}
 #endif
 }
 
 void    GLWindowRep::SetBackground(PColorID bgid)
 {
+  MAKECURRENT();
         _xbgid = AP_GetXColorID(bgid);
 
         WindowRep::SetBackground(bgid);
@@ -2463,6 +2598,8 @@ void GLWindowRep::UpdateWinDimensions()
 
 void GLWindowRep::SetNumDim(int numDim) {
   GLfloat w, h;
+  if (_numDim==numDim)
+    return;
   _numDim=numDim;
   w=_width;
   h=_height;
@@ -2471,20 +2608,19 @@ void GLWindowRep::SetNumDim(int numDim) {
     glDisable(GL_DEPTH_TEST);
     GLMATRIXMODE(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, w, 0.0, h, -10.0, 10.0);
+    glOrtho(0.0, w, 0.0, h, DEPTH_NEAR, DEPTH_FAR);
   }
   if (numDim==3) {
     w=_width;
     h=_height;
     MAKECURRENT();
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     if (w<h)
-      glOrtho(-2.5, 2.5, -2.5*h/w, 2.5*h/w, -10.0, 10.0);
+      glOrtho(-2.5, 2.5, -2.5*h/w, 2.5*h/w, DEPTH_NEAR, DEPTH_FAR);
     else
-      glOrtho(-2.5*w/h, 2.5*w/h, -2.5, 2.5, -10.0, 10.0);
+      glOrtho(-2.5*w/h, 2.5*w/h, -2.5, 2.5, DEPTH_NEAR, DEPTH_FAR);
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -2582,12 +2718,14 @@ void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 			   Boolean skipLeadingSpaces = false,
 			   Coord orientation=0.0)
 {
-  GLCHECKERROR();
   if (skipLeadingSpaces) {
     /* skip leading spaces before drawing text */
     while (*text == ' ')
       text++;
   }
+
+#ifdef GRAPHICS
+  
 
   MAKECURRENT();
   DOASSERT(_currentfontstruct, "GLWindowRep::DrawText: called before a font is set");
@@ -2647,7 +2785,8 @@ void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
   glBitmap(0, 0, 0, 0, xloc, yloc, 0);
   glCallLists(strlen(text), GL_UNSIGNED_BYTE, text);
 
-  GLCHECKERROR();
+  
+#endif
 }
 
 /* Calculate the locations of points needed to draw a rectangle,
@@ -3010,32 +3149,35 @@ GLWindowRep * GLWindowRep::currWinRep=0;
 
 // Make the window and GL graphical context the current graphical context
 GLboolean GLWindowRep::makeCurrent() {
-  GLCHECKERROR();
+#ifdef GRAPHICS
+  
 //  if (currWinRep != this) {
     switch (glXMakeCurrent(_display, _win, _gc)) {
     case GL_FALSE:
       currWinRep=0;
       printf("Cannot make current!\n");
-      GLCHECKERROR();
+      
       return GL_FALSE;
     case GL_TRUE:
       currWinRep=this;
 #ifdef DEBUG
       printf("Can make current currWinRep=%d\n", int(currWinRep));
 #endif
-      GLCHECKERROR();
+      
       return GL_TRUE;
     default:
       printf("glXMakeCurrent() returned unexpected val\n");
-      GLCHECKERROR();
+      
       return GL_FALSE;
     }
 //  }
 /*  else {
     DOASSERT(glXGetCurrentContext()==_gc, "GLGraphical context changed with unknown reason");
-    GLCHECKERROR();
+    
     return GL_TRUE;
   }*/
+  
+#endif
 }
 
 void GLWindowRep::PushTop()
@@ -3043,14 +3185,14 @@ void GLWindowRep::PushTop()
 #if defined (DEBUG)
   printf("GLWindow::PushTop\n");
 #endif
-  GLCHECKERROR();
+  
   MAKECURRENT();
   GLMATRIXMODE(GL_MODELVIEW);
   DEBUGE(glPushMatrix());
 #if defined (DEBUG)
   PrintTransform();
 #endif
-  GLCHECKERROR();
+  
 }
 
 void GLWindowRep::PopTransform()
@@ -3058,7 +3200,7 @@ void GLWindowRep::PopTransform()
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::PopMatrix\n",this);
 #endif
-  GLCHECKERROR();
+  
   MAKECURRENT();
 #if defined(DEBUG)
 #endif
@@ -3067,42 +3209,58 @@ void GLWindowRep::PopTransform()
 #if defined(DEBUG)
   PrintTransform();
 #endif
-  GLCHECKERROR();
+  
 }
 
 void GLWindowRep::Scale(Coord sx, Coord sy) {
 #if defined (DEBUG)
   printf("GLWindow::Scale(%f,%f)\n", sx, sy);
 #endif
-  GLCHECKERROR();
+  
   MAKECURRENT();
   GLMATRIXMODE(GL_MODELVIEW);
   DEBUGE(glScaled(sx,sy,1.0));
-  GLCHECKERROR();
+  
 }
 
 void GLWindowRep::Translate(Coord dx, Coord dy) {
 #if defined (DEBUG)
   printf("GLWindowRep(0x%p)::Translate %f %f\n",this, dx, dy);
 #endif
-  GLCHECKERROR();
+  
   MAKECURRENT();
   GLMATRIXMODE(GL_MODELVIEW);
-  GLdouble a[]={1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, dx, dy, 0, 1};
   DEBUGE(glTranslated(dx, dy, 0.0));
-  //DEBUGE(glMultMatrixd(a));
-  GLCHECKERROR();
+  
+}
+
+void GLWindowRep::Translate3(Coord dx, Coord dy, Coord dz) {
+#if defined (DEBUG)
+  printf("GLWindowRep(0x%p)::Translate %f %f\n",this, dx, dy);
+#endif
+  
+  MAKECURRENT();
+  GLMATRIXMODE(GL_MODELVIEW);
+  DEBUGE(glTranslated(dx, dy, dz));
+  
+}
+
+void GLWindowRep::Rotate3(Coord angle, Coord x, Coord y, Coord z)
+// Rotate the object by angle around the vector ((0,0,0),(x,y,z))
+{
+  MAKECURRENT();
+  glRotatef(angle, x, y, z);
 }
 
 void GLWindowRep::MakeIdentity() {
 #if defined (DEBUG)
   printf("GLWindowRep(0x%p)::MakeIdentity()\n",this);
 #endif
-  GLCHECKERROR();
+  
   MAKECURRENT();
   GLMATRIXMODE(GL_MODELVIEW);
   DEBUGE(glLoadIdentity());
-  GLCHECKERROR();
+  
 }
 
 void GLWindowRep::Transform(Coord x, Coord y, Coord &newX, Coord &newY)
@@ -3111,6 +3269,7 @@ void GLWindowRep::Transform(Coord x, Coord y, Coord &newX, Coord &newY)
   GLdouble model[16];
   GLdouble proj[16];
   GLint view[4];
+  MAKECURRENT();
   glGetDoublev(GL_MODELVIEW_MATRIX, model);
   glGetDoublev(GL_PROJECTION_MATRIX, proj);
   glGetIntegerv(GL_VIEWPORT, view);
@@ -3121,6 +3280,61 @@ void GLWindowRep::Transform(Coord x, Coord y, Coord &newX, Coord &newY)
   newY=objectY;
 }
 
+void GLWindowRep::Transform3
+  (Coord x, Coord y, Coord z, Coord &newX, Coord &newY)
+{
+  // Object (logical) coordinate -> Window (physical) coordinate
+  GLdouble model[16];
+  GLdouble proj[16];
+  GLint view[4];
+  MAKECURRENT();
+  glGetDoublev(GL_MODELVIEW_MATRIX, model);
+  glGetDoublev(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+  GLdouble objectX, objectY, objectZ;
+  gluProject((GLdouble)x,(GLdouble)y, (GLdouble)0,
+	       model, proj, view, &objectX, &objectY, &objectZ);
+  newX=objectX;
+  newY=objectY;
+}
+
+void GLWindowRep::Transform(int n, Coord *x, Coord *y, Coord *newX, Coord *newY)
+{
+  // Object (logical) coordinate -> Window (physical) coordinate
+  GLdouble model[16];
+  GLdouble proj[16];
+  GLint view[4];
+  MAKECURRENT();
+  glGetDoublev(GL_MODELVIEW_MATRIX, model);
+  glGetDoublev(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+  GLdouble objectX, objectY, objectZ;
+  for (int i=0; i<n; i++) {
+    gluProject((GLdouble)x[i],(GLdouble)y[i], (GLdouble)0,
+	       model, proj, view, &objectX, &objectY, &objectZ);
+    newX[i]=objectX;
+    newY[i]=objectY;
+  }
+}
+void GLWindowRep::Transform3
+   (int n, Coord *x, Coord *y, Coord *z, Coord *newX, Coord *newY)
+{
+  // Object (logical) coordinate -> Window (physical) coordinate
+  GLdouble model[16];
+  GLdouble proj[16];
+  GLint view[4];
+  MAKECURRENT();
+  glGetDoublev(GL_MODELVIEW_MATRIX, model);
+  glGetDoublev(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+  GLdouble objectX, objectY, objectZ;
+  for (int i=0; i<n; i++) {
+    gluProject((GLdouble)x[i],(GLdouble)y[i], (GLdouble)z[i],
+	       model, proj, view, &objectX, &objectY, &objectZ);
+    newX[i]=objectX;
+    newY[i]=objectY;
+  }
+}
 void GLWindowRep::InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY)
 {
   // Window (physical) coordinate -> Object (logical) coordinate
@@ -3138,6 +3352,25 @@ void GLWindowRep::InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY)
   newY=objectY;
 }
 
+void GLWindowRep::InverseTransform
+  (int n, Coord *x, Coord *y, Coord *newX, Coord *newY)
+{
+  // Window (physical) coordinate -> Object (logical) coordinate
+  GLdouble model[16];
+  GLdouble proj[16];
+  GLint view[4];
+  MAKECURRENT();
+  glGetDoublev(GL_MODELVIEW_MATRIX, model);
+  glGetDoublev(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+  for (int i=0; i<n; i++) {
+    GLdouble objectX, objectY, objectZ;
+    gluUnProject((GLdouble)x[i],(GLdouble)y[i], (GLdouble)0,
+	       model, proj, view, &objectX, &objectY, &objectZ);
+    newX[i]=objectX;
+    newY[i]=objectY;
+  }
+}
 
 /* return the transform on top of the stack. */
 Transform2D *GLWindowRep::TopTransform() {
@@ -3156,7 +3389,7 @@ Transform3D *GLWindowRep::TopTransform3() {
 
 void GLWindowRep::PrintTransform()
 {
-  GLCHECKERROR();
+  
   MAKECURRENT();
   // get the top matrix and print
   GLfloat a[16];
@@ -3165,7 +3398,7 @@ void GLWindowRep::PrintTransform()
   GLMATRIXMODE(GL_MODELVIEW);
   glGetIntegerv(GL_MODELVIEW_STACK_DEPTH, &depth);
   printf("Model view stack depth=%d\n", depth);
-  GLCHECKERROR();
+  
   glGetFloatv(GL_MODELVIEW_MATRIX, a);
   printf("Transform matrix for 0x%p\n", this);
   for (int i=0; i<4; i++) {
@@ -3173,12 +3406,12 @@ void GLWindowRep::PrintTransform()
       printf("%.8f\t", a[i+j*4]);
     printf("\n");
   }
-  GLCHECKERROR();
+  
 
   GLMATRIXMODE(GL_PROJECTION);
   glGetIntegerv(GL_PROJECTION_STACK_DEPTH, &depth);
   printf("Projection stack depth=%d\n", depth);
-  GLCHECKERROR();
+  
   glGetFloatv(GL_PROJECTION_MATRIX, a);
   printf("Projection matrix for 0x%p\n", this);
   for (int i=0; i<4; i++) {
@@ -3186,71 +3419,63 @@ void GLWindowRep::PrintTransform()
       printf("%.8f\t", a[i+j*4]);
     printf("\n");
   }
-  GLCHECKERROR();
+  
 
   GLfloat width;
   glGetFloatv(GL_LINE_WIDTH, &width);
   printf("Line width = %.2f\tRecord width = %d\n", width, GetLineWidth());
 }
 
-void GLWindowRep::ReadCursorStore
-	(Coord x, Coord y, Coord w, Coord h, CursorStore & c)
+void GLWindowRep::ReadCursorStore(CursorStore & c)
 {
-  Coord x2, y2, x3, y3;
-  int xi, yi, wi, hi;
 
   MAKECURRENT();
 
-  Transform(x,y, x2, y2);
-  Transform(x+w,y+h, x3, y3);
+  if (c.Valid()) {
 
-  xi=MAX(int(x2)-2, 0);
-  yi=MAX(int(y2)-2, 0);
-  wi=MIN(int(_width), int(x3+2))-xi+1;
-  hi=MIN(int(_height), int(y3+2))-yi+1;
+    glReadPixels(c._min_x, c._min_y,
+		 (c._max_x-c._min_x+1), (c._max_y-c._min_y+1),
+		 GL_COLOR_INDEX,GL_FLOAT, c.color_index);
+    glReadPixels(c._min_x, c._min_y,
+		 (c._max_x-c._min_x+1), (c._max_y-c._min_y+1),
+		 GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
 
-  GLMATRIXMODE(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  c.Allocate(wi, hi);
-  glReadPixels(xi, yi, wi, hi, GL_COLOR_INDEX,GL_FLOAT, c.color_index);
-  glReadPixels(xi, yi, wi, hi, GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
-
-  glPopMatrix();
+  }
 }
 
-void GLWindowRep::DrawCursorStore
-	(Coord x, Coord y, Coord w, Coord h, CursorStore & c)
+void GLWindowRep::DrawCursorStore(CursorStore & c)
 {
-  Coord x2, y2, x3, y3;
-  int xi, yi, wi, hi;
-
   MAKECURRENT();
 
-  Transform(x,y, x2, y2);
-  Transform(x+w,y+h, x3, y3);
+  if (c.Valid()) {
+    GLMATRIXMODE(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    GLMATRIXMODE(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, (GLdouble)_width, 0.0, (GLdouble)_height,
+	    DEPTH_NEAR, DEPTH_FAR);
 
-  xi=MAX(int(x2)-2, 0);
-  yi=MAX(int(y2)-2, 0);
-  wi=MIN(int(_width), int(x3)+2)-xi+1;
-  hi=MIN(int(_height), int(y3)+2)-yi+1;
+    glDepthFunc(GL_ALWAYS);
+    glRasterPos2i(c._min_x,c._min_y);
+    glDrawPixels((c._max_x-c._min_x+1),(c._max_y-c._min_y+1),
+		 GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
+    glDrawPixels((c._max_x-c._min_x+1),(c._max_y-c._min_y+1),
+		 GL_COLOR_INDEX,GL_FLOAT, c.color_index);
+    glDepthFunc(GL_LESS);
 
-  GLMATRIXMODE(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-
-  glRasterPos2i(xi,yi);
-  glDrawPixels(wi,hi,GL_DEPTH_COMPONENT,GL_FLOAT, c.depth);
-  glDrawPixels(wi,hi,GL_COLOR_INDEX,GL_FLOAT, c.color_index);
-
-  glPopMatrix();
+    GLMATRIXMODE(GL_PROJECTION);
+    glPopMatrix();
+    GLMATRIXMODE(GL_MODELVIEW);
+    glPopMatrix();
+  }
 }
 
 /* Clear the transformation stack and put an identity 
    matrix as top of the stack */
 void GLWindowRep::ClearTransformStack() {
-  GLCHECKERROR();
+  
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::ClearTransformStack()\n",this);
 #endif
@@ -3263,130 +3488,63 @@ void GLWindowRep::ClearTransformStack() {
     depth--;
   }
   glLoadIdentity();
-  GLCHECKERROR();
-}
-
-void GLWindowRep::ViewNegX()
-{
-  MAKECURRENT();
-  GLMATRIXMODE(GL_PROJECTION);
-  glPopMatrix();
-  glPushMatrix();
-  glRotatef(-90.0, 0.0, 1.0, 0.0);
-  _viewdir = NegX;
 }
 
 void GLWindowRep::SetViewCamera(const Camera & c)
 {
+  MAKECURRENT();
+
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glPushMatrix();
+  glTranslatef(c.pan_right, 0.0, 0.0);
+  glTranslatef(0.0, c.pan_up, 0.0);
   switch (c.view_dir) {
-    case PosX: ViewPosX(); break;
-    case PosY: ViewPosY(); break;
-    case PosZ: ViewPosZ(); break;
-    case NegX: ViewNegX(); break;
-    case NegY: ViewNegY(); break;
-    case NegZ: ViewNegZ(); break;
-  }
-  PanRightAmount(c.pan_right);
-  PanUpAmount(c.pan_up);
-	
-}
-void GLWindowRep::ViewPosX()
-{
-  MAKECURRENT();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glPushMatrix();
-  glRotatef(90.0, 0.0, 1.0, 0.0);
-  _viewdir = PosX;
-}
-
-void GLWindowRep::ViewNegY()
-{
-  MAKECURRENT();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glPushMatrix();
-  glRotatef(90.0, 1.0, 0.0, 0.0);
-  _viewdir = NegY;
-}
-
-void GLWindowRep::ViewPosY()
-{
-  MAKECURRENT();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glPushMatrix();
-  glRotatef(-90, 1.0, 0.0, 0.0);
-  _viewdir = PosY;
-}
-
-void GLWindowRep::ViewNegZ()
-{
-  MAKECURRENT();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glPushMatrix();
-  _viewdir = NegZ;
-}
-
-void GLWindowRep::ViewPosZ()
-{
-  MAKECURRENT();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-  glPushMatrix();
-  glRotatef(180.0, 1.0, 0.0, 0.0);
-  _viewdir = PosZ;
-}
-
-void GLWindowRep::PanRightAmount(Coord dx)
-{
-  MAKECURRENT();
-  GLMATRIXMODE(GL_PROJECTION);
-  switch (_viewdir) {
-  case PosX:
-    glTranslatef(0.0, 0.0, dx);
-    break;
-  case NegX:
-    glTranslatef(0.0, 0.0, -dx);
-    break;
-  case PosY:
-    glTranslatef(dx, 0.0, 0.0);
-    break;
-  case NegY:
-    glTranslatef(dx, 0.0, 0.0);
-    break;
-  case PosZ:
-    glTranslatef(dx, 0.0, 0.0);
-		break;
-  case NegZ:
-    glTranslatef(dx, 0.0, 0.0);
-    break;
+    case PosX:
+      glRotatef(90.0, 0.0, 1.0, 0.0);
+      break;
+    case PosY:
+      glRotatef(-90, 1.0, 0.0, 0.0);
+      break;
+    case PosZ:
+      glRotatef(180.0, 1.0, 0.0, 0.0);
+      break;
+    case NegX:
+      glRotatef(-90.0, 0.0, 1.0, 0.0);
+      break;
+    case NegY:
+      glRotatef(90.0, 1.0, 0.0, 0.0);
+      break;
+    case NegZ:
+      break;
   }
 }
 
-void GLWindowRep::PanUpAmount(Coord dy)
+void GLWindowRep::SetCamCursorTransform(const Camera & c)
 {
   MAKECURRENT();
-  GLMATRIXMODE(GL_PROJECTION);
-  switch (_viewdir) {
-  case PosX:
-    glTranslatef(0.0, dy, 0.0);
-    break;
-  case NegX:
-    glTranslatef(0.0, dy, 0.0);
-    break;
-  case PosY:
-    glTranslatef(0.0, 0.0, dy);
-    break;
-  case NegY:
-    glTranslatef(0.0, 0.0, -dy);
-    break;
-  case PosZ:
-    glTranslatef(0.0, -dy, 0.0);
-    break;
-  case NegZ:
-    glTranslatef(0.0, dy, 0.0);
-    break;
+  glMatrixMode(GL_MODELVIEW);
+
+  switch (c.view_dir) {
+    case PosX:
+      glRotatef(-90.0, 0.0, 1.0, 0.0);
+      break;
+    case PosY:
+      glRotatef(90, 1.0, 0.0, 0.0);
+      break;
+    case PosZ:
+      glRotatef(-180.0, 1.0, 0.0, 0.0);
+      break;
+    case NegX:
+      glRotatef(90.0, 0.0, 1.0, 0.0);
+      break;
+    case NegY:
+      glRotatef(-90.0, 1.0, 0.0, 0.0);
+      break;
+    case NegZ:
+      break;
   }
+  glTranslatef(-c.pan_right, 0.0, 0.0);
+  glTranslatef(0.0, -c.pan_up, 0.0);
 }
+

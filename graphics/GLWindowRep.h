@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/03/26 15:21:31  zhenhai
+  The cursor drawings now use CursorStore as backup instead of using
+  XOR mode for drawing and erasing.
+
   Revision 1.8  1998/03/18 08:19:39  zhenhai
   Added visual links between 3D graphics.
 
@@ -234,22 +238,30 @@ public:
   virtual void SetNumDim(int numDim);
 
   virtual void SetViewCamera(const Camera & c);
-  virtual void ViewNegX();
-  virtual void ViewPosX();
-  virtual void ViewNegY();
-  virtual void ViewPosY();
-  virtual void ViewNegZ();
-  virtual void ViewPosZ();
-
-  virtual void PanRightAmount(Coord dx);
-  virtual void PanUpAmount(Coord dy);
-
+  virtual void SetCamCursorTransform(const Camera & c);
 
   virtual void Scale(Coord sx, Coord sy);
+
   virtual void Translate(Coord dx, Coord dy);
+  virtual void Translate3(Coord dx, Coord dy, Coord dz);
+
+  virtual void Rotate3(Coord angle, Coord x, Coord y, Coord z);
+  // Rotate the object by angle around the vector ((0,0,0),(x,y,z))
+
   virtual void MakeIdentity();
   virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY);
+  virtual void Transform(int n, Coord *x, Coord *y, Coord *newX, Coord *newY);
+
+  virtual void Transform3(Coord x, Coord y, Coord z,
+                  Coord &newX, Coord &newY);
+
+  virtual void Transform3(int n, Coord *x, Coord *y, Coord *z,
+                  Coord *newX, Coord *newY);
+
   virtual void InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY);
+  virtual void InverseTransform
+          (int n, Coord *x, Coord *y, Coord *newX, Coord *newY);
+
   // Convert win coordinate to object coordinate
 
   /* return the transform on top of the stack. */
@@ -262,10 +274,8 @@ public:
   void ClearTransformStack();
   /* Drawing primitives */
 
-  virtual void ReadCursorStore
-	(Coord x, Coord y, Coord w, Coord h, CursorStore & c);
-  virtual void DrawCursorStore
-	(Coord x, Coord y, Coord w, Coord h, CursorStore & c);
+  virtual void ReadCursorStore(CursorStore & c);
+  virtual void DrawCursorStore(CursorStore & c);
 
   virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
                         Coord height)
@@ -279,7 +289,7 @@ public:
     }
   }
   virtual void FillRect(Coord xlow, Coord ylow, Coord width,
-			Coord height);
+			Coord height,CursorStore *cstore=0);
   virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
 			     Coord height,
 			     SymbolAlignment alignment = AlignSouthWest,
@@ -312,9 +322,11 @@ public:
   virtual void Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 		   Coord vertDiam, Coord startAngle, Coord endAngle);
 
-  virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
+  virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width,
+                    CursorStore *cstore=0);
   virtual void Line3D(Coord x1, Coord y1, Coord z1,
-                      Coord x2, Coord y2, Coord y3, Coord width);
+                      Coord x2, Coord y2, Coord y3, Coord width,
+                      CursorStore *cstore=0);
   virtual void Text3D(Coord x, Coord y, Coord z, char* text);
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
@@ -333,6 +345,15 @@ public:
          (Point3D p1, Point3D p2, Point3D p3);
 
   virtual void FillSphere(Coord x, Coord y, Coord z, Coord r);
+  // (x, y, z) = origin of sphere
+  //        r  = radius of sphere
+
+  virtual void FillCone(Coord x0, Coord y0, Coord z0,
+                        Coord x1, Coord y1, Coord y2, Coord r,
+                        CursorStore*cstore=0);
+  // (x0, y0, z0) = center of base of cone
+  // (x1, y1, z1) = top point of cone
+
 
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode();

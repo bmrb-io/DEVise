@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1997/11/24 23:14:30  weaver
+  Changes for the new ColorManager.
+
   Revision 1.26  1997/07/18 20:25:05  wenger
   Orientation now works on Rect and RectX symbols; code also includes
   some provisions for locating symbols other than at their centers.
@@ -264,7 +267,8 @@ class PSWindowRep : public WindowRep
     virtual void SetDashes(int dashCount, int dashes[], int startOffset);
 #endif
 
-    virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
+    virtual void FillRect
+      (Coord xlow, Coord ylow, Coord width, Coord height,CursorStore *cstore=0);
     virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
 			       Coord height,
 			       SymbolAlignment alignment = AlignSouthWest,
@@ -297,7 +301,8 @@ class PSWindowRep : public WindowRep
     virtual void Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
                      Coord vertDiam, Coord startAngle, Coord endAngle);
 
-    virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
+    virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width,
+                      CursorStore *cstore=0);
     virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
     virtual void ScaledText(char *text, Coord x, Coord y, Coord width,

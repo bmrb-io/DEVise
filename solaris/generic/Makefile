@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1998/03/05 08:12:32  zhenhai
+#  Added ability to use "DEV_DEBUG_GENERIC" environment variable to toggle on
+#  the -gstabs option for generic
+#
 #  Revision 1.21  1998/03/04 18:41:09  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -84,7 +88,7 @@ include ../Makefile.config
 
 ARCH_LDFLAGS = -L/s/mesa-2.4/lib -R/s/mesa-2.4/lib \
                -L/s/X11/lib -L /s/tcl/lib -R /s/X11/lib
-ARCH_SYSLIBS = -lMesaGLw -lMesaGLU -lMesaGL \
+ARCH_SYSLIBS = -lMesaGLU -lMesaGL \
                -ltk -ltcl -lXaw -lXpm -lXt -lXmu -lX11 -lm
 ARCH_LDPOST  = -lsocket -lnsl
 ARCH_STATIC_LDPOST  = -lsocket -lnsl -static

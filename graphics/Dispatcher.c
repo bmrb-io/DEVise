@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/03/24 20:48:15  wenger
+  Temporarily changed Dispatcher to quit immediately rather than going
+  thru the loop one more time upon receipt of second INT.
+
   Revision 1.40  1998/03/10 19:52:32  wenger
   Merged cleanup_1_4_7_br_10 through cleanup_1_4_7_br_11 (fixes callback
   list problems on SGIs).
@@ -231,19 +235,19 @@ Dispatcher::Dispatcher(StateFlag state)
   _quit = false;
 
   /* Set handling of Control-C interrupt */
-  (void)signal(SIGINT, Terminate);
+  signal(SIGINT, Terminate);
 
   /* Set handling of severe signals */
-  (void)signal(SIGILL, ImmediateTerminate);
-  (void)signal(SIGFPE, ImmediateTerminate);
-  (void)signal(SIGSEGV, ImmediateTerminate);
-  (void)signal(SIGBUS, ImmediateTerminate);
+  signal(SIGILL, ImmediateTerminate);
+  signal(SIGFPE, ImmediateTerminate);
+  signal(SIGSEGV, ImmediateTerminate);
+  signal(SIGBUS, ImmediateTerminate);
 #if !defined(LINUX)
-  (void)signal(SIGSYS, ImmediateTerminate);
+  signal(SIGSYS, ImmediateTerminate);
 #endif
 
   /* Set this process to be the session leader */
-  (void)setsid();
+  setsid();
 
   FD_ZERO(&fdset);
   maxFdCheck = 0;
@@ -418,7 +422,7 @@ void Dispatcher::Terminate(int sig)
   }
 
   /* reset interrupt handling for INTR */
-  (void)signal(SIGINT, Terminate);
+  signal(SIGINT, Terminate);
 }
 
 void Dispatcher::ImmediateTerminate(int sig)
@@ -464,7 +468,7 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 #endif
 
 #if defined(DEBUG_CALLBACK_LIST)
-  (void) CallbacksOk();
+   CallbacksOk();
 #endif
 
   int index;
@@ -502,7 +506,7 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
       }
     }
 #if defined(DEBUG_CALLBACK_LIST)
-    (void) CallbacksOk();
+    CallbacksOk();
 #endif
   }
   _callbacks.DoneIterator(index);

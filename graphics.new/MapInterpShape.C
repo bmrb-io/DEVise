@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/02/26 00:19:27  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.48  1998/01/08 19:46:06  wenger
   Added a little more debug code for text symbols.
 
@@ -929,7 +932,8 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
     y=GetY(gdata, map, offset);
     z=GetZ(gdata, map, offset);
     r=size * GetShapeAttr0(gdata, map, offset)/2.0;
-    win->SetForeground(GetPColorID(gdata, map, offset));
+    PColorID colorid=GetPColorID(gdata, map, offset);
+    win->SetForeground(colorid);
     win->FillSphere(x, y, z, r);
   }
   recordsProcessed = numSyms;

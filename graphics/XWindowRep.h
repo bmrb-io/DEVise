@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  1998/03/13 18:10:44  wenger
+  Fixed bug 327 (gaps in view background colors).
+
   Revision 1.51  1998/02/26 00:19:09  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -446,7 +449,7 @@ class XWindowRep : public WindowRep
 #endif
 
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width,
-			      Coord height);
+			      Coord height, CursorStore *cstore=0);
 	virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
 				   Coord height,
 				   SymbolAlignment alignment = AlignSouthWest,
@@ -479,7 +482,8 @@ class XWindowRep : public WindowRep
         virtual void Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
                          Coord vertDiam, Coord startAngle, Coord endAngle);
 
-	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
+	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width,
+                          CursorStore *cstore=0);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
 	virtual void ScaledText(char *text, Coord x, Coord y, Coord width,

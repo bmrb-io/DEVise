@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/02/26 00:18:59  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.35  1998/02/16 15:41:20  wenger
   Fixed (I believe) bug 287.
 
@@ -968,7 +971,8 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 
 
 /*---------------------------------------------------------------------------*/
-void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
+void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height,
+   CursorStore *)
 {
 #ifdef DEBUG
   printf("PSWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
@@ -1287,7 +1291,7 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
 
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
-		      Coord width)
+		      Coord width, CursorStore *)
 {
 #if defined(DEBUG)
   printf("PSWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);

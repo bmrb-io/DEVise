@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.68  1998/03/26 15:21:43  zhenhai
+  The cursor drawings now use CursorStore as backup instead of using
+  XOR mode for drawing and erasing.
+
   Revision 1.67  1998/03/18 08:19:46  zhenhai
   Added visual links between 3D graphics.
 
@@ -673,7 +677,7 @@ public:
   }
 
   virtual void FillRect(Coord xlow, Coord ylow,
-			Coord width, Coord height) = 0;
+			Coord width, Coord height, CursorStore *cstore=0) = 0;
   virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
 			     Coord height,
 			     SymbolAlignment alignment = AlignSouthWest,
@@ -709,9 +713,11 @@ public:
 		   Coord vertDiam, Coord startAngle, Coord endAngle) = 0;
 
   /* draw line. end points are in world coord, but the width is in pixels */
-  virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width) = 0;
+  virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width,
+                    CursorStore *cstore=0) = 0;
   virtual void Line3D(Coord x1, Coord y1, Coord z1,
-		      Coord x2, Coord y2, Coord z2, Coord width) {};
+		      Coord x2, Coord y2, Coord z2, Coord width,
+                      CursorStore *cstore=0) {};
   virtual void Text3D(Coord x, Coord y, Coord z, char* text) {};
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width) = 0;
 
@@ -737,6 +743,15 @@ public:
 	(Point3D p1, Point3D p2, Point3D p3) {};
 
   virtual void FillSphere(Coord x, Coord y, Coord z, Coord r){};
+  // (x, y, z) = origin of sphere
+  //        r  = radius of sphere
+
+  virtual void FillCone(Coord x0, Coord y0, Coord z0,
+                        Coord x1, Coord y1, Coord y2, Coord r,
+                        CursorStore* cstore=0) {};
+  // (x0, y0, z0) = center of base of cone
+  // (x1, y1, z1) = top point of cone
+
 
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode() = 0;
@@ -756,10 +771,8 @@ public:
   /* Get window rep dimensions */
   virtual void Dimensions(unsigned int &width, unsigned int &height ) = 0;
   virtual void PrintDimensions() {} // for debug
-  virtual void ReadCursorStore
-	(Coord x, Coord y, Coord w, Coord h, CursorStore & c) {}
-  virtual void DrawCursorStore
-	(Coord x, Coord y, Coord w, Coord h, CursorStore & c) {}
+  virtual void ReadCursorStore(CursorStore & c) {}
+  virtual void DrawCursorStore(CursorStore & c) {}
 
   /* Set window rep dimensions */
   virtual void SetDimensions(unsigned int width, unsigned int height) {}
@@ -807,15 +820,8 @@ public:
   }
 
   virtual void SetViewCamera(const Camera & c) {}
-  virtual void ViewNegX(){}
-  virtual void ViewPosX(){}
-  virtual void ViewNegY(){}
-  virtual void ViewPosY(){}
-  virtual void ViewNegZ(){}
-  virtual void ViewPosZ(){}
-
-  virtual void PanRightAmount(Coord dx) {}
-  virtual void PanUpAmount(Coord dy) {}
+  // set a transform to in order to draw the cursor
+  virtual void SetCamCursorTransform(const Camera & c) {}
 
   /* operations on current transformation matrix */
   virtual void Scale(Coord sx, Coord sy) {
@@ -844,8 +850,36 @@ public:
     _transforms[_current].Transform(x, y, newX, newY);
   }
 
+  virtual void Transform(int n, Coord *x, Coord *y, Coord *newX, Coord *newY) {
+    for (int i=0; i<n; i++) {
+      _transforms[_current].Transform(x[i], y[i], newX[i], newY[i]);
+    }
+  }
+
+  virtual void Transform3(Coord x, Coord y, Coord z,
+                  Coord &newX, Coord &newY) {
+    Coord newZ;
+    _transforms3[_current3].Transform(x, y, z, newX, newY, newZ);
+  }
+
+  virtual void Transform3(int n, Coord *x, Coord *y, Coord *z,
+                  Coord *newX, Coord *newY) {
+    Coord newZ;
+    for (int i=0; i<n; i++) {
+      _transforms3[_current3].Transform
+	(x[i], y[i], z[i], newX[i], newY[i], newZ);
+    }
+  }
+
   virtual void InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY) {
     _transforms[_current].InverseTransform(x, y, newX, newY);
+  }
+
+  virtual void InverseTransform(int n, Coord *x, Coord *y,
+                                Coord *newX, Coord *newY) {
+    for (int i=0; i<n; i++) {
+      _transforms[_current].InverseTransform(*x, *y, *newX, *newY);
+    }
   }
 
   virtual void PrintTransform() {
@@ -864,7 +898,7 @@ public:
   /* 3D transformation matrix operations */
   
   /* Push a copy of the top of stack onto the stack */
-  void PushTop3() {
+  virtual void PushTop3() {
     if (_current3 >= WindowRepTransformDepth-1 ){
       reportErrNosys("WindowRep::PushTop: overflow");
       Exit::DoExit(1);
@@ -874,7 +908,7 @@ public:
   }
   
   /* pop transformation matrix */
-  void PopTransform3() {
+  virtual void PopTransform3() {
     if (_current3 <= 0){
       reportErrNosys("WindowRep::PopTransform: underflow");
       Exit::DoExit(1);
@@ -883,13 +917,16 @@ public:
   }
 
   /* operations on current transformation matrix */
-  void Scale3(Coord sx, Coord sy, Coord sz) {
+  virtual void Scale3(Coord sx, Coord sy, Coord sz) {
     DEBUGE(_transforms3[_current3].Scale(sx,sy,sz));
   }
 
-  void Translate3(Coord dx, Coord dy, Coord dz) {
+  virtual void Translate3(Coord dx, Coord dy, Coord dz) {
     DEBUGE(_transforms3[_current3].Translate(dx,dy,dz));
   }
+
+  virtual void Rotate3(Coord angle, Coord x, Coord y, Coord z) {};
+  // Rotate the object by angle around the vector ((0,0,0),(x,y,z))
 
   void MakeIdentity3() {
     DEBUGE(_transforms3[_current3].MakeIdentity());
@@ -904,13 +941,6 @@ public:
     DEBUGE(_transforms3[_current3].PostMultiply(t));
   }
 
-#if 0
-// Not used -- RKW 10/12/96.
-  virtual void Transform3(Coord x, Coord y, Coord z,
-                  Coord &newX, Coord &newY, Coord &newZ) {
-    _transforms3[_current3].Transform(x, y, z, newX, newY, newZ);
-  }
-#endif
 
   void PrintTransform3() {
     _transforms3[_current3].Print();
