@@ -232,7 +232,7 @@ DataSourceSegment.o: /usr/include/stdlib.h /usr/include/sys/time.h
 DataSourceSegment.o: /usr/include/ctype.h /usr/include/math.h
 DataSourceSegment.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 DataSourceSegment.o: ../graphics/Exit.h ../graphics/DevError.h
-DataSourceSegment.o: DataSourceWeb.h DataSourceFileDesc.h ../graphics/Timer.h
+DataSourceSegment.o: DataSourceWeb.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceTape.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
 DataSourceTape.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -247,12 +247,12 @@ DataSourceTape.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
 DataSourceTape.o: ../graphics/DevError.h
 DataSourceWeb.o: /usr/include/stdio.h /usr/include/string.h
 DataSourceWeb.o: /usr/include/sys/stdtypes.h /usr/include/errno.h
-DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/unistd.h
-DataSourceWeb.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
-DataSourceWeb.o: /usr/include/sys/param.h /usr/include/machine/param.h
+DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/signal.h
 DataSourceWeb.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-DataSourceWeb.o: /usr/include/sys/stat.h DataSourceWeb.h DataSourceFileDesc.h
-DataSourceWeb.o: DataSourceFileStream.h DataSource.h
+DataSourceWeb.o: /usr/include/unistd.h /usr/include/sys/types.h
+DataSourceWeb.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+DataSourceWeb.o: /usr/include/machine/param.h /usr/include/sys/stat.h
+DataSourceWeb.o: DataSourceWeb.h DataSourceFileStream.h DataSource.h
 DataSourceWeb.o: ../graphics/DeviseTypes.h ../graphics/Timer.h
 DataSourceWeb.o: ../graphics/Util.h /usr/include/stdlib.h
 DataSourceWeb.o: /usr/include/sys/time.h /usr/include/ctype.h
@@ -578,8 +578,7 @@ TDataAscii.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataAscii.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
 TDataAscii.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h
 TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h ../graphics/Init.h
-TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
-TDataAscii.o: ../graphics/Timer.h DerivedDataSource.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DerivedDataSource.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 TDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
@@ -611,8 +610,7 @@ TDataBinary.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataBinary.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
 TDataBinary.o: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
 TDataBinary.o: DataSeg.h QueryProc.h ../graphics/Init.h
-TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
-TDataBinary.o: ../graphics/Timer.h
+TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
 TDataBinaryInterp.o: /usr/include/unistd.h /usr/include/sys/types.h
 TDataBinaryInterp.o: /usr/include/sys/sysmacros.h TDataBinaryInterp.h
@@ -848,12 +846,12 @@ dsw.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/unistd.h
 dsw.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
 dsw.o: /usr/include/sys/param.h /usr/include/machine/param.h
 dsw.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-dsw.o: /usr/include/sys/stat.h DataSourceWeb.h DataSourceFileDesc.h
-dsw.o: DataSourceFileStream.h DataSource.h ../graphics/DeviseTypes.h
-dsw.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/stdlib.h
-dsw.o: /usr/include/sys/time.h /usr/include/ctype.h /usr/include/math.h
-dsw.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-dsw.o: ../graphics/Exit.h Web.h ../graphics/DevError.h
+dsw.o: /usr/include/sys/stat.h DataSourceWeb.h DataSourceFileStream.h
+dsw.o: DataSource.h ../graphics/DeviseTypes.h ../graphics/Timer.h
+dsw.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/sys/time.h
+dsw.o: /usr/include/ctype.h /usr/include/math.h /usr/include/floatingpoint.h
+dsw.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h Web.h
+dsw.o: ../graphics/DevError.h
 genAms.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 genAms.o: /usr/include/sys/sysmacros.h /usr/include/sys/stat.h
 genAms.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h ams.h

@@ -261,7 +261,6 @@ DataSourceSegment.o: /usr/include/stdlib.h /usr/include/ctype.h
 DataSourceSegment.o: /usr/include/math.h /usr/include/floatingpoint.h
 DataSourceSegment.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
 DataSourceSegment.o: ../graphics/DevError.h DataSourceWeb.h
-DataSourceSegment.o: DataSourceFileDesc.h ../graphics/Timer.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceTape.o: /usr/include/string.h /usr/include/errno.h
 DataSourceTape.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -276,12 +275,14 @@ DataSourceTape.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 DataSourceTape.o: ../graphics/Exit.h ../graphics/DevError.h
 DataSourceWeb.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceWeb.o: /usr/include/string.h /usr/include/errno.h
-DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/unistd.h
-DataSourceWeb.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-DataSourceWeb.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-DataSourceWeb.o: /usr/include/sys/time.h /usr/include/sys/time.h
-DataSourceWeb.o: /usr/include/sys/unistd.h /usr/include/sys/param.h
-DataSourceWeb.o: /usr/include/sys/stat.h DataSourceWeb.h DataSourceFileDesc.h
+DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/signal.h
+DataSourceWeb.o: /usr/include/sys/signal.h /usr/include/sys/unistd.h
+DataSourceWeb.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+DataSourceWeb.o: /usr/include/sys/time.h /usr/include/sys/types.h
+DataSourceWeb.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+DataSourceWeb.o: /usr/include/sys/select.h /usr/include/sys/time.h
+DataSourceWeb.o: /usr/include/unistd.h /usr/include/sys/param.h
+DataSourceWeb.o: /usr/include/sys/stat.h DataSourceWeb.h
 DataSourceWeb.o: DataSourceFileStream.h DataSource.h
 DataSourceWeb.o: ../graphics/DeviseTypes.h ../graphics/Timer.h
 DataSourceWeb.o: ../graphics/Util.h /usr/include/stdlib.h
@@ -645,8 +646,7 @@ TDataAscii.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataAscii.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
 TDataAscii.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h
 TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h ../graphics/Init.h
-TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
-TDataAscii.o: ../graphics/Timer.h DerivedDataSource.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DerivedDataSource.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -682,8 +682,7 @@ TDataBinary.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataBinary.o: /usr/include/sys/ieeefp.h DataSourceFileStream.h
 TDataBinary.o: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
 TDataBinary.o: DataSeg.h QueryProc.h ../graphics/Init.h
-TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
-TDataBinary.o: ../graphics/Timer.h
+TDataBinary.o: ../graphics/BufPolicy.h DataSourceWeb.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataBinaryInterp.o: /usr/include/unistd.h /usr/include/sys/types.h
 TDataBinaryInterp.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
@@ -946,11 +945,11 @@ dsw.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 dsw.o: /usr/include/sys/select.h /usr/include/sys/time.h
 dsw.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
 dsw.o: /usr/include/sys/param.h /usr/include/sys/stat.h DataSourceWeb.h
-dsw.o: DataSourceFileDesc.h DataSourceFileStream.h DataSource.h
-dsw.o: ../graphics/DeviseTypes.h ../graphics/Timer.h ../graphics/Util.h
-dsw.o: /usr/include/stdlib.h /usr/include/ctype.h /usr/include/math.h
-dsw.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-dsw.o: ../graphics/Exit.h Web.h ../graphics/DevError.h
+dsw.o: DataSourceFileStream.h DataSource.h ../graphics/DeviseTypes.h
+dsw.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/stdlib.h
+dsw.o: /usr/include/ctype.h /usr/include/math.h /usr/include/floatingpoint.h
+dsw.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h Web.h
+dsw.o: ../graphics/DevError.h
 genAms.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 genAms.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 genAms.o: /usr/include/sys/select.h /usr/include/sys/time.h

@@ -218,7 +218,7 @@ DataSourceSegment.o: DataSourceBuf.h DataSourceSegment.h ../graphics/Util.h
 DataSourceSegment.o: /usr/include/stdlib.h /usr/include/time.h
 DataSourceSegment.o: /usr/include/ctype.h /usr/include/math.h
 DataSourceSegment.o: ../graphics/Exit.h ../graphics/DevError.h
-DataSourceSegment.o: DataSourceWeb.h DataSourceFileDesc.h ../graphics/Timer.h
+DataSourceSegment.o: DataSourceWeb.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DataSourceTape.o: /usr/include/string.h /usr/include/errno.h
 DataSourceTape.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -232,13 +232,14 @@ DataSourceTape.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 DataSourceTape.o: ../graphics/DevError.h
 DataSourceWeb.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DataSourceWeb.o: /usr/include/string.h /usr/include/errno.h
-DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/unistd.h
+DataSourceWeb.o: /usr/include/sys/errno.h /usr/include/signal.h
+DataSourceWeb.o: /usr/include/sys/signal.h /usr/include/unistd.h
 DataSourceWeb.o: /usr/include/sys/unistd.h /usr/include/sys/param.h
 DataSourceWeb.o: /usr/include/sys/types.h /usr/include/machine/param.h
 DataSourceWeb.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 DataSourceWeb.o: /usr/include/machine/spl.h /usr/include/sys/stat.h
-DataSourceWeb.o: DataSourceWeb.h DataSourceFileDesc.h DataSourceFileStream.h
-DataSourceWeb.o: DataSource.h ../graphics/DeviseTypes.h ../graphics/Timer.h
+DataSourceWeb.o: DataSourceWeb.h DataSourceFileStream.h DataSource.h
+DataSourceWeb.o: ../graphics/DeviseTypes.h ../graphics/Timer.h
 DataSourceWeb.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/time.h
 DataSourceWeb.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 DataSourceWeb.o: Web.h ../graphics/DevError.h
@@ -549,8 +550,7 @@ TDataAscii.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataAscii.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
 TDataAscii.o: DataSourceTape.h DataSourceBuf.h ../graphics/DevError.h
 TDataAscii.o: DataSeg.h QueryProc.h ../graphics/Init.h
-TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
-TDataAscii.o: ../graphics/Timer.h DerivedDataSource.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DerivedDataSource.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/ctype.h
 TDataAsciiInterp.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
@@ -583,7 +583,6 @@ TDataBinary.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataBinary.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
 TDataBinary.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataBinary.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
-TDataBinary.o: DataSourceFileDesc.h ../graphics/Timer.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/unistd.h
 TDataBinaryInterp.o: /usr/include/sys/unistd.h TDataBinaryInterp.h
 TDataBinaryInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
@@ -815,10 +814,10 @@ dsw.o: /usr/include/sys/unistd.h /usr/include/sys/param.h
 dsw.o: /usr/include/sys/types.h /usr/include/machine/param.h
 dsw.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 dsw.o: /usr/include/machine/spl.h /usr/include/sys/stat.h DataSourceWeb.h
-dsw.o: DataSourceFileDesc.h DataSourceFileStream.h DataSource.h
-dsw.o: ../graphics/DeviseTypes.h ../graphics/Timer.h ../graphics/Util.h
-dsw.o: /usr/include/stdlib.h /usr/include/time.h /usr/include/ctype.h
-dsw.o: /usr/include/math.h ../graphics/Exit.h Web.h ../graphics/DevError.h
+dsw.o: DataSourceFileStream.h DataSource.h ../graphics/DeviseTypes.h
+dsw.o: ../graphics/Timer.h ../graphics/Util.h /usr/include/stdlib.h
+dsw.o: /usr/include/time.h /usr/include/ctype.h /usr/include/math.h
+dsw.o: ../graphics/Exit.h Web.h ../graphics/DevError.h
 genAms.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 genAms.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 genAms.o: /usr/include/sys/fcntl.h ams.h /usr/include/math.h
