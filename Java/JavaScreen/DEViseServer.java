@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2001/04/17 02:30:14  xuk
+// *** empty log message ***
+//
 // Revision 1.63  2001/04/12 18:18:17  wenger
 // Added more diagnostic code to the JSPoP.
 //
@@ -781,7 +784,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	pop.pn("We send the close_session command.");
 	cmdCloseSession();
 	// keep the current session opened
-	if ( !client.isSessionOpened )
+	if (!client.isSessionOpened )
 	    client.isSessionOpened = true;
         if (client.socket != null) {
             client.socket.closeSocket();

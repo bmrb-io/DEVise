@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.93  2001/04/24 01:46:18  xuk
+// Fixed bug 658: restoring pre-collaboration session, when leader exits.
+//
 // Revision 1.92  2001/04/12 15:29:25  xuk
 // When collaboration leader exits, followers don't exit; instead they go back to normal mode.
 //
@@ -506,7 +509,8 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         if (getStatus() != 0) {
-            jsc.showMsg("JavaScreen is busy working\nPlease try again later");
+            if (!cmd.startsWith(DEViseCommands.HEART_BEAT))
+		jsc.showMsg("JavaScreen is busy working\nPlease try again later");
             return;
         }
 

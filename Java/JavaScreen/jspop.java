@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2001/04/12 18:18:17  wenger
+// Added more diagnostic code to the JSPoP.
+//
 // Revision 1.50  2001/04/11 21:16:28  xuk
 // A collaboration leader could find out the followers hostname.
 //
@@ -801,6 +804,11 @@ public class jspop implements Runnable
 			    client.setCgi(cgiflag);
        			    client.setSocket(socket);
 			    client.addNewCmd(cmd);
+			    // disable collaboration
+			    if ((cmd.startsWith(DEViseCommands.SAVE_CUR_SESSION)) && (client.isAbleCollab)) {
+				client.isAbleCollab = false;
+				pn("Disable collaboration." + client.isAbleCollab);
+			    }
 			} else {
 			    throw new YException("No client for ID: " + id);
 			}

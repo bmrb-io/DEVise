@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.107  2001/04/24 01:46:17  xuk
+// Fixed bug 658: restoring pre-collaboration session, when leader exits.
+//
 // Revision 1.106  2001/04/21 20:52:53  xuk
 // Added functionality to disable collaboration.
 // Added isCollab variable.
@@ -2280,8 +2283,11 @@ class SetModeDlg extends Dialog
                         if (jsc.isSessionOpened) {
 			    jsc.sessionSaved = true;
 			    try {
+				jsc.pn("Sending: \"" + DEViseCommands.SAVE_CUR_SESSION +"\"");
 				jsc.dispatcher.sockSendCmd(DEViseCommands.SAVE_CUR_SESSION);
+				Thread.sleep(1000);
 			    } catch (YException e) {
+			    } catch (InterruptedException e) {
 			    }
                         }
 			// if already in "collaboration" mode,
@@ -2300,7 +2306,7 @@ class SetModeDlg extends Dialog
 			}
 
 			close();
-
+			
 			if (jsc.dispatcher.dispatcherThread != null) {
 			    jsc.dispatcher.dispatcherThread.stop();
 			    jsc.dispatcher.dispatcherThread = null;
