@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.22.2.1  1997/08/07 16:33:44  wenger
+  Buffer manager now re-checks the list of in-memory data from the
+  beginning each time a query gets data (this is needed for allowing
+  draws to return partway through a data chunk so user can click the
+  stop button).
+
+  Revision 1.22  1997/07/03 01:53:32  liping
+  changed query interface to TData from RecId to double
+
   Revision 1.21  1997/01/23 17:39:44  jussi
   Added another check for query termination.
 
@@ -245,6 +254,10 @@ Boolean BufMgrFull::GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range)
 Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
                                  int &numRecs, char *&buf)
 {
+#if DEBUGLVL >= 3
+    printf("BufMgrFull::GetDataInMem()\n");
+#endif
+
     Boolean isTData = (!req->gdataInMemory);
 
 #if DEBUGLVL >= 3
@@ -611,8 +624,16 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
     /* Put into list of ranges for this TData */
     int numDisposed;
     RangeInfo **disposed;
+#if DEBUGLVL >= 5
+    printf("Inserting %d through %d into _tdataInMemory\n",
+      (int) range->low, (int) range->high);
+#endif
     rangeList->Insert(range, RangeList::MergeIgnore,
                       numDisposed, disposed);
+#if DEBUGLVL >= 5
+    printf("_tdataInMemory after insert:\n");
+    rangeList->Print();
+#endif
     
     ReportInserted(tdata, range->low, range->high);
     
@@ -682,6 +703,9 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
     req->prev = &_reqhead;
     _reqhead.next = req;
 
+#if DEBUGLVL >= 3
+    printf("  created handle 0x%p\n", req);
+#endif
     return req;
 }
 
@@ -767,11 +791,26 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
                             RecId &startRid, int &numRecs, char *&buf)
 {
 #if DEBUGLVL >= 3
-    printf("BufMgrFull::GetRecs handle 0x%p\n", req);
+    printf("BufMgrFull::GetRecs(handle 0x%p)\n", req);
 #endif
     DOASSERT(req, "Invalid request handle");
 
     /* See if we can find GData in memory */
+
+    // Re-check data in memory even if we exhausted it last time, in
+    // case something got added or we have to re-use a chunk we already
+    // sent to the QP.
+    if (req->gdata != NULL) req->gdataInMemory =
+	_tdataInMemory.Get(req->gdata);
+
+#if DEBUGLVL >= 5
+    printf("----- gdataInMemory:\n");
+    if (req->gdataInMemory) {
+      req->gdataInMemory->Print();
+    } else {
+      printf("NULL\n");
+    }
+#endif
 
     if (req->gdataInMemory) {
         if (!req->inMemoryHead) {
@@ -784,14 +823,40 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
         }
         if (GetDataInMem(req, startRid, numRecs, buf)) {
             isTData = false;
+
+	    // Reset the info about where we are in the in-memory data,
+	    // so we check from the beginning next time.
+	    req->inMemoryCur->ClearUse();
+            req->inMemoryHead = NULL;
+            req->inMemoryCur = NULL;
+
             return true;
         }
+	// This tells us that we've exahausted all applicable in-memory
+	// GData that we currently have.
         req->gdataInMemory = NULL;
+
+	// Get rid of info about where we are in in-memory GData ranges.
         req->inMemoryHead = NULL;
         req->inMemoryCur = NULL;
     }
 
     /* See if we can find TData in memory */
+
+    // Re-check data in memory even if we exhausted it last time, in
+    // case something got added or we have to re-use a chunk we already
+    // sent to the QP.
+    if (req->tdata != NULL) req->tdataInMemory =
+	_tdataInMemory.Get(req->tdata);
+
+#if DEBUGLVL >= 5
+    printf("----- tdataInMemory:\n");
+    if (req->tdataInMemory) {
+      req->tdataInMemory->Print();
+    } else {
+      printf("NULL\n");
+    }
+#endif
 
     if (req->tdataInMemory) {
         if (!req->inMemoryHead) {
@@ -804,9 +869,20 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
         }
         if (GetDataInMem(req, startRid, numRecs, buf)) {
             isTData = true;
+
+	    // Reset the info about where we are in the in-memory data,
+	    // so we check from the beginning next time.
+	    req->inMemoryCur->ClearUse();
+            req->inMemoryHead = NULL;
+            req->inMemoryCur = NULL;
+
             return true;
         }
+	// This tells us that we've exahausted all applicable in-memory
+	// TData that we currently have.
         req->tdataInMemory = NULL;
+
+	// Get rid of info about where we are in in-memory TData ranges.
         req->inMemoryHead = NULL;
         req->inMemoryCur = NULL;
     }
