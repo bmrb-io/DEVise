@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/01/30 17:25:23  wenger
+  Changed the C++ code to default to not using shared memory.
+
   Revision 1.33  1997/01/28 16:50:37  wenger
   Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
   doesn't draw over them); Devise now returns a status of 0 when exiting
@@ -192,7 +195,7 @@ int Init::_streamBufSize = 32;
 BufPolicy::policy Init::_policy = BufPolicy::FIFO;
 
 Boolean Init::_tdataQuery = false;
-Boolean Init::_convertGData = true;
+Boolean Init::_convertGData = false;
 int Init::_gdataPages = -1;
 Boolean Init::_randomize = true;
 

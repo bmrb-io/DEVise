@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.18  1997/02/26 16:32:04  wenger
+#       Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #       Revision 1.17  1997/02/25 22:16:53  donjerko
 #       Fixed some bugs in tcl - dte communication
 #
@@ -99,7 +102,7 @@ proc DoEditMapping {} {
 }
 
 proc BringUpMappingDialog { w curview } {
-    global dialogParamVar dialogListVar DEViseColors DEViseShapes
+    global dialogParamVar dialogListVar DEViseOldColors DEViseShapes
 	global mappingValueShape
 #	global DEViseShapePositions
     
@@ -124,7 +127,7 @@ proc BringUpMappingDialog { w curview } {
 	    [list X {0 1 2 3 4 5 6 7 8 9 10} ] \
 	    [list Y {0 1 2 3 4 5 6 7 8 9 10} ] \
 	    [list Z {0 1 2 3 4 5 6 7 8 9 10} ] \
-	    [list Color $DEViseColors ] \
+	    [list Color $DEViseOldColors ] \
 	    [list Size {0 1 2 3 4} ] \
 	    [list Pattern {0 1 2 3 4 5 6 7 8 9 10}] \
 	    [list Orientation {1} ] \
@@ -173,7 +176,7 @@ proc BringUpMappingDialog { w curview } {
 
 		if {$itemname == "Color"} {
 			$w.mapping.value.p$itemname.menu add command -label "Constant..." \
-				-command "getColor mappingValue$itemname"
+				-command "getColor mappingValue$itemname true"
 		} else {
 			$w.mapping.value.p$itemname.menu add cascade -label "Constant" \
 				-menu $w.mapping.value.p$itemname.menu.constant
@@ -245,7 +248,7 @@ proc BringUpMappingDialog { w curview } {
  }
 
 proc UpdateMappingDialog { w curView } {
-     global DEViseColors DEViseShapes
+     global DEViseOldColors DEViseShapes
 
      if {! [winfo exists $w] } {
 	 return
@@ -317,7 +320,7 @@ proc UpdateMappingDialog { w curView } {
      set xParm [lindex [lindex $params 3] 1]
      set yParm [lindex [lindex $params 4] 1]
      set zParm [lindex [lindex $params 5] 1]
-     set colorParm [findNameValue $DEViseColors [lindex [lindex $params 6] 1]]
+     set colorParm [findNameValue $DEViseOldColors [lindex [lindex $params 6] 1]]
      set sizeParm [lindex [lindex $params 7] 1]
      set patternParm [lindex [lindex $params 8] 1]
      set orientParm [lindex [lindex $params 9] 1]
@@ -447,7 +450,7 @@ proc updateMapName {w xval yval} {
 }
 
 proc ChangeParams { map oldparams newmap } {
-    global dialogParamVar dialogListVar DEViseColors DEViseShapes 
+    global dialogParamVar dialogListVar DEViseOldColors DEViseShapes 
 
     if { $newmap == ""} {
 	return
@@ -460,7 +463,7 @@ proc ChangeParams { map oldparams newmap } {
 	    [lindex $newmap 0] \
 	    [lindex $newmap 1] \
 	    [lindex $newmap 2] \
-	    [findNumericValue $DEViseColors [lindex $newmap 3]] \
+	    [findNumericValue $DEViseOldColors [lindex $newmap 3]] \
 	    [lindex $newmap 4] \
 	    [lindex $newmap 5] \
 	    [lindex $newmap 6] \

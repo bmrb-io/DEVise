@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/21 19:13:45  wenger
+  Fixed more compile warnings; updated devise.dali to match current
+  command-line flags.
+
   Revision 1.8  1996/11/13 16:56:03  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -55,6 +59,7 @@
 #include "ColorMgr.h"
 #include "Display.h"
 #include "Color.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -132,7 +137,7 @@ ColorMgr::ColorMgr()
   for(unsigned int i = 0; i < _numColors; i++) {
     DOASSERT(defaultColors[i].value == i, "Invalid color index");
     ColorData *data = _colorArray[defaultColors[i].value] = new ColorData;
-    data->colorName = defaultColors[i].name;
+    data->colorName = CopyString(defaultColors[i].name);
     data->hasRgb = false;
   }
 }
@@ -233,7 +238,7 @@ GlobalColor ColorMgr::AllocColor(char *name)
 
   /* Otherwise, go ahead and allocate this color. */
   data = new ColorData;
-  data->colorName = name;
+  data->colorName = CopyString(name);
   data->hasRgb = false;
 
   return Instance()->Insert(data);

@@ -15,6 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1997/03/02 00:47:29  donjerko
+#  Tdata used to be created before "Define Visualisation" window.
+#  For DTE types, it is now being created after this window because the
+#  user options can make query more restrictive and therefore cheaper to execute.
+#  This screws up the Mapping dialog because only the restricted set of
+#  attributes is passed as tdata.
+#  This needs to be fixed once we aggree how to go about it.
+#
 #  Revision 1.27  1997/02/26 16:32:07  wenger
 #  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 #
@@ -1281,6 +1289,7 @@ proc DoSetFgBgColor { isForeground {perWindow 0} } {
         if {$oldColor != $newColor} {
             set param [lreplace $param $paramIndex $paramIndex $newColor]
             set cmd "DEVise changeParam $param"
+puts "DIAG $cmd"
             eval $cmd
 	}
     }
@@ -1345,7 +1354,7 @@ proc DoSetTitle { {perWindow 0} } {
 ############################################################
 
 proc DoSetOverrideColor {} {
-    global curView DEViseColors newColor newColorActive
+    global curView DEViseOldColors newColor newColorActive
 
     if {[WindowVisible .setColor]} {
 	return
@@ -1370,12 +1379,12 @@ proc DoSetOverrideColor {} {
     set viewColorParams [DEVise getViewOverrideColor $curView]
     set hasOverrideColor [lindex $viewColorParams 0]
     set overrideColor [lindex $viewColorParams 1]
-    set newColor [findNameValue $DEViseColors $overrideColor]
+    set newColor [findNameValue $DEViseOldColors $overrideColor]
     set newColorActive $hasOverrideColor
 
     button .setColor.top.b1 -text "Change Color..." -width 20 -bg $newColor \
 	    -command {
-	getColor newColor
+	getColor newColor true
 	.setColor.top.b1 configure -background $newColor
     }
     checkbutton .setColor.top.c1 -text "Enabled" -variable newColorActive
@@ -1383,7 +1392,7 @@ proc DoSetOverrideColor {} {
 	    -side left -padx 3m -fill both -expand 1
 
     button .setColor.bot.but.ok -text OK -width 10 -command {
-	set colorValue [findNumericValue $DEViseColors $newColor]
+	set colorValue [findNumericValue $DEViseOldColors $newColor]
 	DEVise setViewOverrideColor $curView $newColorActive $colorValue
 	destroy .setColor
     }

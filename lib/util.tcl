@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.43  1997/02/26 16:32:06  wenger
+#  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+#
 #  Revision 1.42  1997/02/14 16:48:09  wenger
 #  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -536,8 +539,8 @@ proc DoExit {} {
 
 ############################################################
 
-proc getColor {varname} {
-    global $varname DEViseColors
+proc getColor {varname {oldColors false}} {
+    global $varname DEViseColors DEViseOldColors
     global getColorCanceled
 
     if {[WindowVisible .getColor]} {
@@ -562,7 +565,12 @@ proc getColor {varname} {
     set maxcol 8
     set size 5
 
-    foreach val $DEViseColors {
+    if {$oldColors} {
+      set colorList $DEViseOldColors
+    } else {
+      set colorList $DEViseColors
+    }
+    foreach val $colorList {
 	set cindex [lindex $val 0]
 	set color [lindex $val 1]
 	if {$col < 0} {

@@ -22,6 +22,13 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/01/17 20:31:42  wenger
+  Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
+  simulation of XOR drawing in PSWindowRep; removed diagnostic output
+  from Tcl/Tk code; removed (at least for now) the ETk interface from
+  the cslib versions of WindowRep classes so that the cslib will link
+  okay; cslib server now tests XOR drawing.
+
   Revision 1.6  1996/11/18 23:11:16  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -155,6 +162,10 @@ private:
   ColorMgr();
 
   ~ColorMgr() {
+    for (int count = 0; count < (int) _numColors; count++) {
+      delete _colorArray[count]->colorName;
+      delete _colorArray[count];
+    }
     delete _colorArray;
   }
   
