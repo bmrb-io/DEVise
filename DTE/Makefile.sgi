@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.8  1998/02/26 18:52:42  wenger
+# Got everything to compile on haha -- still have a link problem, though.
+#
 # Revision 1.7  1997/03/28 16:07:11  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -39,14 +42,32 @@ depend:
 
 Aggregates.o: Aggregates.h types.h /usr/include/assert.h exception.h
 Aggregates.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
-Aggregates.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
-Aggregates.o: SockStream.h listop.h site.h Iterator.h MemoryMgr.h TypeCheck.h
-Aggregates.o: StringLess.h SeqSimVecAggregate.h
+Aggregates.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h
+Aggregates.o: TableUtils.h url.h SockStream.h RelationId.h listop.h site.h
+Aggregates.o: Iterator.h MemoryMgr.h TypeCheck.h StringLess.h
+Aggregates.o: SeqSimVecAggregate.h
+CreateTableParse.o: /usr/include/stdlib.h /usr/include/standards.h
+CreateTableParse.o: /usr/include/sgidefs.h /usr/include/sys/types.h
+CreateTableParse.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+CreateTableParse.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+CreateTableParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
+CreateTableParse.o: exception.h Utility.h Array.h SeqSimVec.h
+CreateTableParse.o: /usr/include/math.h TableUtils.h url.h SockStream.h
+CreateTableParse.o: RelationId.h listop.h TypeCheck.h StringLess.h ExecOp.h
+CreateTableParse.o: ExecExpr.h Iterator.h Interface.h RelationManager.h
+DataRead.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
+DataRead.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
+DataRead.o: /usr/include/standards.h DataRead.h Iterator.h
+DataRead.dummy.o: /usr/include/assert.h types.h exception.h Utility.h queue.h
+DataRead.dummy.o: Array.h SeqSimVec.h /usr/include/math.h
+DataRead.dummy.o: /usr/include/sgidefs.h /usr/include/standards.h DevRead.h
+DataRead.dummy.o: Iterator.h
 DeleteParse.o: /usr/include/assert.h /usr/include/math.h
 DeleteParse.o: /usr/include/sgidefs.h /usr/include/standards.h queue.h
 DeleteParse.o: myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
-DeleteParse.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h
-DeleteParse.o: ParseTree.h TypeCheck.h StringLess.h ExecExpr.h MemoryMgr.h
+DeleteParse.o: TableUtils.h url.h SockStream.h RelationId.h listop.h site.h
+DeleteParse.o: Iterator.h catalog.h ParseTree.h TypeCheck.h StringLess.h
+DeleteParse.o: ExecExpr.h MemoryMgr.h
 DevRead.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
 DevRead.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
 DevRead.o: /usr/include/standards.h DevRead.h Iterator.h
@@ -57,152 +78,186 @@ DevRead.dummy.o: Iterator.h
 DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
 DropIndexParse.o: exception.h Utility.h Array.h SeqSimVec.h
 DropIndexParse.o: /usr/include/math.h /usr/include/sgidefs.h
-DropIndexParse.o: /usr/include/standards.h url.h SockStream.h listop.h
-DropIndexParse.o: TypeCheck.h StringLess.h Engine.h site.h Iterator.h
+DropIndexParse.o: /usr/include/standards.h TableUtils.h url.h SockStream.h
+DropIndexParse.o: RelationId.h listop.h TypeCheck.h StringLess.h Engine.h
+DropIndexParse.o: site.h Iterator.h
 Engine.o: /usr/include/assert.h /usr/include/math.h /usr/include/sgidefs.h
 Engine.o: /usr/include/standards.h queue.h myopt.h types.h exception.h
-Engine.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h Engine.h
-Engine.o: site.h Iterator.h ParseTree.h TypeCheck.h StringLess.h ExecOp.h
-Engine.o: ExecExpr.h
-ExecOp.o: ExecOp.h queue.h /usr/include/assert.h Array.h ExecExpr.h types.h
-ExecOp.o: exception.h Utility.h SeqSimVec.h /usr/include/math.h
+Engine.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+Engine.o: RelationId.h listop.h Engine.h site.h Iterator.h ParseTree.h
+Engine.o: TypeCheck.h StringLess.h ExecOp.h ExecExpr.h
+ExecOp.o: ExecOp.h Array.h /usr/include/assert.h ExecExpr.h types.h
+ExecOp.o: exception.h Utility.h queue.h SeqSimVec.h /usr/include/math.h
 ExecOp.o: /usr/include/sgidefs.h /usr/include/standards.h Iterator.h listop.h
-ExecOp.o: RTreeRead.h myopt.h url.h SockStream.h StandardRead.h MemoryMgr.h
+ExecOp.o: RTreeRead.h myopt.h TableUtils.h url.h SockStream.h RelationId.h
+ExecOp.o: StandardRead.h MemoryMgr.h
 FunctionRead.o: FunctionRead.h Iterator.h /usr/include/assert.h types.h
 FunctionRead.o: exception.h Utility.h queue.h Array.h SeqSimVec.h
 FunctionRead.o: /usr/include/math.h /usr/include/sgidefs.h
 FunctionRead.o: /usr/include/standards.h url.h SockStream.h
+GlobalConstructors.o: types.h /usr/include/assert.h exception.h Utility.h
+GlobalConstructors.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+GlobalConstructors.o: /usr/include/sgidefs.h /usr/include/standards.h
+GlobalConstructors.o: catalog.h RelationManager.h Interface.h RelationId.h
 IndexParse.o: /usr/include/memory.h /usr/include/assert.h /usr/include/math.h
 IndexParse.o: /usr/include/sgidefs.h /usr/include/standards.h
 IndexParse.o: /usr/include/stdlib.h /usr/include/stdio.h /usr/include/errno.h
 IndexParse.o: /usr/include/sys/errno.h queue.h myopt.h types.h exception.h
-IndexParse.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h
-IndexParse.o: site.h Iterator.h catalog.h ParseTree.h TypeCheck.h
-IndexParse.o: StringLess.h Aggregates.h MemoryMgr.h Inserter.h MinMax.h
-IndexParse.o: StandardRead.h Interface.h
+IndexParse.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+IndexParse.o: RelationId.h listop.h site.h Iterator.h catalog.h ParseTree.h
+IndexParse.o: TypeCheck.h StringLess.h Aggregates.h MemoryMgr.h Inserter.h
+IndexParse.o: MinMax.h StandardRead.h Interface.h
 IndexParse.dummy.o: /usr/include/assert.h /usr/include/math.h
 IndexParse.dummy.o: /usr/include/sgidefs.h /usr/include/standards.h queue.h
 IndexParse.dummy.o: myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
-IndexParse.dummy.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h
-IndexParse.dummy.o: ParseTree.h TypeCheck.h StringLess.h Aggregates.h
-IndexParse.dummy.o: MemoryMgr.h
+IndexParse.dummy.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+IndexParse.dummy.o: site.h Iterator.h catalog.h ParseTree.h TypeCheck.h
+IndexParse.dummy.o: StringLess.h Aggregates.h MemoryMgr.h
 InsertParse.o: /usr/include/assert.h /usr/include/math.h
 InsertParse.o: /usr/include/sgidefs.h /usr/include/standards.h queue.h
 InsertParse.o: myopt.h types.h exception.h Utility.h Array.h SeqSimVec.h
-InsertParse.o: url.h SockStream.h listop.h site.h Iterator.h catalog.h
-InsertParse.o: ParseTree.h TypeCheck.h StringLess.h
+InsertParse.o: TableUtils.h url.h SockStream.h RelationId.h listop.h site.h
+InsertParse.o: Iterator.h catalog.h ParseTree.h TypeCheck.h StringLess.h
 Inserter.o: url.h /usr/include/assert.h SockStream.h exception.h Inserter.h
 Inserter.o: types.h Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
 Inserter.o: /usr/include/sgidefs.h /usr/include/standards.h StandardRead.h
-Inserter.o: Iterator.h MemoryMgr.h
+Inserter.o: Iterator.h MemoryMgr.h Sort.h site.h myopt.h TableUtils.h
+Inserter.o: RelationId.h listop.h PQueue.h
 Interface.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
 Interface.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
-Interface.o: /usr/include/standards.h Interface.h site.h myopt.h url.h
-Interface.o: SockStream.h listop.h Iterator.h DevRead.h StandardRead.h
-Interface.o: Inserter.h Engine.h catalog.h ParseTree.h TypeCheck.h
-Interface.o: StringLess.h
+Interface.o: /usr/include/standards.h Interface.h site.h myopt.h TableUtils.h
+Interface.o: url.h SockStream.h RelationId.h listop.h Iterator.h DevRead.h
+Interface.o: DataRead.h StandardRead.h Inserter.h Engine.h catalog.h
+Interface.o: ParseTree.h TypeCheck.h StringLess.h
 MaterializeParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
 MaterializeParse.o: exception.h Utility.h Array.h SeqSimVec.h
 MaterializeParse.o: /usr/include/math.h /usr/include/sgidefs.h
-MaterializeParse.o: /usr/include/standards.h url.h SockStream.h listop.h
-MaterializeParse.o: TypeCheck.h StringLess.h site.h Iterator.h catalog.h
-MaterializeParse.o: Engine.h Interface.h Inserter.h
+MaterializeParse.o: /usr/include/standards.h TableUtils.h url.h SockStream.h
+MaterializeParse.o: RelationId.h listop.h TypeCheck.h StringLess.h site.h
+MaterializeParse.o: Iterator.h catalog.h Engine.h Interface.h Inserter.h
 MemoryMgr.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
 MemoryMgr.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
 MemoryMgr.o: /usr/include/standards.h Interface.h MemoryMgr.h
 MinMax.o: MinMax.h myopt.h /usr/include/assert.h queue.h types.h exception.h
 MinMax.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
-MinMax.o: /usr/include/sgidefs.h /usr/include/standards.h url.h SockStream.h
-MinMax.o: listop.h StandardRead.h Iterator.h catalog.h
+MinMax.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h url.h
+MinMax.o: SockStream.h RelationId.h listop.h StandardRead.h Iterator.h
+MinMax.o: catalog.h
 ODBCInterface.dummy.o: types.h /usr/include/assert.h exception.h Utility.h
 ODBCInterface.dummy.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
 ODBCInterface.dummy.o: /usr/include/sgidefs.h /usr/include/standards.h
-ODBCInterface.dummy.o: Interface.h site.h myopt.h url.h SockStream.h listop.h
-ODBCInterface.dummy.o: Iterator.h DevRead.h StandardRead.h Inserter.h
-ODBCInterface.dummy.o: Engine.h catalog.h
-Optimizer.o: Optimizer.h StringLess.h
+ODBCInterface.dummy.o: Interface.h site.h myopt.h TableUtils.h url.h
+ODBCInterface.dummy.o: SockStream.h RelationId.h listop.h Iterator.h
+ODBCInterface.dummy.o: DevRead.h StandardRead.h Inserter.h Engine.h catalog.h
+Optimizer.o: TableUtils.h types.h /usr/include/assert.h exception.h Utility.h
+Optimizer.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
+Optimizer.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
+Optimizer.o: SockStream.h RelationId.h listop.h Iterator.h Optimizer.h
+Optimizer.o: StringLess.h
 PQueue.o: PQueue.h types.h /usr/include/assert.h exception.h Utility.h
 PQueue.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
 PQueue.o: /usr/include/sgidefs.h /usr/include/standards.h
 QueryTree.o: queue.h /usr/include/assert.h myopt.h types.h exception.h
 QueryTree.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
-QueryTree.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
-QueryTree.o: SockStream.h listop.h site.h Iterator.h catalog.h DevRead.h
-QueryTree.o: Aggregates.h MemoryMgr.h TypeCheck.h StringLess.h ParseTree.h
-QueryTree.o: Sort.h StandardRead.h PQueue.h MinMax.h Interface.h Optimizer.h
+QueryTree.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h
+QueryTree.o: url.h SockStream.h RelationId.h listop.h site.h Iterator.h
+QueryTree.o: catalog.h DevRead.h Aggregates.h MemoryMgr.h TypeCheck.h
+QueryTree.o: StringLess.h ParseTree.h Sort.h StandardRead.h PQueue.h MinMax.h
+QueryTree.o: Interface.h Optimizer.h
 RTreeRead.o: RTreeRead.h myopt.h /usr/include/assert.h queue.h types.h
 RTreeRead.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
-RTreeRead.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
-RTreeRead.o: SockStream.h listop.h Iterator.h StandardRead.h
+RTreeRead.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h
+RTreeRead.o: url.h SockStream.h RelationId.h listop.h Iterator.h
+RTreeRead.o: StandardRead.h
 RTreeRead.dummy.o: RTreeRead.h myopt.h /usr/include/assert.h queue.h types.h
 RTreeRead.dummy.o: exception.h Utility.h Array.h SeqSimVec.h
 RTreeRead.dummy.o: /usr/include/math.h /usr/include/sgidefs.h
-RTreeRead.dummy.o: /usr/include/standards.h url.h SockStream.h listop.h
-RTreeRead.dummy.o: Iterator.h StandardRead.h
+RTreeRead.dummy.o: /usr/include/standards.h TableUtils.h url.h SockStream.h
+RTreeRead.dummy.o: RelationId.h listop.h Iterator.h StandardRead.h
+RelationId.o: RelationId.h
+RelationManager.o: RelationManager.h Interface.h types.h
+RelationManager.o: /usr/include/assert.h exception.h Utility.h queue.h
+RelationManager.o: Array.h SeqSimVec.h /usr/include/math.h
+RelationManager.o: /usr/include/sgidefs.h /usr/include/standards.h
+RelationManager.o: RelationId.h
 SchemaParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
 SchemaParse.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
-SchemaParse.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
-SchemaParse.o: SockStream.h listop.h TypeCheck.h StringLess.h site.h
-SchemaParse.o: Iterator.h catalog.h Interface.h
+SchemaParse.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h
+SchemaParse.o: url.h SockStream.h RelationId.h listop.h TypeCheck.h
+SchemaParse.o: StringLess.h site.h Iterator.h catalog.h Interface.h
 SeqSimVecAggregate.o: SeqSimVecAggregate.h Aggregates.h types.h
 SeqSimVecAggregate.o: /usr/include/assert.h exception.h Utility.h queue.h
 SeqSimVecAggregate.o: Array.h SeqSimVec.h /usr/include/math.h
 SeqSimVecAggregate.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h
-SeqSimVecAggregate.o: url.h SockStream.h listop.h site.h Iterator.h
-SeqSimVecAggregate.o: MemoryMgr.h TypeCheck.h StringLess.h
+SeqSimVecAggregate.o: TableUtils.h url.h SockStream.h RelationId.h listop.h
+SeqSimVecAggregate.o: site.h Iterator.h MemoryMgr.h TypeCheck.h StringLess.h
 Sort.o: /usr/include/assert.h Sort.h site.h queue.h types.h exception.h
 Sort.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
-Sort.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
-Sort.o: SockStream.h listop.h Iterator.h StandardRead.h PQueue.h Inserter.h
-Sort.o: MemoryMgr.h
+Sort.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h TableUtils.h
+Sort.o: url.h SockStream.h RelationId.h listop.h Iterator.h StandardRead.h
+Sort.o: PQueue.h Inserter.h MemoryMgr.h
 StandardRead.o: StandardRead.h types.h /usr/include/assert.h exception.h
 StandardRead.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
 StandardRead.o: /usr/include/sgidefs.h /usr/include/standards.h Iterator.h
 StandardRead.o: url.h SockStream.h ExecOp.h ExecExpr.h
+TableUtils.o: TableUtils.h types.h /usr/include/assert.h exception.h
+TableUtils.o: Utility.h queue.h Array.h SeqSimVec.h /usr/include/math.h
+TableUtils.o: /usr/include/sgidefs.h /usr/include/standards.h ExecOp.h
+TableUtils.o: ExecExpr.h Iterator.h StandardRead.h myopt.h url.h SockStream.h
+TableUtils.o: RelationId.h listop.h
 Templates.o: queue.h /usr/include/assert.h Array.h types.h exception.h
 Templates.o: Utility.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
 Templates.o: /usr/include/standards.h ExecExpr.h MemoryMgr.h listop.h myopt.h
-Templates.o: url.h SockStream.h Optimizer.h StringLess.h
+Templates.o: TableUtils.h url.h SockStream.h RelationId.h Optimizer.h
+Templates.o: StringLess.h ParseTree.h TypeCheck.h
 TypeCheck.o: myopt.h /usr/include/assert.h queue.h types.h exception.h
 TypeCheck.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
-TypeCheck.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
-TypeCheck.o: SockStream.h listop.h TypeCheck.h StringLess.h catalog.h
-TypeCheck.o: Interface.h
+TypeCheck.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h
+TypeCheck.o: url.h SockStream.h RelationId.h listop.h TypeCheck.h
+TypeCheck.o: StringLess.h catalog.h Interface.h
 UnionParse.o: ParseTree.h queue.h /usr/include/assert.h myopt.h types.h
 UnionParse.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
-UnionParse.o: /usr/include/sgidefs.h /usr/include/standards.h url.h
-UnionParse.o: SockStream.h listop.h TypeCheck.h StringLess.h site.h
-UnionParse.o: Iterator.h
+UnionParse.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h
+UnionParse.o: url.h SockStream.h RelationId.h listop.h TypeCheck.h
+UnionParse.o: StringLess.h site.h Iterator.h
 Util.o: types.h /usr/include/assert.h exception.h Utility.h queue.h Array.h
 Util.o: SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
 Util.o: /usr/include/standards.h Inserter.h
 catalog.o: StandardRead.h types.h /usr/include/assert.h exception.h Utility.h
 catalog.o: queue.h Array.h SeqSimVec.h /usr/include/math.h
 catalog.o: /usr/include/sgidefs.h /usr/include/standards.h Iterator.h
-catalog.o: catalog.h url.h SockStream.h site.h myopt.h listop.h Inserter.h
-catalog.o: Interface.h
+catalog.o: catalog.h url.h SockStream.h site.h myopt.h TableUtils.h
+catalog.o: RelationId.h listop.h Inserter.h Interface.h
 joins.o: joins.h site.h queue.h /usr/include/assert.h types.h exception.h
 joins.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
-joins.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h url.h
-joins.o: SockStream.h listop.h Iterator.h
+joins.o: /usr/include/sgidefs.h /usr/include/standards.h myopt.h TableUtils.h
+joins.o: url.h SockStream.h RelationId.h listop.h Iterator.h
 lex.yy.o: /usr/include/stdio.h /usr/include/standards.h
 lex.yy.o: /usr/include/sgidefs.h /usr/include/assert.h myopt.h queue.h
 lex.yy.o: types.h exception.h Utility.h Array.h SeqSimVec.h
-lex.yy.o: /usr/include/math.h url.h SockStream.h listop.h ParseTree.h
-lex.yy.o: TypeCheck.h StringLess.h /usr/include/stdlib.h
+lex.yy.o: /usr/include/math.h TableUtils.h url.h SockStream.h RelationId.h
+lex.yy.o: listop.h ParseTree.h TypeCheck.h StringLess.h my.yacc.tab.h
+lex.yy.o: /usr/include/stdlib.h
 listop.o: /usr/include/assert.h /usr/include/math.h /usr/include/sgidefs.h
 listop.o: /usr/include/standards.h queue.h myopt.h types.h exception.h
-listop.o: Utility.h Array.h SeqSimVec.h url.h SockStream.h listop.h site.h
-listop.o: Iterator.h catalog.h ExecExpr.h
+listop.o: Utility.h Array.h SeqSimVec.h TableUtils.h url.h SockStream.h
+listop.o: RelationId.h listop.h site.h Iterator.h catalog.h ExecExpr.h
+my.yacc.tab.o: myopt.h /usr/include/assert.h queue.h types.h exception.h
+my.yacc.tab.o: Utility.h Array.h SeqSimVec.h /usr/include/math.h
+my.yacc.tab.o: /usr/include/sgidefs.h /usr/include/standards.h TableUtils.h
+my.yacc.tab.o: url.h SockStream.h RelationId.h listop.h ParseTree.h
+my.yacc.tab.o: TypeCheck.h StringLess.h /usr/include/stdlib.h
+my.yacc.tab.o: /usr/include/stdio.h /usr/include/alloca.h
 resolve.o: types.h /usr/include/assert.h exception.h Utility.h queue.h
 resolve.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
-resolve.o: /usr/include/standards.h myopt.h url.h SockStream.h listop.h
-resolve.o: site.h Iterator.h ExecExpr.h catalog.h Interface.h
+resolve.o: /usr/include/standards.h myopt.h TableUtils.h url.h SockStream.h
+resolve.o: RelationId.h listop.h site.h Iterator.h ExecExpr.h catalog.h
+resolve.o: Interface.h RelationManager.h
 site.o: site.h queue.h /usr/include/assert.h types.h exception.h Utility.h
 site.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
-site.o: /usr/include/standards.h myopt.h url.h SockStream.h listop.h
-site.o: Iterator.h Interface.h ExecOp.h ExecExpr.h RTreeRead.h StandardRead.h
-site.o: MemoryMgr.h
+site.o: /usr/include/standards.h myopt.h TableUtils.h url.h SockStream.h
+site.o: RelationId.h listop.h Iterator.h Interface.h ExecOp.h ExecExpr.h
+site.o: RTreeRead.h StandardRead.h MemoryMgr.h
 types.o: types.h /usr/include/assert.h exception.h Utility.h queue.h Array.h
 types.o: SeqSimVec.h /usr/include/math.h /usr/include/sgidefs.h
 types.o: /usr/include/standards.h Interface.h catalog.h
@@ -227,4 +282,10 @@ SBMInit.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 SBMInit.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 SBMInit.o: /usr/include/sys/endian.h InitShut.h
 SBMInit.dummy.o: InitShut.h
+TableCreate.o: ../Core/RelationManager.h ../Core/Interface.h ../Core/types.h
+TableCreate.o: /usr/include/assert.h ../Core/exception.h ../Core/Utility.h
+TableCreate.o: ../Core/queue.h ../Core/Array.h ../Core/SeqSimVec.h
+TableCreate.o: /usr/include/math.h /usr/include/sgidefs.h
+TableCreate.o: /usr/include/standards.h ../Core/RelationId.h
+TableCreate.o: ../Core/Inserter.h
 main.o: InitShut.h Common.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.7  1998/02/26 18:53:52  wenger
+# Got everything to compile on haha -- still have a link problem, though.
+#
 # Revision 1.6  1997/03/28 16:08:21  wenger
 # Added headers to all source files that didn't have them; updated
 # solaris, solsparc, and hp dependencies.
@@ -36,7 +39,7 @@ ApInit.o: /usr/include/sys/signal.h ../graphics/Exit.h ApInit.h
 ApInit.o: ../graphics/DeviseTypes.h /usr/include/values.h
 ApInit.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h ../graphics/Time.h
 ApInit.o: /usr/include/sys/time.h ../graphics/Journal.h
-ApInit.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/Timer.h
+ApInit.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/Timer.h
 ApInit.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
 ApInit.o: /usr/include/math.h
 ApParseCat.o: /usr/include/stdio.h /usr/include/standards.h
@@ -63,13 +66,13 @@ ApParseCat.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
-ApParseCat.o: ApInit.h ../graphics.new/TDataAsciiInterp.h
+ApParseCat.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Parse.h
+ApParseCat.o: /usr/include/time.h ApInit.h ../graphics.new/TDataAsciiInterp.h
 ApParseCat.o: ../graphics.new/TDataAscii.h ../graphics/Dispatcher.h
 ApParseCat.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
 ApParseCat2.o: /usr/include/stdio.h /usr/include/standards.h
 ApParseCat2.o: /usr/include/sgidefs.h ApParseCat.h ../graphics/DeviseTypes.h
 ApParseCat2.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -94,13 +97,14 @@ ApParseCat2.o: ../graphics/BufPolicy.h ../graphics.new/GroupDir.h
 ApParseCat2.o: ../graphics.new/ItemList.h ../graphics.new/Group.h
 ApParseCat2.o: /usr/include/stdlib.h ../graphics.new/MapInterpClassInfo.h
 ApParseCat2.o: ../graphics/ClassDir.h ../graphics/VisualArg.h
-ApParseCat2.o: ../graphics/Pattern.h ../graphics/Parse.h /usr/include/time.h
-ApParseCat2.o: ApInit.h ../graphics.new/TDataSeqAsciiInterp.h
+ApParseCat2.o: ../graphics/ViewDir.h /usr/include/string.h
+ApParseCat2.o: ../graphics/Parse.h /usr/include/time.h ApInit.h
+ApParseCat2.o: ../graphics.new/TDataSeqAsciiInterp.h
 ApParseCat2.o: ../graphics.new/TDataSeqAscii.h ../graphics/Dispatcher.h
 ApParseCat2.o: ../graphics/Journal.h ../graphics.new/FileIndex.h
 ApParseCat2.o: ../graphics.new/TDataBinaryInterp.h
 ApParseCat2.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
-ApParseCat2.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ApParseCat2.o: /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/stdio.h /usr/include/standards.h
 AttrProj.o: /usr/include/sgidefs.h /usr/include/string.h AttrProj.h
 AttrProj.o: ../graphics/DeviseTypes.h /usr/include/values.h

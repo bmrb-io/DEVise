@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/02/26 18:53:43  wenger
+# Got everything to compile on haha -- still have a link problem, though.
+#
 # Revision 1.10  1998/02/23 23:21:52  wenger
 # Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
 #
@@ -42,21 +45,22 @@ MapClassInfo.o: /usr/include/values.h ../graphics/DevStatus.h
 MapClassInfo.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/stdio.h
 MapClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
 MapClassInfo.o: ../graphics/Exit.h ../graphics/Journal.h
-MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-MapClassInfo.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-MapClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+MapClassInfo.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+MapClassInfo.o: /usr/include/string.h ../graphics/ViewWin.h
+MapClassInfo.o: ../graphics/WindowRep.h ../graphics/Transform.h
+MapClassInfo.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 MapClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 MapClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
-MapClassInfo.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
-MapClassInfo.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h
-MapClassInfo.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-MapClassInfo.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h
-MapClassInfo.o: /usr/include/X11/Xutil.h ../graphics/GraphicsDebug.h
-MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
-MapClassInfo.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-MapClassInfo.o: ../graphics.new/RecId.h ../graphics.new/GDataRec.h
-MapClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-MapClassInfo.o: ../graphics/BufPolicy.h ../graphics/Temp.h
+MapClassInfo.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
+MapClassInfo.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+MapClassInfo.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+MapClassInfo.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
+MapClassInfo.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
+MapClassInfo.o: /usr/include/GL/gl.h ../graphics.new/RectShape.h
+MapClassInfo.o: ../graphics.new/Shape.h ../graphics.new/TDataMap.h
+MapClassInfo.o: ../graphics.new/ShapeID.h ../graphics.new/RecId.h
+MapClassInfo.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Temp.h
 MapClassInfo.o: ../graphics/Map3D.h ../graphics.new/ViewGraph.h
 MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
 MapClassInfo.o: ../tape/HashTable.h ../graphics/Control.h
@@ -71,18 +75,19 @@ ams.o: /usr/include/sgidefs.h /usr/include/sys/signal.h /usr/include/stdio.h
 ams.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
 ams.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Dispatcher.h
 ams.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-ams.o: ../graphics/VisualArg.h ../graphics/Pattern.h ../graphics/Display.h
-ams.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ViewWin.h
-ams.o: ../graphics/WindowRep.h ../graphics/Transform.h
-ams.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-ams.o: ../graphics/DevError.h /usr/include/errno.h /usr/include/sys/errno.h
-ams.o: ../graphics/ETkIfc.h /usr/include/string.h ../graphics/ETk.h
+ams.o: ../graphics/VisualArg.h ../graphics/ViewDir.h /usr/include/string.h
+ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
+ams.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
+ams.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+ams.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 ams.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 ams.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 ams.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-ams.o: ../graphics/GraphicsDebug.h ../graphics/Control.h
-ams.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
-ams.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+ams.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
+ams.o: /usr/include/GL/gl.h ../graphics/Control.h ../graphics/ClassDir.h
+ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+ams.o: ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 ams.o: ../graphics.new/ViewGraph.h ../graphics.new/Action.h

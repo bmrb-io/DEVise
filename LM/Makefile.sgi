@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1998/02/26 18:53:08  wenger
+#  Got everything to compile on haha -- still have a link problem, though.
+#
 #  Revision 1.2  1998/01/07 19:26:49  wenger
 #  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 #  server library into Devise); updated solaris, sun, linux, and hp
@@ -34,35 +37,49 @@ depend:
 
 LMAPI.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
 LMAPI.o: /usr/include/string.h /usr/include/stdlib.h LMAPI.h LMControl.h
-LMAPI.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
-LMAPI.o: ../graphics/Exit.h ../graphics/Dispatcher.h /usr/include/sys/types.h
+LMAPI.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+LMAPI.o: /usr/include/sys/types.h /usr/include/X11/X.h
+LMAPI.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+LMAPI.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
+LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
 LMAPI.o: ../graphics/DeviseTypes.h /usr/include/values.h
 LMAPI.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMAPI.o: ../graphics/VisualArg.h ../graphics/Pattern.h LMError.h
+LMAPI.o: ../graphics/VisualArg.h ../graphics/ViewDir.h LMError.h
 LMControl.o: /usr/include/stdlib.h /usr/include/standards.h
 LMControl.o: /usr/include/sgidefs.h /usr/include/string.h LMControl.h
-LMControl.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
-LMControl.o: ../graphics/Exit.h ../graphics/Dispatcher.h
-LMControl.o: /usr/include/sys/types.h ../graphics/DeviseTypes.h
-LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
-LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
-LMControl.o: ../graphics/Pattern.h LMAPI.h
+LMControl.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h /usr/include/X11/Xlib.h
+LMControl.o: /usr/include/sys/types.h /usr/include/X11/X.h
+LMControl.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+LMControl.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
+LMControl.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+LMControl.o: ../graphics/DeviseTypes.h /usr/include/values.h
+LMControl.o: ../graphics/DevStatus.h ../graphics/Journal.h
+LMControl.o: ../graphics/VisualArg.h /usr/include/stdio.h
+LMControl.o: ../graphics/ViewDir.h LMAPI.h
 LMHashTable.o: /usr/include/string.h /usr/include/standards.h LMHashTable.h
 LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/standards.h
 LMLayout.o: /usr/include/sgidefs.h /usr/include/math.h LMWindow.h
 LMLayout.o: LMHashTable.h ../graphics/DList.h ../graphics/Exit.h
-LMMain.o: LMControl.h LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
-LMMain.o: ../graphics/Exit.h ../graphics/Dispatcher.h
-LMMain.o: /usr/include/sys/types.h /usr/include/standards.h
-LMMain.o: /usr/include/sgidefs.h ../graphics/DeviseTypes.h
+LMMain.o: LMControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+LMMain.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+LMMain.o: /usr/include/standards.h /usr/include/sgidefs.h
+LMMain.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+LMMain.o: /usr/include/X11/Xosdefs.h /usr/include/stddef.h LMWindow.h
+LMMain.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
+LMMain.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 LMMain.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Journal.h
-LMMain.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+LMMain.o: ../graphics/VisualArg.h /usr/include/stdio.h ../graphics/ViewDir.h
+LMMain.o: /usr/include/string.h
 LMWindow.o: LMWindow.h LMHashTable.h LMLayout.h ../graphics/DList.h
-LMWindow.o: ../graphics/Exit.h LMControl.h ../graphics/Dispatcher.h
+LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
+LMWindow.o: /s/tcl/include/tk.h /usr/include/X11/Xlib.h
 LMWindow.o: /usr/include/sys/types.h /usr/include/standards.h
-LMWindow.o: /usr/include/sgidefs.h ../graphics/DeviseTypes.h
-LMWindow.o: /usr/include/values.h ../graphics/DevStatus.h
-LMWindow.o: ../graphics/Journal.h ../graphics/VisualArg.h
-LMWindow.o: ../graphics/Pattern.h
+LMWindow.o: /usr/include/sgidefs.h /usr/include/X11/X.h
+LMWindow.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+LMWindow.o: /usr/include/stddef.h ../graphics/Dispatcher.h
+LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
+LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
+LMWindow.o: ../graphics/VisualArg.h /usr/include/stdio.h
+LMWindow.o: ../graphics/ViewDir.h /usr/include/string.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

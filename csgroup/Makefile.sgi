@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.5  1998/04/14 02:09:55  zhenhai
+# New dependencies for SGI compiling.
+#
 # Revision 1.4  1998/02/26 18:54:07  wenger
 # Got everything to compile on haha -- still have a link problem, though.
 #
@@ -135,7 +138,8 @@ server_locfns.o: ../graphics/DeviseTypes.h /usr/include/values.h
 server_locfns.o: ../graphics/DevStatus.h ../graphics/BufPolicy.h Server.h
 server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
 server_locfns.o: ../graphics/Exit.h ../graphics/Journal.h
-server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ckptfile.h
+server_locfns.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
+server_locfns.o: CmdDescriptor.h CmdSerialize.h ckptfile.h
 server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
 server_rmtfns.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
 server_rmtfns.o: /usr/include/standards.h /usr/include/sys/termios.h
@@ -180,19 +184,25 @@ Client.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
 Client.o: /usr/include/sys/select.h /usr/include/netinet/in.h
 Client.o: /usr/include/sys/endian.h /usr/include/netdb.h Client.h
 Client.o: Csprotocols.h /usr/include/arpa/inet.h keys.h CollabTypes.h
+CmdDescriptor.o: CmdDescriptor.h CmdSerialize.h
 CmdLog.o: /usr/include/stdio.h /usr/include/standards.h
-CmdLog.o: /usr/include/sgidefs.h /usr/include/ctype.h CmdLog.h CmdSerialize.h
+CmdLog.o: /usr/include/sgidefs.h /usr/include/ctype.h
 CmdLog.o: /usr/include/sys/types.h /usr/include/unistd.h /usr/include/fcntl.h
 CmdLog.o: /usr/include/sys/fcntl.h /usr/include/sys/stat.h
+CmdLog.o: /usr/include/sys/time.h CmdLog.h CmdSerialize.h
+CmdLog.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+CmdLog.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
+CmdLog.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+CmdLog.o: ../graphics/ViewDir.h /usr/include/string.h ../graphics/Scheduler.h
 CmdSerialize.o: /usr/include/stdlib.h /usr/include/standards.h
 CmdSerialize.o: /usr/include/sgidefs.h /usr/include/stdio.h CmdSerialize.h
-CommandObj.o: CommandObj.h Csprotocols.h /usr/include/sys/types.h
-CommandObj.o: /usr/include/standards.h /usr/include/sgidefs.h
-CommandObj.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
-CommandObj.o: /usr/include/sys/select.h /usr/include/netinet/in.h
-CommandObj.o: /usr/include/sys/endian.h /usr/include/arpa/inet.h
-CommandObj.o: /usr/include/netdb.h codec.h /usr/include/stdio.h
-CommandObj.o: ../graphics/View.h
+CommandObj.o: CommandObj.h CmdDescriptor.h CmdSerialize.h Csprotocols.h
+CommandObj.o: /usr/include/sys/types.h /usr/include/standards.h
+CommandObj.o: /usr/include/sgidefs.h /usr/include/sys/socket.h
+CommandObj.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+CommandObj.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+CommandObj.o: /usr/include/arpa/inet.h /usr/include/netdb.h codec.h
+CommandObj.o: /usr/include/stdio.h ../graphics/View.h
 Keys.o: /usr/include/stdio.h /usr/include/standards.h /usr/include/sgidefs.h
 Keys.o: /usr/include/string.h keys.h CollabTypes.h /usr/include/sys/types.h
 Keys.o: /usr/include/sys/socket.h /usr/include/sys/bsd_types.h
@@ -204,14 +214,17 @@ Server.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/unistd.h
 Server.o: /usr/include/sys/types.h /usr/include/sys/socket.h
 Server.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 Server.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
-Server.o: /usr/include/math.h Server.h CollabTypes.h ../graphics/Dispatcher.h
+Server.o: /usr/include/math.h /usr/include/signal.h /usr/include/sys/signal.h
+Server.o: Server.h CollabTypes.h ../graphics/Dispatcher.h
 Server.o: ../graphics/DeviseTypes.h /usr/include/values.h
 Server.o: ../graphics/DevStatus.h ../graphics/DList.h ../graphics/Exit.h
 Server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
-Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h error.h
-Server.o: ctrlMsg.h rcvMsg.h CommandObj.h serverInterface.h colbr.h
-Server.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h datum.h
-Server.o: queue.h queueElem.h keys.h Csprotocols.h /usr/include/netdb.h
+Server.o: CmdDescriptor.h CmdSerialize.h ../graphics/Control.h
+Server.o: ../graphics/ClassDir.h callBks.h error.h ctrlMsg.h rcvMsg.h
+Server.o: CommandObj.h serverInterface.h colbr.h /usr/include/arpa/inet.h
+Server.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+Server.o: keys.h Csprotocols.h /usr/include/netdb.h ../graphics/Util.h
+Server.o: /usr/include/time.h /usr/include/ctype.h
 TclClient.o: /usr/include/stdio.h /usr/include/standards.h
 TclClient.o: /usr/include/sgidefs.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h TclClient.h Client.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1998/02/26 18:54:21  wenger
+# Got everything to compile on haha -- still have a link problem, though.
+#
 # Revision 1.5  1998/02/23 23:22:22  wenger
 # Merged cleanup_1_4_7_br_8 thru cleanup_1_4_7_br_9.
 #
@@ -82,16 +85,17 @@ WinServer.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
 WinServer.o: /usr/include/stdio.h /usr/include/math.h
 WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
-WinServer.o: ../graphics/Pattern.h ../graphics/ViewWin.h
-WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/ViewDir.h /usr/include/string.h
+WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+WinServer.o: ../graphics/Transform.h ../graphics/Pattern.h
 WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 WinServer.o: ../graphics/DevError.h /usr/include/errno.h
-WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h
-WinServer.o: /usr/include/string.h ../graphics/ETk.h ../graphics/Xdef.h
-WinServer.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+WinServer.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
+WinServer.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 WinServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 WinServer.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-WinServer.o: ../graphics/GraphicsDebug.h
+WinServer.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
+WinServer.o: /usr/include/GL/gl.h
 client.o: /usr/include/stdio.h /usr/include/standards.h
 client.o: /usr/include/sgidefs.h /usr/include/stdlib.h /usr/include/string.h
 client.o: TkClient.h TclClient.h Client.h
@@ -102,11 +106,13 @@ server.o: ../graphics/DeviseTypes.h /usr/include/values.h
 server.o: ../graphics/DevStatus.h /usr/include/sys/types.h ../graphics/Geom.h
 server.o: /usr/include/math.h ../graphics/Dispatcher.h ../graphics/DList.h
 server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-server.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+server.o: ../graphics/ViewDir.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+server.o: ../graphics/Transform.h ../graphics/Pattern.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 server.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 server.o: /usr/include/stddef.h /usr/include/X11/Xutil.h
-server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h
+server.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
+server.o: /usr/include/GL/gl.h ../graphics/DualWindowRep.h
