@@ -29,6 +29,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/04/27 17:30:26  wenger
+  Improvements to TAttrLinks and related code.
+
   Revision 1.4  1998/04/16 16:52:36  wenger
   Further improvements to set/tdata attribute links, but not quite working
   yet...
@@ -61,6 +64,8 @@
 #include "Init.h"
 #include "Control.h"
 #include "AttrList.h"
+#include "Control.h"
+#include "Session.h"
 
 #include "RelationManager.h"
 #include "types.h"
@@ -69,12 +74,26 @@
 
 //#define DEBUG
 
-class SlaveViewInfo {
-public:
-  View *view;
-  TDataMap *oldMap;
-  //TEMP -- need to save relation ID of new slave table
-};
+static TData *
+CreateTData(char *name)
+{
+  //TEMP -- maybe we DON'T want to go thru this so that the
+  // TData isn't put into the class directory
+  if (!Session::CreateTData(name).IsComplete()) {
+    return NULL;
+  }
+  return (TData *)ControlPanel::Instance()->GetClassDir()->FindInstance(name);
+}
+
+static DevStatus
+DestroyTData(TData *tdata)
+{
+  DevStatus result = StatusOk;
+
+  ControlPanel::Instance()->GetClassDir()->DestroyInstance(tdata->GetName());
+
+  return result;
+}
 
 /*------------------------------------------------------------------------------
  * function: TAttrLink::TAttrLink
@@ -151,16 +170,9 @@ TAttrLink::SetMasterView(ViewGraph *view)
 
   if (view != NULL) {
     //
-    // Create the table to hold the master attribute values; set up any
-    // slave views that have already been added to this link.
+    // Create the table to hold the master attribute values.
     //
     (void) CreateTable(view);
-    int index = _viewList->InitIterator();
-    while (_viewList->More(index)) {
-      ViewGraph *slaveView = _viewList->Next(index);
-      (void) SetSlaveTable(slaveView);
-    }
-    _viewList->DoneIterator(index);
   } else {
     //
     // Remove the mappings from all slave views.
@@ -170,7 +182,9 @@ TAttrLink::SetMasterView(ViewGraph *view)
       ViewGraph *slaveView = _viewList->Next(index);
       TDataMap *map = slaveView->GetFirstMap();
       if (map != NULL) {
-	slaveView->RemoveMapping(map);
+	//TEMP: this doesn't do the right thing, but it keeps us from
+	// crashing
+        map->SetPhysTData(map->GetLogTData());
 	slaveView->Refresh();
       }
     }
@@ -192,7 +206,9 @@ TAttrLink::InsertView(ViewGraph *view)
   MasterSlaveLink::InsertView(view);
 
   if (_tableExists) {
-    (void) SetSlaveTable(view);
+    if (!SetSlaveTable(view).IsComplete()) {
+      MasterSlaveLink::DeleteView(view);
+    }
   }
 }
 
@@ -216,30 +232,14 @@ TAttrLink::DeleteView(ViewGraph *view)
       SetMasterView(NULL);
     } else {
       //
-      // Set the mapping and TData of this view back to what they were
-      // before it was linked; destroy the slave mapping.
+      // Set the physical TData of the view back to the original (logical)
+      // TData.
       //
-      int index = _slaveViewInfo.InitIterator();
-      while (_slaveViewInfo.More(index)) {
-        SlaveViewInfo *slaveInfo = _slaveViewInfo.Next(index);
-        if (slaveInfo->view == view) {
-          TDataMap *map = view->GetFirstMap();
-	  if (map != NULL) {
-            view->RemoveMapping(map);
-            ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-	    classDir->DestroyInstance(map->GetName());
-	  }
-
-//TEMP -- should we delete the slave mapping and TData?
-
-	  //TEMP -- maybe make a new mapping with the old TData so
-	  // we keep any changes made in the mapping
-          view->InsertMapping(slaveInfo->oldMap, "");
-	  _slaveViewInfo.DeleteCurrent(index);
-	  break;
-        }
-      }
-      _slaveViewInfo.DoneIterator(index);
+      TDataMap *map = view->GetFirstMap();
+      TData *oldTdata = map->GetPhysTData();
+      map->SetPhysTData(map->GetLogTData());
+      if (!DestroyTData(oldTdata).IsComplete()) result = false;
+      //TEMP -- remove old TData from temp catalog
     }
   }
 
@@ -265,7 +265,7 @@ TAttrLink::Initialize()
   }
 
   char *curTDName = NULL;
-  TData *tdata = GetTData(_masterView);
+  TData *tdata = GetTData(_masterView, TDataPhys);
   if (tdata != NULL) {
     curTDName = tdata->GetName();
   }
@@ -290,6 +290,8 @@ TAttrLink::Initialize()
       currExcept = NULL;
     }
   }
+
+  _recordCount = 0;
 }
 
 /*------------------------------------------------------------------------------
@@ -392,6 +394,8 @@ TAttrLink::InsertValues(TData *tdata, int recCount, void **tdataRecs)
     }
   }
 
+  _recordCount += recCount;
+
   return result;
 }
 
@@ -413,6 +417,11 @@ TAttrLink::Done()
     return;
   }
 
+#if defined(DEBUG)
+  printf("  %d records (including duplicates) were inserted into table "
+      "for link %s\n", _recordCount, _name);
+#endif
+
   //
   // Close and delete inserter.
   //
@@ -428,15 +437,29 @@ TAttrLink::Done()
   //
   // Create TDatas for all slave views that don't have them.
   //
+    int index = _viewList->InitIterator();
+    while (_viewList->More(index)) {
+      ViewGraph *slaveView = _viewList->Next(index);
+      TDataMap *map = slaveView->GetFirstMap();
+      // TEMP: this is a crude test for whether the slave view already has
+      // the appropriate TData
+      if (map->GetLogTData() == map->GetPhysTData()) {
+        if (!SetSlaveTable(slaveView).IsComplete()) {
+	  // Can't do this while iterator is open.
+	  //TEMP MasterSlaveLink::DeleteView(slaveView);
+	}
+      }
+    }
+    _viewList->DoneIterator(index);
 
   //
   // Invalidate the TDatas of all slave views.
   //
-  int index = InitIterator();
+  index = InitIterator();
   while (More(index)) {
     ViewGraph *view = Next(index);
-    TData *tdata = GetTData(view);
-    //TEMP -- for some reason this also changes the slave's visual filter!
+    TData *tdata = GetTData(view, TDataPhys);
+    //TEMP -- this changes visual filter
     if (tdata != NULL) tdata->InvalidateTData();
   }
   DoneIterator(index);
@@ -487,7 +510,7 @@ TAttrLink::CreateTable(ViewGraph *masterView)
   //
   // Get the TData for the master view.
   //
-  TData *tdata = GetTData(masterView);
+  TData *tdata = GetTData(masterView, TDataPhys);
   if (tdata == NULL) return StatusFailed;
   _tdataName = CopyString(tdata->GetName());
 
@@ -590,9 +613,7 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
   printf("TAttrLink(%s)::SetSlaveTable(%s)\n", _name, view->GetName());
 #endif
 
-//TEMP -- setting master several times causes original TData for
-//slaves to be lost
-// maybe we should always unlink slave view before calling this -- or
+// TEMP: maybe we should always unlink slave view before calling this -- or
 // delete the slave table and mapping for it
 
   DevStatus result = StatusOk;
@@ -613,7 +634,7 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
   //
   TData *tdata;
   if (result.IsComplete()) {
-    tdata = GetTData(view);
+    tdata = GetTData(view, TDataLog);
     if (tdata == NULL) result = StatusFailed;
   }
   if (result.IsComplete()) {
@@ -698,65 +719,12 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
   }
 
   //
-  // Remove the slave view's original mapping and TData and substitute the
-  // new mapping and TData.
+  // Change the view's mapping's physical TData to the new TData.
   //
   TDataMap *map;
-  ClassDir *classDir;
-  ClassInfo *classInfo;
   if (result.IsComplete()) {
     map = view->GetFirstMap();
-    view->RemoveMapping(map);
-
-    classDir = ControlPanel::Instance()->GetClassDir();
-    classInfo = classDir->FindClassInfo(map->GetName());
-    if (classInfo == NULL) {
-      reportErrNosys("Can't find class info for existing mapping");
-      result = StatusFailed;
-    }
-  }
-  if (result.IsComplete()) {
-    int argc;
-    char ** argv;
-    classDir->CreateParams(classInfo->CategoryName(), classInfo->ClassName(),
-	map->GetName(), argc, argv);
-
-    // argv[0] is TData name, argv[1] is mapping name.
-    argv[0] = slaveTableName;
-    char mapNameBuf[1024];
-    sprintf(mapNameBuf, "%s_slave", argv[1]);
-    argv[1] = mapNameBuf;
-
-    char *newMapName = classDir->CreateWithParams(
-	classInfo->CategoryName(), classInfo->ClassName(), argc, argv);
-    if (newMapName == NULL) {
-      reportErrNosys("Can't create new mapping");
-      result = StatusFailed;
-    } else {
-      TDataMap *newMap = (TDataMap *)classDir->FindInstance(newMapName);
-      if (newMap == NULL) {
-        reportErrNosys("Can't find new mapping instance");
-        result = StatusFailed;
-      } else {
-        view->InsertMapping(newMap, "");
-	view->Refresh();
-      }
-    }
-  }
-
-  //
-  // Save the info we need to unlink the slave view.
-  //
-  if (result.IsComplete()) {
-    SlaveViewInfo *slaveInfo = new SlaveViewInfo;
-    if (slaveInfo == NULL) {
-      reportErrSys("Out of memory");
-      result = StatusFailed;
-    } else {
-      slaveInfo->view = view;
-      slaveInfo->oldMap = map;
-      _slaveViewInfo.Insert(slaveInfo);
-    }
+    map->SetPhysTData(CreateTData(slaveTableName));
   }
 
   return result;
@@ -808,10 +776,10 @@ TAttrLink::DestroyTable()
  * Get the TData for the given view.
  */
 TData *
-TAttrLink::GetTData(ViewGraph *view)
+TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 {
 #if defined(DEBUG)
-  printf("TAttrLink(%s)::GetTData(%s)\n", _name, view->GetName());
+  printf("TAttrLink(%s)::GetTData(%s, %d)\n", _name, view->GetName(), tdType);
 #endif
 
   TData *tdata;
@@ -819,7 +787,20 @@ TAttrLink::GetTData(ViewGraph *view)
   if (tdMap == NULL) {
     tdata = NULL;
   } else {
-    tdata = tdMap->GetTData();
+    switch (tdType) {
+    case TDataPhys:
+      tdata = tdMap->GetPhysTData();
+      break;
+
+    case TDataLog:
+      tdata = tdMap->GetLogTData();
+      break;
+
+    default:
+      reportErrNosys("Illegal TData type");
+      tdata = NULL;
+      break;
+    }
   }
 
   if (tdata == NULL) {

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/02/26 22:59:54  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.26  1998/02/19 23:25:18  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -278,8 +283,16 @@ class TDataMap
   /* Get the GData file for the mapping */
   GData *GetGData() { return _gdata; }
   
-  /* Get the TData file for the mapping */
-  TData *GetTData() { return _tdata; }
+  /* Get the "logical" (user) TData file for the mapping */
+  TData *GetLogTData() { return _logicalTdata; }
+
+  /* Get the "physical" TData -- the same as the logical unless this
+   * mapping is the slave of a TAttrLink. */
+  TData *GetPhysTData() { return _tdata; }
+
+  /* Set the "physical" TData.  The new TData should have the same
+   * attributes as the old TData. */
+  void SetPhysTData(TData *tdata);
   
   /* Get record size for TData */
   int TDataRecordSize();
@@ -383,7 +396,14 @@ private:
   TData *_hintTdata; /* tdata for the above cached info */
   
   char *_mappingName;
-  TData *_tdata;
+
+  // Note: the "logical" TData is the TData of the view as far as the user
+  // is concerned; the "physical" TData is the same as the logical unless
+  // the mapping is a TAttrLink slave -- in this case, the "physical"
+  // TData is the result of the join(s) with the master table(s).
+  TData *_logicalTdata;
+  TData *_tdata; // "physical" tdata
+
   GData *_gdata;
   VisualFlag _dynamicArgs; /* attributes that are set dynamically */
   

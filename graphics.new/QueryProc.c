@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/02/03 23:46:38  wenger
+  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
+  283 and 285 (resulted from problems in color manager merge);
+  conditionaled out some debug output.
+
   Revision 1.11  1997/05/30 15:41:19  wenger
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
@@ -98,7 +103,8 @@ void QueryProc::RefreshTData(TData *tdata)
         int idx = vg->InitMappingIterator();
         while(vg->MoreMapping(idx)) {
             TDataMap *map = vg->NextMapping(idx)->map;
-            if (map->GetTData() == tdata) {
+            if (map->GetPhysTData() == tdata ||
+	      map->GetLogTData() == tdata) {
                 usesTData = true;
                 break;
             }

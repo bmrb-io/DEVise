@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.76  1998/04/10 18:29:33  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.75  1998/04/01 17:11:34  wenger
   4/left arrow, 5 (home), and 6/right arrow keys, and cursor movements
   now get sent to slaves during collaboration.
@@ -671,7 +676,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
     DoneMappingIterator(index);
 
     // determine if this view is dependent upon any other
-    TData* tdata = map->GetTData();
+    TData* tdata = map->GetLogTData();
     DOASSERT(tdata, "null tdata");
     DataSource* ds = tdata->GetDataSource();
     DOASSERT(ds, "null data source");

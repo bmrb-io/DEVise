@@ -24,6 +24,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/14 21:03:14  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
   Revision 1.1  1998/04/10 18:29:31  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -45,9 +49,8 @@ class ISchema;
 class StandardInterface;
 class RelationId;
 class UniqueInserter;
-class SlaveViewInfo;
 
-DefinePtrDList(SlaveViewInfoList, SlaveViewInfo *);
+enum TDType { TDataPhys, TDataLog };
 
 class TAttrLink : public MasterSlaveLink {
 public:
@@ -79,22 +82,21 @@ protected:
   DevStatus CreateTable(ViewGraph *masterView);
   DevStatus SetSlaveTable(ViewGraph *view);
   DevStatus DestroyTable();
-  TData *GetTData(ViewGraph *view);
+  TData *GetTData(ViewGraph *view, TDType tdType);
 
   char *_masterAttrName;
   char *_slaveAttrName;
 
-  char *_tdataName;
+  char *_tdataName; // name of master view's TData
 
   Boolean _tableExists;
-  char *_tableFile;
+  char *_tableFile; // table holding master view attribute values
+  int _recordCount; // number of records inserted into master table
 
   ISchema *_schema;
   StandardInterface *_stdInt;
   RelationId *_relId;
   UniqueInserter *_inserter;
-
-  SlaveViewInfoList _slaveViewInfo;
 };
 
 #endif // _TAttrLink_h_

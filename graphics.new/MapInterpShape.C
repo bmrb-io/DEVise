@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1998/04/16 21:51:36  wenger
+  Committed Sanjay's text code.
+
   Revision 1.50  1998/04/13 22:26:29  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -2297,6 +2300,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 	win->Transform(1, 1, x1, y1);
 	Coord pointSize =  fabs(y1 - y0);
 	
+		//TEMP -- should these be Coords instead of ints?
         int pixelperUnitHeight     = fabs(y1 - y0);
 	int pixelperUnitWidth      = fabs(x1 - x0);
 
@@ -2305,6 +2309,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 	cout << "pixelper Unit (Width) = " << pixelperUnitWidth <<endl;
 #endif
 
+		//TEMP -- should these be Coords instead of ints?
         int pixelperUnit = size * (MIN(pixelperUnitWidth,pixelperUnitHeight));
 	pixelperUnit  = (Coord) ((int) (pixelperUnit + 0.5));
 

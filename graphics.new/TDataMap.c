@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1998/03/04 19:11:05  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.21  1998/02/19 23:25:17  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -105,6 +108,7 @@
 #include "QueryProc.h"
 #include "Util.h"
 #include "XColor.h"
+#include "DevError.h"
 
 //#define DEBUG
 
@@ -142,6 +146,7 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _dynamicAttrs = dynamicAttrs;
   _dynamicArgs = dynamicArgs;
   _tdata = tdata;
+  _logicalTdata = tdata;
   _gRecSize = gdataRecSize;
   
   _gdataName = gdataName;
@@ -365,9 +370,23 @@ Make a path for storing gdata
 char *TDataMap::CreateGDataPath(char *gdataName)
 {
   char *tmpDir = Init::TmpDir();
-  char *name = new char [strlen(gdataName) + 1 + strlen(tmpDir) + 1];//TEMPTEMP --  leaked
+  char *name = new char [strlen(gdataName) + 1 + strlen(tmpDir) + 1];//TEMP --  leaked
   sprintf(name, "%s/%s", tmpDir, gdataName);
   return name;
+}
+
+void TDataMap::SetPhysTData(TData *tdata)
+{
+  if (tdata->RecSize() != _logicalTdata->RecSize()) {
+    char errBuf[1024];
+    sprintf(errBuf, "New physical TData %s is incompatible with logical "
+	"TData %s", tdata->GetName(), _logicalTdata->GetName());
+    reportErrNosys(errBuf);
+  } else {
+    //TEMP -- possibly also compare attribute lists
+    _tdata = tdata;
+    ResetGData(_gRecSize);
+  }
 }
 
 int TDataMap::TDataRecordSize()

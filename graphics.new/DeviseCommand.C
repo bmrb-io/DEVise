@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1998/04/27 17:30:25  wenger
+  Improvements to TAttrLinks and related code.
+
   Revision 1.8  1998/04/14 21:03:13  wenger
   TData attribute links (aka set links) are working except for actually
   creating the join table, and some cleanup when unlinking, etc.
@@ -924,7 +927,7 @@ DeviseCommand_getSourceName::Run(int argc, char** argv)
             return -1;
         }
         TDataMap *map = view->GetFirstMap();
-        TData *tdata = map->GetTData();
+        TData *tdata = map->GetLogTData();
         char *sourceName = tdata->GetTableName();
         control->ReturnVal(API_ACK, sourceName); 
     
@@ -1787,7 +1790,7 @@ DeviseCommand_getMappingTData::Run(int argc, char** argv)
     	control->ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
-          TData *tdata = map->GetTData();
+          TData *tdata = map->GetLogTData();
           control->ReturnVal(API_ACK, classDir->FindInstanceName(tdata));
           return 1;
         }

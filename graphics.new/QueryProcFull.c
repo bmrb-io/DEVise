@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  1998/04/14 21:03:16  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
   Revision 1.78  1998/04/10 18:29:28  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -488,8 +492,8 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       QueryCallback *callback, void *userData,
 			       int priority)
 {
-  TData *tdata = map->GetTData();
-  QPFullData *query = new QPFullData;//TEMPTEMP leaked
+  TData *tdata = map->GetPhysTData();
+  QPFullData *query = new QPFullData;//TEMP leaked
   DOASSERT(query, "Out of memory");
 
   query->map = map;
@@ -620,7 +624,7 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
   for(i = 0; i < _numCoordinateTables; i++) {
     TDataMap *smap = _coordinateTables[i]->map;
     /* Different TData? */
-    if (smap->GetTData() != map->GetTData())
+    if (smap->GetPhysTData() != map->GetPhysTData())
         continue;
     if (map->IsInterpreted() && smap->IsInterpreted()) {
         /*
@@ -679,7 +683,7 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
 void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 {
 #if DEBUGLVL >= 3
-  printf("abort query for %s %s\n", map->GetTData()->GetName(),
+  printf("abort query for %s %s\n", map->GetPhysTData()->GetName(),
 	 map->GetName());
 #endif
 
@@ -731,7 +735,7 @@ void QueryProcFull::ClearTData(TData *tdata)
 
   for(int i = 0; i < _numMappings; i++) {
     TDataMap *map = _mappings[i];
-    if (map->GetTData() == tdata)
+    if (map->GetPhysTData() == tdata)
       _mgr->ClearData(map->GetGData());
   }
 
@@ -804,7 +808,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Note: the 'if' part of the code is the bug fix.  I've left the old
    * code in place for now just in case there is some problem with the
    * fix.  RKW 5/7/97. */
-#if 0 //TEMPTEMP
+#if 0 //TEMP
   if (!DoBinarySearch(query, query->filter.xLow, false, query->low,
     false, 0, 0, false)) {
 #else
@@ -826,7 +830,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   /* Note: the 'if' part of the code is the bug fix.  I've left the old
    * code in place for now just in case there is some problem with the
    * fix.  RKW 5/7/97. */
-#if 0 //TEMPTEMP
+#if 0 //TEMP
       if (DoBinarySearch(query, query->filter.xHigh, false,
                          lastId, true, query->low, query->high, true))
 #else
@@ -1892,7 +1896,7 @@ void QueryProcFull::InsertMapping(TDataMap *map)
 {
 #if DEBUGLVL >= 5
     printf("InsertMapping 0x%p, %s %s\n", map,
-           map->GetTData()->GetName(), map->GetName());
+           map->GetLogTData()->GetName(), map->GetName());
 #endif
 
     for(int i = 0; i < _numMappings; i++) {
@@ -2035,7 +2039,7 @@ void QueryProcFull::DoGDataConvert()
     TDataMap *map = _mappings[_convertIndex];
     _convertIndex = (_convertIndex + 1) % _numMappings;
     GData *gdata = map->GetGData();
-    TData *tdata = map->GetTData();
+    TData *tdata = map->GetPhysTData();
     if (gdata && DoInMemGDataConvert(tdata, gdata, map)) {
       /* Done converting one segment of in-memory TData */
 #if DEBUGLVL >= 5
@@ -2067,7 +2071,7 @@ void QueryProcFull::DoGDataConvert()
     map = _mappings[_convertIndex];
     _convertIndex = (_convertIndex + 1) % _numMappings;
     gdata = map->GetGData();
-    tdata = map->GetTData();
+    tdata = map->GetPhysTData();
 
     if (!gdata)
       continue;
@@ -2184,7 +2188,7 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 	 approx);
 #endif
 
-  TData *tdata = map->GetTData();
+  TData *tdata = map->GetPhysTData();
   _tqueryApprox = approx;
   _tdataQuery->map = map;
   _tdataQuery->tdata = tdata;

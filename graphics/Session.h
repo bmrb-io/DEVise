@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/10/03 14:37:04  wenger
+  Various fixes to get session opening/saving to work with client/server
+  version; reading old-style (Tcl) session files now works in back end;
+  got back-end session file stuff working for multi.
+
   Revision 1.6  1997/10/02 18:46:31  wenger
   Opening and saving batch-style sessions in back end now fully working;
   added tk2ds.tcl script for conversion.
@@ -49,6 +54,8 @@
 
 
 #include <sys/types.h>
+
+#include <tcl.h> // for ClientData
 
 #include "DevStatus.h"
 

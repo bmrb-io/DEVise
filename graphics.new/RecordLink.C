@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/04/10 18:29:30  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
   Revision 1.14  1998/03/08 00:01:11  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -174,7 +179,7 @@ Boolean RecordLink::CheckTData(ViewGraph *view, Boolean isMaster)
     }
     sview->DoneMappingIterator(mindex);
     if (smap) {
-      if (mmap->GetTData() != smap->GetTData()) {
+      if (mmap->GetPhysTData() != smap->GetPhysTData()) {
 	DoneIterator(index);
 	return false;
       }

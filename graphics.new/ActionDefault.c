@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/03/05 08:10:52  zhenhai
+  Added ability to view 3D graphs from six directions. Use -gl option to run,
+  and click key x,y,z and X,Y,Z to select the direction you are viewing.
+  Use arrow keys to pan left right up and down.
+
   Revision 1.30  1997/11/24 23:14:47  weaver
   Changes for the new ColorManager.
 
@@ -368,7 +373,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
     numDimensions = map->DimensionInfo(dimensionInfo);
     Boolean approxFlag = (numDimensions == 1 && dimensionInfo[0] == VISUAL_X);
     
-    TData *tdata = map->GetTData();
+    TData *tdata = map->GetPhysTData();
     AttrList *attrs = tdata->GetAttrList();
     if (!attrs) {
         errorMsg = "No attribute info!";
