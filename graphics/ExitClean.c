@@ -16,8 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/11 21:52:06  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 21:12:46  jussi
-  Added/update CVS header.
+  Added/updated CVS header.
 */
 
 #include <stdio.h>
@@ -25,10 +28,14 @@
 
 #include "Exit.h"
 
-void Exit::DoExit(int arg)
+void Exit::DoExit(int code)
 {
   abort();
-  /*
-     exit(2);
-  */
+}
+
+void Exit::DoAbort(char *reason)
+{
+  fprintf(stderr, "An internal error has occurred. The reason is:\n");
+  fprintf(stderr, "  %s\n", reason);
+  DoExit(2);
 }
