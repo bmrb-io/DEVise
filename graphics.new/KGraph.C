@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/13 17:28:41  jussi
+  Added window flush call.
+
   Revision 1.10  1996/05/31 20:58:50  jussi
   Fixed problem with calculation of center and size of circle.
 
@@ -48,58 +51,63 @@
 
 #include <stdio.h>
 
-#include "Transform.h"
-#include "WindowRep.h"
 #include "KGraph.h"
+#include "Display.h"
 
 //#define DEBUG
 
 #define MAX_POPUP_LEN 30
 
-KGraph::KGraph(DeviseDisplay *dis)
+KGraph::KGraph()
 {
-  _dis = dis;
+  DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();  
 
   // Create a new window
-  _win = _dis->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25);
+  _win = disp->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25);
   _win->RegisterCallback(this);
 
   _naxes = 0;
   _pts = NULL;
   _xyarr = NULL;
   _winame = NULL;
-  msgBuf = NULL;
+  _msgBuf = NULL;
 }
 
 KGraph::~KGraph()
 {
+  /* We don't need to destroy the window because it's already
+     being destroyed -- that's why this destructor is being
+     called in the first place. We also don't need to remove
+     the callback from the window's callback list; the
+     window does that for us. */
+
   delete _pts;
   delete _xyarr;
-  if (msgBuf) {
+  if (_msgBuf) {
     for(int i = 0; i < _naxes+3; i++)
-      delete msgBuf[i];
+      delete _msgBuf[i];
   }
-  delete msgBuf;
+  delete _msgBuf;
 }
 
-void KGraph::Init(char *winname, char *statname)
+void KGraph::InitGraph(char *winname, char *statname)
 {
   _naxes = 0;
 
   delete _pts;
   delete _xyarr;
-  if (msgBuf) {
+  if (_msgBuf) {
     for(int i = 0; i < _naxes + 3; i++)
-      delete msgBuf[i];
+      delete _msgBuf[i];
   }
-  delete msgBuf;
+  delete _msgBuf;
 
   // Copy window name
   _winame = winname;
   _statname = statname;
 }
 
-void KGraph::setAxes(int num)
+void KGraph::SetAxes(int num)
 {
   _naxes = num;
   _pts = new Coord[num];
@@ -107,18 +115,18 @@ void KGraph::setAxes(int num)
   int i;
   for(i = 0; i < num; i++)
     _pts[i] = 0.0;
-  msgBuf = new (char *)[_naxes + 3];
+  _msgBuf = new (char *)[_naxes + 3];
   for(i = 0; i < _naxes + 3; i++)
-    msgBuf[i] = new char[MAX_POPUP_LEN];
+    _msgBuf[i] = new char[MAX_POPUP_LEN];
 }
 
-void KGraph::setPoints(Coord *pts, int num)
+void KGraph::SetPoints(Coord *pts, int num)
 {
   for(int i = 0; i < num; i++)
     _pts[i] = pts[i];
 }
 
-void KGraph::Display()
+void KGraph::DisplayGraph()
 {
   if (!_naxes)
     return;
@@ -150,13 +158,13 @@ void KGraph::DrawCircle()
 
   // Compute size and center of circle
   h = (w > h) ? h : w;
-  cy = h / 2;
-  cx = h / 2;
-  diam = h - 10;
+  _cy = h / 2;
+  _cx = h / 2;
+  _diam = h - 10;
 
   // Draw Circle
   _win->SetFgColor(BlueColor);
-  _win->Arc(cx, cy, diam, diam, 0, 2 * PI);
+  _win->Arc(_cx, _cy, _diam, _diam, 0, 2 * PI);
 }    
 
 void KGraph::DrawAxes()
@@ -168,8 +176,8 @@ void KGraph::DrawAxes()
 
   // Draw axes
   for(int i = 0; i < _naxes; i++) {
-    Rotate(diam / 2, i * theta, x, y);
-    _win->Line(cx, cy, x, y, 1);
+    Rotate(_diam / 2, i * theta, x, y);
+    _win->Line(_cx, _cy, x, y, 1);
   }
 
   _win->SetCopyMode();
@@ -241,21 +249,27 @@ void KGraph::ShowVal()
 
 Coord KGraph::Scale(Coord xval, Coord max)
 {
-  return (xval * diam) / (2 * max);
+  return (xval * _diam) / (2 * max);
 }
 
 void KGraph::Rotate(Coord xval, int degree, Coord &retx, Coord &rety)
 {
-  retx = cx + xval * cos(ToRadian(degree));
-  rety = cy + xval * sin(ToRadian(degree));
+  retx = _cx + xval * cos(ToRadian(degree));
+  rety = _cy + xval * sin(ToRadian(degree));
 }
 
 void KGraph::HandlePress(WindowRep *w, int xlow, int ylow, int xhigh, 
 			 int yhigh, int button)
 {
 #ifdef DEBUG
-  printf("HandlePress : button %d\n",button);
+  printf("HandlePress: button %d\n",button);
 #endif
+}
+
+void KGraph::HandleResize(WindowRep *w, int xlow, int ylow,
+                          unsigned width, unsigned height)
+{
+  DisplayGraph();
 }
 
 Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button, 
@@ -263,20 +277,15 @@ Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button,
 {
   // Message displayed consists of three generic lines followed by values
   // for each of the axes.
-  msgs = msgBuf;
-  sprintf(msgBuf[0], "%s", _winame);
-  sprintf(msgBuf[1], "%s", _statname);
-  sprintf(msgBuf[2], "Values clockwise from 0");
+
+  msgs = _msgBuf;
+  sprintf(_msgBuf[0], "%s", _winame);
+  sprintf(_msgBuf[1], "%s", _statname);
+  sprintf(_msgBuf[2], "Values clockwise from 0");
   
   for(int i = 0; i < _naxes; i++)
-    sprintf(msgBuf[3+i], "%4.2f", _pts[i]);
+    sprintf(_msgBuf[3+i], "%4.2f", _pts[i]);
 
   numMsgs = _naxes + 3;
   return true;
-}
-
-void KGraph::HandleResize(WindowRep *w, int xlow, int ylow, unsigned width,
-			  unsigned height)
-{
-  Display();
 }

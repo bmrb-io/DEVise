@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/13 17:27:10  jussi
+  ViewKGraph now uses the more general ViewCallback interface.
+
   Revision 1.5  1996/05/31 15:42:48  jussi
   Stores a list of views, not a list of statistics objects.
 
@@ -36,8 +39,6 @@
 ViewKGraph::ViewKGraph()
 {
   _view_list = 0;
-  _kg = 0;
-  _dis = 0;
   _numviews = 0;
   _statnum = STAT_NONE;
   _name = 0;
@@ -47,7 +48,6 @@ ViewKGraph::~ViewKGraph()
 {
   View::DeleteViewCallback(this);
   delete _view_list;
-  delete _kg;
   delete _name;
 }
 
@@ -73,7 +73,6 @@ Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
     return false;
 
   _numviews = num;
-  _dis = v[0]->GetWindowRep()->GetDisplay();
 
   // Create _view_list
   _view_list = new (ViewGraph *) [num];
@@ -100,14 +99,8 @@ Boolean ViewKGraph::Display(int statnum)
 
   _statnum = statnum;
 
-  // Need to create the KGraph if not already existing
-  if (!_kg) {
-    _kg = new KGraph(_dis);
-    DOASSERT(_kg, "Out of memory");
-  }
-
-  _kg->Init(_name, _view_list[0]->GetStatObj()->GetStatName(_statnum));
-  _kg->setAxes(_numviews);
+  InitGraph(_name, _view_list[0]->GetStatObj()->GetStatName(_statnum));
+  SetAxes(_numviews);
 
   Coord *parr = new Coord [_numviews];
   DOASSERT(parr, "Out of memory");
@@ -115,8 +108,8 @@ Boolean ViewKGraph::Display(int statnum)
   for(int i = 0; i < _numviews; i++)
     parr[i] = _view_list[i]->GetStatObj()->GetStatVal(_statnum);
 
-  _kg->setPoints(parr, _numviews);
-  _kg->Display();
+  SetPoints(parr, _numviews);
+  DisplayGraph();
 
   delete parr;
 
@@ -146,4 +139,19 @@ void ViewKGraph::ViewRecomputed(View *view)
       return;
     }
   }
+}
+
+Boolean ViewKGraph::HandleWindowDestroy(WindowRep *w)
+{
+#ifdef DEBUG
+  printf("ViewKGraph %s being destroyed\n", _name);
+#endif
+
+  /* Tell ParseAPI.C that current ViewKGraph is destroyed */
+  extern void ResetVkg();
+  ResetVkg();
+
+  delete this;
+
+  return true;
 }

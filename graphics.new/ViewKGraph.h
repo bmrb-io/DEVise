@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/13 17:26:19  jussi
+  ViewKGraph now uses more general ViewCallback mechanism.
+
   Revision 1.3  1996/05/31 15:42:49  jussi
   Stores a list of views, not a list of statistics objects.
 
@@ -35,7 +38,7 @@
 #include "ViewCallback.h"
 #include "KGraph.h"
 
-class ViewKGraph : public ViewCallback
+class ViewKGraph : public ViewCallback, public KGraph
 {
 public:
   ViewKGraph();
@@ -60,6 +63,7 @@ public:
 private:
   virtual void ViewRecomputed(View *view);
   virtual void ViewDestroyed(View *view);
+  virtual Boolean HandleWindowDestroy(WindowRep *w);
 
   // Number of views displayed
   int _numviews;
@@ -67,12 +71,6 @@ private:
 
   // The specific stat to be displayed
   int _statnum;
-
-  // The KGraph display
-  KGraph *_kg;
-
-  // Devise display
-  DeviseDisplay *_dis;
 
   // Window name
   char *_name;
