@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.29  1997/06/10 02:30:31  guangshu
+#  Added unidata schema which can generate unidata schema and parse to the
+#  users unidata schema.
+#
 #  Revision 1.28  1997/02/25 22:16:55  donjerko
 #  Fixed some bugs in tcl - dte communication
 #
@@ -810,7 +814,8 @@ proc unidata_newschemawin {} {
 	    -variable issepar -value 0 -command {
 	set issepartext "Whitespace"
     }
-    set issepartext "Separator"
+#   set issepartext "Separator"
+    set issepartext "Whitespace"
     if {!$issepar} {
 	set issepartext "Whitespace"
     }
