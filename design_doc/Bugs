@@ -2465,6 +2465,12 @@ Num Date        Status  Description
 			cause the follower views to redraw. (rkw)
 			(Fixed by rkw, 10/16/00.)
 
+624 11/13/00	OPEN	JavaScreen: do click-shift to drill down; if you
+			don't release the shift key before the dialog appears,
+			the JS does not get the shift-up event, and therefore
+			when you click to move a cursor you drill down again
+			instead. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
