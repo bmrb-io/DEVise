@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.127  2002/01/28 23:52:18  wenger
+  Updated the DEVised to support drawing axis labels on the JS side:
+  changed JAVAC_ViewDataArea command; leaves blank areas for axis
+  labels (temporarily disabled until the JS end is done); protocol
+  version is now 10.0 -- JS code accepts but ignores new arguments.
+
   Revision 1.126  2001/12/13 21:35:55  wenger
   Added flexibility to enable/disable mouse location display individually
   for X and Y axes (needed for peptide-cgi session improvements requested
@@ -3273,7 +3279,8 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		  args.FillString(axisFormat);
 		  args.FillDouble(multFactor);
 
-		  args.FillInt(view->_xAxis.IsInUse());
+		  args.FillInt(view->_xAxis.IsInUse() &&
+		      view->_xAxis.TicksEnabled());
 
 		  int family;
 		  float pointSize;
@@ -3315,7 +3322,8 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		  args.FillString(axisFormat);
 		  args.FillDouble(multFactor);
 
-		  args.FillInt(view->_yAxis.IsInUse());
+		  args.FillInt(view->_yAxis.IsInUse() &&
+		      view->_yAxis.TicksEnabled());
 
 		  int family;
 		  float pointSize;
