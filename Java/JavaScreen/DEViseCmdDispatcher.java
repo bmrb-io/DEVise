@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2000/07/20 15:42:59  wenger
+// Fixed bug 603 (GData errors caused by problems in new parser); eliminated
+// old parser.
+//
 // Revision 1.62  2000/07/19 20:11:36  wenger
 // Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
 // problem); background color of upper left part of JS changed to red when a
@@ -529,8 +533,23 @@ public class DEViseCmdDispatcher implements Runnable
                     String viewtitle = cmd[24];
                     int dtx = 0, dty = 0;
                     Font dtf = null;
+
+		    // Ven -> show mouse location variable
+
+		    int dvinfo = 1; 
+		    if(cmd.length == 26){
+		     // When viewtitle is empty, then arg 25 is the show mouse location - dvinfo
+
+                       if(cmd[25].equals("")){
+			  dvinfo = 1;
+                       } else{
+			  dvinfo = Integer.parseInt(cmd[25]);
+                       }
+                    }
+
+
                     if (viewtitle.length() > 0) {
-                        if (cmd.length != 31) {
+                        if (cmd.length < 31 || cmd.length > 32) {
                             throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                         }
 
@@ -561,6 +580,15 @@ public class DEViseCmdDispatcher implements Runnable
                             dti = Integer.parseInt(cmd[30]);
                         }
 
+			if(cmd.length == 32){
+			   if(cmd[31].equals("")){
+			     dvinfo = 1;
+                           }
+			   else{
+			     dvinfo = Integer.parseInt(cmd[31]);
+                           }
+                        }
+
                         dtf = DEViseUIGlobals.getFont(dtfs, dtff, dtb, dti);
                         if (dtf != null) {
                             Toolkit tk = Toolkit.getDefaultToolkit();
@@ -581,6 +609,7 @@ public class DEViseCmdDispatcher implements Runnable
                         view.viewDTFont = dtf;
                         view.viewDTX = dtx + view.viewLocInCanvas.x;
                         view.viewDTY = dty + view.viewLocInCanvas.y;
+			view.isViewInfo = (dvinfo == 1);
                     }
 
                     jsc.jscreen.addView(view);
@@ -778,7 +807,7 @@ public class DEViseCmdDispatcher implements Runnable
                 }
             } else if (rsp[i].startsWith(DEViseCommands.VIEW_DATA_AREA)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 5) {
+                if (cmd == null || cmd.length < 5 || cmd.length > 6) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
@@ -788,7 +817,15 @@ public class DEViseCmdDispatcher implements Runnable
                     float min = (Float.valueOf(cmd[3])).floatValue();
                     float max = (Float.valueOf(cmd[4])).floatValue();
 
-                    jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max);
+		    // Ven - for mouse display format string
+
+		    String format = null;
+
+		    if(cmd.length == 6){
+		       format = cmd[5];
+		    } 
+
+                    jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max, format);
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }

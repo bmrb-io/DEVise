@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2000/06/21 18:37:30  wenger
+// Removed a bunch of unused code (previously just commented out).
+//
 // Revision 1.61  2000/06/21 18:10:15  wenger
 // Changes to 3D requested by BMRB: removed axes; up/down mouse movement
 // does zooming; molecule doesn't move when changing atoms; 'r' resets
@@ -655,12 +658,12 @@ public class DEViseScreen extends Panel
     }
 
     public void updateViewDataRange(String viewName, String axis,
-      float min, float max)
+      float min, float max, String format)
     {
         DEViseView view = getView(viewName);
 
         if (view != null && axis != null) {
-            view.updateDataRange(axis, min, max);
+            view.updateDataRange(axis, min, max, format);
         }
     }
 

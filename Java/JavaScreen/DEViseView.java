@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2000/06/27 16:44:45  wenger
+// Considerably cleaned up and simplified the cursor-related code; moved
+// cursor grid implementation from the DEViseCanvas class to the DEViseCursor
+// class.
+//
 // Revision 1.47  2000/06/21 18:37:30  wenger
 // Removed a bunch of unused code (previously just commented out).
 //
@@ -115,6 +120,10 @@ public class DEViseView
     private float viewDataYMin = 0.0f, viewDataYMax = 0.0f;
     // data type could be "real" or "date" or "none"
     public String viewDataXType = null, viewDataYType = null;
+
+    //ven
+    public String viewInfoFormat = null;
+    public boolean isViewInfo = true;
 
     public String viewTitle = null;
     public int viewDTX, viewDTY; // title X and Y location
@@ -433,9 +442,10 @@ public class DEViseView
     }
 
     // Update the data range of the given axis.
-    public void updateDataRange(String axis, float min, float max)
+    public void updateDataRange(String axis, float min, float max, String viFormat)
       throws YError
     {
+       viewInfoFormat = viFormat;
         if (axis.equals("X")) {
             viewDataXMin = min;
             viewDataXMax = max;
@@ -463,6 +473,9 @@ public class DEViseView
     // x is relative to this view's canvas
     public String getX(int x)
     {
+	if(!isViewInfo || viewDimension == 3){
+	   return "";
+        }
         Rectangle loc = viewLocInCanvas;
 
         if (x < loc.x || x > (loc.x + loc.width)) {
@@ -492,7 +505,10 @@ public class DEViseView
                 x0 = (int)(x0 * 1000.0f - 0.5f) / 1000.0f;
             }
 
-            return ("" + x0);
+            //  return ("" + x0);
+	    // Ven - modified for mouse display format
+	    return DEViseViewInfo.viewParser(x0, viewInfoFormat);
+
         }
     }
 
@@ -500,6 +516,9 @@ public class DEViseView
     // y is relative to this view's canvas
     public String getY(int y)
     {
+	if(!isViewInfo || viewDimension == 3){
+	   return "";
+        }
         Rectangle loc = viewLocInCanvas;
 
         if (y < loc.y || y > (loc.y + loc.height)) {
@@ -529,7 +548,8 @@ public class DEViseView
                 y0 = (int)(y0 * 1000.0f - 0.5f) / 1000.0f;
             }
 
-            return ("" + y0);
+            // return ("" + y0);
+	    return DEViseViewInfo.viewParser(y0, viewInfoFormat);
         }
     }
 

@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2000/07/19 20:11:38  wenger
+// Code to read data from sockets is more robust (hopefully fixes BMRB/Linux
+// problem); background color of upper left part of JS changed to red when a
+// dialog is shown; more debug output added.
+//
 // Revision 1.68  2000/07/11 16:39:19  venkatan
 // *** empty log message ***
 //
@@ -546,6 +551,11 @@ public class jsdevisec extends Panel
     }
 
     public String showViewDialogHelp(String msg){
+       
+	if(msg == null) {
+	   System.out.println("conflict 1");
+	   return null;
+	   }
 
         return showMsg(msg, "Help", YMsgBox.YMBXOK);
     }
