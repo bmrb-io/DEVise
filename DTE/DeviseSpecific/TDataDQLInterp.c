@@ -113,8 +113,9 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 	cout << "})" << endl;
 #endif
 
-	if(argc != 2){
-		cout << "Number of arguments = " << argc << " (2 expected)" << endl;
+	if(argc < 2){
+		cout << "Problem in TDataDQLInterp.c, at leas 2 fields expected" 
+			<< endl;
 		for(int i = 0; i < argc; i++){
 			cout << argv[i] << ", ";
 		}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/09/05 22:20:04  donjerko
+  Made changes for port to NT.
+
   Revision 1.6  1997/08/22 23:13:02  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -71,9 +74,12 @@ Site* InsertParse::createSite(){
 
 	TRY(site->typify(""), NULL);
 	int numFlds = site->getNumFlds();
+/*
+	// this is not satisfied because we are inserting strings
 	if(numFlds != fieldList->cardinality()){
 		THROW(new Exception("Number of fields do not match"), NULL);
 	}
+*/
 	const string* types = site->getTypeIDs();
 
 // What follows is just a temporary kludge. 

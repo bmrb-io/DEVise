@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/09/05 22:20:16  donjerko
+  Made changes for port to NT.
+
   Revision 1.7  1997/08/21 21:04:30  donjerko
   Implemented view materialization
 
@@ -99,4 +102,4 @@ class JoinTable{
 
 			}
 };
-#endif;
+#endif

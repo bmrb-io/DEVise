@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/09/05 22:20:15  donjerko
+  Made changes for port to NT.
+
   Revision 1.27  1997/08/25 15:28:12  donjerko
   Added minmax table
 
@@ -128,7 +131,7 @@ Interface* Directory::createInterface(const string& entry) const
 
 	ifstream* in = new ifstream(fileName.c_str());
 	assert(in);
-	if(!in->good()){
+	if(!(*in)){
 		delete in;
 		string msg = "Could not open file " + fileName;
 		THROW(new Exception(msg), NULL);

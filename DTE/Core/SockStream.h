@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/09/05 22:20:10  donjerko
+  Made changes for port to NT.
+
   Revision 1.4  1997/08/22 23:13:03  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -130,4 +133,4 @@ class Cor_sockbuf : public streambuf {
 
 //**************************************************************************
 
-#endif  _SOCKSTREAM_H_
+#endif

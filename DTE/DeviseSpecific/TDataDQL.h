@@ -83,7 +83,7 @@ public:
 	Init getting records.
 	***************************************************************/
 	virtual TDHandle InitGetRecs(double lowVal, double highVal,
-                                 Boolean asyncAllowed,
+                                 Boolean asyncAllowed = false,
                                  ReleaseMemoryCallback *callback,
                                  char *AttrName = "recId");
 

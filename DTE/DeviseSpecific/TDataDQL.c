@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/09/05 22:20:31  donjerko
+  Made changes for port to NT.
+
   Revision 1.20  1997/08/21 21:04:52  donjerko
   Implemented view materialization
 
@@ -308,9 +311,9 @@ Boolean TDataDQL::LastID(RecId &recId)
 }
 
 TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
-                                 Boolean asyncAllowed = false,
+                                 Boolean asyncAllowed,
                                  ReleaseMemoryCallback *callback,
-                                 char *AttrName = "recId")
+                                 char *AttrName)
 {
 	
 #if defined(DEBUG)
