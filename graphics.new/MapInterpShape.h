@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/05/22 21:05:08  jussi
+  Added HighLowShape. Added tentative version of GifImageShape.
+
   Revision 1.17  1996/04/23 20:35:37  jussi
   Added Segment shape which just connects two end points.
 
@@ -277,7 +280,7 @@ public:
 
 // -----------------------------------------------------------------
 
-class FullMapping_PolygonShape: public PolygonShape {
+class FullMapping_RegularPolygonShape: public RegularPolygonShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
@@ -298,8 +301,10 @@ public:
       Coord pixelHeight = 1 / fabs(y1 - y0);
 
 #ifdef DEBUG
-      printf("PolygonShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
-	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+      printf("RegularPolygonShape: maxW %.2f, maxH %.2f,\n",
+	     maxWidth, maxHeight);
+      printf("                     pixelW %.2f, pixelH %.2f\n",
+	     pixelWidth, pixelHeight);
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
@@ -554,7 +559,7 @@ class FullMapping_HorLineShape: public HorLineShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
 				Coord &width, Coord &height) {
-    width = 0.0;
+    width = 1e9;
     height = 0.0;
   }
   
@@ -582,6 +587,23 @@ public:
 
 class FullMapping_SegmentShape: public SegmentShape {
 public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0.0;
+    height = 0.0;
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      // double the width and height because segment starts at
+      // at (X,Y) and is not centered at (X,Y)
+      Coord w = 2 * GetShapeAttr0(gdata, map, offset);
+      Coord h = 2 * GetShapeAttr1(gdata, map, offset);
+      if (w > width) width = w;
+      if (h > height) height = h;
+    }
+  }
+  
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		 
@@ -633,8 +655,6 @@ public:
 				Coord &width, Coord &height) {
     width = 0.0;
     height = 0.0;
-
-    return;
 
     GDataAttrOffset *offset = map->GetGDataOffset();
     for(int i = 0; i < numSyms; i++) {
@@ -699,6 +719,103 @@ public:
  
 // -----------------------------------------------------------------
 
+class FullMapping_PolylineShape: public PolylineShape {
+public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0;
+    height = 0;
+
+    GDataAttrOffset *offset = map->GetGDataOffset();
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      int npOff = offset->shapeAttrOffset[0];
+      if (npOff < 0)
+	continue;
+      int np = (int)*(Coord *)(gdata + npOff);
+      for(int j = 1; j <= 2 * np; j++) {
+	if (j >= MAX_GDATA_ATTRS)
+	  continue;
+	int off = offset->shapeAttrOffset[j];
+	if (off < 0)
+	  continue;
+	Coord temp = *(Coord *)(gdata + off);
+	// every other shape attribute is X, every other is Y
+	if (j % 2) {
+	  if (temp > width) width = temp;
+	} else {
+	  if (temp > height) height = temp;
+	}
+      }
+    }
+  }
+  
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+		 
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
+			    offset->shapeAttrOffset[1] < 0 &&
+			    offset->shapeAttrOffset[2] < 0 ? true : false);
+
+    Coord x0, y0, x1, y1;
+    win->Transform(0, 0, x0, y0);
+    win->Transform(1, 1, x1, y1);
+    Coord pixelWidth = 1 / fabs(x1 - x0);
+    Coord pixelHeight = 1 / fabs(y1 - y0);
+
+    if (fixedSymSize) {
+      Coord maxWidth, maxHeight;
+      map->MaxBoundingBox(maxWidth, maxHeight);
+
+#ifdef DEBUG
+      printf("PolylineShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
+	     maxWidth, maxHeight, pixelWidth, pixelHeight);
+#endif
+
+      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
+	DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
+	return;
+      }
+    }
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      win->SetFgColor(GetColor(view, gdata, map, offset));
+      win->SetPattern(GetPattern(gdata, map, offset));
+
+      win->DrawPixel(x, y);
+
+      int npOff = offset->shapeAttrOffset[0];
+      if (npOff < 0)
+	continue;
+
+      int np = (int)*(Coord *)(gdata + npOff);
+#ifdef DEBUG
+      printf("Drawing %d additional data points\n", np);
+#endif
+      for(int j = 0; j < np; j++) {
+	if (1 + 2 * j + 1 >= MAX_GDATA_ATTRS)
+	  break;
+	int xOff = offset->shapeAttrOffset[1 + 2 * j];
+	int yOff = offset->shapeAttrOffset[1 + 2 * j + 1];
+	if (xOff < 0 || yOff < 0)
+	  continue;
+	Coord x1 = *(Coord *)(gdata + xOff);
+	Coord y1 = *(Coord *)(gdata + yOff);
+	win->Line(x, y, x1, y1, 1);
+	x = x1;
+	y = y1;
+      }
+    }
+  }
+};
+ 
+// -----------------------------------------------------------------
+
 class FullMapping_GifImageShape: public GifImageShape {
 public:
   virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
@@ -720,9 +837,9 @@ public:
       char *gdata = (char *)gdataArray[i];
       Coord x = GetX(gdata, map, offset);
       Coord y = GetY(gdata, map, offset);
-      Color color = GetColor(view, gdata, map, offset);
+      win->SetFgColor(GetColor(view, gdata, map, offset));
+      win->SetPattern(GetPattern(gdata, map, offset));
 
-      win->SetFgColor(color);
       Coord tx, ty;
       win->Transform(x, y, tx, ty);
       win->PushTop();
@@ -731,22 +848,122 @@ public:
       win->Line(tx, ty - 3, tx, ty + 3, 1);
       win->PopTransform();
 
-      int off = offset->shapeAttrOffset[0];
-      if (off < 0) {
-#ifdef DEBUG
-	printf("Drawing null GIF image at %.2f,%.2f\n", x, y);
-#endif
-	continue;
-      }
+      char *file = "/p/devise/dat/defaultimage.gif";
+      // need to figure out how to get file from shape attribute 0
 
 #ifdef DEBUG
-      printf("Drawing GIF image at %.2f,%.2f\n", x, y);
+      printf("Drawing GIF image %s at %.2f,%.2f\n", file, x, y);
 #endif
 
-      char *filename = gdata + off;
-      win->ImportImage(x, y, GIF, filename);
+      win->ImportImage(x, y, GIF, file);
     }
   }
 };
  
+// -----------------------------------------------------------------
+
+class FullMapping_PolylineFileShape: public PolylineFileShape {
+public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0;
+    height = 0;
+  }
+  
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+		 
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      win->SetFgColor(GetColor(view, gdata, map, offset));
+      win->SetPattern(GetPattern(gdata, map, offset));
+
+      char *file = "/p/devise/dat/defaultpoly.dat";
+      char *format = "%lf%lf";
+      // need to figure out how to get file and format
+      // from shape attributes 0 and 1
+
+      FILE *fp = fopen(file, "r");
+      if (!fp) {
+	printf("Cannot open polyline file %s\n", file);
+	continue;
+      }
+
+#ifdef DEBUG
+      printf("Drawing polyline file %s at %.2f,%.2f\n", file, x, y);
+#endif
+
+      Boolean hasPrev = false;
+      Coord x0 = 0, y0 = 0;
+
+      char line[255];
+      while(fgets(line, sizeof line, fp)) {
+	if (line[strlen(line) - 1] == '\n')
+	  line[strlen(line) - 1] = 0;
+	if (!strlen(line) || line[0] == '#') {
+	  if (hasPrev)
+	    win->DrawPixel(x0, y0);
+	  hasPrev = false;
+	} else {
+	  Coord x1, y1;
+	  if (sscanf(line, format, &x1, &y1) != 2) {
+	    printf("Ignoring invalid line: %s\n", line);
+	    continue;
+	  }
+	  x1 += x;
+	  y1 += y;
+	  if (hasPrev)
+	    win->Line(x0, y0, x1, y1, 1);
+	  else
+	    hasPrev = true;
+	  x0 = x1;
+	  y0 = y1;
+	}
+      }
+
+      fclose(fp);
+    }
+  }
+};
+ 
+// -----------------------------------------------------------------
+
+class FullMapping_TextLabelShape: public TextLabelShape {
+public:
+  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
+				Coord &width, Coord &height) {
+    width = 0;
+    height = 0;
+  }
+  
+  virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
+			      TDataMap *map, View *view, int pixelSize) {
+		 
+    GDataAttrOffset *offset = map->GetGDataOffset();
+
+    for(int i = 0; i < numSyms; i++) {
+      char *gdata = (char *)gdataArray[i];
+      Coord x = GetX(gdata, map, offset);
+      Coord y = GetY(gdata, map, offset);
+      win->SetFgColor(GetColor(view, gdata, map, offset));
+      win->SetPattern(GetPattern(gdata, map, offset));
+
+      char *label = "label";
+      // need to figure out how to get label from shape attribute 0
+
+      // Pretend that there's a 500x500 box in which the text has to
+      // be drawn; this is done because we don't know the size of the
+      // the label in pixels, and if we pass a width or height that
+      // is too tight, AbsoluteText() will try to scale the text.
+      Coord fakeSize = 500;
+      win->AbsoluteText(label, x - fakeSize / 2, y - fakeSize / 2,
+			fakeSize, fakeSize, WindowRep::AlignCenter, true);
+    }
+  }
+};
+
 #endif
