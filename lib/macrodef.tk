@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.97  1997/12/02 19:35:40  wenger
+#	Temporarily(?) backed out changes from color manager merge.
+#
 #       Revision 1.96  1997/11/24 23:15:43  weaver
 #       Changes for the new ColorManager.
 #
@@ -1015,7 +1018,7 @@ proc AllList {list  args} {
 
 #############################################################
 proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
-    global x yvar viewselname bgcolor linksel windowsel titlesel
+    global x yvar viewselname linksel windowsel titlesel
     global xaxissel yaxissel cancel newgdata viewsel
     global sourceList global curView
     
@@ -1137,11 +1140,12 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     pack .auto.gdatasel.link -side left -padx 3m
     set newgdata 1
 
-    label .auto.colorsel.label -text "Background:"
-    button .auto.colorsel.color -width 15 -textvariable bgcolor \
-	-command "getColor bgcolor" -highlightthickness 0
-    pack .auto.colorsel.label .auto.colorsel.color -side left -padx 1m
-    set bgcolor "AntiqueWhite"
+#	global bgcolor
+#    label .auto.colorsel.label -text "Background:"
+#    button .auto.colorsel.color -width 15 -textvariable bgcolor \
+#	-command "getColor bgcolor" -highlightthickness 0
+#    pack .auto.colorsel.label .auto.colorsel.color -side left -padx 1m
+#    set bgcolor "AntiqueWhite"
 
     checkbutton .auto.titlesel.title -text Title -variable titlesel
     pack .auto.titlesel.title -side left -padx 3m
@@ -1274,8 +1278,10 @@ if {$is_dte_type} {
     }
     
 }
-MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
+MacroDefAutoActual $tdata $viewsel $linksel $windowsel \
 	$titlesel $xaxissel $yaxissel $x $ylist $newgdata
+#MacroDefAutoActual $tdata $viewsel $linksel $windowsel $bgcolor \
+#	$titlesel $xaxissel $yaxissel $x $ylist $newgdata
 }
 
 ############################################################
@@ -1381,11 +1387,12 @@ proc CleanName { name } {
 }
 
 
-proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
+# NEW ColorManager changes CEW 971202 (removed bgcolor)
+proc MacroDefAutoActual {tdata viewsel linksel window \
 	titlesel xaxissel yaxissel x ylist \
 	newgdata {ofAttr ""}} {
     #    puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel \
-    #          $window $bgcolor \
+    #          $window \
     #          $titlesel $xaxissel $yaxissel $x $ylist $newgdata"
     
     
@@ -1433,7 +1440,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
     } else {
         set sortedx Scatter
     }
-    set color 2
+    set color 0
     set shape $viewsel
     set size 1
     set pattern 0
@@ -1496,11 +1503,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	ProcessAttrInfo $attr yname type sorted yhi ylo colorY "y" $viewsel
 	#puts "$yname $type $sorted $colorY $yhi $ylo"
 	
-	if {$clean_name=="Count"} { set color 2 }
-	if {$clean_name=="Sum"} { set color 3 }
-	if {$clean_name=="Max"} { set color 0 }
-	if {$clean_name=="Avg"} { set color 2 }
-	if {$clean_name=="Min"} { set color 3 }
+# NEW ColorManager changes CEW 971202 (always map to palette color #0)
+#	if {$clean_name=="Count"} { set color 2 }
+#	if {$clean_name=="Sum"} { set color 3 }
+#	if {$clean_name=="Max"} { set color 0 }
+#	if {$clean_name=="Avg"} { set color 2 }
+#	if {$clean_name=="Min"} { set color 3 }
 	
         if {$subder == "Stat" \
 		|| $subder == "GstatX" \
@@ -1550,8 +1558,11 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 			"View $viewinstance exists already." "" 0 OK
 		return
 	    }
+# NEW ColorManager changes CEW 971202 (removed $bgcolor)
 	    set result [DEVise create view $sorted $viewinstance \
-		    $xlo $xhi $ylo $yhi $bgcolor]
+		    $xlo $xhi $ylo $yhi]
+#	    set result [DEVise create view $sorted $viewinstance \
+#		    $xlo $xhi $ylo $yhi $bgcolor]
 	    if {$result == ""} {
 		dialog .viewError "View Error" \
 			"Error creating view $viewinstance" "" 0 OK
@@ -1609,11 +1620,12 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	# ask DEVise to turn on/off Y axis
 	DEVise setAxisDisplay $viewinstance Y $yaxissel
 	
+# NEW ColorManager changes CEW 971202 (commented out)
 	# if new mappings are requested, associate color with mapping,
 	# otherwise associate color with view
-	if {0 && !$newgdata} {
-	    DEVise setViewOverrideColor $viewinstance $color 1
-	}
+#	if {0 && !$newgdata} {
+#	    DEVise setViewOverrideColor $viewinstance $color 1
+#	}
 	
 	# for map color, either use constant color, or variable
 	# if defined in the schema
@@ -1621,6 +1633,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	if {$colorAttr != ""} {
 	    set mapColor \$$colorAttr
 	}
+
 	set mapname [format "%s_vs_%s" $name $x]
 	
 	if {[lsearch [DEVise get mapping] $mapname] < 0} {
@@ -1676,14 +1689,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
 	
 	ProcessViewSelected $viewinstance
-	if {$colorAttr == ""} { incr color }
+
+# NEW ColorManager changes CEW 971202 (commented out)
+#	if {$colorAttr == ""} { incr color }
     }
 }
-
-
-
-
-
-
-
-
