@@ -1616,8 +1616,9 @@ Num Date        Status  Description
 			DEVise to crash. (rkw)
 			(Fixed by rkw, 10/21/98.)
 
-422 10/19/98	OPEN	Setting a cursor destination without setting the
+422 10/19/98	FIXED	Setting a cursor destination without setting the
 			source causes a crash. (rkw)
+			(Fixed by rkw, 2/2/99.)
 
 423 10/20/98	FIXED	Don't allow user to (accidentally) save a session
 			to the full path $DEVISE_SESSION (destroys session
@@ -1668,8 +1669,9 @@ Num Date        Status  Description
 			for some reason. (rkw)
 			(Caused by unsorted attr being declared sorted.)
 
-435 11/06/98	OPEN	DataReader/DTE combination drops off the last record
+435 11/06/98	FIXED	DataReader/DTE combination drops off the last record
 			of data. (rkw/kb)
+			(Fixed by rkw/kb 2/1/99.)
 
 436 11/11/98	OPEN	SoilSci demo sessions seem to cause the devised to
 			lock up when run via the JavaScreen (with the new
@@ -1679,8 +1681,6 @@ Num Date        Status  Description
 			has black text on black background). (rkw)
 
 438 11/13/98	OPEN	Drill-down popup window comes up at the wrong location
-			(in the y direction) in OpenGL windows. (rkw)
-
 			(in the y direction) in OpenGL windows. (rkw)
 
 439 11/19/98	OPEN	It's not possible to edit data sources that are in

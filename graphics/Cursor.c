@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/01/29 21:09:41  wenger
+  Fixed bug 451 (dragging cursor in JS bypasses cursor grid).
+
   Revision 1.20  1998/12/10 21:53:16  wenger
   Devised now sends GIFs to JavaScreen on a per-view rather than per-window
   basis; GIF "dirty" flags are now also referenced by view rather than by
@@ -141,6 +144,8 @@
 #include "CmdContainer.h"
 #include "CommandObj.h"
 
+//#define DEBUG
+
 //******************************************************************************
 // Constructors and Destructors
 //******************************************************************************
@@ -180,20 +185,40 @@ DeviseCursor::~DeviseCursor(void)
 
 //******************************************************************************
 
+//
+// Note: I had thought of not allowing the source and destination to be
+// set to the same view, since that doesn't really make any sense.
+// However, I decided that it may be useful to allow that state to exist
+// because you might have things that way temporarily while you're changing
+// a cursor around, and it doesn't seem to hurt anything, so I'm leaving
+// in the possibility of having the source and destination views be the
+// same.  RKW 1999-02-02.
+//
+
 /* Set source view. Changing this view's visual filter
    changes in the cursor's position. Can also set to NULL */
 
 void DeviseCursor::SetSource(View *view)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SetSource(%s)\n", GetName(),
+    view->GetName());
+#endif
+
+  // Don't do anything if the given view is already the source.
+  if (view == _src) return;
+
   Boolean redrawCursors = false;
 
-  if (_dst)
+  if (_dst) {
     redrawCursors = _dst->HideCursors();
+  }
 
   _src = view;
 
-  if (_dst && redrawCursors)
+  if (_dst && redrawCursors) {
     (void)_dst->DrawCursors();
+  }
 }
 
 /* Set destination: this is where the cursor will be drawn.
@@ -201,28 +226,34 @@ void DeviseCursor::SetSource(View *view)
 
 void DeviseCursor::SetDst(View *view)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SetDst(%s)\n", GetName(),
+    view->GetName());
+#endif
+
+  // Don't do anything if the given view is already the destination.
+  if (view == _dst) return;
+
   Boolean redrawCursors = false;
 
-  if (_dst)
-    redrawCursors = _dst->HideCursors();
-
   if (_dst) {
+    redrawCursors = _dst->HideCursors();
     _dst->DeleteCursor(this);
-    if (redrawCursors)
+    if (redrawCursors) {
       (void)_dst->DrawCursors();        // redraw cursors at old destination
+    }
   }
   
   _dst = view;
 
   redrawCursors = false;
-  if (_dst)
+  if (_dst) {
     redrawCursors = _dst->HideCursors();
-
-  if (_dst)
     _dst->AppendCursor(this);
-
-  if (_dst && redrawCursors)
-    (void)_dst->DrawCursors();          // redraw cursors at new destination
+    if (redrawCursors) {
+      (void)_dst->DrawCursors();          // redraw cursors at new destination
+    }
+  }
 }
 
 /* Get current visual filter. return TRUE if it exists. */
@@ -240,6 +271,11 @@ Boolean DeviseCursor::GetVisualFilter(VisualFilter *&filter)
 
 void DeviseCursor::FilterAboutToChange(View *view)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::FilterAboutToChange(%s)\n", GetName(),
+    view->GetName());
+#endif
+
   if (_dst && view == _src)
     (void)_dst->HideCursors();
 }
@@ -247,6 +283,10 @@ void DeviseCursor::FilterAboutToChange(View *view)
 void DeviseCursor::FilterChanged(View *view, VisualFilter &filter,
 				 int flushed)
 {
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::FilterChanged(%s)\n", GetName(), view->GetName());
+#endif
+
   if (_dst && view == _src)
     (void)_dst->DrawCursors();
 }
@@ -556,7 +596,7 @@ void DeviseCursor::DrawCursorBorder(WindowRep* w)
 void DeviseCursor::SetCursorColor(PColorID color)
 {
 #if defined(DEBUG)
-  printf("DeviseCursor(%s)::SetCursorColor(%d)\n", _name, color);
+  printf("DeviseCursor(%s)::SetCursorColor(%ld)\n", _name, color);
 #endif
 
   _cursorColor = color;

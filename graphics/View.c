@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.153  1999/02/01 23:13:33  wenger
+  Backspace key in a view goes back one in the visual filter history.
+
   Revision 1.152  1999/01/06 21:25:00  wenger
   Fixed Condor2.ds redraw problem (a problem with the VisualLink class);
   also added some debug code and code to make sure view filter histories
@@ -2513,50 +2516,56 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
   printf("DoDrawCursor(%s)\n", cursor->GetName());
 #endif
 
-  winRep->SetPattern(Pattern0);
-  winRep->SetLineWidth(0);
-  winRep->SetXorMode();
-
   VisualFilter *cFilter;
-  cursor->GetVisualFilter(cFilter);
 
+  // GetVisualFilter() returns false if cursor has no source.
+  if (cursor->GetVisualFilter(cFilter)) {
+#if defined(DEBUG)
+    printf("  Cursor filter = (%g, %g), (%g, %g), %d\n", cFilter->xLow,
+	    cFilter->yLow, cFilter->xHigh, cFilter->yHigh, cFilter->flag);
+#endif
 
-  Coord xLow, yLow, xHigh, yHigh;
-  xLow = MAX(_filter.xLow, cFilter->xLow);
-  xHigh = MIN(_filter.xHigh, cFilter->xHigh);
-  yLow = MAX(_filter.yLow, cFilter->yLow);
-  yHigh = MIN(_filter.yHigh, cFilter->yHigh);
+    winRep->SetPattern(Pattern0);
+    winRep->SetLineWidth(0);
+    winRep->SetXorMode();
 
-  if ((cFilter->flag & VISUAL_X) && (cFilter->flag & VISUAL_Y)) {
+    Coord xLow, yLow, xHigh, yHigh;
+    xLow = MAX(_filter.xLow, cFilter->xLow);
+    xHigh = MIN(_filter.xHigh, cFilter->xHigh);
+    yLow = MAX(_filter.yLow, cFilter->yLow);
+    yHigh = MIN(_filter.yHigh, cFilter->yHigh);
+
+    if ((cFilter->flag & VISUAL_X) && (cFilter->flag & VISUAL_Y)) {
 #if defined(DEBUG)
-    printf("DoDrawCursor: Drawing XY cursor %s in\n  %s\n",
-        cursor->GetName(), GetName());
+      printf("DoDrawCursor: Drawing XY cursor %s in\n  %s\n",
+          cursor->GetName(), GetName());
 #endif
-    if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh
-        || cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
-      winRep->ClearBackground(xLow, yLow, xHigh - xLow, yHigh - yLow);
-    }
-  } else if (cFilter->flag & VISUAL_X) {
+      if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh
+          || cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
+        winRep->ClearBackground(xLow, yLow, xHigh - xLow, yHigh - yLow);
+      }
+    } else if (cFilter->flag & VISUAL_X) {
 #if defined(DEBUG)
-    printf("DoDrawCursor: Drawing X cursor %s in\n  %s\n",
-        cursor->GetName(), GetName());
+      printf("DoDrawCursor: Drawing X cursor %s in\n  %s\n",
+          cursor->GetName(), GetName());
 #endif
-    if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh)) {
-	  winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
-	      _filter.yHigh - _filter.yLow);
-    }
-  } else if (cFilter->flag & VISUAL_Y) {
+      if (!(cFilter->xHigh < _filter.xLow || cFilter->xLow > _filter.xHigh)) {
+	    winRep->ClearBackground(xLow, _filter.yLow, xHigh - xLow,
+	        _filter.yHigh - _filter.yLow);
+      }
+    } else if (cFilter->flag & VISUAL_Y) {
 #if defined(DEBUG)
-    printf("DoDrawCursor: Drawing Y cursor %s in\n  %s\n",
-        cursor->GetName(), GetName());
+      printf("DoDrawCursor: Drawing Y cursor %s in\n  %s\n",
+          cursor->GetName(), GetName());
 #endif
-    if (!(cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
-	  winRep->ClearBackground(_filter.xLow, yLow,
-	      _filter.xHigh - _filter.xLow, yHigh - yLow);
+      if (!(cFilter->yHigh < _filter.yLow || cFilter->yLow > _filter.yHigh)) {
+	    winRep->ClearBackground(_filter.xLow, yLow,
+	        _filter.xHigh - _filter.xLow, yHigh - yLow);
+      }
     }
+
+    winRep->SetCopyMode();
   }
-
-  winRep->SetCopyMode();
 }
 
 FilterQueue *View::GetHistory()
