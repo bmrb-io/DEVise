@@ -344,6 +344,13 @@ Transition user manual from TeX/PostScript to html. (rr/rkw 1/29/97)
 Add a new rectangular shape type whose location is specified by the
 lower left corner rather than the center. (ml/rkw 1/29/97)
 
+When drilling down, allow showing of longer strings in the output. (ak/rkw
+2/3/97)
+
+Allow dotted/dashed lines in Devise. (ma/rkw 2/3/97)
+
+Allow user to change window names. (ma/rkw 2/4/97)
+
 
 COMPLETED
 ---------
@@ -391,6 +398,7 @@ CANCELLED
 ---------
 
 
+ak = alain@cs.wisc.edu = Alain Kagi
 at = andyt@cs.wisc.edu = Andrew Therber
 ds = sorin@cae.wisc.edu = Dan Sorin
 ff = 
