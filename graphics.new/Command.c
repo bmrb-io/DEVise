@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 20:08:58  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.4  1995/12/05 18:36:49  jussi
   Fixed compiler warning about char **argv being passed to a function
   expecting const char **argv.
@@ -31,7 +34,7 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef IBM_POWER_STATION
+#ifdef AIX
 #include <sys/select.h>
 #endif
 #include "Exit.h"
@@ -282,7 +285,7 @@ void Command::Run()
 #define BUFSIZE 256
   char buf[BUFSIZE];
   struct timeval timeout;
-#ifdef IBM_POWER_STATION
+#ifdef AIX
   fd_set readfds;
 #else
   int readfds;
@@ -306,14 +309,14 @@ void Command::Run()
   case ReadInput:
     /* read next input */
     fd = fileno(_input);
-#ifdef IBM_POWER_STATION
+#ifdef AIX
     FD_SET(fd, &readfds);
 #else
     readfds = 1 << fd;
 #endif
     timeout.tv_sec = 0;
     timeout.tv_usec = 0;
-#if defined(IBM_POWER_STATION) || defined(HPUX)
+#if defined(AIX) || defined(HPUX)
     ret = select(fd + 1, &readfds, NULL, NULL, &timeout);
 #else
     ret = select(fd + 1, (fd_set *)&readfds, NULL, NULL, &timeout);
