@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/14 18:07:55  jussi
+  Cursor now inserts itself into the view callback list at
+  construction time, and removes itself at destruction time.
+  There was a problem that a cursor was destroyed after
+  a view was destroyed, and the if condition protecting
+  the removal of the cursor from the view callback list
+  failed to fire.
+
   Revision 1.5  1996/01/16 16:16:38  jussi
   Improved code that hides and draws cursors when source
   and/or destination changes.
@@ -144,7 +152,7 @@ void DeviseCursor::ViewDestroyed(View *view)
     _dst = 0;
 }
 
-void DeviseCursor::MoveSourceX(Coord x)
+void DeviseCursor::MoveSource(Coord x, Coord y)
 {
   if (!_src)
     return;
@@ -154,12 +162,23 @@ void DeviseCursor::MoveSourceX(Coord x)
 
   VisualFilter filter;
   _src->GetVisualFilter(filter);
-  Coord width = filter.xHigh - filter.xLow;
-  Coord newXLow = x - width / 2.0;
-  Coord xMin;
-  if (_src->GetXMin(xMin) && newXLow < xMin)
-    newXLow = xMin;
-  filter.xLow = newXLow;
-  filter.xHigh = newXLow + width;
+
+  if (_visFlag & VISUAL_X) {
+    Coord width = filter.xHigh - filter.xLow;
+    Coord newXLow = x - width / 2.0;
+    Coord xMin;
+    if (_src->GetXMin(xMin) && newXLow < xMin)
+      newXLow = xMin;
+    filter.xLow = newXLow;
+    filter.xHigh = newXLow + width;
+  }
+
+  if (_visFlag & VISUAL_Y) {
+    Coord height = filter.yHigh - filter.yLow;
+    Coord newYLow = y - height / 2.0;
+    filter.yLow = newYLow;
+    filter.yHigh = newYLow + height;
+  }
+
   _src->SetVisualFilter(filter);
 }

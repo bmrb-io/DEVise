@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/02/02 21:51:47  jussi
+  Replaced HightlightColor with ForegroundColor. Cursors are
+  drawn with xor so foreground color doesn't matter.
+
   Revision 1.4  1996/01/30 21:14:08  jussi
   Removed references to specific colors.
 
@@ -57,8 +61,8 @@ public:
   /* Get current visual filter. return TRUE if it exists. */
   Boolean GetVisualFilter(VisualFilter *&filter, Color &color);
 
-  /* Move the X coord of source */
-  void MoveSourceX(Coord x);
+  /* Move the X and Y coords of source */
+  void MoveSource(Coord x, Coord y);
 
 private:
   virtual void FilterAboutToChange(View *view);

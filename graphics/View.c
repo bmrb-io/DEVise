@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.38  1996/05/31 15:30:28  jussi
+  Added support for tick marks in axes. The spacing and location
+  of tick marks is set automatically to something reasonable,
+  even if the axis range is not.
+
   Revision 1.37  1996/05/14 18:05:16  jussi
   Added initialization of view callback list. Added debugging
   statements.
@@ -167,17 +172,16 @@
 
 //#define DEBUG
 
-/* width/height of sensitive area for cursor */
-static const int VIEW_CURSOR_SENSE = 10;
-
-/* 256K bytes before saving pixel data*/
-static const int VIEW_BYTES_BEFORE_SAVE = 256 * 1024;
+/*
+   pixel image must be at least 64K bytes before it is saved with the
+   session file
+*/
+static const int VIEW_BYTES_BEFORE_SAVE = 64 * 1024;
 
 static const Coord DELTA_X = .000000000001;
 static const Coord DELTA_Y = .000000000001;
 
-/* id for the next view created.
-   view == NULL return id = 0.*/
+/* id for the next view created. view == NULL return id = 0. */
 
 int View::_nextId = 0;
 ViewList *View::_viewList = NULL;   /* list of all views */
@@ -239,15 +243,14 @@ void View::Init(char *name, VisualFilter &filter,
   _displaySymbol = true;
 
   /* init default filter */
+  _filter = filter;
   _filterChanged = true;
   if (!_hasTimestamp) {
     _hasTimestamp =true;
     _timeStamp = TimeStamp::NextTimeStamp();
   }
-  _filter = filter;
   
   _hasExposure = false; /* no exposure rectangle yet */
-  
   _querySent = false;	/* TRUE if query has been sent */
   
   xAxis.inUse = false;
@@ -269,27 +272,22 @@ void View::Init(char *name, VisualFilter &filter,
   _label.name = 0;
   
   _cursors = new DeviseCursorList;
+  DOASSERT(_cursors, "Out of memory");
 
-  Dispatcher::CreateMarker(readFd,writeFd);
-  
-  //Dispatcher::Current()->Register(this,10,GoState,false,readFd);
-  Dispatcher::Current()->Register(this,10,GoState,false,-1);
-
+  Dispatcher::CreateMarker(readFd, writeFd);
+  Dispatcher::Current()->Register(this, 10, GoState, false, readFd);
+  //Dispatcher::Current()->Register(this, 10, GoState, false, -1);
   Dispatcher::InsertMarker(writeFd);
 }
 
 View::~View()
 {
+  Dispatcher::CloseMarker(readFd, writeFd);
 
-  Dispatcher::CloseMarker(readFd,writeFd);
-  if (_querySent) {
-    fprintf(stderr,
-	    "Destructor of subclass of View did not abort query (%s: %d)\n",
-	    __FILE__, __LINE__);
-    Exit::DoExit(1);
-  }
+  DOASSERT(!_querySent, "Query still active");
 
   delete _label.name;
+  delete _cursors;
 
   Unmap();
   DeleteFromParent();
@@ -304,10 +302,7 @@ Find view by name. Return NULL if not found.
 
 View *View::FindViewByName(char *name)
 {
-  if (!_viewList) {
-    fprintf(stderr,"View::FindViewByName: _viewList empty\n");
-    return NULL;
-  }
+  DOASSERT(_viewList, "Invalid view list");
   
   int index;
   for(index = _viewList->InitIterator(); _viewList->More(index); ) {
@@ -319,7 +314,7 @@ View *View::FindViewByName(char *name)
   }
   _viewList->DoneIterator(index);
   
-  fprintf(stderr, "View::FindViewByName: %s not found\n", name);
+  fprintf(stderr, "View %s not found\n", name);
   return NULL;
 }
 
@@ -332,7 +327,7 @@ View *View::FindViewById(int id)
   if (!id)
     return NULL;
   
-  DOASSERT(_viewList, "Empty view list");
+  DOASSERT(_viewList, "Invalid view list");
   
   for(int index = _viewList->InitIterator(); _viewList->More(index); ) {
     View *view = _viewList->Next(index);
@@ -342,7 +337,7 @@ View *View::FindViewById(int id)
     }
   }
   
-  fprintf(stderr,"View::FindViewById: %d not found\n", id);
+  fprintf(stderr,"View %d not found\n", id);
   return NULL;
 }
 
@@ -364,7 +359,7 @@ void View::SubClassUnmapped()
 {
   // If the View object is really anything other than a
   // TDataViewX, ViewRanges, or ViewScatter, and _querySent is true,
-  // this will call a pure virtual function.  RKW 4/5/96.
+  // this will call a pure virtual function.
   if (_querySent) {
     DerivedAbortQuery();
     ReportQueryDone(0);
@@ -433,30 +428,29 @@ void View::Mark(int index, Boolean marked)
 
 Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 {
+  // view has no cursors, so we can't move them either
+  if (!_cursors->Size())
+    return false;
+
+  // can only move cursors in 2D views
   if (_numDimensions != 2)
     return false;
 
-  int cursorX, cursorY, cursorW, cursorH;
+  // if view is not selected, no cursor movement is induced;
+  // mouse click is intended for selecting the view as current;
+  // the next mouse click in this view will move the cursor
+  if (!_highlight)
+    return false;
+
+  /* change the X and Y coordinates of the cursor */
   Coord worldXLow, worldYLow, worldXHigh, worldYHigh;
+  FindWorld(x, y, x + 1, y - 1, worldXLow, worldYLow, worldXHigh, worldYHigh);
+  DeviseCursor *cursor = _cursors->GetFirst();
+  DOASSERT(cursor, "Invalid cursor");
+  cursor->MoveSource((worldXHigh + worldXLow) / 2.0,
+		     (worldYHigh + worldYLow) / 2.0);
 
-  GetXCursorArea(cursorX, cursorY, cursorW, cursorH);
-  int cursorMaxX = cursorX + cursorW - 1;
-  int cursorMaxY = cursorY + cursorH - 1;
-
-  if (x >= cursorX && x <= cursorMaxX &&
-      y >= cursorY && y <= cursorMaxY) {
-    /* event for cursor area */
-    if (_cursors->Size() > 0) {
-      /* change location of the X coord */
-      FindWorld(x, y, x + 1, y - 1,
-		worldXLow, worldYLow, worldXHigh, worldYHigh);
-      DeviseCursor *cursor = _cursors->GetFirst();
-      cursor->MoveSourceX((worldXHigh + worldXLow) / 2.0);
-    }
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void View::HandleExpose(WindowRep *w, int x, int y, unsigned width, 
@@ -1379,8 +1373,7 @@ void View::SetLabelParam(Boolean occupyTop, int extent, char *name)
   delete _label.name;
 
   if (name) {
-    _label.name = new char [strlen(name) + 1];
-    strcpy(_label.name, name);
+    _label.name = CopyString(name);
   } else
     _label.name = 0;
 
@@ -1633,7 +1626,9 @@ void View::InsertViewCallback(ViewCallback *callBack)
 {
   if (!_viewCallbackList)
     _viewCallbackList = new ViewCallbackList;
-  
+    
+  DOASSERT(_viewCallbackList, "Invalid view callback list");
+
 #ifdef DEBUG
   printf("Inserting 0x%p to view callback list\n", callBack);
 #endif
@@ -1643,7 +1638,7 @@ void View::InsertViewCallback(ViewCallback *callBack)
 
 void View::DeleteViewCallback(ViewCallback *callBack)
 {
-  DOASSERT(_viewCallbackList, "Empty view callback list");
+  DOASSERT(_viewCallbackList, "Invalid view callback list");
 
 #ifdef DEBUG
   printf("Removing 0x%p from view callback list\n", callBack);
@@ -1749,42 +1744,6 @@ void View::DeleteCursor(DeviseCursor *cursor)
   _cursors->Delete(cursor);
 }
 
-void View::GetXCursorArea(int &x, int &y, int &w, int &h)
-{
-  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
-
-  int startX;
-  if (xAxis.inUse) {
-    GetXAxisArea(x, y, w, h, startX);
-    x = startX;
-  } else {
-    /* X axis not in use */
-    GetDataArea(x, y, w, h);
-    y += h - VIEW_CURSOR_SENSE;
-    h = VIEW_CURSOR_SENSE;
-  }
-
-#ifdef DEBUG
-  printf("GetXCursorArea  %s %d %d %d %d\n", GetName(), x, y, w, h);
-#endif
-}
-
-void View::GetYCursorArea(int &x, int &y, int &w, int &h)
-{
-  DOASSERT(_numDimensions == 2, "Invalid number of dimensions");
-
-  if (yAxis.inUse) {
-    GetYAxisArea(x, y, w, h);
-  } else {
-    GetDataArea(x, y, w, h);
-    w = VIEW_CURSOR_SENSE;
-  }
-
-#ifdef DEBUG
-  printf("GetYCursorArea  %s %d %d %d %d\n", GetName(), x, y, w, h);
-#endif
-}
-
 Boolean View::DrawCursors()
 {
 #ifdef DEBUG
@@ -1840,39 +1799,44 @@ void View::DoDrawCursors()
   
   int index;
   for(index = _cursors->InitIterator(); _cursors->More(index);) {
-    Coord xLow, yLow, xHigh, yHigh;
     DeviseCursor *cursor = _cursors->Next(index);
     VisualFilter *filter;
     Color color;
     cursor->GetVisualFilter(filter, color);
 
-    if (filter->flag & VISUAL_X) {
+    Coord xLow, yLow, xHigh, yHigh;
+    xLow = MinMax::max(_filter.xLow, filter->xLow);
+    xHigh = MinMax::min(_filter.xHigh, filter->xHigh);
+    yLow = MinMax::max(_filter.yLow, filter->yLow);
+    yHigh = MinMax::min(_filter.yHigh, filter->yHigh);
+
+    if ((filter->flag & VISUAL_X) && (filter->flag & VISUAL_Y)) {
+#ifdef DEBUG
+      printf("DoDrawCursors: Drawing XY cursor in\n  %s\n", GetName());
+#endif
+      if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh
+	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh))
+	winRep->FillRect(xLow, yLow, xHigh - xLow, yHigh - yLow);
+    } else if (filter->flag & VISUAL_X) {
 #ifdef DEBUG
       printf("DoDrawCursors: Drawing X cursor in\n  %s\n", GetName());
 #endif
-      if(!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh)) {
-	xLow = MinMax::max(_filter.xLow, filter->xLow);
-	xHigh = MinMax::min(_filter.xHigh, filter->xHigh);
+      if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh))
 	winRep->FillRect(xLow, _filter.yLow, xHigh - xLow,
 			 _filter.yHigh - _filter.yLow);
-      }
-    }
-
-    if (filter->flag & VISUAL_Y) {
+    } else if (filter->flag & VISUAL_Y) {
 #ifdef DEBUG
       printf("DoDrawCursors: Drawing Y cursor in\n  %s\n", GetName());
 #endif
-      if(!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
-	yLow = MinMax::max(_filter.yLow, filter->yLow);
-	yHigh = MinMax::min(_filter.yHigh, filter->yHigh);
+      if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh))
 	winRep->FillRect(_filter.xLow, yLow,
 			 _filter.xHigh - _filter.xLow, yHigh - yLow);
-      }
     }
   }
 
-  winRep->SetCopyMode();
   _cursors->DoneIterator(index);
+
+  winRep->SetCopyMode();
 }
 
 void View::ClearHistory()
@@ -2174,7 +2138,9 @@ void View::LoadPixmaps(FILE *file)
   printf("Loading pixmap for %s\n", GetName());
 #endif
 
-  DevisePixmap *pixmap = new DevisePixmap();
+  DevisePixmap *pixmap = new DevisePixmap;
+  DOASSERT(pixmap, "Out of memory");
+
   if (fread(pixmap, sizeof(*pixmap), 1, file) != 1 ) {
     perror("fread");
     DOASSERT(0, "Cannot read pixmap file");
@@ -2218,7 +2184,9 @@ void View::LoadPixmaps(FILE *file)
   
   DOASSERT(num[0] <= 1, "Too many pixmaps");
   
-  _pixmap = new DevisePixmap();
+  _pixmap = new DevisePixmap;
+  DOASSERT(_pixmap, "Out of memory");
+
   if (fread(_pixmap, sizeof(*_pixmap), 1, file) != 1) {
     perror("fread");
     DOASSERT(0, "Cannot read pixmap file");

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/05/31 15:30:29  jussi
+  Added support for tick marks in axes. The spacing and location
+  of tick marks is set automatically to something reasonable,
+  even if the axis range is not.
+
   Revision 1.20  1996/05/07 16:32:14  jussi
   Moved Action member variable to ViewGraph. Move implementation of
   HandleKey, HandlePress and HandlePopup to ViewGraph as well.
@@ -157,12 +162,13 @@ public:
 	        Color background = BackgroundColor,
 		AxisLabel *xAxis = NULL, AxisLabel *yAxis = NULL,
 		int weight = 1, Boolean boundary = false);
-	~View();
+	virtual ~View();
 
-	char *GetName(){ return ViewWin::GetName();}
-	void Geometry(int &x, int &y, unsigned int &w, unsigned int &h){
-		ViewWin::Geometry(x,y,w,h); }
-	WindowRep *GetWindowRep(){ return ViewWin::GetWindowRep(); }
+	char *GetName() { return ViewWin::GetName(); }
+	void Geometry(int &x, int &y, unsigned int &w, unsigned int &h) {
+	  ViewWin::Geometry(x,y,w,h);
+	}
+	WindowRep *GetWindowRep() { return ViewWin::GetWindowRep(); }
 
 	/* Highlight a view of depending on flag.*/
 	void Highlight(Boolean flag);
@@ -181,14 +187,14 @@ public:
 	void ClearHistory();
 	void InsertHistory(VisualFilter &filter);
 
-
 	/* Mark/unmark nth visualfilter in history */
 	void Mark(int index, Boolean true_false);
 
 	static View *FindViewByName(char *name);
 	static View *FindViewById(int viewId);
 	static int FindViewId(View *view);
-	/* get all views */
+
+	/* iterate through all mappings in the view */
 	static int InitViewIterator() { return _viewList->InitIterator(); }
 	static Boolean MoreView(int index) { return _viewList->More(index); }
 	static View *NextView(int index){ return _viewList->Next(index); }
@@ -196,12 +202,12 @@ public:
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);
-	AttrType GetXAxisAttrType() { return _xAxisAttrType;}
+	AttrType GetXAxisAttrType() { return _xAxisAttrType; }
 	void SetYAxisAttrType(AttrType type);
 	AttrType GetYAxisAttrType() { return _yAxisAttrType; }
-	void SetXAxisLabel(AxisLabel *callback){ _xAxisLabel = callback;}
+	void SetXAxisLabel(AxisLabel *callback){ _xAxisLabel = callback; }
 	AxisLabel *GetXAxisLabel() { return _xAxisLabel; }
-	void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback;}
+	void SetYAxisLabel(AxisLabel *callback){ _yAxisLabel = callback; }
 	AxisLabel *GetYAxisLabel() { return _yAxisLabel; }
 
 	/* set/clear min info about a view */
@@ -211,7 +217,7 @@ public:
 	  _hasXMin = hasXMin;
 	  _xMin = xMin;
 	}
-	Boolean GetXMin(Coord &xMin){
+	Boolean GetXMin(Coord &xMin) {
 	  xMin = _xMin;
 	  return _hasXMin;
 	}
@@ -227,16 +233,15 @@ public:
 	void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
 	
 	/* set label parameters */
-	void SetLabelParam(Boolean occupyTop, int extent, char *name=NULL);
+	void SetLabelParam(Boolean occupyTop, int extent, char *name = 0);
 
-	void Refresh() ;
+	void Refresh();
 
 	/* Insert callback */
 	static void InsertViewCallback(ViewCallback *callBack);
 	static void DeleteViewCallback(ViewCallback *callBack);
 
-	/* Insert class callback */
-
+	/* Iconify view */
 	void Iconify(Boolean iconified);
 
 	/* Cursor manipulations */
@@ -271,7 +276,7 @@ public:
 	void SavePixmaps(FILE *file);
 
 	/* Restore pixmaps from an open file into pixmap buffer*/
-	void LoadPixmaps(FILE  *file);
+	void LoadPixmaps(FILE *file);
 
 	/* Invalidate pixmaps because of changes in mapping.
 	This needs to be developed into a more complicated interface
@@ -291,7 +296,7 @@ public:
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
-	virtual void SubClassMapped(); /* called just after mapping */
+	virtual void SubClassMapped();   /* called just after mapping */
 	virtual void SubClassUnmapped(); /* called just before unmapping */
 
 	/* Base class decides when to start/abort a query. Derived
@@ -349,10 +354,6 @@ private:
 	enum UpdateFilterStat { NotScrolled, Scrolled, SameFilter };
 	UpdateFilterStat UpdateFilterWithScroll();
 
-	/* Get area for cursor */
-	void GetXCursorArea(int &x, int &y, int &w, int &h);
-	void GetYCursorArea(int &x, int &y, int &w, int &h);
-
 	/* Drawing axes and label*/
 	void DrawAxesLabel(WindowRep *win, int x, int y, int w, int h);
 	void DrawXAxis(WindowRep *win, int x, int y, int w, int h);
@@ -398,21 +399,21 @@ private:
 
 	/* TRUE if _filter has changed since last time query was sent */
 	Boolean _filterChanged; 
-	VisualFilter _filter; /* new state of visual filter */
+	VisualFilter _filter;      /* new state of visual filter */
 	
-	Boolean _hasExposure; /* TRUE if _exporsureRect has valid data */
-	ViewRect _exposureRect; /* Rect that has been exposed
-				   and needs to be redrawn */
+	Boolean _hasExposure;      /* TRUE if _exporsureRect has valid data */
+	ViewRect _exposureRect;    /* Rect that has been exposed
+				      and needs to be redrawn */
 	
-	Boolean _querySent;	 /* TRUE if query has been sent */
-	VisualFilter _queryFilter; /* filter used for query */
-	ViewRect _queryRect; /* screen coordinates used for query */
+	Boolean _querySent;	    /* TRUE if query has been sent */
+	VisualFilter _queryFilter;  /* filter used for query */
+	ViewRect _queryRect;        /* screen coordinates used for query */
 
-	int _id;    /* id of this view */
-	static int _nextId; /* id of next view */
+	int _id;                    /* id of this view */
+	static int _nextId;         /* id of next view */
 	static ViewList *_viewList; /* list of all views */
 
-	LabelInfo _label;	/* info about label */
+	LabelInfo _label;	  /* info about label */
 	Boolean _updateTransform; /* TRUE if we need to update transform
 				     for the window */
 
