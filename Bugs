@@ -915,6 +915,24 @@ Num Date        Status  Description
 			Define Visualization dialog -> DEVise core dumps on
 			exit.  (rkw)
 
+228 09/25/97	OPEN	Tasvir images show up at the wrong place when you
+			print to PostScript. (rkw)
+
+229 09/25/97	OPEN	Printing PostScript from the pixmap fails for views
+			with Tasvir images in MolBio demo. (rkw)
+
+230 09/25/97	OPEN	If you try to show the mapping dialog for a histogram
+			view, an assertion fails in the DTE. (rkw)
+
+231 09/25/97	OPEN	DTE doesn't recognize when it adds duplicate entries
+			to the data source catalog. (rkw)
+
+232 09/26/97	OPEN	Dots ('.') in data source names goof things up. (rkw)
+
+233 10/01/97	OPEN	Schema editor GUI (for both old and UniData schemas)
+			doesn't let you add a new attribute prior to an
+			existing attribute. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
