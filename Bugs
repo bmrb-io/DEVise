@@ -553,7 +553,7 @@ Num Date        Status  Description
 			up the 'Edit Mapping' dialog -> you cannot get any
 			attributes to show up in the 'Variable' menu for
 			changing a GData attribute. (rkw)
-			(This happens because the schema filess opened by the
+			(This happens because the schema files opened by the
 			session are not the ones referred to in the data
 			streams.) (rkw)
 			Deferred
@@ -690,8 +690,9 @@ Num Date        Status  Description
 166 02/19/97	OPEN	Merging a template sometimes puts duplicate data
 			stream definitions into the catalog. (ml/rkw)
 
-167 02/26/97    OPEN    Selecting XOR as a view foreground color causes
+167 02/26/97    FIXED   Selecting XOR as a view foreground color causes
                         DEVise to exit. (rkw)
+			(XOR is no longer available as a background color.)
 
 168 02/27/97    OPEN    A session that has statistical data displayed in
                         a view cannot be opened as a template -- you are
@@ -765,7 +766,7 @@ Num Date        Status  Description
 184 05/21/97	OPEN	Last record sometimes is not displayed if recId is
 			mapped to X axis. (rkw/at) (see also 186)
 
-185 05/21/97	OPEN	recId's don't work in complex mappings (the attribute
+185 05/21/97	FIXED	recId's don't work in complex mappings (the attribute
 			that recId is mapped to seems to always get a value
 			of zero). (rkw)
 
@@ -808,7 +809,7 @@ Num Date        Status  Description
 196 07/15/97	OPEN	Window->duplicate doesn't work right if window has
 			piled views. (rkw)
 
-197 07/15/97	OPEN	You can't select data sources from the 'active tables'
+197 07/15/97	FIXED	You can't select data sources from the 'active tables'
 			window. (rkw)
 
 198 07/15/97	FIXED	Schema editor (non-UniData version) now has 'text'
@@ -921,7 +922,7 @@ Num Date        Status  Description
 229 09/25/97	OPEN	Printing PostScript from the pixmap fails for views
 			with Tasvir images in MolBio demo. (rkw)
 
-230 09/25/97	OPEN	If you try to show the mapping dialog for a histogram
+230 09/25/97	FIXED	If you try to show the mapping dialog for a histogram
 			view, an assertion fails in the DTE. (rkw)
 
 231 09/25/97	OPEN	DTE doesn't recognize when it adds duplicate entries
@@ -978,7 +979,7 @@ Num Date        Status  Description
 246 12/01/97	FIXED	Data source definition GUI shouldn't let you add
 			data source names with dots or spaces. (rkw)
 
-247 12/01/97	OPEN	devised must be started from the directory in which
+247 12/01/97	FIXED	devised must be started from the directory in which
 			the executable resides. (rkw)
 
 248 12/10/97    OPEN    DEVise crashes if you try to generate a GIF with any
@@ -1187,7 +1188,7 @@ Num Date        Status  Description
 313 03/07/98	OPEN	It's possible to create a link with no link attribute. (rkw)
 
 314 03/09/98	OPEN	Record links don't show up in the list of links when you
-			select View->Links->Unlink. (rkw)
+			select View->Links->Unlink in the master view. (rkw)
 
 315 03/11/98	OPEN	When printing the entire display to PostScript, windows
 			are printed in reversed order top-to-bottom. (rkw)
