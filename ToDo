@@ -200,6 +200,23 @@ Combine TDataAscii and TDataBinary. (rkw/jpm 10/3/96)
 Add a note to the user manual more clearly specifying the difference
 between separators and white space. (rkw 10/7/96)
 
+Have Devise itself, attrproj, and devread all use the same ParseCat
+code. (rkw 10/10/96)
+
+Add text extents function (returning size in what units?) to WindowRep
+and its subclasses (something like AbsoluteTextExtents()). (at/rkw 10/11/96)
+
+Add handling of enter/leave events to WindowRepCallback class.
+(at/rkw 10/11/96)
+
+Be able to add notations to views and/or data. (rkw/ff 10/14/96)
+
+Possibly allow dumping of the values corresponding to a particular view,
+so that they could be imported into other software.  (rkw/tom keating
+10/15/96)
+
+Have control of image contrast, etc., in Devise. (rkw/tom keating 10/15/96)
+
 
 COMPLETED
 ---------

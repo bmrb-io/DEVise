@@ -154,6 +154,12 @@ Num Date        Status  Description
 			directory gets huge amounts of stuff written to it.
 			(Running with '-convert 0' flag prevents this.) (rkw)
 
+050 10/14/96	FIXED	Setting a GData attribute to recid does not work
+			correctly (if it's already set it's okay, but
+			setting it doesn't work). (rkw)
+
+051 10/15/96	OPEN	Showing statistics as text produces many errors. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

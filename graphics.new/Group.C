@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/09/27 21:09:36  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.8  1996/06/12 14:56:05  wenger
   Added GUI and some code for saving data to templates; added preliminary
   graphical display of TDatas; you now have the option of closing a session
@@ -106,7 +112,7 @@ void Group::subitems(char *result)
   /* If this is a top level group there is an additional item called
      "recId" which is not stored in our lists */
   if (type == TOPGRP)
-    strcpy(result, "{recid leaf} ");
+    strcpy(result, "{recId leaf} ");
 
   curr = subgrps->first_item();
   while (curr) {

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.60  1996/08/29 22:28:38  guangshu
+#	Get rid of several puts.
+#
 #	Revision 1.59  1996/08/07 15:35:52  guangshu
 #	Added support to view statistics in text form.
 #
@@ -680,7 +683,7 @@ proc StatText {tdata schemafile} {
      set nlist ""
      foreach entry $namelist {
 	set name [lindex $entry 0]
-	if {$name != "recid"} {
+	if {$name != "recId"} {
 	    lappend nlist $name
 	    label .$vname.s$name -text $name
 	    listbox .$vname.l$name -yscroll ".$vname.scroll set" \
