@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.41  1999/06/04 16:32:29  wenger
+  Fixed bug 495 (problem with cursors in piled views) and bug 496 (problem
+  with key presses in piled views in the JavaScreen); made other pile-
+  related improvements (basically, I removed a bunch of pile-related code
+  from the XWindowRep class, and implemented that functionality in the
+  PileStack class).
+
   Revision 1.40  1999/05/28 16:32:42  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -195,6 +202,7 @@
 #include "TData.h"
 #include "DeviseKey.h"
 #include "DepMgr.h"
+#include "PileStack.h"
 
 //#define DEBUG
 
@@ -383,9 +391,25 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
         return true;
     }
 
-    char *errorMsg;
-    if (!PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
-        InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
+    char *errorMsg = "";
+    Boolean printedRecords = false;
+    if (view->IsInPileMode()) {
+        PileStack *ps = view->GetParentPileStack();
+	if (ps) {
+	    int index = ps->InitIterator();
+	    while (ps->More(index)) {
+	        ViewGraph *tmpView = (ViewGraph *)ps->Next(index);
+		if (PrintRecords(tmpView, x, y, xHigh, yHigh, errorMsg)) {
+		    printedRecords = true;
+		}
+	    }
+	    ps->DoneIterator(index);
+	}
+    } else if (PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
+        printedRecords = true;
+    }
+
+    if (!printedRecords) {
         PutMessage("");
         PutMessage(errorMsg);
     }
@@ -399,7 +423,7 @@ Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y,
 				    Coord xHigh, Coord yHigh, char *&errorMsg)
 {
 #if defined(DEBUG)
-    printf("ActionDefault::PrintRecords %s %.2f %.2f %.2f %.2f\n",
+    printf("ActionDefault::PrintRecords <%s> %.2f %.2f %.2f %.2f\n",
            view->GetName(), x, y, xHigh, yHigh);
 #endif
 

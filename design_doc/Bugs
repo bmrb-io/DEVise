@@ -1943,6 +1943,10 @@ Num Date        Status  Description
 			doesn't work right. (rkw)
 			(Fixed by rkw, 6/15/99.)
 
+501 06/21/99	FIXED	Drill-down only works on the first view in a pile.
+			(rkw)
+			(Fixed by rkw, 6/21/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
