@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.50  1996/01/18 18:02:05  jussi
+#	Added View/Destroy but made it not accessible to the user
+#	because of pending questions whether all necessary data
+#	structures are deleted in response to such a command.
+#
 #	Revision 1.49  1996/01/17 18:05:14  jussi
 #	Default UserMode value now set in control.tk.
 #
@@ -558,7 +563,10 @@ menu .mbar.window.menu -tearoff 0
 menu .mbar.schema.menu -tearoff 0
 # Command to execute for browsing schema depends on whether we are in 
 # the user or the superuser mode. 
-.mbar.schema.menu add command -label "Browse.." -command SchemaBrowse
+.mbar.schema.menu add command -label "Browse..." -command SchemaBrowse
+.mbar.schema.menu add separator
+.mbar.schema.menu add command -label "Physical..." -command {SchemaEdit 0}
+.mbar.schema.menu add command -label "Logical..." -command {SchemaEdit 1}
 
 menu .mbar.mapping.menu -tearoff 0
 .mbar.mapping.menu add command -label "Define" -command DefineMapping
@@ -710,8 +718,8 @@ proc DoCreateTData { file type } {
     set fileAlias [ lindex $dialogParamVar(params) 0 ]
     if { [DEVise exists $fileAlias] } {
 	# This file alias already exists in memory.
-	set but [dialog .fileExist "FileExist" \
-		"Warning: TData $fileAlias	exists" "" \
+	set but [dialog .fileExist "File Exists" \
+		"Warning: TData $fileAlias exists" "" \
 		1 Cancel {Use Existing}]
 	if { $but == 0 } {
 	    return
@@ -1679,10 +1687,9 @@ proc DoActualSave { infile asTemplate } {
     puts $f ""
 
     puts $f "# Import file (Create TData)"
-    puts $f "# format: DEVise create tdata fileType filePath fileAlias"
     puts $f ""
     if {!$asTemplate} {
-	puts $f "set loadPixmap \$template"
+	puts $f "set loadPixmap 1"
 	puts $f ""
     } 
 
@@ -1705,6 +1712,7 @@ proc DoActualSave { infile asTemplate } {
 		puts $f "\}"
 	    } else {
 		puts $f "if \{ \$template \} \{"
+		puts $f "\tset loadPixmap 0"
 		puts $f "\tset $tdataVar \[ GetTDataTemplate $class $totalTData $fileNum \]"
 		puts $f "\tif \{\$$tdataVar == \"\"\} \{"
 		puts $f "\t\treturn 0"
@@ -1739,7 +1747,6 @@ proc DoActualSave { infile asTemplate } {
     puts $f ""
 
     puts $f "# Create mappings instances (and GData)"
-    puts $f "# format: DEVise create mapping mapType fileAlias gdataName"
     set mapClasses [DEVise get mapping]
     set mapDict ""
     set mapNum 1
@@ -1768,7 +1775,6 @@ proc DoActualSave { infile asTemplate } {
     puts $f  ""
 
     puts $f "# Create views"
-    puts $f "# format: DEVise create view viewType viewName xlow xhigh ylow yhigh"
     set viewDict ""
     set viewNum 1
     set viewClasses [DEVise get view]
@@ -1800,7 +1806,6 @@ proc DoActualSave { infile asTemplate } {
     puts $f ""
 
     puts $f "# Create windows"
-    puts $f "# format: DEVise create window winType winName x y width height"
     SaveCategory $f "window" 
     puts $f ""
 
@@ -1812,22 +1817,18 @@ proc DoActualSave { infile asTemplate } {
     puts $f ""
     
     puts $f "# Create Links"
-    puts $f "# format: DEVise create link Visual_Link name flag"
     SaveCategory $f "link" 
     puts $f ""
 
     puts $f "# Create Cursors"
-    puts $f "# format: DEVise create cursor Cursor name flag"
     SaveCategory $f "cursor"
     puts $f ""
 
     puts $f "# Create axislabel"
-    puts $f "# format: DEVise create axisLabel type name format"
     SaveCategory $f "axisLabel"
     puts $f ""
 
     puts $f "# Create Actions"
-    puts $f "# format: DEVise create action type name"
     SaveCategory $f "action"
     puts $f ""
 
@@ -1851,12 +1852,10 @@ proc DoActualSave { infile asTemplate } {
     puts $f ""
 
     puts $f "# Insert mappings into views"
-    puts $f "# format: DEVise insertMapping viewName gdataName"
     SaveAllViewMappings $f $mapDict $viewDict 
     puts $f ""
 
     puts $f "# Insert views into windows"
-    puts $f "# format: DEVise insertWindow viewName winName"
     SaveAllWindowViews $f $viewDict
     puts $f ""
 
@@ -3717,59 +3716,41 @@ proc DoLoadPixmap {} {
     DEVise close $file
 }
 
-# Get a new TData for a template
-# Return name of new TData.
-# input:
-#	type: file type
-#	total: total number of Tdata to import
-#	num: number for the tdata, [1..total].
-# This procedure asks user for file name, and imports it as 
-# the new TData
+############################################################
 
 proc GetTDataTemplate {type total num} {
-    global fsBox dialogParamVar datadir
-
-    set fsBox(path) $datadir
-    set fsBox(pattern) *
+    global sourceList
 
     while {1} {
-	set file [ FSBox "Select file $num of $total, type $type" ]
-	if {$file == ""} {
+	set title "Select file $num of $total, type $type"
+	set sname [selectStream $title]
+
+	if {$sname == ""} {
 	    return ""
 	}
 
-	if {![FileExist $file]} {
+	# see if data stream already open
+	if {[lsearch [TdataSet] $sname] < 0} {
 	    break
 	}
-	set but [dialog .fileExist "File Exists" \
-		"File $file already loaded\n\
-		Please select another file" "" 0 Continue]
+
+	dialog .fileExist "Data Stream Open" \
+		"Data stream $sname already open.\n\
+		Please select another stream." "" 0 Continue
     }
 
-    while {1} {
-	set fileAlias [ file tail $file ]
-	set tempParam [list [ list  FileAlias $fileAlias ] ]
-	set button [ dialogParam .fileParam "FileParam" \
-		"Enter Alias for file\n$file" "" 0 { OK Cancel } $tempParam]
-	if {$button == 1} {
-	    return ""
-	}
-	set fileAlias [ lindex $dialogParamVar(params) 0 ]
-	
-	if {![DEVise exists $fileAlias]} {
-	    break
-	}
-	set but [dialog .fileExist "Alias Exists" \
-		"Alias $fileAlias exists already" "" 1 {continue}]
-    }
+    # make sure data is cached on disk
+    set sourcedef [OpenDataSource $sname]
+    set sname [lindex $sourcedef 0]
+    set source [lindex $sourcedef 1]
 
     statusWindow .info "Status" \
-	    "Creating an index on $fileAlias.\n\n\
+	    "Creating an index on $sname.\n\n\
 	    This may take a while."
-    DEVise create tdata $type $file $fileAlias
+    DEVise create tdata $type $source $sname
     catch {destroy .info}
 
-    return $fileAlias
+    return $sname
 }
 
 ############################################################
