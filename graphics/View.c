@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1995/12/29 18:33:13  jussi
+  Forgot to comment out the #define DEBUG statement in last check-in.
+
   Revision 1.16  1995/12/29 18:27:52  jussi
   Added new cursor mechanism; cursors are drawn as inverted rectangles
   which are easier to see than the old cursor lines.
@@ -109,7 +112,7 @@ View::View(char *name, Action *action,
 	   Color fg, Color bg,
 	   AxisLabel *xAxis, AxisLabel *yAxis ,
 	   int weight, Boolean boundary) :
-	ViewWin(name,fg, bg,weight, boundary)
+	ViewWin(name, fg, bg, weight, boundary)
 {
   _modeRefresh = false;
   _hasTimestamp = false;
@@ -1767,6 +1770,8 @@ void View::SavePixmaps(FILE *file)
   
   /* Disable cursors if currently displayed */
   Boolean cursorState = HideCursors();
+  Boolean dispSymbol = DisplaySymbols(true);
+  Boolean dispConnector = DisplayConnectors(false);
 
 #ifndef JPEG
 
@@ -1802,6 +1807,8 @@ void View::SavePixmaps(FILE *file)
     /* Return cursors to original state */
     if (cursorState)
       (void)DrawCursors();
+    (void)DisplaySymbols(dispSymbol);
+    (void)DisplayConnectors(dispConnector);
     return;
   }
   
@@ -1860,6 +1867,8 @@ void View::SavePixmaps(FILE *file)
     /* Return cursors to original state */
     if (cursorState)
       (void)DrawCursors();
+    (void)DisplaySymbols(dispSymbol);
+    (void)DisplayConnectors(dispConnector);
     return;
   }
   
@@ -1930,6 +1939,8 @@ void View::SavePixmaps(FILE *file)
   /* Return cursors to original state */
   if (cursorState)
     (void)DrawCursors();
+  (void)DisplaySymbols(dispSymbol);
+  (void)DisplayConnectors(dispConnector);
 }
 
 /* Restore pixmaps from an open file into pixmap buffer*/
