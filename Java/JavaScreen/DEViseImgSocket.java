@@ -1,3 +1,26 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Description of module.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
 import  java.io.*;
 import  java.net.*;
 
@@ -65,7 +88,16 @@ public class DEViseImgSocket
     public void sendInt(int data) throws DEViseNetException
     {
         try {
-            os.writeInt(data);
+			Integer aInt = new Integer(data);
+			String  aStr;
+			int		len;
+			int		i;
+
+			aStr = aInt.toString();
+			len = aStr.length();
+			for (i=len; i< DEViseGlobals.SLOTNUMSIZE; ++i)
+				aStr += " ";
+			os.writeBytes(aStr);
             os.flush();
         } catch (IOException e) {
             throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while sending integer data!");
@@ -75,7 +107,12 @@ public class DEViseImgSocket
     public int receiveInt() throws DEViseNetException
     {
         try {
-            return is.readInt();
+			byte[] intNum = new byte[DEViseGlobals.SLOTNUMSIZE];
+			is.readFully(intNum);
+			String aStr = new String(intNum);
+			aStr = aStr.substring(0, aStr.indexOf(' '));
+			Integer aInt = new Integer(aStr);
+			return aInt.intValue();
         } catch (IOException e) {
             throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while receiving integer data!");
         }            

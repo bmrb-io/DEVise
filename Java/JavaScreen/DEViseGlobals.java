@@ -1,3 +1,26 @@
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  Description of module.
+ */
+
+/*
+  $Id$
+
+  $Log$
+ */
 import  java.util.*;
 import  java.awt.*; 
 import  java.awt.event.*;
@@ -10,11 +33,12 @@ public final class DEViseGlobals
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2, API_CTL = 3, API_JAVA = 5;
     public static final String NO_OP = new String("   No   "), YES_OP = new String(" Yes "), OK_OP = new String("   OK   "), CANCEL_OP = new String("Cancel");
     public static final int OP_OK = 0, OP_YESNO = 1, OP_OKCANCEL = 2, OP_YESNOCANCEL = 3;
+	public static final int SLOTNUMSIZE = 6;
     //public static final Cursor WAITCURSOR = new Cursor(Cursor.WAIT_CURSOR);
         
     // global variables
     public static String DEVISEHOST = new String("localhost");
-    public static int CMDPORT = 6100, IMGPORT = 6123, DATAPORT = 6124;
+    public static int CMDPORT = 6100, IMGPORT = 6400, DATAPORT = 6124;
     public static Color uibgcolor = new Color(64, 96, 0);    
     public static Color uifgcolor = Color.white;
     public static Color dialogbgcolor = new Color(64, 96, 0);    
