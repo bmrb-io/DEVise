@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/04/11 18:23:00  jussi
+#  Major changes in the organization of the user interface.
+#
 #  Revision 1.1  1996/01/23 20:51:00  jussi
 #  Initial revision.
 #
@@ -33,8 +36,8 @@ proc ProcessMarkSelected { sel } {
     }
     set index [expr [.historyWin.listMark size]-$sel-1]
     DEVise markViewFilter $curView $index $newVal
+    .historyWin.listMark insert [expr $sel+1] $newMark
     .historyWin.listMark delete $sel
-    .historyWin.listMark insert $sel $newMark
 }
 
 ############################################################
@@ -152,8 +155,21 @@ proc OpenHistory {} {
     pack $w.heading $w.lists -side top -fill x -expand 1
     
     set historyWinOpened 1
-    
-    if { [string compare $curView "" ] != 0 } {
+    UpdateHistoryWindow
+}
+
+############################################################
+
+proc UpdateHistoryWindow {} {
+    global curView historyWinOpened
+    if { !$historyWinOpened } {
+        return
+    }
+    foreach i {listMark listXlow listXhigh listYlow listYhigh} {
+        selection clear .historyWin.$i
+        .historyWin.$i delete 0 end
+    }
+    if { $curView != "" } {
 	# Init history with history of current view
 	set filters [DEVise getVisualFilters $curView]
 	foreach filter $filters {

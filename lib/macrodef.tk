@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.66  1996/11/15 10:06:25  kmurli
+#	Changed importFile parameters and ParseCat parameters to take in the file type
+#	and data file name so that a whole query can be formed if necessary for calling
+#	DQL type. (In case of a query schema)
+#
 #	Revision 1.65  1996/11/03 18:20:55  kmurli
 #	Changes for incorporating DQL type..
 #
@@ -980,7 +985,7 @@ proc MacroDefAuto {tdata schemafile} {
 proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          titlesel xaxissel yaxissel x ylist
                          newgdata} {
-    global viewDefault
+    global viewDefault DEViseShapes
 
     set pos ""
     set subder ""
@@ -1038,10 +1043,10 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 
     # if no defaults specified anywhere, resort to these defaults
     if {$xhi == ""} {
-        set xhi 0
+        set xhi 100
     }
     if {$xlo == ""} {
-        set xlo 100
+        set xlo 0
     }
 
     if {$xlo == $xhi} {
@@ -1127,10 +1132,10 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 
         # if no defaults specified anywhere, resort to these defaults
         if {$yhi == ""} {
-            set yhi 0
+            set yhi 100
         }
         if {$ylo == ""} {
-            set ylo 100
+            set ylo 0
         }
 
         # for bar shape, make ylo zero
@@ -1156,7 +1161,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                  set shapeAttr0 1
             }
     	} elseif {$subder == "Hist"} {
-            set shapeAttr0 1 
+	    set shape [findNumericCaseValue $DEViseShapes {Line Shade}]
         }
 
 	

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.96  1996/11/20 20:35:35  wenger
+#	Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+#	some Makefile improvements so compile works first time; fixed up files
+#	to correspond to new query catalog name.
+#
 #	Revision 1.95  1996/11/20 16:49:16  jussi
 #	Changed display/layout mode control to be a button. Changed 'Working...'
 #	message to be a Stop button which aborts all queries.
@@ -496,6 +501,8 @@ set envName [ format "%s_RC" [string toupper $progName] ]
 set rcFile1 [ format ".%s_rc" $progName ]
 set rcFile2 [ format "%s.rc" $progName ]
 set rcFile3 "devise.rc"
+set rcFile4 "$env(HOME)/.$rcFile2"
+set rcFile5 "$env(HOME)/.devise.rc"
 
 if { [ info exists env($envName)] && [file exists $env($envName) ] } {
     set rcFile $env($envName)
@@ -505,6 +512,10 @@ if { [ info exists env($envName)] && [file exists $env($envName) ] } {
     set rcFile $rcFile2
 } elseif { [ file exists $rcFile3 ] } {
     set rcFile $rcFile3
+} elseif { [ file exists $rcFile4 ] } {
+    set rcFile $rcFile4
+} elseif { [ file exists $rcFile5 ] } {
+    set rcFile $rcFile5
 } else {
     set rcFile ""
 }
@@ -663,6 +674,12 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Cursor" \
 	-menu .mbar.view.menu.cursorMenu 
+.mbar.view.menu add separator
+.mbar.view.menu add command -label "Destroy View" -command {
+    global curView
+    DestroyView $curView
+}
+
 
 menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu.cursorMenu add command -label "Create" -command DoCursorCreate
@@ -821,6 +838,9 @@ proc ChangeStatus { status } {
     if { $status == 0 } {
 	.panel.messages.status configure -text "" -fg white \
                 -activeforeground white -relief flat -state disabled
+        Update3DLocation
+        Update2DQueryWindow
+        UpdateHistoryWindow
     } else {
 	.panel.messages.status configure -text "Stop" -fg red \
                 -activeforeground red -relief raised -state normal

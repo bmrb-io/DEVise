@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/08/07 15:43:40  guangshu
+#  Added global statistics into the query box.
+#
 #  Revision 1.6  1996/07/10 19:02:01  jussi
 #  3D query window now displays fix_focus and perspective flags.
 #
@@ -244,12 +247,43 @@ proc SetQuery {} {
     pack .query.bot.but -side top
     pack .query.bot -side top -pady 5m
 
-    set queryWinOpened true
+    set queryWinOpened 1
 
     if {$curView != ""} {
 	.query.title.text configure -text "View: $curView"
 	DoUndoEdit
     }
+}
+
+############################################################
+
+proc Update2DQueryWindow {} {
+    global curView queryWinOpened
+
+    if {!$queryWinOpened} {
+	return
+    }
+    foreach i {xlow ylow xhigh yhigh max mean min count} {
+        .query.$i delete 0 end
+    }
+    if {$curView == ""} {
+        .query.title.text configure -text "No View Selected"
+        return
+    }
+
+    .query.title.text configure -text "View: $curView"
+
+    set filter [DEVise getCurVisualFilter $curView]
+    .query.xlow insert 0 [lindex $filter 0]
+    .query.ylow insert 0 [lindex $filter 1]
+    .query.xhigh insert 0 [lindex $filter 2]
+    .query.yhigh insert 0 [lindex $filter 3]
+
+    set stat [DEVise getAllStats $curView]
+    .query.max insert 0 [lindex $stat 0]
+    .query.mean insert 0 [lindex $stat 1]
+    .query.min insert 0 [lindex $stat 2]
+    .query.count insert 0 [lindex $stat 3]
 }
 
 ############################################################

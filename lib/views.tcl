@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1996/08/29 22:32:31  guangshu
+#  Removed some unnecessary comment.
+#
 #  Revision 1.18  1996/08/07 15:44:36  guangshu
 #  Added updating statistics in query box.
 #
@@ -104,18 +107,13 @@ proc ProcessViewSelected { view } {
 	DEVise highlightView $curView 0
     }
  
-    ClearHistory
-
     set curView $view
 
-    if {$query3DWinOpened} {
-	Update3DLocation
-    }
+    Update3DLocation
+    Update2DQueryWindow
+    UpdateHistoryWindow
 
     if {$curView == ""} {
-	if {$queryWinOpened} {
-	    .query.title.text configure -text "No View Selected"
-	}
 	if {$stackWinOpened} {
 	    .stack.title.text configure -text "No View Selected"
 	}
@@ -130,9 +128,6 @@ proc ProcessViewSelected { view } {
 	return
     }
 
-    if {$queryWinOpened} {
-	.query.title.text configure -text "View: $curView"
-    }
     if {$stackWinOpened} {
 	.stack.title.text configure -text "View: $curView"
     }
@@ -142,80 +137,6 @@ proc ProcessViewSelected { view } {
 
     # highlight new view
     DEVise highlightView $curView 1
-
-    set filters [DEVise getVisualFilters $curView]
-    # puts "setting filter $curView $filters"
-    foreach filter $filters { 
-	ProcessViewFilterChange $curView -1 \
-		[lindex $filter 0] [lindex $filter 1] \
-		[lindex $filter 2] [lindex $filter 3] [lindex $filter 4]
-    }
-    #update allStats
-#    if {$queryWinOpened} {
-#	set stat [DEVise getAllStats $curView]
-#	foreach i { max mean min count} {
-#	     .query.$i delete 0 end
-#        }
-#	.query.max insert 0 [lindex $stat 0]
-#	.query.mean insert 0 [lindex $stat 1]
-#	.query.min insert 0 [lindex $stat 2]
-#	.query.count insert 0 [lindex $stat 3]
-#     }
-}
-
-############################################################
-
-proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked } {
-    global curView historyWinOpened queryWinOpened query3DWinOpened
-
-    if {$view != $curView} {
-	return
-    }
-
-    if {$query3DWinOpened} {
-	Update3DLocation
-    }
-
-    if {$queryWinOpened} {
-	# Change the control panel's entry box
-	foreach i { xlow ylow xhigh yhigh} {
-	    .query.$i delete 0 end
-	}
-	.query.xlow insert 0 $xLow
-	.query.ylow insert 0 $yLow
-	.query.xhigh insert 0 $xHigh
-	.query.yhigh insert 0 $yHigh
-
-        set stat [DEVise getAllStats $curView]
-        foreach i { max mean min count} {
-              .query.$i delete 0 end
-        }
-        .query.max insert 0 [lindex $stat 0]
-        .query.mean insert 0 [lindex $stat 1]
-        .query.min insert 0 [lindex $stat 2]
-        .query.count insert 0 [lindex $stat 3]
-   }
-
-    if {$historyWinOpened} {
-	if {$flushed >= 0} {
-	    # Remove last in the list 
-	    foreach i { listMark listXlow listXhigh listYlow listYhigh } {
-		set size [.historyWin.$i size]
-		.historyWin.$i delete [expr $size-$flushed-1]
-	    }
-	}
-
-	# Insert new filter 
-	.historyWin.listXlow insert 0 $xLow
-	.historyWin.listXhigh insert 0 $xHigh
-	.historyWin.listYlow insert 0 $yLow
-	.historyWin.listYhigh insert 0 $yHigh
-	if {$marked} {
-	    .historyWin.listMark insert 0 "*"
-	} else {
-	    .historyWin.listMark insert 0 " "
-	}
-    }
 }
 
 ############################################################
@@ -1418,6 +1339,17 @@ proc DoSwapView {} {
     }
 
     DEVise swapView $win1 $curView $lastView
+}
+
+############################################################
+
+proc DestroyView {view} {
+    global curView
+    if {$curView == ""} { return 1 }
+    DEVise removeView $view
+    DEVise destroy $view
+    if { $view == $curView } { set curView "" }
+    return 0
 }
 
 ############################################################
