@@ -95,7 +95,7 @@ int main()
 
     printf("\nTesting Web write data access...\n");
 
-    url = "http://cgi.cs.wisc.edu/scripts/donjerko/test";
+    url = "http://cgi.cs.wisc.edu/scripts/jussi/echotest";
     task[0] = new UnixWebIOTask(url, false);
     assert(task[0]);
     status = task[0]->Initialize();
