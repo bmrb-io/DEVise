@@ -11,7 +11,7 @@ public final class DEViseGlobals
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
                               API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
                               API_DATA = 7;
-    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6688;
+    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644;
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
