@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.61  1996/07/15 14:23:39  jussi
+  Made one #ifdef statement more flexible, allowing for future
+  versions of Tcl/Tk.
+
   Revision 1.60  1996/07/15 01:03:47  jussi
   Code now compatible with tk4.1. Compatibility with tk4.0 maintained
   for a short while.
@@ -250,6 +254,7 @@
 #include "Util.h"
 #include "Init.h"
 #include "Version.h"
+#include "StringStorage.h"
 
 //#define DEBUG
 
@@ -400,14 +405,17 @@ void TkControlPanel::DestroySessionData()
   // destroy tdata, gdata, cursor, view link, win, axis, action
   classDir->DestroyAllInstances();
 
-  // clearQP
+  // clear query processor
   classDir->DestroyTransientClasses();
   QueryProc::Instance()->ClearQueries();
   ClearCats();
 
-  // clearTopGroups
+  // clear top groups
   delete gdir;
   gdir = new GroupDir();
+
+  // clear string storage space
+  StringStorage::Clear();
 }
 
 void TkControlPanel::DoAbort(char *reason)

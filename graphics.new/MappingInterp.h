@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/10 00:03:38  jussi
+  Replaced TDataMapDispatch with TDataMap.
+
   Revision 1.21  1996/07/02 22:45:59  jussi
   The bounding box of symbols is now correctly computed. Scatter
   plots sometimes did not have all necessary data displayed in
@@ -247,24 +250,20 @@ private:
   unsigned long int _cmdFlag;
   unsigned long int _cmdAttrFlag;
   
-  /* Offsets of GData attributes */
-  GDataAttrOffset *_offsets;
+  GDataAttrOffset *_offsets;   /* Offsets of GData attributes */
   
-  AttrList *_attrList;        /* list of tdata attributes */
-  Bitmap *_tdataFlag;         /* bit i set if ith attribute of TData is used */
-  int _maxTDataAttrNum;       /* max # of attributes in TData used */
-  int _maxGDataShapeAttrNum;  /* max shape attribute number encountered */
+  AttrList *_attrList;         /* list of tdata attributes */
+  Bitmap *_tdataFlag;          /* bit i set if ith attribute of TData is used */
+  int _maxTDataAttrNum;        /* max # of attributes in TData used */
+  int _maxGDataShapeAttrNum;   /* max shape attribute number encountered */
   
-  /* attributes used to evaluate tcl variables */
-  static double *_tclAttrs;
-  static char **_tclStrAttrs;
+  static double *_tclAttrs;    /* attributes used to evaluate tcl variables */
   static double _interpResult; /* result to be set by tcl interpreter */
   
   static Shape **_shapes;
   static int _tclRecId;
   
-  /* tcl interpreter */
-  static Tcl_Interp *_interp;
+  static Tcl_Interp *_interp;  /* Tcl interpreter */
 };
 
 #endif

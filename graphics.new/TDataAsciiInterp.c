@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/01 19:28:07  jussi
+  Added support for typed data sources (WWW and UNIXFILE). Renamed
+  'cache' references to 'index' (cache file is really an index).
+  Added support for asynchronous interface to data sources.
+
   Revision 1.18  1996/06/27 18:12:40  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -93,6 +98,9 @@
 #include "Parse.h"
 #include "Control.h"
 #include "Util.h"
+#ifndef ATTRPROJ
+#  include "StringStorage.h"
+#endif
 
 //#define DEBUG
 
@@ -378,6 +386,10 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
     AttrInfo *info = _attrList.Get(i);
     char *ptr = (char *)recordBuf + info->offset;
 
+    char *string = 0;
+    int code = 0;
+    int key = 0;
+
     switch(info->type) {
     case IntAttr:
       *(int *)ptr = atoi(args[i]);
@@ -394,6 +406,14 @@ Boolean TDataAsciiInterp::Decode(void *recordBuf, int recPos, char *line)
     case StringAttr:
       strncpy(ptr, args[i], info->length);
       ptr[info->length - 1] = '\0';
+#ifndef ATTRPROJ
+      string = strdup(ptr);
+      code = StringStorage::Insert(string, key);
+#ifdef DEBUG
+      printf("Inserted \"%s\" with key %d, code %d\n", ptr, key, code);
+#endif
+      DOASSERT(code >= 0, "Cannot insert string");
+#endif
       break;
 
     case DateAttr:

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/07/10 00:03:37  jussi
+  Replaced TDataMapDispatch with TDataMap.
+
   Revision 1.33  1996/07/03 22:15:25  jussi
   Fixed an index error.
 
@@ -154,9 +157,9 @@
 #include "Util.h"
 #include "Exit.h"
 #include "Init.h"
+#include "StringStorage.h"
 
 double     *MappingInterp::_tclAttrs     = NULL;
-char      **MappingInterp::_tclStrAttrs  = NULL;
 double      MappingInterp::_interpResult = 0.0;
 int         MappingInterp::_tclRecId     = 0;
 Shape     **MappingInterp::_shapes       = NULL;
@@ -289,14 +292,10 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     
     /* tcl variables used to store tdata variables */
     _tclAttrs = new double [MAX_TDATA_ATTRS];
-    _tclStrAttrs = new char * [MAX_TDATA_ATTRS];
     char buf[80];
     for(int i = 0; i < MAX_TDATA_ATTRS; i++) {
-      sprintf(buf, "interpAttr_%d",i);
-      Tcl_LinkVar(_interp,buf,(char *)&_tclAttrs[i],TCL_LINK_DOUBLE);
-      sprintf(buf, "interpStrAttr_%d",i);
-      _tclStrAttrs[i] = NULL;
-      Tcl_LinkVar(_interp,buf,(char *)&_tclStrAttrs[i],TCL_LINK_STRING);
+      sprintf(buf, "interpAttr_%d", i);
+      Tcl_LinkVar(_interp, buf, (char *)&_tclAttrs[i], TCL_LINK_DOUBLE);
     }
   }
 
@@ -487,22 +486,26 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 
   for(int i = 0; i < numRecs; i++) {
     /* Initialize tdata variables into tcl variables.*/
-    /*
-       printf("setting attr values\n");
-    */
+#if 0
+    printf("setting attr values\n");
+#endif
 
     int j;
     for(j = 0; j <= _maxTDataAttrNum; j++) {
       if (_tdataFlag->TestBit(j)) {
 	/* jth attr of TData is to be used */
-	/*
-	   printf("bit %d set\n", j);
-	*/
+#if 0
+        printf("bit %d set\n", j);
+#endif
 	AttrInfo *attrInfo = _attrList->Get(j);
 	int *intPtr;
 	float *fPtr;
 	double *dPtr;
 	time_t *tptr;
+
+        int code = 0;
+        int key = 0;
+        char *string = 0;
 
 	switch(attrInfo->type) {
 
@@ -510,7 +513,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  intPtr = (int *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*intPtr);
 	  /*
-	     printf("Setting int attr %d to %f\n",j, _tclAttrs[j]);
+	     printf("Setting int attr %d to %f\n", j, _tclAttrs[j]);
 	  */
 	  break;
 
@@ -518,7 +521,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  fPtr = (float *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*fPtr);
 	  /*
-	     printf("Setting float attr %d to %f\n",j, _tclAttrs[j]);
+	     printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
 	  */
 	  break;
 
@@ -526,17 +529,26 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  dPtr = (double *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (*dPtr);
 	  /*
-	     printf("Setting float attr %d to %f\n",j, _tclAttrs[j]);
+	     printf("Setting float attr %d to %f\n", j, _tclAttrs[j]);
 	  */
 	  break;
 
 	case StringAttr:
-	  _tclStrAttrs[j] = tPtr + attrInfo->offset;
+	  string = tPtr + attrInfo->offset;
+          code = StringStorage::Lookup(string, key);
+          DOASSERT(code >= 0, "Invalid key value for string");
+	  _tclAttrs[j] = (double)key;
+	  /*
+	     printf("Setting string attr %d to %f\n", j, _tclAttrs[j]);
+	  */
 	  break;
 
 	case DateAttr:
 	  tptr = (time_t *)(tPtr + attrInfo->offset);
 	  _tclAttrs[j] = (double)(*tptr);
+	  /*
+	     printf("Setting date attr %d to %f\n", j, _tclAttrs[j]);
+	  */
 	  break;
 
 	default:
@@ -590,17 +602,11 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	_interpResult = 0.0;
 	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->colorCmd);
 	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
-	/*
-	   printf("Color cmd code is %d\n", code);
-	*/
       }
       /*
 	 printf("eval color\n");
       */
       *((Color *)(gPtr + _offsets->colorOffset)) = (Color)_interpResult;
-      /*
-	 printf("color is %f\n", _interpResult);
-      */
     }
     
     if (_offsets->sizeOffset >= 0) {
@@ -1194,10 +1200,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	    _maxTDataAttrNum = info->attrNum;
 	  _tdataFlag->SetBit(info->attrNum);
 	  
-	  if (info->type == StringAttr)
-	    sprintf(buf, "$interpStrAttr_%d",info->attrNum);
-	  else
-	    sprintf(buf, "$interpAttr_%d",info->attrNum);
+          sprintf(buf, "$interpAttr_%d", info->attrNum);
 	  InsertString(buf);
 	}
 	cmd = ptr - 1;
@@ -1343,6 +1346,9 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
   int offset;
   char *ptr;
 
+  int code = 0;
+  int key = 0;
+
   switch(entry->cmdType) {
 
   case MappingSimpleCmdEntry::AttrCmd:
@@ -1354,26 +1360,34 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
     ptr = from + offset;
 
     switch(info->type) {
-    case IntAttr:
-      return (double)(*((int *)ptr));
-      break;
 
-    case FloatAttr:
-      return (double)(*((float *)ptr));
-      break;
+      case IntAttr:
+        return (double)(*((int *)ptr));
+        break;
 
-    case DoubleAttr:
-      return *((double *)ptr);
-      break;
+      case FloatAttr:
+        return (double)(*((float *)ptr));
+        break;
 
-    case StringAttr:
-      return defaultVal;
-      break;
+      case DoubleAttr:
+        return *((double *)ptr);
+        break;
 
-    case DateAttr:
-      return (double)(*((time_t *)ptr));
-      break;
+      case StringAttr:
+        code = StringStorage::Lookup(ptr, key);
+#ifdef DEBUG
+        printf("Converted string \"%s\" to key %d, code %d\n", ptr, key, code);
+#endif
+        if (code < 0)
+          return defaultVal;
+        return (double)key;
+        break;
+
+      case DateAttr:
+        return (double)(*((time_t *)ptr));
+        break;
     }
+
     break;
 
   case MappingSimpleCmdEntry::ConstCmd:

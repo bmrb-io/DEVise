@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/07/09 16:00:19  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
   Revision 1.16  1996/06/27 16:39:30  jussi
   With the new dispatching scheme in place, the server uses blocking-mode
   I/O with interrupts generated from the select() call in the dispatcher.
@@ -109,6 +114,7 @@
 #include "View.h"
 #include "Util.h"
 #include "Version.h"
+#include "StringStorage.h"
 
 #ifdef SUN
 #include "missing.h"
@@ -267,14 +273,17 @@ void ServerAPI::DestroySessionData()
   // destroy tdata, gdata, cursor, view link, win, axis, action
   classDir->DestroyAllInstances();
 
-  // clearQP
+  // clear query processor
   classDir->DestroyTransientClasses();
   QueryProc::Instance()->ClearQueries();
   ClearCats();
 
-  // clearTopGroups
+  // clear top groups
   delete gdir;
   gdir = new GroupDir();
+
+  // clear string storage space
+  StringStorage::Clear();
 }
 
 void ServerAPI::Run()
