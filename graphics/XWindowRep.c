@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.138  1999/10/18 17:32:35  wenger
+  Fixed bug 515 (small problem with cursor dragging) and bug 516 (we now
+  eliminate any extraneous control-D's in GData strings).
+
   Revision 1.137  1999/10/12 17:59:28  wenger
   Fixed bug in code for checking if the mouse is on a cursor that caused
   devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
@@ -2490,6 +2494,14 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   Coord tx1, ty1, tx2, ty2;
   Transform(x1 ,y1, tx1, ty1);
   Transform(x2, y2, tx2, ty2);
+
+  // Kludgey fix for bug 023.  This probably eliminates some "legitimate"
+  // lines, but it also fixes the worst cases of the bug.  RKW 1999-11-12.
+  if (tx1 > MAXSHORT || tx1 < -MAXSHORT) return;
+  if (tx2 > MAXSHORT || tx2 < -MAXSHORT) return;
+  if (ty1 > MAXSHORT || ty1 < -MAXSHORT) return;
+  if (ty2 > MAXSHORT || ty2 < -MAXSHORT) return;
+
 #if defined(GRAPHICS)
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), _lineStyle, CapButt,
@@ -2503,7 +2515,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
 
 void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("XWindowRep::AbsoluteLine (%d, %d), (%d, %d), %d\n", x1, y1,
       x2, y2, width);
 #endif

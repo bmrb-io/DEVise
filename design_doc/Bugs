@@ -75,7 +75,7 @@ Num Date        Status  Description
 022 08/06/96	FIXED?	Records missing from view when many views or 
 			datasources are open. (kb)
 
-023 08/04/96	OPEN	Doing an extreme zoom in causes extra records to 
+023 08/04/96	FIXED?	Doing an extreme zoom in causes extra records to 
 			suddenly appear. (kb)
 			9/6/96: cause of problem found:
 			Overflow problem when converting from devise
@@ -83,7 +83,8 @@ Num Date        Status  Description
 			See XWindowRep::FillRectArray for one possible
 			solution which works for rectangles, but it won't
 			quite right work for other types (eg lines).
-			Deferred
+			(Possible fix by rkw, 11/12/99 -- see
+			XWindowRep::Line().)
 
 024 08/06/96	OPEN	Zooming as far as you can in or out can cause 
 			DEVise to fail an assertion. (kb)
@@ -2069,6 +2070,18 @@ Num Date        Status  Description
 
 530 10/30/99	OPEN	When saving Condor/UserWeek.ds, all windows got moved
 			down one screen. (rkw)
+
+531 11/11/99	OPEN	Copying a view doesn't copy the JavaScreen GData
+			settings. (rkw)
+
+532 11/11/99	OPEN	Piles seem to be in the opposite order in the
+			JavaScreen compared to "regular" DEVise. (rkw)
+
+533 11/11/99	OPEN	'Restart' in the JavaScreen seems to not throw
+			away all info and regenerate from scratch. (rkw)
+
+534 11/11/99	OPEN	Drag time cursor in TwoStation5Var.ds -> second
+			station view shows no data. (ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
