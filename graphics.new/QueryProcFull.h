@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/11/20 18:39:03  wenger
+  Fixed bug 440 (crash caused by empty mapping command for X in combination
+  with other errors).
+
   Revision 1.27  1998/11/09 20:33:25  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -381,6 +385,14 @@ protected:
   
 protected:
   DispatcherID _dispatcherID;      /* dispatcher ID */
+
+private:
+  /* Temp page to hold data for converting tdata into gdata. */
+  const int GDATA_BUF_SIZE = 6400 * sizeof(double);
+
+  /* Force _gdataBuf to be aligned for doubles. */
+  double _gdataDoubleBuf[GDATA_BUF_SIZE / sizeof(double)];
+  char* _gdataBuf;
 };
 
 #endif

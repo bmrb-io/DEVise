@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.100  1998/12/08 20:01:53  wenger
+  Color palette is now saved in session files.
+
   Revision 1.99  1998/12/07 19:43:42  wenger
   Removed "old" layout manager code.
 
@@ -472,7 +475,6 @@
 #include "Display.h"
 #include "TDataAscii.h"
 #include "DevError.h"
-#include "ViewLens.h"
 #include "WinClassInfo.h"
 #include "VisualLinkClassInfo.h"
 #include "CursorClassInfo.h"

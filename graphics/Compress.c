@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/08/17 18:51:41  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.5  1995/12/28 18:39:36  jussi
   Minor fixes to remove compiler warnings.
 
@@ -34,6 +38,7 @@
 #include "Exit.h"
 
 static const int COMPRESS_BUF_SIZE = 2048;
+// Note: this buffer must be static.  RKW 1998-12-15.
 static unsigned char _compressBuf[COMPRESS_BUF_SIZE];
 
 SimpleCompress::SimpleCompress()

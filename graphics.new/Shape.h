@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/11/24 23:15:16  weaver
+  Changes for the new ColorManager.
+
   Revision 1.30  1997/11/18 23:27:01  wenger
   First version of GData to socket capability; removed some extra include
   dependencies; committed test version of TkControl::OpenDataChannel().
@@ -153,7 +156,6 @@
 
 #include "TDataMap.h"
 #include "WindowRep.h"
-#include "Temp.h"
 #include "ViewGraph.h"
 
 #include "Color.h"
@@ -336,11 +338,12 @@ class Shape {
                               Boolean canRandomize) {
     GDataAttrOffset *offset = map->GetGDataOffset();
     int i = 0;
+    Coord xArray[WINDOWREP_BATCH_SIZE], yArray[WINDOWREP_BATCH_SIZE];
     while (i < numSyms) {
       char *gdata = (char *)gdataArray[i];
       int count = 1;
-      _x[0] = ShapeGetX(gdata, map, offset);
-      _y[0] = ShapeGetY(gdata, map, offset);
+      xArray[0] = ShapeGetX(gdata, map, offset);
+      yArray[0] = ShapeGetY(gdata, map, offset);
 
       PColorID	fgid = GetPColorID(gdata, map, offset);
       
@@ -351,8 +354,8 @@ class Shape {
 	if (GetPColorID(colorGData, map, offset) != fgid)
 	  break;
 
-	_x[count] = ShapeGetX(colorGData, map, offset);
-	_y[count] = ShapeGetY(colorGData, map, offset);
+	xArray[count] = ShapeGetX(colorGData, map, offset);
+	yArray[count] = ShapeGetY(colorGData, map, offset);
         count++;
       }
       
@@ -365,11 +368,11 @@ class Shape {
         float cloudWidth = fabs(attrs[2]);
         float cloudHeight = fabs(attrs[3]);
         if (cloudWidth >= 0.15 || cloudHeight >= 0.15)
-          RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
+          RandomizePoints(xArray, yArray, count, cloudWidth, cloudHeight);
       }
 
       win->SetForeground(fgid);
-      win->DrawPixelArray(_x, _y, count, pixelSize);
+      win->DrawPixelArray(xArray, yArray, count, pixelSize);
       
       i = colorIndex;
     }
@@ -399,18 +402,18 @@ class Shape {
     // Randomize points in X, Y, or both directions.
     for(int cnt = 0; cnt < count; cnt++) {
       if (cloudWidth == 0.0) {
-        _y[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudHeight;
+        y[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudHeight;
       } else if (cloudHeight == 0.0) {
-        _x[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudWidth;
+        x[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudWidth;
       } else {
 #if defined(OVAL_CLOUD)
         float length = (rand() % 1000) / 1000.0 * cloudWidth;
         float dir = (rand() % 360) / 360.0 * 2 * 3.14;
-        _x[cnt] += length * sin(dir);
-        _y[cnt] += length * cos(dir) * cloudHeight / cloudWidth;
+        x[cnt] += length * sin(dir);
+        y[cnt] += length * cos(dir) * cloudHeight / cloudWidth;
 #else
-        _x[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudWidth;
-        _y[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudHeight;
+        x[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudWidth;
+        y[cnt] += ((rand() % 1000) / 1000.0 - 0.5) * cloudHeight;
 #endif
       }
     }

@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/12/23 23:35:40  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.35  1997/11/24 23:15:18  weaver
   Changes for the new ColorManager.
 
@@ -191,14 +200,6 @@
 
 #define DEBUGLVL 0
 
-/* We cache the first BIN_CONTENT_COMPARE_BYTES from the file.
-   The next time we start up, this cache is compared with what's in
-   the file to determine if they are the same file. */
-
-static const int BIN_CONTENT_COMPARE_BYTES = 4096;
-
-static char fileContent[BIN_CONTENT_COMPARE_BYTES];
-static char indexFileContent[BIN_CONTENT_COMPARE_BYTES];
 static char *   srcFile = __FILE__;
 
 TDataBinary::TDataBinary(char *name, char *type, char *param,

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/05/03 19:53:56  wenger
+  Fixed bug in AttrList class that caused Devise to crash on mappings
+  that use recId; commented out debug code in UnixRecFile.c..
+
   Revision 1.10  1997/02/03 04:12:18  donjerko
   Catalog management moved to DTE
 
@@ -63,14 +67,14 @@
 #include "Exit.h"
 #include "DevError.h"
 
-static char errBuf[1024];
-
 /****************************************************************
 Create a new file. Return NULL if file already exists
 ****************************************************************/
 
 UnixRecFile *UnixRecFile::CreateFile(char *name, int recSize)
 {
+  char errBuf[1024];
+
   /* Open file */
   int fd;
   //cout << "UnixRecFile::CreateFile(" << name << ", " << recSize << ")" << endl;
@@ -96,6 +100,8 @@ Open an existing file. Return NULL if file does not exist
 
 UnixRecFile *UnixRecFile::OpenFile(char *name, int recSize, Boolean trunc)
 {
+  char errBuf[1024];
+
   /* Open file */
   int fd;
   if ((fd = open(name, O_RDWR | (trunc ? O_TRUNC : 0), 0)) < 0)
@@ -154,6 +160,8 @@ Get data for this page and put it into buffer
 
 void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
 {
+  char errBuf[1024];
+
   if (recNum < 0 || recNum+numRecs > _totalRecs) {
     sprintf(errBuf, "ReadRec: rec %d invalid (%d)\n", recNum, _totalRecs);
     reportErrNosys(errBuf);
@@ -205,6 +213,8 @@ Write a page.
 
 void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
 {
+  char errBuf[1024];
+
   if (recNum < 0) {
     sprintf(errBuf, "WriteRec: rec %d invalid\n", recNum);
     reportErrNosys(errBuf);
@@ -253,6 +263,8 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
 
 int UnixRecFile::GetModTime()
 {
+  char errBuf[1024];
+
   struct stat sbuf;
   if (fstat(_fd, &sbuf) < 0) {
     sprintf(errBuf, "fstat on file %s", _name);

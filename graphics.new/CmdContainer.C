@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/11/11 14:30:55  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.22  1998/11/06 17:59:44  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -233,7 +239,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(isYDateType)
 	REGISTER_COMMAND(mapG2TAttr)
 	REGISTER_COMMAND(mapT2GAttr)
-	REGISTER_COMMAND(setViewLensParams)
 	REGISTER_COMMAND(startLayoutManager)
 	REGISTER_COMMAND(date)
 	REGISTER_COMMAND(printDispatcher)
@@ -303,7 +308,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(raiseView)
 	REGISTER_COMMAND(lowerView)
 	REGISTER_COMMAND(getFileHeader)
-	REGISTER_COMMAND(getViewLensParams)
 	REGISTER_COMMAND(winGetPrint)
 	REGISTER_COMMAND(viewGetHome)
 	REGISTER_COMMAND(viewGetHorPan)
@@ -340,7 +344,6 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setLinkFlag)
 	REGISTER_COMMAND(highlightView)
 	REGISTER_COMMAND(getparam)
-	REGISTER_COMMAND(insertViewInLens)
 	REGISTER_COMMAND(insertMapping)
 	REGISTER_COMMAND(getMappingLegend)
 	REGISTER_COMMAND(insertLink)

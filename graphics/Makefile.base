@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.70  1998/12/07 19:44:29  wenger
+#  Removed "old" layout manager code.
+#
 #  Revision 1.69  1998/11/19 21:13:25  wenger
 #  Implemented non-DTE version of DEVise (new code handles data source catalog
 #  functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -241,7 +244,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	GLDisplay.c GLWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c \
-	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
+	Map3D.C PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
 	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/11/09 20:33:21  wenger
+  Fixed bug 433 (drill-down problem); improved debug output in various
+  related modules.
+
   Revision 1.35  1998/08/24 14:57:40  wenger
   Added misc. debug output.
 
@@ -249,7 +253,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 
 static const int MAX_MSGS = 50;
 static const int MSG_BUF_SIZE = 4096;
-static char msgBuf[MSG_BUF_SIZE];
+static char msgBuf[MSG_BUF_SIZE]; // this does need to be static.  RKW 1998-12-14.
 static int msgIndex;
 static char *msgPtr[MAX_MSGS];
 static int numMsgs;
@@ -269,7 +273,7 @@ static Boolean PutMessage(char *msg)
 
     if (!CheckParams())
       return false;
-    
+
     int len = strlen(msg) + 1;
     if (msgIndex + len > MSG_BUF_SIZE)
       return false;

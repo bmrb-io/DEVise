@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/03/05 20:36:22  wenger
+  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
+  problems related to *ClassInfo classes.
+
   Revision 1.16  1998/03/04 19:11:06  wenger
   Fixed some more dynamic memory errors.
 
@@ -288,33 +292,6 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   SetViewColors(view, argc, argv);
 
   return new ViewScatterInfo(name, view);
-}
-
-ViewLensInfo::ViewLensInfo(char *name, ViewLens *view)
-	: ViewClassInfo(name, view)
-{
-}
-
-ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
-{
-  if (argc != 4 && argc != 5 && argc != 6) {
-    fprintf(stderr, "ViewLensInfo::CreateWithParams: wrong args\n");
-    return NULL;
-  }
-
-  char *name = CopyString(argv[0]);
-
-  VisualFilter filter;
-  (void)ParseFloatDate(argv[1], filter.xLow);
-  (void)ParseFloatDate(argv[2], filter.xHigh);
-  (void)ParseFloatDate(argv[3], filter.yLow);
-  (void)ParseFloatDate(argv[4], filter.yHigh);
-  filter.flag = VISUAL_LOC;
-  
-  ViewLens *view = new ViewLens(name, filter,  GetQueryProc());
-  SetViewColors(view, argc, argv);
-
-  return new ViewLensInfo(name, view);
 }
 
 //******************************************************************************

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.90  1998/12/07 19:43:41  wenger
+#  Removed "old" layout manager code.
+#
 #  Revision 1.89  1998/11/19 21:12:50  wenger
 #  Implemented non-DTE version of DEVise (new code handles data source catalog
 #  functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -286,7 +289,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c ViewData.c \
-	ViewLens.C ViewGraph.c QPRange.c ParseAPI.C \
+	ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \

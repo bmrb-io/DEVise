@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/03/05 20:36:22  wenger
+  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
+  problems related to *ClassInfo classes.
+
   Revision 1.7  1998/02/09 18:11:00  wenger
   Removed ViewScatter class (totally replaced by ViewData, which is a
   renamed version of TDataViewX); removed ViewRanges class (not used);
@@ -47,7 +51,6 @@
 
 #include "ViewGraph.h"
 #include "ViewData.h"
-#include "ViewLens.h"
 
 
 class ViewClassInfo: public ClassInfo {
@@ -87,11 +90,4 @@ public:
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };
 
-class ViewLensInfo : public ViewClassInfo {
-public:
-   ViewLensInfo() : ViewClassInfo() {}
-   ViewLensInfo(char *name, ViewLens *view);
-   virtual char *ClassName() { return "ViewLens";}
-   virtual ClassInfo *CreateWithParams(int argc, char **argv);
-};  
 #endif

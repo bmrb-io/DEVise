@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/12/16 17:53:49  zhenhai
+  Added OpenGL features to graphics.
+
   Revision 1.6  1997/11/24 23:14:27  weaver
   Changes for the new ColorManager.
 
@@ -87,17 +90,6 @@ public:
 
 class WindowRep;
 
-class Object3D : public Coloring {
-public:
-  Point3D  pt;               // location (center) of object
-  Coord    W, H, D;          // size of object
-  Coord    segWidth;         // width of frame segments
-  Vertex3D vt[SPHERE_VERTEX]; // shape's vertices
-  Edge3D   ed[SPHERE_EDGES];  // shape's edges
-  Side3D   sd[SPHERE_SIDES];  // shape's sides
-  Boolean  clipout;          // true = clip, false = keep it
-};
-
 // ---------------------------------------------------------- 
 // 3D mapping functions
 // ---------------------------------------------------------- 
@@ -108,39 +100,6 @@ public:
 
 class Map3D {
 public:
-  static void AssignBlockVertices(Object3D &block);
-  static void AssignBlockEdges(Object3D &block);
-  static void AssignBlockSides(Object3D &block);
-
-  static void AssignOvalVertices(Object3D &block);
-  static void AssignOvalEdges(Object3D &block);
-  static void AssignOvalSides(Object3D &block);
-
-  static void ClipBlocks(WindowRep *win,
-                         Object3D *block, int numSyms, 
-			 Camera camera, int H, int V);
-  static void ClipOvals(WindowRep *win,
-                         Object3D *block, int numSyms, 
-			 Camera camera, int H, int V);
-  static void MapBlockSegments(WindowRep *win,
-                               Object3D *block, int numSyms,
-			       Camera camera, int H, int V);
-  static void MapBlockPlanes(WindowRep *win,
-                             Object3D *block, int numSyms,
-			     Camera camera, int H, int V);
-  static void MapOvalSegments(WindowRep *win,
-                             Object3D *sphere, int numSyms,
-			     Camera camera, int H, int V);
-  static void MapOvalPlanes(WindowRep *win,
-                             Object3D *sphere, int numSyms,
-			     Camera camera, int H, int V);
-  static void ClipLineSegments(WindowRep *win,
-                               Object3D *segment, int numSyms, 
-	      		       Camera camera, int H, int V);
-  static void MapLineSegments(WindowRep *win,
-                              Object3D *segment, int numSyms,
-			      Camera camera, int H, int V);
-
   // compute the location of a "user" point to the viewing
   // space's coordinates
   static Point3D CompLocationOnViewingSpace(WindowRep *win, Point3D &pt);
@@ -149,8 +108,6 @@ public:
   // the 3D Point3D into a 2D Point
   static Point CompProjectionOnViewingPlane(Point3D &pt, Camera camera);
 
-  static void DrawSegments(WindowRep *win);
-  static void DrawPlanes(WindowRep *win, Boolean frame);
   static void DrawRefAxis(WindowRep *win, Camera camera);
 
   // ---------------------------------------------------------- 
@@ -160,16 +117,6 @@ public:
     return (p1.x_ - p2.x_) * (p1.x_ - p2.x_)
            + (p1.y_ - p2.y_) * (p1.y_ - p2.y_)
 	   + (p1.z_ - p2.z_) * (p1.z_ - p2.z_);
-  }
-
-  /* return distance between a triangular plane and a point, squared */
-  static Coord TriDistSq(Object3D &block, int v1, int v2, int v3,
-			 Point3D &p2) {
-    Point3D p1;
-    p1.x_ = (block.vt[v1].x_ + block.vt[v2].x_ + block.vt[v3].x_) / 3;
-    p1.y_ = (block.vt[v1].y_ + block.vt[v2].y_ + block.vt[v3].y_) / 3;
-    p1.z_ = (block.vt[v1].z_ + block.vt[v2].z_ + block.vt[v3].z_) / 3;
-    return DistSq(p1, p2);
   }
 
 protected:

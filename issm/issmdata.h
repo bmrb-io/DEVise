@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/02 16:52:44  jussi
+  Updated copyright message.
+
   Revision 1.2  1995/09/22 15:49:45  jussi
   Added copyright message.
 
@@ -88,7 +91,6 @@ short *exdate, *dadate;
 short *dpdate, *drdate;
 short *shsday, *seldy;
 
-char  mktmkr[bnmktm][4];
 char  dflag[bndist][2];
 char  *trdqt, *oexch, *print;
 char  *bnk, *con;

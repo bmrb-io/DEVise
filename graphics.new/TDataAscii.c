@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.64  1998/10/28 19:22:29  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.63  1998/03/04 19:11:04  wenger
   Fixed some more dynamic memory errors.
 
@@ -308,15 +314,6 @@
 
 static const int LINESIZE = 4096;         /* maximum size of a record */
 
-/* We cache the first FILE_CONTENT_COMPARE_BYTES from the file.
-   The next time we start up, this cache is compared with what's in
-   the file to determine if they are the same file. */
-
-static const int FILE_CONTENT_COMPARE_BYTES = 4096;
-
-
-static char fileContent[FILE_CONTENT_COMPARE_BYTES];
-static char indexFileContent[FILE_CONTENT_COMPARE_BYTES];
 static char *   srcFile = __FILE__;
 
 TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)

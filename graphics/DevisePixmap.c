@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/10/02 15:23:36  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.4  1995/12/05 21:55:18  jussi
   Added #include <stdlib.h> to get malloc() prototype.
 
@@ -94,6 +98,7 @@ void PixmapIO::End()
 }
 
 const int PIXMAPIO_BUFSIZE = 5120;
+// Note: this buffer must be static.  RKW 1998-12-15.
 static char pixBuf[PIXMAPIO_BUFSIZE];
 
 /* Read next line. return NULL if no more */

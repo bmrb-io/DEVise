@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/08/17 18:52:03  wenger
+  Updated solaris dependencies for egcs; fixed most compile warnings;
+  bumped version to 1.5.4.
+
   Revision 1.10  1996/12/02 18:44:44  wenger
   Fixed problems dealing with DST in dates (including all date composite
   parsers); added more error checking to date composite parsers.
@@ -521,6 +525,7 @@ static int readStock(RecTape &tape)
     DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nmktmk > 0) {
+    char  mktmkr[bnmktm][4];
     status = tape.getrec4((char *)imktmk);
     DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)mktmkr);

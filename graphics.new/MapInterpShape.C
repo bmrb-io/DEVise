@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/11/06 17:59:49  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.54  1998/11/04 20:33:55  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -287,7 +291,6 @@
 
 #include "ViewGraph.h"
 #include "MapInterpShape.h"
-#include "Map3D.h"
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"
@@ -384,6 +387,8 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Coord		firstOrientation = 0.0;
 	int			count = 0;
 
+	Coord xArray[WINDOWREP_BATCH_SIZE], yArray[WINDOWREP_BATCH_SIZE];
+	Coord widthArray[WINDOWREP_BATCH_SIZE], heightArray[WINDOWREP_BATCH_SIZE];
 	for(; i < numSyms; i++) {
 		char *gdata = (char *)gdataArray[i];
 		PColorID	pcid = GetPColorID(gdata, map, offset);
@@ -401,12 +406,12 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		firstLineWidth = int(GetLineWidth(gdata, map, offset)+0.5);
 		firstOrientation = orientation;
 		}
-		_width[count] = fabs(pixelSize * size
+		widthArray[count] = fabs(pixelSize * size
 								 * GetShapeAttr0(gdata, map, offset));
-		_height[count] = fabs(pixelSize * size
+		heightArray[count] = fabs(pixelSize * size
 								  * GetShapeAttr1(gdata, map, offset));
-		_x[count] = GetX(gdata, map, offset);
-		_y[count] = GetY(gdata, map, offset);
+		xArray[count] = GetX(gdata, map, offset);
+		yArray[count] = GetY(gdata, map, offset);
 
 		count++;
     }
@@ -421,21 +426,21 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 			float		cloudHeight = fabs(attrs[3]);
 
 			if (cloudWidth >= 0.15 || cloudHeight >= 0.15)
-				RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
+				RandomizePoints(xArray, yArray, count, cloudWidth, cloudHeight);
 		}
 
 		win->SetForeground(fgid);
 		win->SetPattern(firstPattern);
 		win->SetLineWidth(firstLineWidth);
 
-	win->FillRectArray(_x, _y, _width, _height, count, WindowRep::AlignCenter,
+	win->FillRectArray(xArray, yArray, widthArray, heightArray, count, WindowRep::AlignCenter,
 	    firstOrientation);
 
 	if (view->GetDisplayDataValues()) {
 		for(int s = 0; s < count; s++)
-		  DisplayDataLabel(win, _x[s] + _width[s] / 2,
-				   _y[s] + _height[s] / 2,
-				   _y[s] + _height[2] / 2);
+		  DisplayDataLabel(win, xArray[s] + widthArray[s] / 2,
+				   yArray[s] + heightArray[s] / 2,
+				   yArray[s] + heightArray[2] / 2);
 	}
 	}
 
@@ -448,64 +453,8 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 											 ViewGraph *view, int pixelSize,
 											 int &recordsProcessed)
 {
-  GDataAttrOffset *offset = map->GetGDataOffset();
-  
-  // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
-  Boolean wireframe = (view->GetSolid3D() == 0);
-  Boolean solidFrame = (view->GetSolid3D() == 2);
-  
-  for(int i = 0; i < numSyms; i++) {
-	char *gdata = (char *)gdataArray[i];
-	
-	Coord size = GetSize(gdata, map, offset);
-	
-	_object3D[i].pt.x_ = GetX(gdata, map, offset);
-	_object3D[i].pt.y_ = GetY(gdata, map, offset);
-	_object3D[i].pt.z_ = GetZ(gdata, map, offset);
-	_object3D[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
-	_object3D[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
-	_object3D[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
-	_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
-	_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
-	_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
-
-	Map3D::AssignBlockVertices(_object3D[i]);
-	if (wireframe)
-	  Map3D::AssignBlockEdges(_object3D[i]);
-	else
-	  Map3D::AssignBlockSides(_object3D[i]);
-	
-#ifdef DEBUG
-	cout << "sym " << i << " of " << numSyms << endl
-	  << "	x = " << _object3D[i].pt.x_
-	<< "  y = " << _object3D[i].pt.y_
-	  << "	z = " << _object3D[i].pt.z_ << endl;
-	for(int j = 0; j < BLOCK_VERTEX; j++) {
-	  cout << "	 "
-	<< _object3D[i].vt[j].x_ << "  "
-	  << _object3D[i].vt[j].y_ << "	 "
-		<< _object3D[i].vt[j].z_ << endl;
-	}
-#endif
-  }
-  
-  // get width and height of 3D display area
-  int x, y, w, h;
-  view->GetDataArea(x, y, w, h);
-  
-  // clip blocks
-  Map3D::ClipBlocks(win, _object3D, numSyms, view->GetCamera(), w, h);
-  
-  // map blocks to points, segments, and planes and then draw them
-  if (wireframe) {
-	Map3D::MapBlockSegments(win, _object3D, numSyms,
-				view->GetCamera(), w, h);
-	Map3D::DrawSegments(win);
-  } else {
-	Map3D::MapBlockPlanes(win, _object3D, numSyms,
-			  view->GetCamera(), w, h);
-	Map3D::DrawPlanes(win, solidFrame);
-  }
+  fprintf(stderr,
+    "Warning: 3D display of Rect shapes not currently implemented\n");
 
   recordsProcessed = numSyms;
 }
@@ -878,69 +827,6 @@ void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 					   ViewGraph *view, int pixelSize,
 					   int &recordsProcessed)
 {
-#if 0
-  GDataAttrOffset *offset = map->GetGDataOffset();
-  
-  // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
-  Boolean wireframe = (view->GetSolid3D() == 0);
-  Boolean solidFrame = (view->GetSolid3D() == 2);
-  
-  for(int i = 0; i < numSyms; i++) {
-	char *gdata = (char *)gdataArray[i];
-	
-	Coord size = GetSize(gdata, map, offset);
-       	
-	_object3D[i].pt.x_ = GetX(gdata, map, offset);
-	_object3D[i].pt.y_ = GetY(gdata, map, offset);
-	_object3D[i].pt.z_ = GetZ(gdata, map, offset);
-	_object3D[i].W = fabs(size * GetShapeAttr0(gdata, map, offset));
-	_object3D[i].H = fabs(size * GetShapeAttr1(gdata, map, offset));
-	_object3D[i].D = fabs(size * GetShapeAttr2(gdata, map, offset));
-	_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
-	_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
-	_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
-	
-	Map3D::AssignOvalVertices(_object3D[i]);
-	if (wireframe)
-	  Map3D::AssignOvalEdges(_object3D[i]);
-	else
-	  Map3D::AssignOvalSides(_object3D[i]);
-	
-#ifdef DEBUG
-/*
-	cout << "sym " << i << " of " << numSyms << endl
-	  << "	x = " << _object3D[i].pt.x_
-	<< "  y = " << _object3D[i].pt.y_
-	  << "	z = " << _object3D[i].pt.z_ << endl;
-	for(int j = 0; j < BLOCK_VERTEX; j++) {
-	  cout << "	 "
-	<< _object3D[i].vt[j].x_ << "  "
-	  << _object3D[i].vt[j].y_ << "	 "
-		<< _object3D[i].vt[j].z_ << endl;
-	}
-*/
-#endif
-  }
-  
-  // get width and height of 3D display area
-  int x, y, w, h;
-  view->GetDataArea(x, y, w, h);
-  
-  // clip Ovals
-  Map3D::ClipOvals(win, _object3D, numSyms, view->GetCamera(), w, h);
-  
-  // map ovals to points, segments, and planes and then draw them
-  if (wireframe) {
-	Map3D::MapOvalSegments(win, _object3D, numSyms,
-				view->GetCamera(), w, h);
-	Map3D::DrawSegments(win);
-  } else {
-	Map3D::MapOvalPlanes(win, _object3D, numSyms,
-			  view->GetCamera(), w, h);
-	Map3D::DrawPlanes(win, solidFrame);
-  }
-#endif
-
   GDataAttrOffset *offset = map->GetGDataOffset();
   Coord x, y, z, r;
   // 0 = wireframe only, 1 = solid, 2 = solid + wireframe
@@ -1241,43 +1127,6 @@ Draw3DGDataArray(WindowRep *win, void **gdataArray,
 		 ViewGraph *view, int pixelSize,
 		 int &recordsProcessed)
 {
-#if 0
-	GDataAttrOffset *offset = map->GetGDataOffset();
-
-	for(int i = 0; i < numSyms; i++) {
-		char *gdata = (char *)gdataArray[i];
-	
-		Coord size = GetSize(gdata, map, offset);
-
-		_object3D[i].pt.x_ = GetX(gdata, map, offset);
-		_object3D[i].pt.y_ = GetY(gdata, map, offset);
-		_object3D[i].pt.z_ = GetZ(gdata, map, offset);
-		_object3D[i].W = size * GetShapeAttr0(gdata, map, offset);
-		_object3D[i].H = size * GetShapeAttr1(gdata, map, offset);
-		_object3D[i].D = size * GetShapeAttr2(gdata, map, offset);
-		_object3D[i].segWidth = fabs(GetShapeAttr3(gdata, map, offset));
-		_object3D[i].segWidth = MAX(_object3D[i].segWidth, 1);
-		_object3D[i].SetForeground(GetPColorID(gdata, map, offset));
-
-#ifdef DEBUG
-		cout << "sym " << i << " of " << numSyms << endl
-	  << "	x = " << _object3D[i].pt.x_
-	  << "	y = " << _object3D[i].pt.y_
-	  << "	z = " << _object3D[i].pt.z_ << endl;
-#endif
-	}
-
-	// get width and height of 3D display area
-	int x, y, w, h;
-	view->GetDataArea(x, y, w, h);
-
-	// clip, map, and draw segments
-	Map3D::ClipLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
-	Map3D::MapLineSegments(win, _object3D, numSyms, view->GetCamera(), w, h);
-	Map3D::DrawSegments(win);
-
-	recordsProcessed = numSyms;
-#endif
 	GDataAttrOffset *offset = map->GetGDataOffset();
 	
 	for(int i = 0; i < numSyms; i++) {

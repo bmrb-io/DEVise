@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/12/10 21:53:25  wenger
+  Devised now sends GIFs to JavaScreen on a per-view rather than per-window
+  basis; GIF "dirty" flags are now also referenced by view rather than by
+  window.
+
   Revision 1.38  1998/12/07 19:43:38  wenger
   Removed "old" layout manager code.
 
@@ -201,7 +206,6 @@
 #include "Display.h"
 #include "TDataAscii.h"
 #include "DevError.h"
-#include "ViewLens.h"
 #include "WinClassInfo.h"
 #include "VisualLinkClassInfo.h"
 #include "CursorClassInfo.h"
@@ -1377,52 +1381,7 @@ DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
     }
     return true;
 }
-int
-DeviseCommand_setViewLensParams::Run(int argc, char** argv)
-{
-    {
-        {
-         // name mode views 
-         ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
-         if (!lens) {
-           ReturnVal(API_NAK, "Cannot find lens");
-           return -1;
-         }
-         lens->SetMode(argv[2]);
-         DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[3]);
-         if (!link) {
-            ReturnVal(API_NAK,"Cannot find link");
-            return -1;
-         }
-         lens->SetLink(link);
-    
-    	 // Replace constant with a heuristically-chosen color?
-         lens->SetBackground(GetPColorID(lensBackColor));
-    
-         int index = lens->InitViewLensIterator();
-         for (int j = 4;  j < argc ; j++) {
-             ViewGraph *v = (ViewGraph *)classDir->FindInstance(argv[j]);
-             if (!v) {
-                ReturnVal(API_NAK, "Cannot find view");
-                return -1;
-             }
-             printf("Inserting view %s\n", v->GetName());
-             if (lens->MoreViewsInLens(index)) {
-                ViewInfo *vinfo = lens->NextViewInfoInLens(index);
-                lens->ReplaceView(vinfo,v);
-             } else {
-                lens->InsertView(v);
-             }
-         }
-         // delete extra views 
-         index = lens->DeleteViewListTail(index);
-         lens->DoneViewLensIterator(index);
-         ReturnVal(API_ACK, "done");
-         return 1;
-      }
-    }
-    return true;
-}
+
 int
 DeviseCommand_startLayoutManager::Run(int argc, char** argv)
 {
@@ -2818,34 +2777,7 @@ DeviseCommand_getFileHeader::Run(int argc, char** argv)
     }
     return true;
 }
-int
-DeviseCommand_getViewLensParams::Run(int argc, char** argv)
-{
-    {
-        {
-          ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
-          if (!lens) {
-           ReturnVal(API_NAK, "Cannot find lens");
-           return -1;
-          }
-          /* Get mode */
-          sprintf(result, "%s %s { ", lens->GetMode(), lens->GetLink()->GetName()); 
-          /* get list of views */
-          int index = lens->InitViewLensIterator();
-          while(lens->MoreViewsInLens(index)) {
-               ViewGraph *view = lens->NextViewInLens(index);
-               strcat(result, " {");
-               strcat(result, view->GetName());
-               strcat(result, "} ");
-          }
-          lens->DoneViewLensIterator(index);
-          strcat(result, " } ");
-          ReturnVal(API_ACK, result);
-          return 1;
-        }
-    }
-    return true;
-}
+
 int
 DeviseCommand_winGetPrint::Run(int argc, char** argv)
 {
@@ -3609,28 +3541,7 @@ DeviseCommand_getparam::Run(int argc, char** argv)
     }
     return true;
 }
-int
-DeviseCommand_insertViewInLens::Run(int argc, char** argv)
-{
-    {
-        {
-          ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
-          if (!lens) {
-    	ReturnVal(API_NAK, "Cannot find lens");
-    	return -1;
-          }
-          ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
-          if (!view){
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          lens->InsertView(view);
-          ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
-    return true;
-}
+
 int
 DeviseCommand_insertMapping::Run(int argc, char** argv)
 {

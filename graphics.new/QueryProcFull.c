@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.89  1998/11/20 18:39:00  wenger
+  Fixed bug 440 (crash caused by empty mapping command for X in combination
+  with other errors).
+
   Revision 1.88  1998/11/09 20:33:24  wenger
   Fixed bug 433 (drill-down problem); improved debug output in various
   related modules.
@@ -432,16 +436,6 @@
 void DumpFilter(QPFullData *query);
 #endif
 
-/* Temp page to hold data for converting tdata into gdata. */
-static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
-
-/* Force _gdataBuf to be aligned for doubles. */
-static double _gdataDoubleBuf[GDATA_BUF_SIZE / sizeof(double)];
-static char* _gdataBuf = (char *)_gdataDoubleBuf;
-
-static const int TDATA_BUF_SIZE = 40960;
-static char _tdataBuf[TDATA_BUF_SIZE];
-
 //kb: changed to implict-templates, so all arch. must declare this class
 //     for gcc 2.7;  egcs 2.9 does not need this line.
 // #if defined(SGI)
@@ -493,6 +487,8 @@ QPFullData::QPFullData()
 
 QueryProcFull::QueryProcFull()
 {
+  _gdataBuf = (char *)_gdataDoubleBuf;
+
   _queries = new QPFullDataList;
   DOASSERT(_queries, "Out of memory");
   DOASSERT(_queries->ListOk(), "Error in query list");
@@ -2258,6 +2254,9 @@ void QueryProcFull::DoGDataConvert()
   RecId startRid;
   int numRetrieved;
   int dataSize;
+
+  const int TDATA_BUF_SIZE = 40960;
+  char _tdataBuf[TDATA_BUF_SIZE];
   Boolean status = tdata->GetRecs(handle, _tdataBuf, TDATA_BUF_SIZE,
                                   &interval, dataSize);
   

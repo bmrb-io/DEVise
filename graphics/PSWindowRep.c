@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/05/14 18:21:06  wenger
+  New protocol for JavaScreen opening sessions works (sending "real" GIF)
+  except for the problem of spaces in view and window names.
+
   Revision 1.38  1998/04/16 21:50:48  wenger
   Committed Sanjay's text code.
 
@@ -734,13 +738,6 @@ void PSWindowRep::DrawPixel(Coord x, Coord y)
 #endif
 }
 
-
-
-static Point pointArray[WINDOWREP_BATCH_SIZE];
-static Rectangle rectArray[WINDOWREP_BATCH_SIZE];
-
-
-
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 {
@@ -766,6 +763,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
     /* each "pixel" is no wider than one screen pixel */
 
+    Point pointArray[WINDOWREP_BATCH_SIZE];
     for(int i = 0; i < num; i++) {
       Transform(x[i], y[i], pointArray[i].x, pointArray[i].y);
     }
@@ -802,6 +800,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
   /* each "pixel" is wider than one screen pixel */
 
+  Rectangle rectArray[WINDOWREP_BATCH_SIZE];
   Coord halfWidth = ((Coord) width) / 2;
   for(int i = 0; i < num; i++) {
     Coord tx,ty;
@@ -869,6 +868,7 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 #endif
 
+  Rectangle rectArray[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
     Transform(xlow[i], ylow[i], x1, y1);
@@ -936,6 +936,7 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 #endif
 
+  Rectangle rectArray[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
     Transform(xlow[i], ylow[i], x1, y1);
@@ -1153,6 +1154,7 @@ void PSWindowRep::FillPoly(Point *pts, int pointCount)
     pointCount = WINDOWREP_BATCH_SIZE;
   }
 
+  Point pointArray[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < pointCount; i++) {
     Transform(pts[i].x, pts[i].y, pointArray[i].x, pointArray[i].y);
   }

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.59  1998/11/04 20:33:34  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.58  1998/10/20 19:39:40  wenger
   Various small code cleanups.
 
@@ -1641,7 +1646,6 @@ int main(int argc, char **argv)
   ControlPanel::RegisterClass(new TileLayoutInfo);
   ControlPanel::RegisterClass(new ViewXInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
-  ControlPanel::RegisterClass(new ViewLensInfo);
   ControlPanel::RegisterClass(new VisualLinkClassInfo());
   ControlPanel::RegisterClass(new CursorClassInfo());
 

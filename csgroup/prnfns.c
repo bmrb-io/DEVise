@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/07/29 14:19:44  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.5  1998/03/12 02:09:08  wenger
   Fixed dynamic memory errors in collaboration code that caused core dump
   on Linux; collaboration code now tolerates interruption of accept() and
@@ -130,7 +134,7 @@ prnMode(int flg, int mode) {
 
 void
 prnBuf(int type, char *format, ...) {
-	static char command[2000];
+	char command[2000];
 	va_list pvar;
 	int code;
 

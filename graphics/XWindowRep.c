@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.117  1998/11/16 15:27:57  wenger
+  Fixed bug 437 (drill-down on black background).
+
   Revision 1.116  1998/09/10 23:21:22  wenger
   Fixed bug 388 (missing window in JavaScreen) (caused by '/' in window
   name, which was then used as part of temp file name); default for
@@ -1829,9 +1832,6 @@ void XWindowRep::DrawPixel(Coord x, Coord y)
 #endif
 }
 
-static struct XPoint points[WINDOWREP_BATCH_SIZE];
-static XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
-
 void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 {
 #ifdef DEBUG
@@ -1854,6 +1854,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
   if (width == 1) {
     DOASSERT(num <= WINDOWREP_BATCH_SIZE, "points array will overflow");
+    struct XPoint points[WINDOWREP_BATCH_SIZE];
     for(int i = 0; i < num; i++) {
       Coord tx, ty;
       Transform(x[i], y[i], tx, ty);
@@ -1885,6 +1886,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 
   int halfWidth = width/2;
   DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
+  XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
     Coord tx,ty;
     Transform(x[i],y[i],tx,ty);
@@ -1940,6 +1942,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 
   DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
+  XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
 #if defined(DEBUG)
@@ -2026,6 +2029,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 
   DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
+  XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
     Coord x1,y1,x2,y2;
     Transform(xlow[i], ylow[i], x1, y1);
@@ -2229,6 +2233,7 @@ void XWindowRep::FillPoly(Point *pts, int n)
   }
 
   DOASSERT(n <= WINDOWREP_BATCH_SIZE, "points array will overflow");
+  struct XPoint points[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < n; i++) {
     Coord tx, ty;
     Transform(pts[i].x, pts[i].y, tx, ty);
@@ -2298,6 +2303,7 @@ void XWindowRep::FillPixelPoly(Point *pts, int n)
   }
 
   DOASSERT(n <= WINDOWREP_BATCH_SIZE, "points array will overflow");
+  struct XPoint points[WINDOWREP_BATCH_SIZE];
   for(int i = 0;  i < n; i++ ) {
     points[i].x = ROUND(short, pts[i].x);
     points[i].y = ROUND(short, pts[i].y);
@@ -3712,9 +3718,6 @@ Boolean XWindowRep::HasBackingStore()
 }
 
 
-const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
-static char _pixmapBuf[MAX_PIXMAP_BUF_SIZE];
-
 /* Get current window pixmap */
 
 DevisePixmap *XWindowRep::GetPixmap()
@@ -3722,6 +3725,9 @@ DevisePixmap *XWindowRep::GetPixmap()
 #ifdef DEBUG
   printf("XWindowRep::GetPixmap()\n");
 #endif
+
+  const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
+  char _pixmapBuf[MAX_PIXMAP_BUF_SIZE];
 
   /* see if window is entirely visible on screen or not (XGetImage
      fails if window is partially off-screen */

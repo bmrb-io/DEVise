@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/11/11 14:30:57  wenger
+  Implemented "highlight views" for record links and set links; improved
+  ClassDir::DestroyAllInstances() by having it destroy all links before
+  it destroys anything else -- this cuts down on propagation problems as
+  views are destroyed; added test code for timing a view's query and draw.
+
   Revision 1.19  1998/11/06 17:59:47  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -470,12 +476,6 @@ DECLARE_CLASS_END
 //
 //Class definition
 //
-DECLARE_CLASS_DeviseCommand_(setViewLensParams) 
-DECLARE_CLASS_END
-
-//
-//Class definition
-//
 DECLARE_CLASS_DeviseCommand_(startLayoutManager) 
 DECLARE_CLASS_END
 
@@ -896,12 +896,6 @@ DECLARE_CLASS_END
 //
 //Class definition
 //
-DECLARE_CLASS_DeviseCommand_(getViewLensParams) 
-DECLARE_CLASS_END
-
-//
-//Class definition
-//
 DECLARE_CLASS_DeviseCommand_(winGetPrint) 
 DECLARE_CLASS_END
 
@@ -1113,12 +1107,6 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getparam) 
-DECLARE_CLASS_END
-
-//
-//Class definition
-//
-DECLARE_CLASS_DeviseCommand_(insertViewInLens) 
 DECLARE_CLASS_END
 
 //

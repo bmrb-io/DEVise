@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.58  1998/09/22 17:20:59  wenger
+# Updated Solaris dependencies (on Intel/Solaris 2.6).
+#
 # Revision 1.57  1998/06/24 22:15:13  donjerko
 # *** empty log message ***
 #
@@ -151,7 +154,9 @@ generic.o: ../graphics.new/VisualLinkClassInfo.h
 generic.o: ../graphics.new/ViewClassInfo.h ../graphics.new/ViewGraph.h
 generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
 generic.o: ../graphics.new/PointStorage.h ../tape/HashTable.h
-generic.o: ../graphics.new/ViewData.h ../graphics.new/ViewLens.h
+generic.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/GDataRec.h ../graphics/AttrList.h
+generic.o: ../src/utils/ObjectValid.h ../graphics.new/ViewData.h
 generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
 generic.o: ../graphics/CursorClassInfo.h ../graphics.new/StringStorage.h
 generic.o: StateMap.h ../graphics/Util.h /usr/include/stdlib.h
