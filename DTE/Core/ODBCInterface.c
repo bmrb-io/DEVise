@@ -10,6 +10,7 @@
 #include <windows.h>
 #include "SQL.H"
 #include <sqlext.h>
+#include "ODBCSite.h"
 
 const ISchema* ODBCInterface::getISchema(TableName* table){
 
@@ -159,4 +160,8 @@ void ODBCInterface::ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len,
 			ODBC_Error(-1,"SQL Type not Defined in DTE");
 		}
 	}
+}
+
+Site* ODBCInterface::getSite(){
+	return ODBCSite(tableName);
 }

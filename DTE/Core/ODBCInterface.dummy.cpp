@@ -8,9 +8,26 @@
 #include "catalog.h"
 #include <string>
 
+#define TEST_ODBC
+
+#ifdef TEST_ODBC
+	#include "ODBCSite.h"
+#endif
+
 const ISchema* ODBCInterface::getISchema(TableName* table){
-	
+#ifdef TEST_ODBC
+	return &DIR_SCHEMA;
+#else
 	cerr << "ODBC driver is not installed" << endl;
 	exit(1);
+#endif
+}
 
+Site* ODBCInterface::getSite(){
+#ifdef TEST_ODBC
+	return new ODBCSite(tableName);
+#else
+	cerr << "ODBC driver is not installed" << endl;
+	exit(1);
+#endif
 }

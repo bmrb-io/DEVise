@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/11/13 22:19:26  okan
+  Changes about compilation on NT
+
   Revision 1.34  1997/11/12 23:17:41  donjerko
   Improved error checking.
 
@@ -133,7 +136,6 @@ friend class SiteGroup;
 protected:
 	string name;
 	PlanOp* iterat;
-	int numFlds;
 	set<string, ltstr>* tables;
 	List<BaseSelection*>* mySelect;
 	List<TableAlias*>* myFrom;
@@ -173,8 +175,7 @@ public:
      virtual void typify(string option);	// Throws a exception
 	virtual int getNumFlds(){
 		if(mySelect){
-			assert(numFlds == mySelect->cardinality());
-			return numFlds;
+			return mySelect->cardinality();
 		}
 		else{
 			return 0;
@@ -242,6 +243,14 @@ public:
 	}
 };
 
+class DBServerSite : public Site {
+	string host;
+	unsigned short port;
+public:
+	DBServerSite(const string& host, unsigned short port);
+	virtual Iterator* createExec();
+};
+
 class DirectSite : public Site {
 
 	// Used only for typifying LocalTable
@@ -284,7 +293,6 @@ public:
 		mySelect->addList(select);
 		myWhere->addList(where);
 		this->iterat = iterat;
-		numFlds = mySelect->cardinality();
 		directSite = new DirectSite(name, iterat);
 		this->iterat = NULL;
 		fout = NULL;
@@ -322,6 +330,7 @@ public:
 	virtual void write(Tuple* tuple){
 		assert(fout && fout->good());
 		assert(writePtrs);
+		int numFlds = getNumFlds();
 		for(int i = 0; i < numFlds; i++){
 			assert(writePtrs[i]);
 			writePtrs[i](*fout, tuple[i]);

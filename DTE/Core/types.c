@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/11/24 05:25:37  okan
+  *** empty log message ***
+
   Revision 1.40  1997/11/19 00:19:19  donjerko
   Added ODBC skeleton.
 
@@ -537,6 +540,10 @@ void interfaceRead(istream& in, Type*& adt){
 	}
 	else if(typeNm == MaterViewInterface::typeName){
 		interf = (ViewInterface*) new (adt) MaterViewInterface();
+		TRY(interf->read(in), NVOID );
+	}
+	else if(typeNm == DBServerInterface::typeName){
+          interf = (DBServerInterface*) new (adt) DBServerInterface();
 		TRY(interf->read(in), NVOID );
 	}
 	else if(typeNm == ODBCInterface::typeName){

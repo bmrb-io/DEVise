@@ -530,6 +530,10 @@ const ISchema* DBServerInterface::getISchema(TableName* table){
 	return schema;
 }
 
+Site* DBServerInterface::getSite(){
+	return new DBServerSite(host, port);
+}
+
 istream& ODBCInterface::read(istream& in){
 	in >> dataSourceName;
 	in >> userName >> passwd >> tableName;

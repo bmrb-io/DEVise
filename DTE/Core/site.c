@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/11/13 22:19:25  okan
+  Changes about compilation on NT
+
   Revision 1.31  1997/11/12 23:17:40  donjerko
   Improved error checking.
 
@@ -119,7 +122,6 @@
 class Iterator;
 
 Site::Site(string nm) : name(nm), iterat(NULL) {
-	numFlds = 0;
 	tables = new set<string, ltstr>;
 	mySelect = NULL;
 	myFrom = new List<TableAlias*>;
@@ -161,8 +163,34 @@ Iterator* Site::createExec(){
 	TRY(in = contactURL(name, options, values, count), NULL);
 	delete [] options;
 	delete [] values;
-
+	assert(mySelect);
+	if(!typeIDs){
+		typeIDs = getTypesFromList(mySelect);
+	}
+	int numFlds = getNumFlds();
 	return new StandReadExec(numFlds, typeIDs, in);
+}
+
+DBServerSite::DBServerSite(const string& host, unsigned short port) :
+	host(host), port(port) {}
+
+Iterator* DBServerSite::createExec(){
+	Cor_sockbuf* sockBuf = new Cor_sockbuf(host.c_str(), port);
+	iostream* str = new iostream(sockBuf);
+
+	stringstream tmp;
+	display(tmp);
+	tmp << ends;
+	string query = tmp.str();
+	cerr << "Shipping query: " << query << endl;
+	*str << query << ";" << flush;
+
+	assert(mySelect);
+	if(!typeIDs){
+		typeIDs = getTypesFromList(mySelect);
+	}
+	int numFlds = getNumFlds();
+	return new StandReadExec(numFlds, typeIDs, str);
 }
 
 void Site::addTable(TableAlias* tabName){
@@ -283,7 +311,6 @@ void LocalTable::typify(string){	// Throws exception
 
 		mySelect = createSelectList(name, iterat);
 	}
-	numFlds = mySelect->cardinality();
 	setStats();
 }
 
@@ -371,6 +398,7 @@ istream* contactURL(string name,
 }
 
 void Site::typify(string option){	// Throws an exception
+/*
 	int count = 2;
 	int i;
 	string* options = new string[count];
@@ -420,6 +448,7 @@ void Site::typify(string option){	// Throws an exception
 		mySelect->get()->setSize(sizes[i]);
 		mySelect->step();
 	}
+*/
 }
 
 void Site::display(ostream& out, int detail){
@@ -534,6 +563,7 @@ void LocalTable::setStats(){
 	assert(baseStats);
 	int cardinality = int(selectivity * baseStats->cardinality);
 	int* sizes = sizesFromList(mySelect);
+	int numFlds = getNumFlds();
 	stats = new Stats(numFlds, sizes, cardinality);
 }
 
@@ -655,7 +685,7 @@ void SiteGroup::typify(string option){	// Throws exception
 	else{
 //		TRY(typifyList(mySelect, tmpL), NVOID );
 	}
-	numFlds = mySelect->cardinality();
+	int numFlds = mySelect->cardinality();
 //	TRY(typifyList(myWhere, tmpL), NVOID );
 	double selectivity = listSelectivity(myWhere);
 	int card1 = site1->getStats()->cardinality;
@@ -717,7 +747,6 @@ DirectSite::DirectSite(string nm, PlanOp* iterat) : Site(nm) {
 
 	assert(iterat);
 	Site::iterat = iterat;
-	numFlds = iterat->getNumFlds();
 	stats = iterat->getStats();
 	assert(stats);
 	mySelect = createSelectList(nm, iterat);

@@ -890,6 +890,7 @@ class Aggregates : public Site {
   int numSeqByFlds;
   int* seqByPos;
   int windowLow, windowHigh; 
+  int numFlds;
 
 public:
 	Aggregates(

@@ -373,7 +373,7 @@ public:
 	virtual Interface* duplicate() const {
 		return new DBServerInterface(*this);
 	}
-	virtual Site* getSite(){assert(0); return NULL;}
+	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
 	virtual const ISchema* getISchema(TableName* table);
@@ -402,8 +402,10 @@ public:
 	int ODBC_Connect();
 	void ODBC_disConnect();
 	int ODBC_Stmt_Handle();
+#if defined(_WINDOWS) || defined(_CONSOLE)
 	int ODBC_Error(SQLRETURN err_Stat,string err_msg);
 	void ODBC_Column_Info(short* types,string* attrs,SQLINTEGER* len, short col_Num);
+#endif
 	virtual ~ODBCInterface(){
 	}
 	virtual string getTypeNm(){
@@ -412,7 +414,7 @@ public:
 	virtual Interface* duplicate() const {
 		return new ODBCInterface(*this);
 	}
-	virtual Site* getSite(){assert(0); return NULL;}
+	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
 	virtual const ISchema* getISchema(TableName* table);

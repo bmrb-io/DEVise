@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/11/08 21:02:28  arvind
+  Completed embedded moving aggregates: mov aggs with grouping.
+
   Revision 1.15  1997/10/14 05:16:40  arvind
   Implemented a first version of moving aggregates (without group bys).
 
@@ -127,6 +130,7 @@ private:
 
   TypeID    *attrTypes;     // Attribute types of the tuple fields
   SortOrder order;          // Asc or Desc (enum SortOrder def in PQueue.h)
+  int numFlds;
 
 public:
 

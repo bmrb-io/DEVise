@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/09/05 22:56:09  donjerko
+  *** empty log message ***
+
   Revision 1.8  1997/09/05 22:20:16  donjerko
   Made changes for port to NT.
 
@@ -71,6 +74,7 @@ class Joins:public SiteGroup{
 
 			bool outerFill();
 			bool innerFill();
+			int numFlds;
 };
 
 class JoinTable{

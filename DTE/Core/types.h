@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/11/05 00:19:50  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.38  1997/10/06 22:10:23  donjerko
   *** empty log message ***
 
@@ -267,6 +270,10 @@ typedef void (*MarshalPtr)(const Type* adt, char* to);
 typedef void (*UnmarshalPtr)(char* from, Type*& adt);
 typedef void (*ConstructorPtr)(const Array<const Type*>& inp, Type*& res, size_t& = dummySz);
  
+inline bool isInlined(const TypeID& type){
+	return type == INT_TP;
+}
+
 void insert(string tableStr, Tuple* tuple);	// throws exception
 
 int domain(const TypeID adt);	// throws exception
