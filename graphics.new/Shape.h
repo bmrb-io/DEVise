@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/28 00:23:36  jussi
+  Elevated a couple of #include statements from MapInterpShape.h
+  to this file.
+
   Revision 1.5  1995/11/28 00:07:25  jussi
   Moved some common code from MapInterpShape.h to this file.
   BoundingBoxGData is by default computed based on the width
@@ -127,9 +131,9 @@ class Shape {
     GDataAttrOffset *offset = map->GetGDataOffset();
     for(int i = 0; i < numSyms; i++) {
       char *gdata = (char *)gdataArray[i];
-      Coord temp = GetShapeAttr0(gdata, map, offset);
+      Coord temp = fabs(GetShapeAttr0(gdata, map, offset));
       if (temp > width) width = temp;
-      temp = GetShapeAttr1(gdata, map,  offset);
+      temp = fabs(GetShapeAttr1(gdata, map,  offset));
       if (temp > height) height = temp;
     }
   }
