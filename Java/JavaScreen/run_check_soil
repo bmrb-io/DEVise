@@ -3,7 +3,10 @@
 ############################################################
 
 # This file is just to get the path, etc., set up right to run check_jspop
-# from cron.
+# for the soil science jspop from cron.  It also fixes the problem that
+# output from cron jobs is not mailed in some versions of Solaris.
+
+#-----------------------------------------------------------
 
 # $Id$
 
