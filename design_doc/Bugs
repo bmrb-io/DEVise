@@ -1203,9 +1203,10 @@ Num Date        Status  Description
 315 03/11/98	OPEN	When printing the entire display to PostScript, windows
 			are printed in reversed order top-to-bottom. (rkw)
 
-316 03/11/98	OPEN	When you display a data source as a scatter plot,
+316 03/11/98	FIXED	When you display a data source as a scatter plot,
 			the mapping should have width and height set to 1.
 			(rkw)
+			(Fixed by rkw, 7/1/99.)
 
 317 03/11/98	FIXED (donko) Trying to materialize a data source that's not a
 			view causes DEVise to crash. (rkw)

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-1999
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.103  1999/04/14 15:30:29  wenger
+#	Improved 'switch TData': moved the code from Tcl to C++, functionality
+#	is more flexible -- schemas don't have to match exactly as long as the
+#	appropriate TData attributes are present; TData can now be specified for
+#	view symbols in parent view mapping; updated shape help.
+#	
 #	Revision 1.102  1998/11/23 19:19:58  donjerko
 #	*** empty log message ***
 #	
@@ -1482,6 +1488,10 @@ proc MacroDefAutoActual {tdata viewsel linksel window \
 			"" $shapeAttr0 $shapeAttr1 ]
 	    } else {
 		# ask DEVise to create an instance of mapping
+		if {$shape == 0} {
+		    set shapeAttr0 1
+		    set shapeAttr1 1
+		}
 		set result [DEVise create mapping $mapname $tdata \
 			$mapinstance \
 			"" \$$x \$$name $mapColor $size $pattern\
