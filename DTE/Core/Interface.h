@@ -4,22 +4,21 @@
 #include <string>
 //#include <iostream.h>   erased for sysdep.h
 #include "sysdep.h"
-#if defined(_WINDOWS) || defined(_CONSOLE)
-	#include <windows.h>
-	#include "SQL.H"
-	#include <sqlext.h>
-#endif
+//#if defined(_WINDOWS) || defined(_CONSOLE)
+//	#include <windows.h>
+//	#include "SQL.H"
+//	#include <sqlext.h>
+//#endif
 
 #ifndef __GNUG__
 using namespace std;
 #endif
 
-#include "ODBC.h"
-
 class Inserter;
 class TableName;
 class Site;
 class ISchema;
+class ODBC_Data;
 
 class Interface{
 public:
@@ -400,7 +399,7 @@ class ODBCInterface : public Interface {
 	int ODBC_Exist;
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
-	SQLRETURN SQL_Result;
+//	SQLRETURN SQL_Result;
 #endif
 
 	ISchema tmp;
@@ -409,10 +408,7 @@ public:
 	ODBCInterface() {
 		ODBC_Exist = 0;
 	}
-	virtual ~ODBCInterface(){
-		if (ODBC_Exist > 0)
-			delete myODBC;
-	}
+	virtual ~ODBCInterface();
 	virtual string getTypeNm(){
 		return typeName;
 	}

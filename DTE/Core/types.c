@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1997/12/04 04:05:22  donjerko
+  *** empty log message ***
+
   Revision 1.44  1997/11/24 08:27:51  donjerko
   *** empty log message ***
 
@@ -1303,7 +1306,7 @@ void time_tDestroy(Type* adt){
 }
 
 void dateDestroy(Type* adt){
-	delete (EncodedDTF*) adt;
+//	delete (EncodedDTF*) adt;
 }
 
 void boolDestroy(Type* adt){

@@ -8,7 +8,7 @@
 #include "catalog.h"
 #include <string>
 
-#define TEST_ODBC
+//#define TEST_ODBC
 
 #ifdef TEST_ODBC
 	#include "ODBCSite.h"
@@ -27,3 +27,5 @@ Site* ODBCInterface::getSite(){
 	cerr << "ODBC driver is not installed" << endl;
 	exit(1);
 }
+
+ODBCInterface::~ODBCInterface() {}

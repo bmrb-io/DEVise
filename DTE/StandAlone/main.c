@@ -9,7 +9,7 @@
 
   Under no circumstances is this software to be copied, distributed,
   or altered in any way without prior permission from the DEVise
-  Development Group.
+  Development Group.sel
 */
 
 #include "InitShut.h"

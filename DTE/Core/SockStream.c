@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/12/02 23:26:20  donjerko
+  Changes made by Kevin
+
   Revision 1.11  1997/11/23 21:23:30  donjerko
   Added ODBC stuff.
 
@@ -108,10 +111,10 @@ extern "C" int shutdown(int, int);
 
 extern int errno;
 
-// #define DEBUG_SOCK_REL
+//#define DEBUG_SOCK_REL
 
 // *************************************************************************
-Cor_sockbuf::Cor_sockbuf(int sockfd)
+Cor_sockbuf::Cor_sockbuf(SOCKET_TP sockfd)
 {
     init();
     _socketfd = sockfd;
@@ -128,6 +131,7 @@ Cor_sockbuf::Cor_sockbuf(const char* _host, unsigned short port)
 Cor_sockbuf::Cor_sockbuf(unsigned short _port)
 {
     init();
+
     port = _port;
     // gethostname(host,HOSTNAME_LENGTH);
 
@@ -142,11 +146,11 @@ Cor_sockbuf::Cor_sockbuf(unsigned short _port)
     srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     srv_addr.sin_port = htons(port);
 
-    if( bind(_socketfd, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) {
-//        cerr << "bind error\n";
-	   perror("SockStream bind failed");
-	   assert(0);
-        ::close(_socketfd);
+      if( bind(_socketfd, (struct sockaddr*)&srv_addr, sizeof(srv_addr)) < 0) {
+		perror("bind error\n");
+		perror("SockStream bind failed");
+		assert(0);
+		::close(_socketfd);
         _socketfd = -1;
         return;
     }
@@ -244,14 +248,12 @@ Cor_sockbuf *Cor_sockbuf::AcceptConnection()
     struct sockaddr Addr;
     int AddrLen = sizeof(Addr);
 
-    int sd = accept(_socketfd, &Addr, &AddrLen);
+    SOCKET_TP sd = accept(_socketfd, &Addr, &AddrLen);
     if (sd < 0) {
 	   perror("SockStream accept failed");
 	   assert(0);
-//        cerr << "Cor_sockbuf: Could not accept().\n";
         return(NULL);
     }
-
     return new Cor_sockbuf(sd);
 }
 
@@ -265,14 +267,14 @@ void Cor_sockbuf::RefuseConnection()
     int AddrLen = sizeof(Addr);
 
       // Temporially accepting, so we can tell them to get lost.
-    int sd = accept(_socketfd, &Addr, &AddrLen);
+    SOCKET_TP sd = accept(_socketfd, &Addr, &AddrLen);
     if (sd < 0) {
         perror("CoralSock: accept");
         return;
     }
 
     char *mess = "Connection refused by Coral Server.\n";
-    write(sd,mess,strlen(mess));
+    send(sd,mess,strlen(mess),0);
 
       // Disconnect
     ::shutdown(sd,2);
@@ -313,9 +315,9 @@ int Cor_sockbuf::overflow(int c)
 #endif
     
     while( len > 0 ) {
-        int n = EOF;
+        SOCKET_TP n = EOF;
 	   do {
-            n = write(_socketfd, cp, len);
+            n = send(_socketfd, cp, len,0);
 #ifdef DEBUG_SOCK_REL
 //		  cerr << "write:" << _socketfd << ' ' << n << ' ' << errno << endl;
 #endif
@@ -347,9 +349,9 @@ int Cor_sockbuf::underflow()
                     // before we wait for input
     cp = eback();
 
-    int n;
+    SOCKET_TP n;
     do {
-    		n = read(_socketfd, cp, get_buffer_size);
+    		n = recv(_socketfd, cp, get_buffer_size,0);
 	} while(n == -1 && errno == EINTR);
 
     if(n == 0){
@@ -406,4 +408,3 @@ int Cor_sockbuf::more()
 }
 #endif    
 // *************************************************************************
-

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/12/04 04:05:21  donjerko
+  *** empty log message ***
+
   Revision 1.30  1997/11/23 21:23:33  donjerko
   Added ODBC stuff.
 
@@ -275,8 +278,8 @@ bool PrimeSelection::match(BaseSelection* x){
 }
 
 TypeID Operator::typeCheck(){
-	TypeID root = left->getTypeID();
-	TypeID arg = right->getTypeID();
+	TRY(TypeID root = left->getTypeID(),"");
+	TRY(TypeID arg = right->getTypeID(),"");
 	GeneralPtr* genPtr;
 	genPtr = getOperatorPtr(name, root, arg, typeID);
 	CATCH(;);

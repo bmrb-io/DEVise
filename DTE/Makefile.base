@@ -69,11 +69,11 @@ CORE_SRC = resolve.c lex.yy.c my.yacc.tab.c site.c types.c \
 	PQueue.c Sort.c UnionParse.c MinMax.c \
 	ExecOp.c Inserter.c TypeCheck.c \
 	Interface.c MaterializeParse.c MemoryMgr.c \
-	Templates.c
+	Templates.c ODBCInterface.dummy.c
 #	TuplePtr.Plex.c TuplePtr.XPlex.c
 #	ApParseCat.c FunctionRead.c
 
-CORE_SRC_CPP = ODBCInterface.dummy.cpp
+CORE_SRC_CPP =
 
 STAND_ALONE_LIBS =
 

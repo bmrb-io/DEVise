@@ -9,6 +9,7 @@
 #include "SockStream.h"
 #include "ParseTree.h"
 #include <string>
+#include "sysdep.h"
 
 string ViewInterface::typeName = "SQLView";
 string MaterViewInterface::typeName = "MaterView";
@@ -565,3 +566,4 @@ void ODBCInterface::write(ostream& out) const {
 		<< " " << tableName;
 	Interface::write(out);
 }
+

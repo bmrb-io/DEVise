@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/12/04 04:05:20  donjerko
+  *** empty log message ***
+
   Revision 1.40  1997/11/24 23:13:17  weaver
   Changes for the new ColorManager.
 
@@ -169,6 +172,7 @@ protected:
 	int avgSize;	// to estimate result sizes
 public:
      BaseSelection() {
+		 typeID ="" ;
 		avgSize = 10;
 	}
      BaseSelection(const TypeID& typeID, int avgSize = 10) 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/12/02 23:26:21  donjerko
+  Changes made by Kevin
+
   Revision 1.7  1997/11/23 21:23:30  donjerko
   Added ODBC stuff.
 
@@ -90,7 +93,7 @@ class Cor_sockbuf : public streambuf {
 
       // create a socket using defaults, or envirornment variables,
       // or the given file descriptor (connect to a remote machine)
-    Cor_sockbuf(int _sockfd = -1);
+    Cor_sockbuf(SOCKET_TP _sockfd = -1);
 
    ~Cor_sockbuf();
 
@@ -126,7 +129,7 @@ class Cor_sockbuf : public streambuf {
     
   private:
 
-    int   _socketfd;               // The socket's file descriptor
+    SOCKET_TP   _socketfd;               // The socket's file descriptor
     char  host[HOSTNAME_LENGTH];
     unsigned short port;         
 

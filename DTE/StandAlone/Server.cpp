@@ -21,8 +21,8 @@ const unsigned short PORT = 6571;
 
 int main(int argc, char** argv){
 
-     initialize_system();
-
+    initialize_system();
+	
 	Cor_sockbuf listener(PORT);
 
 	while(true){
@@ -32,5 +32,6 @@ int main(int argc, char** argv){
 		delete sockBuf;
 	}
 
-     shutdown_system();
+    shutdown_system();
+	return 1;
 }
