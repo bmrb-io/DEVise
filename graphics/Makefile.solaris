@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.75  1997/10/28 19:58:57  wenger
+# Updated solaris dependencies.
+#
 # Revision 1.74  1997/10/03 16:23:35  wenger
 # Updated solaris dependencies.
 #
@@ -521,30 +524,31 @@ NullDisplay.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 NullDisplay.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 NullDisplay.o: /s/X11/include/X11/Xutil.h DualWindowRep.h ColorMgr.h
 NullDisplay.o: Control.h ClassDir.h Init.h BufPolicy.h
-PSDisplay.o: /usr/include/errno.h /usr/include/sys/errno.h
-PSDisplay.o: ../graphics.new/machdep.h /usr/include/limits.h
-PSDisplay.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-PSDisplay.o: /usr/include/sys/types.h /usr/include/sys/machtypes.h
-PSDisplay.o: /usr/include/sys/select.h /usr/include/sys/time.h
-PSDisplay.o: /usr/include/time.h /usr/include/sys/param.h
-PSDisplay.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-PSDisplay.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-PSDisplay.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-PSDisplay.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-PSDisplay.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-PSDisplay.o: /usr/include/netdb.h /usr/include/sys/socket.h
-PSDisplay.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-PSDisplay.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-PSDisplay.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-PSDisplay.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-PSDisplay.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-PSDisplay.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-PSDisplay.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-PSDisplay.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-PSDisplay.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-PSDisplay.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-PSDisplay.o: /usr/include/sys/byteorder.h PSDisplay.h Display.h DeviseTypes.h
-PSDisplay.o: /usr/include/values.h DevStatus.h Geom.h /usr/include/stdio.h
+PSDisplay.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
+PSDisplay.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+PSDisplay.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+PSDisplay.o: /usr/include/sys/time.h /usr/include/time.h
+PSDisplay.o: /usr/include/sys/unistd.h /usr/include/errno.h
+PSDisplay.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
+PSDisplay.o: /usr/include/limits.h /usr/include/sys/param.h
+PSDisplay.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+PSDisplay.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+PSDisplay.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+PSDisplay.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+PSDisplay.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+PSDisplay.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+PSDisplay.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+PSDisplay.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+PSDisplay.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+PSDisplay.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+PSDisplay.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+PSDisplay.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+PSDisplay.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+PSDisplay.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+PSDisplay.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+PSDisplay.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+PSDisplay.o: PSDisplay.h Display.h DeviseTypes.h /usr/include/values.h
+PSDisplay.o: DevStatus.h Geom.h /usr/include/stdio.h
 PSDisplay.o: /usr/include/sys/va_list.h /usr/include/math.h
 PSDisplay.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h Color.h
 PSDisplay.o: Dispatcher.h DList.h Exit.h Journal.h VisualArg.h Pattern.h

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.81  1997/11/05 00:23:25  donjerko
+# Made changes for RTree.
+#
 # Revision 1.80  1997/10/28 19:58:41  wenger
 # Updated solaris dependencies.
 #
@@ -790,12 +793,29 @@ DiskFile.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
 DiskFile.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 DiskFile.o: /usr/include/sys/time.h /usr/include/time.h
 DrawTimer.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-DrawTimer.o: /usr/include/sys/va_list.h DrawTimer.h /usr/include/sys/types.h
-DrawTimer.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-DrawTimer.o: /usr/include/sys/select.h /usr/include/sys/time.h
-DrawTimer.o: /usr/include/time.h ../graphics/DeviseTypes.h
+DrawTimer.o: /usr/include/sys/va_list.h /usr/include/sys/time.h
+DrawTimer.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+DrawTimer.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+DrawTimer.o: /usr/include/time.h DrawTimer.h ../graphics/DeviseTypes.h
 DrawTimer.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Init.h
-DrawTimer.o: ../graphics/BufPolicy.h
+DrawTimer.o: ../graphics/BufPolicy.h machdep.h /usr/include/limits.h
+DrawTimer.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+DrawTimer.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+DrawTimer.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+DrawTimer.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DrawTimer.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DrawTimer.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DrawTimer.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DrawTimer.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DrawTimer.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DrawTimer.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+DrawTimer.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+DrawTimer.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+DrawTimer.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+DrawTimer.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DrawTimer.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+DrawTimer.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+DrawTimer.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 FileIndex.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 FileIndex.o: /usr/include/sys/va_list.h /usr/include/sys/types.h
 FileIndex.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
