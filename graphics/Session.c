@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.74  1999/12/06 18:40:48  wenger
+  Simplified and improved command logging (includes fixing bug 537, command
+  logs are now human-readable); added standard header to debug logs.
+
   Revision 1.73  1999/12/02 15:06:49  wenger
   Fixed bug 538 (slow session saving).
 
@@ -2108,6 +2112,10 @@ Session::CheckWindowLocations()
       Coord relY = atof(argv[2]);
       Coord relWidth = atof(argv[3]);
       Coord relHeight = atof(argv[4]);
+#if defined(DEBUG)
+      printf("Relative window geometry: %g, %g, %g, %g\n", relX, relY,
+          relWidth, relHeight);
+#endif
       if (relX < 0.0 || relX + relWidth > 1.0 || relY < 0.0 ||
           relY + relHeight > 1.0) {
 	    char errBuf[256];

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/10/04 22:36:08  wenger
+  Fixed bug 508 (windows move slightly when repeatedly opening and saving
+  a session) -- replaced kludgey (incorrect) way of dealing with window
+  manager borders with correct way; user is warned if any windows extend
+  off-screen when opening or saving a session.
+
   Revision 1.23  1999/09/02 17:25:51  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -246,6 +252,15 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
   double relativeY = atof(argv[2]);
   double relativeWidth = atof(argv[3]);
   double relativeHeight = atof(argv[4]);
+
+  // Force upper left corner of window to be on the screen.
+  if (relativeX < 0.0 || relativeX > 1.0) {
+    relativeX -= floor(relativeX);
+  }
+  if (relativeY < 0.0 || relativeY > 1.0) {
+    relativeY -= floor(relativeY);
+  }
+
   // Note: the Layout class is a newer version of the TileLayout class.
   // For a while there was a conditional compile here to make one or the
   // other, but I'm getting rid of it.  RKW 1998-12-30.
@@ -322,8 +337,20 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
     printf("Session not opened JavaScreen; window may have been resized.\n");
     printf("Window was resized\n");
 #endif
-    sprintf(buf2, "%f", (double)x / dispWidth);
-    sprintf(buf3, "%f", (double)y / dispHeight);
+
+    double relX = (double)x / dispWidth;
+    double relY = (double)y / dispHeight;
+
+    // Force upper left corner of window to be on the screen.
+    if (relX < 0.0 || relX > 1.0) {
+      relX -= floor(relX);
+    }
+    if (relY < 0.0 || relY > 1.0) {
+      relY -= floor(relY);
+    }
+
+    sprintf(buf2, "%f", relX);
+    sprintf(buf3, "%f", relY);
     sprintf(buf4, "%f", (double)w / dispWidth);
     sprintf(buf5, "%f", (double)h / dispHeight);
   }
