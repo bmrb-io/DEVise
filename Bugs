@@ -385,9 +385,11 @@ Num Date        Status  Description
 			view in window DEViseWn1, bring up the Query Tool ->
 			the axis limits are not filled in. (rkw)
 
-110 01/09/97	OPEN	Load the session /p/devise/test/baa1.tk, select the
+110 01/09/97	NB	Load the session /p/devise/test/baa1.tk, select the
 			view in window DEViseWn1 -> you can't display
-			axes in this view. (rkw)
+			axes in this view. Not a bug: foreground color
+                        was the same as background color, so axes just
+                        weren't visible. (rkw/jpm)
 
 111 01/10/97	OPEN	Got the following bug when loading the session
 			/p/devise/session/demo/COD1.tk, only with shared
