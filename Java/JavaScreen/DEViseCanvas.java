@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  1999/12/02 19:47:23  hongyu
+// *** empty log message ***
+//
 // Revision 1.23  1999/11/11 18:11:51  hongyu
 // *** empty log message ***
 //
@@ -1269,20 +1272,21 @@ public class DEViseCanvas extends Container
                             for (int i = 0; i < numberOfAtoms; i++) {
                                 atomName[i] = getString(input);
                                 atomPos[i] = getData(input, 3);
-
+                                /*
                                 if (isBasis) {
                                     YGlobals.ythrow(atomPos[i][0] >= 0.0 && atomPos[i][0] < 1.0
                                                     && atomPos[i][1] >= 0.0 && atomPos[i][1] < 1.0
                                                     && atomPos[i][2] >= 0.0 && atomPos[i][2] < 1.0,
                                                     "Incorrect atom position for unit cell basis (valid atom position must be less than 1.0 and greater than or equals to 0.0) at line " + input.lineno());
                                 }
-
+                                
                                 for (int j = 0; j < i; j++) {
                                     YGlobals.ythrow(!(atomPos[i][0] == atomPos[j][0]
                                                     && atomPos[i][1] == atomPos[j][1]
                                                     && atomPos[i][2] == atomPos[j][2]),
                                                     "Atom position shared by more than one atoms at line " + input.lineno());
                                 }
+                                */
                             }
 
                             isEnd = true;
