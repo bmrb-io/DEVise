@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/11/17 04:05:07  ravim
+  New form of index file.
+
   Revision 1.7  1995/11/02 16:57:15  jussi
   Updated copyright message.
 
@@ -478,7 +481,7 @@ int comp_dat_2[COMP_DAT_FIELDS_2 * COMP_NUM_PER_DAT] = {
 #define COMP_MAX_STR_LEN  50
 
 /* Function prototypes */
-int find_rec(FILE *idxfile, char cval[]);
+unsigned long int find_rec(FILE *idxfile, char cval[]);
 void generate_dat(char *dat1, char *dat2, int year,
 		  FILE *outfile);
 double comp_get_val(char *str, int len, int pre);
