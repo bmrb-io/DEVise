@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/15 16:36:20  jussi
+  Added sync command.
+
   Revision 1.6  1996/05/15 16:02:37  wenger
   Restored 'parseSchema' command (got lost in one of the recent changes);
   added 'Bugs' file to keep track of bugs in a central area.
@@ -40,6 +43,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "ParseAPI.h"
 #include "ClassDir.h"
@@ -112,36 +116,39 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (!strcmp(argv[0], "showkgraph")) {
-    if ((atoi(argv[1]) == 1) || (!vkg))  {
+    if (atoi(argv[1]) == 1 || !vkg) {
       /* Create a new ViewKGraph object */
       /*
 	 Don't delete the previous vkg since we still want it to
 	 continuously display the previously defined KGraph
       */
-      vkg = new ViewKGraph();
+      vkg = new ViewKGraph;
+      assert(vkg);
     }
     /* Number of views */
     int nview = argc - 4;
-    ViewGraph **vlist = (ViewGraph **)malloc(nview * sizeof(ViewGraph *));
+    ViewGraph **vlist = new (ViewGraph *) [nview];
+    assert(vlist);
     for(int i = 0; i < nview; i++) {
       vlist[i] = (ViewGraph *)classDir->FindInstance(argv[5 + i]);
       if (!vlist[i]) {
 	control->ReturnVal(API_NAK, "Cannot find view");
+	delete vlist;
 	return -1;
       }
     }
     vkg->Init();
     /* Add these to the ViewKGraph class and display */
     if (vkg->AddViews(vlist, nview, argv[3]) == false) {
-      control->ReturnVal(API_NAK, "Could not add views to ViewKGraph");
+      control->ReturnVal(API_NAK, "Could not add views to Kiviat graph");
+      delete vlist;
       return -1;
     }
-    
+    delete vlist;
     if (vkg->Display(atoi(argv[2])) == false) {
-      control->ReturnVal(API_NAK, "Could not display the KGraph");
+      control->ReturnVal(API_NAK, "Could not display Kiviat graph");
       return -1;
     }
-    free(vlist);
     control->ReturnVal(API_ACK, "done");
     return 1;
   }
@@ -197,6 +204,26 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
+    if (!strcmp(argv[0], "resetLinkMaster")) {
+      VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+      if (!link) {
+	control->ReturnVal(API_NAK, "Cannot find link");
+	return -1;
+      }
+      link->SetMasterView(0);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "getLinkMaster")) {
+      VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+      if (!link) {
+	control->ReturnVal(API_NAK, "Cannot find link");
+	return -1;
+      }
+      ViewGraph *view = link->GetMasterView();
+      control->ReturnVal(API_ACK, (view ? view->GetName() : ""));
+      return 1;
+    }
     if (!strcmp(argv[0], "setBatchMode")) {
       Boolean batch = (atoi(argv[1]) ? true : false);
       control->SetBatchMode(batch);
@@ -407,6 +434,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       int numAttrs = attrList->NumAttrs();
       args = new (char *) [numAttrs + 1];
       args[0] = new char[25];
+      assert(args && args[0]);
       strcpy(args[0], "recId int 1 0 0 0 0");
       
       int i;
@@ -458,6 +486,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	  Exit::DoExit(1);
 	}
 	args[i + 1] = new char [strlen(attrBuf) + 1];
+	assert(args[i + 1]);
 	strcpy(args[i + 1], attrBuf);
       }
       control->ReturnVal(numAttrs + 1, args) ;
@@ -487,7 +516,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
-      sprintf(result, "%d",link->GetFlag());
+      sprintf(result, "%d", link->GetFlag());
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -619,7 +648,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       }
       int index;
       for(index = link->InitIterator(); link->More(index); ) {
-	ViewWin *view = (ViewWin *)link->Next(index);
+	ViewGraph *view = (ViewGraph *)link->Next(index);
 	strcat(result, "{");
 	strcat(result, view->GetName());
 	strcat(result, "} ");
@@ -733,6 +762,21 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 3) {
+    if (!strcmp(argv[0], "setLinkMaster")) {
+      VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
+      if (!link) {
+	control->ReturnVal(API_NAK, "Cannot find link");
+	return -1;
+      }
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+      if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      link->SetMasterView(view);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
     if (!strcmp(argv[0], "addReplicaServer")) {
       if (control->AddReplica(argv[1], atoi(argv[2])) < 0)
 	fprintf(stderr, "Could not add %s:%d as a replica.\n", argv[1],
@@ -927,14 +971,14 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       VisualFlag flag = atoi(argv[2]);
-      link->ChangeFlag(flag);
+      link->SetFlag(flag);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
     if (!strcmp(argv[0], "highlightView")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
-	control->ReturnVal(API_NAK, "Cannot highlight view");
+	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
       }
       view->Highlight(atoi(argv[2]));
@@ -986,7 +1030,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
-      View *view = (View *)classDir->FindInstance(argv[2]);
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
@@ -1001,7 +1045,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
-      View *view = (View *)classDir->FindInstance(argv[2]);
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
@@ -1019,7 +1063,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
-      View *view = (View *)classDir->FindInstance(argv[2]);
+      ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
 	return -1;
@@ -1123,7 +1167,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       return 1;
     }
     if (!strcmp(argv[0], "getCreateParam")) {
-      classDir->CreateParams(argv[1],argv[2],argv[3],numArgs,args);
+      classDir->CreateParams(argv[1], argv[2], argv[3], numArgs, args);
       control->ReturnVal(numArgs, args);
       return 1;
     }
