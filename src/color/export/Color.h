@@ -34,6 +34,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/20 20:44:06  wenger
+  Changed color and utils libraries to new export directory scheme for
+  dealing with include files (email with complete explanation forthcoming).
+
   Revision 1.4  1998/02/19 23:26:02  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -186,10 +190,6 @@ RGBList		PM_GetRGBList(void);
 // Maps (via the current palette) an RGB to a PColorID. Returns false if the
 // RGB is invalid (not in the current palette), true if valid.
 bool		PM_GetPColorID(const RGB& rgb, PColorID& pcid);
-
-// If the requested RGB is in the current palette, returns its PColorID;
-// otherwise, attempts to allocate it in the current palette.
-bool		PM_GetOrAllocColor(const RGB& rgb, PColorID& pcid);
 
 // Maps (via the PaletteManager) a PColorID to an ColorID. Returns nullColorID
 // (invalid ColorID) if the PColorID is invalid (not in the current palette).
