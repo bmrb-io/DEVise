@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/13 20:25:03  jussi
+  Improved support for replicas. Commands are echoed to replicas
+  before being executed locally. See comments in ReadSocket()
+  for an explanation.
+
   Revision 1.7  1996/05/13 18:07:11  jussi
   Changed interpretation of the "flag" argument to Send().
   It is no longer simply an error flag but instead indicates
@@ -62,7 +67,6 @@
 //#define DEBUG
 //#define DEBUG9
 
-ControlPanel::Mode ServerAPI::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *ServerAPI::_interpProto = 0;
 
 ControlPanel *GetTkControl()
