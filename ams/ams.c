@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/12/02 18:44:05  wenger
+  Fixed problems dealing with DST in dates (including all date composite
+  parsers); added more error checking to date composite parsers.
+
   Revision 1.14  1996/11/23 20:45:17  jussi
   Removed references to QueryProcTape.
 
@@ -88,7 +92,7 @@
 
 int debug = 0;
 
-char *monthNames[12] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL",
+static char *monthNames[12] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL",
 			 "AUG", "SEP", "OCT", "NOV", "DEC" };
 
 int GetMonth(char *month)

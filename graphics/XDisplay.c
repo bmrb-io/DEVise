@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  1998/12/15 18:47:13  wenger
+  New option in fixed text symbol: if size is <=1, it is assumed to be a
+  fraction of the screen height, rather than the font size in points.
+
   Revision 1.71  1998/09/22 17:23:45  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -1332,7 +1336,8 @@ Coord XDisplay::PointsPerPixel()
 
   if (fabs(pointsPerPixelHor - pointsPerPixelVert) > 0.01) {
     fprintf(stderr,
-      "Warning: horizontal and vertical points per pixel differ!\n");
+      "Warning: horizontal (%f) and vertical (%f) points per pixel differ!\n",
+        pointsPerPixelHor, pointsPerPixelVert);
   }
 
 #if defined (DEBUG)

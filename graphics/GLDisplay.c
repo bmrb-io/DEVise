@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -13,6 +13,10 @@
 */
 
 /*
+  $Id$
+
+  $Log$
+
   Wed Oct  1 14:32:06 CDT 1997 Zhenhai Lin
   Added/updated CVS header.
 */
@@ -119,10 +123,10 @@ GLDisplay::GLDisplay(char *name)
 #endif
   int configuration2[] = {None};
 
-  vi = glXChooseVisual(_display, DefaultScreen(_display), configuration);
-  if (vi == NULL) {
-    vi = glXChooseVisual(_display, DefaultScreen(_display), configuration2);
-    DOASSERT(vi != NULL, "no appropriate RGB visual with depth buffer");
+  _vi = glXChooseVisual(_display, DefaultScreen(_display), configuration);
+  if (_vi == NULL) {
+    _vi = glXChooseVisual(_display, DefaultScreen(_display), configuration2);
+    DOASSERT(_vi != NULL, "no appropriate RGB visual with depth buffer");
     double_buffer=GL_FALSE;
   }
   else {
@@ -132,7 +136,7 @@ GLDisplay::GLDisplay(char *name)
   
   /* Define window attributes. */
 #ifdef SGI
-  _cmap = XCreateColormap(_display, RootWindow(_display, vi->screen), vi->visual, AllocNone);
+  _cmap = XCreateColormap(_display, RootWindow(_display, _vi->screen), _vi->visual, AllocNone);
   Colormap cmap[2]={_cmap, DefaultColormap(_display, DefaultScreen(_display))};
   if (!InitColor(_display, DefaultDepth(_display, DefaultScreen(_display)),
 		2, cmap)) {
@@ -768,13 +772,13 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 #ifndef SGI
   Window w = XCreateWindow(_display, parent, (unsigned)realX, (unsigned)realY, 
 			   (unsigned)realWidth, (unsigned)realHeight,
-			   border_width, vi->depth, InputOutput, vi->visual,
+			   border_width, _vi->depth, InputOutput, _vi->visual,
 			   AllPlanes, &attr);
 #else
   Window w = XCreateWindow(_display, parent,
     (unsigned)realX, (unsigned)realY, (unsigned)realWidth, (unsigned)realHeight,
-    border_width, vi->depth,
-    InputOutput, vi->visual,
+    border_width, _vi->depth,
+    InputOutput, _vi->visual,
 /* These bits caused invalid config error on SGI:
    CWBorderPixmap
 */
@@ -786,14 +790,15 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
     &attr);
 #endif
 
-/*  Window w = XCreateWindow(_display, RootWindow(_display, vi->screen),
-    0, 0, 300, 300, 0, vi->depth,
-    InputOutput, vi->visual, CWBorderPixel | CWColormap | CWEventMask, &swa);
+/*  Window w = XCreateWindow(_display, RootWindow(_display, _vi->screen),
+    0, 0, 300, 300, 0, _vi->depth,
+    InputOutput, _vi->visual, CWBorderPixel | CWColormap | CWEventMask, &swa);
 */
 
   DOASSERT(w, "Cannot create window");
 
-  GLXContext gc = glXCreateContext(_display, vi,
+  // This uses about 1.5 MB of memory(!)  RKW 1998-08-27.
+  GLXContext gc = glXCreateContext(_display, _vi,
                          /* No sharing of display lists */ NULL,
                          /* Direct rendering if possible */ True);
 
@@ -867,6 +872,7 @@ WindowRep *GLDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 
   /* Return the GLWindowRep structure. */
 
+  // This uses almost 1 MB of memory!!  RKW 1998-08-27.
   GLWindowRep *xwin = new GLWindowRep(_display, w, this,
                                    (GLWindowRep *)parentRep, gc, double_buffer);
   DOASSERT(xwin, "Cannot create GLWindowRep");

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -13,6 +13,9 @@
 */
 
 /*
+  $Id$
+
+  $Log$
   Wed Oct  1 14:32:06 CDT 1997 Zhenhai Lin
   Added/updated CVS header.
 */
@@ -152,7 +155,7 @@ private:
     XFontStruct *_normalFontStruct; /* big font used in window */
     XFontStruct *_smallFontStruct;  /* small font used in window */
     Colormap _cmap;
-    XVisualInfo * vi;
+    XVisualInfo * _vi;
     GLboolean double_buffer;
 };
 #endif
