@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/11/23 21:23:11  jussi
+  Removed variables and methods not used anywhere.
+
   Revision 1.10  1996/10/07 22:53:50  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -69,14 +72,17 @@ class Init {
     static char *PlaybackFileName(){ return _playbackFile; }
     static Boolean DoPlayback() { return _doPlayback; }
   
-    /* get buffer manager policies.
+    /*
+       Get buffer manager policies.
        bufSize = buffer size, in # of pages
-       prefetch: true if prefetch while idling.
        policy : buffer policy to use
-       existing: true if pages already in mem should be checked first for
-       an incoming query */
-    static void BufPolicies(int &bufSize, Boolean &prefetch,
-                            BufPolicy::policy &policy, Boolean &existing);
+    */
+    static void BufParams(int &bufSize, int &streamBufSize,
+                          BufPolicy::policy &policy) {
+        bufSize = _bufferSize;
+        streamBufSize = _streamBufSize;
+        policy = _policy;
+    }
     static BufPolicy::policy Policy() { return _policy; }
 	
     static Boolean TDataQuery(){ return _tdataQuery; }
@@ -123,10 +129,9 @@ protected:
     static char *_playbackFile;    /* name of the playback file */
     static Boolean _doPlayback;    /* true if playback requested */
 
-    static Boolean _prefetch;      /* true if prefetch enabled */
     static int _bufferSize;        /* buffer size */
+    static int _streamBufSize;     /* streaming buffer size */
     static BufPolicy::policy _policy;
-    static Boolean _existing;
 
     static Boolean _tdataQuery; 
     static Boolean _convertGData;  /* true if bg GData conversion enabled */

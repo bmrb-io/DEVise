@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/11/23 21:23:10  jussi
+  Removed variables and methods not used anywhere.
+
   Revision 1.23  1996/11/13 16:56:07  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -118,12 +121,12 @@
 #include "Util.h"
 #include "Version.h"
 
+static char uniqueFileName[100];
 
 /*************************************************************
 Create unique temporary file name 
 **************************************************************/
 
-static char uniqueFileName[100];
 static char *CreateUniqueFileName(char *progname)
 {
   progname = StripPath(progname);
@@ -149,10 +152,9 @@ Boolean Init::_savePopup = false;
 Boolean Init::_doPlayback = false;
 char *Init::_playbackFile = "";
 
-Boolean Init::_prefetch = true;
 int Init::_bufferSize = 1536;
+int Init::_streamBufSize = 32;
 BufPolicy::policy Init::_policy = BufPolicy::FIFO;
-Boolean Init::_existing = true;	
 
 Boolean Init::_tdataQuery = false;
 Boolean Init::_convertGData = true;
@@ -212,10 +214,9 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-journal <file>: name of journal file\n");
   fprintf(stderr, "\t-playback <file>: journal file to play back\n");
   fprintf(stderr, "\t-buffer <size>: buffer size in pages\n");
-  fprintf(stderr, "\t-prefetch 0|1: do prefetch or not\n");
+  fprintf(stderr, "\t-sbuffer <size>: stream buffer size in pages\n");
   fprintf(stderr, "\t-policy <policy>: buffer replacement policy, one of:\n");
   fprintf(stderr, "\t                  lru, fifo, lifo, focal, or rnd\n");
-  fprintf(stderr, "\t-existing 0|1: use existing buffers first or not\n");
   fprintf(stderr, "\t-norandom: don't randomize record retrieval\n");
   fprintf(stderr, "\t-batch <file>: batch file to execute\n");
   fprintf(stderr, "\t-version: print version number and compile date\n");
@@ -349,7 +350,20 @@ void Init::DoInit(int &argc, char **argv)
 	}
 	_bufferSize = atoi(argv[i+1]);
 	if (_bufferSize <= 0) {
-	  fprintf(stderr, "invalid buffer size %d\n", _bufferSize);
+	  fprintf(stderr, "Invalid buffer size %d\n", _bufferSize);
+	  Usage(argv[0]);
+	}
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "sbuffer") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_streamBufSize = atoi(argv[i+1]);
+	if (_bufferSize <= 0) {
+	  fprintf(stderr, "Invalid stream buffer size %d\n", _streamBufSize);
 	  Usage(argv[0]);
 	}
 	MoveArg(argc,argv,i,2);
@@ -362,7 +376,7 @@ void Init::DoInit(int &argc, char **argv)
 	}
 	_pageSize = atoi(argv[i+1]);
 	if (_pageSize <= 0) {
-	  fprintf(stderr, "invalid buffer size %d\n", _pageSize);
+	  fprintf(stderr, "Invalid buffer size %d\n", _pageSize);
 	  Usage(argv[0]);
 	}
 	if ((_pageSize % 4096) != 0) {
@@ -391,15 +405,6 @@ void Init::DoInit(int &argc, char **argv)
 	  fprintf(stderr, "unknown policy %s\n", argv[i+1]);
 	  Usage(argv[0]);
 	}
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "prefetch") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_prefetch = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
@@ -436,15 +441,6 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_elimOverlap = !(atoi(argv[i+1]) == 0);
-	MoveArg(argc,argv,i,2);
-      }
-
-      else if (strcmp(&argv[i][1], "existing") == 0) {
-	if (i >= argc -1) {
-	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
-	  Usage(argv[0]);
-	}
-	_existing = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
@@ -593,13 +589,4 @@ void Init::DoInit(int &argc, char **argv)
 #if 0
   Journal::Init(journalName, argc, args);
 #endif
-}
-
-void Init::BufPolicies(int &bufSize, Boolean &prefetch,
-		       BufPolicy::policy &policy, Boolean &existing)
-{
-  bufSize = _bufferSize;
-  prefetch = _prefetch;
-  policy = _policy;
-  existing = _existing;
 }
