@@ -15,6 +15,8 @@ setenv DEVISE_ROOT    /p/devise
 
 setenv DEVISE_DAT     $DEVISE_ROOT/demo/dat
 setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/demo/schema/schema/catalog.dte
+setenv DEVISE_ID_FILE		$DEVISE_ROOT/demo/schema/schema/temp_catalog
+setenv DEVISE_DEF_FILE		$DEVISE_ROOT/demo/schema/schema/def_file
 setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/demo/schema/schema/sysind.dte
 setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/demo/schema/schema/minmax.dte
 setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/demo/dat

@@ -29,6 +29,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/14 21:03:14  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
   Revision 1.1  1998/04/10 18:29:31  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -45,14 +49,11 @@
 #include "TData.h"
 #include "TDataMap.h"
 #include "Init.h"
-//#include "MappingInterp.h"//TEMPTEMP?
-//#include "DataSeg.h"//TEMPTEMP?
 #include "Control.h"
 
 #include "RelationManager.h"
 #include "types.h"
 #include "Inserter.h"
-//#include "TDataDQLInterp.h"//TEMPTEMP?
 
 //#define DEBUG
 
@@ -589,7 +590,6 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
   // Define a new TData that's the join of the slave view's original
   // TData with the table of master attribute values.
   //
-  TData *newTData;
   if (result.IsComplete()) {
     const int querySize = 1024;
     char query[querySize];
@@ -599,44 +599,35 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
 	" as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
     printf("  query = %s\n", query);//TEMPTEMP
 
-#if 0 //TEMPTEMP?
-    newTData = new TDataDQLInterp(tdata->GetName(), NULL, query);
-#endif
-#if 0 //TEMPTEMP?
-//TEMPTEMP -- try making a new KNOWN tdata here
-    DataSeg::Set(".testcolors2_table", "", 0, 0);
-    newTData = new TDataDQLInterp(".testcolors2_table", NULL,
-	"select * from .testcolors2_table as t");
-#endif
-#if 0 //TEMPTEMP?
+#if 1 //TEMPTEMP
     int numFlds = 4;//TEMPTEMP
     string attributeNames[4];
     attributeNames[0] = "X";
     attributeNames[1] = "Y";
     attributeNames[2] = "Color";
     attributeNames[3] = "Name";
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
     ViewInterface vi(numFlds, attributeNames, query);
-    RelationId newRelId = RELATION_MNGR.registerNewRelation(vi);
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+    //TEMPTEMPRelationId newRelId = RELATION_MNGR.registerNewRelation(vi);
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
     if (currExcept) {
       cerr << currExcept->toString() << endl;
       return StatusFailed;
     }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
     const int nameSize = 128;
     char name[nameSize];
     ostrstream nost(name, nameSize);
-    nost << newRelId;
-
-    const int query2Size = 128;
-    char query2[query2Size];
-    ostrstream qost(query2, query2Size);
-    qost << "select * from " << newRelId << " as t";
-
-    DataSeg::Set(name, "", 0, 0);
-    newTData = new TDataDQLInterp(name, NULL, query2);
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
+    //TEMPTEMPnost << newRelId;
+//*TEMPTEMP*/printf("  newRelId: %s\n", name);
+//*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 #endif
-    //printf("  newTData = 0x%p\n", newTData);//TEMPTEMP
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
   }
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 
   //
   // Remove the slave view's original mapping and TData and substitute the
