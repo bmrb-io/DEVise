@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/09/04 21:24:50  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.30  1996/08/29 22:10:49  guangshu
   Changed arguments of ConvertAndWriteGIF.
 
@@ -268,8 +275,8 @@ void XDisplay::ExportImage(DisplayExportFormat format,
       int y2 = MAX(y + h - 1, wy + wh - 1);
       x = MIN(x, wx);
       y = MIN(y, wy);
-      w = x2 - x;
-      h = y2 - y;
+      w = x2 - x + 1;
+      h = y2 - y + 1;
     }
   }
   _winList.DoneIterator(index);
@@ -290,11 +297,10 @@ void XDisplay::ExportImage(DisplayExportFormat format,
 
   /* Create and set up graphics context */
 
-  GC gc = XCreateGC(_display, pixmap, 0, NULL);
-  XSetState(_display, gc, None, None, GXcopy, AllPlanes);
+  GC gc = XCreateGC(_display, DefaultRootWindow(_display), 0, NULL);
+  XSetState(_display, gc, GetLocalColor(WhiteColor),
+            GetLocalColor(BlackColor), GXcopy, AllPlanes);
   XFillRectangle(_display, pixmap, gc, 0, 0, w, h);
-  XSetGraphicsExposures(_display, gc, False);
-  XSetClipMask(_display, gc, None);
 
   /* Copy windows to pixmap */
 
@@ -309,8 +315,8 @@ void XDisplay::ExportImage(DisplayExportFormat format,
     int dx = wx - x;
     int dy = wy - y;
 #ifdef DEBUG
-    printf("Copying from XWin 0x%p to %d,%d,%u,%u\n", win,
-           dx, dy, ww, wh);
+    printf("Copying from window 0x%lx to %d,%d,%u,%u\n",
+           win->GetWinId(), dx, dy, ww, wh);
 #endif
     DOASSERT(dx >= 0 && dy >= 0, "Invalid window coordinates");
     Pixmap src = win->GetPixmapId();
@@ -320,7 +326,14 @@ void XDisplay::ExportImage(DisplayExportFormat format,
       src = win->FindTopWindow(win->GetWinId());
       XRaiseWindow(_display, src);
     }
-    XCopyArea(_display, src, pixmap, gc, 0, 0, ww, wh, dx, dy);
+    XImage *image = XGetImage(_display, src, 0, 0, ww, wh, AllPlanes, ZPixmap);
+    if (!image || !image->data) {
+      fprintf(stderr, "Cannot get image of window or pixmap\n");
+      continue;
+    }
+    XPutImage(_display, pixmap, gc, image, 0, 0, dx, dy, ww, wh);
+    image->data = NULL;
+    XDestroyImage(image);
   }
   _winList.DoneIterator(index);
 
@@ -342,10 +355,12 @@ void XDisplay::ExportImage(DisplayExportFormat format,
 
   FILE *fp = fopen(filename, "wb");
   if (!fp) {
-  	fprintf(stderr, "Cannot open file %s for writing\n", filename);
-	return;
+    fprintf(stderr, "Cannot open file %s for writing\n", filename);
+  } else {
+    ConvertAndWriteGIF(pixmap, xwa, fp);
+    if (fp != stderr && fp != stdout)
+      fclose(fp);
   }
-  ConvertAndWriteGIF(pixmap, xwa, fp);
 
   /* Free gc and pixmap area */
 
@@ -388,8 +403,6 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
 			colorstyle, comment);
   if (status)
     fprintf(stderr, "Cannot write GIF image\n");
-
-  if ( fp != stderr && fp != stdout ) fclose(fp);
 
   free(grabPic);
   grabPic = 0;
@@ -688,7 +701,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
     DOASSERT(pixmap, "Cannot create pixmap");
 
 #ifdef DEBUG
-    printf("XDisplay: Created X pixmap 0x%lx at %u,%u, size %u%u\n",
+    printf("XDisplay: Created X pixmap 0x%lx at %u,%u, size %ux%u\n",
 	   pixmap, (unsigned)realX, (unsigned)realY,
 	   (unsigned)realWidth, (unsigned)realHeight);
 #endif
@@ -729,7 +742,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   attr.border_pixel  		= realFgnd;
   attr.bit_gravity  		= ForgetGravity;   /* CenterGravity */
   attr.win_gravity  		= NorthWestGravity;
-  attr.backing_store  		= WhenMapped;      /* Always/NotUseful */
+  attr.backing_store  		= Always;          /* WhenMapped/NotUseful */
   attr.backing_planes  		= AllPlanes;
   attr.backing_pixel  		= 0;
   attr.save_under  		= False;
