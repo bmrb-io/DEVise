@@ -413,6 +413,11 @@ Have some kind of concurrency control on the data source catalog. (lz/rkw
 
 Drill down query should query all views in a pile, not just one (kb 9/15/97)
 
+Allow PostScript printing in landscape mode. (rkw 9/25/97)
+
+Implement a shape like a Rect or RectX, but with the size specified in
+pixels rather than user coordinates. (dk/rkw 9/30/97)
+
 
 
 COMPLETED
