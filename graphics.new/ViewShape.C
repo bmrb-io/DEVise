@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.13  1999/05/07 14:13:55  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.12  1999/04/14 15:30:20  wenger
   Improved 'switch TData': moved the code from Tcl to C++, functionality
   is more flexible -- schemas don't have to match exactly as long as the
@@ -165,6 +172,10 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       continue;
     }
 
+#if defined(DEBUG)
+    printf("Drawing view symbol <%s>\n", viewname);
+#endif
+
 #if 1
     // Draw rectangle and view name for debugging.
     {
@@ -274,7 +285,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     viewsym->Refresh();
 
     if (hasZ) {
-      viewsym->SetZ(dataZ);
+      viewsym->SetPileZ(dataZ);
     }
 
     if (ps) {

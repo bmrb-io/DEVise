@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.36  1999/05/07 14:13:46  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.35  1999/04/21 20:35:22  wenger
   Improved interface for changing fonts, titles, etc.:
   * Fonts can now be set on a window-wide basis.
@@ -391,10 +398,11 @@ class ViewWin : public Coloring
     virtual void SetFont(const char *which, int family, float pointSize,
       Boolean bold, Boolean italic, Boolean notifyPile = true);
 
-	// Z value for piled view symbols.
-	void SetZ(Coord z) { _zValid = true; _zValue = z; }
-	void UnsetZ() { _zValid = false; }
-	const Coord* GetZ() { return _zValid ? &_zValue : NULL; }
+	// Z value for piled view symbols.  Perhaps this should be combined
+	// with the Z in the View class.
+	void SetPileZ(Coord z) { _pileZValid = true; _pileZValue = z; }
+	void UnsetPileZ() { _pileZValid = false; }
+	const Coord* GetPileZ() { return _pileZValid ? &_pileZValue : NULL; }
 
 protected:
     /* called by base class when it has been mapped/unmapped */
@@ -456,8 +464,8 @@ private:
 	PileStack *_parentPileStack;
 
 	// Z value for piled view symbols.
-	Boolean _zValid;
-	Coord _zValue;
+	Boolean _pileZValid;
+	Coord _pileZValue;
 
 
 	protected:

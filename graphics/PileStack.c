@@ -26,6 +26,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/05/07 14:13:43  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.8  1999/04/21 20:35:17  wenger
   Improved interface for changing fonts, titles, etc.:
   * Fonts can now be set on a window-wide basis.
@@ -347,13 +354,13 @@ PileStack::InsertView(ViewWin *view)
   // Hopefully, in any given pile, all or none of the views should have
   // Z values.
   //
-  if (view->GetZ()) {
-    Coord z = *(view->GetZ());
+  if (view->GetPileZ()) {
+    Coord z = *(view->GetPileZ());
     int index = _views.InitIterator();
     Boolean done = false;
     while (_views.More(index) && !done) {
       ViewWin *tmpView = _views.Next(index);
-      if (!tmpView->GetZ() || z < *(tmpView->GetZ())) {
+      if (!tmpView->GetPileZ() || z < *(tmpView->GetPileZ())) {
          _views.InsertBeforeCurrent(index, view);
 	 done = true;
       }
@@ -865,8 +872,8 @@ PileStack::Dump(FILE *fp)
   while (_views.More(index)) {
     ViewWin *view = _views.Next(index);
     fprintf(fp, "     <%s>", view->GetName());
-    if (view->GetZ()) {
-      fprintf(fp, " z = %g", *(view->GetZ()));
+    if (view->GetPileZ()) {
+      fprintf(fp, " z = %g", *(view->GetPileZ()));
     }
     fprintf(fp, "\n");
   }

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/05/07 14:13:45  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.55  1999/04/21 20:35:20  wenger
   Improved interface for changing fonts, titles, etc.:
   * Fonts can now be set on a window-wide basis.
@@ -351,7 +358,7 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 	_myPileStack = NULL;
 	_parentPileStack = NULL;
 
-	_zValid = false;
+	_pileZValid = false;
 }
 
 ViewWin::~ViewWin(void)
