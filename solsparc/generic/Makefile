@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/01/18 20:48:47  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.7  1996/11/23 20:56:14  jussi
 #  Removed -lpthread.
 #
@@ -41,6 +44,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib

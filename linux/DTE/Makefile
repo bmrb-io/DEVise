@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1997/05/08 18:11:19  wenger
+#  Minor changes to fix Linux compile problems.
+#
 #  Revision 1.4  1997/03/20 19:56:26  wenger
 #  Minor mods to get latest version to compile on HP and SunOS; cleaned
 #  up DTE makefiles (moved all targets from architecture-specific makefiles
@@ -33,6 +36,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /usr/lib/perl5/i486-linux/5.003/CORE
 
 ARCH_FLAGS = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS =

@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/03/20 19:56:48  wenger
+#  Minor mods to get latest version to compile on HP and SunOS; cleaned
+#  up DTE makefiles (moved all targets from architecture-specific makefiles
+#  to DTE/Makefile.base).
+#
 #  Revision 1.7  1997/03/14 18:37:20  donjerko
 #  *** empty log message ***
 #
@@ -40,6 +45,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS = -DSUN -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS =

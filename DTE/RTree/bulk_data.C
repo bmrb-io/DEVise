@@ -16,17 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/03/28 16:07:48  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
-#include"bulk_data.h"
-#include"hfpage.h"
-#include<stdlib.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/mman.h>
-#include"type_compat.h"
-#include<errno.h>
-#include<stdio.h>
-#include"globals.h"
+
+#include "bulk_data.h"
+#include "hfpage.h"
+#include "type_compat.h"
+#include "globals.h"
 
 #pragma implementation
 
@@ -108,9 +114,12 @@ void bulk_data_t::init(int       infile,
   else
     entry_sz=2*dim*sizeof(int)+data_sz;
   off=offset;
-#ifdef HP
+#if defined(HPUX)
   file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FILE|MAP_VARIABLE, infile, 0);
+#elif defined(LINUX)
+  file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
+		  PROT_READ|PROT_WRITE, MAP_SHARED, infile, 0);
 #else
   file_arr = mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED|MAP_NORESERVE, infile, 0);

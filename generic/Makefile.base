@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34  1997/08/11 14:15:19  wenger
+#  Modifications to get DEVise to compile on Linux.
+#
 #  Revision 1.33  1997/06/16 16:05:33  donjerko
 #  New memory management in exec phase. Unidata included.
 #
@@ -73,7 +76,7 @@
 
 include ../../Makefile.common
 
-CFLAGS = -gstabs $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DNEW_LAYOUT
 

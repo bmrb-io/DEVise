@@ -15,8 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/04/09 19:10:56  wenger
+#  Got unidata to compile -- but not run -- on solaris, solsparc, sun.
+#
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSOLARIS
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib

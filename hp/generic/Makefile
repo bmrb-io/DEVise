@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/01/18 20:48:54  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.6  1996/08/09 15:40:13  wenger
 #  Modified makefiles to allow making static and Purify'd executables.
 #
@@ -37,6 +40,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib

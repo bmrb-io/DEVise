@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1997/03/25 18:01:43  wenger
+#  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+#
 #  Revision 1.5.4.1  1997/03/18 14:43:37  wenger
 #  Various minor changes to get 1.3 to compile on SGI.
 #
@@ -36,6 +39,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib 

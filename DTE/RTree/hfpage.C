@@ -16,13 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:07:50  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include <stdio.h>
+#include <strings.h> // for bcopy()
 #include <memory.h>
 #include "hfpage.h"
-
-extern "C" void bcopy(char *, char *, int);
+#include "machdep.h"
 
 // fairly evil, but useful
 #define slotCnt (*pSlotCnt)

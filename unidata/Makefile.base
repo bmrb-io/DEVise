@@ -39,7 +39,7 @@ LEX_FILES = \
 FLEX = flex
 FLEXFLAGS = -I -Puni_yy
 
-PERL_CORE = /s/perl/lib/CORE
+#PERL_CORE = /s/perl/lib/CORE
 #PERL_CORE = ./lib/CORE
 PERL_INCL = -I$(PERL_CORE)
 PERL_LIB  = -L$(PERL_CORE) -lperl -lm

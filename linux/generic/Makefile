@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/05/08 18:11:27  wenger
+#  Minor changes to fix Linux compile problems.
+#
 #  Revision 1.6  1997/04/11 18:46:02  wenger
 #  Added proper static flags to generic Makefiles for various architectures.
 #
@@ -45,6 +48,8 @@
 #  Initial revision.
 
 ############################################################
+
+PERL_CORE = /usr/lib/perl5/i486-linux/5.003/CORE
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib

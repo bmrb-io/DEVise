@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1997/06/16 16:04:18  donjerko
+#  New memory management in exec phase. Unidata included.
+#
 #  Revision 1.14  1997/06/09 13:30:05  wenger
 #  Removed path from ar, since /s/binutils/bin seems to have disappeared.
 #
@@ -77,8 +80,6 @@
 
 ############################################################
 
-PERL_CORE = /s/perl/lib/CORE
-
 # Define our linker and compiler.
 SPECIFIC_PATH = TRUE
 
@@ -110,7 +111,7 @@ else
     ifeq ($(DEV_DEBUG),-1)
 	OPTFLAG = -O
     else
- 	OPTFLAG = -gstabs
+ 	OPTFLAG = -g
     endif
 endif
 

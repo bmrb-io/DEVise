@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/03/28 16:07:47  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "RTree.h"
@@ -36,8 +40,13 @@ void initialize_system(const char FileName[],
   fscanf(in_file, "%d", &NextEmptyPage);
   fclose(in_file);
   RTreeFile = open(FileName, O_RDWR|O_CREAT, 0600);
+#if defined(LINUX)
+  FileArr = mmap((caddr_t) 0, VolumeSize, PROT_READ|PROT_WRITE,
+           MAP_SHARED, RTreeFile, 0);
+#else
   FileArr = mmap((caddr_t) 0, VolumeSize, PROT_READ|PROT_WRITE,
            MAP_SHARED|MAP_NORESERVE, RTreeFile, 0);
+#endif
 }
 
 void shutdown_system(const char FileName[],

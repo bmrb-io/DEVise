@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1997/01/18 20:49:16  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.11  1996/07/18 14:10:26  jussi
 #  We now produce dynamically linked executables.
 #
@@ -32,6 +35,8 @@
 #  Added copyright and CVS log messages.
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib

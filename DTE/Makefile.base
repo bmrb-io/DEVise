@@ -43,8 +43,7 @@ DTE_INCLUDES = \
 
 CFLAGS = $(ARCH_FLAGS) $(ARCH_ENDIAN) $(DTE_INCLUDES)\
 	-Wall -Wno-unused -Wno-comment $(OPTFLAG) \
-	-DUNIX -DLIBCS \
-	-G
+	-DUNIX -DLIBCS
 #	-fexternal-templates \
 
 ifdef DTE_DEBUG

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1997/01/18 20:49:46  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.2  1996/07/18 14:09:58  jussi
 #  We now produce dynamically linked executables.
 #
@@ -22,6 +25,8 @@
 #  Initial revision.
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DULTRIX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib

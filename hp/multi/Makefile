@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1997/01/18 20:48:55  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.4  1996/07/18 13:58:49  jussi
 #  We now produce dynamically linked executables.
 #
@@ -29,6 +32,8 @@
 #  Initial revision.
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib

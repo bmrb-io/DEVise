@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/04/11 18:46:17  wenger
+#  Added proper static flags to generic Makefiles for various architectures.
+#
 #  Revision 1.6  1997/01/18 20:49:21  jussi
 #  Removed inclusion of Xaw and related X extensions.
 #
@@ -37,6 +40,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DSGI -I/usr/include/X11 -I/usr/local/include
 ARCH_LDFLAGS = -L /usr/lib/X11 -L /usr/local/lib

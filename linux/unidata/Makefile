@@ -15,11 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/08/11 14:16:08  wenger
+#  Modifications to get DEVise to compile on Linux.
+#
 
 ############################################################
 
 PERL_CORE = /usr/lib/perl5/i486-linux/5.003/CORE
-ARCH_FLAGS   = -DLINUX -I/usr/lib/perl5/i486-linux/5.003/CORE
+
+ARCH_FLAGS   = -DLINUX
 ARCH_LDFLAGS =
 ARCH_LDPOST  =
 

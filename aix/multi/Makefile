@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1997/01/18 20:49:11  jussi
+#  Removed inclusion of Xaw and related X extensions.
+#
 #  Revision 1.5  1996/07/13 02:12:07  jussi
 #  AIX now also uses the base Makefile.
 #
@@ -33,6 +36,8 @@
 #
 
 ############################################################
+
+PERL_CORE = /s/perl/lib/CORE
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
