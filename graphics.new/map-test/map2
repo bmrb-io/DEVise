@@ -1,0 +1,16 @@
+
+mapping SolDnMapping AmsData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 90.0; attrs[1] = 90.0;
+		TDataMap::SetDefaultShape(SolDnMapping_RectXShapeID,2,attrs);
+		TDataMap::SetDefaultColor(blue);
+	}
+	dynamic x,y,color, shapeAttr[0]{
+		symbol->x = data->time;
+		symbol->color = blue;
+		symbol->y = data->solDn;
+		symbol->shapeAttr_0 = ((i % 2)+1)*90;
+	}
+}

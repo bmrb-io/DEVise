@@ -1,0 +1,67 @@
+
+mapping CpuMapping StrData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1.0; attrs[1] = 1.0;
+		TDataMap::SetDefaultShape(CpuMapping_RectXShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		StringHash *hashTbl = (StringHash *)userData;
+		symbol->x = hashTbl->InsertHashTable(data->name);
+		symbol->y = data->cpu;
+		if (data->cpu > data->io)
+			symbol->color = red;
+		else symbol->color = BlackColor;
+	}
+}
+
+mapping UserMapping StrData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1.0; attrs[1] = 1.0;
+		TDataMap::SetDefaultShape(UserMapping_RectXShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		StringHash *hashTbl = (StringHash *)userData;
+		symbol->x = hashTbl->InsertHashTable(data->name);
+		symbol->y = data->user;
+		if (data->cpu > data->io)
+			symbol->color = red;
+		else symbol->color = BlackColor;
+	}
+}
+
+mapping IoMapping StrData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1.0; attrs[1] = 1.0;
+		TDataMap::SetDefaultShape(IoMapping_RectXShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		StringHash *hashTbl = (StringHash *)userData;
+		symbol->x = hashTbl->InsertHashTable(data->name);
+		symbol->y = data->io;
+		if (data->cpu > data->io)
+			symbol->color = red;
+		else symbol->color = BlackColor;
+	}
+}
+mapping TotalMapping StrData {
+    shape { RectXShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1.0; attrs[1] = 1.0;
+		TDataMap::SetDefaultShape(TotalMapping_RectXShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		StringHash *hashTbl = (StringHash *)userData;
+		symbol->x = hashTbl->InsertHashTable(data->name);
+		symbol->y = data->user+ data->cpu + data->io;
+		if (data->cpu > data->io)
+			symbol->color = red;
+		else symbol->color = BlackColor;
+	}
+}

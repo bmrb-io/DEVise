@@ -1,0 +1,20 @@
+
+mapping Mapping2D Data2D {
+    shape { RectShape }
+	static {
+		float attrs[2];
+		attrs[0] = 1.0; attrs[1] = 1.0;
+		TDataMap::SetDefaultShape(Mapping2D_RectShapeID,2,attrs);
+	}
+	dynamic x,y,color {
+		int *indices;
+		GetTData()->GetIndex(recId,indices);
+
+		symbol->x = (Coord)indices[1];
+		symbol->y = (Coord)indices[0];
+		if (data->val > 0.0)
+			symbol->color = red;
+		else
+			symbol->color = WhiteColor;
+	}
+}
