@@ -22,6 +22,12 @@
   $Id$
 
   $Log$
+  Revision 1.102  1999/01/20 22:47:11  beyer
+  Major changes to the DTE.
+  * Added a new type system.
+  * Rewrote expression evaluation and parsing
+  * And many other changes...
+
   Revision 1.101  1998/12/15 14:55:19  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -494,7 +500,6 @@
 #include "StringStorage.h"
 #include "DepMgr.h"
 #include "Session.h"
-#include "GDataSock.h"
 #include "Timer.h"
 
 #include "Color.h"

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/05/26 19:50:42  wenger
+  Added bounding box info to GData, so that the selection of records by the
+  visual filter is more accurate.  (Note that at this time the bounding box
+  info does not take into account symbol orientation; symbol alignment is
+  taken into account somewhat crudely.) This includes considerable
+  reorganization of the mapping-related classes.  Fixed problem with
+  pixelSize getting used twice in Rect shape (resulted in size being the
+  square of pixel size).
+
   Revision 1.9  1999/05/21 14:52:10  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -82,6 +91,19 @@ struct AttrVals {
   AttrType type;
   Coord numericalValue;
   char *stringValue;
+};
+
+// See GDataRec.h.
+struct RecordVals {
+  Coord _x;
+  Coord _y;
+  Coord _z;
+  PColorID _color;
+  Coord _size;
+  Pattern _pattern;
+  Coord _orientation;
+  ShapeID _symbolType;
+  AttrVals _shapeAttrs[MAX_SHAPE_ATTRS];
 };
 
 #define IncAndCheckOffset(buf, offset, bufSize, status) { \
@@ -203,7 +225,7 @@ GDataSock::~GDataSock()
  * Send GData records to a socket.
  */
 DevStatus
-GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
+GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *tdMap,
 		int recCount)
 {
 #if defined(DEBUG)
@@ -213,159 +235,31 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
   DevStatus result(StatusOk);
 
   if (_status.IsComplete()) {
-    GDataAttrOffset *offsets = map->GetGDataOffset();
-    StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
-    AttrList *attrList = map->GDataAttrList();
+    StringStorage *stringTable = tdMap->GetStringTable(TDataMap::TableGen);
+    AttrList *attrList = tdMap->GDataAttrList();
+
+    AttrInfo *attrInfos[MAX_SHAPE_ATTRS];
+    for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
+      char buf[128];
+      sprintf(buf, "shapeAttr_%d", attrNum);
+      attrInfos[attrNum] = attrList->Find(buf);
+    }
 
     // Note: at least for now, I am assuming that for string attributes
     // you want the string value for ShapeAttr0 - ShapeAttr9 and the
     // numerical value otherwise.  This may need some refinement in the
     // future.  RKW Nov. 18, 1997.
 
-    int recNum;
-    for (recNum = 0; recNum < recCount; recNum++) {
+    for (int recNum = 0; recNum < recCount; recNum++) {
       DevStatus tmpResult(StatusOk);
 
       char *gdata = (char *) gdataArray[recNum];
-
-      //
-      // Get the values of the attributes.
-      //
-      Coord x = map->GetX(gdata);
-      Coord y = map->GetY(gdata);
-      Coord z = map->GetZ(gdata);
-
-//      Coord color = GetColor(view, gdata, map, offsets);
-      Coord		pcid = map->GetPColorID(gdata);
-
-      Coord size = map->GetSize(gdata);
-      Coord pattern = map->GetPattern(gdata);
-      Coord orientation = map->GetOrientation(gdata);
-      Coord symbolType = map->GetShape(gdata);
-
-      const int shapeAttrCount = 10;
-      AttrVals shapeAttrs[shapeAttrCount] = {
-	  {"shapeAttr_0", IntAttr, 0.0, NULL},
-	  {"shapeAttr_1", IntAttr, 0.0, NULL},
-	  {"shapeAttr_2", IntAttr, 0.0, NULL},
-	  {"shapeAttr_3", IntAttr, 0.0, NULL},
-	  {"shapeAttr_4", IntAttr, 0.0, NULL},
-	  {"shapeAttr_5", IntAttr, 0.0, NULL},
-	  {"shapeAttr_6", IntAttr, 0.0, NULL},
-	  {"shapeAttr_7", IntAttr, 0.0, NULL},
-	  {"shapeAttr_8", IntAttr, 0.0, NULL},
-	  {"shapeAttr_9", IntAttr, 0.0, NULL} };
-
-      int attrNum;
-      const ShapeAttr *defaultAttrs = map->GetDefaultShapeAttrs();
-      for (attrNum = 0; attrNum < shapeAttrCount; attrNum++) {
-	//
-	// Get the numerical value for this shape attribute.
-	//
-	if (offsets->_shapeAttrOffset[attrNum] < 0) {
-	  shapeAttrs[attrNum].numericalValue = defaultAttrs[attrNum];
-	} else {
-	  shapeAttrs[attrNum].numericalValue = GetAttr(gdata,
-	      _shapeAttrOffset[attrNum], Coord, offsets);
-	}
-
-	//
-	// Figure out whether this attribute is a string type, and if so
-	// get the string value.
-	//
-        AttrInfo *attrInfo = attrList->Find(shapeAttrs[attrNum].name);
-	// Assume attribute is not a string if we can't get AttrInfo.
-	if (attrInfo != NULL) {
-	  shapeAttrs[attrNum].type = attrInfo->type;
-	  if (shapeAttrs[attrNum].type == StringAttr) {
-	    if (stringTable->Lookup( (int) shapeAttrs[attrNum].numericalValue,
-		shapeAttrs[attrNum].stringValue) < 0) {
-	      char buf[1024];
-	      sprintf(buf, "String not found for %s", attrInfo->name);
-	      reportErrNosys(buf);
-	      tmpResult += StatusFailed;
-	    }
-	  }
-	}
-      }
+      RecordVals vals;
+      tmpResult += GetRecordVals(attrInfos, tdMap, gdata, stringTable, vals);
 
 
       if (_params.sendText) {
-        //
-        // Format a buffer for this GData record.
-        //
-	const int bufSize = 2048;
-	char buf[bufSize];
-	int offset = 0;
-	char sep = _params.separator;
-
-	if (tmpResult.IsComplete()) {
-	  if (sprintf(&buf[offset], "%g%c%g%c%g%c", x, sep, y, sep, z,
-	      sep) < 0) {
-	    reportErrSys("Error formatting output");
-	    tmpResult = StatusFailed;
-	  } else {
-	    IncAndCheckOffset(buf, offset, bufSize, tmpResult);
-	  }
-	}
-
-	if (tmpResult.IsComplete()) {
-	  if (sprintf(&buf[offset], "%g%c%g%c%g%c%g%c%g", pcid, sep, size,
-	      sep, pattern, sep, orientation, sep, symbolType) < 0) {
-	    reportErrSys("Error formatting output");
-	    tmpResult = StatusFailed;
-	  } else {
-	    IncAndCheckOffset(buf, offset, bufSize, tmpResult);
-	  }
-	}
-
-        for (attrNum = 0; attrNum < shapeAttrCount && tmpResult.IsComplete();
-	    attrNum++) {
-	  if (shapeAttrs[attrNum].type == StringAttr) {
-	    if (sprintf(&buf[offset], "%c%s", sep,
-		shapeAttrs[attrNum].stringValue) < 0) {
-	      reportErrSys("Error formatting output");
-	      tmpResult = StatusFailed;
-	    } else {
-	      IncAndCheckOffset(buf, offset, bufSize, tmpResult);
-	    }
-	  } else {
-	    if (sprintf(&buf[offset], "%c%g", sep,
-		shapeAttrs[attrNum].numericalValue) < 0) {
-	      reportErrSys("Error formatting output");
-	      tmpResult = StatusFailed;
-	    } else {
-	      IncAndCheckOffset(buf, offset, bufSize, tmpResult);
-	    }
-	  }
-        }
-
-	if (tmpResult.IsComplete()) {
-	  if (sprintf(&buf[offset], "\n") < 0) {
-	    reportErrSys("Error formatting output");
-	    tmpResult = StatusFailed;
-	  } else {
-	    IncAndCheckOffset(buf, offset, bufSize, tmpResult);
-	  }
-        }
-
-	//
-	// Dump the buffer to the output.
-	//
-	// Note: I'm dumping the whole record at once so that we never
-	// output a partial record if there is some kind of error partway
-	// through.  RKW Nov. 18, 1997.
-	if (tmpResult.IsComplete()) {
-	  size_t byteCount = (size_t) offset;
-	  if (write(_fd, buf, byteCount) !=
-#if defined(SOLARIS)
-	      (ssize_t)
-#endif // SOLARIS
-	      byteCount) {
-	    reportErrSys("Error writing to data channel");
-	    result = StatusFailed;
-	  }
-	}
+	tmpResult += PrintRecordVals(vals);
       } else {
 	reportErrNosys("Sending binary GData is not yet implemented\n");
 	tmpResult = StatusFailed;
@@ -376,6 +270,228 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
   } else {
     reportErrNosys("Attempted operation on object with bad status");
     result = StatusFailed;
+  }
+
+  return result;
+}
+
+
+/*------------------------------------------------------------------------------
+ * function: GDataSock::GetRecordVals()
+ * Get values for one record.
+ */
+DevStatus
+GDataSock::GetRecordVals(AttrInfo **attrInfos, TDataMap *tdMap, char *gdata,
+    StringStorage *stringTable, RecordVals &vals)
+{
+  DevStatus result(StatusOk);
+
+  //
+  // Get the values of the attributes.
+  //
+  vals._x = tdMap->GetX(gdata);
+  vals._y = tdMap->GetY(gdata);
+  vals._z = tdMap->GetZ(gdata);
+
+  vals._color = tdMap->GetColor(gdata);
+
+  vals._size = tdMap->GetSize(gdata);
+  vals._pattern = tdMap->GetPattern(gdata);
+  vals._orientation = tdMap->GetOrientation(gdata);
+  vals._symbolType = tdMap->GetShape(gdata);
+
+  for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
+    result += GetShapeAttr(attrNum, attrInfos[attrNum], tdMap, gdata,
+        stringTable, vals._shapeAttrs[attrNum]);
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: GDataSock::GetShapeAttr
+ * Gets a shape attribute value.
+ */
+DevStatus
+GDataSock::GetShapeAttr(int attrNum, const AttrInfo *attrInfo,
+    TDataMap *tdMap, const char *gdata, StringStorage *stringTable,
+    AttrVals &attrVal)
+{
+  DevStatus result(StatusOk);
+
+  if (attrInfo) {
+    attrVal.type = attrInfo->type;
+
+    //
+    // Get the numerical value for this shape attribute.
+    //
+    attrVal.numericalValue = tdMap->GetShapeAttr(gdata, attrNum);
+
+    //
+    // Figure out whether this attribute is a string type, and if so
+    // get the string value.
+    //
+    if (attrVal.type == StringAttr) {
+      if (stringTable->Lookup( (int) attrVal.numericalValue,
+          attrVal.stringValue) < 0) {
+        char buf[1024];
+        sprintf(buf, "String not found for %s", attrInfo->name);
+        reportErrNosys(buf);
+        result += StatusFailed;
+      }
+    }
+  } else {
+    // This attribute is not specified.
+    attrVal.type = StringAttr;
+    attrVal.stringValue = "";
+  }
+
+  return result;
+}
+
+
+/*------------------------------------------------------------------------------
+ * function: GDataSock::PrintRecordVals
+ * Print the values for one record.
+ */
+DevStatus
+GDataSock::PrintRecordVals(const RecordVals &vals)
+{
+  DevStatus result(StatusOk);
+
+  //
+  // Format a buffer for this GData record.
+  //
+  const int bufSize = 2048;
+  char buf[bufSize];
+  int offset = 0;
+  char sep = _params.separator;
+
+  if (result.IsComplete()) {
+    if (sprintf(&buf[offset], "%g%c%g%c%g%c", vals._x, sep, vals._y,
+        sep, vals._z, sep) < 0) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+  }
+
+  if (result.IsComplete()) {
+    if (_params.rgbColor) {
+      RGB rgb;
+      if (PM_GetRGB(vals._color, rgb)) {
+        string colorStr = rgb.ToString();
+
+        if (sprintf(&buf[offset], "%s%c", colorStr.c_str(), sep) < 0) {
+          reportErrSys("Error formatting output");
+          result = StatusFailed;
+        } else {
+          IncAndCheckOffset(buf, offset, bufSize, result);
+        }
+      } else {
+	char errBuf[256];
+        sprintf(errBuf, "Error converting PColorID %ld to RGB", vals._color);
+        reportErrNosys(errBuf);
+	result = StatusFailed;
+      }
+    } else {
+      if (sprintf(&buf[offset], "%g%c", (Coord)vals._color, sep) < 0) {
+        reportErrSys("Error formatting output");
+        result = StatusFailed;
+      } else {
+        IncAndCheckOffset(buf, offset, bufSize, result);
+      }
+    }
+  }
+
+  if (result.IsComplete()) {
+    if (sprintf(&buf[offset], "%g%c%g%c%g%c%g", vals._size, sep,
+        (Coord)vals._pattern, sep, vals._orientation, sep,
+	(Coord)vals._symbolType) < 0) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+  }
+
+  for (int attrNum = 0;
+      attrNum < MAX_SHAPE_ATTRS && result.IsComplete(); attrNum++) {
+    result += PrintShapeAttr(vals._shapeAttrs[attrNum], buf, offset,
+      bufSize);
+  }
+
+  if (result.IsComplete()) {
+    if (sprintf(&buf[offset], "\n") < 0) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+  }
+
+  //
+  // Dump the buffer to the output.
+  //
+  // Note: I'm dumping the whole record at once so that we never
+  // output a partial record if there is some kind of error partway
+  // through.  RKW Nov. 18, 1997.
+  if (result.IsComplete()) {
+    size_t byteCount = (size_t) offset;
+    if (write(_fd, buf, byteCount) !=
+#if defined(SOLARIS)
+        (ssize_t)
+#endif // SOLARIS
+        byteCount) {
+      reportErrSys("Error writing to data channel");
+      result = StatusFailed;
+    }
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: GDataSock::PrintShapeAttr
+ * Prints a shape attribute value to the given buffer.
+ */
+DevStatus
+GDataSock::PrintShapeAttr(const AttrVals &attrVal, char buf[], int &offset,
+    int bufSize)
+{
+  DevStatus result(StatusOk);
+
+  // Note: the way the code is currently written, we can't tell the difference
+  // in the output between an attribute with an empty string, and an attribute
+  // with no value specified at all.  I'm not sure whether or not this is
+  // important.  RKW 1999-06-29.
+
+  if (attrVal.type == StringAttr) {
+    char *formatStr;
+    if (strlen(attrVal.stringValue) == 0 ||
+        strchr(attrVal.stringValue, _params.separator)) {
+      // String is empty or contains separator char -- put braces around it.
+      formatStr = "%c{%s}";
+    } else {
+      formatStr = "%c%s";
+    }
+
+    if (sprintf(&buf[offset], formatStr, _params.separator,
+        attrVal.stringValue) < 0) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+  } else {
+    if (sprintf(&buf[offset], "%c%g", _params.separator,
+	attrVal.numericalValue) < 0) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
   }
 
   return result;

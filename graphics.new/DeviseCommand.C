@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.70  1999/06/25 15:58:21  wenger
+  Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
+  now uses DebugLog facility instead of printf; dispatcher logging is turned
+  on by default, and commands and queries are logged; added -debugLog command
+  line flag to turn logging on and off.
+
   Revision 1.69  1999/06/16 19:26:30  wenger
   Fixed bug 497 (doing 'remove view' on a piled parent view with a piled
   view symbol caused crash).
@@ -3205,7 +3211,7 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
         {
           // Argument: <view name>
           // Returns: <draw to screen> <send to socket> <port number> <file>
-          //  <send text> <separator>
+          //  <send text> <separator> <RGB color>
     #if defined(DEBUG)
           printf("getViewGDS <%s>\n", argv[1]);
     #endif
@@ -3221,8 +3227,9 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
           view->GetSendParams(params);
           if (params.file == NULL) params.file = "";
           char buf[1024];
-          sprintf(buf, "%d %d %d \"%s\" %d \"%c\"", drawToScreen, sendToSocket,
-    	params.portNum, params.file, params.sendText, params.separator);
+          sprintf(buf, "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
+		      sendToSocket, params.portNum, params.file, params.sendText,
+			  params.separator, params.rgbColor);
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -4612,7 +4619,7 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
     {
         {
           // Argument: <view name> <draw to screen> <send to socket>
-          //   <port number> <file> <send text> <separator>
+          //   <port number> <file> <send text> <separator> [<RGB color>]
           // Returns: "done"
     #if defined(DEBUG)
           printf("setViewGDS <%s>\n", argv[1]);
@@ -4631,6 +4638,11 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
           params.file = argv[5];
           params.sendText = atoi(argv[6]);
           params.separator = argv[7][0];
+		  if (argc > 8) {
+		    params.rgbColor = atoi(argv[8]);
+		  } else {
+		    params.rgbColor = true;
+		  }
           view->SetSendParams(params);
     
           ReturnVal(API_ACK, "done");
@@ -5855,7 +5867,7 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(viewGetJSSendP)
     // Arguments: <viewName>
 	// Returns: <draw to screen> <send to socket> <port number> <file>
-	//  <send text> <separator>
+	//  <send text> <separator> <RGB color>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -5872,8 +5884,9 @@ IMPLEMENT_COMMAND_BEGIN(viewGetJSSendP)
         view->GetJSSendP(drawToScreen, sendToSocket, params);
         if (params.file == NULL) params.file = "";
         char buf[1024];
-        sprintf(buf, "%d %d %d \"%s\" %d \"%c\"", drawToScreen, sendToSocket,
-    	    params.portNum, params.file, params.sendText, params.separator);
+        sprintf(buf, "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
+		    sendToSocket, params.portNum, params.file, params.sendText,
+			params.separator, params.rgbColor);
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {
@@ -5886,12 +5899,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
     // Arguments: <viewName> <draw to screen> <send to socket>
-	// <port number> <file> <send text> <separator>
+	// <port number> <file> <send text> <separator> [<RGB color>]
 	// Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
-    if (argc == 8) {
+    if (argc == 8 || argc == 9) {
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
         if (!view) {
     	    ReturnVal(API_NAK, "Cannot find view");
@@ -5905,6 +5918,11 @@ IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
         params.file = argv[5];
         params.sendText = atoi(argv[6]);
         params.separator = argv[7][0];
+		if (argc > 8) {
+		  params.rgbColor = atoi(argv[8]);
+		} else {
+		  params.rgbColor = true;
+		}
         view->SetJSSendP(drawToScreen, sendToSocket, params);
     
         ReturnVal(API_ACK, "done");

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.89  1999/06/23 14:35:43  wenger
+  Fixed alignment problem that caused crash on SPARC.
+
   Revision 1.88  1999/06/04 20:52:52  wenger
   Improved error message.
 
@@ -432,7 +435,6 @@
 #include "Util.h"
 #include "Init.h"
 #include "StringStorage.h"
-#include "GDataSock.h"
 #include "NativeExpr.h"
 
 #include "Color.h"

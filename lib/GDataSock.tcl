@@ -19,6 +19,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.2  1999/05/17 18:38:07  wenger
+#	Views now have GData sending configuration that is only employed when
+#	connecting to the JavaScreen (eliminates the need for the current kludgey
+#	setup to send GData to the JS).
+#	
 #	Revision 1.1  1997/11/24 16:22:37  wenger
 #	Added GUI for saving GData; turning on GData to socket now forces
 #	redraw of view; GData to socket params now saved in session files;
@@ -29,7 +34,7 @@
 
 proc SaveGData {} {
   global curView
-  global gdsFile gdsSeparator
+  global gdsFile gdsSeparator gdsRgb
 
   # If this window already exists, raise it to the top and return.
   if {[WindowVisible .saveGData]} {
@@ -39,6 +44,7 @@ proc SaveGData {} {
   set viewGDS [DEVise getViewGDS $curView]
   set gdsFile [lindex $viewGDS 3]
   set gdsSeparator [lindex $viewGDS 5]
+  set gdsRgb [lindex $viewGDS 6]
 
   # Create the top level widget and the frames we'll later use for
   # positioning.
@@ -48,6 +54,7 @@ proc SaveGData {} {
   frame .saveGData.row1
   frame .saveGData.row2
   frame .saveGData.row3
+  frame .saveGData.row4
 
   # Create the various widgets.
   button .saveGData.ok -text "OK" -width 10 \
@@ -69,10 +76,14 @@ proc SaveGData {} {
   # Allow tab for separator character.
   bind .saveGData.sepEnt <Tab> { set gdsSeparator "\	" }
 
+  checkbutton .saveGData.rgb -variable gdsRgb -relief raised -bd 2 \
+    -text "Convert colors to RGB" -padx 2m -pady 1m
+
   # Pack the widgets into the frames.
   pack .saveGData.row1 -side bottom -pady 4m
   pack .saveGData.row2 -side top -pady 3m
   pack .saveGData.row3 -side top -pady 3m
+  pack .saveGData.row4 -side top -pady 3m
 
   pack .saveGData.ok .saveGData.cancel -in .saveGData.row1 \
     -side left -padx 3m
@@ -80,6 +91,7 @@ proc SaveGData {} {
     -in .saveGData.row2 -side left -padx 3m
   pack .saveGData.sepLab .saveGData.sepEnt -in .saveGData.row3 -side left \
     -padx 3m
+  pack .saveGData.rgb -in .saveGData.row4 -side left -padx 3m
 
   # Wait for the user to make a selection from this window.
   tkwait visibility .saveGData
@@ -91,11 +103,11 @@ proc SaveGData {} {
 
 proc DoSaveGData {} {
   global curView
-  global gdsFile gdsSeparator
+  global gdsFile gdsSeparator gdsRgb
 
-  DEVise setViewGDS $curView 1 1 0 $gdsFile 1 $gdsSeparator 
+  DEVise setViewGDS $curView 1 1 0 $gdsFile 1 $gdsSeparator $gdsRgb
   DEVise waitForQueries
-  DEVise setViewGDS $curView 1 0 0 $gdsFile 1 $gdsSeparator 
+  DEVise setViewGDS $curView 1 0 0 $gdsFile 1 $gdsSeparator $gdsRgb
 }
 
 ############################################################
@@ -103,7 +115,7 @@ proc DoSaveGData {} {
 proc EditJSGData {} {
   global curView
   global jsGdsDraw jsGdsSend
-  global jsGdsFile jsGdsSeparator
+  global jsGdsFile jsGdsSeparator jsGdsRgb
 
   # If this window already exists, raise it to the top and return.
   if {[WindowVisible .jsGData]} {
@@ -115,6 +127,7 @@ proc EditJSGData {} {
   set jsGdsSend [lindex $viewGDS 1]
   set jsGdsFile [lindex $viewGDS 3]
   set jsGdsSeparator [lindex $viewGDS 5]
+  set jsGdsRgb [lindex $viewGDS 6]
 
   # Create the top level widget and the frames we'll later use for
   # positioning.
@@ -125,6 +138,7 @@ proc EditJSGData {} {
   frame .jsGData.row2
   frame .jsGData.row3
   frame .jsGData.row4
+  frame .jsGData.row5
 
   # Create the various widgets.
   button .jsGData.ok -text "OK" -width 10 \
@@ -151,11 +165,15 @@ proc EditJSGData {} {
   # Allow tab for separator character.
   bind .jsGData.sepEnt <Tab> { set jsGdsSeparator "\	" }
 
+  checkbutton .jsGData.rgb -variable jsGdsRgb -relief raised -bd 2 \
+    -text "Convert colors to RGB" -padx 2m -pady 1m
+
   # Pack the widgets into the frames.
   pack .jsGData.row1 -side bottom -pady 4m
   pack .jsGData.row4 -side top -pady 3m
   pack .jsGData.row2 -side top -pady 3m
   pack .jsGData.row3 -side top -pady 3m
+  pack .jsGData.row5 -side top -pady 3m
 
   pack .jsGData.ok .jsGData.cancel -in .jsGData.row1 \
     -side left -padx 3m
@@ -164,6 +182,7 @@ proc EditJSGData {} {
     -in .jsGData.row2 -side left -padx 3m
   pack .jsGData.sepLab .jsGData.sepEnt -in .jsGData.row3 -side left \
     -padx 3m
+  pack .jsGData.rgb -in .jsGData.row5 -side left -padx 3m
 
   # Wait for the user to make a selection from this window.
   tkwait visibility .jsGData
@@ -176,8 +195,8 @@ proc EditJSGData {} {
 proc SetJSGData {} {
   global curView
   global jsGdsDraw jsGdsSend
-  global jsGdsFile jsGdsSeparator
+  global jsGdsFile jsGdsSeparator jsGdsRgb
 
   DEVise viewSetJSSendP $curView $jsGdsDraw $jsGdsSend 0 $jsGdsFile 1 \
-    $jsGdsSeparator 
+    $jsGdsSeparator $jsGdsRgb
 }
