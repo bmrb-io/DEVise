@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/10/02 15:23:50  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.9  1996/05/31 15:39:31  jussi
   Minor changes to remove compiler warnings in Linux.
 
@@ -99,32 +103,6 @@ static double maxVal[maxNumAttrs];
 static int orderAttr = -1;
 static float density = 0.0;
 
-static int readn(int fd, char *buf, int nbytes)
-{
-#ifdef DEBUG_IO
-  char *orig = buf;
-#endif
-
-  int nleft = nbytes;
-  while(nleft > 0) {
-    int nread = read(fd, buf, nleft);
-    if (nread < 0)                      // error?
-      return nread;
-    if (nread == 0)                     // EOF?
-      break;
-    nleft -= nread;
-    buf   += nread;
-    if (buf[-1] == 0)
-      break;
-  }
-
-#ifdef DEBUG_IO
-  printf("readn: got %d bytes: %.*s\n", nbytes - nleft, nbytes - nleft, orig);
-#endif
-
-  return nbytes - nleft;
-}
-  
 static int ParseSEQHeader(char *&buf, int &len)
 {
   if (memcmp(buf, resultHeader, strlen(resultHeader))) {
