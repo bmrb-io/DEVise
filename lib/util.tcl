@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.65  1999/12/03 22:16:26  wenger
+#  Reduced the number of commands required to update the mapping dialog.
+#
 #  Revision 1.64  1999/10/08 19:58:08  wenger
 #  Fixed bugs 470 and 513 (crashes when closing a session while a query
 #  is running), 510 (disabling actions in piles), and 511 (problem in
@@ -979,6 +982,10 @@ proc ScaleLower {val} {
 
 proc WindowVisible {w} {
     # see if $w already exists
+    if {![WindowExists $w]} {
+        return 0
+    }
+
     set err [catch {set state [wm state $w]}]
 	
     if {$err} {
@@ -997,13 +1004,7 @@ proc WindowVisible {w} {
 
 proc WindowExists {w} {
     # see if $w already exists
-    set err [catch {set state [wm state $w]}]
-	
-    if {$err} {
-	return 0
-    }
-
-    return 1
+    return [winfo exists $w]
 }
 
 

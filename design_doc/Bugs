@@ -2263,6 +2263,14 @@ Num Date        Status  Description
 578 04/18/00	OPEN	Displaying a data source from the 'Edit Data Stream
 			Definition' dialog doesn't work. (rkw)
 
+579 04/19/00	FIXED	Do 'refresh' with no session open -> DEVise crashes.
+			(rkw)
+			(Fixed by rkw, 4/19/00.)
+
+580 04/19/00	OPEN	In client/server DEVise, errors don't seem to get
+			correctly passed back up to Tcl on the client side.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

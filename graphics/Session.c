@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.83  2000/04/07 17:36:00  wenger
+  String file path in session file is specified with $DEVISE_SESSION.
+
   Revision 1.82  2000/03/14 17:05:09  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -1134,8 +1137,9 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename, CommandP
   FILE *fp = fopen(filename, "r");
   if (!fp) {
 	char errBuf[MAXPATHLEN * 2];
-	sprintf("Unable to open session file <%s>", filename);
+	sprintf(errBuf, "Unable to open session file <%s>", filename);
     reportErrSys(errBuf);
+	result += StatusFailed;
   } else {
     const int bufSize = 1024;
 	char lineBuf[bufSize];

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.49  1999/12/02 16:26:52  wenger
+#  Fixed bug 518 (confirm before saving a session the first time); got rid
+#  of error message during normal Tasvir launch.
+#
 #  Revision 1.48  1999/10/08 19:58:08  wenger
 #  Fixed bugs 470 and 513 (crashes when closing a session while a query
 #  is running), 510 (disabling actions in piles), and 511 (problem in
@@ -238,6 +242,7 @@ proc DoActualOpen { sessionFile {asTemplate 0} } {
     } else {
 	puts "Could not restore session"
         puts $errorInfo
+	error $errorInfo
     }
 
     UpdateLinkCursorInfo
@@ -375,10 +380,12 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
 proc DoRefresh {} {
     global sessionName
 
-    set tmpSession $sessionName
+    if {$sessionName != ""} {
+        set tmpSession $sessionName
 
-    if {[DoClose 1]} {
-        DoActualOpen $tmpSession
+        if {[DoClose 1]} {
+            DoActualOpen $tmpSession
+        }
     }
 }
 
