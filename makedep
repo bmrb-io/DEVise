@@ -1,0 +1,43 @@
+#! /bin/csh -f
+
+if ($#argv == 0) then
+  echo "Usage: $0 solaris|sun|hp|sgi|linux"
+endif
+ 
+set arch = $1
+echo "Building all dependencies for the $arch platform..."
+
+foreach d (*)
+  if (-f $d/Makefile.$arch) then
+    echo $d
+    cd $d
+    make -f Makefile.$arch depend >& /dev/null
+    cd ..
+  endif
+end
+
+echo ""
+echo -n "Is it okay to check new dependency files into the archive? [Y] "
+set answer = $<
+if ($answer == "" || $answer == y || $answer == Y) then
+  cvs update */Makefile.$arch
+  cvs commit -m'Updated dependencies.' */Makefile.$arch
+  echo "Done."
+endif
+
+echo ""
+echo "Listing of old dependency files:"
+ls */Makefile.$arch.bak
+
+echo ""
+echo -n "Is it okay to remove these files? [N] "
+set answer = $<
+
+if ($answer == y || $answer == Y) then
+  echo "Removing old dependency files..."
+  rm */Makefile.$arch.bak
+  echo "Done."
+endif
+
+exit 1
+
