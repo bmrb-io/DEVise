@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.68  1999/08/19 13:54:25  wenger
+  Changes for JavaScreen support: all 15 shape attributes now sent in
+  GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
+  JAVAC_MouseAction_DoubleClick changed to JAVAC_ShowRecords.
+
   Revision 1.67  1999/08/12 16:03:55  wenger
   Implemented "inverse" zoom -- alt-drag zooms out instead of in.
 
@@ -389,6 +394,9 @@ static DeviseCursorList _drawnCursors;
 
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
+
+static const int protocolMajorVersion = 2;
+static const int protocolMinorVersion = 1;
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -909,6 +917,9 @@ JavaScreenCmd::Run()
 			break;
 		case CURSORCHANGED:
 			CursorChanged();
+			break;
+		case PROTOCOLVERSION:
+			JSProtocolVersion();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
@@ -1498,6 +1509,39 @@ JavaScreenCmd::CursorChanged()
 	_status = SendChangedViews(true);
 
 	return;
+}
+
+//====================================================================
+// Sent by JavaScreen when first trying to connect.
+void
+JavaScreenCmd::JSProtocolVersion()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message("JavaScreenCmd::JSProtocolVersion(",
+      _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 1) {
+		errmsg = "Usage: ProtocolVersion <major.minor>";
+		_status = ERROR;
+	} else {
+		int jsMajor, jsMinor;
+	    sscanf(_argv[0], "%d.%d", &jsMajor, &jsMinor);
+        if (jsMajor != protocolMajorVersion) {
+			char errBuf[1024];
+			sprintf(errBuf, "Expected protocol version %d.%d; JavaScreen "
+			    "has version %d.%d", protocolMajorVersion,
+				protocolMinorVersion, jsMajor, jsMinor);
+			reportErrNosys(errBuf);
+
+		    errmsg = "Protocol version mismatch";
+			_status = ERROR;
+		} else if (jsMinor != protocolMinorVersion) {
+		    fprintf(stderr, "Warning: devised implements JavaScreen protocol "
+			    "version %d.%d;\n  JavaScreen has version %d.%d\n",
+				protocolMajorVersion, protocolMinorVersion, jsMajor, jsMinor);
+		}
+	}
 }
 
 //====================================================================

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/08/19 13:54:25  wenger
+  Changes for JavaScreen support: all 15 shape attributes now sent in
+  GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
+  JAVAC_MouseAction_DoubleClick changed to JAVAC_ShowRecords.
+
   Revision 1.42  1999/08/13 17:22:47  wenger
   Custom view layouts are now saved to session files; removed now unused
   TileLayout code.
@@ -374,6 +379,12 @@ DECLARE_CLASS_END
 //Class definition: DeviseCommand_JAVAC_CursorChanged
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_CursorChanged)
+DECLARE_CLASS_END
+
+//
+//Class definition: DeviseCommand_JAVAC_ProtocolVersion
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_ProtocolVersion)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------

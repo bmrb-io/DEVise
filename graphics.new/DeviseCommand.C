@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.78  1999/08/19 13:54:23  wenger
+  Changes for JavaScreen support: all 15 shape attributes now sent in
+  GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
+  JAVAC_MouseAction_DoubleClick changed to JAVAC_ShowRecords.
+
   Revision 1.77  1999/08/13 17:22:45  wenger
   Custom view layouts are now saved to session files; removed now unused
   TileLayout code.
@@ -666,6 +671,15 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_CursorChanged)
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
+
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_ProtocolVersion)
+	JavaScreenCmd jc(_control,JavaScreenCmd::PROTOCOLVERSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+
 
 //**********************************************************************
 // DTE Command objects

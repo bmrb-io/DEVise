@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/08/19 13:54:26  wenger
+  Changes for JavaScreen support: all 15 shape attributes now sent in
+  GData; added zoom in/out argument to JAVAC_MouseAction_RubberBand;
+  JAVAC_MouseAction_DoubleClick changed to JAVAC_ShowRecords.
+
   Revision 1.22  1999/06/22 19:46:59  wenger
   Devised support for JavaScreen improvements: cursors are now drawn in any
   view of a pile; mouse actions can be disabled in views; cursor grid info
@@ -157,6 +162,7 @@ class JavaScreenCmd
 			SERVERCLOSESOCKET,
 			IMAGECHANNEL,
 			CURSORCHANGED,
+			PROTOCOLVERSION,
 			NULL_SVC_CMD
 		}ServiceCmdType;
 
@@ -215,6 +221,7 @@ class JavaScreenCmd
 		void ServerCloseSocket();
 		void ImageChannel();
 		void CursorChanged();
+		void JSProtocolVersion();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
