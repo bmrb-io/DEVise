@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/11/30 00:36:15  jussi
+  Commented out a couple of debugging output statements.
+
   Revision 1.7  1995/11/28 00:04:53  jussi
   Added polygon and oval shapes.
 
@@ -123,8 +126,7 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
   int numShapeAttrs = GetDefaultNumShapeAttrs();
   ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
   for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
-    if ( (attrFlag & (1<<j)) &&
-	!IsConstCmd(cmd->shapeAttrCmd[j],val) ) {
+    if ((attrFlag & (1 << j)) && !IsConstCmd(cmd->shapeAttrCmd[j], val) ) {
       size = WordBoundary(size, sizeof(double));
       size += sizeof(double);
     }
@@ -497,7 +499,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
     int numShapeAttrs = GetDefaultNumShapeAttrs();
     ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
 
-    for(j = 0; j < _maxGDataShapeAttrNum; j++) {
+    for(j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->shapeAttrOffset[j] >= 0) {
 	if (_tclCmd->yCmd == NULL) {
 	  _interpResult = shapeAttr[j];
@@ -509,7 +511,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
 	/*
 	   printf("eval shapeAttr %d\n", j);
 	*/
-	*((double *)(gPtr+_offsets->shapeAttrOffset[j]))= _interpResult;
+	*((double *)(gPtr + _offsets->shapeAttrOffset[j]))= _interpResult;
       }
     }
 
@@ -649,14 +651,12 @@ AttrList *MappingInterp::InitCmd(char *name)
 
   _maxGDataShapeAttrNum = 0;
   for(j = 0; j < MAX_GDATA_ATTRS; j++) {
-    char attrName [80];
-    sprintf(attrName, "shapeAttr_%d", j);
-    if (_cmdAttrFlag & (1<<j)) {
+    if (_cmdAttrFlag & (1 << j)) {
       _maxGDataShapeAttrNum = j;
       if (!ConvertSimpleCmd(_cmd->shapeAttrCmd[j],
 			    _simpleCmd->shapeAttrCmd[j], attrType, isSorted))
 	goto complexCmd;
-      if (_simpleCmd->shapeAttrCmd[j].cmdType == 
+      if (_simpleCmd->shapeAttrCmd[j].cmdType ==
 	  MappingSimpleCmdEntry::ConstCmd) {
 	/* constant */
 	SetDefaultShapeAttr(j, (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num);
@@ -665,6 +665,8 @@ AttrList *MappingInterp::InitCmd(char *name)
 	else if (j == 1)
 	  pixelHeight = (Coord)_simpleCmd->shapeAttrCmd[j].cmd.num;
       } else {
+	char attrName [80];
+	sprintf(attrName, "shapeAttr_%d", j);
 	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
 	attrList->InsertAttr(7 + j, attrName, offset, sizeof(double),
@@ -811,7 +813,7 @@ AttrList *MappingInterp::InitCmd(char *name)
   for(j = 0; j < MAX_GDATA_ATTRS; j++) {
     char attrName [80];
     sprintf(attrName, "shapeAttr_%d", j);
-    if (_cmdAttrFlag & (1<<j)) {
+    if (_cmdAttrFlag & (1 << j)) {
       _maxGDataShapeAttrNum = j;
       if (IsConstCmd(_cmd->shapeAttrCmd[j],constVal)) {
 	SetDefaultShapeAttr(j,constVal);
@@ -1091,8 +1093,8 @@ void MappingInterp::PrintCmd()
     }
 
     for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
-      if (_cmdAttrFlag & (1<<j)) {
-	printf("shapeAttr_%d: %s --> ",j, _cmd->shapeAttrCmd[j]);
+      if (_cmdAttrFlag & (1 << j)) {
+	printf("shapeAttr_%d: %s --> ", j, _cmd->shapeAttrCmd[j]);
 	PrintSimpleCmdEntry(&_simpleCmd->shapeAttrCmd[j]);
 	printf("\n");
       }
@@ -1125,8 +1127,8 @@ void MappingInterp::PrintCmd()
 	     _tclCmd->orientationCmd);
 
     for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
-      if (_cmdAttrFlag & (1<<j)) {
-	printf("shapeAttr_%d: %s --> %s",j, _cmd->shapeAttrCmd[j],
+      if (_cmdAttrFlag & (1 << j)) {
+	printf("shapeAttr_%d: %s --> %s", j, _cmd->shapeAttrCmd[j],
 	       _tclCmd->shapeAttrCmd[j]);
 	printf("\n");
       }
@@ -1161,11 +1163,11 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
       break;
 
     case FloatAttr:
-      return  (double)(*((float *)ptr));
+      return (double)(*((float *)ptr));
       break;
 
     case DoubleAttr:
-      return  *((double *)ptr);
+      return *((double *)ptr);
       break;
 
     case StringAttr:
@@ -1246,18 +1248,15 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 
     int numShapeAttrs = GetDefaultNumShapeAttrs();
     ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
-    for(int j = 0; j < _maxGDataShapeAttrNum; j++) {
+    for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->shapeAttrOffset[j] >= 0) {
-	double *dPtr = (double *)(gPtr+_offsets->shapeAttrOffset[j]);
+	double *dPtr = (double *)(gPtr + _offsets->shapeAttrOffset[j]);
 	*dPtr =  ConvertOne(tPtr, &_simpleCmd->shapeAttrCmd[j], 0.1);
+#ifdef DEBUG
+	printf("ConvertGData: shape attribute %d: %.2f\n", j, *dPtr);
+#endif
       }
     }
-
-#ifdef DEBUG
-    printf("ConvertGData x:%f y:%f color %d size %f pattern %d orient %f shape %d attr0 %f attr1 %f\n", gPtr->x, gPtr->y, gPtr->color, gPtr->size,
-	   gPtr->pattern, gPtr->orientation, gPtr->shape, gPtr->shapeAttrs[0],
-	   gPtr->shapeAttrs[1]);
-#endif
 
     tPtr += tRecSize;
     gPtr += gRecSize;
