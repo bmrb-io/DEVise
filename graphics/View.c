@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.102  1997/01/23 21:43:03  wenger
+  Conditionaled out redrawing of entire background, and bug 123 workaround
+  in View class.
+
   Revision 1.101  1997/01/23 17:38:27  jussi
   Removed references to GetXMin().
 
@@ -960,7 +964,11 @@ void View::GetXAxisArea(int &x, int &y, int &width, int &height,
   width = windW;
   height = xAxis.width;
   
-  if (!_label.occupyTop) {
+  if (_label.occupyTop) {
+    // space for highlight rectangle -- corresponding change also
+    // in GetDataArea()
+    width -= 2;
+  } else {
     x += _label.extent;
     width -= _label.extent;
   }
@@ -1044,10 +1052,11 @@ void View::GetDataArea(int &x, int &y, int &width,int &height)
     y +=  _label.extent; 
     /* 
        subtract 2 from left so that data doesn't draw
-       over the highlight border
+       over the highlight border (already subtracting 2 because we moved
+       the data area 2 to the right
     */
     x += 2;
-    width = winWidth - 2;
+    width = winWidth - 4;
     height = winHeight - _label.extent;
   } else {
     /* _label occupies left of view */

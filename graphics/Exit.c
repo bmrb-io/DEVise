@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/30 23:51:07  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.12  1996/12/20 16:49:27  wenger
   Conditionaled out RTree code for libcs and attrproj.
 
@@ -61,9 +66,10 @@
 #include <unistd.h>
 
 #include "Exit.h"
+#include "Init.h"
+#include "Util.h"
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
-#include "Init.h"
 #include "Control.h"
 #include "DaliIfc.h"
 #include "ETkIfc.h"
@@ -75,23 +81,22 @@
 
 void Exit::DoExit(int code)
 {
+#if defined(DEBUG) || 1 //TEMPTEMP
+    printf("Exit::DoExit(%d)\n", code);
+#endif
+
 #if !defined(LIBCS) && !defined(ATTRPROJ)
     shutdown_system(VolumeName, RTreeFile, VolumeSize);
 #endif
-    
+
+    /* Clean out temp directory.  This code was moved here from Control.c,
+     * replacing inline code.  The cleanup should be here, so that it
+     * gets called whenever we exit (as much as is possible). */
+    char *tmpDir = Init::TmpDir();
+    ClearDir(tmpDir);
+    (void)rmdir(tmpDir);
+
 #if !defined(LIBCS) && !defined(ATTRPROJ)
-    if (Init::DoAbort()) {
-	fflush(stdout);
-	fflush(stderr);
-	abort();
-    }
-    
-    if (Init::DoAbort()) {
-	fflush(stdout);
-	fflush(stderr);
-	abort();
-    }
-    
     if (Init::DaliQuit()) {
 	(void) DaliIfc::Quit(Init::DaliServer());
     }
@@ -100,21 +105,14 @@ void Exit::DoExit(int code)
 	(void) ETkIfc::SendSimpleCommand(ETkIfc::GetServer(), "quit");
     }
     
+    if (Init::DoAbort()) {
+	fflush(stdout);
+	fflush(stderr);
+	abort();
+    }
 #endif
 
-    // hack to get rid of temp directory - this could probably be written
-    // a bit more portably, but oh well.
-    char *tmpDir =  getenv("DEVISE_TMP");
-    if (!tmpDir)
-	tmpDir = "tmp";
-    pid_t pid = getpid();
-    char buf[512];
-    DOASSERT(strlen(tmpDir) + 25 <= 512, "String space too small");
-    sprintf(buf, "rm -fr %s/DEVise_%ld", tmpDir, (long)pid);
-    system(buf);
-    
     exit(code);
-    
 }
 
 void Exit::DoAbort(char *reason, char *file, int line)
@@ -127,17 +125,7 @@ void Exit::DoAbort(char *reason, char *file, int line)
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
   ControlPanel::Instance()->DoAbort(fulltext);
-
-  if (Init::DaliQuit()) {
-    (void) DaliIfc::Quit(Init::DaliServer());
-  }
-
-  if (ETkIfc::GetQuitFlag()) {
-    (void) ETkIfc::SendSimpleCommand(ETkIfc::GetServer(), "quit");
-  }
-
 #endif
 
   DoExit(2);
-
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/01/24 16:38:24  wenger
+  Fixed bugs 078, 103, 125; also improved X font handling (does a better
+  job of finding fonts).
+
   Revision 1.20  1997/01/17 20:31:44  wenger
   Fixed bugs 088, 121, 122; put workaround in place for bug 123; added
   simulation of XOR drawing in PSWindowRep; removed diagnostic output
@@ -1391,6 +1395,14 @@ void PSWindowRep::SetFont(char *family, char *weight, char *slant,
   }
 
   _fontSize = pointSize;
+  /* Adjust the font size according to the relationship between X and
+   * PostScript, so the font size stays the same in relation to the
+   * window size. */
+  Coord x1, x2, y1, y2;
+  TransPixToPoint(0.0, 0.0, x1, y1);
+  TransPixToPoint(0.0, 1.0, x2, y2);
+  Coord yScale = ABS(y2 - y1);
+  _fontSize *= yScale;
 
   fprintf(printFile, "/%s%s%s findfont\n", family, boldString, angleString);
   fprintf(printFile, "%f scalefont\n", _fontSize);

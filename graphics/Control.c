@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/01/18 18:34:29  jussi
+  Removed inclusion of XawControl.h.
+
   Revision 1.13  1996/12/12 21:10:08  jussi
   Tmp directories removed after clean-up.
 
@@ -136,12 +139,7 @@ void ControlPanel::DoQuit()
    
   Dispatcher::Cleanup();
   
-  /* Clear tmp directory */
-  char *tmpDir = Init::TmpDir();
-  ClearDir(tmpDir);
-  (void)rmdir(tmpDir);
-  
-  Exit::DoExit(2);
+  Exit::DoExit(0);
 }
 
 /* return */

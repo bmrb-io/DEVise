@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/01/14 15:48:06  wenger
+  Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
+  flexibility in overriding startup script default; fixed bug 116
+  (off-by-one error in BufMgrFull caused buffer overflow in XWindowRep).
+
   Revision 1.31  1997/01/09 18:47:22  jussi
   Added command line options for setting tape search method.
 
@@ -549,7 +554,7 @@ void Init::DoInit(int &argc, char **argv)
 
       else if (strcmp(&argv[i][1], "version") == 0) {
 	Version::PrintInfo();
-  	Exit::DoExit(1);
+  	Exit::DoExit(0);
       }
 
       else if (strcmp(&argv[i][1], "usage") == 0) {

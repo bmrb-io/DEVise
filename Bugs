@@ -494,11 +494,10 @@ Num Date        Status  Description
 			ColorMgr::GetColorRgb() failed when printing
 			PostScript.  (Doesn't seem to be repeatable.) (rkw)
 
-122 01/16/97	OPEN	Changing mapping (forcing data to be redrawn) goofs
+122 01/16/97	FIXED	Changing mapping (forcing data to be redrawn) goofs
 			up the drawing of the view selection box. (rkw)
 			(Setting FILL_WHOLE_BACKGROUND to 0 in View.c
 			removed the fix for this bug.  rkw)
-			Deferred
 
 123 01/16/97	WORK	Load the sesson demo/COD1.tk; resize the 'Global
 			View' window; then obscure any part of that window
@@ -511,9 +510,8 @@ Num Date        Status  Description
 			tvtwm, or mwm.
 			(Workaround in View::HandleExpose().)
 
-124 01/17/97	OPEN	Drawing of the selection box gets goofed up if the
+124 01/17/97	FIXED	Drawing of the selection box gets goofed up if the
 			actual data overdraws it. (rkw)
-			Deferred
 
 125 01/22/97	FIXED	When the help window is shown, the topics do not show
 			up. (rkw)
@@ -574,6 +572,11 @@ Num Date        Status  Description
 			while the pile is drawing -> you get a PopClip
 			underflow error. (See test/3view_pile.tk for an
 			example session.) (ssl/rkw)
+
+138 01/28/97	FIXED	Scaling of fonts relative to other things drawn
+			in the view doesn't always work right in PostScript
+			output (especially if the view is very wide in
+			relation to its height). (jpm/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
