@@ -1,0 +1,169 @@
+CC = gcc
+
+BINPATH = ../bin.HP
+
+IMGLIBINCLUDE = -I../Image
+
+IMGLIBPATH = -L../bin.HP
+
+IMGLIB = -lImg
+
+JPEGLIBPATH = -L../../jpeg/bin.HP
+
+JPEGLIBINCLUDE = -I../../jpeg
+
+JPEGOBJ = ../../jpeg/bin.HP
+
+JPEGSRC = ../../jpeg
+
+VRDIR = ../VR
+
+XLIBPATH = -L/s/X11/lib
+
+XLIBINCLUDE = -I/s/X11/include
+
+JPEGLIB = -ljpeg
+
+VRLIB = -lVR
+
+VRLIBPATH = -L../bin.HP
+
+XLIB = -lX11
+
+NETLIBPATH = 
+
+NETLIB =
+
+MATHLIB = -lm
+
+INCLUDES = $(JPEGLIBINCLUDE) $(XLIBINCLUDE) $(IMGLIBINCLUDE) -I$(VRDIR)
+
+AUXSOFT = -DHAVE_JPEGLIB -DHAVE_DJPEG -DHAVE_TIFFTOPNM -DHAVE_GIFTOPNM \
+	  -DHAVE_IJG_EXTENSIONS -DHAVE_RASTTOPNM -DHAVE_FITSTOPNM
+
+CFLAGS = -D_HP -O $(INCLUDES)  $(AUXSOFT)
+
+
+
+SRC = computeSNR.c endian.c http_url.c jgSorQ.c jgetscan.c \
+      jgetscans.c jinfo.c jpegqual.c jpgtodc.c jscans.c \
+      jsuspsrc.c jview.c xdjpeg.c xpnm.c xpnmboard.c \
+      xpnmmovie.c
+
+all:
+	make xdjpeg; make xpnm; make jview; make jpegqual; make cat_url; \
+	make jgetscan; make jgetscans; make jscans; make jinfo; make jpgtodc; \
+	make xpnmboard; make xpnmmovie; make jgSorQ; make computeSNR; \
+	make endian
+
+endian: endian.o
+	$(CC) $(CFLAGS) -o $(BINPATH)/endian endian.c
+
+xdjpeg:	xdjpeg.o jsuspsrc.o
+	$(CC) $(CFLAGS)  xdjpeg.o jsuspsrc.o \
+	-o $(BINPATH)/xdjpeg \
+	$(VRLIBPATH) $(VRLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) \
+	$(XLIBPATH) $(XLIB) $(NETLIBPATH) $(NETLIB)
+
+xpnm:	xpnm.o 
+	$(CC) $(CFLAGS)  xpnm.o \
+	-o $(BINPATH)/xpnm \
+	$(VRLIBPATH) $(VRLIB) \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) \
+	$(XLIBPATH) $(XLIB) $(NETLIBPATH) $(NETLIB)
+
+xpnmboard: xpnmboard.o 
+	$(CC) $(CFLAGS) xpnmboard.o \
+	-o $(BINPATH)/xpnmboard \
+	$(VRLIBPATH) $(VRLIB) \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) \
+	$(XLIBPATH) $(XLIB) $(NETLIBPATH) $(NETLIB)
+
+xpnmmovie: xpnmmovie.o 
+	$(CC) $(CFLAGS) xpnmmovie.o \
+	-o $(BINPATH)/xpnmmovie \
+	$(VRLIBPATH) $(VRLIB) \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) \
+	$(XLIBPATH) $(XLIB) $(NETLIBPATH) $(NETLIB)
+
+$(JPEGOBJ)/rdswitch.o:
+	$(CC) $(CFLAGS) -c $(JPEGSRC)/rdswitch.c -o $(JPEGOBJ)/rdswitch.o
+
+$(JPEGOBJ)/cdjpeg.o:
+	$(CC) $(CFLAGS) -c $(JPEGSRC)/cdjpeg.c -o $(JPEGOBJ)/cdjpeg.o
+
+jpgtodc: jpgtodc.c $(JPEGOBJ)/rdswitch.o $(JPEGOBJ)/cdjpeg.o
+	$(CC) $(CFLAGS) jpgtodc.c \
+	$(JPEGOBJ)/rdswitch.o $(JPEGOBJ)/cdjpeg.o \
+	-o $(BINPATH)/jpgtodc \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB)
+
+
+jview: jview.o http_url.o
+	$(CC) $(CFLAGS) jview.o http_url.o -o $(BINPATH)/jview \
+	$(NETLIBPATH) $(NETLIB)
+
+jpegqual: jpegqual.o 
+	$(CC) $(CFLAGS)  jpegqual.o \
+	-o $(BINPATH)/jpegqual \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) \
+	$(MATHLIB)
+
+computeSNR: computeSNR.o
+	$(CC) $(CFLAGS) computeSNR.o \
+	-o $(BINPATH)/computeSNR \
+	$(IMGLIBPATH) $(IMGLIB) \
+	$(JPEGLIBPATH) $(JPEGLIB) \
+	$(MATHLIB)
+
+jinfo: jinfo.c 
+	$(CC) $(CFLAGS)  jinfo.c \
+	-o $(BINPATH)/jinfo $(JPEGLIBPATH) $(JPEGLIB)
+
+cat_url: http_url.c
+	$(CC) $(CFLAGS) -D_CAT_URL http_url.c -o $(BINPATH)/cat_url \
+	$(NETLIBPATH) $(NETLIB)
+
+jgetscan: jgetscan.c
+	$(CC) $(CFLAGS) jgetscan.c -o $(BINPATH)/jgetscan
+
+jgSorQ: jgSorQ.c
+	$(CC) $(CFLAGS) jgSorQ.c -o $(BINPATH)/jgSorQ
+
+jgetscans: jgetscans.c
+	$(CC) $(CFLAGS) jgetscans.c -o $(BINPATH)/jgetscans
+
+jscans: jscans.c
+	$(CC) $(CFLAGS) jscans.c -o $(BINPATH)/jscans
+
+clean:
+	/bin/rm *.o
+
+depend:
+	makedepend $(INCLUDES) $(SRC)
+
+
+# DO NOT DELETE
+
+jinfo.o: ../../jpeg/jpeglib.h ../../jpeg/jconfig.h ../../jpeg/jmorecfg.h
+jinfo.o: ../../jpeg/jerror.h
+jpegqual.o: ../../jpeg/jpeglib.h ../../jpeg/jconfig.h ../../jpeg/jmorecfg.h
+jpegqual.o: ../../jpeg/jerror.h
+jpgtodc.o: ../../jpeg/cdjpeg.h ../../jpeg/jinclude.h ../../jpeg/jconfig.h
+jpgtodc.o: ../../jpeg/jpeglib.h ../../jpeg/jmorecfg.h ../../jpeg/jerror.h
+jpgtodc.o: ../../jpeg/cderror.h ../../jpeg/jversion.h
+jscans.o: ../../jpeg/jinclude.h ../../jpeg/jconfig.h
+jsuspsrc.o: ../../jpeg/jinclude.h ../../jpeg/jconfig.h ../../jpeg/jpeglib.h
+jsuspsrc.o: ../../jpeg/jmorecfg.h ../../jpeg/jerror.h jsuspsrc.h
+jview.o: http_url.h
+xdjpeg.o: ../../jpeg/jpeglib.h ../../jpeg/jconfig.h ../../jpeg/jmorecfg.h
+xdjpeg.o: ../../jpeg/jerror.h jsuspsrc.h ../VR/VR.h
+xpnm.o: ../VR/VR.h
+xpnmboard.o: ../VR/VR.h
+xpnmmovie.o: ../VR/VR.h

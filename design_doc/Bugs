@@ -1421,13 +1421,18 @@ Num Date        Status  Description
 375 07/07/98	OPEN	MailOrder/a2_full.tk session is incredibly slow.
 			(kb/rkw)
 
-376 07/07/98	OPEN	Can't open test/setlink2.ds with standard data source
+376 07/07/98	FIXED	Can't open test/setlink2.ds with standard data source
 			catalog. (rkw)
 
-377 07/07/98	OPEN	Attempting to open test/setlink2.ds session with
+377 07/07/98	FIXED	Attempting to open test/setlink2.ds session with
 			my catalog causes crash on SPARC/Solaris (works on
 			Intel/Solaris). (rkw)
 			(Also crashes on Intel/Linux.)
+
+378 07/09/98	OPEN	Client/server DEVise doesn't work on Intel/Linux
+			(raven) -- server says that connections is 
+			established, but DEVise window never shows up.
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
