@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.net.*; 
 import  java.io.*;
 import  java.util.*;
@@ -103,26 +80,26 @@ public class DEViseCDataChannel implements Runnable
             for (int i = 0; i < commands.length; i++) {
                 command = commands[i];
                 try {
-                    DEViseDebugInfo.println("Sending: " + command);
-                    cmdSocket.sendCmd(command, DEViseGlobals.API_JAVA);
+                    YDebugInfo.println("Sending: " + command);
+                    cmdSocket.sendCmd(command, Globals.API_JAVA);
                     boolean isDone = false;
                     while (!isDone) {
                         response = cmdSocket.receiveRsp(false);
-                        DEViseDebugInfo.println("Received: \n" + response);
+                        YDebugInfo.println("Received: \n" + response);
                         rsp = parseStr(response);
                         if (rsp == null) {
-                            throw new DEViseNetException("Trash Data received from DEVise Server!");
+                            throw new YError("Trash Data received from DEVise Server!");
                         } else {
-                            if (rsp[rsp.length - 1].equals("JAVAC_Done") ||
-                                rsp[rsp.length - 1].startsWith("JAVAC_Error") ||
-                                rsp[rsp.length - 1].equals("JAVAC_Fail")) {
+                            if (rsp[rsp.length - 1].equals("JAVAC_Done") || rsp[rsp.length - 1].equals("{JAVAC_Done}") ||
+                                rsp[rsp.length - 1].startsWith("JAVAC_Error") || rsp[rsp.length - 1].equals("{JAVAC_Error}") ||
+                                rsp[rsp.length - 1].equals("JAVAC_Fail") || rsp[rsp.length - 1].equals("{JAVAC_Fail}")) {
                                 isDone = true;
                             }
                             
                             parseRsp();                        
                         }
                     }
-                } catch (DEViseNetException e) {
+                } catch (YError e) {
                     jsc.exitOnError(e.getMessage());
                 }
             }
@@ -156,17 +133,17 @@ public class DEViseCDataChannel implements Runnable
         return outStr;    
     }
     
-    private void parseRsp() throws DEViseNetException
+    private void parseRsp() throws YError
     {
         for (int i = 0; i < rsp.length; i++) {
-            String[] cmd = DEViseGlobals.parseStr(rsp[i], false);
+            String[] cmd = Globals.parseStr(rsp[i], false);
             if (cmd == null) 
-                throw new DEViseNetException("Trash Data received from DEVise Server!");                           
+                throw new YError("Trash Data received from DEVise Server!");                           
             
             if (cmd[0].equals("JAVAC_CreateWindow")) {
-                DEViseDebugInfo.print("Retrieving image data for window " + cmd[1] + " ... ");
+                YDebugInfo.print("Retrieving image data for window " + cmd[1] + " ... ");
                 byte[] imageData = imgSocket.receiveImg((Integer.valueOf(cmd[6])).intValue());
-                DEViseDebugInfo.println("Finished");
+                YDebugInfo.println("Finished");
                 MediaTracker tracker = new MediaTracker(jsc);
                 Toolkit kit = jsc.getToolkit();
                 Image image = kit.createImage(imageData);
@@ -177,7 +154,7 @@ public class DEViseCDataChannel implements Runnable
                 }            
                 
                 if (tracker.isErrorID(0))  
-                    throw new DEViseNetException("Can not build image from image data received!");
+                    throw new YError("Can not build image from image data received!");
                 
                 DEViseImageView view = null;
                 try  {
@@ -188,7 +165,7 @@ public class DEViseCDataChannel implements Runnable
                     Vector vRect = new Vector();
                     if (cmd.length != numOfV * 5 + 8) {
                         // something is wrong here, but leave it now
-                        DEViseDebugInfo.println("Received JAVAC_CreateWindow has incorrect format!");
+                        YDebugInfo.println("Received JAVAC_CreateWindow has incorrect format!");
                     } else {
                         for (int j = 0; j < numOfV; j++) {
                             vName.addElement(cmd[8 + j * 5]);
@@ -199,22 +176,22 @@ public class DEViseCDataChannel implements Runnable
                     }
                                                   
                     view = new DEViseImageView(jsc, cmd[1], loc, image, vName, vRect);
-                }  catch (DEViseException e) {
-                    throw new DEViseNetException("Can not open view!" + e.getMessage());
+                }  catch (YException e) {
+                    throw new YError("Can not open view!" + e.getMessage());
                 }            
                  
                 jsc.addView(view);
             } else if (cmd[0].equals("JAVAC_UpdateGData")) {
                 if ((cmd.length / 2) * 2 == cmd.length) {
                     // something is wrong here
-                    DEViseDebugInfo.println("Received JAVAC_UpdateGData has incorrect format!");
+                    YDebugInfo.println("Received JAVAC_UpdateGData has incorrect format!");
                 } else {
                     jsc.getCurrentView().updateGData(cmd);
                 }
             } else if (cmd[0].equals("JAVAC_UpdateWindow")) {
-                DEViseDebugInfo.print("Retrieving image data for window " + cmd[1] + " ... ");
+                YDebugInfo.print("Retrieving image data for window " + cmd[1] + " ... ");
                 byte[] imageData = imgSocket.receiveImg((Integer.valueOf(cmd[2])).intValue());
-                DEViseDebugInfo.println("Finished");
+                YDebugInfo.println("Finished");
                 MediaTracker tracker = new MediaTracker(jsc);
                 Toolkit kit = jsc.getToolkit();
                 Image image = kit.createImage(imageData);
@@ -225,7 +202,7 @@ public class DEViseCDataChannel implements Runnable
                 }            
                 
                 if (tracker.isErrorID(0))  
-                    throw new DEViseNetException("Can not build image from image data received!");
+                    throw new YError("Can not build image from image data received!");
                 
                 DEViseImageView view = jsc.getCurrentView();
                 view.setNewImage(image);
@@ -245,13 +222,13 @@ public class DEViseCDataChannel implements Runnable
                 
                 return;
             } else if (cmd[0].equals("JAVAC_Error")) {
-                DEViseGlobals.showMsg(jsc, cmd[1], "Warning");
+                UIGlobals.showMsg(jsc, cmd[1], "Warning");
                 return;
             } else if (cmd[0].equals("JAVAC_Fail")) {
                 jsc.exitOnError("DEVise Server Failed(Unrecoverable)!");
                 return;
             } else {
-                throw new DEViseNetException("Unrecognized commands received from DEVise Server!");
+                throw new YError("Unrecognized commands received from DEVise Server!");
             }
         }
     }        

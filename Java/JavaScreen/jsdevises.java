@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.io.*;
 import  java.net.*;
 import  java.util.*;
@@ -47,11 +24,11 @@ public class jsdevises
             if (args[i].startsWith("-CP"))  {
                 if (!args[i].substring(3).equals(""))  {
                     try  {
-                        DEViseGlobals.CMDPORT = Integer.parseInt(args[i].substring(3));
-                        if (DEViseGlobals.CMDPORT < 1 || DEViseGlobals.CMDPORT > 65535)
+                        Globals.CMDPORT = Integer.parseInt(args[i].substring(3));
+                        if (Globals.CMDPORT < 1 || Globals.CMDPORT > 65535)
                             throw new NumberFormatException();
                     }  catch (NumberFormatException e)  {
-                        System.out.println("Invalid port number " + DEViseGlobals.CMDPORT + " used in -CP field!\n");
+                        System.out.println("Invalid port number " + Globals.CMDPORT + " used in -CP field!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }
@@ -59,11 +36,11 @@ public class jsdevises
             }  else if (args[i].startsWith("-IP"))  {
                 if (!args[i].substring(3).equals(""))  {
                     try  {
-                        DEViseGlobals.IMGPORT = Integer.parseInt(args[i].substring(3));
-                        if (DEViseGlobals.IMGPORT < 1 || DEViseGlobals.IMGPORT > 65535)
+                        Globals.IMGPORT = Integer.parseInt(args[i].substring(3));
+                        if (Globals.IMGPORT < 1 || Globals.IMGPORT > 65535)
                             throw new NumberFormatException();
                     }  catch (NumberFormatException e)  {
-                        System.out.println("Invalid port number " + DEViseGlobals.IMGPORT + " used in -IP field!\n");
+                        System.out.println("Invalid port number " + Globals.IMGPORT + " used in -IP field!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }
@@ -71,11 +48,11 @@ public class jsdevises
             }  else if (args[i].startsWith("-DP"))  {        
                 if (!args[i].substring(3).equals(""))  {
                     try  {
-                        DEViseGlobals.DATAPORT = Integer.parseInt(args[i].substring(3));
-                        if (DEViseGlobals.DATAPORT < 1 || DEViseGlobals.DATAPORT > 65535)
+                        Globals.DATAPORT = Integer.parseInt(args[i].substring(3));
+                        if (Globals.DATAPORT < 1 || Globals.DATAPORT > 65535)
                             throw new NumberFormatException();
                     }  catch (NumberFormatException e)  {
-                        System.out.println("Invalid port number " + DEViseGlobals.DATAPORT + " used in -DP field!\n");
+                        System.out.println("Invalid port number " + Globals.DATAPORT + " used in -DP field!\n");
                         System.out.println(usage);
                         System.exit(1);
                     }
@@ -100,7 +77,5 @@ public class jsdevises
         cmdServerThread.start();
         Thread imgServerThread = new Thread(imgServerSocket);
         imgServerThread.start();       
-        //jdevisec newclient = new jdevisec(cmdSocket, imgSocket, dataServerSocket, dataChannel); 
-        //jsdevises newserver = new jsdevises(cmdServerSocket, imgServerSocket); 
     }
 }

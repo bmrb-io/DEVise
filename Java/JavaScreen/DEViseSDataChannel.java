@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.net.*; 
 import  java.io.*;
 import  java.util.*;
@@ -34,7 +11,7 @@ public class DEViseSDataChannel implements Runnable
     boolean isExit = true;
     boolean isError = false;
     Random rand = new Random();  
-    String myID = DEViseGlobals.ERRORID;  
+    String myID = Globals.ERRORID;  
 
     public DEViseSDataChannel(DEViseCmdServerSocket what, Socket socket) throws IOException
     {        
@@ -47,7 +24,7 @@ public class DEViseSDataChannel implements Runnable
     {
         setStatus(true);
         cmdServer.decreaseCount(this);
-        myID = DEViseGlobals.ERRORID;
+        myID = Globals.ERRORID;
            
         try {
             if (imgSocket != null) {
@@ -58,7 +35,7 @@ public class DEViseSDataChannel implements Runnable
                 cmdSocket.closeSocket();        
                 cmdSocket = null;
             }
-        } catch (DEViseNetException e) {
+        } catch (YError e) {
             // do nothing now
         }
     }
@@ -85,10 +62,10 @@ public class DEViseSDataChannel implements Runnable
     {   
         try  { 
             imgSocket = new DEViseImgSocket(what);
-            String id = new String(imgSocket.receiveBytes(DEViseGlobals.IDSIZE));
+            String id = new String(imgSocket.receiveBytes(Globals.IDSIZE));
             if (!id.equals(myID)) {
                 System.out.println("Something is wrong!");
-                imgSocket.sendBytes(DEViseGlobals.ERRORID.getBytes());
+                imgSocket.sendBytes(Globals.ERRORID.getBytes());
                 isError = true;
             } else {
                 imgSocket.sendBytes(id.getBytes());
@@ -96,7 +73,7 @@ public class DEViseSDataChannel implements Runnable
         } catch (IOException e) {
             System.out.println("Can not establish image socket connection to " + hostName);
             isError = true;            
-        } catch (DEViseNetException e) {
+        } catch (YError e) {
             System.out.println("Communication Error while receiving data from " + hostName);
             isError = true;
         }
@@ -107,10 +84,10 @@ public class DEViseSDataChannel implements Runnable
         if (!cmdServer.increaseCount(this)) {
             try {
                 setStatus(true);
-                myID = DEViseGlobals.ERRORID;
+                myID = Globals.ERRORID;
                 cmdSocket.sendBytes(myID.getBytes());  
                 close();
-            } catch (DEViseNetException e) {
+            } catch (YError e) {
                 System.out.println("Communication Error with " + hostName +" : " + e.getMessage());
             }
         } else {
@@ -130,13 +107,13 @@ public class DEViseSDataChannel implements Runnable
                 
                 if (isError) {
                     System.out.println("Can not establish image data connection with client!");
-                    cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
+                    cmdSocket.sendCmd("JAVAC_Fail", Globals.API_JAVA);
                     close();                
                 } else {
-                    cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+                    cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
                     System.out.println("Client connection from " + hostName + " is established.");
                 }
-            } catch (DEViseNetException e) {
+            } catch (YError e) {
                 close();
                 System.out.println("Communication Error with " + hostName + " : " + e.getMessage());
             }
@@ -156,59 +133,59 @@ public class DEViseSDataChannel implements Runnable
                     System.out.println("Client send failing message!");
                 } else if (cmd.startsWith("JAVAC_OpenSession")) {                    
                     if (!openSession(cmd))
-                        cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
+                        cmdSocket.sendCmd("JAVAC_Fail", Globals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_GetSessionList")) {
                     cmdSocket.sendCmd("JAVAC_UpdateSessionList test.ds test1.ds " +
                                       "test2.ds test3.ds test4.ds {test 5.ds} test6.ds " +
-                                      "test7.ds test8.ds test9.ds {test 10.ds}", DEViseGlobals.API_JAVA);
-                    cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+                                      "test7.ds test8.ds test9.ds {test 10.ds}", Globals.API_JAVA);
+                    cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_CloseCurrentSession")) {
-                    cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+                    cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_MouseAction_RubberBand")) {
                     if (!MouseAction_RubberBand(cmd))
-                        cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
+                        cmdSocket.sendCmd("JAVAC_Fail", Globals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_MouseAction_Click")) {
                     if (!MouseAction_Click(cmd))
-                        cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
+                        cmdSocket.sendCmd("JAVAC_Fail", Globals.API_JAVA);
                 } else if (cmd.startsWith("JAVAC_MouseAction_DoubleClick")) {
                     if (!MouseAction_DoubleClick(cmd))
-                        cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
+                        cmdSocket.sendCmd("JAVAC_Fail", Globals.API_JAVA);
                 } else {
-                    cmdSocket.sendCmd("JAVAC_Error {Unrecognized API command}", DEViseGlobals.API_JAVA);
-                    //cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);
+                    cmdSocket.sendCmd("JAVAC_Error {Unrecognized API command}", Globals.API_JAVA);
+                    //cmdSocket.sendCmd("JAVAC_Fail", Globals.API_JAVA);
                 }
-            } catch (DEViseNetException e) {
+            } catch (YError e) {
                 close();
                 System.out.println("Communication Error with " + hostName + " : " + e.getMessage());
             }
         }
     }
     
-    private boolean MouseAction_RubberBand(String cmd) throws DEViseNetException
+    private boolean MouseAction_RubberBand(String cmd) throws YError
     {
-        String[] argument = DEViseGlobals.parseStr(cmd, false);
+        String[] argument = Globals.parseStr(cmd, false);
         String name = "images/" + argument[1] + "-sample" + String.valueOf((int)(rand.nextFloat()*6) + ".jpg");
         byte[] imageData = getImage(name);
         if (imageData == null)
             return false;
-        cmdSocket.sendCmd("JAVAC_UpdateWindow " + argument[1] + " " + imageData.length, DEViseGlobals.API_CTL);
-        cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+        cmdSocket.sendCmd("JAVAC_UpdateWindow " + argument[1] + " " + imageData.length, Globals.API_CTL);
+        cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
         imgSocket.sendImg(imageData);
         return true;
     }
     
-    private boolean MouseAction_Click(String cmd) throws DEViseNetException
+    private boolean MouseAction_Click(String cmd) throws YError
     {
-        String[] argument = DEViseGlobals.parseStr(cmd, false);
+        String[] argument = Globals.parseStr(cmd, false);
         String value = String.valueOf(rand.nextFloat());
-        cmdSocket.sendCmd("JAVAC_UpdateRecordValue " + value, DEViseGlobals.API_CTL);
-        cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+        cmdSocket.sendCmd("JAVAC_UpdateRecordValue " + value, Globals.API_CTL);
+        cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
         return true;
     }
     
-    private boolean MouseAction_DoubleClick(String cmd) throws DEViseNetException
+    private boolean MouseAction_DoubleClick(String cmd) throws YError
     {
-        String[] argument = DEViseGlobals.parseStr(cmd, false);
+        String[] argument = Globals.parseStr(cmd, false);
         int number = (int)(rand.nextFloat() * 10) + 1;
         String label = "";
         for (int i = 0; i < number; i++) {
@@ -216,14 +193,14 @@ public class DEViseSDataChannel implements Runnable
             label = label + "http://" + argument[1] + ".homepage" + i + ".edu ";
         }
             
-        cmdSocket.sendCmd("JAVAC_UpdateGData " + label, DEViseGlobals.API_CTL);
-        cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+        cmdSocket.sendCmd("JAVAC_UpdateGData " + label, Globals.API_CTL);
+        cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
         return true;
     }
     
-    private boolean openSession(String cmd) throws DEViseNetException
+    private boolean openSession(String cmd) throws YError
     {   
-        String[] argument = DEViseGlobals.parseStr(cmd, false);
+        String[] argument = Globals.parseStr(cmd, false);
         int number = 0;
         if (argument[1].equals("test1.ds")) {
             number = 1;
@@ -242,10 +219,10 @@ public class DEViseSDataChannel implements Runnable
                 return false; 
             cmdSocket.sendCmd("JAVAC_CreateWindow view" + (i + 1) +" 0 0 400 300 " 
                              + imageData.length + " 2 name1 0 0 200 300 name2 200 0 400 300"
-                             , DEViseGlobals.API_CTL);
+                             , Globals.API_CTL);
         }
         
-        cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+        cmdSocket.sendCmd("JAVAC_Done", Globals.API_JAVA);
 
         for (int i = 0; i < number; i++) {
             //System.out.println("Start sending imageData...");

@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.awt.*;
 import  java.io.*;
 import  java.net.*;
@@ -59,7 +36,7 @@ public class jsdevisec extends Frame
     
     public Vector currSession = new Vector();
     
-    public DEViseDebugInfo debugInfo = null;
+    public YDebugInfo debugInfo = null;    
     
     public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, String arg3)
     {
@@ -72,21 +49,21 @@ public class jsdevisec extends Frame
         imgSocket = arg2;
         myID = arg3;        
                 
-        debugInfo = new DEViseDebugInfo(DEViseGlobals.ISDEBUG, DEViseGlobals.ISGUI, DEViseGlobals.ISLOG, null);
-        DEViseDebugInfo.println("Successfully connect to DEVise command and image Server - ID: " + myID);
+        debugInfo = new YDebugInfo(Globals.ISDEBUG, Globals.ISLOG);
+        YDebugInfo.println("Successfully connect to DEVise command and image Server - ID: " + myID);
         
         channel = new DEViseCDataChannel(this, cmdSocket, imgSocket);
         
         // necessary for processEvent method to work
         this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
 
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        setFont(DEViseGlobals.uifont);
+        setBackground(UIGlobals.uibgcolor);
+        setForeground(UIGlobals.uifgcolor);
+        setFont(UIGlobals.uifont);
         setLayout(new BorderLayout(2, 2));     
         
         Vector images = null;        
-        if (!DEViseGlobals.ISAPPLET) {
+        if (!Globals.ISAPPLET) {
             MediaTracker tracker = new MediaTracker(this);
             Toolkit toolkit = this.getToolkit();
             images = new Vector();
@@ -110,7 +87,7 @@ public class jsdevisec extends Frame
         
         try  {
             animPanel = new DEViseAnimPanel(this, images, 100);
-        }  catch (DEViseException e)  {
+        }  catch (YException e)  {
             exitOnError(e.getMessage());
         }
         
@@ -140,7 +117,7 @@ public class jsdevisec extends Frame
                 show();
             }
 
-            if (DEViseGlobals.ISDEBUG && DEViseGlobals.ISGUI) {
+            if (Globals.ISDEBUG) {
                 if (!debugInfo.isShowing())
                     debugInfo.show();
             } 
@@ -149,7 +126,7 @@ public class jsdevisec extends Frame
                 setVisible(false);
             }
 
-            if (DEViseGlobals.ISDEBUG && DEViseGlobals.ISGUI) {
+            if (Globals.ISDEBUG) {
                 if (debugInfo.isShowing()) 
                     debugInfo.setVisible(false);
             } 
@@ -202,7 +179,7 @@ public class jsdevisec extends Frame
     public synchronized void stopAnim()
     {
         isAvailable = true;
-        stopButton.setBackground(DEViseGlobals.buttonbgcolor);
+        stopButton.setBackground(UIGlobals.buttonbgcolor);
         animPanel.stop();
     }
     
@@ -244,8 +221,10 @@ public class jsdevisec extends Frame
         }
         
         viewPanel = new Panel(new GridLayout(row, column));
+        viewPanel.setBackground(UIGlobals.uibgcolor);
         for (int i = 0; i < number; i++)  {
-            ScrollPane tmpPanel = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);                             
+            ScrollPane tmpPanel = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED); 
+            tmpPanel.setBackground(UIGlobals.uibgcolor);
             tmpPanel.add((DEViseImageView)allViews.elementAt(i));
             viewPanel.add(tmpPanel);
         }
@@ -296,6 +275,8 @@ public class jsdevisec extends Frame
                             if (!isSessionOpened) {
                                 channel.stop();
                                 channel.start("JAVAC_GetSessionList");
+                                
+                                setStatus(false);
                                 
                                 if (openSessionHandler != null && openSessionHandler.isAlive()) {
                                     openSessionHandler.stop();
@@ -370,15 +351,15 @@ public class jsdevisec extends Frame
         if (isQuit)
             return;
             
-        String result = DEViseGlobals.showMsg(this, "Do you really want to quit?", "Confirm", DEViseGlobals.OP_YESNO);
-        if (result.equals(DEViseGlobals.NO_OP))  {
+        String result = UIGlobals.showMsg(this, "Do you really want to quit?", "Confirm", UIGlobals.OP_YESNO);
+        if (result.equals(UIGlobals.NO_OP))  {
             return;
         }
         
         if (channel.dataChannel != null) {
             if (channel.dataChannel.isAlive()) {
-                if ((DEViseGlobals.showMsg(this, "Still talking to Server - Continue quit?", "Confirm",
-                                  DEViseGlobals.OP_YESNO)).equals(DEViseGlobals.NO_OP)) {
+                if ((UIGlobals.showMsg(this, "Still talking to Server - Continue quit?", "Confirm",
+                                  UIGlobals.OP_YESNO)).equals(UIGlobals.NO_OP)) {
                     return;
                 } else {
                     channel.stop();
@@ -389,12 +370,12 @@ public class jsdevisec extends Frame
         isQuit = true;
         
         stopAnim();
-        debugInfo.close();
+        debugInfo.dispose();
         dispose();
 
         try {
-            cmdSocket.sendCmd("JAVAC_Exit", DEViseGlobals.API_JAVA);
-            if (!DEViseGlobals.ISAPPLET) {
+            cmdSocket.sendCmd("JAVAC_Exit", Globals.API_JAVA);
+            if (!Globals.ISAPPLET) {
                 if (imgSocket != null) {
                     imgSocket.closeSocket();
                     imgSocket = null;
@@ -404,8 +385,8 @@ public class jsdevisec extends Frame
                     cmdSocket = null;
                 }
             }
-        } catch (DEViseNetException e) {
-            if (!DEViseGlobals.ISAPPLET) {
+        } catch (YError e) {
+            if (!Globals.ISAPPLET) {
                 if (isFatalError)
                     System.out.println("Fatal error happened in program execution!");
                 System.out.println("Can not close socket connection!");
@@ -414,7 +395,7 @@ public class jsdevisec extends Frame
         }
         
 
-        if (!DEViseGlobals.ISAPPLET) {
+        if (!Globals.ISAPPLET) {
             if (isFatalError) {
                 System.out.println("Fatal error happened in program execution!");
                 System.exit(1);
@@ -426,7 +407,7 @@ public class jsdevisec extends Frame
     
     public void exitOnError(String msg)
     {
-        String result = DEViseGlobals.showMsg(this, "Error occurs in the Program\n" + msg + "\nPlease press Exit to quit the program!", "Confirm");
+        String result = UIGlobals.showMsg(this, "Error occurs in the Program\n" + msg + "\nPlease press Exit to quit the program!", "Confirm");
         isFatalError = true;
         channel.stop();
     }
@@ -446,8 +427,8 @@ class DEViseOpenDlg extends Dialog
     private jsdevisec jsc = null;
     private boolean status = false;
     private String sessionName = null;
+    private List fileList = null;
     private Label label = new Label("Current Available Session:");
-    private List fileList = new List(10, false);
     private Button okButton = new Button("OK");
     private Button cancelButton = new Button("Cancel");
     
@@ -457,13 +438,14 @@ class DEViseOpenDlg extends Dialog
         
         jsc = what;
          
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        setFont(DEViseGlobals.uifont);
+        setBackground(UIGlobals.uibgcolor);
+        setForeground(UIGlobals.uifgcolor);
+        setFont(UIGlobals.uifont);
 
-        fileList.setBackground(DEViseGlobals.textbgcolor);
-        fileList.setForeground(DEViseGlobals.textfgcolor);
-        fileList.setFont(DEViseGlobals.textfont);
+        fileList = new List(10, false);
+        fileList.setBackground(UIGlobals.textbgcolor);
+        fileList.setForeground(UIGlobals.textfgcolor);
+        fileList.setFont(UIGlobals.textfont);
         
         int howMany = jsc.currSession.size();
         for (int i = 0; i < howMany; i++) 

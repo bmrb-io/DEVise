@@ -1,27 +1,5 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.applet.*;
+import  java.awt.event.*;
 import  java.awt.*;
 import  java.net.*;
 import  java.io.*;
@@ -29,91 +7,58 @@ import  java.util.*;
 
 public class jsa extends Applet
 {
+    URL baseURL = null;
+    String hostname = null;
+    
+    Button button = null;
+    TextArea info = null;
+    
+    boolean isStarted = false;
     jsdevisec client = null;
     DEViseCmdSocket cmdSocket = null;
     DEViseImgSocket imgSocket = null;
 
-    public void init()    
+    public void init()
     {
-        URL url = getDocumentBase();           
-        DEViseGlobals.DEVISEHOST = url.getHost();
-        showStatus(DEViseGlobals.DEVISEHOST);
-                            
-        MediaTracker tracker = new MediaTracker(this);
-        Vector images = new Vector();
-        Image image = null;
-        for (int i = 0; i < 4; i++)  {        
-            image = getImage(url, "devise" + i + ".gif");
-            tracker.addImage(image, 0);
-            try  {
-                tracker.waitForID(0);
-            }  catch (InterruptedException e)  {
-            }
+        baseURL = getDocumentBase();
+        hostname = baseURL.getHost();
         
-            if (tracker.isErrorID(0)) {
-                showStatus("Can not get symbols of DEVise!");
-                return;
-            }
-                                                      
-            images.addElement(image);
-        }
+        setLayout(new BorderLayout(10, 10));
         
-        showStatus("Successfully get symbols of DEVise");
+        button = new Button("Start DEVise");
+        button.setBackground(UIGlobals.buttonbgcolor);
+        button.setForeground(UIGlobals.buttonfgcolor);
+        button.setFont(UIGlobals.buttonfont);        
+        add(button, BorderLayout.NORTH);
         
-        String myID = DEViseGlobals.ERRORID;
-        String hostname = "localhost";                            
-        try  {
-            cmdSocket = new DEViseCmdSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.CMDPORT);
-            try {   
-                myID = new String(cmdSocket.receiveBytes(DEViseGlobals.IDSIZE));
-                
-                if (myID == null || myID.length() != DEViseGlobals.IDSIZE || myID.equals(DEViseGlobals.ERRORID)) {
-                    showStatus("Connection to DEVise Server is rejected!");
-                    destroy();
-                    return;
-                }
-            } catch (DEViseNetException e) {
-                showStatus(e.getMessage());
-                return;
-            }
-            
-            imgSocket = new DEViseImgSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.IMGPORT);
-            try {
-                
-                imgSocket.sendBytes(myID.getBytes());
-                String tempID = new String(imgSocket.receiveBytes(DEViseGlobals.IDSIZE));
-                if (tempID == null || tempID.equals(DEViseGlobals.ERRORID) || !tempID.equals(myID)) {
-                    showStatus("Can not connect to DEVise Image Server!");
-                    destroy();
-                    return; 
-                } 
-                
-                String rsp = cmdSocket.receiveRsp(false);
-                if (!rsp.equals("JAVAC_Done")) {
-                    showStatus("Can not connect to DEVise Image Server!");
-                    destroy();
-                    return;
-                }
-            } catch (DEViseNetException e) {
-                showStatus("Communication error: " + e.getMessage());
-                destroy();
-                return;
-            }
-        }  catch (UnknownHostException e)  {
-            showStatus("Can not find " + DEViseGlobals.DEVISEHOST);
-            destroy();
-            return;
-        }  catch (IOException e)  {
-            showStatus("Can not open connection to DEVise server at " + DEViseGlobals.DEVISEHOST);
-            destroy();
-            return;
-        }
-                
-        DEViseGlobals.ISAPPLET = true;
+        info = new TextArea(5, 40);
+        info.setBackground(UIGlobals.textbgcolor);
+        info.setForeground(UIGlobals.textfgcolor);
+        info.setFont(UIGlobals.textfont);
+        add(info, BorderLayout.SOUTH);
         
-        showStatus("Successfully connect to Server command and image socket!");
-
-        client = new jsdevisec(cmdSocket, imgSocket, myID, images); 
+        //pack();
+        //show();
+        
+        button.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)                    
+                    {
+                        if (isStarted) {
+                            if (client != null && !client.getQuitStatus()) {
+                                info.append("Please close DEVise Screen first!\n");
+                            } else {
+                                closeJS();
+                                isStarted = false;
+                                button.setLabel("Start DEVise");
+                            }
+                        } else {
+                            startJS();
+                            if (isStarted)
+                                button.setLabel("Stop DEVise");                            
+                        }
+                    }
+                });               
     }
 
     public void start()
@@ -123,7 +68,7 @@ public class jsa extends Applet
     }
 
     public void stop()
-    { 
+    {
         if (client != null && !client.getQuitStatus())
             client.displayMe(false);
     }
@@ -133,21 +78,103 @@ public class jsa extends Applet
         if (client != null && !client.getQuitStatus()) {
             client.quit();
             client = null;
-        } 
+        }
+
+        closeJS();
+        isStarted = false;
         
+        super.destroy();
+    }
+    
+    public void closeJS()
+    {
         try {
+            info.append("Start closing socket connection to DEVise Server ...\n");
             if (imgSocket != null) {
                 imgSocket.closeSocket();
                 imgSocket = null;
             }
             if (cmdSocket != null) {
-                cmdSocket.closeSocket(); 
+                cmdSocket.closeSocket();
                 cmdSocket = null;
             }
-        } catch (DEViseNetException e) {
-            showStatus("Can not close socket connection!");
-        }    
+            info.append("Successfully closing socket connection to DEVise Server!\n");
+        } catch (YError e) {
+            info.append("Can not close socket connection!\n");
+        }
+    }
+    
+    public void startJS() 
+    {        
+        info.append("Trying to load DEVise Symbol ...\n");
+        MediaTracker tracker = new MediaTracker(this);
+        Vector images = new Vector();
+        Image image = null;
+        for (int i = 0; i < 4; i++)  {
+            image = getImage(baseURL, "devise" + i + ".gif");
+            tracker.addImage(image, 0);
+            try  {
+                tracker.waitForID(0);
+            }  catch (InterruptedException e)  {
+            }
 
-        super.destroy();
+            if (tracker.isErrorID(0)) {
+                info.append("Can not load DEVise Symbol!\n");
+                return;
+            }
+
+            images.addElement(image);
+        }
+        info.append("Successfully load DEVise Symbol!\n");
+        
+        isStarted = true;
+
+        String myID = Globals.ERRORID;
+        try  {
+            info.append("Trying to connect to DEVise CMD Server at " + hostname + " ...\n");        
+            cmdSocket = new DEViseCmdSocket(hostname, Globals.CMDPORT);
+            try {
+                myID = new String(cmdSocket.receiveBytes(Globals.IDSIZE));
+                if (myID == null || myID.length() != Globals.IDSIZE || myID.equals(Globals.ERRORID)) {
+                    info.append("Can not open connection to DEVise CMD Server!\n");
+                    return;
+                }
+            } catch (YError e) {
+                info.append(e.getMessage() + "\n");
+                return;
+            }
+            info.append("Successfully connect to DEVise CMD Server!\n");
+            
+            info.append("Trying to connect to DEVise IMG Server at " + hostname + " ...\n");
+            imgSocket = new DEViseImgSocket(hostname, Globals.IMGPORT);
+            try {
+                imgSocket.sendBytes(myID.getBytes());
+                String tempID = new String(imgSocket.receiveBytes(Globals.IDSIZE));
+                if (tempID == null || tempID.equals(Globals.ERRORID) || !tempID.equals(myID)) {
+                    info.append("Can not open connection to DEVise IMG Server!\n");
+                    return;
+                }
+                String rsp = cmdSocket.receiveRsp(false);
+                if (!rsp.equals("JAVAC_Done")) {
+                    info.append("Can not open connection to DEVise Img Server!\n");
+                    return;
+                } 
+                info.append("Successfully connect to DEVise IMG Server!\n");
+            } catch (YError e) {
+                info.append(e.getMessage() + "\n");
+                return;
+            }
+        }  catch (UnknownHostException e)  {
+            info.append("Can not find host " + hostname + "\n");
+            return;
+        }  catch (IOException e)  {
+            info.append("Communication Error -> " + e.getMessage() + "\n");
+            return;
+        }
+        
+        Globals.ISAPPLET = true;
+
+        client = new jsdevisec(cmdSocket, imgSocket, myID, images);
     }
 }
+

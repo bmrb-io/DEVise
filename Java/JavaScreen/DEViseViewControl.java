@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import java.awt.*;
 import java.awt.event.*;
 
@@ -36,9 +13,9 @@ public class DEViseViewControl extends Panel
     {
         jsc = what;
       
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        setFont(DEViseGlobals.uifont);
+        setBackground(UIGlobals.uibgcolor);
+        setForeground(UIGlobals.uifgcolor);
+        setFont(UIGlobals.uifont);
         setLayout(new GridLayout(1, 0));
         
         DEViseImageView view = jsc.getCurrentView();

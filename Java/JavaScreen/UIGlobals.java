@@ -1,46 +1,14 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
+import java.awt.*; 
+import java.awt.event.*;
+import java.util.*;
 
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
-import  java.util.*;
-import  java.awt.*; 
-import  java.awt.event.*;
-
-// Defines global constants, global variables and global functions used in DEVise Client
-public final class DEViseGlobals
+public final class UIGlobals
 {
     // global constants
-    public static final boolean ISDEBUG = true, ISLOG = true, ISGUI = true;
-    public static final int IDSIZE = 6;
-    public static final String ERRORID = "-1    ";
-    public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2, API_CTL = 3, API_JAVA = 5;
     public static final String NO_OP = new String("   No   "), YES_OP = new String(" Yes "), OK_OP = new String("   OK   "), CANCEL_OP = new String("Cancel");
     public static final int OP_OK = 0, OP_YESNO = 1, OP_OKCANCEL = 2, OP_YESNOCANCEL = 3;
-    //public static final Cursor WAITCURSOR = new Cursor(Cursor.WAIT_CURSOR);
         
     // global variables
-    public static String DEVISEHOST = new String("localhost");
-    public static int CMDPORT = 6100, IMGPORT = 6400, DATAPORT = 6124;
-    public static boolean ISAPPLET = false;
     public static Color uibgcolor = new Color(64, 96, 0);    
     public static Color uifgcolor = Color.white;
     public static Color dialogbgcolor = new Color(64, 96, 0);    
@@ -54,93 +22,7 @@ public final class DEViseGlobals
     public static Font textfont = new Font("Serif", Font.PLAIN, 14);
     public static Font buttonfont = new Font("Serif", Font.PLAIN, 14);
     
-    // global functions    
-    public static String[] parseStr(String inputStr, boolean keepCurly)
-    {
-        // return null if unsuccessful
-        String[] outputStr = null;
-        
-        // Check empty string
-        if (inputStr.equals(""))  {
-            outputStr = new String[1];
-            outputStr[0] = new String("");
-            return outputStr;
-        }
-
-        Vector strBuffer = new Vector();
-        byte isInit = 0, isWhitespace = 1, isCurly = 2, isCurlyChar = 3, isChar = 4, state = 0;
-        char testChar;
-        StringBuffer buffer = new StringBuffer("");
-        int i;
-        
-        for (i = 0; i < inputStr.length(); i++)  {
-            testChar = inputStr.charAt(i);
-            if (testChar == '{')  {
-                if (state == isInit || state == isWhitespace)  {
-                    if (keepCurly)
-                        buffer.append(testChar);
-                }  else if (state == isCurly || state == isCurlyChar)  {
-                    return null;
-                }  else if (state == isChar)  {                    
-                    strBuffer.addElement(buffer.toString());
-                    buffer = new StringBuffer("");
-                }  else  {
-                    return null;
-                }
-                state = isCurly;
-            }  else if (testChar == '}')  {
-                if (state == isInit || state == isWhitespace || state == isChar)  {
-                    return null;
-                }  else if (state == isCurlyChar || state == isCurly)  {
-                    if (keepCurly)
-                        buffer.append(testChar);
-                    strBuffer.addElement(buffer.toString());
-                    buffer = new StringBuffer("");
-                }  else  {
-                    return null;
-                }
-                state = isWhitespace;
-            //}  else if (testChar == ' ' || testChar == '\n' | testChar == '\t')  {
-            } else if (testChar == ' ') {
-                if (state == isCurlyChar || state == isCurly)  {
-                    buffer.append(testChar);
-                    state = isCurlyChar;
-                }  else if (state == isInit || state == isWhitespace)  {
-                    state = isWhitespace;
-                }  else if (state == isChar)  {
-                    strBuffer.addElement(buffer.toString());
-                    buffer = new StringBuffer("");
-                    state = isWhitespace;
-                }                
-            }  else  {
-                if (state == isInit || state == isWhitespace || state == isChar)  {
-                    buffer.append(testChar);
-                    state = isChar;
-                }  else if (state == isCurly || state == isCurlyChar)  {
-                    buffer.append(testChar);                
-                    state = isCurlyChar;
-                }
-            }
-        }
-        
-        if (state == isChar)  {
-            strBuffer.addElement(buffer.toString());
-        }  else if (state == isWhitespace)  {
-            if (strBuffer.size() == 0)  {
-                strBuffer.addElement(buffer.toString());
-            }
-        }  else  {
-            return null;
-        }
-        
-        outputStr = new String[strBuffer.size()];
-        for (i = 0; i < strBuffer.size(); i++)  {
-            outputStr[i] = (String)strBuffer.elementAt(i);
-        }
-        
-        return outputStr;
-    }
-    
+    // global functions        
     public static String showMsg(Frame frame, String msg, String title, int style)
     {
         DEViseMSGDlg dlg = new DEViseMSGDlg(frame, msg, title, style);
@@ -150,7 +32,7 @@ public final class DEViseGlobals
     
     public static String showMsg(Frame frame, String msg, String title)
     {
-        DEViseMSGDlg dlg = new DEViseMSGDlg(frame, msg, title, DEViseGlobals.OP_OK);
+        DEViseMSGDlg dlg = new DEViseMSGDlg(frame, msg, title, UIGlobals.OP_OK);
         dlg.show();
         return dlg.getResult();                
     }
@@ -174,30 +56,30 @@ final class DEViseMSGDlg extends Dialog
         int i;
         
         switch (style)  {
-        case DEViseGlobals.OP_OK:
+        case UIGlobals.OP_OK:
             button = new Button[1];
-            button[0] = new Button(DEViseGlobals.OK_OP);
+            button[0] = new Button(UIGlobals.OK_OP);
             break;
-        case DEViseGlobals.OP_YESNO:
+        case UIGlobals.OP_YESNO:
             button = new Button[2];
-            button[0] = new Button(DEViseGlobals.YES_OP);
-            button[1] = new Button(DEViseGlobals.NO_OP);            
+            button[0] = new Button(UIGlobals.YES_OP);
+            button[1] = new Button(UIGlobals.NO_OP);            
             break;
-        case DEViseGlobals.OP_OKCANCEL:
+        case UIGlobals.OP_OKCANCEL:
             button = new Button[2];
-            button[0] = new Button(DEViseGlobals.OK_OP);
-            button[1] = new Button(DEViseGlobals.CANCEL_OP);            
+            button[0] = new Button(UIGlobals.OK_OP);
+            button[1] = new Button(UIGlobals.CANCEL_OP);            
             break;
-        case DEViseGlobals.OP_YESNOCANCEL:
+        case UIGlobals.OP_YESNOCANCEL:
             button = new Button[3];
-            button[0] = new Button(DEViseGlobals.YES_OP);
-            button[1] = new Button(DEViseGlobals.NO_OP);
-            button[2] = new Button(DEViseGlobals.CANCEL_OP);
+            button[0] = new Button(UIGlobals.YES_OP);
+            button[1] = new Button(UIGlobals.NO_OP);
+            button[2] = new Button(UIGlobals.CANCEL_OP);
             break;
         default: 
             isStyleCorrect = false;
             button = new Button[1];
-            button[0] = new Button(DEViseGlobals.OK_OP);
+            button[0] = new Button(UIGlobals.OK_OP);
             break;
         }
         
@@ -224,7 +106,7 @@ final class DEViseMSGDlg extends Dialog
                     }                    
                 }  catch (NoSuchElementException e)  {
                     button = new Button[1];
-                    button[0] = new Button(DEViseGlobals.OK_OP);                   
+                    button[0] = new Button(UIGlobals.OK_OP);                   
                     label = new Label[1];
                     label[0] = new Label("DEVise Error #0801 - DEVise Internal Error!");
                 }                            
@@ -234,9 +116,9 @@ final class DEViseMSGDlg extends Dialog
             label[0] = new Label("DEVise Error #0802 - Unsupported Dialog Style!");
         }
         
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        setFont(DEViseGlobals.uifont);
+        setBackground(UIGlobals.uibgcolor);
+        setForeground(UIGlobals.uifgcolor);
+        setFont(UIGlobals.uifont);
                         
         // building the panel that display messages
         panel1.setLayout(new GridLayout(0, 1, 0, 0));        
@@ -246,9 +128,9 @@ final class DEViseMSGDlg extends Dialog
         // building the panel that display buttons
         panel2.setLayout(new GridLayout(1, 0, 10, 0));
         for (i = 0; i < button.length; i++)  {
-            button[i].setBackground(DEViseGlobals.buttonbgcolor);
-            button[i].setForeground(DEViseGlobals.buttonfgcolor);
-            button[i].setFont(DEViseGlobals.buttonfont);
+            button[i].setBackground(UIGlobals.buttonbgcolor);
+            button[i].setForeground(UIGlobals.buttonfgcolor);
+            button[i].setFont(UIGlobals.buttonfont);
             button[i].setActionCommand(button[i].getLabel());            
             panel2.add(button[i]);
         }

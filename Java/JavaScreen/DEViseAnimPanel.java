@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.awt.*;
 import  java.awt.event.*;
 import  java.awt.image.*;
@@ -39,10 +16,10 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     private int waitInterval = 0;
     private boolean isAnimated = false;
     
-    public DEViseAnimPanel(jsdevisec what, Vector array, int time) throws DEViseException
+    public DEViseAnimPanel(jsdevisec what, Vector array, int time) throws YException
     {
         if (what == null || array == null)
-            throw new DEViseException("NULL argument in DEViseAnimPanel constructor!");
+            throw new YException("NULL argument in DEViseAnimPanel constructor!");
        
         jsc = what;
         images = array;
@@ -50,25 +27,25 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         
         imageCount = images.size();        
         if (imageCount == 0)  
-            throw new DEViseException("Empty image list received in DEViseAnimPanel constructor!");
+            throw new YException("Empty image list received in DEViseAnimPanel constructor!");
         
         // assume all image in the list has same size
         currentImg = (Image)images.elementAt(0);
         if (currentImg == null)  
-            throw new DEViseException("NULL image received in DEViseAnimPanel constructor!");            
+            throw new YException("NULL image received in DEViseAnimPanel constructor!");            
         imageWidth = currentImg.getWidth(this);
         imageHeight = currentImg.getHeight(this);
         if (imageWidth <= 0 || imageHeight <= 0) 
-            throw new DEViseException("Empty image received in DEViseAnimPanel constructor!");            
+            throw new YException("Empty image received in DEViseAnimPanel constructor!");            
                 
         for (int i = 1; i < imageCount; i++)  {
             Image image = (Image)images.elementAt(i);
             if (image == null)
-                throw new DEViseException("Empty image received in DEViseAnimPanel constructor!");                
+                throw new YException("Empty image received in DEViseAnimPanel constructor!");                
             int width = image.getWidth(this);
             int height = image.getHeight(this);
             if (width != imageWidth || height != imageHeight)
-                throw new DEViseException("Different image size encounter in DEViseAnimPanel constructor!");
+                throw new YException("Different image size encounter in DEViseAnimPanel constructor!");
         }
         
         minSize = new Dimension(imageWidth, imageHeight);
@@ -110,7 +87,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
                 g.drawImage(currentImg, 0, 0, this);
             }
         }  else  {
-            g.setColor(DEViseGlobals.uibgcolor);
+            g.setColor(UIGlobals.uibgcolor);
             g.fillRect(0, 0, imageWidth, imageHeight);
         }
     }

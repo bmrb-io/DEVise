@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.io.*;
 import  java.net.*;
 
@@ -46,7 +23,7 @@ public class DEViseCmdSocket
         is = new DataInputStream(socket.getInputStream());
     }
 
-    public void sendBytes(byte[] data) throws DEViseNetException
+    public void sendBytes(byte[] data) throws YError
     {
         if (data == null)
             return; 
@@ -55,11 +32,11 @@ public class DEViseCmdSocket
             os.write(data, 0, data.length);    
             os.flush();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while sending data!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while sending data!");
         }
     }
     
-    public byte[] receiveBytes(int howMany) throws DEViseNetException
+    public byte[] receiveBytes(int howMany) throws YError
     {
         if (howMany < 1)
             return null;
@@ -69,38 +46,38 @@ public class DEViseCmdSocket
             is.readFully(data);
             return data;
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while receiving data!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while receiving data!");
         }
     }
 /*    
-    public void sendInt(int data) throws DEViseNetException
+    public void sendInt(int data) throws YError
     {
         try {
             os.writeInt(data);
             os.flush();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while sending integer data!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while sending integer data!");
         }        
     }
     
-    public int receiveInt() throws DEViseNetException
+    public int receiveInt() throws YError
     {
         try {
             return is.readInt();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while receiving integer data!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while receiving integer data!");
         }            
     }
 */    
-    public void sendCmd(String cmd, short flag) throws DEViseNetException
+    public void sendCmd(String cmd, short flag) throws YError
     {
         short nelem = 0, size = 0;
         short i;
         
         try  {
-            String[] cmdBuffer = DEViseGlobals.parseStr(cmd, true);
+            String[] cmdBuffer = Globals.parseStr(cmd, true);
             if (cmdBuffer == null)
-                throw new DEViseNetException("DEVise Command Socket Error: NULL API Command!");
+                throw new YError("DEVise Command Socket Error: NULL API Command!");
             
             nelem = (short)cmdBuffer.length;
             for (i = 0; i < nelem; i++)  {
@@ -119,11 +96,11 @@ public class DEViseCmdSocket
             
             os.flush();
         }  catch (IOException e)  {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while sending API commands!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while sending API commands!");
         }
     }
     
-    public String receiveRsp(boolean header) throws DEViseNetException
+    public String receiveRsp(boolean header) throws YError
     {
         String response = new String("");
         short flag = 0, nelem = 0, size = 0, i;
@@ -133,26 +110,26 @@ public class DEViseCmdSocket
             while (!isEnd)  {        
                 flag = is.readShort();
                 switch (flag)  {
-                case DEViseGlobals.API_CMD:
+                case Globals.API_CMD:
                     if (header)
                         response = response + "(CMD) -> ";                    
                     isEnd = true;
                     break;
-                case DEViseGlobals.API_ACK:
+                case Globals.API_ACK:
                     if (header)
                         response = response + "(ACK) -> ";                    
                     isEnd = true;
                     break;
-                case DEViseGlobals.API_NAK:
+                case Globals.API_NAK:
                     if (header)
                         response = response + "(NAK) -> ";                    
                     isEnd = true;
                     break;
-                case DEViseGlobals.API_CTL:
+                case Globals.API_CTL:
                     if (header)
                         response = response + "(CTL) -> ";                    
                     break;
-                case DEViseGlobals.API_JAVA:
+                case Globals.API_JAVA:
                     if (header)
                         response = response + "(JAV) -> ";
                     isEnd = true;
@@ -184,18 +161,18 @@ public class DEViseCmdSocket
             
             return response;
         }  catch (IOException e)  {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while receiving API responses!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while receiving API responses!");
         }
     }
     
-    public void closeSocket() throws DEViseNetException
+    public void closeSocket() throws YError
     {
         try  {                               
             os.close();
             is.close();
             socket.close();
         }  catch (IOException e)  {
-            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while closing socket connection!");
+            throw new YError("DEVise Command Socket Error: Communication Error occured while closing socket connection!");
         }
     }    
 }

@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.awt.*;
 import  java.awt.event.*;
 import  java.awt.image.*;
@@ -49,10 +26,10 @@ public class DEViseImageView extends Canvas
     int mouseAction = 0;
     int x0, y0, w, h;
         
-    public DEViseImageView(jsdevisec what, String name, Rectangle loc, Image img, Vector vname, Vector rect) throws DEViseException
+    public DEViseImageView(jsdevisec what, String name, Rectangle loc, Image img, Vector vname, Vector rect) throws YException
     {
         if (what == null || name == null || loc == null || img == null || vname == null || rect == null)
-            throw new DEViseException("NULL argument in DEViseImageView constructor!");
+            throw new YException("NULL argument in DEViseImageView constructor!");
             
         jsc = what;
         viewName = name;
@@ -99,7 +76,7 @@ public class DEViseImageView extends Canvas
     public synchronized void setNewImage(Image img)
     {   
         if (img == null)  {
-            DEViseDebugInfo.println("NULL argument in setNewImage!");
+            YDebugInfo.println("NULL argument in setNewImage!");
             return;
         }
             
@@ -107,8 +84,9 @@ public class DEViseImageView extends Canvas
         imageWidth = image.getWidth(this);
         imageHeight = image.getHeight(this);
         minSize = new Dimension(imageWidth, imageHeight);
-        
         setMouseAction(0);
+        
+        setSize(minSize);
         repaint();
     }
     
@@ -207,17 +185,31 @@ public class DEViseImageView extends Canvas
                 }
             }
             
-        }        
+        }                
+    }
+    
+    public Point correctPoint(Point p)
+    {
+        if (p.x < 0)
+            p.x = 0;
+        if (p.x >= imageWidth)
+            p.x = imageWidth - 1;
+        if (p.y < 0)
+            p.y = 0;
+        if (p.y >= imageHeight)
+            p.y = imageHeight - 1;
+     
+        return p;
     }                                     
                                      
     // start of class ViewMouseListener
     class ViewMouseListener extends MouseAdapter       
-    {     
-        private MouseClickHandler mouseClickHandler = null;
+    {             
+        MouseClickHandler mouseClickHandler = null;
         
         public void mousePressed(MouseEvent event)
         {                   
-            sp = event.getPoint();
+            sp = correctPoint(event.getPoint());
             ep = sp;
 
             if (!isSelected)  {
@@ -228,9 +220,9 @@ public class DEViseImageView extends Canvas
             
         public void mouseReleased(MouseEvent event)
         {                
-            ep = event.getPoint();
+            ep = correctPoint(event.getPoint());
 
-            if (sp.equals(ep)) {
+            if (sp.x == ep.x || sp.y == ep.y) {
                 setMouseAction(0);
                 repaint();
                 return;
@@ -247,6 +239,8 @@ public class DEViseImageView extends Canvas
         public void mouseClicked(MouseEvent event)
         {   
             cp = event.getPoint();
+            if (cp.x < 0 || cp.x >= imageWidth || cp.y < 0 || cp.y >= imageHeight)
+                return;
             
             if (event.getClickCount() > 1)  {
                 if (mouseClickHandler != null)
@@ -286,7 +280,7 @@ public class DEViseImageView extends Canvas
     {  
         public void mouseDragged(MouseEvent event)
         {
-            ep = event.getPoint();
+            ep = correctPoint(event.getPoint());
             jsc.viewInfo.updateInfo(ep.x, ep.y);
             
             setMouseAction(2);
@@ -295,7 +289,7 @@ public class DEViseImageView extends Canvas
         
         public void mouseMoved(MouseEvent event)
         {
-            ep = event.getPoint();
+            ep = correctPoint(event.getPoint());
             if (isSelected) {
                 jsc.viewInfo.updateInfo(ep.x, ep.y);
             }

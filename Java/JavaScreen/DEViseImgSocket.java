@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.io.*;
 import  java.net.*;
 
@@ -48,18 +25,18 @@ public class DEViseImgSocket
         is = new DataInputStream(socket.getInputStream());
     }
           
-    public void closeSocket() throws DEViseNetException
+    public void closeSocket() throws YError
     {
         try  {                               
             os.close();
             is.close();
             socket.close();
         }  catch (IOException e)  {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while closing socket connection!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while closing socket connection!");
         }
     } 
     
-    public void sendBytes(byte[] data) throws DEViseNetException
+    public void sendBytes(byte[] data) throws YError
     {
         if (data == null)
             return;
@@ -67,11 +44,11 @@ public class DEViseImgSocket
             os.write(data, 0, data.length);    
             os.flush();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while sending data!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while sending data!");
         }
     }
     
-    public byte[] receiveBytes(int howMany) throws DEViseNetException
+    public byte[] receiveBytes(int howMany) throws YError
     {
         if (howMany < 1)
             return null;
@@ -81,47 +58,47 @@ public class DEViseImgSocket
             is.readFully(data);
             return data;
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while receiving data!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while receiving data!");
         }
     }
 /*    
-    public void sendInt(int data) throws DEViseNetException
+    public void sendInt(int data) throws YError
     {
         try {
             os.writeInt(data);
             os.flush();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while sending integer data!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while sending integer data!");
         }        
     }
     
-    public int receiveInt() throws DEViseNetException
+    public int receiveInt() throws YError
     {
         try {
             return is.readInt();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while receiving integer data!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while receiving integer data!");
         }            
     }
 */    
-    public void sendImg(byte[] imageData) throws DEViseNetException
+    public void sendImg(byte[] imageData) throws YError
     {   
         try {
             os.write(imageData, 0, imageData.length);
             os.flush();
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while sending image data!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while sending image data!");
         }
     }
     
-    public byte[] receiveImg(int imageSize) throws DEViseNetException
+    public byte[] receiveImg(int imageSize) throws YError
     {   
         byte[] imageData = new byte[imageSize];
         
         try {
             is.readFully(imageData);
         } catch (IOException e) {
-            throw new DEViseNetException("DEVise Image Socket Error: Communication Error occured while receiving image data!");
+            throw new YError("DEVise Image Socket Error: Communication Error occured while receiving image data!");
         }
         
         return imageData;

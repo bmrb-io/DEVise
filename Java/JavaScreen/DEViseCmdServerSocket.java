@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import  java.net.*; 
 import  java.io.*;
 import  java.util.*;
@@ -34,7 +11,7 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
    
     public DEViseCmdServerSocket() throws IOException
     {
-        super(DEViseGlobals.CMDPORT);
+        super(Globals.CMDPORT);
     } 
     
     public synchronized Vector getClients()
@@ -46,7 +23,7 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
     {
         String id = Integer.toString(currentID);
         
-        for (int i = id.length(); i < DEViseGlobals.IDSIZE; i++)
+        for (int i = id.length(); i < Globals.IDSIZE; i++)
             id += ' ';
             
         return id;
@@ -104,7 +81,7 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
             try  {
                 socket = accept();
             }  catch (IOException e)  {
-                System.out.println("DEVise CMD Server can not listen on port " + DEViseGlobals.CMDPORT + "\nDEVise CMD Server is aborted!");
+                System.out.println("DEVise CMD Server can not listen on port " + Globals.CMDPORT + "\nDEVise CMD Server is aborted!");
                 isListen = false;                
             }
             

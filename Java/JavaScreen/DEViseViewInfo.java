@@ -1,26 +1,3 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1998
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
-
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-/*
-  Description of module.
- */
-
-/*
-  $Id$
-
-  $Log$
- */
 import java.awt.*;
 import java.awt.event.*;
 
@@ -36,22 +13,22 @@ public class DEViseViewInfo extends Panel
     {
         jsc = what;
       
-        setBackground(DEViseGlobals.uibgcolor);
-        setForeground(DEViseGlobals.uifgcolor);
-        setFont(DEViseGlobals.uifont);
+        setBackground(UIGlobals.uibgcolor);
+        setForeground(UIGlobals.uifgcolor);
+        setFont(UIGlobals.uifont);
         setLayout(new FlowLayout(FlowLayout.CENTER));
-        viewName.setBackground(DEViseGlobals.textbgcolor);
-        viewName.setForeground(DEViseGlobals.textfgcolor);
-        viewName.setFont(DEViseGlobals.textfont);
-        mouseX.setBackground(DEViseGlobals.textbgcolor);
-        mouseX.setForeground(DEViseGlobals.textfgcolor);
-        mouseX.setFont(DEViseGlobals.textfont);
-        mouseY.setBackground(DEViseGlobals.textbgcolor);
-        mouseY.setForeground(DEViseGlobals.textfgcolor);
-        mouseY.setFont(DEViseGlobals.textfont);
-        recordValue.setBackground(DEViseGlobals.textbgcolor);
-        recordValue.setForeground(DEViseGlobals.textfgcolor);
-        recordValue.setFont(DEViseGlobals.textfont);
+        viewName.setBackground(UIGlobals.textbgcolor);
+        viewName.setForeground(UIGlobals.textfgcolor);
+        viewName.setFont(UIGlobals.textfont);
+        mouseX.setBackground(UIGlobals.textbgcolor);
+        mouseX.setForeground(UIGlobals.textfgcolor);
+        mouseX.setFont(UIGlobals.textfont);
+        mouseY.setBackground(UIGlobals.textbgcolor);
+        mouseY.setForeground(UIGlobals.textfgcolor);
+        mouseY.setFont(UIGlobals.textfont);
+        recordValue.setBackground(UIGlobals.textbgcolor);
+        recordValue.setForeground(UIGlobals.textfgcolor);
+        recordValue.setFont(UIGlobals.textfont);
         
         add(new Label("Current View Name:"));
         add(viewName);
