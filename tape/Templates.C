@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:17  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:50  jussi
   Added CVS header.
 */
@@ -28,6 +31,6 @@
 #include "QueryProcTape.h"
 
 #ifdef __GNUG__
-typedef SortedTable<Coord, RecId> DummyTemplate001;
+template class SortedTable<Coord, RecId>;
 #endif
 
