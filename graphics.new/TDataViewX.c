@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/07/12 19:40:14  jussi
+  View statistics are now printed into a memory buffer.
+
   Revision 1.24  1996/07/02 22:46:01  jussi
   The bounding box of symbols is now correctly computed. Scatter
   plots sometimes did not have all necessary data displayed in
@@ -338,17 +341,20 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       WriteMasterLink(recId + firstRec, numGData - firstRec);
   }
   
-  if (_batchRecs) {
-    _dataBin->InsertSymbol(recId, gdata, numGData);
+  // Draw data only if window is not iconified
+  if (!Iconified()) {
+    if (_batchRecs) {
+      _dataBin->InsertSymbol(recId, gdata, numGData);
 #ifdef DEBUG
-    _dataBin->PrintStat();
+      _dataBin->PrintStat();
 #endif
-  } else {
-    char *ptr = (char *)gdata;
-    for(int i = 0; i < numGData; i++) {
-      _dataBin->InsertSymbol(recId, ptr, 1);
-      recId++;
-      ptr += gRecSize;
+    } else {
+      char *ptr = (char *)gdata;
+      for(int i = 0; i < numGData; i++) {
+        _dataBin->InsertSymbol(recId, ptr, 1);
+        recId++;
+        ptr += gRecSize;
+      }
     }
   }
 }

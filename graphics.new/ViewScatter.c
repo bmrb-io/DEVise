@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/12 19:40:15  jussi
+  View statistics are now printed into a memory buffer.
+
   Revision 1.18  1996/07/02 22:46:01  jussi
   The bounding box of symbols is now correctly computed. Scatter
   plots sometimes did not have all necessary data displayed in
@@ -106,10 +109,10 @@ ViewScatter::ViewScatter(char *name, VisualFilter &initFilter,
 
 ViewScatter::~ViewScatter()
 {
-	// SubClassUnmapped aborts any current query; this _must_ be done
-	// before this destructor exits, or members needed to do the abort
-	// will no longer be defined.  RKW 4/5/96.
-    SubClassUnmapped();
+  // SubClassUnmapped aborts any current query; this _must_ be done
+  // before this destructor exits, or members needed to do the abort
+  // will no longer be defined.
+  SubClassUnmapped();
 }
 
 void ViewScatter::InsertMapping(TDataMap *map)
@@ -243,10 +246,13 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       continue;
     }    
 
-    _recs[recIndex++] = ptr;
-    if (recIndex == WINDOWREP_BATCH_SIZE) {
-      mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
-      recIndex = 0;
+    // Draw data only if window is not iconified
+    if (!Iconified()) {
+      _recs[recIndex++] = ptr;
+      if (recIndex == WINDOWREP_BATCH_SIZE) {
+        mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
+        recIndex = 0;
+      }
     }
 
     ptr += gRecSize;
@@ -257,7 +263,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       WriteMasterLink(recId + firstRec, numGData - firstRec);
   }
 
-  if (recIndex > 0)
+  if (!Iconified() && recIndex > 0)
     mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
 }
 
