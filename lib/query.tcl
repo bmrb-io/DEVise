@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1997/01/22 20:13:58  wenger
+#  Removed other non-functional user interface components (includes workaround
+#  for bug 127); fixed a number of OK/Cancel button positions.
+#
 #  Revision 1.8  1996/11/25 22:31:35  beyer
 #  1. extended .devise.rc search
 #  2. added DestroyView command
@@ -50,14 +54,14 @@
 set queryColors "red blue green white black yellow orange brown"
 
 proc SetQuery {} { 
-    global curView queryWinOpened queryColors
-
-    set expand 1
-    set fill both
+    global curView queryColors
 
     if {[WindowVisible .query]} {
 	return
     }
+
+    set expand 1
+    set fill both
 
     toplevel    .query
     wm title    .query "Query Tool"
@@ -248,9 +252,7 @@ proc SetQuery {} {
     button .query.bot.but.history -text "History" -width 10 \
 	    -command { DoHistoryToggle }
     button .query.bot.but.close -text Close -width 10 \
-	    -command { global queryWinOpened; \
-	               set queryWinOpened 0; \
-	               destroy .query }
+	    -command { destroy .query }
 
     pack .query.bot.but.exec .query.bot.but.undo .query.bot.but.back \
 	    .query.bot.but.history .query.bot.but.close \
@@ -258,8 +260,6 @@ proc SetQuery {} {
 
     pack .query.bot.but -side top
     pack .query.bot -side top -pady 5m
-
-    set queryWinOpened 1
 
     if {$curView != ""} {
 	.query.title.text configure -text "View: $curView"
@@ -270,9 +270,9 @@ proc SetQuery {} {
 ############################################################
 
 proc Update2DQueryWindow {} {
-    global curView queryWinOpened
+    global curView
 
-    if {!$queryWinOpened} {
+    if {![WindowExists .query]} {
 	return
     }
     foreach i {xlow ylow xhigh yhigh max mean min count} {
@@ -413,7 +413,7 @@ proc AboutDevise {} {
 }
 
 proc Do3DQuery {} { 
-    global curView query3DWinOpened
+    global curView
 
     if {[WindowVisible .query3d]} {
 	return
@@ -552,9 +552,7 @@ proc Do3DQuery {} {
 	Update3DLocation
     }
     button .query3d.bot.but.close -text Close -width 10 \
-	    -command "global query3DWinOpened; \
-	              set query3DWinOpened 0; \
-	              destroy .query3d"
+	    -command { destroy .query3d }
 
     pack .query3d.bot.but.exec .query3d.bot.but.close \
 	    -side left -expand 1 -fill x -padx 3m
@@ -562,17 +560,15 @@ proc Do3DQuery {} {
     pack .query3d.bot.but -side top
     pack .query3d.bot -side top -pady 5m
 
-    set query3DWinOpened 1
-
     if {$curView != ""} {
 	Update3DLocation
     }
 }
 
 proc Update3DLocation {} {
-    global curView query3DWinOpened
+    global curView
 
-    if {!$query3DWinOpened} {
+    if {![WindowExists .query3d]} {
 	return
     }
 
