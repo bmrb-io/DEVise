@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/05/11 03:01:13  jussi
+#  Minor fix in DoActualCreateWindow.
+#
 #  Revision 1.6  1996/05/09 18:15:21  kmurli
 #  No changes, just inserted some debugging print statements and removed them
 #
@@ -430,13 +433,8 @@ proc DoWindowMerge {} {
 	    }
 	}
 
-	# remove view $v from its window
-	set ans [DEVise removeView $v]
-	if {$ans != ""} {
-	    dialogList .removeError "Cannot Remove View" $ans "" 0 OK
-	}
-
-	# destroy view $v
+	# remove view $v from its window and then destroy the view
+	DEVise removeView $v
 	DEVise destroy $v
     }
 
@@ -512,10 +510,8 @@ proc DoWindowSplit {} {
 		DEVise unlinkView $link $v
 	    }
 	}
-	set ans [DEVise removeView $v]
-	if {$ans != ""} {
-	    dialogList .removeError "Cannot Remove View" $ans "" 0 OK
-	}
+	# remove view $v from its window and then destroy the view
+	DEVise removeView $v
 	DEVise destroy $v
     }
 }
