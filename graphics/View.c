@@ -2,6 +2,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/14 19:19:51  jussi
+  Corrected a couple of perror messages.
+
   Revision 1.2  1995/09/05 21:13:15  jussi
   Added/updated CVS header.
 */
@@ -604,176 +607,179 @@ void View::DrawLabel(WindowRep *win, int x, int y, int w, int h){
 	}
 }
 
-void View::DrawXAxis(WindowRep *win,int x,int y,int w,int h){
-/*
-printf("DrawXAxis %s %d %d %d %d\n",GetName(), x,y,w,h);
-*/
+void View::DrawXAxis(WindowRep *win,int x,int y,int w,int h)
+{
+  /*
+     printf("DrawXAxis %s %d %d %d %d\n",GetName(), x,y,w,h);
+     */
+  
+  int axisX, axisY, axisWidth, axisHeight, startX;
+  GetXAxisArea(axisX,axisY,axisWidth,axisHeight, startX);
+  int axisMaxX = axisX+axisWidth-1;
+  int axisMaxY = axisY+axisHeight-1;
+  char *label;
+  char buf[30];
+  int maxX = x+w-1;
+  int maxY = y+h-1;
+  if (!Geom::RectRectIntersect(x,y,maxX,maxY,axisX,axisY,axisMaxX, axisMaxY)){
+    /*
+       printf("do not intersect\n");
+       */
+    return;
+  }
+  
+  win->PushTop();
+  win->MakeIdentity();
+  
+  Coord startWorldX = _filter.xLow;
+  Coord endWorldX = _filter.xHigh;
+  int numMajorTicks = xAxis.numTicks;
+  Coord tickIncrement = (endWorldX-startWorldX)/numMajorTicks;
+  
+  if (xAxis.numTicks == 2) {
+    /* draw the text */
+    Coord drawWidth = axisWidth - (startX - axisX);
 
-	int axisX, axisY, axisWidth, axisHeight, startX;
-	GetXAxisArea(axisX,axisY,axisWidth,axisHeight, startX);
-	int axisMaxX = axisX+axisWidth-1;
-	int axisMaxY = axisY+axisHeight-1;
-	char *label;
-	char buf[30];
-	int maxX = x+w-1;
-	int maxY = y+h-1;
-	if (!Geom::RectRectIntersect(x,y,maxX,maxY,axisX,axisY,axisMaxX, axisMaxY)){
-		/*
-		printf("do not intersect\n");
-		*/
-		return;
-	}
-
-	win->PushTop();
-	win->MakeIdentity();
-	
-	Coord startWorldX = _filter.xLow;
-	Coord endWorldX = _filter.xHigh;
-	int numMajorTicks = xAxis.numTicks;
-	Coord tickIncrement = (endWorldX-startWorldX)/numMajorTicks;
-
-
-	if (xAxis.numTicks == 2){
-		/* draw the text */
-		Coord drawWidth = axisWidth- (startX - axisX);
-
-		if (_xAxisLabel != NULL)
-			label= _xAxisLabel->GenerateLabel( _filter.xLow);
-		else {
-			if (_xAxisAttrType == DateAttr){
-				time_t tm = (time_t)_filter.xLow;
-				label = DateString(tm);
-			}
-			else {
-				sprintf(buf,"%*.*f",xAxis.fieldWidth,xAxis.decimalPlaces,
-					_filter.xLow);
-				label= buf;
-			}
-		}
-
-		/* Don't need this because cusor routine already
-		filled in the background.
-		win->SetFgColor(win->GetBgColor());
-		win->FillRect(startX,axisY,drawWidth/2,axisHeight);
-		*/
-		win->SetFgColor(xAxis.color);
-		win->AbsoluteText(label,startX, axisY, drawWidth/2, axisHeight,
-			WindowRep::AlignWest,false);
-		
-		if (_xAxisLabel != NULL)
-			label= _xAxisLabel->GenerateLabel(_filter.xHigh);
-		else {
-			if (_xAxisAttrType == DateAttr){
-				time_t tm = (time_t)_filter.xHigh;
-				label = DateString(tm);
-			}
-			else {
-				sprintf(buf,"%*.*f",xAxis.fieldWidth,xAxis.decimalPlaces,
-					_filter.xHigh);
-				label= buf;
-			}
-		}
-		/* Don't need this because cusor routine already
-		filled in the background.
-		win->SetFgColor(win->GetBgColor());
-		win->FillRect(startX+drawWidth/2,axisY,drawWidth/2,axisHeight);
-		*/
-		win->SetFgColor(xAxis.color);
-		win->AbsoluteText(label,startX+drawWidth/2, axisY, drawWidth/2,
-			axisHeight, WindowRep::AlignEast,false);
-	}
-
-    /* draw a line from startX to the end of the view */
-	win->SetFgColor(xAxis.color);
-	win->SetPattern(Pattern0);
-	win->Line(startX,axisY,axisMaxX, axisY, 2.0);
-
-	win->PopTransform();
+    if (_xAxisLabel != NULL)
+      label= _xAxisLabel->GenerateLabel( _filter.xLow);
+    else {
+      if (_xAxisAttrType == DateAttr){
+	time_t tm = (time_t)_filter.xLow;
+	label = DateString(tm);
+      }
+      else {
+	sprintf(buf, "%-*.*f", xAxis.fieldWidth,
+		xAxis.decimalPlaces, _filter.xLow);
+	label= buf;
+      }
+    }
+    
+    /* Don't need this because cursor routine already
+       filled in the background.
+       win->SetFgColor(win->GetBgColor());
+       win->FillRect(startX,axisY,drawWidth/2,axisHeight);
+       */
+    win->SetFgColor(xAxis.color);
+    win->AbsoluteText(label,startX, axisY, drawWidth/2, axisHeight,
+		      WindowRep::AlignWest,false);
+    
+    if (_xAxisLabel != NULL)
+      label= _xAxisLabel->GenerateLabel(_filter.xHigh);
+    else {
+      if (_xAxisAttrType == DateAttr){
+	time_t tm = (time_t)_filter.xHigh;
+	label = DateString(tm);
+      }
+      else {
+	sprintf(buf,"%*.*f",xAxis.fieldWidth,xAxis.decimalPlaces,
+		_filter.xHigh);
+	label= buf;
+      }
+    }
+    /* Don't need this because cursor routine already
+       filled in the background.
+       win->SetFgColor(win->GetBgColor());
+       win->FillRect(startX+drawWidth/2,axisY,drawWidth/2,axisHeight);
+       */
+    win->SetFgColor(xAxis.color);
+    win->AbsoluteText(label,startX+drawWidth/2, axisY, drawWidth/2,
+		      axisHeight, WindowRep::AlignEast,false);
+  }
+  
+  /* draw a line from startX to the end of the view */
+  win->SetFgColor(xAxis.color);
+  win->SetPattern(Pattern0);
+  win->Line(startX,axisY,axisMaxX, axisY, 2.0);
+  
+  win->PopTransform();
 }
 
-void View::DrawYAxis(WindowRep *win,int x,int y,int w,int h){
-    char buf[30];
-	int axisX, axisY, axisWidth, axisHeight;
-	Coord startY;
-	GetYAxisArea(axisX,axisY, axisWidth, axisHeight);
-	startY = axisY;
-	int axisMaxX = axisX + axisWidth-1;
-	int axisMaxY = axisY + axisHeight-1;
+void View::DrawYAxis(WindowRep *win,int x,int y,int w,int h)
+{
+  char buf[30];
 
-	Coord maxX = x+w; Coord maxY = y+h;
-	if (!Geom::RectRectIntersect(x,y,maxX,maxY,
-			axisX,axisY, axisMaxX, axisMaxY))
-		return;
+  int axisX, axisY, axisWidth, axisHeight;
+  Coord startY;
+  GetYAxisArea(axisX,axisY, axisWidth, axisHeight);
+  startY = axisY;
+  int axisMaxX = axisX + axisWidth-1;
+  int axisMaxY = axisY + axisHeight-1;
 
-	win->PushTop();
-	win->MakeIdentity();
+  Coord maxX = x+w; Coord maxY = y+h;
+  if (!Geom::RectRectIntersect(x,y,maxX,maxY,
+			       axisX,axisY, axisMaxX, axisMaxY))
+    return;
+
+  win->PushTop();
+  win->MakeIdentity();
 
    char *label;
+  
+  if (yAxis.numTicks == 2){
+    /* draw lower Y coord */
+    Coord drawHeight = axisHeight - (startY - axisY);
+    if (_yAxisLabel != NULL)
+      label = _yAxisLabel->GenerateLabel(_filter.yLow);
+    else {
+      if (_yAxisAttrType == DateAttr){
+	time_t tm = (time_t)_filter.yLow;
+	label = DateString(tm);
+      }
+      else {
+	sprintf(buf,"%*.*f",yAxis.fieldWidth, yAxis.decimalPlaces,
+		_filter.yLow);
+	label = buf;
+      }
+    }
+    /*
+       win->SetFgColor(win->GetBgColor());
+       win->FillRect( axisX, startY+drawHeight/2, axisWidth,
+       drawHeight/2);
+       */
+    win->SetFgColor(yAxis.color);
+    win->AbsoluteText(label, axisX, startY+drawHeight/2, axisWidth,
+		      drawHeight/2, WindowRep::AlignSouth, true);
+    
+    /* draw upper Y coord */
+    if (_yAxisLabel != NULL)
+      label = _yAxisLabel->GenerateLabel(_filter.yHigh);
+    else {
+      if (_yAxisAttrType == DateAttr){
+	time_t tm = (time_t)_filter.yHigh;
+	DateString(tm);
+      }
+      else {
+	sprintf(buf,"%*.*f",yAxis.fieldWidth,
+		yAxis.decimalPlaces,_filter.yHigh);
+	label = buf;
+      }
+    }
+    /*
+       win->SetFgColor(win->GetBgColor());
+       win->FillRect(axisX, startY, axisWidth,
+       drawHeight/2);
+       */
+    win->SetFgColor(yAxis.color);
+    win->AbsoluteText(label, axisX, startY, axisWidth,
+		      drawHeight/2, WindowRep::AlignNorth, true);
+  }
 
-   if (yAxis.numTicks == 2){
-		/* draw lower Y coord */
-		Coord drawHeight = axisHeight - (startY - axisY);
-		if (_yAxisLabel != NULL)
-			label = _yAxisLabel->GenerateLabel(_filter.yLow);
-		else{
-			if (_yAxisAttrType == DateAttr){
-				time_t tm = (time_t)_filter.yLow;
-				label = DateString(tm);
-			}
-			else {
-				sprintf(buf,"%*.*f",yAxis.fieldWidth, yAxis.decimalPlaces,
-					_filter.yLow);
-				label = buf;
-			}
-		}
-		/*
-		win->SetFgColor(win->GetBgColor());
-		win->FillRect( axisX, startY+drawHeight/2, axisWidth,
-			drawHeight/2);
-		*/
-		win->SetFgColor(yAxis.color);
-		win->AbsoluteText(label, axisX, startY+drawHeight/2, axisWidth,
-			drawHeight/2, WindowRep::AlignSouth, true);
-		
-		/* draw upper Y coord */
-		if (_yAxisLabel != NULL)
-			label = _yAxisLabel->GenerateLabel(_filter.yHigh);
-		else {
-			if (_yAxisAttrType == DateAttr){
-				time_t tm = (time_t)_filter.yHigh;
-				DateString(tm);
-			}
-			else {
-				sprintf(buf,"%*.*f",yAxis.fieldWidth,
-					yAxis.decimalPlaces,_filter.yHigh);
-				label = buf;
-			}
-		}
-		/*
-		win->SetFgColor(win->GetBgColor());
-		win->FillRect(axisX, startY, axisWidth,
-			drawHeight/2);
-		*/
-		win->SetFgColor(yAxis.color);
-		win->AbsoluteText(label, axisX, startY, axisWidth,
-			drawHeight/2, WindowRep::AlignNorth, true);
-   }
-
-	/* draw a line from startY to the bottom of the view */
-	win->SetFgColor(yAxis.color);
-	win->SetPattern(Pattern0);
-	win->Line(axisMaxX, startY, axisMaxX, axisMaxY, 2.0);
-
-	win->PopTransform();
+  /* draw a line from startY to the bottom of the view */
+  win->SetFgColor(yAxis.color);
+  win->SetPattern(Pattern0);
+  win->Line(axisMaxX, startY, axisMaxX, axisMaxY, 2.0);
+  
+  win->PopTransform();
 }
 
 
 /*
-void View::AxisDisplayOnOff(Boolean stat){
-	if (stat != _axisDisplay){
-		_axisDisplay = stat;
-		_updateTransform = true;
-	}
+void View::AxisDisplayOnOff(Boolean stat)
+{
+  if (stat != _axisDisplay){
+    _axisDisplay = stat;
+    _updateTransform = true;
+  }
 }
 */
 
