@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.103  2001/10/17 15:54:24  wenger
+// Fixed bug 712 (JS collaboration doesn't work); various other code
+// cleanup.
+//
 // Revision 1.102  2001/10/16 22:14:27  wenger
 // Major cleanup of command playback code; fixed bug 711 (problem with
 // command log playback).
@@ -1853,7 +1857,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
 	}
 
-	if (commSocket.socket == null) {
+	if (!commSocket.isOpen()) {
 	    commSocket = null;
 	    jsc.disconnectedMode();
 	    boolean end = false;

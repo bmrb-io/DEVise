@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2001/10/22 18:06:50  wenger
+// Fixed bug 718 (client sockets never deleted in JSPoP).
+//
 // Revision 1.62  2001/10/19 18:39:48  wenger
 // Changed socket receive timeout to 1000 millisec as emergency fix for
 // JSPoP restart problem.
@@ -831,7 +834,7 @@ public class jspop implements Runnable
 	    
 		// Note: socket will never be null here; socket.is is null
 		// if the socket has been closed. RKW 2001-10-22.
-		if (socket.is != null) {
+		if (socket.isOpen()) {
 		    if (! socket.isEmpty()) {
 			long id;
 			int cgi;
@@ -873,7 +876,7 @@ public class jspop implements Runnable
 			    throw new YException("No client for ID: " + id);
 			}
 		    }
-		} else { // socket.is == null
+		} else { // !socket.isOpen
 		    if (DEBUG >= 2) {
 		        System.out.println(
 			  "Removing client socket from active sockets list");

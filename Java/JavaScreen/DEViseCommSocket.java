@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2001/10/22 18:06:49  wenger
+// Fixed bug 718 (client sockets never deleted in JSPoP).
+//
 // Revision 1.26  2001/10/12 19:12:41  wenger
 // Changed client ID generation to avoid any chance of duplicates;
 // updated command format documentation.
@@ -201,9 +204,9 @@ public class DEViseCommSocket
     //TEMP -- increased this from 1000 to see if it helps on yola.
     private static final int DEFAULT_RCV_TIMEOUT = 10000; // millisec
 
-    public Socket socket = null;
-    public DataInputStream is = null;
-    public DataOutputStream os = null;
+    private Socket socket = null;
+    private DataInputStream is = null;
+    private DataOutputStream os = null;
 
     // timeout = 0 means no time out
     private int timeout = 0;
@@ -237,10 +240,11 @@ public class DEViseCommSocket
             socket = s;
         }
 
-        if (to < 0)
+        if (to < 0) {
             timeout = 0;
-        else
+        } else {
             timeout = to;
+        }
 
 	CreateStreams();
     }
@@ -320,6 +324,13 @@ public class DEViseCommSocket
         os = null;
         is = null;
         socket = null;
+    }
+
+    //-------------------------------------------------------------------
+    // Whether this socket is open.
+    public boolean isOpen()
+    {
+        return ((socket != null) && (is != null) && (os != null));
     }
 
     //-------------------------------------------------------------------
