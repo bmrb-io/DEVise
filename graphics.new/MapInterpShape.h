@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/11/28 00:04:33  jussi
+  Added polygon and oval shape. The former is drawn as a small number of
+  segments, the latter as a perfect, round shape.
+
   Revision 1.6  1995/11/25 01:20:10  jussi
   This code now uses Transform matrix operations to convert user/world
   coordinates to screen pixel coordinates. This is to avoid any future
@@ -37,10 +41,8 @@
   Added CVS header.
 */
 
-#include "DeviseTypes.h"
 #include "Transform.h"
 #include "Geom.h"
-#include "WindowRep.h"
 #include "RectShape.h"
 
 class FullMapping_RectShape: public RectShape {
