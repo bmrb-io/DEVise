@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2000/09/12 20:51:22  wenger
+// Did some cleanup of the command-related code, better error messages from JSS.
+//
 // Revision 1.65  2000/07/20 22:38:26  venkatan
 // Mouse Location Format display:
 // 1. Both X and Y axis formats are recognised.
@@ -387,7 +390,6 @@ public class DEViseCmdDispatcher implements Runnable
                     continue;
                 }
 
-		//TEMP -- check arg counts
                 if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
                     jsc.jscreen.updateScreen(false);
 
@@ -461,7 +463,6 @@ public class DEViseCmdDispatcher implements Runnable
         // turn on the 'process' light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
 
-        String[] cmd = null;
         for (int i = 0; i < rsp.length; i++) {
             // adjust the counter
             jsc.viewInfo.updateCount(rsp.length - 1 - i);
@@ -471,425 +472,7 @@ public class DEViseCmdDispatcher implements Runnable
             DEViseDebugLog.log("Processing command (" +
 	      (rsp.length - 1 - i) + ") " + rsp[i]);
 
-            if (rsp[i].startsWith(DEViseCommands.DONE)) { // this command will guaranteed to be the last
-                if (command.startsWith(DEViseCommands.OPEN_SESSION)) {
-                    jsc.jscreen.updateScreen(true);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.FAIL)) {
-                jsc.showMsg(rsp[i]);
-                jsc.jscreen.updateScreen(false);
-            } else if (rsp[i].startsWith(DEViseCommands.ERROR)) { // this command will guaranteed to be the last
-                if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
-                    jsc.showMsg(rsp[i]);
-                } else {
-                    jsc.showSession(new String[] {rsp[i]}, false);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_SERVER_STATE)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 2) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                jsc.showServerState(cmd[1]);
-            } else if (rsp[i].startsWith(DEViseCommands.CREATE_VIEW)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length < 25) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                String viewname = cmd[1];
-                String parentname = cmd[2];
-                String piledname = cmd[3];
-                try {
-                    int x = Integer.parseInt(cmd[4]);
-                    int y = Integer.parseInt(cmd[5]);
-                    int w = Integer.parseInt(cmd[6]);
-                    int h = Integer.parseInt(cmd[7]);
-                    float z = (Float.valueOf(cmd[8])).floatValue();
-                    int dim = Integer.parseInt(cmd[9]);
-                    Rectangle viewloc = new Rectangle(x, y, w, h);
-                    x = Integer.parseInt(cmd[10]);
-                    y = Integer.parseInt(cmd[11]);
-                    w = Integer.parseInt(cmd[12]);
-                    h = Integer.parseInt(cmd[13]);
-                    Rectangle dataloc = new Rectangle(x, y, w, h);
-
-                    int bg, fg;
-                    Color color = DEViseUIGlobals.convertColor(cmd[14]);
-                    if (color != null) {
-                        fg = color.getRGB();
-                    } else {
-                        throw new NumberFormatException();
-                    }
-                    color = DEViseUIGlobals.convertColor(cmd[15]);
-                    if (color != null) {
-                        bg = color.getRGB();
-                    } else {
-                        throw new NumberFormatException();
-                    }
-                    //int bg = (Color.white).getRGB();
-                    //int fg = (Color.black).getRGB();
-
-                    String xtype = cmd[16], ytype = cmd[17];
-
-		    // Mouse movement grid -- not yet used.
-                    float gridx = (Float.valueOf(cmd[18])).floatValue();
-                    float gridy = (Float.valueOf(cmd[19])).floatValue();
-
-                    int rb = Integer.parseInt(cmd[20]);
-                    int cm = Integer.parseInt(cmd[21]);
-                    int dd = Integer.parseInt(cmd[22]);
-                    int ky = Integer.parseInt(cmd[23]);
-
-                    String viewtitle = cmd[24];
-                    int dtx = 0, dty = 0;
-                    Font dtf = null;
-
-		    // Ven -> show mouse location variable
-
-		    int dvinfo = 1; 
-		    if(cmd.length == 26){
-		     // When viewtitle is empty, then arg 25 is the show mouse location - dvinfo
-
-                       if(cmd[25].equals("")){
-			  dvinfo = 1;
-                       } else{
-			  dvinfo = Integer.parseInt(cmd[25]);
-                       }
-                    }
-
-
-                    if (viewtitle.length() > 0) {
-                        if (cmd.length < 31 || cmd.length > 32) {
-                            throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                        }
-
-                        dtx = Integer.parseInt(cmd[25]);
-                        dty = Integer.parseInt(cmd[26]);
-                        int dtff;
-                        if (cmd[27].equals("")) {
-                            dtff = 0;
-                        } else {
-                            dtff = Integer.parseInt(cmd[27]);
-                        }
-                        int dtfs;
-                        if (cmd[28].equals("")) {
-                            dtfs = 14;
-                        } else {
-                            dtfs = Integer.parseInt(cmd[28]);
-                        }
-                        int dtb;
-                        if (cmd[29].equals("")) {
-                            dtb = 0;
-                        } else {
-                            dtb = Integer.parseInt(cmd[29]);
-                        }
-                        int dti;
-                        if (cmd[30].equals("")) {
-                            dti = 0;
-                        } else {
-                            dti = Integer.parseInt(cmd[30]);
-                        }
-
-			if(cmd.length == 32){
-			   if(cmd[31].equals("")){
-			     dvinfo = 1;
-                           }
-			   else{
-			     dvinfo = Integer.parseInt(cmd[31]);
-                           }
-                        }
-
-                        dtf = DEViseUIGlobals.getFont(dtfs, dtff, dtb, dti);
-                        if (dtf != null) {
-                            Toolkit tk = Toolkit.getDefaultToolkit();
-                            FontMetrics fm = tk.getFontMetrics(dtf);
-                            int ac = fm.getAscent(), dc = fm.getDescent(), ld = fm.getLeading();
-                            ac = ac + ld / 2;
-                            dc = dc + ld / 2;
-                            int sh = fm.getHeight();
-                            int sw = fm.stringWidth(viewtitle);
-                            int height = 0, width = 0;
-                            dty = dty + height / 2 + ac - sh / 2;
-                            dtx = dtx + width / 2 - sw / 2;
-                        }
-                    }
-
-                    DEViseView view = new DEViseView(jsc, parentname, viewname, piledname, viewtitle, viewloc, z, dim, bg, fg, dataloc, xtype, ytype, gridx, gridy, rb, cm, dd, ky);
-                    if (view != null) {
-                        view.viewDTFont = dtf;
-                        view.viewDTX = dtx + view.viewLocInCanvas.x;
-                        view.viewDTY = dty + view.viewLocInCanvas.y;
-			view.isViewInfo = (dvinfo == 1);
-                    }
-
-                    jsc.jscreen.addView(view);
-                } catch (NumberFormatException e) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_VIEW_IMAGE)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 3) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                String viewname = cmd[1];
-                int imageSize;
-                try {
-                    imageSize = Integer.parseInt(cmd[2]);
-                    if (imageSize <= 0) {
-                        throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                byte[] imageData = receiveData(imageSize);
-
-                MediaTracker tracker = new MediaTracker(jsc);
-                Toolkit kit = jsc.getToolkit();
-                Image image = kit.createImage(imageData);
-                tracker.addImage(image, 0);
-                try {
-                    tracker.waitForID(0);
-                }  catch (InterruptedException e) {
-                }
-
-                if (tracker.isErrorID(0))
-                    throw new YException("Invalid image data for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-
-                jsc.jscreen.updateViewImage(viewname, image);
-            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_GDATA)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 7) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                String viewname = cmd[1];
-		DEViseView view = jsc.jscreen.getView(viewname);
-
-		// Remove the old GData from the view and hopefully free it.
-        //        DEViseView view = jsc.jscreen.getView(viewname);
-		//if (view != null) {
-		//    view.removeAllGData();
-		//    System.gc();
-		//}
-
-                float xm, xo, ym, yo;
-                int gdataSize;
-                try {
-                    xm = (Float.valueOf(cmd[2])).floatValue();
-                    xo = (Float.valueOf(cmd[3])).floatValue();
-                    ym = (Float.valueOf(cmd[4])).floatValue();
-                    yo = (Float.valueOf(cmd[5])).floatValue();
-                    gdataSize = Integer.parseInt(cmd[6]);
-                    if (gdataSize <= 0) {
-                        throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-//            System.out.println("Free memory(before new GData): " +
-//	      Runtime.getRuntime().freeMemory() + "/" +
-//	      Runtime.getRuntime().totalMemory());
-
-                byte[] gdata = receiveData(gdataSize);
-
-                String gdataStr = new String(gdata);
-                if (gdataStr.equals("\u0004")) {
-                    jsc.jscreen.updateGData(viewname, null);
-                } else {
-		    // This is used to handle the case when JSPoP sending
-		    // all the GData in one command (I know currently devised
-		    // is sending one
-		    // GData per command) and separate them use \x04.
-                    String[] GData = DEViseGlobals.parseStr(gdataStr, "\u0004", false);
-                    if (GData == null) {
-                        throw new YException(
-			  "Invalid GData received for view \"" + viewname +
-			  "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                    }
-
-                    Vector gdList = new Vector();
-                    for (int j = 0; j < GData.length; j++) {
-                        if (GData[j] == null) {
-                            throw new YException(
-			      "Invalid GData received for view \"" + viewname +
-			      "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                        }
-
-			// Split the GData into records.
-                        String[] results = DEViseGlobals.parseStr(GData[j]);
-                        if (results == null || results.length == 0) {
-                            throw new YException(
-			      "Invalid GData received for view \"" + viewname +
-			      "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                        }
-
-                        DEViseGData.defaultFont = null;
-
-                        for (int k = 0; k < results.length; k++) {
-                            DEViseGData data = null;
-                            //jsc.pn("Received gdata is: \"" + results[k] + "\"");
-                            try {
-                                data = new DEViseGData(jsc, view, results[k], xm, xo, ym, yo);
-                            } catch (YException e1) {
-                                //throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                                throw new YException(e1.getMsg(), 2);
-                            }
-
-                            gdList.addElement(data);
-                            results[k] = null;
-                        }
-
-			if (_debug) {
-                            System.out.println("number of new gdata: " + results.length);
-			}
-
-                        jsc.jscreen.updateGData(viewname, gdList);
-                        results = null;
-                        gdList = null;
-                    }
-                }
-
-                gdata = null;
-
-//                System.gc();
-
-//          System.out.println("Free memory(after new GData): " +
-//	      Runtime.getRuntime().freeMemory() + "/" +
-//	      Runtime.getRuntime().totalMemory());
-            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_SESSION_LIST)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                jsc.showSession(cmd, true);
-            } else if (rsp[i].startsWith(DEViseCommands.DRAW_CURSOR)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 14) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                try {
-                    String cursorName = cmd[1];
-                    String viewname = cmd[2];
-
-                    int x0 = Integer.parseInt(cmd[3]);
-                    int y0 = Integer.parseInt(cmd[4]);
-                    int w = Integer.parseInt(cmd[5]);
-                    int h = Integer.parseInt(cmd[6]);
-                    String move = cmd[7];
-                    String resize = cmd[8];
-                    Rectangle rect = new Rectangle(x0, y0, w, h);
-                    float gridx = (Float.valueOf(cmd[9])).floatValue();
-                    float gridy = (Float.valueOf(cmd[10])).floatValue();
-                    int isedge = Integer.parseInt(cmd[11]);
-                    Color color = DEViseUIGlobals.convertColor(cmd[12]);
-                    //TEMP int type = Integer.parseInt(cmd[13]);
-					int type = 0;//TEMP
-
-                    DEViseCursor cursor = null;
-                    try {
-                        cursor = new DEViseCursor(jsc, cursorName, viewname, rect, move, resize, gridx, gridy, isedge, type, color);
-                    } catch (YException e1) {
-                        throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                    }
-
-                    jsc.jscreen.updateCursor(viewname, cursor);
-                } catch (NumberFormatException e) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.ERASE_CURSOR)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 3) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                jsc.jscreen.removeCursor(cmd[1], cmd[2]);
-            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_RECORD_VALUE)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                } else {
-                    jsc.showRecord(cmd);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.VIEW_DATA_AREA)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length < 5 || cmd.length > 6) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                try {
-                    String viewname = cmd[1];
-                    String viewaxis = cmd[2];
-                    float min = (Float.valueOf(cmd[3])).floatValue();
-                    float max = (Float.valueOf(cmd[4])).floatValue();
-
-		    // Ven - for mouse display format string
-
-		    String format = null;
-
-
-		    if(cmd.length == 6){
-		       format = cmd[5];
-		    } 
-
-
-                    jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max, format);
-                } catch (NumberFormatException e) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.DELETE_VIEW)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 2) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                jsc.jscreen.removeView(cmd[1]);
-            } else if (rsp[i].startsWith(DEViseCommands.DELETE_CHILD_VIEWS)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 2) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                jsc.jscreen.removeChildViews(cmd[1]);
-            } else if (rsp[i].startsWith(DEViseCommands.USER)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 2) {
-                    throw new YException("Invalid connection ID received from server", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-
-                try {
-                    int id = Integer.parseInt(cmd[1]);
-                    if (id < 0 && id != DEViseGlobals.DEFAULTID) {
-                        throw new NumberFormatException();
-                    } else {
-                        DEViseGlobals.connectionID = id;
-                        setOnlineStatus(true);
-                    }
-                } catch (NumberFormatException e) {
-                    throw new YException("Invalid connection ID received from server", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-            } else if (rsp[i].startsWith(DEViseCommands.SHOW_VIEW_HELP)) {
-                cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 3) {
-                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
-                }
-		// Modified - Ven
-                if(!DEViseGlobals.helpBox){
-                   jsc.jscreen.showHelpMsg(cmd[1], cmd[2]);
-                }
-		else{
-                 jsc.showViewDialogHelp(cmd[2]);
-	          DEViseGlobals.helpBox = false ;
-                }
-
-            } else {
-                throw new YException("Unsupported command received from server", "DEViseCmdDispatcher::processCmd()", 2);
-            }
+	    processReceivedCommand(command, rsp[i]);
 
 	    jsc.pn("  Done with command " + rsp[i]);
 	    jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
@@ -905,6 +488,526 @@ public class DEViseCmdDispatcher implements Runnable
         //System.out.println("Memory: " +
 	    //Runtime.getRuntime().freeMemory() + "/" +
 	    //Runtime.getRuntime().totalMemory());
+    }
+
+    // command is the command we sent; response is the command we got
+    // in response.
+    private void processReceivedCommand(String command, String response)
+      throws YException
+    {
+        String[] args = DEViseGlobals.parseString(response);
+        if (args == null || args.length < 1) {
+            throw new YException(
+              "Ill-formated command received from server \"" +
+              response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        if (args[0].equals(DEViseCommands.DONE)) {
+            // this command will guaranteed to be the last
+            if (command.startsWith(DEViseCommands.OPEN_SESSION)) {
+                jsc.jscreen.updateScreen(true);
+            }
+
+        } else if (args[0].equals(DEViseCommands.FAIL)) {
+            jsc.showMsg(response);
+            jsc.jscreen.updateScreen(false);
+
+        } else if (args[0].equals(DEViseCommands.ERROR)) {
+            // this command will guaranteed to be the last
+            if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
+                jsc.showMsg(response);
+            } else {
+                jsc.showSession(new String[] {response}, false);
+            }
+
+        } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
+            if (args.length != 2) {
+                throw new YException(
+                  "Ill-formated command received from server \"" +
+                  response + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            jsc.showServerState(args[1]);
+
+        } else if (args[0].equals(DEViseCommands.CREATE_VIEW)) {
+	    createView(response, args);
+
+        } else if (args[0].equals(DEViseCommands.UPDATE_VIEW_IMAGE)) {
+	    updateViewImage(response, args);
+
+        } else if (args[0].equals(DEViseCommands.UPDATE_GDATA)) {
+	    updateGData(response, args);
+
+        } else if (args[0].equals(DEViseCommands.UPDATE_SESSION_LIST)) {
+	    // Number of arguments is variable.
+            jsc.showSession(args, true);
+
+        } else if (args[0].equals(DEViseCommands.DRAW_CURSOR)) {
+	    drawCursor(response, args);
+
+        } else if (args[0].equals(DEViseCommands.ERASE_CURSOR)) {
+            if (args.length != 3) {
+                throw new YException(
+                  "Ill-formated command received from server \"" + response +
+                  "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            jsc.jscreen.removeCursor(args[1], args[2]);
+
+        } else if (args[0].equals(DEViseCommands.UPDATE_RECORD_VALUE)) {
+	    // Number of arguments is variable.
+            jsc.showRecord(args);
+
+        } else if (args[0].equals(DEViseCommands.VIEW_DATA_AREA)) {
+	    viewDataArea(response, args);
+
+        } else if (args[0].equals(DEViseCommands.DELETE_VIEW)) {
+            if (args.length != 2) {
+                throw new YException(
+                  "Ill-formated command received from server \"" + response +
+                  "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            jsc.jscreen.removeView(args[1]);
+
+        } else if (args[0].equals(DEViseCommands.DELETE_CHILD_VIEWS)) {
+            if (args.length != 2) {
+                throw new YException(
+                  "Ill-formated command received from server \"" + response +
+                  "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            jsc.jscreen.removeChildViews(args[1]);
+
+        } else if (args[0].equals(DEViseCommands.USER)) {
+	    user(args);
+
+        } else if (args[0].equals(DEViseCommands.SHOW_VIEW_HELP)) {
+            if (args.length != 3) {
+                throw new YException(
+                  "Ill-formated command received from server \"" + response +
+                  "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            // Modified - Ven
+            if (!DEViseGlobals.helpBox) {
+               jsc.jscreen.showHelpMsg(args[1], args[2]);
+            } else {
+               jsc.showViewDialogHelp(args[2]);
+               DEViseGlobals.helpBox = false ;
+            }
+
+        } else {
+            throw new YException("Unsupported command (" + response +
+              ")received from server", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+    }
+
+    private void createView(String command, String[] args) throws YException
+    {
+        if (args.length < 25) {
+            throw new YException(
+              "Ill-formated command received from server \"" +
+              command + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        String viewname = args[1];
+        String parentname = args[2];
+        String piledname = args[3];
+        try {
+            int x = Integer.parseInt(args[4]);
+            int y = Integer.parseInt(args[5]);
+            int w = Integer.parseInt(args[6]);
+            int h = Integer.parseInt(args[7]);
+            float z = (Float.valueOf(args[8])).floatValue();
+            int dim = Integer.parseInt(args[9]);
+            Rectangle viewloc = new Rectangle(x, y, w, h);
+            x = Integer.parseInt(args[10]);
+            y = Integer.parseInt(args[11]);
+            w = Integer.parseInt(args[12]);
+            h = Integer.parseInt(args[13]);
+            Rectangle dataloc = new Rectangle(x, y, w, h);
+
+            int bg, fg;
+            Color color = DEViseUIGlobals.convertColor(args[14]);
+            if (color != null) {
+                fg = color.getRGB();
+            } else {
+                throw new NumberFormatException();
+            }
+            color = DEViseUIGlobals.convertColor(args[15]);
+            if (color != null) {
+                bg = color.getRGB();
+            } else {
+                throw new NumberFormatException();
+            }
+            //int bg = (Color.white).getRGB();
+            //int fg = (Color.black).getRGB();
+
+            String xtype = args[16], ytype = args[17];
+
+            // Mouse movement grid -- not yet used.
+            float gridx = (Float.valueOf(args[18])).floatValue();
+            float gridy = (Float.valueOf(args[19])).floatValue();
+
+            int rb = Integer.parseInt(args[20]);
+            int cm = Integer.parseInt(args[21]);
+            int dd = Integer.parseInt(args[22]);
+            int ky = Integer.parseInt(args[23]);
+
+            String viewtitle = args[24];
+            int dtx = 0, dty = 0;
+            Font dtf = null;
+
+            int dvinfo = 1; // whether to show mouse location
+            if (args.length == 26) {
+                // When viewtitle is empty, then arg 25 is the show mouse
+                // location - dvinfo
+
+                if (args[25].equals("")) {
+                    dvinfo = 1;
+                } else{
+                    dvinfo = Integer.parseInt(args[25]);
+                }
+            }
+
+            if (viewtitle.length() > 0) {
+                if (args.length < 31 || args.length > 32) {
+                    throw new YException(
+                      "Ill-formated command received from server \"" +
+                      command + "\"",
+                      "DEViseCmdDispatcher::processCmd()", 2);
+                }
+
+                dtx = Integer.parseInt(args[25]);
+                dty = Integer.parseInt(args[26]);
+
+                int dtff;
+                if (args[27].equals("")) {
+                    dtff = 0;
+                } else {
+                    dtff = Integer.parseInt(args[27]);
+                }
+
+                int dtfs;
+                if (args[28].equals("")) {
+                    dtfs = 14;
+                } else {
+                    dtfs = Integer.parseInt(args[28]);
+                }
+
+                int dtb;
+                if (args[29].equals("")) {
+                    dtb = 0;
+                } else {
+                    dtb = Integer.parseInt(args[29]);
+                }
+
+                int dti;
+                if (args[30].equals("")) {
+                    dti = 0;
+                } else {
+                    dti = Integer.parseInt(args[30]);
+                }
+
+                if (args.length == 32) {
+                    if(args[31].equals("")){
+                        dvinfo = 1;
+                    } else {
+                        dvinfo = Integer.parseInt(args[31]);
+                    }
+                }
+
+                dtf = DEViseUIGlobals.getFont(dtfs, dtff, dtb, dti);
+                if (dtf != null) {
+                    Toolkit tk = Toolkit.getDefaultToolkit();
+                    FontMetrics fm = tk.getFontMetrics(dtf);
+
+                    int ac = fm.getAscent();
+                    int dc = fm.getDescent();
+                    int ld = fm.getLeading();
+
+                    ac = ac + ld / 2;
+                    dc = dc + ld / 2;
+
+                    int sh = fm.getHeight();
+                    int sw = fm.stringWidth(viewtitle);
+
+                    int height = 0, width = 0;
+
+                    dty = dty + height / 2 + ac - sh / 2;
+                    dtx = dtx + width / 2 - sw / 2;
+                }
+            }
+
+            DEViseView view = new DEViseView(jsc, parentname, viewname,
+              piledname, viewtitle, viewloc, z, dim, bg, fg, dataloc,
+              xtype, ytype, gridx, gridy, rb, cm, dd, ky);
+            if (view != null) {
+                view.viewDTFont = dtf;
+                view.viewDTX = dtx + view.viewLocInCanvas.x;
+                view.viewDTY = dty + view.viewLocInCanvas.y;
+                view.isViewInfo = (dvinfo == 1);
+            }
+
+            jsc.jscreen.addView(view);
+        } catch (NumberFormatException e) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+    }
+
+    private void updateViewImage(String command, String[] args)
+      throws YException
+    {
+        if (args.length != 3) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        String viewname = args[1];
+        int imageSize;
+        try {
+            imageSize = Integer.parseInt(args[2]);
+            if (imageSize <= 0) {
+                throw new YException(
+                  "Ill-formated command received from server \"" +
+                  command + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+        } catch (NumberFormatException e) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        byte[] imageData = receiveData(imageSize);
+
+        MediaTracker tracker = new MediaTracker(jsc);
+        Toolkit kit = jsc.getToolkit();
+        Image image = kit.createImage(imageData);
+        tracker.addImage(image, 0);
+        try {
+            tracker.waitForID(0);
+        }  catch (InterruptedException e) {
+        }
+
+        if (tracker.isErrorID(0)) {
+            throw new YException("Invalid image data for view \"" +
+              viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        jsc.jscreen.updateViewImage(viewname, image);
+    }
+
+    private void updateGData(String command, String[] args) throws YException
+    {
+        if (args.length != 7) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        String viewname = args[1];
+        DEViseView view = jsc.jscreen.getView(viewname);
+
+        // Remove the old GData from the view and hopefully free it.
+        //        DEViseView view = jsc.jscreen.getView(viewname);
+        //if (view != null) {
+        //    view.removeAllGData();
+        //    System.gc();
+        //}
+
+        float xm, xo, ym, yo;
+        int gdataSize;
+        try {
+            xm = (Float.valueOf(args[2])).floatValue();
+            xo = (Float.valueOf(args[3])).floatValue();
+            ym = (Float.valueOf(args[4])).floatValue();
+            yo = (Float.valueOf(args[5])).floatValue();
+            gdataSize = Integer.parseInt(args[6]);
+            if (gdataSize <= 0) {
+                throw new YException(
+                  "Ill-formated command received from server \"" +
+                  command + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+        } catch (NumberFormatException e) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+//          System.out.println("Free memory(before new GData): " +
+//            Runtime.getRuntime().freeMemory() + "/" +
+//            Runtime.getRuntime().totalMemory());
+
+        byte[] gdata = receiveData(gdataSize);
+
+        String gdataStr = new String(gdata);
+        if (gdataStr.equals("\u0004")) {
+            jsc.jscreen.updateGData(viewname, null);
+        } else {
+            // This is used to handle the case when JSPoP sending
+            // all the GData in one command (I know currently devised
+            // is sending one
+            // GData per command) and separate them use \x04.
+            String[] GData = DEViseGlobals.parseStr(gdataStr, "\u0004",
+              false);
+            if (GData == null) {
+                throw new YException(
+                  "Invalid GData received for view \"" + viewname +
+                  "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            Vector gdList = new Vector();
+            for (int j = 0; j < GData.length; j++) {
+                if (GData[j] == null) {
+                    throw new YException(
+                      "Invalid GData received for view \"" + viewname +
+                      "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                }
+
+                // Split the GData into records.
+                String[] results = DEViseGlobals.parseStr(GData[j]);
+                if (results == null || results.length == 0) {
+                    throw new YException(
+                      "Invalid GData received for view \"" + viewname +
+                      "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                }
+
+                DEViseGData.defaultFont = null;
+
+                for (int k = 0; k < results.length; k++) {
+                    DEViseGData data = null;
+                    //jsc.pn("Received gdata is: \"" + results[k] + "\"");
+                    try {
+                        data = new DEViseGData(jsc, view, results[k], xm,
+                          xo, ym, yo);
+                    } catch (YException e1) {
+                        //throw new YException("Invalid GData received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                        throw new YException(e1.getMsg(), 2);
+                    }
+
+                    gdList.addElement(data);
+                    results[k] = null;
+                }
+
+                if (_debug) {
+                    System.out.println("number of new gdata: " +
+                      results.length);
+                }
+
+                jsc.jscreen.updateGData(viewname, gdList);
+                results = null;
+                gdList = null;
+            }
+        }
+
+        gdata = null;
+
+//          System.gc();
+
+//          System.out.println("Free memory(after new GData): " +
+//              Runtime.getRuntime().freeMemory() + "/" +
+//              Runtime.getRuntime().totalMemory());
+    }
+
+    private void drawCursor(String command, String[] args) throws YException
+    {
+        if (args.length != 14) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        try {
+            String cursorName = args[1];
+            String viewname = args[2];
+
+            int x0 = Integer.parseInt(args[3]);
+            int y0 = Integer.parseInt(args[4]);
+            int w = Integer.parseInt(args[5]);
+            int h = Integer.parseInt(args[6]);
+            String move = args[7];
+            String resize = args[8];
+            Rectangle rect = new Rectangle(x0, y0, w, h);
+            float gridx = (Float.valueOf(args[9])).floatValue();
+            float gridy = (Float.valueOf(args[10])).floatValue();
+            int isedge = Integer.parseInt(args[11]);
+            Color color = DEViseUIGlobals.convertColor(args[12]);
+            //TEMP int type = Integer.parseInt(args[13]);
+            int type = 0;//TEMP
+
+            DEViseCursor cursor = null;
+            try {
+                cursor = new DEViseCursor(jsc, cursorName, viewname,
+                  rect, move, resize, gridx, gridy, isedge, type, color);
+            } catch (YException e1) {
+                throw new YException(
+                  "Invalid cursor data received for view \"" + viewname +
+                  "\"", "DEViseCmdDispatcher::processCmd()", 2);
+            }
+
+            jsc.jscreen.updateCursor(viewname, cursor);
+        } catch (NumberFormatException e) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+    }
+
+    private void viewDataArea(String command, String[] args) throws YException
+    {
+        if (args.length < 5 || args.length > 6) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        try {
+            String viewname = args[1];
+            String viewaxis = args[2];
+            float min = (Float.valueOf(args[3])).floatValue();
+            float max = (Float.valueOf(args[4])).floatValue();
+
+            // Ven - for mouse display format string
+            String format = null;
+            if (args.length == 6) {
+               format = args[5];
+            } 
+
+            jsc.jscreen.updateViewDataRange(viewname, viewaxis, min, max,
+              format);
+        } catch (NumberFormatException e) {
+            throw new YException(
+              "Ill-formated command received from server \"" + command +
+              "\"", "DEViseCmdDispatcher::processCmd()", 2);
+        }
+    }
+
+    private void user(String[] args) throws YException
+    {
+        if (args.length != 2) {
+            throw new YException(
+              "Invalid connection ID received from server",
+              "DEViseCmdDispatcher::processCmd()", 2);
+        }
+
+        try {
+            int id = Integer.parseInt(args[1]);
+            if (id < 0 && id != DEViseGlobals.DEFAULTID) {
+                throw new NumberFormatException();
+            } else {
+                DEViseGlobals.connectionID = id;
+                setOnlineStatus(true);
+            }
+        } catch (NumberFormatException e) {
+            throw new YException(
+              "Invalid connection ID received from server",
+              "DEViseCmdDispatcher::processCmd()", 2);
+        }
     }
 
     private byte[] receiveData(int size) throws YException
@@ -990,13 +1093,13 @@ public class DEViseCmdDispatcher implements Runnable
                     for (int j = 1; j < cmds.length; j++)
                         cmd = cmd + " {" + cmds[j] + "}";
 
-		    //TEMP -- check arg counts
                     if (cmd.startsWith(DEViseCommands.JS_PREFIX)) {
                         if (cmd.startsWith(DEViseCommands.ACK)) {
                             jsc.animPanel.setActiveImageNumber(5);
                         } else {
-                            if (cmd.startsWith(DEViseCommands.DONE) || cmd.startsWith(DEViseCommands.ERROR)
-                                || cmd.startsWith(DEViseCommands.FAIL)) {
+                            if (cmd.startsWith(DEViseCommands.DONE) ||
+			      cmd.startsWith(DEViseCommands.ERROR) ||
+			      cmd.startsWith(DEViseCommands.FAIL)) {
                                 isEnd = true;
                             }
 
@@ -1005,7 +1108,9 @@ public class DEViseCmdDispatcher implements Runnable
                             jsc.viewInfo.updateCount(rspbuf.size());
                         }
                     } else {
-                        throw new YException("Unsupported command received from server \"" + response + "\"", "DEViseCmdDispatcher::sendCommand()", 2);
+                	throw new YException("Unsupported command (" +
+			  response + ")received from server",
+		          "DEViseCmdDispatcher::processCmd()", 2);
                     }
                 }
             }

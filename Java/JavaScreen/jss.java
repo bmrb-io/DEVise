@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2000/09/12 20:51:34  wenger
+// Did some cleanup of the command-related code, better error messages from JSS.
+//
 // Revision 1.11  2000/03/30 19:14:36  wenger
 // Improved error messages for socket creation failures.
 //
@@ -352,7 +355,7 @@ public class jss implements Runnable
             return false;
         }
 
-        if (cmd[0].startsWith(DEViseCommands.S_RESTART)) {
+        if (cmd[0].equals(DEViseCommands.S_RESTART)) {
 			if (cmd.length == 3) {
                 try {
                     int cmdport = Integer.parseInt(cmd[1]);
@@ -393,7 +396,7 @@ public class jss implements Runnable
 			    System.err.println("Wrong number of arguments in command: <"
 				  + msg + ">");
 			}
-        } else if (cmd[0].startsWith(DEViseCommands.S_QUIT)) {
+        } else if (cmd[0].equals(DEViseCommands.S_QUIT)) {
             return true;
         } else {
             System.err.println("Can't recognize command received from jspop: <"

@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2000/09/12 20:51:27  wenger
+// Did some cleanup of the command-related code, better error messages from JSS.
+//
 // Revision 1.9  2000/06/12 22:13:58  wenger
 // Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
 // DEViseTrafficLight, YImageCanvas; added debug output of number of
@@ -172,8 +175,13 @@ public class JssHandler implements Runnable
 		      "Invalid request received from jss \"" + msg + "\"");
 		}
 
-		//TEMP -- check args better
-                if (cmd[0].startsWith(DEViseCommands.S_ADD) && cmd.length == 4) {
+                if (cmd[0].equals(DEViseCommands.S_ADD)) {
+		    if (cmd.length != 4) {
+		        throw new YException(
+			  "Wrong number of arguments in command: <" + msg + 
+			  ">");
+		    }
+
 		    int port = Integer.parseInt(cmd[1]);
 		    int cmdport = Integer.parseInt(cmd[2]);
 		    int imgport = Integer.parseInt(cmd[3]);
