@@ -1,0 +1,26 @@
+#!/bin/csh -f
+#=========================================================================
+# Script to automatically update the visual filter of the given view in
+# the given session to its 'home' value.
+
+# $Id$
+
+#=========================================================================
+
+if ($#argv != 2) then
+  echo "Usage: update_filter <session> <view>"
+else
+  set session = $1
+  set view = "$2"
+
+  set batchfile = /tmp/update_filter.batch
+  \rm $batchfile
+  touch $batchfile
+  echo "DEVise viewGoHome {$view}" >> $batchfile
+  echo "DEVise saveSession $session 0 0 0" >> $batchfile
+  echo "DEVise exit" >> $batchfile
+
+  devisec -q $session $batchfile
+
+  #\rm $batchfile
+endif
