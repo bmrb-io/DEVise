@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/07/02 22:46:23  jussi
+  Added debugging statement.
+
   Revision 1.6  1996/06/27 15:52:44  jussi
   Added functionality which allows TDataAscii and TDataBinary to request
   that views using a given TData be refreshed (existing queries are
@@ -116,7 +119,8 @@ void QueryProc::RefreshTData(TData *tdata)
             printf("Reexecuting query for view %s with new data...\n",
                    vg->GetName());
 #endif
-            vg->AbortAndReexecuteQuery();
+            vg->AbortQuery();
+            vg->Refresh();
             if (vg->GetAutoScale())
               vg->UpdateAutoScale();
         }

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/11/13 16:57:13  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.40  1996/09/27 21:09:38  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -576,9 +586,10 @@ void ViewGraph::SetDisplayStats(char *stat)
 void ViewGraph::MasterRecomputed(ViewGraph* master)
 {
 #ifdef DEBUG
-    printf("ViewGraph::MasterRecomputed[%s]\n", GetName());
+    printf("ViewGraph::MasterRecomputed [%s]\n", GetName());
 #endif
-    AbortAndReexecuteQuery();
+    AbortQuery();
+    Refresh();
 }
 
 
@@ -781,5 +792,7 @@ void ViewGraph::SetHistogramWidthToFilter()
     printf("Histogram for view %s set to (%g, %g) from %s range\n",
 	   GetName(), lo, hi, is_filter ? "filter" : "file");
     _allStats.SetHistWidth(lo, hi);
-    AbortAndReexecuteQuery();
+
+    AbortQuery();
+    Refresh();
 }
