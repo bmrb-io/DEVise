@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/09 18:08:03  jussi
+  Added call to Display::Flush() when all queries have been executed,
+  and added variables needed to support that.
+
   Revision 1.8  1996/01/27 00:19:18  jussi
   Added hook to execute postscript when all queries have been
   evaluated (system is idle).
@@ -253,10 +257,10 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 	/* insert query into list of queries */
 	InsertMapping(map);
 
-	/* Do LIFO policy in query */
-	_queries->Insert(qdata);
+	/* Do FIFO policy in query */
+	_queries->Append(qdata);
 
-	/*
+#if 0
 	int index;
 	for (index= _queries->InitIterator(); _queries->More(index); ) {
 		QPFullData *qd = _queries->Next(index);
@@ -268,17 +272,18 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 	}
 	_queries->DoneIterator(index);
 	_queries->Append(qdata);
-	*/
+#endif
 
-/*
+#ifdef DEBUG
 	printf("queries are: \n");
-	for (index= _queries->InitIterator(); _queries->More(index); ) {
-		QPFullData *qd = _queries->Next(index);
-		printf("%s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
-			qd->priority);
+	int index;
+	for(index = _queries->InitIterator(); _queries->More(index); ) {
+	  QPFullData *qd = _queries->Next(index);
+	  printf("%s %s %d\n", qd->tdata->GetName(), qd->map->GetName(),
+		 qd->priority);
 	}
 	_queries->DoneIterator(index);
-*/
+#endif
 
 	return;
 }
@@ -309,6 +314,10 @@ void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 
 void QueryProcFull::ClearQueries()
 {
+#ifdef DEBUG
+  printf("QueryProcFull::ClearQueries\n");
+#endif
+
   int index;
   for(index = _queries->InitIterator(); _queries->More(index);) {
     QPFullData *qd = _queries->Next(index);
@@ -612,7 +621,7 @@ void QueryProcFull::ProcessQuery()
   QPFullData *first = FirstQuery();
 
 #ifdef DEBUG
-  printf("Processquery for %s %s\n", first->tdata->GetName(),
+  printf("ProcessQuery for %s %s\n", first->tdata->GetName(),
 	 first->map->GetName());
 #endif
 
@@ -779,7 +788,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 			      Boolean tdataOnly)
 {
 #ifdef DEBUG
-  printf("DoScan map 0x%p, [%d,%d]\n", qData->map, low, high);
+  printf("DoScan map 0x%p, [%ld,%ld]\n", qData->map, low, high);
 #endif
 
   BufMgr *mgr = qData->mgr;
@@ -819,7 +828,7 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 {
 #ifdef DEBUG
-  printf("range inserted [%d,%d]\n", low, high);
+	printf("QPRangeInserted [%ld,%ld]\n", low, high);
 #endif
 
 	int tRecSize = _rangeQData->tdata->RecSize();
@@ -880,8 +889,8 @@ void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
 	int numRecs, void *buf, void **recs)
 {
 #ifdef DEBUG
-  printf("DistributeTData map 0x%p, [%d,%d]\n", queryData->map,
-	 startRid, startRid+numRecs-1);
+	printf("DistributeTData map 0x%p, [%ld,%ld]\n", queryData->map,
+	       startRid, startRid+numRecs-1);
 #endif
 
 	/* init params for QPRangeInserted() */
@@ -924,7 +933,8 @@ void QueryProcFull::DistributeGData(QPFullData *queryData, RecId startRid,
 	int numRecs, void *buf, void **recs)
 {
 #ifdef DEBUG
-  printf("DistributeGData map 0x%p, [%d,%d]\n", startRid, startRid+numRecs-1);
+	printf("DistributeGData map 0x%p, [%ld,%ld]\n",
+	       queryData->map, startRid, startRid+numRecs - 1);
 #endif
 
 	/* init params for QPRangeInserted() */
