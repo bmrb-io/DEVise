@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/11/25 19:24:42  jussi
+  Updated copyright notice and cleaned up the code. Removed references
+  to xPerPixel and yPerPixel as per changes made in Devise in how
+  world coordinates are converted to pixel coordinates. The Shape
+  classes now use Transform matrix operations to perform the
+  conversion.
+
   Revision 1.7  1995/11/09 23:41:38  jussi
   Changed PROTODIR to reflect new Devise location.
 
@@ -93,7 +100,7 @@ GenShapeDefs(MappingRec *rec, FILE *mapFile)
   tmpnam(tempName);
 
   for(int i = 0; i < rec->numShapeNames; i++) {
-    sprintf(string, "/usr/lib/cpp -P -DCLASSNAME=%s_%s -DGDATANAME=%s_GData ",
+    sprintf(string, "g++ -E -DCLASSNAME=%s_%s -DGDATANAME=%s_GData ",
 	    rec->name, rec->shapeNames[i], rec->name);
     
     GenCppDefs(rec, string);
@@ -129,6 +136,8 @@ GenShapeDefs(MappingRec *rec, FILE *mapFile)
 
   unlink(tempName);
   
+  fprintf(mapFile, "\n");
+
   /* generate shape IDs */
   for(i = 0; i < rec->numShapeNames; i++) {
     fprintf(mapFile, "const int %s_%sID = %d;\n\n",
@@ -192,7 +201,7 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
   if (rec->dynamicFields & BIT_Y)
     fprintf(mapFile, "\tdouble y;\n");
   if (rec->dynamicFields & BIT_COLOR)
-    fprintf(mapFile, "\tdouble color;\n");
+    fprintf(mapFile, "\tunsigned long int color;\n");
   if (rec->dynamicFields & BIT_SIZE)
     fprintf(mapFile, "\tdouble size;\n");
   if (rec->dynamicFields & BIT_PATTERN)
@@ -203,7 +212,7 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
     fprintf(mapFile, "\tdouble orientation;\n");
   for(int i = 0; i < MAX_ATTRS; i++) {
     if (rec->dynamicAttrs & (1<< i))
-      fprintf(mapFile, "\tfloat shapeAttr_%d;\n",i);
+      fprintf(mapFile, "\tdouble shapeAttr_%d;\n",i);
   }
   fprintf(mapFile, "};\n\n");
   
