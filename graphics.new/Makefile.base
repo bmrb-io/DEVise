@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.49  1996/11/26 16:51:29  ssl
+#  Added support for piled viws
+#
 #  Revision 1.48  1996/11/23 21:20:33  jussi
 #  Updated to reflect files removed. Also added -I../../DTE/Core.
 #
@@ -56,9 +59,8 @@ CFLAGS =  -gstabs $(ARCH_FLAGS) -I../../graphics -I../../DTE -I../../DTE/Core \
 
 # Buffer manager
 
-BufMgrSrc = BufMgr.c VoidArray.c RecRange.c RangeInfoArray.c BufMgrFull.c \
-	RangeList.c TDataRangeList.c MultiArray.c RangeCallback.c \
-	GDataRangeSource.c TDataRangeSource.c
+BufMgrSrc = BufMgr.c VoidArray.c RangeInfoArray.c BufMgrFull.c \
+	RangeList.c TDataRangeList.c MultiArray.c RangeCallback.c
 
 BufMgrObj = $(BufMgrSrc:.c=.o)
 
@@ -71,12 +73,11 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
-	ViewLens.C \
-	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
+	ViewLens.C ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
-        StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C
+        StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C
 	
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
@@ -85,7 +86,7 @@ QPObj += $(QPSrcC:.C=.o)
 
 # View
 
-VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c BasicStats.c \
+VIEWSRC = ActionDefault.c ConnectorShape.h BasicStats.c \
 	KGraph.c ViewKGraph.c Seq.C Web.C Action.c ActionClassInfo.c \
 	VisualLinkClassInfo.c VisualLink.c RecordLink.C UpdateLink.C \
 	MapIntToInt.C
@@ -115,7 +116,7 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testTdata.c testbit.c testPageRange.c testPageRangeMap.c \
 	testPageRangeFile.c testAms1.c rstat.c testAms1Sym.c makeGData.c \
 	testBufPage.c testRecFile.c test2d.c testraw.c testVoidArray.c \
-        testRecRange.c testBufMech.c testBufMgrFull.c testRangeList.c \
+        testBufMech.c testBufMgrFull.c testRangeList.c \
         genStrData.c testStr.c StringHash.c testViewRanges.c testXY.c \
         testSBufMgr.C
 
@@ -163,7 +164,7 @@ rstat: rstat.o ../graphics/Parse.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o ../graphics/Exit.o -lm
 
 TESTBUFMGROBJ =  RangeInfoArray.o MultiArray.o ../graphics/Parse.o \
-	RecRange.o VoidArray.o BufMgrFull.o RangeList.o TDataRangeList.o
+	VoidArray.o BufMgrFull.o RangeList.o TDataRangeList.o
 
 testBufMgrFull: testBufMgrFull.o $(TESTBUFMGROBJ)
 	$(CC) -o $@ $@.o $(TESTBUFMGROBJ) ../graphics/ExitClean.o
@@ -177,9 +178,6 @@ testRangeList: testRangeList.o ../graphics/Parse.o RangeList.o \
 	../graphics/Exit.o
 	$(CC) -o $@ $@.o ../graphics/Parse.o RangeList.o \
 		../graphics/ExitClean.o
-
-testRecRange: testRecRange.o ../graphics/Parse.o RecRange.o ../graphics/Exit.o
-	$(CC) -o $@ $@.o ../graphics/Parse.o RecRange.o ../graphics/ExitClean.o
 
 testVoidArray: testVoidArray.o ../graphics/Parse.o VoidArray.o \
 	../graphics/Exit.o
@@ -259,9 +257,9 @@ testpage: $(LIBOBJ) testpage.o
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
 		libmonolith.a testSBufMgr testGDataRange \
-                testRecFile testRecRange testViewRanges testVoidArray
+                testRecFile testViewRanges testVoidArray
 
 mostlyclean:
 	-rm $(LIBOBJ) libbufmgr.a genStrData.o rstat.o testGDataRange.o \
-	testRecFile.o testRecRange.o testViewRanges.o testVoidArray.o\
+	testRecFile.o testViewRanges.o testVoidArray.o\
 	ClientAPI.o ServerAPI.o TkControl.o testSBufMgr.o
