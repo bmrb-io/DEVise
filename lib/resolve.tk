@@ -1,0 +1,278 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+# This procedure takes as input :
+# 1. File name of the mapping table
+# 2. File name of first set unresolved entries
+# 3. File name of the second set of unresolved entries
+# and creates a tool to manually define new mappings
+
+set leftindex 0
+set rightindex 0
+
+proc resolve {mapfile rel1file rel2file} {
+    global mfile r1file r2file leftelem rightelem mapnum
+
+    set mfile $mapfile
+    set r1file $rel1file
+    set r2file $rel2file
+
+    set leftelem ""
+    set rightelem ""
+    set mapnum 0
+
+    # Create window
+    toplevel .res -bg DarkRed
+    wm title .res "Mapping Data Sources"
+    wm iconname .res "Map"
+    wm geometry .res 630x570+100+100
+
+    # top level frames
+    frame .res.lists -relief raised -bg honeydew2 
+    frame .res.mid -relief raised -bg honeydew2
+    frame .res.bot -relief raised -bg honeydew2
+    pack .res.lists .res.mid .res.bot -side top -fill x \
+	    -padx 1m -pady 1m
+
+    frame .res.map -relief raised -bg honeydew2 -bd 1 
+    frame .res.auto -relief raised -bg honeydew2 -bd 1
+    pack .res.map .res.auto -in .res.mid -side left \
+	    -padx 1m -pady 1m -fill x -expand 1
+
+    # Two frames side by side for the listboxes
+    label .res.lists.label -text "Unresolved Companies" -bg honeydew2 -fg red
+    pack .res.lists.label -side top -fill x
+    frame .res.l1 -relief raised -bg honeydew2 -bd 1
+    frame .res.l2 -relief raised -bg honeydew2 -bd 1
+    pack .res.l1 .res.l2 -in .res.lists -side left -padx 1m -pady 1m -fill x \
+	    -expand 1
+
+    frame .res.l1.top -relief raised -bg honeydew2 
+    frame .res.l1.bot -relief raised -bg honeydew2 
+    pack .res.l1.top .res.l1.bot -fill x 
+
+    frame .res.l2.top -relief raised -bg honeydew2
+    frame .res.l2.bot -relief raised -bg honeydew2
+    pack .res.l2.top .res.l2.bot -fill x 
+
+
+
+
+
+    # Each frame has listbox +scrollbar with the entry and delete button 
+    # at the bottom
+    listbox .res.l1.list -relief raised -bd 1 \
+	    -yscrollcommand ".res.l1.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .res.l1.scroll -command ".res.l1.list yview" -bg honeydew2
+    entry .res.l1.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable leftelem -bg bisque
+    button .res.l1.del -text Delete -bg gray75 -fg IndianRed4 -command {
+	set line [.res.l1.list get active]
+	if {$line != ""} {
+	    .res.l1.list delete active 
+	    set leftelem ""
+	}
+    }
+    
+    pack .res.l1.scroll -in .res.l1.top -side left -fill y
+    pack .res.l1.list -in .res.l1.top -fill x
+
+    pack .res.l1.entry .res.l1.del -in .res.l1.bot \
+	    -side left -padx 2m -pady 2m -expand 1
+
+
+    # Same for the other side
+    listbox .res.l2.list -relief raised -bd 1 \
+	    -yscrollcommand ".res.l2.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .res.l2.scroll -command ".res.l2.list yview" -bg honeydew2
+    entry .res.l2.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable rightelem -bg bisque
+    button .res.l2.del -text Delete -bg gray75 -fg IndianRed4 -command {
+	set line [.res.l2.list get active]
+	if {$line != ""} {
+	    .res.l2.list delete active 
+	    set rightelem ""
+	}
+    }
+    
+    pack .res.l2.scroll -in .res.l2.top -side right -fill y
+    pack .res.l2.list -in .res.l2.top -fill x 
+
+    pack .res.l2.entry .res.l2.del -in .res.l2.bot \
+	    -side left -padx 2m -pady 2m -expand 1
+
+    # Initialize lists
+    readrel $rel1file .res.l1.list
+    readrel $rel2file .res.l2.list
+
+    # Bind double click on the listboxes to load selection into entry boxes
+    bind .res.l1.list <Double-1> {
+	set sel [.res.l1.list get active]
+	set leftelem [lindex $sel $leftindex]
+    }
+
+    bind .res.l2.list <Double-1> {
+	set sel [.res.l2.list get active]
+	set rightelem [lindex $sel $rightindex]
+    }
+
+    # Break up into two frames side by side
+    label .res.map.label -text "Current mappings" -bg honeydew2 -fg red
+    frame .res.map.left -relief raised -bg honeydew2
+    frame .res.map.right -relief raised -bg honeydew2
+    pack .res.map.label .res.map.left .res.map.right -side top -fill x
+
+    # Frame with one list of mapped items
+    listbox .res.map.list -relief raised -bd 1 \
+	    -yscrollcommand ".res.map.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .res.map.scroll -command ".res.map.list yview" -bg honeydew2
+
+    pack .res.map.scroll -in .res.map.left -side left -fill y
+    pack .res.map.list -in .res.map.left  -fill x     
+
+    # Buttons on the right side
+    button .res.map.add -text Add -bg gray75 -fg IndianRed4 -command {
+	if {($leftelem == "") || ($rightelem == "")} {
+	    showmesg "Please select both the items to be mapped."
+	} else {
+	    .res.map.list insert end "$leftelem  $rightelem"
+	    set mapnum [expr $mapnum+1]
+	    set leftelem ""
+	    set rightelem ""
+	}
+    }
+
+    button .res.map.del -text Delete -bg gray75 -fg IndianRed4 -command {
+	set line [.res.map.list get active]
+	if {$line != ""} {
+	    .res.map.list delete active 
+	}
+    }
+
+    pack .res.map.add .res.map.del -in .res.map.right -side left \
+	    -padx 1m -pady 1m -ipadx 1m -ipady 1m -expand 1
+
+    # Automatic mapping window
+    label .res.auto.label -text "Automatic mappings" -bg honeydew2 -fg red
+    frame .res.auto.left -relief raised -bg honeydew2
+    frame .res.auto.right -relief raised -bg honeydew2
+    pack .res.auto.label .res.auto.left .res.auto.right -side top -fill x
+
+    # Frame with one list of mapped items
+    listbox .res.auto.list -relief raised -bd 1 \
+	    -yscrollcommand ".res.auto.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .res.auto.scroll -command ".res.auto.list yview" -bg honeydew2
+
+    pack .res.auto.scroll -in .res.auto.left -side right -fill y
+    pack .res.auto.list -in .res.auto.left  -fill x     
+
+    button .res.auto.del -text Delete -bg gray75 -fg IndianRed4 -command {
+	set line [.res.auto.list get active]
+	if {$line != ""} {
+	    .res.auto.list delete active 
+	}
+    }
+
+    pack  .res.auto.del -in .res.auto.right -side left \
+	    -padx 1m -pady 1m -ipadx 1m -ipady 1m -expand 1
+
+    # Populate the auto-mapping listbox
+    readrel $mapfile .res.auto.list
+
+
+    # Bottom frame for save/cancel
+    button .res.bot.save -text Save -bg gray75 -fg IndianRed4 -command {
+	writerel $mfile .res.auto.list
+	appendrel $mfile .res.map.list
+	writerel $r1file .res.l1.list
+	writerel $r2file .res.l2.list 
+	destroy .res
+    }
+    
+    button .res.bot.cancel -text Cancel -bg gray75 -fg IndianRed4 \
+	    -command {destroy .res}
+
+    pack .res.bot.save .res.bot.cancel  -side left \
+	    -padx 1m -pady 1m -ipadx 1m -ipady 1m -expand 1
+
+    # Finally grab focus
+    tkwait visibility .res
+    grab set .res
+    tkwait window .res
+}
+
+# This function reads the relation from the specified file and loads it into
+# the specified list.
+proc readrel {fname lname} {
+    global datadir
+
+    # Open the file for reading
+    set f [open $datadir/$fname r]
+
+    # Read and ignore the first line - comment added by coral
+    set line [gets $f]
+    
+    # Repeat - read line and insert into list
+    set len [gets $f line]
+    while {$len != -1} {
+	$lname insert end $line 
+	set len [gets $f line]
+    }
+
+    close $f
+}
+
+# This function writes the relation from the specified list to 
+# the specified file.
+proc writerel {fname lname} {
+    global datadir
+
+    # Open the file for writing
+    set f [open $datadir/$fname w]
+
+    puts $f "## Mappings"
+    set num 0
+    for {set total [$lname index end]} {$num < $total} {incr num} {
+	set line [$lname get $num]
+	puts $f $line
+    }
+    close $f
+}
+
+# This function appends the relation from the specified list to 
+# the specified file.
+proc appendrel {fname lname} {
+    global datadir
+
+    # Open the file for writing
+    set f [open $datadir/$fname a]
+
+    set num 0
+    for {set total [$lname index end]} {$num < $total} {incr num} {
+	set line [$lname get $num]
+	puts $f $line
+    }
+    close $f
+}
+	
