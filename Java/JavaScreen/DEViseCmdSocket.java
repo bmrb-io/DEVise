@@ -13,7 +13,8 @@ public class DEViseCmdSocket
 
     // The following data are used in receiveRsp to support timeout
     private boolean isFlag = false, isNumOfElement = false, isSize = false;
-    private short flag = 0, numOfElement = 0, size = 0;
+    private int flag = 0, numOfElement = 0;
+    private int size = 0;
     private String response = null;
     private byte[] rsp = null;
     // The number of bytes read so far
@@ -268,10 +269,17 @@ public class DEViseCmdSocket
 
         try {
             if (!isFlag) {
+                socket.setSoTimeout(0);
+                flag = is.readUnsignedShort();
+                numOfElement = is.readUnsignedShort();
+                size = is.readUnsignedShort();
+                socket.setSoTimeout(timeout);
+                isFlag = true;
+                /*
                 if (rsp == null)
                     rsp = new byte[2];
-                
-                if (number < 2) 
+
+                if (number < 2)
                     number = number + is.read(rsp, number, 2 - number);
                 flag = YGlobals.Ytoshort(rsp);
                 isFlag = true;
@@ -282,8 +290,8 @@ public class DEViseCmdSocket
             if (!isNumOfElement) {
                 if (rsp == null)
                     rsp = new byte[2];
-                
-                if (number < 2) 
+
+                if (number < 2)
                     number = number + is.read(rsp, number, 2 - number);
                 numOfElement = YGlobals.Ytoshort(rsp);
                 isNumOfElement = true;
@@ -294,13 +302,14 @@ public class DEViseCmdSocket
             if (!isSize) {
                 if (rsp == null)
                     rsp = new byte[2];
-                
-                if (number < 2) 
+
+                if (number < 2)
                     number = number + is.read(rsp, number, 2 - number);
-                size = YGlobals.Ytoshort(rsp);
+                size = YGlobals.YtoUshort(rsp);
                 isSize = true;
                 number = 0;
                 rsp = null;
+                */
             }
 
             if (numOfElement <= 0 || size <= 0) {
@@ -311,7 +320,7 @@ public class DEViseCmdSocket
 
             if (rsp == null)
                 rsp = new byte[size];
-            
+
             if (number < size)
                 number = number + is.read(rsp, number, size - number);
         } catch (InterruptedIOException e) {
@@ -322,17 +331,18 @@ public class DEViseCmdSocket
             throw new YException("Can not read from input stream!", "DEViseCmdSocket:receiveRsp", 2);
         }
 
-        short argsize;
-        short pastsize = 0;
+        int argsize = 0;
+        int pastsize = 0;
         response = new String("");
-        for (short i = 0; i < numOfElement; i++) {
+        for (int i = 0; i < numOfElement; i++) {
             if (size < pastsize + 2) {
                 clearBuffer();
                 YGlobals.Ydebugpn("Invalid response received: size is not right at DEViseCmdSocket:receiveRsp!");
                 return null;
             }
 
-            argsize = YGlobals.Ytoshort(rsp, pastsize);
+            argsize = YGlobals.YtoUshort(rsp, pastsize);
+            YGlobals.Ydebugpn("argsize is " + argsize);
             pastsize += 2;
 
             if (size < pastsize + argsize) {

@@ -130,6 +130,36 @@ public final class YGlobals
         return Ytoshort(data, 0);
     }
 
+    public static int YtoUshort(byte[] data, int offset)
+    {
+        if (data == null || data.length < 2 + offset)
+            return 0;
+
+        byte b1 = data[0 + offset];
+        byte b2 = data[1 + offset];
+        byte b3 = -128;
+        int v1, v2;
+
+        if (b1 < 0) {
+            v1 = -b1 + 128;
+        } else {
+            v1 = b1;
+        }
+
+        if (b2 < 0) {
+            v2 = -b2 + 128;
+        } else {
+            v2 = b2;
+        }
+
+        return ((v1 << 8) + (v2 << 0));
+    }
+
+    public static int YtoUshort(byte[] data)
+    {
+        return YtoUshort(data, 0);
+    }
+
     public static int Ytoint(byte[] data, int offset)
     {
         if (data == null || data.length < 4 + offset)

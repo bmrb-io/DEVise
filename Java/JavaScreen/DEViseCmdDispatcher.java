@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1998/08/27 15:40:40  hongyu
+// *** empty log message ***
+//
 // Revision 1.6  1998/08/14 17:48:05  hongyu
 // *** empty log message ***
 //
@@ -117,12 +120,12 @@ public class DEViseCmdDispatcher implements Runnable
             insertCmd("JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}");
             dispatcherThread = new Thread(this);
             dispatcherThread.start();
-        } else {           
+        } else {
             YGlobals.Ydebugpn("Dispatcher is still active at Dispatcher:startDispatcher!");
             return;
         }
     }
-    
+
     public synchronized void insertCmd(String cmd, int pos)
     {
         if (status < 0) {
@@ -187,7 +190,7 @@ public class DEViseCmdDispatcher implements Runnable
     {
         cmdBuffer.removeAllElements();
     }
-    
+
     public synchronized boolean connect()
     {
         boolean isEnd = false;
@@ -210,7 +213,7 @@ public class DEViseCmdDispatcher implements Runnable
                 } else {
                     msg = new String("Can not connect IMG channel to " + hostname + " at port " + imgPort + "!\n");
                 }
-                
+
                 String result = YGlobals.Yshowmsg(jsc, msg + "Do you wish to retry now?", 0);
                 if (!result.equals(YGlobals.YIDYES)) {
                     return false;
@@ -233,12 +236,12 @@ public class DEViseCmdDispatcher implements Runnable
             imgSocket = null;
         }
     }
-    
+
     public synchronized void goOnline()
     {
         insertCmd("JAVAC_Connect {" + username + "} {" + password + "} {" + connectID + "}");
-    }    
-    
+    }
+
     public synchronized boolean isOnline()
     {
         if (cmdSocket != null && imgSocket != null)
@@ -500,7 +503,7 @@ public class DEViseCmdDispatcher implements Runnable
                         for (int j = 0; j < numOfV; j++) {
                             String name = cmd[8 + j * 5];
                             Rectangle rect = new Rectangle(Integer.parseInt(cmd[9 + j * 5]), Integer.parseInt(cmd[10 + j * 5]),
-                                                           Integer.parseInt(cmd[11 + j * 5]), Integer.parseInt(rsp[12 + j * 5]));
+                                                           Integer.parseInt(cmd[11 + j * 5]), Integer.parseInt(cmd[12 + j * 5]));
                             DEViseView v = new DEViseView(jsc, name, rect);
                             views.addElement(v);
                         }
