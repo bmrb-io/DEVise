@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1995/11/01 01:37:55  ravim
+#  Several minor changes.
+#
 #  Revision 1.4  1995/10/25 19:21:46  ravim
 #  Added new types.
 #
@@ -39,15 +42,137 @@
 
 ############################################################
 
+set catalogFile $datadir/schema/catalog.tcl
+if {![file exists $catalogFile]} {
+    puts "Cannot read catalog file for physical to logical associations"
+    exit 1
+}
+source $catalogFile
+
 #-----------------------------------------------------------
 #		PROCEDURES
 #-----------------------------------------------------------
 
+# Schema browser for  a normal user - can manipulate only the logical schema
+proc SchemaUser {} {
+    global datadir physchema
+    # Show a list of currently defined physical schemas and buttons to either
+    # create a Open one of these
+
+    toplevel .psch -bg DarkRed
+    wm title .psch "Current Schemas"
+    wm iconname .psch "Schemas"
+
+    frame .psch.top -relief raised -bg honeydew2
+    frame .psch.mid -relief raised -bg honeydew2
+    frame .psch.bot -relief raised -bg honeydew2
+    pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
+
+    # Label on top
+    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red
+    pack .psch.top.label
+
+    # Listbox with scrollbar in the middle
+    listbox .psch.mid.list -relief raised -bd 1 \
+	    -yscrollcommand ".psch.mid.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .psch.mid.scroll -command ".psch.mid.list yview" -bg honeydew2
+    pack .psch.mid.scroll -side right -fill y
+    pack .psch.mid.list -fill x
+
+    # Search for files in the schema/physical directory to populate the list
+    set flist [glob $datadir/schema/physical/*]
+    foreach fname $flist {
+	.psch.mid.list insert end [file tail $fname]
+    }    
+
+    # Button to Open or Quit
+    button .psch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
+	set physchema [.psch.mid.list get active]
+	if {$physchema == ""} {
+	    showmesg "Please choose a schema by clicking on the entry"
+	} else {
+	    destroy .psch
+	    displogical $physchema
+	}
+    }
+    button .psch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
+	destroy .psch
+    }
+    pack .psch.bot.open .psch.bot.quit -side left -padx 3m -pady 1m -expand 1
+
+    # Finally grab focus
+    tkwait visibility .psch
+    grab set .psch
+    tkwait window .psch
+}
+
+########################################################
+# Schema browser for the superuser - can change both physical and logical parts
+proc SchemaSuperuser {} {
+    global datadir
+    # Show a list of currently defined schemas and buttons to either
+    # create a New one or Open an existing one
+
+    toplevel .psch -bg DarkRed
+    wm title .psch "Physical Schemas"
+    wm iconname .psch "Schemas"
+
+    frame .psch.top -relief raised -bg honeydew2
+    frame .psch.mid -relief raised -bg honeydew2
+    frame .psch.bot -relief raised -bg honeydew2
+    pack .psch.top .psch.mid .psch.bot -side top -fill x -padx 1m -pady 1m
+
+    # Label on top
+    label .psch.top.label -text "Schemas" -bg honeydew2 -fg red
+    pack .psch.top.label
+
+    # Listbox with scrollbar in the middle
+    listbox .psch.mid.list -relief raised -bd 1 \
+	    -yscrollcommand ".psch.mid.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .psch.mid.scroll -command ".psch.mid.list yview" -bg honeydew2
+    pack .psch.mid.scroll -side right -fill y
+    pack .psch.mid.list -fill x
+
+    # Search for files in the schema/physical directory to populate the list
+    set flist [glob $datadir/schema/physical/*]
+    foreach fname $flist {
+	.psch.mid.list insert end [file tail $fname]
+    }
+
+    # Buttons at bottom
+    button .psch.bot.new -text New -bg gray75 -fg IndianRed4 -command {
+	destroy .psch
+	newschema
+    }
+    button .psch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
+	set sel [.psch.mid.list get active]
+	if {$sel == ""} {
+	    showmesg "Select the schema to edit by clicking once on the entry."
+	} else {
+	    destroy .psch
+	    openschema $sel
+	}
+    }
+    button .psch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
+	destroy .psch
+    }
+    pack .psch.bot.new .psch.bot.open .psch.bot.quit -side left \
+	    -padx 3m -pady 1m -expand 1
+
+    # Finally grab focus
+    tkwait visibility .psch
+    grab set .psch
+    tkwait window .psch
+}
+
+#############################################################
 # This procedure creates a window depicting all the fields for the schema
 # and their values if any.
 proc newschemawin {} {
 global sname ftype comm separ attrlist aname atype asort attrnum \
-	tgrps glist
+	tgrps glist Logical
 
 # Count number of attributes
 set attrnum 0
@@ -230,8 +355,6 @@ pack .newschema.attrop.add .newschema.attrop.delete \
 
 #-----------------------------------------------------------
 # Bottom portion of window
-button .newschema.opt.grp -text "Browse Groups" \
-	-bg gray75 -fg IndianRed4 -command gbrowse
 button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
     if {$sname == ""} {
 	showmesg "Schema name is not specified. Cannot save a schema \
@@ -254,13 +377,18 @@ button .newschema.opt.save -text Save -bg gray75 -fg IndianRed4 -command {
 	}
 
 	# Write into a file 
-	writefile $sname $ftype $comm $separ $attrlist
+	writephysical $sname $ftype $comm $separ $attrlist
+	# Update catalog with this new physical schema (if new).
+	if {[info exists Logical($sname)] == 0} {
+	    set Logical($sname) ""
+	    writecatalog
+	}
 	destroy .newschema
     }
 }
 button .newschema.opt.quit -text Cancel -bg gray75 -fg IndianRed4 -command { 
     destroy .newschema }
-pack .newschema.opt.grp .newschema.opt.save .newschema.opt.quit  -side left \
+pack .newschema.opt.save .newschema.opt.quit  -side left \
 	-padx 3m -pady 1m -expand 1
 
 #-----------------------------------------------------------
@@ -289,19 +417,9 @@ proc newschema {} {
 }
 
 #-----------------------------------------------------------
-proc openschema {} {
+proc openschema {filename} {
     global sname ftype comm separ attrlist aname atype asort fsBox datadir \
 	    tgrps
-
-    # Display a file selection box and get the file name
-    set fsBox(path) $datadir
-    set fsBox(pattern) *.schema*
-    set filename [FSBox "Select schema file"]
-    # If no file selected, return
-    if {$filename == ""} {
-	return 
-    }
-    puts " File : $filename"
 
     # Set some defaults
     set sname ""
@@ -315,7 +433,7 @@ proc openschema {} {
     set tgrps ""
 
     # Read the file and get the contents
-    readfile $filename
+    readphysical $filename
 
     # Call function to display the schema
     newschemawin
@@ -345,12 +463,25 @@ proc showmesg {str} {
     tkwait window .msg
 }
 
+################################################################
+proc writelogical {name} {
+    global tgrps datadir physchema
 
-#-----------------------------------------------------------
-# Procedure that creates the schema file
-proc writefile {name type comm sep alist} {
-    global tgrps glist datadir
-    set f [open $datadir/$name.schema w]
+    set f [open $datadir/schema/logical/$name w]
+    
+    # First output the physical schema name
+    puts $f "physical $physchema"
+
+    foreach nm $tgrps {
+	goutput $f $nm
+    }
+    close $f
+}
+
+proc writephysical {name type comm sep alist} {
+    global datadir
+
+    set f [open $datadir/schema/physical/$name w]
 
     puts $f "type $name $type" 
     puts $f "comment $comm"
@@ -366,21 +497,37 @@ proc writefile {name type comm sep alist} {
 	}
 	puts $f "attr $aname $atype"
     }
-
-    foreach nm $tgrps {
-	goutput $f $nm
-    }
-
     close $f
 }
 
-#-----------------------------------------------------------
-proc readfile {filename} {
-    global sname ftype comm separ attrlist tgrps
+##################################################################
+proc readlogical {filename} {
+    global tgrps datadir
+
+    # Open file for reading
+    set f [open $datadir/schema/logical/$filename r]
+
+    # First line specifies the physical schema
+    set line [gets $f]
+
+    # Group declarations
+    set len [gets $f line]
+    while {$len != -1} {
+	set nm [lindex $line 1]
+	set tgrps [lappend tgrps $nm]
+	ginput $f $nm
+	set len [gets $f line]
+    }
+    # Close file
+    close $f
+}
+
+proc readphysical {filename} {
+    global sname ftype comm separ attrlist datadir
     set attrlist ""
 
     # Open file for reading
-    set f [open $filename r]
+    set f [open $datadir/schema/physical/$filename r]
 
     # First line is the schema name and type
     set line [gets $f]
@@ -404,8 +551,6 @@ proc readfile {filename} {
     set num 0
     while {$len != -1} {
 	set first [lindex $line 0]
-	if {$first == "group"} break
-
 	if {$first != "sorted"} {
 	    scan $line "attr %s %s" attrname attrtype
 	    set attr [list $attrtype unsorted $attrname] 
@@ -419,21 +564,13 @@ proc readfile {filename} {
 	set len [gets $f line]
 	set num [expr $num+1]
     }
-
-    while {$len != -1} {
-	set nm [lindex $line 1]
-	set tgrps [lappend tgrps $nm]
-	ginput $f $nm
-	set len [gets $f line]
-    }
-
     # Close file
     close $f
 }
+###################################################################
 
-#--------------------------------------------------------------------
 proc gbrowse {} {
-    global tgrps glist resgrp
+    global tgrps glist resgrp logschema physchema Logical
 
     toplevel .gbrowse -bg DarkRed
     wm title .gbrowse "Group Browser"
@@ -536,6 +673,15 @@ proc gbrowse {} {
     button .gbrowse.ops.op.quit -text "Quit" \
 	    -bg gray75 -fg IndianRed4	-command {
 	printgrps 
+	writelogical $logschema
+	# Update catalog if needed
+	if {[lsearch $Logical($physchema) $logschema] == -1} {
+	    set Logical($physchema) [lappend Logical($physchema) $logschema]
+	    writecatalog
+	}
+	set logschema ""
+	set physchema ""
+	set tgrps ""
 	destroy .gbrowse
     }
     pack .gbrowse.ops.op.create .gbrowse.ops.op.delete \
@@ -948,4 +1094,97 @@ proc begpos {gnm ngnm} {
     }
     set cnt [expr $cnt+1]
     return 0
+}
+
+#########################################################################
+proc writecatalog {} {
+    global Logical datadir
+
+    set f [open $datadir/schema/catalog.tcl w]
+    puts $f "# Association between physical and logical schemas"
+    puts $f ""
+
+    foreach itm [lsort [array names Logical]] {
+	puts $f "set \"Logical($itm)\" \{$Logical($itm)\}"
+    }
+    close $f
+}
+
+##########################################################################
+
+proc displogical {pname} {
+    global datadir tgrps logschema Logical
+    
+    # Display the logical schema corr. to the passed physical schema
+    toplevel .lsch -bg DarkRed
+    wm title .lsch "Current Views"
+    wm iconname .lsch "Schemas"
+
+    frame .lsch.top -relief raised -bg honeydew2
+    frame .lsch.mid -relief raised -bg honeydew2
+    frame .lsch.bot -relief raised -bg honeydew2
+    frame .lsch.ent -relief raised -bg honeydew2
+    pack .lsch.top .lsch.mid .lsch.ent .lsch.bot \
+	    -side top -fill x -padx 1m -pady 1m
+
+    # Entry for schema name
+    label .lsch.ent.label -text "Schema name : " -bg honeydew2 -fg red
+    entry .lsch.ent.entry -width 25 -relief sunken -bd 2 \
+	    -textvariable logschema -bg bisque
+    pack .lsch.ent.label .lsch.ent.entry -side left -padx 1m 
+
+    # Label on top
+    label .lsch.top.label -text "$pname   Schemas" -bg honeydew2 -fg red
+    pack .lsch.top.label
+
+    # Listbox with scrollbar in the middle
+    listbox .lsch.mid.list -relief raised -bd 1 \
+	    -yscrollcommand ".lsch.mid.scroll set" \
+	    -font 9x15 -selectmode single -bg honeydew2
+    scrollbar .lsch.mid.scroll -command ".lsch.mid.list yview" -bg honeydew2
+    pack .lsch.mid.scroll -side right -fill y
+    pack .lsch.mid.list -fill x
+
+    # bind double-click on the listbox
+    bind .lsch.mid.list <Double-1> {
+	set logschema [.lsch.mid.list get active]
+    }
+
+    # Populate the listbox based on the Logical array values
+    if {[info exists Logical($pname)] == 0} {
+	set Logical($pname) ""
+    }
+    foreach itm $Logical($pname) {
+	.lsch.mid.list insert end $itm
+    }
+
+    # Button to create a New one, Open or Quit
+    button .lsch.bot.new -text New -bg gray75 -fg IndianRed4 -command {
+	if {$logschema == ""} {
+	    showmesg "Please type in the name of the schema to be created"
+	} else {
+	    set tgrps ""
+	    destroy .lsch
+	    gbrowse
+	}
+    }
+    button .lsch.bot.open -text Open -bg gray75 -fg IndianRed4 -command {
+	if {$logschema == ""} {
+	    showmesg "Please choose a schema by clicking on the entry"
+	} else {
+	    destroy .lsch
+	    readlogical $logschema
+	    gbrowse
+	}
+    }
+    button .lsch.bot.quit -text Quit -bg gray75 -fg IndianRed4 -command {
+	destroy .lsch
+    }
+    pack .lsch.bot.new .lsch.bot.open .lsch.bot.quit \
+	    -side left -padx 3m -pady 1m -expand 1
+
+    # Finally grab focus
+    tkwait visibility .lsch
+    grab set .lsch
+    tkwait window .lsch
 }
