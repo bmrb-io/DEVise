@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/01/17 21:05:14  jussi
+  Minor fix for SGI EPS output.
+
   Revision 1.14  1996/01/17 20:53:34  jussi
   Added support for additional image export formats.
 
@@ -246,20 +249,33 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
   char cmd[256];
 
-#ifndef SGI
+#if defined(SUN) || defined(HPUX)
+  if (format == POSTSCRIPT || format == EPS) {
+    sprintf(cmd, "xwd -frame -id %ld | xpr -device ps -portrait -compact > %s",
+	    _win, filename);
+  } else if (format == GIF) {
+    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | ppmtogif > %s",
+	    _win, filename);
+  } else {
+    printf("Requested export format not supported yet on this platform.\n");
+    return;
+  }
+#endif
+
+#if defined(PENTIUM)
   if (format == POSTSCRIPT || format == EPS) {
     sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtops -rle > %s",
 	    _win, filename);
   } else if (format == GIF) {
-    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | pnmtogif > %s",
+    sprintf(cmd, "xwd -frame -id %ld | xwdtopnm | ppmtogif > %s",
 	    _win, filename);
   } else {
-    printf("Requested export format not supported yet.\n");
+    printf("Requested export format not supported yet on this platform.\n");
     return;
   }
+#endif
 
-#else
-
+#if defined(SGI)
   if (format == POSTSCRIPT) {
     sprintf(cmd, "xwd -frame -id %ld > /tmp/devise.xwd; \
 fromxwd /tmp/devise.xwd /tmp/devise.rgb; \
@@ -279,7 +295,7 @@ togif /tmp/devise.rgb %s; \
 rm /tmp/devise.xwd /tmp/devise.rgb",
 	    _win, filename);
   } else {
-    printf("Requested export format not supported yet.\n");
+    printf("Requested export format not supported yet on this platform.\n");
     return;
   }
 #endif
