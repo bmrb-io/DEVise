@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.14  1997/01/09 18:37:33  wenger
+#	Removed some leftover debug code.
+#
 #	Revision 1.13  1996/12/16 20:29:48  wenger
 #	Fixed bug 095 ('OK' button doesn't work in mapping editor).
 #
@@ -58,8 +61,7 @@
 
 proc dialogMapping {w title text bitmap schemaname params map {getName 0}} { 
     global dialogParamVar dialogListVar DEViseColors DEViseShapes 
-    global button1 mappingWinOpened
-    global curView
+    global button1 curView
 
     set xParm [lindex [lindex $params 3] 1]
     set yParm [lindex [lindex $params 4] 1]
@@ -188,11 +190,9 @@ proc dialogMapping {w title text bitmap schemaname params map {getName 0}} {
 	    UpdateMappings {$map} {$params} {$mappings} "
     button $w.but.ok -text OK -width 10 -command " \
 	    UpdateMappings {$map} {$params} {$mappings}
-    	    set mappingWinOpened 0 
             destroy $w 
 	    return "
     button $w.but.cancel -text Cancel -width 10 -command " \
-	    set mappingWinOpened 0 
             destroy $w 
             return "
     pack $w.but.apply $w.but.ok $w.but.cancel -side left -padx 3m
