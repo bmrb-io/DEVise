@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/04 05:18:26  kmurli
+  Major modification: The dispatcher now receives the register command
+  from the displays directly (i.e. from XDisplay instead of from
+  Display) corrected a bug in call to register function. Also now
+  dispatcher uses socket number passed from the XDisplay class to
+  select on it and call the relevant functions.
+
   Revision 1.5  1996/01/27 00:20:31  jussi
   QuitNotify() is now defined in .c file.
 
@@ -66,7 +73,7 @@ public:
   DispatcherCallback *callBack;
   StateFlag flag;
   int priority;
-  int DisplaySocketId;
+  int fd;
 };
 
 class DeviseWindow;
@@ -120,7 +127,8 @@ public:
   /* callback registration. all == TRUE if register with
      ALL dispatchers. */
   void Register(DispatcherCallback *c, int priority = 10,
-		StateFlag flag=GoState, Boolean all = false,int DisplaySocketId = -1); 
+		StateFlag flag=GoState, Boolean all = false,
+		int fd = -1); 
   
   /* unregister */
   void Unregister(DispatcherCallback *c); 

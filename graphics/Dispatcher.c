@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/04 05:18:24  kmurli
+  Major modification: The dispatcher now receives the register command
+  from the displays directly (i.e. from XDisplay instead of from
+  Display) corrected a bug in call to register function. Also now
+  dispatcher uses socket number passed from the XDisplay class to
+  select on it and call the relevant functions.
+
   Revision 1.7  1996/01/27 00:20:18  jussi
   QuitNotify() is now defined in .c file.
 
@@ -37,8 +44,10 @@
 */
 
 #include <unistd.h>
+#include <memory.h>
 #include <sys/types.h>
 #include <sys/time.h>
+
 #include "Dispatcher.h"
 #include "Control.h"
 #include "Init.h"
@@ -53,9 +62,12 @@ DispatcherList Dispatcher::_dispatchers;
 DispatcherInfoList Dispatcher::_allCallbacks,
 	Dispatcher::_toInsertAllCallbacks;
 Boolean Dispatcher::_returnFlag;
-Boolean Dispatcher::_quit = false; /* TRUE if we should quit by cleaning up
-				      and exit. This is done with QuitNotify()
-				   */
+
+/*
+   TRUE if we should quit by cleaning up
+   and exit. This is done with QuitNotify()
+*/
+Boolean Dispatcher::_quit = false;
 
 Dispatcher::Dispatcher(StateFlag state)
 {
@@ -73,7 +85,10 @@ Dispatcher::Dispatcher(StateFlag state)
   
   int d1, d2, d3, d4; /* dummy vars that we don't need */ 
   
-  _playback = ! Journal::NextEvent(_playInterval, _nextEvent, _nextSelection, _nextView, _nextFilter, _nextHint, d1, d2, d3, d4); } 
+  _playback = ! Journal::NextEvent(_playInterval, _nextEvent,
+				   _nextSelection, _nextView,
+				   _nextFilter, _nextHint,
+				   d1, d2, d3, d4); } 
   
 }
 
@@ -88,23 +103,27 @@ Dispatcher::Dispatcher(StateFlag state)
 **************************************************************/
 
 void Dispatcher::Register(DispatcherCallback *c, int priority,
-			  StateFlag flag, Boolean allDispatchers, int DisplaySocketId )
+			  StateFlag flag, Boolean allDispatchers,
+			  int fd)
 {
   DispatcherInfo *info = new DispatcherInfo;
   info->callBack = c;
   info->flag = flag;
   info->priority = priority;
-  info->DisplaySocketId = DisplaySocketId; // the socket descriptor
+  info->fd = fd;
+
 #ifdef DEBUG
-   printf("In Register,Socket Id = %d\n",DisplaySocketId);
+  printf("In Register, fd = %d\n", fd);
 #endif
+
   if (allDispatchers) {
     _toInsertAllCallbacks.Append(info);
   } else {
     _toInsertCallbacks.Append(info);
   }
+
 #ifdef DEBUG
-   printf(" Left Register\n");
+  printf(" Left Register\n");
 #endif
 }
 
@@ -251,14 +270,13 @@ void Dispatcher::QuitNotify()
 
 void Dispatcher::Run1()
 {
+  fd_set fdread;          // Set the file desc varible to hold the fd values
+  struct timeval timeout; // For timeout
 
-  fd_set fdread;//Set the file desc varible to hold the socket id values.
-  struct timeval timeout; //For timeout
+  // This is used to limit the number of fd's to check in select.
+  int MaxFDcheck = 0;
 
-  int MaxFDcheck = 0;//This is used to limit the number of fd's to check in select.
-
-
-  FD_ZERO(&fdread );
+  FD_ZERO(&fdread);
 	
   if (_quit) {
     Cleanup();
@@ -270,33 +288,26 @@ void Dispatcher::Run1()
   int index;
   for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
     DispatcherInfo *callback = _allCallbacks.Next(index);
-    if ((callback->flag & _stateFlag)&&(callback->DisplaySocketId < 0 ))
+    if ((callback->flag & _stateFlag)&&(callback->fd < 0))
       callback->callBack->Run();
-     else{
-	    
-		// Add to the socket mask and list.
-       FD_SET(callback->DisplaySocketId, &fdread);
-       
-	   if (MaxFDcheck < callback->DisplaySocketId)
-	       MaxFDcheck = callback->DisplaySocketId;
+     else {
+       // Add fd to the fdmask
+       FD_SET(callback->fd, &fdread);
+       if (MaxFDcheck < callback->fd)
+	 MaxFDcheck = callback->fd;
      }
-	     
   }
   _allCallbacks.DoneIterator(index);
 
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *callback = _callbacks.Next(index);
-    if ((callback->flag & _stateFlag)&&(callback->DisplaySocketId < 0 ))
+    if ((callback->flag & _stateFlag)&&(callback->fd < 0))
       callback->callBack->Run();
-    else{
-	    
-       FD_SET(callback->DisplaySocketId, &fdread);
-	  
-       
-       if (MaxFDcheck < callback->DisplaySocketId)
-	       MaxFDcheck = callback->DisplaySocketId;
+    else {
+      FD_SET(callback->fd, &fdread);
+      if (MaxFDcheck < callback->fd)
+	MaxFDcheck = callback->fd;
     }
-    
   }
   _callbacks.DoneIterator(index);
 
@@ -324,48 +335,48 @@ void Dispatcher::Run1()
 
   int NumberFdsReady = 0;
 
-  if ((NumberFdsReady = (select(MaxFDcheck + 1,(fd_set *)&fdread,(fd_set * )&dummy,(fd_set *)&dummy,&timeout))) <0){
-	  
-	  perror("select");
-	  return;
+  if ((NumberFdsReady = (select(MaxFDcheck + 1,
+				(fd_set *)&fdread,
+				(fd_set * )&dummy,
+				(fd_set *)&dummy,
+				&timeout))) < 0) {
+    perror("select");
+    return;
   }
 
-  // Check if any one of the sockets have something to be read..the list is _sockcallbacks
-
+  // Check if any one of the fds have something to be read...
+  // the list is _sockcallbacks
 
   // checks if there is anything to be done..
-  if ( NumberFdsReady > 0 ) { 
 
-  	for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
-    	
-		DispatcherInfo *callback = _allCallbacks.Next(index);
-    	if ((callback->flag & _stateFlag)&&(callback->DisplaySocketId != -1)\
-			  &&(FD_ISSET(callback->DisplaySocketId,&fdread)))
-	   
+  if (NumberFdsReady > 0) { 
+    for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
+      DispatcherInfo *callback = _allCallbacks.Next(index);
+      if ((callback->flag & _stateFlag)
+	  && (callback->fd != -1)
+	  && (FD_ISSET(callback->fd, &fdread))) {
 #ifdef DEBUG
-		 printf(" Check for correctness.. Called \n"); 
+	printf(" Check for correctness.. Called \n"); 
 #endif
-		 callback->callBack->Run();
+	callback->callBack->Run();
+      }
+    }
 
-	     
-  	}
-  	_allCallbacks.DoneIterator(index);
+    _allCallbacks.DoneIterator(index);
 
-  	for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
-    
-		DispatcherInfo *callback = _callbacks.Next(index);
-    	if ((callback->flag & _stateFlag)&&(callback->DisplaySocketId != -1)\
-		 &&(FD_ISSET(callback->DisplaySocketId,&fdread)))
-
+    for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+      DispatcherInfo *callback = _callbacks.Next(index);
+      if ((callback->flag & _stateFlag)&&(callback->fd != -1)\
+	  &&(FD_ISSET(callback->fd, &fdread))) {
 #ifdef DEBUG
       	printf(" Check for correctness.. Called \n");
 #endif
-	    callback->callBack->Run();
-    
- 	 }
-  	 _callbacks.DoneIterator(index);
-
+	callback->callBack->Run();
+      }	
+    }
+    _callbacks.DoneIterator(index);
   } 
+
   // end of call backs     
 
   if (!_playback)
