@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 03 2000 14:59:33
+# file date: Aug 16 2000 09:38:55
 # DEVise version: 1.7.1
-# DEVise date: Jul 20 2000
+# DEVise date: Aug 15 2000
 # DEVise endHeader
 
 # Session description
@@ -13,8 +13,8 @@ DEVise dteInsertCatalogEntry . {"4096r" UNIXFILE 4096r.dat HXRates /p/devise/dem
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
-DEVise create {view} {SortedX} {View 1} 2.000000 147.000000 0.000000 6.410000 37 0
-DEVise setLabel {View 1} 1 16 {- Log(H-exchange rate values)}
+DEVise create {view} {SortedX} {View 1} 2.000000 147.000000 -6.410000 0.000000 37 0
+DEVise setLabel {View 1} 1 16 {Log(H-exchange rate values)}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
 DEVise setViewSolid3D {View 1} 2
@@ -220,7 +220,7 @@ DEVise createMappingClass {H_exchange_rate_max_value_vs_Residue_seq_code}
 DEVise createMappingClass {Label_text_vs_recId}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {Log_H_exchange_rate_value_vs_Residue_seq_code} .4096r .4096r#Log_H_exchange_rate_value_vs_Residue_seq_code {} {$Residue_seq_code} {-$Log_H_exchange_rate_value} {} 7 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Log_H_exchange_rate_value_vs_Residue_seq_code} .4096r .4096r#Log_H_exchange_rate_value_vs_Residue_seq_code {} {$Residue_seq_code} {$Log_H_exchange_rate_value} {} 7 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4096r#Log_H_exchange_rate_value_vs_Residue_seq_code} 1
 DEVise create {mapping} {log_H_ex_prot_factor_value_vs_Residue_seq_code} .hxpf .hxpf#log_H_ex_prot_factor_value_vs_Residue_seq_code {} {$Residue_seq_code} {$log_H_ex_prot_factor_value} {} 7 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.hxpf#log_H_ex_prot_factor_value_vs_Residue_seq_code} 1
@@ -236,8 +236,8 @@ DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId 
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 
 # Create windows
-DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.191406 0.500000 0.312500 0 0
-DEVise create {window} {TileLayout} DEViseWn1 0.156250 0.504883 0.500000 0.351562 0 0
+DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.190430 0.500000 0.312500 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.156250 0.504883 0.500000 0.350586 0 0
 DEVise create {window} {TileLayout} DEViseWn2 0.156250 0.857422 0.500000 0.032227 0 0
 
 # Set up window layouts
@@ -326,6 +326,7 @@ DEVise insertViewHistory {View 1} {2.00} {-6.41} {147.00} {0.00} 0
 DEVise insertViewHistory {View 1} {2.00} {0.00} {147.00} {6.41} 0
 DEVise insertViewHistory {View 1} {7.99} {0.00} {11.46} {6.41} 0
 DEVise insertViewHistory {View 1} {2.00} {0.00} {147.00} {6.41} 0
+DEVise insertViewHistory {View 1} {2.00} {-6.41} {147.00} {0.00} 0
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {3.00} {1.00} {147.00} {20.00} 0
 DEVise insertViewHistory {View 2} {2.00} {1.00} {147.00} {20.00} 0
@@ -356,6 +357,7 @@ DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
 DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
 DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} 83
 DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} -121
+DEVise insertViewHistory {View 3} {-6.41} {0.00} {0.00} {1.00} -41
 DEVise clearViewHistory {View 4}
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 0
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
@@ -363,6 +365,7 @@ DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} 83
 DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} -121
+DEVise insertViewHistory {View 4} {-6.41} {0.00} {0.00} {0.00} -41
 DEVise clearViewHistory {View 7}
 DEVise insertViewHistory {View 7} {0.00} {0.00} {100.00} {100.00} 0
 DEVise insertViewHistory {View 7} {-1.00} {-1.00} {1.00} {1.00} 0
