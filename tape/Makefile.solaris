@@ -11,7 +11,10 @@ QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
 QueryProcTape.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-QueryProcTape.o: /usr/include/stdlib.h ../graphics/Journal.h SortedTable.h
+QueryProcTape.o: /usr/include/stdlib.h /usr/include/sys/types.h
+QueryProcTape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+QueryProcTape.o: /usr/include/sys/select.h /usr/include/sys/time.h
+QueryProcTape.o: /usr/include/sys/time.h ../graphics/Journal.h SortedTable.h
 QueryProcTape.o: ../graphics.new/GData.h ../graphics.new/TData.h
 QueryProcTape.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 QueryProcTape.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
@@ -26,22 +29,23 @@ QueryProcTape.o: /usr/include/math.h /usr/include/floatingpoint.h
 QueryProcTape.o: /usr/include/sys/ieeefp.h ../graphics/Transform.h
 QueryProcTape.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 QueryProcTape.o: ../graphics/Control.h ../graphics/ViewCallback.h
-QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
-QueryProcTape.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-QueryProcTape.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-QueryProcTape.o: /usr/include/sys/time.h ../graphics/Config.h
+QueryProcTape.o: ../graphics/AttrList.h ../graphics/Config.h
 QueryProcTape.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
 QueryProcTape.o: ../graphics.new/ViewStats.h ../graphics.new/GDataBin.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h
-QueryProcTape.o: ../graphics.new/TDataMapDispatch.h
+QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/Display.h
+QueryProcTape.o: ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics.new/RecId.h
-Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-Templates.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-Templates.o: /usr/include/stdlib.h ../graphics/Journal.h SortedTable.h
-Templates.o: /usr/include/assert.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h
+Templates.o: /usr/include/assert.h ../graphics/Exit.h ../graphics/BufPolicy.h
+Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+Templates.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h
+Templates.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+Templates.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+Templates.o: /usr/include/sys/time.h /usr/include/sys/time.h
+Templates.o: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 Templates.o: ../graphics.new/BufferPolicy.h
@@ -52,32 +56,6 @@ devtype.o: /usr/include/sys/stat.h /usr/include/sys/time.h
 devtype.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 devtype.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 devtype.o: /usr/include/sys/time.h
-extend.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-extend.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
-exttape.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-exttape.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
-exttape.o: tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
-exttape.o: /usr/include/limits.h /usr/include/sys/types.h
-exttape.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-exttape.o: /usr/include/sys/select.h /usr/include/sys/time.h
-exttape.o: /usr/include/sys/time.h /usr/include/sys/param.h
-exttape.o: /usr/include/sys/unistd.h /usr/include/sys/wait.h
-exttape.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
-exttape.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
-exttape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-exttape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-exttape.o: /usr/include/netdb.h /usr/include/sys/socket.h
-exttape.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-exttape.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-exttape.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-exttape.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-exttape.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-exttape.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-exttape.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-exttape.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-exttape.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-exttape.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-exttape.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/feature_tests.h
 tapedrive.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 tapedrive.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h

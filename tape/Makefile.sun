@@ -12,7 +12,8 @@ QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
 QueryProcTape.o: /usr/include/stdio.h /usr/include/stdlib.h
-QueryProcTape.o: /usr/include/sys/stdtypes.h ../graphics/Journal.h
+QueryProcTape.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
+QueryProcTape.o: /usr/include/sys/sysmacros.h ../graphics/Journal.h
 QueryProcTape.o: SortedTable.h ../graphics.new/GData.h
 QueryProcTape.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 QueryProcTape.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
@@ -32,15 +33,17 @@ QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
 QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
 QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
 QueryProcTape.o: ../graphics.new/GDataBin.h ../graphics.new/MappingInterp.h
-QueryProcTape.o: ../graphics.new/TDataMapDispatch.h
+QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/Display.h
+QueryProcTape.o: ../graphics/ColorMgr.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics.new/RecId.h
-Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
-Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-Templates.o: /usr/include/stdio.h /usr/include/stdlib.h
-Templates.o: /usr/include/sys/stdtypes.h ../graphics/Journal.h SortedTable.h
-Templates.o: /usr/include/assert.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h
+Templates.o: /usr/include/assert.h ../graphics/Exit.h ../graphics/BufPolicy.h
+Templates.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+Templates.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+Templates.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+Templates.o: ../graphics/Journal.h SortedTable.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
 Templates.o: ../graphics.new/BufferPolicy.h
@@ -49,25 +52,6 @@ atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/sys/timeb.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 devtype.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 devtype.o: /usr/include/sys/sysmacros.h
-extend.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-extend.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
-exttape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
-exttape.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
-exttape.o: tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
-exttape.o: /usr/include/limits.h /usr/include/sys/types.h
-exttape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
-exttape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-exttape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-exttape.o: /usr/include/sys/time.h /usr/include/sys/time.h
-exttape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-exttape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
-exttape.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
-exttape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-exttape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-exttape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-exttape.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-exttape.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-exttape.o: /usr/include/arpa/inet.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/types.h
 tapedrive.o: /usr/include/sys/stdtypes.h /usr/include/sys/sysmacros.h
 tapedrive.o: /usr/include/string.h /usr/include/assert.h tapedrive.h

@@ -34,3 +34,17 @@ index.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 index.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 index.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 index.o: /usr/include/arpa/inet.h
+project.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+project.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+project.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
+project.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+project.o: /usr/include/sys/param.h /usr/include/sys/types.h
+project.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+project.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+project.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+project.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+project.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+project.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+project.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+project.o: /usr/include/arpa/inet.h

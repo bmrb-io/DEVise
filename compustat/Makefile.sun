@@ -43,3 +43,21 @@ index.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
 index.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
 index.o: /usr/include/netdb.h /usr/include/sys/socket.h
 index.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h
+project.o: /usr/include/stdio.h /usr/include/stdlib.h
+project.o: /usr/include/sys/stdtypes.h /usr/include/string.h
+project.o: /usr/include/ctype.h /usr/include/unistd.h
+project.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
+project.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+project.o: /usr/include/sys/param.h /usr/include/machine/param.h
+project.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+project.o: /usr/include/vm/faultcode.h /usr/include/sys/time.h
+project.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+project.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+project.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+project.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+project.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+project.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+project.o: /usr/include/netdb.h /usr/include/sys/socket.h
+project.o: /usr/include/netinet/in.h /usr/include/arpa/inet.h

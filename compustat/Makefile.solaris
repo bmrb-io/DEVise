@@ -58,3 +58,28 @@ index.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 index.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
 index.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 index.o: /usr/include/arpa/inet.h
+project.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+project.o: /usr/include/stdlib.h /usr/include/string.h /usr/include/ctype.h
+project.o: /usr/include/unistd.h /usr/include/sys/types.h
+project.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+project.o: /usr/include/sys/select.h /usr/include/sys/time.h
+project.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
+project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
+project.o: /usr/include/tar.h ../graphics.new/machdep.h /usr/include/limits.h
+project.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+project.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+project.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+project.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+project.o: /usr/include/netdb.h /usr/include/sys/socket.h
+project.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
+project.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+project.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+project.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
+project.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+project.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+project.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+project.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+project.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+project.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+project.o: /usr/include/sys/byteorder.h /usr/include/arpa/inet.h
