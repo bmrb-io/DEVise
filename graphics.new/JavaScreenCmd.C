@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.75  1999/09/29 00:56:01  wenger
+  Improved handing of session files in JavaScreen support: better error
+  checking, devised won't go up from 'base' session directory;
+  more flexible debug logging method now available.
+
   Revision 1.74  1999/09/24 21:02:07  wenger
   Devised changes to correspond with the latest JavaScreen code:
   JAVAC_CreateView command sends more info; JS protocol version is now
@@ -443,8 +448,6 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_Error",
 	"JAVAC_Fail"
 };
-
-static char *_sessionDir = NULL;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -1021,6 +1024,7 @@ JavaScreenCmd::GetSessionList()
 void
 JavaScreenCmd::OpenSession()
 {
+//TEMPTEMP -- changes here?
 #if defined (DEBUG_LOG)
     DebugLog::DefaultLog()->Message("JavaScreenCmd::OpenSession(", _argc,
 	  _argv, ")\n");
@@ -1033,15 +1037,13 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
-	if (_sessionDir == NULL) {
-		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
-	}
+	const char *basePath = getenv("DEVISE_SESSION");
 
 	// If the given filename is a directory, send back a list of the
 	// contents of that directory; otherwise, assume the file is a
 	// session file and go ahead and open it.
 	char fullpath[MAXPATHLEN];
-	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
+	sprintf(fullpath, "%s/%s", basePath, _argv[0]);
 
 	struct stat buf;
 	if (stat(fullpath, &buf) != 0) {
@@ -1054,14 +1056,7 @@ JavaScreenCmd::OpenSession()
 	    if (S_ISDIR(buf.st_mode)) {
 		    UpdateSessionList(_argv[0]);
 	    } else {
-		    // Reset the session directory -- this matches the behavior of the
-		    // "regular" DEVise, but it would probably make more sense to
-			// reset it // when the JavaScreen disconnects.  RKW Jun 17, 1998.
-		    delete [] _sessionDir;
-		    _sessionDir = NULL;
-    
-		    printf("Session:%s requested!\n", fullpath);
-
+		    printf("Session %s requested!\n", fullpath);
 		    DoOpenSession(fullpath);
 	    }
 	}
@@ -1440,12 +1435,10 @@ JavaScreenCmd::SaveSession()
 		return;
 	}
 
-	if (_sessionDir == NULL) {
-		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
-	}
+	const char *basePath = getenv("DEVISE_SESSION");
 
 	char fullpath[MAXPATHLEN];
-	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
+	sprintf(fullpath, "%s/%s", basePath, _argv[0]);
 
 	if (!Session::Save(fullpath, false, false, false,
 	  saveSelView).IsComplete()) {
@@ -2234,20 +2227,17 @@ JavaScreenCmd::CloseJavaConnection()
 //====================================================================
 void JavaScreenCmd::UpdateSessionList(char *dirName)
 {
+//TEMPTEMP -- changes here
 	const char *basePath = getenv("DEVISE_SESSION");
-
-	if (_sessionDir == NULL) {
-		_sessionDir = CopyString(basePath);
-	}
 
 	//
 	// Add the specified directory name onto the current directory.
 	//
 	char newPath[MAXPATHLEN];
 	if (dirName != NULL) {
-	    sprintf(newPath, "%s/%s", _sessionDir, dirName);
+	    sprintf(newPath, "%s/%s", basePath, dirName);
 	} else {
-	    strcpy(newPath, _sessionDir);
+	    strcpy(newPath, basePath);
 	}
 
     //
@@ -2260,6 +2250,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	memset(baseBuf, 0, MAXPATHLEN);
 	memset(newBuf, 0, MAXPATHLEN);
 
+	const char *sessionDir = basePath;
     if (resolvepath(basePath, baseBuf, MAXPATHLEN) < 0) {
 	    reportErrSys("Error in resolvepath()");
 	} else if (resolvepath(newPath, newBuf, MAXPATHLEN) < 0) {
@@ -2273,13 +2264,8 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		if (strncmp(baseBuf, newBuf, length)) {
             errmsg = "Illegal session directory (can't go up from base)";
 			reportErrNosys(errmsg);
-			delete [] _sessionDir;
-			_sessionDir = CopyString(basePath);
 		} else {
-			// Copy newBuf to _sessionDir here so path doesn't keep getting
-			// longer if we repeatedly go up and down the directory tree.
-			delete [] _sessionDir;
-			_sessionDir = CopyString(newBuf);
+		    sessionDir = newBuf;
 		}
 	}
 
@@ -2288,20 +2274,19 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	//
 	ArgList files;
 
-	DIR *directory = opendir(_sessionDir);
+	DIR *directory = opendir(sessionDir);
 	if (directory == NULL) {
 	    char errBuf[MAXPATHLEN * 2];
-		sprintf(errBuf, "Can't open session directory (%s)", _sessionDir);
+		sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
 		reportErrSys(errBuf);
 
 	    // Reset things to the "base" session directory and try again.
-		delete [] _sessionDir;
-		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
-	    directory = opendir(_sessionDir);
+		sessionDir = getenv("DEVISE_SESSION");
+	    directory = opendir(sessionDir);
 	}
 	if (directory == NULL) {
 	    char errBuf[MAXPATHLEN * 2];
-		sprintf(errBuf, "Can't open session directory (%s)", _sessionDir);
+		sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
 		reportErrSys(errBuf);
 		errmsg = "Can't open session directory";
 		_status = ERROR;
@@ -2327,7 +2312,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	for (int index = 0; index < files.GetCount(); index++) {
 		const char *file = files.GetArgs()[index];
 		char fullpath[MAXPATHLEN];
-		sprintf(fullpath, "%s/%s", _sessionDir, file);
+		sprintf(fullpath, "%s/%s", sessionDir, file);
 
 		struct stat buf;
 		stat(fullpath, &buf);
