@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.56  1998/11/19 21:13:17  wenger
+#  Implemented non-DTE version of DEVise (new code handles data source catalog
+#  functions; Tables, SQLViews, etc., are not implemented); changed version to
+#  1.6.0.
+#
 #  Revision 1.55  1998/08/21 22:16:38  wenger
 #  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
 #  linked DEVise for distribution.
@@ -211,7 +216,7 @@ LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-L../unidata -lunidata \
 	-L../DataReader -ldatareader \
 	-L../data -ldevdata \
-	-L$(PERL_CORE) -lperl $(ARCH_SYSLIBS)
+        -lmalloc -L$(PERL_CORE) -lperl $(ARCH_SYSLIBS)
 
 TEST_LDFLAGS = -L../graphics -lgraphics -lutils -lcolor -lX11
 
