@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/04/11 18:15:36  jussi
+  Made XDisplay use the polling mechanism temporarily until the
+  occasional display update problem has been resolved.
+
   Revision 1.15  1996/04/09 18:06:13  jussi
   Added Flush() method.
 
@@ -136,15 +140,12 @@ XDisplay::XDisplay(char *name)
   /* set big font to be current font */
   _fontStruct = _normalFontStruct;
 
-  /* init stipples for patterns*/
+  /* init stipples for patterns */
   Window win = XCreateSimpleWindow(_display, DefaultRootWindow(_display),
 				   (unsigned)0, (unsigned)0, (unsigned)10,
 				   (unsigned)10, /* border width */ 5,
 				   /* border */ 0, /* background */ 0);
-  if (!win) {
-    fprintf(stderr, "XDisplay::XDisplay() can't create window\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(win, "Cannot create window");
 
   for(int i = 0; i < XNumBitmaps; i++) {
     _stipples[i] = XCreateBitmapFromData(_display, win, xBitmaps[i],
@@ -340,48 +341,15 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord min_width, Coord min_height,
 				     Boolean relative, Boolean winBoundary)
 {
-  Window w, parent;
-  XSetWindowAttributes attr;
-  XSizeHints xsh;
-  XWindowRep *xParentRep = (XWindowRep *)parentRep;
-
-  if (!parentRep)
-    parent = DefaultRootWindow(_display);
-  else
-    parent = xParentRep->GetWin();
-
-  Color realFgnd, realBgnd;
-  realFgnd = GetLocalColor(fgnd);
-  realBgnd = GetLocalColor(bgnd);
-
-  attr.background_pixmap 	= None;
-  attr.background_pixel  	= realBgnd;
-  attr.border_pixmap  		= CopyFromParent;
-  attr.border_pixel  		= realFgnd;
-  attr.bit_gravity  		= ForgetGravity /*CenterGravity*/;
-  attr.win_gravity  		= NorthWestGravity;
-  attr.backing_store  		= Always /* NotUseful*/ ;
-  attr.backing_planes  		= AllPlanes;
-  attr.backing_pixel  		= 0;
-  attr.save_under  		= False;
-  attr.event_mask  		= 0;
-  attr.do_not_propagate_mask	= 0;
-  attr.override_redirect  	= False;
-  attr.colormap	= DefaultColormap(_display, DefaultScreen(_display));
-  attr.cursor  			= None;
-
-  /* Deal with providing the window with an initial position & size.
-   * Fill out the XSizeHints struct to inform the window manager. See
-   * Sections 9.1.6 & 10.3.
-   */
+  Window parent = DefaultRootWindow(_display);
 
   Coord realX, realY, realWidth, realHeight;
   Coord real_min_width, real_min_height;
   if (relative) {
-    RealWindowDimensions(parent,x,y,width,height,realX,realY,realWidth,
-			 realHeight);
-    RealWindowWidthHeight(parent,min_width,min_height,real_min_width,
-			  real_min_height);
+    RealWindowDimensions(parent, x, y, width, height, realX, realY,
+			 realWidth, realHeight);
+    RealWindowWidthHeight(parent, min_width, min_height,
+			  real_min_width, real_min_height);
   } else {
     realX = x;
     realY = y;
@@ -391,6 +359,63 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
     real_min_height = min_height;
   }
 
+  if (Init::BatchFile()) {
+    // we're in batch mode -- create a pixmap instead of a window
+
+    unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
+    Pixmap pixmap = XCreatePixmap(_display, parent, (unsigned)realWidth,
+				  (unsigned)realHeight, depth);
+    DOASSERT(pixmap, "Cannot create pixmap");
+
+#ifdef DEBUG
+    printf("XDisplay: Created X pixmap 0x%lx at %u,%u, size %u%u\n",
+	   pixmap, (unsigned)realX, (unsigned)realY,
+	   (unsigned)realWidth, (unsigned)realHeight);
+#endif
+
+    XWindowRep *xwin = new XWindowRep(_display, pixmap, this,
+				      (XWindowRep *)parentRep,
+				      fgnd, bgnd, (int)realX, (int)realY);
+    DOASSERT(xwin, "Cannot create XWindowRep");
+
+    _winList.Insert(xwin);
+  
+    return xwin;
+  }
+
+  if (parentRep) {
+    XWindowRep *xParentRep = (XWindowRep *)parentRep;
+    parent = xParentRep->GetWinId();
+  }
+
+  Color realFgnd, realBgnd;
+  realFgnd = GetLocalColor(fgnd);
+  realBgnd = GetLocalColor(bgnd);
+
+  XSetWindowAttributes attr;
+  attr.background_pixmap 	= None;
+  attr.background_pixel  	= realBgnd;
+  attr.border_pixmap  		= CopyFromParent;
+  attr.border_pixel  		= realFgnd;
+  attr.bit_gravity  		= ForgetGravity;   /* CenterGravity */
+  attr.win_gravity  		= NorthWestGravity;
+  attr.backing_store  		= Always;          /* NotUseful*/
+  attr.backing_planes  		= AllPlanes;
+  attr.backing_pixel  		= 0;
+  attr.save_under  		= False;
+  attr.event_mask  		= 0;
+  attr.do_not_propagate_mask	= 0;
+  attr.override_redirect  	= False;
+  attr.colormap	= DefaultColormap(_display, DefaultScreen(_display));
+  attr.cursor  			= None;
+
+  /*
+   * Deal with providing the window with an initial position & size.
+   * Fill out the XSizeHints struct to inform the window manager. See
+   * Sections 9.1.6 & 10.3.
+   */
+
+  XSizeHints xsh;
   xsh.flags 	= PPosition | PSize | PMinSize;
   xsh.height 	= (int)realHeight;
   xsh.width 	= (int)realWidth;
@@ -407,13 +432,11 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
   else
     border_width = (!parent ? 5 : 0);
 
-  if ((w = XCreateWindow(_display, parent, (unsigned)realX, (unsigned)realY, 
-			 (unsigned)realWidth, (unsigned)realHeight,
-			 border_width, 0, InputOutput, CopyFromParent,
-			 AllPlanes, &attr)) == 0) {
-    fprintf(stderr,"XDisplay::CreateWindowRep: can't create window\n");
-    Exit::DoExit(1);
-  }
+  Window w = XCreateWindow(_display, parent, (unsigned)realX, (unsigned)realY, 
+			   (unsigned)realWidth, (unsigned)realHeight,
+			   border_width, 0, InputOutput, CopyFromParent,
+			   AllPlanes, &attr);
+  DOASSERT(w, "Cannot create window");
 
 #ifdef DEBUG
   printf("XDisplay: Created X window 0x%lx to parent 0x%lx at %u,%u,\n",
@@ -463,6 +486,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 
   /* return the XWindowRep structure */
   XWindowRep *xwin = new XWindowRep(_display, w, this, fgnd, bgnd, false);
+  DOASSERT(xwin, "Cannot create XWindowRep");
   _winList.Insert(xwin);
   
   return xwin;
@@ -480,12 +504,19 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     Exit::DoExit(1);
   }
 
+  if (xwin->GetWinId()) {
 #ifdef DEBUG
-  printf("XDisplay::DestroyWindowRep 0x%p, X Window 0x%lx\n",
-	 xwin, xwin->GetWin());
+    printf("XDisplay::DestroyWindowRep 0x%p, window 0x%lx\n",
+	   xwin, xwin->GetWinId());
 #endif
-
-  XDestroyWindow(_display, xwin->GetWin());
+    XDestroyWindow(_display, xwin->GetWinId());
+  } else {
+#ifdef DEBUG
+    printf("XDisplay::DestroyWindowRep 0x%p, pixmap 0x%lx\n",
+	   xwin, xwin->GetPixmapId());
+#endif
+    XFreePixmap(_display, xwin->GetPixmapId());
+  }
 
   delete xwin;
 
@@ -513,7 +544,7 @@ void XDisplay::InternalProcessing()
     int index;
     for(index = _winList.InitIterator(); _winList.More(index);) {
       XWindowRep *win = _winList.Next(index);
-      if (win->_win == event.xany.window) {
+      if (win->GetWinId() && win->GetWinId() == event.xany.window) {
 	/* Note: got to be careful here. We need to
 	   call DoneIterator() before informing the WindowRep
 	   because it might trigger a call to DestroyWindowRep() to
