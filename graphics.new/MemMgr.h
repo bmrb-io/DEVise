@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/12/19 00:05:56  donjerko
+  Changes made be Kevin to get DTE to compile.
+
   Revision 1.4  1997/02/07 22:01:13  liping
   Fixed complile problem
 
@@ -222,7 +225,7 @@ class MultiPipe {
 
     SemaphoreV *_data;
 
-    const int _maxPipes = 32;
+    static const int _maxPipes = 32;
     DataPipe *_pipes[_maxPipes];
     int _numPipes;
     int _hint;

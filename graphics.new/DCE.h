@@ -7,6 +7,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/12/11 04:25:41  beyer
+  Shared memory and semaphores are now released properly when devise
+  terminates normally.
+
   Revision 1.11  1997/01/14 20:05:47  wenger
   Fixed some compile warnings; fixed relative positions of OK/Cancel
   buttons in link GUI; removed some debug code I accidentally left
@@ -323,9 +327,9 @@ protected:
   } *comm;                              // communication area
 
   SemaphoreV *sems;                     // semaphores
-  const int lock = 0;                   // protects comm area
-  const int hasData = 1;                // set when comm area has data
-  const int hasSpace = 2;               // set when comm area has space
+  static const int lock = 0;            // protects comm area
+  static const int hasData = 1;         // set when comm area has data
+  static const int hasSpace = 2;        // set when comm area has space
   SharedMemory *shmem;                  // shared memory area
 };
 
