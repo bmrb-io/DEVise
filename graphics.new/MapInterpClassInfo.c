@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/11 03:12:46  jussi
+  Made this code independent of the ControlPanel variables
+  like FileAlias and GDataName.
+
   Revision 1.8  1996/04/16 00:16:43  jussi
   Added initialization of _dimensionInfo to two constructors.
 
@@ -157,12 +161,13 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
   }
 
   cmd->xCmd = cmd->yCmd = cmd->zCmd = cmd->colorCmd = cmd->sizeCmd =
-    cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = NULL;
+    cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = 0;
   for(int i = 0; i < MAX_GDATA_ATTRS; i++)
-    cmd->shapeAttrCmd[i] = NULL;
+    cmd->shapeAttrCmd[i] = 0;
   
   tdataAlias = CopyString(argv[0]);
-  if ((tdata = (TData *)ControlPanel::FindInstance(tdataAlias)) == NULL) {
+  tdata = (TData *)ControlPanel::FindInstance(tdataAlias);
+  if (!tdata) {
     fprintf(stderr, 
 	    "MapInterpClassInfo::CreateWithParams: can't find tdata\n");
     Exit::DoExit(2);
@@ -262,67 +267,67 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
   } else
     args[2] = "Sorted";
   
-  if (_cmd->xCmd != NULL) {
+  if (_cmd->xCmd) {
     sprintf(buf[3], "X {%s}", _cmd->xCmd);
     args[3] = buf[3];
   } else
     args[3] = "X";
     
-  if (_cmd->yCmd != NULL) {
+  if (_cmd->yCmd) {
     sprintf(buf[4], "Y {%s}", _cmd->yCmd);
     args[4] = buf[4];
   } else
     args[4] = "Y";
     
-  if (_cmd->zCmd != NULL) {
+  if (_cmd->zCmd) {
     sprintf(buf[5], "Z {%s}", _cmd->zCmd);
     args[5] = buf[5];
   } else
     args[5] = "Z";
     
-  if (_cmd->colorCmd != NULL) {
+  if (_cmd->colorCmd) {
     sprintf(buf[6], "Color {%s}", _cmd->colorCmd);
     args[6] = buf[6];
   } else
       args[6] = "Color";
     
-  if ( _cmd->sizeCmd != NULL) {
+  if ( _cmd->sizeCmd) {
     sprintf(buf[7], "Size {%s}", _cmd->sizeCmd);
     args[7] = buf[7];
   } else
     args[7] = "Size";
     
-  if ( _cmd->patternCmd != NULL) {
+  if ( _cmd->patternCmd) {
     sprintf(buf[8], "Pattern {%s}", _cmd->patternCmd);
     args[8] = buf[8];
   } else
     args[8] = "Pattern";
   
-  if ( _cmd->orientationCmd != NULL) {
+  if ( _cmd->orientationCmd) {
     sprintf(buf[9], "Orientation {%s}", _cmd->orientationCmd);
     args[9] = buf[9];
   } else
     args[9] = "Orientation";
     
-  if ( _cmd->shapeCmd!= NULL) {
+  if ( _cmd->shapeCmd) {
     sprintf(buf[10], "Shape {%s}", _cmd->shapeCmd);
     args[10] = buf[10];
   } else
     args[10] = "Shape";
     
-  if ( _cmd->shapeAttrCmd[0] != NULL) {
+  if ( _cmd->shapeAttrCmd[0]) {
     sprintf(buf[11], "ShapeAttr0 {%s}", _cmd->shapeAttrCmd[0]);
     args[11] = buf[11];
   } else
     args[11] = "ShapeAttr0";
     
-  if (_cmd->shapeAttrCmd[1] != NULL) {
+  if (_cmd->shapeAttrCmd[1]) {
     sprintf(buf[12], "ShapeAttr1 {%s}", _cmd->shapeAttrCmd[1]);
     args[12] = buf[12];
   } else
     args[12] = "ShapeAttr1";
     
-  if (_cmd->shapeAttrCmd[2] != NULL) {
+  if (_cmd->shapeAttrCmd[2]) {
     sprintf(buf[13], "ShapeAttr2 {%s}", _cmd->shapeAttrCmd[2]);
     args[13] = buf[13];
   } else
@@ -420,7 +425,7 @@ void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
   argv = args;
   
   args[0] = _fileAlias;
-  if (_name == NULL) {
+  if (!_name) {
     /* info about creating an interpreted mapping class */
     args[1] = _className;
   } else
@@ -432,58 +437,58 @@ void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
   } else
     args[2] = "";
   
-  if (_cmd->xCmd != NULL) {
+  if (_cmd->xCmd) {
     args[3] = _cmd->xCmd;
   } else
     args[3] = "";
   
-  if (_cmd->yCmd != NULL) {
+  if (_cmd->yCmd) {
     args[4] = _cmd->yCmd;
   } else
     args[4] = "";
   
-  if (_cmd->zCmd != NULL) {
+  if (_cmd->zCmd) {
     args[5] = _cmd->zCmd;
   } else
     args[5] = "";
   
-  if ( _cmd->colorCmd != NULL) {
+  if ( _cmd->colorCmd) {
     args[6] = _cmd->colorCmd;
   } else
     args[6] = "";
   
-  if ( _cmd->sizeCmd != NULL) {
+  if ( _cmd->sizeCmd) {
     args[7] = _cmd->sizeCmd;
   } else
     args[7] = "";
   
-  if ( _cmd->patternCmd != NULL) {
+  if ( _cmd->patternCmd) {
     args[8] = _cmd->patternCmd;
   } else
-    args[8] = NULL;
+    args[8] = "";
   
-  if ( _cmd->orientationCmd != NULL) {
+  if ( _cmd->orientationCmd) {
     args[9] = _cmd->orientationCmd;
   } else
     args[9] = "";
   
-  if ( _cmd->shapeCmd!= NULL) {
+  if ( _cmd->shapeCmd) {
     args[10] = _cmd->shapeCmd;
   } else
-    args[10] = NULL;
+    args[10] = "";
   
-  if ( _cmd->shapeAttrCmd[0] != NULL) {
+  if ( _cmd->shapeAttrCmd[0]) {
     args[11] = _cmd->shapeAttrCmd[0];
   } else
     args[11] = "";
   
-  if ( _cmd->shapeAttrCmd[1] != NULL) {
+  if ( _cmd->shapeAttrCmd[1]) {
     args[12] = _cmd->shapeAttrCmd[1];
   } else
-    args[12] = NULL;
+    args[12] = "";
   
-  if ( _cmd->shapeAttrCmd[2] != NULL) {
+  if ( _cmd->shapeAttrCmd[2]) {
     args[13] = _cmd->shapeAttrCmd[2];
   } else
-    args[13] = NULL;
+    args[13] = "";
 }
