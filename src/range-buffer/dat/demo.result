@@ -23,7 +23,7 @@ End of all memory residing records.
 
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 0
+Total number of records = 0
 
 DEMO 1 ended successfully!
 
@@ -59,7 +59,7 @@ End of all memory residing records.
 {44.3, 5, "str E 789012", 2.6, "five"}
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 10
+Total number of records = 10
 
 DEMO 2 ended successfully!
 
@@ -98,7 +98,7 @@ End of all memory residing records.
 
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 10
+Total number of records = 10
 
 DEMO 3 ended successfully!
 
@@ -137,7 +137,7 @@ End of all memory residing records.
 {39.3, 0, "str E 7890123", 2.6, "five"}
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 12
+Total number of records = 12
 
 DEMO 4 ended successfully!
 
@@ -184,7 +184,7 @@ End of all memory residing records.
 {47.3, 2, "str CC2", 2.6, "three"}
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 11
+Total number of records = 11
 
 DEMO 5 ended successfully!
 
@@ -217,7 +217,7 @@ End of all memory residing records.
 {5.3, 4, "str AA", 2.7, "one"}
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 6
+Total number of records = 6
 
 DEMO 6 ended successfully!
 
@@ -281,7 +281,7 @@ Object 2 replaced as a victim.
 {35.3, 4, "str AA", 2.6, "one"}
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 21
+Total number of records = 21
 
 DEMO 7 ended successfully!
 
@@ -419,7 +419,7 @@ Object 1 replaced as a victim.
 {149.3, 0, "str E 7890123", 2.6, "five"}
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 107
+Total number of records = 107
 
 DEMO 8 ended successfully!
 
@@ -554,11 +554,20 @@ End of all memory residing records.
 
 End of records fetched from low level and end of all records.
 
-End of all records. Total number of records = 107
+Total number of records = 107
 
 DEMO 9 ended successfully!
 
 
 /************************************************************************/
 /*  		All demos ran successfully! Goodbye!			*/
+/************************************************************************/
+
+/************************************************************************/
+/* Additional Comments: 						*/
+/* 									*/
+/* - All records returned before the comment *End of all memory ...*	*/
+/*   are records fetched from memory directly.				*/
+/* - All records returned after that are fetched from low level data	*/
+/*   provider.								*/
 /************************************************************************/

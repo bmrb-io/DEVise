@@ -204,7 +204,7 @@ printf("
     }
     
     /* print out total number of records */
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -263,7 +263,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -325,7 +325,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -385,7 +385,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -473,7 +473,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -540,7 +540,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -632,7 +632,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -700,7 +700,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -762,7 +762,7 @@ printf("
         i++;
     }
     
-    printf("\nEnd of all records. Total number of records = %d\n", i);
+    printf("\nTotal number of records = %d\n", i);
 
 /*-------------- Clean up --------------*/
  
@@ -784,6 +784,17 @@ printf("
 printf("
 /************************************************************************/
 /*  		All demos ran successfully! Goodbye!			*/
+/************************************************************************/
+");
+
+printf("
+/************************************************************************/
+/* Additional Comments: 						*/
+/* 									*/
+/* - All records returned before the comment *End of all memory ...*	*/
+/*   are records fetched from memory directly.				*/
+/* - All records returned after that are fetched from low level data	*/
+/*   provider.								*/
 /************************************************************************/
 ");
 
