@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/21 19:49:31  jussi
+  Minor change so that older compilers will accept the code.
+
   Revision 1.1  1996/06/21 19:25:22  jussi
   Initial revision.
 */
@@ -64,36 +67,36 @@ void Map3D::AssignBlockVertices(BLOCK &block)
   Coord D = block.D / 2;
 
   block.vt[0].x_ = block.pt.x_ - W;
-  block.vt[0].y_ = block.pt.y_ - D; 
-  block.vt[0].z_ = block.pt.z_ + H;
+  block.vt[0].y_ = block.pt.y_ - H; 
+  block.vt[0].z_ = block.pt.z_ + D;
 
   block.vt[1].x_ = block.pt.x_ + W;
-  block.vt[1].y_ = block.pt.y_ - D;
-  block.vt[1].z_ = block.pt.z_ + H;
+  block.vt[1].y_ = block.pt.y_ - H;
+  block.vt[1].z_ = block.pt.z_ + D;
 
   block.vt[2].x_ = block.pt.x_ + W;
-  block.vt[2].y_ = block.pt.y_ - D;
-  block.vt[2].z_ = block.pt.z_ - H;
+  block.vt[2].y_ = block.pt.y_ - H;
+  block.vt[2].z_ = block.pt.z_ - D;
 
   block.vt[3].x_ = block.pt.x_ - W;
-  block.vt[3].y_ = block.pt.y_ - D;
-  block.vt[3].z_ = block.pt.z_ - H;
+  block.vt[3].y_ = block.pt.y_ - H;
+  block.vt[3].z_ = block.pt.z_ - D;
 
   block.vt[4].x_ = block.pt.x_ - W;
-  block.vt[4].y_ = block.pt.y_ + D;
-  block.vt[4].z_ = block.pt.z_ + H;
+  block.vt[4].y_ = block.pt.y_ + H;
+  block.vt[4].z_ = block.pt.z_ + D;
 
   block.vt[5].x_ = block.pt.x_ + W;
-  block.vt[5].y_ = block.pt.y_ + D;
-  block.vt[5].z_ = block.pt.z_ + H;
+  block.vt[5].y_ = block.pt.y_ + H;
+  block.vt[5].z_ = block.pt.z_ + D;
 
   block.vt[6].x_ = block.pt.x_ + W;
-  block.vt[6].y_ = block.pt.y_ + D;
-  block.vt[6].z_ = block.pt.z_ - H;
+  block.vt[6].y_ = block.pt.y_ + H;
+  block.vt[6].z_ = block.pt.z_ - D;
 
   block.vt[7].x_ = block.pt.x_ - W;
-  block.vt[7].y_ = block.pt.y_ + D;
-  block.vt[7].z_ = block.pt.z_ - H;
+  block.vt[7].y_ = block.pt.y_ + H;
+  block.vt[7].z_ = block.pt.z_ - D;
 }
 
 // ---------------------------------------------------------- 
