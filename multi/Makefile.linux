@@ -57,6 +57,7 @@ CycleCpuTimeMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+CycleCpuTimeMappingClassInfo.o: ../graphics/DevFont.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleCpuTimeMappingClassInfo.o: ../graphics.new/GdataStat.h
@@ -72,13 +73,13 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/asm/bitops.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/shm.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/linux/shm.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/asm/shmparam.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/linux/stat.h
-CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/limits.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/posix1_lim.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/linux/limits.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/posix2_lim.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/sys/stat.h
+CycleCpuTimeMappingClassInfo.o: /usr/include/linux/stat.h
+CycleCpuTimeMappingClassInfo.o: ../graphics.new/machdep.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/param.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/linux/param.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/asm/param.h
@@ -161,7 +162,8 @@ CycleEffMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 CycleEffMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleEffMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 CycleEffMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleEffMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+CycleEffMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+CycleEffMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleEffMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleEffMappingClassInfo.o: ../graphics.new/GdataStat.h
 CycleEffMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -173,11 +175,11 @@ CycleEffMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 CycleEffMappingClassInfo.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 CycleEffMappingClassInfo.o: /usr/include/linux/shm.h
 CycleEffMappingClassInfo.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-CycleEffMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-CycleEffMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
-CycleEffMappingClassInfo.o: /usr/include/posix1_lim.h
+CycleEffMappingClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
 CycleEffMappingClassInfo.o: /usr/include/linux/limits.h
-CycleEffMappingClassInfo.o: /usr/include/posix2_lim.h
+CycleEffMappingClassInfo.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+CycleEffMappingClassInfo.o: /usr/include/linux/stat.h
+CycleEffMappingClassInfo.o: ../graphics.new/machdep.h
 CycleEffMappingClassInfo.o: /usr/include/sys/param.h
 CycleEffMappingClassInfo.o: /usr/include/linux/param.h
 CycleEffMappingClassInfo.o: /usr/include/asm/param.h /usr/include/sys/wait.h
@@ -256,7 +258,8 @@ CycleOccMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 CycleOccMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleOccMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 CycleOccMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-CycleOccMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+CycleOccMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+CycleOccMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleOccMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleOccMappingClassInfo.o: ../graphics.new/GdataStat.h
 CycleOccMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -268,11 +271,11 @@ CycleOccMappingClassInfo.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 CycleOccMappingClassInfo.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 CycleOccMappingClassInfo.o: /usr/include/linux/shm.h
 CycleOccMappingClassInfo.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-CycleOccMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-CycleOccMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
-CycleOccMappingClassInfo.o: /usr/include/posix1_lim.h
+CycleOccMappingClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
 CycleOccMappingClassInfo.o: /usr/include/linux/limits.h
-CycleOccMappingClassInfo.o: /usr/include/posix2_lim.h
+CycleOccMappingClassInfo.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+CycleOccMappingClassInfo.o: /usr/include/linux/stat.h
+CycleOccMappingClassInfo.o: ../graphics.new/machdep.h
 CycleOccMappingClassInfo.o: /usr/include/sys/param.h
 CycleOccMappingClassInfo.o: /usr/include/linux/param.h
 CycleOccMappingClassInfo.o: /usr/include/asm/param.h /usr/include/sys/wait.h
@@ -368,7 +371,7 @@ CycleSuspendedMappingClassInfo.o: ../graphics/ClassDir.h
 CycleSuspendedMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleSuspendedMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleSuspendedMappingClassInfo.o: ../graphics/BufPolicy.h
-CycleSuspendedMappingClassInfo.o: ../graphics/Cursor.h
+CycleSuspendedMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleSuspendedMappingClassInfo.o: ../graphics.new/GdataStat.h
@@ -385,14 +388,13 @@ CycleSuspendedMappingClassInfo.o: /usr/include/asm/bitops.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/shm.h
 CycleSuspendedMappingClassInfo.o: /usr/include/linux/shm.h
 CycleSuspendedMappingClassInfo.o: /usr/include/asm/shmparam.h
-CycleSuspendedMappingClassInfo.o: /usr/include/assert.h
-CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
-CycleSuspendedMappingClassInfo.o: /usr/include/linux/stat.h
-CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
-CycleSuspendedMappingClassInfo.o: /usr/include/limits.h
+CycleSuspendedMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/posix1_lim.h
 CycleSuspendedMappingClassInfo.o: /usr/include/linux/limits.h
 CycleSuspendedMappingClassInfo.o: /usr/include/posix2_lim.h
+CycleSuspendedMappingClassInfo.o: /usr/include/sys/stat.h
+CycleSuspendedMappingClassInfo.o: /usr/include/linux/stat.h
+CycleSuspendedMappingClassInfo.o: ../graphics.new/machdep.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/param.h
 CycleSuspendedMappingClassInfo.o: /usr/include/linux/param.h
 CycleSuspendedMappingClassInfo.o: /usr/include/asm/param.h
@@ -485,6 +487,7 @@ CycleWorkingMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 CycleWorkingMappingClassInfo.o: ../graphics/ViewCallback.h
 CycleWorkingMappingClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
 CycleWorkingMappingClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+CycleWorkingMappingClassInfo.o: ../graphics/DevFont.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/BasicStats.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/ViewStats.h
 CycleWorkingMappingClassInfo.o: ../graphics.new/GdataStat.h
@@ -500,13 +503,13 @@ CycleWorkingMappingClassInfo.o: /usr/include/asm/bitops.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/shm.h
 CycleWorkingMappingClassInfo.o: /usr/include/linux/shm.h
 CycleWorkingMappingClassInfo.o: /usr/include/asm/shmparam.h
-CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-CycleWorkingMappingClassInfo.o: /usr/include/linux/stat.h
-CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
-CycleWorkingMappingClassInfo.o: /usr/include/limits.h
+CycleWorkingMappingClassInfo.o: /usr/include/assert.h /usr/include/limits.h
 CycleWorkingMappingClassInfo.o: /usr/include/posix1_lim.h
 CycleWorkingMappingClassInfo.o: /usr/include/linux/limits.h
 CycleWorkingMappingClassInfo.o: /usr/include/posix2_lim.h
+CycleWorkingMappingClassInfo.o: /usr/include/sys/stat.h
+CycleWorkingMappingClassInfo.o: /usr/include/linux/stat.h
+CycleWorkingMappingClassInfo.o: ../graphics.new/machdep.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/param.h
 CycleWorkingMappingClassInfo.o: /usr/include/linux/param.h
 CycleWorkingMappingClassInfo.o: /usr/include/asm/param.h
@@ -583,7 +586,8 @@ HostMappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 HostMappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 HostMappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 HostMappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-HostMappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
+HostMappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+HostMappingClassInfo.o: ../graphics.new/BasicStats.h
 HostMappingClassInfo.o: ../graphics.new/ViewStats.h
 HostMappingClassInfo.o: ../graphics.new/GdataStat.h
 HostMappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
@@ -594,10 +598,10 @@ HostMappingClassInfo.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 HostMappingClassInfo.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 HostMappingClassInfo.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 HostMappingClassInfo.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+HostMappingClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
+HostMappingClassInfo.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 HostMappingClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-HostMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
-HostMappingClassInfo.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-HostMappingClassInfo.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+HostMappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 HostMappingClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
 HostMappingClassInfo.o: /usr/include/sys/wait.h /usr/include/waitflags.h
 HostMappingClassInfo.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
@@ -660,8 +664,9 @@ MappingClassInfo.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 MappingClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 MappingClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MappingClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MappingClassInfo.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-MappingClassInfo.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+MappingClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h
+MappingClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+MappingClassInfo.o: ../graphics.new/GdataStat.h
 MappingClassInfo.o: ../graphics.new/DataSourceFixedBuf.h
 MappingClassInfo.o: ../graphics.new/DataSourceBuf.h
 MappingClassInfo.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
@@ -670,10 +675,10 @@ MappingClassInfo.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 MappingClassInfo.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 MappingClassInfo.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 MappingClassInfo.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+MappingClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
+MappingClassInfo.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 MappingClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-MappingClassInfo.o: ../graphics.new/machdep.h /usr/include/limits.h
-MappingClassInfo.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-MappingClassInfo.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+MappingClassInfo.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 MappingClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
 MappingClassInfo.o: /usr/include/sys/wait.h /usr/include/waitflags.h
 MappingClassInfo.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
@@ -717,10 +722,10 @@ Message.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 Message.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 Message.o: /usr/include/errno.h /usr/include/linux/errno.h
 Message.o: /usr/include/asm/errno.h /usr/include/assert.h
+Message.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Message.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 Message.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-Message.o: ../graphics.new/machdep.h /usr/include/limits.h
-Message.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-Message.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+Message.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 Message.o: /usr/include/linux/param.h /usr/include/asm/param.h
 Message.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
 Message.o: /usr/include/waitflags.h /usr/include/waitstatus.h
@@ -755,10 +760,10 @@ TDataCycle.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 TDataCycle.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 TDataCycle.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 TDataCycle.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TDataCycle.o: /usr/include/assert.h /usr/include/sys/stat.h
+TDataCycle.o: /usr/include/assert.h /usr/include/limits.h
+TDataCycle.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TDataCycle.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
 TDataCycle.o: /usr/include/linux/stat.h ../graphics.new/machdep.h
-TDataCycle.o: /usr/include/limits.h /usr/include/posix1_lim.h
-TDataCycle.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 TDataCycle.o: /usr/include/sys/param.h /usr/include/linux/param.h
 TDataCycle.o: /usr/include/asm/param.h /usr/include/sys/time.h
 TDataCycle.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -802,10 +807,10 @@ TDataHost.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 TDataHost.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 TDataHost.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 TDataHost.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TDataHost.o: /usr/include/assert.h /usr/include/sys/stat.h
+TDataHost.o: /usr/include/assert.h /usr/include/limits.h
+TDataHost.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TDataHost.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
 TDataHost.o: /usr/include/linux/stat.h ../graphics.new/machdep.h
-TDataHost.o: /usr/include/limits.h /usr/include/posix1_lim.h
-TDataHost.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 TDataHost.o: /usr/include/sys/param.h /usr/include/linux/param.h
 TDataHost.o: /usr/include/asm/param.h /usr/include/sys/time.h
 TDataHost.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -849,10 +854,10 @@ TDataMulti.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 TDataMulti.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 TDataMulti.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 TDataMulti.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TDataMulti.o: /usr/include/assert.h /usr/include/sys/stat.h
+TDataMulti.o: /usr/include/assert.h /usr/include/limits.h
+TDataMulti.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TDataMulti.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
 TDataMulti.o: /usr/include/linux/stat.h ../graphics.new/machdep.h
-TDataMulti.o: /usr/include/limits.h /usr/include/posix1_lim.h
-TDataMulti.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 TDataMulti.o: /usr/include/sys/param.h /usr/include/linux/param.h
 TDataMulti.o: /usr/include/asm/param.h /usr/include/sys/time.h
 TDataMulti.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -901,31 +906,32 @@ disp.o: ../graphics.new/ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
 disp.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 disp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 disp.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-disp.o: ../graphics/Cursor.h ../graphics.new/BasicStats.h
-disp.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
-disp.o: ../graphics.new/DataSourceFixedBuf.h ../graphics.new/DataSourceBuf.h
-disp.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
-disp.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-disp.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-disp.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-disp.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-disp.o: /usr/include/assert.h /usr/include/sys/stat.h
-disp.o: /usr/include/linux/stat.h ../graphics.new/machdep.h
+disp.o: ../graphics/Cursor.h ../graphics/DevFont.h
+disp.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+disp.o: ../graphics.new/GdataStat.h ../graphics.new/DataSourceFixedBuf.h
+disp.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+disp.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h /usr/include/sys/ipc.h
+disp.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+disp.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+disp.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+disp.o: /usr/include/asm/shmparam.h /usr/include/assert.h
 disp.o: /usr/include/limits.h /usr/include/posix1_lim.h
 disp.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-disp.o: /usr/include/sys/param.h /usr/include/linux/param.h
-disp.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-disp.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-disp.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-disp.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-disp.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-disp.o: /usr/include/asm/sockios.h /usr/include/netdb.h /usr/include/paths.h
-disp.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-disp.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-disp.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-disp.o: /usr/include/asm/byteorder.h ../graphics.new/UpdateLink.h
-disp.o: ../graphics.new/VisualLink.h ../graphics.new/Action.h
-disp.o: ../graphics.new/PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
+disp.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+disp.o: ../graphics.new/machdep.h /usr/include/sys/param.h
+disp.o: /usr/include/linux/param.h /usr/include/asm/param.h
+disp.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+disp.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+disp.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+disp.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+disp.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+disp.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
+disp.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+disp.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+disp.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+disp.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+disp.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
+disp.o: ../graphics/Temp.h ../graphics/Map3D.h
 disp.o: ../graphics.new/VisualLinkClassInfo.h TDataMulti.h
 disp.o: ../graphics.new/TDataAscii.h ../graphics.new/TData.h
 disp.o: ../graphics.new/FileIndex.h TDataHost.h TDataCycle.h

@@ -31,10 +31,10 @@ DevRead.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 DevRead.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 DevRead.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 DevRead.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+DevRead.o: /usr/include/limits.h /usr/include/posix1_lim.h
+DevRead.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 DevRead.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-DevRead.o: ../graphics.new/machdep.h /usr/include/limits.h
-DevRead.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-DevRead.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+DevRead.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 DevRead.o: /usr/include/linux/param.h /usr/include/asm/param.h
 DevRead.o: /usr/include/sys/time.h /usr/include/linux/time.h
 DevRead.o: /usr/include/sys/wait.h /usr/include/gnu/types.h

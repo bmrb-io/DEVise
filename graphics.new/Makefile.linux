@@ -33,23 +33,24 @@ Action.o: ../graphics/DualWindowRep.h ../graphics/ViewCallback.h
 Action.o: ../graphics/AttrList.h /usr/include/sys/time.h
 Action.o: /usr/include/linux/time.h /usr/include/sys/time.h
 Action.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-Action.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-Action.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-Action.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-Action.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-Action.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-Action.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-Action.o: /usr/include/assert.h /usr/include/sys/stat.h
-Action.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-Action.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-Action.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-Action.o: /usr/include/linux/param.h /usr/include/asm/param.h
-Action.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-Action.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-Action.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-Action.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-Action.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-Action.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
+Action.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+Action.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+Action.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+Action.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+Action.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+Action.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+Action.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+Action.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Action.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+Action.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+Action.o: /usr/include/sys/param.h /usr/include/linux/param.h
+Action.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+Action.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+Action.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+Action.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+Action.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+Action.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+Action.o: /usr/include/paths.h /usr/include/sys/socket.h
 Action.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
 Action.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
 Action.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h UpdateLink.h
@@ -87,7 +88,8 @@ ActionClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 ActionClassInfo.o: /usr/include/sys/time.h /usr/include/linux/time.h
 ActionClassInfo.o: /usr/include/sys/time.h ../graphics/Init.h
 ActionClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
-ActionClassInfo.o: ../graphics/Util.h /usr/include/ctype.h
+ActionClassInfo.o: ../graphics/DevFont.h ../graphics/Util.h
+ActionClassInfo.o: /usr/include/ctype.h
 ActionDefault.o: /usr/include/stdio.h /usr/include/libio.h
 ActionDefault.o: /usr/include/_G_config.h /usr/include/sys/time.h
 ActionDefault.o: /usr/include/ctype.h /usr/include/features.h
@@ -120,30 +122,31 @@ ActionDefault.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 ActionDefault.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ActionDefault.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ActionDefault.o: /usr/include/linux/time.h ../graphics/Init.h
-ActionDefault.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-ActionDefault.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-ActionDefault.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
-ActionDefault.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-ActionDefault.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-ActionDefault.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-ActionDefault.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-ActionDefault.o: /usr/include/assert.h /usr/include/sys/stat.h
-ActionDefault.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-ActionDefault.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-ActionDefault.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-ActionDefault.o: /usr/include/linux/param.h /usr/include/asm/param.h
-ActionDefault.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-ActionDefault.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-ActionDefault.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-ActionDefault.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-ActionDefault.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-ActionDefault.o: /usr/include/netdb.h /usr/include/paths.h
-ActionDefault.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-ActionDefault.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-ActionDefault.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-ActionDefault.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h
-ActionDefault.o: PointStorage.h ../graphics/Selection.h RecInterp.h
-ActionDefault.o: QueryProc.h TData.h DeviseKey.h
+ActionDefault.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+ActionDefault.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+ActionDefault.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+ActionDefault.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+ActionDefault.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+ActionDefault.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+ActionDefault.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+ActionDefault.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+ActionDefault.o: /usr/include/limits.h /usr/include/posix1_lim.h
+ActionDefault.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+ActionDefault.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+ActionDefault.o: /usr/include/sys/param.h /usr/include/linux/param.h
+ActionDefault.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+ActionDefault.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+ActionDefault.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+ActionDefault.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+ActionDefault.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+ActionDefault.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+ActionDefault.o: /usr/include/paths.h /usr/include/sys/socket.h
+ActionDefault.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+ActionDefault.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+ActionDefault.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+ActionDefault.o: UpdateLink.h VisualLink.h PointStorage.h
+ActionDefault.o: ../graphics/Selection.h RecInterp.h QueryProc.h TData.h
+ActionDefault.o: DeviseKey.h
 AmsDiskFile.o: /usr/include/stdlib.h /usr/include/features.h
 AmsDiskFile.o: /usr/include/sys/cdefs.h
 AmsDiskFile.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -161,9 +164,9 @@ AmsDiskFile.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 AmsDiskFile.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 AmsDiskFile.o: /usr/include/assert.h /usr/include/stdio.h
 AmsDiskFile.o: /usr/include/libio.h /usr/include/_G_config.h
-AmsDiskFile.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 AmsDiskFile.o: /usr/include/limits.h /usr/include/posix1_lim.h
 AmsDiskFile.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+AmsDiskFile.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 AmsDiskFile.o: /usr/include/sys/param.h /usr/include/linux/param.h
 AmsDiskFile.o: /usr/include/asm/param.h /usr/include/sys/time.h
 AmsDiskFile.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -209,9 +212,9 @@ BufHash.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 BufHash.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 BufHash.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 BufHash.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-BufHash.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 BufHash.o: /usr/include/limits.h /usr/include/posix1_lim.h
 BufHash.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+BufHash.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 BufHash.o: /usr/include/sys/param.h /usr/include/linux/param.h
 BufHash.o: /usr/include/asm/param.h /usr/include/sys/time.h
 BufHash.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -241,10 +244,10 @@ BufMech.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 BufMech.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 BufMech.o: /usr/include/asm/shmparam.h /usr/include/errno.h
 BufMech.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-BufMech.o: /usr/include/assert.h /usr/include/sys/stat.h
-BufMech.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+BufMech.o: /usr/include/assert.h /usr/include/limits.h
 BufMech.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-BufMech.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+BufMech.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+BufMech.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 BufMech.o: /usr/include/linux/param.h /usr/include/asm/param.h
 BufMech.o: /usr/include/sys/time.h /usr/include/linux/time.h
 BufMech.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -273,21 +276,20 @@ BufMgr.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 BufMgr.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 BufMgr.o: /usr/include/errno.h /usr/include/linux/errno.h
 BufMgr.o: /usr/include/asm/errno.h /usr/include/assert.h /usr/include/stdio.h
-BufMgr.o: /usr/include/libio.h /usr/include/_G_config.h
-BufMgr.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
-BufMgr.o: /usr/include/limits.h /usr/include/posix1_lim.h
-BufMgr.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-BufMgr.o: /usr/include/sys/param.h /usr/include/linux/param.h
-BufMgr.o: /usr/include/asm/param.h /usr/include/sys/time.h
-BufMgr.o: /usr/include/linux/time.h /usr/include/sys/time.h
-BufMgr.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
-BufMgr.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-BufMgr.o: /usr/include/endian.h /usr/include/bytesex.h
-BufMgr.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-BufMgr.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-BufMgr.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-BufMgr.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-BufMgr.o: /usr/include/paths.h /usr/include/sys/socket.h
+BufMgr.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/limits.h
+BufMgr.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+BufMgr.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+BufMgr.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
+BufMgr.o: /usr/include/linux/param.h /usr/include/asm/param.h
+BufMgr.o: /usr/include/sys/time.h /usr/include/linux/time.h
+BufMgr.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+BufMgr.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+BufMgr.o: /usr/include/waitstatus.h /usr/include/endian.h
+BufMgr.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+BufMgr.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+BufMgr.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+BufMgr.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+BufMgr.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
 BufMgr.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
 BufMgr.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
 BufMgr.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h GData.h
@@ -308,9 +310,9 @@ BufMgrFull.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 BufMgrFull.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 BufMgrFull.o: /usr/include/errno.h /usr/include/linux/errno.h
 BufMgrFull.o: /usr/include/asm/errno.h /usr/include/assert.h
-BufMgrFull.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 BufMgrFull.o: /usr/include/limits.h /usr/include/posix1_lim.h
 BufMgrFull.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+BufMgrFull.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 BufMgrFull.o: /usr/include/sys/param.h /usr/include/linux/param.h
 BufMgrFull.o: /usr/include/asm/param.h /usr/include/sys/time.h
 BufMgrFull.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -358,10 +360,10 @@ BufPageList.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 BufPageList.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 BufPageList.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 BufPageList.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-BufPageList.o: /usr/include/assert.h /usr/include/sys/stat.h
-BufPageList.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+BufPageList.o: /usr/include/assert.h /usr/include/limits.h
 BufPageList.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-BufPageList.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+BufPageList.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+BufPageList.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 BufPageList.o: /usr/include/linux/param.h /usr/include/asm/param.h
 BufPageList.o: /usr/include/sys/time.h /usr/include/linux/time.h
 BufPageList.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -446,10 +448,10 @@ Command.o: ../graphics/Compress.h ../graphics/DevError.h
 Command.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 Command.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 Command.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-Command.o: ../graphics/Cursor.h Command.h ../graphics/Timer.h
-Command.o: ../graphics/Parse.h BufMgr.h RecId.h BufferPolicy.h
-Command.o: RangeInfoArray.h TData.h DataSource.h MemMgr.h DCE.h
-Command.o: /usr/include/assert.h /usr/include/sys/stat.h
+Command.o: ../graphics/Cursor.h ../graphics/DevFont.h Command.h
+Command.o: ../graphics/Timer.h ../graphics/Parse.h BufMgr.h RecId.h
+Command.o: BufferPolicy.h RangeInfoArray.h TData.h DataSource.h MemMgr.h
+Command.o: DCE.h /usr/include/assert.h /usr/include/sys/stat.h
 Command.o: /usr/include/linux/stat.h GData.h RangeList.h RangeInfo.h
 Command.o: QPRange.h QueryProc.h
 CompositeParser.o: /usr/include/stdio.h /usr/include/libio.h
@@ -750,10 +752,11 @@ DataSourceSegment.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
 DataSourceSegment.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 DataSourceSegment.o: /usr/include/netinet/in.h /usr/include/linux/in.h
 DataSourceSegment.o: /usr/include/asm/byteorder.h DataSourceTape.h
-DataSourceSegment.o: DataSourceBuf.h DataSourceSegment.h ../graphics/Util.h
-DataSourceSegment.o: /usr/include/stdlib.h /usr/include/alloca.h
-DataSourceSegment.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceSegment.o: /usr/include/huge_val.h /usr/include/nan.h
+DataSourceSegment.o: ../tape/tapedrive.h DataSourceBuf.h DataSourceSegment.h
+DataSourceSegment.o: ../graphics/Util.h /usr/include/stdlib.h
+DataSourceSegment.o: /usr/include/alloca.h /usr/include/ctype.h
+DataSourceSegment.o: /usr/include/math.h /usr/include/huge_val.h
+DataSourceSegment.o: /usr/include/nan.h
 DataSourceSegment.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 DataSourceSegment.o: /usr/include/ieee754.h /usr/include/ieee854.h
 DataSourceSegment.o: ../graphics/DevError.h DataSourceWeb.h
@@ -791,13 +794,14 @@ DataSourceTape.o: /usr/include/netdb.h /usr/include/paths.h
 DataSourceTape.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
 DataSourceTape.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
 DataSourceTape.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-DataSourceTape.o: /usr/include/asm/byteorder.h ../graphics/Util.h
-DataSourceTape.o: /usr/include/stdlib.h /usr/include/alloca.h
-DataSourceTape.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceTape.o: /usr/include/huge_val.h /usr/include/nan.h
+DataSourceTape.o: /usr/include/asm/byteorder.h ../tape/tapedrive.h
+DataSourceTape.o: ../graphics/Util.h /usr/include/stdlib.h
+DataSourceTape.o: /usr/include/alloca.h /usr/include/ctype.h
+DataSourceTape.o: /usr/include/math.h /usr/include/huge_val.h
+DataSourceTape.o: /usr/include/nan.h
 DataSourceTape.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 DataSourceTape.o: /usr/include/ieee754.h /usr/include/ieee854.h
-DataSourceTape.o: ../graphics/DevError.h ../tape/tapedrive.h
+DataSourceTape.o: ../graphics/DevError.h
 DataSourceWeb.o: /usr/include/stdio.h /usr/include/libio.h
 DataSourceWeb.o: /usr/include/_G_config.h /usr/include/string.h
 DataSourceWeb.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -887,9 +891,9 @@ FileIndex.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 FileIndex.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 FileIndex.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 FileIndex.o: /usr/include/errno.h /usr/include/linux/errno.h
-FileIndex.o: /usr/include/asm/errno.h /usr/include/assert.h machdep.h
+FileIndex.o: /usr/include/asm/errno.h /usr/include/assert.h
 FileIndex.o: /usr/include/limits.h /usr/include/posix1_lim.h
-FileIndex.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+FileIndex.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h machdep.h
 FileIndex.o: /usr/include/sys/param.h /usr/include/linux/param.h
 FileIndex.o: /usr/include/asm/param.h /usr/include/sys/time.h
 FileIndex.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -923,10 +927,10 @@ GData.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 GData.o: /usr/include/asm/shmparam.h /usr/include/errno.h
 GData.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
 GData.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/libio.h
-GData.o: /usr/include/_G_config.h /usr/include/sys/stat.h
-GData.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+GData.o: /usr/include/_G_config.h /usr/include/limits.h
 GData.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-GData.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+GData.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+GData.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 GData.o: /usr/include/linux/param.h /usr/include/asm/param.h
 GData.o: /usr/include/sys/time.h /usr/include/linux/time.h
 GData.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -973,28 +977,28 @@ GDataBin.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 GDataBin.o: ../graphics/AttrList.h /usr/include/sys/time.h
 GDataBin.o: /usr/include/linux/time.h /usr/include/sys/time.h
 GDataBin.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-GDataBin.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-GDataBin.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-GDataBin.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-GDataBin.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-GDataBin.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-GDataBin.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-GDataBin.o: /usr/include/assert.h /usr/include/sys/stat.h
-GDataBin.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-GDataBin.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-GDataBin.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-GDataBin.o: /usr/include/linux/param.h /usr/include/asm/param.h
-GDataBin.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-GDataBin.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-GDataBin.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-GDataBin.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-GDataBin.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-GDataBin.o: /usr/include/netdb.h /usr/include/paths.h
-GDataBin.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-GDataBin.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-GDataBin.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-GDataBin.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
-GDataBin.o: PointStorage.h TDataCMap.h
+GDataBin.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+GDataBin.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+GDataBin.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+GDataBin.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+GDataBin.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+GDataBin.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+GDataBin.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+GDataBin.o: /usr/include/limits.h /usr/include/posix1_lim.h
+GDataBin.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+GDataBin.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+GDataBin.o: /usr/include/sys/param.h /usr/include/linux/param.h
+GDataBin.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+GDataBin.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+GDataBin.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+GDataBin.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+GDataBin.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+GDataBin.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+GDataBin.o: /usr/include/paths.h /usr/include/sys/socket.h
+GDataBin.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+GDataBin.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+GDataBin.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h UpdateLink.h
+GDataBin.o: VisualLink.h Action.h PointStorage.h TDataCMap.h
 GDataRangeMap.o: /usr/include/sys/types.h /usr/include/linux/types.h
 GDataRangeMap.o: /usr/include/linux/posix_types.h
 GDataRangeMap.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
@@ -1063,30 +1067,30 @@ GDataSnap.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 GDataSnap.o: ../graphics/AttrList.h /usr/include/sys/time.h
 GDataSnap.o: /usr/include/linux/time.h /usr/include/sys/time.h
 GDataSnap.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-GDataSnap.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-GDataSnap.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-GDataSnap.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-GDataSnap.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-GDataSnap.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-GDataSnap.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-GDataSnap.o: /usr/include/assert.h /usr/include/sys/stat.h
-GDataSnap.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-GDataSnap.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-GDataSnap.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-GDataSnap.o: /usr/include/linux/param.h /usr/include/asm/param.h
-GDataSnap.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-GDataSnap.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-GDataSnap.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-GDataSnap.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-GDataSnap.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-GDataSnap.o: /usr/include/netdb.h /usr/include/paths.h
-GDataSnap.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-GDataSnap.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-GDataSnap.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-GDataSnap.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
-GDataSnap.o: PointStorage.h ../graphics/Temp.h ../graphics/Map3D.h
-GDataSnap.o: ../graphics/ColorMgr.h ../graphics/Selection.h GDataSnap.h
-GDataSnap.o: GDataVar.h
+GDataSnap.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+GDataSnap.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+GDataSnap.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+GDataSnap.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+GDataSnap.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+GDataSnap.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+GDataSnap.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+GDataSnap.o: /usr/include/limits.h /usr/include/posix1_lim.h
+GDataSnap.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+GDataSnap.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+GDataSnap.o: /usr/include/sys/param.h /usr/include/linux/param.h
+GDataSnap.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+GDataSnap.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+GDataSnap.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+GDataSnap.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+GDataSnap.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+GDataSnap.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+GDataSnap.o: /usr/include/paths.h /usr/include/sys/socket.h
+GDataSnap.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+GDataSnap.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+GDataSnap.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+GDataSnap.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
+GDataSnap.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/ColorMgr.h
+GDataSnap.o: ../graphics/Selection.h GDataSnap.h GDataVar.h
 MapInterpClassInfo.o: /usr/include/ctype.h /usr/include/features.h
 MapInterpClassInfo.o: /usr/include/sys/cdefs.h /usr/include/endian.h
 MapInterpClassInfo.o: /usr/include/bytesex.h ../graphics/DeviseTypes.h
@@ -1120,23 +1124,23 @@ MapInterpClassInfo.o: ../graphics/DualWindowRep.h ../graphics/ViewCallback.h
 MapInterpClassInfo.o: ../graphics/AttrList.h /usr/include/sys/time.h
 MapInterpClassInfo.o: /usr/include/linux/time.h /usr/include/sys/time.h
 MapInterpClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MapInterpClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-MapInterpClassInfo.o: GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
-MapInterpClassInfo.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-MapInterpClassInfo.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-MapInterpClassInfo.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-MapInterpClassInfo.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-MapInterpClassInfo.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-MapInterpClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-MapInterpClassInfo.o: /usr/include/linux/stat.h machdep.h
+MapInterpClassInfo.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+MapInterpClassInfo.o: ViewStats.h GdataStat.h ../tape/HashTable.h
+MapInterpClassInfo.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h
+MapInterpClassInfo.o: MemMgr.h DCE.h /usr/include/sys/ipc.h
+MapInterpClassInfo.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+MapInterpClassInfo.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+MapInterpClassInfo.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+MapInterpClassInfo.o: /usr/include/asm/shmparam.h /usr/include/assert.h
 MapInterpClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
 MapInterpClassInfo.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-MapInterpClassInfo.o: /usr/include/sys/param.h /usr/include/linux/param.h
-MapInterpClassInfo.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-MapInterpClassInfo.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-MapInterpClassInfo.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-MapInterpClassInfo.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-MapInterpClassInfo.o: /usr/include/sys/socketio.h
+MapInterpClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+MapInterpClassInfo.o: machdep.h /usr/include/sys/param.h
+MapInterpClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
+MapInterpClassInfo.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+MapInterpClassInfo.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+MapInterpClassInfo.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+MapInterpClassInfo.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
 MapInterpClassInfo.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
 MapInterpClassInfo.o: /usr/include/netdb.h /usr/include/paths.h
 MapInterpClassInfo.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
@@ -1163,10 +1167,10 @@ MappingInterp.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 MappingInterp.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 MappingInterp.o: /usr/include/asm/shmparam.h /usr/include/errno.h
 MappingInterp.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-MappingInterp.o: /usr/include/assert.h /usr/include/sys/stat.h
-MappingInterp.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+MappingInterp.o: /usr/include/assert.h /usr/include/limits.h
 MappingInterp.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-MappingInterp.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+MappingInterp.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+MappingInterp.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 MappingInterp.o: /usr/include/linux/param.h /usr/include/asm/param.h
 MappingInterp.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
 MappingInterp.o: /usr/include/waitflags.h /usr/include/waitstatus.h
@@ -1196,12 +1200,12 @@ MappingInterp.o: /usr/include/posix_opt.h /usr/include/confname.h
 MappingInterp.o: /usr/include/string.h ../graphics/Journal.h
 MappingInterp.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 MappingInterp.o: ../graphics/Control.h ../graphics/ClassDir.h
-MappingInterp.o: ../graphics/ViewCallback.h ../graphics/Cursor.h BasicStats.h
-MappingInterp.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-MappingInterp.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h
-MappingInterp.o: VisualLink.h Action.h PointStorage.h MapInterpShape.h
-MappingInterp.o: RectShape.h Shape.h StringStorage.h ../graphics/Util.h
-MappingInterp.o: /usr/include/ctype.h
+MappingInterp.o: ../graphics/ViewCallback.h ../graphics/Cursor.h
+MappingInterp.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+MappingInterp.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+MappingInterp.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
+MappingInterp.o: MapInterpShape.h RectShape.h Shape.h StringStorage.h
+MappingInterp.o: ../graphics/Util.h /usr/include/ctype.h
 MultiArray.o: MultiArray.h /usr/include/stdio.h /usr/include/libio.h
 MultiArray.o: /usr/include/_G_config.h ../graphics/DeviseTypes.h
 MultiArray.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -1226,9 +1230,9 @@ PageFile.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 PageFile.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 PageFile.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 PageFile.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-PageFile.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 PageFile.o: /usr/include/limits.h /usr/include/posix1_lim.h
 PageFile.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+PageFile.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 PageFile.o: /usr/include/sys/param.h /usr/include/linux/param.h
 PageFile.o: /usr/include/asm/param.h /usr/include/sys/time.h
 PageFile.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -1304,10 +1308,9 @@ ParseCat.o: ../graphics/Color.h ../graphics/Pattern.h TData.h RecId.h
 ParseCat.o: DataSource.h MemMgr.h DCE.h /usr/include/assert.h
 ParseCat.o: /usr/include/sys/stat.h /usr/include/linux/stat.h FileIndex.h
 ParseCat.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/BufPolicy.h
-ParseCat.o: TDataDQLInterp.h TDataDQL.h TDataBinaryInterp.h TDataBinary.h
-ParseCat.o: ../graphics/Parse.h ../graphics/Control.h ../graphics/Util.h
-ParseCat.o: /usr/include/ctype.h /usr/include/math.h /usr/include/huge_val.h
-ParseCat.o: /usr/include/nan.h
+ParseCat.o: TDataBinaryInterp.h TDataBinary.h ../graphics/Parse.h
+ParseCat.o: ../graphics/Control.h ../graphics/Util.h /usr/include/ctype.h
+ParseCat.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
 ParseCat.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 ParseCat.o: /usr/include/ieee754.h /usr/include/ieee854.h Group.h
 ParseCat.o: MapInterpClassInfo.h GroupDir.h ItemList.h DataSourceBuf.h
@@ -1342,9 +1345,9 @@ QueryProc.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 QueryProc.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 QueryProc.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 QueryProc.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-QueryProc.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 QueryProc.o: /usr/include/limits.h /usr/include/posix1_lim.h
 QueryProc.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+QueryProc.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 QueryProc.o: /usr/include/sys/param.h /usr/include/linux/param.h
 QueryProc.o: /usr/include/asm/param.h /usr/include/sys/time.h
 QueryProc.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -1369,9 +1372,10 @@ QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 QueryProc.o: ../graphics/Compress.h ../graphics/DevError.h
 QueryProc.o: ../graphics/DualWindowRep.h ../graphics/ViewCallback.h
 QueryProc.o: ../graphics/AttrList.h ../graphics/Init.h ../graphics/Cursor.h
-QueryProc.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-QueryProc.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h VisualLink.h
-QueryProc.o: Action.h PointStorage.h TDataMap.h ShapeID.h GDataRec.h
+QueryProc.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+QueryProc.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+QueryProc.o: UpdateLink.h VisualLink.h Action.h PointStorage.h TDataMap.h
+QueryProc.o: ShapeID.h GDataRec.h
 QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull.o: /usr/include/values.h ../graphics/DevStatus.h
 QueryProcFull.o: /usr/include/sys/types.h /usr/include/linux/types.h
@@ -1397,9 +1401,9 @@ QueryProcFull.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 QueryProcFull.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 QueryProcFull.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 QueryProcFull.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-QueryProcFull.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 QueryProcFull.o: /usr/include/limits.h /usr/include/posix1_lim.h
 QueryProcFull.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+QueryProcFull.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 QueryProcFull.o: /usr/include/sys/param.h /usr/include/linux/param.h
 QueryProcFull.o: /usr/include/asm/param.h /usr/include/sys/time.h
 QueryProcFull.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -1426,11 +1430,12 @@ QueryProcFull.o: ShapeID.h GDataRec.h ViewGraph.h ../graphics/View.h
 QueryProcFull.o: ../graphics/ViewWin.h ../graphics/DualWindowRep.h
 QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcFull.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-QueryProcFull.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
-QueryProcFull.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-QueryProcFull.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
-QueryProcFull.o: MappingInterp.h /usr/include/tcl/tcl.h Bitmap.h GDataBin.h
-QueryProcFull.o: RecordLink.h RecFile.h
+QueryProcFull.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+QueryProcFull.o: ViewStats.h GdataStat.h ../tape/HashTable.h
+QueryProcFull.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h
+QueryProcFull.o: VisualLink.h Action.h PointStorage.h MappingInterp.h
+QueryProcFull.o: /usr/include/tcl/tcl.h Bitmap.h GDataBin.h RecordLink.h
+QueryProcFull.o: RecFile.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeCallback.o: /usr/include/sys/types.h /usr/include/linux/types.h
@@ -1482,9 +1487,9 @@ RecFile.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 RecFile.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 RecFile.o: /usr/include/asm/shmparam.h /usr/include/assert.h
 RecFile.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-RecFile.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 RecFile.o: /usr/include/limits.h /usr/include/posix1_lim.h
 RecFile.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+RecFile.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 RecFile.o: /usr/include/sys/param.h /usr/include/linux/param.h
 RecFile.o: /usr/include/asm/param.h /usr/include/sys/time.h
 RecFile.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -1569,8 +1574,8 @@ ServerAPI.o: /usr/include/ieee754.h /usr/include/ieee854.h
 ServerAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ServerAPI.o: ../graphics/Compress.h ../graphics/DevError.h
 ServerAPI.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
-ServerAPI.o: ../graphics/Util.h /usr/include/ctype.h Version.h
-ServerAPI.o: StringStorage.h ../tape/HashTable.h
+ServerAPI.o: ../graphics/DevFont.h ../graphics/Util.h /usr/include/ctype.h
+ServerAPI.o: Version.h StringStorage.h ../tape/HashTable.h
 StringHash.o: /usr/include/stdio.h /usr/include/libio.h
 StringHash.o: /usr/include/_G_config.h StringHash.h
 TData.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
@@ -1591,9 +1596,9 @@ TData.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 TData.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 TData.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 TData.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TData.o: /usr/include/assert.h machdep.h /usr/include/limits.h
+TData.o: /usr/include/assert.h /usr/include/limits.h
 TData.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-TData.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TData.o: /usr/include/posix2_lim.h machdep.h /usr/include/sys/param.h
 TData.o: /usr/include/linux/param.h /usr/include/asm/param.h
 TData.o: /usr/include/sys/time.h /usr/include/linux/time.h
 TData.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -1613,15 +1618,16 @@ TData.o: /usr/include/nan.h /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 TData.o: /usr/include/ieee754.h /usr/include/ieee854.h DevFileHeader.h
 TData.o: ../graphics/DevError.h ../graphics/AttrList.h ../graphics/DList.h
 TData.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceFileStream.h
-TData.o: DataSourceSegment.h DataSourceTape.h DataSourceBuf.h DataSourceDQL.h
-TData.o: DataSeg.h ViewGraph.h ../graphics/View.h ../graphics/Dispatcher.h
-TData.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
-TData.o: ../graphics/Pattern.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-TData.o: ../graphics/Geom.h ../graphics/Transform.h
-TData.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-TData.o: ../graphics/DualWindowRep.h ../graphics/Control.h
-TData.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-TData.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
+TData.o: DataSourceSegment.h DataSourceTape.h ../tape/tapedrive.h
+TData.o: DataSourceBuf.h DataSourceDQL.h DataSeg.h ViewGraph.h
+TData.o: ../graphics/View.h ../graphics/Dispatcher.h ../graphics/Journal.h
+TData.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+TData.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
+TData.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+TData.o: ../graphics/Compress.h ../graphics/DualWindowRep.h
+TData.o: ../graphics/Control.h ../graphics/ClassDir.h
+TData.o: ../graphics/ViewCallback.h ../graphics/Cursor.h
+TData.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
 TData.o: ../tape/HashTable.h DataSourceFixedBuf.h UpdateLink.h VisualLink.h
 TData.o: Action.h PointStorage.h QueryProc.h DataSourceWeb.h
 TDataAppend.o: /usr/include/stdio.h /usr/include/libio.h
@@ -1640,10 +1646,10 @@ TDataAppend.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 TDataAppend.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 TDataAppend.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 TDataAppend.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TDataAppend.o: /usr/include/assert.h /usr/include/sys/stat.h
-TDataAppend.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+TDataAppend.o: /usr/include/assert.h /usr/include/limits.h
 TDataAppend.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-TDataAppend.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TDataAppend.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+TDataAppend.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 TDataAppend.o: /usr/include/linux/param.h /usr/include/asm/param.h
 TDataAppend.o: /usr/include/sys/time.h /usr/include/linux/time.h
 TDataAppend.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -1706,8 +1712,9 @@ TDataAscii.o: /usr/include/huge_val.h /usr/include/nan.h
 TDataAscii.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 TDataAscii.o: /usr/include/ieee754.h /usr/include/ieee854.h
 TDataAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
-TDataAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
+TDataAscii.o: ../tape/tapedrive.h DataSourceBuf.h ../graphics/DevError.h
+TDataAscii.o: DataSeg.h QueryProc.h ../graphics/Init.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/features.h
 TDataAsciiInterp.o: /usr/include/sys/cdefs.h
 TDataAsciiInterp.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -1734,23 +1741,23 @@ TDataAsciiInterp.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 TDataAsciiInterp.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 TDataAsciiInterp.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 TDataAsciiInterp.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-TDataAsciiInterp.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-TDataAsciiInterp.o: machdep.h /usr/include/limits.h /usr/include/posix1_lim.h
+TDataAsciiInterp.o: /usr/include/limits.h /usr/include/posix1_lim.h
 TDataAsciiInterp.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-TDataAsciiInterp.o: /usr/include/sys/param.h /usr/include/linux/param.h
-TDataAsciiInterp.o: /usr/include/asm/param.h /usr/include/sys/time.h
-TDataAsciiInterp.o: /usr/include/linux/time.h /usr/include/sys/time.h
-TDataAsciiInterp.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-TDataAsciiInterp.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-TDataAsciiInterp.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-TDataAsciiInterp.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-TDataAsciiInterp.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-TDataAsciiInterp.o: /usr/include/netdb.h /usr/include/paths.h
-TDataAsciiInterp.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-TDataAsciiInterp.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-TDataAsciiInterp.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-TDataAsciiInterp.o: /usr/include/asm/byteorder.h FileIndex.h
-TDataAsciiInterp.o: ../graphics/AttrList.h ../graphics/Init.h
+TDataAsciiInterp.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+TDataAsciiInterp.o: machdep.h /usr/include/sys/param.h
+TDataAsciiInterp.o: /usr/include/linux/param.h /usr/include/asm/param.h
+TDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/linux/time.h
+TDataAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataAsciiInterp.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+TDataAsciiInterp.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+TDataAsciiInterp.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+TDataAsciiInterp.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+TDataAsciiInterp.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+TDataAsciiInterp.o: /usr/include/paths.h /usr/include/sys/socket.h
+TDataAsciiInterp.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+TDataAsciiInterp.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+TDataAsciiInterp.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+TDataAsciiInterp.o: FileIndex.h ../graphics/AttrList.h ../graphics/Init.h
 TDataAsciiInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
 TDataAsciiInterp.o: ../graphics/Parse.h ../graphics/Control.h
 TDataAsciiInterp.o: ../graphics/Util.h /usr/include/math.h
@@ -1804,8 +1811,9 @@ TDataBinary.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
 TDataBinary.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 TDataBinary.o: /usr/include/ieee754.h /usr/include/ieee854.h
 TDataBinary.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
-TDataBinary.o: ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataBinary.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
+TDataBinary.o: ../tape/tapedrive.h ../graphics/DevError.h DataSeg.h
+TDataBinary.o: QueryProc.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataBinary.o: DataSourceWeb.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/features.h
 TDataBinaryInterp.o: /usr/include/sys/cdefs.h
 TDataBinaryInterp.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -1830,10 +1838,10 @@ TDataBinaryInterp.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 TDataBinaryInterp.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 TDataBinaryInterp.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 TDataBinaryInterp.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+TDataBinaryInterp.o: /usr/include/limits.h /usr/include/posix1_lim.h
+TDataBinaryInterp.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 TDataBinaryInterp.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-TDataBinaryInterp.o: machdep.h /usr/include/limits.h
-TDataBinaryInterp.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-TDataBinaryInterp.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TDataBinaryInterp.o: machdep.h /usr/include/sys/param.h
 TDataBinaryInterp.o: /usr/include/linux/param.h /usr/include/asm/param.h
 TDataBinaryInterp.o: /usr/include/sys/time.h /usr/include/linux/time.h
 TDataBinaryInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -1857,104 +1865,6 @@ TDataBinaryInterp.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 TDataBinaryInterp.o: /usr/include/ieee754.h /usr/include/ieee854.h
 TDataBinaryInterp.o: ../graphics/DevError.h StringStorage.h
 TDataBinaryInterp.o: ../tape/HashTable.h
-TDataDQL.o: /usr/include/assert.h /usr/include/features.h
-TDataDQL.o: /usr/include/sys/cdefs.h /usr/include/stdio.h
-TDataDQL.o: /usr/include/libio.h /usr/include/_G_config.h
-TDataDQL.o: /usr/include/stdlib.h
-TDataDQL.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
-TDataDQL.o: /usr/include/errno.h /usr/include/linux/errno.h
-TDataDQL.o: /usr/include/asm/errno.h /usr/include/alloca.h
-TDataDQL.o: /usr/include/fcntl.h /usr/include/sys/types.h
-TDataDQL.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-TDataDQL.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-TDataDQL.o: /usr/include/sys/bitypes.h /usr/include/gnu/types.h
-TDataDQL.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
-TDataDQL.o: /usr/include/limits.h /usr/include/posix1_lim.h
-TDataDQL.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-TDataDQL.o: /usr/include/unistd.h /usr/include/posix_opt.h
-TDataDQL.o: /usr/include/confname.h /usr/include/sys/stat.h
-TDataDQL.o: /usr/include/linux/stat.h ../graphics/AttrList.h
-TDataDQL.o: /usr/include/sys/time.h /usr/include/linux/time.h
-TDataDQL.o: /usr/include/sys/time.h ../graphics/DeviseTypes.h
-TDataDQL.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
-TDataDQL.o: ../graphics/Exit.h ../graphics/Init.h ../graphics/BufPolicy.h
-TDataDQL.o: ../graphics/Parse.h TDataDQL.h ../graphics/Dispatcher.h
-TDataDQL.o: /usr/include/string.h ../graphics/Journal.h
-TDataDQL.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-TDataDQL.o: TData.h RecId.h DataSource.h MemMgr.h DCE.h
-TDataDQL.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-TDataDQL.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-TDataDQL.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-TDataDQL.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h machdep.h
-TDataDQL.o: /usr/include/sys/param.h /usr/include/linux/param.h
-TDataDQL.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-TDataDQL.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-TDataDQL.o: /usr/include/endian.h /usr/include/bytesex.h
-TDataDQL.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-TDataDQL.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-TDataDQL.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-TDataDQL.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-TDataDQL.o: /usr/include/paths.h /usr/include/sys/socket.h
-TDataDQL.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-TDataDQL.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-TDataDQL.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h FileIndex.h
-TDataDQL.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
-TDataDQL.o: /usr/include/huge_val.h /usr/include/nan.h
-TDataDQL.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
-TDataDQL.o: /usr/include/ieee754.h /usr/include/ieee854.h
-TDataDQL.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
-TDataDQL.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataDQL.o: DataSourceWeb.h
-TDataDQLInterp.o: /usr/include/string.h /usr/include/features.h
-TDataDQLInterp.o: /usr/include/sys/cdefs.h
-TDataDQLInterp.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
-TDataDQLInterp.o: machdep.h /usr/include/limits.h /usr/include/posix1_lim.h
-TDataDQLInterp.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-TDataDQLInterp.o: /usr/include/sys/types.h /usr/include/linux/types.h
-TDataDQLInterp.o: /usr/include/linux/posix_types.h
-TDataDQLInterp.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-TDataDQLInterp.o: /usr/include/sys/bitypes.h /usr/include/sys/param.h
-TDataDQLInterp.o: /usr/include/linux/param.h /usr/include/asm/param.h
-TDataDQLInterp.o: /usr/include/sys/time.h /usr/include/linux/time.h
-TDataDQLInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
-TDataDQLInterp.o: /usr/include/gnu/types.h /usr/include/waitflags.h
-TDataDQLInterp.o: /usr/include/waitstatus.h /usr/include/endian.h
-TDataDQLInterp.o: /usr/include/bytesex.h /usr/include/sys/ipc.h
-TDataDQLInterp.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
-TDataDQLInterp.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TDataDQLInterp.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-TDataDQLInterp.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
-TDataDQLInterp.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-TDataDQLInterp.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-TDataDQLInterp.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-TDataDQLInterp.o: /usr/include/netdb.h /usr/include/paths.h
-TDataDQLInterp.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-TDataDQLInterp.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-TDataDQLInterp.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-TDataDQLInterp.o: /usr/include/asm/byteorder.h /usr/include/ctype.h
-TDataDQLInterp.o: /usr/include/unistd.h /usr/include/posix_opt.h
-TDataDQLInterp.o: /usr/include/confname.h DataSeg.h TDataDQLInterp.h
-TDataDQLInterp.o: ../graphics/DeviseTypes.h /usr/include/values.h
-TDataDQLInterp.o: ../graphics/DevStatus.h ../graphics/ClassDir.h TDataDQL.h
-TDataDQLInterp.o: /usr/include/stdio.h /usr/include/libio.h
-TDataDQLInterp.o: /usr/include/_G_config.h ../graphics/Dispatcher.h
-TDataDQLInterp.o: /usr/include/stdlib.h /usr/include/errno.h
-TDataDQLInterp.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-TDataDQLInterp.o: /usr/include/alloca.h ../graphics/DList.h
-TDataDQLInterp.o: ../graphics/Exit.h ../graphics/Journal.h
-TDataDQLInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
-TDataDQLInterp.o: ../graphics/Pattern.h TData.h RecId.h DataSource.h MemMgr.h
-TDataDQLInterp.o: DCE.h /usr/include/assert.h /usr/include/sys/stat.h
-TDataDQLInterp.o: /usr/include/linux/stat.h FileIndex.h
-TDataDQLInterp.o: ../graphics/AttrList.h ../graphics/Init.h
-TDataDQLInterp.o: ../graphics/BufPolicy.h RecInterp.h CompositeParser.h
-TDataDQLInterp.o: ../graphics/Parse.h ../graphics/Control.h
-TDataDQLInterp.o: ../graphics/Util.h /usr/include/math.h
-TDataDQLInterp.o: /usr/include/huge_val.h /usr/include/nan.h
-TDataDQLInterp.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
-TDataDQLInterp.o: /usr/include/ieee754.h /usr/include/ieee854.h
-TDataDQLInterp.o: ../graphics/DevError.h ParseCat.h DataSourceBuf.h
-TDataDQLInterp.o: StringStorage.h ../tape/HashTable.h
 TDataMap.o: /usr/include/stdio.h /usr/include/libio.h
 TDataMap.o: /usr/include/_G_config.h /usr/include/string.h
 TDataMap.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -1984,29 +1894,30 @@ TDataMap.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 TDataMap.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 TDataMap.o: ../graphics/AttrList.h /usr/include/sys/time.h
 TDataMap.o: /usr/include/linux/time.h /usr/include/sys/time.h
-TDataMap.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
-TDataMap.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-TDataMap.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-TDataMap.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
-TDataMap.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-TDataMap.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-TDataMap.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-TDataMap.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
-TDataMap.o: /usr/include/limits.h /usr/include/posix1_lim.h
-TDataMap.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-TDataMap.o: /usr/include/sys/param.h /usr/include/linux/param.h
-TDataMap.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-TDataMap.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-TDataMap.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-TDataMap.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-TDataMap.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-TDataMap.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-TDataMap.o: /usr/include/paths.h /usr/include/sys/socket.h
-TDataMap.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-TDataMap.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-TDataMap.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h UpdateLink.h
-TDataMap.o: VisualLink.h Action.h PointStorage.h GData.h TData.h GDataBin.h
-TDataMap.o: QueryProc.h ../graphics/Util.h /usr/include/ctype.h
+TDataMap.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+TDataMap.o: ViewStats.h GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
+TDataMap.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
+TDataMap.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+TDataMap.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+TDataMap.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+TDataMap.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+TDataMap.o: /usr/include/assert.h /usr/include/limits.h
+TDataMap.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TDataMap.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+TDataMap.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
+TDataMap.o: /usr/include/linux/param.h /usr/include/asm/param.h
+TDataMap.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+TDataMap.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+TDataMap.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+TDataMap.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+TDataMap.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+TDataMap.o: /usr/include/netdb.h /usr/include/paths.h
+TDataMap.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+TDataMap.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+TDataMap.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+TDataMap.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
+TDataMap.o: PointStorage.h GData.h TData.h GDataBin.h QueryProc.h
+TDataMap.o: ../graphics/Util.h /usr/include/ctype.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/linux/types.h
 TDataMmap.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
 TDataMmap.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
@@ -2094,8 +2005,9 @@ TDataSeqAscii.o: /usr/include/nan.h
 TDataSeqAscii.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 TDataSeqAscii.o: /usr/include/ieee754.h /usr/include/ieee854.h
 TDataSeqAscii.o: DataSourceFileStream.h DataSourceSegment.h DataSourceTape.h
-TDataSeqAscii.o: DataSourceBuf.h ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataSeqAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
+TDataSeqAscii.o: ../tape/tapedrive.h DataSourceBuf.h ../graphics/DevError.h
+TDataSeqAscii.o: DataSeg.h QueryProc.h ../graphics/Init.h
+TDataSeqAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h
 TDataSeqAsciiInterp.o: /usr/include/string.h /usr/include/features.h
 TDataSeqAsciiInterp.o: /usr/include/sys/cdefs.h
 TDataSeqAsciiInterp.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -2123,10 +2035,10 @@ TDataSeqAsciiInterp.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 TDataSeqAsciiInterp.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 TDataSeqAsciiInterp.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 TDataSeqAsciiInterp.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+TDataSeqAsciiInterp.o: /usr/include/limits.h /usr/include/posix1_lim.h
+TDataSeqAsciiInterp.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 TDataSeqAsciiInterp.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-TDataSeqAsciiInterp.o: machdep.h /usr/include/limits.h
-TDataSeqAsciiInterp.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-TDataSeqAsciiInterp.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TDataSeqAsciiInterp.o: machdep.h /usr/include/sys/param.h
 TDataSeqAsciiInterp.o: /usr/include/linux/param.h /usr/include/asm/param.h
 TDataSeqAsciiInterp.o: /usr/include/sys/time.h /usr/include/linux/time.h
 TDataSeqAsciiInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -2178,31 +2090,31 @@ TDataViewX.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 TDataViewX.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 TDataViewX.o: ../graphics/AttrList.h /usr/include/sys/time.h
 TDataViewX.o: /usr/include/linux/time.h /usr/include/sys/time.h
-TDataViewX.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
-TDataViewX.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-TDataViewX.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-TDataViewX.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
-TDataViewX.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-TDataViewX.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-TDataViewX.o: /usr/include/asm/shmparam.h /usr/include/sys/stat.h
-TDataViewX.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-TDataViewX.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-TDataViewX.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-TDataViewX.o: /usr/include/linux/param.h /usr/include/asm/param.h
-TDataViewX.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-TDataViewX.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-TDataViewX.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-TDataViewX.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-TDataViewX.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-TDataViewX.o: /usr/include/netdb.h /usr/include/paths.h
-TDataViewX.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-TDataViewX.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-TDataViewX.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-TDataViewX.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
-TDataViewX.o: PointStorage.h GDataBin.h TDataCMap.h ConnectorShape.h
-TDataViewX.o: Connector.h ShapeID.h TDataMap.h GDataRec.h Shape.h
-TDataViewX.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/Util.h
-TDataViewX.o: /usr/include/ctype.h RecordLink.h RecFile.h
+TDataViewX.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+TDataViewX.o: ViewStats.h GdataStat.h ../tape/HashTable.h
+TDataViewX.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
+TDataViewX.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+TDataViewX.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+TDataViewX.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+TDataViewX.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+TDataViewX.o: /usr/include/limits.h /usr/include/posix1_lim.h
+TDataViewX.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+TDataViewX.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+TDataViewX.o: /usr/include/sys/param.h /usr/include/linux/param.h
+TDataViewX.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+TDataViewX.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+TDataViewX.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+TDataViewX.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+TDataViewX.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+TDataViewX.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+TDataViewX.o: /usr/include/paths.h /usr/include/sys/socket.h
+TDataViewX.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+TDataViewX.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+TDataViewX.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+TDataViewX.o: UpdateLink.h VisualLink.h Action.h PointStorage.h GDataBin.h
+TDataViewX.o: TDataCMap.h ConnectorShape.h Connector.h ShapeID.h TDataMap.h
+TDataViewX.o: GDataRec.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
+TDataViewX.o: ../graphics/Util.h /usr/include/ctype.h RecordLink.h RecFile.h
 TkControl.o: /usr/include/stdio.h /usr/include/libio.h
 TkControl.o: /usr/include/_G_config.h /usr/include/stdlib.h
 TkControl.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -2232,10 +2144,10 @@ TkControl.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 TkControl.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 TkControl.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 TkControl.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-TkControl.o: /usr/include/assert.h /usr/include/sys/stat.h
-TkControl.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+TkControl.o: /usr/include/assert.h /usr/include/limits.h
 TkControl.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-TkControl.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+TkControl.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+TkControl.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 TkControl.o: /usr/include/linux/param.h /usr/include/asm/param.h
 TkControl.o: /usr/include/sys/wait.h /usr/include/waitflags.h
 TkControl.o: /usr/include/waitstatus.h /usr/include/endian.h
@@ -2255,8 +2167,8 @@ TkControl.o: /usr/include/ieee754.h /usr/include/ieee854.h
 TkControl.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 TkControl.o: ../graphics/Compress.h ../graphics/DevError.h
 TkControl.o: ../graphics/DualWindowRep.h ../graphics/Cursor.h
-TkControl.o: ../graphics/Util.h /usr/include/ctype.h Version.h
-TkControl.o: StringStorage.h ../tape/HashTable.h
+TkControl.o: ../graphics/DevFont.h ../graphics/Util.h /usr/include/ctype.h
+TkControl.o: Version.h StringStorage.h ../tape/HashTable.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/libio.h
 UnixDiskFile.o: /usr/include/_G_config.h /usr/include/stdlib.h
 UnixDiskFile.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -2318,7 +2230,30 @@ UnixRecFile.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 UnixRecFile.o: /usr/include/ieee754.h /usr/include/ieee854.h
 UnixRecFile.o: ../graphics/DevError.h
 Version.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-Version.o: Version.h
+Version.o: Version.h machdep.h /usr/include/limits.h /usr/include/features.h
+Version.o: /usr/include/sys/cdefs.h /usr/include/posix1_lim.h
+Version.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+Version.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Version.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Version.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+Version.o: /usr/include/sys/param.h /usr/include/linux/param.h
+Version.o: /usr/include/asm/param.h /usr/include/sys/time.h
+Version.o: /usr/include/linux/time.h /usr/include/sys/time.h
+Version.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
+Version.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+Version.o: /usr/include/endian.h /usr/include/bytesex.h
+Version.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+Version.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+Version.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+Version.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+Version.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+Version.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+Version.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+Version.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+Version.o: /usr/include/paths.h /usr/include/sys/socket.h
+Version.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Version.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Version.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
 ViewClassInfo.o: /usr/include/stdio.h /usr/include/libio.h
 ViewClassInfo.o: /usr/include/_G_config.h /usr/include/sys/time.h
 ViewClassInfo.o: /usr/include/sys/types.h /usr/include/linux/types.h
@@ -2350,33 +2285,34 @@ ViewClassInfo.o: ../graphics/Compress.h ../graphics/DevError.h
 ViewClassInfo.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 ViewClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewClassInfo.o: ../graphics/AttrList.h ../graphics/Init.h
-ViewClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-ViewClassInfo.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-ViewClassInfo.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
-ViewClassInfo.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-ViewClassInfo.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-ViewClassInfo.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-ViewClassInfo.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-ViewClassInfo.o: /usr/include/assert.h /usr/include/sys/stat.h
-ViewClassInfo.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-ViewClassInfo.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-ViewClassInfo.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-ViewClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
-ViewClassInfo.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-ViewClassInfo.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-ViewClassInfo.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-ViewClassInfo.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-ViewClassInfo.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-ViewClassInfo.o: /usr/include/netdb.h /usr/include/paths.h
-ViewClassInfo.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-ViewClassInfo.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-ViewClassInfo.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-ViewClassInfo.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h
-ViewClassInfo.o: Action.h PointStorage.h GDataBin.h TDataCMap.h
-ViewClassInfo.o: ConnectorShape.h Connector.h ShapeID.h ViewScatter.h
-ViewClassInfo.o: ViewClassInfo.h ViewLens.h ../graphics/Selection.h
-ViewClassInfo.o: ../graphics/Util.h /usr/include/ctype.h ActionDefault.h
-ViewClassInfo.o: ../graphics/ColorMgr.h ../graphics/Parse.h
+ViewClassInfo.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+ViewClassInfo.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+ViewClassInfo.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+ViewClassInfo.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+ViewClassInfo.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+ViewClassInfo.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+ViewClassInfo.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+ViewClassInfo.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+ViewClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
+ViewClassInfo.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+ViewClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+ViewClassInfo.o: /usr/include/sys/param.h /usr/include/linux/param.h
+ViewClassInfo.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+ViewClassInfo.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+ViewClassInfo.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+ViewClassInfo.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+ViewClassInfo.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+ViewClassInfo.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+ViewClassInfo.o: /usr/include/paths.h /usr/include/sys/socket.h
+ViewClassInfo.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+ViewClassInfo.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+ViewClassInfo.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+ViewClassInfo.o: UpdateLink.h VisualLink.h Action.h PointStorage.h GDataBin.h
+ViewClassInfo.o: TDataCMap.h ConnectorShape.h Connector.h ShapeID.h
+ViewClassInfo.o: ViewScatter.h ViewClassInfo.h ViewLens.h
+ViewClassInfo.o: ../graphics/Selection.h ../graphics/Util.h
+ViewClassInfo.o: /usr/include/ctype.h ActionDefault.h ../graphics/ColorMgr.h
+ViewClassInfo.o: ../graphics/Parse.h
 ViewGraph.o: /usr/include/assert.h /usr/include/features.h
 ViewGraph.o: /usr/include/sys/cdefs.h ViewGraph.h ../graphics/View.h
 ViewGraph.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -2406,30 +2342,30 @@ ViewGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewGraph.o: /usr/include/linux/time.h /usr/include/sys/time.h
 ViewGraph.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-ViewGraph.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-ViewGraph.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-ViewGraph.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-ViewGraph.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-ViewGraph.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-ViewGraph.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-ViewGraph.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
-ViewGraph.o: /usr/include/limits.h /usr/include/posix1_lim.h
-ViewGraph.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-ViewGraph.o: /usr/include/sys/param.h /usr/include/linux/param.h
-ViewGraph.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-ViewGraph.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-ViewGraph.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-ViewGraph.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-ViewGraph.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-ViewGraph.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-ViewGraph.o: /usr/include/paths.h /usr/include/sys/socket.h
-ViewGraph.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-ViewGraph.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-ViewGraph.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-ViewGraph.o: UpdateLink.h VisualLink.h Action.h RecId.h PointStorage.h
-ViewGraph.o: TDataMap.h ShapeID.h GDataRec.h ActionDefault.h
-ViewGraph.o: ../graphics/Util.h /usr/include/ctype.h RecordLink.h RecFile.h
-ViewGraph.o: TData.h
+ViewGraph.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+ViewGraph.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+ViewGraph.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+ViewGraph.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+ViewGraph.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+ViewGraph.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+ViewGraph.o: /usr/include/asm/shmparam.h /usr/include/limits.h
+ViewGraph.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+ViewGraph.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+ViewGraph.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
+ViewGraph.o: /usr/include/linux/param.h /usr/include/asm/param.h
+ViewGraph.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+ViewGraph.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+ViewGraph.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ViewGraph.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+ViewGraph.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ViewGraph.o: /usr/include/netdb.h /usr/include/paths.h
+ViewGraph.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+ViewGraph.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+ViewGraph.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+ViewGraph.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
+ViewGraph.o: RecId.h PointStorage.h TDataMap.h ShapeID.h GDataRec.h
+ViewGraph.o: ActionDefault.h ../graphics/Util.h /usr/include/ctype.h
+ViewGraph.o: RecordLink.h RecFile.h TData.h
 ViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewRanges.o: /usr/include/values.h ../graphics/DevStatus.h
 ViewRanges.o: /usr/include/sys/types.h /usr/include/linux/types.h
@@ -2459,7 +2395,7 @@ ViewRanges.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewRanges.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewRanges.o: /usr/include/linux/time.h /usr/include/sys/time.h
 ViewRanges.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-ViewRanges.o: RangeCallback.h
+ViewRanges.o: ../graphics/DevFont.h RangeCallback.h
 ViewScatter.o: ViewScatter.h QueryProc.h ../graphics/DeviseTypes.h
 ViewScatter.o: /usr/include/values.h ../graphics/DevStatus.h
 ViewScatter.o: /usr/include/sys/types.h /usr/include/linux/types.h
@@ -2490,31 +2426,31 @@ ViewScatter.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewScatter.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewScatter.o: /usr/include/linux/time.h /usr/include/sys/time.h
 ViewScatter.o: ../graphics/Init.h ../graphics/BufPolicy.h
-ViewScatter.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
-ViewScatter.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-ViewScatter.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-ViewScatter.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
-ViewScatter.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-ViewScatter.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-ViewScatter.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-ViewScatter.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
-ViewScatter.o: /usr/include/limits.h /usr/include/posix1_lim.h
-ViewScatter.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-ViewScatter.o: /usr/include/sys/param.h /usr/include/linux/param.h
-ViewScatter.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-ViewScatter.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-ViewScatter.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-ViewScatter.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-ViewScatter.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-ViewScatter.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-ViewScatter.o: /usr/include/paths.h /usr/include/sys/socket.h
-ViewScatter.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-ViewScatter.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-ViewScatter.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-ViewScatter.o: UpdateLink.h VisualLink.h Action.h PointStorage.h GDataBin.h
-ViewScatter.o: TDataMap.h ShapeID.h GDataRec.h Shape.h ../graphics/Temp.h
-ViewScatter.o: ../graphics/Map3D.h ../graphics/Util.h /usr/include/ctype.h
-ViewScatter.o: RecordLink.h RecFile.h
+ViewScatter.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+ViewScatter.o: ViewStats.h GdataStat.h ../tape/HashTable.h
+ViewScatter.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
+ViewScatter.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+ViewScatter.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+ViewScatter.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+ViewScatter.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+ViewScatter.o: /usr/include/assert.h /usr/include/limits.h
+ViewScatter.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+ViewScatter.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+ViewScatter.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
+ViewScatter.o: /usr/include/linux/param.h /usr/include/asm/param.h
+ViewScatter.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+ViewScatter.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+ViewScatter.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ViewScatter.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+ViewScatter.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ViewScatter.o: /usr/include/netdb.h /usr/include/paths.h
+ViewScatter.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+ViewScatter.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+ViewScatter.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+ViewScatter.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h
+ViewScatter.o: Action.h PointStorage.h GDataBin.h TDataMap.h ShapeID.h
+ViewScatter.o: GDataRec.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
+ViewScatter.o: ../graphics/Util.h /usr/include/ctype.h RecordLink.h RecFile.h
 VisualLink.o: VisualLink.h ../graphics/DList.h ../graphics/Exit.h
 VisualLink.o: ../graphics/ViewCallback.h ../graphics/VisualArg.h
 VisualLink.o: ../graphics/DeviseTypes.h /usr/include/values.h
@@ -2544,29 +2480,29 @@ VisualLink.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 VisualLink.o: ../graphics/ClassDir.h ../graphics/AttrList.h
 VisualLink.o: /usr/include/sys/time.h /usr/include/linux/time.h
 VisualLink.o: /usr/include/sys/time.h ../graphics/Init.h
-VisualLink.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-VisualLink.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-VisualLink.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
-VisualLink.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-VisualLink.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-VisualLink.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-VisualLink.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-VisualLink.o: /usr/include/assert.h /usr/include/sys/stat.h
-VisualLink.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-VisualLink.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-VisualLink.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-VisualLink.o: /usr/include/linux/param.h /usr/include/asm/param.h
-VisualLink.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-VisualLink.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-VisualLink.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-VisualLink.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-VisualLink.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-VisualLink.o: /usr/include/netdb.h /usr/include/paths.h
-VisualLink.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-VisualLink.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-VisualLink.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-VisualLink.o: /usr/include/asm/byteorder.h UpdateLink.h Action.h RecId.h
-VisualLink.o: PointStorage.h
+VisualLink.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+VisualLink.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+VisualLink.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+VisualLink.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+VisualLink.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+VisualLink.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+VisualLink.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+VisualLink.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+VisualLink.o: /usr/include/limits.h /usr/include/posix1_lim.h
+VisualLink.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+VisualLink.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+VisualLink.o: /usr/include/sys/param.h /usr/include/linux/param.h
+VisualLink.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+VisualLink.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+VisualLink.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+VisualLink.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+VisualLink.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+VisualLink.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+VisualLink.o: /usr/include/paths.h /usr/include/sys/socket.h
+VisualLink.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+VisualLink.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+VisualLink.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+VisualLink.o: UpdateLink.h Action.h RecId.h PointStorage.h
 VisualLinkClassInfo.o: /usr/include/stdio.h /usr/include/libio.h
 VisualLinkClassInfo.o: /usr/include/_G_config.h VisualLinkClassInfo.h
 VisualLinkClassInfo.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
@@ -2586,10 +2522,10 @@ VisualLinkClassInfo.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 VisualLinkClassInfo.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 VisualLinkClassInfo.o: /usr/include/errno.h /usr/include/linux/errno.h
 VisualLinkClassInfo.o: /usr/include/asm/errno.h /usr/include/assert.h
+VisualLinkClassInfo.o: /usr/include/limits.h /usr/include/posix1_lim.h
+VisualLinkClassInfo.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 VisualLinkClassInfo.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-VisualLinkClassInfo.o: machdep.h /usr/include/limits.h
-VisualLinkClassInfo.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-VisualLinkClassInfo.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+VisualLinkClassInfo.o: machdep.h /usr/include/sys/param.h
 VisualLinkClassInfo.o: /usr/include/linux/param.h /usr/include/asm/param.h
 VisualLinkClassInfo.o: /usr/include/sys/time.h /usr/include/linux/time.h
 VisualLinkClassInfo.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -2744,27 +2680,27 @@ testBufMgrFull.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 testBufMgrFull.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 testBufMgrFull.o: /usr/include/asm/shmparam.h /usr/include/errno.h
 testBufMgrFull.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-testBufMgrFull.o: /usr/include/assert.h /usr/include/sys/stat.h
-testBufMgrFull.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testBufMgrFull.o: /usr/include/assert.h /usr/include/limits.h
 testBufMgrFull.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testBufMgrFull.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-testBufMgrFull.o: /usr/include/linux/param.h /usr/include/asm/param.h
-testBufMgrFull.o: /usr/include/sys/time.h /usr/include/linux/time.h
-testBufMgrFull.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
-testBufMgrFull.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-testBufMgrFull.o: /usr/include/endian.h /usr/include/bytesex.h
-testBufMgrFull.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-testBufMgrFull.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-testBufMgrFull.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-testBufMgrFull.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-testBufMgrFull.o: /usr/include/paths.h /usr/include/sys/socket.h
-testBufMgrFull.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-testBufMgrFull.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-testBufMgrFull.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-testBufMgrFull.o: RangeInfo.h RangeInfoArray.h BufferPolicy.h BufMgrFull.h
-testBufMgrFull.o: BufMgr.h ../graphics/BufPolicy.h ../graphics/DList.h
-testBufMgrFull.o: GData.h RangeList.h QPRange.h ../graphics/Init.h
-testBufMgrFull.o: TDataRangeList.h
+testBufMgrFull.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testBufMgrFull.o: /usr/include/linux/stat.h machdep.h
+testBufMgrFull.o: /usr/include/sys/param.h /usr/include/linux/param.h
+testBufMgrFull.o: /usr/include/asm/param.h /usr/include/sys/time.h
+testBufMgrFull.o: /usr/include/linux/time.h /usr/include/sys/wait.h
+testBufMgrFull.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+testBufMgrFull.o: /usr/include/waitstatus.h /usr/include/endian.h
+testBufMgrFull.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
+testBufMgrFull.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+testBufMgrFull.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+testBufMgrFull.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+testBufMgrFull.o: /usr/include/netdb.h /usr/include/paths.h
+testBufMgrFull.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+testBufMgrFull.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+testBufMgrFull.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+testBufMgrFull.o: /usr/include/asm/byteorder.h RangeInfo.h RangeInfoArray.h
+testBufMgrFull.o: BufferPolicy.h BufMgrFull.h BufMgr.h
+testBufMgrFull.o: ../graphics/BufPolicy.h ../graphics/DList.h GData.h
+testBufMgrFull.o: RangeList.h QPRange.h ../graphics/Init.h TDataRangeList.h
 testBufPage.o: BufPage.h /usr/include/stdio.h /usr/include/libio.h
 testBufPage.o: /usr/include/_G_config.h ../graphics/DeviseTypes.h
 testBufPage.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -2839,10 +2775,10 @@ testQueryProc.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 testQueryProc.o: /usr/include/errno.h /usr/include/linux/errno.h
 testQueryProc.o: /usr/include/asm/errno.h /usr/include/assert.h
 testQueryProc.o: /usr/include/stdio.h /usr/include/libio.h
-testQueryProc.o: /usr/include/_G_config.h /usr/include/sys/stat.h
-testQueryProc.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testQueryProc.o: /usr/include/_G_config.h /usr/include/limits.h
 testQueryProc.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testQueryProc.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+testQueryProc.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testQueryProc.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 testQueryProc.o: /usr/include/linux/param.h /usr/include/asm/param.h
 testQueryProc.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testQueryProc.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -2876,10 +2812,10 @@ testQueryProc.o: ../graphics/Compress.h ../graphics/DevError.h
 testQueryProc.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 testQueryProc.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 testQueryProc.o: ../graphics/AttrList.h ../graphics/Init.h
-testQueryProc.o: ../graphics/Cursor.h BasicStats.h ViewStats.h GdataStat.h
-testQueryProc.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-testQueryProc.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
-testQueryProc.o: QueryProc.h
+testQueryProc.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+testQueryProc.o: ViewStats.h GdataStat.h ../tape/HashTable.h
+testQueryProc.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h
+testQueryProc.o: VisualLink.h Action.h PointStorage.h QueryProc.h
 testRangeList.o: /usr/include/stdio.h /usr/include/libio.h
 testRangeList.o: /usr/include/_G_config.h /usr/include/stdlib.h
 testRangeList.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -2906,10 +2842,10 @@ testRecFile.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 testRecFile.o: /usr/include/errno.h /usr/include/linux/errno.h
 testRecFile.o: /usr/include/asm/errno.h /usr/include/assert.h
 testRecFile.o: /usr/include/stdio.h /usr/include/libio.h
-testRecFile.o: /usr/include/_G_config.h /usr/include/sys/stat.h
-testRecFile.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testRecFile.o: /usr/include/_G_config.h /usr/include/limits.h
 testRecFile.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testRecFile.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+testRecFile.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testRecFile.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 testRecFile.o: /usr/include/linux/param.h /usr/include/asm/param.h
 testRecFile.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testRecFile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -2950,10 +2886,10 @@ testTdata.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 testTdata.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 testTdata.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 testTdata.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-testTdata.o: /usr/include/assert.h /usr/include/sys/stat.h
-testTdata.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testTdata.o: /usr/include/assert.h /usr/include/limits.h
 testTdata.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testTdata.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+testTdata.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testTdata.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 testTdata.o: /usr/include/linux/param.h /usr/include/asm/param.h
 testTdata.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testTdata.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -3001,7 +2937,7 @@ testViewRanges.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 testViewRanges.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testViewRanges.o: /usr/include/sys/time.h ../graphics/Init.h
 testViewRanges.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
-testViewRanges.o: RangeCallback.h
+testViewRanges.o: ../graphics/DevFont.h RangeCallback.h
 testVoidArray.o: /usr/include/stdio.h /usr/include/libio.h
 testVoidArray.o: /usr/include/_G_config.h /usr/include/stdlib.h
 testVoidArray.o: /usr/include/features.h /usr/include/sys/cdefs.h
@@ -3042,10 +2978,10 @@ testbuf.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 testbuf.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 testbuf.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 testbuf.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-testbuf.o: /usr/include/assert.h /usr/include/sys/stat.h
-testbuf.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testbuf.o: /usr/include/assert.h /usr/include/limits.h
 testbuf.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testbuf.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+testbuf.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testbuf.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 testbuf.o: /usr/include/linux/param.h /usr/include/asm/param.h
 testbuf.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testbuf.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -3093,10 +3029,10 @@ testpfile.o: MemMgr.h DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 testpfile.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 testpfile.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 testpfile.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-testpfile.o: /usr/include/assert.h /usr/include/sys/stat.h
-testpfile.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testpfile.o: /usr/include/assert.h /usr/include/limits.h
 testpfile.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testpfile.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+testpfile.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testpfile.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 testpfile.o: /usr/include/linux/param.h /usr/include/asm/param.h
 testpfile.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testpfile.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -3130,9 +3066,9 @@ testpfileGap.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 testpfileGap.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 testpfileGap.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 testpfileGap.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-testpfileGap.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 testpfileGap.o: /usr/include/limits.h /usr/include/posix1_lim.h
 testpfileGap.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+testpfileGap.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 testpfileGap.o: /usr/include/sys/param.h /usr/include/linux/param.h
 testpfileGap.o: /usr/include/asm/param.h /usr/include/sys/time.h
 testpfileGap.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -3178,16 +3114,16 @@ BasicStats.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 BasicStats.o: ../graphics/AttrList.h /usr/include/sys/time.h
 BasicStats.o: /usr/include/linux/time.h /usr/include/sys/time.h
 BasicStats.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-BasicStats.o: GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
-BasicStats.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-BasicStats.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+BasicStats.o: ../graphics/DevFont.h GdataStat.h ../tape/HashTable.h
+BasicStats.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
+BasicStats.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 BasicStats.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 BasicStats.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 BasicStats.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-BasicStats.o: /usr/include/assert.h /usr/include/sys/stat.h
-BasicStats.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+BasicStats.o: /usr/include/assert.h /usr/include/limits.h
 BasicStats.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-BasicStats.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+BasicStats.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+BasicStats.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 BasicStats.o: /usr/include/linux/param.h /usr/include/asm/param.h
 BasicStats.o: /usr/include/sys/wait.h /usr/include/waitflags.h
 BasicStats.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
@@ -3210,9 +3146,9 @@ DCE.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 DCE.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 DCE.o: /usr/include/asm/shmparam.h /usr/include/errno.h
 DCE.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-DCE.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 DCE.o: /usr/include/limits.h /usr/include/posix1_lim.h
 DCE.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+DCE.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 DCE.o: /usr/include/sys/param.h /usr/include/linux/param.h
 DCE.o: /usr/include/asm/param.h /usr/include/sys/time.h
 DCE.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -3338,27 +3274,28 @@ MapInterpShape.o: ../graphics/Control.h ../graphics/ClassDir.h
 MapInterpShape.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapInterpShape.o: /usr/include/sys/time.h /usr/include/linux/time.h
 MapInterpShape.o: /usr/include/sys/time.h ../graphics/Init.h
-MapInterpShape.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-MapInterpShape.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-MapInterpShape.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
-MapInterpShape.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-MapInterpShape.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-MapInterpShape.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-MapInterpShape.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-MapInterpShape.o: /usr/include/assert.h /usr/include/sys/stat.h
-MapInterpShape.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/wait.h
-MapInterpShape.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-MapInterpShape.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-MapInterpShape.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-MapInterpShape.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-MapInterpShape.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-MapInterpShape.o: /usr/include/paths.h /usr/include/sys/socket.h
-MapInterpShape.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-MapInterpShape.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-MapInterpShape.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-MapInterpShape.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
-MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h StringStorage.h
-MapInterpShape.o: ../graphics/Util.h /usr/include/ctype.h
+MapInterpShape.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+MapInterpShape.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+MapInterpShape.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+MapInterpShape.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+MapInterpShape.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+MapInterpShape.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+MapInterpShape.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+MapInterpShape.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+MapInterpShape.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+MapInterpShape.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+MapInterpShape.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+MapInterpShape.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+MapInterpShape.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+MapInterpShape.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+MapInterpShape.o: /usr/include/netdb.h /usr/include/paths.h
+MapInterpShape.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+MapInterpShape.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+MapInterpShape.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+MapInterpShape.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h
+MapInterpShape.o: Action.h PointStorage.h ../graphics/Temp.h
+MapInterpShape.o: ../graphics/Map3D.h StringStorage.h ../graphics/Util.h
+MapInterpShape.o: /usr/include/ctype.h
 MemMgr.o: /usr/include/memory.h /usr/include/features.h
 MemMgr.o: /usr/include/sys/cdefs.h /usr/include/string.h
 MemMgr.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h MemMgr.h
@@ -3373,10 +3310,10 @@ MemMgr.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 MemMgr.o: /usr/include/asm/shmparam.h /usr/include/errno.h
 MemMgr.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
 MemMgr.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/libio.h
-MemMgr.o: /usr/include/_G_config.h /usr/include/sys/stat.h
-MemMgr.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+MemMgr.o: /usr/include/_G_config.h /usr/include/limits.h
 MemMgr.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-MemMgr.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+MemMgr.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+MemMgr.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 MemMgr.o: /usr/include/linux/param.h /usr/include/asm/param.h
 MemMgr.o: /usr/include/sys/time.h /usr/include/linux/time.h
 MemMgr.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -3420,33 +3357,34 @@ ParseAPI.o: ../graphics/DualWindowRep.h ../graphics/ViewCallback.h
 ParseAPI.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ParseAPI.o: /usr/include/linux/time.h /usr/include/sys/time.h
 ParseAPI.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-ParseAPI.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-ParseAPI.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h DCE.h
-ParseAPI.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-ParseAPI.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-ParseAPI.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-ParseAPI.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-ParseAPI.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
-ParseAPI.o: /usr/include/limits.h /usr/include/posix1_lim.h
-ParseAPI.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-ParseAPI.o: /usr/include/sys/param.h /usr/include/linux/param.h
-ParseAPI.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-ParseAPI.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-ParseAPI.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-ParseAPI.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-ParseAPI.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-ParseAPI.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-ParseAPI.o: /usr/include/paths.h /usr/include/sys/socket.h
-ParseAPI.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-ParseAPI.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-ParseAPI.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h UpdateLink.h
-ParseAPI.o: VisualLink.h Action.h RecId.h PointStorage.h KGraph.h
-ParseAPI.o: ../graphics/Util.h ParseCat.h TData.h TDataMap.h ShapeID.h
-ParseAPI.o: GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h Group.h
-ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
-ParseAPI.o: ../graphics/Display.h ../graphics/ColorMgr.h TDataAscii.h
-ParseAPI.o: FileIndex.h ViewLens.h ../graphics/WinClassInfo.h
+ParseAPI.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+ParseAPI.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+ParseAPI.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+ParseAPI.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+ParseAPI.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+ParseAPI.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+ParseAPI.o: /usr/include/asm/shmparam.h /usr/include/limits.h
+ParseAPI.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+ParseAPI.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+ParseAPI.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
+ParseAPI.o: /usr/include/linux/param.h /usr/include/asm/param.h
+ParseAPI.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+ParseAPI.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+ParseAPI.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ParseAPI.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+ParseAPI.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ParseAPI.o: /usr/include/netdb.h /usr/include/paths.h
+ParseAPI.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+ParseAPI.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+ParseAPI.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+ParseAPI.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
+ParseAPI.o: RecId.h PointStorage.h KGraph.h ../graphics/Util.h ParseCat.h
+ParseAPI.o: TData.h TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h
+ParseAPI.o: GroupDir.h ItemList.h Group.h MapInterpClassInfo.h
+ParseAPI.o: ../graphics/ViewLayout.h ../graphics/FilterQueue.h DataSeg.h
+ParseAPI.o: Version.h DevFileHeader.h ../graphics/Display.h
+ParseAPI.o: ../graphics/ColorMgr.h TDataAscii.h FileIndex.h ViewLens.h
+ParseAPI.o: ../graphics/WinClassInfo.h
 PointStorage.o: PointStorage.h /usr/include/stdio.h /usr/include/libio.h
 PointStorage.o: /usr/include/_G_config.h ../graphics/DeviseTypes.h
 PointStorage.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -3471,10 +3409,10 @@ RecordLink.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 RecordLink.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 RecordLink.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 RecordLink.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-RecordLink.o: /usr/include/assert.h /usr/include/sys/stat.h
-RecordLink.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+RecordLink.o: /usr/include/assert.h /usr/include/limits.h
 RecordLink.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-RecordLink.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+RecordLink.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+RecordLink.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 RecordLink.o: /usr/include/linux/param.h /usr/include/asm/param.h
 RecordLink.o: /usr/include/sys/time.h /usr/include/linux/time.h
 RecordLink.o: /usr/include/sys/time.h /usr/include/sys/wait.h
@@ -3504,10 +3442,10 @@ RecordLink.o: ../graphics/Geom.h ../graphics/Transform.h
 RecordLink.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 RecordLink.o: ../graphics/DevError.h ../graphics/DualWindowRep.h
 RecordLink.o: ../graphics/Control.h ../graphics/ClassDir.h
-RecordLink.o: ../graphics/AttrList.h ../graphics/Cursor.h BasicStats.h
-RecordLink.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-RecordLink.o: DataSourceFixedBuf.h DataSourceBuf.h UpdateLink.h Action.h
-RecordLink.o: PointStorage.h
+RecordLink.o: ../graphics/AttrList.h ../graphics/Cursor.h
+RecordLink.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+RecordLink.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+RecordLink.o: UpdateLink.h Action.h PointStorage.h
 SBufMgr.o: /usr/include/memory.h /usr/include/features.h
 SBufMgr.o: /usr/include/sys/cdefs.h /usr/include/string.h
 SBufMgr.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -3528,9 +3466,9 @@ SBufMgr.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
 SBufMgr.o: /usr/include/errno.h /usr/include/linux/errno.h
 SBufMgr.o: /usr/include/asm/errno.h /usr/include/assert.h
 SBufMgr.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-SBufMgr.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 SBufMgr.o: /usr/include/limits.h /usr/include/posix1_lim.h
 SBufMgr.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+SBufMgr.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 SBufMgr.o: /usr/include/sys/param.h /usr/include/linux/param.h
 SBufMgr.o: /usr/include/asm/param.h /usr/include/sys/time.h
 SBufMgr.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -3620,28 +3558,29 @@ UpdateLink.o: ../graphics/DualWindowRep.h ../graphics/Control.h
 UpdateLink.o: ../graphics/ClassDir.h ../graphics/AttrList.h
 UpdateLink.o: /usr/include/sys/time.h /usr/include/linux/time.h
 UpdateLink.o: /usr/include/sys/time.h ../graphics/Init.h
-UpdateLink.o: ../graphics/BufPolicy.h ../graphics/Cursor.h BasicStats.h
-UpdateLink.o: ViewStats.h GdataStat.h ../tape/HashTable.h
-UpdateLink.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
-UpdateLink.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-UpdateLink.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-UpdateLink.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-UpdateLink.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-UpdateLink.o: /usr/include/assert.h /usr/include/sys/stat.h
-UpdateLink.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-UpdateLink.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-UpdateLink.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-UpdateLink.o: /usr/include/linux/param.h /usr/include/asm/param.h
-UpdateLink.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-UpdateLink.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-UpdateLink.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-UpdateLink.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-UpdateLink.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-UpdateLink.o: /usr/include/netdb.h /usr/include/paths.h
-UpdateLink.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-UpdateLink.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-UpdateLink.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-UpdateLink.o: /usr/include/asm/byteorder.h Action.h RecId.h PointStorage.h
+UpdateLink.o: ../graphics/BufPolicy.h ../graphics/Cursor.h
+UpdateLink.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+UpdateLink.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+UpdateLink.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+UpdateLink.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+UpdateLink.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+UpdateLink.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+UpdateLink.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+UpdateLink.o: /usr/include/limits.h /usr/include/posix1_lim.h
+UpdateLink.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+UpdateLink.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+UpdateLink.o: /usr/include/sys/param.h /usr/include/linux/param.h
+UpdateLink.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+UpdateLink.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+UpdateLink.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+UpdateLink.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+UpdateLink.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+UpdateLink.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+UpdateLink.o: /usr/include/paths.h /usr/include/sys/socket.h
+UpdateLink.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+UpdateLink.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+UpdateLink.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Action.h
+UpdateLink.o: RecId.h PointStorage.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h /usr/include/values.h
 ViewKGraph.o: ../graphics/DevStatus.h /usr/include/sys/types.h
 ViewKGraph.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
@@ -3671,29 +3610,29 @@ ViewKGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewKGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewKGraph.o: /usr/include/linux/time.h /usr/include/sys/time.h
 ViewKGraph.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Cursor.h
-ViewKGraph.o: BasicStats.h ViewStats.h GdataStat.h ../tape/HashTable.h
-ViewKGraph.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
-ViewKGraph.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-ViewKGraph.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-ViewKGraph.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-ViewKGraph.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-ViewKGraph.o: /usr/include/assert.h /usr/include/sys/stat.h
-ViewKGraph.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
-ViewKGraph.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-ViewKGraph.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-ViewKGraph.o: /usr/include/linux/param.h /usr/include/asm/param.h
-ViewKGraph.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-ViewKGraph.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
-ViewKGraph.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-ViewKGraph.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-ViewKGraph.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-ViewKGraph.o: /usr/include/netdb.h /usr/include/paths.h
-ViewKGraph.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-ViewKGraph.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-ViewKGraph.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-ViewKGraph.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
-ViewKGraph.o: RecId.h PointStorage.h KGraph.h ../graphics/Util.h
-ViewKGraph.o: /usr/include/ctype.h
+ViewKGraph.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
+ViewKGraph.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
+ViewKGraph.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
+ViewKGraph.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+ViewKGraph.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+ViewKGraph.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+ViewKGraph.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+ViewKGraph.o: /usr/include/limits.h /usr/include/posix1_lim.h
+ViewKGraph.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+ViewKGraph.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
+ViewKGraph.o: /usr/include/sys/param.h /usr/include/linux/param.h
+ViewKGraph.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+ViewKGraph.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+ViewKGraph.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+ViewKGraph.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+ViewKGraph.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+ViewKGraph.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+ViewKGraph.o: /usr/include/paths.h /usr/include/sys/socket.h
+ViewKGraph.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+ViewKGraph.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+ViewKGraph.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+ViewKGraph.o: UpdateLink.h VisualLink.h Action.h RecId.h PointStorage.h
+ViewKGraph.o: KGraph.h ../graphics/Util.h /usr/include/ctype.h
 ViewLens.o: /usr/include/sys/time.h ../graphics/Util.h /usr/include/stdlib.h
 ViewLens.o: /usr/include/features.h /usr/include/sys/cdefs.h
 ViewLens.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
@@ -3722,30 +3661,30 @@ ViewLens.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewLens.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewLens.o: /usr/include/linux/time.h ../graphics/Init.h
 ViewLens.o: ../graphics/BufPolicy.h ../graphics/Cursor.h ViewGraph.h
-ViewLens.o: ../graphics/View.h BasicStats.h ViewStats.h GdataStat.h
-ViewLens.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
-ViewLens.o: DataSource.h MemMgr.h DCE.h /usr/include/sys/ipc.h
-ViewLens.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
-ViewLens.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
-ViewLens.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-ViewLens.o: /usr/include/asm/shmparam.h /usr/include/assert.h
-ViewLens.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
-ViewLens.o: /usr/include/limits.h /usr/include/posix1_lim.h
-ViewLens.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
-ViewLens.o: /usr/include/sys/param.h /usr/include/linux/param.h
-ViewLens.o: /usr/include/asm/param.h /usr/include/sys/wait.h
-ViewLens.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-ViewLens.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
-ViewLens.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
-ViewLens.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
-ViewLens.o: /usr/include/asm/sockios.h /usr/include/netdb.h
-ViewLens.o: /usr/include/paths.h /usr/include/sys/socket.h
-ViewLens.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-ViewLens.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-ViewLens.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h UpdateLink.h
-ViewLens.o: VisualLink.h Action.h RecId.h PointStorage.h
-ViewLens.o: ../graphics/XWindowRep.h ../graphics/Xdef.h
-ViewLens.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+ViewLens.o: ../graphics/View.h ../graphics/DevFont.h BasicStats.h ViewStats.h
+ViewLens.o: GdataStat.h ../tape/HashTable.h DataSourceFixedBuf.h
+ViewLens.o: DataSourceBuf.h DataSource.h MemMgr.h DCE.h
+ViewLens.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+ViewLens.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+ViewLens.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+ViewLens.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+ViewLens.o: /usr/include/assert.h /usr/include/limits.h
+ViewLens.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+ViewLens.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+ViewLens.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
+ViewLens.o: /usr/include/linux/param.h /usr/include/asm/param.h
+ViewLens.o: /usr/include/sys/wait.h /usr/include/waitflags.h
+ViewLens.o: /usr/include/waitstatus.h /usr/include/sys/ioctl.h
+ViewLens.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ViewLens.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+ViewLens.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ViewLens.o: /usr/include/netdb.h /usr/include/paths.h
+ViewLens.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+ViewLens.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+ViewLens.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+ViewLens.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
+ViewLens.o: RecId.h PointStorage.h ../graphics/XWindowRep.h
+ViewLens.o: ../graphics/Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 ViewLens.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 ViewLens.o: /usr/include/X11/Xutil.h ../graphics/FilterQueue.h
 ViewLens.o: ../graphics/TimeStamp.h ../graphics/Parse.h ../graphics/Map3D.h
@@ -3797,9 +3736,9 @@ testSBM2.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 testSBM2.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 testSBM2.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 testSBM2.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-testSBM2.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 testSBM2.o: /usr/include/limits.h /usr/include/posix1_lim.h
 testSBM2.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+testSBM2.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 testSBM2.o: /usr/include/sys/param.h /usr/include/linux/param.h
 testSBM2.o: /usr/include/asm/param.h /usr/include/sys/time.h
 testSBM2.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -3833,9 +3772,9 @@ testSBM3.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
 testSBM3.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
 testSBM3.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
 testSBM3.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-testSBM3.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 testSBM3.o: /usr/include/limits.h /usr/include/posix1_lim.h
 testSBM3.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+testSBM3.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 testSBM3.o: /usr/include/sys/param.h /usr/include/linux/param.h
 testSBM3.o: /usr/include/asm/param.h /usr/include/sys/time.h
 testSBM3.o: /usr/include/linux/time.h /usr/include/sys/time.h
@@ -3869,10 +3808,10 @@ testSBufMgr.o: ../graphics/DevStatus.h MemMgr.h DCE.h /usr/include/sys/ipc.h
 testSBufMgr.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 testSBufMgr.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 testSBufMgr.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-testSBufMgr.o: /usr/include/asm/shmparam.h /usr/include/sys/stat.h
-testSBufMgr.o: /usr/include/linux/stat.h machdep.h /usr/include/limits.h
+testSBufMgr.o: /usr/include/asm/shmparam.h /usr/include/limits.h
 testSBufMgr.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-testSBufMgr.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+testSBufMgr.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h
+testSBufMgr.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/param.h
 testSBufMgr.o: /usr/include/linux/param.h /usr/include/asm/param.h
 testSBufMgr.o: /usr/include/sys/time.h /usr/include/linux/time.h
 testSBufMgr.o: /usr/include/sys/time.h /usr/include/sys/wait.h

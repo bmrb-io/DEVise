@@ -32,10 +32,10 @@ Templates.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
 Templates.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
 Templates.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
 Templates.o: /usr/include/asm/shmparam.h /usr/include/assert.h
+Templates.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Templates.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 Templates.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
-Templates.o: ../graphics.new/machdep.h /usr/include/limits.h
-Templates.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-Templates.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+Templates.o: ../graphics.new/machdep.h /usr/include/sys/param.h
 Templates.o: /usr/include/linux/param.h /usr/include/asm/param.h
 Templates.o: /usr/include/sys/time.h /usr/include/linux/time.h
 Templates.o: /usr/include/sys/time.h /usr/include/sys/wait.h

@@ -71,3 +71,12 @@ mkbinfile.o: /usr/include/ieee854.h /usr/include/time.h /usr/include/stdlib.h
 mkbinfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
 mkbinfile.o: /usr/include/errno.h /usr/include/linux/errno.h
 mkbinfile.o: /usr/include/asm/errno.h /usr/include/alloca.h
+mkparfile.o: /usr/include/math.h /usr/include/features.h
+mkparfile.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
+mkparfile.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
+mkparfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+mkparfile.o: /usr/include/values.h /usr/include/ieee754.h
+mkparfile.o: /usr/include/ieee854.h /usr/include/time.h /usr/include/stdlib.h
+mkparfile.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+mkparfile.o: /usr/include/errno.h /usr/include/linux/errno.h
+mkparfile.o: /usr/include/asm/errno.h /usr/include/alloca.h

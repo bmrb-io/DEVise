@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/10/17 23:30:01  wenger
+#  Added sample data, session, and schema files to sources; modified
+#  the release script so that these files get installed into the target
+#  directory; added gen_dist script to generate tar files for distribution;
+#  changed /p/devise/dist structure (removed Devise-1.1.8 directories,
+#  since this actually contains whatever is the current version of
+#  Devise); tar file of the dist structure committed to CVS.
+#
 #  Revision 1.8  1996/09/05 20:05:23  wenger
 #  Put the 'public' and 'run' files into CVS; the release script now installs
 #  them.
@@ -170,7 +178,7 @@ foreach dir ($rundirs)
   endif
 end
 
-set runfiles = "run_public/devise run_public/devise.dali \
+set runfiles = "run_public/devise run_public/devise.tasvir \
 	run_public/deviseweb run_public/dumpgif.script \
 	run_public/multi"
 

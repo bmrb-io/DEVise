@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/27 17:00:13  wenger
+  Got latest code to compile for sun, solsparc, and hp; updated dependencies;
+  changed 'Import' to 'New Table' in main window GUI to reflect change of
+  function.
+
   Revision 1.16  1996/12/15 20:23:08  wenger
   Incremented revision; prints current architecture at startup.
 
@@ -472,6 +477,10 @@ EXTERNC unsigned sleep(unsigned);
                                                 /* "double" */
 #define DBL_MIN         2.2250738585072014E-308 /* min decimal value of a */
                                                 /* "double" */
+#endif
+
+#if defined(__linux)
+#include <float.h>
 #endif
 
 
