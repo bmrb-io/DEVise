@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/11/25 16:33:34  wenger
+#  Fixed makefile so 'all' target makes 'lib' -- so top-level compile
+#  works correctly.
+#
 #  Revision 1.8  1996/11/20 02:24:27  donjerko
 #  Does not make the test program any more.
 #  This is because it was failing to compile.
@@ -110,6 +114,8 @@ LIBOBJ = \
 	../graphics.new/DataSourceDQL.o \
 	../graphics.new/DevFileHeader.o \
 	../graphics.new/Version.o \
+        ../graphics.new/MemMgr.o \
+        ../graphics.new/DCE.o \
 	../tape/tapedrive.o \
 	../generic/CompDate.o 
 
