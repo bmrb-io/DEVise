@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.124  2001/10/24 22:15:33  wenger
+// More collaboration-related fixes.
+//
 // Revision 1.123  2001/10/19 19:28:55  xuk
 // Added playback indicator.
 //
@@ -439,6 +442,8 @@ public class jsdevisec extends Panel
     public String collabPass = new String(DEViseGlobals.DEFAULTPASS);
 
     public boolean sessionSaved = false;
+
+    public boolean collabinterrupted = false;
 
     // message buffer for logging
     public Vector msgBuffer = new Vector();
@@ -995,15 +1000,6 @@ public class jsdevisec extends Panel
         settingdlg = null;
     }
 
-    public void showCollab()
-    {
-
-	collabMode();
-
-	specialID = 0;
-	dispatcher.start(null);
-    }
-
     public void setCgiUrl()
     {
         setcgiurldlg = new SetCgiUrlDlg(this, parentFrame, isCenterScreen);
@@ -1135,16 +1131,9 @@ public class jsdevisec extends Panel
     {
 	pn("Quit from collaboration mode.");
 
-	if (dispatcher.commSocket != null) {
-	    dispatcher.commSocket.closeSocket();
-	    dispatcher.commSocket = null;
-	}
-
-	dispatcher._connectedAlready = false;
-	dispatcher.isOnline = false;
-	dispatcher.setAbortStatus(false);
 	dispatcher.setStatus(0);
-
+	if ( !dispatcher.dispatcherThread.isInterrupted() )
+	    dispatcher.dispatcherThread.interrupt();
 	animPanel.stop();
 	stopButton.setBackground(jsValues.uiglobals.bg);
 	jscreen.updateScreen(false);
@@ -1152,11 +1141,6 @@ public class jsdevisec extends Panel
 	// go back to normal mode
 	specialID = -1;
 	socketMode();
-
-	if (dispatcher.dispatcherThread != null) {
-	    dispatcher.dispatcherThread.stop();
-	    dispatcher.dispatcherThread = null;
-	}
     }	
 }
 
@@ -2532,34 +2516,15 @@ class SetModeDlg extends Dialog
 			// switch out off the collaboration mode
 			if (jsc.specialID != -1) {
 
-			    if (jsc.dispatcher.dispatcherThread != null) {
-				jsc.dispatcher.dispatcherThread.stop();
-				jsc.dispatcher.dispatcherThread = null;
-			    }
-			    try {
-				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-				//jsc.dispatcher.sockSendCmd(DEViseCommands.EXIT);
-				jsc.dispatcher.commSocket.sendCmd(DEViseCommands.EXIT, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
-			    } catch (YException e) {
-				jsc.showMsg(e.getMsg());
-			    }
-
-			    if (jsc.dispatcher.commSocket != null) {
-				jsc.dispatcher.commSocket.closeSocket();
-				jsc.dispatcher.commSocket = null;
-			    }
-
-			    jsc.dispatcher._connectedAlready = false;
-			    jsc.dispatcher.isOnline = false;
+			    jsc.specialID = -1;
+			    jsc.collabinterrupted = true;
+			    jsc.dispatcher.dispatcherThread.interrupt();
 
 			    jsc.animPanel.stop();
 			    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 			    jsc.jscreen.updateScreen(false);
-
 			    jsc.dispatcher.setStatus(0);
-			    jsc.dispatcher.setAbortStatus(false);
-
-			    jsc.specialID = -1;
+			    
 			    if (jsc.sessionSaved) {
 				jsc.isSessionOpened = true;
 				jsc.dispatcher.start(DEViseCommands.REOPEN_SESSION);
@@ -2575,56 +2540,34 @@ class SetModeDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			String command = new String();
+
 			// if switch from "socket" mode, save current 
 			// session.
                         if (jsc.isSessionOpened) {
 			    jsc.sessionSaved = true;
-			    try {
-				jsc.pn("Sending: \"" + DEViseCommands.SAVE_CUR_SESSION +"\"");
-				jsc.dispatcher.sockSendCmd(DEViseCommands.SAVE_CUR_SESSION);
-				Thread.sleep(1000);
-			    } catch (YException e) {
-			    } catch (InterruptedException e) {
-			    }
+			    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
                         }
+
 			// if already in "collaboration" mode,
-			// send JAVAC_Exit to exit from previous collaboration
+			// send JAVAC_CollabExit to exit from previous collaboration
 			if (jsc.specialID != -1) {
-			    if (jsc.dispatcher.dispatcherThread != null) {
-				jsc.dispatcher.dispatcherThread.stop();
-				jsc.dispatcher.dispatcherThread = null;
+			    if (!jsc.dispatcher.dispatcherThread.isInterrupted()) {
+				jsc.collabinterrupted = true;
+				jsc.dispatcher.dispatcherThread.interrupt();
 			    }
-			    try {
-				jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
-				jsc.dispatcher.sockSendCmd(DEViseCommands.EXIT);
-			    } catch (YException e) {
-				jsc.showMsg(e.getMsg());
-			    }
+			    jsc.specialID = -1;
 			}
+
+			command = command + DEViseCommands.ASK_COLLAB_LEADER;
+			jsc.dispatcher.start(command);
 
 			close();
-			
-			if (jsc.dispatcher.dispatcherThread != null) {
-			    jsc.dispatcher.dispatcherThread.stop();
-			    jsc.dispatcher.dispatcherThread = null;
-			}
-			if (jsc.dispatcher.commSocket != null) {
-			    jsc.dispatcher.commSocket.closeSocket();
-			    jsc.dispatcher.commSocket = null;
-			}
-
-			jsc.dispatcher._connectedAlready = false;
-
-			jsc.dispatcher.isOnline = false;
-
 			jsc.animPanel.stop();
 			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 			jsc.jscreen.updateScreen(false);
-
 			jsc.dispatcher.setStatus(0);
-			jsc.dispatcher.setAbortStatus(false);
-
-                        jsc.showCollab();
+			jsc.collabMode();
                     }
                 });
 
@@ -3146,33 +3089,11 @@ class EnterCollabPassDlg extends Dialog
 
 			jsc.collabPass = pass.getText();
 
-			if (jsc.dispatcher.dispatcherThread != null) {
-			    jsc.dispatcher.dispatcherThread.stop();
-			    jsc.dispatcher.dispatcherThread = null;
-			}
+			String id = new Long(jsc.specialID).toString();
+			String command = DEViseCommands.COLLABORATE + " {" + 
+			    id + "} {" + jsc.collabPass + "}";
 
-			if (jsc.dispatcher.commSocket != null) {
-			    jsc.dispatcher.commSocket.closeSocket();
-			    jsc.dispatcher.commSocket = null;
-			}
-
-			jsc.dispatcher._connectedAlready = false;
-			jsc.dispatcher.isOnline = false;
-
-			jsc.animPanel.stop();
-			jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
-			jsc.jscreen.updateScreen(false);
-
-			if (jsc.dispatcher.getStatus() != 0) {
-			    // For some reason, we get an interruption on
-			    // the socket when setting up collaboration
-			    // when the JSPoP uses the new DEViseClientSocket
-			    // class.
-			    // jsc.dispatcher.setAbortStatus(true);
-			}
-			jsc.dispatcher.setStatus(0);
-
-                        jsc.dispatcher.start(null);
+                        jsc.dispatcher.start(command);
 			close();
                     }
                 });
