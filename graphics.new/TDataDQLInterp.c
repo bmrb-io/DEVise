@@ -34,9 +34,27 @@
 TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className,char *schemaFile,char *query): _attrs(className)
 {
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
+  printf(" DQLINTERP CLASS -- className = %s schemaFile = %s query = %s \n\n",
+	className,schemaFile,query);
+
   _className = strdup(className); 
   _schemaFile = strdup(schemaFile);
-  _query = strdup(query);
+
+  if (!(className[0] == 'D' && className[1] == 'Q' && className[2] == 'L')){
+	
+	char * tmp1 = "select * from \" Devise ";
+	_query = (char *)malloc (strlen(tmp1)+strlen(schemaFile)+strlen(query)+15);
+	strcpy(_query,tmp1);
+	strcat(_query,schemaFile);
+	strcat(_query," \" where ");
+	strcat(_query,query);
+
+  }
+  else
+	_query = strdup(query);
+ 
+  printf(" Query = %s \n",_query);
+
   _tdata = NULL;
   _type = NULL;
   _name = NULL;
