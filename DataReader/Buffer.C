@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/10/16 21:29:35  beyer
+  fixed length integers can have leading spaces
+
   Revision 1.15  1998/10/12 21:24:18  wenger
   Fixed bugs 405, 406, and 408 (all DataReader problems); considerably
   increased the robustness of the DataReader (partly addresses bug 409);
@@ -749,6 +752,8 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 //          every extractor function
 // myAttr : Attribute object assigned to current field
 
+  _sign = false;
+  _iRetVal = 0;   // kb: because of goofy stop condition in DataRead.c
   int fieldLen = fieldLens[myAttr->whichAttr];
   char buf[1024];
   assert( fieldLen <= (int)sizeof(buf) );
@@ -1306,6 +1311,7 @@ Status Buffer::extractField(Attribute* myAttr, char* dest) {
 	}
 		
 	retSt = (this->*(extFunc[myAttr->whichAttr]))(myAttr,dest);
+// kb: this should only happen if extract was successful
 	(this->*(valFunc[myAttr->whichAttr]))(dest);
 
 #if defined(DEBUG)
