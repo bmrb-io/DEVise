@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.97  2001/08/28 18:30:11  wenger
+  Added 'robustOpen' option (default is true) -- this allows a session
+  open to succeed even if there are unrecognized commands (useful for
+  opening a newer session file with an older version of DEVise); if a
+  session open fails, we now clean things up.
+
   Revision 1.96  2001/06/12 15:29:30  wenger
   Implemented a choice of modulus (default) or truncate color modes.
 
@@ -509,6 +515,7 @@ char *Session::_sessionFile = NULL;
 char *Session::_description = NULL;
 PaletteID Session::_defaultPalette = nullPaletteID;
 PaletteID Session::_sessionPalette = nullPaletteID;
+Boolean Session::_dirty = false;
 
 static const char *_sessionPaletteName = "session";
 static const char *_defaultPaletteName = "def";
@@ -557,6 +564,8 @@ Session::Open(const char *filename)
   }
 
   status += CheckWindowLocations();
+
+  ClearDirty();
 
 #if defined(DEBUG)
   printf("  finished Session::Open(%s)\n    ", filename);
@@ -645,6 +654,8 @@ Session::Close()
   DeleteDataSources();
   CompositeParser::ResetAll();
   _isJsSession = false;
+
+  ClearDirty();
 
   return status;
 }
@@ -820,6 +831,10 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
       FreeString(_sessionFile);
     }
     _sessionFile = CopyString(filename);
+  }
+
+  if (status.IsComplete()) {
+    ClearDirty();
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");

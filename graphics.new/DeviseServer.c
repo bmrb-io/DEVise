@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  2001/01/08 20:32:54  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.14.2.2  2000/09/09 18:37:31  wenger
   Devised can now operate with either separate command and data sockets
   or a single command/data socket.
@@ -212,6 +216,7 @@ DeviseServer::Run()
 void 
 DeviseServer::RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
 {
+    //TEMP -- should we look at return value here???
     CmdContainer::GetCmdContainer()->Run(argc, argv, _control, cmdDes);
 }
 

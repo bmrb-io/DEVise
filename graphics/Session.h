@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.26  2001/03/23 18:06:31  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.25  2001/01/08 20:32:42  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -197,6 +202,10 @@ public:
 
   static void SetDefaultPalette();
   static DevStatus CreateSessionPalette(const char *colors);
+
+  static void SetDirty() { _dirty = true; }
+  static void ClearDirty() { _dirty = false; }
+  static Boolean IsDirty() { return _dirty; }
   
 protected:
   friend class DeviseCommand_setOpeningSession;
@@ -301,6 +310,8 @@ private:
 
   static PaletteID _defaultPalette;
   static PaletteID _sessionPalette;
+
+  static Boolean _dirty;
 };
 
 #endif /* _Session_h_ */

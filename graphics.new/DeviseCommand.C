@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.120  2001/06/12 15:29:45  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.119  2001/05/27 18:51:15  wenger
   Improved buffer checking with snprintfs.
 
@@ -1220,6 +1223,7 @@ DeviseCommand_color::Run(int argc, char** argv)
 {
 	return ParseAPIColorCommands(argc, argv, _control);
 }
+
 int
 DeviseCommand_getAllViews::Run(int argc, char** argv)
 {
@@ -1248,15 +1252,12 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
 int
 DeviseCommand_changeParam::Run(int argc, char** argv)
 {
-    {
-        {
+	    Session::SetDirty();
         _classDir->ChangeParams(argv[1], argc - 2, &argv[2]);
         ReturnVal(API_ACK, "done");
         return 1;
-      }
-    }
-    return true;
 }
+
 int
 DeviseCommand_createInterp::Run(int argc, char** argv)
 {
@@ -1276,11 +1277,11 @@ DeviseCommand_createInterp::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_create::Run(int argc, char** argv)
 {
-    {
-        {
+        Session::SetDirty();
         _control->SetBusy();
         // HACK to provide backward compatibility
         if (!strcmp(argv[2], "WinVertical") ||
@@ -1305,10 +1306,8 @@ DeviseCommand_create::Run(int argc, char** argv)
           ReturnVal(API_ACK, name);
 	}
         return 1;
-      }
-    }
-    return true;
 }
+
 int
 DeviseCommand_getTDataName::Run(int argc, char** argv)
 {
@@ -1326,9 +1325,11 @@ DeviseCommand_getTDataName::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_showkgraph::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
         if (atoi(argv[1]) == 1 || !vkg) {
@@ -1370,9 +1371,11 @@ DeviseCommand_showkgraph::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_createMappingClass::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
         MapInterpClassInfo *interp = _control->GetInterpProto();
@@ -1388,6 +1391,7 @@ DeviseCommand_createMappingClass::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setDefault::Run(int argc, char** argv)
 {
@@ -1409,6 +1413,8 @@ DeviseCommand_setHistogram::Run(int argc, char** argv)
         ReturnVal(API_ACK, "done");
         return 1;
 #endif
+
+    Session::SetDirty();
     {
         {
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
@@ -1439,6 +1445,7 @@ DeviseCommand_setHistogram::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getHistogram::Run(int argc, char** argv)
 {
@@ -1462,6 +1469,7 @@ DeviseCommand_getHistogram::Run(int argc, char** argv)
 int
 DeviseCommand_setBuckRefresh::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
@@ -1489,6 +1497,7 @@ DeviseCommand_setBuckRefresh::Run(int argc, char** argv)
 int
 DeviseCommand_setHistViewname::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
@@ -1506,6 +1515,7 @@ DeviseCommand_setHistViewname::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getHistViewname::Run(int argc, char** argv)
 {
@@ -1525,6 +1535,7 @@ DeviseCommand_getHistViewname::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_checkGstat::Run(int argc, char** argv)
 {
@@ -1549,6 +1560,7 @@ DeviseCommand_checkGstat::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getSourceName::Run(int argc, char** argv)
 {
@@ -1569,6 +1581,7 @@ DeviseCommand_getSourceName::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_isXDateType::Run(int argc, char** argv)
 {
@@ -1593,6 +1606,7 @@ DeviseCommand_isXDateType::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_isYDateType::Run(int argc, char** argv)
 {
@@ -1617,6 +1631,7 @@ DeviseCommand_isYDateType::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
 {
@@ -1657,6 +1672,7 @@ DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
 {
@@ -1693,6 +1709,7 @@ DeviseCommand_startLayoutManager::Run(int argc, char** argv)
 {
     return false;
 }
+
 int
 DeviseCommand_date::Run(int argc, char** argv)
 {
@@ -1707,6 +1724,7 @@ DeviseCommand_date::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_printDispatcher::Run(int argc, char** argv)
 {
@@ -1718,6 +1736,7 @@ DeviseCommand_printDispatcher::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_catFiles::Run(int argc, char** argv)
 {
@@ -1732,6 +1751,7 @@ DeviseCommand_catFiles::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_exit::Run(int argc, char** argv)
 {
@@ -1744,6 +1764,7 @@ DeviseCommand_exit::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_clearAll::Run(int argc, char** argv)
 {
@@ -1756,6 +1777,7 @@ DeviseCommand_clearAll::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_sync::Run(int argc, char** argv)
 {
@@ -1768,6 +1790,7 @@ DeviseCommand_sync::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_version::Run(int argc, char** argv)
 {
@@ -1779,6 +1802,7 @@ DeviseCommand_version::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_copyright::Run(int argc, char** argv)
 {
@@ -1790,6 +1814,7 @@ DeviseCommand_copyright::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_compDate::Run(int argc, char** argv)
 {
@@ -1801,6 +1826,7 @@ DeviseCommand_compDate::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_new_leaks::Run(int argc, char** argv)
 {
@@ -1817,6 +1843,7 @@ DeviseCommand_new_leaks::Run(int argc, char** argv)
 #endif
     return false;
 }
+
 int
 DeviseCommand_new_inuse::Run(int argc, char** argv)
 {
@@ -1833,6 +1860,7 @@ DeviseCommand_new_inuse::Run(int argc, char** argv)
 #endif
     return false;
 }
+
 int
 DeviseCommand_getWinCount::Run(int argc, char** argv)
 {
@@ -1846,6 +1874,7 @@ DeviseCommand_getWinCount::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getStringCount::Run(int argc, char** argv)
 {
@@ -1860,6 +1889,7 @@ DeviseCommand_getStringCount::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_waitForQueries::Run(int argc, char** argv)
 {
@@ -1869,6 +1899,7 @@ DeviseCommand_waitForQueries::Run(int argc, char** argv)
     ReturnVal(API_ACK, "done");
     return true;
 }
+
 int
 DeviseCommand_serverExit::Run(int argc, char** argv)
 {
@@ -1896,6 +1927,7 @@ DeviseCommand_serverExit::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_abortQuery::Run(int argc, char** argv)
 {
@@ -1913,6 +1945,7 @@ DeviseCommand_abortQuery::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_importFileType::Run(int argc, char** argv)
 {
@@ -1924,6 +1957,7 @@ DeviseCommand_importFileType::Run(int argc, char** argv)
 		fprintf(stderr, "Unknown command:%s\n", argv[0]);
 	return 0;
 }
+
 int
 DeviseCommand_importFileType::Run_2(int argc, char** argv)
 {
@@ -1940,6 +1974,7 @@ DeviseCommand_importFileType::Run_2(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_importFileType::Run_4(int argc, char** argv)
 {
@@ -1957,9 +1992,11 @@ DeviseCommand_importFileType::Run_4(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_resetLinkMaster::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
@@ -1974,6 +2011,7 @@ DeviseCommand_resetLinkMaster::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_get3DLocation::Run(int argc, char** argv)
 {
@@ -1996,6 +2034,7 @@ DeviseCommand_get3DLocation::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getLinkMaster::Run(int argc, char** argv)
 {
@@ -2049,6 +2088,7 @@ DeviseCommand_setBatchMode::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_invalidateTData::Run(int argc, char** argv)
 {
@@ -2066,6 +2106,7 @@ DeviseCommand_invalidateTData::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_invalidatePixmap::Run(int argc, char** argv)
 {
@@ -2083,6 +2124,8 @@ DeviseCommand_invalidatePixmap::Run(int argc, char** argv)
     }
     return true;
 }
+
+//TEMP -- is this even used????
 int
 DeviseCommand_readLine::Run(int argc, char** argv)
 {
@@ -2099,6 +2142,8 @@ DeviseCommand_readLine::Run(int argc, char** argv)
     }
     return true;
 }
+
+//TEMP -- is this even used????
 int
 DeviseCommand_close::Run(int argc, char** argv)
 {
@@ -2112,6 +2157,7 @@ DeviseCommand_close::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_isMapped::Run(int argc, char** argv)
 {
@@ -2129,6 +2175,7 @@ DeviseCommand_isMapped::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getLabel::Run(int argc, char** argv)
 {
@@ -2151,6 +2198,7 @@ DeviseCommand_getLabel::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_tdataFileName::Run(int argc, char** argv)
 {
@@ -2167,6 +2215,7 @@ DeviseCommand_tdataFileName::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewWin::Run(int argc, char** argv)
 {
@@ -2187,9 +2236,11 @@ DeviseCommand_getViewWin::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_clearViewHistory::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           View *view = (View *)_classDir->FindInstance(argv[1]);
@@ -2205,6 +2256,7 @@ DeviseCommand_clearViewHistory::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getCursorViews::Run(int argc, char** argv)
 {
@@ -2218,20 +2270,23 @@ DeviseCommand_getCursorViews::Run(int argc, char** argv)
           View *src = cursor->GetSource();
           View *dst = cursor->GetDst();
           char *name[2];
-          if (src)
-    	name[0] = src->GetName();
-          else
-    	name[0] = "";
-          if (dst)
-    	name[1] = dst->GetName();
-          else
-    	name[1] = "";
-          ReturnVal(2, name);
+          if (src) {
+    	    name[0] = src->GetName();
+          } else {
+    	    name[0] = "";
+	  }
+          if (dst) {
+    	    name[1] = dst->GetName();
+          } else {
+    	    name[1] = "";
+	  }
+          ReturnVal(2, name); // 2 is argc here
           return 1;
         } 
     }
     return true;
 }
+
 int
 DeviseCommand_getMappingTData::Run(int argc, char** argv)
 {
@@ -2249,9 +2304,11 @@ DeviseCommand_getMappingTData::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_destroy::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           if (_classDir->DestroyInstance(argv[1])) {
@@ -2265,6 +2322,7 @@ DeviseCommand_destroy::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_parseDateFloat::Run(int argc, char** argv)
 {
@@ -2279,6 +2337,7 @@ DeviseCommand_parseDateFloat::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_isInterpretedGData::Run(int argc, char** argv)
 {
@@ -2299,6 +2358,7 @@ DeviseCommand_isInterpretedGData::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_isInterpreted::Run(int argc, char** argv)
 {
@@ -2314,6 +2374,7 @@ DeviseCommand_isInterpreted::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getPixelWidth::Run(int argc, char** argv)
 {
@@ -2343,6 +2404,7 @@ DeviseCommand_getTopGroups::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getWindowLayout::Run(int argc, char** argv)
 {
@@ -2366,6 +2428,7 @@ DeviseCommand_getWindowLayout::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getSchema::Run(int argc, char** argv)
 {
@@ -2472,6 +2535,7 @@ DeviseCommand_getAction::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getLinkFlag::Run(int argc, char** argv)
 {
@@ -2489,6 +2553,7 @@ DeviseCommand_getLinkFlag::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_changeableParam::Run(int argc, char** argv)
 {
@@ -2505,6 +2570,7 @@ DeviseCommand_changeableParam::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getInstParam::Run(int argc, char** argv)
 {
@@ -2520,6 +2586,7 @@ DeviseCommand_getInstParam::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_tcheckpoint::Run(int argc, char** argv)
 {
@@ -2550,6 +2617,7 @@ DeviseCommand_get::Run(int argc, char** argv)
 		fprintf(stderr, "Unknown command:%s\n", argv[0]);
 	return 0;
 }
+
 int
 DeviseCommand_get::Run_2(int argc, char** argv)
 {
@@ -2565,6 +2633,7 @@ DeviseCommand_get::Run_2(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_get::Run_3(int argc, char** argv)
 {
@@ -2619,9 +2688,11 @@ DeviseCommand_exists::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_removeView::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
@@ -2640,6 +2711,7 @@ DeviseCommand_removeView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewMappings::Run(int argc, char** argv)
 {
@@ -2664,6 +2736,7 @@ DeviseCommand_getViewMappings::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_refreshView::Run(int argc, char** argv)
 {
@@ -2681,6 +2754,7 @@ DeviseCommand_refreshView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getWinGeometry::Run(int argc, char** argv)
 {
@@ -2703,6 +2777,7 @@ DeviseCommand_getWinGeometry::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getWinViews::Run(int argc, char** argv)
 {
@@ -2728,6 +2803,7 @@ DeviseCommand_getWinViews::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getLinkViews::Run(int argc, char** argv)
 {
@@ -2752,6 +2828,7 @@ DeviseCommand_getLinkViews::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getCurVisualFilter::Run(int argc, char** argv)
 {
@@ -2771,6 +2848,7 @@ DeviseCommand_getCurVisualFilter::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getVisualFilters::Run(int argc, char** argv)
 {
@@ -2814,6 +2892,7 @@ DeviseCommand_getVisualFilters::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewStatistics::Run(int argc, char** argv)
 {
@@ -2831,6 +2910,7 @@ DeviseCommand_getViewStatistics::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getAllStats::Run(int argc, char** argv)
 {
@@ -2867,6 +2947,7 @@ DeviseCommand_getAllStats::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getStatBuffer::Run(int argc, char** argv)
 {
@@ -2953,6 +3034,7 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewDimensions::Run(int argc, char** argv)
 {
@@ -2971,6 +3053,7 @@ DeviseCommand_getViewDimensions::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewSolid3D::Run(int argc, char** argv)
 {
@@ -2989,6 +3072,7 @@ DeviseCommand_getViewSolid3D::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewXYZoom::Run(int argc, char** argv)
 {
@@ -3007,6 +3091,7 @@ DeviseCommand_getViewXYZoom::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewDisplayDataValues::Run(int argc, char** argv)
 {
@@ -3025,6 +3110,7 @@ DeviseCommand_getViewDisplayDataValues::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewPileMode::Run(int argc, char** argv)
 {
@@ -3043,6 +3129,7 @@ DeviseCommand_getViewPileMode::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_raiseView::Run(int argc, char** argv)
 {
@@ -3060,6 +3147,7 @@ DeviseCommand_raiseView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_lowerView::Run(int argc, char** argv)
 {
@@ -3077,6 +3165,7 @@ DeviseCommand_lowerView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getFileHeader::Run(int argc, char** argv)
 {
@@ -3110,6 +3199,7 @@ DeviseCommand_winGetPrint::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_viewGetHome::Run(int argc, char** argv)
 {
@@ -3249,9 +3339,11 @@ DeviseCommand_saveStringSpace::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_loadStringSpace::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           // Argument: <file name>
@@ -3269,6 +3361,7 @@ DeviseCommand_loadStringSpace::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_dumpLinkCursor::Run(int argc, char** argv)
 {
@@ -3294,6 +3387,7 @@ DeviseCommand_dumpLinkCursor::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_openSession::Run(int argc, char** argv)
 {
@@ -3313,6 +3407,7 @@ DeviseCommand_openSession::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_createTData::Run(int argc, char** argv)
 {
@@ -3336,6 +3431,7 @@ DeviseCommand_createTData::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getViewGDS::Run(int argc, char** argv)
 {
@@ -3368,6 +3464,7 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_testDataSock::Run(int argc, char** argv)
 {
@@ -3407,6 +3504,7 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
 int
 DeviseCommand_setLinkMaster::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
@@ -3433,6 +3531,8 @@ DeviseCommand_setLinkType::Run(int argc, char** argv)
     // Arguments: <link name> <link type (-1 = negative, 1 = positive)>
     // Returns: "done"
 	// Note: this command applies only to record links
+
+    Session::SetDirty();
 
     RecordLink *link = (RecordLink *)_classDir->FindInstance(argv[1]);
     if (!link) {
@@ -3471,6 +3571,8 @@ DeviseCommand_setScreenSize::Run(int argc, char** argv)
     }
     return true;
 }
+
+//TEMP -- is this used????
 int
 DeviseCommand_writeLine::Run(int argc, char** argv)
 {
@@ -3485,6 +3587,8 @@ DeviseCommand_writeLine::Run(int argc, char** argv)
     }
     return true;
 }
+
+//TEMP -- is this used????
 int
 DeviseCommand_open::Run(int argc, char** argv)
 {
@@ -3502,9 +3606,11 @@ DeviseCommand_open::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewStatistics::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           ViewGraph *vg = (ViewGraph *)_classDir->FindInstance(argv[1]);
@@ -3520,9 +3626,11 @@ DeviseCommand_setViewStatistics::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewDimensions::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           View *vg = (View *)_classDir->FindInstance(argv[1]);
@@ -3538,9 +3646,11 @@ DeviseCommand_setViewDimensions::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewSolid3D::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           View *vg = (View *)_classDir->FindInstance(argv[1]);
@@ -3556,9 +3666,11 @@ DeviseCommand_setViewSolid3D::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewXYZoom::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           View *vg = (View *)_classDir->FindInstance(argv[1]);
@@ -3574,9 +3686,11 @@ DeviseCommand_setViewXYZoom::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewDisplayDataValues::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           View *vg = (View *)_classDir->FindInstance(argv[1]);
@@ -3592,6 +3706,7 @@ DeviseCommand_setViewDisplayDataValues::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewPileMode::Run(int argc, char** argv)
 {
@@ -3601,6 +3716,7 @@ DeviseCommand_setViewPileMode::Run(int argc, char** argv)
 	ReturnVal(API_ACK, "done");
 	return 1;
 }
+
 int
 DeviseCommand_savePixmap::Run(int argc, char** argv)
 {
@@ -3619,24 +3735,25 @@ DeviseCommand_savePixmap::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_loadPixmap::Run(int argc, char** argv)
 {
-    {
-        {
           View *vg = (View *)_classDir->FindInstance(argv[1]);
           if (!vg) {
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+
+          Session::SetDirty();
+
           FILE *file = (FILE *)atol(argv[2]);
           vg->LoadPixmaps(file);
+
           ReturnVal(API_ACK, "done");
           return 1;
-        }
-    }
-    return true;
 }
+
 int
 DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
 {
@@ -3667,6 +3784,7 @@ DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
 int
 DeviseCommand_setCursorSrc::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           DeviseCursor *cursor = (DeviseCursor *)
@@ -3687,9 +3805,11 @@ DeviseCommand_setCursorSrc::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setCursorDst::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           DeviseCursor *cursor = (DeviseCursor *)
@@ -3710,9 +3830,11 @@ DeviseCommand_setCursorDst::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setPixelWidth::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           TDataMap *map= (TDataMap *)_classDir->FindInstance(argv[1]);
@@ -3729,6 +3851,7 @@ DeviseCommand_setPixelWidth::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setAction::Run(int argc, char** argv)
 {
@@ -3751,9 +3874,11 @@ DeviseCommand_setAction::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setLinkFlag::Run(int argc, char** argv)
 {
+    Session::SetDirty();
     {
         {
           DeviseLink *link = (DeviseLink *)_classDir->FindInstance(argv[1]);
@@ -3769,6 +3894,7 @@ DeviseCommand_setLinkFlag::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_highlightView::Run(int argc, char** argv)
 {
@@ -3786,6 +3912,7 @@ DeviseCommand_highlightView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getparam::Run(int argc, char** argv)
 {
@@ -3805,6 +3932,8 @@ DeviseCommand_getparam::Run(int argc, char** argv)
 int
 DeviseCommand_insertMapping::Run(int argc, char** argv)
 {
+    Session::SetDirty();
+
 	if (argc ==3)
 		return Run_3(argc, argv);
 	else if (argc ==4)
@@ -3813,6 +3942,7 @@ DeviseCommand_insertMapping::Run(int argc, char** argv)
 		fprintf(stderr, "Unknown command:%s\n", argv[0]);
 	return 0;
 }
+
 int
 DeviseCommand_insertMapping::Run_3(int argc, char** argv)
 {
@@ -3835,6 +3965,7 @@ DeviseCommand_insertMapping::Run_3(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_insertMapping::Run_4(int argc, char** argv)
 {
@@ -3896,6 +4027,8 @@ DeviseCommand_insertLink::Run(int argc, char** argv)
       ReturnVal(API_NAK, "Cannot find view");
       return -1;
     }
+    Session::SetDirty();
+
     link->InsertView(view);
   }
   ReturnVal(API_ACK, "done");
@@ -3927,6 +4060,7 @@ DeviseCommand_viewInLink::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_unlinkView::Run(int argc, char** argv)
 {
@@ -3943,6 +4077,8 @@ DeviseCommand_unlinkView::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+          Session::SetDirty();
+
           link->DeleteView(view);
           ReturnVal(API_ACK, "done");
           return 1;
@@ -3950,6 +4086,7 @@ DeviseCommand_unlinkView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_insertWindow::Run(int argc, char** argv)
 {
@@ -3965,6 +4102,8 @@ DeviseCommand_insertWindow::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
+          Session::SetDirty();
+
           view->DeleteFromParent();
           view->AppendToParent(win);
 	  if (!view->Mapped()) {
@@ -3977,6 +4116,7 @@ DeviseCommand_insertWindow::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_removeMapping::Run(int argc, char** argv)
 {
@@ -3992,6 +4132,8 @@ DeviseCommand_removeMapping::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
+          Session::SetDirty();
+
           view->RemoveMapping(map);
           ReturnVal(API_ACK, "done");
           return 1;
@@ -4016,6 +4158,7 @@ DeviseCommand_saveDisplayImage::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_saveDisplayView::Run(int argc, char** argv)
 {
@@ -4033,6 +4176,7 @@ DeviseCommand_saveDisplayView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_saveTdata::Run(int argc, char** argv)
 {
@@ -4054,6 +4198,7 @@ DeviseCommand_saveTdata::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getDisplayImage::Run(int argc, char** argv)
 {
@@ -4084,6 +4229,7 @@ DeviseCommand_getDisplayImage::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getDisplayImageAndSize::Run(int argc, char** argv)
 {
@@ -4096,6 +4242,7 @@ DeviseCommand_getDisplayImageAndSize::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getFont::Run(int argc, char** argv)
 {
@@ -4175,6 +4322,7 @@ DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setMappingLegend::Run(int argc, char** argv)
 {
@@ -4190,6 +4338,8 @@ DeviseCommand_setMappingLegend::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
+          Session::SetDirty();
+
           view->SetMappingLegend(map, argv[3]);
           ReturnVal(API_ACK, "done");
           return 1;
@@ -4197,25 +4347,26 @@ DeviseCommand_setMappingLegend::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_markViewFilter::Run(int argc, char** argv)
 {
-    {
-        {
           View *view = (View *)_classDir->FindInstance(argv[1]);
           if (!view) {
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+
+          Session::SetDirty();
+
           int index = atoi(argv[2]);
           Boolean mark = atoi(argv[3]);
           view->Mark(index, mark);
+
           ReturnVal(API_ACK, "done");
           return 1;
-        }
-    }
-    return true;
 }
+
 int
 DeviseCommand_getWindowImage::Run(int argc, char** argv)
 {
@@ -4252,6 +4403,7 @@ DeviseCommand_getWindowImage::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getWindowImageAndSize::Run(int argc, char** argv)
 {
@@ -4264,6 +4416,7 @@ DeviseCommand_getWindowImageAndSize::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_swapView::Run(int argc, char** argv)
 {
@@ -4280,6 +4433,8 @@ DeviseCommand_swapView::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Views not in same window");
     	return -1;
           }
+          Session::SetDirty();
+
           viewWin->SwapChildren(view1, view2);
           ReturnVal(API_ACK, "done");
           return 1;
@@ -4287,6 +4442,7 @@ DeviseCommand_swapView::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
 {
@@ -4297,6 +4453,9 @@ DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+
+          Session::SetDirty();
+
           Boolean stat = atoi(argv[3]);
           if (!strcmp(argv[2], "X")) {
     	    vg->XAxisDisplayOnOff(stat);
@@ -4314,6 +4473,7 @@ DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getCreateParam::Run(int argc, char** argv)
 {
@@ -4329,6 +4489,7 @@ DeviseCommand_getCreateParam::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getItems::Run(int argc, char** argv)
 {
@@ -4351,35 +4512,34 @@ DeviseCommand_setWindowLayout::Run(int argc, char** argv)
 		return Run_5(argc, argv);
 	else
 		fprintf(stderr, "Unknown command:%s\n", argv[0]);
-	return 0;
+	return -1;
 }
+
 int
 DeviseCommand_setWindowLayout::Run_4(int argc, char** argv)
 {
-    {
-        {
           ViewLayout *layout = (ViewLayout *)_classDir->FindInstance(argv[1]);
           if (!layout) {
     	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
+          Session::SetDirty();
+
           layout->SetPreferredLayout(atoi(argv[2]), atoi(argv[3]));
           ReturnVal(API_ACK, "done");
           return 1;
-        }
-    }
-    return true;
 }
+
 int
 DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
 {
-    {
-        {
           ViewLayout *layout = (ViewLayout *)_classDir->FindInstance(argv[1]);
           if (!layout) {
     	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
+          Session::SetDirty();
+
 		  if (atoi(argv[4])) {
 			//
 			// Note: if we're setting the window to stacked mode here, we
@@ -4396,10 +4556,8 @@ DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
 		  }
           ReturnVal(API_ACK, "done");
           return 1;
-        }
-    }
-    return true;
 }
+
 int
 DeviseCommand_saveWindowImage::Run(int argc, char** argv)
 {
@@ -4423,6 +4581,7 @@ DeviseCommand_saveWindowImage::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewOverrideColor::Run(int argc, char** argv)
 {
@@ -4434,6 +4593,7 @@ DeviseCommand_setViewOverrideColor::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_parseSchema::Run(int argc, char** argv)
 {
@@ -4450,6 +4610,7 @@ DeviseCommand_parseSchema::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_winSetPrint::Run(int argc, char** argv)
 {
@@ -4463,6 +4624,8 @@ DeviseCommand_winSetPrint::Run(int argc, char** argv)
             ReturnVal(API_NAK, "Cannot find window");
             return -1;
           }
+          Session::SetDirty();
+
           Boolean exclude = atoi(argv[2]);
           Boolean pixmap = atoi(argv[3]);
           win->SetPrintExclude(exclude);
@@ -4473,6 +4636,7 @@ DeviseCommand_winSetPrint::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setLabel::Run(int argc, char** argv)
 {
@@ -4483,6 +4647,8 @@ DeviseCommand_setLabel::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+          Session::SetDirty();
+
           view->SetLabelParam(atoi(argv[2]), atoi(argv[3]), argv[4]);
           ReturnVal(API_ACK, "done");
           return 1;
@@ -4490,6 +4656,7 @@ DeviseCommand_setLabel::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_dataSegment::Run(int argc, char** argv)
 {
@@ -4518,6 +4685,8 @@ DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+          Session::SetDirty();
+
           ViewPanInfo info;
           info.mode = (ViewPanMode) atoi(argv[2]);
           info.relPan = atof(argv[3]);
@@ -4547,6 +4716,9 @@ DeviseCommand_setCursorGrid::Run(int argc, char** argv)
             ReturnVal(API_NAK, "Cannot find cursor");
             return -1;
         }
+
+        Session::SetDirty();
+
         Boolean useGrid = atoi(argv[2]);
         Coord gridX = atof(argv[3]);
         Coord gridY = atof(argv[4]);
@@ -4586,6 +4758,7 @@ DeviseCommand_saveSession::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setWinGeometry::Run(int argc, char** argv)
 {
@@ -4596,6 +4769,9 @@ DeviseCommand_setWinGeometry::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+
+          Session::SetDirty();
+
           int x, y;
           unsigned h, w;
           x = atoi(argv[2]);
@@ -4610,6 +4786,7 @@ DeviseCommand_setWinGeometry::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setFilter::Run(int argc, char** argv)
 {
@@ -4640,6 +4817,7 @@ DeviseCommand_setFilter::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_saveDisplayImageAndMap::Run(int argc, char** argv)
 {
@@ -4658,6 +4836,7 @@ DeviseCommand_saveDisplayImageAndMap::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_insertViewHistory::Run(int argc, char** argv)
 {
@@ -4668,6 +4847,9 @@ DeviseCommand_insertViewHistory::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+
+          Session::SetDirty();
+
           VisualFilter filter;
           (void)ParseFloatDate(argv[2],filter.xLow); 
           (void)ParseFloatDate(argv[3],filter.yLow);
@@ -4681,6 +4863,7 @@ DeviseCommand_insertViewHistory::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setFont::Run(int argc, char** argv)
 {
@@ -4693,6 +4876,8 @@ DeviseCommand_setFont::Run(int argc, char** argv)
 	    ReturnVal(API_NAK, "Cannot find view or window");
             return -1;
         }
+
+        Session::SetDirty();
     
         viewWin->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
     	  atoi(argv[6]));
@@ -4741,6 +4926,7 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setViewGDS::Run(int argc, char** argv)
 {
@@ -4757,6 +4943,8 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
+
+          Session::SetDirty();
     
           view->SetDrawToScreen(atoi(argv[2]));
           view->SetSendToSocket(atoi(argv[3]));
@@ -4779,6 +4967,7 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_viewSetHome::Run(int argc, char** argv)
 {
@@ -4794,6 +4983,8 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
 
         ViewHomeInfo info;
 		int argNum = 2;
@@ -4840,6 +5031,8 @@ DeviseCommand_viewSetImplicitHome::Run(int argc, char** argv)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
 
         ViewHomeInfo info;
 		int argNum = 2;
@@ -4936,7 +5129,6 @@ IMPLEMENT_COMMAND_BEGIN(test)
 		    printf("Unable to get RGB\n");
         }
 
-    	ReturnVal(API_ACK, "done");
     	return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
@@ -5002,6 +5194,9 @@ IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
             ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
+
+        Session::SetDirty();
+
 		link->SetMasterAttr(argv[2]);
         ReturnVal(API_ACK, "done");
 		return 1;
@@ -5025,6 +5220,9 @@ IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
             ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
+
+        Session::SetDirty();
+
 		link->SetSlaveAttr(argv[2]);
         ReturnVal(API_ACK, "done");
 		return 1;
@@ -5140,6 +5338,8 @@ IMPLEMENT_COMMAND_BEGIN(setCountMapping)
           return -1;
         }
 
+        Session::SetDirty();
+
 		Boolean enabled = atoi(argv[2]);
 		if (view->SetCountMapping(enabled, argv[3], argv[4]).IsComplete()) {
           ReturnVal(API_ACK, "done");
@@ -5245,7 +5445,7 @@ IMPLEMENT_COMMAND_BEGIN(writeRangeDesc)
 	}
 IMPLEMENT_COMMAND_END
 
-TDataMap::TableType
+static TDataMap::TableType
 Name2StringTableType(char *name)
 {
   TDataMap::TableType type = TDataMap::TableInvalid;
@@ -5276,6 +5476,8 @@ IMPLEMENT_COMMAND_BEGIN(viewSetStringTable)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
 
 		TDataMap::TableType type = Name2StringTableType(argv[2]);
 		if (type == TDataMap::TableInvalid) {
@@ -5340,6 +5542,9 @@ IMPLEMENT_COMMAND_BEGIN(viewSetIsHighlight)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetHighlightView(atoi(argv[2]));
 
         ReturnVal(API_ACK, "done");
@@ -5376,7 +5581,6 @@ IMPLEMENT_COMMAND_BEGIN(viewGetIsHighlight)
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
-
 
 IMPLEMENT_COMMAND_BEGIN(getXAxisDateFormat)
     // Arguments: <view name>
@@ -5441,7 +5645,11 @@ IMPLEMENT_COMMAND_BEGIN(setXAxisDateFormat)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetXAxisDateFormat(argv[2]);
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -5465,7 +5673,11 @@ IMPLEMENT_COMMAND_BEGIN(setYAxisDateFormat)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetYAxisDateFormat(argv[2]);
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -5567,6 +5779,9 @@ IMPLEMENT_COMMAND_BEGIN(setViewGeometry)
           ReturnVal(API_NAK, "View has no window");
           return -1;
 		}
+
+        Session::SetDirty();
+
 		win->Geometry(winX, winY, winWidth, winHeight);
 
 		int viewX = (int)(atof(argv[2]) * winWidth);
@@ -5605,7 +5820,11 @@ IMPLEMENT_COMMAND_BEGIN(setPileStackState)
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
 		}
+
+        Session::SetDirty();
+
 		ps->SetState((PileStack::State)atoi(argv[2]));
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -5658,7 +5877,11 @@ IMPLEMENT_COMMAND_BEGIN(flipPileStack)
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
 		}
+
+        Session::SetDirty();
+
 		ps->Flip();
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -5676,6 +5899,8 @@ IMPLEMENT_COMMAND_BEGIN(groupUngroupViews)
     PrintArgs(stdout, argc, argv);
 #endif
     if (argc == 1) {
+        Session::SetDirty();
+
 		ViewGeom *viewGeom = ViewGeom::GetViewGeom();
 		if (viewGeom->IsGrouped()) {
 		  ViewGeom::GetViewGeom()->Ungroup();
@@ -5751,7 +5976,11 @@ IMPLEMENT_COMMAND_BEGIN(setViewAutoFilter)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetAutoUpdate(atoi(argv[2]));
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -5843,8 +6072,11 @@ IMPLEMENT_COMMAND_BEGIN(setDupElim)
     	  return -1;
 		}
 
+        Session::SetDirty();
+
 		Boolean enable = atoi(argv[2]);
 		view->SetDupElim(enable);
+
        	ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
@@ -5919,6 +6151,8 @@ IMPLEMENT_COMMAND_BEGIN(setNiceAxes)
     	  return -1;
 		}
 
+        Session::SetDirty();
+
 		Boolean niceX = atoi(argv[2]);
 		Boolean niceY = atoi(argv[3]);
 		view->SetNiceAxes(niceX, niceY);
@@ -5943,6 +6177,8 @@ IMPLEMENT_COMMAND_BEGIN(switchTData)
           ReturnVal(API_NAK, "Cannot find view");
     	  return -1;
 		}
+
+        Session::SetDirty();
 
 		if (view->SwitchTData(argv[2]).IsComplete()) {
        	  ReturnVal(API_ACK, "done");
@@ -5996,7 +6232,10 @@ IMPLEMENT_COMMAND_BEGIN(setCursorFixedSize)
     	  return -1;
 		}
 
+        Session::SetDirty();
+
 		cursor->SetFixedSize(atoi(argv[2]));
+
        	ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
@@ -6045,11 +6284,15 @@ IMPLEMENT_COMMAND_BEGIN(viewSetVerPan)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
+
         ViewPanInfo info;
         info.mode = (ViewPanMode) atoi(argv[2]);
         info.relPan = atof(argv[3]);
         info.absPan = atof(argv[4]);
         view->SetVerPanInfo(info);
+
         ReturnVal(API_ACK, "done");
         return 1;
 	} else {
@@ -6106,6 +6349,8 @@ IMPLEMENT_COMMAND_BEGIN(viewSetJSSendP)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
 
 		Boolean drawToScreen = atoi(argv[2]);
 		Boolean sendToSocket = atoi(argv[3]);
@@ -6176,12 +6421,15 @@ IMPLEMENT_COMMAND_BEGIN(viewSetDisabledActions)
     	    return -1;
         }
 
+        Session::SetDirty();
+
 		Boolean rubberbandDisabled = atoi(argv[2]);
 		Boolean cursorMoveDisabled = atoi(argv[3]);
 		Boolean drillDownDisabled = atoi(argv[4]);
 		Boolean keysDisabled = atoi(argv[5]);
 		view->SetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
 		  drillDownDisabled, keysDisabled);
+
         ReturnVal(API_ACK, "done");
         return 1;
 	} else {
@@ -6274,6 +6522,9 @@ IMPLEMENT_COMMAND_BEGIN(setAxisTicks)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
+
 		Boolean enableTicks = atoi(argv[3]);
         if (!strcmp(argv[2], "X")) {
     	  view->XAxisTicksOnOff(enableTicks);
@@ -6283,6 +6534,7 @@ IMPLEMENT_COMMAND_BEGIN(setAxisTicks)
           ReturnVal(API_NAK, "Bad axis selection");
           return -1;
 	    }
+
         ReturnVal(API_ACK, "done");
         return 1;
     } else {
@@ -6369,6 +6621,8 @@ IMPLEMENT_COMMAND_BEGIN(removeViewFromPile)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
 
 		PileStack *ps = view->GetParentPileStack();
 		if (!ps) {
@@ -6483,7 +6737,11 @@ IMPLEMENT_COMMAND_BEGIN(setViewHelp)
     	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetViewHelp(argv[2]);
+
         ReturnVal(API_ACK, "done");
         return 1;
 	} else {
@@ -6501,7 +6759,10 @@ IMPLEMENT_COMMAND_BEGIN(setSessionDesc)
     PrintArgs(stdout, argc, argv);
 #endif
     if (argc == 2) {
+        Session::SetDirty();
+
 		Session::SetDescription(argv[1]);
+
         ReturnVal(API_ACK, "done");
         return 1;
 	} else {
@@ -6554,6 +6815,8 @@ IMPLEMENT_COMMAND_BEGIN(setShowMouseLocation)
     PrintArgs(stdout, argc, argv);
 #endif
     if (argc == 2 || argc == 3) {
+        Session::SetDirty();
+
 	    if (argc == 2) {
 		    Boolean show = atoi(argv[1]);
 			View::SetGlobalShowMouseLocation(show);
@@ -6607,7 +6870,6 @@ IMPLEMENT_COMMAND_BEGIN(getShowMouseLocation)
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
-
 
 IMPLEMENT_COMMAND_BEGIN(getXAxisFloatFormat)
     // Arguments: <view name>
@@ -6672,7 +6934,11 @@ IMPLEMENT_COMMAND_BEGIN(setXAxisFloatFormat)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetXAxisFloatFormat(argv[2]);
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -6696,7 +6962,11 @@ IMPLEMENT_COMMAND_BEGIN(setYAxisFloatFormat)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
+
+        Session::SetDirty();
+
 		view->SetYAxisFloatFormat(argv[2]);
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -6706,7 +6976,6 @@ IMPLEMENT_COMMAND_BEGIN(setYAxisFloatFormat)
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
-
 
 IMPLEMENT_COMMAND_BEGIN(writeMetaVisDesc)
     // Arguments: <file name> [write header] [write comments]
@@ -6740,7 +7009,6 @@ IMPLEMENT_COMMAND_BEGIN(writeMetaVisDesc)
 	}
 IMPLEMENT_COMMAND_END
 
-
 IMPLEMENT_COMMAND_BEGIN(getCursorConstraints)
     // Arguments: <cursor name>
 	// Returns: <fixed size> <part in dest> <all in dest>
@@ -6771,7 +7039,6 @@ IMPLEMENT_COMMAND_BEGIN(getCursorConstraints)
 	}
 IMPLEMENT_COMMAND_END
 
-
 IMPLEMENT_COMMAND_BEGIN(setCursorConstraints)
     // Arguments: <cursor name> <fixed size> <part in dest> <all in dest>
     // Returns: "done"
@@ -6785,6 +7052,8 @@ IMPLEMENT_COMMAND_BEGIN(setCursorConstraints)
     	    ReturnVal(API_NAK, "Cannot find cursor");
     	    return -1;
         }
+
+        Session::SetDirty();
 
 		Boolean fixedSize = (atoi(argv[2]) != 0);
 		Boolean partInDest = (atoi(argv[3]) != 0);
@@ -6820,6 +7089,7 @@ IMPLEMENT_COMMAND_BEGIN(getCursorFlag)
 
 		char buf[128];
 		sprintf(buf, "%d", cursor->GetFlag());
+
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -6844,8 +7114,11 @@ IMPLEMENT_COMMAND_BEGIN(setCursorFlag)
     	    return -1;
         }
 
+        Session::SetDirty();
+
 		VisualFlag flag = atoi(argv[2]);
 		cursor->SetFlag(flag);
+
         ReturnVal(API_ACK, "done");
 	    return 1;
 	} else {
@@ -7054,6 +7327,8 @@ IMPLEMENT_COMMAND_BEGIN(setAxisNegLabel)
     	    return -1;
         }
 
+        Session::SetDirty();
+
 		Boolean enableNegative = atoi(argv[3]);
         if (!strcmp(argv[2], "X")) {
     	  view->SetXAxisMultFact(enableNegative ? -1.0 : 1.0);
@@ -7063,6 +7338,7 @@ IMPLEMENT_COMMAND_BEGIN(setAxisNegLabel)
           ReturnVal(API_NAK, "Bad axis selection");
           return -1;
 	    }
+
         ReturnVal(API_ACK, "done");
         return 1;
     } else {
@@ -7087,6 +7363,8 @@ IMPLEMENT_COMMAND_BEGIN(setAxisMultFact)
     	    return -1;
         }
 
+        Session::SetDirty();
+
 		double factor = atof(argv[3]);
         if (!strcmp(argv[2], "X")) {
     	  view->SetXAxisMultFact(factor);
@@ -7096,6 +7374,7 @@ IMPLEMENT_COMMAND_BEGIN(setAxisMultFact)
           ReturnVal(API_NAK, "Bad axis selection");
           return -1;
 	    }
+
         ReturnVal(API_ACK, "done");
         return 1;
     } else {
@@ -7150,6 +7429,8 @@ IMPLEMENT_COMMAND_BEGIN(setColorMode)
     PrintArgs(stdout, argc, argv);
 #endif
     if (argc == 2) {
+        Session::SetDirty();
+
 		ColorMode mode = (ColorMode)atoi(argv[1]);
 	    SetColorMode(mode);
 
@@ -7175,6 +7456,30 @@ IMPLEMENT_COMMAND_BEGIN(getColorMode)
 		const int bufSize = 32;
 		char buf[bufSize];
 		int formatted = snprintf(buf, bufSize, "%d", mode);
+		if (checkAndTermBuf(buf, bufSize, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in getColorMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(sessionIsDirty)
+    // Arguments: none
+    // Returns: <dirty flag (0 | 1)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		const int bufSize = 32;
+		char buf[bufSize];
+		int formatted = snprintf(buf, bufSize, "%d", Session::IsDirty());
 		if (checkAndTermBuf(buf, bufSize, formatted) != StatusOk) {
           ReturnVal(API_NAK, "buffer overflow");
           return -1;

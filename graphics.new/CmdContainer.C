@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.75  2001/08/28 18:30:19  wenger
+  Added 'robustOpen' option (default is true) -- this allows a session
+  open to succeed even if there are unrecognized commands (useful for
+  opening a newer session file with an older version of DEVise); if a
+  session open fails, we now clean things up.
+
   Revision 1.74  2001/06/12 15:29:45  wenger
   Implemented a choice of modulus (default) or truncate color modes.
 
@@ -729,6 +735,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getAxisMultFact)
 	REGISTER_COMMAND(setColorMode)
 	REGISTER_COMMAND(getColorMode)
+	REGISTER_COMMAND(sessionIsDirty)
 }
 
 CmdContainer::~CmdContainer()

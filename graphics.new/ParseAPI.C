@@ -22,6 +22,11 @@
   $Id$
 
   $Log$
+  Revision 1.106  2001/03/23 18:06:39  wenger
+  Color palettes are now associated with sessions; added borders to
+  color chooser buttons so they're visible even if they're the same
+  color as the background; fixed various color-related bugs.
+
   Revision 1.105  2000/08/10 16:10:53  wenger
   Phase 1 of getting rid of shared-memory-related code.
 
@@ -818,6 +823,8 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 			return -1;
 		}
 
+        Session::SetDirty();
+
 		PColorID	pcid;
 		RGB			rgb;
 
@@ -845,6 +852,8 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 			control->ReturnVal(API_NAK, "Cannot find view");
 			return -1;
 		}
+
+        Session::SetDirty();
 
 		PColorID	pcid;
 		RGB			rgb;
@@ -876,6 +885,8 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 			control->ReturnVal(API_NAK, "Cannot find cursor");
 			return -1;
 		}
+
+        Session::SetDirty();
 
 		PColorID	pcid;
 		RGB			rgb;
@@ -1019,6 +1030,8 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 	{
 		Trace("    Command: color CreateAndSetPalette");
 
+        Session::SetDirty();
+
 		string		s(argv[2]);
 
 		PaletteID	pid = PM_NewPalette(s);
@@ -1067,6 +1080,8 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 	if (!strcmp(argv[1], "SetCurrentPalette"))
 	{
 		Trace("    Command: color SetCurrentPalette");
+
+        Session::SetDirty();
 
 		PaletteID	pid = (PaletteID)atoi(argv[2]);
 		PaletteID	oldPid = PM_GetCurrentPalette();
@@ -1127,6 +1142,8 @@ int		ParseAPIColorCommands(int argc, char** argv, ControlPanel* control)
 	{
 	    if (argc == 3)
 		{
+            Session::SetDirty();
+
 			if (Session::CreateSessionPalette(argv[2]).IsComplete())
 			{
 		        control->ReturnVal(API_ACK, "done");

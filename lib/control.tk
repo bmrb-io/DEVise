@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.222  2001/02/20 20:03:03  wenger
+#	Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+#	to the trunk.
+#	
 #	Revision 1.221.2.2  2001/02/16 21:39:39  wenger
 #	Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
 #	a web browser) on 'sets' of visual filters.
@@ -2116,7 +2120,7 @@ proc FindDefaultXAttr { attrs } {
 proc DoClose {{askUser 1}} {
     global sessionName templateMode datadir sourceList
     global sessionHasBeenSaved
-    
+
     if {$templateMode} {	
 	if {$askUser} {
 	  set but [dialog .open "Merge Data" \
@@ -2135,9 +2139,10 @@ proc DoClose {{askUser 1}} {
 	}
     }	
     
-    if {$askUser && [SessionIsOpen]} {
-      set but [dialog .open "Close Session" "Close Current Session?" \
-	    "" 0 OK Cancel ]
+    if {$askUser && [SessionIsOpen] && [DEVise sessionIsDirty]} {
+      set but [dialog .open "Close Session" \
+          "Session has unsaved changes.  Are you sure you want to close it?" \
+	  "" 0 OK Cancel ]
     } else {
       set but 0
     }

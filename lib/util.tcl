@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.69  2001/08/28 17:10:32  wenger
+#  Various improvements to printing GUI and Tcl code.
+#
 #  Revision 1.68  2001/04/27 17:09:56  wenger
 #  Made various cleanups to external process dynamic data generation and
 #  added most GUI (still need special GUI for creating the data source);
@@ -679,9 +682,9 @@ proc DoExit { mode } {
 		DoGroupExit
 		return
 	}
-    if {[SessionIsOpen]} {
+    if {[SessionIsOpen] && [DEVise sessionIsDirty]} {
       set answer [ dialog .quit "Quit" \
-	      "Are you sure you want to quit?" "" 0 \
+	      "Session has unsaved changes. Are you sure you want to quit?" "" 0 \
 	      { OK } { Cancel} ]
     } else {
       set answer 0

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  2001/06/12 15:29:46  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.67  2001/05/03 19:39:11  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -350,6 +353,8 @@ class DeviseCommand_##command_name: public DeviseCommand\
         DeviseCommand(){}\
     ~DeviseCommand_##command_name(){}\
 	private: /* only base class can Run(), we need to initialize control */\
+\
+	/* 1 = OK, -1 = error */ \
     int Run(int argc, char** argv);
 #define DECLARE_CLASS_END };
 
@@ -388,7 +393,10 @@ class DeviseCommand
 		{
 			delete _controlStack;
 		}
+
+	    // 1 = OK, -1 = error
 		virtual int Run(int argc, char** argv) = 0;
+
 		virtual int ReturnVal(u_short flag, const char *result);
 		//TEMP -- should be const char **
 		virtual int ReturnVal(int argc, char **argv);
@@ -397,6 +405,7 @@ class DeviseCommand
 		ClassDir	*_classDir;
 
 	public:
+	    // 1 = OK, -1 = error
 		virtual int Run(int argc, char** argv, ControlPanel* cntl);
 };
 ostream& operator <<(ostream& os, DeviseCommand& cmd);
@@ -2127,6 +2136,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getColorMode) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(sessionIsDirty) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_
