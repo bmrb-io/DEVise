@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  1999/08/17 06:15:16  hongyu
+// *** empty log message ***
+//
 // Revision 1.11  1999/08/03 05:56:35  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -61,7 +64,7 @@ public class DEViseCanvas extends Container
 
     Point sp = new Point(), ep = new Point(), op = new Point();
     
-    int lastKey = KeyEvent.VK_UNDEFINED;
+    public static int lastKey = KeyEvent.VK_UNDEFINED;
 
 
     public DEViseCanvas(DEViseView v, Image img)
@@ -84,7 +87,7 @@ public class DEViseCanvas extends Container
         }
 
         this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
-        this.enableEvents(AWTEvent.KEY_EVENT_MASK);
+        //this.enableEvents(AWTEvent.KEY_EVENT_MASK);
         addMouseListener(new ViewMouseListener());
         addMouseMotionListener(new ViewMouseMotionListener());
         addKeyListener(new ViewKeyListener());
@@ -355,7 +358,8 @@ public class DEViseCanvas extends Container
 
         super.processMouseEvent(event);
     }
-
+    
+    /*
     protected void processKeyEvent(KeyEvent event)
     {
         if (dispatcher.getStatus() != 0) {
@@ -368,26 +372,50 @@ public class DEViseCanvas extends Container
 
         super.processKeyEvent(event);
     }
-
+    */
+    
     // start of class ViewKeyListener
     class ViewKeyListener extends KeyAdapter
     {
         // event sequence: 1. keypressed 2.keytyped 3.keyreleased
         public void keyPressed(KeyEvent event)
         {
-            lastKey = event.getKeyCode();            
+            DEViseCanvas.lastKey = event.getKeyCode();
+            /*
+            String name = null;
+            if (activeView != null) {
+                name = activeView.getCurlyName();
+            } else {
+                name = "{null}";
+            }            
+            jsc.pn("Key " + event.getKeyCode() + " pressed in " + name);
+            jsc.pn("Character " + event.getKeyChar() + " pressed in " + name);
+            */
         }
         
         public void keyReleased(KeyEvent event)
-        {
-            //jsc.pn("Key " + event.getKeyCode() + " released!");
-            //jsc.pn("Character " + event.getKeyChar() + " released!");
-
+        {   
+            /*
+            String name = null;
+            if (activeView != null) {
+                name = activeView.getCurlyName();
+            } else {
+                name = "{null}";
+            }            
+            jsc.pn("Key " + event.getKeyCode() + " released in " + name);
+            jsc.pn("Character " + event.getKeyChar() + " released in " + name);
+            */
+            
             char keyChar = event.getKeyChar();
             int keyCode = event.getKeyCode();
-            lastKey = KeyEvent.VK_UNDEFINED;
+            DEViseCanvas.lastKey = KeyEvent.VK_UNDEFINED;
             int actualKey = 0;
-
+            
+            if (dispatcher.getStatus() != 0) {
+                //jsc.showMsg("Java Screen still talking to the Server!\nPlease try again later or press STOP button!");
+                return;
+            }
+                
             if (keyChar != KeyEvent.CHAR_UNDEFINED) {
                 actualKey = (int)keyChar;
             } else {
@@ -490,16 +518,15 @@ public class DEViseCanvas extends Container
 
             if (actualKey != 0 && activeView != null && activeView.isKey) {
                 String cmd = "";
-                if (activeView.isFirstTime) {
-                    cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  0 + " " + 0 + "\n";
-                }
+                //if (activeView.isFirstTime) {
+                //    cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  0 + " " + 0 + "\n";
+                //}
 
                 cmd = cmd + "JAVAC_KeyAction " + activeView.getCurlyName() + " " + actualKey;
 
                 jscreen.guiAction = true;
                 dispatcher.start(cmd);
             }
-
         }
     }
     // end of class ViewKeyListener
@@ -507,7 +534,7 @@ public class DEViseCanvas extends Container
     // start of class ViewMouseListener
     class ViewMouseListener extends MouseAdapter
     {
-        WaitThread wt = new WaitThread(jsc);
+        //WaitThread wt = new WaitThread(jsc);
 
         // event sequence: 1. mousePressed 2. mouseReleased 3. mouseClicked
         public void mousePressed(MouseEvent event)
@@ -638,13 +665,19 @@ public class DEViseCanvas extends Container
                         h = -h;
 
                     if (w > DEViseGlobals.rubberBandLimit.width || h > DEViseGlobals.rubberBandLimit.height && activeView.isRubberBand) {
-                        if (activeView.isFirstTime) {
-                            cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
-                        }
-
+                        //if (activeView.isFirstTime) {
+                        //    cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
+                        //}
+                                                
                         cmd = cmd + "JAVAC_MouseAction_RubberBand " + activeView.getCurlyName() + " "
                               + activeView.xtome(sp.x) + " " + activeView.ytome(sp.y) + " " + activeView.xtome(ep.x) + " " + activeView.ytome(ep.y);
-
+                        
+                        if (DEViseCanvas.lastKey == KeyEvent.VK_ALT) {
+                            cmd = cmd + " 1";
+                        } else {
+                            cmd = cmd + " 0";
+                        }
+                        
                         jscreen.guiAction = true;
                         dispatcher.start(cmd);
                     }
@@ -684,10 +717,10 @@ public class DEViseCanvas extends Container
                     DEViseCursor cursor = activeView.getCursor(activeView.whichCursor);
                     cursor.image = null;
                     
-                    if (lastKey != KeyEvent.VK_CONTROL) {
-                        if (activeView.isFirstTime) {
-                            cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
-                        }
+                    if (DEViseCanvas.lastKey != KeyEvent.VK_CONTROL) {
+                        //if (activeView.isFirstTime) {
+                        //    cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
+                        //}
 
                         //cmd = cmd + "JAVAC_CursorChanged " + activeView.getCurlyName() + " "
                         cmd = cmd + "JAVAC_CursorChanged " + cursor.name + " "
@@ -712,10 +745,10 @@ public class DEViseCanvas extends Container
                     DEViseCursor cursor = activeView.getCursor(activeView.whichCursor);
                     cursor.image = null;
                     
-                    if (lastKey != KeyEvent.VK_CONTROL) {
-                        if (activeView.isFirstTime) {
-                            cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
-                        }
+                    if (DEViseCanvas.lastKey != KeyEvent.VK_CONTROL) {
+                        //if (activeView.isFirstTime) {
+                        //    cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
+                        //}
 
                         //cmd = cmd + "JAVAC_CursorChanged " + activeView.getCurlyName() + " "
                         cmd = cmd + "JAVAC_CursorChanged " + cursor.name + " "
@@ -745,6 +778,7 @@ public class DEViseCanvas extends Container
             // the position for this event will be within the range of this view
 
             if (!isMouseDragged && (mousePosition > 0 && mousePosition != 4)) {
+                /*
                 if (event.getClickCount() > 1 && activeView.isDrillDown) {
                     wt.setDC(true);
 
@@ -765,7 +799,47 @@ public class DEViseCanvas extends Container
 
                     (new Thread(wt)).start();
                 }
-
+                */ 
+                
+                String cmd = null;
+                
+                if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT && activeView.isDrillDown) {
+                    cmd = "JAVAC_ShowRecords " + activeView.getCurlyName() + " " + activeView.xtome(sp.x) + " " + activeView.ytome(sp.y);
+                } else {
+                    if (activeView.viewCursors.size() > 0) {
+                        DEViseCursor cursor = activeView.getCursor(0);
+                        if (cursor != null && (cursor.isXMovable || cursor.isYMovable)) {
+                            cursor.image = null;
+                            
+                            int dx = activeView.xtome(sp.x) - cursor.x - cursor.width / 2;
+                            int dy = activeView.ytome(sp.y) - cursor.y - cursor.height / 2;
+                            
+                            if (cursor.gridx > 0) {
+                                //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
+                                dx = (int)Math.round(Math.round((dx * activeView.dataXStep) / cursor.gridxx) * cursor.gridxx / activeView.dataXStep);
+                            }
+                    
+                            if (cursor.gridy > 0) {
+                                //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
+                                dy = (int)Math.round(Math.round((dy * activeView.dataYStep) / cursor.gridyy) * cursor.gridyy / activeView.dataYStep);
+                            } 
+                            
+                            activeView.updateCursorLoc(0, 1, dx, dy, true);
+                            
+                            cmd = "JAVAC_CursorChanged " + cursor.name + " "
+                                  + cursor.x + " "
+                                  + cursor.y + " "
+                                  + cursor.width + " "
+                                  + cursor.height;
+                        }          
+                    }
+                }    
+                
+                if (cmd != null) {
+                    jscreen.guiAction = true;
+                    dispatcher.start(cmd);
+                }    
+                
                 mousePosition = -1;
 
                 repaint();
@@ -954,7 +1028,7 @@ public class DEViseCanvas extends Container
     // end of class ViewMouseMotionListener
 }
 
-
+/*
 // This class is used only for distinguish between doulbe-click and single-click
 class WaitThread implements Runnable
 {
@@ -1010,6 +1084,7 @@ class WaitThread implements Runnable
         }
     }
 }
+*/
 
 // this class is used to create XOR of part of image
 class XORFilter extends RGBImageFilter

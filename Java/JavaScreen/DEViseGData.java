@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  1999/08/17 06:15:16  hongyu
+// *** empty log message ***
+//
 // Revision 1.16  1999/08/03 05:56:49  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -59,7 +62,7 @@ public class DEViseGData
         viewname = name;
 
         data = DEViseGlobals.parseString(gdata);
-        if (data == null || data.length != 18)
+        if (data == null || data.length != 23)
             throw new YException("Invalid GData + {" + gdata + "}");
 
         double x0 = 0, y0 = 0, size = 0;
