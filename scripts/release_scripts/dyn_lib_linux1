@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,7 +21,7 @@
 ############################################################
 
 if ($#argv < 1) then
-  echo "Usage: dyn_lib_linux1 <dyn_lib_directory>"
+  echo "Usage: dyn_lib_linux1b <dyn_lib_directory>"
   exit 1
 endif
 
@@ -29,4 +29,5 @@ set libdir = $1
 
 set homedir = `pwd`
 
-ssh pumori "cd $libdir; $homedir/dyn_lib_linux2"
+cd $libdir
+$homedir/dyn_lib_linux2

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  2001/12/19 18:26:01  wenger
+#  Added sunx86_58 architecture.
+#
 #  Revision 1.8  2001/12/17 23:18:35  wenger
 #  Added Solaris 2.8 link.
 #
@@ -51,6 +54,7 @@ if ($#argv < 2) then
   echo "    solaris (Solaris/Intel),"
   echo "    solsparc (Solaris/SPARC),"
   echo "    linux (Linux/Intel)"
+  echo "    linux_rh62 (Linux (RedHat 6.2)/Intel)"
   exit 1
 endif
 
@@ -60,8 +64,8 @@ set arches = ($argv[2-$#argv])
 #-----------------------------------------------------------
 # Check that we're doing this on trigger.
 
-if (`hostname` != trigger) then
-  echo "Release should be done on trigger (or another Intel/Solaris machine)"
+if (`hostname` != trigger.cs.wisc.edu) then
+  echo "Release should be done on trigger (or another Intel/RedHat 7.2 machine)"
   echo -n "Are you SURE you want to continue? [N] "
   set answer = $<
   if ($answer != y && $answer != Y) then
@@ -151,9 +155,12 @@ if (! -d $dest/dyn_lib_arch) then
 endif
 
 foreach arch ($arches)
-  if ($arch == linux) then
+  if ($arch == linux_rh62) then
     set mainarch = i386_linux
     set otherarches = (i386_linux22 i386_rh61 i386_rh62)
+  else if ($arch == linux) then
+    set mainarch = i386_rh72
+    set otherarches = (i386_rh71)
   else if ($arch == solaris) then
     set mainarch = sunx86_54
     set otherarches = (sunx86_55 sunx86_56 sunx86_57 sunx86_58)
@@ -197,8 +204,10 @@ cd ../..
 foreach arch ($arches)
   echo "Releasing DEVise $arch executables"
 
-  if ($arch == linux) then
+  if ($arch == linux_rh62) then
     set mainarch = i386_linux
+  else if ($arch == linux) then
+    set mainarch = i386_rh72
   else if ($arch == solaris) then
     set mainarch = sunx86_54
   else if ($arch == solsparc) then

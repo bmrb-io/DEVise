@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2002
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -29,5 +29,4 @@ set libdir = $1
 
 set homedir = `pwd`
 
-cd $libdir
-$homedir/dyn_lib_solaris2
+ssh ricotta "cd $libdir; $homedir/dyn_lib_solaris2"

@@ -21,6 +21,8 @@
 
 ############################################################
 
+# This is for Solaris 2.7.
+
 cp /usr/lib/libX11.so.6.1 .
 cp /usr/lib/libsocket.so.1 .
 cp /usr/lib/libnsl.so.1 .
