@@ -1,10 +1,13 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 20:31:57  jussi
+  Added CVS header.
+*/
 
 #include <iostream.h>
-#include "TapeDrive.h"
+#include "tapedrive.h"
 
 int main(int argc, char **argv)
 {

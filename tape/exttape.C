@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 20:31:54  jussi
+  Added CVS header.
+*/
 
 #include <iostream.h>
 #include <fstream.h>
@@ -10,7 +13,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "TapeDrive.h"
+#include "tapedrive.h"
 
 const int months = 12;
 const char *month[] = { "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
