@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/11/13 16:57:08  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.21  1996/09/06 07:00:13  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -270,7 +280,8 @@ class Shape {
      pixel. */
   virtual void DrawPixelArray(WindowRep *win, void **gdataArray,
                               int numSyms, TDataMap *map,
-                              ViewGraph *view, int pixelSize) {
+                              ViewGraph *view, int pixelSize,
+                              Boolean canRandomize) {
     GDataAttrOffset *offset = map->GetGDataOffset();
     int i = 0;
     while (i < numSyms) {
@@ -290,6 +301,18 @@ class Shape {
         count++;
       }
       
+      // Randomize X,Y coordinates if shape attribute 2 or 3 contains
+      // a constant value of 0.5 or more.
+
+      if (canRandomize && offset->shapeAttrOffset[2] < 0
+          && offset->shapeAttrOffset[3] < 0) {
+        ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+        float cloudWidth = fabs(attrs[2]);
+        float cloudHeight = fabs(attrs[3]);
+        if (cloudWidth > 0.1 || cloudHeight > 0.1)
+          RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
+      }
+
       win->SetFgColor(firstColor);
       win->DrawPixelArray(_x, _y, count, pixelSize);
       
@@ -314,6 +337,23 @@ class Shape {
                       y + dataLabelYOffset - dataLabelHeight / 2,
                       dataLabelWidth, dataLabelHeight,
                       WindowRep::AlignCenter, true);
+  }
+
+  virtual void RandomizePoints(Coord *x, Coord *y, int count,
+                               Coord cloudWidth, Coord cloudHeight) {
+    // Randomize points in X, Y, or both directions.
+    for(int cnt = 0; cnt < count; cnt++) {
+      if (cloudWidth == 0.0) {
+        _y[cnt] += (rand() % 1000) / 1000.0 * cloudHeight;
+      } else if (cloudHeight == 0.0) {
+        _x[cnt] += (rand() % 1000) / 1000.0 * cloudWidth;
+      } else {
+        float length = (rand() % 1000) / 1000.0 * cloudWidth;
+        float dir = (rand() % 360) / 360.0 * 2 * 3.14;
+        _x[cnt] += length * sin(dir);
+        _y[cnt] += length * cos(dir) * cloudHeight / cloudWidth;
+      }
+    }
   }
 
   Coord dataLabelWidth;
