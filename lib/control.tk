@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.37  1995/12/14 15:46:35  jussi
+#	Added support for TileLayout view layout with automatic or manual
+#	layout control.
+#
 #	Revision 1.36  1995/12/12 01:47:18  ravim
 #	Physical/logical schema support.
 #
@@ -442,6 +446,7 @@ menu .mbar.view.menu.kmenu -tearoff 1
 .mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
 .mbar.view.menu.kmenu add radiobutton -label Max -variable kval -value 1
 .mbar.view.menu.kmenu add radiobutton -label Min -variable kval -value 2
+.mbar.view.menu.kmenu add radiobutton -label Count -variable kval -value 3
 .mbar.view.menu.kmenu add separator
 .mbar.view.menu.kmenu add radiobutton -label "Use Current" \
 	-variable kcurr -value 1
@@ -480,8 +485,9 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Duplicate" -command DupWindow
 
 menu .mbar.schema.menu -tearoff 0
-.mbar.schema.menu add command -label "User" -command SchemaUser
-.mbar.schema.menu add command -label "Superuser" -command SchemaSuperuser
+# Command to execute for browsing schema depends on whether we are in 
+# the user or the superuser mode. 
+.mbar.schema.menu add command -label "Browse.." -command SchemaBrowse
 
 menu .mbar.mapping.menu -tearoff 0
 .mbar.mapping.menu add command -label "Define" -command DefineMapping
@@ -3411,8 +3417,11 @@ proc DoToggleStatistics {} {
     global curView statmean statmax statmin statcurr
 
     # The status is formed by as a binary string xxx where 1 means that the 
-    # corr. stat is to be displayed.
-    set stat $statmean$statmax$statmin
+    # corr. stat is to be displayed. Further, since "count" which is the 
+    # fourth stat cannot currently be displayed meaningfully on the graph
+    # always append a 0.
+    set statcount 0
+    set stat $statmean$statmax$statmin$statcount
 
     if {$statcurr == 1} {
 	if {$curView == ""} {
