@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/10/02 17:21:50  wenger
+  Fixed problem with GData being sent in the the wrong order for multiple
+  views.
+
   Revision 1.39  1998/10/01 17:54:16  wenger
   Implemented the sending of GData to the JavaScreen.
 
@@ -431,7 +435,7 @@ SetGDataFiles()
 	while (DevWindow::More(winIndex)) {
 		ClassInfo *info = DevWindow::Next(winIndex);
 		ViewWin *window = (ViewWin *)info->GetInstance();
-		if (window != NULL) {
+		if (window != NULL && !window->GetPrintExclude()) {
 			int viewIndex = window->InitIterator();
 			while (window->More(viewIndex)) {
 				ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
@@ -468,7 +472,7 @@ DeleteGDataFiles()
 	while (DevWindow::More(winIndex)) {
 		ClassInfo *info = DevWindow::Next(winIndex);
 		ViewWin *window = (ViewWin *)info->GetInstance();
-		if (window != NULL) {
+		if (window != NULL && !window->GetPrintExclude()) {
 			int viewIndex = window->InitIterator();
 			while (window->More(viewIndex)) {
 				ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
@@ -767,7 +771,7 @@ JavaScreenCmd::OpenSession()
 	{
 	  ClassInfo *info = DevWindow::Next(winIndex);
 	  ViewWin *window = (ViewWin *)info->GetInstance();
-	  if (window != NULL)
+	  if (window != NULL && !window->GetPrintExclude())
 	  {
 		//
 		// Dump the window image and send a "CreateWindow" command to the
@@ -796,9 +800,7 @@ JavaScreenCmd::OpenSession()
 	}
 	DevWindow::DoneIterator(winIndex);
 
-	if (_status == DONE) {
-		DOASSERT(winNum == winCount, "Incorrect number of windows");
-	}
+    winCount = winNum;
 
 
 	//
@@ -811,7 +813,7 @@ JavaScreenCmd::OpenSession()
 	{
 		ClassInfo *info = DevWindow::Next(winIndex);
 		ViewWin *window = (ViewWin *)info->GetInstance();
-		if (window != NULL)
+		if (window != NULL && !window->GetPrintExclude())
 		{
 			int viewIndex = window->InitIterator();
 			while (window->More(viewIndex)) {
@@ -1420,7 +1422,7 @@ JavaScreenCmd::SendChangedWindows()
 	while (DevWindow::More(winIndex)) {
 	  ClassInfo *info = DevWindow::Next(winIndex);
 	  ViewWin *window = (ViewWin *)info->GetInstance();
-	  if (window != NULL) {
+	  if (window != NULL && !window->GetPrintExclude()) {
 		if (window->GetGifDirty()) {
 #if defined(DEBUG)
 		  printf("GIF of window %s is \"dirty\".\n", window->GetName());

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/09/22 17:23:41  wenger
+  Devised now returns no image data if there are any problems (as per
+  request from Hongyu); added a bunch of debug and test code to try to
+  diagnose bug 396 (haven't figured it out yet); made some improvements
+  to the Dispatcher to make the main loop more reentrant; added some error
+  reporting to the xv window grabbing code; improved command-result
+  checking code.
+
   Revision 1.33  1998/08/28 22:01:09  wenger
   Made Dispatcher::WaitForQueries() function -- improved over earlier
   versions because it also checks the callback list (this fixes bug 367);
@@ -334,6 +342,7 @@ private:
   time_t _lastCmdTime;
 
   int _processingDepth;
+  Boolean _waitingForQueries;
 };
 
 #if 0

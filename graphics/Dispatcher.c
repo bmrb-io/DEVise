@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/09/30 17:44:30  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.49  1998/09/22 17:23:40  wenger
   Devised now returns no image data if there are any problems (as per
   request from Hongyu); added a bunch of debug and test code to try to
@@ -300,6 +304,7 @@ Dispatcher::Dispatcher(StateFlag state)
   _callback_requests = 0;
 
   _processingDepth = 0;
+  _waitingForQueries = false;
 
   /* init current time */
   _oldTime = DeviseTime::Now();
@@ -461,12 +466,21 @@ void Dispatcher::Terminate(int sig)
     // Can now quit immediately (without looping again) on third interrupt
     // in case we're hung in a loop somewhere.
     printf("\nReceived interrupt. Terminating program immediately.\n");
+#if defined(DEBUG_LOG)
+    LogMessage("Received interrupt. Terminating program immediately.\n");
+#endif
     CheckUserInterrupt();
   } else if (dispatcher._firstIntr) {
     printf("\nReceived interrupt. Terminating program.\n");
+#if defined(DEBUG_LOG)
+    LogMessage("Received interrupt. Terminating program.\n");
+#endif
     dispatcher._quit = true;
   } else {
     printf("\nReceived interrupt. Hit interrupt once more to quit.\n");
+#if defined(DEBUG_LOG)
+    LogMessage("Received interrupt. Hit interrupt once more to quit.\n");
+#endif
     dispatcher._firstIntr = true;
   }
 
@@ -563,6 +577,9 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 #endif
 		  CancelCallback(info);
 		  info->callBack->Run();
+#if defined(DEBUG)
+        LogMessage("  ran callback\n");
+#endif
 		  if (Init::ClientTimeout() > 0) {
 			if (!strcmp(info->callBack->DispatchedName(), "DeviseServer")
 			    || !strcmp(info->callBack->DispatchedName(),
@@ -583,6 +600,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 #endif
   }
   _callbacks.DoneIterator(index);
+
 
   // iterate through the queue and check of minimum select time
   // iff there is any immediate pending requests,
@@ -682,12 +700,18 @@ void Dispatcher::Run1()
   }
 #endif
 
+  int NumberFdsReady = 0;
+  if (!_waitingForQueries) {
 #if defined(HPUX)
-  int NumberFdsReady = select(_maxFdCheck + 1, (int*)&fdread, 
+  NumberFdsReady = select(_maxFdCheck + 1, (int*)&fdread, 
 			      (int*)0, (int*)&fdexc, timeoutp);
 #else
-  int NumberFdsReady = select(_maxFdCheck + 1, &fdread, 0, &fdexc, timeoutp);
+  NumberFdsReady = select(_maxFdCheck + 1, &fdread, 0, &fdexc, timeoutp);
 #endif
+  } else {
+    FD_ZERO(&fdread);
+    FD_ZERO(&fdexc);
+  }
 
   if( NumberFdsReady < 0 ) {
     NumberFdsReady = 0;
@@ -857,11 +881,16 @@ Boolean Dispatcher::CallbacksOk()
 }
 
 void
- Dispatcher::WaitForQueries()
+Dispatcher::WaitForQueries()
 {
 #if defined(DEBUG)
   printf("Dispatcher::WaitForQueries()\n");
 #endif
+#if defined(DEBUG_LOG)
+  DebugLog::DefaultLog()->Message("Dispatcher::WaitForQueries()\n");
+#endif
+
+  _waitingForQueries = true;
 
   QueryProc *qp = QueryProc::Instance();
 
@@ -877,6 +906,10 @@ void
     while (_callbacks.More(index) && callbacksDone) {
       DispatcherInfo *info = _callbacks.Next(index);
       if (info->callback_requested) {
+#if defined(DEBUG)
+        printf("Waiting for callback 0x%p (%s)\n", info->callBack,
+	  info->callBack->DispatchedName());
+#endif
 	// QueryProcFull *always* requests a callback if Init::ConvertGData()
 	// is true.
 	if (strcmp(info->callBack->DispatchedName(), "QueryProcFull")) {
@@ -896,6 +929,11 @@ void
 #if defined(DEBUG)
   printf("Leaving Dispatcher::WaitForQueries()\n");
 #endif
+#if defined(DEBUG_LOG)
+  DebugLog::DefaultLog()->Message("Leaving Dispatcher::WaitForQueries()\n");
+#endif
+
+  _waitingForQueries = false;
 }
 
 int

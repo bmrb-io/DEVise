@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/08/17 17:12:01  wenger
+  Devised now responds to KeyAction commands from JavaScreen.
+
   Revision 1.18  1998/08/10 13:48:01  wenger
   Possible (not completely tested yet) fix to interruped system call problems
   being seen in Italy.
@@ -251,6 +254,10 @@ void NetworkAnalyseHeader(const char *headerbuf, int& numElements, int&tsize)
 
 int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 {
+#if defined(DEBUG)
+  printf("NetworkReceive()\n");
+#endif
+
   static int recBuffSize = 0;
   static char *recBuff = 0;
   int    numElements; 
@@ -275,7 +282,10 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 	errno = 0;
 	int res = recv(fd, (char *)&hdr, sizeof hdr, 0);
 	
-	//printf(" Received %d no of bytes \n",res);
+#if 0
+	printf(" Received %d bytes\n", res);
+	printf(" errno  = %d\n", errno);
+#endif
     
 	if (res == (int)sizeof hdr)
       break;
