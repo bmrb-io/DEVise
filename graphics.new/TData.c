@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/02/03 19:45:35  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.16  1997/01/24 01:56:59  wenger
   Fixed bug 068 (major overhaul of DataSourceSegment class).
 
@@ -154,6 +160,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
     if (strcmp(_name, segLabel)) {
 	cout << (void*) segLabel << " " << segLabel[0] << " " << segLabel[1] << endl; 
 	cout << _name << " != " << segLabel << endl;
+	cout << flush;
 	DOASSERT(false, "Data segment does not match tdata");
     }
 
