@@ -1,11 +1,14 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1995/09/19 15:42:04  jussi
+#	Initial revision of archive.
+#
 
 ############################################################
 
 set cstat_tapeDrive /dev/nrst1
-set cstat_tapeFile  5
+set cstat_tapeFile  7
 set cstat_diskPath /tmp
 
 if {[info exists env(CSTAT_TAPEDRIVE)]} {
@@ -327,13 +330,11 @@ proc cstat_helpWindow {} {
 proc cstat_tapeToDisk {symbol} {
     global cstat_firmlst cstat_firmsel
     set lstIdx [cstat_lstIndex $cstat_firmlst $symbol]
-    set entry [join [lindex $cstat_firmlst $lstIdx]]
-    set entry [concat $entry "On Disk"]
+    set entry [format "%s%s" [lindex $cstat_firmlst $lstIdx] "On Disk"]
     set cstat_firmlst [lreplace $cstat_firmlst $lstIdx $lstIdx $entry]
 
     set lstIdx [cstat_lstIndex $cstat_firmsel $symbol]
-    set entry [join [lindex $cstat_firmsel $lstIdx]]
-    set entry [concat $entry "On Disk"]
+    set entry [format "%s%s" [lindex $cstat_firmsel $lstIdx] "On Disk"]
     set cstat_firmsel [lreplace $cstat_firmsel $lstIdx $lstIdx $entry]
     cstat_updateFirmSelBox .cstat.firmsel.list
 }
