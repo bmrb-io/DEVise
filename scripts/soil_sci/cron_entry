@@ -1,1 +1,1 @@
-55 00 * * * cd /local.biron/devise/dat/Asos/scripts; ./run_update
+55 01 * * * cd /local.biron/devise/dat/Asos/scripts; ./run_update
