@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/06/28 21:47:34  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.30  1998/06/04 23:06:46  donjerko
   Added DataReader.
 
@@ -140,7 +144,10 @@ DevReadExec::DevReadExec(UniData* ud, const TypeIDList& types)
   AttrStk *stk = ud->schema()->GetFlatAttrs();
   offsets[0] = 0;               // not used, recid
   for(int i = 0; i < numFlds; i++) {
-    offsets[i] = stk->ith(i - 1)->offset();
+    // The 'if' in the next line prevents core dumps on some architectures
+    // because otherwise we try to use a negative array subscript.
+    // RKW 7/7/98.
+    if (i > 0) offsets[i] = stk->ith(i - 1)->offset();
     unmarshalPtrs[i] = getUnmarshalPtr(types[i]);
     destroyPtrs[i] = getDestroyPtr(types[i]);
     assert(destroyPtrs[i]);
