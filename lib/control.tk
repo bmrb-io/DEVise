@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.82  1996/07/09 16:00:43  wenger
+#	Added master version number and compile date to C++ code (also displayed
+#	in the user interface); added -usage and -version command line arguments;
+#	updated usage message.
+#
 #	Revision 1.81  1996/07/09 14:27:21  jussi
 #	Added missing parameter to OpenNewDataSource call.
 #
@@ -609,13 +614,12 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Statistics" -command { DoStat }
-.mbar.view.menu add cascade -label "Kiviat Graph" \
-	-menu .mbar.view.menu.kmenu
+.mbar.view.menu add command -label "Color Statistics" -command { DoColorStat }
+.mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Foreground..." -command DoSetFgColor
 .mbar.view.menu add command -label "Background..." -command DoSetBgColor
-.mbar.view.menu add cascade -label "Dimensions" \
-	-menu .mbar.view.menu.dimmenu
+.mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
 .mbar.view.menu add command -label "Title" -command DoSetTitle
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
