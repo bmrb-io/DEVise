@@ -27,6 +27,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.2.1  2001/11/07 17:22:36  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.8  2001/10/12 02:06:37  xuk
+// Using timestamp-based client ID.
+// Expanded connection.connectionID to long.
+//
 // Revision 1.7  2001/10/10 19:28:19  xuk
 // Added display control command line argument/parameter for auto playback.
 // For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
@@ -109,7 +118,7 @@ public final class DEViseJSValues
 
     public final class Connection {
 	public int cmdport = 0;
-	public long connectionID = DEViseGlobals.DEFAULTID; // for client
+	public int connectionID = DEViseGlobals.DEFAULTID; // for client
 	public String username = null, password = null, hostname = null;
 	public boolean helpBox = false;
 	public boolean cgi = false;  // using cgi, default false.

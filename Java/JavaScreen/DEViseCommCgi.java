@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.2.1  2001/11/07 17:22:36  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.5  2001/09/10 21:21:44  xuk
+// Solve the client disconnection problem.
+// Changed receiveCmd() method to indicate the cgi connection is disabled.
+//
 // Revision 1.4  2001/05/11 20:36:05  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -162,7 +171,8 @@ public class DEViseCommCgi
       throws YException, InterruptedIOException
     {
         if (DEBUG >= 1) {
-	    System.out.println("DEViseCommCgi.receiveCmd()");
+	    System.out.println("DEViseCommCgi.receiveCmd(" +
+	      expectResponse + ")");
 	}
 
 	_responseReceived = true;
@@ -178,12 +188,14 @@ public class DEViseCommCgi
 	     _cgiInput = new DataInputStream(_cgiConn.getInputStream());
 
 	     if (dataRead == null) {
-                 dataRead = new byte[10];
+		 //TEMP -- 12 is a "magic" number here
+                 dataRead = new byte[12];
                  numberRead = 0;
              }
 
              int b;
-             for (int i = numberRead; i < 10; i++) {
+	     //TEMP -- 12 is a "magic" number here
+             for (int i = numberRead; i < 12; i++) {
 		 b = _cgiInput.read();
                  if (b < 0) {
 		     //TEMP -- is this safe?
@@ -198,10 +210,10 @@ public class DEViseCommCgi
              }
 
              msgType = DEViseGlobals.toUshort(dataRead);
-	     cmdId = DEViseGlobals.toUshort(dataRead, 2);
-	     cgiFlag = DEViseGlobals.toUshort(dataRead, 4);
-             numberOfElement = DEViseGlobals.toUshort(dataRead, 6);
-             totalSize = DEViseGlobals.toUshort(dataRead, 8);
+	     cmdId = DEViseGlobals.toInt(dataRead, 2);
+	     cgiFlag = DEViseGlobals.toUshort(dataRead, 6);
+             numberOfElement = DEViseGlobals.toUshort(dataRead, 8);
+             totalSize = DEViseGlobals.toUshort(dataRead, 10);
 
              dataRead = null;
 

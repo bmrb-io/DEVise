@@ -20,6 +20,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2001/10/30 17:23:51  xuk
+// Created DEViseClient object for collaborating clients in jspop.
+// In doReceiveCmd(), no difference for collaboration mode clients.
+//
+// Revision 1.30.2.2  2001/11/07 17:22:36  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.30.2.1  2001/10/28 18:13:18  wenger
+// Made msgType and cmdId private in DEViseCommSocket; other minor cleanups.
+//
 // Revision 1.30  2001/10/25 21:35:42  wenger
 // Added heartbeat count to heartbeat command (for debugging); other minor
 // cleanup and debug code additions.
@@ -228,14 +240,15 @@ public class DEViseCommSocket
 
     // The following data are used in receiveCmd() and receiveData() to support timeout
     private boolean isControl = true; // ADD COMMENT about purpose of isControl
-    private int msgType = 0, numberOfElement = 0, totalSize = 0;
+    private int msgType = 0;
+    private int numberOfElement = 0, totalSize = 0;
     private byte[] dataRead = null;
     private int numberRead = 0;
 
-    public long cmdId = 0;
+    private int cmdId = 0;
 
     //TEMP -- document what this means -- -1 seems to mean collaboration
-    public int flag = 0;
+    private int flag = 0;
 
     // Use these objects for mutex on reading and writing.  I am making
     // the reading and writing methods non-synchronized because it makes
@@ -355,6 +368,30 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
+    //TEMP -- should return short to be consistent with writing and 
+    // "real" values in command, but I'm leaving it an int for now.
+    // RKW 2001-10-28.
+    public int getMsgType()
+    {
+        return msgType;
+    }
+
+    //-------------------------------------------------------------------
+    public int getCmdId()
+    {
+        return cmdId;
+    }
+
+    //-------------------------------------------------------------------
+    //TEMP -- should return short to be consistent with writing and 
+    // "real" values in command, but I'm leaving it an int for now.
+    // RKW 2001-10-28.
+    public int getFlag()
+    {
+        return flag;
+    }
+
+    //-------------------------------------------------------------------
     // Whether this socket is open.
     public boolean isOpen()
     {
@@ -445,7 +482,7 @@ public class DEViseCommSocket
     // Note: the format of commands on the socket is as follows:
     // u_short msgType // API_CMD, etc. -- see DEViseGlobals,java,
     //                    graphics.new/ParseAPI.h
-    // u_short id // JavaScreen ID
+    // int id // JavaScreen ID
     // u_short useCgi // whether we're using the CGI interface
     // u_short argCount
     // u_short totalBytes // size of everything remaining
@@ -456,7 +493,7 @@ public class DEViseCommSocket
     // ...
 
     //-------------------------------------------------------------------
-    public void sendCmd(String cmd, short msgType, long ID)
+    public void sendCmd(String cmd, short msgType, int ID)
       throws YException
     {
         if (DEBUG >= 1) {
@@ -623,7 +660,7 @@ public class DEViseCommSocket
     }
 
     //-------------------------------------------------------------------
-    private void doSendCmd(String cmd, short msgType, long ID)
+    private void doSendCmd(String cmd, short msgType, int ID)
       throws YException
     {
         if (os == null) {
@@ -664,7 +701,7 @@ public class DEViseCommSocket
             }
 
 	    os.writeShort(msgType);
-	    os.writeLong(ID);
+	    os.writeInt(ID);
  	    os.writeShort(0); // not cgi
 
             // if nelem is greater than MAX_VALUE of short, if you use readUnsignedShort
@@ -715,16 +752,17 @@ public class DEViseCommSocket
         try {
             if (isControl) {
                 if (dataRead == null) {
-		    //TEMP -- 16 is 'magic constant' here!
-                    dataRead = new byte[16];
+		    //TEMP -- 12 is 'magic constant' here!
+                    dataRead = new byte[12];
                     numberRead = 0;
                 }
 
 		// TEMP -- try read(buf, offset, len) here
 		
+                //TEMP -- why don't we do readInt(), etc, here?  RKW 2001-11-07
                 int b;
-		//TEMP -- 16 is 'magic constant' here!
-                for (int i = numberRead; i < 16; i++) {
+		//TEMP -- 12 is 'magic constant' here!
+                for (int i = numberRead; i < 12; i++) {
                     b = is.read();
                     if (b < 0) {
                         closeSocket();
@@ -737,10 +775,10 @@ public class DEViseCommSocket
 
 		//TEMP -- "magic constants" here...
                 msgType = DEViseGlobals.toUshort(dataRead);
-                cmdId = DEViseGlobals.toUlong(dataRead, 2);
-                flag = DEViseGlobals.toUshort(dataRead, 10);
-                numberOfElement = DEViseGlobals.toUshort(dataRead, 12);
-                totalSize = DEViseGlobals.toUshort(dataRead, 14);
+                cmdId = DEViseGlobals.toInt(dataRead, 2);
+                flag = DEViseGlobals.toUshort(dataRead, 6);
+                numberOfElement = DEViseGlobals.toUshort(dataRead, 8);
+                totalSize = DEViseGlobals.toUshort(dataRead, 10);
 
                 dataRead = null;
                 isControl = false;

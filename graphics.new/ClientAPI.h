@@ -16,6 +16,15 @@
    $Id$
 
    $Log$
+   Revision 1.18.2.1  2001/11/07 17:22:26  wenger
+   Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+   handle it; got CGI mode working again (bug 723).  (Changed JS version
+   to 5.0 and protocol version to 9.0.)
+
+   Revision 1.18  2001/10/12 18:43:56  wenger
+   Changed JavaScreen ID to 8 bytes; changed JS protocol version to 8.0
+   (changes to match the latest JavaScreen code).
+
    Revision 1.17  2001/10/12 18:30:26  wenger
    Fixed problems with network header reading/writing code (old code
    assumed that the NetworkHeader struct would never contain any extra
@@ -85,7 +94,7 @@ typedef struct {
 
   u_short msgType;                      // type of message (see API_CMD, etc.
   					// in ParseAPI.h)
-  long long jsId;			// JavaScreen ID
+  int jsId;				// JavaScreen ID
   u_short useCgi;			// (boolean) whether to use CGI
   u_short nelem;                        // number of elements in message
   u_short size;                         // total size of message

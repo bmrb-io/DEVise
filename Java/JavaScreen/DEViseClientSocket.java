@@ -28,6 +28,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.1.2.2  2001/11/07 17:22:35  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.1.2.1  2001/10/28 18:13:18  wenger
+// Made msgType and cmdId private in DEViseCommSocket; other minor cleanups.
+//
+// Revision 1.1  2001/10/24 17:46:07  wenger
+// Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
+// the JSPoP now has a separate thread to read from each client.
+//
 
 // ========================================================================
 
@@ -46,7 +58,7 @@ public class DEViseClientSocket implements Runnable
     private DEViseCommSocket _socket = null;
     
     private String _command = null;
-    private long _id;
+    private int _id;
     private int _cgiFlag;
 
     private boolean _isFirstCmd = true;
@@ -135,7 +147,7 @@ public class DEViseClientSocket implements Runnable
     // Get the client ID corresponding to the pending command, if any.
     // TEMP -- maybe this should throw an exception if there is no
     // pending command
-    public synchronized long getCmdId()
+    public synchronized int getCmdId()
     {
         return _id;
     }
@@ -171,7 +183,7 @@ public class DEViseClientSocket implements Runnable
 
     // ------------------------------------------------------------------
     // Send the given command to the client.
-    public synchronized void sendCommand(String cmd, short msgType, long id)
+    public synchronized void sendCommand(String cmd, short msgType, int id)
       throws YException
     {
 	if (DEBUG >= 1) {
@@ -225,8 +237,8 @@ public class DEViseClientSocket implements Runnable
 		    _command = partCmd;
 		    partCmd = "";
 
-		    _id = _socket.cmdId;
-		    _cgiFlag = _socket.flag;
+		    _id = _socket.getCmdId();
+		    _cgiFlag = _socket.getFlag();
 
 		    if (DEBUG >= 2) {
 		        System.out.println("Got command <" + _command +

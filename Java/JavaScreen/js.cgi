@@ -20,6 +20,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6.2.1  2001/11/07 17:22:37  wenger
+#  Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+#  handle it; got CGI mode working again (bug 723).  (Changed JS version
+#  to 5.0 and protocol version to 9.0.)
+#
+#  Revision 1.6  2001/09/05 19:31:21  wenger
+#  Added bin2 and dyn_lib directories in JavaScreen release and install,
+#  and made corresponding changes to scripts; other distribution-related
+#  changes.
+#
 #  Revision 1.5  2001/04/11 16:49:59  wenger
 #  Fixed description.
 #
@@ -168,8 +178,10 @@ connect(SOCK, $paddr)    || dienice("connect: $!");
 # Send the command "header".
 #
 my ($out, $written);
-$out = pack "n5", $msgtype, $id, $cgi, $nelem, $size;
-$written = syswrite(SOCK, $out, 10) || dienice("send: $!");
+$out = pack "nNn3", $msgtype, $id, $cgi, $nelem, $size;
+  print LOG "size = $size\n" if $debug;
+#TEMP -- 12 is "magic" number here!!!!
+$written = syswrite(SOCK, $out, 12) || dienice("send: $!");
 dienice("System write error: $!\n") unless defined $written;
   print LOG "Sent command header to jspop\n" if $debug;
 

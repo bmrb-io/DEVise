@@ -27,6 +27,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.70  2001/10/30 17:31:14  xuk
+// reated DEViseClient object for collaborating clients in jspop.
+//
+// Revision 1.69.2.2  2001/11/07 17:22:36  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.69.2.1  2001/10/25 22:55:54  wenger
+// JSPoP now replies to heartbeat to make it less of a special case.
+//
 // Revision 1.69  2001/10/24 17:46:07  wenger
 // Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
 // the JSPoP now has a separate thread to read from each client.
@@ -727,10 +738,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
 	    cmdCloseSession();
 
-        } else if (clientCmd.startsWith(DEViseCommands.HEART_BEAT)) {
-            // do nothing
-	    // no need to return any response to client
-            return false;
         } else if (clientCmd.startsWith(DEViseCommands.GET_SESSION_LIST)) {
 	    cmdGetSessionList(clientCmd);
 
@@ -1261,7 +1268,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         Vector rspbuf = new Vector();
 
         pop.pn("Sending command to devised(" + hostname + " at " + cmdPort + ") :  \"" + clientCmd + "\"");
-        socket.sendCmd(clientCmd, (short)5, (long)9999);
+        socket.sendCmd(clientCmd, (short)5, 9999);
 
         isEnd = false;
         while (!isEnd) {

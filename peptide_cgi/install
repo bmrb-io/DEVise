@@ -157,7 +157,7 @@ find $targetdir -name \* -type f -exec chmod a+r {} \;
 echo "Creating html link ($pephome/html)"
 set targetdir = $pephome/html
 if (! -e $targetdir) then
-  ln -s $demohome/dat/bmrb/dynamic_data $targetdir
+  ln -s $datahome $targetdir
 endif
 
 

@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2001/11/07 19:27:21  xuk
+// Garbage collection for temporary session files.
+// In jspop(), create a subdir for each jspop. Delete temporary session files.
+//
 // Revision 1.70  2001/11/06 16:27:20  xuk
 // Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
 //
@@ -36,6 +40,14 @@
 // DEViseClient object when getting JAVAC_AskCollabLeader command;
 // 4. Modified setUpCollab(), which is called by DEViseClient object when
 // getting JAVAC_Collaborate command.
+//
+// Revision 1.68.2.2  2001/11/07 17:22:37  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.68.2.1  2001/10/29 00:05:15  wenger
+// Minor debug output fix.
 //
 // Revision 1.68  2001/10/24 22:15:33  wenger
 // More collaboration-related fixes.
@@ -363,7 +375,7 @@ public class jspop implements Runnable
     private Hashtable users = new Hashtable();
     private Vector servers = new Vector();
 
-    private long _lastClientId = 0;
+    private int _lastClientId = 0;
 
     // Clients that are not connected to a devised.
     private Vector suspendClients = new Vector();
@@ -844,7 +856,6 @@ public class jspop implements Runnable
 		    if (clientSock.hasCommand()) {
 			long id;
 			int cgi;
-			boolean cgiflag;
 
                         pn("Before getting command");
 			String cmd = clientSock.getCommand();
@@ -1183,12 +1194,18 @@ public class jspop implements Runnable
     //----------------------------------------------------------------------
 
     // Get a unique ID for a client.
-    private synchronized long getID()
+    private synchronized int getID()
     {
 	// we use timestamp as client's id now.
 	// xuk 10/10/01
 	Date date = new Date();
-	long id = date.getTime();
+	long time = date.getTime();
+
+	// Make this fit into an int.
+	time /= 100; // truncate to tenths of seconds
+	time %= Integer.MAX_VALUE;
+
+	int id = (int)time;
 
 	//
 	// Make sure there's no chance of duplicate IDs.
@@ -1436,7 +1453,7 @@ public class jspop implements Runnable
     {
         if (DEBUG >= 1) {
 	    System.out.println("jspop.processFirstCommand(" + hostname +
-	      cmd + ")");
+	      ", " + cmd + ")");
 	}
 
 	boolean cgi;

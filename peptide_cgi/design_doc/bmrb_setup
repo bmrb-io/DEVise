@@ -4,26 +4,27 @@
 /p/devise/demo                          
   dat                          
     bmrb                          
-      (dynamic_data) <---------------+ >--+
-  schema                             |    |          
-    schema                           |    |          
-      physical                       |    |          
-  session.js                         |    |          
-    bmrb                             |    |          
-      (dynamic_sessions) <-----------|-+  |           
-                                     | |  |      
-/bmrb/htdocs                         | |  |   
-  cgi-bin                            | |  |
-    peptide-cgi                      | |  |      
-      bin                            | |  |
-      java_classes                   | |  |
-      (data_dir) <-------------------+ |  |
-      (session_dir) <----------------|-+  |
-  devise [JS jar files]              | |  |
-    peptide-cgi [bmrb_select.html]   | |  |
-      data_dir >---------------------+ | [make_view points to html files here]
+      (dynamic_data) <---------------+ 
+  schema                             |              
+    schema                           |              
+      physical                       |              
+  session.js                         |              
+    bmrb                             |              
+      (dynamic_sessions) <-----------|-+             
+                                     | |        
+/bmrb/htdocs                         | |     
+  cgi-bin                            | |  
+    peptide-cgi                      | |        
+      bin                            | |  
+      java_classes                   | |  
+      (data_dir) <-------------------+ |  
+      (session_dir) <----------------|-+  
+  devise [JS jar files]              | |  
+    peptide-cgi [bmrb_select.html]   | |  
+      data_dir >---------------------+-|--+
       session_dir >--------------------+  |        
-      (html) <----------------------------+
+      (html) <----------------------------+ [make_view points to html files here]
+CGI script doesn't return html in path
 
 
 Note: a >---> (b) is a symlink from a to b.

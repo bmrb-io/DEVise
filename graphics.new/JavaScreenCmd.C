@@ -21,6 +21,15 @@
   $Id$
 
   $Log$
+  Revision 1.123.2.1  2001/11/07 17:22:27  wenger
+  Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+  handle it; got CGI mode working again (bug 723).  (Changed JS version
+  to 5.0 and protocol version to 9.0.)
+
+  Revision 1.123  2001/10/12 18:43:57  wenger
+  Changed JavaScreen ID to 8 bytes; changed JS protocol version to 8.0
+  (changes to match the latest JavaScreen code).
+
   Revision 1.122  2001/10/08 19:21:02  wenger
   Fixed bug 702 (JavaScreen locks up on unrecognized command in DEVised).
 
@@ -600,7 +609,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 8;
+static const int protocolMajorVersion = 9;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;

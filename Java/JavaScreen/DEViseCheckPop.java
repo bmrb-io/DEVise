@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.2.1  2001/10/28 18:12:00  wenger
+// Fixed usage message.
+//
+// Revision 1.10  2001/09/24 17:36:31  wenger
+// Moved all JS log files to "logs" subdirectory; fixed omission of Tasvir
+// script from intall.
+//
 // Revision 1.9  2001/09/12 20:34:29  wenger
 // Incremented JS version to 4.4; various fixes because of install problems
 // on pumori.
@@ -144,7 +151,7 @@ public class DEViseCheckPop
 
     //-------------------------------------------------------------------
     // Check command-line arguments and set values accordingly.
-    public void checkArgs(String[] args) throws YException
+    private void checkArgs(String[] args) throws YException
     {
         if (DEBUG >= 2) {
 	    System.out.println("DEViseCheckPop.checkArgs()");
@@ -157,7 +164,7 @@ public class DEViseCheckPop
 	    _log.write(")\n");
 	}
 
-	final String usage = "Usage: java DEViseCheckPop [-port<port>] " +
+	final String usage = "Usage: java JavaScreen.DEViseCheckPop [-port<port>] " +
 	  "[-host<hostname>]\n";
 
         if (args.length > 2) {

@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.108  2001/11/06 16:27:19  xuk
+// Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
+//
 // Revision 1.107  2001/10/30 17:29:35  xuk
 // *** empty log message ***
 //
@@ -34,6 +37,14 @@
 // 			enable heartbeat in collaboration mode;
 // 3. Modified run(), in collaboration mode, break loop when specialID == 1;
 // 4. Modified sendRcvCommand(), in collaboration mode, when current thread is interrupted, sends JAVAC_CollabExit command to jspop;
+//
+// Revision 1.105.2.2  2001/11/07 17:22:36  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.105.2.1  2001/10/25 22:55:54  wenger
+// JSPoP now replies to heartbeat to make it less of a special case.
 //
 // Revision 1.105  2001/10/25 21:35:41  wenger
 // Added heartbeat count to heartbeat command (for debugging); other minor
@@ -889,14 +900,6 @@ public class DEViseCmdDispatcher implements Runnable
 			jsc.showMsg(e1.getMsg());
 			disconnect();
 		    }
-		} else if (commands[i].startsWith(DEViseCommands.HEART_BEAT)) {
-		    try {
-			jsc.pn("Sending: \"" + commands[i] + "\"");
-                        sendCmd(commands[i]);
-		    } catch (YException e1) {
-			jsc.showMsg(e1.getMsg());
-			disconnect();
-		    }
 		} else if (commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
 		    jsc.jscreen.updateScreen(false);
 		    processCmd(commands[i]);
@@ -1584,7 +1587,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         try {
-            long id = Long.parseLong(args[1]);
+            int id = Integer.parseInt(args[1]);
             if (id < 0 && id != DEViseGlobals.DEFAULTID) {
                 throw new NumberFormatException();
             } else {

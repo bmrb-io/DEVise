@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.127  2001/11/06 16:27:20  xuk
+// Reset collaboration follower's screen size and resolution to deal with different screen size from leaders.
+//
 // Revision 1.126  2001/11/02 19:38:38  xuk
 // Added "Collaborate" and "Playback" buttons on menu.
 //
@@ -31,6 +34,11 @@
 // 2. In setModeDlg class, modified socketButton and collabButton actions;
 // 3. In enterCollabPassDlg class, sends JAVAC_Collaborate {ID} {passwd} to
 // jspop, don't disconnect socket.
+//
+// Revision 1.124.2.1  2001/11/07 17:22:37  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
 //
 // Revision 1.124  2001/10/24 22:15:33  wenger
 // More collaboration-related fixes.
@@ -450,7 +458,7 @@ public class jsdevisec extends Panel
     // -1: normal JS
     // 0: before the first round connection
     // >0: collaborated JS ID
-    public long specialID = -1;
+    public int specialID = -1;
 
     public String collabPass = new String(DEViseGlobals.DEFAULTPASS);
 
@@ -2960,7 +2968,7 @@ class CollabDlg extends Frame
 	                    String list = clientList.getItem(idx);
 	                    int n = list.indexOf(' ');
 	                    String clientID = list.substring(0,n);
-	                    jsc.specialID = Long.parseLong(clientID);
+	                    jsc.specialID = Integer.parseInt(clientID);
                             close();
 	                    jsc.enterCollabPass();
                         }
@@ -2978,7 +2986,7 @@ class CollabDlg extends Frame
 	                    String list = clientList.getItem(idx);
 	                    int n = list.indexOf(' ');
 	                    String clientID = list.substring(0,n);
-	                    jsc.specialID = Long.parseLong(clientID);
+	                    jsc.specialID = Integer.parseInt(clientID);
 
                             close();
                             jsc.enterCollabPass();

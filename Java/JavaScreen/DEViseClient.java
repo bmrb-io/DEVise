@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2001/11/07 19:29:07  xuk
+// Garbage collection for temporary session files.
+// In DEViseClient(), get savedSessionName from jspop.sessionDir.
+// In close(), delete session file when close client object.
+//
 // Revision 1.54  2001/10/30 17:09:52  xuk
 // Created DEViseClient object for collaborating clients in jspop.
 // 1. In getCmd(), process JAVAC_AskCollabLeader command;
@@ -35,6 +40,14 @@
 // 		   removeCollabSocket() to removeCollabClient();
 // 4. Added collabLeader, the leader client for collaboration;
 // 5. Changed private _clientSocket to public clientSocket, in order to send data to collaborating followers in sendData().
+//
+// Revision 1.53.2.2  2001/11/07 17:22:35  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.53.2.1  2001/10/25 22:55:53  wenger
+// JSPoP now replies to heartbeat to make it less of a special case.
 //
 // Revision 1.53  2001/10/24 17:46:06  wenger
 // Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
@@ -277,7 +290,7 @@ public class DEViseClient
     private int status = CLOSE;
 
     public DEViseUser user = null;
-    public long ID = 0;
+    public int ID = 0;
     public String hostname = null;
     public DEViseClientSocket clientSock = null;
 
@@ -319,7 +332,7 @@ public class DEViseClient
 
     public YLogFile logFile = null;
 
-    public DEViseClient(jspop p, String host, DEViseClientSocket cs, long id,
+    public DEViseClient(jspop p, String host, DEViseClientSocket cs, int id,
       boolean cgi)
     {
 	if (DEBUG >= 1) {
@@ -396,11 +409,16 @@ public class DEViseClient
 	updateHeartbeat();
 
 	if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
-	    if (cgi) {
-		// Close socket here because there is no reply to heartbeat
-		// command.
-	        clientSock.closeSocket();
-	        pop.pn("Socket between client and cgi is closed.");
+	    // Note: this must be dealt with here so we don't generate
+	    // unnecessary server switches.
+	    try {
+	        sendCmd(DEViseCommands.DONE);
+	        if (useCgi()) {
+		    closeSocket();
+		}
+	    } catch (YException ex) {
+	        System.err.println("Error sending " + DEViseCommands.DONE +
+		  " command in response to " + DEViseCommands.CHECK_POP);
 	    }
 	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
 	    try {

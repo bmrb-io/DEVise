@@ -20,6 +20,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.58.2.2  2001/11/07 17:22:36  wenger
+// Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
+// handle it; got CGI mode working again (bug 723).  (Changed JS version
+// to 5.0 and protocol version to 9.0.)
+//
+// Revision 1.58.2.1  2001/10/28 18:13:18  wenger
+// Made msgType and cmdId private in DEViseCommSocket; other minor cleanups.
+//
+// Revision 1.58  2001/10/12 02:05:08  xuk
+// Using timestamp-based client ID.
+// 1. PROTOCOL_VERSION = 8.0;
+// 2. DEFAULTID has been expanded to long;
+// 3. Added toUlong() method to parse long int from network.
+//
 // Revision 1.57  2001/09/12 20:34:29  wenger
 // Incremented JS version to 4.4; various fixes because of install problems
 // on pumori.
@@ -224,9 +238,9 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("4.4");
-    public static final String PROTOCOL_VERSION = new String("8.0");
-    public static final long DEFAULTID = 0;
+    public static final String VERSION = new String("5.0");
+    public static final String PROTOCOL_VERSION = new String("9.0");
+    public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
     public static final String DEFAULTHOST = new String("localhost");
@@ -381,10 +395,12 @@ public final class DEViseGlobals
         return DEViseGlobals.parseStr(inputStr, "\n", false);
     }
 
+    //TEMP -- why does this return an int instead of a short??
     public static int toUshort(byte[] data, int offset)
     {
-        if (data == null || data.length < 2 + offset)
+        if (data == null || data.length < 2 + offset) {
             return 0;
+        }
 
         int v1 = (int)data[0 + offset] & 0x000000FF;
         int v2 = (int)data[1 + offset] & 0x000000FF;
@@ -392,15 +408,32 @@ public final class DEViseGlobals
         return ((v1 << 8) + (v2 << 0));
     }
 
+    //TEMP -- why does this return an int instead of a short??
     public static int toUshort(byte[] data)
     {
         return DEViseGlobals.toUshort(data, 0);
     }
 
+    public static int toInt(byte[] data, int offset)
+    {
+        if (data == null || data.length < 4 + offset) {
+            return 0;
+	}
+
+        int v1 = (int)data[0 + offset] & 0x000000FF;
+        int v2 = (int)data[1 + offset] & 0x000000FF;
+        int v3 = (int)data[2 + offset] & 0x000000FF;
+        int v4 = (int)data[3 + offset] & 0x000000FF;
+
+        return ((v1 << 24) + (v2 << 16) +  (v3 << 8) + (v4 << 0));
+    }
+
+/*
     public static long toUlong(byte[] data, int offset)
     {
-        if (data == null || data.length < 8 + offset)
+        if (data == null || data.length < 8 + offset) {
             return 0;
+        }
 
         long v1 = (long)data[0 + offset] & 0x00000000000000FF;
         long v2 = (long)data[1 + offset] & 0x00000000000000FF;
@@ -414,6 +447,7 @@ public final class DEViseGlobals
         return ((v1 << 56) + (v2 << 48) + (v3 << 40) + (v4 << 32) +
 		(v5 << 24) + (v6 << 16) +  (v7 << 8) + (v8 << 0));
     }
+*/
 
     public static long getCurrentTime()
     {
