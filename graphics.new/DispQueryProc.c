@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/23 19:34:39  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.8  1996/07/12 16:39:05  jussi
   Added cancellation of timers to query processor destructors.
 
@@ -43,6 +47,7 @@
 */
 
 #include "DispQueryProc.h"
+//#define DEBUG
 
 DispQueryProcSimple::DispQueryProcSimple()
 {
@@ -70,6 +75,9 @@ DispQueryProcFull::DispQueryProcFull()
 {
     _dispatcherID = Dispatcher::Current()->Register(this, 20, GoState);
     Dispatcher::Current()->RequestCallback(_dispatcherID);
+#ifdef DEBUG
+    printf("DispQueryProcFull register to dispatcher, _dispatcherID = 0x%p\n", &_dispatcherID);
+#endif
     Timer::Queue(QP_TIMER_INTERVAL, this, 0);
 }
 
