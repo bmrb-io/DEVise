@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.76  1996/11/23 00:24:14  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.75  1996/11/20 20:34:57  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -1800,8 +1806,13 @@ void XWindowRep::HandleEvent(XEvent &event)
 	// not found in xkey->devise_key translation map
 	if( count == 1 ) {		// regular key
 	    d_key = buf[0];
-	    // don't report shift for normal keys, eg, 'C', not SHIFT-C
-	    d_modifier &= ~DeviseKey::SHIFT; 
+            if( d_modifier & (DeviseKey::CONTROL|DeviseKey::ALT) ) {
+              // always report as upper case if control or alt used
+              d_key = toupper(d_key);
+            } else {
+              // don't report shift for normal keys, eg, 'C', not SHIFT-C
+              d_modifier &= ~DeviseKey::SHIFT;
+            }
 	} else {
 	    d_key = 0;		// ignore keypress
 	}
