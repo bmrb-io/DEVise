@@ -1,0 +1,109 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile for attribute projection code.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.18  1996/08/12 18:43:21  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
+#  Revision 1.17  1996/08/06 20:11:08  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
+
+############################################################
+
+include ../../Makefile.common
+
+CFLAGS = $(ARCH_FLAGS) -I../../devread -I../../attrproj -I../../graphics \
+	-I../../graphics.new -I../../tape \
+	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
+	-DATTRPROJ -DLIBCS
+
+#LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
+
+TESTSRC = drtest.c
+TESTOBJ = $(TESTSRC:.c=.o)
+
+LOCALSRC = DevRead.c types.c
+
+SRCc = $(filter %.c,$(LOCALSRC))
+SRCC = $(filter %.C,$(LOCALSRC))
+LOCALOBJ = $(SRCc:.c=.o)
+LOCALOBJ += $(SRCC:.C=.o)
+
+LIBOBJ = \
+	../attrproj/vector.o \
+	../attrproj/ProjectionList.o \
+	../attrproj/VectorArray.o \
+	../attrproj/ApInit.o \
+	../attrproj/ApParseCat.o \
+	../attrproj/Exit.o \
+	../attrproj/TData.o \
+	../attrproj/TDataAscii.o \
+	../attrproj/TDataAsciiInterp.o \
+	../attrproj/TDataBinary.o \
+	../attrproj/TDataBinaryInterp.o \
+	../attrproj/DataSourceSegment.o \
+	../graphics/Parse.o \
+	../graphics/AttrList.o \
+	../graphics/Time.o \
+	../graphics/Util.o \
+	../graphics/DevError.o \
+	../graphics.new/RecInterp.o \
+	../graphics.new/CompositeParser.o \
+	../graphics.new/Group.o \
+	../graphics.new/GroupDir.o \
+	../graphics.new/ItemList.o \
+	../graphics.new/DataSeg.o \
+	../graphics.new/DataSource.o \
+	../graphics.new/DataSourceFileStream.o \
+	../graphics.new/DataSourceTape.o \
+	../graphics.new/DataSourceBuf.o \
+	../graphics.new/DevFileHeader.o \
+	../graphics.new/Version.o \
+	../tape/tapedrive.o \
+	../generic/CompDate.o \
+	$(LOCALOBJ)
+
+LIB = libdevread.a
+
+ALLTESTOBJ = $(TESTOBJ)
+ALLSHOWOBJ = $(SHOWOBJ)
+
+all: drtest
+lib: $(LIB)
+
+drtest: $(ALLTESTOBJ) $(LIB)
+	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
+                -ldevread -ltcl -lm $(ARCH_LDPOST)
+
+show: $(ALLSHOWOBJ) $(LIB)
+	$(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
+                -ldevread -ltcl -lm $(ARCH_LDPOST)
+
+$(LIB): $(LIBOBJ)
+	$(AR) cr $@ $(LIBOBJ)
+	$(RANLIB) $@
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm -f drtest
+
+mostlyclean:
+	-rm -f $(TESTOBJ) $(LOCALOBJ) $(LIB)
