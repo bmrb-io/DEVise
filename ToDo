@@ -491,6 +491,14 @@ template instantiations we need for libdevwin, etc. (rkw 2/17/98)
 
 Allow LoadStringSpace to accept a URL as a file name. (am/rkw 2/27/98)
 
+Add a method to the Shape classes that returns the bounding box (or
+bounding prism) of a given symbol; use it in testing against the
+visual filter, doing count mappings, etc. (ml/rkw 3/23/98)
+
+Allow the user to select whether symbols that overlap the visual
+filter, but whose reference point is outside the visual filter,
+should be displayed. (ml/rkw 3/23/98)
+
 
 COMPLETED
 ---------
