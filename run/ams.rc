@@ -1,0 +1,18 @@
+# Set default DEVise view boundaries: xlow xhigh ylow yhigh
+DEVise setDefault view SortedX {May 1 1987 00:00:00} {Jun 1 1987 00:00:00} \
+				-10 1200
+DEVise setDefault view Scatter 0 1000 0 150
+
+set viewDefault(int)     "{xlow 0} {xhigh 100} {ylow 0} {yhigh 100}"
+set viewDefault(float)   "{xlow 0} {xhigh 100} {ylow 0} {yhigh 100}"
+set viewDefault(double)  "{xlow 0} {xhigh 100} {ylow 0} {yhigh 100}"
+set viewDefault(date)    "{xlow {May 1 1987 00:00:00}} \
+                          {xhigh {Jun 1 1987 00:00:00}} \
+                          {ylow {May 1 1987 00:00:00}} \
+			  {yhigh {Jun 1 1987 00:00:00}}"
+
+# default DEVisee window parameters: x y width height
+DEVise setDefault window WinVertical 0.0  0.5  0.9      0.45
+
+# Specify user mode: 1 for user and 0 for superuser
+set UserMode 0
