@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/07/23 19:33:55  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.17  1996/06/24 20:04:35  jussi
   Added inclusion of sys/select.h for SOLARIS and AIX.
 
@@ -102,12 +106,20 @@
 #include "Journal.h"
 #include "Exit.h"
 
-#if !defined(FD_SET)
-typedef int fd_set
-inline void FD_SET(int fd, fd_set* fd_set) { (*fdset) |= 1 << fd; }
-inline void FD_CLR(int fd, fd_set* fd_set) { (*fdset) &= ~(1 << fd); }
-inline void FD_ZERO(fd_set* fd_set) { memset((char*)fdset,0,sizeof(*fd_set)); }
-inline bool FD_ISSET(int fd, fd_set* fd_set) { return (*fd_set) & (1 << fd); }
+#if defined(HPUX)
+#define fd_set int
+
+#if defined(FD_SET)
+#undef FD_SET
+#undef FD_CLR
+#undef FD_ZERO
+#undef FD_ISSET
+#endif
+
+inline void FD_SET(int fd, fd_set* fdset) { (*fdset) |= 1 << fd; }
+inline void FD_CLR(int fd, fd_set* fdset) { (*fdset) &= ~(1 << fd); }
+inline void FD_ZERO(fd_set* fdset) { memset((char*)fdset,0,sizeof(*fdset)); }
+inline bool FD_ISSET(int fd, fd_set* fdset) { return (*fdset) & (1 << fd); }
 #endif
 
 class DispatcherCallback {
