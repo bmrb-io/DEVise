@@ -28,3 +28,9 @@ cp /s/gcc/lib/libstdc++-libc6.1-2.so.3 .
 cp /lib/libm.so.6 .
 cp /lib/libc.so.6 .
 cp /lib/ld-linux.so.2 .
+
+cp /usr/X11R6/lib/libXmu.so.6 .
+cp /usr/X11R6/lib/libXt.so.6 .
+cp /usr/X11R6/lib/libSM.so.6 .
+cp /usr/X11R6/lib/libICE.so.6 .
+cp /usr/X11R6/lib/libXext.so.6 .

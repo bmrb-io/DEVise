@@ -20,6 +20,10 @@
 
 ############################################################
 
+cd session
+mkdir .tmp
+cd ..
 ln -s session session.js
+
 cd schema/schema
 ln -s catalog.dte catalog.js.dte

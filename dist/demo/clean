@@ -20,6 +20,7 @@
 
 ############################################################
 
+rmdir session/.tmp
 \rm session.js
 
 cd schema/schema
