@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.13  1996/12/16 20:29:48  wenger
+#	Fixed bug 095 ('OK' button doesn't work in mapping editor).
+#
 #	Revision 1.12  1996/12/15 20:23:51  wenger
 #	Added view name to mapping editor window; added first version of font
 #	selection GUI (currently disabled).
@@ -331,7 +334,7 @@ proc UpdateMappings { map params mappings } {
 	global mappingValue$itemname
 	lappend newmap [deref mappingValue$itemname]
     }
-    puts $newmap
+    #puts $newmap
     ChangeParams $map $params $newmap
     ChangeViewMapping $map
     return

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.108  1997/01/08 18:56:50  wenger
+#	Added 'View List' selection to window menu (gives a list of the views
+#	in the window containing the selected view, especially useful for
+#	piled views); fixed OK/Cancel in Remove Window dialog.
+#
 #	Revision 1.107  1996/12/30 23:57:50  andyt
 #	First version with support for Embedded Tcl/Tk windows.
 #
@@ -1055,7 +1060,6 @@ proc EditMapping { map } {
 	    $params \
 	    $map \
 	    0
-    puts "Map edit done"
 }
 
 
