@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/03/24 17:26:03  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.4  1998/07/14 15:39:20  wenger
   Committed Matt's fix for egcs.
 
@@ -38,7 +44,12 @@
 
 #define _DevError_c_
 
+#include <sys/time.h>
+#include <string.h>
+#include <strstream.h>
+
 #include "DevError.h"
+#include "Util.h"
 #ifndef LIBCS
 #include "Init.h"
 #endif
@@ -68,20 +79,29 @@ DevError::ReportError(char *message, char *file, int line, int errnum)
     if (!_enabled)
         return;
 
-    fprintf(stderr, "\n%s error: %s\n", progName, message);
-    fprintf(stderr, "  at %s: %d\n", file, line);
-    if (errnum != devNoSyserr)
-    {
-        fprintf(stderr, "  syserr: %d: ", errnum);
-        perror(NULL);
-    }
-    fprintf(stderr, "\n");
+    ostrstream errStr;
 
-    if (strlen(progName) + strlen(message) + strlen(file) <
-      MAXPATHLEN * 2 - 100) {
-        sprintf(_errBuf, "%s error: %s (%d)\n  at %s: %d\n", progName, message,
-          errnum, file, line);
+    errStr << endl << progName << " error: " << message << endl;
+    if (errnum != devNoSyserr) {
+        char *sysStr = strerror(errnum);
+	errStr << "  syserr: " << errnum;
+	if (sysStr != NULL) {
+	    errStr << ": " << sysStr;
+	}
+	errStr << endl;
     }
+    errStr << "  at " << file << ": " << line;
+
+    struct timeval errTime;
+    if (gettimeofday(&errTime, NULL) >= 0) {
+        errStr << " (" << DateString(errTime.tv_sec) << ")\n";
+    }
+
+    errStr << ends;
+
+    fprintf(stderr, "%s", errStr.str());
+    strncpy(_errBuf, errStr.str(), MAXPATHLEN * 2);
+    _errBuf[MAXPATHLEN * 2 - 1] = '\0'; // ensure termination
 }
 
 /*============================================================================*/

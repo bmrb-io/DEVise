@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/03/24 17:26:10  wenger
+  Non-DTE data source code prevents adding duplicate data source names;
+  added "nice axis" feature (sets axis limits to multiples of powers of
+  10 if enabled); improved the propagation of DEVise errors back to the
+  GUI; fixed bug 474 (problem with view home).
+
   Revision 1.52  1999/03/18 17:30:40  wenger
   Implemented two-color option in HighLow symbols; compensated for
   XFillRectangle() not working the way O'Reilly says it does (subtracted
@@ -4633,13 +4639,10 @@ IMPLEMENT_COMMAND_END
 IMPLEMENT_COMMAND_BEGIN(test)
 // Note: modify this code to do whatever you need to test.
     if (argc == 1) {
-        ViewGraph *view = (ViewGraph *)View::FindSelectedView();
-		if (view != NULL) {
-		  view->NiceifyAxes(true, true);
-		}
-
-       	ReturnVal(API_ACK, "done");
-		return 1;
+		errno = 2;
+		reportError("Testing error handling", 2);
+    	ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+    	return -1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
