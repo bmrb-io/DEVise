@@ -3053,6 +3053,17 @@ Num Date        Status  Description
 			right in the GUI -- the schema parser should complain
 			about them. (rkw)
 
+757 3/11/02	OPEN	'Home' (5 key) doesn't seem to be working very well in
+			the Y direction on the antares session. (See
+			session.js/test/antares_bad_y_home.ds.) (rkw)
+
+758 3/11/02	OPEN	JavaScreen: moving a 3D object produces the error
+			message "Cannot find view". (rkw)  (I thought I
+			had fixed this before, but the problem is still
+			showing up.  This is turning out to be very hard
+			to duplicate -- it shows up on the "regular" JS on
+			pumori but nowhere else.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
