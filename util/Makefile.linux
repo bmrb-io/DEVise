@@ -1,0 +1,56 @@
+depend:
+	makedepend -fMakefile.linux -I../graphics.new -I../graphics \
+		-I/usr/X11/include -I/usr/include/tcl *.C
+
+# DO NOT DELETE
+
+atof.o: /usr/include/stdlib.h /usr/include/features.h
+atof.o: /usr/include/sys/cdefs.h /usr/include/errno.h
+atof.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+atof.o: /usr/include/alloca.h /usr/include/assert.h /usr/include/ctype.h
+atof.o: /usr/include/endian.h /usr/include/bytesex.h
+atof.o: /usr/include/linux/version.h /usr/include/asm/byteorder.h
+atof.o: /usr/include/time.h /usr/include/math.h /usr/include/huge_val.h
+atof.o: /usr/include/nan.h /usr/include/values.h /usr/include/sys/time.h
+atof.o: /usr/include/linux/types.h /usr/include/asm/types.h
+atof.o: /usr/include/linux/time.h /usr/include/sys/types.h ../graphics/Util.h
+atof.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+atof.o: /usr/include/string.h ../graphics/DeviseTypes.h ../graphics/Exit.h
+http_url.o: /usr/include/stdio.h /usr/include/libio.h
+http_url.o: /usr/include/_G_config.h /usr/include/stdlib.h
+http_url.o: /usr/include/features.h /usr/include/sys/cdefs.h
+http_url.o: /usr/include/errno.h /usr/include/linux/errno.h
+http_url.o: /usr/include/asm/errno.h /usr/include/alloca.h
+http_url.o: /usr/include/unistd.h /usr/include/posix_opt.h
+http_url.o: /usr/include/gnu/types.h /usr/include/confname.h
+http_url.o: /usr/include/sys/types.h /usr/include/linux/types.h
+http_url.o: /usr/include/asm/types.h /usr/include/string.h
+http_url.o: ../graphics.new/machdep.h /usr/include/limits.h
+http_url.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+http_url.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
+http_url.o: /usr/include/linux/param.h /usr/include/asm/param.h
+http_url.o: /usr/include/sys/time.h /usr/include/linux/time.h
+http_url.o: /usr/include/time.h /usr/include/sys/wait.h
+http_url.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+http_url.o: /usr/include/endian.h /usr/include/bytesex.h
+http_url.o: /usr/include/linux/version.h /usr/include/asm/byteorder.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+http_url.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+http_url.o: /usr/include/asm/shmparam.h /usr/include/sys/sem.h
+http_url.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+http_url.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+http_url.o: /usr/include/asm/page.h /usr/include/sys/termios.h
+http_url.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+http_url.o: /usr/include/netdb.h /usr/include/paths.h
+http_url.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+http_url.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+http_url.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+http_url.o: /usr/include/arpa/inet.h /usr/include/sys/bitypes.h
+mkbinfile.o: /usr/include/math.h /usr/include/features.h
+mkbinfile.o: /usr/include/sys/cdefs.h /usr/include/huge_val.h
+mkbinfile.o: /usr/include/endian.h /usr/include/bytesex.h
+mkbinfile.o: /usr/include/linux/version.h /usr/include/asm/byteorder.h
+mkbinfile.o: /usr/include/nan.h /usr/include/values.h /usr/include/time.h
+mkbinfile.o: /usr/include/stdlib.h /usr/include/errno.h
+mkbinfile.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+mkbinfile.o: /usr/include/alloca.h
