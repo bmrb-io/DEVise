@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2000/04/07 22:44:10  wenger
+// Improved shading of atoms (it now works on white atoms); added comments
+// based on meeting with Hongyu on 2000-04-06.
+//
 // Revision 1.35  2000/03/23 16:26:14  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -376,27 +380,27 @@ public class DEViseServer implements Runnable
                 // commands JAVAC_GetServerState, JAVAC_Abort & JAVAC_Connect
                 // already been handled in DEViseClient
                 try {
-                    if (clientCmd.startsWith("JAVAC_ProtocolVersion")) {
+                    if (clientCmd.startsWith(DEViseCommands.PROTOCOL_VERSION)) {
                         if (sendCmd(clientCmd)) {
                             if (client.user.addClient(client)) {
                                 serverCmds = new String[2];
-                                serverCmds[0] = "JAVAC_User " + client.ID.intValue();
-                                serverCmds[1] = "JAVAC_Done";
+                                serverCmds[0] = DEViseCommands.USER + " " + client.ID.intValue();
+                                serverCmds[1] = DEViseCommands.DONE;
                             } else {
                                 serverCmds = new String[1];
-                                serverCmds[0] = "JAVAC_Error {Maximum logins for this user has been reached}";
+                                serverCmds[0] = DEViseCommands.ERROR + " {Maximum logins for this user has been reached}";
                                 //throw new YException("No more login is allowed for user \"" + client.user.getName() + "\"");
                                 isRemoveClient = true;
                             }
                         } else {
                             isRemoveClient = true;
                         }
-                    } else if (clientCmd.startsWith("JAVAC_Exit")) {
+                    } else if (clientCmd.startsWith(DEViseCommands.EXIT)) {
                         client.isClientSwitched = false;
                         client.isSwitchSuccessful = false;
                         if (client.isSessionOpened) {
                             client.isSessionOpened = false;
-                            sendCmd("JAVAC_CloseCurrentSession");
+                            sendCmd(DEViseCommands.CLOSE_SESSION);
                             currentDir = new Vector();
                             currentDir.addElement(rootDir);
                         }
@@ -405,33 +409,33 @@ public class DEViseServer implements Runnable
 
                         // no need to return any response to client
                         continue;
-                    } else if (clientCmd.startsWith("JAVAC_CloseCurrentSession")) {
+                    } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
                         client.isClientSwitched = false;
                         client.isSwitchSuccessful = false;
                         if (client.isSessionOpened) {
                             client.isSessionOpened = false;
-                            sendCmd("JAVAC_CloseCurrentSession");
+                            sendCmd(DEViseCommands.CLOSE_SESSION);
                             currentDir = new Vector();
                             currentDir.addElement(rootDir);
                         }
 
                         // no need to return any response to client
                         continue;
-                    } else if (clientCmd.startsWith("JAVAC_GetSessionList")) {
+                    } else if (clientCmd.startsWith(DEViseCommands.GET_SESSION_LIST)) {
                         String[] cmds = DEViseGlobals.parseString(clientCmd);
                         if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir)) {
                             if (cmds[1].equals(rootDir)) {
-                                sendCmd("JAVAC_GetSessionList");
+                                sendCmd(DEViseCommands.GET_SESSION_LIST);
                             } else {
                                 String p = cmds[1].substring(14);
-                                sendCmd("JAVAC_GetSessionList {" + p + "}");
+                                sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
                             }
                             //Vector path = findPath(cmds[1]);
                             //if (path != null) {
                             //    if (path.size() > 0) {
                             //        for (int i = 0; i < path.size(); i++) {
                             //            String p = (String)path.elementAt(i);
-                            //            sendCmd("JAVAC_GetSessionList {" + p + "}");
+                            //            sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
                             //            if (p.equals("..")) {
                             //                currentDir.removeElementAt(currentDir.size() - 1);
                             //            } else {
@@ -439,18 +443,18 @@ public class DEViseServer implements Runnable
                             //            }
                             //        }
                             //    } else {
-                            //        sendCmd("JAVAC_GetSessionList");
+                            //        sendCmd(DEViseCommands.GET_SESSION_LIST);
                             //    }
                             //
                             //} else {
                             //    serverCmds = new String[1];
-                            //    serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
+                            //    serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" + clientCmd + "\"}";
                             //}
                         } else {
                             serverCmds = new String[1];
-                            serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
+                            serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" + clientCmd + "\"}";
                         }
-                    } else if (clientCmd.startsWith("JAVAC_SetDisplaySize")) {
+                    } else if (clientCmd.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
                         boolean error = false;
                         String[] cmds = DEViseGlobals.parseString(clientCmd);
                         if (cmds != null && cmds.length == 3) {
@@ -468,16 +472,16 @@ public class DEViseServer implements Runnable
 
                         if (error) {
                             serverCmds = new String[1];
-                            serverCmds[0] = "JAVAC_Error {Invalid command: \"" + clientCmd + "\"}";
+                            serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" + clientCmd + "\"}";
                             client.screenDimX = -1;
                             client.screenDimY = -1;
                         } else {
                             sendCmd(clientCmd);
                         }
-                    } else if (clientCmd.startsWith("JAVAC_OpenSession")) {
+                    } else if (clientCmd.startsWith(DEViseCommands.OPEN_SESSION)) {
                         if (client.isSessionOpened) {
                             client.isSessionOpened = false;
-                            sendCmd("JAVAC_CloseCurrentSession");
+                            sendCmd(DEViseCommands.CLOSE_SESSION);
                             currentDir = new Vector();
                             currentDir.addElement(rootDir);
                         }
@@ -490,13 +494,13 @@ public class DEViseServer implements Runnable
 
                             boolean error = false;
                             if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
                                     error = true;
                                 }
                             }
 
                             if (!error) {
-                                if (sendCmd("JAVAC_OpenSession {" + client.sessionName + "}")) {
+                                if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.sessionName + "}")) {
                                     client.isSessionOpened = true;
                                 } else {
                                     // need to clear socket because there might be some data on data socket
@@ -515,7 +519,7 @@ public class DEViseServer implements Runnable
                             //if (path != null && path.size() > 0) {
                             //    for (int i = 0; i < path.size() - 1; i++) {
                             //        String p = (String)path.elementAt(i);
-                            //        sendCmd("JAVAC_GetSessionList {" + p + "}");
+                            //        sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
                             //        if (p.equals("..")) {
                             //            currentDir.removeElementAt(currentDir.size() - 1);
                             //        } else {
@@ -532,13 +536,13 @@ public class DEViseServer implements Runnable
                             //
                             //    boolean error = false;
                             //    if (client.screenDimX > 0 && client.screenDimY > 0) {
-                            //        if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                            //        if (!sendCmd(DEViseCommand.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
                             //            error = true;
                             //        }
                             //    }
                             //
                             //    if (!error) {
-                            //        if (sendCmd("JAVAC_OpenSession {" + client.sessionName + "}")) {
+                            //        if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.sessionName + "}")) {
                             //            client.isSessionOpened = true;
                             //        } else {
                             //            // need to clear socket because there might be some data on data socket
@@ -550,7 +554,7 @@ public class DEViseServer implements Runnable
 
                         if (!client.isSessionOpened) {
                             serverCmds = new String[1];
-                            serverCmds[0] = "JAVAC_Error {Can not open session \"" + client.sessionName + "\"}";
+                            serverCmds[0] = DEViseCommands.ERROR + " {Can not open session \"" + client.sessionName + "\"}";
                         }
                     } else {
                         if (client.isClientSwitched) {
@@ -561,18 +565,18 @@ public class DEViseServer implements Runnable
 
                                 boolean error = false;
                                 if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                    if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                    if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
                                         error = true;
                                     //} else {
-                                    //    pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
+                                    //    pop.pn("Switch error: can not send " + DEViseCommands.SET_DISPLAY_SIZE);
                                     }
                                 }
 
                                 if (!error) {
-                                    if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
+                                    if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}")) {
                                         client.isSessionOpened = true;
                                     } else {
-                                        pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
+                                        pop.pn("Switch error: Can not send " + DEViseCommands.OPEN_SESSION + " " + client.savedSessionName);
                                     }
                                     // need to clear socket because there might be some useless data on data socket
                                     //socket.clearSocket();
@@ -591,7 +595,7 @@ public class DEViseServer implements Runnable
                                 //if (path != null) {
                                 //    for (int i = 0; i < path.size(); i++) {
                                 //        String p = (String)path.elementAt(i);
-                                //        sendCmd("JAVAC_GetSessionList {" + p + "}");
+                                //        sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
                                 //        if (p.equals("..")) {
                                 //            currentDir.removeElementAt(currentDir.size() - 1);
                                 //        } else {
@@ -601,18 +605,18 @@ public class DEViseServer implements Runnable
                                 //
                                 //    boolean error = false;
                                 //    if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                //        if (!sendCmd("JAVAC_SetDisplaySize " + client.screenDimX + " " + client.screenDimY)) {
+                                //        if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
                                 //            error = true;
                                 //        } else {
-                                //            pop.pn("Switch error: can not send JAVAC_SetDisplaySize");
+                                //            pop.pn("Switch error: can not send " + DEViseCommands.SET_DISPLAY_SIZE);
                                 //        }
                                 //    }
                                 //
                                 //    if (!error) {
-                                //        if (sendCmd("JAVAC_OpenSession {" + client.savedSessionName + "}")) {
+                                //        if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}")) {
                                 //            client.isSessionOpened = true;
                                 //        } else {
-                                //            pop.pn("Switch error: Can not send JAVAC_OpenSession " + client.savedSessionName);
+                                //            pop.pn("Switch error: Can not send " + DEViseCommands.OPEN_SESSION + " " + client.savedSessionName);
                                 //        }
                                 //
                                 //        // need to clear socket because there might be some useless data on data socket
@@ -640,20 +644,20 @@ public class DEViseServer implements Runnable
                             }
                         } else {
                             serverCmds = new String[1];
-                            serverCmds[0] = "JAVAC_Fail {Do not have an opened session or Can not open last saved session}";
+                            serverCmds[0] = DEViseCommands.FAIL + " {Do not have an opened session or Can not open last saved session}";
                         }
                     }
 
                     // need to get whatever data is sending over by devised along with the commands
                     // since serverCmds always ends with a JAVAC_Error or JAVAC_Fail or JAVAC_Done, so we do not need to check the last command
-                    if (!serverCmds[serverCmds.length - 1].startsWith("JAVAC_Done")) {
+                    if (!serverCmds[serverCmds.length - 1].startsWith(DEViseCommands.DONE)) {
                         String tmpcmd = serverCmds[serverCmds.length - 1];
                         serverCmds = new String[1];
                         serverCmds[0] = tmpcmd;
                     }
 
                     for (int i = 0; i < (serverCmds.length - 1); i++) {
-                        if (serverCmds[i].startsWith("JAVAC_UpdateViewImage")) {
+                        if (serverCmds[i].startsWith(DEViseCommands.UPDATE_VIEW_IMAGE)) {
                             String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
                             if (cmds != null && cmds.length == 3) {
                                 try {
@@ -671,7 +675,7 @@ public class DEViseServer implements Runnable
                             } else {
                                 throw new YException("Ill-formated command \"" + serverCmds[i] + "\"");
                             }
-                        } else if (serverCmds[i].startsWith("JAVAC_UpdateGData")) {
+                        } else if (serverCmds[i].startsWith(DEViseCommands.UPDATE_GDATA)) {
                             String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
                             if (cmds != null && cmds.length == 7) {
                                 try {
@@ -695,13 +699,13 @@ public class DEViseServer implements Runnable
                     pop.pn("DEViseServer failed");
                     pop.pn(e.getMsg());
 
-                    if (clientCmd.startsWith("JAVAC_Exit")) {
+                    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
                         removeCurrentClient(false);
-                    } else if (clientCmd.startsWith("JAVAC_CloseCurrentSession")) {
+                    } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
                         switchClient();
                     } else {
                         try {
-                            client.sendCmd("JAVAC_Error {Communication error occurs while talk to devised}");
+                            client.sendCmd(DEViseCommands.ERROR + " {Communication error occurs while talk to devised}");
                             switchClient();
                         } catch (YException e1) {
                             pop.pn("Client communication error");
@@ -798,7 +802,7 @@ public class DEViseServer implements Runnable
         if (client != null) {
             if (isClose && client.isSessionOpened) {
                 try {
-                    sendCmd("JAVAC_CloseCurrentSession");
+                    sendCmd(DEViseCommands.CLOSE_SESSION);
                     currentDir = new Vector();
                     currentDir.addElement(rootDir);
                 } catch (YException e) {
@@ -831,13 +835,13 @@ public class DEViseServer implements Runnable
                 client.isSessionOpened = false;
 
                 try {
-                    if (sendCmd("JAVAC_SaveSession {" + client.savedSessionName + "}")) {
+                    if (sendCmd(DEViseCommands.SAVE_SESSION + " {" + client.savedSessionName + "}")) {
                         client.isSwitchSuccessful = true;
                     } else {
                         pop.pn("Can not save session for old client while switching client!");
                     }
 
-                    if (!sendCmd("JAVAC_CloseCurrentSession")) {
+                    if (!sendCmd(DEViseCommands.CLOSE_SESSION)) {
                         pop.pn("Can not close current session for old client while switching client!");
                     }
                     currentDir = new Vector();
@@ -940,10 +944,10 @@ public class DEViseServer implements Runnable
                     for (int j = 1; j < cmds.length; j++)
                         cmd = cmd + " {" + cmds[j] + "}";
 
-                    if (cmd.startsWith("JAVAC_Done")) {
+                    if (cmd.startsWith(DEViseCommands.DONE)) {
                         isEnd = true;
                         isError = false;
-                    } else if (cmd.startsWith("JAVAC_Error") || cmd.startsWith("JAVAC_Fail")) {
+                    } else if (cmd.startsWith(DEViseCommands.ERROR) || cmd.startsWith(DEViseCommands.FAIL)) {
                         isEnd = true;
                         isError = true;
                         rspbuf.removeAllElements();
@@ -965,7 +969,7 @@ public class DEViseServer implements Runnable
     {
         int count = 0;
         for (int i = 0; i < (serverCmds.length - 1); i++) {
-            if (serverCmds[i].startsWith("JAVAC_UpdateViewImage")) {
+            if (serverCmds[i].startsWith(DEViseCommands.UPDATE_VIEW_IMAGE)) {
                 String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
                 if (cmds != null && cmds.length == 3) {
                     try {
@@ -981,7 +985,7 @@ public class DEViseServer implements Runnable
                 } else {
                     throw new YException("Ill-formated command \"" + serverCmds[i] + "\" while counting data in the socket");
                 }
-            } else if (serverCmds[i].startsWith("JAVAC_UpdateGData")) {
+            } else if (serverCmds[i].startsWith(DEViseCommands.UPDATE_GDATA)) {
                 String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
                 if (cmds != null && cmds.length == 7) {
                     try {

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2000/04/24 20:22:02  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.56  2000/03/23 16:26:18  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -232,7 +235,7 @@ public class jsdevisec extends Panel
                             return;
                         }
 
-                        dispatcher.start("JAVAC_GetSessionList {" + currentDir + "}");
+                        dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + currentDir + "}");
                     }
                 });
         closeButton.addActionListener(new ActionListener()
@@ -244,7 +247,7 @@ public class jsdevisec extends Panel
                             return;
                         }
 
-                        dispatcher.start("JAVAC_CloseCurrentSession");
+                        dispatcher.start(DEViseCommands.CLOSE_SESSION);
                     }
                 });
         stopButton.addActionListener(new ActionListener()
@@ -270,7 +273,9 @@ public class jsdevisec extends Panel
                             return;
                         }
 
-                        dispatcher.start("JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
+			//TEMPTEMP -- do we need to close the current session first?
+
+                        dispatcher.start(DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
                     }
                 });
         setButton.addActionListener(new ActionListener()
@@ -296,7 +301,7 @@ public class jsdevisec extends Panel
                             return;
                         }
 
-                        dispatcher.start("JAVAC_ResetFilters");
+                        dispatcher.start(DEViseCommands.RESET_FILTERS);
                     }
                 });
         helpButton.addActionListener(new ActionListener()
@@ -326,7 +331,7 @@ public class jsdevisec extends Panel
                 currentSession = sessionName;
             }
 
-            dispatcher.start("JAVAC_SetDisplaySize " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height + "\n" + "JAVAC_OpenSession {" + currentDir + "/" + currentSession + "}");
+            dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height + "\n" + DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
         }
     }
 
@@ -737,11 +742,11 @@ class SessionDlg extends Frame
 
                                         //String dir = (jsc.currentDir).substring(14);
 
-                                        jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
+                                        jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + jsc.currentDir + "}");
                                     } else {
                                         jsc.currentSession = sessionName;
-                                        jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
-                                                                 + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
+                                        jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
+                                                                 + "\n" + DEViseCommands.OPEN_SESSION + " {" + jsc.currentDir + "/" + sessionName + "}");
                                         close();
                                     }
                                 }
@@ -781,11 +786,11 @@ class SessionDlg extends Frame
                                     directory.setText("/" + jsc.currentDir);
                                     validate();
 
-                                    jsc.dispatcher.start("JAVAC_GetSessionList {" + jsc.currentDir + "}");
+                                    jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + jsc.currentDir + "}");
                                 } else {
                                     jsc.currentSession = sessionName;
-                                    jsc.dispatcher.start("JAVAC_SetDisplaySize " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
-                                                             + "\nJAVAC_OpenSession {" + jsc.currentDir + "/" + sessionName + "}");
+                                    jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " + DEViseUIGlobals.screenSize.width + " " + DEViseUIGlobals.screenSize.height
+                                                             + "\n" + DEViseCommands.OPEN_SESSION + " {" + jsc.currentDir + "/" + sessionName + "}");
                                     close();
                                 }
                             }
@@ -1033,7 +1038,7 @@ class SettingDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        jsc.dispatcher.start("JAVAC_GetServerState");
+                        jsc.dispatcher.start(DEViseCommands.GET_SERVER_STATE);
 
                         close();
                     }

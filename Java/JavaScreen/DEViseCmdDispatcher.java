@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2000/04/27 15:56:54  wenger
+// Added some comments and requests for comments.
+//
 // Revision 1.52  2000/04/24 20:21:59  hongyu
 // remove UI dependency of jspop and js
 //
@@ -203,7 +206,7 @@ public class DEViseCmdDispatcher implements Runnable
 	// command to whatever was passed in.
         String command = cmd;
         if (!getOnlineStatus()) {
-            command = "JAVAC_Connect {" + DEViseGlobals.username + "} {"
+            command = DEViseCommands.CONNECT + " {" + DEViseGlobals.username + "} {"
                        + DEViseGlobals.password + "} {" + DEViseGlobals.PROTOCOL_VERSION + "}\n" + command;
         }
 
@@ -264,8 +267,9 @@ public class DEViseCmdDispatcher implements Runnable
                     if (commSocket != null) {
                         if (getOnlineStatus()) {
                             try {
-                                jsc.pn("Sending: \"JAVAC_Exit\"");
-                                commSocket.sendCmd("JAVAC_Exit");
+                                jsc.pn("Sending: \"" + DEViseCommands.EXIT +
+				  "\"");
+                                commSocket.sendCmd(DEViseCommands.EXIT);
                             } catch (YException e) {
                                 jsc.showMsg(e.getMsg());
                             }
@@ -322,12 +326,12 @@ public class DEViseCmdDispatcher implements Runnable
 
                 if (commands[i].length() == 0) {
                     continue;
-                } else if (!commands[i].startsWith("JAVAC")) {
+                } else if (!commands[i].startsWith(DEViseCommands.PREFIX)) {
                     jsc.pn("Invalid command: " + commands[i]);
                     continue;
                 }
 
-                if (commands[i].startsWith("JAVAC_CloseCurrentSession")) {
+                if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
                     jsc.jscreen.updateScreen(false);
 
                     try {
@@ -337,7 +341,7 @@ public class DEViseCmdDispatcher implements Runnable
                         jsc.showMsg(e1.getMsg());
                         disconnect();
                     }
-                } else if (commands[i].startsWith("JAVAC_OpenSession")) {
+                } else if (commands[i].startsWith(DEViseCommands.OPEN_SESSION)) {
                     jsc.jscreen.updateScreen(false);
                     processCmd(commands[i]);
                 } else {
@@ -373,8 +377,9 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showMsg(e.getMsg());
                 jsc.jscreen.updateScreen(false);
                 try {
-                    jsc.pn("Sending: \"JAVAC_CloseCurrentSession\"");
-                    commSocket.sendCmd("JAVAC_CloseCurrentSession");
+                    jsc.pn("Sending: \"" + DEViseCommands.CLOSE_SESSION +
+		      "\"");
+                    commSocket.sendCmd(DEViseCommands.CLOSE_SESSION);
                 } catch (YException e1) {
                     jsc.showMsg(e1.getMsg());
                     disconnect();
@@ -406,27 +411,27 @@ public class DEViseCmdDispatcher implements Runnable
             // adjust the counter
             jsc.viewInfo.updateCount(rsp.length - 1 - i);
 
-            if (rsp[i].startsWith("JAVAC_Done")) { // this command will guranteed to be the last
-                if (command.startsWith("JAVAC_OpenSession")) {
+            if (rsp[i].startsWith(DEViseCommands.DONE)) { // this command will guaranteed to be the last
+                if (command.startsWith(DEViseCommands.OPEN_SESSION)) {
                     jsc.jscreen.updateScreen(true);
                 }
-            } else if (rsp[i].startsWith("JAVAC_Fail")) {
+            } else if (rsp[i].startsWith(DEViseCommands.FAIL)) {
                 jsc.showMsg(rsp[i]);
                 jsc.jscreen.updateScreen(false);
-            } else if (rsp[i].startsWith("JAVAC_Error")) { // this command will guranteed to be the last
-                if (!command.startsWith("JAVAC_GetSessionList")) {
+            } else if (rsp[i].startsWith(DEViseCommands.ERROR)) { // this command will guaranteed to be the last
+                if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
                     jsc.showMsg(rsp[i]);
                 } else {
                     jsc.showSession(new String[] {rsp[i]}, false);
                 }
-            } else if (rsp[i].startsWith("JAVAC_UpdateServerState")) {
+            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_SERVER_STATE)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 jsc.showServerState(cmd[1]);
-            } else if (rsp[i].startsWith("JAVAC_CreateView")) {
+            } else if (rsp[i].startsWith(DEViseCommands.CREATE_VIEW)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length < 25) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -534,7 +539,7 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
-            } else if (rsp[i].startsWith("JAVAC_UpdateViewImage")) {
+            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_VIEW_IMAGE)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 3) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -566,7 +571,7 @@ public class DEViseCmdDispatcher implements Runnable
                     throw new YException("Invalid image data for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
 
                 jsc.jscreen.updateViewImage(viewname, image);
-            } else if (rsp[i].startsWith("JAVAC_UpdateGData")) {
+            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_GDATA)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 7) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -666,14 +671,14 @@ public class DEViseCmdDispatcher implements Runnable
 //          System.out.println("Free memory(after new GData): " +
 //	      Runtime.getRuntime().freeMemory() + "/" +
 //	      Runtime.getRuntime().totalMemory());
-            } else if (rsp[i].startsWith("JAVAC_UpdateSessionList")) {
+            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_SESSION_LIST)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 jsc.showSession(cmd, true);
-            } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
+            } else if (rsp[i].startsWith(DEViseCommands.DRAW_CURSOR)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 14) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -708,21 +713,21 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
-            } else if (rsp[i].startsWith("JAVAC_EraseCursor")) {
+            } else if (rsp[i].startsWith(DEViseCommands.ERASE_CURSOR)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 3) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 jsc.jscreen.removeCursor(cmd[1], cmd[2]);
-            } else if (rsp[i].startsWith("JAVAC_UpdateRecordValue")) {
+            } else if (rsp[i].startsWith(DEViseCommands.UPDATE_RECORD_VALUE)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 } else {
                     jsc.showRecord(cmd);
                 }
-            } else if (rsp[i].startsWith("JAVAC_ViewDataArea")) {
+            } else if (rsp[i].startsWith(DEViseCommands.VIEW_DATA_AREA)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 5) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -738,21 +743,21 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (NumberFormatException e) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
-            } else if (rsp[i].startsWith("JAVAC_DeleteView")) {
+            } else if (rsp[i].startsWith(DEViseCommands.DELETE_VIEW)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 jsc.jscreen.removeView(cmd[1]);
-            } else if (rsp[i].startsWith("JAVAC_DeleteChildViews")) {
+            } else if (rsp[i].startsWith(DEViseCommands.DELETE_CHILD_VIEWS)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
                 jsc.jscreen.removeChildViews(cmd[1]);
-            } else if (rsp[i].startsWith("JAVAC_User")) {
+            } else if (rsp[i].startsWith(DEViseCommands.USER)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 2) {
                     throw new YException("Invalid connection ID received from server", "DEViseCmdDispatcher::processCmd()", 2);
@@ -769,7 +774,7 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (NumberFormatException e) {
                     throw new YException("Invalid connection ID received from server", "DEViseCmdDispatcher::processCmd()", 2);
                 }
-            } else if (rsp[i].startsWith("JAVAC_ShowViewHelp")) {
+            } else if (rsp[i].startsWith(DEViseCommands.SHOW_VIEW_HELP)) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null || cmd.length != 3) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
@@ -857,7 +862,7 @@ public class DEViseCmdDispatcher implements Runnable
                     isFinish = true;
                 } catch (InterruptedIOException e) {
                     if (getAbortStatus()) {
-                        commSocket.sendCmd("JAVAC_Abort");
+                        commSocket.sendCmd(DEViseCommands.ABORT);
                         setAbortStatus(false);
                     }
                 }
@@ -875,12 +880,12 @@ public class DEViseCmdDispatcher implements Runnable
                     for (int j = 1; j < cmds.length; j++)
                         cmd = cmd + " {" + cmds[j] + "}";
 
-                    if (cmd.startsWith("JAVAC_")) {
-                        if (cmd.startsWith("JAVAC_Ack")) {
+                    if (cmd.startsWith(DEViseCommands.PREFIX)) {
+                        if (cmd.startsWith(DEViseCommands.ACK)) {
                             jsc.animPanel.setActiveImageNumber(5);
                         } else {
-                            if (cmd.startsWith("JAVAC_Done") || cmd.startsWith("JAVAC_Error")
-                                || cmd.startsWith("JAVAC_Fail")) {
+                            if (cmd.startsWith(DEViseCommands.DONE) || cmd.startsWith(DEViseCommands.ERROR)
+                                || cmd.startsWith(DEViseCommands.FAIL)) {
                                 isEnd = true;
                             }
 

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2000/04/24 20:22:00  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.51  2000/04/07 22:43:14  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -260,7 +263,7 @@ public class DEViseScreen extends Panel
             String cmd = "";
             for (int i = 0; i < allCanvas.size(); i++) {
                 DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
-                cmd = cmd + "JAVAC_GetViewHelp " + c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
+                cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " + c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
             }
 
             jsc.dispatcher.start(cmd);

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2000/03/23 16:26:12  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.12  1999/10/10 08:49:51  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -187,40 +190,40 @@ public class DEViseClient
                 while (!isSocketEmpty()) {
                     String command = receiveCmd();
                     if (command != null) {
-                        if (!command.startsWith("JAVAC_Connect") && user == null) {
-                            sendCmd("JAVAC_Error {No user infomation given}");
+                        if (!command.startsWith(DEViseCommands.CONNECT) && user == null) {
+                            sendCmd(DEViseCommands.ERROR + " {No user infomation given}");
                             throw new YException("Can not get user information for this client");
                         }
 
-                        if (command.startsWith("JAVAC_Abort")) {
+                        if (command.startsWith(DEViseCommands.ABORT)) {
                             cmdBuffer.removeAllElements();
-                        } else if (command.startsWith("JAVAC_Connect")) {
+                        } else if (command.startsWith(DEViseCommands.CONNECT)) {
                             String[] cmds = DEViseGlobals.parseString(command);
                             if (cmds != null && cmds.length == 4) {
                                 user = pop.getUser(cmds[1], cmds[2]);
                                 if (user != null) { 
                                     cmdBuffer.removeAllElements();
-                                    cmdBuffer.addElement("JAVAC_ProtocolVersion " + cmds[3]);
+                                    cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
                                 } else {
-                                    sendCmd("JAVAC_Error {Can not find such user}");
+                                    sendCmd(DEViseCommands.ERROR + " {Can not find such user}");
                                     throw new YException("Client send invalid login information");
                                 }
                             } else {
-                                sendCmd("JAVAC_Error {Invalid connecting request}");
+                                sendCmd(DEViseCommands.ERROR + " {Invalid connecting request}");
                                 throw new YException("Invalid connection request received from client");
                             }
-                        } else if (command.startsWith("JAVAC_CloseCurrentSession")) {
+                        } else if (command.startsWith(DEViseCommands.CLOSE_SESSION)) {
                             cmdBuffer.removeAllElements();
-                            cmdBuffer.addElement("JAVAC_CloseCurrentSession");
-                        } else if (command.startsWith("JAVAC_Exit")) {
+                            cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
+                        } else if (command.startsWith(DEViseCommands.EXIT)) {
                             cmdBuffer.removeAllElements();
-                            cmdBuffer.addElement("JAVAC_Exit");
-                        } else if (command.startsWith("JAVAC_GetServerState")) {
-                            String state = "JAVAC_UpdateServerState " + pop.getServerState();
-                            sendCmd(new String[] {state, "JAVAC_Done"});
+                            cmdBuffer.addElement(DEViseCommands.EXIT);
+                        } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
+                            String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
+                            sendCmd(new String[] {state, DEViseCommands.DONE});
                         } else {
                             cmdBuffer.addElement(command);
-                            sendCmd("JAVAC_Ack");
+                            sendCmd(DEViseCommands.ACK);
                         }
                     }
                 }
@@ -263,7 +266,7 @@ public class DEViseClient
                 }
             }
 
-            //socket.sendCmd("JAVAC_Done");
+            //socket.sendCmd(DEViseCommands.DONE);
         } else {
             throw new YException("Invalid client");
         }

@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2000/04/24 20:21:58  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.39  2000/04/07 22:43:13  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -61,6 +64,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.40  2000/04/24 20:21:58  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.39  2000/04/07 22:43:13  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -834,7 +840,7 @@ public class DEViseCanvas extends Container
 
             if (actualKey != 0 && activeView != null && activeView.isKey) {
                 String cmd = "";
-                cmd = cmd + "JAVAC_KeyAction " + activeView.getCurlyName() + " " + actualKey;
+                cmd = cmd + DEViseCommands.KEY_ACTION + " " + activeView.getCurlyName() + " " + actualKey;
                 jscreen.guiAction = true;
                 dispatcher.start(cmd);
             }
@@ -927,7 +933,7 @@ public class DEViseCanvas extends Container
                     cursor.image = null;
 
                     if (DEViseCanvas.lastKey != KeyEvent.VK_CONTROL) {
-                        cmd = cmd + "JAVAC_CursorChanged " + cursor.name + " "
+                        cmd = cmd + DEViseCommands.CURSOR_CHANGED + " " + cursor.name + " "
                               + cursor.x + " "
                               + cursor.y + " "
                               + cursor.width + " "
@@ -949,7 +955,7 @@ public class DEViseCanvas extends Container
                         h = -h;
 
                     if (w > DEViseUIGlobals.rubberBandLimit.width || h > DEViseUIGlobals.rubberBandLimit.height) {
-                        cmd = cmd + "JAVAC_MouseAction_RubberBand " + activeView.getCurlyName() + " "
+                        cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND + " " + activeView.getCurlyName() + " "
                               + activeView.translateX(sp.x, 2) + " " + activeView.translateY(sp.y, 2) + " " + activeView.translateX(ep.x, 2) + " " + activeView.translateY(ep.y, 2);
 
                         if (DEViseCanvas.lastKey == KeyEvent.VK_ALT) {
@@ -985,14 +991,14 @@ public class DEViseCanvas extends Container
                 Point p = event.getPoint();
 
                 if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT && activeView.isDrillDown) {
-                    cmd = "JAVAC_ShowRecords " + activeView.getCurlyName() + " " + activeView.translateX(p.x, 2) + " " + activeView.translateY(p.y, 2);
+                    cmd = DEViseCommands.SHOW_RECORDS + " " + activeView.getCurlyName() + " " + activeView.translateX(p.x, 2) + " " + activeView.translateY(p.y, 2);
                 } else if (DEViseCanvas.lastKey == KeyEvent.VK_F1) {
                     if (helpMsg != null) {
                         helpMsg = null;
                     } else {
                         helpMsgX = activeView.translateX(p.x, 2);
                         helpMsgY = activeView.translateY(p.y, 2);
-                        cmd = "JAVAC_GetViewHelp " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
+                        cmd = DEViseCommands.GET_VIEW_HELP + " " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
                     }
                 } else {
                     DEViseCursor cursor = activeView.getFirstCursor();
@@ -1013,7 +1019,7 @@ public class DEViseCanvas extends Container
 
                         cursor.updateCursorLoc(dx, dy, 1, whichCursorSide, true);
 
-                        cmd = "JAVAC_CursorChanged " + cursor.name + " "
+                        cmd = DEViseCommands.CURSOR_CHANGED + " " + cursor.name + " "
                               + cursor.x + " "
                               + cursor.y + " "
                               + cursor.width + " "
