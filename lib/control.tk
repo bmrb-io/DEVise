@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.40  1995/12/20 02:26:26  ravim
+#	Variable to store temp. directory location added.
+#
 #	Revision 1.39  1995/12/18 03:12:46  ravim
 #	Confidence intervals displayed.
 #
@@ -179,7 +182,8 @@ set DEViseColors {{0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{22 blue} {23 orange} {24 LightGray} {25 red1} {26 red2} \
 	{27 green1} {28 green2} {29 blue1} {30 blue2} {31 gold1} {32 gold2} \
 	{33 blue1} {34 blue2} {35 blue3} {36 blue4}}
-set DEViseShapes {{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval}}
+set DEViseShapes {{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} \
+	{5 Vector}}
 
 # global to control.tk: curView: current view selected.
 # lastView: last view selected.
@@ -1491,10 +1495,10 @@ proc SaveCursorViews { file dict} {
 	set src [DictLookup $dict [lindex $views 0]]
 	set dst [DictLookup $dict [lindex $views 1]]
 	if {$src != ""} {
-	    puts $file "DEVise setCursorSrc $cursor \$$src"
+	    puts $file "DEVise setCursorSrc \{$cursor\} \$$src"
 	}
 	if {$dst != ""} {
-	    puts $file "DEVise setCursorDst $cursor \$$dst"
+	    puts $file "DEVise setCursorDst \{$cursor\} \$$dst"
 	}
     }
 }
