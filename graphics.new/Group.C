@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/07 20:23:52  jussi
+  Made output statements be part of DEBUG setup.
+
   Revision 1.2  1995/09/27 23:59:43  ravim
   Fixed some bugs. Added some new functions for handling groups.
 
@@ -32,7 +35,8 @@
 
 Group::Group(char *nm,Group *par, int typ)
 {
-  strcpy(name, nm);
+  strncpy(name, nm, sizeof name);
+  name[sizeof name - 1] = 0;
   type = typ;
   parent = par;
   subgrps = new(ItemList);
