@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.223  2000/05/16 14:35:53  wenger
+  Fixed minor typo.
+
   Revision 1.222  2000/05/10 16:19:42  wenger
   Cursors now drawn as frames rather than filled rectangles.
 
@@ -2870,7 +2873,9 @@ View::HideCursors()
         }
 	  }
 	  if (_jsCursors) {
-	    JavaScreenCmd::EraseCursor(this, cursor);
+		// JavaScreen automatically erases a cursor when it gets a
+		// cursor draw request.
+	    // JavaScreenCmd::EraseCursor(this, cursor);
 	  }
     }
     _cursors->DoneIterator(index);
@@ -4458,9 +4463,10 @@ View::MouseDrag(int x1, int y1, int x2, int y2)
       cursor->FindNewPosition(x1, y1, x2, y2, hitType, dataXLow, dataYLow,
           dataXHigh, dataYHigh);
       int x3, y3, x4, y4;
-	  cursor->GetDestPixels(dataXLow, dataYLow, dataXHigh, dataYHigh,
-	      x3, y3, x4, y4);
-      winRep->DrawRubberband(x3, y3, x4, y4);
+	  if (cursor->GetDestPixels(dataXLow, dataYLow, dataXHigh, dataYHigh,
+	      x3, y3, x4, y4)) {
+        winRep->DrawRubberband(x3, y3, x4, y4);
+	  }
     }
   }
 }

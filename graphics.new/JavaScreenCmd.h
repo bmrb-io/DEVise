@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.38  2000/06/05 16:22:42  wenger
+  Basically finished command/GData/GIF caching for JavaScreen support
+  (there are a few refinements that could still be added); changed the
+  default to do/use caching.
+
   Revision 1.37  2000/05/01 18:02:52  wenger
   Modified JavaScreenCmd::SendChangedViews() to reduce "cursor disappearing":
   JAVAC_DrawCursor commands now are sent ASAP after the corresponding
@@ -320,7 +325,7 @@ class JavaScreenCmd
 		void DeleteChildViews(View *view);
 		void SendViewDataArea(View *view);
 		void UpdateViewImage(View *view, int imageSize);
-		void EraseChangedCursors();
+		// void EraseChangedCursors();
 		void DrawChangedCursors();
 		void DrawViewCursors(View *view);
 

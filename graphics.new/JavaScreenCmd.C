@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.102  2000/06/05 16:22:41  wenger
+  Basically finished command/GData/GIF caching for JavaScreen support
+  (there are a few refinements that could still be added); changed the
+  default to do/use caching.
+
   Revision 1.101  2000/05/01 18:02:42  wenger
   Modified JavaScreenCmd::SendChangedViews() to reduce "cursor disappearing":
   JAVAC_DrawCursor commands now are sent ASAP after the corresponding
@@ -2364,7 +2369,13 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	}
 
 	int xPixLow, yPixLow, xPixHigh, yPixHigh;
-	cursor->GetDestPixels(xPixLow, yPixLow, xPixHigh, yPixHigh);
+	Boolean cursorValid = cursor->GetDestPixels(xPixLow, yPixLow, xPixHigh,
+	  yPixHigh);
+    if (!cursorValid) {
+	    EraseCursor(view, cursor);
+		return;
+    }
+
 
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow,
@@ -2483,10 +2494,6 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
-// JavaScreen will now automatically erase cursor before re-drawing it,
-// so (hopefully) we should never have to explicitly request it to erase
-// a cursor.  RKW 1999-04-02.
-#if 0
 	if (_postponeCursorCmds) {
 #if defined (DEBUG_LOG)
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
@@ -2506,7 +2513,6 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
     // This JavaScreenCmd object is created only to send the command.
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
 	args.ReturnVal(&jsc);
-#endif
 }
 
 //====================================================================
@@ -2655,6 +2661,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	  (char **)args.GetArgs());	
 }
 
+#if 0
 //====================================================================
 void
 JavaScreenCmd::EraseChangedCursors()
@@ -2676,6 +2683,7 @@ JavaScreenCmd::EraseChangedCursors()
 
 	_erasedCursors.DeleteAll();
 }
+#endif
 
 //====================================================================
 void
