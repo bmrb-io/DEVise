@@ -1,4 +1,8 @@
-/* AttrList.h: keeps track of TData attributes */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef AttrList_h
 #define AttrList_h
 #include <sys/time.h>

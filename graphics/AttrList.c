@@ -1,4 +1,8 @@
-/* AttrList.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "AttrList.h"
 #include "Util.h"

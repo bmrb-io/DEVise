@@ -1,4 +1,8 @@
-/* ActionClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "ActionClassInfo.h"
 #include "Action.h"

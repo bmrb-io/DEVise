@@ -1,4 +1,8 @@
-/* AxisLabelClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "AxisLabelClassInfo.h"
 #include "View.h"

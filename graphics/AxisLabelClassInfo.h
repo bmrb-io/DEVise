@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef AxisLabelClassInfo_h
 #define AxisLabelClassInfo_h
 #include "DeviseTypes.h"

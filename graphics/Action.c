@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Action.h"
 #include "Control.h"
 #include "View.h"

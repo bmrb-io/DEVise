@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef ActionClassInfo_h
 #define ActionClassInfo_h
 #include "DeviseTypes.h"
