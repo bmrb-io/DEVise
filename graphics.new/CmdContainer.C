@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/09/27 20:41:18  wenger
+  Unrecognized commands are now logged.
+
   Revision 1.48  1999/09/07 19:00:53  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -784,7 +787,8 @@ CmdContainer::RunOneCommand(int argc, char** argv, ControlPanel* control)
 		fprintf(stderr, "Command is: ");
         PrintArgs(stderr, argc, argv, true);
 #if defined(DEBUG_LOG)
-		DebugLog::DefaultLog()->Message("Command: ", argc, argv);
+		DebugLog::DefaultLog()->Message(DebugLog::LevelError, "Command: ",
+		  argc, argv);
 #endif
 		control->ReturnVal(API_NAK, "Unrecognized command");
 		retval = -1;

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/09/08 20:56:21  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.7  1999/07/16 21:35:49  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -119,7 +123,7 @@ DevError::ReportError(const char *message, char *file, int line, int errnum)
 
     fprintf(stderr, "%s", errStr.str());
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message(errStr.str());
+    DebugLog::DefaultLog()->Message(DebugLog::LevelError, errStr.str());
 #endif
     strncpy(_errBuf, errStr.str(), MAXPATHLEN * 2);
     _errBuf[MAXPATHLEN * 2 - 1] = '\0'; // ensure termination

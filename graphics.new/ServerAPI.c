@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1999/10/04 19:37:09  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.40  1999/06/25 15:58:24  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -247,7 +250,7 @@ ControlPanel *GetNewControl()
 static void
 LogFn(char *msg)
 {
-  DebugLog::DefaultLog()->Message(msg);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo0, msg);
 }
 
 ServerAPI::ServerAPI()

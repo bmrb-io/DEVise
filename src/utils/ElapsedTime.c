@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/09/01 19:27:43  wenger
+  Debug logging improved -- directory of log file can now be specified
+  with the DEVISE_LOG_DIR environment variable (changed most startup scripts
+  to put it in the DEVise tmp directory); added logging of a bunch of elapsed
+  times to help figure out JavaScreen performance bottlenecks.
+
  */
 
 #include <stdio.h>
@@ -82,7 +88,7 @@ ElapsedTime::ReportTime(const char *info)
     sprintf(buf, "%s elapsed time: can't find time", info);
   }
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message(buf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, buf);
 #else
   printf("%s\n", buf);
 #endif

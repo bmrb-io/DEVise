@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.124  1999/09/08 20:56:29  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.123  1999/08/17 19:47:03  wenger
   Converted Condor UserMonth session from high/low symbols to piles for
   better representation of data; fixed some cursor/pile drawing bugs and
@@ -2042,7 +2046,7 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
   {
     char logBuf[256];
     sprintf(logBuf, "ViewGraph(%s)::DerivedStartQuery()\n", GetName());
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
 
@@ -2136,7 +2140,7 @@ void ViewGraph::DerivedAbortQuery()
   {
     char logBuf[256];
     sprintf(logBuf, "ViewGraph(%s)::DerivedAbortQuery()\n", GetName());
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
 
@@ -2225,7 +2229,7 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
   {
     char logBuf[256];
     sprintf(logBuf, "ViewGraph(%s)::QueryDone(%d)\n", GetName(), bytes);
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
 

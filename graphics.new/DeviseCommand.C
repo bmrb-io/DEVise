@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.81  1999/09/23 15:46:30  wenger
+  Added per-session data source capability:  data sources defined in a
+  session file are added to a separate catalog which is delete when the
+  session is closed; the "regular" and the per-session catalog are treated
+  as a single catalog while the session is open.
+
   Revision 1.80  1999/09/07 19:00:54  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -512,7 +518,8 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	fflush(stdout);
 #endif
 #if defined(DEBUG_LOG)
-	DebugLog::DefaultLog()->Message("Starting command ", argc, argv);
+	DebugLog::DefaultLog()->Message(DebugLog::LevelCommand,
+	  "Starting command ", argc, argv);
 #endif
 
 	int	retval;
@@ -555,7 +562,7 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 #if defined(DEBUG_LOG)
     char logBuf[256];
     sprintf(logBuf, "  Done with command <%s>\n", argv[0]);
-	DebugLog::DefaultLog()->Message(logBuf);
+	DebugLog::DefaultLog()->Message(DebugLog::LevelCommand, logBuf);
 #endif
 
 	return retval;

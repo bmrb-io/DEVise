@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1999/07/19 19:46:33  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
  */
 
 #include <stdio.h>
@@ -110,7 +114,7 @@ HangCheck::TimerWake(int arg)
 #if defined(DEBUG_LOG)
   char logBuf[256];
   sprintf(logBuf, "HangCheck()::TimerWake(%d)\n", tag);
-  DebugLog::DefaultLog()->Message(logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
   if (tag == _lastDispTag) {

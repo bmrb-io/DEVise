@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/08/25 14:55:31  wenger
+  More improvements to JavaScreen argument handling; assertion failures are
+  written to debug log.
+
   Revision 1.23  1999/07/19 19:46:32  wenger
   If Devise gets hung, it now detects this and kills itself (mainly for
   the sake of JavaScreen support).
@@ -195,7 +199,7 @@ void Exit::DoAbort(char *reason, char *file, int line)
 #if !defined(LIBCS) && !defined(ATTRPROJ)
   char errBuf[1024];
   sprintf(errBuf, "Failed assertion: %s\n", fulltext);
-  DebugLog::DefaultLog()->Message(errBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelFatalError, errBuf);
 #endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)

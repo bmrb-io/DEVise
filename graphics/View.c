@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.195  1999/10/04 19:36:57  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.194  1999/09/24 21:02:16  wenger
   Devised changes to correspond with the latest JavaScreen code:
   JAVAC_CreateView command sends more info; JS protocol version is now
@@ -1232,7 +1235,7 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
         GetName(), _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh,
 	_filter.flag, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh,
 	filter.flag);
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
 
@@ -3483,7 +3486,7 @@ void	View::Run(void)
 	{
       char logBuf[256];
 	  sprintf(logBuf, "View(%s)::Run()\n", GetName());
-	  DebugLog::DefaultLog()->Message(logBuf);
+	  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 	}
 #endif
 #if defined(DEBUG)

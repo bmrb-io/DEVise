@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/09/29 00:56:01  wenger
+  Improved handing of session files in JavaScreen support: better error
+  checking, devised won't go up from 'base' session directory;
+  more flexible debug logging method now available.
+
   Revision 1.4  1999/07/16 21:36:06  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -49,10 +54,13 @@
 
 class DebugLog {
 public:
-  void Message(const char *msg1, const char *msg2 = NULL,
+  enum Level {LevelFatalError = 0, LevelError, LevelWarning, LevelInfo0,
+      LevelInfo1, LevelCommand, LevelInfo2, LevelDispatcher};
+
+  void Message(Level level, const char *msg1, const char *msg2 = NULL,
       const char *msg3 = NULL);
-  void Message(const char *msg1, int argc, const char * const *argv,
-      const char *msg2 = "\n");
+  void Message(Level level, const char *msg1, int argc,
+      const char * const *argv, const char *msg2 = "\n");
 
   static DebugLog *DefaultLog();
   static void DeleteAll();
@@ -60,7 +68,7 @@ public:
 protected:
   // Note: these should be moved to being public once we implement a
   // list of all DebugLog objects.
-  DebugLog(const char *filename = "devise_debug_log",
+  DebugLog(Level logLevel, const char *filename = "devise_debug_log",
       long maxSize = (2 * 1024 * 1024));
   ~DebugLog();
 
@@ -70,6 +78,7 @@ private:
   int _logNum;
   int _fd;
   long _maxSize;
+  Level _logLevel;
 };
 
 #endif /* _DebugLog_h_ */

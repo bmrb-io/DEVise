@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.12  1999/07/16 21:36:07  wenger
+  Changes to try to reduce the chance of devised hanging, and help diagnose
+  the problem if it does: select() in Server::ReadCmd() now has a timeout;
+  DEVise stops trying to connect to Tasvir after a certain number of failures,
+  and Tasvir commands are logged; errors are now logged to debug log file;
+  other debug log improvements.  Changed a number of 'char *' declarations
+  to 'const char *'.
+
   Revision 1.11  1998/09/30 17:44:43  wenger
   Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
   bug 401 (improper saving of window positions).
@@ -160,11 +168,13 @@ DeviseServer::Run()
 
   if (_numClients < 1) {
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("Before WaitForConnection()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+        "Before WaitForConnection()\n");
 #endif
     WaitForConnection();
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("After WaitForConnection()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+        "After WaitForConnection()\n");
 #endif
     if (_numClients < 1) {
       reportErrNosys("No client connected");
@@ -172,11 +182,13 @@ DeviseServer::Run()
   } else {
     // Note: SingleStep() receives a command and/or sets up a new connection.
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("Before SingleStep()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+        "Before SingleStep()\n");
 #endif
     SingleStep();
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("After SingleStep()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+        "After SingleStep()\n");
 #endif
   }
 }

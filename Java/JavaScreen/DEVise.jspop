@@ -35,6 +35,6 @@ setenv LM_LIB                   $DEVISE_LIB/LM
 #setenv DEVISE_EXEC              /p/devise/wenger/tmp/hongyu/devised
 setenv DEVISE_EXEC              ./devised
 
-$DEVISE_EXEC $* >>& devised.out
+$DEVISE_EXEC $* -logLevel 7>>& devised.out
 
 rmmem

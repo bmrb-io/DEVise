@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.91  1999/10/04 19:37:10  wenger
+  Mouse location is displayed in "regular" DEVise.
+
   Revision 1.90  1999/09/07 19:00:57  wenger
   dteInsertCatalogEntry command changed to tolerate an attempt to insert
   duplicate entries without causing a problem (to allow us to get rid of
@@ -473,7 +476,7 @@ TkControlPanel::~TkControlPanel()
 static void
 LogFn(char *msg)
 {
-  DebugLog::DefaultLog()->Message(msg);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo0, msg);
 }
 
 void TkControlPanel::StartSession()

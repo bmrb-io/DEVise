@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/03/25 14:51:50  wenger
+  Added standard headers to all graphics sources.
+
   Revision 1.15  1998/03/10 19:52:36  wenger
   Merged cleanup_1_4_7_br_10 through cleanup_1_4_7_br_11 (fixes callback
   list problems on SGIs).
@@ -212,7 +215,8 @@ void Timer::TimerHandler(int arg)
     printf("Timer::TimerHandler()\n");
 #endif
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("Timer::TimerHandler()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+	  "Timer::TimerHandler()\n");
 #endif
 
     StopTimer();
@@ -268,7 +272,8 @@ Stop the timer
 void Timer::StopTimer()
 {
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("Timer::StopTimer()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+	  "Timer::StopTimer()\n");
 #endif
 
     if (_inHandler || !_timerRunning)
@@ -311,7 +316,8 @@ Restart the timer
 void Timer::StartTimer()
 {
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("Timer::StartTimer()\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2,
+	  "Timer::StartTimer()\n");
 #endif
 
     if (_inHandler)

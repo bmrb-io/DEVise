@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/09/29 00:56:01  wenger
+  Improved handing of session files in JavaScreen support: better error
+  checking, devised won't go up from 'base' session directory;
+  more flexible debug logging method now available.
+
   Revision 1.7  1999/09/01 19:27:08  wenger
   Debug logging improved -- directory of log file can now be specified
   with the DEVISE_LOG_DIR environment variable (changed most startup scripts
@@ -75,7 +80,7 @@ static DebugLog *_defaultLog = NULL;
  * function: DebugLog::DebugLog
  * Constructor.
  */
-DebugLog::DebugLog(const char *filename, long maxSize)
+DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
 {
   if (Init::DoDebugLog()) {
     // Note: using open() intead of fopen() here so we can open an existing
@@ -93,6 +98,7 @@ DebugLog::DebugLog(const char *filename, long maxSize)
     }
     _maxSize = maxSize;
     _logNum = 0;
+    _logLevel = logLevel;
   } else {
     _fd = -1;
   }
@@ -119,10 +125,10 @@ DebugLog::~DebugLog()
  * Log a message.
  */
 void
-DebugLog::Message(const char *msg1, const char *msg2 = NULL, 
+DebugLog::Message(Level level, const char *msg1, const char *msg2 = NULL, 
     const char *msg3 = NULL)
 {
-  if (_fd != -1) {
+  if (_fd != -1 && ((int)level <= (int)_logLevel)) {
     char logBuf[1024];
     sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
     write(_fd, logBuf, strlen(logBuf));
@@ -147,10 +153,10 @@ DebugLog::Message(const char *msg1, const char *msg2 = NULL,
  * Log a message, with arguments.
  */
 void
-DebugLog::Message(const char *msg1, int argc, const char * const *argv,
-    const char *msg2)
+DebugLog::Message(Level level, const char *msg1, int argc,
+    const char * const *argv, const char *msg2)
 {
-  if (_fd != -1) {
+  if (_fd != -1 && ((int)level <= (int)_logLevel)) {
     char logBuf[MAXPATHLEN * 2];
     sprintf(logBuf, "\n%d (%s): ", _logNum++, GetTimeString());
     write(_fd, logBuf, strlen(logBuf));
@@ -188,7 +194,7 @@ DebugLog::DefaultLog()
     }
     char filename[MAXPATHLEN];
     sprintf(filename, "%s/devise_debug_log_%ld", logDir, (long)getpid());
-    _defaultLog = new DebugLog(filename);
+    _defaultLog = new DebugLog((Level)Init::LogLevel(), filename);
   }
 
   return _defaultLog;

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.16  1999/09/21 18:58:15  wenger
+  Devise looks for an already-running Tasvir before launching one; Devise
+  can also launch a new Tasvir at any time if Tasvir has crashed; added
+  warning if you use -gl flag with non-OpenGL linked DEVise.
+
   Revision 1.15  1999/07/16 21:35:48  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -462,7 +467,8 @@ DaliIfc::LaunchServer()
 
     printf("Launching Tasvir server\n");
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message("Launching Tasvir server");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	    "Launching Tasvir server");
 #endif
 
     pid_t pid = fork();
@@ -568,7 +574,7 @@ SendCommand(int fd, const char *commandBuf, int imageLen, const char *image,
   {
     char logBuf[MAXPATHLEN * 2];
     sprintf(logBuf, "Tasvir command: <%s>\n", commandBuf);
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
   }
 #endif
 
@@ -583,7 +589,8 @@ SendCommand(int fd, const char *commandBuf, int imageLen, const char *image,
   }
 
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message("  Tasvir command sent");
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+      "  Tasvir command sent");
 #endif
 
 /*
@@ -597,7 +604,7 @@ SendCommand(int fd, const char *commandBuf, int imageLen, const char *image,
       result = StatusFailed;
     }
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message("  Tasvir image sent");
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "  Tasvir image sent");
 #endif
   }
 
@@ -651,7 +658,8 @@ OpenConnection(const char *daliServer, int &fd, Boolean tryLaunch)
   DevStatus result = StatusOk;
 
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message("Opening Tasvir connection");
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+      "Opening Tasvir connection");
 #endif
 
   const int maxConnectFails = 25;
@@ -660,7 +668,7 @@ OpenConnection(const char *daliServer, int &fd, Boolean tryLaunch)
     char *msg = "Tasvir connect canceled because of previous failures";
     fprintf(stderr, "%s\n", msg);
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message(msg);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, msg);
 #endif
     fd = -1;
     result = StatusCancel;
@@ -760,7 +768,7 @@ WaitForReply(char *buf, int fd, int bufSize, double timeout)
   if (result.IsComplete()) {
     char logBuf[1024];
     sprintf(logBuf, "Tasvir reply: <%s>\n", buf);
-    DebugLog::DefaultLog()->Message(logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
   }
 #endif
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.56  1999/07/19 19:46:31  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.55  1999/06/25 15:58:00  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -290,7 +294,8 @@
 //#define DEBUG_CALLBACK_ORDER
 
 #if defined(DEBUG_LOG)
-#  define LogMessage(msg) DebugLog::DefaultLog()->Message(msg)
+#  define LogMessage(msg) DebugLog::DefaultLog()->Message( \
+     DebugLog::LevelDispatcher, msg)
 #else
 #  define LogMessage(msg) fprintf(stderr, "%s", msg)
 #endif
@@ -435,7 +440,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "  DispatcherID is 0x%p\n", info);
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
   return info;
 }
@@ -568,7 +573,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
     _callback_requests);
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
 #if defined(DEBUG_CALLBACK_LIST)
@@ -666,7 +671,7 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
   sprintf(_logBuf,
     "done with Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
     _callback_requests);
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
 	_processingDepth--;
@@ -687,9 +692,9 @@ void Dispatcher::Run1()
 
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::Run1()\n");
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
   sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
 #if defined(DEBUG_CALLBACK_LIST)
@@ -924,7 +929,8 @@ Dispatcher::WaitForQueries()
   printf("Dispatcher::WaitForQueries()\n");
 #endif
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message("Dispatcher::WaitForQueries()\n");
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher,
+      "Dispatcher::WaitForQueries()\n");
 #endif
 
   _waitingForQueries = true;
@@ -967,7 +973,8 @@ Dispatcher::WaitForQueries()
   printf("Leaving Dispatcher::WaitForQueries()\n");
 #endif
 #if defined(DEBUG_LOG)
-  DebugLog::DefaultLog()->Message("Leaving Dispatcher::WaitForQueries()\n");
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher,
+      "Leaving Dispatcher::WaitForQueries()\n");
 #endif
 
   _waitingForQueries = false;
@@ -1012,7 +1019,7 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::RequestCallback(0x%p %s)\n", info,
     info->callBack->DispatchedName());
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
   DOASSERT(info, "bad dispatcher id");
@@ -1047,7 +1054,7 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 #if defined(DEBUG_LOG)
     sprintf(_logBuf, "  After increment, _callback_requests = %d\n",
         _callback_requests);
-    DebugLog::DefaultLog()->Message(_logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
   }
 
@@ -1071,7 +1078,7 @@ void Dispatcher::CancelCallback(DispatcherID info)
 #if defined(DEBUG_LOG)
   sprintf(_logBuf, "Dispatcher::CancelCallback(0x%p %s)\n", info,
     info->callBack->DispatchedName());
-  DebugLog::DefaultLog()->Message(_logBuf);
+  DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
   DOASSERT(info, "bad dispatcher id");
@@ -1082,7 +1089,7 @@ void Dispatcher::CancelCallback(DispatcherID info)
 #if defined(DEBUG_LOG)
     sprintf(_logBuf, "  After decrement, _callback_requests = %d\n",
 	_callback_requests);
-    DebugLog::DefaultLog()->Message(_logBuf);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
       
 #if defined(DEBUG)

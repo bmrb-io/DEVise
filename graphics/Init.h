@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  1999/07/19 19:46:34  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.25  1999/06/25 15:58:12  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -217,6 +221,7 @@ class Init {
 	static int ClientTimeout() { return _clientTimeout; }
 
     static Boolean DoDebugLog() { return _doDebugLog; }
+	static int LogLevel() { return _logLevel; }
 
     static Boolean DoHangCheck() { return _doHangCheck; }
 
@@ -286,6 +291,7 @@ protected:
 	static int _clientTimeout;	   /* quit if client doesn't send commands */
 
 	static Boolean _doDebugLog;
+	static int _logLevel;
 	static Boolean _doHangCheck;
 };
 

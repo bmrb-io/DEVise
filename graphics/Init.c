@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/07/19 19:46:33  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.52  1999/06/25 15:58:12  wenger
   Improved debug logging, especially for JavaScreen support: JavaScreenCmd.C
   now uses DebugLog facility instead of printf; dispatcher logging is turned
@@ -257,6 +261,7 @@
   #include "InitShut.h"
 #endif
 #include "ClientAPI.h"
+#include "DebugLog.h"
 
 static char uniqueFileName[100];
 
@@ -344,6 +349,7 @@ char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
 Boolean Init::_doDebugLog = true;
+int Init::_logLevel = (int)DebugLog::LevelInfo2;
 Boolean Init::_doHangCheck = true;
 
 Boolean Init::_quitOnDisconnect = false;
@@ -418,6 +424,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-clientTimeout <value>: quit if client doesn't send"
 					" a command for <value> minutes\n");
   fprintf(stderr, "\t-debugLog 0|1: write debug log or not\n");
+  fprintf(stderr, "\t-logLevel <value>: level of debug logging\n");
   fprintf(stderr, "\t-hangCheck 0|1: do hang check or not\n");
 
   Exit::DoExit(1);
@@ -880,6 +887,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_doDebugLog = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "logLevel") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_logLevel = atoi(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 
