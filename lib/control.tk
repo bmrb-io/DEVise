@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.94  1996/11/03 02:41:50  kmurli
+#	Modified to include the query schema level. Also modified to include DQL
+#	processing
+#
 #	Revision 1.93  1996/09/27 15:51:36  wenger
 #	Added "Memory leaks" and "Memory in use" menu selections and associated
 #	Tcl "DEVise" commands (conditionaled out for commit).
@@ -571,8 +575,6 @@ menu .mbar.session.menu.exportMenu -tearoff 0
 .mbar.session.menu add command -label "Merge Template" \
 	-command {DoTemplateMerge}
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Toggle Mode" -command { ChangeMode }
-.mbar.session.menu add separator
 .mbar.session.menu add command -label "Add Replica" -command { AddReplica }
 .mbar.session.menu add command -label "Remove Replica" \
 	-command { NotImplemented }
@@ -763,9 +765,9 @@ button .panel.query.button2 -text "Mapping" -width 7 -relief raised \
 	-highlightthickness 0 -bd 3 -command { DoEditMapping } \
 	-state disabled
 
-pack   .panel.query.button .panel.query.button2 -side top -padx 2m -pady 1m
+pack .panel.query.button .panel.query.button2 -side top -padx 2m -pady 1m
 
-label .panel.center.dummy -text "" -font 5x7 -fg red
+label .panel.center.dummy -text "" -font 5x7
 
 button .panel.center.label -text DEVise \
         -font -*-times-medium-i-normal--*-300-*-*-*-*-*-* \
@@ -787,23 +789,25 @@ pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
 pack  .panel.center.version -side top -expand 0 -fill x
 pack  .panel.center.copyright -side top -expand 0 -fill x
 
-label .panel.messages.mode -text "" \
-        -font -*-helvetica-bold-o-normal--*-180-*-*-*-*-*-* \
-	-fg red -width 12
-label .panel.messages.status -text "" \
-        -font -*-helvetica-bold-o-normal--*-180-*-*-*-*-*-*
+button .panel.messages.mode -text Display -width 7 -relief raised \
+        -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
+	-highlightthickness 0 -bd 3 -command { ChangeMode }
+button .panel.messages.status -text "" -width 7 -relief flat -bd 3 \
+        -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
+        -state disabled -highlightthickness 0 -command { AbortAllQueries }
 
-pack .panel.messages.mode   -side top -expand 1 -fill both
-pack .panel.messages.status -side top -expand 1 -fill both
+pack .panel.messages.mode .panel.messages.status -side top -padx 2m -pady 1m
 
 proc ChangeMode {} {
     global mode
     if { $mode == 0 } {
 	set mode 1
-        .panel.messages.mode configure -text Layout
+        .panel.messages.mode configure -text Layout -fg red \
+                -activeforeground red
     } else {
 	set mode 0
-        .panel.messages.mode configure -text ""
+        .panel.messages.mode configure -text Display -fg white \
+                -activeforeground white
 	RefreshAllViews
     }
     DEVise changeMode $mode
@@ -811,9 +815,18 @@ proc ChangeMode {} {
 
 proc ChangeStatus { status } {
     if { $status == 0 } {
-	.panel.messages.status configure -text "" -fg white
+	.panel.messages.status configure -text "" -fg white \
+                -activeforeground white -relief flat -state disabled
     } else {
-	.panel.messages.status configure -text "Working..." -fg red
+	.panel.messages.status configure -text "Stop" -fg red \
+                -activeforeground red -relief raised -state normal
+    }
+}
+
+proc AbortAllQueries {} {
+    set views [ViewSet]
+    foreach view [ViewSet] {
+        DEVise abortQuery $view
     }
 }
 
