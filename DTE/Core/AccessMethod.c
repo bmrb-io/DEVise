@@ -60,31 +60,41 @@ vector<OptExpr*> StandardAM::getProjectList(const string& alias) const
 DataReaderAM::DataReaderAM(const string& schemaFile, const string& dataFile)
   : dr(NULL), ud(NULL)
 {
-	if(schemaFile.compare("ddr", schemaFile.length() - 3) == 0){
-
-		// datareader
-
-		dr = new DataReader(dataFile.c_str(), schemaFile.c_str());
-		if(!dr || !dr->isOk()){
-			string msg = string("Cannot create DataReader table(") +
-				dataFile + ", " + schemaFile + ")";
-			CON_THROW(new Exception(msg));
-			// throw Exception(msg);
-		}
+	//
+	// Try opening the data source as a DataReader; if that doesn't work,
+	// try opening it as a UniData.
+	//
+	dr = new DataReader(dataFile.c_str(), schemaFile.c_str());
+	if (dr && dr->isOk()) {
 		DataReadExec::translateSchema(dr, schema);
-	}
-	else{
-		// unidata
-		// this path is obsolete
+	} else {
+		if (dr) {
+			delete dr;
+			dr = NULL;
+		}
+
+		cout << "Cannot create DataReader table(" << dataFile << ", " <<
+		  schemaFile << ")\nTrying to create UniData table\n";
 
 		ud = new UniData(dataFile.c_str(), schemaFile.c_str());
-		if(!ud || !ud->isOk()){
-			string msg = string("Cannot create Unidata table(") +
-				dataFile + ", " + schemaFile + ")";
-			CON_THROW(new Exception(msg));
-			// throw Exception(msg);
+		if (ud && ud->isOk()) {
+			DevReadExec::translateSchema(ud, schema);
+		} else {
+			if (ud) {
+				delete ud;
+				ud = NULL;
+			}
+
+			cout << "Cannot create UniData table(" << dataFile << ", " <<
+			  schemaFile << ")\nTrying to create UniData table\n";
 		}
-		DevReadExec::translateSchema(ud, schema);
+	}
+
+	if (!dr && !ud) {
+		string msg = string("Cannot create DataReader or Unidata table(") +
+			dataFile + ", " + schemaFile + ")";
+		CON_THROW(new Exception(msg));
+		// throw Exception(msg);
 	}
 	CON_END:;
 }
