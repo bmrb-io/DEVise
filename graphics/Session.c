@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/12/08 20:01:47  wenger
+  Color palette is now saved in session files.
+
   Revision 1.38  1998/12/01 20:04:01  wenger
   More reductions of memory usage in DEVise -- basically eliminated the
   histogram capability (this really saves a lot, since there are big
@@ -426,6 +429,7 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
       fprintf(saveData.fp, "DEVise loadStringSpace %s\n", stringFile);
     }
 
+#if 0 // Temporarily disabling because of bug 441.
     fprintf(saveData.fp, "\n# Load color palette\n");
     PaletteID pid = PM_GetCurrentPalette();
     if (pid != nullPaletteID) {
@@ -439,6 +443,7 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 	  colors.c_str());
       }
     }
+#endif
 
     fprintf(saveData.fp, "\n# Create views\n");
     status += ForEachInstance("view", SaveView, &saveData);
