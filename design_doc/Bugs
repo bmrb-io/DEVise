@@ -1468,14 +1468,28 @@ Num Date        Status  Description
 			'.MarsM16_dat#CENTER_LATITUDE_vs_CENTER_LONGITUDE'.
 			(rkw)
 
-387 09/09/98	OPEN	Can't open BAA.tk, MolBio.tk, NIMA.tk, or WordCount.tk
+387 09/09/98	FIXED	Can't open BAA.tk, MolBio.tk, NIMA.tk, or WordCount.tk
 			demo sessions with JavaScreen. (rkw)
+			(devised blocks while trying to write to image socket.)
 
 388 09/09/98	FIXED	The 'Mars airbrush images: 4 pixels/degree' window
 			is missing when the MarsDemo.ds session is opened
 			in the JavaScreen.  (rkw)
 
 389 09/09/98	OPEN	EmbeddedTk doesn't work with JavaScreen. (rkw)
+
+390 09/14/98	OPEN	JavaScreen draws XY cursor too high in the Y
+			direction. (rkw)
+
+391 09/15/98	OPEN	Opening the MarsMiron.tk demo session fails when
+			the devised is run with Xvfb as the X server. (hy/rkw)
+			(devised gets stuck trying to dump GIFs.)
+
+392 09/15/98	OPEN	Opening the MolBio.tk session in the JavaScreen fails
+			(devised crashes). (hy/rkw)
+
+393 09/15/98	OPEN	Devised had 'Too many open files' error when serving
+			three JavaScreens. (hy/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

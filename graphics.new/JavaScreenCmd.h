@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/09/14 14:57:56  wenger
+  Reorganized code somewhat for clarity (no change in functionality except
+  for some better error checking).
+
   Revision 1.14  1998/09/08 16:55:14  wenger
   Improved how JavaScreenCmd handles closing sessions -- fixes some problems
   with client switching.
@@ -134,7 +138,7 @@ class JavaWindowInfo
 		string			_winName;
 		string			_imageName;
 		JavaRectangle	_winRec;
-		int				_views;
+		int				_viewCount;
 		JavaViewInfo*	_viewList;
 };
 
@@ -214,7 +218,8 @@ class JavaScreenCmd
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
-		ControlCmdType RequestCreateWindow(JavaWindowInfo& winInfo);
+		ControlCmdType RequestCreateWindow(JavaWindowInfo& winInfo,
+		  int imageSize);
 		ControlCmdType RequestUpdateRecordValue(int argc, char** argv);
 		ControlCmdType RequestUpdateWindow(char* winName, int imageSize);
 

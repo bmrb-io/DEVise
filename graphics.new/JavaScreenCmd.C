@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/09/14 14:57:46  wenger
+  Reorganized code somewhat for clarity (no change in functionality except
+  for some better error checking).
+
   Revision 1.30  1998/09/10 23:21:29  wenger
   Fixed bug 388 (missing window in JavaScreen) (caused by '/' in window
   name, which was then used as part of temp file name); default for
@@ -232,8 +236,100 @@ static Boolean IsSessionFile(const char *filename)
 	return isSession;
 }
 
+static JavaWindowInfo *
+CreateWinInfo(ViewWin *window)
+{
+#if defined(DEBUG)
+    printf("window name: %s\n", window->GetName());
+	printf("%d children\n", window->NumChildren());
+#endif
+
+    JavaViewInfo **views = new JavaViewInfo*[window->NumChildren()];
+
+	int winX, winY;
+	unsigned winW, winH;
+	window->RealGeometry(winX, winY, winW, winH);
+#if defined(DEBUG)
+    printf("window RealGeometry = %d, %d, %d, %d\n", winX, winY, winW,
+		winH);
+#endif
+
+	window->AbsoluteOrigin(winX, winY);
+#if defined(DEBUG)
+    printf("window AbsoluteOrigin = %d, %d\n", winX, winY);
+#endif
+
+	JavaRectangle winRect(winX, winY, winW, winH);
+#if defined(DEBUG)
+    printf("window JavaRectangle: (%g, %g), (%g, %g)\n", winRect._x0,
+	    winRect._y0, winRect._width, winRect._height);
+#endif
+
+    string winName(window->GetName());
+    string imageName(Init::TmpDir());
+	// Remove slashes from window name, so when it's used as part of
+	// a file path it won't goof things up.
+	string winName2(winName);
+	for (int index = 0; index < (int)winName2.length(); index++) {
+		if (winName2[index] == '/') {
+			winName2[index] = '_';
+		}
+	}
+    imageName += "/" + winName2 + ".gif";
+#if defined(DEBUG)
+    cout << "imageName = " << imageName << endl;
+#endif
+
+    int viewNum = 0;
+	int viewIndex = window->InitIterator();
+	while (window->More(viewIndex))
+	{
+	  ViewWin *view = window->Next(viewIndex);
+#if defined(DEBUG)
+      printf("  view name: %s\n", view->GetName());
+#endif
+
+	  int viewX, viewY;
+	  unsigned viewW, viewH;
+	  view->RealGeometry(viewX, viewY, viewW, viewH);
+#if defined(DEBUG)
+      printf("  view RealGeometry = %d, %d, %d, %d\n", viewX, viewY,
+		  viewW, viewH);
+#endif
+
+	  view->GetWindowRep()->Origin(viewX, viewY);
+#if defined(DEBUG)
+      printf("  view WindowRep Origin = %d, %d\n", viewX, viewY);
+#endif
+
+	  JavaRectangle viewRect(viewX, viewY, viewW, viewH);
+#if defined(DEBUG)
+      printf("  view JavaRectangle: (%g, %g), (%g, %g)\n", viewRect._x0,
+		  viewRect._y0, viewRect._width, viewRect._height);
+#endif
+
+	  string viewName(view->GetName());
+
+	  views[viewNum] = new JavaViewInfo(viewRect, viewName);
+
+	  viewNum++;
+	}
+	window->DoneIterator(viewIndex);
+
+    JavaWindowInfo *winInfo = new JavaWindowInfo(winRect, winName, imageName,
+		window->NumChildren(), views);
+
+	for (int index = 0; index < window->NumChildren(); index++) {
+		// Deleting this causes deviset to crash; not deleting is a leak.
+		// delete views[index];
+	}
+	delete [] views;
+
+    return winInfo;
+}
+
 //====================================================================
-off_t
+static off_t
 getFileSize(const char* filename)
 {
 	off_t filesize;
@@ -247,27 +343,27 @@ getFileSize(const char* filename)
 }
 
 //====================================================================
-void
+static void
 FillInt(char** argv, int& pos, const int x)
 {
 	char buf[128];
 	sprintf(buf, "%d", x);
-	argv[pos++] = strdup(buf);
+	argv[pos++] = CopyString(buf);
 }
 
 //====================================================================
-void
+static void
 FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 {
 	char	buf[128];
 	sprintf(buf,"%.0f", jr._x0);
-	argv[pos ++] = strdup(buf);
+	argv[pos ++] = CopyString(buf);
 	sprintf(buf,"%.0f", jr._y0);
-	argv[pos ++] = strdup(buf);
+	argv[pos ++] = CopyString(buf);
 	sprintf(buf,"%.0f", jr._width);
-	argv[pos ++] = strdup(buf);
+	argv[pos ++] = CopyString(buf);
 	sprintf(buf,"%.0f", jr._height);
-	argv[pos ++] = strdup(buf);
+	argv[pos ++] = CopyString(buf);
 }
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -279,7 +375,7 @@ JavaWindowInfo::JavaWindowInfo(JavaRectangle& winRec, string& winName,
 	_winRec = winRec;
 	_winName = winName;
 	_imageName = imageName;
-	_views 	= viewCount;
+	_viewCount 	= viewCount;
 	_viewList = new JavaViewInfo[viewCount];
 
 	int i;
@@ -473,11 +569,11 @@ JavaScreenCmd::OpenSession()
 		return;
 	}
 
-	_postponeCursorCmds = true;
-
 	// Close the current session, if any, to prevent possible name conflicts
 	// and other problems.
 	DoCloseSession();
+
+	_postponeCursorCmds = true;
 
 	if (_sessionDir == NULL) {
 		_sessionDir = CopyString(getenv("DEVISE_SESSION"));
@@ -525,7 +621,12 @@ JavaScreenCmd::OpenSession()
 	// Wait for all queries to finish before continuing.
 	Dispatcher::Current()->WaitForQueries();
 
-	// Dump all window images to files.
+    int winCount = DevWindow::GetCount() - 1;
+	char **imageNames = new char *[winCount];
+	int winNum = 0;
+
+	// Dump all window images to files and send commands requesting the
+	// creation of the windows in the JavaScreen.
 	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex))
 	{
@@ -533,97 +634,49 @@ JavaScreenCmd::OpenSession()
 	  ViewWin *window = (ViewWin *)info->GetInstance();
 	  if (window != NULL)
 	  {
-#if defined(DEBUG)
-        printf("window name: %s\n", window->GetName());
-		printf("%d children\n", window->NumChildren());
-#endif
+		JavaWindowInfo *winInfo = CreateWinInfo(window);
 
-        JavaViewInfo **views = new JavaViewInfo*[window->NumChildren()];
-
-		int winX, winY;
-		unsigned winW, winH;
-		window->RealGeometry(winX, winY, winW, winH);
-#if defined(DEBUG)
-        printf("window RealGeometry = %d, %d, %d, %d\n", winX, winY, winW,
-			winH);
-#endif
-
-		window->AbsoluteOrigin(winX, winY);
-#if defined(DEBUG)
-        printf("window AbsoluteOrigin = %d, %d\n", winX, winY);
-#endif
-
-		JavaRectangle winRect(winX, winY, winW, winH);
-#if defined(DEBUG)
-        printf("window JavaRectangle: (%g, %g), (%g, %g)\n", winRect._x0,
-			winRect._y0, winRect._width, winRect._height);
-#endif
-
-        string winName(window->GetName());
-        string imageName(Init::TmpDir());
-		// Remove slashes from window name, so when it's used as part of
-		// a file path it won't goof things up.
-		string winName2(winName);
-		for (int index = 0; index < (int)winName2.length(); index++) {
-			if (winName2[index] == '/') {
-				winName2[index] = '_';
+        if (!window->ExportImage(GIF,
+		      winInfo->_imageName.c_str()).IsComplete()) {
+	        errmsg = "Error exporting window image";
+			_status = ERROR;
+	    } else {
+			int filesize = getFileSize(winInfo->_imageName.c_str());
+	        if (filesize > 0) {
+				_status = RequestCreateWindow(*winInfo, filesize);
 			}
 		}
-        imageName += "/" + winName2 + ".gif";
-#if defined(DEBUG)
-        cout << "imageName = " << imageName << endl;
-#endif
 
-	    int viewNum = 0;
-		int viewIndex = window->InitIterator();
-		while (window->More(viewIndex))
-		{
-		  ViewWin *view = window->Next(viewIndex);
-#if defined(DEBUG)
-          printf("  view name: %s\n", view->GetName());
-#endif
+		imageNames[winNum] = CopyString(winInfo->_imageName.c_str());
+        winNum++;
 
-		  int viewX, viewY;
-		  unsigned viewW, viewH;
-		  view->RealGeometry(viewX, viewY, viewW, viewH);
-#if defined(DEBUG)
-          printf("  view RealGeometry = %d, %d, %d, %d\n", viewX, viewY,
-			  viewW, viewH);
-#endif
-
-		  view->GetWindowRep()->Origin(viewX, viewY);
-#if defined(DEBUG)
-          printf("  view WindowRep Origin = %d, %d\n", viewX, viewY);
-#endif
-
-		  JavaRectangle viewRect(viewX, viewY, viewW, viewH);
-#if defined(DEBUG)
-          printf("  view JavaRectangle: (%g, %g), (%g, %g)\n", viewRect._x0,
-			  viewRect._y0, viewRect._width, viewRect._height);
-#endif
-
-		  string viewName(view->GetName());
-
-		  JavaViewInfo *viewInfo = new JavaViewInfo(viewRect, viewName);
-		  views[viewNum] = viewInfo;
-
-		  viewNum++;
-		}
-		window->DoneIterator(viewIndex);
-
-        JavaWindowInfo winInfo(winRect, winName, imageName,
-			window->NumChildren(), views);
-
-	    _status = RequestCreateWindow(winInfo);
-
-        delete [] views;
+		delete winInfo;
 	  }
 	}
 	DevWindow::DoneIterator(winIndex);
 
-	_postponeCursorCmds = false;
+	DOASSERT(winNum == winCount, "Incorrect number of windows");
 
+	_postponeCursorCmds = false;
 	DrawAllCursors();
+
+	// Send DONE here so jspop and js start reading from the image socket.
+    if (_status == DONE) {
+		char *argv[1];
+		argv[0] = _controlCmdName[DONE];
+		ReturnVal(1, argv);
+	}
+
+	// Send the window images.
+    for (winNum = 0; winNum < winCount; winNum++) {
+		(void) SendWindowImage(imageNames[winNum]);
+		delete [] imageNames[winNum];
+	}
+	delete [] imageNames;
+
+	// avoid unnecessary JAVAC_Done command, after sending back images
+	if (_status == DONE)
+		_status = NULL_COMMAND;
 
 #if 0
     struct timeval stopTime;
@@ -668,6 +721,12 @@ JavaScreenCmd::MouseAction_Click()
 
 	int xLoc = atoi(_argv[1]);
 	int yLoc = atoi(_argv[2]);
+
+	// Convert x and y from window to view location.
+	int viewX, viewY;
+	view->GetWindowRep()->Origin(viewX, viewY);
+    xLoc -= viewX;
+	yLoc -= viewY;
 
     view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
 
@@ -820,7 +879,6 @@ JavaScreenCmd::MouseAction_RubberBand()
 			// Make sure everything has actually been re-drawn before we
 			// continue.
 			Dispatcher::Current()->WaitForQueries();
-
 
 			// Send the updated window image(s).
 			_status = SendChangedWindows();
@@ -1021,9 +1079,10 @@ JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 	}
 	ReturnVal(argc+1, args);
 
+	delete [] args;
+
 	return DONE;
 }
-
 
 //====================================================================
 char* 
@@ -1116,6 +1175,9 @@ JavaScreenCmd::SendWindowImage(const char* fileName)
 				break;
 			}
 			filesize += bytesRead;
+#if defined(DEBUG)
+        printf("    %d bytes sent\n", filesize);
+#endif
 		}
 		if (bytesRead < 0) {
 			reportErrSys("Reading image file");
@@ -1144,6 +1206,9 @@ JavaScreenCmd::SendChangedWindows()
 
     JavaScreenCmd::ControlCmdType result = DONE;
 
+	char **imageNames = new char *[DevWindow::GetCount() - 1];
+	int dirtyWinCount = 0;
+
 	int winIndex = DevWindow::InitIterator();
 	while (DevWindow::More(winIndex)) {
 	  ClassInfo *info = DevWindow::Next(winIndex);
@@ -1154,37 +1219,64 @@ JavaScreenCmd::SendChangedWindows()
 		  printf("GIF of window %s is \"dirty\".\n", window->GetName());
 #endif
 
-			char *fileName = tmpnam(NULL);
+    		JavaScreenCmd::ControlCmdType tmpResult = DONE;
+			int	filesize;
+
+			char *fileName = tempnam(Init::TmpDir(), NULL);
 			if (!window->ExportImage(GIF, fileName).IsComplete()) {
 				errmsg = "Error exporting window image";
-				result = ERROR;
+				tmpResult = ERROR;
+				filesize = 0;
+			} else {
+				filesize = getFileSize(fileName);
 			}
 	
-			int	filesize;
-			filesize = getFileSize(fileName);
 #if defined(DEBUG)
             printf("  Image file size = %d\n", filesize);
 #endif
-			if (filesize >0)
+			if (filesize > 0)
 			{
-				if (result == DONE) {
-				    result = RequestUpdateWindow(window->GetName(), filesize);
+				if (tmpResult == DONE) {
+				    tmpResult = RequestUpdateWindow(window->GetName(),
+					  filesize);
 				}
-				if (result == DONE) {
-				    result = SendWindowImage(fileName);
+				if (tmpResult == DONE) {
+					imageNames[dirtyWinCount] = fileName;
+					dirtyWinCount++;
+				} else {
+					(void) unlink(fileName);
+					delete [] fileName;
 				}
 			}
-			(void) unlink(fileName);
+			if (tmpResult != DONE) result = tmpResult;
 		}
 	  }
     }
 	DevWindow::DoneIterator(winIndex);
 
+	// Send DONE here so jspop and js start reading from the image socket.
+    if (_status == DONE) {
+		char *argv[1];
+		argv[0] = _controlCmdName[DONE];
+		ReturnVal(1, argv);
+	}
+
+	// Send the actual images.
+    for (int winNum = 0; winNum < dirtyWinCount; winNum++) {
+		(void) SendWindowImage(imageNames[winNum]);
+		(void) unlink(imageNames[winNum]);
+		delete [] imageNames[winNum];
+	}
+	delete [] imageNames;
+
 	// avoid unnecessary JAVAC_Done command, after sending
 	// back images
-	if (_status == DONE)
-		_status = NULL_COMMAND;
+	if (result == DONE)
+		result = NULL_COMMAND;
 
+#if defined(DEBUG)
+    printf("End of SendChangedWindows; result = %d\n", result);
+#endif
 	return result;
 }
 
@@ -1198,85 +1290,59 @@ JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
 
 //====================================================================
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
+JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo, int imageSize)
 {
 #if defined (DEBUG)
-    printf("\nJavaScreenCmd::RequestCreateWindow(%s)\n",
-	winInfo._winName.c_str());
+    printf("\nJavaScreenCmd::RequestCreateWindow(%s, %d)\n",
+	  winInfo._winName.c_str(), imageSize);
 #endif
 
 	char*	fileName = CopyString(winInfo._imageName.c_str());
 
 	ControlCmdType	status = DONE;
-	int		filesize = 0;
+	//
+	// Return one command to  the JAVA Screen
+	// This is Okay, since JAVA Screen will not react until 
+	// it sees DONE/ERROR/FAIL
+	int		argc = 
+			+1 						// CommandName
+			+1 						// WinName
+			+4 						// Win coordinates
+			+1						// Image Size
+			+1						// # Views
+			+winInfo._viewCount * 5;	// viewname + coordinaes
 
-// TEMP maybe the dumping, getting file size, etc., should be put into
-// a single function
+	char**	argv = new (char*)[argc](NULL);
+	int		i;
+	int		pos = 0;
 
-    ViewWin *viewWin = (ViewWin *)ControlPanel::FindInstance(
-		winInfo._winName.c_str());
-    if (!viewWin) {
-      reportErrNosys("Cannot find window");
-	  errmsg = "Cannot find window";
-      return ERROR;
-    }
-    
-    viewWin->ExportImage(GIF, fileName);
+	argv[pos++] = CopyString(_controlCmdName[CREATEWINDOW]);
+	argv[pos++] = CopyString(winInfo._winName.c_str());
+	FillArgv(argv, pos, winInfo._winRec);
+	FillInt(argv, pos, imageSize);
+	FillInt(argv, pos, winInfo._viewCount);
 
-	filesize = getFileSize(fileName);
-#if defined(DEBUG)
-        printf("filesize = %d\n", filesize);
-#endif
-	if (filesize >0)
+	for (i =0; i< winInfo._viewCount; ++i)
 	{
-		//
-		// Return one command to  the JAVA Screen
-		// This is Okay, sicne JAVA Screen will not react until 
-		// it sees DONE/ERROR/FAIL
-		int		argc = 
-				+1 						// CommandName
-				+1 						// WinName
-				+4 						// Win coordinates
-				+1						// Image Size
-				+1						// # Views
-				+winInfo._views * 5;	// viewname + coordinaes
-
-		char**	argv = new (char*)[argc](NULL);
-		int		i;
-		int		pos = 0;
-
-		argv[pos++] = strdup(_controlCmdName[CREATEWINDOW]);
-		argv[pos++] = strdup(winInfo._winName.c_str());
-		FillArgv(argv, pos, winInfo._winRec);
-		FillInt(argv, pos, filesize);
-		FillInt(argv, pos, winInfo._views);
-
-		for (i =0; i< winInfo._views; ++i)
-		{
-			JavaViewInfo	*jv;
-			jv = &winInfo._viewList[i];
-			argv[pos++] = strdup(jv->_viewName.c_str());
-			FillArgv(argv, pos, jv->_jr);
-		}
-		if (pos != argc)
-		{
-			fprintf(stderr, "Error in perparing create window command\n");
-		}
-
-		// Send a image retrieving command to JAVA_Screen
-		ReturnVal(argc, argv);
-
-		// Send back the window image.
-		status = SendWindowImage(fileName);
-		(void) unlink(fileName);
-
-		// free all ..
-		for (i=0; i< argc; ++i)
-		{
-			delete [] argv[i];
-		}
-		delete [] argv;
+		JavaViewInfo	*jv;
+		jv = &winInfo._viewList[i];
+		argv[pos++] = CopyString(jv->_viewName.c_str());
+		FillArgv(argv, pos, jv->_jr);
 	}
+	if (pos != argc)
+	{
+		fprintf(stderr, "Error in preparing create window command\n");
+	}
+
+	// Send a image retrieving command to JAVA_Screen
+	ReturnVal(argc, argv);
+
+	// free all ..
+	for (i=0; i< argc; ++i)
+	{
+		delete [] argv[i];
+	}
+	delete [] argv;
 
 	delete [] fileName;
 
@@ -1625,6 +1691,7 @@ JavaScreenCmd::DrawAllCursors()
 void
 JavaScreenCmd::DoCloseSession()
 {
+	Boolean savePostpone = _postponeCursorCmds;
 	_postponeCursorCmds = true;
 
     int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
@@ -1633,5 +1700,5 @@ JavaScreenCmd::DoCloseSession()
     DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = width;
     DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = height;
 
-	_postponeCursorCmds = false;
+	_postponeCursorCmds = savePostpone;
 }
