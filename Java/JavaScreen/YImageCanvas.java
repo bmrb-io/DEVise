@@ -12,13 +12,17 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class is used for displaying the "traffic lights".
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.16  2000/05/22 17:52:50  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.15  2000/03/23 16:26:17  wenger
 // Cleaned up headers and added requests for comments.
 //

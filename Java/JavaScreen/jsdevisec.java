@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2000/05/22 17:52:51  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.62  2000/05/12 20:43:57  wenger
 // Added more comments to the DEViseScreen, DEViseCanvas, and jsdevisec
 // classes and cleaned up the code; commented out unused code; added
@@ -224,7 +228,9 @@ public class jsdevisec extends Panel
             button[7] = exitButton;
         }
 
-        DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button, "Horizontal", 5, 1);
+        DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 5,
+	  DEViseComponentPanel.ALIGN_LEFT);
 
         mainPanel.add(buttonPanel);
 
@@ -235,7 +241,8 @@ public class jsdevisec extends Panel
 
         if (DEViseUIGlobals.inBrowser) {
             topPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
-            topPanel.add(new Label("                       " + DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
+            topPanel.add(new Label("                       " +
+	      DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
         }
 
 		//
@@ -585,7 +592,8 @@ class RecordDlg extends Dialog
             }
         }
 
-        DEViseComponentPanel panel = new DEViseComponentPanel(label, "Vertical", 0);
+        DEViseComponentPanel panel = new DEViseComponentPanel(label,
+	  DEViseComponentPanel.LAYOUT_VERTICAL, 0);
         for (int i = 0; i < size; i++)
             label[i].setAlignment(Label.LEFT);
 
@@ -751,7 +759,8 @@ class SessionDlg extends Frame
         Button [] button = new Button[2];
         button[0] = okButton;
         button[1] = cancelButton;
-        DEViseComponentPanel panel = new DEViseComponentPanel(button, "Horizontal", 20);
+        DEViseComponentPanel panel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();

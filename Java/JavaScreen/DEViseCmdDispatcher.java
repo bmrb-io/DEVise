@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2000/05/11 20:19:33  wenger
+// Cleaned up jsdevisec.java and added comments; eliminated
+// jsdevisec.lastCursor (not really needed).
+//
 // Revision 1.55  2000/05/04 15:53:33  wenger
 // Added consistency checking, added comments, commented out unused code
 // in DEViseScreen.java, DEViseCanvas.java, DEViseView.java,
@@ -373,7 +377,7 @@ public class DEViseCmdDispatcher implements Runnable
             jsc.stopButton.setBackground(DEViseUIGlobals.bg);
 
             // turn off the counter and the traffic light
-            jsc.viewInfo.updateImage(0, 0);
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE, false);
             jsc.viewInfo.updateCount(0);
 
             // user pressed the stop button
@@ -415,12 +419,15 @@ public class DEViseCmdDispatcher implements Runnable
         String[] rsp = sendCommand(command);
 
         // turn on the 'process' light
-        jsc.viewInfo.updateImage(3, 1);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
 
         String[] cmd = null;
         for (int i = 0; i < rsp.length; i++) {
             // adjust the counter
             jsc.viewInfo.updateCount(rsp.length - 1 - i);
+
+	    jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
+	      rsp[i]);
 
             if (rsp[i].startsWith(DEViseCommands.DONE)) { // this command will guaranteed to be the last
                 if (command.startsWith(DEViseCommands.OPEN_SESSION)) {
@@ -482,8 +489,11 @@ public class DEViseCmdDispatcher implements Runnable
                     //int fg = (Color.black).getRGB();
 
                     String xtype = cmd[16], ytype = cmd[17];
+
+		    // Mouse movement grid -- not yet used.
                     float gridx = (Float.valueOf(cmd[18])).floatValue();
                     float gridy = (Float.valueOf(cmd[19])).floatValue();
+
                     int rb = Integer.parseInt(cmd[20]);
                     int cm = Integer.parseInt(cmd[21]);
                     int dd = Integer.parseInt(cmd[22]);
@@ -789,10 +799,14 @@ public class DEViseCmdDispatcher implements Runnable
             } else {
                 throw new YException("Unsupported command received from server", "DEViseCmdDispatcher::processCmd()", 2);
             }
+
+	    jsc.pn("  Done with command " + rsp[i]);
+	    jsc.pn("  Free mem: " + Runtime.getRuntime().freeMemory() +
+	      " Total mem: " + Runtime.getRuntime().totalMemory());
         }
 
         // turn off the 'process' light
-        jsc.viewInfo.updateImage(3, 0);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, false);
 
         System.gc();
 
@@ -807,14 +821,17 @@ public class DEViseCmdDispatcher implements Runnable
         byte[] imgData = null;
 
         // turn on the receive light
-        jsc.viewInfo.updateImage(2, 1);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
 
-        jsc.pn("Trying to receive data(" + size + ") from socket ...");
+        jsc.pn("Trying to receive data (" + size + ") from socket ...");
+	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
         while (!isFinish) {
             try {
                 imgData = commSocket.receiveData(size);
                 isFinish = true;
-                jsc.pn("Successfully received data(" + size + ") from socket ...");
+                jsc.pn("Successfully received data (" + size + ") from socket ...");
+		jsc.pn("  Last byte = " + imgData[imgData.length - 1]);
+		jsc.pn("  Bytes available: " + commSocket.dataAvailable());
             } catch (InterruptedIOException e) {
                 if (getAbortStatus()) {
                     // since at this point, server already finish processing request
@@ -828,7 +845,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         // turn off the receive light
-        jsc.viewInfo.updateImage(2, 0);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
 
         if (imgData == null) {
             throw new YException("Invalid response received from server", "DEViseCmdDispatcher::receiveData()", 1);
@@ -844,17 +861,17 @@ public class DEViseCmdDispatcher implements Runnable
         Vector rspbuf = new Vector();
 
         // turn on the 'send' light
-        jsc.viewInfo.updateImage(1, 1);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, true);
         // sending command to server, and expect an immediate response of "JAVAC_Ack"
         jsc.pn("Sending: \"" + command + "\"");
         commSocket.sendCmd(command);
         // turn off the 'send' light
-        jsc.viewInfo.updateImage(1, 0);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
 
         // turn on the counter
         jsc.viewInfo.updateCount(0);
         // turn on the 'receive' light
-        jsc.viewInfo.updateImage(2, 1);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
 
         // wait to receive the response from server
 
@@ -914,7 +931,7 @@ public class DEViseCmdDispatcher implements Runnable
             rspstr[i] = (String)rspbuf.elementAt(i);
 
         // turn off the 'receive' light
-        jsc.viewInfo.updateImage(2, 0);
+        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
 
         return rspstr;
     }

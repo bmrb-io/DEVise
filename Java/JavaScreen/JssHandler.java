@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/06/05 16:35:08  wenger
+// Added comments and cleaned up the code a little.
+//
 // Revision 1.7  2000/03/30 19:14:36  wenger
 // Improved error messages for socket creation failures.
 //
@@ -52,6 +55,7 @@ public class JssHandler implements Runnable
     // status = true, handler is running
     private boolean status = false;
 
+    // port is the port we're listening on for connections from a JSS.
     public JssHandler(jspop j, int port) throws YException
     {
         jspopPort = port;
@@ -60,22 +64,21 @@ public class JssHandler implements Runnable
 
         pop = j;
 
-        System.out.println("\nTry to start jss server socket at port " + jspopPort + " ...\n");
+        System.out.println("\nTry to start jss server socket at port " +
+	  jspopPort + " ...\n");
         try {
             jssServerSocket = new ServerSocket(jspopPort);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             jssServerSocket = null;
-            throw new YException("Can not start jss server socket at port " + jspopPort);
+            throw new YException("Can not start jss server socket at port " +
+	      jspopPort);
         }
 
     }
 
-    private synchronized void setStatus(boolean s)
-    {
-        status = s;
-    }
-
+    // status = false, handler is not running
+    // status = true, handler is running
     public synchronized boolean getStatus()
     {
         return status;
@@ -85,12 +88,16 @@ public class JssHandler implements Runnable
     {
         if (!getStatus()) {
             if (jssServerSocket == null) {
-                System.out.println("\nTry to restart jss server socket at port " + jspopPort + " ...\n");
+                System.out.println(
+		  "\nTry to restart jss server socket at port " + jspopPort +
+		  " ...\n");
                 try {
                     jssServerSocket = new ServerSocket(jspopPort);
-                    System.out.println("\nRestarting jss server socket succeed!\n");
+                    System.out.println(
+		      "\nRestarting jss server socket succeeded!\n");
                 } catch (IOException e) {
-                    System.out.println("\nRestarting jss server socket failed\n");
+                    System.out.println(
+		      "\nRestarting jss server socket failed\n");
                     System.out.println(e.getMessage());
                     jssServerSocket = null;
                     return;
@@ -120,7 +127,7 @@ public class JssHandler implements Runnable
             }
 
             pop.pn("Client handler thread is stopped");
-            setStatus(false);
+            status = false;
         }
     }
 
@@ -128,92 +135,111 @@ public class JssHandler implements Runnable
     {
         pop.pn("\nJss handler started ...\n");
 
-        boolean isListen = true;
-        String hostname = null;
-        int cmdport, imgport, port;
-
-        while (isListen) {
+        while (true) {
             Socket socket = null;
-            DataInputStream is = null;
+	    String hostname = null;
+
+	    //
+	    // Get socket to JSS -- abort if this fails.
+	    //
             try {
                 socket = jssServerSocket.accept();
                 hostname = socket.getInetAddress().getHostName();
-                imgport = -1;
-                cmdport = -1;
-                port = -1;
-                System.out.println("Connection request from " + hostname + " is accepted ...");
-
-                try {
-                    is = new DataInputStream(socket.getInputStream());
-                    String msg = receiveFromJSS(is, hostname);
-
-                    String[] cmd = DEViseGlobals.parseString(msg);
-                    if (cmd == null) {
-                        System.out.println("Invalid request received from jss \"" + msg + "\"");
-                    } else {
-                        if (cmd[0].startsWith("JSS_Add") && cmd.length == 4) {
-                            try {
-                                port = Integer.parseInt(cmd[1]);
-                                cmdport = Integer.parseInt(cmd[2]);
-                                imgport = Integer.parseInt(cmd[3]);
-                            } catch (NumberFormatException e) {
-                                port = -1;
-                                cmdport = -1;
-                                imgport = -1;
-                                System.out.println("Invalid request received from jss \"" + msg + "\"");
-                            }
-                        } else {
-                            System.out.println("Invalid request received from jss \"" + msg + "\"");
-                        }
-                    }
-
-                    if (hostname != null && port > 1024 && port < 65535 && imgport > 1024 && imgport < 65535 && cmdport > 1024 && cmdport < 65535) {
-                        pop.addServer(hostname, port, cmdport, imgport);
-                    }
-                } catch (IOException ex) {
-                    pop.pn("IO Error while open connection to jss host " + hostname);
-                } catch (YException ex) {
-                    pop.pn(ex.getMessage());
-                }
-
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ex) {
-                    }
-                    is = null;
-                }
-
-                if (socket != null) {
-                    try {
-                        socket.close();
-                    } catch (IOException ex) {
-                    }
-                    socket = null;
-                }
+                System.out.println("Connection request from " + hostname +
+		  " is accepted ...");
             } catch (IOException e) {
                 System.out.println("jss handler can not listen on jss socket so it is aborting!");
                 break;
             }
+
+	    //
+	    // Read command from socket, execute it.
+	    //
+            DataInputStream is = null;
+	    String msg = null;
+	    try {
+	        is = new DataInputStream(socket.getInputStream());
+		msg = receiveFromJSS(is, hostname);
+
+                String[] cmd = DEViseGlobals.parseString(msg);
+		if (cmd == null) {
+		    throw new YException(
+		      "Invalid request received from jss \"" + msg + "\"");
+		}
+
+                if (cmd[0].startsWith("JSS_Add") && cmd.length == 4) {
+		    int port = Integer.parseInt(cmd[1]);
+		    int cmdport = Integer.parseInt(cmd[2]);
+		    int imgport = Integer.parseInt(cmd[3]);
+
+                    if (hostname != null && port > 1024 && port < 65535 &&
+		      imgport > 1024 && imgport < 65535 && cmdport > 1024 &&
+		      cmdport < 65535) {
+                        pop.addServer(hostname, port, cmdport, imgport);
+                    } else {
+			throw new YException(
+			  "Illegal hostname, port, cmdport, or imgport");
+		    }
+		} else {
+		    throw new YException(
+		      "Invalid request received from jss \"" + msg + "\"");
+		}
+	    } catch (NumberFormatException e) {
+	        System.out.println("Invalid request received from jss \"" +
+		  msg + "\"");
+	    } catch (IOException ex) {
+	        pop.pn("IO Error while open connection to jss host " +
+		  hostname);
+	    } catch (YException ex) {
+	        pop.pn(ex.getMessage());
+	    }
+
+	    //
+	    // Clean up.
+	    //
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+		    System.out.println("IOException " + ex.getMessage() +
+		      " while closing DataInputStream");
+                }
+                is = null;
+            }
+
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException ex) {
+		    System.out.println("IOException " + ex.getMessage() +
+		      " while closing Socket");
+                }
+                socket = null;
+            }
         }
     }
 
-    private String receiveFromJSS(DataInputStream is, String hostname) throws YException
+    private String receiveFromJSS(DataInputStream is, String hostname)
+      throws YException
     {
         if (is == null) {
-            throw new YException("Null jss input stream!", "JssHandler:receiveFromJSS()");
+            throw new YException("Null jss input stream!",
+	      "JssHandler:receiveFromJSS()");
         }
 
         try {
-            System.out.println("Try to receive data from JSS server at " + hostname + " ...");
+            System.out.println("Try to receive data from JSS server at " +
+	      hostname + " ...");
             int length = is.readInt();
             byte[] data = new byte[length];
             is.readFully(data);
             String msg = new String(data);
-            System.out.println("Message \"" + msg + "\" successfully received from JSS server!");
+            System.out.println("Message \"" + msg +
+	      "\" successfully received from JSS server!");
             return msg;
         } catch (IOException e) {
-            throw new YException("IO Error while receive message from jss", "JssHandler:receiveFromJSS()");
+            throw new YException("IO Error while receive message from jss",
+	      "JssHandler:receiveFromJSS()");
         }
     }
 }

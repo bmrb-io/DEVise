@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2000/04/24 20:22:01  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.44  2000/04/07 22:44:10  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -151,10 +154,11 @@ public class DEViseViewInfo extends Panel
         validate();
     }
 
-    public void updateImage(int type, int isOn)
+    // status is DEViseTrafficLight.STATUS_*.
+    public void updateImage(int status, boolean isOn)
     {
         if (jsc.light != null) {
-            jsc.light.updateImage(type, isOn);
+            jsc.light.updateImage(status, isOn);
             jsc.validate();
         }
     }

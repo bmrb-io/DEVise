@@ -12,13 +12,20 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class is used to display the status of the JavaScreen with
+// the "traffic lights" and command counter.
+
+// There is one instace of this class for the entire JavaScreen.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.7  2000/05/22 17:52:49  wenger
+// JavaScreen handles fonts much more efficiently to avoid the problems with
+// GData text being drawn very slowly on Intel platforms.
+//
 // Revision 1.6  2000/04/24 20:22:00  hongyu
 // remove UI dependency of jspop and js
 //
@@ -38,32 +45,45 @@ import java.awt.event.*;
 
 public class DEViseTrafficLight extends Panel
 {
+    public static final String ALIGN_TOP = "TOP";
+    public static final String ALIGN_BOTTOM = "BOTTOM";
+    public static final String ALIGN_LEFT = "LEFT";
+    public static final String ALIGN_RIGHT = "RIGHT";
+
+    public static final int STATUS_IDLE = 0;
+    public static final int STATUS_SENDING = 1;
+    public static final int STATUS_RECEIVING = 2;
+    public static final int STATUS_PROCESSING = 3;
+
     Image onImage = null, offImage = null;
     YImageCanvas [] canvas = new YImageCanvas[4];
-    //Label [] label = new Label[4];
     YImageCanvas [] label = new YImageCanvas[3];
     String[] c = {"S", "R", "P"};
     String string = null;
 
-    public DEViseTrafficLight(Image offi, Image oni, String s) throws YException
+    public DEViseTrafficLight(Image offi, Image oni, String s)
+      throws YException
     {
         this(offi, oni, s, null);
     }
 
-    public DEViseTrafficLight(Image offi, Image oni, String s, String align) throws YException
+    public DEViseTrafficLight(Image offi, Image oni, String s, String align)
+      throws YException
     {
         onImage = oni;
         offImage = offi;
 
         for (int i = 0; i < 3; i++) {
             canvas[i] = new YImageCanvas(onImage);
-            if (!canvas[i].setImage(offImage))
+            if (!canvas[i].setImage(offImage)) {
                 throw new YException("Invalid Image!");
-            //label[i] = new Label(c[i]);
-            label[i] = new YImageCanvas(c[i], null, DEViseUIGlobals.bg, DEViseUIGlobals.fg, 12, 12, 1, 1);
+	    }
+            label[i] = new YImageCanvas(c[i], null, DEViseUIGlobals.bg,
+	      DEViseUIGlobals.fg, 12, 12, 1, 1);
         }
         string = s;
         canvas[3] = new YImageCanvas(string);
+
         if (align == null) {
             align = "RIGHT";
         }
@@ -78,12 +98,14 @@ public class DEViseTrafficLight extends Panel
         panel.setBackground(DEViseUIGlobals.bg);
         panel.setForeground(DEViseUIGlobals.fg);
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             panel.add(label[i]);
-        for (int i = 0; i < 3; i++)
+	}
+        for (int i = 0; i < 3; i++) {
             panel.add(canvas[i]);
+	}
 
-        if (align == "TOP" || align == "BOTTOM") {
+	if (align.equals(ALIGN_TOP) || align.equals(ALIGN_BOTTOM)) {
             // set new gridbag layout
             GridBagLayout gridbag = new GridBagLayout();
             GridBagConstraints c = new GridBagConstraints();
@@ -101,7 +123,7 @@ public class DEViseTrafficLight extends Panel
 
             setLayout(gridbag);
 
-            if (align == "TOP") {
+	    if (align.equals(ALIGN_TOP)) {
                 gridbag.setConstraints(canvas[3], c);
                 add(canvas[3]);
                 gridbag.setConstraints(panel, c);
@@ -112,29 +134,31 @@ public class DEViseTrafficLight extends Panel
                 gridbag.setConstraints(canvas[3], c);
                 add(canvas[3]);
             }
-        } else if (align == "LEFT") {
+        } else if (align.equals(ALIGN_LEFT)) {
             add(canvas[3]);
             add(panel);
+        } else if (align.equals(ALIGN_RIGHT)) {
+            add(panel);
+            add(canvas[3]);
         } else {
-            add(panel);
-            add(canvas[3]);
+	    throw new YException("Illegal align value: " + align);
         }
     }
 
-    public void updateImage(int type, int isOn)
+    public void updateImage(int status, boolean isOn)
     {
-        if (type < 0 || type > 3)
+        if (status < STATUS_IDLE || status > STATUS_PROCESSING)
             return;
 
-        if (type == 0) {
+        if (status == STATUS_IDLE) {
             for (int i = 0; i < 3; i++) {
                 canvas[i].setImage(offImage);
             }
         } else {
-            if (isOn == 1) {
-                canvas[type - 1].setImage(onImage);
+            if (isOn) {
+                canvas[status - 1].setImage(onImage);
             } else {
-                canvas[type - 1].setImage(offImage);
+                canvas[status - 1].setImage(offImage);
             }
         }
     }

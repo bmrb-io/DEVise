@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/04/21 19:45:45  wenger
+// Cleaned up DEViseCommSocket class -- removed duplicate code, better
+// variable names, more comments.
+//
 // Revision 1.8  2000/03/23 16:26:13  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -502,6 +506,26 @@ public class DEViseCommSocket
             throw new YException("Error occurs while writing to output stream",
 	      "DEViseCommSocket:sendData()");
         }
+    }
+
+    // Number of bytes available on data socket.
+    public int dataAvailable()
+    {
+	int bytes;
+
+        if (imgis == null) {
+	    bytes = 0;
+	} else {
+	    try {
+	        bytes = imgis.available();
+	    } catch (IOException e) {
+		System.out.println("Exception " + e.getMessage() +
+		  "while getting number of bytes available");
+	        bytes = 0;
+	    }
+	}
+
+	return bytes;
     }
 
     // Receive data.  Note that this method may be interrupted by

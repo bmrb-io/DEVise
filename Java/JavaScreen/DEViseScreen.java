@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.59  2000/05/25 14:47:39  wenger
+// 3D coordinate system remains unchanged when new GData arrives; 'r' or 'R'
+// in view resets to default coordinates.
+//
 // Revision 1.58  2000/05/22 17:52:49  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
@@ -690,7 +694,7 @@ public class DEViseScreen extends Panel
             jsc.isSessionOpened = false;
 
             jsc.viewInfo.updateInfo();
-            jsc.viewInfo.updateImage(0, 0);
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE, false);
             jsc.viewInfo.updateCount(0);
 
             setCursor(DEViseUIGlobals.defaultCursor);

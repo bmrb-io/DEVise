@@ -12,13 +12,24 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class provides the interface between the jspop and an associated
+// devised (server).  Basically, an object of this class gets a command
+// from the client associated with the server, sends the command to
+// the server, and then sends the reply commands and data back to the
+// client.  It also keeps track of the current session file directory
+// for the devised.
+
+// There is one instance of this class for each devised connected to
+// a jspop.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.38  2000/06/05 16:35:07  wenger
+// Added comments and cleaned up the code a little.
+//
 // Revision 1.37  2000/04/27 20:15:25  wenger
 // Added DEViseCommands class which has string constants for all command
 // names; replaced all literal command names in code with the appropriate
@@ -87,33 +98,42 @@ import java.util.*;
 public class DEViseServer implements Runnable
 {
     private static int Port = DEViseGlobals.cmdport + 1;
-    public static int QUIT = 0, IDLE = 1, WORK = 2;
 
     private jspop pop = null;
 
     private Process proc = null;
     private Thread serverThread = null;
 
-    public String hostname = "localhost";
+    public String hostname = "localhost"; // hostname of jss/devised
     public int dataPort = 0, cmdPort = 0, switchPort = 0;
-    public int jssport = 0;
+
+    public int jssport = 0; // port the jss is listening on
+
     private DEViseCommSocket socket = null;
     private int devisedTimeout = 180 * 1000;
     private int socketTimeout = 1000;
 
+    // newClient is the client we're going to switch to the next time we
+    // switch clients; client is the client we're currently connected to.
     private DEViseClient newClient = null;
     private DEViseClient client = null;
+
     private String[] serverCmds = null;
 
     private Vector currentDir = new Vector();
     private String rootDir = "DEViseSession";
 
+    public static final int STATUS_STOPPED = 0, STATUS_RUNNING = 1;
     private int status = 0;
     private boolean isValid = false;
 
-    private int action = DEViseServer.IDLE;
+    public static final int ACTION_QUIT = 0, ACTION_IDLE = 1, ACTION_WORK = 2;
+    private int action = ACTION_IDLE;
 
-    public DEViseServer(jspop j, String name, int port, int cmdport, int imgport)
+    // name is the name of the system that the jss and devised(s) are running
+    // on; port is the jssport.
+    public DEViseServer(jspop j, String name, int port, int cmdport,
+      int imgport)
     {
         pop = j;
         if (name != null) {
@@ -125,32 +145,8 @@ public class DEViseServer implements Runnable
         jssport = port;
         isValid = true;
     }
-    /*
-    public synchronized static int getPort()
-    {
-        if (Port == DEViseGlobals.cmdport || Port == DEViseGlobals.imgport)
-            Port++;
 
-        if (Port > 60000)
-            Port = DEViseGlobals.cmdport + 1;
-
-        while (true) {
-            try {
-                ServerSocket s = new ServerSocket(Port);
-                s.close();
-                return Port++;
-            } catch (IOException e) {
-                Port++;
-
-                if (Port == DEViseGlobals.cmdport || Port == DEViseGlobals.imgport)
-                    Port++;
-
-                if (Port > 60000)
-                    Port = DEViseGlobals.cmdport + 1;
-            }
-        }
-    }
-    */
+    // Returns STATUS_*.
     public synchronized int getStatus()
     {
         return status;
@@ -163,13 +159,13 @@ public class DEViseServer implements Runnable
 
     public void stop()
     {
-        if (getStatus() != 0) {
+        if (getStatus() != STATUS_STOPPED) {
             if (serverThread != null) {
                 serverThread.stop();
                 serverThread = null;
             }
 
-            setStatus(0);
+            setStatus(STATUS_STOPPED);
 
             closeSocket();
 
@@ -186,9 +182,9 @@ public class DEViseServer implements Runnable
             throw new YException("Can not start DEViseServer");
 
         // start server Thread but first check if server thread is still active
-        if (getStatus() == 0) {
-            setStatus(1);
-            setAction(DEViseServer.IDLE);
+        if (getStatus() == STATUS_STOPPED) {
+            setStatus(STATUS_RUNNING);
+            setAction(ACTION_IDLE);
             serverThread = new Thread(this);
             serverThread.start();
         }
@@ -250,21 +246,6 @@ public class DEViseServer implements Runnable
         return false;
     }
 
-    /*
-    private boolean isDEViseAlive()
-    {
-        if (proc == null)
-            return false;
-
-        try {
-            int v = proc.exitValue();
-            proc = null;
-            return false;
-        } catch (IllegalThreadStateException e) {
-            return true;
-        }
-    }
-    */
     private void stopDEVise()
     {
         isValid = false;
@@ -290,6 +271,7 @@ public class DEViseServer implements Runnable
         return client;
     }
 
+    // Set the client to switch to the next time we switch clients.
     public synchronized void setCurrentClient(DEViseClient c)
     {
         if (c == null)
@@ -300,26 +282,28 @@ public class DEViseServer implements Runnable
         notifyAll();
     }
 
+    // Returns ACTION_*.
     private synchronized int getAction()
     {
-        while (action == DEViseServer.IDLE && newClient == null) {
+        while (action == ACTION_IDLE && newClient == null) {
             try {
                 wait();
             } catch (InterruptedException e) {
             }
         }
 
-        if (action == DEViseServer.QUIT) {
+        if (action == ACTION_QUIT) {
             return action;
         }
 
         if (client == null && newClient == null) {
-            action = DEViseServer.IDLE;
+            action = ACTION_IDLE;
         } else {
             if (newClient != null) { // need to switch client
-                pop.pn("Client switching happened in server running on (" + hostname + ")");
+                pop.pn("Client switching happened in server running on (" +
+		  hostname + ")");
                 switchClient(true);
-                action = DEViseServer.WORK;
+                action = ACTION_WORK;
             } else {
                 try {
                     //Thread.sleep(100);
@@ -345,13 +329,14 @@ public class DEViseServer implements Runnable
         while (true) {
             todo = getAction();
 
-            if (todo == DEViseServer.QUIT) {
+            if (todo == ACTION_QUIT) {
                 quit();
 
                 break;
-            } else if (todo == DEViseServer.WORK && client != null) {
-                // while DEViseServer thread reach here, there is no way to interrupt it until
-                // some error happened or it finish processing one client's request
+            } else if (todo == ACTION_WORK && client != null) {
+                // while DEViseServer thread reach here, there is no way to
+		// interrupt it until some error happened or it finish
+		// processing one client's request
 
                 serverCmds = null;
 
@@ -361,11 +346,14 @@ public class DEViseServer implements Runnable
                 boolean isEnd = false;
                 while (!isEnd) {
                     try {
-                        // this method will not block, if no command it just return null
+			// Get a command from the client.
+                        // This method will not block, if no command it just
+			// returns null.
                         clientCmd = client.getCmd();
                         isEnd = true;
                     } catch (InterruptedIOException e) {
-                        // since client.getCmd() will not block, so this is meaningless
+                        // since client.getCmd() will not block, this is
+			// meaningless
                     } catch (YException e) {
                         pop.pn("Client communication error");
                         pop.pn(e.getMsg());
@@ -379,338 +367,35 @@ public class DEViseServer implements Runnable
                 if (clientCmd == null) {
                     continue;
                 } else {
+		    // We've just finished processing this command, so
+		    // remove it from the client.
                     client.removeLastCmd();
                 }
 
+		//
+		// Process the command.
                 // commands JAVAC_GetServerState, JAVAC_Abort & JAVAC_Connect
                 // already been handled in DEViseClient
+		//
                 try {
-                    if (clientCmd.startsWith(DEViseCommands.PROTOCOL_VERSION)) {
-                        if (sendCmd(clientCmd)) {
-                            if (client.user.addClient(client)) {
-                                serverCmds = new String[2];
-                                serverCmds[0] = DEViseCommands.USER + " " + client.ID.intValue();
-                                serverCmds[1] = DEViseCommands.DONE;
-                            } else {
-                                serverCmds = new String[1];
-                                serverCmds[0] = DEViseCommands.ERROR + " {Maximum logins for this user has been reached}";
-                                //throw new YException("No more login is allowed for user \"" + client.user.getName() + "\"");
-                                isRemoveClient = true;
-                            }
-                        } else {
-                            isRemoveClient = true;
-                        }
-                    } else if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-                        client.isClientSwitched = false;
-                        client.isSwitchSuccessful = false;
-                        if (client.isSessionOpened) {
-                            client.isSessionOpened = false;
-                            sendCmd(DEViseCommands.CLOSE_SESSION);
-                            currentDir = new Vector();
-                            currentDir.addElement(rootDir);
-                        }
-
-                        removeCurrentClient(false);
-
-                        // no need to return any response to client
-                        continue;
-                    } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
-                        client.isClientSwitched = false;
-                        client.isSwitchSuccessful = false;
-                        if (client.isSessionOpened) {
-                            client.isSessionOpened = false;
-                            sendCmd(DEViseCommands.CLOSE_SESSION);
-                            currentDir = new Vector();
-                            currentDir.addElement(rootDir);
-                        }
-
-                        // no need to return any response to client
-                        continue;
-                    } else if (clientCmd.startsWith(DEViseCommands.GET_SESSION_LIST)) {
-                        String[] cmds = DEViseGlobals.parseString(clientCmd);
-                        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir)) {
-                            if (cmds[1].equals(rootDir)) {
-                                sendCmd(DEViseCommands.GET_SESSION_LIST);
-                            } else {
-                                String p = cmds[1].substring(14);
-                                sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
-                            }
-                            //Vector path = findPath(cmds[1]);
-                            //if (path != null) {
-                            //    if (path.size() > 0) {
-                            //        for (int i = 0; i < path.size(); i++) {
-                            //            String p = (String)path.elementAt(i);
-                            //            sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
-                            //            if (p.equals("..")) {
-                            //                currentDir.removeElementAt(currentDir.size() - 1);
-                            //            } else {
-                            //                currentDir.addElement(p);
-                            //            }
-                            //        }
-                            //    } else {
-                            //        sendCmd(DEViseCommands.GET_SESSION_LIST);
-                            //    }
-                            //
-                            //} else {
-                            //    serverCmds = new String[1];
-                            //    serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" + clientCmd + "\"}";
-                            //}
-                        } else {
-                            serverCmds = new String[1];
-                            serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" + clientCmd + "\"}";
-                        }
-                    } else if (clientCmd.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
-                        boolean error = false;
-                        String[] cmds = DEViseGlobals.parseString(clientCmd);
-                        if (cmds != null && cmds.length == 3) {
-                            try {
-                                client.screenDimX = Integer.parseInt(cmds[1]);
-                                client.screenDimY = Integer.parseInt(cmds[2]);
-                                if (client.screenDimX < 1 || client.screenDimY < 1)
-                                    throw new NumberFormatException();
-                            } catch (NumberFormatException e) {
-                                error = true;
-                            }
-                        } else {
-                            error = true;
-                        }
-
-                        if (error) {
-                            serverCmds = new String[1];
-                            serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" + clientCmd + "\"}";
-                            client.screenDimX = -1;
-                            client.screenDimY = -1;
-                        } else {
-                            sendCmd(clientCmd);
-                        }
-                    } else if (clientCmd.startsWith(DEViseCommands.OPEN_SESSION)) {
-                        if (client.isSessionOpened) {
-                            client.isSessionOpened = false;
-                            sendCmd(DEViseCommands.CLOSE_SESSION);
-                            currentDir = new Vector();
-                            currentDir.addElement(rootDir);
-                        }
-
-                        String[] cmds = DEViseGlobals.parseString(clientCmd);
-                        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir + "/")) {
-                            String p = cmds[1].substring(14);
-
-                            client.sessionName = p;
-
-                            boolean error = false;
-                            if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
-                                    error = true;
-                                }
-                            }
-
-                            if (!error) {
-                                if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.sessionName + "}")) {
-                                    client.isSessionOpened = true;
-                                } else {
-                                    // need to clear socket because there might be some data on data socket
-                                    int count;
-                                    try {
-                                        count = countData();
-                                    } catch (YException ee) {
-                                        count = -1;
-                                        pop.pn(ee.getMessage());
-                                    }
-                                    socket.clearSocket(count);
-                                }
-                            }
-
-                            //Vector path = findPath(cmds[1]);
-                            //if (path != null && path.size() > 0) {
-                            //    for (int i = 0; i < path.size() - 1; i++) {
-                            //        String p = (String)path.elementAt(i);
-                            //        sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
-                            //        if (p.equals("..")) {
-                            //            currentDir.removeElementAt(currentDir.size() - 1);
-                            //        } else {
-                            //            currentDir.addElement(p);
-                            //        }
-                            //    }
-                            //
-                            //    //client.path = (String)currentDir.elementAt(0);
-                            //    //for (int i = 1; i < currentDir.size(); i++) {
-                            //    //    client.path = client.path + "/" + (String)currentDir.elementAt(i);
-                            //    //}
-                            //
-                            //    client.sessionName = (String)path.lastElement();
-                            //
-                            //    boolean error = false;
-                            //    if (client.screenDimX > 0 && client.screenDimY > 0) {
-                            //        if (!sendCmd(DEViseCommand.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
-                            //            error = true;
-                            //        }
-                            //    }
-                            //
-                            //    if (!error) {
-                            //        if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.sessionName + "}")) {
-                            //            client.isSessionOpened = true;
-                            //        } else {
-                            //            // need to clear socket because there might be some data on data socket
-                            //            socket.clearSocket();
-                            //        }
-                            //    }
-                            //}
-                        }
-
-                        if (!client.isSessionOpened) {
-                            serverCmds = new String[1];
-                            serverCmds[0] = DEViseCommands.ERROR + " {Can not open session \"" + client.sessionName + "\"}";
-                        }
-                    } else {
-                        if (client.isClientSwitched) {
-                            client.isClientSwitched = false;
-
-                            if (client.isSwitchSuccessful) {
-                                client.isSwitchSuccessful = false;
-
-                                boolean error = false;
-                                if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                    if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
-                                        error = true;
-                                    //} else {
-                                    //    pop.pn("Switch error: can not send " + DEViseCommands.SET_DISPLAY_SIZE);
-                                    }
-                                }
-
-                                if (!error) {
-                                    if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}")) {
-                                        client.isSessionOpened = true;
-                                    } else {
-                                        pop.pn("Switch error: Can not send " + DEViseCommands.OPEN_SESSION + " " + client.savedSessionName);
-                                    }
-                                    // need to clear socket because there might be some useless data on data socket
-                                    //socket.clearSocket();
-                                }
-                                // need to clear socket because there might be some useless data on data socket
-                                int count;
-                                try {
-                                    count = countData();
-                                } catch (YException ee) {
-                                    count = -1;
-                                    pop.pn(ee.getMessage());
-                                }
-                                socket.clearSocket(count);
-
-                                //Vector path = findPath(client.path);
-                                //if (path != null) {
-                                //    for (int i = 0; i < path.size(); i++) {
-                                //        String p = (String)path.elementAt(i);
-                                //        sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
-                                //        if (p.equals("..")) {
-                                //            currentDir.removeElementAt(currentDir.size() - 1);
-                                //        } else {
-                                //            currentDir.addElement(p);
-                                //        }
-                                //    }
-                                //
-                                //    boolean error = false;
-                                //    if (client.screenDimX > 0 && client.screenDimY > 0) {
-                                //        if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " + client.screenDimX + " " + client.screenDimY)) {
-                                //            error = true;
-                                //        } else {
-                                //            pop.pn("Switch error: can not send " + DEViseCommands.SET_DISPLAY_SIZE);
-                                //        }
-                                //    }
-                                //
-                                //    if (!error) {
-                                //        if (sendCmd(DEViseCommands.OPEN_SESSION + " {" + client.savedSessionName + "}")) {
-                                //            client.isSessionOpened = true;
-                                //        } else {
-                                //            pop.pn("Switch error: Can not send " + DEViseCommands.OPEN_SESSION + " " + client.savedSessionName);
-                                //        }
-                                //
-                                //        // need to clear socket because there might be some useless data on data socket
-                                //        socket.clearSocket();
-                                //    }
-                                //} else {
-                                //    pop.pn("Switch error: path is null");
-                                //}
-                            } else {
-                                pop.pn("Switch error: client switch not successful");
-                            }
-                        }
-
-                        if (client.isSessionOpened) {
-                            if (!sendCmd(clientCmd)) {
-                                // need to clear data socket when error happened because there might be some data on data socket
-                                int count;
-                                try {
-                                    count = countData();
-                                } catch (YException ee) {
-                                    count = -1;
-                                    pop.pn(ee.getMessage());
-                                }
-                                socket.clearSocket(count);
-                            }
-                        } else {
-                            serverCmds = new String[1];
-                            serverCmds[0] = DEViseCommands.FAIL + " {Do not have an opened session or Can not open last saved session}";
-                        }
+		    if (!processClientCmd(clientCmd, isRemoveClient,
+		      serverDatas)) {
+		        continue;
                     }
-
-                    // need to get whatever data is sending over by devised along with the commands
-                    // since serverCmds always ends with a JAVAC_Error or JAVAC_Fail or JAVAC_Done, so we do not need to check the last command
-                    if (!serverCmds[serverCmds.length - 1].startsWith(DEViseCommands.DONE)) {
-                        String tmpcmd = serverCmds[serverCmds.length - 1];
-                        serverCmds = new String[1];
-                        serverCmds[0] = tmpcmd;
-                    }
-
-                    for (int i = 0; i < (serverCmds.length - 1); i++) {
-                        if (serverCmds[i].startsWith(DEViseCommands.UPDATE_VIEW_IMAGE)) {
-                            String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
-                            if (cmds != null && cmds.length == 3) {
-                                try {
-                                    int imgSize = Integer.parseInt(cmds[2]);
-                                    if (imgSize < 1) {
-                                        throw new NumberFormatException();
-                                    }
-
-                                    byte[] image = receiveData(imgSize);
-
-                                    serverDatas.addElement(image);
-                                } catch (NumberFormatException e1) {
-                                    throw new YException("Invalid image size in command \"" + serverCmds[i] + "\"");
-                                }
-                            } else {
-                                throw new YException("Ill-formated command \"" + serverCmds[i] + "\"");
-                            }
-                        } else if (serverCmds[i].startsWith(DEViseCommands.UPDATE_GDATA)) {
-                            String[] cmds = DEViseGlobals.parseString(serverCmds[i]);
-                            if (cmds != null && cmds.length == 7) {
-                                try {
-                                    int dataSize = Integer.parseInt(cmds[6]);
-                                    if (dataSize < 1) {
-                                        throw new NumberFormatException();
-                                    }
-
-                                    byte[] data = receiveData(dataSize);
-
-                                    serverDatas.addElement(data);
-                                } catch (NumberFormatException e1) {
-                                    throw new YException("Invalid GData size in command \"" + serverCmds[i] + "\"");
-                                }
-                            } else {
-                                throw new YException("Ill-formated command \"" + serverCmds[i] + "\"");
-                            }
-                        }
-                    }
+		    processServerCmd(serverDatas);
                 } catch (YException e) {
                     pop.pn("DEViseServer failed");
                     pop.pn(e.getMsg());
 
                     if (clientCmd.startsWith(DEViseCommands.EXIT)) {
                         removeCurrentClient(false);
-                    } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
+                    } else if (clientCmd.startsWith(
+		      DEViseCommands.CLOSE_SESSION)) {
                         switchClient();
                     } else {
                         try {
-                            client.sendCmd(DEViseCommands.ERROR + " {Communication error occurs while talk to devised}");
+                            client.sendCmd(DEViseCommands.ERROR +
+			      " {Communication error occurs while talk to devised}");
                             switchClient();
                         } catch (YException e1) {
                             pop.pn("Client communication error");
@@ -719,13 +404,12 @@ public class DEViseServer implements Runnable
                         }
                     }
 
-                    //if (!startSocket()) {
-                        setAction(DEViseServer.QUIT);
-                    //}
-
                     continue;
                 }
 
+		//
+		// Send response from server back to the client.
+		//
                 try {
                     client.sendCmd(serverCmds);
                     client.sendData(serverDatas);
@@ -742,6 +426,337 @@ public class DEViseServer implements Runnable
         }
     }
 
+
+// ------------------------------------------------------------------------
+// Method to process client commands.
+
+    // Returns true if command needs the rest of the "standard" processing,
+    // false otherwise.
+    private boolean processClientCmd(String clientCmd, boolean isRemoveClient,
+      Vector serverDatas) throws YException
+    {
+        if (clientCmd.startsWith(DEViseCommands.PROTOCOL_VERSION)) {
+	    cmdProtocolVersion(clientCmd, isRemoveClient);
+
+        } else if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+	    cmdExit();
+
+            // no need to return any response to client
+            return false;
+
+        } else if (clientCmd.startsWith(DEViseCommands.CLOSE_SESSION)) {
+	    cmdCloseSession();
+
+            // no need to return any response to client
+            return false;
+
+        } else if (clientCmd.startsWith(DEViseCommands.GET_SESSION_LIST)) {
+	    cmdGetSessionList(clientCmd);
+
+        } else if (clientCmd.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
+	    cmdSetDisplaySize(clientCmd);
+
+        } else if (clientCmd.startsWith(DEViseCommands.OPEN_SESSION)) {
+	    cmdOpenSession(clientCmd);
+
+        } else {
+	    cmdClientDefault(clientCmd);
+
+        }
+
+	return true;
+    }
+
+// ------------------------------------------------------------------------
+// Method to process server commands.
+
+    private void processServerCmd(Vector serverDatas) throws YException
+    {
+        // need to get whatever data is sending over by devised along with
+	// the commands since serverCmds always ends with a JAVAC_Error or
+	// JAVAC_Fail or JAVAC_Done, so we do not need to check the last
+	// command
+        if (!serverCmds[serverCmds.length - 1].startsWith(DEViseCommands.DONE)) {
+            String tmpcmd = serverCmds[serverCmds.length - 1];
+            serverCmds = new String[1];
+            serverCmds[0] = tmpcmd;
+        }
+
+        for (int i = 0; i < (serverCmds.length - 1); i++) {
+            if (serverCmds[i].startsWith(DEViseCommands.UPDATE_VIEW_IMAGE)) {
+	        cmdUpdateViewImage(serverCmds[i], serverDatas);
+            } else if (serverCmds[i].startsWith(DEViseCommands.UPDATE_GDATA)) {
+		cmdUpdateGData(serverCmds[i], serverDatas);
+            }
+        }
+    }
+
+// ------------------------------------------------------------------------
+// Methods to process specific client commands.
+
+    private void cmdProtocolVersion(String clientCmd, boolean isRemoveClient)
+      throws YException
+    {
+        if (sendCmd(clientCmd)) {
+            if (client.user.addClient(client)) {
+                serverCmds = new String[2];
+                serverCmds[0] = DEViseCommands.USER + " " +
+                client.ID.intValue();
+                serverCmds[1] = DEViseCommands.DONE;
+            } else {
+                serverCmds = new String[1];
+                serverCmds[0] = DEViseCommands.ERROR +
+                  " {Maximum logins for this user has been reached}";
+                //throw new YException(
+                  //"No more login is allowed for user \"" +
+                  //client.user.getName() + "\"");
+                isRemoveClient = true;
+            }
+        } else {
+            isRemoveClient = true;
+        }
+    }
+
+    private void cmdExit() throws YException
+    {
+	cmdCloseSession();
+
+        removeCurrentClient(false);
+    }
+
+    private void cmdCloseSession() throws YException
+    {
+        client.isClientSwitched = false;
+        client.isSwitchSuccessful = false;
+        if (client.isSessionOpened) {
+            client.isSessionOpened = false;
+            sendCmd(DEViseCommands.CLOSE_SESSION);
+            currentDir = new Vector();
+            currentDir.addElement(rootDir);
+        }
+    }
+
+    private void cmdGetSessionList(String clientCmd) throws YException
+    {
+        String[] cmds = DEViseGlobals.parseString(clientCmd);
+        if (cmds != null && cmds.length == 2 &&
+          cmds[1].startsWith(rootDir)) {
+            if (cmds[1].equals(rootDir)) {
+                sendCmd(DEViseCommands.GET_SESSION_LIST);
+            } else {
+                String p = cmds[1].substring(14);
+                sendCmd(DEViseCommands.GET_SESSION_LIST + " {" + p + "}");
+            }
+        } else {
+            serverCmds = new String[1];
+            serverCmds[0] = DEViseCommands.ERROR +
+              " {Invalid command: \"" + clientCmd + "\"}";
+        }
+    }
+
+    private void cmdSetDisplaySize(String clientCmd) throws YException
+    {
+        boolean error = false;
+        String[] cmds = DEViseGlobals.parseString(clientCmd);
+        if (cmds != null && cmds.length == 3) {
+            try {
+                client.screenDimX = Integer.parseInt(cmds[1]);
+                client.screenDimY = Integer.parseInt(cmds[2]);
+                if (client.screenDimX < 1 || client.screenDimY < 1) {
+		    throw new NumberFormatException();
+	        }
+            } catch (NumberFormatException e) {
+                error = true;
+            }
+        } else {
+            error = true;
+        }
+
+        if (error) {
+            serverCmds = new String[1];
+            serverCmds[0] = DEViseCommands.ERROR + " {Invalid command: \"" +
+	      clientCmd + "\"}";
+            client.screenDimX = -1;
+            client.screenDimY = -1;
+        } else {
+            sendCmd(clientCmd);
+        }
+    }
+
+    private void cmdOpenSession(String clientCmd) throws YException
+    {
+        if (client.isSessionOpened) {
+            client.isSessionOpened = false;
+            sendCmd(DEViseCommands.CLOSE_SESSION);
+            currentDir = new Vector();
+            currentDir.addElement(rootDir);
+        }
+
+        String[] cmds = DEViseGlobals.parseString(clientCmd);
+        if (cmds != null && cmds.length == 2 && cmds[1].startsWith(rootDir +
+	  "/")) {
+            String p = cmds[1].substring(14);
+
+            client.sessionName = p;
+
+            boolean error = false;
+            if (client.screenDimX > 0 && client.screenDimY > 0) {
+                if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " +
+		  client.screenDimX + " " + client.screenDimY)) {
+                    error = true;
+                }
+            }
+
+            if (!error) {
+                if (sendCmd(DEViseCommands.OPEN_SESSION + " {" +
+		  client.sessionName + "}")) {
+                    client.isSessionOpened = true;
+                } else {
+                    // need to clear socket because there might be some
+		    // data on data socket
+                    int count;
+                    try {
+                        count = countData();
+                    } catch (YException ee) {
+                        count = -1;
+                        pop.pn(ee.getMessage());
+                    }
+                    socket.clearSocket(count);
+                }
+            }
+        }
+
+        if (!client.isSessionOpened) {
+            serverCmds = new String[1];
+            serverCmds[0] = DEViseCommands.ERROR +
+	      " {Can not open session \"" + client.sessionName + "\"}";
+        }
+    }
+
+// ------------------------------------------------------------------------
+// Method to process all client commands not using the command-specific
+// methods.
+
+    private void cmdClientDefault(String clientCmd) throws YException
+    {
+        if (client.isClientSwitched) {
+            client.isClientSwitched = false;
+
+            if (client.isSwitchSuccessful) {
+                client.isSwitchSuccessful = false;
+
+                boolean error = false;
+                if (client.screenDimX > 0 && client.screenDimY > 0) {
+                    if (!sendCmd(DEViseCommands.SET_DISPLAY_SIZE + " " +
+		      client.screenDimX + " " + client.screenDimY)) {
+                        error = true;
+                    //} else {
+                    //    pop.pn("Switch error: can not send " +
+		    //      DEViseCommands.SET_DISPLAY_SIZE);
+                    }
+                }
+
+                if (!error) {
+                    if (sendCmd(DEViseCommands.OPEN_SESSION + " {" +
+		      client.savedSessionName + "}")) {
+                        client.isSessionOpened = true;
+                    } else {
+                        pop.pn("Switch error: Can not send " +
+			  DEViseCommands.OPEN_SESSION + " " +
+			  client.savedSessionName);
+                    }
+                    // need to clear socket because there might be some
+		    // useless data on data socket 
+		    //socket.clearSocket();
+                }
+
+                // need to clear socket because there might be some useless
+		// data on data socket
+                int count;
+                try {
+                    count = countData();
+                } catch (YException ee) {
+                    count = -1;
+                    pop.pn(ee.getMessage());
+                }
+                socket.clearSocket(count);
+            } else {
+                pop.pn("Switch error: client switch not successful");
+            }
+        }
+
+        if (client.isSessionOpened) {
+            if (!sendCmd(clientCmd)) {
+                // need to clear data socket when error happened because
+		// there might be some data on data socket
+                int count;
+                try {
+                    count = countData();
+                } catch (YException ee) {
+                    count = -1;
+                    pop.pn(ee.getMessage());
+                }
+                socket.clearSocket(count);
+            }
+        } else {
+            serverCmds = new String[1];
+            serverCmds[0] = DEViseCommands.FAIL +
+	      " {Do not have an opened session or Can not open last saved session}";
+        }
+    }
+
+// ------------------------------------------------------------------------
+// Methods to process specific server commands.
+
+    private void cmdUpdateViewImage(String serverCmd, Vector serverDatas)
+      throws YException
+    {
+        String[] cmds = DEViseGlobals.parseString(serverCmd);
+        if (cmds != null && cmds.length == 3) {
+            try {
+                int imgSize = Integer.parseInt(cmds[2]);
+                if (imgSize < 1) {
+                    throw new NumberFormatException();
+                }
+
+                byte[] image = receiveData(imgSize);
+
+                serverDatas.addElement(image);
+            } catch (NumberFormatException e1) {
+                throw new YException("Invalid image size in command \"" +
+		  serverCmd + "\"");
+            }
+        } else {
+            throw new YException("Ill-formated command \"" + serverCmd + "\"");
+        }
+    }
+
+    private void cmdUpdateGData(String serverCmd, Vector serverDatas)
+      throws YException
+    {
+        String[] cmds = DEViseGlobals.parseString(serverCmd);
+        if (cmds != null && cmds.length == 7) {
+            try {
+                int dataSize = Integer.parseInt(cmds[6]);
+                if (dataSize < 1) {
+                    throw new NumberFormatException();
+                }
+
+                byte[] data = receiveData(dataSize);
+
+                serverDatas.addElement(data);
+            } catch (NumberFormatException e1) {
+                throw new YException("Invalid GData size in command \"" +
+		  serverCmd + "\"");
+            }
+        } else {
+            throw new YException("Ill-formated command \"" + serverCmd + "\"");
+        }
+    }
+
+// ------------------------------------------------------------------------
+
+/* Not used.  RKW 2000-06-12.
     private Vector findPath(String p)
     {
         Vector ppp = new Vector();
@@ -787,6 +802,7 @@ public class DEViseServer implements Runnable
             return null;
         }
     }
+*/
 
     private synchronized void quit()
     {
@@ -794,7 +810,7 @@ public class DEViseServer implements Runnable
 
         stopDEVise();
 
-        setStatus(0);
+        setStatus(STATUS_STOPPED);
     }
 
     private synchronized void removeCurrentClient()
@@ -815,7 +831,7 @@ public class DEViseServer implements Runnable
                     pop.pn(e.getMsg());
 
                     //if (!startSocket()) {
-                        setAction(DEViseServer.QUIT);
+                        setAction(ACTION_QUIT);
                     //}
                 }
             }
@@ -831,7 +847,10 @@ public class DEViseServer implements Runnable
         switchClient(false);
     }
 
-    private synchronized void switchClient(boolean flag)
+    // Note: this method is sometimes called with startNewClient false,
+    // to just save the state and clean up for the old client (for
+    // example, if the client crashes).
+    private synchronized void switchClient(boolean startNewClient)
     {
         if (client != null) {
             if (client.isSessionOpened) {
@@ -840,7 +859,8 @@ public class DEViseServer implements Runnable
                 client.isSessionOpened = false;
 
                 try {
-                    if (sendCmd(DEViseCommands.SAVE_SESSION + " {" + client.savedSessionName + "}")) {
+                    if (sendCmd(DEViseCommands.SAVE_SESSION + " {" +
+		      client.savedSessionName + "}")) {
                         client.isSwitchSuccessful = true;
                     } else {
                         pop.pn("Can not save session for old client while switching client!");
@@ -856,7 +876,7 @@ public class DEViseServer implements Runnable
                     pop.pn(e.getMsg());
 
                     //if (!startSocket()) {
-                        setAction(DEViseServer.QUIT);
+                        setAction(ACTION_QUIT);
                     //}
                 }
             }
@@ -865,7 +885,7 @@ public class DEViseServer implements Runnable
             client = null;
         }
 
-        if (flag) {
+        if (startNewClient) {
             client = newClient;
             newClient = null;
             if (client != null) {
@@ -970,6 +990,8 @@ public class DEViseServer implements Runnable
         return !isError;
     }
 
+    // Determine the number of bytes on the data socket associated with
+    // the commands currently in serverCmds.
     private int countData() throws YException
     {
         int count = 0;
