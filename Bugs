@@ -265,6 +265,17 @@ Num Date        Status  Description
 077 11/21/96	OPEN	Importing data into a window with piled views
 			doesn't work. (rkw)
 
+078 11/21/96	OPEN	Open a template as a session, cancel out of selecting
+			a data stream -> some of the (internal) objects for
+			the session are not destroyed (opening the same
+			session again causes duplicate name error). (rkw)
+
+079 11/21/96	OPEN	Data shouldn't be erased when switching from display
+			to layout mode. (ml/rkw)
+
+080 11/21/96	OPEN	'Working' should be shown while drilling down as
+			the result of a middle button click. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -263,6 +263,8 @@ X-specific code. (rkw 11/19/96)
 If query window is open, it should be updated as you change other things.
 (ml/rkw 11/20/96)
 
+Show name of view in mapping window. (ml/rkw 11/21/96)
+
 
 COMPLETED
 ---------
