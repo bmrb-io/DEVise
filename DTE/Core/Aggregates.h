@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/06/28 21:47:33  beyer
+  major changes to the interfaces all of the execution classes to make it easier
+  for the plan reader.
+
   Revision 1.48  1998/03/12 18:23:18  donjerko
   *** empty log message ***
 
@@ -128,7 +132,7 @@ public:
     { return _fn->isDifferent(t[_pos]); }
   
   const Type* getValue()
-    { _fn->getValue(); }
+    { return _fn->getValue(); }
   
   void dequeue(int n)
     { _fn->dequeue(n); }
