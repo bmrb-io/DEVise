@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/10/01 17:54:16  wenger
+  Implemented the sending of GData to the JavaScreen.
+
   Revision 1.38  1998/09/30 18:01:55  wenger
   Oops!  Forgot one change for previous fix.
 
@@ -815,7 +818,7 @@ JavaScreenCmd::OpenSession()
 				ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
 				if (view->GetSendToSocket()) {
 					if (RequestUpdateGData(view) == DONE) {
-						gDataViews.Insert(view);
+						gDataViews.Append(view);
 					} else {
 						_status = ERROR;
 					}
@@ -1423,7 +1426,7 @@ JavaScreenCmd::SendChangedWindows()
 		  printf("GIF of window %s is \"dirty\".\n", window->GetName());
 #endif
 
-			dirtyWinList.Insert(window);
+			dirtyWinList.Append(window);
 
     		ControlCmdType tmpResult = DONE;
 			int	filesize;
@@ -1487,7 +1490,7 @@ JavaScreenCmd::SendChangedWindows()
 			ViewGraph *view = (ViewGraph *)window->Next(viewIndex);
 			if (view->GetSendToSocket()) {
 				if (RequestUpdateGData(view) == DONE) {
-					gDataViews.Insert(view);
+					gDataViews.Append(view);
 				} else {
 					tmpResult = ERROR;
 				}
