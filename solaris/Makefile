@@ -15,6 +15,14 @@
 # $Id$
 
 # $Log$
+# Revision 1.48.4.1  1999/04/09 20:25:30  wenger
+# Phase 1 of the changes for view symbol improvements is in place: the ViewInfo
+# and ViewInstance classes are working, and views are no longer accesses via
+# the class directory.
+#
+# Revision 1.48  1999/02/18 17:31:39  wenger
+# Removed UniData from DEVise.
+#
 # Revision 1.47  1998/11/23 20:04:25  donjerko
 # *** empty log message ***
 #
@@ -161,11 +169,17 @@
 # Makefile for all components of DEVise
 #
 
+include ../Makefile.common
+
 LIBMODULES = utils color graphics graphics.new tape issm compustat crsp \
-	DataReader RTree DTE xvertext csgroup data
+	xvertext csgroup data
 
 #devread is obsolete
 #attrproj is broken
+
+ifeq (,$(findstring NO_DTE,$(DEBUG_FLAGS)))
+	LIBMODULES += DataReader RTree DTE
+endif
 
 MODULES = $(LIBMODULES) cslib generic
 

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.62  1999/02/18 19:22:53  wenger
+#  Links or doesn't link dte and rtree as necessary.
+#
 #  Revision 1.61  1999/02/18 17:30:54  wenger
 #  Removed UniData from DEVise.
 #
@@ -224,19 +227,22 @@ BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 # dd: dte need stuff from Jussi's SBM which is in graphics.new
 
 ifeq (,$(findstring NO_DTE,$(DEBUG_FLAGS)))
-	DTE_STUFF = -ldte -lrtree
+	DTE_STUFF = -ldte -lrtree -ldatareader
+	DTE_DEPEND = ../DTE/libdte.a ../RTree/librtree.a \
+		../DataReader/libdatareader.a
 else
 	DTE_STUFF =
+	DTE_DEPEND =
 endif
 
 LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-L../color -L../utils -L../issm -L../csgroup\
 	-L../crsp -L../compustat -L../xvertext \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
+	-L../DataReader \
 	$(DTE_STUFF) -lgraphicsnew -lcsgroup \
 	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
-	-L../DataReader -ldatareader \
 	-L../data -ldevdata \
 	$(ARCH_SYSLIBS)
 
@@ -259,10 +265,9 @@ OBJ += $(SRCC:.C=.o)
 ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a \
-	../DTE/libdte.a \
-	../RTree/librtree.a \
+	$(DTE_DEPEND) \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
-	../crsp/libcrsp.a ../xvertext/libXrot.a ../DataReader/libdatareader.a \
+	../crsp/libcrsp.a ../xvertext/libXrot.a \
 	../data/libdevdata.a
 
 CLIENTLIB = ../graphics.new/libclient.a
