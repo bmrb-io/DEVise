@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.157  1998/02/20 08:46:23  beyer
+#	resurected histograms
+#
 #	Revision 1.156  1998/02/20 06:17:17  beyer
 #	resurected histograms
 #
@@ -700,6 +703,7 @@ set DEViseShapes \
 # UserMode: 1 for end-user mode (logical schemas), 0 for
 #           administrator mode (physical schemas)
 
+set exitmode ""
 set restoring 0
 set template 0
 set sessionName "session.tk"
@@ -951,32 +955,8 @@ menu .mbar.session.menu.printMenu -tearoff 0
 .mbar.session.menu add command -label "Dump Link/Cursor Info" \
 	-command { DumpLinksCursors }
 
-#.mbar.session.menu add separator
-menu .mbar.session.menu.collaborationMenu -tearoff 0
-.mbar.session.menu.collaborationMenu add command -label "Create/Join Group" \
-	-command { DEVise GroupCmd QueryGroup }
-.mbar.session.menu.collaborationMenu add command -label "Request Control" \
-	-command {DEVise GroupCmd LeadGroup}
-
-.mbar.session.menu.collaborationMenu add command -label "Relinquish Control" \
-	-command {DEVise GroupCmd ListenGroup $GroupName $PassWd}
-
-.mbar.session.menu.collaborationMenu add command -label "Leave Group" \
-	-command {DEVise GroupCmd LeaveGroup }
-
-.mbar.session.menu.collaborationMenu add cascade -label "Configuration" \
-	-menu .mbar.session.menu.collaborationMenu.configMenu
-
-menu .mbar.session.menu.collaborationMenu.configMenu -tearoff 0
-.mbar.session.menu.collaborationMenu.configMenu add command  -label "Group Info" \
-	-command {} 
-.mbar.session.menu.collaborationMenu.configMenu add command -label "Token Management" \
-	-command {}
-.mbar.session.menu.collaborationMenu.configMenu add command -label "Pass Word" \
-	-command {}
-
 .mbar.session.menu add separator
-.mbar.session.menu add command -label "Quit" -command DoExit
+.mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.54  1998/02/12 17:17:35  wenger
+#  Merged through collab_br_2; updated version number to 1.5.1.
+#
 #  Revision 1.53  1998/02/02 18:26:35  wenger
 #  Strings file can now be loaded manually; name of strings file is now
 #  stored in session file; added 'serverExit' command and kill_devised
@@ -606,7 +609,10 @@ proc PrintCategory { category } {
 
 ############################################################
 
-proc DoExit {} {
+proc DoExit { mode } {
+	if { $mode == "csgroup" } {
+		DoGroupExit
+	}
     if {[SessionIsOpen]} {
       set answer [ dialog .quit "Quit" \
 	      "Are you sure you want to quit?" "" 0 \
