@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.95  2001/03/19 23:37:53  xuk
+// Fixed bugs.
+//
 // Revision 1.94  2001/03/19 23:10:32  xuk
 // Fixed bug for no available JavaScreen for collaboration.
 //
@@ -2418,7 +2421,7 @@ class CollabDlg extends Frame
     {
       	clients = DEViseGlobals.parseString(data);	
 
-        clientList.removeAll();
+        //clientList.removeAll();
 
         for (int i = 1; i <= (clients.length-1)/3; i++) {
 	    String list = new String();
@@ -2430,7 +2433,7 @@ class CollabDlg extends Frame
         validate();
 
 	if (clientList.getItemCount() <= 0) 
-	    jsc.showMsg("No available JavaScreen for collaboration.");
+	  jsc.showMsg("No available JavaScreen for collaboration.");
     }
 
     protected void processEvent(AWTEvent event)
