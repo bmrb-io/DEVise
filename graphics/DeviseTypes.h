@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/09/23 19:59:25  wenger
+  Fix compile warning.
+
   Revision 1.13  1997/03/28 16:09:11  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -74,6 +77,16 @@
 
 typedef double Coord;
 typedef char Boolean;
+
+typedef struct
+{
+	char 	*AttrName;
+	Coord	Low;
+	Coord	High;
+	Coord	Granularity;
+	int	NumRecs;  // ONLY used in GetRecs for convenience;
+			  // redundant and I'll try to get rid of it later;
+}Range;
 
 #if defined(HPUX) || defined(SUN) || defined(SOLARIS) || defined(LINUX)
 inline int trunc(float num) {
