@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.59  1996/07/23 19:34:01  beyer
+  Changed dispatcher so that pipes are not longer used for callback
+  requests from other parts of the code.
+
   Revision 1.58  1996/07/23 17:16:28  jussi
   Added support for piled views.
 
@@ -1306,8 +1310,14 @@ void View::Run()
 #endif
         return;
       }
+#ifdef DEBUG
+      printf("Bottom pile view %s continues\n", GetName());
+#endif
       _pileViewHold = true;
     } else {
+#ifdef DEBUG
+      printf("Top pile view %s continues\n", GetName());
+#endif
       /* make sure top view is visible */
       GetWindowRep()->Raise();
     }
@@ -1410,8 +1420,6 @@ void View::Run()
     return;
   }
   
-  Dispatcher::Current()->RequestCallback(_dispatcherID);
-
   if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged) {
     /* Do scroll, if we can  */
     UpdateFilterStat stat;
