@@ -2480,7 +2480,7 @@ Num Date        Status  Description
 			dates (doesn't pay attention to the format string).
 			(rkw)
 
-626 12/21/00	OPEN	JavaScreen: JAVAC_ProtocolVersion command is initiated
+626 12/21/00	FIXED	JavaScreen: JAVAC_ProtocolVersion command is initiated
 			by the jspop, not the client, which makes it basically
 			useless. (rkw)
 
@@ -3048,6 +3048,10 @@ Num Date        Status  Description
 755 2/11/02	OPEN	Data source creation GUI should default to having
 			the schema selection dialog come up in the physical
 			schema directory. (rkw)
+
+756 1/31/02	OPEN	Schema attribute names with '(' in them don't work
+			right in the GUI -- the schema parser should complain
+			about them. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
