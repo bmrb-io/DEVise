@@ -1,9 +1,12 @@
-/* CursorClassInfo.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef CursorClassInfo_h
 #define CursorClassInfo_h
 #include "ClassDir.h"
 #include "VisualArg.h"
-
 
 class DeviseCursor;
 class CursorClassInfo: public ClassInfo {

@@ -1,4 +1,8 @@
-/* Time.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Time.h"
 
 struct timeval Time::_beginning;

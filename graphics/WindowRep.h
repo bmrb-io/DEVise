@@ -1,11 +1,18 @@
-/* WindowRep.h: A WindowRep is an instantiation of a window.
-it has the following coordinates:
-(x,y)
-  +----+
-  |    | height
-  +----+
+/*
+  $Id$
+
+  $Log$*/
+
+/* A WindowRep is an instantiation of a window.
+
+   It has the following coordinates:
+   (x,y)
+   +----+
+   |    | height
+   +----+
    width
 */
+
 #ifndef WindowRep_h
 #define WindowRep_h
 #include <stdio.h>

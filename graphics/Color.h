@@ -1,4 +1,8 @@
-/* Color.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Color_h
 #define Color_h
 

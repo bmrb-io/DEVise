@@ -1,4 +1,8 @@
-/* WinClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Display.h"
 #include "Control.h"
 #include "WinClassInfo.h"

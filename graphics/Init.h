@@ -1,4 +1,8 @@
-/* Init.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Init_h
 #define Init_h
 #include "DeviseTypes.h"

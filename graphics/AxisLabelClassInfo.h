@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 20:39:24  jussi
+  Added CVS header.
+*/
 
 #ifndef AxisLabelClassInfo_h
 #define AxisLabelClassInfo_h

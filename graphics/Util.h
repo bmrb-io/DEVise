@@ -1,4 +1,8 @@
-/* Util.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Util_h
 #define Util_h
 #include <assert.h>

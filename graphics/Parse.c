@@ -1,4 +1,8 @@
-/* parse.c: */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <sys/types.h>
 #include <sys/time.h>
 #include <ctype.h>

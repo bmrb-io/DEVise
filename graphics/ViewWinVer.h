@@ -1,4 +1,10 @@
-/* ViewWinVer: stacks its children vertically */
+/*
+  $Id$
+
+  $Log$*/
+
+/* stacks its children vertically */
+
 #ifndef ViewWinVer_h
 #define ViewWinVer_h
 #include "ViewWin.h"

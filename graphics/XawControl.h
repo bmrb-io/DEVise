@@ -1,4 +1,10 @@
-/* XawControl.h: Xaw implementation for control panel  */
+/*
+  $Id$
+
+  $Log$*/
+
+/* Xaw implementation for control panel */
+
 #ifndef XawControl_h
 #define XawControl_h
 #include "Control.h"

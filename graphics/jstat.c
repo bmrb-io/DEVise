@@ -1,13 +1,20 @@
-/* jstat.c: print statistics on journal file
-usage: jstat [flags] file
+/*
+  $Id$
+
+  $Log$*/
+
+/* print statistics on journal file
+
+   usage: jstat [flags] file
 	flags:
 	-pn = print listing, where n==
-		0: print a dump of the file.
-		1: print visual filter width and completion time only, in seconds.
-		2: print visual filter width and buffer statistics only,
+	 0: print a dump of the file.
+	 1: print visual filter width and completion time only, in seconds.
+	 2: print visual filter width and buffer statistics only,
 			including # miss, and # accessed
 	-s = print statistics
 */
+
 #include <math.h>
 #include "Journal.h"
 

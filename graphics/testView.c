@@ -1,5 +1,13 @@
-/* testView.c: suplply > 1 param to get boundary for window.
-Not param for no window boundary for view. */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   supply > 1 param to get boundary for window.
+   Not param for no window boundary for view.
+*/
+
 #include <stdio.h>
 #include "Init.h"
 #include "ViewWinVer.h"

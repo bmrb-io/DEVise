@@ -1,4 +1,8 @@
-/* testWindowRep.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Dispatcher.h"
 #include "Display.h"

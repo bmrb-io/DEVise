@@ -1,4 +1,8 @@
-/* Xdef.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef X_h
 #define X_h
 

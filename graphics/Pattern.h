@@ -1,4 +1,8 @@
-/* Pattern.h*/
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Pattern_h
 #define Pattern_h
 

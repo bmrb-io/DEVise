@@ -1,4 +1,8 @@
-/* DevisePixmap.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Exit.h"
 #include "DevisePixmap.h"

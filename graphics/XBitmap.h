@@ -1,4 +1,8 @@
-/* XBitmap.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef XBitmap_h
 #define XBitmap_h
 

@@ -1,4 +1,8 @@
-/* Display.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Display_h
 #define Display_h
 #include "DeviseTypes.h"

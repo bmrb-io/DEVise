@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 20:39:23  jussi
+  Added CVS header.
+*/
 
 #include <stdio.h>
 #include "AxisLabelClassInfo.h"

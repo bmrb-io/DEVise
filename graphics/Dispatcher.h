@@ -1,4 +1,8 @@
-/* Dispatcher.h: */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Dispatcher_h
 #define Dispatcher_h
 #include <stdio.h>

@@ -1,4 +1,8 @@
-/* Selection.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #if defined(SUN)||defined(PENTIUM)
 #include <string.h>
 #else

@@ -1,4 +1,8 @@
-/* WindowRep.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "WindowRep.h"
 #include "Display.h"
 

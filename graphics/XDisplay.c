@@ -1,4 +1,8 @@
-/* XDisplay.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <X11/Intrinsic.h>
 #include "XDisplay.h"
 #include "XWindowRep.h"

@@ -1,4 +1,12 @@
-/* Selection.h: base class implements linksage in all directons */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   Selection.h: base class implements linksage in all directons
+*/
+
 #ifndef Selection_h
 #define Selection_h
 #include "View.h"

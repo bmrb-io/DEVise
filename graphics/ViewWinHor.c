@@ -1,4 +1,8 @@
-/* ViewWinHor.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "ViewWinHor.h"
 
 ViewWinHor:: ViewWinHor(char *name,  Coord x, Coord y, Coord w, Coord h)

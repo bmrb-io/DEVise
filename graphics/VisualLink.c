@@ -1,4 +1,8 @@
-/* VisualLinkc */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "VisualLink.h"
 #include "View.h"
 

@@ -1,5 +1,13 @@
-/* Time.h: keeps track of current time in terms of # of milliseconds
-since the beginning of the program */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   Time.h: keeps track of current time in terms of # of milliseconds
+   since the beginning of the program
+*/
+
 #ifndef Time_h
 #define Time_h
 #if defined(IBM_POWER_STATION) || defined(ALPHA) || defined(SUN)

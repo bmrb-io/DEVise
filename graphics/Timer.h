@@ -1,4 +1,8 @@
-/* Timer.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Timer_h
 #define Timer_h
 #include "DeviseTypes.h"

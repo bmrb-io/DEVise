@@ -1,4 +1,8 @@
-/* TimeStamp.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef TimeStamp_h
 #define TimeStamp_h
 

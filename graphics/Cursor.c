@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Cursor.h"
 #include "View.h"
 

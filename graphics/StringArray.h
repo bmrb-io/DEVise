@@ -1,4 +1,8 @@
-/* StringArray.h: implements array of strings */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef StringArray_h
 #define StringArray_h
 #include "libc.h"

@@ -1,4 +1,8 @@
-/* VisualLLinkClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "VisualLink.h"
 #include "VisualLinkClassInfo.h"

@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef View_h
 #define View_h
 #include "DeviseTypes.h"

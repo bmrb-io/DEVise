@@ -1,4 +1,8 @@
-/* Cursor.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef DeviseCursor_h
 #define DeviseCursor_h
 #include "DList.h"

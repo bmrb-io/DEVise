@@ -1,4 +1,8 @@
-/* VisualArg.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef VisualArg_h
 #define VisualArg_h
 #include "DeviseTypes.h"

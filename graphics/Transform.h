@@ -1,4 +1,10 @@
-/* Transform.h: transformation matrix */
+/*
+  $Id$
+
+  $Log$*/
+
+/* transformation matrix */
+
 #ifndef Transform_h
 #define Transform_h
 #include "DeviseTypes.h"

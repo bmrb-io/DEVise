@@ -1,4 +1,8 @@
-/* VisualLLinkClassInfo.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "CursorClassInfo.h"
 #include "Cursor.h"

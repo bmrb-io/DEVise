@@ -1,4 +1,8 @@
-/* Control.h: defs for control panel  */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Control_h
 #define Control_h
 #include "DeviseTypes.h"

@@ -1,4 +1,8 @@
-/* ColorMgr.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "ColorMgr.h"
 #include "Display.h"
 

@@ -1,4 +1,8 @@
-/* configuration file */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Config_h
 #define Config_h
 

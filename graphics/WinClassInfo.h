@@ -1,4 +1,10 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* Window class info */
+
 #ifndef WinClassInfo_h
 #define  WinClassInfo_h
 #include "ClassDir.h"

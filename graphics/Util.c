@@ -1,4 +1,8 @@
-/* Utilc. */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>

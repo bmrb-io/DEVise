@@ -1,4 +1,8 @@
-/* XawWidget.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef XawWidget_h
 #define XawWidget_h
 #include <stdio.h>

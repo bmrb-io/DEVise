@@ -1,4 +1,8 @@
-/* BufPolicy.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef BufPolicy_h
 #define BufPolicy_h
 

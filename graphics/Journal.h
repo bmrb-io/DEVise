@@ -1,4 +1,12 @@
-/* Journal.h: keeps track of events to selection, and stop/go buttons */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   Journal.h: keeps track of events to selection, and stop/go buttons
+*/
+
 #ifndef Journal_h
 #define Journal_h
 #include "DeviseTypes.h"

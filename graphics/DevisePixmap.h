@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef DevisePixmap_h
 #define DevisePixmap_h
 #include "VisualArg.h"

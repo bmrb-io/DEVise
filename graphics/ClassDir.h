@@ -1,17 +1,27 @@
-/* ClassDir.h : directory about classes and instances.
-The hierarchy is as follows:
-	category --> class --> instance
-For example:
-	tdata --> multi --> run_trace
-	view --> ViewScatter --> g8639.solar.Scatter
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   ClassDir.h : directory about classes and instances.
+   The hierarchy is as follows:
+     category --> class --> instance
+   For example:
+     tdata --> multi --> run_trace
+     view --> ViewScatter --> g8639.solar.Scatter
 */
+
 #ifndef ClassDir_h
 #define ClassDir_h
 #include "DeviseTypes.h"
 
-/* class information. This is set up to store both class and instance
-information. For classInfo, only methods dealing with class are
-used. For instance info, methods dealing with instances are alos used */
+/*
+   class information. This is set up to store both class and instance
+   information. For classInfo, only methods dealing with class are
+   used. For instance info, methods dealing with instances are alos used
+*/
+
 class InstanceInfo;
 class ClassInfo {
 public:

@@ -1,4 +1,8 @@
-/* ClassDir.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "ClassDir.h"
 #include "Exit.h"

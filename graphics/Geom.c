@@ -1,4 +1,8 @@
-/* Geom.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Geom.h"
 #include <stdio.h>
 #include <libc.h>

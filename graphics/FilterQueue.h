@@ -1,4 +1,10 @@
+/*
+  $Id$
+
+  $Log$*/
+
 /* Queue of visual filters */
+
 #ifndef FilterQueue_h
 #define FilterQueue_h
 #include "VisualArg.h"

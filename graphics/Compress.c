@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Compress.h"
 #include "Exit.h"

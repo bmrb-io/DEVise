@@ -1,4 +1,8 @@
-/* Types.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef DeviseTypes_h
 #define DeviseTypes_h
 

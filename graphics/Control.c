@@ -1,4 +1,8 @@
-/* Control.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Init.h"
 #include "Control.h"
 #include "XawControl.h"

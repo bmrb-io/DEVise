@@ -1,4 +1,8 @@
-/* Compression interface */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Compress_h
 #define Compress_h
 

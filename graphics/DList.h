@@ -1,4 +1,10 @@
-/* DList.h: doubly linked list */
+/*
+  $Id$
+
+  $Log$*/
+
+/* doubly linked list */
+
 #ifndef DList_h
 #define DList_h
 #include "Exit.h"

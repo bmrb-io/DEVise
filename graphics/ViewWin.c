@@ -1,4 +1,8 @@
-/* ViewWin.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "ViewWin.h"
 #include "Display.h"

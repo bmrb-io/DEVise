@@ -1,4 +1,8 @@
-/* parse.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Parse_h
 #define Parse_h
 

@@ -1,3 +1,8 @@
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Jpeg_h
 #define Jpeg_h
 

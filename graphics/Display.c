@@ -1,4 +1,8 @@
-/* Display.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "XDisplay.h"
 
 /* DList <DeviseDisplay *> DeviseDisplay::_displays;*/

@@ -1,4 +1,8 @@
-/* XWindowRep.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Init.h"
 #include "XWindowRep.h"
 #include "XDisplay.h"

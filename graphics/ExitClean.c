@@ -1,4 +1,8 @@
-/* Exit.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Exit.h"
 #include <stdio.h>
 #include <libc.h>

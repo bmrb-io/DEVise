@@ -1,4 +1,8 @@
-/* View.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <time.h>
 #include "Util.h"
 #include "View.h"

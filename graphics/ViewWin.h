@@ -1,15 +1,23 @@
-/* A ViewWin is consist of two parts:
-1) WindowRep part that is its window
-2) children: subwindows
-The base class keeps track of the children, while the derived classes
-determine how to create the window representation of the
-children and how children are to be handled.
+/*
+  $Id$
 
-Protocol for creating a new WindowRep in the constructor:
-Call the Map() function with the size of the window.
-1) If parent == NULL, a top level WindowRep is created.
-2) if parent != NULL: a lower level windowRep is created.
+  $Log$*/
+
+/*
+   A ViewWin is consist of two parts:
+   1) WindowRep part that is its window
+   2) children: subwindows
+
+   The base class keeps track of the children, while the derived classes
+   determine how to create the window representation of the
+   children and how children are to be handled.
+
+   Protocol for creating a new WindowRep in the constructor:
+   Call the Map() function with the size of the window.
+   1) If parent == NULL, a top level WindowRep is created.
+   2) if parent != NULL: a lower level windowRep is created.
 */
+
 #ifndef ViewWin_h
 #define ViewWin_h
 #include "DList.h"

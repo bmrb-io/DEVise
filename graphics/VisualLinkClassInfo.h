@@ -1,4 +1,8 @@
-/* VisualLinkClassInfo.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef VisualLinkClassInfo_h
 #define VisualLinkClassInfo_h
 #include "ClassDir.h"

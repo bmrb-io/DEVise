@@ -1,4 +1,8 @@
-/* VisualLink.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef VisualLink_h
 #define VisualLink_h
 #include "DList.h"

@@ -1,4 +1,8 @@
-/* XawWidget.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "XawWidget.h"
 /* DList<XawWidgetMapEntry*> XawWidget::_widgetMap;*/
 XawWidgetMapEntryList XawWidget::_widgetMap;

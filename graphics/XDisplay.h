@@ -1,4 +1,8 @@
-/* XDisplay.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef XDisplay_h
 #define XDisplay_h
 #include "Display.h"

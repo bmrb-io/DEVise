@@ -1,4 +1,8 @@
-/* FilterQueue.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include <stdio.h>
 #include "Exit.h"
 #include "FilterQueue.h"

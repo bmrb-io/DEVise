@@ -1,4 +1,8 @@
-/* Dispatcher.c */
+/*
+  $Id$
+
+  $Log$*/
+
 #include "Dispatcher.h"
 /*
 #include "DeviseWindow.h"

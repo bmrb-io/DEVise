@@ -1,4 +1,8 @@
-/* Geom.h */
+/*
+  $Id$
+
+  $Log$*/
+
 #ifndef Geom_h
 #define Geom_h
 #include "DeviseTypes.h"

@@ -1,5 +1,13 @@
-/* ColorMgr.h: used to allocate global colors consistent for all displays.
-Built-in colors: 0th color == black. 1st color = white. . */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   ColorMgr.h: used to allocate global colors consistent for all displays.
+   Built-in colors: 0th color == black. 1st color = white...
+*/
+
 #ifndef ColorMgr_h
 #define ColorMgr_h
 #include <stdio.h>
