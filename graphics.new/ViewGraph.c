@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  1997/03/20 22:24:55  guangshu
+  Enhanced statistics to support user specified number of buckets in histograms,
+  group by X and Y, support for date type in group by.
+
   Revision 1.48  1997/03/19 19:41:52  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -744,7 +748,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     char line[1024];
     int i;
     for(i = 0; i < MAXCOLOR; i++) {
-	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
+//	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
 	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g %g\n",
 		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
 		      _stats[i].GetStatVal(STAT_YSUM),
@@ -758,6 +762,10 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 		      _stats[i].GetStatVal(STAT_ZVAL95L),
 		      _stats[i].GetStatVal(STAT_ZVAL95H));
 	    int len = strlen(line);
+#if defined(DEBUG) || 0
+    printf("Color stat buf line is %s\n", line);
+#endif
+
 	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 	    if( (int) _statBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
@@ -765,7 +773,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 #endif
 		break;
 	    }
-	  }
+//	  }
       }
 
     double width = _allStats.GetHistWidth();
@@ -809,9 +817,15 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     }
     gAttrList->DoneIterator();
 
+    int getXRecs = 0;
+    VisualFilter filter;
+    GetVisualFilter(filter);
+    char *date_string;
+    char **date;
+    int len;
+
     int index = _glistX.InitIterator();
     while(_glistX.More(index)) {
-//	int i = _glistX.Next(index); 
 	double i = _glistX.Next(index); 
 	char *date_string;
 	char **date;
@@ -833,11 +847,12 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
-	   int len = strlen(line);
+	   len = strlen(line);
 	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 #if defined(DEBUG) || 0
 	    printf("_gstatX buf line is %s\n", line);
 #endif
+           getXRecs = 1;
 	   if( (int) _gdataStatBufferX->Write(line, len) != len ) {
 #ifdef DEBUG
 	       fprintf(stderr, "******Out of GData Stat Buffer space\n");
@@ -848,9 +863,48 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     }	
     _glistX.DoneIterator(index);
 
+    if(getXRecs == 0) {
+        double low = filter.xLow;
+	double high = filter.xHigh;
+
+    	if(x_is_date) {
+		date_string = DateString(low);
+		date = ExtractDate(date_string);
+		sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+			 date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+	} else {
+		sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
+	}
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+
+#if defined(DEBUG) || 0
+        printf("_gstatX buf line is %s\n", line);
+#endif 
+	if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+	    fprintf(stderr, "******Out of GData Stat Buffer space\n");
+
+        if(x_is_date) {
+                date_string = DateString(high);
+                date = ExtractDate(date_string); 
+                sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+                         date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+        } else {
+                sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
+        }
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+
+#if defined(DEBUG) || 0
+        printf("_gstatX buf line is %s\n", line);
+#endif
+        if( (int) _gdataStatBufferX->Write(line, len) != len ) 
+            fprintf(stderr, "******Out of GData Stat Buffer space\n");
+    }
+
+    int getYRecs = 0;
     index = _glistY.InitIterator();
     while(_glistY.More(index)) {
-//	int i = _glistY.Next(index); 
 	double i = _glistY.Next(index); 
 	if (_gstatY.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
@@ -860,11 +914,12 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
-	   int len = strlen(line);
+	   len = strlen(line);
 	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 #if defined(DEBUG) || 0
 	    printf("_gstatY buf line is %s\n", line);
 #endif
+           getYRecs = 1; 
 	   if( (int) _gdataStatBufferY->Write(line, len) != len ) {
 #ifdef DEBUG
 	       fprintf(stderr, "Out of GData Stat Buffer space\n");
@@ -874,6 +929,32 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
        }
     }	
     _glistY.DoneIterator(index);
+
+    if(getYRecs == 0) {
+        double low = filter.yLow;
+        double high = filter.yHigh;
+
+        sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+
+#if defined(DEBUG) || 0
+        printf("_gstatY buf line is %s\n", line);
+#endif
+        if( (int) _gdataStatBufferY->Write(line, len) != len ) 
+            fprintf(stderr, "******Out of GData Stat Buffer space\n");
+
+        sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
+        len = strlen(line);
+        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
+
+#if defined(DEBUG) || 0
+        printf("_gstatY buf line is %s\n", line);
+#endif
+        if( (int) _gdataStatBufferY->Write(line, len) != len )
+            fprintf(stderr, "******Out of GData Stat Buffer space\n");
+    }
+
 
 }
 
