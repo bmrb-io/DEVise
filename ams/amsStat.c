@@ -1,6 +1,19 @@
-/* tdataStat.c: Print statistics of ams file
-Usage: tdataStat infile 
+/*
+  $Id$
+
+  $Log$
+  Revision 1.3  1995/09/05 20:08:33  jussi
+  Updated header
+
+  Revision 1.2  1995/09/05 20:05:24  jussi
+  Added VCS header.
 */
+
+/*
+   tdataStat.c: Print statistics of ams file
+   Usage: tdataStat infile 
+*/
+
 #include <stdio.h>
 #include <libc.h>
 #include <sys/types.h>

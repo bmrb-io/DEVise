@@ -1,7 +1,21 @@
-/* extendAms.c: extend AMS file and store in TData paged file format
-Usage: extendAms infile outfile [numTimes]
-where numTimes == # of times file should be replicated. 
-Default == 1. */
+/*
+  $Id$
+
+  $Log$
+  Revision 1.3  1995/09/05 20:08:33  jussi
+  Updated header
+
+  Revision 1.2  1995/09/05 20:05:24  jussi
+  Added VCS header.
+*/
+
+/*
+   extendAms.c: extend AMS file and store in TData paged file format
+   Usage: extendAms infile outfile [numTimes]
+   where numTimes == # of times file should be replicated. 
+   Default == 1.
+*/
+
 #include <stdio.h>
 #include <libc.h>
 #include <sys/types.h>
