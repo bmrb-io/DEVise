@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/02 16:52:45  jussi
+  Updated copyright message.
+
   Revision 1.2  1995/09/22 15:49:46  jussi
   Added copyright message.
 
@@ -124,7 +127,7 @@ int RecTape::getrec(char *buf)
   int status = read((char *)&size1, sizeof size1);
   if (!status)
     return status;
-  if (status < sizeof size1)
+  if (status < (int)(sizeof size1))
     return -1;
 
   BinaryConversion::fourbyte((char *)&size1, 1);
@@ -136,7 +139,7 @@ int RecTape::getrec(char *buf)
     return -1;
 
   int size2;
-  if (read((char *)&size2, sizeof size2) < sizeof size2)
+  if (read((char *)&size2, sizeof size2) < (int)(sizeof size2))
     return -1;
 
   BinaryConversion::fourbyte((char *)&size2, 1);
