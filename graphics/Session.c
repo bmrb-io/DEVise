@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.96  2001/06/12 15:29:30  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.95  2001/05/03 19:39:02  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -556,9 +559,14 @@ Session::Open(const char *filename)
   status += CheckWindowLocations();
 
 #if defined(DEBUG)
-  printf("  finished Session::Open(%s)\n", filename);
+  printf("  finished Session::Open(%s)\n    ", filename);
   status.Print();
 #endif
+
+  // Don't leave things with a half-open session.
+  if (!status.IsComplete()) {
+    (void)Close();
+  }
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

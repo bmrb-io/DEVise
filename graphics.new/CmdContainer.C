@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.74  2001/06/12 15:29:45  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.73  2001/05/03 19:39:10  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -381,6 +384,8 @@
 #include "DevError.h"
 #include "DebugLog.h"
 #include "ControlPanelSimple.h"
+#include "Session.h"
+#include "Init.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -882,6 +887,10 @@ CmdContainer::RunOneCommand(int argc, const char* const *argv, ControlPanel* con
 #endif
 		control->ReturnVal(API_NAK, "Unrecognized command");
 		retval = -1;
+		if (Session::OpeningSession() && Init::RobustOpen()) {
+			// Continue opening the session.
+		    retval = 1;
+		}
 	}
 	else
 	{

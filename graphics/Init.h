@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  2001/08/03 18:13:03  wenger
+  Removed all OpenGL-related code.
+
   Revision 1.30  2001/07/31 15:53:22  wenger
   Added -fontkludge argument to allow bypassing of font families that
   don't work with Xvfb on SPARC/Solaris.
@@ -240,6 +243,10 @@ class Init {
     // Helvetica and Times cause crash on SPARC/Solaris with Xvfb.
     static Boolean FontKludge() { return _fontKludge; }
 
+    // If this is true, unrecognized commands don't cause session
+    // opens to fail.
+    static Boolean RobustOpen() { return _robustOpen; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -307,6 +314,7 @@ protected:
 	static Boolean _doHangCheck;
 	static Boolean _useJSCache;
 	static Boolean _fontKludge;
+	static Boolean _robustOpen;
 };
 
 #endif

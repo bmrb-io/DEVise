@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  2001/08/03 18:13:03  wenger
+  Removed all OpenGL-related code.
+
   Revision 1.67  2001/07/31 16:36:27  wenger
   Oops!  Default for fontKludge should be false.
 
@@ -385,6 +388,7 @@ int Init::_logLevel = (int)DebugLog::LevelInfo2;
 Boolean Init::_doHangCheck = true;
 Boolean Init::_useJSCache = true;
 Boolean Init::_fontKludge = false;
+Boolean Init::_robustOpen = true;
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
@@ -459,6 +463,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-id <string> string to identify devise in ps output\n");
   fprintf(stderr, "\t-jscache 0|1: use JavaScreen cache or not\n");
   fprintf(stderr, "\t-fontkludge 0|1: use SPARC/Solaris Xvfb font kludge or not\n");
+  fprintf(stderr, "\t-robustOpen 0|1: ignore unrecognized commands when"
+    "opening a session, or not\n");
 
   Exit::DoExit(1);
 }
@@ -939,6 +945,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_fontKludge = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "robustOpen") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_robustOpen = !(atoi(argv[i+1]) == 0);
 	MoveArg(argc,argv,i,2);
       }
 
