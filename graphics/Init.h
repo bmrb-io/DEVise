@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/03 20:24:09  jussi
+  Removed unused command line parameters. Changed BufPolicies().
+
   Revision 1.11  1996/11/23 21:23:11  jussi
   Removed variables and methods not used anywhere.
 
@@ -121,6 +124,8 @@ class Init {
     
     static int ScreenWidth() { return _screenWidth; }
     static int ScreenHeight() { return _screenHeight; }
+
+    static Boolean UseSharedMem() { return _useSharedMem; }
     
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
@@ -168,6 +173,8 @@ protected:
     
     static int _screenWidth;       /* requested screen width */
     static int _screenHeight;      /* requested screen height */
+
+    static Boolean _useSharedMem;  /* use shared memory */
 };
 
 #endif

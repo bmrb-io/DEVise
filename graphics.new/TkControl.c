@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.72  1996/12/15 06:48:55  donjerko
+  Added support for RTrees and moved DQL sources to DTE/DeviseSpecific dir
+
   Revision 1.71  1996/12/13 21:33:42  jussi
   Updated to use SemaphoreV::maxNumSemaphores().
 
@@ -371,9 +374,15 @@ TkControlPanel::TkControlPanel()
 #endif
 
   // attempt to create space for a large number of virtual semaphores
-  int status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
-  if (status < 0)
+  int status;
+  if (Init::UseSharedMem()) {
+    status = SemaphoreV::create(SemaphoreV::maxNumSemaphores());
+  } else {
+    status = -1;
+  }
+  if (status < 0) {
     fprintf(stderr, "Proceeding without shared memory and semaphores.\n");
+  }
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));
   Dispatcher::Current()->Register(this, 10, GoState, true, fd);

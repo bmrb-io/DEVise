@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/12/15 06:52:31  donjerko
+  Added the initialization and shutdown for RTree code.
+
   Revision 1.26  1996/12/12 22:01:04  jussi
   Moved signal() setup to Dispatcher.c.
 
@@ -125,7 +128,9 @@
 #include "BufPolicy.h"
 #include "Util.h"
 #include "Version.h"
+#if 0 //TEMPTEMP
 #include "RTreeCommon.h"
+#endif
 
 static char uniqueFileName[100];
 
@@ -198,6 +203,8 @@ int Init::_imageDelay = 0;
 int Init::_screenWidth = -1;
 int Init::_screenHeight = -1;
 
+Boolean Init::_useSharedMem = true;
+
 /**************************************************************
 Remove positions from index to index+len-1 from argv
 Update argc.
@@ -250,6 +257,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
   fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
   fprintf(stderr, "\t-imageDelay <value>: sets delay before drawing images\n");
+  fprintf(stderr, "\t-noshm: don't use shared memory\n");
 
   Exit::DoExit(1);
 }
@@ -257,7 +265,9 @@ static void Usage(char *prog)
 void Init::DoInit(int &argc, char **argv)
 {
 
+#if 0 //TEMPTEMP
   initialize_system(VolumeName, RTreeFile, VolumeSize);
+#endif
 
   /* Create work directory, if needed */
   char *workDir = getenv("DEVISE_WORK");
@@ -569,6 +579,11 @@ void Init::DoInit(int &argc, char **argv)
 	// Make sure delay value is non-negative.
 	_imageDelay = MAX(0, _imageDelay);
 	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "noshm") == 0) {
+	_useSharedMem = false;
+	MoveArg(argc,argv,i,1);
       }
 
       else {
