@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2001/12/17 16:50:43  wenger
+#  Added check to release script to warn if we're not doing the release on
+#  trigger (needed because of the dynamic libraries).
+#
 #  Revision 1.6  2001/09/19 17:28:44  wenger
 #  Added dynamic libraries to releases to /p/devise; made some improvements
 #  to run scripts.
@@ -152,7 +156,7 @@ foreach arch ($arches)
     set otherarches = (sunx86_55 sunx86_56 sunx86_57)
   else if ($arch == solsparc) then
     set mainarch = sun4m_54
-    set otherarches = (sun4m_55 sun4x_55 sun4x_56 sun4x_57)
+    set otherarches = (sun4m_55 sun4x_55 sun4x_56 sun4x_57 sun4x_58)
   endif
 
   foreach archdir (bin_arch dyn_lib_arch)
