@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/07/29 15:44:36  wenger
+  Corrected compile warnings on HP.
+
   Revision 1.19  1996/07/24 03:36:03  wenger
   Fixed dispatcher to compile for HP.
 
@@ -109,23 +112,6 @@
 #include "Journal.h"
 #include "Exit.h"
 
-#if defined(HPUX)
-#define fd_set int
-
-#if defined(FD_SET)
-#undef FD_SET
-#undef FD_CLR
-#undef FD_ZERO
-#undef FD_ISSET
-#endif
-
-#include <string.h> // for memset()
-
-inline void FD_SET(int fd, fd_set* fdset) { (*fdset) |= 1 << fd; }
-inline void FD_CLR(int fd, fd_set* fdset) { (*fdset) &= ~(1 << fd); }
-inline void FD_ZERO(fd_set* fdset) { memset((char*)fdset,0,sizeof(*fdset)); }
-inline bool FD_ISSET(int fd, fd_set* fdset) { return (*fdset) & (1 << fd); }
-#endif
 
 class DispatcherCallback {
 public:
@@ -142,7 +128,7 @@ const unsigned AllState  = 0xffffffff;
 struct DispatcherInfo {
 public:
   DispatcherCallback *callBack;
-  StateFlag flag;
+  StateFlag flag;		// if flag is zero, this info will be deleted
   int priority;
   int fd;
   bool callback_requested;
@@ -157,21 +143,25 @@ class Dispatcher;
 class View;
 class Selection;
 
+/* the one and only global dispatcher */
+extern Dispatcher dispatcher;
+
 DefinePtrDList(DeviseWindowList, DeviseWindow *);
 DefinePtrDList(DispatcherInfoList, DispatcherInfo *);
-DefinePtrDList(DispatcherList, Dispatcher *);
+
 
 class Dispatcher {
 public:
   Dispatcher(StateFlag state = GoState );
 
-  virtual ~Dispatcher(){
-    DeleteDispatcher();
-  }
+  ~Dispatcher() {}
 
-  /* schedule/deschedule a callback
-     WARNING: this code only works if there is one dispatcher or if
-     none of the callback requests are in the global pool (_allCallbacks) */
+  /* schedule a callback
+     note: it doesn't matter how many times this is called, the callback
+     will only be made once & one cancel can kill 10 requests.
+     Also, once the callback is made, it will not be made again unless
+     the callback reschedules itself.
+   */
   void RequestCallback(DispatcherID info) {
     DOASSERT(info, "bad dispatcher id");
     if( !(info->callback_requested) ) {
@@ -179,6 +169,8 @@ public:
       _callback_requests++;
     } 
   }
+
+  /* cancel a scheduled callback */
   void CancelCallback(DispatcherID info) {
     DOASSERT(info, "bad dispatcher id");
     if( info->callback_requested ) {
@@ -188,154 +180,66 @@ public:
     } 
   }
 
-  /* Return the current dispatcher */
-  static Dispatcher *Current() {
-    if (!_current_dispatcher)
-      _current_dispatcher = new Dispatcher();
-    return _current_dispatcher;
-  }
-
-  /* Register window */
-  void RegisterWindow(DeviseWindow *win) {
-    _windows.Append(win);
-  }
-  
-  /* Unregister window */
-  void UnregisterWindow(DeviseWindow *win) {
-    _windows.Delete(win);
-  }
-
   /* Register callback, all == TRUE if register with ALL dispatchers. */
   DispatcherID Register(DispatcherCallback *c, int priority = 10,
-			StateFlag flag = GoState, Boolean all = false,
+			StateFlag flag = GoState, 
+			Boolean ignored = false, // parameter no longer used
 			int fd = -1); 
   
   /* Unregister callback */
   void Unregister(DispatcherCallback *c); 
 
-  /* Set/Change current dispatcher */
-  static void SetCurrent(Dispatcher *p) {
-    if (_current_dispatcher != p) {
-      if (_current_dispatcher) {
-	_current_dispatcher->DeactivateDispatcher();
-      }
-      _current_dispatcher = p;
-      _current_dispatcher->ActivateDispatcher();
-    }
-  }
+  /* Change the state of the dispatcher */
+  void ChangeState(StateFlag flag) { _stateFlag = flag; }
+
+  /* CGet the state of the dispatcher */
+  StateFlag GetState() { return _stateFlag; }
+
+  /* Single step */
+  void Run1();
+  
+  /* Print what's in the queue */
+  void Print();
+
+  /***********************************************************************
+    the following static functions are no longer needed, since there
+    is only one dispatcher. I left them here to avoid changing a lot of
+    code... KSB
+  ***********************************************************************/
+
+  /* Return the current dispatcher */
+  static Dispatcher *Current() { return &dispatcher; }
 
   /* Run once, for single step */
-  static void SingleStepCurrent() {
-    Current()->Run1();
-  }
-
-  /* Run continuously, but can return after ReturnCurrent() is called. */
-  static void RunCurrent();
+  static void SingleStepCurrent() { dispatcher.Run1(); }
 
   /* Run, no return */
   static void RunNoReturn();
 
-  /* Switch to next dispatcher */
-  static void NextDispatcher() {
-    Dispatcher *current = Current();
-    int index = 0;
-    for(index = _dispatchers.InitIterator(); _dispatchers.More(index);) {
-      Dispatcher *dispatcher = _dispatchers.Next(index);
-      if (dispatcher == current) {
-	Dispatcher *retDispatcher;
-	if (_dispatchers.More(index)) {
-	  retDispatcher = _dispatchers.Next(index);
-	  _dispatchers.DoneIterator(index);
-	} else {
-	  _dispatchers.DoneIterator(index);
-	  retDispatcher = _dispatchers.GetFirst();
-	}
-	SetCurrent(retDispatcher);
-	return;
-      }
-    }
-    _dispatchers.DoneIterator(index);
-    DOASSERT(0, "Cannot find next dispatcher");
-  }
+  /* Run continuously, but can return after ReturnCurrent() is called. */
+  static void RunCurrent();
 
   /* Return from Run() */
-  static void ReturnCurrent() {
-    _returnFlag = true;
-  }
+  static void ReturnCurrent() { dispatcher._returnFlag = true; }
   
   /* Notify dispatcher that we need to quit program */
   static void QuitNotify();
 
   /* Cleanup all dispatchers */
-  static void Cleanup() {
-    int index;
-    for(index = _dispatchers.InitIterator(); _dispatchers.More(index);) {
-      Dispatcher *dispatcher = _dispatchers.Next(index);
-      dispatcher->DoCleanup();
-    }
-    _dispatchers.DoneIterator(index);
-  }
+  static void Cleanup() { dispatcher.DoCleanup(); }
 
-  /* Change the state of the dispatcher */
-  void ChangeState(StateFlag flag) {
-    _stateFlag = flag;
-  }
+  /***********************************************************************/
 
-  /* CGet the state of the dispatcher */
-  StateFlag GetState() {
-    return _stateFlag;
-  }
+
+private:
 
   /* Clean up before quitting */
-  virtual void DoCleanup();
+  void DoCleanup();
 
   /* process any callbacks that have an fd set in fdread or fdexc,
      or any callbacks that have callback_requested set */
-  void Dispatcher::ProcessCallbacks(DispatcherInfoList& cb_list,
-				    fd_set& fdread, fd_set& fdexc);
-  /* Single step */
-  virtual void Run1();
-  
-  /* Activate the dispatcher. Default: inform all windows  */
-  void ActivateDispatcher();
-  
-  /* Deactivate dispatcher. Default: inform all windows */
-  void DeactivateDispatcher();
-  
-  /* Print what's in the queue */
-  void Print();
+  void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc);
 
-private:
-  /* Register all to be registered */
-  void DoRegisterAll();
-
-  /* Register just one entry */
-  void DoRegister(DispatcherInfo *info, DispatcherInfoList &list); 
-
-  /* Unregister all to be registered */
-  void DoUnregisterAll();
-
-  /* Unregister just one entry */
-  void DoUnregister(DispatcherInfo *info, DispatcherInfoList &list);
-  
-  /* Run, no return */
-  void DoRunNoReturn() {
-    while(1)
-      Run1();
-  }
-
-  /* Append a dispatcher */
-  void AppendDispatcher() {
-    _dispatchers.Append(this);
-  }
-
-  /* Remove a dispatcher */
-  void DeleteDispatcher() {
-    if (_current_dispatcher == this)
-      NextDispatcher();
-    _dispatchers.Delete(this);
-  }
-  
   long _oldTime;		/* time when clock was read last */
   long _playTime;		/* time last read for playback */
   Boolean _playback;		/* TRUE if doing playback */
@@ -348,31 +252,17 @@ private:
   VisualFilter _nextFilter;
   VisualFilter _nextHint;
 
-  /* List of windows */
-  DeviseWindowList _windows;
-
-  /* Callback list (and add/delete list) for this dispatcher */
+  /* Callback list for this dispatcher */
   DispatcherInfoList _callbacks;
-  DispatcherInfoList _toInsertCallbacks, _toDeleteCallbacks;
   int                _callback_requests;
 
-  /* Callback list (and add/delete list) for ALL dispatchers */
-  static DispatcherInfoList _allCallbacks;
-  static DispatcherInfoList _toInsertAllCallbacks, _toDeleteAllCallbacks; 
-
-  static Dispatcher *_current_dispatcher;
   StateFlag _stateFlag;
-  static Boolean _returnFlag;	/* TRUE if we should quit running and return */
-  
-  /* All dispatchers */
-  static DispatcherList _dispatchers;
+  Boolean _returnFlag;	/* TRUE if we should quit running and return */
+  Boolean _quit;	/* Set to true when dispatcher should quit */
   
   /* Set of file descriptors to inspect for potential input */
-  static fd_set fdset;
-  static int maxFdCheck;
-
-  /* Set to true when dispatcher should quit */
-  static Boolean _quit;
+  fd_set fdset;
+  int maxFdCheck;
 };
 
 /*********************************************************
@@ -389,5 +279,6 @@ public:
     Dispatcher::Current()->Unregister(this);
   }
 };
+
 
 #endif

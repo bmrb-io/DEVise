@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/31 19:38:20  wenger
+  Fixed compile warnings in dispatcher.
+
   Revision 1.22  1996/07/29 21:39:59  wenger
   Fixed various compile errors and warnings.
 
@@ -119,25 +122,14 @@
 
 //#define DEBUG
 
-Dispatcher *Dispatcher::_current_dispatcher = 0;
-DispatcherList Dispatcher::_dispatchers;
-DispatcherInfoList Dispatcher::_allCallbacks;
-DispatcherInfoList Dispatcher::_toInsertAllCallbacks;
-DispatcherInfoList Dispatcher::_toDeleteAllCallbacks;
-Boolean Dispatcher::_returnFlag;
+// The global dispatcher
+Dispatcher dispatcher;
 
-/*
-   TRUE if we should quit by cleaning up
-   and exit. This is done with QuitNotify()
-*/
-Boolean Dispatcher::_quit = false;
-fd_set Dispatcher::fdset;
-int Dispatcher::maxFdCheck = 0;
 
 Dispatcher::Dispatcher(StateFlag state)
 {
   _stateFlag = state;
-  AppendDispatcher();
+  _quit = false;
 
   FD_ZERO(&fdset);
   maxFdCheck = 0;
@@ -164,23 +156,24 @@ Dispatcher::Dispatcher(StateFlag state)
 
 
 /***********************************************************
-  The dispatcher keeps track of classes to dispatch via
-  the _callback, and _allCallbacks list. We can't run the
-  dispatcher and update these two lists at the same time,
-  because of the implementation of voidList.
-  Therefore, we have to queue up all elements to be dispatched,
-  and insert them into the lists later, when the dispatcher
-  is not using them.
+  The dispatcher keeps track of classes to dispatch via the _callback
+  list. We can't run the dispatcher and delete from the _callback list
+  at the same time, because of the implementation of voidList.  (Can't
+  delete with more than one active iterator.)  Therefore, we insert
+  new ones immediately, but when a callback is unregistered, it is
+  only marked for deletion and it then gets deleted during the next
+  iteration of the dispatcher.
 **************************************************************/
 
 DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
-				  StateFlag flag, Boolean allDispatchers,
+				  StateFlag flag, 
+				  Boolean /* ignored */,
 				  int fd)
 {
 
 #ifdef DEBUG
-  printf("Dispatcher::Register: %s: 0x%p, fd %d\n",
-	 c->DispatchedName(), c, fd);
+  printf("Dispatcher(0x%p)::Register: %s: 0x%p, fd %d\n",
+	 this, c->DispatchedName(), c, fd);
 #endif
 
   DispatcherInfo *info = new DispatcherInfo;
@@ -190,150 +183,75 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
   info->fd = fd;
   info->callback_requested = false;
 
-#ifdef DEBUG
-  printf("In Dispatcher::Register, fd = %d\n", fd);
-#endif
-
   if (fd >= 0) {
-    FD_SET(fd, &fdset);
-    if (fd > maxFdCheck)
+    if (fd > maxFdCheck) {
+      DOASSERT(fd < FD_SETSIZE, "too many file descriptors for select()");
       maxFdCheck = fd;
+    }
+    FD_SET(fd, &fdset);
   }
-  
-  if (allDispatchers) {
-    _toInsertAllCallbacks.Append(info);
-  } else {
-    _toInsertCallbacks.Append(info);
+
+  int index;
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    DispatcherInfo *current = _callbacks.Next(index);
+    if (current->priority > info->priority) {
+      _callbacks.InsertBeforeCurrent(index, info);
+      break;
+    }
   }
+  if( ! _callbacks.More(index) ) {
+    // ran off the end of the list - new record has the highest priority
+    // index is now at the end of the list, so this is 
+    // equivalent to an append
+    _callbacks.Append(info);
+  }
+  _callbacks.DoneIterator(index);
+
+#if defined(DEBUG_CALLBACK_ORDER)
+  printf("check count & order of callback list: count=%d\n", 
+	 _callbacks.Size());
+  int i = 0;
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    i++;
+    DispatcherInfo *current = _callbacks.Next(index);
+    printf("%d\t%d\n", i, current->priority);
+  }
+  _callbacks.DoneIterator(index);
+#endif
   return info;
 }
 
-/********************************************************
-  Register all entries waiting to be registered 
-**********************************************************/
-
-void Dispatcher::DoRegisterAll()
-{
-  int index;
-  for(index = _toInsertCallbacks.InitIterator();
-      _toInsertCallbacks.More(index);) {
-    DispatcherInfo *current = _toInsertCallbacks.Next(index);
-    DoRegister(current, _callbacks);
-    _toInsertCallbacks.DeleteCurrent(index);
-  }
-  _toInsertCallbacks.DoneIterator(index);
-  
-  for(index = _toInsertAllCallbacks.InitIterator();
-      _toInsertAllCallbacks.More(index);) {
-    DispatcherInfo *current = _toInsertAllCallbacks.Next(index);
-    DoRegister(current, _allCallbacks);
-    _toInsertAllCallbacks.DeleteCurrent(index);
-  }
-  _toInsertAllCallbacks.DoneIterator(index);
-}
-
-void Dispatcher::DoRegister(DispatcherInfo *info, DispatcherInfoList &list)
-{
-#ifdef DEBUG
-  printf("Dispatcher::DoRegister: %s: 0x%p\n",
-	 info->callBack->DispatchedName(), info->callBack);
-#endif
-
-  int index;
-  for(index = list.InitIterator(); list.More(index);) {
-    DispatcherInfo *current = list.Next(index);
-    if (current->priority > info->priority) {
-      list.InsertBeforeCurrent(index, info);
-      list.DoneIterator(index);
-      return;
-    }
-  }
-  list.DoneIterator(index);
-  list.Append(info);
-}
 
 void Dispatcher::Unregister(DispatcherCallback *c)
 {
+#ifdef DEBUG
+  printf("Dispatcher(0x%p)::Unregister: %s: 0x%p\n",
+	 this, c->DispatchedName(), c);
+#endif
+
   int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *info = _callbacks.Next(index);
+#if defined(DEBUG)
+    printf("local: looking for callback 0x%p, found 0x%p\n", 
+	   c, info->callBack);
+#endif
     if (info->callBack == c) {
       info->flag = 0;                   // prevent callback from being called
+					// and mark for deletion
       CancelCallback(info);		// cancel any user-requested calls
       if (info->fd >= 0) {
 	FD_CLR(info->fd, &fdset);
       }
-      _toDeleteCallbacks.Append(info);
       _callbacks.DoneIterator(index);
       return;
     }
   }
   _callbacks.DoneIterator(index);
-  
-  for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
-    DispatcherInfo *info = _allCallbacks.Next(index);
-    if (info->callBack == c) {
-      info->flag = 0;                   // prevent callback from being called
-      if (info->fd >= 0) {
-	FD_CLR(info->fd, &fdset);
-      }
-      _toDeleteAllCallbacks.Append(info);
-      _allCallbacks.DoneIterator(index);
-      return;
-    }
-  }
-  _allCallbacks.DoneIterator(index);
-
-#ifdef DEBUG
   printf("Could not find registrant %s: 0x%p\n", c->DispatchedName(), c);
-#endif
+  DOASSERT(0, "attempt to unregister unknown callback");
 }
 
-void Dispatcher::DoUnregisterAll()
-{
-  int index;
-  for(index = _toDeleteCallbacks.InitIterator();
-      _toDeleteCallbacks.More(index);) {
-    DispatcherInfo *current = _toDeleteCallbacks.Next(index);
-    DoUnregister(current, _callbacks);
-    _toDeleteCallbacks.DeleteCurrent(index);
-  }
-  _toDeleteCallbacks.DoneIterator(index);
-  
-  for(index = _toDeleteAllCallbacks.InitIterator();
-      _toDeleteAllCallbacks.More(index);) {
-    DispatcherInfo *current = _toDeleteAllCallbacks.Next(index);
-    DoUnregister(current, _allCallbacks);
-    _toDeleteAllCallbacks.DeleteCurrent(index);
-  }
-  _toDeleteAllCallbacks.DoneIterator(index);
-}
-
-void Dispatcher::DoUnregister(DispatcherInfo *info, DispatcherInfoList &list)
-{
-  // Note: info->callBack has already been deleted so we cannot
-  // dereference it anymore, like for getting its name etc.
-
-#ifdef DEBUG
-  printf("Dispatcher::DoUnregister: 0x%p\n", info->callBack);
-#endif
-
-  int index;
-  for(index = list.InitIterator(); list.More(index);) {
-    DispatcherInfo *current = list.Next(index);
-    if (current == info) {
-      list.DeleteCurrent(index);
-      delete info;
-      list.DoneIterator(index);
-      return;
-    }
-  }
-  list.DoneIterator(index);
-
-#ifdef DEBUG
-  printf("Could not unregister: 0x%p\n", info->callBack);
-#endif
-}
 
 /**********************************************************************
   run current dispatcher
@@ -342,12 +260,12 @@ void Dispatcher::DoUnregister(DispatcherInfo *info, DispatcherInfoList &list)
 void Dispatcher::RunCurrent()
 {
   ControlPanel::Init();
-
-  _returnFlag = false;
-
+  
+  dispatcher._returnFlag = false;
+  
   while(1) {
-    Current()->Run1();
-    if (_returnFlag)
+    dispatcher.Run1();
+    if (dispatcher._returnFlag)
       break;
   }
 }
@@ -361,41 +279,49 @@ void Dispatcher::RunNoReturn()
   ControlPanel::Init();
 
   while(1)
-    Current()->Run1();
+    dispatcher.Run1();
 }
 
 void Dispatcher::QuitNotify()
 {
-  if (!_quit)
+  if (!dispatcher._quit)
     printf("\nReceived interrupt from user.\n");
 
-  _quit = true;
+  dispatcher._quit = true;
 }
 
 /********************************************************************
   Notify 
 *********************************************************************/
 
-void Dispatcher::ProcessCallbacks(DispatcherInfoList& cb_list,
-				  fd_set& fdread, fd_set& fdexc)
+void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 {
   int index;
-  for(index = cb_list.InitIterator(); cb_list.More(index);) {
-    DispatcherInfo *callback = cb_list.Next(index);
-    if (callback->flag & _stateFlag) {
-      if ( ( callback->fd >= 0
-	     && (  FD_ISSET(callback->fd, &fdread) 
-                || FD_ISSET(callback->fd, &fdexc)))
-	  || callback->callback_requested ) {
+  for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
+    DispatcherInfo *info = _callbacks.Next(index);
+    if( info->flag == 0 ) {
+      // callback has been unregistered - remove it 
+      // note: info->callback could very well be an invalid pointer!
 #if defined(DEBUG)
-	printf("Check for correctness: called fd = %d  req = %d\n", callback->fd, callback->callback_requested); 
+      printf("deleting callback 0x%p\n", info->callback);
 #endif
-	CancelCallback(callback);
-	callback->callBack->Run();
+      _callbacks.DeleteCurrent(index);
+      delete info;
+    } else if (info->flag & _stateFlag) {
+      if ( info->callback_requested
+	  || (info->fd >= 0
+	      && (   FD_ISSET(info->fd, &fdread) 
+		  || FD_ISSET(info->fd, &fdexc))) ) {
+#if defined(DEBUG)
+	printf("Calling callback 0x%p: called fd = %d  req = %d\n", 
+	       info->callBack, info->fd, info->callback_requested); 
+#endif
+	CancelCallback(info);
+	info->callBack->Run();
       }
     }
   }
-  cb_list.DoneIterator(index);
+  _callbacks.DoneIterator(index);
 }
 
 
@@ -411,13 +337,10 @@ void Dispatcher::Run1()
     Exit::DoExit(0);
   }
 
-  /* Register all those waiting to be registered or unregistered */
-  DoRegisterAll();
-  DoUnregisterAll();
-
   /*
      Wait for something to happen using select().
-     Use an infinite timeout if we're not in playback mode.
+     Use an infinite timeout if we're not in playback mode &&
+     no callback requests scheduled.
   */
 
   fd_set fdread,fdexc;
@@ -434,7 +357,14 @@ void Dispatcher::Run1()
   if( !timeoutp ) printf("blocking select: %d userdefs\n", _callback_requests);
   else printf("non-blocking select\n");
 #endif
+
+#if defined(HPUX)
+  int NumberFdsReady = select(maxFdCheck + 1, (int*)&fdread, 
+			      (int*)0, (int*)&fdexc, timeoutp);
+#else
   int NumberFdsReady = select(maxFdCheck + 1, &fdread, 0, &fdexc, timeoutp);
+#endif
+
   if( NumberFdsReady < 0 ) {
     NumberFdsReady = 0;
     FD_ZERO(&fdread);
@@ -451,8 +381,7 @@ void Dispatcher::Run1()
     printf("Checked %d fds, %d have data, %d user-defined\n",
 	   maxFdCheck + 1, NumberFdsReady, _callback_requests);
 #endif
-    ProcessCallbacks(_allCallbacks, fdread, fdexc);
-    ProcessCallbacks(_callbacks, fdread, fdexc);
+    ProcessCallbacks(fdread, fdexc);
   } 
 
   /* end of call backs */
@@ -530,40 +459,10 @@ void Dispatcher::DoCleanup()
       callback->callBack->Cleanup();
   }
   _callbacks.DoneIterator(index);
-  
-  for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
-    DispatcherInfo *callback = _allCallbacks.Next(index);
-    if (callback->flag & _stateFlag)
-      callback->callBack->Cleanup();
-  }
-  _allCallbacks.DoneIterator(index);
 
   ControlPanel::Instance()->DestroySessionData();
 }
 
-void Dispatcher::ActivateDispatcher()
-{
-#if 0
-  int index;
-  for(index = _windows.InitIterator(); _windows.More(index);) {
-    DeviseWindow *win = _windows.Next(index);
-    win->Activate();
-  }
-  _windows.DoneIterator(index);
-#endif
-}
-
-void Dispatcher::DeactivateDispatcher()
-{
-#if 0
-  int index;
-  for(index = _windows.InitIterator(); _windows.More(index);) {
-    DeviseWindow *win = _windows.Next(index);
-    win->Deactivate();
-  }
-  _windows.DoneIterator(index);
-#endif
-}
 
 void Dispatcher::Print()
 {
@@ -577,14 +476,4 @@ void Dispatcher::Print()
       printf("deleted: 0x%p\n", info->callBack);
   }
   _callbacks.DoneIterator(index);
-
-  printf("Dispatcher: all callbacks\n");
-  for(index = _allCallbacks.InitIterator(); _allCallbacks.More(index);) {
-    DispatcherInfo *info = _allCallbacks.Next(index);
-    if (info->flag)
-      printf("%s: 0x%p\n", info->callBack->DispatchedName(), info->callBack);
-    else
-      printf("deleted: 0x%p\n", info->callBack);
-  }
-  _allCallbacks.DoneIterator(index);
 }
