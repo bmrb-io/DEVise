@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/06/16 16:30:54  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 %option c++
@@ -75,13 +78,17 @@ C-style		return CSTYLE_TOKEN;
 quoted		return QUOTEDSTYLE_TOKEN;
 url			return URLSTYLE_TOKEN;
 noescape	return NOESCAPESTYLE_TOKEN;
+comment     return COMMENT_TOKEN;
 
 \[			{ 	myString.seekp(0);
 				escCheck = 0;
 				BEGIN BRACKET;
 			}
 
-<BRACKET>\][\+]? {	myString << "+" << "\0" ;
+<BRACKET>\][\+]? { if (yytext[1] == '\+') {
+					myString << '+' ;
+				}
+				myString << '\0' ;
 				yylval.string_val = myString.str();
 				escCheck = 0;
 				BEGIN INITIAL;

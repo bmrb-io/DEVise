@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/06/24 01:33:20  okan
+  *** empty log message ***
+
   Revision 1.6  1998/06/23 22:57:11  okan
   *** empty log message ***
 
@@ -91,6 +94,10 @@ Buffer::Buffer(char* fileName, DRSchema* myDRSchema) {
 	extFunc = new eFunc[myDRSchema->qAttr];
 	valFunc = new vFunc[myDRSchema->qAttr];
 
+	if (myDRSchema->getComment() != NULL) {
+		_comment = myDRSchema->getComment();
+	}
+	
 	repeatings = new bool[myDRSchema->qAttr];
 	maxLens = new int[myDRSchema->qAttr];
 	fieldLens = new int[myDRSchema->qAttr];
@@ -273,6 +280,44 @@ Status Buffer::checkEOL(char curChar) {
 			_in.putback(curChar);
 		}
 		return FOUNDEOL;
+	}
+	return OK;
+}
+
+Status Buffer::checkComment() {
+
+// This is called at the beginning of the record to check if
+// record begins with comment, if so skips the record till next
+// delimiter, otherwise backs up ifstream and returns OK
+
+	char tmpChar;
+
+	for (int i = 0; i < _comment->length; i++) {
+		if ((tmpChar = getChar()) == 0) {
+			return FOUNDEOF;
+		}
+		if (tmpChar != _comment->data[i]) {
+			_in.seekg((-1)*(i+1), ios::cur);
+			return OK;
+		}
+	}
+
+	Status tSt;
+
+	while (true) {
+
+		if ((tmpChar = getChar()) == 0) {
+			return FOUNDEOF;
+		}
+
+		tSt = checkEOL(tmpChar);
+
+		if (tSt == FOUNDEOF) {
+			return tSt;
+		} else if (tSt == FOUNDEOL) {
+			return FOUNDCOMMENT;
+		}
+
 	}
 	return OK;
 }
@@ -1080,7 +1125,21 @@ Status Buffer::getDate(Attribute* myAttr, char* dest) {
 }
 
 Status Buffer::extractField(Attribute* myAttr, char* dest) {
+
 	Status retSt;
+
+	// check for comment at the beginning of the record
+	if (_comment != NULL) {
+		while (true) {
+			retSt = checkComment();
+			if (retSt == OK) {
+				break;
+			} else if (retSt == FOUNDEOF) {
+				return retSt;
+			}
+		}
+	}
+		
 	retSt = extFunc[myAttr->whichAttr](myAttr,dest);
 	valFunc[myAttr->whichAttr](dest);
 	return retSt;

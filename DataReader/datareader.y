@@ -31,6 +31,7 @@ char* tmpKey;
 %token QUOTEDSTYLE_TOKEN
 %token URLSTYLE_TOKEN
 %token NOESCAPESTYLE_TOKEN
+%token COMMENT_TOKEN
 %token <string_val> BRACKET_TOKEN
 %token <string_val> STRING_TOKEN
 %token <int_val> INTVAL_TOKEN
@@ -59,6 +60,7 @@ getschema: getanyschema
 		   ;
 
 getanyschema: getdelim ';'
+			  | getcomment ';'
               | getupsep ';'
 			  | getupqu ';'
 			  | getkey ';'
@@ -82,6 +84,21 @@ getdelim: DELIM_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getDelimiter() != NULL
                                             tmpHolder->data = tmpChar;
                                             tmpHolder->length = strlen(tmpChar);
                                             myDRSchema->setDelimiter(tmpHolder);
+                                        }
+			;
+getcomment: COMMENT_TOKEN '=' BRACKET_TOKEN {	if (myDRSchema->getComment() != NULL)
+												drerror("DRSchema Comment can't be entered twice !...");
+											if ($3 == NULL)
+												drerror("DRSchema Comment NULL ??? ") ;
+											char* tmpCom = new char[strlen($3)];
+											strcpy(tmpCom,$3);
+                                            Holder* tmpHolderC = new Holder;
+
+											tmpHolderC->repeating = false;
+
+                                            tmpHolderC->data = tmpCom;
+                                            tmpHolderC->length = strlen(tmpCom);
+                                            myDRSchema->setComment(tmpHolderC);
                                         }
 			;
 getupsep: SEPARATOR_TOKEN '=' BRACKET_TOKEN {

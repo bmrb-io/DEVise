@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/06/16 16:30:52  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #ifndef DATAREADER_SCHEMA_H
@@ -37,7 +40,7 @@ enum types { TYPE_INT, TYPE_STRING, TYPE_DOUBLE, TYPE_DATE };
 #define EXPONENTC 101 //ASCII value of 'e'
 #define EXPONENTS 69 //ASCII value of 'E'
 
-enum Status { OK, FAIL, FOUNDEOF, FOUNDEOL, NOQUOTE, FOUNDSEPARATOR };
+enum Status { OK, FAIL, FOUNDEOF, FOUNDEOL, NOQUOTE, FOUNDSEPARATOR, FOUNDCOMMENT };
 
 enum Encoding { ENCODING_CSTYLE, ENCODING_QUOTED, ENCODING_URL, ENCODING_NOESCAPE };
 
@@ -159,6 +162,7 @@ public:
 class DRSchema {
 private:
 	Holder* _delimiter; // Record delimiter
+	Holder* _comment;   // Data Comment
 	Holder* _separator; // Default separator
 	char _quote;
 	char* _fileName; // DRSchema file name
@@ -186,6 +190,7 @@ public:
 	DRSchema(char* fileName) {
 		_fileName = fileName;
 		qAttr = 0;
+		tAttr = 0;
 		_delimiter = NULL;
 		_separator = NULL;
 		_nullIf = NULL;
@@ -197,6 +202,7 @@ public:
 		_stageSorted = NULL;
 		_dateFormat = NULL;
 		_quote = -1;
+		_comment = NULL;
 	}
 
 	~DRSchema();
@@ -234,6 +240,14 @@ public:
 			
 	void setDelimiter(Holder* delimiter) {
 		_delimiter = delimiter;
+	}
+
+	Holder* getComment() {
+		return _comment;
+	}
+
+	void setComment(Holder* comment) {
+		_comment = comment;
 	}
 
 	int getRecSize() {

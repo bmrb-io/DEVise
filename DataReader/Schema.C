@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/06/22 23:46:59  okan
+  Fixed Some bugs...
+
   Revision 1.6  1998/06/16 16:30:54  wenger
   Added standard headers to DataReader sources.
 
@@ -61,7 +64,6 @@ Attribute::~Attribute() {
 
 DRSchema::~DRSchema() {
 	int i;
-	tAttr = 0;
 
 	if (_separator != NULL) {
 		if (_separator->data != NULL) {

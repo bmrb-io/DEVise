@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/06/16 16:30:52  wenger
+  Added standard headers to DataReader sources.
+
  */
 
 #ifndef DATAREADER_BUFFER_H
@@ -56,6 +59,7 @@ class Buffer {
 private:
 	ifstream _in; //data file
 	Holder* _EOL; //End of Line string
+	Holder* _comment; //Comment string
 	char* _EOLCheck; //char array used for comparing current character to EOL 
 	char** _separatorCheck; //same as EOLCheck, we use different arrays for each attribute
 	char* _fileName; //Name of DataFile
@@ -80,6 +84,7 @@ private:
 	Status checkEOL(char curChar); //Checks if the next character sequence is EOL
 	Status checkSeparator(char curChar, Attribute* myAttr); // Checks if the next character sequence is a Separator
 	Status checkAll(char curChar, Attribute* myAttr); // Combination of EOL & Separator
+	Status checkComment(); // Check if this record begins with a comment
 	
 	// Reads n characters from file stream and calculates the integer value
 	Status getInt(int valLen, int& value);
@@ -140,6 +145,6 @@ public:
 	// extractors using void function pointer arrays
 
 	Status extractField(Attribute* myAttr, char* dest);
-	
 };
+
 #endif
