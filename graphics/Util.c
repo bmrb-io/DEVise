@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/10/07 22:53:50  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.13  1996/08/23 16:55:44  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -58,12 +62,29 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#include <sys/statvfs.h>
+
+#if defined(SOLARIS)
+  #include <sys/statvfs.h>
+  #define STAT_STRUCT statvfs
+  #define STAT_FUNC statvfs
+  #define STAT_FRSIZE f_frsize
+#else
+  #include <sys/vfs.h>
+  #define STAT_STRUCT statfs
+  #define STAT_FUNC statfs
+  #define STAT_FRSIZE f_bsize
+
+  #if defined(SUN)
+    extern "C" int statfs(const char *, struct statfs *);
+  #endif
+#endif
+
 #if defined(SOLARIS) || defined(HPUX) || defined(AIX)
 #include <dirent.h>
 #else
 #include <sys/dir.h>
 #endif
+
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -227,15 +248,15 @@ void CheckAndMakeDirectory(char *dir, int clear )
 /* Check whether we have enough space in a given directory. */
 void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
 {
-  struct statvfs stats;
+  struct STAT_STRUCT stats;
 
-  if (statvfs(dirname, &stats) != 0)
+  if (STAT_FUNC(dirname, &stats) != 0)
   {
     reportErrSys("Can't get status of file system");
   }
   else
   {
-    int bytesFree = stats.f_bavail * stats.f_frsize;
+    int bytesFree = stats.f_bavail * stats.STAT_FRSIZE;
     if (bytesFree < exitSize)
     {
       char errBuf[1024];
