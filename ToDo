@@ -454,6 +454,8 @@ Possibly eliminate crsp, compustat, etc. (devel 12/11/97)
 Build and release only the client/server form of DEVise. (devel 12/11/97)
 (Depends on being able to get rid of multi.)
 
+Add info to the user manual about expressions in mappings. (rkw 1/13/98)
+
 
 COMPLETED
 ---------
