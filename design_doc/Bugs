@@ -2101,6 +2101,14 @@ Num Date        Status  Description
 			(try the demo session Misc/MolBio.ds, for example).
 			(rkw)
 
+539 11/30/99	FIXED	Clicking in the "blank" area with improperly-piled
+			views locks up DEVise (load Test/bad_pile1.ds). (rkw)
+			(Fixed by rkw, 12/1/99.)
+
+540 12/01/99	OPEN	Dragging in the "blank" area with improperly-piled
+			views zooms the wrong view (load Test/bad_pile1.ds).
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

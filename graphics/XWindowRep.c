@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.141  1999/12/01 00:09:38  wenger
+  Disabled extra debug logging for tracking down Omer's crash.
+
   Revision 1.140  1999/11/30 22:28:09  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -2628,7 +2631,7 @@ void XWindowRep::DoButtonPress(int x, int y, int &pixX1, int &pixY1,
   long buttonMask = buttonMasks[button - 1];
   while(!done) {
     XEvent event;
-    XWindowEvent(_display, _win, ButtonReleaseMask | buttonMask, &event);
+    XWindowEvent(_display, _myWin, ButtonReleaseMask | buttonMask, &event);
     switch(event.xany.type) {
     case ButtonRelease:
       if (event.xbutton.button == (unsigned int)button) {
@@ -3672,8 +3675,9 @@ void XWindowRep::DoPopup(int x, int y, int button)
 #else
   Boolean savePopup = Init::SavePopup();
 #endif
-  if (!savePopup)
+  if (!savePopup) {
     XGrabServer(_display);
+  }
 
   /* Draw the text messages into window */
   for(i = 0; i < numMsgs; i++) {
@@ -3713,8 +3717,9 @@ void XWindowRep::DoPopup(int x, int y, int button)
   }
 
   XFreeGC(_display, popUpGc);
-  if (!savePopup)
+  if (!savePopup) {
     XUngrabServer(_display);
+  }
   XSync(_display,false);
 }
 #endif
