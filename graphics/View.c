@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.63  1996/08/03 15:48:37  jussi
+  Pixmaps are restored only for 2D views.
+
   Revision 1.62  1996/08/03 15:37:05  jussi
   Flag _solid3D now has three values.
 
@@ -334,6 +337,8 @@ View::View(char *name, VisualFilter &initFilter,
   _highlight = false; 
 
   _hasXMin = false;
+
+  _view_locks = 0;
 
   _hasLastFilter = false;
   _updateTransform = true;

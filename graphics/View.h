@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.37  1996/08/03 15:35:09  jussi
+  Solid3D flag now has three values: wireframe, solid with frame,
+  and solid without frame.
+
   Revision 1.36  1996/07/25 14:22:59  jussi
   Added aborted parameter to ReportQueryDone().
 
@@ -205,9 +209,29 @@ struct LabelInfo {
 
 class FilterQueue;
 
-class View: public ViewWin, private DispatcherCallback,
-	private ControlPanelCallback {
-public:
+class View
+: public ViewWin,
+  private DispatcherCallback,
+  private ControlPanelCallback
+{
+  public:
+
+	enum VIEW_LOCK {
+	    LOWER_LEFT  = 0x0001,
+	    UPPER_LEFT  = 0x0002,
+	    LOWER_RIGHT = 0x0004,
+	    UPPER_RIGHT = 0x0008,
+	    XWIDTH      = 0x0010,
+	    YWIDTH      = 0x0020,
+
+	    LEFT_SIDE   = LOWER_LEFT|UPPER_LEFT,
+	    RIGHT_SIDE  = LOWER_RIGHT|UPPER_RIGHT,
+	    TOP_SIDE    = UPPER_LEFT|UPPER_RIGHT,
+	    BOTTOM_SIDE = LOWER_LEFT|LOWER_RIGHT,
+	    ALL_LOCKS   = 0xffff
+	};
+
+
 	View(char *name, VisualFilter &initFilter,
 		Color foreground = ForegroundColor,
 	        Color background = BackgroundColor,
@@ -257,10 +281,10 @@ public:
 
 	/* set/clear min info about a view */
 	void SetXMin(Boolean hasXMin, Coord xMin = 0.0) {
-	  if (_hasXMin && _xMin < xMin)
-	    return;
 	  _hasXMin = hasXMin;
-	  _xMin = xMin;
+	  if (_hasXMin && xMin < _xMin) {
+	      _xMin = xMin;
+	  }
 	}
 	Boolean GetXMin(Coord &xMin) {
 	  xMin = _xMin;
@@ -273,6 +297,13 @@ public:
 	  xOnOff = xAxis.inUse;
 	  yOnOff = yAxis.inUse;
 	}
+
+	/* view locks - lock corners or widths */
+	void SetViewLocks(int locks) { _view_locks |= locks; }
+	void ClearViewLocks(int locks) { _view_locks &= ~locks; }
+	bool ToggleViewLocks(int locks) { _view_locks ^= locks; }
+	int ViewLocks() { return _view_locks; }
+	bool IsViewLocked(int locks) { return (_view_locks & locks) != 0; }
 
 	/* get label parameters */
 	void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
@@ -409,7 +440,7 @@ protected:
 	void OptimizeTickMarks(Coord low, Coord high, int numTicks,
 			       Coord &start, int &num, Coord &inc);
 
-private:
+protected:
 	void DrawHighlight();
 
 	/* from ControlPanelCallback */
@@ -462,7 +493,7 @@ private:
 				 int button) = 0;
 
 	/* handle key event */
-	virtual void HandleKey(WindowRep *w ,char key, int x, int y) = 0;
+	virtual void HandleKey(WindowRep *w ,int key, int x, int y) = 0;
 
 	virtual void HandleResize(WindowRep * w, int xlow,
 				  int ylow, unsigned width,
@@ -525,6 +556,9 @@ private:
 
 	Boolean _hasXMin;
 	Coord _xMin;
+
+	int _view_locks;	// bits from VIEW_LOCK
+
 	DeviseCursorList *_cursors;
 	DevisePixmap *_pixmap;
 	int _bytes;          /* # data bytes used to draw the current view */
