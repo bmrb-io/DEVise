@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.171  1999/05/14 13:59:53  wenger
+  User can now control data font family, weight, and slant, on a per-view
+  basis.
+
   Revision 1.170  1999/05/13 18:58:54  wenger
   Removed _queryFilter member from View class to avoid confusion with
   _queryFilter in ViewGraph.
@@ -1194,13 +1198,25 @@ void View::Mark(int index, Boolean marked)
 
 Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 {
+#if defined(DEBUG)
+  printf("View(%s)::CheckCursorOp()\n", GetName());
+#endif
+
   // view has no cursors, so we cant move them either
-  if (!_cursors->Size())
+  if (!_cursors->Size()) {
+#if defined(DEBUG)
+    printf("  view has no cursors\n");
+#endif
     return false;
+  }
 
   // can only move cursors in 2D views
-  if (_numDimensions != 2)
+  if (_numDimensions != 2) {
+#if defined(DEBUG)
+    printf("  view is not 2D\n");
+#endif
     return false;
+  }
 
   // if view is not selected, no cursor movement is induced;
   // mouse click is intended for selecting the view as current;
@@ -1215,13 +1231,23 @@ Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 	GetParentPileStack()->DoneIterator(index);
 
     if (!pileHighlighted) {
+#if defined(DEBUG)
+      printf("  pile is not highlighted\n");
+#endif
       return false;
     }
   } else {
     if (!_selected) {
+#if defined(DEBUG)
+      printf("  view is not selected\n");
+#endif
       return false;
     }
   }
+
+#if defined(DEBUG)
+  printf("  moving cursor\n");
+#endif
 
   /* change the X and Y coordinates of the cursor */
   // Why the heck do we do this?  Why not just move the center of the

@@ -1877,6 +1877,13 @@ Num Date        Status  Description
 487 05/14/99	OPEN	Closing a session does not destroy Kiviat graphs.
 			(rkw)
 
+488 05/17/99	KLUDGED	Cursors in a piled view don't work in the JavaScreen
+			unless they're in the last (top) view of the pile.
+			(rkw)
+
+489 02/16/99	OPEN	Set links don't work (because of changes to the DTE).
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/05/12 21:00:46  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.10  1999/05/07 16:09:38  wenger
   Fixed bug in the ordering of viewsym piles.
 
@@ -1080,6 +1083,26 @@ PileStack::GetFirstView()
   ViewWin *result = NULL;
   if (_views.Size() > 0) {
     result = _views.GetFirst();
+  }
+
+  return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: PileStack::GetLastView
+ * Returns the last view in the pile.
+ */
+ViewWin *
+PileStack::GetLastView()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if (DEBUG >= 2)
+  printf("PileStack(%s)::GetLastView()\n", _name);
+#endif
+
+  ViewWin *result = NULL;
+  if (_views.Size() > 0) {
+    result = _views.GetLast();
   }
 
   return result;

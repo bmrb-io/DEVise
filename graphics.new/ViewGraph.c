@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.111  1999/05/17 18:38:00  wenger
+  Views now have GData sending configuration that is only employed when
+  connecting to the JavaScreen (eliminates the need for the current kludgey
+  setup to send GData to the JS).
+
   Revision 1.110  1999/05/14 16:46:51  wenger
   View vertical scroll can now be configured by the user.
 
@@ -2242,7 +2247,7 @@ void	ViewGraph::HandlePress(WindowRep* w, int xlow, int ylow,
 							   int xhigh, int yhigh, int button)
 {
 #if defined(DEBUG)
-    printf("ViewGraph(0x%p %s)::HandlePress(%d, %d, %d, %d, %d)\n", this,
+    printf("ViewGraph(0x%p, <%s>)::HandlePress(%d, %d, %d, %d, %d)\n", this,
 	  GetName(), xlow, ylow, xhigh, yhigh, button);
 #endif
 

@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.57  1999/05/17 18:37:59  wenger
+  Views now have GData sending configuration that is only employed when
+  connecting to the JavaScreen (eliminates the need for the current kludgey
+  setup to send GData to the JS).
+
   Revision 1.56  1999/05/14 20:10:03  wenger
   Fixed bugs 462 and 478 (both related to setting visual filters).
 
@@ -1058,7 +1063,19 @@ JavaScreenCmd::MouseAction_Click()
 
 	_postponeCursorCmds = true;
 
-    view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
+	if (view->IsInPileMode()) {
+	  // Send the click to all views in the pile (this is done by the
+	  // XWindowRep in the "regular" DEVise).  (Part of the fix for bug 488.)
+	  PileStack *ps = view->GetParentPileStack();
+	  int index = ps->InitIterator();
+	  while (ps->More(index)) {
+	    ViewGraph *tmpView = (ViewGraph *)ps->Next(index);
+        tmpView->HandlePress(tmpView->GetWindowRep(), xLoc, yLoc, xLoc,
+		    yLoc, 1);
+	  }
+	} else {
+      view->HandlePress(view->GetWindowRep(), xLoc, yLoc, xLoc, yLoc, 1);
+	}
 
 	// Make sure everything has actually been re-drawn before we
 	// continue.
@@ -1976,6 +1993,13 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	argv[pos++] = _controlCmdName[DRAWCURSOR];
 	argv[pos++] = (char *)cursor->GetName();
 	argv[pos++] = view->GetName();
+#if 1
+    // This is a kludgey fix for bug 488 -- always say that we're drawing
+	// the cursor in the last (top) view of the pile.  RKW 1999-05-17.
+    if (view->IsInPileMode()) {
+	  argv[pos-1] = view->GetParentPileStack()->GetLastView()->GetName();
+	}
+#endif
 	FillInt(argv, pos, xLoc);
 	FillInt(argv, pos, yLoc);
 	FillInt(argv, pos, width);

@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/05/12 21:01:00  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.8  1999/05/07 14:13:43  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -107,6 +110,7 @@ public:
   void DeleteView(ViewWin *view);
 
   ViewWin *GetFirstView();
+  ViewWin *GetLastView();
   int InitIterator() { return _views.InitIterator(); }
   int More(int index) { return _views.More(index); }
   ViewWin *Next(int index) { return _views.Next(index); }
