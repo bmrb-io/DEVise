@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/09 15:59:55  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
   Revision 1.12  1996/04/18 18:12:45  jussi
   Replaced 'postScript' member variable and method with more appropriate
   name 'batchFile.'
@@ -65,7 +70,6 @@
 #include "Exit.h"
 #include "Init.h"
 #include "Time.h"
-#include "Timer.h"
 #include "BufPolicy.h"
 #include "Util.h"
 #include "Version.h"
@@ -222,10 +226,6 @@ void Init::DoInit(int &argc, char **argv)
   
   /* init current time */
   DeviseTime::Init();
-
-#if 0
-  Timer::InitTimer();
-#endif
 
   _progName = CopyString(argv[0]);
   _progModTime = ModTime(argv[0]);
