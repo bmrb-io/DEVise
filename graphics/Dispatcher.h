@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/04/08 16:56:14  jussi
+  Changed name of DisplaySocketId to more generic 'fd'.
+
   Revision 1.6  1996/04/04 05:18:26  kmurli
   Major modification: The dispatcher now receives the register command
   from the displays directly (i.e. from XDisplay instead of from
@@ -41,6 +44,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include "DeviseTypes.h"
 #include "DList.h"
@@ -94,7 +98,7 @@ public:
     DeleteDispatcher();
   }
 
-  /* return the current dispatcher */
+  /* Return the current dispatcher */
   static Dispatcher *Current() {
     if (_current_dispatcher == NULL)
       _current_dispatcher = new Dispatcher();
@@ -108,35 +112,35 @@ public:
     _current_dispatcher->DoRegisterTimer(callback);
   }
   
-  /* unregister */
+  /* Unregister timer */
   static void UnregisterTimer(DispatcherTimerCallback *callback) {
     if (_current_dispatcher == NULL)
       _current_dispatcher = new Dispatcher();
     _current_dispatcher->DoUnregisterTimer(callback);
   }
 
-  /* Window registration */
+  /* Register window */
   void RegisterWindow(DeviseWindow *win) {
     _windows.Append(win);
   }
   
+  /* Unregister window */
   void UnregisterWindow(DeviseWindow *win) {
     (void)_windows.Delete(win);
   }
 
-  /* callback registration. all == TRUE if register with
-     ALL dispatchers. */
+  /* Register callback, all == TRUE if register with ALL dispatchers. */
   void Register(DispatcherCallback *c, int priority = 10,
-		StateFlag flag=GoState, Boolean all = false,
+		StateFlag flag = GoState, Boolean all = false,
 		int fd = -1); 
   
-  /* unregister */
+  /* Unregister callback */
   void Unregister(DispatcherCallback *c); 
 
   /* Set/Change current dispatcher */
   static void SetCurrent(Dispatcher *p) {
     if (_current_dispatcher != p) {
-      if (_current_dispatcher != NULL) {
+      if (_current_dispatcher) {
 	_current_dispatcher->DeactivateDispatcher();
       }
       _current_dispatcher = p;
@@ -149,13 +153,13 @@ public:
     Current()->Run1();
   }
 
-  /* run continuously, but can return after ReturnCurrent() is called. */
+  /* Run continuously, but can return after ReturnCurrent() is called. */
   static void RunCurrent();
 
-  /* run, no return */
+  /* Run, no return */
   static void RunNoReturn();
 
-  /* switch to next dispatcher */
+  /* Switch to next dispatcher */
   static void NextDispatcher() {
     Dispatcher *current = Current();
     int index = 0;
@@ -179,7 +183,7 @@ public:
     Exit::DoExit(1);
   }
 
-  /* return from run */
+  /* Return from run */
   static void ReturnCurrent() {
     _returnFlag = true;
   }
@@ -187,7 +191,7 @@ public:
   /* Notify dispatcher that we need to quit program */
   static void QuitNotify();
 
-  /* cleanup all dispatchers */
+  /* Cleanup all dispatchers */
   static void Cleanup() {
     for (int index = _dispatchers.InitIterator();_dispatchers.More(index);) {
       Dispatcher *dispatcher = _dispatchers.Next(index);
@@ -195,32 +199,34 @@ public:
     }
   }
 
-  /* change the state of the dispatcher */
+  /* Change the state of the dispatcher */
   void ChangeState(StateFlag flag) {
     _stateFlag = flag;
   }
 
-  /* get the state of the dispatcher */
+  /* CGet the state of the dispatcher */
   StateFlag GetState() {
     return _stateFlag;
   }
 
-  /* cleanup before quitting */
+  /* Clean up before quitting */
   virtual void DoCleanup();
 
-  /* single step */
+  /* Single step */
   virtual void Run1();
   
-  /* activate the dispatcher. Default: inform all windows  */
+  /* Activate the dispatcher. Default: inform all windows  */
   void ActivateDispatcher();
   
   /* Deactivate dispatcher. Default: inform all windows */
   void DeactivateDispatcher();
   
+  /* Do actual registration of timer */
   void DoRegisterTimer(DispatcherTimerCallback *c) {
     _timerCallbacks.Append(c);
   }
 
+  /* Do actual unregistration of timer */
   void DoUnregisterTimer(DispatcherTimerCallback *c) {
     _timerCallbacks.Delete(c);
   }
@@ -229,22 +235,30 @@ public:
   void Print();
 
 private:
-  /* actual code to do registration */
-  /* Do register all to be registered */
+  /* Register all to be registered */
   void DoRegisterAll();
+
   /* Register just one entry */
-  void DoRegister(DispatcherInfo *info, Boolean all = false); 
+  void DoRegister(DispatcherInfo *info, DispatcherInfoList &list); 
+
+  /* Unregister all to be registered */
+  void DoUnregisterAll();
+
+  /* Unregister just one entry */
+  void DoUnregister(DispatcherInfo *info, DispatcherInfoList &list);
   
-  /* run, no return */
+  /* Run, no return */
   void DoRunNoReturn() {
     for(;;)
       Run1();
   }
 
-  /* append a dispatcher */
+  /* Append a dispatcher */
   void AppendDispatcher() {
     _dispatchers.Append(this);
   }
+
+  /* Remove a dispatcher */
   void DeleteDispatcher() {
     if (_current_dispatcher  == this)
       NextDispatcher();
@@ -255,7 +269,7 @@ private:
   long _playTime;		/* time last read for playback */
   Boolean _playback;		/* TRUE if doing playback */
 
-  /* next event to be played back */
+  /* Next event to be played back */
   long _playInterval;
   Journal::EventType _nextEvent;
   Selection *_nextSelection;
@@ -263,35 +277,38 @@ private:
   VisualFilter _nextFilter;
   VisualFilter _nextHint;
 
-  /* list of windows */
-  /* DList<DeviseWindow *>_windows;*/
+  /* List of windows */
   DeviseWindowList _windows;
 
-  /* callback for this dispatcher*/
-  /* DList <DispatcherInfo *> _callbacks;	*/
-  DispatcherInfoList _callbacks, _toInsertCallbacks;
+  /* Callback list (and add/delete list) for this dispatcher */
+  DispatcherInfoList _callbacks;
+  DispatcherInfoList _toInsertCallbacks, _toDeleteCallbacks;
 
+  /* Callback list (and add/delete list) for ALL dispatchers */
+  static DispatcherInfoList _allCallbacks;
+  static DispatcherInfoList _toInsertAllCallbacks, _toDeleteAllCallbacks; 
 
-  /* callback for ALL dispatchers*/
-  /* static DList <DispatcherInfo *> _allCallbacks; */
-  static DispatcherInfoList  _allCallbacks, _toInsertAllCallbacks; 
-
-  /*DList <DispatcherTimerCallback *>_timerCallbacks;*/
+  /* Timer callback list */
   DispatcherTimerCallbackList _timerCallbacks;
 
   static Dispatcher *_current_dispatcher;
   StateFlag _stateFlag;
   static Boolean _returnFlag;	/* TRUE if we should quit running and return */
   
-  /* static DList<Dispatcher *>_dispatchers; */
-  static DispatcherList _dispatchers; /* all dispatchers */
+  /* All dispatchers */
+  static DispatcherList _dispatchers;
   
+  /* Set of file descriptors to inspect for potential input */
+  static fd_set fdset;
+  static int maxFdCheck;
+
+  /* Set to true when dispatcher should quit */
   static Boolean _quit;
 };
 
-/************************************************************
-A callback that automatically registeres with the dispatcher 
-*************************************************************/
+/*********************************************************
+A class that automatically registers with the dispatcher
+*********************************************************/
 
 class DispatcherAutoRegister: public DispatcherCallback {
 public:
