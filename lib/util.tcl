@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/02/02 21:24:46  jussi
+#  Added getColor.
+#
 #  Revision 1.9  1996/01/26 23:22:46  jussi
 #  Added ExecuteScript procedure.
 #
@@ -367,6 +370,7 @@ proc getColor {varname} {
     set size 5
 
     foreach val $DEViseColors {
+	set cindex [lindex $val 0]
 	set color [lindex $val 1]
 	if {$col < 0} {
 	    incr row
@@ -375,7 +379,7 @@ proc getColor {varname} {
 	    pack .getColor.top.row$row -side top -fill x -expand 1
 	}
 	button .getColor.top.row$row.col$col -background $color \
-		-activebackground $color -width $size \
+		-activebackground $color -width $size -text $cindex \
 		-command "set $varname $color; destroy .getColor"
 	pack .getColor.top.row$row.col$col -side left -fill x -expand 1
 	incr col
