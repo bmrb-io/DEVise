@@ -37,10 +37,18 @@ RelationManager::RelationManager()
 	}
 
 	idStream.open(idFile.c_str(), ios::in | ios::out);
-	assert(idStream.good());
+	if (!idStream.good()) {
+		cout << "Error: open of " << idFile.c_str() << " failed.\n";
+		perror("open");
+		assert(0);
+	}
 
 	defStream.open(definitionFile.c_str(),  ios::in | ios::out);
-	assert(defStream.good());
+	if (!defStream.good()) {
+		cout << "Error: open of " << definitionFile.c_str() << " failed.\n";
+		perror("open");
+		assert(0);
+	}
 
 	end:;
 }
