@@ -15,12 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/10/15 19:12:16  jussi
+#  Initial revision.
+#
 
 ############################################################
 
 ARCH_FLAGS   = -DHPUX -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
-ARCH_LDPOST  = -static
+ARCH_LDPOST  =
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base
