@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.64  1996/04/23 20:39:24  jussi
+#	Added HorLine and Segment shapes.
+#
 #	Revision 1.63  1996/04/14 00:25:41  jussi
 #	Removed call to clearInterp.
 #
@@ -243,9 +246,6 @@
 
 ############################################################
 
-# The following are linked to global C variables: fileName, fileAlias,
-# gdataName, windowName, sessionName, argv0,  template
-
 set DEViseColors \
 	{{0 black} {1 white} {2 red} {3 blue} {4 orange} \
 	{5 tan} {6 green} {7 purple} {8 aquamarine} {9 peru} {10 chocolate} \
@@ -262,6 +262,9 @@ set DEViseShapes \
 	{6 Block} {7 3DVector} {8 HorLine} {9 Segment}}
 
 # global variables:
+# restoring: true if restoring session or template
+# template: true if restoring template
+# sessionName: name of current session
 # curView: current view selected
 # lastView: last view selected
 # historyWinOpened: true if history window has been opened
@@ -271,11 +274,14 @@ set DEViseShapes \
 # UserMode: 1 for end-user mode (logical schemas), 0 for
 #           administrator mode (physical schemas)
 
+set restoring 0
+set template 0
+set sessionName "session.tk"
 set curView ""
 set lastView ""
-set historyWinOpened false
-set queryWinOpened false
-set stackWinOpened false
+set historyWinOpened 0
+set queryWinOpened 0
+set stackWinOpened 0
 set helpWindowCreated 0
 set UserMode 1
 
@@ -737,16 +743,16 @@ proc DoEditMapping {} {
 	return
     }
 
-    # Get mapping for the view
-    set map [lindex [DEVise getViewMappings $curView] 0]
-    
     # Find all interpreted mapping
-    set maps [InterpretedGData ]
+    set maps [InterpretedGData]
     if {$maps == ""} {
 	dialog .editError "No Interpreted Mappings" \
 		"View has a compiled mapping which cannot be edited." "" 0 OK
 	return
     }
+    
+    # Get mapping for the view
+    set map [lindex [DEVise getViewMappings $curView] 0]
     
     # See if map is interpreted
     set found 0
@@ -859,48 +865,7 @@ proc DoClose {} {
     
     ProcessViewSelected ""
 	
-    foreach tdata [TdataSet] {
-	# puts "destroying tdata $tdata"
-	DEVise destroy $tdata
-    }
-    
-    foreach gdata [GdataSet] {
-	# puts "destroying gdata $gdata"
-	DEVise destroy $gdata
-    }
-    
-    foreach cursor [CursorSet] {
-	# puts "destroying cursor $cursor"
-	DEVise destroy $cursor
-    }
-    
-    foreach view [ViewSet] {
-	# puts "destroying view $view"
-	DEVise destroy $view
-    }
-
-    foreach link [LinkSet] {
-	# puts "destroying link $link"
-	DEVise destroy $link
-    }
-    
-    foreach win [WinSet] {
-	# puts "destroying window $win"
-	DEVise destroy $win
-    }
-    
-    foreach axis [AxisSet] {
-	# puts "destroying axis $axis"
-	DEVise destroy $axis
-    }
-
-    foreach action [ActionSet ] {
-	# puts "destroying action $action"
-	DEVise destroy $action
-    }
-
-    DEVise clearQP
-    DEVise clearTopGroups
+    DEVise clearAll
 
     set sessionName "session.tk"
 
@@ -909,7 +874,7 @@ proc DoClose {} {
 
 # Do open a session file
 proc DoOpen { asTemplate } {
-    global fsBox sessiondir
+    global fsBox sessiondir restoring template sessionName
 
     if {[DEVise get tdata] != "" && ![DoClose]} {
 	# abort opening a new session
@@ -925,10 +890,20 @@ proc DoOpen { asTemplate } {
 	return
     }
 
+    set sessionName "session.tk"
+    set restoring 1
     if {$asTemplate} {
-	DEVise openTemplate $file
+	set template 1
+    }
+    puts "Restoring session from $file"
+    set err [ catch { source $file } ]
+    set restoring 0
+    set template 0
+
+    if {!$err} {
+	set sessionName $file
     } else {
-	DEVise openSession $file
+	puts "Could not restore session"
     }
 }
 
@@ -1101,6 +1076,15 @@ proc GetTDataTemplate {type total num} {
 	if {$sname == ""} {
 	    return ""
 	}
+
+	# must choose a single data stream
+	if {[llength $sname] > 1} {
+	    dialog .singleStream "Select Single Stream" \
+		    "You have selected more than one data stream.\
+		    Please select a single data stream." "" 0 Continue
+	    continue
+	}
+	set sname [lindex $sname 0]
 
 	# see if data stream already open
 	if {[lsearch [TdataSet] $sname] >= 0} {
