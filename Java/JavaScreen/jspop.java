@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2001/08/21 18:37:16  wenger
+// JSPoP now responds to JAVAC_CheckPop with JAVAC_Error if no deviseds
+// are connected to it; fixed up redirection of stderr in sh scripts.
+//
 // Revision 1.53  2001/05/11 20:36:15  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -270,7 +274,7 @@ public class jspop implements Runnable
     //      default: No Debug information is written
     //
 
-    private static final int SOCK_REC_TIMEOUT = 10000; // milliseconds
+    private static final int SOCK_REC_TIMEOUT = 100000; // milliseconds
 
     private ServerSocket cmdServerSocket = null;
     //private ServerSocket dataServerSocket = null;
@@ -300,7 +304,8 @@ public class jspop implements Runnable
     private Vector activeClients = new Vector();
 
     // Sockets that are connected to a JS.
-    private Vector activeSockets = new Vector();
+    //private Vector activeSockets = new Vector();
+    public Vector activeSockets = new Vector();
 
     // Maximum number of client objects allowed.
     private int maxClient = DEViseGlobals.DEFAULTMAXCLIENT;
