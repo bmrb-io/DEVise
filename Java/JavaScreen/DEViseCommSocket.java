@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2001/01/30 18:42:47  wenger
+// Cleaned up formatting.
+//
 // Revision 1.14  2001/01/30 03:10:25  xuk
 // Change for collaboration JS. cgiFlag = -1 to indicate collaboration JS.
 //
@@ -145,7 +148,7 @@ public class DEViseCommSocket
     private int numberRead = 0;
 
     public int cmdId = 0;
-    public int cgiFlag = 0;
+    public int flag = 0;
 
     //===================================================================
     // PUBLIC METHODS
@@ -445,13 +448,13 @@ public class DEViseCommSocket
 
                 msgType = DEViseGlobals.toUshort(dataRead);
                 cmdId = DEViseGlobals.toUshort(dataRead, 2);
-                cgiFlag = DEViseGlobals.toUshort(dataRead, 4);
+                flag = DEViseGlobals.toUshort(dataRead, 4);
                 numberOfElement = DEViseGlobals.toUshort(dataRead, 6);
                 totalSize = DEViseGlobals.toUshort(dataRead, 8);
 
 		// for collabration JS
 		if (msgType == DEViseGlobals.API_JAVA_CID)
-		    cgiFlag = -1; //TEMP use cgiFlag=-1 to indicate collab JS
+		    flag = -1; //TEMP use cgiFlag=-1 to indicate collab JS
 
                 dataRead = null;
                 isControl = false;
