@@ -19,7 +19,7 @@ setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
 setenv DEVISE_CACHE   $DEVISE_ROOT/cache
 setenv DEVISE_SCHEMA  $DEVISE_ROOT/schema/schema
 setenv DEVISE_SESSION $DEVISE_ROOT/session
-setenv DEVISE_LIB     $DEVISE_ROOT/public/lib
+setenv DEVISE_LIB     $DEVISE_ROOT/public/multi_lib
 setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    $DEVISE_ROOT/public/bin/multi
