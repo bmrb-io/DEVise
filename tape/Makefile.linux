@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/01/07 19:32:20  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.10  1997/11/12 15:51:43  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -51,21 +56,20 @@ Templates.o: /usr/include/asm/types.h /usr/include/linux/time.h
 Templates.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
 Templates.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
 Templates.o: /usr/include/values.h ../graphics/DevStatus.h
-Templates.o: ../graphics/VisualArg.h ../graphics/Pattern.h
-Templates.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
-Templates.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
-Templates.o: ../graphics/Journal.h SortedTable.h ../graphics/Timer.h
-Templates.o: ../graphics.new/BufMgr.h ../graphics/BufPolicy.h
-Templates.o: ../graphics.new/BufferPolicy.h ../graphics.new/RangeInfoArray.h
-Templates.o: ../graphics.new/TData.h ../graphics.new/DataSource.h
-Templates.o: ../graphics.new/MemMgr.h ../graphics.new/DCE.h
-Templates.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-Templates.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-Templates.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
-Templates.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
-Templates.o: /usr/include/errno.h /usr/include/linux/errno.h
-Templates.o: /usr/include/asm/errno.h /usr/include/assert.h
-Templates.o: /usr/include/stdio.h /usr/include/libio.h
+Templates.o: ../graphics/VisualArg.h ../graphics.new/RecId.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
+Templates.o: ../graphics/Dispatcher.h ../graphics/Journal.h SortedTable.h
+Templates.o: ../graphics/Timer.h ../graphics.new/BufMgr.h
+Templates.o: ../graphics/BufPolicy.h ../graphics.new/BufferPolicy.h
+Templates.o: ../graphics.new/RangeInfoArray.h ../graphics.new/TData.h
+Templates.o: ../graphics.new/DataSource.h ../graphics.new/MemMgr.h
+Templates.o: ../graphics.new/DCE.h /usr/include/sys/ipc.h
+Templates.o: /usr/include/linux/ipc.h /usr/include/sys/sem.h
+Templates.o: /usr/include/linux/sem.h /usr/include/asm/bitops.h
+Templates.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
+Templates.o: /usr/include/asm/shmparam.h /usr/include/errno.h
+Templates.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+Templates.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/libio.h
 Templates.o: /usr/include/_G_config.h /usr/include/limits.h
 Templates.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
 Templates.o: /usr/include/posix2_lim.h /usr/include/sys/stat.h

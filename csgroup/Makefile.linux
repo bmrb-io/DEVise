@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1998/02/12 17:14:36  wenger
+# Merged through collab_br_2; updated version number to 1.5.1.
+#
 # Revision 1.5.2.1  1998/01/28 22:42:16  taodb
 # Added support for group communicatoin
 #
@@ -50,9 +53,366 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+Csprotocols.o: /usr/include/string.h /usr/include/features.h
+Csprotocols.o: /usr/include/sys/cdefs.h
+Csprotocols.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+Csprotocols.o: /usr/include/stdlib.h /usr/include/errno.h
+Csprotocols.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+Csprotocols.o: /usr/include/alloca.h /usr/include/stdio.h
+Csprotocols.o: /usr/include/libio.h /usr/include/_G_config.h Csprotocols.h
+Csprotocols.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Csprotocols.o: /usr/include/linux/posix_types.h
+Csprotocols.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+Csprotocols.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+Csprotocols.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+Csprotocols.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+Csprotocols.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+Csprotocols.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+Csprotocols.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+Csprotocols.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Csprotocols.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+Csprotocols.o: /usr/include/linux/param.h /usr/include/asm/param.h
+Csprotocols.o: /usr/include/netdb.h /usr/include/paths.h
+Csprotocols.o: /usr/include/sys/varargs.h
+Csprotocols.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+callBks.o: callBks.h error.h /usr/include/sys/varargs.h
+callBks.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h types.h
+callBks.o: /usr/include/sys/types.h /usr/include/linux/types.h
+callBks.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+callBks.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+callBks.o: /usr/include/sys/socket.h /usr/include/features.h
+callBks.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+callBks.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+callBks.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+callBks.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+callBks.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+callBks.o: /usr/include/sys/param.h /usr/include/limits.h
+callBks.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+callBks.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+callBks.o: /usr/include/asm/param.h ctrlMsg.h
+codec.o: codec.h /usr/include/sys/varargs.h
+codec.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+codec.o: /usr/include/sys/types.h /usr/include/linux/types.h
+codec.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+codec.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+codec.o: /usr/include/sys/uio.h /usr/include/features.h
+codec.o: /usr/include/sys/cdefs.h
+codec.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+codec.o: /usr/include/unistd.h /usr/include/posix_opt.h
+codec.o: /usr/include/gnu/types.h /usr/include/confname.h
+codec.o: /usr/include/errno.h /usr/include/linux/errno.h
+codec.o: /usr/include/asm/errno.h error.h /usr/include/assert.h
+colbr.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+colbr.o: /usr/include/strings.h /usr/include/string.h /usr/include/features.h
+colbr.o: /usr/include/sys/cdefs.h
+colbr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+colbr.o: /usr/include/stdlib.h /usr/include/errno.h
+colbr.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+colbr.o: /usr/include/alloca.h /usr/include/sys/time.h
+colbr.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+colbr.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+colbr.o: /usr/include/linux/time.h /usr/include/time.h
+colbr.o: /usr/include/sys/types.h /usr/include/sys/bitypes.h
+colbr.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+colbr.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+colbr.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+colbr.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+colbr.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+colbr.o: /usr/include/sys/param.h /usr/include/limits.h
+colbr.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+colbr.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+colbr.o: /usr/include/asm/param.h /usr/include/netdb.h /usr/include/paths.h
+colbr.o: error.h /usr/include/sys/varargs.h
+colbr.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h colbr.h
+colbr.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
+colbr.o: types.h logfns.h log.h /usr/include/sys/uio.h /usr/include/unistd.h
+colbr.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+colbr.o: /usr/include/confname.h colbrLog.h sndMsg.h ctrlMsg.h timeOut.h
+colbr.o: netfns.h /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+colbr.o: /usr/include/asm/ioctl.h /usr/include/termios.h
+colbr.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
+colbr.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
+colbr.o: /usr/include/sys/socketio.h serverInterface.h prnfns.h
+error.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+error.o: error.h /usr/include/sys/varargs.h
+error.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+logfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
+logfns.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+logfns.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+logfns.o: /usr/include/sys/stat.h /usr/include/features.h
+logfns.o: /usr/include/sys/cdefs.h /usr/include/linux/stat.h
+logfns.o: /usr/include/fcntl.h /usr/include/gnu/types.h
+logfns.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h colbrLog.h
+logfns.o: log.h /usr/include/stdio.h /usr/include/libio.h
+logfns.o: /usr/include/_G_config.h /usr/include/stdlib.h
+logfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+logfns.o: /usr/include/errno.h /usr/include/linux/errno.h
+logfns.o: /usr/include/asm/errno.h /usr/include/alloca.h
+logfns.o: /usr/include/string.h /usr/include/sys/uio.h /usr/include/unistd.h
+logfns.o: /usr/include/posix_opt.h /usr/include/confname.h colbr.h
+logfns.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+logfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+logfns.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+logfns.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+logfns.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+logfns.o: /usr/include/sys/param.h /usr/include/limits.h
+logfns.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+logfns.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+logfns.o: /usr/include/asm/param.h dbase.h error.h /usr/include/sys/varargs.h
+logfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h htable.h
+logfns.o: bucket.h entry.h datum.h queue.h queueElem.h types.h logfns.h
+netfns.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+netfns.o: /usr/include/stdlib.h /usr/include/features.h
+netfns.o: /usr/include/sys/cdefs.h
+netfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+netfns.o: /usr/include/errno.h /usr/include/linux/errno.h
+netfns.o: /usr/include/asm/errno.h /usr/include/alloca.h netfns.h
+netfns.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+netfns.o: /usr/include/asm/ioctl.h /usr/include/termios.h
+netfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
+netfns.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+netfns.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+netfns.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
+netfns.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
+netfns.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+netfns.o: /usr/include/asm/sockios.h /usr/include/sys/socket.h
+netfns.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+netfns.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+netfns.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+netfns.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+netfns.o: /usr/include/limits.h /usr/include/posix1_lim.h
+netfns.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+netfns.o: /usr/include/linux/param.h /usr/include/asm/param.h
+netfns.o: /usr/include/sys/time.h /usr/include/linux/time.h
+netfns.o: /usr/include/time.h /usr/include/string.h /usr/include/unistd.h
+netfns.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+netfns.o: /usr/include/confname.h error.h /usr/include/sys/varargs.h
+netfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+prnfns.o: prnfns.h /usr/include/stdio.h /usr/include/libio.h
+prnfns.o: /usr/include/_G_config.h /usr/include/stdlib.h
+prnfns.o: /usr/include/features.h /usr/include/sys/cdefs.h
+prnfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+prnfns.o: /usr/include/errno.h /usr/include/linux/errno.h
+prnfns.o: /usr/include/asm/errno.h /usr/include/alloca.h
+prnfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
+prnfns.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+prnfns.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+prnfns.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+prnfns.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+prnfns.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+prnfns.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+prnfns.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+prnfns.o: /usr/include/sys/param.h /usr/include/limits.h
+prnfns.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+prnfns.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+prnfns.o: /usr/include/asm/param.h /usr/include/sys/varargs.h
+prnfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+prnfns.o: /usr/include/strings.h /usr/include/string.h types.h
+prnfns.o: serverInterface.h colbr.h dbase.h error.h htable.h bucket.h entry.h
+prnfns.o: datum.h queue.h queueElem.h
+rcvMsg.o: /usr/include/sys/types.h /usr/include/linux/types.h
+rcvMsg.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+rcvMsg.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+rcvMsg.o: /usr/include/sys/socket.h /usr/include/features.h
+rcvMsg.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+rcvMsg.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+rcvMsg.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+rcvMsg.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+rcvMsg.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+rcvMsg.o: /usr/include/sys/param.h /usr/include/limits.h
+rcvMsg.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+rcvMsg.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+rcvMsg.o: /usr/include/asm/param.h /usr/include/strings.h
+rcvMsg.o: /usr/include/string.h
+rcvMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+rcvMsg.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+rcvMsg.o: /usr/include/bytesex.h /usr/include/nan.h
+rcvMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
+rcvMsg.o: /usr/include/values.h /usr/include/ieee754.h /usr/include/ieee854.h
+rcvMsg.o: /usr/include/unistd.h /usr/include/posix_opt.h
+rcvMsg.o: /usr/include/gnu/types.h /usr/include/confname.h
+rcvMsg.o: /usr/include/sys/stat.h /usr/include/linux/stat.h
+rcvMsg.o: /usr/include/fcntl.h /usr/include/linux/fcntl.h
+rcvMsg.o: /usr/include/asm/fcntl.h rcvMsg.h ctrlMsg.h codec.h
+rcvMsg.o: /usr/include/sys/varargs.h
+rcvMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+rcvMsg.o: /usr/include/sys/uio.h /usr/include/errno.h
+rcvMsg.o: /usr/include/linux/errno.h /usr/include/asm/errno.h error.h
+rcvMsg.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h datum.h
+rcvMsg.o: queue.h queueElem.h types.h callBks.h netfns.h
+rcvMsg.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+rcvMsg.o: /usr/include/asm/ioctl.h /usr/include/termios.h
+rcvMsg.o: /usr/include/linux/termios.h /usr/include/asm/termios.h
+rcvMsg.o: /usr/include/asm/termbits.h /usr/include/asm/ioctls.h
+rcvMsg.o: /usr/include/sys/socketio.h /usr/include/sys/time.h
+rcvMsg.o: /usr/include/linux/time.h /usr/include/time.h timeOut.h ckptfile.h
+rcvMsg.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+server_clnt.o: server.h types.h /usr/include/sys/types.h
+server_clnt.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+server_clnt.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+server_clnt.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+server_clnt.o: /usr/include/features.h /usr/include/sys/cdefs.h
+server_clnt.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+server_clnt.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+server_clnt.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+server_clnt.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+server_clnt.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+server_clnt.o: /usr/include/limits.h /usr/include/posix1_lim.h
+server_clnt.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+server_clnt.o: /usr/include/linux/param.h /usr/include/asm/param.h codec.h
+server_clnt.o: /usr/include/sys/varargs.h
+server_clnt.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+server_clnt.o: /usr/include/sys/uio.h
+server_clnt.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+server_clnt.o: /usr/include/unistd.h /usr/include/posix_opt.h
+server_clnt.o: /usr/include/gnu/types.h /usr/include/confname.h
+server_clnt.o: /usr/include/errno.h /usr/include/linux/errno.h
+server_clnt.o: /usr/include/asm/errno.h error.h
+server_locfns.o: /usr/include/stdio.h /usr/include/libio.h
+server_locfns.o: /usr/include/_G_config.h /usr/include/strings.h
+server_locfns.o: /usr/include/string.h /usr/include/features.h
+server_locfns.o: /usr/include/sys/cdefs.h
+server_locfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+server_locfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
+server_locfns.o: /usr/include/linux/posix_types.h
+server_locfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+server_locfns.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+server_locfns.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+server_locfns.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+server_locfns.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+server_locfns.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+server_locfns.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+server_locfns.o: /usr/include/limits.h /usr/include/posix1_lim.h
+server_locfns.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+server_locfns.o: /usr/include/linux/param.h /usr/include/asm/param.h
+server_locfns.o: /usr/include/netdb.h /usr/include/paths.h
+server_locfns.o: /usr/include/errno.h /usr/include/linux/errno.h
+server_locfns.o: /usr/include/asm/errno.h /usr/include/sys/wait.h
+server_locfns.o: /usr/include/gnu/types.h /usr/include/waitflags.h
+server_locfns.o: /usr/include/waitstatus.h /usr/include/endian.h
+server_locfns.o: /usr/include/bytesex.h /usr/include/signal.h
+server_locfns.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
+server_locfns.o: /usr/include/sys/time.h /usr/include/linux/time.h
+server_locfns.o: /usr/include/time.h /usr/include/stdlib.h
+server_locfns.o: /usr/include/alloca.h /usr/include/unistd.h
+server_locfns.o: /usr/include/posix_opt.h /usr/include/confname.h error.h
+server_locfns.o: /usr/include/sys/varargs.h
+server_locfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+server_locfns.o: serverInterface.h colbr.h dbase.h htable.h bucket.h entry.h
+server_locfns.o: datum.h queue.h queueElem.h types.h server.h sigfns.h
+server_locfns.o: servdb.h timeOut.h netfns.h /usr/include/sys/ioctl.h
+server_locfns.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+server_locfns.o: /usr/include/termios.h /usr/include/linux/termios.h
+server_locfns.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+server_locfns.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+server_locfns.o: ../graphics/Init.h ../graphics/DeviseTypes.h
+server_locfns.o: /usr/include/values.h ../graphics/DevStatus.h
+server_locfns.o: ../graphics/BufPolicy.h Server.h keys.h Csprotocols.h
+server_locfns.o: ../graphics/Dispatcher.h ../graphics/DList.h
+server_locfns.o: ../graphics/Exit.h ../graphics/Journal.h
+server_locfns.o: ../graphics/VisualArg.h ckptfile.h
+server_rmtfns.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+server_rmtfns.o: /usr/include/asm/ioctl.h /usr/include/features.h
+server_rmtfns.o: /usr/include/sys/cdefs.h /usr/include/termios.h
+server_rmtfns.o: /usr/include/sys/types.h /usr/include/linux/types.h
+server_rmtfns.o: /usr/include/linux/posix_types.h
+server_rmtfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+server_rmtfns.o: /usr/include/sys/bitypes.h /usr/include/linux/termios.h
+server_rmtfns.o: /usr/include/asm/termios.h /usr/include/asm/termbits.h
+server_rmtfns.o: /usr/include/asm/ioctls.h /usr/include/sys/socketio.h
+server_rmtfns.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+server_rmtfns.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+server_rmtfns.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
+server_rmtfns.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+server_rmtfns.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+server_rmtfns.o: /usr/include/sys/param.h /usr/include/limits.h
+server_rmtfns.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+server_rmtfns.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+server_rmtfns.o: /usr/include/asm/param.h /usr/include/errno.h
+server_rmtfns.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+server_rmtfns.o: /usr/include/sys/time.h /usr/include/linux/time.h
+server_rmtfns.o: /usr/include/time.h /usr/include/string.h
+server_rmtfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+server_rmtfns.o: /usr/include/unistd.h /usr/include/posix_opt.h
+server_rmtfns.o: /usr/include/gnu/types.h /usr/include/confname.h error.h
+server_rmtfns.o: /usr/include/sys/varargs.h
+server_rmtfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+server_rmtfns.o: queue.h queueElem.h datum.h server.h types.h colbr.h dbase.h
+server_rmtfns.o: htable.h bucket.h entry.h colbrLog.h log.h
+server_rmtfns.o: /usr/include/stdio.h /usr/include/libio.h
+server_rmtfns.o: /usr/include/_G_config.h /usr/include/stdlib.h
+server_rmtfns.o: /usr/include/alloca.h /usr/include/sys/uio.h
+server_rmtfns.o: serverInterface.h sndMsg.h ctrlMsg.h prnfns.h
+server_rmtfns.o: /usr/include/strings.h Csprotocols.h /usr/include/netdb.h
+server_rmtfns.o: /usr/include/paths.h
+server_serv.o: server.h types.h /usr/include/sys/types.h
+server_serv.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+server_serv.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+server_serv.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+server_serv.o: /usr/include/features.h /usr/include/sys/cdefs.h
+server_serv.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+server_serv.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+server_serv.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+server_serv.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+server_serv.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+server_serv.o: /usr/include/limits.h /usr/include/posix1_lim.h
+server_serv.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+server_serv.o: /usr/include/linux/param.h /usr/include/asm/param.h codec.h
+server_serv.o: /usr/include/sys/varargs.h
+server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+server_serv.o: /usr/include/sys/uio.h
+server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+server_serv.o: /usr/include/unistd.h /usr/include/posix_opt.h
+server_serv.o: /usr/include/gnu/types.h /usr/include/confname.h
+server_serv.o: /usr/include/errno.h /usr/include/linux/errno.h
+server_serv.o: /usr/include/asm/errno.h error.h sndMsg.h colbr.h
+server_serv.o: /usr/include/string.h dbase.h htable.h bucket.h entry.h
+server_serv.o: datum.h queue.h queueElem.h ctrlMsg.h /usr/include/stdio.h
+server_serv.o: /usr/include/libio.h /usr/include/_G_config.h
+server_serv.o: /usr/include/stdlib.h /usr/include/alloca.h
+server_serv.o: /usr/include/signal.h /usr/include/linux/signal.h
+server_serv.o: /usr/include/asm/signal.h /usr/include/memory.h
+server_serv.o: /usr/include/sys/resource.h /usr/include/sys/time.h
+server_serv.o: /usr/include/linux/time.h /usr/include/time.h
+server_serv.o: /usr/include/linux/resource.h /usr/include/asm/resource.h
+server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog.h
+server_serv.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stdarg.h
+server_serv.o: /usr/include/strings.h
+sigfns.o: sigfns.h /usr/include/signal.h /usr/include/features.h
+sigfns.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
+sigfns.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+sigfns.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+sigfns.o: /usr/include/sys/bitypes.h /usr/include/linux/signal.h
+sigfns.o: /usr/include/asm/signal.h error.h /usr/include/sys/varargs.h
+sigfns.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+sndMsg.o: /usr/include/sys/types.h /usr/include/linux/types.h
+sndMsg.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+sndMsg.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+sndMsg.o: /usr/include/sys/socket.h /usr/include/features.h
+sndMsg.o: /usr/include/sys/cdefs.h /usr/include/linux/socket.h
+sndMsg.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+sndMsg.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+sndMsg.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+sndMsg.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+sndMsg.o: /usr/include/sys/param.h /usr/include/limits.h
+sndMsg.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+sndMsg.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+sndMsg.o: /usr/include/asm/param.h /usr/include/sys/varargs.h
+sndMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+sndMsg.o: /usr/include/unistd.h /usr/include/posix_opt.h
+sndMsg.o: /usr/include/gnu/types.h
+sndMsg.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+sndMsg.o: /usr/include/confname.h sndMsg.h colbr.h /usr/include/string.h
+sndMsg.o: dbase.h error.h htable.h bucket.h entry.h datum.h queue.h
+sndMsg.o: queueElem.h types.h ctrlMsg.h codec.h /usr/include/sys/uio.h
+sndMsg.o: /usr/include/errno.h /usr/include/linux/errno.h
+sndMsg.o: /usr/include/asm/errno.h prnfns.h /usr/include/stdio.h
+sndMsg.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/stdlib.h
+sndMsg.o: /usr/include/alloca.h /usr/include/strings.h serverInterface.h
+sndMsg.o: Csprotocols.h /usr/include/netdb.h /usr/include/paths.h
 Client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-Client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-Client.o: /usr/include/features.h
+Client.o: /usr/include/stdlib.h /usr/include/features.h
+Client.o: /usr/include/sys/cdefs.h
 Client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 Client.o: /usr/include/errno.h /usr/include/linux/errno.h
 Client.o: /usr/include/asm/errno.h /usr/include/alloca.h
@@ -65,10 +425,63 @@ Client.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
 Client.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
 Client.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
 Client.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-Client.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Client.h
+Client.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+Client.o: /usr/include/netdb.h /usr/include/paths.h
+Client.o: /usr/include/sys/varargs.h
+Client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h Client.h
+Client.o: Csprotocols.h /usr/include/arpa/inet.h /usr/include/sys/param.h
+Client.o: /usr/include/limits.h /usr/include/posix1_lim.h
+Client.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+Client.o: /usr/include/linux/param.h /usr/include/asm/param.h keys.h types.h
+CommandObj.o: CommandObj.h ../graphics/Control.h /usr/include/sys/types.h
+CommandObj.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+CommandObj.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+CommandObj.o: /usr/include/sys/bitypes.h ../graphics/DeviseTypes.h
+CommandObj.o: /usr/include/values.h ../graphics/DevStatus.h
+CommandObj.o: ../graphics/VisualArg.h ../graphics/DList.h ../graphics/Exit.h
+CommandObj.o: ../graphics/ClassDir.h ../graphics/View.h codec.h
+CommandObj.o: /usr/include/sys/varargs.h
+CommandObj.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h
+CommandObj.o: /usr/include/sys/uio.h /usr/include/features.h
+CommandObj.o: /usr/include/sys/cdefs.h
+CommandObj.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+CommandObj.o: /usr/include/unistd.h /usr/include/posix_opt.h
+CommandObj.o: /usr/include/gnu/types.h /usr/include/confname.h
+CommandObj.o: /usr/include/errno.h /usr/include/linux/errno.h
+CommandObj.o: /usr/include/asm/errno.h error.h Server.h serverInterface.h
+CommandObj.o: colbr.h /usr/include/string.h /usr/include/sys/socket.h
+CommandObj.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+CommandObj.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+CommandObj.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+CommandObj.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+CommandObj.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+CommandObj.o: /usr/include/limits.h /usr/include/posix1_lim.h
+CommandObj.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+CommandObj.o: /usr/include/linux/param.h /usr/include/asm/param.h dbase.h
+CommandObj.o: htable.h bucket.h entry.h datum.h queue.h queueElem.h types.h
+CommandObj.o: keys.h Csprotocols.h /usr/include/netdb.h /usr/include/paths.h
+CommandObj.o: ../graphics/Dispatcher.h ../graphics/Journal.h
+CommandObj.o: /usr/include/stdio.h /usr/include/libio.h
+CommandObj.o: /usr/include/_G_config.h
+Keys.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+Keys.o: /usr/include/string.h /usr/include/features.h
+Keys.o: /usr/include/sys/cdefs.h
+Keys.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h keys.h types.h
+Keys.o: /usr/include/sys/types.h /usr/include/linux/types.h
+Keys.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+Keys.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+Keys.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+Keys.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+Keys.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+Keys.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+Keys.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+Keys.o: /usr/include/sys/param.h /usr/include/limits.h
+Keys.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Keys.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+Keys.o: /usr/include/asm/param.h
 Server.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-Server.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-Server.o: /usr/include/features.h
+Server.o: /usr/include/stdlib.h /usr/include/features.h
+Server.o: /usr/include/sys/cdefs.h
 Server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 Server.o: /usr/include/errno.h /usr/include/linux/errno.h
 Server.o: /usr/include/asm/errno.h /usr/include/alloca.h
@@ -82,116 +495,127 @@ Server.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
 Server.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
 Server.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
 Server.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Server.h
+Server.o: serverInterface.h colbr.h /usr/include/arpa/inet.h
+Server.o: /usr/include/sys/param.h /usr/include/limits.h
+Server.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Server.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+Server.o: /usr/include/asm/param.h dbase.h error.h /usr/include/sys/varargs.h
+Server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h htable.h
+Server.o: bucket.h entry.h datum.h queue.h queueElem.h types.h keys.h
+Server.o: Csprotocols.h /usr/include/netdb.h /usr/include/paths.h
+Server.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+Server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/DList.h
+Server.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
+Server.o: ../graphics/Control.h ../graphics/ClassDir.h callBks.h ctrlMsg.h
+Server.o: rcvMsg.h CommandObj.h ../graphics/View.h codec.h
+Server.o: /usr/include/sys/uio.h
 TclClient.o: /usr/include/stdio.h /usr/include/libio.h
-TclClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-TclClient.o: /usr/include/stdlib.h /usr/include/features.h
+TclClient.o: /usr/include/_G_config.h /usr/include/stdlib.h
+TclClient.o: /usr/include/features.h /usr/include/sys/cdefs.h
 TclClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
 TclClient.o: /usr/include/errno.h /usr/include/linux/errno.h
 TclClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
 TclClient.o: /usr/include/sys/types.h /usr/include/linux/types.h
 TclClient.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
 TclClient.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h TclClient.h
-TclClient.o: /usr/include/tcl/tcl.h Client.h
-TestClient.o: /usr/include/stdio.h /usr/include/libio.h
-TestClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-TestClient.o: /usr/include/stdlib.h /usr/include/features.h
-TestClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-TestClient.o: /usr/include/errno.h /usr/include/linux/errno.h
-TestClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
-TestClient.o: /usr/include/string.h /usr/include/unistd.h
-TestClient.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-TestClient.o: /usr/include/confname.h /usr/include/sys/types.h
-TestClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-TestClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-TestClient.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-TestClient.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-TestClient.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-TestClient.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-TestClient.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Client.h
-TkClient.o: /usr/include/stdio.h /usr/include/libio.h
-TkClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
-TkClient.o: /usr/include/stdlib.h /usr/include/features.h
-TkClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-TkClient.o: /usr/include/errno.h /usr/include/linux/errno.h
-TkClient.o: /usr/include/asm/errno.h /usr/include/alloca.h
-TkClient.o: /usr/include/string.h /usr/include/unistd.h
-TkClient.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-TkClient.o: /usr/include/confname.h /usr/include/sys/types.h
-TkClient.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-TkClient.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-TkClient.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
-TkClient.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
-TkClient.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
-TkClient.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-TkClient.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
-TkClient.o: /usr/include/tcl/tcl.h /usr/include/tcl/tk.h
-TkClient.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
-TkClient.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-TkClient.o: TkClient.h TclClient.h Client.h
-WinServer.o: /usr/include/sys/param.h /usr/include/features.h
-WinServer.o: /usr/include/sys/cdefs.h /usr/include/limits.h
-WinServer.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-WinServer.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
-WinServer.o: /usr/include/asm/param.h /usr/include/sys/types.h
-WinServer.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-WinServer.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-WinServer.o: /usr/include/sys/bitypes.h WinServer.h Server.h
-WinServer.o: ../graphics/Display.h ../graphics/DeviseTypes.h
-WinServer.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
-WinServer.o: /usr/include/stdio.h /usr/include/libio.h
-WinServer.o: /usr/include/_G_config.h /usr/include/math.h
-WinServer.o: /usr/include/huge_val.h /usr/include/endian.h
-WinServer.o: /usr/include/bytesex.h /usr/include/nan.h
-WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-WinServer.o: /usr/include/ieee754.h /usr/include/ieee854.h
-WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
-WinServer.o: ../graphics/Pattern.h ../graphics/ViewWin.h
-WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
-WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-WinServer.o: ../graphics/DevError.h /usr/include/errno.h
-WinServer.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
-WinServer.o: ../graphics/ETkIfc.h /usr/include/string.h
-WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-WinServer.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
-WinServer.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-WinServer.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
-WinServer.o: ../graphics/GraphicsDebug.h
-client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-client.o: /usr/include/features.h
-client.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-client.o: /usr/include/errno.h /usr/include/linux/errno.h
-client.o: /usr/include/asm/errno.h /usr/include/alloca.h
-client.o: /usr/include/string.h TkClient.h /usr/include/tcl/tk.h
-client.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
-client.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
-client.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-client.o: /usr/include/sys/bitypes.h /usr/include/X11/X.h
-client.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-client.o: TclClient.h /usr/include/tcl/tcl.h Client.h
-server.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
-server.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
-server.o: /usr/include/features.h
-server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
-server.o: /usr/include/errno.h /usr/include/linux/errno.h
-server.o: /usr/include/asm/errno.h /usr/include/alloca.h
-server.o: /usr/include/string.h /usr/include/assert.h WinServer.h Server.h
-server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
-server.o: /usr/include/values.h ../graphics/DevStatus.h
-server.o: /usr/include/sys/types.h /usr/include/linux/types.h
-server.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
-server.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
-server.o: ../graphics/Geom.h /usr/include/math.h /usr/include/huge_val.h
-server.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
-server.o: /usr/include/ieee754.h /usr/include/ieee854.h
-server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
-server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
-server.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
-server.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
-server.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
-server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h
+TclClient.o: /usr/include/tcl/tcl.h Client.h Csprotocols.h
+TclClient.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+TclClient.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+TclClient.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+TclClient.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+TclClient.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+TclClient.o: /usr/include/sys/param.h /usr/include/limits.h
+TclClient.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+TclClient.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+TclClient.o: /usr/include/asm/param.h /usr/include/netdb.h
+TclClient.o: /usr/include/paths.h /usr/include/sys/varargs.h
+TclClient.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h keys.h
+TclClient.o: types.h
+bucket.o: bucket.h entry.h datum.h
+colbrLog.o: /usr/include/stdlib.h /usr/include/features.h
+colbrLog.o: /usr/include/sys/cdefs.h
+colbrLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+colbrLog.o: /usr/include/errno.h /usr/include/linux/errno.h
+colbrLog.o: /usr/include/asm/errno.h /usr/include/alloca.h colbr.h
+colbrLog.o: /usr/include/string.h /usr/include/sys/types.h
+colbrLog.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+colbrLog.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+colbrLog.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+colbrLog.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+colbrLog.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+colbrLog.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+colbrLog.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+colbrLog.o: /usr/include/arpa/inet.h /usr/include/sys/param.h
+colbrLog.o: /usr/include/limits.h /usr/include/posix1_lim.h
+colbrLog.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+colbrLog.o: /usr/include/linux/param.h /usr/include/asm/param.h dbase.h
+colbrLog.o: error.h /usr/include/sys/varargs.h
+colbrLog.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h htable.h
+colbrLog.o: bucket.h entry.h datum.h queue.h queueElem.h types.h colbrLog.h
+colbrLog.o: log.h /usr/include/stdio.h /usr/include/libio.h
+colbrLog.o: /usr/include/_G_config.h /usr/include/sys/uio.h
+colbrLog.o: /usr/include/unistd.h /usr/include/posix_opt.h
+colbrLog.o: /usr/include/gnu/types.h /usr/include/confname.h prnfns.h
+colbrLog.o: /usr/include/strings.h serverInterface.h
+datum.o: /usr/include/stdlib.h /usr/include/features.h
+datum.o: /usr/include/sys/cdefs.h
+datum.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+datum.o: /usr/include/errno.h /usr/include/linux/errno.h
+datum.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/string.h
+datum.o: error.h /usr/include/sys/varargs.h
+datum.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h datum.h
+dbase.o: colbr.h /usr/include/string.h /usr/include/features.h
+dbase.o: /usr/include/sys/cdefs.h
+dbase.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+dbase.o: /usr/include/sys/types.h /usr/include/linux/types.h
+dbase.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+dbase.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+dbase.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+dbase.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+dbase.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+dbase.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+dbase.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+dbase.o: /usr/include/sys/param.h /usr/include/limits.h
+dbase.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+dbase.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+dbase.o: /usr/include/asm/param.h dbase.h error.h /usr/include/sys/varargs.h
+dbase.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h htable.h
+dbase.o: bucket.h entry.h datum.h queue.h queueElem.h types.h sndMsg.h
+dbase.o: ctrlMsg.h /usr/include/assert.h
+entry.o: entry.h datum.h
+htable.o: htable.h bucket.h entry.h datum.h
+log.o: log.h /usr/include/sys/types.h /usr/include/linux/types.h
+log.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+log.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+log.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+log.o: /usr/include/stdlib.h /usr/include/features.h /usr/include/sys/cdefs.h
+log.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+log.o: /usr/include/errno.h /usr/include/linux/errno.h
+log.o: /usr/include/asm/errno.h /usr/include/alloca.h /usr/include/string.h
+log.o: /usr/include/sys/uio.h /usr/include/unistd.h /usr/include/posix_opt.h
+log.o: /usr/include/gnu/types.h /usr/include/confname.h
+parseConfig.o: /usr/include/string.h /usr/include/features.h
+parseConfig.o: /usr/include/sys/cdefs.h
+parseConfig.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+parseConfig.o: parseConfig.h
+queue.o: error.h /usr/include/sys/varargs.h
+queue.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h queue.h
+queue.o: queueElem.h datum.h
+queueElem.o: queueElem.h datum.h
+servdb.o: servdb.h /usr/include/string.h /usr/include/features.h
+servdb.o: /usr/include/sys/cdefs.h
+servdb.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/stddef.h
+servdb.o: /usr/include/sys/types.h /usr/include/linux/types.h
+servdb.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+servdb.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+servdb.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
+servdb.o: /usr/include/asm/socket.h /usr/include/asm/sockios.h
+servdb.o: /usr/include/linux/sockios.h /usr/include/linux/uio.h
+servdb.o: /usr/include/netinet/in.h /usr/include/linux/in.h
+servdb.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
+servdb.o: /usr/include/sys/param.h /usr/include/limits.h
+servdb.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+servdb.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+servdb.o: /usr/include/asm/param.h error.h /usr/include/sys/varargs.h
+servdb.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/varargs.h htable.h
+servdb.o: bucket.h entry.h datum.h queue.h queueElem.h types.h

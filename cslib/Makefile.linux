@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.6  1998/01/07 19:27:48  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.5  1997/11/12 15:44:33  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -73,7 +78,11 @@ Server.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
 Server.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
 Server.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
 Server.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
-Server.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h Server.h
+Server.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+Server.o: /usr/include/sys/param.h /usr/include/limits.h
+Server.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+Server.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+Server.o: /usr/include/asm/param.h Server.h ../graphics/Exit.h
 TclClient.o: /usr/include/stdio.h /usr/include/libio.h
 TclClient.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 TclClient.o: /usr/include/stdlib.h /usr/include/features.h
@@ -138,8 +147,8 @@ WinServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 WinServer.o: /usr/include/ieee754.h /usr/include/ieee854.h
 WinServer.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
 WinServer.o: ../graphics/Journal.h ../graphics/VisualArg.h
-WinServer.o: ../graphics/Pattern.h ../graphics/ViewWin.h
-WinServer.o: ../graphics/WindowRep.h ../graphics/Transform.h
+WinServer.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+WinServer.o: ../graphics/Transform.h ../graphics/Pattern.h
 WinServer.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 WinServer.o: ../graphics/DevError.h /usr/include/errno.h
 WinServer.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
@@ -179,9 +188,9 @@ server.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 server.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 server.o: /usr/include/ieee754.h /usr/include/ieee854.h
 server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
-server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewWin.h
+server.o: ../graphics/WindowRep.h ../graphics/Transform.h
+server.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 server.o: ../graphics/Compress.h ../graphics/DevError.h ../graphics/ETkIfc.h
 server.o: ../graphics/ETk.h ../graphics/Xdef.h /usr/include/X11/Xlib.h
 server.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h

@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.11  1998/01/07 19:25:37  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.10  1997/11/12 15:42:40  wenger
 # Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 # into the trunk.
@@ -213,6 +218,7 @@ ODBCInterface.dummy.o: /usr/include/values.h /usr/include/ieee754.h
 ODBCInterface.dummy.o: /usr/include/ieee854.h Interface.h site.h myopt.h
 ODBCInterface.dummy.o: url.h SockStream.h listop.h Iterator.h DevRead.h
 ODBCInterface.dummy.o: StandardRead.h Inserter.h Engine.h catalog.h
+Optimizer.o: Optimizer.h StringLess.h
 PQueue.o: PQueue.h types.h /usr/include/assert.h /usr/include/features.h
 PQueue.o: /usr/include/sys/cdefs.h exception.h Utility.h queue.h Array.h
 PQueue.o: SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
@@ -228,7 +234,7 @@ QueryTree.o: /usr/include/values.h /usr/include/ieee754.h
 QueryTree.o: /usr/include/ieee854.h url.h SockStream.h listop.h site.h
 QueryTree.o: Iterator.h catalog.h DevRead.h Aggregates.h MemoryMgr.h
 QueryTree.o: TypeCheck.h StringLess.h ParseTree.h Sort.h StandardRead.h
-QueryTree.o: PQueue.h MinMax.h Interface.h
+QueryTree.o: PQueue.h MinMax.h Interface.h Optimizer.h
 RTreeRead.o: RTreeRead.h myopt.h /usr/include/assert.h
 RTreeRead.o: /usr/include/features.h /usr/include/sys/cdefs.h queue.h types.h
 RTreeRead.o: exception.h Utility.h Array.h SeqSimVec.h /usr/include/math.h
@@ -294,7 +300,7 @@ Templates.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
 Templates.o: /usr/lib/gcc-lib/i486-linux/2.7.2.1/include/float.h
 Templates.o: /usr/include/values.h /usr/include/ieee754.h
 Templates.o: /usr/include/ieee854.h ExecExpr.h MemoryMgr.h listop.h myopt.h
-Templates.o: url.h SockStream.h
+Templates.o: url.h SockStream.h Optimizer.h StringLess.h
 TypeCheck.o: myopt.h /usr/include/assert.h /usr/include/features.h
 TypeCheck.o: /usr/include/sys/cdefs.h queue.h types.h exception.h Utility.h
 TypeCheck.o: Array.h SeqSimVec.h /usr/include/math.h /usr/include/huge_val.h
