@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.19  1995/11/10 21:56:54  jussi
+#	Minor fix.
+#
 #	Revision 1.18  1995/11/10 21:45:05  jussi
 #	Changed interface to ISSM and Compustat to be through
 #	sources.tcl.
@@ -259,8 +262,6 @@ proc ActionSet {} {
 frame .mbar -relief raised -bd 2 -background LightBlue 
 menubutton .mbar.session -text Session -underline 0 \
 	-menu .mbar.session.menu -bg LightBlue
-menubutton .mbar.sources -text Sources -underline 0 \
-	-menu .mbar.sources.menu -bg LightBlue
 menubutton .mbar.file -text Visualize -underline 7 \
 	-menu .mbar.file.menu -bg LightBlue
 menubutton .mbar.view -text View -underline 0 \
@@ -284,17 +285,14 @@ menu .mbar.session.menu -tearoff 0
 .mbar.session.menu add command -label "Demo" -command DoDemo
 .mbar.session.menu add command -label "Quit" -command DoExit
 
-menu .mbar.sources.menu -tearoff 0
-.mbar.sources.menu add command -label "Select..." -command selectStream
-.mbar.sources.menu add separator
-.mbar.sources.menu add command -label "Define..." -command NotImplemented
-
 menu .mbar.file.menu -tearoff 0
+.mbar.file.menu add command -label "Define" -command MacroDefStart
+.mbar.file.menu add separator
+.mbar.file.menu add command -label "Sources..." -command NotImplemented
+.mbar.file.menu add separator
 .mbar.file.menu add command -label "File" -command DoVisualizeFile
 .mbar.file.menu add command -label "TData" -command DoVisualizeTData
 .mbar.file.menu add command -label "GData" -command DoVisualizeGData
-.mbar.file.menu add separator
-.mbar.file.menu add command -label "Definitions" -command MacroDefStart
 
 menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
@@ -336,7 +334,7 @@ menu .mbar.schema.menu -tearoff 0
 .mbar.schema.menu add command -label "New" -command newschema
 .mbar.schema.menu add command -label "Open" -command openschema
 
-pack .mbar.session .mbar.sources .mbar.file .mbar.view .mbar.cursor \
+pack .mbar.session .mbar.file .mbar.view .mbar.cursor \
 	.mbar.window .mbar.schema -side left -fill x
 
 # status widgets
@@ -457,7 +455,7 @@ pack .history.heading1 .history.entry1 .history.heading2 \
 pack .mbar .status .viewFrame .topFrame -side top -fill x -expand 1
 pack .control .history -side left -fill x -expand 1
 
-tk_menuBar .mbar .mbar.session .mbar.sources .mbar.file .mbar.view \
+tk_menuBar .mbar .mbar.session .mbar.file .mbar.view \
 	.mbar.link .mbar.window .mbar.help
 focus .mbar
 
