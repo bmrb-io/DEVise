@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/01/08 20:31:51  wenger
+// Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+// back onto the trunk.
+//
 // Revision 1.7.4.1  2000/11/21 01:51:31  xuk
 // Change some non-final static variables to non-static. Add a new class, DEViseJSValues, to contain all these variables and attach to every JS, JSA, JSB instance.
 //
@@ -65,7 +69,6 @@ public class DEViseComponentPanel extends Panel
     public DEViseComponentPanel(Component component[], String style, int gap,
       int align, jsdevisec js)
     {
-
 	jsc = js;
 
         if (component == null)
@@ -86,7 +89,8 @@ public class DEViseComponentPanel extends Panel
         if (style.equals(LAYOUT_VERTICAL))  {
             panel.setLayout(new GridLayout(0, 1, 0, gap));
         }  else if (style.equals(LAYOUT_HORIZONTAL))  {
-            panel.setLayout(new GridLayout(1, 0, gap, 0));
+	    int rows = component.length > 5 ? 2 : 1;
+            panel.setLayout(new GridLayout(rows, 0, gap, 0));
         } else {
 	    System.out.println("Illegal style value: " + style);
 	}

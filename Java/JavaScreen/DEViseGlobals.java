@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2001/04/01 03:51:18  xuk
+// Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
+//
 // Revision 1.49  2001/02/21 17:46:39  xuk
 // Deleted DISABLECOLLAB and ENABLECOLLAB.
 //
@@ -189,7 +192,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("4.0");
+    public static final String VERSION = new String("4.1");
     public static final String PROTOCOL_VERSION = new String("6.0");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");

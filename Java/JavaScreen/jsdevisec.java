@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.102  2001/04/17 17:49:17  wenger
+// Button to show or hide debug log is now also in the JSB version.
+//
 // Revision 1.101  2001/04/17 15:51:36  xuk
 // Added the functionality of close debug window.
 //
@@ -301,8 +304,8 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
-    private final String displayLogStr = "Display Log";
-    private final String closeLogStr = "Close Log";
+    private final String displayLogStr = "Show Log";
+    private final String closeLogStr = "Hide Log";
     private Button logButton = new Button(displayLogStr);
 
     public DEViseAnimPanel animPanel = null;
