@@ -64,6 +64,15 @@ Num Date        Status  Description
 
 021 08/05/96	FIXED	'5' key doesn't work. (rkw)
 
+022 08/06/96	OPEN	Records missing from view when many views or 
+			datasources are open. (kb)
+
+023 08/04/96	OPEN	Doing an extreme zoom in causes extra records to 
+			suddenly appear. (kb)
+
+024 08/06/96	OPEN	Zooming as far as you can in or out can cause 
+			DEVise to fail an assertion. (kb)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
