@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.28  1998/01/14 22:25:16  wenger
+# Improved 'strip' target.
+#
 # Revision 1.27  1998/01/07 19:32:07  wenger
 # Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
 # server library into Devise); updated solaris, sun, linux, and hp
@@ -73,7 +76,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree xvertext color utils cslib
+	unidata DTE RTree xvertext color utils csgroup
 
 #devread is obsolete
 #attrproj is broken
@@ -81,7 +84,7 @@ LIBMODULES = graphics graphics.new tape issm compustat crsp \
 MODULES = $(LIBMODULES) parser generic multi
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
-	cslib
+	csgroup
 
 all: date
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
