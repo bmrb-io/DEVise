@@ -56,8 +56,8 @@ public class DEViseWindow extends Container
 
     DEViseCursor[] viewCursor = null;
     Image[] cursorImage = null; 
-    boolean isWithinCursor = false;
-    int whichCursor = 0;
+    boolean isWithinCursor = false, isMovingCursor = false;
+    int whichCursor = 0, whichSide = 0;
 
     public DEViseWindow(jsdevisec what, String name, Rectangle loc, Image img, Vector views)
     {
@@ -257,20 +257,57 @@ public class DEViseWindow extends Container
         }
     }
     
-    private boolean checkCursor(Point p)
+    private int checkCursor(Point p)
     {
-        if (viewCursor == null || currentView == null)
-            return false;
+        if (viewCursor == null || currentView == null) {
+            whichCursor = 0;            
+            return 0;
+        }
         
         for (int i = 0; i < viewCursor.length; i++) {
             if (p.x >= viewCursor[i].x && p.x <= (viewCursor[i].x + viewCursor[i].width)    
                 && p.y >= viewCursor[i].y && p.y <= (viewCursor[i].y + viewCursor[i].height)) {
+
                 whichCursor = i;
-                return true;
+                                
+                if (p.x == viewCursor[i].x) {
+                    if (p.y == viewCursor[i].y) {
+                        whichSide = 5;
+                        return 2;
+                    } else if (p.y == viewCursor[i].y + viewCursor[i].height) {
+                        whichSide = 6;
+                        return 2;
+                    } else {
+                        whichSide = 1;
+                        return 2;
+                    }
+                } else if (p.x == viewCursor[i].x + viewCursor[i].width) {
+                    if (p.y == viewCursor[i].y) {
+                        whichSide = 7;
+                        return 2;
+                    } else if (p.y == viewCursor[i].y + viewCursor[i].height) {
+                        whichSide = 8;
+                        return 2;
+                    } else {
+                        whichSide = 2;
+                        return 2;
+                    }
+                } else {
+                    if (p.y == viewCursor[i].y) {
+                        whichSide = 3;
+                        return 2;
+                    } else if (p.y == viewCursor[i].y + viewCursor[i].height) {
+                        whichSide = 4;
+                        return 2;
+                    } else {
+                        return 1;
+                    }
+                }
             }
         }
         
-        return false;
+        whichCursor = 0;
+        return 0;
     }
     
     private void updateCursorPosition(Point p)
@@ -278,27 +315,375 @@ public class DEViseWindow extends Container
         if (viewCursor == null || currentView == null)
             return;
         
-        Rectangle loc = currentView.getLoc();    
-        int cx = p.x + viewCursor[whichCursor].x;
-        if (cx < loc.x) {
-            cx = loc.x;
-        } else if (cx > loc.x + loc.width - viewCursor[whichCursor].width) {
-            cx = loc.x + loc.width - viewCursor[whichCursor].width;
-        }
-        int cy = p.y + viewCursor[whichCursor].y;
-        if (cy < loc.y) {
-            cy = loc.y;
-        } else if (cy > loc.y + loc.height - viewCursor[whichCursor].height) {
-            cy = loc.y + loc.height - viewCursor[whichCursor].height;
+        Rectangle loc = currentView.getLoc();
+        
+        if (isWithinCursor) {    
+            int cx = p.x + viewCursor[whichCursor].x;
+            if (cx < loc.x) {
+                cx = loc.x;
+            } else if (cx > loc.x + loc.width - viewCursor[whichCursor].width) {
+                cx = loc.x + loc.width - viewCursor[whichCursor].width;
+            }
+            int cy = p.y + viewCursor[whichCursor].y;
+            if (cy < loc.y) {
+                cy = loc.y;
+            } else if (cy > loc.y + loc.height - viewCursor[whichCursor].height) {
+                cy = loc.y + loc.height - viewCursor[whichCursor].height;
+            }
+        
+            viewCursor[whichCursor].x = cx;
+            viewCursor[whichCursor].y = cy;
+        } else if (isMovingCursor) {
+            int tmpx, tmpy, tx, ty, cx, cy;
+            boolean isXChange = false, isYChange = false;
+            
+            switch (whichSide) {
+            case 1: // left side
+                tmpx = viewCursor[whichCursor].x + viewCursor[whichCursor].width;
+                cx = p.x + viewCursor[whichCursor].x;
+                
+                if (cx < loc.x) {
+                    cx = loc.x;
+                } else if (cx > loc.x + loc.width - viewCursor[whichCursor].width) {
+                    cx = loc.x + loc.width - viewCursor[whichCursor].width;
+                }
+                
+                if (cx >= tmpx) {
+                    viewCursor[whichCursor].x = tmpx;
+                    viewCursor[whichCursor].width = cx - tmpx;
+                    if (viewCursor[whichCursor].width == 0) {
+                        viewCursor[whichCursor].width = 1;
+                    }
+                    
+                    whichSide = 2;
+                } else {
+                    viewCursor[whichCursor].x = cx;
+                    viewCursor[whichCursor].width = tmpx - cx;
+                }
+            
+                break;
+            case 2: // right side
+                tmpx = viewCursor[whichCursor].x + viewCursor[whichCursor].width;
+                cx = p.x + tmpx;
+                if (cx < loc.x) {
+                    cx = loc.x;
+                } else if (cx > loc.x + loc.width) {
+                    cx = loc.x + loc.width;
+                }
+                
+                tx = viewCursor[whichCursor].x;
+                if (tx >= cx) {
+                    viewCursor[whichCursor].x = cx;
+                    viewCursor[whichCursor].width = tx - cx;
+                    if (viewCursor[whichCursor].width == 0) {
+                        viewCursor[whichCursor].width = 1;
+                    }
+                    
+                    whichSide = 1;
+                } else {
+                    viewCursor[whichCursor].width = cx - tx;
+                }
+            
+                break;
+            case 3: // top side
+                tmpy = viewCursor[whichCursor].y + viewCursor[whichCursor].height;
+                cy = p.y + viewCursor[whichCursor].y;
+                
+                if (cy < loc.y) {
+                    cy = loc.y;
+                } else if (cy > loc.y + loc.height - viewCursor[whichCursor].height) {
+                    cy = loc.y + loc.height - viewCursor[whichCursor].height;
+                }
+                
+                if (cy >= tmpy) {
+                    viewCursor[whichCursor].y = tmpy;
+                    viewCursor[whichCursor].height = cy - tmpy;
+                    if (viewCursor[whichCursor].height == 0) {
+                        viewCursor[whichCursor].height = 1;
+                    }
+                    
+                    whichSide = 4;
+                } else {
+                    viewCursor[whichCursor].y = cy;
+                    viewCursor[whichCursor].height = tmpy - cy;
+                }
+            
+                break;
+            case 4: // bottom side
+                tmpy = viewCursor[whichCursor].y + viewCursor[whichCursor].height;
+                cy = p.y + tmpy;
+
+                if (cy < loc.y) {
+                    cy = loc.y;
+                } else if (cy > loc.y + loc.height) {
+                    cy = loc.y + loc.height;
+                }                
+                
+                ty = viewCursor[whichCursor].y;
+                if (ty >= cy) {
+                    viewCursor[whichCursor].y = cy;
+                    viewCursor[whichCursor].height = ty - cy;
+                    if (viewCursor[whichCursor].height == 0) {
+                        viewCursor[whichCursor].height = 1;
+                    }
+                    
+                    whichSide = 3;
+                } else {
+                    viewCursor[whichCursor].height = cy - ty;
+                }
+                
+                //YGlobals.Ydebugpn("c.width " + viewCursor[whichCursor].width + " c.height " + viewCursor[whichCursor].height
+                //                  + " c.x " + viewCursor[whichCursor].x + " c.y " + viewCursor[whichCursor].y
+                //                  + " p.x " + p.x + " p.y " + p.y + " loc.x " + loc.x + " loc.y " + loc.y
+                //                  + " loc.width " + loc.width + " loc.height" + loc.height);
+                break;
+            case 5: // left top corner
+                tmpx = viewCursor[whichCursor].x + viewCursor[whichCursor].width;
+                cx = p.x + viewCursor[whichCursor].x;
+                isXChange = false;
+                isYChange = false;
+                
+                if (cx < loc.x) {
+                    cx = loc.x;
+                } else if (cx > loc.x + loc.width - viewCursor[whichCursor].width) {
+                    cx = loc.x + loc.width - viewCursor[whichCursor].width;
+                }
+                
+                if (cx >= tmpx) {
+                    viewCursor[whichCursor].x = tmpx;
+                    viewCursor[whichCursor].width = cx - tmpx;
+                    if (viewCursor[whichCursor].width == 0) {
+                        viewCursor[whichCursor].width = 1;
+                    }
+                    
+                    isXChange = true;
+                } else {
+                    viewCursor[whichCursor].x = cx;
+                    viewCursor[whichCursor].width = tmpx - cx;
+                }
+            
+                tmpy = viewCursor[whichCursor].y + viewCursor[whichCursor].height;
+                cy = p.y + viewCursor[whichCursor].y;
+                
+                if (cy < loc.y) {
+                    cy = loc.y;
+                } else if (cy > loc.y + loc.height - viewCursor[whichCursor].height) {
+                    cy = loc.y + loc.height - viewCursor[whichCursor].height;
+                }
+                
+                if (cy >= tmpy) {
+                    viewCursor[whichCursor].y = tmpy;
+                    viewCursor[whichCursor].height = cy - tmpy;
+                    if (viewCursor[whichCursor].height == 0) {
+                        viewCursor[whichCursor].height = 1;
+                    }
+                    
+                    isYChange = true;
+                } else {
+                    viewCursor[whichCursor].y = cy;
+                    viewCursor[whichCursor].height = tmpy - cy;
+                }
+                
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 8;
+                        } else {
+                            whichSide = 7;
+                        }
+                    } else {
+                        whichSide = 6;
+                    }
+                } 
+                                
+                break;
+            case 6: // left bottom corner
+                tmpx = viewCursor[whichCursor].x + viewCursor[whichCursor].width;
+                cx = p.x + viewCursor[whichCursor].x;
+                isXChange = false;
+                isYChange = false;
+                
+                if (cx < loc.x) {
+                    cx = loc.x;
+                } else if (cx > loc.x + loc.width - viewCursor[whichCursor].width) {
+                    cx = loc.x + loc.width - viewCursor[whichCursor].width;
+                }
+                
+                if (cx >= tmpx) {
+                    viewCursor[whichCursor].x = tmpx;
+                    viewCursor[whichCursor].width = cx - tmpx;
+                    if (viewCursor[whichCursor].width == 0) {
+                        viewCursor[whichCursor].width = 1;
+                    }
+                    
+                    isXChange = true;
+                } else {
+                    viewCursor[whichCursor].x = cx;
+                    viewCursor[whichCursor].width = tmpx - cx;
+                }
+            
+                tmpy = viewCursor[whichCursor].y + viewCursor[whichCursor].height;
+                cy = p.y + tmpy;
+
+                if (cy < loc.y) {
+                    cy = loc.y;
+                } else if (cy > loc.y + loc.height) {
+                    cy = loc.y + loc.height;
+                }                
+                
+                ty = viewCursor[whichCursor].y;
+                if (ty >= cy) {
+                    viewCursor[whichCursor].y = cy;
+                    viewCursor[whichCursor].height = ty - cy;
+                    if (viewCursor[whichCursor].height == 0) {
+                        viewCursor[whichCursor].height = 1;
+                    }
+                    
+                    isYChange = true;
+                } else {
+                    viewCursor[whichCursor].height = cy - ty;
+                }
+                
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 7;
+                        } else {
+                            whichSide = 8;
+                        }
+                    } else {
+                        whichSide = 5;
+                    }
+                } 
+                                
+                break;
+            case 7: // right top corner
+                tmpx = viewCursor[whichCursor].x + viewCursor[whichCursor].width;
+                cx = p.x + tmpx;
+                isXChange = false;
+                isYChange = false;
+
+                if (cx < loc.x) {
+                    cx = loc.x;
+                } else if (cx > loc.x + loc.width) {
+                    cx = loc.x + loc.width;
+                }
+                
+                tx = viewCursor[whichCursor].x;
+                if (tx >= cx) {
+                    viewCursor[whichCursor].x = cx;
+                    viewCursor[whichCursor].width = tx - cx;
+                    if (viewCursor[whichCursor].width == 0) {
+                        viewCursor[whichCursor].width = 1;
+                    }
+                    
+                    isXChange = true;
+                } else {
+                    viewCursor[whichCursor].width = cx - tx;
+                }
+            
+                tmpy = viewCursor[whichCursor].y + viewCursor[whichCursor].height;
+                cy = p.y + viewCursor[whichCursor].y;
+                
+                if (cy < loc.y) {
+                    cy = loc.y;
+                } else if (cy > loc.y + loc.height - viewCursor[whichCursor].height) {
+                    cy = loc.y + loc.height - viewCursor[whichCursor].height;
+                }
+                
+                if (cy >= tmpy) {
+                    viewCursor[whichCursor].y = tmpy;
+                    viewCursor[whichCursor].height = cy - tmpy;
+                    if (viewCursor[whichCursor].height == 0) {
+                        viewCursor[whichCursor].height = 1;
+                    }
+                    
+                    isYChange = true;
+                } else {
+                    viewCursor[whichCursor].y = cy;
+                    viewCursor[whichCursor].height = tmpy - cy;
+                }
+                
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 6;
+                        } else {
+                            whichSide = 5;
+                        }
+                    } else {
+                        whichSide = 8;
+                    }
+                } 
+                                
+                break;
+            case 8: // right bottom corner
+                tmpx = viewCursor[whichCursor].x + viewCursor[whichCursor].width;
+                cx = p.x + tmpx;
+                isXChange = false;
+                isYChange = false;
+
+                if (cx < loc.x) {
+                    cx = loc.x;
+                } else if (cx > loc.x + loc.width) {
+                    cx = loc.x + loc.width;
+                }
+                
+                tx = viewCursor[whichCursor].x;
+                if (tx >= cx) {
+                    viewCursor[whichCursor].x = cx;
+                    viewCursor[whichCursor].width = tx - cx;
+                    if (viewCursor[whichCursor].width == 0) {
+                        viewCursor[whichCursor].width = 1;
+                    }
+                    
+                    isXChange = true;
+                } else {
+                    viewCursor[whichCursor].width = cx - tx;
+                }
+
+                tmpy = viewCursor[whichCursor].y + viewCursor[whichCursor].height;
+                cy = p.y + tmpy;
+
+                if (cy < loc.y) {
+                    cy = loc.y;
+                } else if (cy > loc.y + loc.height) {
+                    cy = loc.y + loc.height;
+                }                
+                
+                ty = viewCursor[whichCursor].y;
+                if (ty >= cy) {
+                    viewCursor[whichCursor].y = cy;
+                    viewCursor[whichCursor].height = ty - cy;
+                    if (viewCursor[whichCursor].height == 0) {
+                        viewCursor[whichCursor].height = 1;
+                    }
+                    
+                    isYChange = true;
+                } else {
+                    viewCursor[whichCursor].height = cy - ty;
+                }
+                
+                if (isXChange || isYChange) {
+                    if (isXChange) {
+                        if (isYChange) {
+                            whichSide = 5;
+                        } else {
+                            whichSide = 6;
+                        }
+                    } else {
+                        whichSide = 7;
+                    }
+                } 
+                                
+                break;
+            }
         }
         
         //YGlobals.Ydebugpn("p.x " + p.x + " p.y " + p.y + " c.x " + viewCursor[whichCursor].x
         //+ " c.y " + viewCursor[whichCursor].y + " c.w " + viewCursor[whichCursor].width      
         //+ " c.h " + viewCursor[whichCursor].height + " v.x " + loc.x + " v.y " + loc.y
         //+ " v.w " + loc.width + " v.h " + loc.height + " cy " + cy + " cx " + cx);
-        
-        viewCursor[whichCursor].x = cx;
-        viewCursor[whichCursor].y = cy;
     }
         
     // Enable reliable light weight component paint
@@ -332,7 +717,7 @@ public class DEViseWindow extends Container
             if (viewCursor != null) {
                 if (cursorImage != null) {
                     for (int i = 0; i < cursorImage.length; i++) {
-                        if (isWithinCursor && whichCursor == i) {                            
+                        if ((isWithinCursor || isMovingCursor) && whichCursor == i) {                            
                         } else {
                             g.drawImage(cursorImage[i], viewCursor[i].x, viewCursor[i].y, this);
                         }
@@ -586,9 +971,13 @@ public class DEViseWindow extends Container
 
             //YGlobals.Ydebugpn("Mouse pressed with click counts " + event.getClickCount() + "!");
             isMouseDragged = false; 
-            if (checkCursor(ep)) {
+            int state = checkCursor(ep);
+            if (state == 1) {                
                 isWithinCursor = true;
                 //updateCursorPosition(new Point(0, 0));
+                userAction = 3;
+            } else if (state == 2) {
+                isMovingCursor = true;
                 userAction = 3;
             }
                 
@@ -608,8 +997,9 @@ public class DEViseWindow extends Container
             if (isMouseDragged) {
                 if (currentView != null) {
                     // clear the mouse drag box
-                    if (isWithinCursor) {
+                    if (isWithinCursor || isMovingCursor) {
                         isWithinCursor = false;
+                        isMovingCursor = false;
                         ep = adjustViewPoint(event.getPoint());
                         updateCursorPosition(new Point(ep.x - op.x, ep.y - op.y));
                         buildCursorImage();
@@ -696,12 +1086,12 @@ public class DEViseWindow extends Container
                 ep = adjustViewPoint(p);
                 jsc.viewInfo.updateInfo(ep.x, ep.y);
                 
-                if (isWithinCursor) {
+                if (isWithinCursor || isMovingCursor) {
                     updateCursorPosition(new Point(ep.x - op.x, ep.y - op.y));
                     op.x = ep.x;
                     op.y = ep.y;
                     userAction = 3;
-                } else {
+                } else {                   
                     userAction = 2;
                 }
                 
@@ -724,11 +1114,14 @@ public class DEViseWindow extends Container
                 jsc.viewInfo.updateInfo(p.x, p.y);
 
                 if (jsc.dispatcher.getStatus() != 0) {
-                    if (!checkCursor(p)) {
+                    int state = checkCursor(p);
+                    if (state == 0) {
                         setCursor(DEViseGlobals.pointercursor);
-                    } else {
+                    } else if (state == 1) {
                         setCursor(DEViseGlobals.handcursor);
-                    }    
+                    } else if (state == 2) {
+                        setCursor(DEViseGlobals.movecursor);
+                    }
                 } else {
                     setCursor(DEViseGlobals.waitcursor);
                 }
@@ -747,10 +1140,13 @@ public class DEViseWindow extends Container
                     currentView = view;
 
                     if (jsc.dispatcher.getStatus() != 0) {
-                        if (!checkCursor(p)) {
+                        int state = checkCursor(p);
+                        if (state == 0) {
                             setCursor(DEViseGlobals.pointercursor);
-                        } else {
+                        } else if (state == 1) {
                             setCursor(DEViseGlobals.handcursor);
+                        } else if (state == 2) {
+                            setCursor(DEViseGlobals.movecursor);
                         }
                     } else {
                         setCursor(DEViseGlobals.waitcursor);
