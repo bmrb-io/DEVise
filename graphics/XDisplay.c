@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/05/11 02:29:26  jussi
+  Ifdef'd out some startup options (whether windows should appear
+  iconic or not when a session is restored).
+
   Revision 1.19  1996/05/08 15:59:36  jussi
   Replaced _display->fd, which is an illegal access, with the
   more portable ConnectionNumber(_display) defined in Xlib.h.
@@ -367,7 +371,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
     real_min_height = min_height;
   }
 
-  if (Init::BatchFile()) {
+  if (ControlPanel::Instance()->GetBatchMode()) {
     // we're in batch mode -- create a pixmap instead of a window
 
     unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
