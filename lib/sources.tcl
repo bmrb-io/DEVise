@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/11/10 22:02:14  jussi
+#	Minor change.
+#
 #	Revision 1.1  1995/11/10 21:45:10  jussi
 #	Initial revision.
 
@@ -98,7 +101,7 @@ proc defineStream {base edit} {
     }
     wm minsize .srcdef 630 320
     wm maxsize .srcdef 630 320
-    wm geometry .srcdef =630x320+100+100
+    wm geometry .srcdef =630x320+150+150
     selection clear .srcdef
 
     set editonly $edit
@@ -211,7 +214,8 @@ proc defineStream {base edit} {
     button .srcdef.but.ok -text OK -width 10 -command {
 	set cachefile [getCacheName $source $key]
 	set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
-	set newschematype [readSchema $schemafile]
+	#set newschematype [readSchema $schemafile]
+	set newschematype ""
 	if {$newschematype != ""} {
 	    set schematype $newschematype
 	}
@@ -271,7 +275,8 @@ proc defineStream {base edit} {
 proc updateSchemaSelection {} {
     global sourceTypes source schemafile schematype
     set schemafile [lindex $sourceTypes($source) 1]
-    set newschematype [readSchema $schemafile]
+    #set newschematype [readSchema $schemafile]
+    set newschematype ""
     if {$newschematype != ""} {
 	set schematype $newschematype
     }
@@ -318,7 +323,7 @@ proc cacheData {dispname} {
     set err [catch {set sourcedef $sourceList($dispname)}]
     if {$err > 0} {
 	puts "Error -- source being cached nonexistent."
-	return
+	return ""
     }
 
     set source [lindex $sourcedef 0]
@@ -332,7 +337,15 @@ proc cacheData {dispname} {
     
     if {[file exists $cachefile]} {
 	puts "Data stream $source:$key already cached."
-	return
+	if {$source == "UNIXFILE"} {
+	    # first line of command specifies directory
+	    set dir [lindex [split $command \n] 0]
+	    if {$dir == ""} {
+		set dir "."
+	    }
+	    return $dir/$key
+	}
+	return $cachefile
     }
 
     set but [dialog .cacheData "Caching Data" \
@@ -340,7 +353,7 @@ proc cacheData {dispname} {
 	    "" 1 Yes No]
     if {$but == 1} {
 	puts "Caching not performed."
-	return
+	return ""
     }
 
     update
@@ -388,6 +401,7 @@ proc cacheData {dispname} {
 	dialog .noCmd "Cannot Extract" \
 		"No extraction command defined for this data source." \
 		"" 0 OK
+	return ""
     } else {
 	if {[catch { eval $cmd }] > 0} {
 	    puts "Cannot execute command:"
@@ -398,8 +412,11 @@ proc cacheData {dispname} {
 		    the error message." \
 		    "" 0 OK
 	    uncacheData $dispname
+	    return ""
 	}
     }
+
+    return $cachefile
 }
 
 ############################################################
@@ -478,58 +495,57 @@ proc selectSourceKey {source} {
 ############################################################
 
 proc selectStream {} {
+    global streamSelected
+
     # see if .srcsel window already exists; if so, just return
     set err [catch {wm state .srcsel}]
     if {!$err} { wm deiconify .srcsel; return }
 
     toplevel .srcsel
     wm title .srcsel "Data Streams"
-    wm minsize .srcsel 575 200
+    wm minsize .srcsel 575 300
     wm maxsize .srcsel 575 800
-    wm geometry .srcsel =575x400+50+50
+    wm geometry .srcsel =575x500+100+100
     selection clear .srcsel
 
     frame .srcsel.mbar -relief raised -borderwidth 2
     frame .srcsel.top
+    frame .srcsel.bot
     pack .srcsel.mbar -side top -fill x
     pack .srcsel.top -side top -fill both -expand 1
+    pack .srcsel.bot -side top -fill x -pady 5m
 
-    menubutton .srcsel.mbar.file -text File -menu .srcsel.mbar.file.menu
-    menubutton .srcsel.mbar.entry -text Entry -menu .srcsel.mbar.entry.menu
-    menubutton .srcsel.mbar.visualize -text Visualize -menu .srcsel.mbar.visualize.menu
+    frame .srcsel.bot.but
+    pack .srcsel.bot.but -side top
+
+    menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
     menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
     menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
+    pack .srcsel.mbar.stream .srcsel.mbar.display .srcsel.mbar.help -side left
 
-    pack .srcsel.mbar.file .srcsel.mbar.entry .srcsel.mbar.visualize \
-	    .srcsel.mbar.display .srcsel.mbar.help -side left
-
-    menu .srcsel.mbar.file.menu -tearoff 0
-    .srcsel.mbar.file.menu add command -label "New..." \
+    menu .srcsel.mbar.stream.menu -tearoff 0
+    .srcsel.mbar.stream.menu add command -label "New..." \
 	    -command { defineStream "" 0 }
-    .srcsel.mbar.file.menu add command -label Close \
-	    -command { destroy .srcsel }
-
-    menu .srcsel.mbar.entry.menu -tearoff 0
-    .srcsel.mbar.entry.menu add command -label "Edit..." -command {
+    .srcsel.mbar.stream.menu add command -label "Edit..." -command {
 	set dispname [getSelectedSource]
 	if {$dispname == ""} {
-	    dialog .note "Note" "Select entry to be edited first." "" 0 OK
+	    dialog .note "Note" "Select stream to be edited first." "" 0 OK
 	    return
 	}
 	defineStream $dispname 1
     }
-    .srcsel.mbar.entry.menu add command -label "Copy..." -command {
+    .srcsel.mbar.stream.menu add command -label "Copy..." -command {
 	set dispname [getSelectedSource]
 	if {$dispname == ""} {
-	    dialog .note "Note" "Select entry to copy first." "" 0 OK
+	    dialog .note "Note" "Select stream to copy first." "" 0 OK
 	    return
 	}
 	defineStream $dispname 0
     }
-    .srcsel.mbar.entry.menu add command -label Delete -command {
+    .srcsel.mbar.stream.menu add command -label Delete -command {
 	set dispname [getSelectedSource]
 	if {$dispname == ""} {
-	    dialog .note "Note" "Select entry to delete first." "" 0 OK
+	    dialog .note "Note" "Select stream to delete first." "" 0 OK
 	    return
 	}
 	set but [dialog .confirm "Confirm Stream Deletion" \
@@ -543,10 +559,6 @@ proc selectStream {} {
 	}
     }
 
-    menu .srcsel.mbar.visualize.menu -tearoff 0
-    .srcsel.mbar.visualize.menu add command -label "Manual" -command {}
-    .srcsel.mbar.visualize.menu add command -label "Automatic" -command {}
-
     menu .srcsel.mbar.display.menu -tearoff 0
     .srcsel.mbar.display.menu add command -label "Show All" -command {}
     .srcsel.mbar.display.menu add command -label "Limit" -command {}
@@ -558,22 +570,26 @@ proc selectStream {} {
     menu .srcsel.mbar.help.menu -tearoff 0
     .srcsel.mbar.help.menu add command -label Help -command {
 	dialog .help "Help" \
-		"Choose File/New to define a new data stream using a blank\
-		template. File/Close closes this dialog.\n\n\
-		Entry/Edit lets you edit an existing data stream. Select\
-		data stream first with the mouse. Double-clicking on\
-		an entry brings up that entry to the editor also.\n\n\
+		"This dialog lets you choose one of the defined data streams\
+		for visualization. A stream is selected by either\
+		double-clicking on it, or by clicking on it once and\
+		pressing the Select button. Press the Cancel button\
+		to return without selecting a data stream.\n\n\
+		Choose Stream/New to define a new data stream using a blank\
+		template.\n\n\
+		Stream/Edit lets you edit an existing data stream. Select\
+		data stream first with the mouse.\n\n\
 		You can copy an existing data stream and use its definition\
-		as a template for a new data stream with Entry/Copy. Select\
+		as a template for a new data stream with Stream/Copy. Select\
 		template with the mouse first.\n\n\
-		Entry/Delete lets you delete the definition of a selected\
+		Stream/Delete lets you delete the definition of a selected\
 		data stream. The program asks for confirmation before\
 		actually removing the definition." \
 		"" 0 OK
     }
 
-    tk_menuBar .srcsel.mbar  pack .srcsel.mbar.file .srcsel.mbar.entry \
-	    .srcsel.mbar.visualize .srcsel.mbar.display .srcsel.mbar.help
+    tk_menuBar .srcsel.mbar .srcsel.mbar.stream \
+	    .srcsel.mbar.display .srcsel.mbar.help
 
     listbox .srcsel.top.list -relief raised -borderwidth 2 \
 	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
@@ -582,12 +598,24 @@ proc selectStream {} {
     pack .srcsel.top.list -side left -fill both -expand 1
     pack .srcsel.top.scroll -side right -fill y
     bind .srcsel.top.list <Double-Button-1> {
-	defineStream [getSelectedSource] 1
+	set streamSelected [getSelectedSource]
     }
 
     updateSources
 
-    tkwait visibility .srcsel
+    button .srcsel.bot.but.select -text Select -width 10 -command {
+	set streamSelected [getSelectedSource]
+    }
+    button .srcsel.bot.but.cancel -text Cancel -width 10 -command {
+	set streamSelected ""
+    }
+    pack .srcsel.bot.but.select .srcsel.bot.but.cancel -side left -padx 3m
+
+    set streamSelected ""
+    tkwait variable streamSelected
+    catch {destroy .srcsel}
+
+    return $streamSelected
 }
 
 ############################################################
