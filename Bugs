@@ -742,7 +742,7 @@ Num Date        Status  Description
 178 04/24/97	OPEN	Devise can't run if it can't find the 5x7 font
 			(requested by the Tcl/Tk code). (rkw)
 
-179 04/28/97	OPEN	Negative color values cause crash. (rkw)
+179 04/28/97	FIXED	Negative color values cause crash. (rkw)
 
 180 04/28/97	OPEN	'~' in print file name doesn't work. (rkw)
 
@@ -784,7 +784,7 @@ Num Date        Status  Description
 			aren't redrawn correctly as you scroll (sometimes
 			they are drawn as gray rectangles). (rkw)
 
-190 06/17/97	OPEN	Point queries on piled views don't shown data from
+190 06/17/97	OPEN	Point queries on piled views don't show data from
 			the (visually) top view. (rkw)
 
 191 06/17/97	OPEN	Attempting to do a group-by on a UNIXFILE should
@@ -795,6 +795,25 @@ Num Date        Status  Description
 			the display or the deposits2 window -- that window
 			is not printed correctly (and the window is erased
 			on the screen, if you print the display). (rkw)
+
+193 07/11/97	OPEN	Display of data labels ('v' key, also see
+			DisplayDataLabel()) needs fixes. (rkw)
+
+194 07/11/97	OPEN	testWindowRep program no longer links because
+			of extra dependencies in WindowRep and Display
+			classes. (rkw)
+
+195 07/15/97	OPEN	Color links don't seem to work. (rkw)
+
+196 07/15/97	OPEN	Window->duplicate doesn't work right if window has
+			piled views. (rkw)
+
+197 07/15/97	OPEN	You can't select data sources from the 'active tables'
+			window. (rkw)
+
+198 07/15/97	OPEN	Schema editor (non-UniData version) now has 'text'
+			instead of 'ascii' -- produces unuseable schema file.
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
