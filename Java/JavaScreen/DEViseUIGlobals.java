@@ -15,6 +15,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2000/04/24 20:22:01  hongyu
+// remove UI dependency of jspop and js
+//
 
 // This class contains a number of constants and utility functions.
 // Note: all members are static.
@@ -78,12 +81,16 @@ public final class DEViseUIGlobals
         }
     }
 
+    // ADD COMMENT -- what are units for size? points?
+    // TEMP -- info for ff (font family)
+    // TEMP -- what are fw, fs?
     public static Font getFont(int size, int ff, int fw, int fs)
     {
         if (size < 4) {
             return null;
         }
 
+	// TEMP -- should have defined constants for font family
         if (ff < 0 || ff > 2) {
             ff = 1;
         }
@@ -93,12 +100,13 @@ public final class DEViseUIGlobals
         return new Font(DEViseFont[ff], fontstyle, size);
     }
 
-    public static Font getFont(String str, int height, int ff, int fw, int fs)
+    public static Font getFont(String str, int height, int ff, int fw, int fs, int maxPointSize)
     {
-        return getFont(str, -1, height, ff, fw, fs);
+        return getFont(str, -1, height, ff, fw, fs, maxPointSize);
     }
 
-    public static Font getFont(String str, int width, int height, int ff, int fw, int fs)
+    // ADD COMMENT -- what are width and height?
+    public static Font getFont(String str, int width, int height, int ff, int fw, int fs, int maxPointSize)
     {
         if (str == null || str.length() == 0 || height < 1) {
             return null;
@@ -116,6 +124,7 @@ public final class DEViseUIGlobals
         }
 
         int minSize = 1, maxSize = 100, fontSize = 12, okSize = -1;
+	if (maxPointSize > 1) maxSize = maxPointSize;
         int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
 
         Toolkit tk = Toolkit.getDefaultToolkit();

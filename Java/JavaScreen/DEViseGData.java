@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2000/04/24 20:22:00  hongyu
+// remove UI dependency of jspop and js
+//
 // Revision 1.31  2000/04/07 22:43:13  wenger
 // Improved shading of atoms (it now works on white atoms); added comments
 // based on meeting with Hongyu on 2000-04-06.
@@ -113,7 +116,9 @@ public class DEViseGData
     public Rectangle GDataLocInScreen = null;
 
     //TEMP -- why do we need x, y, etc, *and* GDataLoc
+    // x, y, z are x0, y0, z0 converted from data units to pixels.
     public int x = 0, y = 0, z = 0, width = 0, height = 0;
+    // x0, y0, z0 are the values in the GData (data units).
     public float x0, y0, z0, x1, y1, z1;
 
     //public String[] data = null;
@@ -162,15 +167,15 @@ public class DEViseGData
             throw new YException("Invalid GData + {" + gdata + "}");
         gdata = null;
 
-        //float x0 = 0, y0 = 0, z0 = 0, size = 0;
         float size = 0;
         try {
+	    // ADD COMMENT about conversion here
             x0 = (Float.valueOf(data[0])).floatValue();
             x = (int)(x0 * xm + xo);
             y0 = (Float.valueOf(data[1])).floatValue();
             y = (int)(y0 * ym + yo);
             z0 = (Float.valueOf(data[2])).floatValue();
-            z = (int)(y0 * ym + yo);
+	    z = (int)z0;
             size = (Float.valueOf(data[4])).floatValue();
             symbolType = Integer.parseInt(data[7]);
         } catch (NumberFormatException e) {
@@ -304,9 +309,11 @@ public class DEViseGData
         // if we needed different fonts for different symbols.
         // RKW 1999-11-02.
         if (w < 0.0f) {
-            font = DEViseUIGlobals.getFont(string, height, ff, fw, fs);
+	    // Note: Z value in GData (if > 1) is max point size of font.
+            font = DEViseUIGlobals.getFont(string, height, ff, fw, fs, (int)z0);
         } else {
-            font = DEViseUIGlobals.getFont(string, width, height, ff, fw, fs);
+	    // Note: Z value in GData (if > 1) is max point size of font.
+            font = DEViseUIGlobals.getFont(string, width, height, ff, fw, fs, (int)z0);
         }
 
         if (color == null || font == null) {

@@ -105,6 +105,8 @@ the specified rectangle
     it doesn't fit within the view).  If orientation is non-zero, the text
     will be truncated instead of scaled if it doesn't fit the given size.
 
+    Note: Z is maximum font size in points if it is > 1.
+
 FIXED TEXT LABEL - a string (text characters) with a fixed
 font size
     Attrs:

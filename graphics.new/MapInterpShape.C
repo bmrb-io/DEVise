@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  1999/08/23 21:23:29  wenger
+  Removed Shape::NumShapeAttrs() method -- not used.
+
   Revision 1.70  1999/07/21 18:51:12  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -2328,6 +2331,12 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	Coord pointSize = height * fabs(y1 - y0) *
 	  DeviseDisplay::DefaultDisplay()->PointsPerPixel();
 	pointSize = (Coord) ((int) (pointSize + 0.5));
+
+	// Z is max font size in points if > 1.
+	int maxPoints = (int)(map->GetZ(gdata) + 0.5);
+	if (maxPoints > 1) {
+	    pointSize = MIN(pointSize, maxPoints);
+	}
 
 	int fontFamily = (int)map->GetShapeAttr(gdata, 6);
 	Boolean bold = (Boolean)map->GetShapeAttr(gdata, 7);
