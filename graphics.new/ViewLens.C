@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/02 16:54:32  wenger
+  Fixed compile warning; added standard headers to some files;
+  conditionaled out debug code.
+
  */
 
 #include <time.h>
@@ -96,7 +100,9 @@ void ViewLens::DeleteView(View *v)
     printf("Removing view %s from lens %s\n", v->GetName(), GetName());
 #endif
     _lensList->Delete(vi);
+#ifdef DEBUG
     _lensList->PrintIterators();
+#endif
   }
 
 }

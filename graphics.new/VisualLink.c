@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/26 16:51:43  ssl
+  Added support for piled viws
+
   Revision 1.4  1996/09/27 21:09:39  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -50,6 +53,9 @@
 #ifdef _flag
 #undef _flag
 #endif
+
+
+//#define DEBUG
 
 
 VisualLink::VisualLink(char *name, VisualFlag linkFlag)
@@ -110,11 +116,9 @@ bool VisualLink::DeleteView(ViewGraph *view)
       /* view not in list */
       return false;
   }
-#define DEBUG
 #ifdef DEBUG
   printf("Removing view %s from link %s\n", view->GetName(), GetName());
 #endif
-#undef DEBUG
   _viewList->Delete(view);
   return true;
 }
@@ -177,7 +181,9 @@ void VisualLink::ProcessFilterChanged(View *view, VisualFilter &filter)
 
 void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
 {
+#if defined(DEBUG)
   printf("VisualLink ->%s setVF view: %s\n", GetName(), view->GetName());
+#endif
   _updating = true;
 
   VisualFilter tempFilter;
