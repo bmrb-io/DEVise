@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  1999/06/23 20:59:15  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -29,8 +32,8 @@ public class DEViseClient
     public static int CLOSE = 0, REQUEST = 1, IDLE = 2, SERVE = 3;
     private int status = 0;
 
-    private DEViseUser user = null;
-    private Integer ID = null;
+    public DEViseUser user = null;
+    public Integer ID = null;
     private String hostname = null;
     private DEViseCommSocket socket = null;
 
@@ -176,22 +179,17 @@ public class DEViseClient
                             cmdBuffer.removeAllElements();
                         } else if (command.startsWith("JAVAC_Connect")) {
                             String[] cmds = DEViseGlobals.parseString(command);
-                            if (cmds != null && cmds.length == 3) {
+                            if (cmds != null && cmds.length == 4) {
                                 user = pop.getUser(cmds[1], cmds[2]);
-                                if (user != null) {
-                                    if (user.addClient(this)) {
-                                        sendCmd(new String[] {"JAVAC_User " + ID.intValue(), "JAVAC_Done"});
-                                    } else {
-                                        sendCmd("JAVAC_Error {Maximum logins for this user has been reached}");
-                                        user = null;
-                                        throw new YException("No more login is allowed for user \"" + user.getName() + "\"");
-                                    }
+                                if (user != null) { 
+                                    cmdBuffer.removeAllElements();
+                                    cmdBuffer.addElement("JAVAC_ProtocolVersion " + cmds[3]);
                                 } else {
                                     sendCmd("JAVAC_Error {Can not find such user}");
                                     throw new YException("Client send invalid login information");
                                 }
                             } else {
-                                sendCmd("JAVAC_Error {Can not find such user}");
+                                sendCmd("JAVAC_Error {Invalid connecting request}");
                                 throw new YException("Invalid connection request received from client");
                             }
                         } else if (command.startsWith("JAVAC_CloseCurrentSession")) {

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  1999/08/04 06:05:54  hongyu
+// *** empty log message ***
+//
 // Revision 1.34  1999/08/03 05:56:49  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -57,6 +60,7 @@ public class DEViseScreen extends Panel
 
     public Image offScrImg = null;
 
+    public Point finalMousePosition = new Point(0, 0);
     //private boolean isGDataAdded = false, isGDataDeleted = false, isCanvasAdded = false, isCanvasDeleted = false;
     //private DEViseCanvas whichCanvasAdded = null, whichCanvasDeleted = null;
     //private int whichCanvasAddedWhere = 0;
@@ -548,6 +552,7 @@ public class DEViseScreen extends Panel
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             add(c, c.posZ);
             c.setBounds(c.getBoundsInScreen());
+            c.canvasPos = c.getLocation();
             //newCanvas.removeElementAt(0);
             newCanvas.removeElement(c);
         }

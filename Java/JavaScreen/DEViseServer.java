@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  1999/08/03 05:56:49  hongyu
+// bug fixes    by Hongyu Yao
+//
 // Revision 1.23  1999/06/23 20:59:17  wenger
 // Added standard DEVise header.
 //
@@ -305,6 +308,7 @@ public class DEViseServer implements Runnable
     public void run()
     {
         int todo;
+        boolean isRemoveClient = false;
 
         while (true) {
             todo = getAction();
@@ -346,10 +350,25 @@ public class DEViseServer implements Runnable
                     client.removeLastCmd();
                 }
 
-                // commands JAVAC_GetServerState, JAVAC_Abort and JAVAC_Connect
+                // commands JAVAC_GetServerState, JAVAC_Abort & JAVAC_Connect
                 // already been handled in DEViseClient
                 try {
-                    if (clientCmd.startsWith("JAVAC_Exit")) {
+                    if (clientCmd.startsWith("JAVAC_ProtocolVersion")) {
+                        if (sendCmd(clientCmd)) {
+                            if (client.user.addClient(client)) {
+                                serverCmds = new String[2];
+                                serverCmds[0] = "JAVAC_User " + client.ID.intValue();
+                                serverCmds[1] = "JAVAC_Done";
+                            } else {
+                                serverCmds = new String[1];
+                                serverCmds[0] = "JAVAC_Error {Maximum logins for this user has been reached}";
+                                //throw new YException("No more login is allowed for user \"" + client.user.getName() + "\"");
+                                isRemoveClient = true;
+                            }                            
+                        } else {
+                            isRemoveClient = true;
+                        }                       
+                    } else if (clientCmd.startsWith("JAVAC_Exit")) {
                         client.isClientSwitched = false;
                         client.isSwitchSuccessful = false;
                         if (client.isSessionOpened) {
@@ -610,6 +629,10 @@ public class DEViseServer implements Runnable
                 try {
                     client.sendCmd(serverCmds);
                     client.sendData(serverDatas);
+                    if (isRemoveClient) {
+                        isRemoveClient = false;
+                        removeCurrentClient(false);
+                    }
                 } catch (YException e) {
                     pop.pn("Client communication error");
                     pop.pn(e.getMsg());

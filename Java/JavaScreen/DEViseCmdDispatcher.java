@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  1999/08/17 06:15:16  hongyu
+// *** empty log message ***
+//
 // Revision 1.37  1999/08/03 05:56:48  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -70,6 +73,12 @@ public class DEViseCmdDispatcher implements Runnable
     private synchronized void setStatus(int arg)
     {
         status = arg;
+        
+        MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
+        Toolkit tk = jsc.jscreen.getToolkit();
+        //EventQueue queue = new EventQueue();
+        EventQueue queue = tk.getSystemEventQueue();
+        queue.postEvent(finishEvent);
     }
 
     public synchronized boolean getOnlineStatus()
@@ -94,6 +103,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     // it is assumed that status = 0 while method start() is called
     // it is also assumed that while status = 0, dispatcher thread is not running
+    
     public void start(String cmd)
     {
         if (getStatus() != 0) {
@@ -102,7 +112,7 @@ public class DEViseCmdDispatcher implements Runnable
         }
 
         setStatus(1);
-        jsc.jscreen.setCursor(DEViseGlobals.waitCursor);
+        //jsc.jscreen.setCursor(DEViseGlobals.waitCursor);
         jsc.animPanel.start();
         jsc.stopButton.setBackground(Color.red);
         jsc.stopNumber = 0;
@@ -113,7 +123,7 @@ public class DEViseCmdDispatcher implements Runnable
                 if (!connect()) {
                     String result = jsc.confirmMsg(errMsg + "\n \nDo you wish to try again?");
                     if (result.equals(YMsgBox.YIDNO)) {
-                        jsc.jscreen.setCursor(jsc.lastCursor);
+                        //jsc.jscreen.setCursor(jsc.lastCursor);
                         jsc.animPanel.stop();
                         jsc.stopButton.setBackground(DEViseGlobals.bg);
                         setStatus(0);
@@ -128,13 +138,13 @@ public class DEViseCmdDispatcher implements Runnable
         String command = cmd;
         if (!getOnlineStatus()) {
             command = "JAVAC_Connect {" + DEViseGlobals.username + "} {"
-                       + DEViseGlobals.password + "}\n" + command;
+                       + DEViseGlobals.password + "} {" + DEViseGlobals.VERSION + "}\n" + command;
         }
 
         commands = DEViseGlobals.parseStr(command);
         if (commands == null || commands.length == 0) {
             jsc.showMsg("Invalid command: \"" + cmd + "\"");
-            jsc.jscreen.setCursor(jsc.lastCursor);
+            //jsc.jscreen.setCursor(jsc.lastCursor);
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
             setStatus(0);
@@ -257,20 +267,26 @@ public class DEViseCmdDispatcher implements Runnable
                     processCmd(commands[i]);
                 } else {
                     processCmd(commands[i]);
-                }
+                }                
             }
 
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
-            jsc.jscreen.setCursor(jsc.lastCursor);
-
+            //jsc.jscreen.setCursor(jsc.lastCursor);
+            
+            MouseEvent finishEvent = new MouseEvent(jsc.jscreen, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, jsc.jscreen.finalMousePosition.x, jsc.jscreen.finalMousePosition.y, 0, false);
+            Toolkit tk = jsc.jscreen.getToolkit();
+            //EventQueue queue = new EventQueue();
+            EventQueue queue = tk.getSystemEventQueue();
+            queue.postEvent(finishEvent);
+            
             // turn off the counter and the traffic light
             //jsc.viewInfo.updateImage(0, 0);
             //jsc.viewInfo.updateCount(0);
         } catch (YException e) {
             jsc.animPanel.stop();
             jsc.stopButton.setBackground(DEViseGlobals.bg);
-            jsc.jscreen.setCursor(jsc.lastCursor);
+            //jsc.jscreen.setCursor(jsc.lastCursor);
 
             // turn off the counter and the traffic light
             jsc.viewInfo.updateImage(0, 0);

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  1999/08/17 06:15:17  hongyu
+// *** empty log message ***
+//
 // Revision 1.22  1999/08/03 05:56:49  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -38,6 +41,7 @@ public final class DEViseGlobals
                               API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
                               API_DATA = 7;
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644;
+    public static final String VERSION = new String("2.1");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
@@ -271,7 +275,7 @@ public final class DEViseGlobals
         }
 
         if (ff < 0 || ff > 2) {
-            ff = 0;
+            ff = 1;
         }
 
         int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
@@ -298,10 +302,10 @@ public final class DEViseGlobals
         // as of right now, I only recognize courier(Monospaced), times(Serif) and Helvetica(SansSerif)
         // default is courier
         if (ff < 0 || ff > 2) {
-            ff = 0;
+            ff = 1;
         }
 
-        int minSize = 1, maxSize = 100, fontSize = 13;
+        int minSize = 1, maxSize = 100, fontSize = 12, okSize = -1;
         int fontstyle = ((fw == 0)?Font.PLAIN:Font.BOLD) + ((fs == 0)?Font.PLAIN:Font.ITALIC);
 
         Toolkit tk = Toolkit.getDefaultToolkit();        
@@ -310,36 +314,44 @@ public final class DEViseGlobals
         int h = fm.getHeight(), w = fm.stringWidth(str);
         
         if (h > height || (checkWidth && w > width)) {
-            boolean flag = false;
+            okSize = -1;
             
             while (fontSize > minSize) {
                 fontSize--;
                 font = new Font(DEViseFont[ff], fontstyle, fontSize);
+                if (font == null) {
+                    continue;
+                }
                 fm = tk.getFontMetrics(font);
                 h = fm.getHeight();                
                 if (h < height) {
                     if (checkWidth) {
                         w = fm.stringWidth(str);
                         if (w < width) {
-                            flag = true;
+                            okSize = fontSize;
                             break;
                         }
                     } else {                                
-                        flag = true;
+                        okSize = fontSize;
                         break;
                     }    
                 }
             }
             
-            if (flag) {
-                return new Font(DEViseFont[ff], fontstyle, fontSize);
+            if (okSize > 0) {
+                return new Font(DEViseFont[ff], fontstyle, okSize);
             } else {
                 return null;
             }    
         } else {
+            okSize = fontSize;
+            
             while (fontSize < maxSize) {
                 fontSize++;
                 font = new Font(DEViseFont[ff], fontstyle, fontSize);
+                if (font == null) {
+                    continue;
+                }
                 fm = tk.getFontMetrics(font);
                 h = fm.getHeight();
                 
@@ -351,15 +363,13 @@ public final class DEViseGlobals
                         if (w > width) {
                             break;
                         }
-                    }
+                    } 
+                    
+                    okSize = fontSize;
                 }    
             }
             
-            if (fontSize == maxSize) {
-                return new Font(DEViseFont[ff], fontstyle, fontSize);
-            } else {
-                return new Font(DEViseFont[ff], fontstyle, fontSize - 1);
-            }    
+            return new Font(DEViseFont[ff], fontstyle, okSize);
         }                 
     }
 

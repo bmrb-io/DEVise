@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  1999/08/19 07:20:51  hongyu
+// *** empty log message ***
+//
 // Revision 1.12  1999/08/17 06:15:16  hongyu
 // *** empty log message ***
 //
@@ -49,6 +52,8 @@ public class DEViseCanvas extends Container
     //public Vector allCursors = new Vector();
     //public Vector allGDatas = new Vector();
     public int posZ = 0;
+    
+    public Point canvasPos = new Point();
 
     private Image image = null;
 
@@ -346,6 +351,10 @@ public class DEViseCanvas extends Container
     protected void processMouseEvent(MouseEvent event)
     {
         int id = event.getID();
+        
+        jsc.jscreen.finalMousePosition.x = canvasPos.x + event.getX();
+        jsc.jscreen.finalMousePosition.y = canvasPos.y + event.getY();
+        
         if (id == MouseEvent.MOUSE_CLICKED || id == MouseEvent.MOUSE_DRAGGED || id == MouseEvent.MOUSE_PRESSED || id == MouseEvent.MOUSE_RELEASED) {
             if (dispatcher.getStatus() != 0) {
                 if (id == MouseEvent.MOUSE_PRESSED) {
