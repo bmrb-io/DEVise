@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/03 20:37:53  jussi
+  Added definition of BufMgrRequest, and improved Init/Get/Done interface.
+
   Revision 1.5  1996/11/23 21:19:52  jussi
   Simplified code.
 
@@ -81,7 +84,6 @@ public:
         RangeList *tdataInMemory;         /* TData ranges in memory */
         RangeList *gdataInMemory;         /* GData ranges in memory */
         RangeInfo *inMemoryHead;          /* head of in-memory range list */
-        RangeInfo *inMemoryNext;          /* next in-memory record range */
         RangeInfo *inMemoryCur;           /* current in-memory record range */
         RecId currentRec;                 /* current record being considered */
         Boolean getRange;                 /* need to get scanLow, scanHigh */

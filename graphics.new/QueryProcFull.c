@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1997/01/09 19:30:05  jussi
+  Added measurement of query elapsed time (debugging output).
+
   Revision 1.47  1997/01/09 18:47:52  jussi
   Improved tape search algorithm.
 
@@ -1497,25 +1500,10 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
         QPFullData *otherQ = _queries->Next(index);
         
         /* Do not distribute data if other query uses different TData */
-        if (isTData) {
-            if (query->tdata != otherQ->tdata)
-                continue;
-        } else {
-            if (query->gdata != otherQ->gdata)
-                continue;
-        }
+        if ((isTData && query->tdata != otherQ->tdata) ||
+            (!isTData && query->gdata != otherQ->gdata))
+            continue;
 
-        /* 
-           If this query is not a slave of a record link but the other
-           query is, do not distribute tdata to it; the query will be
-           executed when the master of the link is done. If neither query
-           is a slave, or both queries are slaves, then do distribute
-           tdata to it.
-        */
-        if (query != otherQ)
-            if (!query->isRecLinkSlave && otherQ->isRecLinkSlave)
-                continue;
-    
         RecId tempLow = low;
         RecId tempHigh = high;
 

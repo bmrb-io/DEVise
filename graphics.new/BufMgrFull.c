@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1997
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/01/08 18:58:18  wenger
+  Fixed some compile warnings.
+
   Revision 1.17  1996/12/18 21:33:37  jussi
   Corrected a bug which occurs when several queries access the
   same TData, one stealing the memory committed to another.
@@ -176,31 +179,35 @@ BufMgrFull::~BufMgrFull()
 /*
    Find next record range in memory that fits in the [req->low,req->high]
    bounds. Return true if found such range, false otherwise. The list
-   pointed to by req->inMemoryNext is either the in-memory GData record
+   pointed to by req->inMemoryCur is either the in-memory GData record
    range list, or the in-memory TData record range list.
 */
 
 Boolean BufMgrFull::GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range)
 {
-    while (req->inMemoryNext != req->inMemoryHead) {
-        range = req->inMemoryNext;
-        req->inMemoryNext = range->next;
+    req->inMemoryCur = req->inMemoryCur->next;
 
+    while (req->inMemoryCur != req->inMemoryHead) {
         RecId low, high;
-        range->RecIds(low, high);
+        req->inMemoryCur->RecIds(low, high);
 
         if (!(low > req->high || high < req->low)) {
             /* Return matching in-memory range. */
 #if DEBUGLVL >= 3
 	    printf("Found in-memory range [%ld,%ld]\n", low, high);
 #endif
+            range = req->inMemoryCur;
             return true;
         }
         
         if (low > high)
             break;
+
+        req->inMemoryCur = req->inMemoryCur->next;
     }
     
+    range = NULL;
+
     return false;
 }
 
@@ -212,7 +219,7 @@ Boolean BufMgrFull::GetNextRangeInMem(BufMgrRequest *req, RangeInfo *&range)
    so we call GetNextRangeInMem() only when the "current" in-memory
    data range has been fully consumed.
 
-   The "current" in-memory data range is indicated by the inMemoryNext
+   The "current" in-memory data range is indicated by the inMemoryCur
    pointer in the request structure.
 */
 
@@ -248,7 +255,6 @@ Boolean BufMgrFull::GetDataInMem(BufMgrRequest *req, RecId &startRecId,
 #endif
                 return false;
             }
-            req->inMemoryCur = inMem;
             /* Pin range in memory until it's fully inspected */
             inMem->SetUse();
 #if DEBUGLVL >= 3
@@ -535,7 +541,6 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
        overlapping areas of the same TData, and one request completes
        after the other is initialized but before it completes.
     */
-    Boolean overlaps = false;
     RecId rangeLow, rangeHigh;
     Boolean noHigh = req->processed.NextUnprocessed(range->low, rangeLow,
                                                     rangeHigh);
@@ -543,14 +548,6 @@ Boolean BufMgrFull::ScanDiskData(BMHandle req, RecId &startRid,
         rangeHigh = range->high;
     /* Overlap exists if unprocessed range does not cover range completely. */
     if (rangeLow > range->low || rangeHigh < range->high) {
-        overlaps = true;
-    } else {
-        if (rangeList->SearchExact(range->low, range->high)) {
-            fprintf(stderr, "Warning: possible problem in buffer manager\n");
-            overlaps = true;
-        }
-    }
-    if (overlaps) {
         /*
            Yes -- range has been processed already. Release allocated
            memory and tell caller that nothing was retrieved.
@@ -640,7 +637,6 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
     req->tdataInMemory = NULL;
     req->gdataInMemory = NULL;
     req->inMemoryHead = NULL;
-    req->inMemoryNext = NULL;
     req->inMemoryCur = NULL;
     req->currentRec = 0;
     req->getRange = false;
@@ -710,7 +706,7 @@ BufMgr::BMHandle BufMgrFull::SelectReady()
             return req;
         }
 
-        if (req->haveIO) {
+        if (req->haveIO && req->tdhandle->IsActiveIO()) {
             if (req->tdhandle->IsDirectIO()) {
 #if DEBUGLVL >= 3
                 printf("Request 0x%p can perform direct I/O\n", req);
@@ -758,7 +754,8 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             /* Initialize for in-memory GData access */
             int numRanges;
             req->gdataInMemory->GetRangeList(numRanges, req->inMemoryHead);
-            req->inMemoryNext = req->inMemoryHead->next;
+            req->inMemoryCur = req->inMemoryHead;
+            req->inMemoryCur->SetUse();
             req->getRange = true;
         }
         if (GetDataInMem(req, startRid, numRecs, buf)) {
@@ -767,7 +764,6 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
         }
         req->gdataInMemory = NULL;
         req->inMemoryHead = NULL;
-        req->inMemoryNext = NULL;
         req->inMemoryCur = NULL;
     }
 
@@ -778,7 +774,8 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
             /* Initialize for in-memory TData access */
             int numRanges;
             req->tdataInMemory->GetRangeList(numRanges, req->inMemoryHead);
-            req->inMemoryNext = req->inMemoryHead->next;
+            req->inMemoryCur = req->inMemoryHead;
+            req->inMemoryCur->SetUse();
             req->getRange = true;
         }
         if (GetDataInMem(req, startRid, numRecs, buf)) {
@@ -787,7 +784,6 @@ Boolean BufMgrFull::GetRecs(BMHandle req, Boolean &isTData,
         }
         req->tdataInMemory = NULL;
         req->inMemoryHead = NULL;
-        req->inMemoryNext = NULL;
         req->inMemoryCur = NULL;
     }
 
@@ -1047,13 +1043,14 @@ void BufMgrFull::PrintStat()
         printf("Total: returned %d, hits %d, %.2f%%\n",
                _tReturned + _gReturned, _tHits + _gHits,
                100.0 * (_tHits + _gHits) / (_tReturned + _gReturned));
+
+#if DEBUGLVL >= 3
     if (_seqIOs + _parIOs > 0) {
         printf("I/Os: %d (%.2f%%) synchronous, %d (%.2f%%) asynchronous\n",
                _seqIOs, 100.0 * _seqIOs / (_seqIOs + _parIOs),
                _parIOs, 100.0 * _parIOs / (_seqIOs + _parIOs));
     }
 
-#if DEBUGLVL >= 3
     printf("%d bufs returned: avg buf size %f, avg data size: %f\n",
            _totalRanges, 1.0 * _totalBuf / _totalRanges,
            1.0 * _totalData / _totalRanges);
