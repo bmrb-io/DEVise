@@ -14,6 +14,9 @@ setenv DEVISE_LIB     $DEVISE_ROOT/taodb/world/lib
 setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    /p/devise/taodb/world/solaris/generic/collaborator
+rm -f /tmp/Group.log
+rm -f /tmp/*master*
+rm -f /tmp/*server*
 
 if (! -f $DEVISE_EXEC) then
   echo "Cannot find Devise executable ($DEVISE_EXEC)."
