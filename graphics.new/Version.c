@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1998/01/30 02:17:09  wenger
+  Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
+
   Revision 1.40  1998/01/14 16:39:22  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -246,7 +249,7 @@ static const char *	version = "1.5.0";
 static const char *	copyright = "Copyright (c) 1992-1998";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 1997";
+static const char *	winLogo = "Visualization by DEVise (tm) 1998";
 
 
 #if !defined(lint) && defined(RCSID)
