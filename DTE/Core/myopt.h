@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/09/05 22:20:18  donjerko
+  Made changes for port to NT.
+
   Revision 1.31  1997/08/25 15:28:14  donjerko
   Added minmax table
 
@@ -109,8 +112,8 @@
 #ifndef MYOPT_H
 #define MYOPT_H
 
-#include <assert.h>
 #include <string>
+#include <assert.h>
 //#include <iostream.h>   erased for sysdep.h
 //#include <fstream.h>   erased for sysdep.h
 //#include <strstream.h>   erased for sysdep.h
@@ -129,7 +132,7 @@ class ExecExpr;
 
 typedef enum SelectID {
 	BASE_ID, SELECT_ID, GLOBAL_ID, OP_ID, CONST_ID, PATH_ID, METHOD_ID, 
-	CAST_ID, MEMBER_ID, ENUM_SELECT_ID
+	CAST_ID, MEMBER_ID, ENUM_SELECT_ID, CONSTRUCTOR_ID
 };
 
 class BaseSelection{
@@ -222,9 +225,6 @@ public:
 
 		return NULL;
 	}
-	virtual bool isGlobal(){
-		return false;
-	}
 	virtual bool isIndexable(
 		string& attrName, string& opName, BaseSelection*& value){
 
@@ -252,7 +252,7 @@ public:
 	GlobalSelect(Site* s, BaseSelection* sel) :
 		site(s), selection(sel), BaseSelection() {
 		typeID = sel->getTypeID();
-		avgSize = sel->getSize();
+		avgSize = 10;	// fix this!
 	}
 	virtual void display(ostream& out, int detail = 0);
 	virtual void displayFlat(ostream& out, int detail = 0){
@@ -320,7 +320,9 @@ public:
 	ConstantSelection(TypeID typeID, Type* val) : 
 		BaseSelection(), typeID(typeID), value(val) {}
 	virtual ~ConstantSelection(){
-		delete value;	// needs destroy ptr
+		DestroyPtr dp = getDestroyPtr(typeID);
+		assert(dp);
+		dp(value);
 	}
 	ConstantSelection* promote(TypeID typeToPromote) const; // throws
 	int toBinary(char* to){
@@ -623,9 +625,6 @@ public:
           }
           out << ')';
 	}
-     virtual bool isGlobal(){
-          return input == NULL;
-     }
      List<BaseSelection*>* getArgs(){
           return args;
      }
@@ -706,6 +705,119 @@ public:
 	virtual bool checkOrphan(){
 		assert(0);
 		return input->checkOrphan();
+	}
+};
+
+class Constructor : public BaseSelection {
+	string* name;
+	TypeID typeID;
+	List<BaseSelection*>* args;
+	int avgSize;	// to estimate result sizes
+	ConstructorPtr consPtr;
+public:
+	Constructor(string* name, List<BaseSelection*>* args) :
+		name(name), typeID(UNKN_TYPE), args(args), consPtr(NULL) {}
+	Constructor(const Constructor& a){
+		assert(0);
+	}
+	virtual ~Constructor(){
+	}
+	const string* getName(){
+		return name;
+	}
+	virtual void display(ostream& out, int detail = 0){
+		assert(name);
+		out << *name << "(";
+          if(args){
+               displayList(out, args, ", ", detail);
+          }
+          out << ')';
+	}
+     List<BaseSelection*>* getArgs(){
+          return args;
+     }
+	virtual BaseSelection* filter(Site* site){
+		if(exclusive(site)){
+			return new GlobalSelect(site, this);
+		}
+		assert(args);
+		for(args->rewind(); !args->atEnd(); args->step()){
+			BaseSelection* curr = args->get();
+			BaseSelection* currf = curr->filter(site);
+			if(currf){
+				args->replace(currf);
+			}
+		}
+		return NULL;
+	}
+	virtual bool exclusive(Site* site){
+		assert(args);
+		for(args->rewind(); !args->atEnd(); args->step()){
+			BaseSelection* curr = args->get();
+			if(!curr->exclusive(site)){
+				return false;
+			}
+		}
+		return true;
+	}
+	virtual bool exclusive(string* attributeNames, int numFlds){
+		assert(0);
+		return false;
+	}
+	virtual BaseSelection* duplicate(){
+		assert(0);
+		return NULL;
+	}
+	virtual void collect(Site* s, List<BaseSelection*>* to){
+		assert(args);
+		for(args->rewind(); !args->atEnd(); args->step()){
+			BaseSelection* curr = args->get();
+			curr->collect(s, to);
+		}
+	}
+     virtual SelectID selectID(){
+          return CONSTRUCTOR_ID;
+     }
+	virtual bool match(BaseSelection* x){ // throws exception
+          if(!(selectID() == x->selectID())){
+               return false;
+          }
+		Constructor* y = (Constructor*) x;
+          if(!(*name == *y->name)){
+               return false;
+          }
+		args->rewind();
+		y->args->rewind();
+		while(!args->atEnd()){
+			BaseSelection* curr = args->get();
+			BaseSelection* curry = y->args->get();
+			if(!curr->match(curry)){
+				return false;
+			}
+			args->step();
+			y->args->step();
+		}
+		return true;
+	}
+	virtual bool matchNoMember(BaseSelection* x){ // throws exception
+		assert(0);
+		return match(x);
+	}
+     virtual ExecExpr* createExec(
+          string site1, List<BaseSelection*>* list1,
+          string site2, List<BaseSelection*>* list2);
+
+     virtual TypeID typify(List<Site*>* sites);
+     virtual TypeID getTypeID(){
+          return typeID;
+     }
+	virtual int getSize(){
+		assert(typeID != UNKN_TYPE);
+		return packSize(typeID);
+	}
+	virtual bool checkOrphan(){
+		assert(0);
+		return false;
 	}
 };
 
@@ -1087,13 +1199,18 @@ public:
 		char* tmp = new char[len + 1];
 		tmp[len] = '\0';
 		tableName = new List<string*>;
-		for(int i = len - 1; i >= 0; i--){
+		int i;
+		for(i = 0; i < len; i++){
 			if(path[i] == '.'){
-				tableName->prepend(new string(&tmp[i + 1]));
 				tmp[i] = '\0';
 			}
 			else{
 				tmp[i] = path[i];
+			}
+		}
+		for(i = 0; i < len; i++){
+			if(tmp[i] == '\0'){
+				tableName->append(new string(&tmp[i + 1]));
 			}
 		}
 		cerr << "path " << path << " resolved as: ";

@@ -6,7 +6,7 @@
 #include <map.h>
 
 struct StringLess {
-	bool operator()(const String& s1, const String& s2) const {
+	bool operator()(const string& s1, const string& s2) const {
 		return s1 < s2;
 	}
 };
@@ -14,16 +14,16 @@ struct StringLess {
 // typedef int BaseSelection;
 
 class SymbolTable {
-	map<String, BaseSelection*, StringLess> symtab;
+	map<string, BaseSelection*, StringLess> symtab;
 public:
-	void put(String key, BaseSelection* element){
+	void put(string key, BaseSelection* element){
 		symtab[key] = element;
 	}
-	BaseSelection* get(String key){
+	BaseSelection* get(string key){
 		return symtab[key];
 	}
 	~SymbolTable(){
-		map<String, BaseSelection*, StringLess>::iterator it;
+		map<string, BaseSelection*, StringLess>::iterator it;
 		for(it = symtab.begin(); it != symtab.end(); it++){
 			delete (*it).second;
 		}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/09/05 22:20:17  donjerko
+  Made changes for port to NT.
+
   Revision 1.14  1997/08/22 23:13:05  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -255,7 +258,7 @@ bool boolCheckList(List<BaseSelection*>* list){
 bool evaluateList(
 	Array<ExecExpr*>* list, const Tuple* left, const Tuple* right){
 
-	for(unsigned i = 0; i < list->length; i++){
+	for(int i = 0; i < list->length; i++){
 		bool value = (*list)[i]->evaluate(left, right);
 		if(value == false){
 			return false;
@@ -266,7 +269,7 @@ bool evaluateList(
 
 void tupleFromList(Tuple* retVal,
 		Array<ExecExpr*>* list, const Tuple* left, const Tuple* right){
-	for(unsigned i = 0; i < list->length; i++){
+	for(int i = 0; i < list->length; i++){
 		retVal[i] = (Type*) (*list)[i]->evaluate(left, right);
 	}
 }

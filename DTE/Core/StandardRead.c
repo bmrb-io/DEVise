@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/09/05 22:20:13  donjerko
+  Made changes for port to NT.
+
   Revision 1.15  1997/08/22 23:13:04  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -70,11 +73,10 @@
 #include "url.h"
 #include "ExecOp.h"
 
-StandReadExec::StandReadExec(const ISchema& schema, istream* in) :
+StandReadExec::StandReadExec(int numFlds, const TypeID* typeIDs, istream* in) :
 	in(in)
 {
-	numFlds = schema.getNumFlds();
-	const TypeID* typeIDs = schema.getTypeIDs();
+	this->numFlds = numFlds;
 	readPtrs = new ReadPtr[numFlds];
 	destroyPtrs = new DestroyPtr[numFlds];
 	currentSz = new size_t[numFlds];

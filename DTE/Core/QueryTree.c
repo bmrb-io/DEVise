@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/09/05 22:20:08  donjerko
+  Made changes for port to NT.
+
   Revision 1.35  1997/08/25 15:28:10  donjerko
   Added minmax table
 
@@ -162,19 +165,25 @@ Site* QueryTree::createSite(){
 	// typecheck the query
 
 	TypeCheck typeCheck;
-	typeCheck.load(tableList);
+	vector<TableAlias*> tableVec;		// TableList
+	vector<BaseSelection*> selectVec;		// TableList
+	vector<BaseSelection*> predicateVec;		// TableList
+	vector<BaseSelection*> groupByVec;		// TableList
+	vector<BaseSelection*> orderByVec;		// TableList
+
+	typeCheck.load(tableVec);
 	if(!selectList){
 
 		// select *
 
-		selectList = typeCheck.createSelList();
+		typeCheck.setupSelList(selectVec);
 	}
 	else {
-		typeCheck.load(selectList);
+		typeCheck.load(selectVec);
 	}
-	typeCheck.load(predicateList);
-	typeCheck.load(groupBy);
-	typeCheck.load(orderBy);
+	typeCheck.load(predicateVec);
+	typeCheck.load(groupByVec);
+	typeCheck.load(orderByVec);
 
 	// check if this is the min-max query
 	// if so, lookup a min-max table to see if there exists an entry

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1997/09/05 22:20:18  donjerko
+  Made changes for port to NT.
+
   Revision 1.27  1997/08/21 21:04:32  donjerko
   Implemented view materialization
 
@@ -415,7 +418,7 @@ selection :
 		if ($5 != NULL){
 			$3->addList($5);
 		}
-		$$ = new Method($1, $3, NULL);	// global function
+		$$ = new Constructor($1, $3);
 	}
 	| constant {
 	}
@@ -493,19 +496,6 @@ optString : STRING {
 	}
 	| {
 		$$ = NULL;
-	}
-	;
-*/
-/*
-expression : STRING {
-		$$ = new Path($1, NULL);
-	}
-	| STRING '(' listOfSelections ')' {
-		$$ = new Method($1, $3, NULL);
-	}
-	| expression '.' expression {
-		$1->append($3);
-		$$ = $1;
 	}
 	;
 */

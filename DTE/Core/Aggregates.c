@@ -28,8 +28,8 @@ bool Aggregates::isApplicable(){
 		
 		BaseSelection* curr = selList->get();
 
-		if(curr->isGlobal() && curr->selectID() == METHOD_ID){
-			Method* function = (Method*) curr;
+		if(curr->selectID() == CONSTRUCTOR_ID){
+			Constructor* function = (Constructor*) curr;
 			List<BaseSelection*>* args = function->getArgs();
 			int numArgs = args->cardinality();
 			const string* name = function->getName();

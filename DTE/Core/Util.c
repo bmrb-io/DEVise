@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/09/05 22:20:14  donjerko
+  Made changes for port to NT.
+
   Revision 1.9  1997/08/25 15:28:12  donjerko
   Added minmax table
 
@@ -157,7 +160,10 @@ void stripQuotes(istream& in, char* buf, int bufsz){// can throw excetion
 		return;
 	}
 	if(tmp != '"'){
-		THROW(new Exception("Leading \" expected"), NVOID );
+		string err("Leading \" expected instead of: ");
+		string junkread;
+		in >> junkread;
+		THROW(new Exception(err + junkread), NVOID );
 	}
 	bool escape = false;
 	while(1){

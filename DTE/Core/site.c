@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/09/09 14:42:16  donjerko
+  Bug fix
+
   Revision 1.25  1997/09/05 22:20:20  donjerko
   Made changes for port to NT.
 
@@ -99,7 +102,7 @@
 
 class Iterator;
 
-Site::Site(string nm = "") : name(nm), iterat(NULL) {
+Site::Site(string nm) : name(nm), iterat(NULL) {
 	numFlds = 0;
 	tables = new set<string, ltstr>;
 	mySelect = NULL;
@@ -130,6 +133,26 @@ Site::~Site(){
 //	delete stats;	     // fix this
 	delete [] attributeNames;
 	delete [] typeIDs;
+}
+
+Iterator* Site::createExec(){
+	int count = 2;
+	string* options = new string[count];
+	string* values = new string[count];
+	options[0] = "query";
+	options[1] = "execute";
+	stringstream tmp;
+	display(tmp);
+	tmp << ends;
+	values[0] = tmp.str();
+	values[1] = "true";
+	istream* in;
+	cerr << "Shipping query: " << values[0] << endl;
+	TRY(in = contactURL(name, options, values, count), NULL);
+	delete [] options;
+	delete [] values;
+
+	return new StandReadExec(numFlds, typeIDs, in);
 }
 
 void Site::addTable(TableAlias* tabName){
@@ -188,6 +211,8 @@ List<BaseSelection*>* createSelectList(
 	return retVal;
 }
 
+/*	// this is not used
+
 List<BaseSelection*>* createSelectList(PlanOp* iterat){
 	assert(iterat);
 	int numFlds = iterat->getNumFlds();
@@ -199,8 +224,7 @@ List<BaseSelection*>* createSelectList(PlanOp* iterat){
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	for(int i = 0; i < numFlds; i++){
 		cerr << "Breaking " << attNms[i] << " into ";
-		char tmp[attNms[i].length() + 1];
-		strcpy(tmp, attNms[i].c_str());
+		char* tmp = strdup(attNms[i].c_str());
 		char* alias = strtok(tmp, ".");
 		assert(alias);
 		char* field = strtok(NULL, ".");
@@ -208,9 +232,11 @@ List<BaseSelection*>* createSelectList(PlanOp* iterat){
 		cerr << alias << " + " << field << endl;
 		retVal->append(new 
 			PrimeSelection(new string(alias), new string(field), types[i], sizes[i]));
+		delete [] tmp;
 	}
 	return retVal;
 }
+*/
 
 void LocalTable::typify(string option){	// Throws exception
 	
@@ -295,6 +321,7 @@ istream* contactURL(string name,
 		*out << "=";
 		stringstream tmp;
 		tmp << values[i];
+		tmp << ends;
 		ostringstream* encoded = URL::encode(tmp);
   		*out << encoded->rdbuf();
 		delete encoded;
@@ -340,7 +367,7 @@ void Site::typify(string option){	// Throws an exception
 	string* options = new string[count];
 	string* values = new string[count];
 	options[0] = "query";
-	options[1] = option;
+	options[1] = "typecheck";
 	stringstream tmp;
 	display(tmp);
 	tmp << ends;
@@ -350,19 +377,33 @@ void Site::typify(string option){	// Throws an exception
 	TRY(in = contactURL(name, options, values, count), NVOID );
 	delete [] options;
 	delete [] values;
-//	iterat = new StandardRead();	
-	assert(!"temporarily broken");
-	TRY(iterat->open(in), NVOID );
-	LOG(logFile << "Header: ");
-	LOG(iterat->display(logFile));
-	stats = iterat->getStats();
-	assert(stats);
-	numFlds = iterat->getNumFlds();
-	if(mySelect == NULL){
-		mySelect = createSelectList(iterat);
-		return;
+
+	ISchema schema;
+	*in >> schema;
+	if(!(*in)){
+		string err = "Illegal schema received from the DTE server";
+		THROW(new Exception(err), NVOID );
 	}
-	const TypeID* types = iterat->getTypeIDs();
+	delete in;
+	numFlds = schema.getNumFlds();
+	stats = new Stats(numFlds);
+	assert(stats);
+	if(mySelect == NULL){
+		mySelect = new List<BaseSelection*>;
+		for(int i = 0; i < numFlds; i++){
+			string field = schema.getAttributeNames()[i];
+			int dotpos = field.find(".");
+			string* alias = new string(field.substr(0, dotpos));
+			string* attnm = new string(field.substr(dotpos + 1));
+			PrimeSelection* tmp = new PrimeSelection(alias, attnm);
+			mySelect->append(tmp);
+		}
+	}
+	const TypeID* types = schema.getTypeIDs();
+	typeIDs = new TypeID[numFlds];
+	for(int i = 0; i < numFlds; i++){
+		typeIDs[i] = types[i];
+	}
 	int* sizes = stats->fldSizes;
 	mySelect->rewind();
 	for(int i = 0; i < numFlds; i++){
@@ -372,7 +413,7 @@ void Site::typify(string option){	// Throws an exception
 	}
 }
 
-void Site::display(ostream& out, int detail = 0){
+void Site::display(ostream& out, int detail){
 	if(detail > 0){
 		 out << "Site " << name << ":\n"; 
 		 if(stats){
@@ -448,7 +489,7 @@ void CGISite::typify(string option){	// Throws a exception
 
 }
 
-void LocalTable::writeOpen(int mode = ios::app){
+void LocalTable::writeOpen(int mode){
 	if(fileToWrite == ""){
 		THROW(new Exception("This site is read only"), NVOID );
 	}
@@ -479,8 +520,8 @@ Iterator* createIteratorFor(
 	const ISchema& schema, istream* in, const string& tableStr)
 {
 	assert(in && in->good());
-	StandReadExec* fs = new StandReadExec(schema, in);
 	int numFlds = schema.getNumFlds();
+	StandReadExec* fs = new StandReadExec(numFlds, schema.getTypeIDs(), in);
 	Array<ExecExpr*>* select = new Array<ExecExpr*>(numFlds);
 	for(int i = 0; i < numFlds; i++){
 		(*select)[i] = new ExecSelect(0, i);
@@ -646,3 +687,9 @@ Iterator* UnionSite::createExec(){
 	TRY(Iterator* it2 = iter2->createExec(), NULL);
 	return new UnionExec(it1, it2);
 }
+
+Iterator* DirectSite::createExec(){
+	assert(iterat);
+	return iterat->createExec();  // no projections or selections
+}
+

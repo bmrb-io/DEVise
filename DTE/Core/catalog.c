@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/09/05 22:56:09  donjerko
+  *** empty log message ***
+
   Revision 1.28  1997/09/05 22:20:15  donjerko
   Made changes for port to NT.
 
@@ -136,7 +139,9 @@ Interface* Directory::createInterface(const string& entry) const
 		string msg = "Could not open file " + fileName;
 		THROW(new Exception(msg), NULL);
 	}
-	Iterator* iterator = new StandReadExec(DIR_SCHEMA, in);
+	int dsnf = DIR_SCHEMA.getNumFlds();
+	const TypeID* dst = DIR_SCHEMA.getTypeIDs();
+	Iterator* iterator = new StandReadExec(dsnf, dst, in);
 	assert(iterator);
 	iterator->initialize();
 

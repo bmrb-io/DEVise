@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/09/05 22:20:19  donjerko
+  Made changes for port to NT.
+
   Revision 1.23  1997/08/25 15:28:15  donjerko
   Added minmax table
 
@@ -544,3 +547,37 @@ QuoteAlias::~QuoteAlias(){
 	delete quote;
 	delete interf;
 }
+
+TypeID Constructor::typify(List<Site*>* sites){
+	assert(args);
+	int numFlds = args->cardinality();
+	TypeID* inpTypes = new TypeID[numFlds];	
+	int i = 0;
+	for(args->rewind(); !args->atEnd(); args->step()){
+		TRY(inpTypes[i] = args->get()->typify(sites), UNKN_TYPE);
+		i++;
+	}
+	TRY(consPtr = 
+		getConstructorPtr(*name, inpTypes, numFlds, typeID), UNKN_TYPE);
+	delete [] inpTypes;
+	return typeID;
+}
+
+ExecExpr* Constructor::createExec(
+	string site1, List<BaseSelection*>* list1,
+     string site2, List<BaseSelection*>* list2)
+{
+	int numFlds = args->cardinality();
+	Array<ExecExpr*>* input = new Array<ExecExpr*>(numFlds);
+	args->rewind();
+	for(int i = 0; i < numFlds; i++){
+		TRY((*input)[i] = 
+			args->get()->createExec(site1, list1, site2, list2), NULL);
+		args->step();
+	}
+	size_t objSz;
+	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
+	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
+	return new ExecConstructor(input, consPtr, value, objSz, destroyPtr);
+}
+

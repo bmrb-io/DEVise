@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/09/09 14:42:16  donjerko
+  Bug fix
+
   Revision 1.19  1997/09/05 22:20:13  donjerko
   Made changes for port to NT.
 
@@ -97,7 +100,7 @@ public:
 		in(in), readPtrs(readPtrs),
 		destroyPtrs(destroyPtrs), tuple(tuple), currentSz(currentSz),
 		numFlds(numFlds) {}
-	StandReadExec(const ISchema& schema, istream* in);
+	StandReadExec(int numFlds, const TypeID* typeIDs, istream* in);
 	virtual ~StandReadExec(){
 		delete [] currentSz;
 		delete [] readPtrs;

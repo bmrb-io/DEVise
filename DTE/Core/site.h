@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/09/05 22:20:21  donjerko
+  Made changes for port to NT.
+
   Revision 1.29  1997/08/21 21:04:36  donjerko
   Implemented view materialization
 
@@ -102,7 +105,7 @@ class RTreeIndex;
 class CGIEntry;
 
 List<BaseSelection*>* createSelectList(const string& nm, PlanOp*);
-List<BaseSelection*>* createSelectList(PlanOp*);
+// List<BaseSelection*>* createSelectList(PlanOp*);	// not used
 List<BaseSelection*>* createSelectList(
 	const string& table, List<string*>* attNms);
 
@@ -158,10 +161,7 @@ public:
 		tmp->append(this);
 		return tmp;
 	}
-	virtual Iterator* createExec(){
-		assert(iterat);
-		return iterat->createExec();	// no projections or selections
-	}
+	virtual Iterator* createExec();
      virtual void typify(string option);	// Throws a exception
 	virtual int getNumFlds(){
 		if(mySelect){
@@ -248,6 +248,7 @@ public:
 		iterat = NULL;	// Local table is the owner of this iterator
 	}
 	virtual void typify(string option){}
+	virtual Iterator* createExec();
 };
 
 class LocalTable : public Site {
@@ -319,6 +320,7 @@ public:
 		for(int i = 0; i < numFlds; i++){
 			assert(writePtrs[i]);
 			writePtrs[i](*fout, tuple[i]);
+			*fout << " ";
 		}
 		*fout << endl;
 	}

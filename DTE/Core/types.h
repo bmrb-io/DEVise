@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/09/05 22:20:23  donjerko
+  Made changes for port to NT.
+
   Revision 1.34  1997/08/25 15:28:16  donjerko
   Added minmax table
 
@@ -133,6 +136,7 @@
 #include "exception.h"
 #include "Utility.h"
 #include "queue.h"
+#include "Array.h"
 #include "sysdep.h"
 
 #ifndef __GNUG__
@@ -253,6 +257,7 @@ typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
 typedef void (*MarshalPtr)(const Type* adt, char* to);
 typedef void (*UnmarshalPtr)(char* from, Type*& adt);
+typedef void (*ConstructorPtr)(const Array<const Type*>& inp, Type*& res, size_t& = dummySz);
  
 void insert(string tableStr, Tuple* tuple);	// throws exception
 
@@ -491,6 +496,9 @@ public:
 		else{
 			return NULL;
 		}
+	}
+	static const int getInt(const Type* object){
+		return (int) object;
 	}
 };
 
@@ -1001,7 +1009,6 @@ public:
 				((T*) (base + i))->~T();
 			}
 		}
-		//	delete [] pagePtrs.get();
 	}
 };
 
@@ -1099,5 +1106,8 @@ WritePtr* newWritePtrs(const TypeID* types, int numFlds);	// throws
 DestroyPtr* newDestroyPtrs(const TypeID* types, int numFlds);	// throws
 
 char* allocateSpace(TypeID type, size_t& size = dummySz);
+
+ConstructorPtr getConstructorPtr(
+	const string& name, const TypeID* inpTypes, int numFlds, TypeID& retType);
 
 #endif

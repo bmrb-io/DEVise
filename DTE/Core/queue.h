@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/09/05 22:20:19  donjerko
+  Made changes for port to NT.
+
   Revision 1.11  1997/07/30 21:39:25  donjerko
   Separated execution part from typchecking in expressions.
 
@@ -98,18 +101,6 @@ public:
 			tail = new Cell(element);
 			head = tail;
 			current = head;
-		}
-		numElem++;
-	}
-     void prepend(T element){	
-		if(head){
-			Cell* oldHead = head;
-			head = new Cell(element);
-			head->next = oldHead;
-		}
-		else{
-			head = new Cell(element);
-			current = tail = head;
 		}
 		numElem++;
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/09/05 22:20:23  donjerko
+  Made changes for port to NT.
+
   Revision 1.6  1997/08/21 21:04:38  donjerko
   Implemented view materialization
 
@@ -75,7 +78,8 @@ istream* URL::getInputStream(){
 	}
 	retVal = new istream(sockBuf);
 	removeHeader(retVal);
-	if(strncmp(header, "HTTP/1.0 200", 12)){
+	const char* codeOff = strstr(header, " ");
+	if(!codeOff || strncmp(codeOff, " 200", 4) != 0){
 		string msg = "HTTP error:\n" + string(header);
 		THROW(new Exception(msg), NULL);
 	}

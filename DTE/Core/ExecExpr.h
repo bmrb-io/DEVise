@@ -125,4 +125,37 @@ public:
 	}
 };
 
+class ExecConstructor : public ExecExpr{
+	Array<ExecExpr*>* input;
+	ConstructorPtr consPtr;
+	Type* value;
+	size_t valueSize;
+	DestroyPtr destroyPtr;
+	Array<const Type*>* inputVals;
+public:
+	ExecConstructor(Array<ExecExpr*>* input,
+		ConstructorPtr consPtr, Type* value, size_t valueSize,
+		DestroyPtr destroyPtr) :
+		input(input), consPtr(consPtr), value(value), 
+		valueSize(valueSize), destroyPtr(destroyPtr) {
+	
+		inputVals = new Array<const Type*>(input->length);
+		assert(input);
+		assert(consPtr);
+		assert(destroyPtr);
+	}
+	virtual ~ExecConstructor(){
+		delete input;
+		delete inputVals;
+		destroyPtr(value);
+	}
+	const Type* evaluate(const Tuple* leftT, const Tuple* rightT) {
+		for(int i = 0; i < input->length; i++){
+			(*inputVals)[i] = (*input)[i]->evaluate(leftT, rightT);
+		}
+		consPtr(*inputVals, value, valueSize);
+		return value;
+	}
+};
+
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/09/05 22:20:12  donjerko
+  Made changes for port to NT.
+
   Revision 1.13  1997/08/15 00:17:34  donjerko
   Completed the Iterator destructor code.
 
@@ -53,6 +56,14 @@
 #include "StandardRead.h"
 #include "Inserter.h"
 #include "types.h"
+
+inline void SortExec::swap(Tuple *&left, Tuple *&right) 
+{
+  Tuple *temp = left;
+  left = right;
+  right = temp;
+  return;
+} 
 
 void SortExec::initialize()
 {
@@ -238,14 +249,6 @@ Tuple* SortExec::find_pivot(Tuple **A,int left, int right)
   swap(A[center], A[right-1]);
   return A[right-1];
 }
-
-inline void SortExec::swap(Tuple *&left, Tuple *&right) 
-{
-  Tuple *temp = left;
-  left = right;
-  right = temp;
-  return;
-} 
 
 void SortExec::insert_sort(Tuple **A, int length)
 {

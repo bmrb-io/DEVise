@@ -22,13 +22,14 @@ void Modifier::replace
 		THROW(new Exception(msg), );
 	}
 	assert(ins && ins->good());
-	StandReadExec* iter = new StandReadExec(schema, ins);
-     iter->initialize();
 	int numFlds = schema.getNumFlds();
+	const TypeID* typeIDs = schema.getTypeIDs();
+	StandReadExec* iter = new StandReadExec(numFlds, typeIDs, ins);
+     iter->initialize();
 	const Tuple* tmpTuple;
 	List<Tuple*> tupleList;
 	TupleLoader tupleLoader;
-	TRY(tupleLoader.open(numFlds, schema.getTypeIDs()), NVOID);
+	TRY(tupleLoader.open(numFlds, typeIDs), NVOID);
 	TRY(tmpTuple = iter->getNext(), NVOID);
 
 	bool isReplaced = false;

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/09/05 22:20:21  donjerko
+  Made changes for port to NT.
+
   Revision 1.33  1997/08/25 15:28:16  donjerko
   Added minmax table
 
@@ -527,6 +530,11 @@ void schemaRead(istream& in, Type*& adt){
 	TRY(((ISchema*) adt)->read(in), NVOID );
 }
 
+void dateRead(istream& in, Type*& adt){
+	EncodedDTF* tmp = (EncodedDTF*) adt;
+	in >> *tmp;
+}
+
 void indexDescRead(istream& in, Type*& adt){
 	IndexDesc* tmp = new IndexDesc();	
 	memcpy(adt, tmp, sizeof(IndexDesc));
@@ -859,6 +867,9 @@ ReadPtr getReadPtr(TypeID root){
 	}
 	else if(root == "time_t"){
 		return time_tRead;
+	}
+	else if(root == DATE_TP){
+		return dateRead;
 	}
 	else{
 		cout << "No such type: " << root << endl;
@@ -1264,7 +1275,7 @@ void intToDouble(const Type* arg, Type*& result, size_t&){
 }
 
 void intToInt(const Type* arg, Type*& result, size_t&){
-	((int) result) = int(arg);
+	result = (Type*) arg;
 }
 
 void doubleToDouble(const Type* arg, Type*& result, size_t&){
@@ -1538,6 +1549,9 @@ MemoryLoader** newTypeLoaders(const TypeID* types, int numFlds){
 		else if(strncmp(types[i].c_str(), "string", 6) == 0){
 			retVal[i] = new StringLoader();
 		}
+		else if(types[i] == DATE_TP){
+			retVal[i] = new MemoryLoaderTemplate<EncodedDTF>;
+		}
 		else{
 			cerr << "Loader not implemented for type: " << types[i] << endl;
 			exit(1);
@@ -1590,4 +1604,36 @@ ostream& operator<<(ostream& out, const ISchema& s){
 Type* InterfaceLoader::load(const Type* arg){
 	char* space = (char*) allocate(INITIAL_INTERFACE_SIZE);
 	return ((Interface*) arg)->copyTo(space);
+}
+
+void dateConstructor
+	(const Array<const Type*>& inp, Type*& res, size_t& = dummySz)
+{
+	EncodedDTF encDTF;
+	const int year = IInt::getInt(inp[0]);
+	const int month = IInt::getInt(inp[1]);
+	const int day = IInt::getInt(inp[2]);
+	encDTF.setDate(year, month, day);
+	*((EncodedDTF*)res) = encDTF;
+}
+
+ConstructorPtr getConstructorPtr(
+     const string& name, const TypeID* inpTypes, int numFlds, TypeID& retType)
+{
+	if(name == "date"){
+		if(numFlds == 3 && inpTypes[0] == INT_TP && inpTypes[1] ==INT_TP &&
+			inpTypes[2] == INT_TP){
+			retType = DATE_TP;
+			return dateConstructor;
+		}
+	}
+	string msg = "Constructor " + name + "(";
+	for(int i = 0; i < numFlds; i++){
+		msg += inpTypes[i];
+		if(i < numFlds - 1){
+			msg += ", ";
+		}
+	}
+	msg += ") not defined";
+	THROW(new Exception(msg), 0);
 }
