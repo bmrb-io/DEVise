@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/10/17 20:42:17  jussi
+  Initial revision.
+*/
 
 #ifndef ClientServer_h
 #define ClientServer_h
@@ -26,6 +29,11 @@
 #include "ClientAPI.h"
 #include "Display.h"
 #include "WindowRep.h"
+
+class CompDate {
+public:
+  static char *Get();
+};
 
 class Client {
  public:

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/10/17 20:42:16  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +35,11 @@
 
 //#define DOASSERT(c,r) { if (!(c)) DoAbort(r); }
 //#define DEBUG
+
+char *CompDate::Get()
+{
+  return __DATE__;
+}
 
 Client::Client(char *name, char *hostname, int port)
 {
