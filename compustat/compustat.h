@@ -1,7 +1,9 @@
 /*
    $Id$
 
-   $Log$
+   Revision 1.2  1995/09/18 18:32:36  jussi
+   Dummy change. Ignore.
+
    Revision 1.1  1995/09/18 18:30:33  jussi
    Initial revision of archive.
 */
@@ -73,9 +75,8 @@ int comp_dat_2[COMP_DAT_FIELDS_2 * COMP_NUM_PER_DAT] = {
 #define COMP_MAX_STR_LEN  50
 
 /* Function prototypes */
-void create_comp_dat(char fname[], char fvalue[]);
 int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off, 
-	      int *year, FILE **outfile);
+	      int *year, char *smbl_val);
 void generate_dat(char *dat1, char *dat2, int year,
 		  FILE *outfile);
 int comp_get_pos(char fname[]);

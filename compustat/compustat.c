@@ -1,7 +1,9 @@
 /*
    $Id$
 
-   $Log$*/
+   Revision 1.1  1995/09/18 18:30:32  jussi
+   Initial revision of archive.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +15,67 @@
 
 #define INFILE_NAME "compustat.dat"
 #define IDXFILE_NAME "compustat.idx"
+static char outfile_path[] = "./";
+
+/*-------------------------------------------------------------------*/
+
+/* This is a wrapper function that makes the assumption that data files
+   are to be created based on the ticker symbol. This function takes
+   as parameter a set of ticker symbols (character strings). It reads the
+   index file and arranges these symbols in the increasing order of offsets
+   of the corresponding records (since the records are on tape) and calls
+   create_comp_dat for every successive symbol. */
+/* syms is the array of character strings and num is the number of strings
+   passed */
+void comp_create(char **syms, int num)
+{
+  FILE *idxfile;
+  int *offset_arr;
+  int *spos_arr;
+  int tmp, i, j;
+  char tmpp[COMP_MAX_STR_LEN];
+
+  /* Get the index file pointer */
+  if ((idxfile = fopen(IDXFILE_NAME, "r")) == NULL)
+  {
+    printf("Error: could not open index file\n");
+    exit(0);
+  }
+  
+  /* We will retrieve num offsets and sort them */
+  offset_arr = (int *)malloc(num*sizeof(int));
+  spos_arr = (int *)malloc(num*sizeof(int));
+
+  for (i = 0; i < num; i++)
+  {
+    spos_arr[i] = i;
+    find_rec(idxfile, "SMBL", syms[i], &offset_arr[i], &tmp, tmpp);
+    rewind(idxfile);
+  }
+
+  /* Now sort offset_arr - bubble sort for now.*/
+  for (i = 0; i < num; i++)
+    for (j = i+1; j < num; j++)
+      if (offset_arr[i] > offset_arr[j])
+      {
+	tmp = offset_arr[i];
+	offset_arr[i] = offset_arr[j];
+	offset_arr[j] = tmp;
+	tmp = spos_arr[i];
+	spos_arr[i] = spos_arr[j];
+	spos_arr[j] = tmp;
+      }
+
+  /* Call create_comp_dat for every symbol in turn */
+  for (i = 0; i < num; i++)
+    create_comp_dat("SMBL", syms[spos_arr[i]]);
+
+  free(offset_arr);
+  free(spos_arr);
+  fclose(idxfile);
+}
+
+/*-------------------------------------------------------------------*/
 
 /* This function extracts the fields in the data and outputs them into
    a DeVise style file.
@@ -26,6 +89,8 @@ void create_comp_dat(char fname[], char fvalue[])
   int recoffset, year;
   char recbuf1[COMP_REC_LENGTH];
   char recbuf2[COMP_REC_LENGTH];
+  char smbl_val[COMP_MAX_STR_LEN];
+  char tmpval[COMP_MAX_STR_LEN];
 
   /* Get the input file pointer */
   if ((infile = fopen(INFILE_NAME, "r")) == NULL)
@@ -43,12 +108,24 @@ void create_comp_dat(char fname[], char fvalue[])
 
   /* Find the record for the company in the index file and open an output
      file with the appropriate name */
-  if (find_rec(idxfile, fname, fvalue, &recoffset, &year, &outfile) == FALSE)
+  if (find_rec(idxfile, fname, fvalue, &recoffset, &year, smbl_val) == FALSE)
   {
     printf("Error: Invalid field name, value combination\n");
     fclose(infile);
     fclose(idxfile);
     return;
+  }
+
+  /* Create a name of the file based on the value of SMBL field.
+     Create the output file and return the file pointer. */
+  /* Create name for the data file to be generated */
+  sprintf(tmpval, "%s%s.dat", outfile_path, smbl_val);
+
+  /* Open file pointer for the data file */
+  if ((outfile = fopen(tmpval, "w")) == NULL)
+  {
+    printf("Error: could not create file for writing data\n");
+    exit(0);
   }
 
   /* Loop through sets of five years-
@@ -95,22 +172,21 @@ void create_comp_dat(char fname[], char fvalue[])
   }
 }
 
+/*-------------------------------------------------------------------*/
+
 /* This function scans the index file and finds the record corr. to the
    passed fname and fvalue.
-   In that record, return the OFFSET, YEAR fields.
-   Create a name of the file based on the value of SMBL field.
-   Create the output file and return the file pointer. */
+   In that record, return the OFFSET, YEAR and SMBL fields. */
 
 int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off, 
-	      int *year, FILE **outfile)
+	      int *year, char *smbl_val)
 {
   int i;
   int offset_pos, year_pos, smbl_pos, fname_pos;
   int offset_val;
   int year_val;
-  char smbl_val[COMP_MAX_STR_LEN];
-  char tmpval[COMP_MAX_STR_LEN];
   char *fname_val;
+  char tmpval[COMP_MAX_STR_LEN];
 
   /* First do some preprocessing : find the field numbers for OFFSET, YEAR,
      SMBL and fname fields. */
@@ -158,24 +234,17 @@ int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off,
   {
     *off = offset_val;
     *year = year_val;
-    
-    /* Create name for the data file to be generated */
-    sprintf(tmpval, "%s.dat", smbl_val);
-
-    /* Open file pointer for the data file */
-    if ((*outfile = fopen(tmpval, "w")) == NULL)
-    {
-      printf("Error: could not create file for writing data\n");
-      exit(0);
-    }
+    free(fname_val);
     return TRUE;
   }
   
   printf("Error: field value %s not found for field name %s\n",
 	 fvalue, fname);
+  free(fname_val);
   return FALSE;
 }
 
+/*-------------------------------------------------------------------*/
 
 /* This function generates data corr. to the passed year.
    off1 represents the start of the data array for the first set of 
@@ -216,6 +285,7 @@ void generate_dat(char *dat1, char *dat2, int year,
   fprintf(outfile, "\n");
 }
 
+/*-------------------------------------------------------------------*/
 
 /* This function returns the field position in the index file record for
    the field with the passed name. This info is got by scanning through the
@@ -233,6 +303,7 @@ int comp_get_pos(char fname[])
   return -1;
 }
 	
+/*-------------------------------------------------------------------*/
 
 /* This function checks if val1 and val2 are identical. Returns 1 if
    identical, 0 otherwise.
@@ -251,6 +322,7 @@ int comp_compare(char *val1, char *val2, int pos)
     else return 0;
 }
 
+/*-------------------------------------------------------------------*/
 
 /* This function returns the floating point number which is represented as
    a character string with the given length and precision. */
@@ -289,3 +361,6 @@ double comp_get_val(char *str, int len, int pre)
 
   return ((double)intval + (double)decval/denom);
 }
+
+/*-------------------------------------------------------------------*/
+

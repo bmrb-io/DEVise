@@ -1,7 +1,9 @@
 /*
    $Id$
 
-   $Log$*/
+   Revision 1.1  1995/09/18 18:30:34  jussi
+   Initial revision of archive.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,26 +13,29 @@
 
 #include "index.h"
 
-#define INFILE_NAME "compustat.dat"
-#define OUTFILE_NAME "compustat.idx"
-
-main()
+main(int argc, char **argv)
 {
   FILE *infile;
   FILE *outfile;
 
-  /* Get the input file pointer */
-  if ((infile = fopen(INFILE_NAME, "r")) == NULL)
+  if (argc != 3)
   {
-    printf("Error: could not open input file\n");
+    printf("Usage: %s <input data file> <output index file>\n", argv[0]);
+    exit(0);
+  }
+
+  /* Get the input file pointer */
+  if ((infile = fopen(argv[1], "r")) == NULL)
+  {
+    printf("Error: could not open input file %s\n", argv[1]);
     exit(0);
   }
 
   /* Get the output file pointer */
   /* Create a new output file for writing index */
-  if ((outfile = fopen(OUTFILE_NAME, "w")) == NULL)
+  if ((outfile = fopen(argv[2], "w")) == NULL)
   {
-    printf("Error: could not create output file\n");
+    printf("Error: could not create output file %s\n", argv[2]);
     exit(0);
   }
 
