@@ -20,6 +20,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1999/06/11 14:47:14  wenger
+# Added the capability (mostly for the JavaScreen) to disable rubberband
+# lines, cursor movement, drill down, and key actions in views (the code
+# to send this info to the JS is still conditionaled out until the JS is
+# ready for it).
+#
 
 ############################################################
 
@@ -34,7 +40,7 @@ proc EditActionDisable {} {
     # Create the top level widget and the frames we'll later use for
     # positioning.
     toplevel .editActionDisable
-    wm title .editActionDisable "Auto Filter ($curView)"
+    wm title .editActionDisable "Disable Actions ($curView)"
 
     frame .editActionDisable.row1
     frame .editActionDisable.row2
