@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2000/09/22 21:06:39  wenger
+// Star2Devise checks chemical shift save frames individually to make sure
+// they refer to a protein; for now it only saves chemical shift info for
+// the first protein-related chemical shift save frame in the NMR-STAR file.
+//
 // Revision 1.11  2000/09/13 20:05:24  wenger
 // Star2Devise only generates chemical shift data for proteins.
 //
@@ -44,7 +49,7 @@
 // bmr4267.str).
 //
 // Revision 1.5  2000/08/16 21:50:09  wenger
-// Split calcChemShifts into several smaller methods to make it easier to
+// Split , summary_writercalcChemShifts into several smaller methods to make it easier to
 // deal with.
 //
 // Revision 1.4  2000/08/11 21:41:34  wenger
@@ -445,7 +450,8 @@ public class Star2Devise {
      * number concatenated with c.dat, d.dat, or p.dat
      * Return value: true iff chem shifts are calculated; false otherwise.
      */
-    public boolean calcChemShifts (String acc_num)
+    public boolean calcChemShifts (String acc_num, PrintWriter summary_writer,
+      String display_link_base)
       throws S2DException
     {
 	if (DEBUG >= 1) {
@@ -475,99 +481,30 @@ public class Star2Devise {
 	    final String tagName = S2DNames.SAVEFRAME_CATEGORY;
 	    final String dataValue = S2DNames.ASSIGNED_CHEM_SHIFTS;
 	    
-	    //Find list of all occurences in the star file
-	    
-	    // Get an enumeration of the save frames of the specified type.
+	    // Get an enumeration of the chemical shift save frames.
 	    Enumeration matches = aStarTree.searchForTypeByTagValue(
 	      Class.forName( StarValidity.pkgName()+".SaveFrameNode"),
 	      tagName, dataValue ).elements();
 	
-	    //For each match only process if item is in a saveframelist node
+	    int index = 1;
+
+	    //For chemical shift save frame...
 	    while (matches.hasMoreElements())
 	    {
 		//
 		// Get the next available save frame.
 		//
-		SaveFrameNode currSaveFrame = (SaveFrameNode)matches.nextElement();
-		//TEMP -- is currSaveFrame ever null??? (see check below)
+		SaveFrameNode currSaveFrame =
+		  (SaveFrameNode)matches.nextElement();
 
-	        String saveFrameName = null;
-		if (currSaveFrame != null) {
-		    saveFrameName 
-			= ((SaveFrameNode)currSaveFrame).getLabel();
-		    
-		    //Strip the save_
-		    saveFrameName = saveFrameName.substring(
-		      S2DNames.SAVEFRAME_PREFIX.length());
-		} else {
-		    saveFrameName = "N/A" ;
+		//
+		// Write out the chemical shift info for this save frame.
+		//
+		if (writeChemShifts(currSaveFrame, index, summary_writer,
+		  display_link_base)) {
+		    index++;
+		    result = true;
 		}
-
-                if (!isAProtein(currSaveFrame)) {
-		    if (DEBUG >= 1) {
-		        System.out.println("Chemical shifts not saved for " +
-			  "save frame " + saveFrameName + " because it is " +
-			  "not a protein");
-		    }
-		    continue;
-		}
-		
-
-	        if (DEBUG >= 2) {
-	            System.out.println("Processing save frame " +
-		      saveFrameName);
-	        }
-	    
-		//
-		// Now to obtain a pointer to the dataloop
-		// containing the specific tag.
-		//
-		VectorCheckType loopMatches;
-		loopMatches 
-		    = currSaveFrame.searchForTypeByName
-		    ( Class.forName( StarValidity.pkgName()
-				     + ".DataLoopNode"),
-		      S2DNames.CHEM_SHIFT_VALUE);
-		
-		// There should be only one data loop.
-		if (loopMatches.size() != 1) {
-		    throw new S2DException("Found " + loopMatches.size() +
-		      " _Chem_shift_value tags, only expect 1." );
-		}
-	    
-		_currentDataLoop = (DataLoopNode)loopMatches.firstElement();
-	    
-		//
-		// Get the indices to the various data elements that we
-		// need.
-		//
-                try {
-                    getIndices();
-                } catch (S2DException ex) {
-                    System.err.println("Error getting index: " +
-                      ex.getMessage());
-                    break;
-                }
-
-		//
-		// Write the deltashift info.
-		//
-		writeDeltashifts();
-
-		//
-		// Write the CSI info.
-		//
-		writeCsi();
-
-		//
-		// Write the percent assignment info.
-		//
-		writeAssignments();
-
-		result = true;
-
-		// Only write out one set of chemical shifts for now.
-		break;
 	    } // end while matches.hasMoreElements()
 	    
 	    _error.close();
@@ -594,6 +531,99 @@ public class Star2Devise {
 	    _error = null;
 	    _prevAtomName = null;
 	}
+    }
+
+    // ----------------------------------------------------------------------
+    // Writes out all chem shift info for *one* chem shift save frame.
+    // Returns true iff info was actually written out (info is not written
+    // if the save frame doesn't have chem shifts for a protein, for
+    // example).
+    public boolean writeChemShifts(SaveFrameNode csFrame, int index,
+      PrintWriter summary_writer, String display_link_base)
+      throws S2DException, ClassNotFoundException, IOException
+    {
+        String saveFrameName = ((SaveFrameNode)csFrame).getLabel();
+        //Strip the save_
+        saveFrameName = saveFrameName.substring(
+	  S2DNames.SAVEFRAME_PREFIX.length());
+
+        if (!isAProtein(csFrame)) {
+            if (DEBUG >= 1) {
+                System.out.println("Chemical shifts not saved for " +
+        	  "save frame " + saveFrameName + " because it is " +
+        	  "not a protein");
+            }
+            return false;
+        }
+        	
+        if (DEBUG >= 2) {
+            System.out.println("Processing save frame " +
+              saveFrameName);
+        }
+
+	//
+	// Get save frame details and output them to the summary page.
+	//
+	VectorCheckType details = csFrame.searchByName(S2DNames.DETAILS);
+	if (details.size() == 1) {
+	    DataItemNode node = (DataItemNode)details.elementAt(0);
+            summary_writer.println("\n<br>");
+            summary_writer.println("<p><b>" + node.getValue() + "</b>");
+	} else {
+            summary_writer.println("<p><b>Details not available for this " +
+	      "save frame.</b>");
+	}
+
+        summary_writer.println("<ul>");
+            
+        //
+        // Now to obtain a pointer to the dataloop
+        // containing the _Chem_shift_value tag.
+        //
+        VectorCheckType loopMatches;
+        loopMatches 
+            = csFrame.searchForTypeByName(Class.forName(
+	      StarValidity.pkgName() + ".DataLoopNode"),
+              S2DNames.CHEM_SHIFT_VALUE);
+        
+        // There should be only one data loop.
+        if (loopMatches.size() != 1) {
+            throw new S2DException("Found " + loopMatches.size() +
+              " _Chem_shift_value tags, only expect 1." );
+        }
+    
+        _currentDataLoop = (DataLoopNode)loopMatches.firstElement();
+    
+        //
+        // Get the indices to the various data elements that we
+        // need.
+        //
+        try {
+            getIndices();
+        } catch (S2DException ex) {
+            System.err.println("Error getting index: " +
+              ex.getMessage());
+            return false;
+        }
+
+        //
+        // Write the deltashift info.
+        //
+        writeDeltashifts(index, summary_writer, display_link_base);
+
+        //
+        // Write the CSI info.
+        //
+        writeCsi(index, summary_writer, display_link_base);
+
+        //
+        // Write the percent assignment info.
+        //
+        writeAssignments(index, summary_writer, display_link_base);
+
+        summary_writer.println("</ul>");
+
+        return true;
     }
 
     // ----------------------------------------------------------------------
@@ -657,11 +687,17 @@ public class Star2Devise {
 
     // ----------------------------------------------------------------------
     // Write out the deltashift info.
-    private void writeDeltashifts() throws IOException, S2DException
+    private void writeDeltashifts(int index, PrintWriter summary_writer,
+      String display_link_base)
+      throws IOException, S2DException
     {
+        //TEMP -- do we want that "extra" first line of deltashifts??
+	// (bmr4001.str)
+
 	//Do the shift computations here
-	FileWriter deltashift_writer = new FileWriter( _accNum +
-	  S2DNames.DELTASHIFT_DAT_SUFFIX);
+	FileWriter deltashift_writer = new FileWriter(_accNum +
+	  S2DNames.DELTASHIFT_SUFFIX + index + S2DNames.DAT_SUFFIX);
+	int dsCount = 0;
 		
 	_currResSeqCode = -1;
 	_prevResSeqCode = -1;
@@ -711,6 +747,7 @@ public class Star2Devise {
 		    (_prevResSeqCode + " " + ha_deltashift + " "
 		     + c_deltashift + " " + ca_deltashift + " "
 		     + cb_deltashift + "\n");
+		dsCount++;
 		
 		// re-initialize values
 		ha_deltashift = 0;
@@ -770,7 +807,15 @@ public class Star2Devise {
 	    (_prevResSeqCode + " " 
 	     + ha_deltashift + " " + c_deltashift + " "
 	     + ca_deltashift + " " + cb_deltashift + "\n");
+	dsCount++;
 	deltashift_writer.close();
+
+        String display_link = display_link_base + S2DNames.DELTASHIFT_SUFFIX +
+	  index + S2DNames.HTML_SUFFIX;
+        summary_writer.print(display_link);
+        summary_writer.println("\">Chemical Shift Delta</a> (" + dsCount +
+	  " shifts)");
+        writeDataPage(S2DNames.DELTASHIFT_SUFFIX, index);
 
         if (DEBUG >= 2) {
   	    System.out.println("Finished deltashift vals.");
@@ -779,17 +824,21 @@ public class Star2Devise {
 
     // ----------------------------------------------------------------------
     // Write out the CSI info.
-    private void writeCsi() throws IOException, S2DException
+    private void writeCsi(int index, PrintWriter summary_writer,
+      String display_link_base)
+      throws IOException, S2DException
     {
         if (DEBUG >= 2) {
 	    System.out.println("writeCsi()");
 	}
 
-	FileWriter csi_writer = new FileWriter( _accNum +
-	  S2DNames.CSI_DAT_SUFFIX );
+	FileWriter csi_writer = new FileWriter(_accNum +
+	  S2DNames.CSI_SUFFIX + index + S2DNames.DAT_SUFFIX);
+        int csiCount = 0;
 
 	LineTokens deltaShiftLine = new LineTokens(new StreamTokenizer(
-	  new FileReader(_accNum + S2DNames.DELTASHIFT_DAT_SUFFIX)));
+	  new FileReader(_accNum + S2DNames.DELTASHIFT_SUFFIX + index +
+	  S2DNames.DAT_SUFFIX)));
 
 	// The CSI values (initialized "for real" inside the loop).
 	int ha_csi = 0, c_csi = 0, ca_csi = 0, cb_csi = 0, cons_csi = 0;
@@ -829,6 +878,7 @@ public class Star2Devise {
                 if (hasCsiInfo) {
 		    csi_writer.write(prevCsSeq + " " + ha_csi + " " + c_csi +
 		      " " + ca_csi + " " + cb_csi + " " + cons_csi + "\n");
+		    csiCount++;
 	        }
 
 	        while (currDelSeq < currCsSeq) {
@@ -915,20 +965,33 @@ public class Star2Devise {
         if (hasCsiInfo) {
 	    csi_writer.write(prevCsSeq + " " + ha_csi + " " + c_csi + " " +
 	      ca_csi + " " + cb_csi + " " + cons_csi + "\n");
+	    csiCount++;
         }
 
 	csi_writer.close();
+
+        String display_link = display_link_base + S2DNames.CSI_SUFFIX +
+	  index + S2DNames.HTML_SUFFIX;
+        summary_writer.print(display_link);
+        summary_writer.println("\">Chemical Shift Index</a> (" + csiCount +
+	  " shifts)");
+
+        writeDataPage(S2DNames.CSI_SUFFIX, index);
+
     }
 
     // ----------------------------------------------------------------------
     // Write out the percent assignment info.
-    private void writeAssignments() throws IOException, S2DException
+    private void writeAssignments(int index, PrintWriter summary_writer,
+      String display_link_base)
+      throws IOException, S2DException
     {
 	//Do the atom assignment computation here
 	int starnumH, starnumC, starnumN, numH, numC, numN;
 	  
-	FileWriter percent_writer = new FileWriter( _accNum +
-	  S2DNames.PERCENT_ASSIGN_DAT_SUFFIX );
+	FileWriter percent_writer = new FileWriter(_accNum +
+	  S2DNames.PERCENT_ASSIGN_SUFFIX + index + S2DNames.DAT_SUFFIX);
+	int paCount = 0;
 	
 	AssgDataManager assgTable 
 	    = new AssgDataManager( S2DNames.CHEMASSG_FILE );
@@ -996,6 +1059,7 @@ public class Star2Devise {
 				       + 100 * (float)starnumN / numN
 				       + " "
 				       + "\n");
+		  paCount++;
 			  
  		} else
 		{ // numH || numC || numN == -1
@@ -1005,6 +1069,15 @@ public class Star2Devise {
 	} // end while currRowNum < maxRows
 		
 	percent_writer.close();
+
+        String display_link = display_link_base +
+	  S2DNames.PERCENT_ASSIGN_SUFFIX + index + S2DNames.HTML_SUFFIX;
+        summary_writer.print(display_link);
+        summary_writer.println("\">Percent Assigned Atoms</a> (" + paCount +
+	  " shifts)");
+
+	writeDataPage(S2DNames.PERCENT_ASSIGN_SUFFIX, index);
+
 //  	System.out.println("Finished percent assignments.");
     }
 
@@ -1098,7 +1171,7 @@ public class Star2Devise {
 	    summary_writer.println("Title: <tt>" + title + "</tt>");
 	    
 	    // new display- pages generated my make_view
-	    String display_link_base = "<br><br><a href=\"" + the_number;
+	    String display_link_base = "<li><a href=\"" + the_number;
 
             //
 	    // Save the data available in this STAR file.
@@ -1118,12 +1191,13 @@ public class Star2Devise {
 		}
 
 		if (current_tag.equals(S2DNames.ASSIGNED_CHEM_SHIFTS)) {
-		    savedChemShifts = calcChemShifts(null);
+		    savedChemShifts = calcChemShifts(null, summary_writer,
+		    display_link_base);
 		    
 		} else if (current_tag.equals(S2DNames.T1_RELAX)) {
 		    try {
 		        saveGeneric(the_number, S2DNames.T1_RELAX,
-		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T1_DAT_SUFFIX,
+		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T1_SUFFIX,
 			  null);
 		        savedRelax = true;
 		    } catch (Exception ex) {
@@ -1134,7 +1208,7 @@ public class Star2Devise {
 		} else if (current_tag.equals(S2DNames.T2_RELAX)) {
 		    try {
 		        saveGeneric(the_number, S2DNames.T2_RELAX,
-		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T2_DAT_SUFFIX,
+		          S2DNames.RESIDUE_SEQ_CODE, S2DNames.T2_SUFFIX,
 			  null);
 		        savedRelax = true;
 		    } catch (Exception ex) {
@@ -1211,24 +1285,13 @@ public class Star2Devise {
 
             if (savedChemShifts) {
 		plotsAvailable = true;
-
-		display_link = display_link_base +
-		  S2DNames.CHEM_SHIFT_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">Chemical Shift Index</a>");
-
-	        display_link = display_link_base + S2DNames.DELTA_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">Chemical Shift Delta</a>");
-
-	        display_link = display_link_base +
-		  S2DNames.PCT_ASSIGNED_HTML_SUFFIX;
-		summary_writer.print(display_link);
-		summary_writer.println("\">Percent Assigned Atoms</a>");
 	    }
 
 	    if (the_number.equals("4096")) { //TEMP -- current code/installation
 	      // treats 4096 as a special case
+
+	    summary_writer.println("<ul>");
+
 	    if (savedRelax) {
 		plotsAvailable = true;
 
@@ -1262,6 +1325,9 @@ public class Star2Devise {
 		summary_writer.print(display_link);
 		summary_writer.println("\">Order Parameters</a>");
 	    }
+
+	    summary_writer.println("</ul>");
+
 	    } //TEMP
 
 	    if (!plotsAvailable) {
@@ -1294,7 +1360,7 @@ public class Star2Devise {
     /* Function sqaure
      *  takes a Float, and squares the number
      */
-    public float square(float x) {
+    public static float square(float x) {
 	return x*x;
     }
 
@@ -1594,8 +1660,8 @@ public class Star2Devise {
 	    } else {
 	        indexOut = String.valueOf(index);
 	    }
-	    outputSaveFrame(saveFrame, accNo + suffix + indexOut + ".dat",
-	      loopTag, logOperand);
+	    outputSaveFrame(saveFrame, accNo + suffix + indexOut +
+	      S2DNames.DAT_SUFFIX, loopTag, logOperand);
         }
     }
 
@@ -1656,8 +1722,8 @@ public class Star2Devise {
     //   loopTag: a tag in the data loop we want to save, e.g.
     //     "_Residue_seq_code"
     //   logOperand: loop value to take the logarithm of, if any (can be null)
-    private void outputSaveFrame(SaveFrameNode saveFrame, String outFileName,
-      String loopTag, String logOperand)
+    private static void outputSaveFrame(SaveFrameNode saveFrame,
+      String outFileName, String loopTag, String logOperand)
       throws S2DException
     {
         if (DEBUG >= 2) {
@@ -1727,7 +1793,7 @@ public class Star2Devise {
     //   operand: loop value to take the logarithm of, if any (can be null)
     //   names: the column names of the table
     //   values: the values of the table
-    private void doLogarithm(String operand, DataLoopNameListNode names,
+    private static void doLogarithm(String operand, DataLoopNameListNode names,
       LoopTableNode values)
       throws S2DException
     {
@@ -1894,7 +1960,7 @@ public class Star2Devise {
     // ----------------------------------------------------------------------
     // Return the first parent, grandparent, etc. of the given node that
     // is of the given class.
-    static StarNode getParentByClass(StarNode node, Class desiredClass)
+    private static StarNode getParentByClass(StarNode node, Class desiredClass)
     {
 	StarNode result = null;
 
@@ -1908,5 +1974,108 @@ public class Star2Devise {
 	}
 
 	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    private void writeDataPage(String dataSuffix, int index)
+      throws FileNotFoundException, IOException
+    {
+
+        String fileName = _accNum + dataSuffix + index + S2DNames.HTML_SUFFIX;
+
+        FileOutputStream outStream = new FileOutputStream(fileName);
+	PrintWriter dataWriter = new PrintWriter(new BufferedWriter(
+	  new OutputStreamWriter(outStream))) ;
+
+        dataWriter.print(
+"<html>\n" +
+"<head>\n");
+
+        dataWriter.print(
+"  <title>BMRB Data Viewer for bmr" + _accNum + ".str</title>\n");
+
+        dataWriter.print(
+"  <script type=\"text/javascript\" language=\"JavaScript\"\n" +
+"    src=\"helpmaster.js\">\n" +
+"  </script>\n" +
+"  <script language=\"JavaScript\">\n" +
+"    <!--\n" +
+"    function openhelp() {\n" +
+"    newwin= window.open(\"help.html\",\n" +
+"    \"per\",\n" +
+"    \"toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=300,height=300\");\n" +
+"    }\n" +
+"    // -->\n" +
+"  </script>\n" +
+"</head>\n" +
+"\n" +
+"<body bgcolor=\"white\">\n" +
+"  <script language=\"JavaScript\">\n" +
+"    popupvar1 = 'Return to summary page';\n" +
+"    popupvar2 = 'Keyboard shortcuts';\n" +
+"    popupvar3 = 'Explanations for plots';\n" +
+"    popupvar4 = 'DEVise home page';\n" +
+"  </script>\n" +
+"  <div id=\"popup\" style=\"position:absolute; z-index:1;\n" +
+"    visibility: hidden\"></div>\n" +
+"\n" +
+"  <center>\n" +
+"  <table border=0 width=500>\n" +
+"    <tr align=center>\n");
+
+        dataWriter.print(
+"      <td><a href=\"" + _accNum + "y.html\" onMouseOut = \"popupoff()\"\n");
+
+        dataWriter.print(
+"        onMouseOver=\"popupon(popupvar1, document.all ||\n" +
+"	document.layers?event:null)\">\n" +
+"	<img onMouseOver=\"Return\" border=0 src=\"arrow.gif\"></a></td>\n" +
+"		  \n" +
+"       <td><a href=\"JavaScript:openhelp()\" onMouseOut = \"popupoff()\"\n" +
+"         onMouseOver=\"popupon(popupvar2, document.all ||\n" +
+"	 document.layers?event:null)\">\n" +
+"	 <img border=0 src=\"keyboard.gif\"></a></td>\n" +
+"	  \n");
+
+        dataWriter.print(
+"       <td><a href=\"help_" + dataSuffix + ".html\" onMouseOut = \"popupoff()\"\n");
+
+        dataWriter.print(
+"          onMouseOver=\"popupon(popupvar3, document.all ||\n" +
+"	  document.layers?event:null)\">\n" +
+"	  <img border=0 src=\"qmark.gif\"></a></td>\n" +
+"		\n" +
+"       <td><a href=\"http://www.cs.wisc.edu/~devise\" onMouseOut = \"popupoff()\"\n" +
+"         onMouseOver=\"popupon(popupvar4, document.all ||\n" +
+"	 document.layers?event:null)\">\n" +
+"	 <img border=0 src=\"devise_logo.jpg\"></a></td>\n" +
+"      </tr>\n" +
+"    </table>\n" +
+"  </center>\n" +
+"  <hr>\n" +
+"\n" +
+"  <applet code=DEViseJSBLoader.class archive=../../jsb1.jar,../../jsb2.jar width=800 height=600>\n" +
+"    <param name=\"debug\" value=\"0\">\n");
+
+        dataWriter.print(
+"    <param name=\"session\" value=\"bmrb/dynamic_sessions/" + _accNum + dataSuffix + index + ".ds\">\n");
+
+        dataWriter.print(
+"    <param name=\"cmdport\" value=\"6666\">\n" +
+"    <param name=\"imgport\" value=\"6644\">\n" +
+"    <param name=\"rubberbandlimit\" value=\"4x4\">\n" +
+"    <!-- old bgcolor     <param name=\"bgcolor\" value=\"64+96+0\"> -->\n" +
+"    <param name=\"bgcolor\" value=\"0+0+0\">\n" +
+"    <param name=\"screensize\" value=\"800x600\">\n" +
+"  </applet>\n" +
+"    \n" +
+"  <br><br>\n" +
+"  <center><h6>Comments?  Contact <a\n" +
+"    href=\"mailto:bmrbhelp@bmrb.wisc.edu\">bmrbhelp@bmrb.wisc.edu</a>\n" +
+"  </h6></center>\n" +
+"</body></html>\n");
+
+        dataWriter.close(); //TEMP -- do we need this?
+	outStream.close(); //TEMP -- do we need this?
     }
 }

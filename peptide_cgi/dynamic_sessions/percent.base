@@ -9,6 +9,7 @@
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
+DEVise dteInsertCatalogEntry . {"4081p1" UNIXFILE 4081p1.dat ChemShiftPercentage /p/devise/demo/schema/schema/physical/bmrb:Percent "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
@@ -39,7 +40,6 @@ DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
-DEVise setViewHelp {View 1} {Percent Assigned Protons Per Residue}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise create {view} {SortedX} {View 2} 1.000000 147.000000 0.000000 100.000000 37 0
 DEVise setLabel {View 2} 1 16 {Percent Assigned Carbons}
@@ -68,7 +68,6 @@ DEVise setViewAutoFilter {View 2} {1}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
-DEVise setViewHelp {View 2} {Percent Assigned Carbons Per Residue}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise create {view} {SortedX} {View 3} 1.000000 147.000000 0.000000 100.000000 37 0
 DEVise setLabel {View 3} 1 16 {Percent Assigned Nitrogens}
@@ -97,7 +96,6 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
-DEVise setViewHelp {View 3} {Percent Assigned Nitrogens Per Residue}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise create {view} {Scatter} {View 4} -1.000000 1.000000 -1.000000 1.000000 4 0
 DEVise setLabel {View 4} 0 12 {Label_text() vs. recId}
@@ -220,14 +218,14 @@ DEVise createMappingClass {CurrSeqNum_vs_recId}
 DEVise createMappingClass {Label_text_vs_recId}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {assigForH_vs_CurrSeqNum} .percent .percent#assigForH_vs_CurrSeqNum {} {$CurrSeqNum} {$assigForH} {} 3 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.percent#assigForH_vs_CurrSeqNum} 1
-DEVise create {mapping} {assigForC_vs_CurrSeqNum} .percent .percent#assigForC_vs_CurrSeqNum {} {$CurrSeqNum} {$assigForC} {} 3 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.percent#assigForC_vs_CurrSeqNum} 1
-DEVise create {mapping} {assigForN_vs_CurrSeqNum} .percent .percent#assigForN_vs_CurrSeqNum {} {$CurrSeqNum} {$assigForN} {} 3 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.percent#assigForN_vs_CurrSeqNum} 1
-DEVise create {mapping} {CurrSeqNum_vs_recId} .percent .percent#CurrSeqNum_vs_recId {} 0 0 {} 37 1 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.percent#CurrSeqNum_vs_recId} 1
+DEVise create {mapping} {assigForH_vs_CurrSeqNum} .4081p1 .4081p1#assigForH_vs_CurrSeqNum {} {$CurrSeqNum} {$assigForH} {} 3 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081p1#assigForH_vs_CurrSeqNum} 1
+DEVise create {mapping} {assigForC_vs_CurrSeqNum} .4081p1 .4081p1#assigForC_vs_CurrSeqNum {} {$CurrSeqNum} {$assigForC} {} 3 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081p1#assigForC_vs_CurrSeqNum} 1
+DEVise create {mapping} {assigForN_vs_CurrSeqNum} .4081p1 .4081p1#assigForN_vs_CurrSeqNum {} {$CurrSeqNum} {$assigForN} {} 3 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081p1#assigForN_vs_CurrSeqNum} 1
+DEVise create {mapping} {CurrSeqNum_vs_recId} .4081p1 .4081p1#CurrSeqNum_vs_recId {} 0 0 {} 37 1 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081p1#CurrSeqNum_vs_recId} 1
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Sequence Number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 8 0 90 16 {"%"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
@@ -295,9 +293,9 @@ DEVise setAxisTicks {View 7} {Y} 1
 # Put axis label into views
 
 # Insert mappings into views
-DEVise insertMapping {View 1} {.percent#assigForH_vs_CurrSeqNum}
-DEVise insertMapping {View 2} {.percent#assigForC_vs_CurrSeqNum}
-DEVise insertMapping {View 3} {.percent#assigForN_vs_CurrSeqNum}
+DEVise insertMapping {View 1} {.4081p1#assigForH_vs_CurrSeqNum}
+DEVise insertMapping {View 2} {.4081p1#assigForC_vs_CurrSeqNum}
+DEVise insertMapping {View 3} {.4081p1#assigForN_vs_CurrSeqNum}
 DEVise insertMapping {View 4} {.label#Label_text_vs_recId}
 DEVise insertMapping {View 5} {.label#Label_text_vs_recId 2}
 DEVise insertMapping {View 6} {.label#Label_text_vs_recId 3}

@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/09/22 21:06:39  wenger
+// Star2Devise checks chemical shift save frames individually to make sure
+// they refer to a protein; for now it only saves chemical shift info for
+// the first protein-related chemical shift save frame in the NMR-STAR file.
+//
 // Revision 1.1  2000/08/29 14:55:52  wenger
 // Star2Devise can now extract relaxation parameters, H exchange rates, etc.
 // from all appropriate NMR-STAR files, not just bmr4096.str (the sessions
@@ -43,6 +48,7 @@ public class S2DNames
     public static final String COUPLING_CONSTANT_CODE =
       "_Coupling_constant_code";
     public static final String COUPLING_CONSTANTS = "coupling_constants";
+    public static final String DETAILS = "_Details";
     public static final String ENTRY_TITLE = "_Entry_title";
     public static final String H_EXCHANGE_PROT_FACT =
       "H_exchange_protection_factors";
@@ -87,24 +93,27 @@ public class S2DNames
       "http://www.bmrb.wisc.edu/data_library/files/";
 
     //
+    // Data type suffixes.
+    //
+    public static final String CSI_SUFFIX = "c";
+    public static final String DELTASHIFT_SUFFIX = "d";
+    public static final String PERCENT_ASSIGN_SUFFIX = "p";
+    public static final String T1_SUFFIX = "t1";
+    public static final String T2_SUFFIX = "t2";
+
+    //
     // Data file suffixes.
     //
     public static final String CONSTRAINTS_DAT_SUFFIX = "i.dat";
-    public static final String CSI_DAT_SUFFIX = "c.dat";
-    public static final String DELTASHIFT_DAT_SUFFIX = "d.dat";
-    public static final String PERCENT_ASSIGN_DAT_SUFFIX = "p.dat";
-    public static final String T1_DAT_SUFFIX = "t1";
-    public static final String T2_DAT_SUFFIX = "t2";
+    public static final String DAT_SUFFIX = ".dat";
 
     //
     // Html file suffixes.
     //
-    public static final String CHEM_SHIFT_HTML_SUFFIX = "c.html";
     public static final String COUPLING_HTML_SUFFIX = "g.html";
-    public static final String DELTA_HTML_SUFFIX = "d.html";
     public static final String H_EXCH_HTML_SUFFIX = "h.html";
+    public static final String HTML_SUFFIX = ".html";
     public static final String ORDER_HTML_SUFFIX = "o.html";
-    public static final String PCT_ASSIGNED_HTML_SUFFIX = "p.html";
     public static final String RELAX_HTML_SUFFIX = "r.html";
     public static final String SUMMARY_HTML_SUFFIX = "y.html";
 

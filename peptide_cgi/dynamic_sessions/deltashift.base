@@ -9,6 +9,7 @@
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
+DEVise dteInsertCatalogEntry . {"4081d1" UNIXFILE 4081d1.dat DeltaShift /p/devise/demo/schema/schema/physical/bmrb:DeltaShift "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
 
 # Create views
@@ -303,16 +304,16 @@ DEVise createMappingClass {Label_text_vs_recId}
 DEVise createMappingClass {Label_text_vs_Label_text}
 
 # Create mapping instances (GData)
-DEVise create {mapping} {HA_DeltaShift_vs_CurrSeqNum} .deltashift .deltashift#HA_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$HA_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.deltashift#HA_DeltaShift_vs_CurrSeqNum} 1
-DEVise create {mapping} {C_DeltaShift_vs_CurrSeqNum} .deltashift .deltashift#C_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$C_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.deltashift#C_DeltaShift_vs_CurrSeqNum} 1
-DEVise create {mapping} {CA_DeltaShift_vs_CurrSeqNum} .deltashift .deltashift#CA_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$CA_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.deltashift#CA_DeltaShift_vs_CurrSeqNum} 1
-DEVise create {mapping} {CB_DeltaShift_vs_CurrSeqNum} .deltashift .deltashift#CB_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$CB_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.deltashift#CB_DeltaShift_vs_CurrSeqNum} 1
-DEVise create {mapping} {CurrSeqNum_vs_recId} .deltashift .deltashift#CurrSeqNum_vs_recId {} {$recId} {$CurrSeqNum} {} 4 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.deltashift#CurrSeqNum_vs_recId} 1
+DEVise create {mapping} {HA_DeltaShift_vs_CurrSeqNum} .4081d1 .4081d1#HA_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$HA_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081d1#HA_DeltaShift_vs_CurrSeqNum} 1
+DEVise create {mapping} {C_DeltaShift_vs_CurrSeqNum} .4081d1 .4081d1#C_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$C_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081d1#C_DeltaShift_vs_CurrSeqNum} 1
+DEVise create {mapping} {CA_DeltaShift_vs_CurrSeqNum} .4081d1 .4081d1#CA_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$CA_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081d1#CA_DeltaShift_vs_CurrSeqNum} 1
+DEVise create {mapping} {CB_DeltaShift_vs_CurrSeqNum} .4081d1 .4081d1#CB_DeltaShift_vs_CurrSeqNum {} {$CurrSeqNum} {$CB_DeltaShift} {} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081d1#CB_DeltaShift_vs_CurrSeqNum} 1
+DEVise create {mapping} {CurrSeqNum_vs_recId} .4081d1 .4081d1#CurrSeqNum_vs_recId {} {$recId} {$CurrSeqNum} {} 4 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4081d1#CurrSeqNum_vs_recId} 1
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 14 0 0 16 {"Sequence number"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 8 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
@@ -394,11 +395,11 @@ DEVise setAxisTicks {View 10} {Y} 1
 # Put axis label into views
 
 # Insert mappings into views
-DEVise insertMapping {View 1} {.deltashift#HA_DeltaShift_vs_CurrSeqNum}
-DEVise insertMapping {View 2} {.deltashift#C_DeltaShift_vs_CurrSeqNum}
-DEVise insertMapping {View 3} {.deltashift#CA_DeltaShift_vs_CurrSeqNum}
-DEVise insertMapping {View 4} {.deltashift#CB_DeltaShift_vs_CurrSeqNum}
-DEVise insertMapping {View 5} {.deltashift#CurrSeqNum_vs_recId}
+DEVise insertMapping {View 1} {.4081d1#HA_DeltaShift_vs_CurrSeqNum}
+DEVise insertMapping {View 2} {.4081d1#C_DeltaShift_vs_CurrSeqNum}
+DEVise insertMapping {View 3} {.4081d1#CA_DeltaShift_vs_CurrSeqNum}
+DEVise insertMapping {View 4} {.4081d1#CB_DeltaShift_vs_CurrSeqNum}
+DEVise insertMapping {View 5} {.4081d1#CurrSeqNum_vs_recId}
 DEVise insertMapping {View 6} {.label#Label_text_vs_recId}
 DEVise insertMapping {View 7} {.label#Label_text_vs_Label_text}
 DEVise insertMapping {View 8} {.label#Label_text_vs_recId 2}
