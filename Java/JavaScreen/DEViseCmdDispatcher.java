@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2000/04/03 05:29:35  hongyu
+// *** empty log message ***
+//
 // Revision 1.47  2000/03/31 19:29:04  wenger
 // Changed code so that views and GData objects get garbage collected when
 // a session is closed; added debug code for tracking construction and
@@ -540,6 +543,14 @@ public class DEViseCmdDispatcher implements Runnable
                 }
 
                 String viewname = cmd[1];
+
+		// Remove the old GData from the view and hopefully free it.
+                DEViseView view = jsc.jscreen.getView(viewname);
+		if (view != null) {
+		    view.removeAllGData();
+		    System.gc();
+		}
+
                 double xm, xo, ym, yo;
                 int gdataSize;
                 try {
