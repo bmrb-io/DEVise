@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  1999/10/12 00:08:43  hongyu
+// *** empty log message ***
+//
 // Revision 1.13  1999/10/10 08:49:52  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -56,8 +59,11 @@ public class DEViseCursor
     public DEViseView parentView = null;
 
     public Image image = null;
+    public Color color = null;
+    public int cursorType = 0;
+    public int gridType = 0;
 
-    public DEViseCursor(jsdevisec panel, String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy) throws YException
+    public DEViseCursor(jsdevisec panel, String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy, int gtype, int ctype, Color c) throws YException
     {
         if (cn == null) {
             throw new YException("Invalid cursor name");
@@ -75,6 +81,10 @@ public class DEViseCursor
 
         gridxx = gx;
         gridyy = gy;
+
+        cursorType = ctype;
+        gridType = gtype;
+        color = c;
 
         if (rect == null) {
             throw new YException("Invalid cursor location");

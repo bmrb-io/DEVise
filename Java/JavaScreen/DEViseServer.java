@@ -700,9 +700,9 @@ public class DEViseServer implements Runnable
                         }
                     }
 
-                    if (!startSocket()) {
+                    //if (!startSocket()) {
                         setAction(DEViseServer.QUIT);
-                    }
+                    //}
 
                     continue;
                 }
@@ -795,9 +795,9 @@ public class DEViseServer implements Runnable
                     pop.pn("DEViseServer failed");
                     pop.pn(e.getMsg());
 
-                    if (!startSocket()) {
+                    //if (!startSocket()) {
                         setAction(DEViseServer.QUIT);
-                    }
+                    //}
                 }
             }
 
@@ -836,9 +836,9 @@ public class DEViseServer implements Runnable
                     pop.pn("DEViseServer failed");
                     pop.pn(e.getMsg());
 
-                    if (!startSocket()) {
+                    //if (!startSocket()) {
                         setAction(DEViseServer.QUIT);
-                    }
+                    //}
                 }
             }
 

@@ -119,6 +119,9 @@ public class DEViseCanvas extends Container
     DEViseCursor selectedCursor = null;
     int whichCursorSide = -1;
 
+    public String helpMsg = null;
+    public int helpMsgX = -1, helpMsgY = -1;
+
     Point sp = new Point(), ep = new Point(), op = new Point();
     public static int lastKey = KeyEvent.VK_UNDEFINED;
 
@@ -236,6 +239,7 @@ public class DEViseCanvas extends Container
         // draw 3D molecular view
         if (paintCrystal(gc)) {
             paintBorder(gc);
+            paintHelpMsg(gc);
             return;
         }
 
@@ -256,6 +260,30 @@ public class DEViseCanvas extends Container
 
         // draw highlight border
         paintBorder(gc);
+
+        paintHelpMsg(gc);
+    }
+
+    private void paintHelpMsg(Graphics gc)
+    {
+        if (helpMsg == null) {
+            return;
+        }
+
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        FontMetrics fm = tk.getFontMetrics(DEViseGlobals.textFont);
+        int ac = fm.getAscent(), dc = fm.getDescent(), height = ac + dc + 12;
+        int width = fm.stringWidth(helpMsg) + 12;
+
+        gc.setColor(Color.black);
+        gc.drawRect(helpMsgX, helpMsgY, width - 1, height - 1);
+        gc.setColor(new Color(255, 255, 192));
+        gc.fillRect(helpMsgX + 1, helpMsgY + 1, width - 2, height - 2);
+        gc.setColor(Color.black);
+        gc.setFont(DEViseGlobals.textFont);
+        gc.drawString(helpMsg, helpMsgX + 6, helpMsgY + height - dc - 6);
+
+        //helpMsg = null;
     }
 
     private synchronized void paintBackground(Graphics gc)
@@ -660,9 +688,9 @@ public class DEViseCanvas extends Container
                 case KeyEvent.VK_NUMPAD9:
                     actualKey = 0x40000 + 37;
                     break;
-                case KeyEvent.VK_F1:
-                    actualKey = 0x50000 + 1;
-                    break;
+                //case KeyEvent.VK_F1:
+                //    actualKey = 0x50000 + 1;
+                //    break;
                 case KeyEvent.VK_F2:
                     actualKey = 0x50000 + 2;
                     break;
@@ -872,7 +900,16 @@ public class DEViseCanvas extends Container
                 Point p = event.getPoint();
 
                 if (DEViseCanvas.lastKey == KeyEvent.VK_SHIFT && activeView.isDrillDown) {
-                    cmd = "JAVAC_ShowRecords " + activeView.getCurlyName() + " " + activeView.translateX(p.x, 2) + " " + activeView.translateY(sp.y, 2);
+                    cmd = "JAVAC_ShowRecords " + activeView.getCurlyName() + " " + activeView.translateX(p.x, 2) + " " + activeView.translateY(p.y, 2);
+                } else if (DEViseCanvas.lastKey == KeyEvent.VK_F1) {
+                    if (helpMsg != null) {
+                        helpMsg = null;
+                    } else {
+                        helpMsgX = activeView.translateX(p.x, 2);
+                        helpMsgY = activeView.translateY(p.y, 2);
+                        cmd = "JAVAC_GetViewHelp " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
+                        jsc.jscreen.setLastMsgView(activeView);
+                    }
                 } else {
                     DEViseCursor cursor = activeView.getFirstCursor();
 

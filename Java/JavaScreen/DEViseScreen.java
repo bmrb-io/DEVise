@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2000/01/12 14:37:48  hongyu
+// *** empty log message ***
+//
 // Revision 1.43  1999/12/07 23:18:21  hongyu
 // *** empty log message ***
 //
@@ -83,6 +86,9 @@ public class DEViseScreen extends Panel
     DEViseView currentView = null;
     public DEViseView lastActionView = null;
     public boolean guiAction = false;
+    private String lastCommand = null;
+
+    private DEViseView lastMsgView = null;
 
     boolean isDimChanged = false;
 
@@ -492,8 +498,15 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public void setLastAction()
+    public synchronized String getLastAction()
     {
+        return lastCommand;
+    }
+
+    public synchronized void setLastAction(String cmd)
+    {
+        lastCommand = cmd;
+
         if (guiAction) {
             guiAction = false;
             if (currentView != null) {
@@ -542,6 +555,24 @@ public class DEViseScreen extends Panel
             offScrImg = null;
 
             repaint();
+        }
+    }
+
+    public synchronized void setLastMsgView(DEViseView v)
+    {
+        lastMsgView = v;
+    }
+
+    public synchronized void showHelpMsg(String msg)
+    {
+        if (msg == null) {
+            return;
+        }
+
+        if (lastMsgView != null && lastMsgView.canvas != null) {
+            lastMsgView.canvas.helpMsg = msg;
+            lastMsgView.canvas.repaint();
+            lastMsgView = null;
         }
     }
 

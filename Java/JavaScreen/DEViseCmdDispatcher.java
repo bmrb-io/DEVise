@@ -13,6 +13,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  1999/12/10 15:30:12  wenger
+// Molecule dragging greatly speeded up by drawing plain (unshaeded) circles
+// during drag; split off protocol version from "main" version.
+//
 // Revision 1.41  1999/10/10 08:49:51  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -159,7 +163,7 @@ public class DEViseCmdDispatcher implements Runnable
             return;
         }
 
-        jsc.jscreen.setLastAction();
+        jsc.jscreen.setLastAction(command);
 
         dispatcherThread = new Thread(this);
         dispatcherThread.start();
@@ -568,7 +572,7 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.showSession(cmd, true);
             } else if (rsp[i].startsWith("JAVAC_DrawCursor")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
-                if (cmd == null || cmd.length != 11) {
+                if (cmd == null || cmd.length != 14) {
                     throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                 }
 
@@ -585,10 +589,13 @@ public class DEViseCmdDispatcher implements Runnable
                     Rectangle rect = new Rectangle(x0, y0, w, h);
                     double gridx = (Double.valueOf(cmd[9])).doubleValue();
                     double gridy = (Double.valueOf(cmd[10])).doubleValue();
+                    int isedge = Integer.parseInt(cmd[11]);
+                    Color color = DEViseGlobals.convertColor(cmd[12]);
+                    int type = Integer.parseInt(cmd[13]);
 
                     DEViseCursor cursor = null;
                     try {
-                        cursor = new DEViseCursor(jsc, cursorName, viewname, rect, move, resize, gridx, gridy);
+                        cursor = new DEViseCursor(jsc, cursorName, viewname, rect, move, resize, gridx, gridy, isedge, type, color);
                     } catch (YException e1) {
                         throw new YException("Invalid cursor data received for view \"" + viewname + "\"", "DEViseCmdDispatcher::processCmd()", 2);
                     }
@@ -658,6 +665,9 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (NumberFormatException e) {
                     throw new YException("Invalid connection ID received from server", "DEViseCmdDispatcher::processCmd()", 2);
                 }
+            } else if (rsp[i].startsWith("JAVAC_ShowViewHelp")) {
+                String helpmsg = rsp[i].substring(18);
+                jsc.jscreen.showHelpMsg(helpmsg);
             } else {
                 throw new YException("Unsupported command received from server", "DEViseCmdDispatcher::processCmd()", 2);
             }
