@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/14 18:40:14  jussi
+  Small fixes to get rid of g++ -Wall warnings.
+
   Revision 1.9  1995/11/27 15:40:41  jussi
   Substituted g++ for /usr/lib/cpp as the preprocessor. Changed type
   of 'color' from unsigned int to double. Changed type of shapeAttrs
@@ -103,7 +106,8 @@ void GenShapeDefs(MappingRec *rec, FILE *mapFile)
 
   tmpnam(tempName);
 
-  for(int i = 0; i < rec->numShapeNames; i++) {
+  int i;
+  for(i = 0; i < rec->numShapeNames; i++) {
     sprintf(string, "g++ -E -DCLASSNAME=%s_%s -DGDATANAME=%s_GData ",
 	    rec->name, rec->shapeNames[i], rec->name);
     
@@ -214,7 +218,8 @@ void CodeGen(MappingRec *rec, FILE *mapFile)
 		fprintf(mapFile, "\tdouble shapeID;\n");
   if (rec->dynamicFields & BIT_ORIENTATION)
     fprintf(mapFile, "\tdouble orientation;\n");
-  for(int i = 0; i < MAX_ATTRS; i++) {
+  int i;
+  for(i = 0; i < MAX_ATTRS; i++) {
     if (rec->dynamicAttrs & (1<< i))
       fprintf(mapFile, "\tdouble shapeAttr_%d;\n",i);
   }
