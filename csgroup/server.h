@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/12 17:15:05  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.2.2.2  1998/02/02 08:24:08  liping
   Added CVS header
 
@@ -65,7 +68,7 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "CollabTypes.h"
 
 #define	RPC_REGISTER 1
 #define	RPC_DEREGISTER 2

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:43  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:23:51  liping
   Added CVS header
 
@@ -57,7 +60,7 @@
 #define _CALLBKS_H
 
 #include "error.h"
-#include "types.h"
+#include "CollabTypes.h"
 #include "ctrlMsg.h"
 
 #ifdef __cplusplus

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/11 18:25:17  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.4  1998/02/27 20:47:48  wenger
   More SGI compile fixes.
 
@@ -78,7 +84,7 @@
 extern Tcl_Interp *interp;
 #endif /* __tcltk */
 
-#include "types.h"
+#include "CollabTypes.h"
 #include "serverInterface.h"
 
 #define MOD_REG 0

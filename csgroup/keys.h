@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:54  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:00  liping
   Added CVS header
 
@@ -27,7 +30,7 @@
 
 #ifndef KEYS_H
 #define KEYS_H
-#include "types.h"
+#include "CollabTypes.h"
 class CSgroupKey
 {
 	private:

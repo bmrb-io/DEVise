@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/30 22:32:52  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.4.2.1  1998/03/25 15:56:44  wenger
   Committing debug version of collaboration code.
 
@@ -44,7 +49,7 @@
 #define _Server_h_
 
 #include "ClientAPI.h"
-#include "types.h"
+#include "CollabTypes.h"
 #include "Dispatcher.h"
 
 class CSgroupKey;

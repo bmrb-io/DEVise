@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/11 18:25:12  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.3  1998/02/12 17:14:50  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -64,7 +70,7 @@
 
 #include "htable.h"
 #include "queue.h"
-#include "types.h"
+#include "CollabTypes.h"
 
 typedef struct _GroupInfo GroupInfo;
 
