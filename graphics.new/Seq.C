@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/12 18:30:00  jussi
+  Network functions need not be defined in SGI because socket.h
+  defines them properly.
+
   Revision 1.5  1996/01/12 17:59:03  jussi
   The extraction routine now periodically updates the Tcl display.
 
@@ -35,45 +39,18 @@
   Initial revision.
 */
 
-#ifdef HPUX
-#undef __P                              // defined by libio.h and netdb.h
-#endif
-
 #include <stdio.h>
-#include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <iostream.h>
 #include <assert.h>
 #include <ctype.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 #include <tcl.h>
 #include <tk.h>
 
-#ifndef SUN
-#include <arpa/inet.h>
-#else
-extern "C" char *inet_ntoa(struct in_addr);
-#endif
-#ifdef ALPHA
-extern "C" struct hostent *gethostbyname(char *);
-#endif
-
-#if !defined(HPUX) && !defined(ALPHA) && !defined(SGI)
-extern "C" {
-  extern int socket(int, int, int);
-  extern int bind(int, struct sockaddr *, int);
-  extern int listen(int, int);
-  extern int accept(int, struct sockaddr *, int *);
-  extern int connect(int, struct sockaddr *, int);
-  extern int shutdown(int, int);
-}
-#endif
-
+#include "machdep.h"
 #include "Util.h"
 #include "Parse.h"
 
