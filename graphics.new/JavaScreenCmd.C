@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.90  2000/02/08 22:12:00  wenger
+  Added JAVAC_GetViewHelp and JAVAC_ShowViewHelp commands, added color
+  edge grid, and type to JAVAC_DrawCursor command, JavaScreen protocol
+  version now 4.0; added GUI to edit view help, and commands to save it
+  to session files.
+
   Revision 1.89  2000/02/04 17:13:11  wenger
   Minor change to make child view coordinates correct in non-batch mode.
 
@@ -442,7 +448,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 4;
-static const int protocolMinorVersion = 0;
+static const int protocolMinorVersion = 1;
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -1744,8 +1750,9 @@ JavaScreenCmd::GetViewHelp()
     }
 
 
-	JSArgs args(2);
+	JSArgs args(3);
 	args.FillString(_controlCmdName[SHOW_VIEW_HELP]);
+	args.FillString(view->GetName());
 	args.FillString(helpString);
 	args.ReturnVal(this);
 
