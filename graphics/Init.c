@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/01/28 16:50:37  wenger
+  Fixed bugs 122 and 124 (reduced data and X axis area so selection rectangle
+  doesn't draw over them); Devise now returns a status of 0 when exiting
+  normally; cleaned up some of the exit code.
+
   Revision 1.32  1997/01/14 15:48:06  wenger
   Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
   flexibility in overriding startup script default; fixed bug 116
@@ -222,7 +227,7 @@ int Init::_imageDelay = 0;
 int Init::_screenWidth = -1;
 int Init::_screenHeight = -1;
 
-Boolean Init::_useSharedMem = true;
+Boolean Init::_useSharedMem = false;
 Boolean Init::_forceBinarySearch = false;
 Boolean Init::_forceTapeSearch = false;
 
