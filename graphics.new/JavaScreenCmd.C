@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/12/10 21:53:26  wenger
+  Devised now sends GIFs to JavaScreen on a per-view rather than per-window
+  basis; GIF "dirty" flags are now also referenced by view rather than by
+  window.
+
   Revision 1.41  1998/11/24 19:31:09  wenger
   Fixed problem with soil science sessions sometimes locking up the
   JavaScreen by disallowing input from file descriptors while waiting for
@@ -1743,12 +1748,6 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 	winRep->Dimensions(viewWidth, viewHeight);
 	yMult *= -1.0;
 	yOffset = viewHeight - yOffset - 1;
-
-    // Convert from view origin to window origin.
-	int viewX, viewY;
-	winRep->Origin(viewX, viewY);
-	xOffset += viewX;
-	yOffset += viewY;
 
 	//
 	// Send the command...
