@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.99  2001/09/28 18:54:56  xuk
+// JavaScreen command log playback.
+// Modified run() mothod to deal with playback.
+//
 // Revision 1.98  2001/09/27 19:52:25  wenger
 // Fixed bug 688 (problem dealing with links in session directories);
 // improved JS error handling for session open; eliminated a bunch of
@@ -861,6 +865,13 @@ public class DEViseCmdDispatcher implements Runnable
 		}
 
 		// for command log playback
+		if (jsc.isPlayback) 
+		    if ( commands[i].startsWith(DEViseCommands.SET_3D_CONFIG) ) {
+			jsc.pn("command = " + commands[i]);
+			String[] args = DEViseGlobals.parseString(commands[i]);
+			jsc.jscreen.collab3DView(args);
+		    }
+
 		if (jsc.isPlayback && jsc.isDisplay) {
 		    jsc.repaint(); 
 		    jsc.jscreen.repaint();

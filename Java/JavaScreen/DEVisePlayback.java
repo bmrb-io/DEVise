@@ -18,6 +18,9 @@
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.3  2001/10/02 22:05:51  xuk
+// *** empty log message ***
+//
 
 // ========================================================================
 
@@ -72,6 +75,10 @@ public class DEVisePlayback implements Runnable
 			 line.startsWith(DEViseCommands.GET_SESSION_LIST) ||
 			 line.startsWith(DEViseCommands.EXIT) ) {
 			continue;
+		    } else if ( line.startsWith(DEViseCommands.SET_3D_CONFIG) ) {
+			String[] args = DEViseGlobals.parseString(line);
+			_jsc.jscreen.collab3DView(args);
+			continue;
 		    } else {
 			if (line.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
 			    line = DEViseCommands.SET_DISPLAY_SIZE + " " + 
@@ -81,7 +88,7 @@ public class DEVisePlayback implements Runnable
 				_jsc.jsValues.uiglobals.screenRes;
 			}
 			_dispatcher.start(line);
-		    }   
+		    }
 		}
 	    } else { // not original playback
 		String cmd = new String();
