@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/01/25 16:37:45  wenger
+// Fixed a bug that could cause an infinite loop in the perecent assignment
+// calculations; put filesize, cpu, and coredump limits in s2d script;
+// updated star file list; got rid of some unnecessary warnings.
+//
 // Revision 1.1  2001/01/17 20:00:06  wenger
 // Restructured the peptide-cgi code to make it much more maintainable.
 //
@@ -152,15 +157,17 @@ public class S2DChemShift {
 		    // Special cases of combining HA2 with HA and HA3 with
 		    // CB as per algorithm.
 		    //TEMP -- need alg reference here
-	            if (atomName.equals("HA") ||
-		      (atomName.equals("HA2") && resLabel.equals("GLY"))) {
+	            if (atomName.equalsIgnoreCase("HA") ||
+		      (atomName.equalsIgnoreCase("HA2") &&
+		      resLabel.equalsIgnoreCase("GLY"))) {
 		        haDeltashift = deltashift;
-	            } else if (atomName.equals("C")) {
+	            } else if (atomName.equalsIgnoreCase("C")) {
 		        cDeltashift = deltashift;
-		    } else if (atomName.equals("CA")) {
+		    } else if (atomName.equalsIgnoreCase("CA")) {
 		        caDeltashift = deltashift;
-		    } else if (atomName.equals("CB") ||
-		      (atomName.equals("HA3") && resLabel.equals("GLY"))) {
+		    } else if (atomName.equalsIgnoreCase("CB") ||
+		      (atomName.equalsIgnoreCase("HA3") &&
+		      resLabel.equalsIgnoreCase("GLY"))) {
 		        cbDeltashift = deltashift;
 		    } else {
 		        //TEMP -- should we ever get here????
@@ -307,15 +314,17 @@ public class S2DChemShift {
 		        // Special cases of combining HA2 with HA and HA3 with
 		        // CB as per algorithm.
 		        //TEMP -- need alg reference here
-	                if (atomName.equals("HA") ||
-		          (atomName.equals("HA2") && resLabel.equals("GLY"))) {
+	                if (atomName.equalsIgnoreCase("HA") ||
+		          (atomName.equalsIgnoreCase("HA2") &&
+			  resLabel.equalsIgnoreCase("GLY"))) {
 		            haCsi = csi;
-	                } else if (atomName.equals("C")) {
+	                } else if (atomName.equalsIgnoreCase("C")) {
 		            cCsi = csi;
-		        } else if (atomName.equals("CA")) {
+		        } else if (atomName.equalsIgnoreCase("CA")) {
 		            caCsi = csi;
-		        } else if (atomName.equals("CB") ||
-		          (atomName.equals("HA3") && resLabel.equals("GLY"))) {
+		        } else if (atomName.equalsIgnoreCase("CB") ||
+		          (atomName.equalsIgnoreCase("HA3") &&
+			  resLabel.equalsIgnoreCase("GLY"))) {
 		            cbCsi = csi;
 		        } else {
 		            //TEMP -- should we ever get here????
@@ -409,14 +418,14 @@ public class S2DChemShift {
 		    int starNumN = 0;
 
 		    while (index < _resSeqCodes.length &&
-		      resLabel.equals(_residueLabels[index]) &&
+		      resLabel.equalsIgnoreCase(_residueLabels[index]) &&
 		      resSeqCode == _resSeqCodes[index]) {
 	                String atomType = _atomTypes[index];
-			if (atomType.equals("H")) {
+			if (atomType.equalsIgnoreCase("H")) {
 			    starNumH++;
-			} else if (atomType.equals("C")) {
+			} else if (atomType.equalsIgnoreCase("C")) {
 			    starNumC++;
-			} else if (atomType.equals("N")) {
+			} else if (atomType.equalsIgnoreCase("N")) {
 			    starNumN++;
 			}
 

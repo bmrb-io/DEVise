@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/01/25 16:37:46  wenger
+// Fixed a bug that could cause an infinite loop in the perecent assignment
+// calculations; put filesize, cpu, and coredump limits in s2d script;
+// updated star file list; got rid of some unnecessary warnings.
+//
 // Revision 1.3  2001/01/23 19:35:19  wenger
 // Made a few minor fixes to get things to work right at BMRB.
 //
@@ -180,7 +185,8 @@ public class S2DStarIfc {
     
 	        String currAtomName =
 		  currRow.elementAt(atomNameIndex).getValue();
-	        if (currAtomName.equals("HA") || currAtomName.equals("HA2")) {
+	        if (currAtomName.equalsIgnoreCase("HA") ||
+		  currAtomName.equalsIgnoreCase("HA2")) {
 	            haCsCount++;
 	        }
 
@@ -217,11 +223,9 @@ public class S2DStarIfc {
 	  tagName, dataValue);
 
 	if (frameList.size() != frameCount) {
-/*TEMP -- put this code back in when bmr4345.str is fixed
 	    throw new S2DError("Got " + frameList.size() +
 	      " save frames for category " + category +
 	      "; should have gotten " + frameCount);
-TEMP*/
 	}
 
 	return frameList.elements();
@@ -284,7 +288,7 @@ TEMP*/
 	    for (int index = 0; index < ltNode.size(); index++) {
 	        LoopRowNode lrNode = ltNode.elementAt(index);
 	    	DataValueNode dvNode = lrNode.elementAt(0);
-                if (dvNode.getValue().equals(molSysComp)) {
+                if (dvNode.getValue().equalsIgnoreCase(molSysComp)) {
 		    molLabel = lrNode.elementAt(1).getValue();
 		    // Assume for now that there will be only one match in
 		    // the loop.
@@ -317,7 +321,7 @@ TEMP*/
 	    }
             node = (DataItemNode)list.elementAt(0);
 	    String molPolymerClass = node.getValue();
-            if (molPolymerClass.equals("protein")) result = true;
+            if (molPolymerClass.equalsIgnoreCase("protein")) result = true;
 	} catch (S2DException ex) {
 	    System.err.println("S2DException checking for protein: " +
 	      ex.getMessage());
@@ -427,7 +431,7 @@ TEMP*/
 	        }
                 DataItemNode node2 = (DataItemNode)list2.elementAt(0);
 	        String molPolymerClass = node2.getValue();
-                if (molPolymerClass.equals("protein")) {
+                if (molPolymerClass.equalsIgnoreCase("protein")) {
 		    if (found) {
 	                throw new S2DError("Expected one " +
 			  S2DNames.RESIDUE_COUNT + " node for a protein; " +
@@ -486,7 +490,7 @@ TEMP*/
 	for (int index = 0; index < catVals.size(); index++) {
 	    String catName =
 	      catVals.elementAt(index).firstElement().getValue();
-            if (catName.equals(category)) {
+            if (catName.equalsIgnoreCase(category)) {
 	        if (found) {
 	            throw new S2DError("Duplicate nodes for " + category);
 		}
