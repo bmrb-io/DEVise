@@ -1137,7 +1137,7 @@ Num Date        Status  Description
 
 296 02/16/98	OPEN	Blanks in schema names cause problems. (ag/rkw)
 
-297 02/17/98	OPEN	Cannot create or edit data source definitions. (am/rkw)
+297 02/17/98	FIXED	Cannot create or edit data source definitions. (am/rkw)
 
 298 02/18/98	OPEN	If you accidentally specify a UNIXFILE-type schema
 			for a Table, the UniData code core dumps. (rkw)
