@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.104  2000/07/12 20:49:27  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.103  2000/06/20 22:17:04  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -2481,9 +2485,11 @@ DeviseCommand_getInstParam::Run(int argc, char** argv)
 {
     {
         {
-		  //TEMP -- get rid of cast
-          _classDir->GetParams(argv[1], _numArgs, (const char **)_args);
-          ReturnVal(_numArgs, _args);
+          int tmpArgc;
+          const char **tmpArgv;
+          _classDir->GetParams(argv[1], tmpArgc, tmpArgv);
+          //TEMP -- get rid of cast
+          ReturnVal(tmpArgc, (char **)tmpArgv);
           return 1;
         }
     }
@@ -2524,9 +2530,11 @@ DeviseCommand_get::Run_2(int argc, char** argv)
 {
     {
         {
-		  //TEMP -- get rid of cast
-          _classDir->ClassNames(argv[1], _numArgs, (const char **)_args);
-          ReturnVal(_numArgs, _args);
+          int tmpArgc;
+          const char **tmpArgv;
+          _classDir->ClassNames(argv[1], tmpArgc, tmpArgv);
+          //TEMP -- get rid of cast
+          ReturnVal(tmpArgc, (char **)tmpArgv);
           return 1;
         }
     }
@@ -2537,10 +2545,11 @@ DeviseCommand_get::Run_3(int argc, char** argv)
 {
     {
         {
-		  //TEMP -- get rid of cast
-          _classDir->InstanceNames(argv[1], argv[2], _numArgs,
-		    (const char **)_args);
-          ReturnVal(_numArgs, _args);
+          int tmpArgc;
+          const char **tmpArgv;
+          _classDir->InstanceNames(argv[1], argv[2], tmpArgc, tmpArgv);
+          //TEMP -- get rid of cast
+          ReturnVal(tmpArgc, (char **)tmpArgv);
           return 1;
         }
     }
@@ -3769,10 +3778,11 @@ DeviseCommand_getparam::Run(int argc, char** argv)
 {
     {
         {
-		  //TEMP -- get rid of cast
-          _classDir->GetParams(argv[1], argv[2], _numArgs,
-		    (const char **)_args);
-          ReturnVal(_numArgs, _args);
+          int tmpArgc;
+          const char **tmpArgv;
+          _classDir->GetParams(argv[1], argv[2], tmpArgc, tmpArgv);
+          //TEMP -- get rid of cast
+          ReturnVal(tmpArgc, (char **)tmpArgv);
           return 1;
         }
     }
@@ -4293,10 +4303,11 @@ DeviseCommand_getCreateParam::Run(int argc, char** argv)
 {
     {
         {
-		  //TEMP -- get rid of cast
-          _classDir->CreateParams(argv[1], argv[2], argv[3], _numArgs,
-		    (const char **)_args);
-          ReturnVal(_numArgs, _args);
+          int tmpArgc;
+          const char **tmpArgv;
+          _classDir->CreateParams(argv[1], argv[2], argv[3], tmpArgc, tmpArgv);
+          //TEMP -- get rid of cast
+          ReturnVal(tmpArgc, (char **)tmpArgv);
           return 1;
         }
     }
