@@ -20,7 +20,7 @@ ALLSRC= disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
 ALLOBJ = $(ALLSRC:.c=.o)
 
 OTHEROBJ = ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
-	../compustat/cstatobj.o ../crsp/crspobj.o
+	../graphics.new/monolith.o ../compustat/cstatobj.o ../crsp/crspobj.o
 
 all: disp
 
