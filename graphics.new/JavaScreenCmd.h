@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  2000/03/17 14:25:12  wenger
+  Removed unused JAVAC_DeleteView command.
+
   Revision 1.31  2000/03/08 21:23:33  wenger
   Fixed bug 568 (crash when opening some sessions in the JavaScreen):
   reset devised timeout in jspop to a better value; JavaScreenCmd now
@@ -281,7 +284,6 @@ class JavaScreenCmd
 		ControlCmdType SendViewGData(ViewGraph *view);
 		int  ControlCmd(ControlCmdType  status);
 		void UpdateSessionList(char *dirName);
-		void DrawAllCursors();
 		void DoCloseSession();
 		void DoOpenSession(char *fullpath);
 

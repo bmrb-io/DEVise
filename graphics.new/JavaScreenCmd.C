@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.97  2000/03/17 14:25:03  wenger
+  Removed unused JAVAC_DeleteView command.
+
   Revision 1.96  2000/03/14 17:05:28  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -2563,36 +2566,6 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 
 	_status = RequestUpdateSessionList(args.GetCount(),
 	  (char **)args.GetArgs());	
-}
-
-//====================================================================
-void
-JavaScreenCmd::DrawAllCursors()
-{
-#if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
-	  "JavaScreenCmd::DrawAllCursors()\n");
-#endif
-
-	int index = DevCursor::InitIterator();
-	while (DevCursor::More(index)) {
-		CursorClassInfo *info = DevCursor::Next(index);
-		if (info != NULL) {
-			DeviseCursor *cursor = (DeviseCursor *)info->GetInstance();
-			if (cursor != NULL) {
-				View *view = cursor->GetDst();
-				if (view != NULL) {
-					DrawCursor(view, cursor);
-				}
-			}
-		}
-	}
-	DevCursor::DoneIterator(index);
-
-#if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
-	  "Done with JavaScreenCmd::DrawAllCursors()\n");
-#endif
 }
 
 //====================================================================
