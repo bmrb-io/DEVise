@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5  1995/11/15 19:16:15  ravim
+#	Changed old references to cstat* to crsp*.
+#
 #	Revision 1.4  1995/11/14 22:57:21  jussi
 #	Listbox listing CRSP securities now shows CUSIP number; previously
 #	the PERMNO was displayed which I had mistaken for the CUSIP number.
@@ -42,13 +45,13 @@ proc crsp_unique_name {symbol} {
 
 ############################################################
 
-proc crsp_extract_data {tapedrive filenum blocksize key file} {
+proc crsp_extract_data {tapedrive filenum offset blocksize key file} {
     global sourceTypes crsp_status
 
     set indexFile [lindex $sourceTypes(CRSP) 2]
     set crsp_status "Extracting CRSP data..."
     crsp_setupStatus .crspstatus
-    crsp_extract $tapedrive $filenum $blocksize $indexFile $key $file
+    crsp_extract $tapedrive $filenum $offset $blocksize $indexFile $key $file
     catch {destroy .crspstatus}
 }
 
