@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/16 20:38:47  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.7  1996/01/13 03:19:13  jussi
   Moved platform-dependent network stuff to machdep.h.
 
@@ -139,7 +142,7 @@ static int ParseSEQSchema(char *&buf, int &len, char *schemafile,
   // for schema and minVal/maxVal are initialized
 
   if (!schema) {
-    char *eol = (char *)memchr(buf, newline, len);
+    char *eol = (char *)memchr((void *)buf, newline, len);
     if (!eol) {
       fprintf(stderr, "Unexpected schema from SEQ server:\n");
       fprintf(stderr, "  %.256s\n", buf);
@@ -406,7 +409,7 @@ int ParseSEQData(char *buf, int size, int len, int sock, char *cachefile)
     if (!memcmp(line, resultTrailer, strlen(resultTrailer)))
       break;
 
-    char *eol = (char *)memchr(line, newline, len);
+    char *eol = (char *)memchr((void *)line, newline, len);
 
     if (!eol || *(eol + 1) != newline) {
       if (line[len - 1] != 0) {
@@ -428,7 +431,7 @@ int ParseSEQData(char *buf, int size, int len, int sock, char *cachefile)
 	  return TCL_ERROR;
 	}
 	len += bytes;
-	eol = (char *)memchr(line, newline, len);
+	eol = (char *)memchr((void *)line, newline, len);
       }
       if (!eol || *(eol + 1) != newline) {
 	fprintf(stderr, "Unexpected data from SEQ server:\n");

@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/16 20:38:49  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.5  1996/03/24 17:19:36  jussi
   Fixed bugs in open_ftp and open_http.
 
@@ -222,7 +225,7 @@ char *get_ftpd_response(int sock_fd, int resp_val)
 }
 
 static
-int open_ftp( const char *name )
+int open_ftp( char *name )
 {
   struct sockaddr_in	sin;
   int		sock_fd;
