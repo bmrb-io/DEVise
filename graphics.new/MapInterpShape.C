@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/13 00:11:17  jussi
+  Added View * parameter to DrawGDataArray() and the calls to
+  DrawPixelArray() and GetColor().
+
   Revision 1.2  1996/02/28 18:32:14  yuc
   Added CVS header.
 */
@@ -25,7 +29,6 @@
 #include "MapInterpShape.h"
 
 // ---------------------------------------------------------- 
-
 // sample block = unit cube
 //    cube center at (0, 0, 0), edge size = 1
 //    pt0 (-0.5, -0.5,  0.5)       pt1( 0.5, -0.5,  0.5)
@@ -38,6 +41,10 @@ FullMapping_BlockShape::MapBlockVertex(int i)
 	double W = _width[i]  / 2.0,
 	       H = _height[i] / 2.0,
 	       D = _depth[i]  / 2.0;
+
+	block_data[i].W = W;
+	block_data[i].H = H;
+	block_data[i].D = D;
 
 	block_data[i].vt[0].x_ = block_data[i].pt.x_ - W;
 	block_data[i].vt[0].y_ = block_data[i].pt.y_ - D; 
@@ -73,9 +80,6 @@ FullMapping_BlockShape::MapBlockVertex(int i)
 } // end of MapBlockVertex()
 
 // ---------------------------------------------------------- 
-
-// #define YLC
-
 void FullMapping_BlockShape::MapBlockEdges(int i)
 {
 	block_data[i].ed[0].p  = 0; block_data[i].ed[0].q  = 3; 
@@ -93,81 +97,76 @@ void FullMapping_BlockShape::MapBlockEdges(int i)
 
 } // end of MapBlockEdges()
 
+// #define YLC
+
+// ---------------------------------------------------------- 
 void 
-FullMapping_BlockShape::DrawGDataArray(WindowRep *win, void **gdataArray,
-				       int numSyms, TDataMap *map,
-				       View *view, int pixelSize)
+FullMapping_BlockShape::DrawGDataArray(WindowRep *win, 
+	void **gdataArray, int numSyms, TDataMap *map, 
+	View *view, int pixelSize)
 {
+    view->SetNumDimensions(3);
+    win->CompViewingTransf(view->GetCamera());
+
+    int X=0, Y=0, H=0, V=0;
+    view->GetDataArea (X, Y, H, V);
+#ifdef YLC
+	cout << "win pixel -> X = "<<X<<" Y = "<<Y<<" H = "<<H<<" V = "<<V<<endl;
+#endif
+    view->SetViewDir(H / 2, V / 2);
+//    view->SetLabelInfo(1); // ture = labe occupies top of view
+
     GDataAttrOffset *offset = map->GetGDataOffset();
-
-    Coord x0, y0, z0, x1, y1, z1;
-    win->Transform(0, 0, 0, x0, y0, z0);
-    win->Transform(1, 1, 1, x1, y1, z1);
-    Coord pixelWidth = 1 / fabs(x1 - x0);
-    Coord pixelHeight = 1 / fabs(y1 - y0);
-
     Boolean fixedSymSize = (offset->shapeAttrOffset[0] < 0 &&
                    offset->shapeAttrOffset[1] < 0 ? true : false);
 
-    if (fixedSymSize) {
-      Coord maxWidth, maxHeight;
-      map->MaxBoundingBox(maxWidth, maxHeight);
-
-#ifdef DEBUG
-      printf("BlockShape: maxW %.2f, maxH %.2f, pixelW %.2f, pixelH %.2f\n",
-          maxWidth, maxHeight, pixelWidth, pixelHeight);
-#endif
-
-      if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-         DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
-         return;
-      }
-    } // end if-then
-
-   int j;
    Color firstColor = 0;
-   for(int i = 0; i < numSyms; i++) {
+   int i = 0, count;
 
-     char *gdata = (char *)gdataArray[i];
-     if (i == 0)
-          firstColor = GetColor(view, gdata, map, offset);
+   while (i < numSyms) {
+	count = 0;
 
-     _width[i]  = fabs(GetShapeAttr0(gdata, map, offset));
-     _height[i] = fabs(GetShapeAttr1(gdata, map, offset));
-     _depth[i]  = fabs(GetShapeAttr2(gdata, map, offset));
+	for (; i < numSyms; i++) {
+		char *gdata = (char *)gdataArray[i];
+		if (count == 0)
+			firstColor = GetColor(view, gdata, map, offset);
+		else if (count > 0 && 
+			GetColor(view, gdata, map, offset) != firstColor)
+			break;
 
-     block_data[i].pt.x_ = GetX(gdata, map, offset);
-     block_data[i].pt.y_ = GetY(gdata, map, offset);
-     block_data[i].pt.z_ = GetZ(gdata, map, offset);
+		_width[count]  = fabs(GetShapeAttr0(gdata, map, offset));
+		_height[count] = fabs(GetShapeAttr1(gdata, map, offset));
+		_depth[count]  = fabs(GetShapeAttr2(gdata, map, offset));
 
-     MapBlockVertex(i);
-     MapBlockEdges (i);
-         
-#ifdef YLC
-     cout << "numSyms = " << numSyms << endl << endl
-          << "  x = " <<block_data[i].pt.x_
-          << "  y = " <<block_data[i].pt.y_
+		block_data[count].pt.x_ = GetX(gdata, map, offset);
+		block_data[count].pt.y_ = GetY(gdata, map, offset);
+		block_data[count].pt.z_ = GetZ(gdata, map, offset);
+
+		MapBlockVertex(count);
+		MapBlockEdges (count);
+		count++;				// get the next pt
+#ifdef YLC1
+     cout << "numSyms = " << numSyms <<"\n\n"<<"  x = "
+		<<block_data[i].pt.x_ << "  y = " <<block_data[i].pt.y_
           << "  z = " <<block_data[i].pt.z_ << "\n" ;
-/*
-     for (j = 0; j < BLOCK_VERTEX; j++) {
+     for (int j = 0; j < BLOCK_VERTEX; j++) {
           cout << "\t" << block_data[i].vt[j].x_ << "  "
                << block_data[i].vt[j].y_ << "  "
                << block_data[i].vt[j].z_ << "\n";
      }
-*/
-     cout << "  ****************************** \n";
+	cout<<"numSyms = "<<numSyms<<"  i = "<<i<<" firstC = "<<firstColor<<endl;
 #endif
+	} // end of for loop
 
-   } // end of for loop
-
-   win->CompViewingTransf();
-   win->MapAllPoints(block_data, numSyms);
-   win->MapAllSegments(block_data, numSyms);
-
-   win->SetFgColor(firstColor);
-   win->DrawXSegments();
-   win->DrawRefAxis();
-
+     win->SetFgColor(0);         // 0 = black
+	win->MapAllXPoints(block_data, count, view->GetCamera(), H, V);
+	win->MapAllXSegments(block_data, count, view->GetCamera(), H, V);
+	win->SetFgColor(firstColor);
+	win->DrawXSegments();
+   } // end of while-loop
+   win->SetFgColor(0);         // 0 = black
+   // draw the x,y,z axis
+   win->DrawRefAxis(view->GetCamera());
 } // end of DrawGDataArray()
 
 
