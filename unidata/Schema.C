@@ -510,9 +510,18 @@ int Schema::subParse(Attr *attr)
  
                 attr->subattr()->push(subattr);
                 subParse(subattr);
+			 
+// This Part is added for checking maxlen entry (strings) in schema  file
 
-                if (!subattr->subattr()->is_empty())
-                    subattr->set_type(UserDefined_Attr);
+			 if ((subattr->_type == String_Attr) && (subattr->_maxlen < 1 )) {
+				*perr << filename << " maxlen is not indicated in : " << (subattr->_flat_name) << " " ; 
+				show_token(perr,tok,&ult);
+				*perr << endl ;
+				exit(1) ;
+			}
+
+				 if (!subattr->subattr()->is_empty())
+					subattr->set_type(UserDefined_Attr);
 
                 subattr->determ_size();
                 break;
