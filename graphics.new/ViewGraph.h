@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/06 05:43:55  ravim
+  Added function which returns the stat object.
+
   Revision 1.3  1995/12/05 17:06:37  jussi
   Moved _stats from View (subclass) so that statistics can be turned
   on and displayed without having to redisplay the data itself.
@@ -50,8 +53,8 @@ public:
   void DoneMappingIterator();
 
   /* Toggle the value of DisplayStats */
-  Boolean GetDisplayStats() {return _DisplayStats; }
-  void SetDisplayStats(Boolean stat);
+  char *GetDisplayStats() {return _DisplayStats; }
+  void SetDisplayStats(char *stat);
   BasicStats *GetStatObj() { return &_stats; }
 
 protected:
@@ -59,7 +62,10 @@ protected:
   int _index;
 
   /* TRUE if Statistics need to be displayed along with data */
-  Boolean _DisplayStats;
+  char _DisplayStats[STAT_NUM];
   BasicStats _stats;
+
+ private:
+  Boolean ToRemoveStats(char *oldset, char *newset);
 };
 #endif
