@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  1996/07/13 00:21:25  jussi
+#  Added DoColorStat.
+#
 #  Revision 1.13  1996/07/01 19:33:31  jussi
 #  Minor improvements. Added DoSetRecordCursor procedure, but
 #  it is yet to be implemented.
@@ -1341,6 +1344,9 @@ proc DoColorStat {} {
 
     set sname "Stat: $curView"
     set sname [ OpenAndDefineDataSources 1 [list $sname] ]
+    if {$sname == ""} {
+        return
+    }
 
     set err [catch {set sourcedef $derivedSourceList($sname)}]
     if {$err} {
