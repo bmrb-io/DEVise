@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/26 15:34:36  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.3  1995/12/02 20:55:53  jussi
   Substituted DeviseTime for Time and added copyright notice.
 
@@ -24,8 +29,9 @@
 */
 
 #include <time.h>
-#include "Time.h"
+
 #include "../graphics.new/machdep.h"
+#include "Time.h"
 
 struct timeval DeviseTime::_beginning;
 

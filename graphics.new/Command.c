@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/06/27 00:02:23  jussi
+  Minor change. Uses class directory, not view list.
+
   Revision 1.10  1996/04/09 18:54:56  jussi
   Made the use of fd_set more general than just AIX and LINUX.
 
@@ -55,6 +58,7 @@
 #include <sys/select.h>
 #endif
 
+#include "machdep.h"
 #include "Exit.h"
 #include "Time.h"
 #include "View.h"
@@ -66,7 +70,6 @@
 #include "TData.h"
 #include "Control.h"
 #include "Init.h"
-#include "machdep.h"
 
 /****************************************************
 Constuctor, input from stdin
