@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.59  1997/10/07 17:04:42  liping
+# *** empty log message ***
+#
 # Revision 1.58  1997/10/03 16:22:59  wenger
 # Updated solaris dependencies.
 #
@@ -1256,27 +1259,6 @@ scriptServer.o: ../Core/Utility.h ../Core/queue.h ../Core/Array.h
 scriptServer.o: ../Core/site.h ../Core/myopt.h ../Core/url.h
 scriptServer.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
 scriptServer.o: ncsa.h
-trash.o: /usr/include/memory.h /s/gcc/lib/g++-include/iostream.h
-trash.o: /s/gcc/lib/g++-include/streambuf.h /s/gcc/lib/g++-include/libio.h
-trash.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
-trash.o: /usr/include/unistd.h /usr/include/sys/types.h
-trash.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-trash.o: /usr/include/sys/select.h /usr/include/sys/time.h
-trash.o: /usr/include/time.h /usr/include/sys/unistd.h
-trash.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-trash.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-trash.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-trash.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-trash.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-trash.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
-trash.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
-trash.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
-trash.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-trash.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
-trash.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-trash.o: /usr/include/sys/byteorder.h /usr/include/ctype.h
-trash.o: /usr/include/netdb.h /usr/include/string.h /usr/include/arpa/inet.h
-trash.o: common.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
 
