@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  1996/05/11 03:00:22  jussi
+#  Small changes.
+#
 #  Revision 1.17  1996/05/09 18:15:19  kmurli
 #  No changes, just inserted some debugging print statements and removed them
 #
@@ -205,6 +208,7 @@ proc DictLookup { dict name } {
 	    return [lindex $element 1]
 	}
     }
+    puts "Warning -- could not find $name in $dict"
     return ""
 }
 
