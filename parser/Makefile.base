@@ -4,7 +4,8 @@ CFLAGS = $(ARCH_FLAGS)
 ALLSRC = main.c parse.c codegen.c
 
 parser: main.o parse.o lex.yy.o codegen.o
-	$(CC) -o parser main.o parse.o codegen.o lex.yy.o -ll
+	$(CC) $(ARCH_LDFLAGS) -o parser main.o parse.o codegen.o lex.yy.o \
+		-ll $(ARCH_LDPOST)
 
 lex.yy.o: lex.yy.c
 
