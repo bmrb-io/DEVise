@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/01/14 20:05:48  wenger
+  Fixed some compile warnings; fixed relative positions of OK/Cancel
+  buttons in link GUI; removed some debug code I accidentally left
+  in place.
+
   Revision 1.23  1997/01/09 18:38:40  wenger
   Updated copyright dates to 1997.
 
@@ -140,7 +145,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.2.7";
+static const char *	version = "1.3.0";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1997";
