@@ -124,19 +124,19 @@ public class YImageCanvas extends Canvas
     // Enable double-buffering
     public void update(Graphics g)
     {
-        if (g == null)
-            return;
-
         if (offScrImg == null) {
             offScrImg = createImage(imageWidth, imageHeight);
-            if (offScrImg == null) {
-                return;
-            }
         }
 
         Graphics og = offScrImg.getGraphics();
         paint(og);
-        g.drawImage(offScrImg, 0, 0, this);
+
+	if (offScrImg != null) {
+            g.drawImage(offScrImg, 0, 0, this);
+	} else {
+	    paint(g);
+        }
+
         og.dispose();
     }
 
