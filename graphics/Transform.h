@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/25 01:17:05  jussi
+  Added optimization for Cartesian coordinates (perpendicular, no rotation).
+
   Revision 1.3  1995/11/24 21:29:58  jussi
   Added copyright notice and cleaned up code. Added Print method
   to help in debugging.
@@ -34,9 +37,15 @@
 
 #include "DeviseTypes.h"
 
-#ifndef PI
-#define PI 3.14159265358979323846
+#if ! defined(M_PI) && ! defined (PI)
+# define PI 3.14159265358979323846
+#else
+# define PI M_PI 
 #endif
+
+#define rad_deg(r) ((r) / PI * 180.0) // change radian -> degree
+#define deg_rad(d) ((d) * PI / 180.0) // change degree -> radian
+#define SQUARE(a) ((a) * (a))
 
 inline Coord ToRadian(Coord degree)
 {
@@ -49,6 +58,7 @@ inline Coord ToDegree(Coord radian)
 };
 
 /* 2D transformation matrix, ala Foley et al, 1990 */
+// Chapter 5
 
 class Transform2D {
 public:
@@ -198,5 +208,188 @@ private:
   Coord _a00,_a01,_a02,_a10,_a11,_a12;  // transformation matrix
   Boolean _cartesian;                   // TRUE if cartesian transformation
                                         // (a01 == a10 == 0.0)
-};
+}; // end of Transform 2D
+
+// ---------------------------------------------------------- 
+// transformation matrix = T
+//    T = [[a00, a01, a02, a03],
+//         [a10, a11, a12, a13],
+//         [a20, a21, a22, a23],
+//         [a30, a31, a32, a33]]
+//    new matrix = old matrix * (x, y, z, 1)^-1
+// NOTE: translation, scale, and rotate functions are used to update
+//       the transformation matrix, T_new * T_old -> T_stored_by_class
+
+class Transform3D {
+public:
+  /* identity matrix */
+  Transform3D() {
+    MakeIdentity();
+  }
+
+  /* Copy from another matrix */
+  Transform3D(Transform3D *t) {
+    t->GetCoords(_a00,_a01,_a02,_a03,
+                 _a10,_a11,_a12,_a13,
+                 _a20,_a21,_a22,_a23,
+                 _a30,_a31,_a32,_a33);
+    _cartesian = t->_cartesian;
+  }
+
+  /* Copy from another mattrix */
+  void Copy(Transform3D &t) {
+    t.GetCoords(_a00,_a01,_a02,_a03,
+                _a10,_a11,_a12,_a13,
+                _a20,_a21,_a22,_a23,
+                _a30,_a31,_a32,_a33);
+    _cartesian = t._cartesian;
+  }
+
+  /* Clear the matrix into an identity matrix */
+  void MakeIdentity() {
+    _a00 = 1.0; _a01 = _a02 = _a03 = 0.0;
+    _a11 = 1.0; _a10 = _a12 = _a13 = 0.0;
+    _a22 = 1.0; _a20 = _a21 = _a23 = 0.0;
+    _a33 = 1.0; _a30 = _a31 = _a32 = 0.0;
+    _cartesian = true;
+  }
+
+  /* Translate by dx,dy,dz */
+  void Translate(Coord dx, Coord dy, Coord dz)
+	{ _a03 += dx; _a13 += dy; _a23 += dz;}
+
+  /* Scale by sx, sy, sz */
+  void Scale(Coord sx, Coord sy, Coord sz) 
+  { _a00 *= sx; _a01 *= sx; _a02 *= sx; _a03 *= sx;
+    _a10 *= sy; _a11 *= sy; _a12 *= sy; _a13 *= sy;
+    _a20 *= sz; _a21 *= sz; _a22 *= sz; _a23 *= sz;}
+
+  /* Return the transformed X,Y,Z coordinates */
+  void Transform(Coord x, Coord y, Coord z, 
+	Coord &newX, Coord &newY, Coord &newZ) {
+    TransformX(x, y, z, newX);
+    TransformY(x, y, z, newY);
+    TransformZ(x, y, z, newZ);
+  }
+
+  /* Return the transformed X coordinate, optimized for speed */
+  void TransformX(Coord x, Coord y, Coord z, Coord &newX) {
+    if (_cartesian)
+      newX = _a00 * x + _a03;
+    else
+      newX = _a00 * x + _a01 * y + _a02 * z + _a03;
+  }
+
+  /* Return the transformed Y coordinate, optimized for speed */
+  void TransformY(Coord x, Coord y, Coord z, Coord &newY) {
+    if (_cartesian)
+      newY = _a11 * y + _a13;
+    else
+      newY = _a10 * x + _a11 * y + _a12 * z + _a13;
+  }
+
+  /* Return the transformed Z coordinate, optimized for speed */
+  void TransformZ(Coord x, Coord y, Coord z, Coord &newZ) {
+    if (_cartesian)
+      newZ = _a22 * z + _a23;
+    else
+      newZ = _a20 * x + _a21 * y + _a22 * z + _a23;
+  }
+
+  /* Multiply other matrix after this one matrix. Store the
+     result in this */
+  void PostMultiply(Transform3D *other) {
+    Coord o00,o01,o02,o03,o10,o11,o12,o13,
+          o20,o21,o22,o23,o30,o31,o32,o33;
+    other->GetCoords( o00,o01,o02,o03, o10,o11,o12,o13,
+                      o20,o21,o22,o23, o30,o31,o32,o33);
+    
+    _a03 = _a00*o02+ _a01*o12 + _a02*o23 + _a03;
+    Coord temp1 = _a01, temp2 = _a02;
+    _a02 = _a00*o02+ _a01*o12 + _a02*o22;
+    _a01 = _a00*o01+ _a01*o11 + temp2*o21;
+    _a00 = _a00*o00+ temp1*o10 + temp2*o20;
+    
+    _a13 = _a10*o03+ _a11*o13 + _a12*o23 + _a13;
+    temp1 = _a11; temp2 = _a12;
+    _a12 = _a10*o02 + _a11*o12 + _a12*o22;
+    _a11 = _a10*o01 + _a11*o11 + temp2*o21;
+    _a10 = _a10*o00+ temp1*o10 + temp2*o20;
+
+    _a23 = _a20*o03+ _a21*o13 + _a22*o23 + _a23;
+    temp1 = _a21; temp2 = _a22;
+    _a22 = _a20*o02 + _a21*o12 + _a22*o22;
+    _a21 = _a20*o01 + _a21*o11 + temp2*o21;
+    _a20 = _a20*o00+ temp1*o10 + temp2*o20;
+
+    if (_a01 == 0.0 && _a02 == 0.0 && _a10 == 0.0 && _a12 == 0.0
+		&& _a20 == 0.0 && _a22 == 0.0)
+      _cartesian = true;
+    else
+      _cartesian = false;
+  } // end of PostMultiply()
+
+  /* Multiply other matrix before this. Store the result in this. */
+  void PreMultiply(Transform3D *other) {
+    Coord o00,o01,o02,o03,o10,o11,o12,o13,
+          o20,o21,o22,o23,o30,o31,o32,o33;
+    other->GetCoords( o00,o01,o02,o03, o10,o11,o12,o13,
+                      o20,o21,o22,o23, o30,o31,o32,o33);
+    
+    Coord temp1 = _a00, temp2 = _a10;
+    _a00 = o00*_a00+ o01*_a10 + o02*_a20;
+    _a10 = o10*temp1+ o11*_a10 + o12*_a20;
+    _a20 = o20*temp1+ o21*temp2 + o22*_a20;
+    
+    temp1 = _a01; temp2 = _a11;
+    _a01 = o00*_a01+ o01*_a11 + o02*_a21;
+    _a11 = o10*temp1+ o11*_a11 + o12*_a21;
+    _a21 = o20*temp1+ o21*temp2 + o22*_a21;
+    
+    temp1 = _a02; temp2 = _a12;
+    _a02 = o00*_a02+ o01*_a12 + o02*_a22;
+    _a12 = o10*temp1+ o11*_a12 + o12*_a22;
+    _a22 = o20*temp1+ o21*temp2 + o22*_a22;
+    
+    temp1 = _a03; temp2 = _a13;
+    _a03 = o00*_a03+ o01*_a13 + o02*_a23;
+    _a13 = o10*temp1+ o11*_a13 + o12*_a23;
+    _a23 = o20*temp1+ o21*temp2 + o22*_a23;
+    
+    if (_a01 == 0.0 && _a02 == 0.0 && _a10 == 0.0 && _a12 == 0.0
+		&& _a20 == 0.0 && _a22 == 0.0)
+      _cartesian = true;
+    else
+      _cartesian = false;
+  } // end of PreMultiply()
+  
+  void GetCoords(Coord &a00, Coord &a01, Coord &a02, Coord &a03,
+			  Coord &a10, Coord &a11, Coord &a12, Coord &a13,
+			  Coord &a20, Coord &a21, Coord &a22, Coord &a23,
+			  Coord &a30, Coord &a31, Coord &a32, Coord &a33
+			  ) {
+    a00 = _a00; a01 = _a01; a02 = _a02; a03 = _a03;
+    a10 = _a10; a11 = _a11; a12 = _a12; a13 = _a13;
+    a20 = _a20; a21 = _a21; a22 = _a22; a23 = _a23;
+    a30 = _a30; a31 = _a31; a32 = _a32; a33 = _a33;
+  }
+  
+  void Print() {
+    printf("(%.2f,%.2f,%.2f,%.2f),\n",   _a00, _a01, _a02, _a03);
+    printf("(%.2f,%.2f,%.2f,%.2f),\n",   _a10, _a11, _a12, _a13);
+    printf("(%.2f,%.2f,%.2f,%.2f),\n",   _a20, _a21, _a22, _a23);
+    printf("(%.2f,%.2f,%.2f,%.2f),%d\n", _a30, _a31, _a32, _a33,
+	   (_cartesian ? 1 : 0));
+  }
+
+private:
+  Coord _a00,_a01,_a02,_a03,
+	   _a10,_a11,_a12,_a13,
+	   _a20,_a21,_a22,_a23,
+	   _a30,_a31,_a32,_a33;      // transformation matrix
+  Boolean _cartesian;             // TRUE if cartesian transformation
+                                  // (a01 == a10 == 0.0)
+};  // end of Transform3D
+
 #endif
+
