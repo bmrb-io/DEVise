@@ -14,7 +14,6 @@
 
 #	$Id$
 
-#	$Log$
 #	Revision 1.6  1995/09/28 17:44:03  jussi
 #	Included size, pattern, and orientation in all mapping definitions
 #	although these are not used by DEVise currently. Minor other
