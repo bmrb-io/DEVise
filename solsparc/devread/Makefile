@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/11/18 18:14:47  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.2  1996/10/29 16:19:58  wenger
 #  Fixed devread Makefiles in the architecture subdirectories to include
 #  the proper dependency files.
@@ -38,7 +41,7 @@
 
 ############################################################
 
-ARCH_FLAGS   = DSOLARIS -I/s/tcl/include
+ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 
