@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/06/15 07:05:08  yuc
+  Change CompRhoPhiTheta so it will display x vs y and z-axis into the
+  screen, add spherical coordinate system to CompRhoPhiTheta also.
+
   Revision 1.39  1996/06/13 00:14:31  jussi
   Added support for XY cursors. All types of cursors can now
   be moved by clicking on their new location in the data area.
@@ -284,14 +288,12 @@ void View::Init(char *name, VisualFilter &filter,
   
   xAxis.inUse = false;
   xAxis.width = 15;
-  xAxis.color = GetFgColor();
   xAxis.numTicks = 8;
   xAxis.significantDigits = 6;
   xAxis.labelWidth = 60;
   
   yAxis.inUse = false;
   yAxis.width = 50;
-  yAxis.color = GetFgColor();
   yAxis.numTicks = 8;
   yAxis.significantDigits = 6;
   yAxis.labelWidth = 40;
@@ -810,7 +812,7 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
     return;
   }
   
-  win->SetFgColor(xAxis.color);
+  win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
 
   /* draw a line from startX to the end of the view */
@@ -920,7 +922,7 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
     return;
   }
 
-  win->SetFgColor(yAxis.color);
+  win->SetFgColor(GetFgColor());
   win->SetPattern(Pattern0);
 
   /* draw a line from startY to the bottom of the view */
@@ -1097,8 +1099,8 @@ void View::CalcTransform(Transform2D &transform)
   transform.Translate(-_filter.xLow, -_filter.yLow);
 
   /* scale to size of the screen */
-  transform.Scale((Coord)dataWidth/(_filter.xHigh -  _filter.xLow),
-		  (Coord)(dataHeight)/(_filter.yHigh - _filter.yLow));
+  transform.Scale((Coord)dataWidth / (_filter.xHigh -  _filter.xLow),
+		  (Coord)(dataHeight) / (_filter.yHigh - _filter.yLow));
 
   /* invert the Y coord to fit (0,0) at top-left corner */
   transform.Scale(1.0, -1.0);

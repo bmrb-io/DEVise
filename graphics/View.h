@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/06/13 00:14:33  jussi
+  Added support for XY cursors. All types of cursors can now
+  be moved by clicking on their new location in the data area.
+  Previously only the X label area was sensitive for cursor
+  movement.
+
   Revision 1.21  1996/05/31 15:30:29  jussi
   Added support for tick marks in axes. The spacing and location
   of tick marks is set automatically to something reasonable,
@@ -137,7 +143,6 @@ struct AxisInfo {
   Boolean inUse;          /* TRUE if this axis is in use */
   int width;              /* width (for Y axis) or height (X axis)
 			     to draw label, in terms of # of pixels */
-  Color color;            /* color for the ticks */
   int numTicks;           /* # of ticks to use */
   int significantDigits;  /* # of significant digits */
   int labelWidth;         /* heigh (for Y axis) or width (X axis)
@@ -293,6 +298,11 @@ public:
 	/* Toggle connector display */
 	virtual Boolean DisplayConnectors() { return false; }
 	virtual Boolean DisplayConnectors(Boolean state) { return state; }
+
+	virtual void SetFgBgColor(Color fg, Color bg) {
+	  ViewWin::SetFgBgColor(fg, bg);
+	  Refresh();
+	}
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
