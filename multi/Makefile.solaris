@@ -1,7 +1,7 @@
 depend:
 	makedepend -fMakefile.solaris \
 		-I../multi -I../graphics -I../graphics.new \
-		-I/usr/X11R6/include -I../../solaris/tcl/include *.c
+		-I/usr/X11R6/include -I/s/tcl/include *.c
 # DO NOT DELETE
 
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h
@@ -11,8 +11,7 @@ CycleCpuTimeMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/machtypes.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/select.h
 CycleCpuTimeMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-CycleCpuTimeMappingClassInfo.o: ../../solaris/tcl/include/tcl.h
-CycleCpuTimeMappingClassInfo.o: /usr/include/stdio.h
+CycleCpuTimeMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleCpuTimeMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -68,8 +67,7 @@ CycleEffMappingClassInfo.o: /usr/include/sys/types.h
 CycleEffMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleEffMappingClassInfo.o: /usr/include/sys/machtypes.h
 CycleEffMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
-CycleEffMappingClassInfo.o: /usr/include/math.h
-CycleEffMappingClassInfo.o: ../../solaris/tcl/include/tcl.h
+CycleEffMappingClassInfo.o: /usr/include/math.h /s/tcl/include/tcl.h
 CycleEffMappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 CycleEffMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleEffMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -121,8 +119,7 @@ CycleOccMappingClassInfo.o: /usr/include/sys/types.h
 CycleOccMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleOccMappingClassInfo.o: /usr/include/sys/machtypes.h
 CycleOccMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
-CycleOccMappingClassInfo.o: /usr/include/math.h
-CycleOccMappingClassInfo.o: ../../solaris/tcl/include/tcl.h
+CycleOccMappingClassInfo.o: /usr/include/math.h /s/tcl/include/tcl.h
 CycleOccMappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 CycleOccMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleOccMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -175,8 +172,7 @@ CycleSuspendedMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/machtypes.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/select.h
 CycleSuspendedMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-CycleSuspendedMappingClassInfo.o: ../../solaris/tcl/include/tcl.h
-CycleSuspendedMappingClassInfo.o: /usr/include/stdio.h
+CycleSuspendedMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleSuspendedMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleSuspendedMappingClassInfo.o: ../graphics/Dispatcher.h
@@ -238,8 +234,7 @@ CycleWorkingMappingClassInfo.o: /usr/include/sys/isa_defs.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/machtypes.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/select.h
 CycleWorkingMappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-CycleWorkingMappingClassInfo.o: ../../solaris/tcl/include/tcl.h
-CycleWorkingMappingClassInfo.o: /usr/include/stdio.h
+CycleWorkingMappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 CycleWorkingMappingClassInfo.o: ../graphics/DeviseTypes.h
 CycleWorkingMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 CycleWorkingMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -294,7 +289,7 @@ HostMappingClassInfo.o: /usr/include/sys/feature_tests.h
 HostMappingClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 HostMappingClassInfo.o: /usr/include/sys/machtypes.h
 HostMappingClassInfo.o: /usr/include/sys/select.h /usr/include/sys/time.h
-HostMappingClassInfo.o: /usr/include/math.h ../../solaris/tcl/include/tcl.h
+HostMappingClassInfo.o: /usr/include/math.h /s/tcl/include/tcl.h
 HostMappingClassInfo.o: /usr/include/stdio.h ../graphics/DeviseTypes.h
 HostMappingClassInfo.o: ../graphics/Display.h ../graphics/Geom.h
 HostMappingClassInfo.o: ../graphics/Dispatcher.h ../graphics/DList.h
@@ -336,7 +331,7 @@ MappingClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MappingClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MappingClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 MappingClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-MappingClassInfo.o: ../../solaris/tcl/include/tcl.h /usr/include/stdio.h
+MappingClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MappingClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
 MappingClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
 MappingClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
@@ -443,13 +438,13 @@ ViewClassInfo.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
 disp.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 disp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 disp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-disp.o: /usr/include/sys/time.h /usr/include/math.h
-disp.o: ../../solaris/tcl/include/tcl.h /usr/include/stdio.h
-disp.o: ../graphics/DeviseTypes.h ../graphics/Display.h ../graphics/Geom.h
-disp.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-disp.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-disp.o: ../graphics/ColorMgr.h ../graphics.new/RectShape.h
-disp.o: ../graphics/Transform.h ../graphics/WindowRep.h ../graphics/Pattern.h
+disp.o: /usr/include/sys/time.h /usr/include/math.h /s/tcl/include/tcl.h
+disp.o: /usr/include/stdio.h ../graphics/DeviseTypes.h ../graphics/Display.h
+disp.o: ../graphics/Geom.h ../graphics/Dispatcher.h ../graphics/DList.h
+disp.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+disp.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+disp.o: ../graphics.new/RectShape.h ../graphics/Transform.h
+disp.o: ../graphics/WindowRep.h ../graphics/Pattern.h
 disp.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 disp.o: ../graphics.new/Shape.h ../graphics/Control.h ../graphics/Init.h
 disp.o: ../graphics/BufPolicy.h ../graphics/VisualLinkClassInfo.h

@@ -1,14 +1,14 @@
 depend:
 	makedepend -fMakefile.solaris \
 		-I../issm -I../tape -I/usr/X11R6/include \
-		-I../../solaris/tcl/include *.C
+		-I/s/tcl/include *.C
 # DO NOT DELETE
 
 binconv.o: /usr/include/math.h /usr/include/assert.h binconv.h
 binconv.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 extract.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 extract.o: /usr/include/assert.h /usr/include/string.h /usr/include/stdlib.h
-extract.o: ../../solaris/tcl/include/tcl.h ../../solaris/tcl/include/tk.h
+extract.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
 extract.o: /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h
 extract.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 extract.o: /usr/include/sys/select.h /usr/include/sys/time.h

@@ -1,7 +1,7 @@
 depend:
 	makedepend -fMakefile.solaris \
 		-I../graphics -I../graphics.new \
-		-I../tape -I/usr/X11R6/include -I../../solaris/tcl/include \
+		-I../tape -I/usr/X11R6/include -I/s/tcl/include \
 		*.c
 # DO NOT DELETE
 
@@ -9,7 +9,7 @@ MapClassInfo.o: /usr/include/sys/time.h /usr/include/sys/feature_tests.h
 MapClassInfo.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MapClassInfo.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
-MapClassInfo.o: ../../solaris/tcl/include/tcl.h /usr/include/stdio.h
+MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MapClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
 MapClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
 MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h

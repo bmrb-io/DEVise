@@ -1,7 +1,7 @@
 depend:
 	makedepend -fMakefile.solaris \
 		-I../graphics -I../graphics.new \
-		-I/usr/X11R6/include -I../../solaris/tcl/include *.c
+		-I/usr/X11R6/include -I/s/tcl/include *.c
 # DO NOT DELETE
 
 ActionDefault.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -182,7 +182,7 @@ GDataSnap.o: GDataVar.h
 MapInterpClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Control.h
 MapInterpClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
 MapInterpClassInfo.o: ../graphics/DList.h ../graphics/Exit.h MappingInterp.h
-MapInterpClassInfo.o: ../../solaris/tcl/include/tcl.h /usr/include/stdio.h
+MapInterpClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MapInterpClassInfo.o: /usr/include/sys/feature_tests.h TDataMapDispatch.h
 MapInterpClassInfo.o: TDataMap.h ../graphics/Pattern.h ShapeID.h Bitmap.h
 MapInterpClassInfo.o: RecId.h GDataRec.h ../graphics/Dispatcher.h
@@ -195,8 +195,8 @@ MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/ClassDir.h
 MapInterpClassInfo.o: ../graphics/Util.h /usr/include/assert.h
 MapInterpClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h
 MappingInterp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-MappingInterp.o: ../../solaris/tcl/include/tcl.h ../graphics/DeviseTypes.h
-MappingInterp.o: Bitmap.h ../graphics/AttrList.h /usr/include/sys/time.h
+MappingInterp.o: /s/tcl/include/tcl.h ../graphics/DeviseTypes.h Bitmap.h
+MappingInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
 MappingInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 MappingInterp.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 MappingInterp.o: /usr/include/time.h ../graphics/Config.h ../graphics/DList.h
@@ -418,12 +418,12 @@ Temp.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Color.h
 Temp.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
 Temp.o: ../graphics/VisualArg.h ../graphics/Compress.h
 TkControl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-TkControl.o: TkControl.h ../../solaris/tcl/include/tcl.h
-TkControl.o: ../../solaris/tcl/include/tk.h /usr/X11R6/include/X11/Xlib.h
-TkControl.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-TkControl.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-TkControl.o: /usr/include/sys/time.h /usr/include/time.h
-TkControl.o: /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xfuncproto.h
+TkControl.o: TkControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
+TkControl.o: /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h
+TkControl.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
+TkControl.o: /usr/include/sys/select.h /usr/include/sys/time.h
+TkControl.o: /usr/include/time.h /usr/X11R6/include/X11/X.h
+TkControl.o: /usr/X11R6/include/X11/Xfuncproto.h
 TkControl.o: /usr/X11R6/include/X11/Xosdefs.h /usr/include/stddef.h
 TkControl.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
 TkControl.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
@@ -701,7 +701,7 @@ testTDataRec.o: RecOrder.h ../graphics/VisualArg.h ../graphics/Color.h
 testTDataRec.o: ../graphics/DList.h ../graphics/Exit.h /usr/include/stdio.h
 testTDataRec.o: /usr/include/sys/feature_tests.h TestData.h
 testTcl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-testTcl.o: /usr/include/stdlib.h ../../solaris/tcl/include/tcl.h
+testTcl.o: /usr/include/stdlib.h /s/tcl/include/tcl.h
 testTdata.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h BufMgr.h
 testTdata.o: ../graphics/DeviseTypes.h ../graphics/BufPolicy.h BufHint.h
 testTdata.o: RecId.h BufferPolicy.h RecOrder.h ../graphics/DList.h
