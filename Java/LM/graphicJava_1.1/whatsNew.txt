@@ -1,0 +1,430 @@
+--------------------------------------------------------------------------------
+Introduction:
+--------------------------------------------------------------------------------
+This file documents the changes between the 1.0 and 1.1 releases
+of the Graphic Java Toolkit.
+
+I've been very careful not to change interfaces so that the 1.1 version
+of the GJT will not break any existing code that uses the 1.0 GJT.  However,
+we have completely redone event handling to conform with the 1.1 AWT, which
+will cause some rework moving from the 1.0 to 1.1 GJT, especially classes that 
+extend GJT classes.
+
+I recommend that you use java.awt.ScrollPane instead of gjt.ComponentScroller.
+Although the GJT's component scroller will do the job, it is better to use
+components that are part of the AWT whenever possible.  ImageScroller, and
+the GJT scrolling framework (gjt.Scroller and gjt.ScrollerLayout) are still
+useful - see the scrolling chapter in the 2nd edition of Graphic Java for
+more information.
+
+With the advent of ScrollPane, we recommend that you do not use the
+gjt.ComponentScroller, although they are still included
+in the GJT.
+
+--------------------------------------------------------------------------------
+GRAPHIC JAVA BEANS:
+--------------------------------------------------------------------------------
+Currently under development, I expect to release a beanified version of
+the GJT this summer.  Watch comp.lang.java.announce for details.
+
+--------------------------------------------------------------------------------
+GJT 1.1 HIGHLIGHTS: 
+--------------------------------------------------------------------------------
+  gjt.DoubleBufferedContainer (new class) supports lightweight components.
+
+  Sprite Animation reworked to incorporate lightweight components - both 
+  gjt.animation.Sprite and gjt.animation.Playfield are lightweight components.
+
+  Splash screen.
+
+  Bubble help.
+
+  Color choice and cursor choice.
+
+  New image filters.
+
+  Toolbox component (popup window with image buttons).
+
+  The GJT dialog hierarchy has been redone.  Question, YesNo and Message 
+Dialogs now support images.
+
+  ImageButtons: 
+  		fire action events.
+  		use black&white filter for disabled buttons.
+		Can have bubble help attached.
+
+--------------------------------------------------------------------------------
+NEW CLASSES:
+--------------------------------------------------------------------------------
+
+	gjt.BorderFactory:
+	------------------
+		Returns new Border given BorderStyle.
+
+	gjt.Bubble:
+	-----------
+		A window for displaying bubble help.
+
+	gjt.ColorChoice:
+	---------------
+		A choice for selecting standard set of colors.
+
+	gjt.CursorChoice:
+	-----------------
+		A choice for selecting predefined cursors.
+
+	gjt.DoubleBufferedContainer:
+	----------------------------
+		A double buffered container for lightweight components and
+		sprite animation.
+
+	gjt.FrameWithMenuBar:
+	---------------------
+		Added from Menus Chapter of Graphic Java
+
+	gjt.MenuBarPrinter:  
+	-------------------
+		Added from Menus Chapter of Graphic Java
+
+  	gjt.BorderStyle:
+  	---------------
+  		Deprecated ThreeDBorderStyle with BorderStyle.
+
+	gjt.RectangleFactory:
+	---------------------
+		Returns a new Rectangle given BorderStyle.
+
+	gjt.SplashScreen:
+	-----------------
+	 	Splash screen for displaying product information while an application
+		is loading.
+
+	gjt.Toolbox:
+	------------
+		Frame that contains ImageButtons.
+
+	gjt.WorkDialog:
+	---------------
+		Dialog with ButtonPanel and work area.  Client sets the panel
+		that goes in work area.
+
+	gjt.image.BlackAndWhiteFilter:
+	------------------------------
+		Creates image that is black and white version of original.
+
+	gjt.image.NegativeFilter:
+	-------------------------
+		Creates image that is negative of original.
+
+--------------------------------------------------------------------------------
+REMOVED CLASSES:
+--------------------------------------------------------------------------------
+
+	gjt.ImageButtonEvent:
+	---------------------
+		Event handling for image buttons updated to AWT 1.1. model.
+
+--------------------------------------------------------------------------------
+ENHANCEMENTS TO EXISTING CLASSES:
+--------------------------------------------------------------------------------
+	General:
+	--------
+		Upgraded all components (and all unit tests) to use the new 1.1 
+		event handling model.
+
+  	gjt.Assert:
+  	-----------
+		Made class public
+		Added assert.isTrue(boolean) and
+		assert.isTrue(boolean,String) and
+		assert.isFalse(boolean) and assert.isFalse(boolean, String)
+
+	gjt.Border:
+	----------
+	  Added accessor for component inside border.
+
+  	gjt.Box:
+  	--------
+		Added ability to set orientation for title as either:
+
+			Orientation.LEFT
+			Orientation.RIGHT
+			Orientation.CENTER
+
+  	gjt.ButtonPanel:
+  	---------------
+    	Added ability to set orientation for buttons as either:
+
+			Orientation.LEFT
+			Orientation.RIGHT
+			Orientation.CENTER
+
+	gjt.FrameWithMenuBar:
+	---------------------
+  		Added protected quit() method that calls aboutToBeDestroyed()
+		and then exits as a convenience for extensions.
+
+		Made createMenus() and handleMenuEvent() protected instead
+		of private.
+
+		Made aboutToBeDestroyed() return a boolean instead of void.
+		Boolean return value signifies whether or not the app should
+		be exited.  Default return value is true.
+
+		Added quitNoConfirm().
+
+	GJTDialog:
+	----------
+		Added show(boolean) and modified show() to call show(true)
+		so that subclasses of GJTDialog may selectively choose to
+		center the dialog when it's shown.
+
+  	gjt.ImageCanvas:
+  	---------------
+  		Added default constructor
+  		Added ability to set image after construction
+		Functions properly if image is null	
+		Added ability to display bubble help
+
+	gjt.ImageButton:
+	----------------
+		Added default constructor so that ImageButtons can be
+		created without specifying image at construction time.
+
+		Added ability to set image after construction.
+
+		Added constructor that takes (Image, thickness)
+
+		Added setThickness(int) method for specifying the thickness of
+		the border.
+
+		Disabled buttons use BlackAndWhiteFilter instead of BleachImageFilter.
+
+		Added bubble help capability.
+
+	gjt.MessageDialog:
+	------------------
+		Added ability to have an image, and modify it.	
+
+	gjt.QuestionDialog:
+	-------------------
+		Added ability to have an image, and modify it.	
+
+  	gjt.RadioMenu:
+  	-------------
+		Added RadioMenu(String) constructor.
+		Added selectItem(int index).
+
+	gjt.Stopwatch:
+	-------------
+		Added void setTickInterval(long milliseconds)
+		Added constructor that takes tick interval as 2nd argument
+		Reference to Stopwatch is now passed to 
+	    StopwatchClient.tick(Stopwatch)
+
+	gjt.StopwatchClient:
+	-------------------
+		INTERFACE CHANGE:  changed void tick() to void tick(Stopwatch)
+
+  	gjt.ThreeDRectangle:
+  	-------------------
+  		Uses BorderStyle instead of ThreeDBorderStyle.
+
+  	gjt.LabelCanvas:
+  	----------------
+  		Modified reshape() to check for null Graphics, in case
+		LabelCanvas is resized before peer is created.
+
+		Added paintDeselected() method instead of handling painting
+		directly in paint() so that subclasses can override
+		behavior.
+
+		Changed access of labelLocation() from private to protected.
+
+		Added "selected" (or "not selected") to param string.
+
+		Made selected variable protected.
+	
+	gjt.Util:
+  	---------
+  		Added Dialog getDialog().
+		Added void stretchImage().
+		Added void beep().
+
+	gjt.YesNoDialog:
+	---------------
+		Extends WorkDialog
+		Added setYesButtonLabel(String) and setNoButtonLabel(String)
+		Added ability to have an image, and change it.
+
+  	gjt.image.BleachImageFilter:
+  	----------------------------
+  		Allowed bleachpercent to be set to negative number
+		to darken instead of lighten.
+
+	gjt.animation.Playfield:
+	------------------------
+	  Added ability to have one sprite move underneath another.
+	  
+	  Changed Playfield's superclass to DoubleBufferedContainer.
+	  Note that this means you can add (both heavyweight and lightweight)
+	  components to a Playfield (see TwoDrinkersAnimationTest) in addition
+	  to sprites (which are now lightweight components).
+
+	  Added automatic wallpapering of playfield's background if you specify
+	  an image via the new Playfield.setWallpaperImage(Image) method.
+
+	gjt.animation.Sprite:
+	---------------------
+		Extends java.awt.Component (is a lightweight component)
+
+--------------------------------------------------------------------------------
+BUG FIXES:
+--------------------------------------------------------------------------------
+
+	General:
+	--------
+		Added calls to Graphics.dispose() wherever a getGraphics() is called.
+
+	gjt.RadioMenu:
+	--------------
+    	BUG: Fixed bug in selectItem(MenuItem)
+
+	gjt.ScrollerLayout:
+	-------------------
+		BUG:  Factored in insets in preferredLayoutSize and
+		      minimumLayoutSize.
+
+	gjt.BulletinLayout:
+	-------------------
+		BUG:  Fixed bug that returned wrong preferred and minimum sizes.
+        	  Modified layoutContainer() so that components are reshaped 
+        	  according to their actual sizes - components with width or
+			  height less than the preferred size are reshaped according 
+			  to their preferred sizes.
+
+  		BUG:  Fixed bug that caused components to drift with >0
+              insets.
+
+  		Removed uneccessary default constructor.
+
+	gjt.ComponentScroller:
+	----------------------
+		BUG:  Fixed setComponent so that component can be set after 
+		      construction.
+
+	gjt.BulletinLayout:
+	-------------------
+		BUG:  Fixed bug that returned wrong preferred and minimum sizes.
+	  	      Modified layoutContainer() so that components are reshaped 
+	  	      according to their actual sizes - components with width or
+			  height less than the preferred size are reshaped according 
+			  to their preferred sizes.
+
+	  	BUG:  Fixed bug that caused components to drift with >0
+		  	  insets.
+
+	gjt.DrawnRectangle:
+	-------------------
+	  	BUG:  Fixed off-by-one-pixel bug when filling DrawnRectangles.
+
+	gjt.MessageDialog:
+	------------------
+		BUG:  Message can be changed after showing dialog first time.
+
+	gjt.YesNoDialog:
+	----------------
+		BUG:  Message can be changed after showing dialog first time.
+
+	gjt.animation.Playfield:
+	------------------------
+		BUG:  Fixed bug so that offscreen buffers are created if
+	          animation starts before playfield is painted the first
+			  time.
+
+--------------------------------------------------------------------------------
+MISCELLANEOUS CHANGES:
+--------------------------------------------------------------------------------
+
+MS Compiler Bug WorkAround:
+--------------------------
+
+  Changed name of some instance variables / methods to work around  
+  bug in the Microsoft compiler.  MS compiler complains when you
+  name an instance variable the same as a method name - it thinks
+  that usage of instance variable is a call to method with missing
+  args.  While it's good practice not to name vars and methods the
+  same, it's a bug in the MS compiler:
+
+	ChoiceCardPanel.vselector renamed to ChoiceCardPanel.vselector
+	IconCardPanel.viewSelector renamed to IconCardPanel.vselector
+	ImageButton.preferredSize renamed to ImageButton.prefSize
+
+	Rubberband.anchor    renamed to Rubberband.anchorPt
+	Rubberband.stretched renamed to Rubberband.stretchedPt
+	Rubberband.last      renamed to Rubberband.lastPt
+	Rubberband.end       renamed to Rubberband.endPt
+
+	Sprite.curBounds renamed to Sprite.kurBounds
+	Sprite.start     renamed to Sprite.startPt
+
+--------------------------------------------------------------------------------
+Unit Test Modifications:
+--------------------------------------------------------------------------------
+
+	gjt.test.BleachImageFilterTest:
+	---------------------
+		Removed filter variable, which was never used.
+
+	RubberbandTest:
+	--------------
+		Uses ColorChoice.
+
+	BoxTest:
+	-------
+		Added orientation specifications to 3 boxes.
+
+	UnitTest / TitledPanel:
+	----------------------
+	  Modified UnitTest and TitledPanel - draw etched border 
+	  around unit test and remove separator.  By running unit tests,
+	  you can see which version of the GJT you have.
+
+	Dialog Unit Test:
+	----------------
+		Changed text in YesNoDialog and changed "Gumby" to "Lesa".
+
+	ComponentScroller Unit Test:
+	---------------------------
+		Added Toggle Component button which toggles between the
+		ImageStore and the RubberbandTestPanel.
+		Added tabbing to ButtonPurchaseForm panel. 
+
+	TwoDrinkersAnimation Unit Test:
+	------------------------------
+		Added Choice for toggling collision detection on/off.
+
+	ImageButtonTest:
+	---------------
+		Changed event handling - action() is used for ImageButton
+		events, and mouseEnter() and mouseExit() are overridden.
+	
+	New Unit Tests:
+	--------------
+		BulletinLayoutTest
+		CursorChoiceTest
+		ColorChoiceTest
+		DoubleBufferedContainerTest
+		SplashScreenTest
+		StopwatchTest
+		ToolboxTest
+
+	General Changes:
+	---------------
+	  Changed println's to Applet.showStatus() wherever appropriate:
+	  	DialogTest
+		DrawnRectangleTest
+		ImageButtonTest
+		LabelCanvasTest
+		MessageDialogTest
+		ToolbarTest
