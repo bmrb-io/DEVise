@@ -25,6 +25,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2001/01/22 17:08:13  wenger
+// Added DEViseCheckPop to actually connect to the jspop when checking
+// with cron; added JAVAC_CheckPop command to make this possible; cleaned
+// up some of the jspop code dealing with heartbeats, etc.; DEViseCommSocket
+// constructor error messages now go to stderr.
+//
 // Revision 1.31  2001/01/08 20:31:58  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -483,9 +489,9 @@ public class jspop implements Runnable
 
             try {
 
-                pn("Before reading command");
+                //pn("Before reading command");
       		String cmd = socket.receiveCmd();
-                pn("After reading command");
+                //pn("After reading command");
 
 	        int id = socket.cmdId;
 		pn("Received command from client(" + id + ") :  \"" + cmd +
@@ -510,8 +516,23 @@ public class jspop implements Runnable
                     pn("Existing client");
 	            DEViseClient client = findClientById(id);
 		    if (client != null) {
-		        client.setSocket(socket);
-		        client.addNewCmd(cmd);
+			//TEMP -- this code should probably be in the client
+			if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
+			    client.updateHeartbeat();
+			    // close client socket for cgi version
+			    if (cgi) {
+				socket.closeSocket();
+				pn("Socket between client and cgi is closed.");
+			    }
+			}
+			else {
+			    if (client.getStatus() != DEViseClient.SERVE)
+				client.setStatus(DEViseClient.REQUEST);
+			    // set cgi flag; added for mode changing
+			    client.setCgi(cgi); 
+			    client.setSocket(socket);
+			    client.addNewCmd(cmd);
+			} 
       		    } else {
 			throw new YException("No client for ID: " + id);
 		    }
@@ -663,6 +684,7 @@ public class jspop implements Runnable
 		    if (! socket.isEmpty()) {
 			int id;
 			int cgi;
+			boolean cgiflag;
 
 			String cmd = socket.receiveCmd();
 
@@ -670,16 +692,31 @@ public class jspop implements Runnable
 	    		pn("Received command from client(" + id + ") :  \"" + cmd + "\"");		
 			cgi = socket.cgiFlag;
 			if (cgi == 1) {
+			    cgiflag = true;
 			    pn("A cgi connection.");
 			} else {
+			    cgiflag = false;
 			    pn("Formal JS connection.");
 			}
 			//TEMP -- what if cgi here != cgi in client?
 
 			DEViseClient client = findClientById(id);
 			if (client != null) {
-			    client.setSocket(socket);
-			    client.addNewCmd(cmd);
+			    if (cmd.startsWith(DEViseCommands.HEART_BEAT)) { 
+				client.updateHeartbeat();
+				// close client socket for cgi version
+				if (cgi == 1) {
+				    socket.closeSocket();
+				    pn("Socket between client and cgi is closed.");
+				}
+			
+			    } else {
+				if (client.getStatus() != DEViseClient.SERVE)
+				    client.setStatus(DEViseClient.REQUEST);
+				client.setCgi(cgiflag);
+       				client.setSocket(socket);
+				client.addNewCmd(cmd);
+			    } 
 			} else {
 			    throw new YException("No client for ID: " + id);
 			}
