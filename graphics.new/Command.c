@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/09 18:54:56  jussi
+  Made the use of fd_set more general than just AIX and LINUX.
+
   Revision 1.9  1996/03/27 17:55:09  wenger
   Changes to get DEVise to compile and run on Linux.
 
@@ -280,18 +283,16 @@ void Command::ProcessLine(char *line)
   
   /* process scroll/zoom commands */
 	
-  /* now parse buf */
-  VisualFilter oldFilter;	/* old filter for view*/
-  VisualFilter newFilter;		/* new filter for view*/
-  /*
-     cmdFilter.flag = VISUAL_LOC;
-     hintFilter.flag = VISUAL_LOC;
-  */
-  View *view = View::FindViewByName(argv[0]);
-  if (view == NULL) {
-    printf("no view %s\n",argv[0]);
+  ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+  View *view = (View *)classDir->FindInstance(argv[0]);
+  if (!view) {
+    printf("no view %s\n", argv[0]);
     return;
   }
+
+  VisualFilter oldFilter;	/* old filter for view */
+  VisualFilter newFilter;	/* new filter for view */
+
   view->GetVisualFilter(oldFilter);
   
   int index = 1;
