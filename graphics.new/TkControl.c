@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/04/14 00:17:15  jussi
+  Removed interpMapClassInfo and clearInterp commands. Added
+  createMappingClass which will eventually replace createInterp
+  complete. createInterp is retained for backward compatibility.
+
   Revision 1.40  1996/04/11 17:53:45  jussi
   Added command verbs raiseView and lowerView.
 
@@ -806,7 +811,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				goto error;
 			}
 			for (view->InitMappingIterator(); view->MoreMapping(); ) {
-				TDataMap *map = view->NextMapping();
+				TDataMap *map = view->NextMapping()->map;
 				Tcl_AppendElement(interp,map->GetGDataName());
 			}
 			view->DoneMappingIterator();
@@ -1143,30 +1148,51 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			MakeReturnVals(interp, numArgs, args);
 		}
 		else if (strcmp(argv[1],"insertMapping") == 0) {
-			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
-			if (view == NULL) {
-				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[2]);
-				Exit::DoExit(2);
-			}
-			TDataMap *map = (TDataMap *)classDir->FindInstance(argv[3]);
-			if (view == NULL) {
-				fprintf(stderr,"TkControl:Cmd insertMapping can't find map %s\n", argv[3]);
-				Exit::DoExit(2);
-			}
-			view->InsertMapping(map);
+		  ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+		  if (!view) {
+		    sprintf(interp->result, "Cannot find view %s\n",
+			    argv[2]);
+		    goto error;
+		  }
+		  TDataMap *map = (TDataMap *)classDir->FindInstance(argv[3]);
+		  if (!map) {
+		    sprintf(interp->result, "Cannot find mapping %s\n",
+			    argv[3]);
+		    goto error;
+		  }
+		  view->InsertMapping(map);
+		}
+		else if (strcmp(argv[1],"getMappingLegend") == 0) {
+		  ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+		  if (!view) {
+		    fprintf(stderr, "Cannot find view %s\n", argv[2]);
+		    interp->result = "";
+		    goto error;
+		  }
+		  TDataMap *map = (TDataMap *)classDir->FindInstance(argv[3]);
+		  if (!map) {
+		    fprintf(stderr, "Cannot find mapping %s\n", argv[3]);
+		    interp->result = "";
+		    goto error;
+		  }
+		  interp->result = view->GetMappingLegend(map);
 		}
 		else if (strcmp(argv[1],"insertLink") == 0) {
-			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
-			if (link == NULL) {
-				fprintf(stderr,"TkControl:Cmd insertLink can't find link %s\n", argv[2]);
-				Exit::DoExit(2);
-			}
-			View *view = (View *)classDir->FindInstance(argv[3]);
-			if (view == NULL) {
-				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[3]);
-				Exit::DoExit(2);
-			}
-			link->InsertView(view);
+		  VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
+		  if (!link) {
+		    sprintf(interp->result,
+			    "TkControl:Cmd insertLink can't find link %s\n",
+			    argv[2]);
+		    goto error;
+		  }
+		  View *view = (View *)classDir->FindInstance(argv[3]);
+		  if (!view) {
+		    sprintf(interp->result,
+			    "TkControl:Cmd insertLink can't find view %s\n",
+			    argv[3]);
+		    goto error;
+		  }
+		  link->InsertView(view);
 		}
 		else if (strcmp(argv[1],"viewInLink") == 0) {
 			VisualLink *link = (VisualLink *)classDir->FindInstance(argv[2]);
@@ -1194,7 +1220,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			}
 			View *view = (View *)classDir->FindInstance(argv[3]);
 			if (view == NULL) {
-				fprintf(stderr,"TkControl:Cmd insertMapping can't find view %s\n", argv[3]);
+				fprintf(stderr,"TkControl:Cmd insertLink can't find view %s\n", argv[3]);
 				Exit::DoExit(2);
 			}
 			link->DeleteView(view);
@@ -1385,6 +1411,19 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	    Boolean active = (atoi(argv[3]) == 1);
 	    view->SetOverrideColor(atoi(argv[4]), active);
+	  }
+	  else if (strcmp(argv[1],"insertMapping") == 0) {
+	    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
+	    if (!view) {
+	      sprintf(interp->result, "Cannot find view %s\n", argv[2]);
+	      goto error;
+	    }
+	    TDataMap *map = (TDataMap *)classDir->FindInstance(argv[3]);
+	    if (!map) {
+	      sprintf(interp->result, "Cannot find mapping %s\n", argv[3]);
+	      goto error;
+	    }
+	    view->InsertMapping(map, argv[4]);
 	  }
 	  else {
 	    interp->result = "wrong args";
