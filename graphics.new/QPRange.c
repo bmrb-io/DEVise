@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/23 21:17:40  jussi
+  Simplified code.
+
   Revision 1.6  1996/11/21 01:22:52  jussi
   Added some comments.
 
@@ -61,6 +64,8 @@ void QPRange::Clear()
     }
 
     _rangeList.next = _rangeList.prev = &_rangeList;
+    _rangeListSize = 0;
+    _hint = NULL;
 }
 
 /*
@@ -190,8 +195,8 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
         QPRangeRec *rec = AllocRec();
         rec->low = low;
         rec->high = high;
-        InsertRec(&_rangeList,rec);
-        callback->QPRangeInserted(low,high);
+        InsertRec(&_rangeList, rec);
+        callback->QPRangeInserted(low, high);
         return;
     }
     
@@ -211,34 +216,33 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
         QPRangeRec *next = NextRec(current);
         
         if (current == NULL) {
-            if (high+1 < next->low)
+            if (high + 1 < next->low)
                 action = CREATE_RANGE;
-            else action = MERGE_RIGHT;
+            else
+                action = MERGE_RIGHT;
         } else {
             /* current not NULL */
-            if (low < current->low) {
-                /* can't be. */
-                fprintf(stderr,"QPRangREc::Insert internal error\n");
-                Exit::DoExit(2);
-            }
+            DOASSERT(low >= current->low, "Invalid low pointer");
             
             if (high < current->high) {
+                /* range contained in current */
                 action = NO_ACTION;
             } else if (next == NULL) {
                 /* at tail of list */
-                if (low <= current->high+1)
+                if (low <= current->high + 1)
                     action = MERGE_CURRENT;
-                else action = CREATE_RANGE;
+                else
+                    action = CREATE_RANGE;
             } else {
                 /* not at the tail */
-                if (low <= current->high +1 &&
-                    high+1 >= next->low)
+                if (low <= current->high + 1 && high + 1 >= next->low)
                     action = MERGE_BOTH;
-                else if (low <= current->high+1)
+                else if (low <= current->high + 1)
                     action = MERGE_CURRENT;
-                else if ( high+1 >= next->low)
+                else if (high + 1 >= next->low)
                     action = MERGE_RIGHT;
-                else action = CREATE_RANGE;
+                else
+                    action = CREATE_RANGE;
             }
         }
         
@@ -248,7 +252,7 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
 
           case NO_ACTION:
             /* no action to take */
-            low = high +1;
+            low = high + 1;
             break;
 
           case CREATE_RANGE :
@@ -262,43 +266,42 @@ void QPRange::Insert(RecId low, RecId high, QPRangeCallback *callback)
             
             callback->QPRangeInserted(low,high);
             
-            low = high+1;
+            low = high + 1;
             break;
 
           case MERGE_RIGHT :
             /* merge range with the next one. Truncate
                [low,high] to the gap between current and next */
-            callback->QPRangeInserted(low,next->low-1);
+            callback->QPRangeInserted(low,next->low - 1);
             next->low = low;
             if (high > next->high)
-                low = next->high+1;
+                low = next->high + 1;
             else
-                low = high+1;
+                low = high + 1;
             current = next;
             break;
             
     case MERGE_BOTH :
             /* merge [low,high] with current and next */
-            callback->QPRangeInserted(current->high+1, next->low-1);
+            callback->QPRangeInserted(current->high + 1, next->low - 1);
             if (high > next->high)
-                low = next->high+1;
+                low = next->high + 1;
             else
-                low = high+1;
+                low = high + 1;
             current->high = next->high;
             DeleteRec(next);
             break;
             
     case MERGE_CURRENT:
             /* merge [low,high] with current, assuming
-               high > current->high+1*/
-            callback->QPRangeInserted(current->high+1, high);
+               high > current->high + 1*/
+            callback->QPRangeInserted(current->high + 1, high);
             current->high = high;
-            low = high+1;
+            low = high + 1;
             break;
 
           default:
-            fprintf(stderr,"QPRangeRec: unknown action\n");
-            Exit::DoExit(1);
+            DOASSERT(0, "Unknown action");
             break;
         }
     }
