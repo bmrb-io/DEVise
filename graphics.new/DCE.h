@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/09/26 20:28:44  jussi
+  Made code compile in Linux.
+
   Revision 1.4  1996/09/26 19:00:21  jussi
   Added virtual semaphore class SemaphoreV which tries to get
   around the limited number of semaphore vectors allowed by
@@ -55,6 +58,7 @@
 
 #include <errno.h>
 #include <assert.h>
+#include <stdio.h>
 
 #ifdef MODIFIED
 #include <sys/types.h>
@@ -149,14 +153,17 @@ private:
 class SemaphoreV {
 public:
   SemaphoreV(key_t key, int &status, int nsem = 1);
+
   int destroy() {                       // destroy semaphore
     if (--_semCount > 0)
       return 0;
     return _sem->destroy();
   }
+
   static int destroyAll() {             // destroy all semaphores
     return Semaphore::destroyAll();
   }
+
   static int create(int maxSems);       // create real semaphore
 
   int acquire(int num = 1,

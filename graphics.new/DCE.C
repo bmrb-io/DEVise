@@ -7,6 +7,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/09/26 19:00:20  jussi
+  Added virtual semaphore class SemaphoreV which tries to get
+  around the limited number of semaphore vectors allowed by
+  the operating system. Various bug fixes.
+
   Revision 1.4  1996/08/01 22:48:22  jussi
   Fixed problem with semop() in SunOS and HP-UX.
 
@@ -201,6 +206,8 @@ SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
   key = key;
 
   if (!_sem || _semBase + nsem > _maxSems) {
+    fprintf(stderr, "Cannot allocate %d semaphores (limit %d)\n",
+            _semBase + nsem, _maxSems);
     status = -1;
     return;
   }
