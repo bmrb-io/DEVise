@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/03/25 17:59:00  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.6  1997/02/03 19:40:04  ssl
   1) Added a new Layout interface which handles user defined layouts
   2) Added functions to set geometry and remap views as changes in the
@@ -108,7 +111,7 @@ public:
   virtual void CreateParams(int &argc, char **&argv);
 
 private:
-  char *arg[5];
+  char *arg[7];
   char *_name;
 #ifndef NEW_LAYOUT
   TileLayout *_win;

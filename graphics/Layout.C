@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:09:13  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include "math.h"
@@ -24,7 +28,8 @@
 #include "Control.h"
 #include "View.h"
 
-Layout::Layout(char *name, Coord x, Coord y, Coord w, Coord h) :
+Layout::Layout(char *name, Coord x, Coord y, Coord w, Coord h,
+       Boolean printExclude, Boolean printPixmap) :
        ViewLayout(name)
 {
   Coord rootWidth, rootHeight;
@@ -32,6 +37,8 @@ Layout::Layout(char *name, Coord x, Coord y, Coord w, Coord h) :
   Map((int) ( x * rootWidth), (int) (y * rootHeight),
       (unsigned) (w * rootWidth), (unsigned) (h * rootHeight));
   _mode = AUTOMATIC;
+  SetPrintExclude(printExclude);
+  SetPrintPixmap(printPixmap);
 }
 
 /* for backward compatibility - to set STACKED, HOR and VERT layouts */

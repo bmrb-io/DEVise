@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/04/21 22:48:35  guangshu
+  Added _histViewExist.
+
   Revision 1.21  1997/03/25 17:58:59  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -266,6 +269,11 @@ public:
     }
     Boolean IsPrinting() { return _hasPrintIndex; }
 
+    void SetPrintExclude(Boolean exclude) { _excludeFromPrint = exclude; }
+    Boolean GetPrintExclude() { return _excludeFromPrint; }
+    void SetPrintPixmap(Boolean pixmap) { _printAsPixmap = pixmap; }
+    Boolean GetPrintPixmap() { return _printAsPixmap; }
+
 protected:
     /* called by base class when it has been mapped/unmapped */
     virtual void SubClassMapped() = 0;
@@ -322,6 +330,9 @@ protected:
 private:
     Boolean _hasPrintIndex;
     int _printIndex;
+
+    Boolean _excludeFromPrint;
+    Boolean _printAsPixmap;
 };
 
 #endif

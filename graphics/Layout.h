@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:09:14  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef _LAYOUT_H_
@@ -32,7 +36,8 @@ class Layout : public ViewLayout {
   public :
   
   Layout(char *name, Coord x = 0.1, Coord y = 0.0, 
-	 Coord w = 0.8, Coord h = 0.9);
+	 Coord w = 0.8, Coord h = 0.9, Boolean printExclude = false,
+	 Boolean printPixmap = false);
 
   virtual void SetPreferredLayout(int v, int h, Boolean stacked);
   virtual void SetLayoutProperties(LayoutMode mode, int rows, int columns);

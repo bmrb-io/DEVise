@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/03/25 17:59:00  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.10  1997/02/03 19:40:03  ssl
   1) Added a new Layout interface which handles user defined layouts
   2) Added functions to set geometry and remap views as changes in the
@@ -70,7 +73,8 @@
 #endif
 #include "Util.h"
 
-static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80];
+static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80],
+  buf7[80];
 
 DevWinList DevWindow::_windowList;
 
@@ -113,13 +117,15 @@ TileLayoutInfo::~TileLayoutInfo()
 
 void TileLayoutInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 5;
+  argc = 7;
   argv = arg;
   arg[0] = buf1;
   arg[1] = buf2;
   arg[2] = buf3;
   arg[3] = buf4;
   arg[4] = buf5;
+  arg[5] = buf6;
+  arg[6] = buf7;
 
   strcpy(buf1, "Name {foobar}");
   int numDefaults;
@@ -137,6 +143,9 @@ void TileLayoutInfo::ParamNames(int &argc, char **&argv)
     sprintf(buf4, "Width 0.5");
     sprintf(buf5, "Height 0.5");
   }
+
+  sprintf(buf6, "printExclude");
+  sprintf(buf7, "printPixmap");
 }
 
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
@@ -144,18 +153,24 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, char **argv)
 #if defined(DEBUG)
   printf("TileLayoutInfo::CreateWithParams(%s)\n", argv[0]);
 #endif
-  if (argc != 5) {
+  if ((argc != 5) && (argc != 7)) {
     fprintf(stderr, "TileLayoutInfo::CreateWithParams wrong args %d\n",
 	    argc);
     return NULL;
   }
   char *name = CopyString(argv[0]);
+  Boolean printExclude = false;
+  Boolean printPixmap = false;
+  if (argc >= 6) printExclude = atoi(argv[5]);
+  if (argc >= 7) printPixmap = atoi(argv[6]);
 #ifndef NEW_LAYOUT
   TileLayout *win = new TileLayout(name, atof(argv[1]), atof(argv[2]),
-				   atof(argv[3]), atof(argv[4]));
+				   atof(argv[3]), atof(argv[4]), printExclude,
+				   printPixmap);
 #else 
   Layout *win = new Layout(name, atof(argv[1]), atof(argv[2]), 
-			   atof(argv[3]), atof(argv[4]));
+			   atof(argv[3]), atof(argv[4]), printExclude,
+			   printPixmap);
 #endif
   return new TileLayoutInfo(name, win);
 }
@@ -174,13 +189,15 @@ void *TileLayoutInfo::GetInstance()
 
 void TileLayoutInfo::CreateParams(int &argc, char **&argv)
 {
-  argc = 5;
+  argc = 7;
   argv = arg;
   arg[0] = _name;
   arg[1] = buf2;
   arg[2] = buf3;
   arg[3] = buf4;
   arg[4] = buf5;
+  arg[5] = buf6;
+  arg[6] = buf7;
 
   int x, y;
   unsigned int w, h;
@@ -204,6 +221,9 @@ void TileLayoutInfo::CreateParams(int &argc, char **&argv)
   sprintf(buf3, "%f", (double)y / dispHeight);
   sprintf(buf4, "%f", (double)w / dispWidth);
   sprintf(buf5, "%f", (double)h / dispHeight);
+
+  sprintf(buf6, "%d", _win->GetPrintExclude());
+  sprintf(buf7, "%d", _win->GetPrintPixmap());
 }
 
 

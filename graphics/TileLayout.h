@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/11 18:05:31  jussi
+  Added support for stacked windows (one overlays another).
+
   Revision 1.2  1995/12/28 19:04:32  jussi
   Small fixes to remove compiler warnings.
 
@@ -31,7 +34,8 @@
 class TileLayout: public ViewLayout {
 public:
   TileLayout(char *name, Coord x = 0.1, Coord y = 0.0, 
-	     Coord w = 0.8, Coord h = 0.9);
+	     Coord w = 0.8, Coord h = 0.9, Boolean printExclude = false,
+	     Boolean printPixmap = false);
 
   virtual void SetPreferredLayout(int v, int h, Boolean stacked);
 

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/07 22:40:12  wenger
+  More functions now working for PostScript output (FillPoly, for example);
+  PostScript output also working for piled views; PSWindowRep member
+  functions no longer do so much unnecessary rounding to integers (left
+  over from XWindowRep); kept in place (but disabled) a bunch of debug
+  code I added while figuring out piled views; added PostScript.doc file
+  for some high-level documentation on the PostScript output code.
+
   Revision 1.5  1996/04/16 19:49:39  jussi
   Replaced assert() calls with DOASSERT().
 
@@ -39,13 +47,16 @@
 
 //#define DEBUG
 
-TileLayout:: TileLayout(char *name,  Coord x, Coord y, Coord w, Coord h) :
+TileLayout:: TileLayout(char *name,  Coord x, Coord y, Coord w, Coord h,
+	Boolean printExclude, Boolean printPixmap) :
 	ViewLayout(name)
 {
   Coord width, height;
   DeviseDisplay::DefaultDisplay()->Dimensions(width, height);
   Map((int)(x * width), (int)(y * height),
       (unsigned)(w * width), (unsigned)(h * height));
+  SetPrintExclude(printExclude);
+  SetPrintPixmap(printPixmap);
 }
 
 void TileLayout::SetPreferredLayout(int v, int h, Boolean stacked)

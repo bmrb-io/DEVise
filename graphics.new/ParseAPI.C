@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.65  1997/05/30 15:41:19  wenger
+  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+  this stuff now so it doesn't get mixed up with special stuff for printing
+  Mitre demo.
+
   Revision 1.64  1997/05/28 15:39:25  wenger
   Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
 
@@ -1638,6 +1643,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+    if (!strcmp(argv[0], "winGetPrint")) {
+      ViewWin *win = (ViewWin *)classDir->FindInstance(argv[1]);
+      if (!win) {
+        control->ReturnVal(API_NAK, "Cannot find window");
+        return -1;
+      }
+      Boolean exclude, pixmap;
+      exclude = win->GetPrintExclude();
+      pixmap = win->GetPrintPixmap();
+      char buf[100];
+      sprintf(buf, "%d %d", exclude, pixmap);
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
     if (!strcmp(argv[0], "viewGetHome")) {
       // Arguments: <viewName>
       // Returns: <mode> <autoXMargin> <autoYMargin> <manXLo> <manYLo>
@@ -2391,6 +2410,19 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       control->ReturnVal(API_ACK, name);
+      return 1;
+    }
+    if (!strcmp(argv[0], "winSetPrint")) {
+      ViewWin *win = (ViewWin *)classDir->FindInstance(argv[1]);
+      if (!win) {
+        control->ReturnVal(API_NAK, "Cannot find window");
+        return -1;
+      }
+      Boolean exclude = atoi(argv[2]);
+      Boolean pixmap = atoi(argv[2]);
+      win->SetPrintExclude(exclude);
+      win->SetPrintPixmap(pixmap);
+      control->ReturnVal(API_ACK, "done");
       return 1;
     }
   }

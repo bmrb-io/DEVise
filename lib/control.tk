@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.131  1997/05/28 15:39:50  wenger
+#	Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #	Revision 1.130  1997/05/08 00:14:36  wenger
 #	Removed layout manager GUI.
 #
@@ -704,6 +707,7 @@ source $libdir/tdata.tk
 source $libdir/layout.tk
 source $libdir/lens.tcl
 source $libdir/lensgui.tk
+source $libdir/win_print_config.tcl
 source $libdirLM/DEViseLMComm.tk
 source $libdirLM/DEViseIfc.tk
 
@@ -1299,6 +1303,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Bring View Back" -command DoBringView
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "View List" -command WinViewList
+.mbar.window.menu add command -label "Print Config" -command GetWinPrintConfig
 
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/05/28 15:38:59  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.34  1997/05/08 00:18:06  wenger
   Kludge fix for bug 182 (crash when closing multi1.tk session).
 
@@ -227,6 +230,9 @@ ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg,
   _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
   _tkPathName[0] = 0;
 #endif
+
+  _excludeFromPrint = false;
+  _printAsPixmap = false;
 }
 
 void ViewWin::Iconify()
