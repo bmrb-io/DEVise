@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/12 17:23:41  jussi
+  Renamed SBufMgr class to CacheMgr and MemPool to MemMgr. This is
+  to reflect the new terms (cache manager, memory manager) used in
+  the documentation.
+
   Revision 1.8  1996/11/11 15:50:57  jussi
   Removed IOTask virtual base class and substituted UnixIOTask for
   it. When SBufMgr accesses an IOTask, no separate process is
@@ -130,7 +135,6 @@ class MemMgr {
     enum PageType { Cache, Buffer };
 
     int Allocate(PageType type, char *&page);
-    int Release(PageType type, char *&page);
     int Deallocate(PageType type, char *page);
     int Convert(char *page, PageType oldType, PageType &newType);
 
@@ -252,7 +256,7 @@ class IOTask {
     // Write specified byte range to file
     int Write(unsigned long long offset,
               unsigned long bytes,
-              char *&addr);
+              char *addr);
 
     // Write specified block range
     int WriteP(int blockOffset, int blocks, char *&addr) {
