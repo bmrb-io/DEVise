@@ -161,31 +161,37 @@ public class DEViseScreen extends Panel
 
     public void updateGData(String name, Vector rect)
     {
+        DEViseView view = getView(name);
         DEViseWindow win = getViewWindow(name);
-        if (win == null) {
-            YGlobals.Ydebugpn("GData window is null!");
+        if (view == null || win == null) {
+            if (name != null) {
+                YGlobals.Ydebugpn("Can not find the view or window for view name " + name + "!");
+            } else {
+                YGlobals.Ydebugpn("Null name received for finding view!");
+            }
             return;
         }
 
-        win.updateGData(rect);
+        view.setGData(rect);
+        win.updateGData();
     }
-
-    public void drawCursor(String name, Rectangle rect)
-    {
+        
+    public void updateCursor(String name, DEViseCursor rect)
+    {           
+        DEViseView view = getView(name);
         DEViseWindow win = getViewWindow(name);
-        if (win == null)
+        
+        if (win == null || view == null) {
+            if (name != null) {
+                YGlobals.Ydebugpn("Can not find the window or view for view name " + name + "!");
+            } else {
+                YGlobals.Ydebugpn("Null name received for finding view!");
+            }
             return;
-
-        win.drawCursor(rect);
-    }
-
-    public void eraseCursor(String name)
-    {
-        DEViseWindow win = getViewWindow(name);
-        if (win == null)
-            return;
-
-        win.eraseCursor();
+        }
+        
+        view.setCursor(rect);
+        win.updateCursor();
     }
 
     public synchronized void setCurrentWindow(DEViseWindow win)
@@ -219,8 +225,9 @@ public class DEViseScreen extends Panel
         for (int i = 0; i < number; i++) {
             win = (DEViseWindow)allWindows.elementAt(i);
             view = win.getView(name);
-            if (view != null)
+            if (view != null) {
                 break;
+            }
         }
 
         return view;
@@ -238,8 +245,9 @@ public class DEViseScreen extends Panel
         for (int i = 0; i < number; i++) {
             win = (DEViseWindow)allWindows.elementAt(i);
             view = win.getView(name);
-            if (view != null)
+            if (view != null) {
                 break;
+            }
         }
 
         if (view != null)

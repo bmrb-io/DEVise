@@ -75,7 +75,7 @@ public class DEViseCmdDispatcher implements Runnable
 
         if (pass != null)
             password = pass;
-        
+
         imgPort = DEViseGlobals.IMGPORT;
         cmdPort = DEViseGlobals.CMDPORT;
     }
@@ -566,6 +566,14 @@ public class DEViseCmdDispatcher implements Runnable
                     DEViseWindow win = new DEViseWindow(jsc, winname, winloc, image, views);
 
                     jscreen.addWindow(win);
+                    /*
+                    String viewwinname = new String("");
+                    Vector allwinviews = win.getAllViews();
+                    for (int k = 0; k < allwinviews.size(); k++) {
+                        viewwinname += ((DEViseView)allwinviews.elementAt(k)).getName() + " ";
+                    }
+                    YGlobals.Ydebugpn("Window: " + win.getName() + " View: " + viewwinname);
+                    */
                 } catch (NumberFormatException e) {
                     throw new YException("Number format error in command " + rsp[i] + "!", 5);
                 }
@@ -644,27 +652,17 @@ public class DEViseCmdDispatcher implements Runnable
                             throw new YException("Invalid GData received for view " + viewname + "!", 6);
 
                         for (int k = 0; k < results.length; k++) {
-                            String[] value = YGlobals.Yparsestr(results[k]);
-                            if (value == null || value.length < 5)
-                                throw new YException("Invalid GData received for view " + viewname + "!", 6);
-
+                            DEViseGData data = null;
                             try {
-                                int x0 = (int)((Float.valueOf(value[0])).floatValue() * xm + xo);
-                                int y0 = (int)((Float.valueOf(value[1])).floatValue() * ym + yo);
-                                int w = (int)((Float.valueOf(value[4])).floatValue() * xm);
-                                int h = (int)((Float.valueOf(value[4])).floatValue() * ym);
-                                if (w < 0)
-                                    w = -w;
-                                if (h < 0)
-                                    h = -h;
-                                //YGlobals.Ydebugpn("rectangle: " + x0 + " " + y0 + " " + w + " " + h);
-                                rect.addElement(new Rectangle(x0, y0, w, h));
-                            } catch (NumberFormatException e1) {
+                                data = new DEViseGData(results[k], xm, xo, ym, yo);
+                            } catch (YException e1) {
                                 throw new YException("Invalid GData received for view " + viewname + "!", 6);
                             }
+
+                            rect.addElement(data);
                         }
 
-                        YGlobals.Ydebugpn(viewname + " has " + rect.size() + " GData record!");
+                        //YGlobals.Ydebugpn(viewname + " has " + rect.size() + " GData record!");
                         jscreen.updateGData(viewname, rect);
                     }
                 } catch (NumberFormatException e) {
@@ -696,7 +694,14 @@ public class DEViseCmdDispatcher implements Runnable
                     int w = Integer.parseInt(cmd[4]);
                     int h = Integer.parseInt(cmd[5]);
                     Rectangle rect = new Rectangle(x0, y0, w, h);
-                    jscreen.drawCursor(viewname, rect);
+                    DEViseCursor cursor = null;
+                    try {
+                        cursor = new DEViseCursor(rect);
+                    } catch (YException e1) {
+                        throw new YException("Invalid cursor data received!", 5);
+                    }
+
+                    jscreen.updateCursor(viewname, cursor);
                 } catch (NumberFormatException e) {
                     throw new YException("Incorrect view coordinate " + cmd[2] + " " + cmd[3] + " " + cmd[4] + " " + cmd[5] + "!", 5);
                 }
@@ -706,7 +711,7 @@ public class DEViseCmdDispatcher implements Runnable
                     throw new YException("Ill-formated command " + rsp[i] + "!", 5);
                 }
 
-                jscreen.eraseCursor(cmd[1]);
+                jscreen.updateCursor(cmd[1], null);
             } else if (rsp[i].startsWith("JAVAC_UpdateRecordValue")) {
                 cmd = DEViseGlobals.parseString(rsp[i]);
                 if (cmd == null) {

@@ -45,16 +45,16 @@ public class DEViseWindow extends Component
     Dimension windowDim = null;
     Image winImage = null;
     Image offScrImg = null;
-    Image croppedImage = null;
     Vector allViews = null;
     DEViseView currentView = null;
 
     boolean isCurrent = false, isViewFirstTime = true, isMouseDragged = false;
     int userAction = 0;
-    Point sp = new Point(), ep = new Point(), cropP = new Point();
+    Point sp = new Point(), ep = new Point();
 
-    Rectangle[] viewGData = null;
-    Image[] GDataImage = null;
+    DEViseGData[] viewGData = null;
+    DEViseCursor[] viewCursor = null;
+    Image[] GDataImage = null, cursorImage = null;
 
     public DEViseWindow(jsdevisec what, String name, Rectangle loc, Image img, Vector views)
     {
@@ -118,13 +118,14 @@ public class DEViseWindow extends Component
         if (name == null)
             return null;
 
-        int number = allViews.size();
         DEViseView view = null;
-
-        for (int i = 0; i < number; i++) {
+        for (int i = 0; i < allViews.size(); i++) {
             view = (DEViseView)allViews.elementAt(i);
-            if (view.getName().equals(name))
+            if ((view.getName()).equals(name)) {
                 break;
+            } else {
+                view = null;
+            }
         }
 
         return view;
@@ -203,44 +204,109 @@ public class DEViseWindow extends Component
     //        return;
     //    super.processEvent(event);
     //}
-
-    public void drawCursor(Rectangle loc)
+    
+    public void updateCursor()
     {
-        if (loc == null)
+        viewCursor = null;
+        cursorImage = null;
+        
+        Vector tmp = new Vector();
+        for (int i = 0; i < allViews.size(); i++) {
+            DEViseView view = (DEViseView)allViews.elementAt(i);
+            DEViseCursor[] data = view.getCursor();
+            if (data != null) {
+                for (int j = 0; j < data.length; j++) {
+                    tmp.addElement(data[j]);
+                }
+            }
+        }
+        
+        if (tmp.size() != 0) {        
+            viewCursor = new DEViseCursor[tmp.size()];
+            
+            for (int i = 0; i < viewCursor.length; i++) 
+                viewCursor[i] = (DEViseCursor)tmp.elementAt(i);
+        }         
+    } 
+    
+    private void buildCursorImage()
+    {
+        if (viewCursor == null || viewCursor.length == 0) {
+            cursorImage = null;
             return;
+        }
+        
+        cursorImage = new Image[viewCursor.length];
+        for (int i = 0; i < cursorImage.length; i++) {                
+            CropImageFilter croppedFilter = new CropImageFilter(viewCursor[i].x, viewCursor[i].y, viewCursor[i].width, viewCursor[i].height);
+            FilteredImageSource source = new FilteredImageSource(winImage.getSource(), croppedFilter);
+            
+            cursorImage[i] = createImage(source);
+            if (cursorImage[i] == null) {
+                YGlobals.Ydebugpn("Can not create image for cursor!");
+                cursorImage = null;
+                break;
+            }
+            
+            source = new FilteredImageSource(cursorImage[i].getSource(), new XORFilter());
 
-        // Should also check that loc is within the range of current view
-        CropImageFilter croppedFilter = new CropImageFilter(loc.x, loc.y, loc.width, loc.height);
-        FilteredImageSource source = new FilteredImageSource(winImage.getSource(), croppedFilter);
-        croppedImage = createImage(source);
-        source = new FilteredImageSource(croppedImage.getSource(), new XORFilter());
-        croppedImage = createImage(source);
-        cropP.x = loc.x;
-        cropP.y = loc.y;
-
-        repaint();
+            cursorImage[i] = createImage(source);            
+            if (cursorImage[i] == null) {
+                YGlobals.Ydebugpn("Can not create image for cursor!");
+                cursorImage = null;
+                break;
+            }            
+        }
+    }
+    
+    public void updateGData()
+    {
+        viewGData = null; 
+        GDataImage = null;
+        
+        Vector tmp = new Vector();
+        for (int i = 0; i < allViews.size(); i++) {
+            DEViseView view = (DEViseView)allViews.elementAt(i);
+            DEViseGData[] data = view.getGData();
+            if (data != null) {
+                for (int j = 0; j < data.length; j++) {
+                    tmp.addElement(data[j]);
+                }
+            }
+        }
+        
+        if (tmp.size() != 0) {        
+            viewGData = new DEViseGData[tmp.size()];
+            
+            for (int i = 0; i < viewGData.length; i++) 
+                viewGData[i] = (DEViseGData)tmp.elementAt(i);
+        } 
     }
 
-    public void eraseCursor()
+    public void buildGDataImage()
     {
-        croppedImage = null;
-        repaint();
-    }
-
-    public void updateGData(Vector gdata)
-    {
-        if (gdata == null || gdata.size() == 0) {
+        if (viewGData == null || viewGData.length == 0) {
             GDataImage = null;
-            viewGData = null;
             return;
         }
-
-        viewGData = new Rectangle[gdata.size()];
-        for (int i = 0; i < viewGData.length; i++) {
-            viewGData[i] = (Rectangle)gdata.elementAt(i);
+        
+        GDataImage = new Image[viewGData.length];
+        for (int i = 0; i < GDataImage.length; i++) {                            
+            GDataImage[i] = createImage(viewGData[i].width, viewGData[i].height);
+            
+            if (GDataImage[i] == null) {
+                YGlobals.Ydebugpn("Can not create image for GData!");
+                GDataImage = null;
+                break;
+            }
+            
+            Graphics tg = GDataImage[i].getGraphics();
+            tg.setColor(Color.yellow);
+            tg.fillRect(0, 0, viewGData[i].width, viewGData[i].height);
+            tg.dispose();
         }
     }
-
+    
     // Enable reliable light weight component paint
     public void repaint()
     {
@@ -270,31 +336,8 @@ public class DEViseWindow extends Component
             g.drawImage(winImage, 0, 0, this);
 
             if (viewGData != null) {
-                /*
-                Color oldColor = g.getColor();
-                g.setColor(Color.yellow);
-
-                for (int i = 0; i < viewGData.length; i++) {
-                    g.fillRect(viewGData[i].x - viewGData[i].width / 2, viewGData[i].y - viewGData[i].height / 2, viewGData[i].width, viewGData[i].height);
-                }
-
-                g.setColor(oldColor);
-                */
                 if (GDataImage == null) {
-                    GDataImage = new Image[viewGData.length];
-                    for (int i = 0; i < viewGData.length; i++) {
-                        GDataImage[i] = createImage(viewGData[i].width, viewGData[i].height);
-                        if (GDataImage[i] == null) {
-                            YGlobals.Ydebugpn("Can not create image for GData!");
-                            GDataImage = null;
-                            break;
-                        }
-
-                        Graphics tg = GDataImage[i].getGraphics();
-                        tg.setColor(Color.yellow);
-                        tg.fillRect(0, 0, viewGData[i].width, viewGData[i].height);
-                        tg.dispose();
-                    }
+                    buildGDataImage();
                 }
 
                 if (GDataImage != null) {
@@ -302,11 +345,18 @@ public class DEViseWindow extends Component
                         g.drawImage(GDataImage[i], viewGData[i].x - viewGData[i].width / 2, viewGData[i].y - viewGData[i].height / 2, this);
                     }
                 }
-
             }
-
-            if (croppedImage != null) {
-                g.drawImage(croppedImage, cropP.x, cropP.y, this);
+            
+            if (viewCursor != null) {
+                if (cursorImage == null) {
+                    buildCursorImage();
+                }
+                
+                if (cursorImage != null) {
+                    for (int i = 0; i < cursorImage.length; i++) {
+                        g.drawImage(cursorImage[i], viewCursor[i].x, viewCursor[i].y, this);
+                    }
+                }
             }
 
             if (isCurrent) {
