@@ -1123,6 +1123,9 @@ Num Date        Status  Description
 			DEVISE_COLLABORATOR envrionment variable defined
 			(with code as of collab_br_1). (rkw)
 
+292 02/11/98	OPEN	Saving GData from views doesn't work correctly now
+			that ViewData has replaced ViewScatter. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
