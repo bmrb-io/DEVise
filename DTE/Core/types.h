@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1998/04/10 17:36:28  donjerko
+  *** empty log message ***
+
   Revision 1.47  1998/03/17 17:19:11  donjerko
   Added new namespace management through relation ids.
 
@@ -706,44 +709,7 @@ public:
 		memcpy(&value, from, sizeof(double));
 	}
 	static GeneralPtr* getOperatorPtr(
-		string name, TypeID arg, TypeID& retType){
-		if(arg == "double"){
-			if(name == "+"){
-				retType = "double";
-				return new GeneralPtr(doubleAdd, sameSize);
-			}
-			else if(name == "-"){
-				retType = "double";
-				return new GeneralPtr(doubleSub, sameSize);
-			}
-			else if(name == "="){
-				retType = "bool";
-				return new GeneralPtr(doubleEq, boolSize, oneOver100);
-			}
-			else if(name == "<"){
-				retType = "bool";
-				return new GeneralPtr(doubleLT, boolSize, oneOver3);
-			}
-			else if(name == ">"){
-				retType = "bool";
-				return new GeneralPtr(doubleGT, boolSize, oneOver3);
-			}
-			else if(name == "/"){
-				retType = "double";
-				return new GeneralPtr(doubleDiv, sameSize);
-			}
-			else if(name == "comp"){
-				retType = "int";
-				return new GeneralPtr(doubleComp, sameSize);
-			}
-			else{
-				return NULL;
-			}
-		}
-		else{
-			return NULL;
-		}
-     }
+		string name, TypeID arg, TypeID& retType);
 	static const Type* getTypePtr(const double* c){
 		return (const Type*) c;
 	}

@@ -68,13 +68,13 @@ RelationId RelationManager::registerNewRelation(const Interface& interface)
 	else{
 		nextId = ntohl(nextId);
 		int futureId = htonl(nextId + 1);	// next id to be created
-		assert(idStream.seekg(0));
+		assert(idStream.seekp(0));
 		idStream.write(&futureId, sizeof(int));
 		assert(idStream);
 	}
-	defStream.seekg(0, ios::end);
-	int nextPos = htonl(defStream.tellg());	// this id points to offset 0
-	idStream.seekg(0, ios::end);
+	defStream.seekp(0, ios::end);
+	int nextPos = htonl(defStream.tellp());	// this id points to offset 0
+	idStream.seekp(0, ios::end);
 	idStream.write(&nextPos, sizeof(int));
 
 	interface.write(defStream);
@@ -92,7 +92,7 @@ Interface* RelationManager::createInterface(const RelationId& relId)
 	
 	int idOffset = relId.getLocalId();
 
-	idStream.seekp(idOffset * sizeof(int));
+	idStream.seekg(idOffset * sizeof(int));
 	
 	int defOffset;
 	if(!idStream.read(&defOffset, sizeof(int))){
@@ -106,7 +106,7 @@ Interface* RelationManager::createInterface(const RelationId& relId)
 	}
 	defOffset = ntohl(defOffset);
 
-	defStream.seekp(defOffset);
+	defStream.seekg(defOffset);
 	assert(defStream);
 
 	char* space = new char[INITIAL_INTERFACE_SIZE];

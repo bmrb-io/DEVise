@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/03/17 17:19:10  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.52  1998/03/13 04:02:19  donjerko
   *** empty log message ***
 
@@ -461,6 +464,18 @@ void doubleLT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
 	double val1 = ((IDouble*)arg1)->getValue();
 	double val2 = ((IDouble*)arg2)->getValue();
 	result = (Type*)(val1 < val2);
+}
+
+void doubleLE(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	double val1 = *((double*)arg1);
+	double val2 = *((double*)arg2);
+	result = (Type*)(val1 <= val2);
+}
+
+void doubleGE(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
+	double val1 = *((double*)arg1);
+	double val2 = *((double*)arg2);
+	result = (Type*)(val1 >= val2);
 }
 
 void doubleGT(const Type* arg1, const Type* arg2, Type*& result, size_t& rsz){
@@ -1924,4 +1939,52 @@ ConstructorPtr getConstructorPtr(
 	}
 	msg += ") not defined";
 	THROW(new Exception(msg), 0);
+}
+
+GeneralPtr* IDouble::getOperatorPtr(
+	string name, TypeID arg, TypeID& retType){
+	if(arg == "double"){
+		if(name == "+"){
+			retType = "double";
+			return new GeneralPtr(doubleAdd, sameSize);
+		}
+		else if(name == "-"){
+			retType = "double";
+			return new GeneralPtr(doubleSub, sameSize);
+		}
+		else if(name == "="){
+			retType = "bool";
+			return new GeneralPtr(doubleEq, boolSize, oneOver100);
+		}
+		else if(name == "<"){
+			retType = "bool";
+			return new GeneralPtr(doubleLT, boolSize, oneOver3);
+		}
+		else if(name == ">"){
+			retType = "bool";
+			return new GeneralPtr(doubleGT, boolSize, oneOver3);
+		}
+		else if(name == ">="){
+			retType = "bool";
+			return new GeneralPtr(doubleGE, boolSize, oneOver3);
+		}
+		else if(name == "<="){
+			retType = "bool";
+			return new GeneralPtr(doubleLE, boolSize, oneOver3);
+		}
+		else if(name == "/"){
+			retType = "double";
+			return new GeneralPtr(doubleDiv, sameSize);
+		}
+		else if(name == "comp"){
+			retType = "int";
+			return new GeneralPtr(doubleComp, sameSize);
+		}
+		else{
+			return NULL;
+		}
+	}
+	else{
+		return NULL;
+	}
 }
