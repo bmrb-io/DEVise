@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/06/27 23:17:23  donjerko
+  Changed date structure from time_t and tm to EncodedDTF
+
   Revision 1.21  1997/06/21 22:48:08  donjerko
   Separated type-checking and execution into different classes.
 
@@ -1176,7 +1179,8 @@ char* allocateSpace(TypeID type, size_t& size){
 		return (char*) new double;
 	}
 	else if(type.through(5).contains("string")){
-		return new char[packSize(type)];
+		size = packSize(type);
+		return new char[size];
 	}
 	else if(type == "date"){
 		return (char*) new EncodedDTF();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/06/21 22:48:01  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.5  1997/06/16 16:04:44  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -60,8 +63,9 @@ class ISchemaExec : public Iterator {
 	bool done;
 	Tuple retVal[1];
 public:
-	ISchemaExec(ISchema* schema) : done(false) {
-		retVal[0] = schema;
+	ISchemaExec(const ISchema* schema) : done(false) {
+		retVal[0] = (Type*) schema;
+		// need to copy schema over
 	}
 	virtual ~ISchemaExec(){
 		// do not delete schema  ?
@@ -77,9 +81,9 @@ public:
 };
 
 class ISchemaSite : public Site {
-	ISchema* schema;	
+	const ISchema* schema;	
 public:
-	ISchemaSite(ISchema* schema) : Site(), schema(schema){}
+	ISchemaSite(const ISchema* schema) : Site(), schema(schema){}
 	virtual ~ISchemaSite(){
 		// do not delete schema
 	}
@@ -103,7 +107,7 @@ Site* ISchemaParse::createSite(){
 	assert(catalog);
 	TRY(interf = catalog->findInterface(tableName), NULL);
 	delete catalog;
-	TRY(ISchema* schema = interf->getISchema(tableName), NULL);
+	TRY(const ISchema* schema = interf->getISchema(tableName), NULL);
 	delete interf;
 	return new ISchemaSite(schema);
 }

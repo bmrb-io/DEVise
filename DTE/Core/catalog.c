@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/06/21 22:48:06  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.17  1997/06/16 16:04:47  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -122,7 +125,7 @@ Site* DeviseInterface::getSite(){
 	return retVal;
 }
 
-ISchema* DeviseInterface::getISchema(TableName* table){
+const ISchema* DeviseInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	int numFlds;
@@ -166,7 +169,7 @@ Inserter* StandardInterface::getInserter(TableName* table){ // Throws
      return inserter;
 }
 
-ISchema* StandardInterface::getISchema(TableName* table){
+const ISchema* StandardInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	int numFlds;
@@ -188,7 +191,7 @@ Site* CatalogInterface::getSite(){ // Throws a exception
 	return retVal;
 }
 
-ISchema* CatalogInterface::getISchema(TableName* table){
+const ISchema* CatalogInterface::getISchema(TableName* table){
 	assert(table);
 	assert(table->isEmpty());
 	String* attributeNames = new String("catentry");
@@ -256,7 +259,10 @@ Site* ViewInterface::getSite(){
 	return new LocalTable("", engine); 
 }
 
-ISchema* QueryInterface::getISchema(TableName* table){	// throws exception
+const ISchema* QueryInterface::getISchema(TableName* table){
+
+	// throws exception
+
 	int count = 2;
 	String* options = new String[count];
 	String* values = new String[count];

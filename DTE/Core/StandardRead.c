@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/06/21 22:48:04  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.10  1997/06/16 16:04:45  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -109,6 +112,15 @@ void StandardRead::open(istream* in, int numFlds, const TypeID* typeIDs){
 	for(int i = 0; i < numFlds; i++){
 		this->typeIDs[i] = typeIDs[i];
 	}
+}
+
+void StandardRead::open(istream* in, int numFlds, TypeID* typeIDs,
+	String* attributeNames){
+	this->numFlds = numFlds;
+	this->typeIDs = typeIDs;
+	this->attributeNames = attributeNames;
+	assert(in && in->good());
+	this->in = in;
 }
 
 void NCDCRead::open(istream* in){	// Throws exception

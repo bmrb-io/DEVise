@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/06/21 22:48:05  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.11  1997/06/16 16:04:46  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -114,6 +117,9 @@ public:
 	virtual void open(istream* in);	// Throws exception
 	void open(istream* in, int numFlds, const TypeID* typeIDs); 
 		// throws, used for tmp tables
+
+	void open(istream* in, int numFlds, TypeID* typeIDs, 
+		String* attributeNames); 
 
 	void writeTo(ofstream* outfile);
 	virtual int getNumFlds(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/06/21 22:48:06  donjerko
+  Separated type-checking and execution into different classes.
+
   Revision 1.14  1997/06/16 16:04:48  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -98,7 +101,7 @@ public:
 	virtual Type getType(){
 		return UNKNOWN;
 	}
-	virtual ISchema* getISchema(TableName* table) = 0;	// throws
+	virtual const ISchema* getISchema(TableName* table) = 0;	// throws
 	virtual Inserter* getInserter(TableName* table){ // throws
 		THROW(new Exception("Insertion not supported"), NULL);
 	}
@@ -137,7 +140,7 @@ public:
 		out << " " << priority << " " << addQuotes(command);
 		out << " " << addQuotes(segment);
 	}
-	virtual ISchema* getISchema(TableName* table){
+	virtual const ISchema* getISchema(TableName* table){
 		String msg = "ISchema lookup not supported for UNIXFILEs";
 		THROW(new Exception(msg), NULL);
 	}
@@ -163,7 +166,7 @@ public:
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out);
-	virtual ISchema* getISchema(TableName* table){
+	virtual const ISchema* getISchema(TableName* table){
 		assert(table);
 		assert(table->isEmpty());
 		assert(attributeNames);
@@ -193,7 +196,7 @@ public:
 		out << "\t" << addQuotes(viewNm);
 		Interface::write(out);
 	}
-	virtual ISchema* getISchema(TableName* table);
+	virtual const ISchema* getISchema(TableName* table);
 };
 
 class StandardInterface : public Interface{
@@ -209,7 +212,7 @@ public:
 		out << " " << urlString;
 		Interface::write(out);
 	}
-	virtual ISchema* getISchema(TableName* table);	// throws exception
+	virtual const ISchema* getISchema(TableName* table);	// throws exception
 	virtual Inserter* getInserter(TableName* table); // throws
 };
 
@@ -233,7 +236,7 @@ public:
 	virtual Type getType(){
 		return QUERY;
 	}
-	virtual ISchema* getISchema(TableName* table);	// throws exception
+	virtual const ISchema* getISchema(TableName* table);	// throws exception
 };
 
 class CGIInterface : public Interface{
@@ -265,7 +268,7 @@ public:
 		}
 		Interface::write(out);
 	}
-	virtual ISchema* getISchema(TableName* table){
+	virtual const ISchema* getISchema(TableName* table){
 		String msg = "ISchema lookup not yet implemented for CGIs";
 		THROW(new Exception(msg), NULL);
 	}
@@ -292,7 +295,7 @@ public:
 	virtual Type getType(){
 		return CATALOG;
 	}
-	virtual ISchema* getISchema(TableName* table);	// throws exception
+	virtual const ISchema* getISchema(TableName* table);	// throws exception
 };
 
 #endif
