@@ -57,9 +57,9 @@ endif
 
 DEVISE_SPECIFIC_SRC = TuplePtr.Plex.c TuplePtr.XPlex.c \
 	TDataDQL.c TDataDQLInterp.c CatalogComm.c CatalogComm2.c \
-	ParseAPIDTE.c
+	ParseAPIDTE.c DTEControl.c
 	
-GUI_SRC = ParseAPIParent.c TkControl.c CatalogComm.c
+GUI_SRC = CatalogComm.c DTEControl.c TkControl.c
 
 ParseAPIDTE_SA.o : ParseAPIDTE.c
 	$(CC) -c $(CFLAGS) -DDTE_STANDALONE -o $@ $<

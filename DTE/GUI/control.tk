@@ -1,0 +1,277 @@
+#!/s/std/bin/wish -f
+
+set libdir $env(DEVISE_LIB)
+source $libdir/tool.tcl
+
+# I guess I don't need "global quiet" for now
+# But I have to give it a value  
+# Otherwise Puts <"Using data stream catalog $sourceFile"> in sources.tcl won't work
+#set quiet 1
+set quiet 0
+
+set UserMode 1
+
+set datadir "."
+if { [info exists env(DEVISE_DAT)] } {
+    set datadir $env(DEVISE_DAT)
+}
+
+set schemadir "."
+if { [info exists env(DEVISE_SCHEMA)] } {
+    set schemadir $env(DEVISE_SCHEMA)
+}
+
+set filterdir $schemadir/query
+
+source $libdir/dialog.tk
+source $libdir/FSBox.tk
+source $libdir/sources.tcl
+source $libdir/schema.tk
+source $libdir/macrodef.tk
+source $libdir/util.tcl
+
+#source util.tcl
+#source dialog.tk
+
+set backGround DarkOliveGreen
+set foreGround white
+
+tk_setPalette background $backGround foreground $foreGround \
+            selectBackground $foreGround selectForeground $backGround
+
+wm title . "DTE"
+wm geometry . +0+0
+tk_focusFollowsMouse 
+
+. configure -bg $backGround
+
+bind . q DoExit
+bind . <Control-c> DoExit
+bind . <Control-C> DoExit
+
+frame .panel -bg white
+frame .mbar  -relief raised -bd 4 -bg green
+
+pack .panel -side top -expand 0 -fill both
+pack .mbar  -side top -expand 0 -fill x
+
+frame .panel.center   -relief sunken
+pack .panel.center   -side left -expand 1 -fill both
+
+label .panel.center.dummy -text "" -font 5x7
+
+button .panel.center.label -text DTE \
+        -font -*-times-medium-i-normal--*-300-*-*-*-*-*-* \
+	-bd 0 -highlightthickness 2 -activebackground $backGround \
+	-highlightcolor red -command {} 
+
+pack  .panel.center.dummy -side top -expand 0 -fill x
+pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
+	-pady 0
+
+menubutton .mbar.session -text Session -underline 0 \
+        -menu .mbar.session.menu
+menubutton .mbar.tdata -text Tables -underline 0 \
+        -menu .mbar.tdata.menu
+menubutton .mbar.index -text Index -underline 0 \
+        -menu .mbar.index.menu
+menubutton .mbar.filter -text SQLFilter -underline 3 \
+        -menu .mbar.filter.menu
+menubutton .mbar.schema -text Schema -underline 1\
+        -menu .mbar.schema.menu
+menubutton .mbar.help -text Help -underline 0\
+        -menu .mbar.help.menu
+
+pack .mbar.session .mbar.tdata .mbar.index .mbar.filter .mbar.schema\
+         .mbar.help -expand 1 -side left -fill x 
+
+menu .mbar.session.menu -tearoff 0
+.mbar.session.menu add command -label "Quit" -command DoExit
+
+menu .mbar.tdata.menu -tearoff 0
+.mbar.tdata.menu add cascade -label "New" \
+        -menu .mbar.tdata.menu.import
+.mbar.tdata.menu add command -label "Edit" -command {
+
+        # boolean var
+        global displayImmediately
+
+        set table [selectStream]
+        set currentDir [CWD]
+     if {[llength $table] == 0} {
+                return
+        }
+     if {[llength $table] > 1} {
+         dialog .note "Note" "Please select only one table." "" 0 OK
+         return
+     }
+        set entry [DEVise dteShowCatalogEntry $table]
+#############################################################################
+#puts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#puts $entry
+#puts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#############################################################################
+
+        set entry [lindex $entry 0]
+        set oldTableName [lindex $entry 0]
+        set type [lindex $entry 1]
+
+
+
+#############################################################################
+#puts ########################################################################
+#puts $type
+#puts ########################################################################
+#############################################################################
+
+        set retVal [define$type $entry]
+        puts "retVal = $retVal"
+        set newTableName [lindex $retVal 0]
+        puts "newTableName = $newTableName"
+        if {$retVal != ""} {
+                if {$newTableName == $oldTableName} {
+
+                        # this was an update
+
+                        DEVise dteDeleteCatalogEntry \
+                                [fullPathName $oldTableName $currentDir]
+                }
+                DEVise dteInsertCatalogEntry $currentDir $retVal
+                if {$displayImmediately} {
+                        displayTable [fullPathName $newTableName]
+                }
+        }
+}
+
+.mbar.tdata.menu add command -label "Delete" -command {
+        set table [selectStream]
+
+##############################################################
+#puts "\n###################################"
+#puts "\ntable="
+#puts $table
+#puts "\n###################################\n"
+##############################################################
+
+     foreach d $table {
+         set but [dialog .confirm "Confirm Stream Deletion" \
+              "Delete stream \"$d\"?" "" 1 Yes No Cancel]
+         if {$but == 2} {
+          return
+         }
+         if {$but == 1} {
+          continue
+         }
+          DEVise dteDeleteCatalogEntry $d
+          updateSources
+     }
+}
+
+menu .mbar.tdata.menu.import -tearoff 0
+
+foreach sourcetype [lsort [array names sourceTypes]] {
+
+#puts "\n***********\nsourcetype="
+#puts $sourcetype
+#puts "\n******************\n"
+
+        if {$sourcetype == "UNIXFILE"} {
+                } elseif {$sourcetype == "WWW"} {
+                } else {
+        .mbar.tdata.menu.import add command -label $sourcetype \
+                -command        [list defineANY $sourcetype]
+                }
+}
+
+menu .mbar.index.menu -tearoff 0
+
+.mbar.index.menu add command -label "New" -command {
+        set table [selectStream]
+        while {[llength $table] > 1} {
+                dialog .note "Note" "Please select only one table." "" 0 OK
+                set table [selectStream]
+        }
+        if {$table == ""} {
+                return
+        }
+        set attrs [DEVise dteListAttributes $table]
+        indexUpdate $attrs
+}
+
+.mbar.index.menu add command -label "Browse" -command {
+        set table [selectStream]
+        while {[llength $table] > 1} {
+                dialog .note "Note" "Please select only one table." "" 0 OK
+                set table [selectStream]
+        }
+        if {$table == ""} {
+                return
+        }
+}
+
+.mbar.index.menu add command -label "Delete" -command {
+        set table [selectStream]
+        while {[llength $table] > 1} {
+                dialog .note "Note" "Please select only one table." "" 0 OK
+                set table [selectStream]
+        }
+        if {$table == ""} {
+                return
+        }
+}
+
+menu .mbar.filter.menu -tearoff 0
+
+.mbar.filter.menu add command -label "New" -command {
+        newViewFile
+        return
+}
+
+.mbar.filter.menu add command -label "Edit" -command {
+        global filterdir fsBox
+        global viewName select as where
+        set fsBox(path) $filterdir
+        set fsBox(pattern) *
+        set file [FSBox "Select SQLFilter file"]
+        if {$file != ""} {
+                set result [DEVise dteReadSQLFilter $file]
+                set select [lindex $result 0]
+                set as [lindex $result 1]
+                set where [lindex $result 2]
+                set viewName [file tail $file]
+                puts "calling qbrowse 1 $viewName $select $as $where"
+                qbrowse 1 $viewName "" "" $select $as $where
+                puts "returns qbrowse 1 $viewName $select $as $where"
+                set fileName "$filterdir/$viewName"
+                saveViewFile $fileName $select $as $where
+        }
+}
+
+.mbar.filter.menu add command -label "Delete" -command {
+        global filterdir fsBox
+        set fsBox(path) $filterdir
+        set fsBox(pattern) *
+        set file [FSBox "Select SQLFilter file"]
+        if {$file != ""} {
+         set but [dialog .confirm "Confirm Stream Deletion" \
+              "Delete SQLFilter \"$file\"?" "" 1 Yes No]
+         if {$but == 1} {
+          return
+         }
+                exec rm $file
+        }
+}
+
+menu .mbar.schema.menu -tearoff 0
+
+.mbar.schema.menu add command -label "Browse..." -command SchemaBrowse
+.mbar.schema.menu add separator
+.mbar.schema.menu add command -label "Physical..." -command {SchemaEdit 0}
+.mbar.schema.menu add command -label "Logical..." -command {SchemaEdit 1}
+
+menu .mbar.help.menu -tearoff 0
+.mbar.help.menu add command -label "Demo"
+
+tk_menuBar .mbar .mbar.session .mbar.tdata .mbar.view \
+        .mbar.link .mbar.window .mbar.help
+focus .mbar 

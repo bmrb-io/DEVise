@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.57  1997/03/14 20:33:55  donjerko
+  *** empty log message ***
+
   Revision 1.56  1997/03/14 18:36:59  donjerko
   Separated DTE calls from ParseAPI.C into ParseAPIDTE.c
 
@@ -526,6 +529,59 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
+
+/*
+//splitted by liping
+//
+
+    if(!strcmp(argv[0], "dteDeleteCatalogEntry")){
+    	 dteDeleteCatalogEntry(argv[1]);
+      control->ReturnVal(API_ACK, "");
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteReadSQLFilter")){
+    	 char* retVal = dteReadSQLFilter(argv[1]);
+      control->ReturnVal(API_ACK, retVal);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteShowCatalogEntry")){
+    	 char* catEntry = dteShowCatalogEntry(argv[1]);
+      control->ReturnVal(API_ACK, catEntry);
+      return 1;
+    }
+
+	if(!strcmp(argv[0],"dteImportFileType")){
+	  char * name = dteImportFileType(argv[1]); 
+	  if (!name){
+		strcpy(result,"");
+		control->ReturnVal(API_NAK, result);
+		return -1;
+	  }
+      control->ReturnVal(API_ACK, name);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteListCatalog")){
+    	 char* catListing = dteListCatalog(argv[1]);
+      control->ReturnVal(API_ACK, catListing);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteListAttributes")){
+    	 char* attrListing = dteListAttributes(argv[1]);
+      control->ReturnVal(API_ACK, attrListing);
+      return 1;
+    }
+//
+
+	if (!strcmp(argv[0],"createIndex")){
+		dqlCreateIndex(argv[1]);
+		return 1;
+	}	
+=======
+*/
 
     if (!strcmp(argv[0], "abortQuery")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
@@ -1318,6 +1374,30 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
   }
   if (argc == 3) {
+
+/*
+//splitted by liping
+//
+    if(!strcmp(argv[0], "dteShowAttrNames")){
+    	 char* attrListing = dteShowAttrNames(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, attrListing);
+      return 1;
+    }
+    if(!strcmp(argv[0], "dteShowCatalogEntry")){
+    	 char* catEntry = dteShowCatalogEntry(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, catEntry);
+      return 1;
+    }
+
+    if(!strcmp(argv[0], "dteInsertCatalogEntry")){
+    	 dteInsertCatalogEntry(argv[1], argv[2]);
+      control->ReturnVal(API_ACK, "");
+      return 1;
+    }
+//
+    
+=======
+*/
 
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);

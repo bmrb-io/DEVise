@@ -7,6 +7,8 @@
 	#include "Control.h"
 	#include "ParseAPI.h"
 #endif
+
+#include "ParseAPIDTE.h"
 #include "CatalogComm.h"
 
 int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
@@ -18,6 +20,14 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
 			control->ReturnVal(API_ACK, retVal);
 			return 1;
 		}
+		
+		// This is for DTE exit ONLY!
+		if(!strcmp(argv[0], "exit")){
+			char* retVal="";
+			control->ReturnVal(API_ACK, retVal);
+			return 1;
+		}
+
 	}
 	if (argc == 2) {
     if(!strcmp(argv[0], "dteDeleteCatalogEntry")){

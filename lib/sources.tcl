@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.61  1997/03/14 18:37:10  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.60  1997/03/06 02:37:45  donjerko
 #	Added window to create StandardTable
 #
@@ -2079,6 +2082,7 @@ proc updateSources {} {
 
     .srcsel.top.list delete 0 end
 	set listing [DEVise dteListCatalog [CWD]]
+        puts "->>>>>$listing"
 	if {[notRootDir]} {
 		set sname ".."
 		set source "Directory"
