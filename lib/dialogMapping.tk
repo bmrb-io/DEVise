@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.6  1995/11/21 23:38:20  jussi
+#	The user can now select either constant values for a mapping
+#	attribute, or a field from TData schema.
+#
 #	Revision 1.5  1995/09/22 17:33:40  jussi
 #	Added copyright message.
 #
@@ -123,6 +127,9 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
     # calculate width of label and value fields
     set labelWidth [expr [FindMaxLabelLength $mappings] + 5]
     set valueWidth [expr [FindMaxValueLength $mappings] + 5]
+    if {$valueWidth < 30} {
+	set valueWidth 30
+    }
 
     # create the name widget
     set nameMsgWidget ""
@@ -140,44 +147,47 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
     }
 
     set xname [lindex [lindex $mappings 0] 0]
-    set xval $w.mapping.value.val$xname
+    set xval mappingValue$xname
     set yname [lindex [lindex $mappings 1] 0]
-    set yval $w.mapping.value.val$yname
+    set yval mappingValue$yname
 
     foreach item $mappings {
 	set itemname [lindex $item 0]
-	set itemval [findCompleteValue [lindex $item 1] [lindex $item 2]]
-	global $w.mapping.value.p$itemname
-	set $w.mapping.value.p$itemname $itemval
+	set itemval [lindex $item 2]
+	global mappingValue$itemname
+	set mappingValue$itemname $itemval
 	label $w.mapping.label.p$itemname -text $itemname \
 		-width $labelWidth
 	catch "$w.mapping.label.p$itemname config $tmpButtonOpt"
 
 	menubutton $w.mapping.value.p$itemname -relief raised \
-		-textvariable $w.mapping.value.p$itemname \
+		-textvariable mappingValue$itemname \
 		-menu $w.mapping.value.p$itemname.menu \
 		-width $valueWidth
 	catch "$w.mapping.value.p$itemname config $tmpButtonOpt"
 	menu $w.mapping.value.p$itemname.menu -tearoff 0
-	$w.mapping.value.p$itemname.menu add command \
-		-label Default \
-		-command "set $w.mapping.value.p$itemname {}"
 	$w.mapping.value.p$itemname.menu add cascade -label Constant \
 		-menu $w.mapping.value.p$itemname.menu.constant
 	$w.mapping.value.p$itemname.menu add cascade -label Variable \
 		-menu $w.mapping.value.p$itemname.menu.variable
+	$w.mapping.value.p$itemname.menu add command -label "Expression..." \
+		-command "editExpression $itemname"
 
 	menu $w.mapping.value.p$itemname.menu.constant -tearoff 0
 	foreach val [lindex $item 1] {
+	    set value [lindex $val 0]
+	    if {[llength $val] > 1} {
+		set value [lindex $val 1]
+	    }
 	    if {$getName} {
 		$w.mapping.value.p$itemname.menu.constant add radiobutton \
-			-label $val -variable $w.mapping.value.p$itemname \
-			-value $val \
+			-label $value -variable mappingValue$itemname \
+			-value $value \
 			-command "updateMapName $nameEntryWidget $xval $yval"
 	    } else {
 		$w.mapping.value.p$itemname.menu.constant add radiobutton \
-			-label $val -variable $w.mapping.value.p$itemname \
-			-value $val
+			-label $value -variable mappingValue$itemname \
+			-value $value
 	    }
 	}
 
@@ -185,12 +195,12 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
 	foreach val $attrlist {
 	    if {$getName} {
 		$w.mapping.value.p$itemname.menu.variable add radiobutton \
-			-label $val -variable $w.mapping.value.p$itemname \
+			-label $val -variable mappingValue$itemname \
 			-value \$$val \
 			-command "updateMapName $nameEntryWidget $xval $yval"
 	    } else {
 		$w.mapping.value.p$itemname.menu.variable add radiobutton \
-			-label $val -variable $w.mapping.value.p$itemname \
+			-label $val -variable mappingValue$itemname \
 			-value \$$val
 	    }
 	}
@@ -243,7 +253,7 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
     if { $button1 == 1 } {
 	foreach item $mappings {
 	    set itemname [lindex $item 0]
-	    lappend newmap [lindex [deref $w.mapping.value.p$itemname] 0]
+	    lappend newmap [deref mappingValue$itemname]
 	}
 	if {$getName } {
 	    set newmap [list [$nameEntryWidget get] $newmap]
@@ -255,13 +265,52 @@ proc dialogMapping {w title text bitmap attrlist mappings {getName 0} } {
     return $newmap
 }
 
-proc findCompleteValue {list key} {
-    foreach item $list {
-	if {[lindex $item 0] == $key} {
-	    return $item
-	}
-    }
-    return $key
+proc editExpression {varname} {
+    global mappingValue$varname edit$varname
+
+    set winname ".edit$varname"
+    set edit$varname [deref mappingValue$varname]
+
+    # see if $winname window already exists; if so, just return
+    set err [catch {wm state $winname}]
+    if {!$err} { wm deiconify $winname; return }
+
+    toplevel $winname
+    wm title $winname "Edit Expression"
+    wm geometry $winname +150+150
+    selection clear $winname
+
+    frame $winname.top -relief groove -borderwidth 2
+    frame $winname.bot
+    pack $winname.top -side top -pady 5m -fill both -expand 1
+    pack $winname.bot -side top -pady 5m -fill x
+    frame $winname.bot.but
+    pack $winname.bot.but -side top
+
+    label $winname.top.label -text "Enter expression for $varname"
+    pack $winname.top.label -side top -pady 5m
+
+    entry $winname.top.e1 -relief sunken -textvariable edit$varname -width 30
+    pack $winname.top.e1 -side left -padx 2m -pady 5m -fill x -expand 1
+
+    button $winname.bot.but.ok -text OK -width 10 -command \
+	    "SetExpression mappingValue$varname edit$varname $winname"
+    button $winname.bot.but.clear -text Clear -width 10 -command \
+	    "set edit$varname {}"
+    button $winname.bot.but.cancel -text Cancel -width 10 -command \
+	    "destroy $winname"
+    pack $winname.bot.but.ok $winname.bot.but.clear \
+	    $winname.bot.but.cancel -side left -padx 5m
+
+    tkwait visibility $winname
+    grab set $winname
+    tkwait window $winname
+}
+
+proc SetExpression {mapvar editvar winname} {
+    global $mapvar $editvar
+    set $mapvar [deref $editvar]
+    destroy $winname
 }
 
 proc deref {var} {

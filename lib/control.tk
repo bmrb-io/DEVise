@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-1996
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.42  1995/12/29 17:30:53  jussi
+#	Minor fixes. Changed format of computed names in UniqueName.
+#
 #	Revision 1.41  1995/12/22 18:08:51  jussi
 #	Added Vector Shape. Fixed session file code; cursor names may
 #	have spaces which used to break the session file.
@@ -26,8 +29,8 @@
 #	Confidence intervals displayed.
 #
 #	Revision 1.38  1995/12/15 03:39:37  ravim
-#	KGraph can display count. Schema browsing capabilities determined by the user
-#	mode.
+#	KGraph can display count. Schema browsing capabilities determined
+#	by the user mode.
 #
 #	Revision 1.37  1995/12/14 15:46:35  jussi
 #	Added support for TileLayout view layout with automatic or manual
@@ -865,6 +868,24 @@ proc FindDefaultXAttr { attrs } {
     }
 }
 
+proc findNumericValue {list value} {
+    foreach item $list {
+	if {[lindex $item 1] == $value} {
+	    return [lindex $item 0]
+	}
+    }
+    return $value
+}
+
+proc findNameValue {list key} {
+    foreach item $list {
+	if {[lindex $item 0] == $key} {
+	    return [lindex $item 1]
+	}
+    }
+    return $key
+}
+
 # Create an interpreted mapping 
 proc CreateInterpretedMapping { tdata } {
     global dialogParamVar DEViseColors DEViseShapes
@@ -876,8 +897,8 @@ proc CreateInterpretedMapping { tdata } {
     if {$defX != "recId"} {
 	set defY [lindex $simpleAttrs 1]
     }
-    set defColor 2
-    set defShape 2
+    set defColor red
+    set defShape Bar
     
     set parm [dialogMapping .enterMapping "Enter Mapping" \
 	    "Enter Mapping" ""  \
@@ -898,8 +919,10 @@ proc CreateInterpretedMapping { tdata } {
     
     # extract parameters
     set params [list $tdata $mapName {} \
-	    \$[lindex $parm 0] \$[lindex $parm 1]  [lindex $parm 2] \
-	    {} {} {} [lindex $parm 3] {} {} ]
+	    \$[lindex $parm 0] \$[lindex $parm 1] \
+	    [findNumericValue $DEViseColors [lindex $parm 2]] \
+	    {} {} {} [findNumericValue $DEViseShapes [lindex $parm 3]] \
+	    {} {} ]
     
     set cmd "DEVise createInterp $params"
     set result [eval $cmd]
@@ -1812,7 +1835,7 @@ proc DoSaveAs { asTemplate } {
     
     if {$file == ""} { return }
 
-    set button [ dialog .saveSession "saveSession" \
+    set button [ dialog .saveSession "Save Session" \
 	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
     if {$button != 1} { return }
 
@@ -2280,11 +2303,11 @@ proc DoEditMapping {} {
     # puts "got params $params"
     set xParm [lindex [lindex $params 3] 1]
     set yParm [lindex [lindex $params 4] 1]
-    set colorParm [lindex [lindex $params 5] 1]
+    set colorParm [findNameValue $DEViseColors [lindex [lindex $params 5] 1]]
     set orientParm [lindex [lindex $params 6] 1]
     set sizeParm [lindex [lindex $params 7] 1]
     set patternParm [lindex [lindex $params 8] 1]
-    set shapeParm [lindex [lindex $params 9] 1]
+    set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 9] 1]]
     set shapeAttr0 [lindex [lindex $params 10] 1]
     set shapeAttr1 [lindex [lindex $params 11] 1]
 
@@ -2300,15 +2323,14 @@ proc DoEditMapping {} {
 	    [list X {1 2 3 4 5 6 7 8 9 10} $xParm] \
 	    [list Y {1 2 3 4 5 6 7 8 9 10} $yParm] \
 	    [list Color $DEViseColors $colorParm] \
-	    [list Orientation {0} $orientParm] \
-	    [list Size {1 2 3 4} $sizeParm] \
+	    [list Orientation {1} $orientParm] \
+	    [list Size {0 1 2 3 4} $sizeParm] \
 	    [list Pattern {0} $patternParm] \
 	    [list Shape $DEViseShapes $shapeParm] \
 	    [list "SymbolWidth" {0.1 0.5 1 2} $shapeAttr0] \
 	    [list "SymbolHeight" {0.1 0.5 1 2} $shapeAttr1] \
 	    ] 0 ]
     
-    # puts "dialogMapping returns $parm"
     if {$parm == ""} {
 	return
     }
@@ -2319,11 +2341,11 @@ proc DoEditMapping {} {
 	    [lindex [lindex $params 2] 1] \
 	    [lindex $parm 0] \
 	    [lindex $parm 1] \
-	    [lindex $parm 2] \
+	    [findNumericValue $DEViseColors [lindex $parm 2]] \
 	    [lindex $parm 3] \
 	    [lindex $parm 4] \
 	    [lindex $parm 5] \
-	    [lindex $parm 6] \
+	    [findNumericValue $DEViseShapes [lindex $parm 6]] \
 	    [lindex $parm 7] \
 	    [lindex $parm 8] ]
 
