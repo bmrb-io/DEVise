@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1995/11/24 08:49:29  ravim
+#  Fixed a small bug.
+#
 #  Revision 1.1  1995/11/24 07:43:57  ravim
 #  Initial Version.
 #
@@ -33,7 +36,7 @@ proc DefineMapping {} {
     global datadir button iftype
 
     # Create a window
-    toplevel .map -bg DarkRed
+    toplevel .map -bg red4
     wm title .map "Generate Input Relations"
     wm iconname .map "Relations"
 
@@ -47,10 +50,10 @@ proc DefineMapping {} {
     set iftype "COMPUSTAT"
 
     # Entry for index file name and type
-    label .map.iname -text " Index File " -bg honeydew2 -fg red
+    label .map.iname -text " Index File " -bg honeydew2 -fg red4
     entry .map.ientry -width 25 -relief sunken -bd 1 \
 	    -textvariable ifname -bg bisque
-    label .map.itype -text " File Type " -bg honeydew2 -fg red
+    label .map.itype -text " File Type " -bg honeydew2 -fg red4
     menubutton .map.tbut -relief raised -textvariable iftype \
 	    -width 14 -menu .map.tbut.menu 
     pack .map.iname .map.ientry .map.itype .map.tbut -in .map.first \
@@ -64,10 +67,10 @@ proc DefineMapping {} {
 	    -value CRSP
 
     # Entry for output relation name and output file name
-    label .map.rname -text "Output Relation Name" -bg honeydew2 -fg red
+    label .map.rname -text "Output Relation Name" -bg honeydew2 -fg red4
     entry .map.rentry -width 10 -relief sunken -bd 1 \
 	    -textvariable rname -bg bisque
-    label .map.rfname -text "Output File" -bg honeydew2 -fg red
+    label .map.rfname -text "Output File" -bg honeydew2 -fg red4
     entry .map.rfentry -width 15 -relief sunken -bd 1 \
 	    -textvariable rfname -bg bisque
     pack .map.rname .map.rentry .map.rfname .map.rfentry -in .map.second \
@@ -138,7 +141,7 @@ proc ResolveMapping {} {
 
     global datadir button
 
-    toplevel .coral -bg DarkRed
+    toplevel .coral -bg red4
     wm title .coral "Coral Mapping Program"
     wm iconname .coral "Coral"
 
@@ -147,7 +150,7 @@ proc ResolveMapping {} {
     frame .coral.third -relief raised -bg honeydew2
     pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
 
-    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red
+    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red4
     entry .coral.oentry -width 10 -relief sunken -bd 1 \
 	    -textvariable oname -bg bisque
     pack .coral.oname .coral.oentry \
@@ -155,10 +158,10 @@ proc ResolveMapping {} {
 
     # Also ask for the names of files that contain any unresolved entries
     label .coral.uname -text " Files containing unresolved entries: " \
-	    -bg honeydew2 -fg red
+	    -bg honeydew2 -fg red4
     entry .coral.urel1 -width 10 -relief sunken -bd 1 \
 	    -textvariable urel1 -bg bisque
-    label .coral.and -text " and " -bg honeydew2 -fg red
+    label .coral.and -text " and " -bg honeydew2 -fg red4
     entry .coral.urel2 -width 10 -relief sunken -bd 1 \
 	    -textvariable urel2 -bg bisque
     pack .coral.uname .coral.urel1 .coral.and .coral.urel2 -in .coral.second \
@@ -193,7 +196,7 @@ proc ResolveMapping {} {
 proc RunCoralMap {} {
     global datadir button
 
-    toplevel .coral -bg DarkRed
+    toplevel .coral -bg red4
     wm title .coral "Coral Mapping Program"
     wm iconname .coral "Coral"
 
@@ -203,10 +206,10 @@ proc RunCoralMap {} {
     pack .coral.first .coral.second .coral.third -fill x -padx 1m -pady 1m
 
     # Ask the user for the name of the coral mapping program
-    label .coral.pname -text " Coral File: " -bg honeydew2 -fg red
+    label .coral.pname -text " Coral File: " -bg honeydew2 -fg red4
     entry .coral.pentry -width 10 -relief sunken -bd 1 \
 	    -textvariable pname -bg bisque
-    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red
+    label .coral.oname -text " Mapping Table File: " -bg honeydew2 -fg red4
     entry .coral.oentry -width 10 -relief sunken -bd 1 \
 	    -textvariable oname -bg bisque
     pack .coral.pname .coral.pentry .coral.oname .coral.oentry \
@@ -214,10 +217,10 @@ proc RunCoralMap {} {
 
     # Also ask for the names of files that contain any unresolved entries
     label .coral.uname -text " Files containing unresolved entries: " \
-	    -bg honeydew2 -fg red
+	    -bg honeydew2 -fg red4
     entry .coral.urel1 -width 10 -relief sunken -bd 1 \
 	    -textvariable urel1 -bg bisque
-    label .coral.and -text " and " -bg honeydew2 -fg red
+    label .coral.and -text " and " -bg honeydew2 -fg red4
     entry .coral.urel2 -width 10 -relief sunken -bd 1 \
 	    -textvariable urel2 -bg bisque
     pack .coral.uname .coral.urel1 .coral.and .coral.urel2 -in .coral.second \

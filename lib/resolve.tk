@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1995/11/24 07:46:23  ravim
+#  Initial version.
+#
 
 ############################################################
 
@@ -39,7 +42,7 @@ proc resolve {mapfile rel1file rel2file} {
     set mapnum 0
 
     # Create window
-    toplevel .res -bg DarkRed
+    toplevel .res -bg red4
     wm title .res "Mapping Data Sources"
     wm iconname .res "Map"
     wm geometry .res 630x570+100+100
@@ -57,7 +60,7 @@ proc resolve {mapfile rel1file rel2file} {
 	    -padx 1m -pady 1m -fill x -expand 1
 
     # Two frames side by side for the listboxes
-    label .res.lists.label -text "Unresolved Companies" -bg honeydew2 -fg red
+    label .res.lists.label -text "Unresolved Companies" -bg honeydew2 -fg red4
     pack .res.lists.label -side top -fill x
     frame .res.l1 -relief raised -bg honeydew2 -bd 1
     frame .res.l2 -relief raised -bg honeydew2 -bd 1
@@ -136,7 +139,7 @@ proc resolve {mapfile rel1file rel2file} {
     }
 
     # Break up into two frames side by side
-    label .res.map.label -text "Current mappings" -bg honeydew2 -fg red
+    label .res.map.label -text "Current mappings" -bg honeydew2 -fg red4
     frame .res.map.left -relief raised -bg honeydew2
     frame .res.map.right -relief raised -bg honeydew2
     pack .res.map.label .res.map.left .res.map.right -side top -fill x
@@ -173,7 +176,7 @@ proc resolve {mapfile rel1file rel2file} {
 	    -padx 1m -pady 1m -ipadx 1m -ipady 1m -expand 1
 
     # Automatic mapping window
-    label .res.auto.label -text "Automatic mappings" -bg honeydew2 -fg red
+    label .res.auto.label -text "Automatic mappings" -bg honeydew2 -fg red4
     frame .res.auto.left -relief raised -bg honeydew2
     frame .res.auto.right -relief raised -bg honeydew2
     pack .res.auto.label .res.auto.left .res.auto.right -side top -fill x
