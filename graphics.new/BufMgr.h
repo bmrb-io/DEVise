@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/27 15:47:16  jussi
+  Replaced method ClearGData() with ClearTData() which allows both
+  TData and GData (which derives from TData) to be cleared.
+
   Revision 1.3  1996/01/15 16:53:48  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -68,8 +72,8 @@ public:
 
   /* Retrieve next batch of records.  Return false if no more */
   virtual Boolean GetRecs(Boolean &isTData, RecId &startRecId,
-			  int &numRecs, void *&recs, void **&recs) = 0;
-	
+			  int &numRecs, void *&recs) = 0;
+
   virtual void DoneGetRecs()= 0;
 
   /* Free batch of records returned by GetRecs(), with buf
@@ -77,38 +81,13 @@ public:
      Give buffer manager hint about how to dispose the records.  */
   virtual void FreeRecs(void *buf, BufHint hint, Boolean dirty = false) = 0;
 
-  /*****  Prefetch Interface ****/
-  /* Init prefetch */
-  virtual void InitPrefetch(TData *tdata) = 0;
-
-  /* Prefetch record whose ID is "current".
-     Return TRUE if there is still buffer for prefetch,
-     and set "next" to the next Id after "current" to be prefetched. */
-  virtual Boolean DoPrefetch(RecId current, RecId &next) = 0;
-
-  /**** Policy ****/
   /* Init buffer manager policy */
-  virtual void InitPolicy(BufPolicy::policy policy) = 0;
+  virtual void InitPolicy(BufPolicy::policy policy) {}
 
   /* Print what's in memory for TData */
   virtual void Print(TData *tdata)= 0;
 
-  /* For buffer allocation in memory.
-     Protocol:
-       InitAllocBu() with the total size wanted.
-       GetBuf() to get next chunk.
-       FreeBuf() to release the chunk and tell buffer manager
-                 to whom it belongs.
-       DoneAllocBuf(): when all done
-  */
-  virtual Boolean HasBuffer() = 0;      /* Return true if there's buffer */
-  virtual void InitAllocBuf(int recSize, int numRecs) = 0;
-  virtual Boolean GetBuf(void *&buf, int &numRecs) = 0;
-  virtual void FreeBuf(void *buf, TData *tdata, RecId startId) = 0;
-  virtual void DoneAllocBuf() = 0;
-  
-  /* Getting TData in memory.
-     XXX: Need to serve > 1 client. */
+  /* Get in-memory TData records */
   virtual void InitTDataInMem(TData *tdata) = 0;
   virtual Boolean GetInMemRecs(void *&buf, RecId &low, RecId &high) = 0;
   virtual void FreeInMemRecs(void *buf, Boolean dirty = 0) = 0;
