@@ -2518,6 +2518,12 @@ Num Date        Status  Description
 636 01/25/01	OPEN	JavaScreen: automatic switchover from socket to CGI
 			mode takes too long. (rkw)
 
+637 01/30/01    OPEN    JavaScreen: all of the buttons have gotten bigger.
+                        (rkw)
+
+638 01/30/01    OPEN    JavaScreen: Filter button seems to make things hang.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
