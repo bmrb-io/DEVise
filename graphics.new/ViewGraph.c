@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.129  1999/10/30 19:08:11  wenger
+  Kludgey fix for bug 527 (problems with Condor/UserWeek.ds session).
+
   Revision 1.128  1999/10/12 17:59:39  wenger
   Fixed bug in code for checking if the mouse is on a cursor that caused
   devised to crash with JavaScreen; fixed Dispatcher problem that sometimes
@@ -1062,6 +1065,14 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 
 void ViewGraph::RemoveMapping(TDataMap *map)
 {
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::RemoveMapping(%s)\n", GetName(), map->GetName());
+#endif
+
+    // If there's a query running on this view, we will crash when we
+    // actually remove the mapping.
+    AbortQuery();
+
     int index = InitMappingIterator();
 
     while(MoreMapping(index )) {
@@ -1071,6 +1082,7 @@ void ViewGraph::RemoveMapping(TDataMap *map)
             _mappings.Delete(info);
             delete info->label;
             delete info;
+	    Refresh();
             return;
         }
     }
