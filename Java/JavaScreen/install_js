@@ -178,6 +178,9 @@ foreach file ($files)
   chmod 755 $popdir/$file
 end
 
+cp -p cron_entry.* $popdir
+chmod 644 $popdir/cron_entry.*
+
 #TEMP -- js_log?
 
 echo ""
