@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.69  1997/09/09 23:25:20  donjerko
+#	*** empty log message ***
+#
 #	Revision 1.68  1997/05/28 16:57:35  wenger
 #	Changed back to the query processor version that sometimes returns
 #	too many records to hopefully avoid returning too few; other minor
@@ -1816,6 +1819,12 @@ proc selectStream {{title "Select Table"}} {
 	return
     }
 
+	set errCode [catch {DEVise dteListCatalog [CWD]} listing]
+     if {$errCode != 0} {
+          dialog .noName "DTE Error" $listing "" 0 OK
+          return
+     }
+
     toplevel .srcsel
     wm title .srcsel $title
     wm geometry .srcsel +50+50
@@ -1824,6 +1833,35 @@ proc selectStream {{title "Select Table"}} {
     frame .srcsel.mbar -relief raised -borderwidth 2
     frame .srcsel.top
     frame .srcsel.bot
+
+    listbox .srcsel.top.list -relief raised -borderwidth 2 \
+	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
+	    -selectmode extended -width 61 -height 22
+
+# This part is taken from procedure updateSources
+# That procedure is probably does not do anything usefull DD
+
+	.srcsel.top.list delete 0 end
+	if {[notRootDir]} {
+		set sname ".."
+		set source "Directory"
+		set cached ""
+		set item [format "%-40.40s  %-10.10s  %-6.6s" \
+			$sname $source $cached]
+		.srcsel.top.list insert end $item
+	}
+	foreach pair [lsort $listing] {
+		set sname [lindex $pair 0]
+		set source [lindex $pair 1]
+		set cached ""
+
+		set item [format "%-40.40s  %-10.10s  %-6.6s" \
+			$sname $source $cached]
+		.srcsel.top.list insert end $item
+	}
+
+# End of block from updateSources
+
     pack .srcsel.mbar -side top -fill x
     if {$title != ""} {
  	label .srcsel.title -text $title
@@ -1835,116 +1873,11 @@ proc selectStream {{title "Select Table"}} {
     frame .srcsel.bot.but
     pack .srcsel.bot.but -side top
 
-#   menubutton .srcsel.mbar.define -text Define -menu .srcsel.mbar.define.menu
-#   menubutton .srcsel.mbar.stream -text Stream -menu .srcsel.mbar.stream.menu
-
-# Donko's and Shaun's MAD SLASHING spree
-#menubutton .srcsel.mbar.display -text Display -menu .srcsel.mbar.display.menu
-#menubutton .srcsel.mbar.follow -text "Follow to" -menu .srcsel.mbar.follow.menu
-
-#   menubutton .srcsel.mbar.help -text Help -menu .srcsel.mbar.help.menu
-#   pack .srcsel.mbar.define .srcsel.mbar.stream .srcsel.mbar.display \
-#    	.srcsel.mbar.follow .srcsel.mbar.help -side left
-#   pack .srcsel.mbar.stream .srcsel.mbar.help -side left
-
-#   menu .srcsel.mbar.define.menu -tearoff 0
-#   .srcsel.mbar.define.menu add command -label "New..." \
-#  	  -command { defineStream "" 0 }
-#   .srcsel.mbar.define.menu add cascade -label "Auto Add" \
-#	    -menu .srcsel.mbar.define.menu.auto
-
-#   menu .srcsel.mbar.define.menu.auto -tearoff 0
-#   foreach sourcetype [lsort [array names sourceTypes]] {
-#   .srcsel.mbar.define.menu.auto add command -label $sourcetype \
-#		-command "autoSourceAdd $sourcetype"
-#   }
-
-#   menu .srcsel.mbar.follow.menu -tearoff 0
-#   foreach mtype [lsort [array names MapTable]] {
-#	.srcsel.mbar.follow.menu add command -label $mtype \
-#		-command "mapFollow $mtype"
-#   }
-
-#   menu .srcsel.mbar.stream.menu -tearoff 0
-#   .srcsel.mbar.stream.menu add command -label "New..." \
-# 	  -command { defineStream "" 0 }
-#   .srcsel.mbar.stream.menu add command -label "Edit..." -command {
-#	set dispname [getSelectedSource]
-#	if {[llength $dispname] != 1} {
-#	    dialog .note "Note" "Select one stream to edit." "" 0 OK
-#	    return
-#	}
-#	defineStream [lindex $dispname 0] 1
-#   }
-#   .srcsel.mbar.stream.menu add command -label "Copy..." -command {
-#	set dispname [getSelectedSource]
-#	if {[llength $dispname] != 1} {
-#	    dialog .note "Note" "Select one stream to copy." "" 0 OK
-#	    return
-#	}
-#	defineStream [lindex $dispname 0] 0
-#   }
-#   .srcsel.mbar.stream.menu add command -label Delete -command {
-#	set dispnames [getSelectedSource]
-#	if {$dispnames == ""} {
-#	    dialog .note "Note" "Select streams to delete first." "" 0 OK
-#	    return
-#	}
-#	foreach d $dispnames {
-#	    set but [dialog .confirm "Confirm Stream Deletion" \
-#		    "Delete stream \"$d\"?" "" 1 Yes No Cancel]
-#	    if {$but == 2} {
-#		return
-#	    }
-#	    if {$but == 1} {
-#		continue
-#	    }
-#
-#	    uncacheData $d ""
-#
-#		DEVise dteDeleteCatalogEntry [CWD] $d
-#		updateSources
-#	}
-#   }
-
-# Donko's and Shaun's MAD SLASHING spree
-#   menu .srcsel.mbar.display.menu -tearoff 0
-#   .srcsel.mbar.display.menu add command -label "Show All" -command {}
-#   .srcsel.mbar.display.menu add command -label "Limit" -command {}
-#   .srcsel.mbar.display.menu add separator
-#   .srcsel.mbar.display.menu add command -label "Sort" -command {}
-#   .srcsel.mbar.display.menu add separator
-#   .srcsel.mbar.display.menu add command -label "Verbose" -command {}
-
-#   menu .srcsel.mbar.help.menu -tearoff 0
-#   .srcsel.mbar.help.menu add command -label Help -command {
-#	dialog .help "Help" \
-#		"This dialog lets you choose one or more data streams\
-#		for visualization. You can select a single data stream\
-#		by double-clicking on it, or you can select multiple\
-# 		data streams with control-click and then\
-#		pressing the Select button. Press the Cancel button\
-#		to return without selecting anything.\n\n\
-#		Choose Stream/New to define a new data stream using a blank\
-#		template.\n\n\
-#		Stream/Edit lets you edit an existing data stream. Select\
-#		data stream first with the mouse.\n\n\
-#		You can copy an existing data stream and use its definition\
-#		as a template for a new data stream with Stream/Copy. Select\
-#		template with the mouse first.\n\n\
-#		Stream/Delete lets you delete the definition of the selected\
-#		data streams. The program asks for confirmation before\
-#		actually removing the entries." \
-#		"" 0 OK
-#   }
-
     tk_menuBar .srcsel.mbar .srcsel.mbar.define .srcsel.mbar.stream \
 	    .srcsel.mbar.display .srcsel.mbar.follow .srcsel.mbar.help
 
-    listbox .srcsel.top.list -relief raised -borderwidth 2 \
-	    -yscrollcommand ".srcsel.top.scroll set" -font 9x15 \
-	    -selectmode extended -width 61 -height 22
     scrollbar .srcsel.top.scroll -command ".srcsel.top.list yview"
+
     pack .srcsel.top.list -side left -fill both -expand 1
     pack .srcsel.top.scroll -side right -fill y
 
@@ -1973,14 +1906,14 @@ proc selectStream {{title "Select Table"}} {
 		} else {
 			CD $tableName
 		}
-		updateSources
+#		updateSources
 	} else {
 #		puts "continuing with streamsSelected = $tableName"
 		set streamsSelected [fullPathName $tableName]
 	}
     }
 
-    updateSources
+#   updateSources
 
     button .srcsel.bot.but.select -text OK -width 10 -command {
 
@@ -2113,11 +2046,20 @@ proc addDataSource {dispName source} {
 
 proc updateSources {} {
 
+# This procedure probably does nothing (DD)
+
     if {[catch {wm state .srcsel}] > 0} {
 	return
     }
     .srcsel.top.list delete 0 end
-	set listing [DEVise dteListCatalog [CWD]]
+    	
+	# this call is useless
+	set errCode [catch {DEVise dteListCatalog [CWD]} listing]
+
+     if {$errCode != 0} {
+          dialog .noName "DTE Error" $listing "" 0 OK
+          return
+     }
 	if {[notRootDir]} {
 		set sname ".."
 		set source "Directory"
