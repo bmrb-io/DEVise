@@ -131,7 +131,19 @@ public class YImageCanvas extends Canvas
             offScrImg = createImage(imageWidth, imageHeight);
             if (offScrImg == null) {
                 return;
-            }
+            } else {
+                int waittime = 0;
+                while (offScrImg.getWidth(this) < 0 || offScrImg.getHeight(this) < 0) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        waittime += 50;
+                        if (waittime > 1000) {
+                            return;
+                        }
+                    }
+                }
+            }            
         }
 
         Graphics og = offScrImg.getGraphics();

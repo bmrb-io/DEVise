@@ -84,14 +84,27 @@ public class DEViseCanvas extends Container
         Image img = createImage(source);
         if (img == null) {
             return null;
-        }
+        }        
 
         source = new FilteredImageSource(img.getSource(), new XORFilter());
         img = createImage(source);
         if (img == null) {
             return null;
+        } else {            
+            int waittime = 0;
+            while (img.getWidth(this) < 0 || img.getHeight(this) < 0) {
+                try {
+                    Thread.sleep(50);                    
+                } catch (InterruptedException e) {
+                    waittime += 50;
+                    if (waittime > 1000) {
+                        jsc.pn("Can not finish creating image with 1 seconds");
+                        return null;
+                    }
+                }
+            }            
         }
-
+            
         return img;
     }
 
@@ -190,35 +203,37 @@ public class DEViseCanvas extends Container
                 }
             }
         }
-
+        
         if (view.viewChilds.size() != 0) {
             for (int i = 0; i < view.viewChilds.size(); i++) {
                 DEViseView v = view.getChild(i);
                 for (int j = 0; j < v.viewCursors.size(); j++) {
                     DEViseCursor cursor = v.getCursor(j);
+
                     // check to see if this cursor is selected
                     if ((mousePosition == 6 || mousePosition == 7) && view.whichCursor == j) {
                         continue;
                     }
 
-                    if (cursor.image == null) {
-                        loc = cursor.getLoc();
-                        // convert loc to be relative to this view
-                        loc.x = loc.x + v.viewLoc.x;
-                        loc.y = loc.y + v.viewLoc.y;
+                    loc = cursor.getLoc();
+                    // convert loc to be relative to this view
+                    loc.x = loc.x + v.viewLoc.x;
+                    loc.y = loc.y + v.viewLoc.y;
+                    
+                    if (cursor.image == null) {                        
                         cursor.image = getCroppedXORImage(loc);
                     }
-
+                    
                     if (cursor.image == null) { // Can not create the image for cursor, so skip this cursor
                         jsc.pn("Can not create image for cursor in child view " + v.getCurlyName() + " of view " + view.getCurlyName());
                     } else {
                         g.drawImage(cursor.image, loc.x, loc.y, this);
-                    }
+                    }                                        
                 }
             }
         }
-
-        if (jscreen.getCurrentView() == activeView && activeView != null) {
+        
+        if (activeView != null && activeView == jscreen.getCurrentView()) {
             if (isMouseDragged) {
                 if (mousePosition == 2 || mousePosition == 3 || mousePosition == 6 || mousePosition == 7) { // draw cursor movement box
                     loc = new Rectangle(activeView.getCursor(activeView.whichCursor).getLoc());
