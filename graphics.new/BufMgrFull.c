@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/01/14 15:48:21  wenger
+  Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
+  flexibility in overriding startup script default; fixed bug 116
+  (off-by-one error in BufMgrFull caused buffer overflow in XWindowRep).
+
   Revision 1.19  1997/01/11 20:59:32  jussi
   Fix for bug #106. Simplified processing of record links.
 
@@ -451,10 +456,16 @@ Boolean BufMgrFull::InitTDataScan(BufMgrRequest *req)
                                                       rangeLow, rangeHigh);
 
     if (rangeLow > req->high) {
+        /* Double-check that no records are missing */
+        req->currentRec = req->low;
+        noHighId = req->processed.NextUnprocessed(req->currentRec,
+                                                  rangeLow, rangeHigh);
+        if (rangeLow > req->high) {
 #if DEBUGLVL >= 3
-        printf("End of disk-resident TData ranges\n");
+            printf("End of disk-resident TData ranges\n");
 #endif    
-        return false;
+            return false;
+        }
     }
             
     if (noHighId || rangeHigh > req->high)
