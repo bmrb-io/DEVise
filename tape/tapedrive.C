@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 17:50:00  jussi
+  Small fixes to remove new compiler warnings.
+
   Revision 1.5  1995/11/09 22:23:28  jussi
   Added debugging statements.
 
@@ -35,7 +38,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include <tar.h>
 
 #include "tapedrive.h"
 
