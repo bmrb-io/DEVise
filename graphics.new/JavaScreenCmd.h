@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/12/10 21:53:27  wenger
+  Devised now sends GIFs to JavaScreen on a per-view rather than per-window
+  basis; GIF "dirty" flags are now also referenced by view rather than by
+  window.
+
   Revision 1.17  1998/10/01 17:54:17  wenger
   Implemented the sending of GData to the JavaScreen.
 
@@ -172,6 +177,7 @@ class JavaScreenCmd
 			SERVEREXIT,
 			SERVERCLOSESOCKET,
 			IMAGECHANNEL,
+			CURSORCHANGED,
 			NULL_SVC_CMD
 		}ServiceCmdType;
 
@@ -184,6 +190,8 @@ class JavaScreenCmd
 			UPDATEWINDOW,
 			DRAWCURSOR,
 			ERASECURSOR,
+			VIEWINFO,
+			DRAWAXIS,
 			DONE,
 			ERROR,
 			FAIL,
@@ -225,6 +233,7 @@ class JavaScreenCmd
 		void ServerExit();
 		void ServerCloseSocket();
 		void ImageChannel();
+		void CursorChanged();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
@@ -245,6 +254,8 @@ class JavaScreenCmd
 		void DrawAllCursors();
 		void DoCloseSession();
 		void DoOpenSession(char *fullpath);
+		void SendViewInfo();
+		void DrawAllAxes();
 
 	protected:
 		friend class View;

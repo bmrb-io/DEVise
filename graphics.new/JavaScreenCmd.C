@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/12/15 21:20:59  wenger
+  Devised now resizes windows to use as much of the JavaScreen real estate
+  as possible.
+
   Revision 1.43  1998/12/11 17:21:36  wenger
   Fixed problem with size and location of Java buttons (GData offset was
   not fixed for per-view GIFs).
@@ -223,7 +227,7 @@
 #include "Cursor.h"
 #include "CursorClassInfo.h"
 
-//#define DEBUG
+#define DEBUG
 #define JS_TIMER 0
 
 #define ROUND_TO_INT(value) ((int)(value + 0.5))
@@ -246,6 +250,8 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_UpdateWindow",
 	"JAVAC_DrawCursor",
 	"JAVAC_EraseCursor",
+	"JAVAC_ViewInfo",
+	"JAVAC_DrawAxis",
 	"JAVAC_Done",
 	"JAVAC_Error",
 	"JAVAC_Fail",
@@ -868,6 +874,9 @@ JavaScreenCmd::Run()
 		case IMAGECHANNEL:
 			ImageChannel();
 			break;
+		case CURSORCHANGED:
+			CursorChanged();
+			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
 	}
@@ -1065,6 +1074,7 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	DevWindow::DoneIterator(winIndex);
     winCount = winNum;
 
+    SendViewInfo();
 
 	//
 	// Send "update GData" commands for all of the "GData views".
@@ -1078,7 +1088,6 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	}
 	_gdataViews.DoneIterator(viewIndex);
 
-
 	//
 	// Okay, now that the JavaScreen knows about all of the windows,
 	// we can go ahead and ask it to draw the cursors.
@@ -1088,11 +1097,14 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 		DrawAllCursors();
 	}
 
+    DrawAllAxes();
+
 	// Send DONE here so jspop and js start reading from the image socket.
     if (_status == DONE) {
-		char *argv[1];
+		const int argCount = 1;
+		char *argv[argCount];
 		argv[0] = _controlCmdName[DONE];
-		ReturnVal(1, argv);
+		ReturnVal(argCount, argv);
 	}
 
 	// Send the window images.
@@ -1443,6 +1455,83 @@ JavaScreenCmd::ImageChannel()
 }
 
 //====================================================================
+// Sent by JavaScreen when cursor location is changed.
+void
+JavaScreenCmd::CursorChanged()
+{
+#if defined (DEBUG)
+    printf("\nJavaScreenCmd::CursorChanged(");
+    PrintArgs(stdout, _argc, _argv, false);
+    printf(")\n");
+#endif
+
+	// Note: x and y are relative to GIF origin.  This used to be the
+	// DEVise window, but now it's the view.
+	if (_argc != 5)
+	{
+		errmsg = "Usage: CursorChanged <view name> <x> <y> <width> <height>";
+		_status = ERROR;
+		return;
+	}
+
+	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	if (view == NULL) {
+		errmsg = "Can't find specified view";
+		_status = ERROR;
+		return;
+	}
+
+	int pixX = atoi(_argv[1]);
+	int pixY = atoi(_argv[2]);
+	int pixWidth = atoi(_argv[3]);
+	int pixHeight = atoi(_argv[4]);
+#if defined(DEBUG)
+	printf("x, y = %d, %d; width, height = %d, %d\n", pixX, pixY, pixWidth,
+	  pixHeight);
+#endif
+
+	if (view->_cursors->Size() < 1) {
+		errmsg = "View has no cursor";
+		_status = ERROR;
+		return;
+	} else if (view->_cursors->Size() > 1) {
+		fprintf(stderr, "Warning: view <%s> has multiple cursors; "
+		  "using the first one\n", view->GetName());
+	}
+
+	DeviseCursor *cursor = view->_cursors->GetFirst();
+#if defined(DEBUG)
+	printf("  cursor is <%s>\n", cursor->GetName());
+#endif
+
+    View *srcView = cursor->GetSource();
+#if defined(DEBUG)
+	printf("  source view is <%s>\n", srcView->GetName());
+#endif
+
+	//
+	// Convert new cursor size and location from pixels to data units,
+	// and set the visual filter of the source view (that's what actually
+	// moves the cursor).
+	//
+	Coord dataX1, dataY1, dataX2, dataY2;
+	VisualFilter filter;
+	srcView->GetVisualFilter(filter);
+	view->FindWorld(pixX, pixY, pixX + pixWidth - 1, pixY + pixHeight - 1,
+	  filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+	srcView->SetVisualFilter(filter);
+
+	// Make sure everything has actually been re-drawn before we
+	// continue.
+	Dispatcher::Current()->WaitForQueries();
+
+	// Send the updated window image(s).
+	_status = SendChangedWindows();
+
+	return;
+}
+
+//====================================================================
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
@@ -1488,7 +1577,8 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 	}
 	if (status == ERROR)
 	{
-		const char *argv[2] = {
+		const int argCount = 2;
+		const char *argv[argCount] = {
 			JavaScreenCmd::_controlCmdName[ERROR],
 			errmsg
 		};	
@@ -1496,7 +1586,7 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 		{
 			argv[1]= "Error, but no error message available";
 		}
-		ReturnVal(2, (char**)&argv[0]);
+		ReturnVal(argCount, (char**)&argv[0]);
 		return -1;
 	}
 	if (status != NULL_COMMAND)
@@ -1672,13 +1762,16 @@ JavaScreenCmd::SendChangedWindows()
 	}
 	_gdataViews.DoneIterator(viewIndex);
 
+	DrawAllAxes();
+
 	//
 	// Send DONE here so jspop and js start reading from the image socket.
 	//
     if (_status == DONE) {
-		char *argv[1];
+		const int argCount = 1;
+		char *argv[argCount];
 		argv[0] = _controlCmdName[DONE];
-		ReturnVal(1, argv);
+		ReturnVal(argCount, argv);
 	}
 
 	//
@@ -1796,13 +1889,14 @@ JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
     printf("\nJavaScreenCmd::RequestUpdateWindow(%s, %d)\n", winName, imageSize);
 #endif
 
-	char* argv[3];
+	const int argCount = 3;
+	char* argv[argCount];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[UPDATEWINDOW];
 	argv[pos++] = winName;
 	FillInt(argv, pos, imageSize);
 
-	ReturnVal(3, argv);
+	ReturnVal(argCount, argv);
 	delete [] argv[2];
 
 	return DONE;
@@ -1868,7 +1962,8 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 	//
 	// Send the command...
 	//
-	char* argv[7];
+	const int argCount = 7;
+	char* argv[argCount];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[UPDATEGDATA];
 	argv[pos++] = view->GetName();
@@ -1878,7 +1973,7 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 	FillDouble(argv, pos, yOffset);
 	FillInt(argv, pos, gdSize);
 
-	ReturnVal(7, argv);
+	ReturnVal(argCount, argv);
 
 	delete [] argv[2];
 	delete [] argv[3];
@@ -2003,9 +2098,25 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 #endif
 
 	//
+	// Figure out which direction(s) the cursor is allowed to move in.
+	//
+	VisualFlag cursorFlag = cursor->GetFlag();
+	char *movement;
+	if ((cursorFlag & VISUAL_X) && (cursorFlag & VISUAL_Y)) {
+	  movement = "XY";
+	} else if (cursorFlag & VISUAL_X) {
+	  movement = "X";
+	} else if (cursorFlag & VISUAL_Y) {
+	  movement = "Y";
+	} else {
+	  movement = "";
+	}
+
+	//
     // Generate the command to send.
 	//
-	char *argv[6];
+	const int argCount = 7;
+	char *argv[argCount];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[DRAWCURSOR];
 	argv[pos++] = view->GetName();
@@ -2013,12 +2124,13 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	FillInt(argv, pos, yLoc);
 	FillInt(argv, pos, width);
 	FillInt(argv, pos, height);
+	argv[pos++] = movement;
 
 	//
     // This JavaScreenCmd object is created only to send the command.
 	//
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
-    jsc.ReturnVal(6, argv);
+    jsc.ReturnVal(argCount, argv);
 
 	delete [] argv[2];
 	delete [] argv[3];
@@ -2042,13 +2154,14 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 		return;
 	}
 
-	char* argv[2];
+	const int argCount = 2;
+	char* argv[argCount];
 	argv[0] = _controlCmdName[ERASECURSOR];
 	argv[1] = view->GetName();
 
     // This JavaScreenCmd object is created only to send the command.
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
-    jsc.ReturnVal(2, argv);
+    jsc.ReturnVal(argCount, argv);
 }
 
 //====================================================================
@@ -2247,4 +2360,165 @@ JavaScreenCmd::SendViewGData(ViewGraph *view)
 	}
 
 	return status;
+}
+
+//====================================================================
+// Send info about view data area, axes, etc.
+void
+JavaScreenCmd::SendViewInfo()
+{
+#if defined(DEBUG)
+    printf("SendViewInfo()\n");
+#endif
+
+
+	int viewIndex = _gifViews.InitIterator();
+	while (_gifViews.More(viewIndex)) {
+		View *view = (View *)_gifViews.Next(viewIndex);
+
+		int dataX, dataY, dataWidth, dataHeight;
+		view->GetDataArea(dataX, dataY, dataWidth, dataHeight);
+
+		char *xAxisType = "none";
+		char *yAxisType = "none";
+		
+		// Don't draw axes for 3D views.
+		if (view->GetNumDimensions() == 2) {
+			if (view->xAxis.inUse) {
+				if (view->GetXAxisAttrType() == DateAttr) {
+					xAxisType = "date";
+				} else {
+					xAxisType = "real";
+				}
+			}
+			if (view->yAxis.inUse) {
+				if (view->GetYAxisAttrType() == DateAttr) {
+					yAxisType = "date";
+				} else {
+					yAxisType = "real";
+				}
+			}
+		}
+
+		string fgColorStr, bgColorStr;
+		PColorID pColor = view->GetForeground();
+		RGB rgb;
+		if (PM_GetRGB(pColor, rgb)) {
+			fgColorStr = rgb.ToString();
+		}
+
+		pColor = view->GetBackground();
+		if (PM_GetRGB(pColor, rgb)) {
+			bgColorStr = rgb.ToString();
+		}
+
+		//
+    	// Generate the command to send.
+		//
+		const int argCount = 11;
+		char *argv[argCount];
+		int	pos = 0;
+		argv[pos++] = _controlCmdName[VIEWINFO];
+		argv[pos++] = view->GetName();
+		FillInt(argv, pos, dataX);
+		FillInt(argv, pos, dataY);
+		FillInt(argv, pos, dataWidth);
+		FillInt(argv, pos, dataHeight);
+		argv[pos++] = (char *)fgColorStr.c_str();
+		argv[pos++] = (char *)bgColorStr.c_str();
+		argv[pos++] = xAxisType;
+		argv[pos++] = yAxisType;
+		if (view->_label.occupyTop) {
+			argv[pos++] = view->_label.name;
+		} else {
+			argv[pos++] = "";
+		}
+
+		//
+    	// This JavaScreenCmd object is created only to send the command.
+		//
+    	JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
+    	jsc.ReturnVal(argCount, argv);
+
+		delete [] argv[2];
+		delete [] argv[3];
+		delete [] argv[4];
+		delete [] argv[5];
+
+	}
+	_gifViews.DoneIterator(viewIndex);
+
+}
+
+//====================================================================
+// Send axis ranges to JavaScreen.
+void
+JavaScreenCmd::DrawAllAxes()
+{
+#if defined(DEBUG)
+    printf("DrawAllAxes()\n");
+#endif
+
+	int viewIndex = _gifViews.InitIterator();
+	while (_gifViews.More(viewIndex)) {
+		View *view = (View *)_gifViews.Next(viewIndex);
+
+		// Don't draw axes for 3D views.
+		if (view->GetNumDimensions() == 2) {
+			VisualFilter filter;
+			view->GetVisualFilter(filter);
+
+			if (view->xAxis.inUse) {
+				//
+    			// Generate the command to send.
+				//
+				const int argCount = 5;
+				char *argv[argCount];
+				int	pos = 0;
+				argv[pos++] = _controlCmdName[DRAWAXIS];
+				argv[pos++] = view->GetName();
+				argv[pos++] = "X";
+				FillDouble(argv, pos, filter.xLow);
+				FillDouble(argv, pos, filter.xHigh);
+
+				//
+    			// This JavaScreenCmd object is created only to send the
+				// command.
+				//
+    			JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0,
+				  NULL);
+    			jsc.ReturnVal(argCount, argv);
+
+				delete [] argv[3];
+				delete [] argv[4];
+			}
+
+			if (view->yAxis.inUse) {
+				//
+    			// Generate the command to send.
+				//
+				const int argCount = 5;
+				char *argv[argCount];
+				int	pos = 0;
+				argv[pos++] = _controlCmdName[DRAWAXIS];
+				argv[pos++] = view->GetName();
+				argv[pos++] = "Y";
+				FillDouble(argv, pos, filter.yLow);
+				FillDouble(argv, pos, filter.yHigh);
+
+				//
+    			// This JavaScreenCmd object is created only to send the
+				// command.
+				//
+    			JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0,
+				  NULL);
+    			jsc.ReturnVal(argCount, argv);
+
+				delete [] argv[3];
+				delete [] argv[4];
+			}
+		}
+	}
+	_gifViews.DoneIterator(viewIndex);
+
 }
