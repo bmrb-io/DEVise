@@ -937,8 +937,9 @@ Num Date        Status  Description
 			ViewScatter and/or TDataViewX can be very large
 			(thousands) and may be unbounded. (rkw)
 
-235 10/09/97	OPEN	The DTE (at least on Linux) sometimes has trouble
+235 10/09/97	FIXED	The DTE (at least on Linux) sometimes has trouble
 			with long strings (e.g., 1024 characters). (rkw/dj)
+			(See also bug 258.)
 
 236 10/27/97	FIXED	Sessions saved by C++ code sometimes don't work because
 			of creating duplicate mapping classes. (ssl/rkw)
@@ -1009,9 +1010,15 @@ Num Date        Status  Description
 257 12/15/97	FIXED	GData attributes with recId get goofed up in mappings
 			that have any expresssions in them. (ssl/rkw)
 
-258 12/15/97	OPEN	Linux versions of Devise core dump on search engine
+258 12/15/97	FIXED	Linux versions of Devise core dump on search engine
 			demo (fixed by shortening strings from 1024 to 256
 			bytes). (rkw)
+			(See also bug 235.)
+
+259 12/16/97	OPEN	Can't save sessions. (rkw)
+
+260 12/17/97	OPEN	Mouse events seem to not get translated to the
+			correct coordinates (since OpenGL commit). (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
