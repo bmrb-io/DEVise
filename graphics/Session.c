@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/02/11 19:54:34  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.42.2.1  1999/02/11 18:24:02  wenger
   PileStack objects are now fully working (allowing non-linked piles) except
   for a couple of minor bugs; new PileStack state is saved to session files;
@@ -240,6 +245,7 @@
 #include "DataCatalog.h"
 #include "DataSeg.h"
 #include "Color.h"
+#include "ViewGeom.h"
 
 
 //#define DEBUG
@@ -399,6 +405,10 @@ Session::Close()
 #endif
 
   DevStatus status = StatusOk;
+  ViewGeom *vg = ViewGeom::GetViewGeom();
+  if (!vg->IsGrouped()) {
+    status += vg->Group();
+  }
   ControlPanel::Instance()->DestroySessionData();
   _isJsSession = false;
   return status;

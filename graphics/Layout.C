@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/02/11 19:54:31  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.7  1999/01/04 15:33:16  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -74,6 +79,20 @@ Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
   DeviseDisplay::DefaultDisplay()->Dimensions(rootWidth, rootHeight);
   Map((int) ( x * rootWidth), (int) (y * rootHeight),
       (unsigned) (w * rootWidth), (unsigned) (h * rootHeight));
+  _mode = AUTOMATIC;
+  SetPrintExclude(printExclude);
+  SetPrintPixmap(printPixmap);
+}
+
+Layout::Layout(char* name, int x, int y, unsigned w, unsigned h,
+			   Boolean printExclude, Boolean printPixmap)
+	: ViewLayout(name)
+{
+#if defined(DEBUG)
+  printf("Layout(0x%p)::Layout(%s)\n", this, name);
+#endif
+
+  Map(x, y, w, h);
   _mode = AUTOMATIC;
   SetPrintExclude(printExclude);
   SetPrintPixmap(printPixmap);

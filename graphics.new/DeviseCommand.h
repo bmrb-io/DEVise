@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/02/11 19:54:56  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.24  1999/01/04 15:33:30  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -1552,6 +1557,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(flipPileStack) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(groupUngroupViews) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

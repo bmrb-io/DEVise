@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.53  1999/02/22 19:07:37  wenger
+  Piling of views with view symbols is not allowed; fixed bug 461 (redrawing
+  of piles); fixed bug 464 (toggling axes in a pile); fixed dynamic memory
+  problems in PileStack and ViewClassInfo classes.
+
   Revision 1.52  1999/02/11 19:54:39  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -505,7 +510,8 @@ void ViewWin::DeleteFromParent()
 void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 {
 #if defined(DEBUG)
-  printf("ViewWin(0x%p)::Map(%d, %d, %d, %d)\n", this, x, y, w, h);
+  printf("ViewWin(0x%p, %s)::Map(%d, %d, %d, %d)\n", this, GetName(),
+      x, y, w, h);
 #endif
   if (_mapped) {
     fprintf(stderr,"ViewWin::Map() already mapped\n");
@@ -667,6 +673,10 @@ void ViewWin::DetachChildren()
 
 void ViewWin::Append(ViewWin *child)
 {
+#if defined(DEBUG)
+  printf("ViewWin(%s)::Append(%s)\n", GetName(), child->GetName());
+#endif
+
   _children.Append(child);
   if (_pileStack) _pileStack->InsertView(child);
 }

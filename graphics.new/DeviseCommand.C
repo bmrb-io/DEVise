@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.46  1999/02/23 15:35:07  wenger
+  Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
+  other pile-related problems.
+
   Revision 1.45  1999/02/11 21:43:29  wenger
   Avoid inserting views into old-style pile links.
 
@@ -266,6 +270,7 @@
 #include "DataCatalog.h"
 #include "Layout.h"
 #include "PileStack.h"
+#include "ViewGeom.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -5272,6 +5277,29 @@ IMPLEMENT_COMMAND_BEGIN(flipPileStack)
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in flipPileStack\n",
 		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(groupUngroupViews)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		ViewGeom *viewGeom = ViewGeom::GetViewGeom();
+		if (viewGeom->IsGrouped()) {
+		  ViewGeom::GetViewGeom()->Ungroup();
+		} else {
+		  ViewGeom::GetViewGeom()->Group();
+		}
+		
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.177  1999/01/04 15:33:53  wenger
+#	Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+#	compiles; added code (GUI is currently disabled) to manually set view
+#	geometry (not yet saved to sessions).
+#	
 #	Revision 1.176  1998/12/22 19:39:41  wenger
 #	User can now change date format for axis labels; fixed bug 041 (axis
 #	type not being changed between float and date when attribute is changed);
@@ -1600,6 +1605,7 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Move View" -command DoViewMove
 .mbar.window.menu add command -label "Remove View" -command DoViewRemove
 .mbar.window.menu add command -label "Restore View" -command DoBringView
+.mbar.window.menu add command -label "Group/Ungroup Views" -command { DEVise groupUngroupViews }
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "View List" -command WinViewList
 .mbar.window.menu add command -label "Print Config" -command GetWinPrintConfig

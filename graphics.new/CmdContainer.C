@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1999/02/11 19:54:54  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.27  1999/01/04 15:33:27  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -443,6 +448,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setPileStackState)
 	REGISTER_COMMAND(getPileStackState)
 	REGISTER_COMMAND(flipPileStack)
+	REGISTER_COMMAND(groupUngroupViews)
 }
 
 CmdContainer::~CmdContainer()

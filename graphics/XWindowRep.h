@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.58  1999/02/11 19:54:45  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.57.2.1  1998/12/29 17:25:00  wenger
   First version of new PileStack objects implemented -- allows piles without
   pile links.  Can't be saved or restored in session files yet.
@@ -620,9 +625,12 @@ protected:
 	/* return pixmap identifier */
 	Pixmap GetPixmapId() { return _pixmap; }
 
+public:
         /* get geometry of root window enclosing this window */
-        void GetRootGeometry(int &x, int &y, unsigned int &w, unsigned int &h);
+        virtual void GetRootGeometry(int &x, int &y, unsigned int &w,
+		  unsigned int &h);
 
+protected:
         /* find top window */
         Window FindTopWindow(Window win);
 

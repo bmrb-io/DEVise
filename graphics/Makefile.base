@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.74  1999/02/11 19:54:32  wenger
+#  Merged newpile_br through newpile_br_1 (new PileStack class controls
+#  pile and stacks, allows non-linked piles; various other improvements
+#  to pile-related code).
+#
 #  Revision 1.73  1999/01/04 15:33:16  wenger
 #  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
 #  compiles; added code (GUI is currently disabled) to manually set view
@@ -266,7 +271,7 @@ LIBSRC = AttrList.c \
 	Map3D.C PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
 	DevStatus.c DualWindowRep.c DevFont.c \
 	ETkIfc.c ETkClient.c SessionDesc.c Scheduler.c DepMgr.c Session.c\
-	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c
+	GLDebug.c GDataSock.c CursorStore.c RangeDesc.c PileStack.c ViewGeom.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

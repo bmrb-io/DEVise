@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/11/24 23:14:22  weaver
+  Changes for the new ColorManager.
+
   Revision 1.3  1997/05/30 20:41:06  wenger
   Added GUI to allow user to specify windows to exclude from display
   print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
@@ -56,6 +59,8 @@ class Layout : public ViewLayout
 		Layout(char* name, Coord x = 0.1, Coord y = 0.0, 
 			   Coord w = 0.8, Coord h = 0.9, Boolean printExclude = false,
 			   Boolean printPixmap = false);
+		Layout(char* name, int x, int y, unsigned w, unsigned h,
+			   Boolean printExclude = false, Boolean printPixmap = false);
 
   virtual void SetPreferredLayout(int v, int h, Boolean stacked);
   virtual void SetLayoutProperties(LayoutMode mode, int rows, int columns);
