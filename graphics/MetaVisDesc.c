@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  2000/07/12 20:49:19  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
  */
 
 #include <stdio.h>
@@ -55,6 +59,10 @@ static const char *_viewXStr = "view_x";
 static const char *_viewYStr = "view_y";
 static const char *_viewWidthStr = "view_width";
 static const char *_viewHeightStr = "view_height";
+static const char *_viewFilterXLo = "view_filter_xlo";
+static const char *_viewFilterXHi = "view_filter_xhi";
+static const char *_viewFilterYLo = "view_filter_ylo";
+static const char *_viewFilterYHi = "view_filter_yhi";
 
 static const char *_linkStr = "link";
 static const char *_linkTypeStr = "link_type";
@@ -353,6 +361,32 @@ MetaVisDesc::WriteView(FILE *file, View *view, Boolean writeComments)
 
     sprintf(tmpBuf, "%d", viewHeight);
     fprintf(file, _tableFormat, view->GetName(), _viewHeightStr, tmpBuf);
+
+    const VisualFilter *filter = view->GetVisualFilter();
+
+    if (view->GetXAxisAttrType() == DateAttr) {
+        sprintf(tmpBuf, "%.7g (%s)", filter->xLow, DateString(filter->xLow));
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterXLo, tmpBuf);
+        sprintf(tmpBuf, "%.7g (%s)", filter->xHigh, DateString(filter->xHigh));
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterXHi, tmpBuf);
+    } else {
+        sprintf(tmpBuf, "%.7g", filter->xLow);
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterXLo, tmpBuf);
+        sprintf(tmpBuf, "%.7g", filter->xHigh);
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterXHi, tmpBuf);
+    }
+
+    if (view->GetYAxisAttrType() == DateAttr) {
+        sprintf(tmpBuf, "%.7g (%s)", filter->yLow, DateString(filter->yLow));
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterYLo, tmpBuf);
+        sprintf(tmpBuf, "%.7g (%s)", filter->yHigh, DateString(filter->yHigh));
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterYHi, tmpBuf);
+    } else {
+        sprintf(tmpBuf, "%.7g", filter->yLow);
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterYLo, tmpBuf);
+        sprintf(tmpBuf, "%.7g", filter->yHigh);
+        fprintf(file, _tableFormat, view->GetName(), _viewFilterYHi, tmpBuf);
+    }
 
     return result;
 }

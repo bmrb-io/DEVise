@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.110  2000/07/12 20:49:15  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.109  2000/06/20 22:16:56  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -614,7 +618,7 @@ class View : public ViewWin
 	void SetVisualFilter(const VisualFilter &filter,
 			     Boolean registerEvent = true);
 	void GetVisualFilter(VisualFilter &filter);
-	VisualFilter *GetVisualFilter();
+	VisualFilter *GetVisualFilter(); // Note: treat return value as const
 
 	/* history queue */
 	FilterQueue *GetHistory();
