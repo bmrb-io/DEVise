@@ -141,6 +141,10 @@ public:
 		StandardRead(NULL) {
 		assert(!"not linked to the right thing");
 	}
+	RTreeIndex(IndexDesc* indexDesc) :
+		StandardRead(NULL) {
+		assert(!"not linked to the right thing");
+	}
 	virtual ~RTreeIndex(){
 	}
 	bool canUse(BaseSelection* predicate){	// Throws exception
