@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.113  2001/11/19 22:20:38  xuk
+// Changes for String[] format socket/commands.
+//
 // Revision 1.112  2001/11/19 17:17:02  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -518,7 +521,7 @@ public class DEViseCmdDispatcher implements Runnable
     private static final int SOCK_REC_TIMEOUT = 5000; // milliseconds
     private static final int SOCK_CONST_TIMEOUT = 5000; // milliseconds
 
-    private jsdevisec jsc = null;
+    public jsdevisec jsc = null;
 
     public Thread dispatcherThread = null;
 
@@ -889,7 +892,7 @@ public class DEViseCmdDispatcher implements Runnable
         if (_debug) {
             System.out.println("DEViseCmdDispatcher.run(" + commands[0] + ")");
         }
-
+		
 	if (jsc.specialID == -1) { // for formal JS
 	    try {
 		for (int i = 0; i < commands.length; i++) {
@@ -1694,7 +1697,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    // turn off the 'send' light
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
 	} else { // for collabration JS
-	    jsc.pn("We are waiting at null command...");
+	    jsc.pn("Waiting for commands in collaboration...");
 	}
 
         // turn on the counter
