@@ -856,6 +856,16 @@ Num Date        Status  Description
 			"Pile:"; this link is then interpreted as a pile link
 			by DEVise and not displayed in link info, etc. (rkw)
 
+211 07/25/97	OPEN	If you create a view with a histogram, save the
+			session, and then re-open it, you cannot access
+			the mapping of the historgram view (the DTE
+			catalog doesn't know about it). (ml/rkw)
+
+212 07/28/97	OPEN	Sessions cannot be saved or opened as templates.
+			(rkw)
+
+213 07/28/97	OPEN	Switching TData doesn't work. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
