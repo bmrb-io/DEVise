@@ -1,0 +1,26 @@
+depend:
+	makedepend -fMakefile.alpha_osf20 -I../parser *.c
+
+# DO NOT DELETE
+
+codegen.o: /usr/include/stdio.h /usr/include/standards.h
+codegen.o: /usr/include/sys/seek.h /usr/include/va_list.h
+codegen.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+codegen.o: /usr/include/getopt.h /usr/include/sys/limits.h
+codegen.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
+codegen.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
+codegen.o: /usr/include/string.h /usr/include/stdlib.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/standards.h
+main.o: /usr/include/sys/seek.h /usr/include/va_list.h
+main.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+main.o: /usr/include/getopt.h /usr/include/sys/limits.h
+main.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
+main.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
+parse.o: /usr/include/stdio.h /usr/include/standards.h
+parse.o: /usr/include/sys/seek.h /usr/include/va_list.h
+parse.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+parse.o: /usr/include/getopt.h /usr/include/sys/limits.h
+parse.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
+parse.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
+parse.o: /usr/include/stdlib.h parse.h tokens.h /usr/include/malloc.h
+parse.o: codegen.h

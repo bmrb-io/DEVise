@@ -1,0 +1,45 @@
+depend:
+	makedepend -fMakefile.alpha_osf20  -I../graphics -I../graphics.new \
+		-I../tape *.c
+
+# DO NOT DELETE
+
+CompDate.o: CompDate.h
+generic.o: /usr/include/stdio.h /usr/include/standards.h
+generic.o: /usr/include/sys/seek.h /usr/include/va_list.h
+generic.o: /usr/include/sys/types.h /usr/include/mach/machine/vm_types.h
+generic.o: /usr/include/getopt.h /usr/include/sys/limits.h
+generic.o: /usr/include/sys/machine/machlimits.h /usr/include/sys/syslimits.h
+generic.o: /usr/include/sys/machine/machtime.h /usr/include/sys/rt_limits.h
+generic.o: /usr/include/time.h /usr/include/sys/timers.h
+generic.o: /usr/include/sys/signal.h /usr/include/string.h
+generic.o: /usr/include/math.h /usr/include/stdlib.h /usr/include/sys/time.h
+generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+generic.o: /usr/include/unistd.h /usr/include/sys/access.h
+generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
+generic.o: ../graphics/Display.h ../graphics/Geom.h ../graphics/ColorMgr.h
+generic.o: ../graphics/Control.h ../graphics/ClassDir.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
+generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
+generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
+generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
+generic.o: ../graphics.new/ViewStats.h ../graphics.new/DerivedDataSource.h
+generic.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+generic.o: ../graphics.new/TDataViewX.h ../graphics.new/QueryProc.h
+generic.o: ../graphics.new/GDataBin.h ../graphics.new/TDataCMap.h
+generic.o: ../graphics.new/ConnectorShape.h ../graphics.new/Connector.h
+generic.o: ../graphics.new/ShapeID.h ../graphics.new/ViewScatter.h
+generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
+generic.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
+generic.o: ../tape/SortedTable.h ../graphics.new/GData.h
+generic.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+generic.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+generic.o: ../graphics.new/BufferPolicy.h ../graphics.new/TDataMap.h
+generic.o: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/ParseCat.h
