@@ -1329,7 +1329,7 @@ int UniData::TxtCopy_UnixTime(char *dst, char *src, udParam *ud)
 }
 
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
-int UniData::ReaderCall(char *dst, char *src, udParam *ud)
+int UniData::ReaderCall(char *dst, char * /* src */, udParam *ud)
 {
     int      ok;
     SV      *sv;

@@ -490,6 +490,7 @@ int Schema::subParse(Attr *attr)
                 subattr->set_white(attr->whitespace(),0);
                 subattr->set_dtefmt(attr->date_format(),0);
                 subattr->set_quote(attr->quote());
+                subattr->set_maxlen(attr->maxlen());
  
                 if (!match(KY_LBRACE,&ult)) {
                     delete subattr;
@@ -521,6 +522,7 @@ int Schema::subParse(Attr *attr)
                 subattr->set_white(attr->whitespace(),0);
                 subattr->set_dtefmt(attr->date_format(),0);
                 subattr->set_quote(attr->quote());
+                subattr->set_maxlen(attr->maxlen());
     
                 if (!match(KY_LBRACE,&ult)) {
                     delete subattr;
@@ -938,17 +940,9 @@ int Schema::subParse(Attr *attr)
                 break;
     
             case KY_MAXLEN:
-                NOT_TOP_LEVEL("maxlen");
                 MATCH(KY_EQ, &ult);
                 MATCH(INUM, &ult);
                 attr->set_maxlen(ult.Int);
-                if ((attr->type() != String_Attr)
-                    && (attr->type() != Invalid_Attr)) {
-                        *perr << filename << ":" << lineno
-                              << ": maxlen only valid for String type.\n";
-                        dispose_token(tok,&ult);
-                        return(0);
-                }
                 MATCH(KY_SEMICOLON, &ult);
                 break;
     

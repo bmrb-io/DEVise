@@ -162,6 +162,7 @@ class Attr {
     int  lpos() { return _lpos; }
     int  rpos() { return _rpos; }
 
+    int  maxlen() { return _maxlen; }
     char *quote() { return(_qte_chr); }
     char *delimiter() { return(_delimit); }
     char *seperator() { return (_seper != NULL ? _seper : ""); }
