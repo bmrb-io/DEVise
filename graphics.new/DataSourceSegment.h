@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/08/04 21:23:25  beyer
+  DataSource's are now reference counted.
+  Added Version() which TData now check to see if the DataSource has changed,
+    and if it has, it rebuilds its index and invalidates the cache.
+  DataSourceFixedBuf is a DataSourceBuf that allocates and destoyes its
+    own buffer.
+  DerivedDataSource functionality is now in the TData constructor.
+  Added some defaults for virtual methods.
+
   Revision 1.4  1996/07/11 17:25:33  wenger
   Devise now writes headers to some of the files it writes;
   DataSourceSegment class allows non-fixed data length with non-zero
@@ -67,18 +76,36 @@ public:
 		      long dataOffset, long dataLength);
     ~DataSourceSegment();
 
-    virtual char *objectType() {return "DataSourceSegment";};
+    virtual char *objectType();
 
     virtual DevStatus Open(char *mode);
+    virtual char IsOk();
     virtual DevStatus Close();
+
+    virtual int AsyncFd();
+    virtual void AsyncIO();
     
+    virtual char *Fgets(char *buffer, int size);
+    virtual size_t Fread(char *buf, size_t size, size_t itemCount);
+    virtual size_t Read(char *buf, int byteCount);
+    
+    virtual size_t Fwrite(const char *buf, size_t size, size_t itemCount);
+    virtual size_t Write(const char *buf, size_t byteCount);
 
     virtual int Seek(long offset, int from);
     virtual long Tell();
 
     virtual int gotoEnd();
 
-    virtual char IsOk();
+    virtual int append(void *buf, int recSize);
+
+    virtual int GetModTime();
+
+    // virtual void printStats();
+
+    virtual Boolean isFile();
+    virtual Boolean isBuf();
+    virtual Boolean isTape();
     
 
 protected:
