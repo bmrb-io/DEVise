@@ -1,8 +1,0 @@
-#!/s/perl/bin/perl -w
-
-$rm = 'ipcrm';
-foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
-    ($type, $id) = split;
-    $rm .= " -$type $id";
-}
-system($rm);
