@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  1997/02/14 16:47:48  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
   Revision 1.31  1997/02/03 19:45:38  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -152,16 +155,20 @@
 #include "GdataStat.h"
 #include "DataSourceFixedBuf.h"
 #include "UpdateLink.h"
+#include "AssoArray.h"
 
 const int MAXCOLOR = 43;
 const int MAX_GSTAT = 10000;
+//const int MAX_GSTAT = 2;
+const int DERIVED_BUF_SIZE = 800000;
+const int HIST_BUF_SIZE = 6144;
+const int STAT2D_BUF_SIZE = 131072;
 
 #include "Action.h"
 #include "RecId.h"
 #include "PointStorage.h"
 
-
-DefineDList(GStatList, int)
+DefineDList(GStatList, double)
 DefineDList(BStatList, BasicStats *)
 
 class TDataMap;
@@ -218,6 +225,21 @@ public:
     _mappings.DoneIterator(index);
   }
 
+  //get the first mapping for this view in order to get the 
+  //tdata name in TDataAsciiInterp.c
+  TDataMap *GetFirstMap() {
+    int index = InitMappingIterator(false);
+    if (MoreMapping(index)) {
+      TDataMap *firstMap = NextMapping(index)->map;
+      DoneMappingIterator(index);
+      return firstMap;
+    } else {
+      printf("No Mapping available\n");
+      DoneMappingIterator(index);
+      return NULL;
+      }
+  }
+
   /* Return true if restoring pixmaps is allowed */
   virtual Boolean PixmapEnabled() {
     return (_masterLink.Size() > 0 || _slaveLink.Size() > 0 ? false : true);
@@ -230,6 +252,9 @@ public:
   virtual void UpdateAutoScale();
   virtual void SetAutoScale(Boolean autoScale) { _autoScale = autoScale; }
   virtual Boolean GetAutoScale() { return _autoScale; }
+  virtual Boolean IsGStatInMem() { return _gstatInMem; }
+  virtual void ResetGStatInMem() { _gstatInMem = true; }
+  virtual Boolean IsXDateType();
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -237,11 +262,13 @@ public:
   
   /* Get pointer to statistics object */
   BasicStats *GetStatObj() { return &_allStats; }
+  void SetHistBucks(int num) { _allStats.SetnumBuckets(num); }
 
   /* Return pointer to buffer with view statistics */
   DataSourceBuf* GetViewStatistics() { return _statBuffer; }
   DataSourceBuf* GetViewHistogram()  { return _histBuffer; }
-  DataSourceBuf* GetGdataStatistics() { return _gdataStatBuffer; }
+  DataSourceBuf* GetGdataStatisticsX() { return _gdataStatBufferX; }
+  DataSourceBuf* GetGdataStatisticsY() { return _gdataStatBufferY; }
 
   // uses filter''s y range to set the histogram upper & lower bounds
   void SetHistogramWidthToFilter();
@@ -261,9 +288,12 @@ public:
   void MasterRecomputed(ViewGraph* master);
 
   void PrintLinkInfo();
- protected:
+
   /* Write color statistics to memory buffer */
-  void PrepareStatsBuffer();
+  void PrepareStatsBuffer(TDataMap *map);
+
+ protected:
+  virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
 
   /* Insert records into record links whose master this view is */
   void WriteMasterLink(RecId start, int num);
@@ -277,14 +307,18 @@ public:
   BasicStats _allStats;            /* basic stats for all categories */
   BasicStats _stats[MAXCOLOR];     /* basic stats per category */
 
-  DataSourceFixedBuf* _statBuffer;          /* view statistics */
+  DataSourceFixedBuf* _statBuffer;         /* view statistics */
   DataSourceFixedBuf* _histBuffer;	   /* histograms */
-  DataSourceFixedBuf* _gdataStatBuffer;	   /* the statistics for each x */
+  DataSourceFixedBuf* _gdataStatBufferX;   /* the statistics for each x */
+  DataSourceFixedBuf* _gdataStatBufferY;   /* the statistics for each x */
 
-  GdataStat _gstat;
-  GStatList _glist;                /* List to keep track of all the gdata */ 
+  Boolean _gstatInMem;			/* true if gdata is in memory */
 
-  
+  GdataStat _gstatX;
+  GdataStat _gstatY;
+  GStatList _glistX;                /* List to keep track of all X values */ 
+  GStatList _glistY;                /* List to keep track of all Y values */ 
+
   Action *_action;                 /* action in this view */
   Boolean _deleteAction;           /* delete _action when this is destroyed? */
   RecordLinkList _masterLink;      /* links whose master this view is */
