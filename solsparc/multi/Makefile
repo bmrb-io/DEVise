@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/05/16 19:34:12  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS   = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
 ARCH_LDPOST  = -lsocket -lnsl
 

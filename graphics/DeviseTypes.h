@@ -2,6 +2,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/15 19:32:05  wenger
+  Consolidated the two (nearly identical) functions for
+  reading/parsing physical schema, and cleaned up the
+  ParseCat.c module quite a bit.  As part of this, I added
+  a new enum DevStatus (StatusOk, StatusFailed, etc.).
+
   Revision 1.2  1995/09/05 21:12:39  jussi
   Added/update CVS header.
 */
@@ -12,12 +18,7 @@
 typedef double Coord;
 typedef char Boolean;
 
-#ifdef IBM_POWER_STATION
-const int true = 1;
-const int false =0;
-#endif
-
-#if defined(HPUX) || defined(SUN) || defined(PENTIUM)
+#if defined(HPUX) || defined(SUN) || defined(SOLARIS)
 inline int trunc(float num){
 	return (int)num;
 }

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/04/20 19:57:31  kmurli
+#  no changes done.
+#
 #  Revision 1.8  1996/02/13 16:44:19  jussi
 #  Replaced /usr/X11R6/include with /s/X11/include.
 #
@@ -24,7 +27,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM  -I/s/X11/include -I/s/tcl/include 
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include 
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base

@@ -15,11 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/04/22 18:05:34  wenger
+#  First version of "attribute projection" code.  The parser (with
+#  the exception of instantiating any TData) compiles and runs.
+#
 #
 
 ############################################################
 
-ARCH_FLAGS   = -DPENTIUM -I/s/tcl/include
+ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = -static
 

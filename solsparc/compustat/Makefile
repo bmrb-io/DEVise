@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/05/16 19:34:08  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 
 VPATH = ../../compustat
 include $(VPATH)/Makefile.base

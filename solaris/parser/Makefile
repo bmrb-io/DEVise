@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1995/09/28 15:12:05  jussi
+#  Added copyright and CVS log messages.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I../../parser
+ARCH_FLAGS = -DSOLARIS -I../../parser
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

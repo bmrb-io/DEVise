@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/03/27 17:55:11  wenger
+  Changes to get DEVise to compile and run on Linux.
+
   Revision 1.4  1996/03/26 15:35:01  wenger
   Fixed various compile warnings and errors; added 'clean' and
   'mostlyclean' targets to makefiles; changed makefiles so that
@@ -62,7 +65,7 @@
   #endif
 #endif
 
-#ifdef PENTIUM
+#ifdef SOLARIS
 #define __solaris
 #endif
 
@@ -87,8 +90,8 @@
 #error "Are you sure this is an HP machine?"
 #endif
 
-#if defined(PENTIUM) && !defined(__solaris)
-#error "Are you sure this is a Pentium machine?"
+#if defined(SOLARIS) && !defined(__solaris)
+#error "Are you sure this is a Solaris machine?"
 #endif
 
 #if defined(SGI) && !defined(__sgi)

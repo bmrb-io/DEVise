@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/02/13 16:44:15  jussi
+#  Replaced /usr/X11R6/include with /s/X11/include.
+#
 #  Revision 1.8  1996/01/09 16:46:41  jussi
 #  Added -lnsl for network support.
 #
@@ -24,7 +27,7 @@
 
 ############################################################
 
-ARCH_FLAGS   = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS   = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L /s/X11/lib -L /s/tcl/lib -R /s/X11/lib 
 ARCH_LDPOST  = -lsocket -lnsl
 

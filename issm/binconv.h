@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/03/27 17:55:18  wenger
+  Changes to get DEVise to compile and run on Linux.
+
   Revision 1.4  1995/11/14 22:59:24  jussi
   Added necessary definitions for a Pentium processor. Fixed
   problems with static member functions.
@@ -35,7 +38,7 @@
 
 #include <string.h>
 
-#if !defined(PENTIUM) && !defined(SUN4) && !defined(MIPS) \
+#if !defined(SOLARIS) && !defined(SUN4) && !defined(MIPS) \
     && !defined(SUN3) && !defined(VAX) && !defined(IBM370) \
     && !defined(LINUX)
 #define SUN4
@@ -50,7 +53,7 @@
 				/*   to EBCDIC				   */
 #endif
 
-#ifdef PENTIUM	                // Pentium machine
+#ifdef SOLARIS	                // Solaris (Intel/Sparc) machine
 #   define SWAPBYTES
 #   define NEED_WORD_ALIGNED
 #   define CONVREALS

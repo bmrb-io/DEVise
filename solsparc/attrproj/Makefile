@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/05/16 19:34:08  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS   = -DPENTIUM -I/s/tcl/include
+ARCH_FLAGS   = -DSOLARIS -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  = -static
 

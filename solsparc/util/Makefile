@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/05/16 19:34:13  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM
+ARCH_FLAGS = -DSOLARIS
 ARCH_LDPOST = -lsocket -lnsl
 
 VPATH = ../../util

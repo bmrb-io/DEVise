@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/03/26 15:34:38  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.3  1996/02/13 16:21:20  jussi
   Fixed for AIX.
 
@@ -120,7 +125,7 @@ void Timer::TimerHandler(int)
     entry->callback->TimerWake(entry->arg);
     FreeEntry(entry);
   }
-#if defined(HPUX) || defined(AIX) || defined(PENTIUM)
+#if defined(HPUX) || defined(AIX) || defined(SOLARIS)
   (void)signal(SIGALRM, TimerHandler);
 #endif
 }

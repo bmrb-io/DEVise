@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/05/16 19:34:12  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I../../parser
+ARCH_FLAGS = -DSOLARIS -I../../parser
 
 VPATH = ../../parser
 include $(VPATH)/Makefile.base

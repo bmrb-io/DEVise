@@ -15,13 +15,16 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1996/02/13 16:44:22  jussi
+#  Replaced /usr/X11R6/include with /s/X11/include.
+#
 #  Revision 1.6  1995/09/28 15:12:06  jussi
 #  Added copyright and CVS log messages.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS = -DSOLARIS -I/s/X11/include -I/s/tcl/include
 
 VPATH = ../../tape
 include $(VPATH)/Makefile.base

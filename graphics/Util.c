@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/03/27 17:54:56  wenger
+  Changes to get DEVise to compile and run on Linux.
+
   Revision 1.8  1996/02/13 16:20:16  jussi
   Fixed for AIX.
 
@@ -41,7 +44,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#if defined(PENTIUM) || defined(HPUX) || defined(AIX)
+#if defined(SOLARIS) || defined(HPUX) || defined(AIX)
 #include <dirent.h>
 #else
 #include <sys/dir.h>
@@ -99,13 +102,13 @@ void ClearDir(char *dir)
 
   DIR *dirp = opendir(dir);
   if (dirp != NULL){
-#if defined(PENTIUM) || defined(HPUX) || defined(AIX) || defined(LINUX)
+#if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX)
     struct dirent *dp;
 #else
     struct direct *dp;
 #endif
     for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)){
-#if defined(PENTIUM) || defined(HPUX) || defined(AIX) || defined(LINUX)
+#if defined(SOLARIS) || defined(HPUX) || defined(AIX) || defined(LINUX)
       struct dirent *realdp = (struct dirent *)dp;
 #else
       struct direct *realdp = dp;
