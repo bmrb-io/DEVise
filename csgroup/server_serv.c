@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/03/11 18:25:19  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.2  1998/02/12 17:15:08  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -69,9 +75,8 @@
 #include <stdlib.h> /* getenv, exit */
 #include <string.h> /* strcmp */
 #include <signal.h>
-#ifdef __cplusplus
-#include <sysent.h> /* getdtablesize, open */
-#endif /* __cplusplus */
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h> /* setsid */
 #include <sys/types.h>
 #include <memory.h>
