@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/07/16 15:49:18  wenger
+  Moved string allocation/deallocation within StringStorage class, fixed
+  memory leak of strings.
+
   Revision 1.6  1997/02/26 16:31:45  wenger
   Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 
@@ -49,33 +53,10 @@
 #define StringStorage_h
 
 #include "HashTable.h"
-#include "Util.h"
-
-//#define DEBUG_STRINGS
 
 class StringStorage {
   public:
-    static int Insert(char *string, int &key) {
-        if (_strings.lookup(string, key) >= 0) {
-            // found string in table
-            return 0;
-        }
-        key = _stringNum++;
-	char *tmpString = CopyString(string);
-        int code = _strings.insert(tmpString, key);
-#if defined(DEBUG_STRINGS)
-        printf("Inserting <%s> into hash table\n", string);
-        printf("  %d entries in hash table\n", _strings.num());
-#endif
-        if (code < 0) {
-	  delete [] tmpString;
-	  return code;
-	}
-        code = _keys.insert(key, tmpString);
-        if (code >= 0)
-          return 1;
-        return code;
-    }
+    static int Insert(char *string, int &key);
 
     static int Lookup(char *string, int &key) {
         return _strings.lookup(string, key);
@@ -85,44 +66,17 @@ class StringStorage {
         return _keys.lookup(key, string);
     }
 
-    static int Clear() {
-#if defined(DEBUG_STRINGS)
-        printf("StringStorage::Clear()\n");
-#endif
+    static int GetCount() { return _strings.num(); }
 
-	// Delete the strings themselves.
-        _strings.InitRetrieveIndex();
-	void *current = NULL;
-	char **string;
-	int key;
-	while (_strings.RetrieveIndex(current, string, key) == 0) {
-#if defined(DEBUG_STRINGS)
-        printf("  deleting <%s>\n", *string);
-#endif
-	  delete [] *string;
-	}
+    // Return 0 if OK, -1 otherwise.
+    static int Save(char *filename);
 
-        int code = _strings.clear();
-        if (code >= 0) {
-            code = _keys.clear();
-            if (code >= 0) {
-                _stringNum = 0;
-                PopulateFromInitFile();
-                return 0;
-            }
-        }
-        return code;
-    }
+    static int Clear();
 
     static int PopulateFromInitFile();
 
   protected:
-    static int StringHash(char *&string, int numBuckets) {
-        unsigned int sum = 0;
-        for(int i = 0; i < (int)strlen(string); i++)
-            sum += string[i];
-        return sum % numBuckets;
-    }
+    static int StringHash(char *&string, int numBuckets);
 
     static int StringComp(char *&string1, char *&string2) {
         return strcmp(string1, string2);

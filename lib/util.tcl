@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.48  1997/06/25 17:05:17  wenger
+#  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+#  function, disabled updating of record links during print, print dialog
+#  grabs input.
+#
 #  Revision 1.47  1997/04/29 14:34:52  wenger
 #  User interface improvments: Quit and Close don't ask for confirmation
 #  if there is no session open; the file selection box gives better info
@@ -1044,4 +1049,28 @@ proc SessionIsOpen {} {
 	return 0
       }
     }
+}
+
+############################################################
+# Get and display the number of strings in the DEVise  string space.
+
+proc GetStringCount {} {
+    set stringCount [DEVise getStringCount]
+    dialog .stringInfo "String Count" \
+      "String table has $stringCount strings" "" 0 OK
+}
+
+############################################################
+# Save the DEVise string space to a file.
+
+proc SaveStringSpace {} {
+  global fsBox
+
+  set fsBox(path) [CWD]
+  set fsBox(pattern) *
+  set filename [ FSBox "Select file for saving strings" ]
+
+  if {$filename != ""} {
+    DEVise saveStringSpace $filename
+  }
 }

@@ -815,6 +815,34 @@ Num Date        Status  Description
 			instead of 'ascii' -- produces unuseable schema file.
 			(rkw)
 
+199 07/17/97	OPEN	When printing a GIF, if any windows are covered up,
+			the covered portions are not printed correctly.
+			(ml/rkw)
+
+200 07/17/97	OPEN	Printing a GIF directly to the printer gives different
+			results than printing to a file and then printing
+			the file. (ml/rkw)
+
+201 07/17/97	OPEN	sourcedef.tcl file ends up with 644 permissions
+			(at least sometimes).  Causes problems for multiple
+			people creating data sources if not on AFS. (ma/rkw)
+
+202 07/17/97	OPEN	If there are too many attributes in the schema, the
+			visualize data window doesn't have enough room for
+			all of the buttons. (ma/rkw)
+
+203 07/17/97	OPEN	The "Choose Attribute Group" window is sometimes
+			obscured when the mapping window is opened. (ma/rkw)
+
+204 07/17/97	OPEN	Print exclusion doesn't work when printing to GIF.
+			(ml/rkw)
+
+205 07/17/97	OPEN	Printing display to GIF with a window iconified
+			causes crash. (ml/rkw)
+
+206 07/17/97	OPEN	Print output should correspond to stacking order on
+			the screen. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

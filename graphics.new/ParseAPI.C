@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.69  1997/06/25 21:25:29  wenger
+  Added writeDesc (write session description) command needed by Hongyu's
+  Java client.
+
   Revision 1.68  1997/06/09 14:46:52  wenger
   Added cursor grid; fixed bug 187; a few minor cleanups.
 
@@ -330,6 +334,7 @@
 
 #include "CatalogComm.h"
 #include "SessionDesc.h"
+#include "StringStorage.h"
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -789,63 +794,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, buf);
       return 1;
     }
+
+    if (!strcmp(argv[0], "getStringCount")) {
+      // Returns: <stringCount>
+      char buf[100];
+      sprintf(buf, "%d", StringStorage::GetCount());
+      control->ReturnVal(API_ACK, buf);
+      return 1;
+    }
   }
 
   if (argc == 2) {
-
-/*
-//splitted by liping
-//
-
-    if(!strcmp(argv[0], "dteDeleteCatalogEntry")){
-    	 dteDeleteCatalogEntry(argv[1]);
-      control->ReturnVal(API_ACK, "");
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteReadSQLFilter")){
-    	 char* retVal = dteReadSQLFilter(argv[1]);
-      control->ReturnVal(API_ACK, retVal);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteShowCatalogEntry")){
-    	 char* catEntry = dteShowCatalogEntry(argv[1]);
-      control->ReturnVal(API_ACK, catEntry);
-      return 1;
-    }
-
-	if(!strcmp(argv[0],"dteImportFileType")){
-	  char * name = dteImportFileType(argv[1]); 
-	  if (!name){
-		strcpy(result,"");
-		control->ReturnVal(API_NAK, result);
-		return -1;
-	  }
-      control->ReturnVal(API_ACK, name);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteListCatalog")){
-    	 char* catListing = dteListCatalog(argv[1]);
-      control->ReturnVal(API_ACK, catListing);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteListAttributes")){
-    	 char* attrListing = dteListAttributes(argv[1]);
-      control->ReturnVal(API_ACK, attrListing);
-      return 1;
-    }
-//
-
-	if (!strcmp(argv[0],"createIndex")){
-		dqlCreateIndex(argv[1]);
-		return 1;
-	}	
-=======
-*/
-
     if (!strcmp(argv[0], "abortQuery")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -1726,6 +1685,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, buf);
       return 1;
     }
+
     if (!strcmp(argv[0], "writeDesc")) {
       // Argument: <file name>
 #if defined(DEBUG)
@@ -1738,33 +1698,22 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
+
+    if (!strcmp(argv[0], "saveStringSpace")) {
+      // Argument: <file name>
+#if defined(DEBUG)
+      printf("saveStringSpace <%s>\n", argv[1]);
+#endif
+      if (StringStorage::Save(argv[1]) != 0) {
+        control->ReturnVal(API_NAK, "can't save string space");
+        return -1;
+      }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
   }
+
   if (argc == 3) {
-
-/*
-//splitted by liping
-//
-    if(!strcmp(argv[0], "dteShowAttrNames")){
-    	 char* attrListing = dteShowAttrNames(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, attrListing);
-      return 1;
-    }
-    if(!strcmp(argv[0], "dteShowCatalogEntry")){
-    	 char* catEntry = dteShowCatalogEntry(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, catEntry);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteInsertCatalogEntry")){
-    	 dteInsertCatalogEntry(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, "");
-      return 1;
-    }
-//
-    
-=======
-*/
-
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {
@@ -2471,19 +2420,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 5) {
-
-/*
-	if(!strcmp(argv[0],"importFileDQLType")){
-	  char * name = ParseDQL(argv[1],argv[2],argv[3],"DQL",argv[2],argv[4]); 
-	  if (!name){
-		strcpy(result,"");
-		control->ReturnVal(API_NAK, result);
-		return -1;
-	  }
-      control->ReturnVal(API_ACK, name);
-      return 1;
-    }
-*/
     if (!strcmp(argv[0], "setLabel")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -2532,7 +2468,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     if (!strcmp(argv[0], "setCursorGrid")) {
       // Arguments: <cursorName> <useGrid> <gridX> <gridY>
 #if defined(DEBUG)
-      printf("getCursorGrid <%s>\n", argv[1]);
+      printf("setCursorGrid <%s>\n", argv[1]);
 #endif
       DeviseCursor *cursor = (DeviseCursor *) classDir->FindInstance(argv[1]);
       if (!cursor) {

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.138  1997/07/15 19:15:34  wenger
+#	All session files now saved as batch scripts instead of Tcl scripts.
+#
 #	Revision 1.137  1997/06/25 21:25:11  wenger
 #	Added writeDesc (write session description) command needed by Hongyu's
 #	Java client.
@@ -875,6 +878,13 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command PrintView
 .mbar.session.menu.printMenu add command -label "With Map" \
 	-command PrintWithMap
+
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Get String Count" \
+	-command { GetStringCount }
+.mbar.session.menu add command -label "Save String Space" \
+	-command { SaveStringSpace }
+.mbar.session.menu add separator
 
 .mbar.session.menu add command -label "Quit" -command DoExit
 
