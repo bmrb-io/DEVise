@@ -15,6 +15,10 @@
 #ifndef ClientAPI_h
 #define ClientAPI_h
 
+#ifdef SUN
+#include "missing.h"
+#endif
+
 extern int DeviseOpen(char *hostName, int port, int control);
 extern int DeviseReceive(char *result, int &flag, char *errorMsg);
 extern int DeviseSend(char **argv, int num);
