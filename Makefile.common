@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1997/11/05 00:18:25  donjerko
+#  Made compilation to fail if any library fails.
+#
 #  Revision 1.18  1997/08/21 21:02:41  donjerko
 #  Changed SPECIFIC_PATH to FALSE
 #
@@ -137,6 +140,8 @@ endif
 .C.o:
 	$(CC) -c $(CFLAGS) $<
 .cc.o:
+	$(CC) -c $(CFLAGS) $<
+%.o : %.cpp
 	$(CC) -c $(CFLAGS) $<
 
 # Purify
