@@ -1,0 +1,100 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1998
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  This document tells programmers how to add a new command
+#  to DEVise.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+There are three main aspects to creating a new DEVise command:
+
+    1. Declare a class for the command.
+    2. Write the actual command code.
+    3. Define and register a command object.
+
+These three steps are explained in more detail below.
+
+
+Here is an example on how to develop a new command for devise.
+
+Example: Develop command "setHistogram" for devise.
+
+
+A. Implement the command on the server side.
+
+A-1. Declare a class for the command:
+
+Go to DeviseCommand.h and add the following:
+
+    //
+    //Class definition
+    //
+    DECLARE_CLASS_DeviseCommand_(setHistogram)
+    DECLARE_CLASS_END
+
+Note:  you can add new function or data members to your class by
+inserting between those two macros. The actual C++ class name for your
+command is always:
+
+    DeviseCommand_setHistogram
+
+
+A-2. Write the code for your command (this is similar to what was previously
+in the ParseAPI.C file):
+
+Go to DeviseCommand.C and add the following:
+
+    IMPLEMENT_COMMAND_BEGIN(setHistogram)
+    // Arguments: <list whatever arguments this command expects>
+    // Returns: <list what the command returns>
+
+    #if defined(DEBUG)
+	printf("DEVise setHistogram\n");
+    #endif
+
+	<code to implement the command here>
+    IMPLEMENT_COMMAND_END
+
+Note: the command code must always call control->ReturnVal() so a value
+will be returned to the Tcl code that called the command.  The return
+value of the command function should be 1 for success and -1 for failure.
+
+Note: it's a good idea to check the argument count and return an error
+message if it's not correct, for example:
+  if (argc != 5) {
+    control->ReturnVal(API_NAK,
+	"Wrong number of arguments for DEVise foobar");
+    return -1;
+  }
+   
+
+A-3. Define a command object and register it with the unique
+CmdContainer object:
+
+Go to CmdContainer.C file, and within its constructors, add:
+
+    REGISTER_COMMAND(setHistogram)
+        or
+    REGISTER_COMMAND_WITH_OPTION(setHistogram, options)
+
+Currently, no commands use the WITH_OPTION feature.
+
+
+B. Use the command on the client (Tcl) side:
+
+    DEVise setHistogram ...
