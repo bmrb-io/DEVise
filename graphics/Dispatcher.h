@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/01/11 18:19:08  jussi
+  Added handling of severe errors (SIGSEGV etc.).
+
   Revision 1.24  1996/12/12 22:01:23  jussi
   Cleaned up termination code and added CheckUserInterrupt() method.
 
@@ -113,14 +116,7 @@
 #ifndef Dispatcher_h
 #define Dispatcher_h
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
 #include <sys/types.h>
-#if defined(SOLARIS) || defined(AIX)
-#include <sys/select.h>
-#endif
 
 #include "DeviseTypes.h"
 #include "DList.h"
@@ -153,7 +149,7 @@ public:
    user registers a callback, but they should not be peeked at! */
 typedef DispatcherInfo* DispatcherID;
 
-class DeviseWindow;
+//class DeviseWindow;
 class Dispatcher;
 class View;
 class Selection;
@@ -259,7 +255,7 @@ private:
 
   /* process any callbacks that have an fd set in fdread or fdexc,
      or any callbacks that have callback_requested set */
-  void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc);
+  void ProcessCallbacks(fd_set& fdread, fd_set& fdexc);
 
   long _oldTime;		/* time when clock was read last */
   long _playTime;		/* time last read for playback */
@@ -287,6 +283,7 @@ private:
   int maxFdCheck;
 };
 
+#if 0 // This isn't currently used anywhere.  RKW Aug. 27, 1997.
 /*********************************************************
 A class that automatically registers with the dispatcher
 *********************************************************/
@@ -301,6 +298,6 @@ public:
     Dispatcher::Current()->Unregister(this);
   }
 };
-
+#endif
 
 #endif

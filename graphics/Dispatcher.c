@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/03/19 19:41:02  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.35  1997/02/03 04:12:05  donjerko
   Catalog management moved to DTE
 
@@ -142,12 +151,16 @@
   Added/updated CVS header.
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 #include <errno.h>
 #include <memory.h>
 #include <sys/time.h>
 #include <signal.h>
 #include <fcntl.h>
-#ifdef AIX
+#if defined(SOLARIS) || defined(AIX)
 #include <sys/select.h>
 #endif
 #if defined(SOLARIS) || defined(HPUX) || defined(AIX)
@@ -231,7 +244,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 				  int fd)
 {
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Dispatcher(0x%p)::Register: %s: 0x%p, fd %d\n",
 	 this, c->DispatchedName(), c, fd);
 #endif
@@ -286,7 +299,7 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 
 void Dispatcher::Unregister(DispatcherCallback *c)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("Dispatcher(0x%p)::Unregister: %s: 0x%p\n",
 	 this, c->DispatchedName(), c);
 #endif
@@ -421,8 +434,9 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	      && (   FD_ISSET(info->fd, &fdread) 
 		  || FD_ISSET(info->fd, &fdexc))) ) {
 #if defined(DEBUG)
-	printf("Calling callback 0x%p: called fd = %d  req = %d\n", 
-	       info->callBack, info->fd, info->callback_requested); 
+	printf("Calling callback 0x%p (%s): called fd = %d  req = %d\n", 
+	       info->callBack, info->callBack->DispatchedName(),
+	       info->fd, info->callback_requested); 
 #endif
 	info->callBack->Run();
       }
