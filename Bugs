@@ -1186,6 +1186,9 @@ Num Date        Status  Description
 
 313 03/07/98	OPEN	It's possible to create a link with no link attribute. (rkw)
 
+314 03/09/98	OPEN	Record links don't show up in the list of links when you
+			select View->Links->Unlink. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
