@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/12/03 20:24:08  jussi
+  Removed unused command line parameters. Changed BufPolicies().
+
   Revision 1.24  1996/11/23 21:23:10  jussi
   Removed variables and methods not used anywhere.
 
@@ -110,7 +113,6 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 #include <sys/types.h>
 
 #include "Dispatcher.h"
@@ -248,16 +250,8 @@ static void Usage(char *prog)
   Exit::DoExit(1);
 }
 
-static void CatchInt(int)
-{
-  Dispatcher::QuitNotify();
-}
-
 void Init::DoInit(int &argc, char **argv)
 {
-  /* set up interrupt handling for INTR */
-  (void)signal(SIGINT, CatchInt);
-
   /* Create work directory, if needed */
   char *workDir = getenv("DEVISE_WORK");
   if (!workDir)
