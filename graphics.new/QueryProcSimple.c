@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/12 15:21:48  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.4  1995/12/28 19:43:23  jussi
   Small fix to remove compiler warning.
 
@@ -27,11 +30,6 @@
 */
 
 /***************************************************************************
-Debug flags:
-	DEBUG_QUERY_PROC: lots of debugging info
-	DEBUG_QUERY_FLOW: state flow info
-	TRACE_GDATA: trace data access
-
 QueryProc.c: query processor
 State machine for query processor:
 states:
@@ -83,10 +81,10 @@ Algorithm for processing a query:
 	loop:{
 7)      Prefetch TData pages
 8)      Prefetch gdata, get rid of those tdata covered by gdata
-    }until no more TData pages fetched or buffer full
+   } until no more TData pages fetched or buffer full
 9) convert tdata pages on disk into gdata.
 
-Definition of Cover: a range of gdata pages convers a range of tdata page if
+Definition of Cover: a range of gdata pages covers a range of tdata page if
 rids in gdata a superset of rids in in tdata, and vice versa.
 
 *************************************************************************/
@@ -109,10 +107,8 @@ rids in gdata a superset of rids in in tdata, and vice versa.
 #include "GDataBin.h"
 #include "PageSize.h"
 
-static int debug=0;
-
 /* temp page to hold data for converting tdata into gdata. */
-const int GDATA_BUF_SIZE = 51200;
+static const int GDATA_BUF_SIZE = 51200;
 static char _gdataBuf[GDATA_BUF_SIZE];
 
 /* Get X associated with a recId */
@@ -368,7 +364,7 @@ Wrap up when done with the query
 Also find next state.
 ****************************************************/
 void QueryProcSimple::DoQueryDone(){
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 		printf("query done\n");
 #endif
 		/*** XXX: Do only the following for now */
@@ -397,7 +393,7 @@ void QueryProcSimple::ProcessGDataQuery(){
 				done = true;
 				break;
 			case NewCmd:
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 			printf("state: NewCmd\n");
 #endif
 				/* Start a new command */
@@ -410,7 +406,7 @@ void QueryProcSimple::ProcessGDataQuery(){
 							  _tDataBin: TData pages already processed.
 					outgoing: _tScanPage: 1st T page to be scanned 
 				*/
-#ifdef TRACE_GDATA
+#ifdef DEBUG
 				printf("Binary Search\n");
 #endif
 				query = FirstQuery();
@@ -429,7 +425,7 @@ void QueryProcSimple::ProcessGDataQuery(){
 				}
 				break;
 			case Scan:
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 			printf("state: scan\n");
 #endif
 				/* scan pages */
@@ -456,11 +452,11 @@ Process new GData command
 void QueryProcSimple::DoNewGDataCommand(){
 	QueryData *query= FirstQuery();
 
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 printf("new gdatacommand: x: %f,%f, \n",
 		query->filter.xLow, query->filter.xHigh);
 #endif
-#ifdef TRACE_GDATA
+#ifdef DEBUG
 printf("new gdatacommand: x: %f,%f\n",
 		query->filter.xLow, query->filter.xHigh);
 #endif
@@ -559,7 +555,7 @@ global used:
 	_tScanId == next record to scan.
 *******************************************************************/
 void QueryProcSimple::DoScan(){
-#ifdef TRACE_GDATA
+#ifdef DEBUG
 	printf("DoScan\n");
 #endif
 	QueryData *query = FirstQuery();
@@ -649,7 +645,7 @@ Return true if found.
 Boolean QueryProcSimple::DoYXBinarySearch(BufMgr *mgr,
 	TData *tdata, TDataMap *map, Coord yval, Boolean isPrefetch,
 	int width, int height, int &row){
-#ifdef DEBUG_QUERY_PROC
+#ifdef DEBUG
 printf("QueryProcSimple::DoYXBinarySearch: filter %f,%f,%f,%f\n",
 	filter.xLow, filter.yLow,filter.xHigh,filter.yHigh);
 #endif
@@ -857,7 +853,7 @@ void QueryProcSimple::ProcessScatterQuery(){
 }
 
 void QueryProcSimple::InitInMemConversion(TData *tdata, GData *gdata, TDataMap *map){
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 	printf("QueryProcSimple::InitMemConvert\n");
 #endif
 	if (!_mgr->HasBuffer() || gdata->RecsLeftToConvert() == 0)
@@ -873,7 +869,7 @@ void QueryProcSimple::InitInMemConversion(TData *tdata, GData *gdata, TDataMap *
 }
 
 Boolean QueryProcSimple::InMemConvert(){
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 	printf("QueryProcSimple::InMemConvert\n");
 #endif
 	void *tbuf;
@@ -889,7 +885,7 @@ Boolean QueryProcSimple::InMemConvert(){
 		_inMemConvertDone = true;
 		return false;
 	}
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 	printf("QueryProcSimple:: got TData %d,%d, buffer = 0x%p\n", low, high, tbuf);
 #endif
 
@@ -897,7 +893,7 @@ Boolean QueryProcSimple::InMemConvert(){
 	RecId convertLow, convertHigh;
 	Boolean noHigh= _inMemGData->NextUnConverted(low, convertLow, convertHigh);
 	while (convertLow <= high){
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 		if (noHigh)
 			printf("QueryProcSimple::unconverted [%d,]\n", convertLow);
 		else printf("QueryProcSimple::unconverted[%d,%d]\n", convertLow, convertHigh);
@@ -907,7 +903,7 @@ Boolean QueryProcSimple::InMemConvert(){
 
 		/* When we get here:[convertLow, convertHigh] are
 		within [low,high] and should be converted*/
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 		printf("QueryProcSimple::converting [%d,%d]\n", convertLow, convertHigh);
 #endif
 
@@ -936,7 +932,7 @@ Boolean QueryProcSimple::InMemConvert(){
 		int numGRecs;
 		while (_mgr->GetBuf(gbuf,numGRecs)){
 			/* Convert */
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 			printf("Got in mem buf %d recs\n", numGRecs);
 #endif
 			_inMemMap->ConvertToGData(nextId, tptr, NULL, numGRecs,gbuf);
@@ -974,7 +970,7 @@ printf("Getting next unconverted from %d\n", convertHigh+1);
 }
 
 void QueryProcSimple::DoneInMemConvert(){
-#ifdef DEBUG_QUERY_FLOW
+#ifdef DEBUG
 	printf("DoneInMemConvert\n");
 	_inMemGData->PrintConverted();
 #endif
