@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34  1997/09/11 21:33:58  wenger
+#  Fixed bug 198 ("text" vs. "ascii" conflict in old-style schema editor GUI).
+#
 #  Revision 1.33  1997/09/04 17:56:43  donjerko
 #  Removed separator button from unidata definition.
 #
@@ -1682,97 +1685,126 @@ proc unidata_readphysical {filename} {
     # Open file for reading
     set f [open $schemadir/physical/$filename r]
 
-    # First line is the schema name 
     set line ""
+
+    # First line is the schema name 
     readSchemaLine $f line
-    scan $line "schema %s \{" sname 
+    if {![regexp {.*schema *([^ ]*) *\{.*} $line dummy sname]} {
+        puts "Can't find schema name in <$line>"
+    }
+    #puts "DIAG name: $sname"
 
     # Second line is schema type
     readSchemaLine $f line
-    scan $line "type = %s \;" ftype
+    if {![regexp {.*type *= *([^; ]*).*;.*} $line dummy ftype]} {
+        puts "Can't find schema type in <$line>"
+    }
+    #puts "DIAG type: $ftype"
 
     # Third line is comment
+    # everything between the 's is the comment
     readSchemaLine $f line
-    scan $line "comment = %s \;" comm
+    if {![regexp {.*comment *= *('[^']*').*;.*} $line dummy comm]} {
+        puts "Can't find schema comment chars in <$line>"
+    }
+    #puts "DIAG comment: $comm"
 
     # Third line is separator or whitespace
-    readSchemaLine $f line
-    set issepar 1
-    if {[lindex $line 0] == "whitespace"} {
-	set issepar 0
-    }
     # everything between the 's is the separator
-    set lstart [string first "'" $line]
-    set lend [string last "'" $line]
-    set separ [string range $line $lstart $lend]
+    readSchemaLine $f line
+    if {![regexp {.*whitespace *= *('[^']*').*;.*} $line dummy separ]} {
+        puts "Can't find schema whitespace chars in <$line>"
+    }
+    #puts "DIAG separator: $separ"
 
-    # Following are all attr declarations
-    set len [readSchemaLine $f line]
+    # Following are all attr declarations...
+
     set num 0
-    while {$len != -1} {
+    while {1} {
+        # Read everything for this attribute into one big line.
+        set line ""
+        set len 0
+        while {![regexp {.*\} *} $line] && $len != -1} {
+            set len [readSchemaLine $f tmpLine]
+	    set line "$line$tmpLine"
+        }
+	if {$len == -1} { break }
+	if {[string range $line 0 0] == "\}"} { break }
 
-	set astrlen 0
-	set hival "none"
-	set loval "none"
-	set dateformat ""
-	set position ""
-	set length ""
-
-	scan $line "attr %s \{" attrname
-	readSchemaLine $f line
-	scan $line "type = %s \;" attrtype
-	readSchemaLine $f line
-
-	set sorted No
-	set count 0
-	while {[string range $line 0 0] != "\}" && $count < 20 } {
-		if {[lindex $line 0] == "sorted"} {
-			set sorted Yes
-		}
-		if {[lindex $line 0] == "max"} {
-			scan $line "max = %s \;" hival
-		}
-		if {[lindex $line 0] == "min"} {
-			scan $line "min = %s \;" loval
-		}
-		if {[lindex $line 0] == "maxlen"} {
-			scan $line "maxlen = %s \;" astrlen
-		}
-		if {$astrlen == "none"} {
-			set astrlen 0
-		}
-		if {[lindex $line 0] == "date_format"} {
-			scan $line "date_format = %s \;" dateformat
-		}
-		if { $dateformat == "none" } {
-			set dateformat ""
-		}
-		if {[lindex $line 0] == "position"} {
-			scan $line "position = %s \;" position
-		}
-		if {$position == "none"} {
-			set position ""
-		}
-		if {[lindex $line 0] == "length"} {
-			scan $line "length = %s \;" length
-		}
-		if {$length == "none"} {
-			set length ""
-		}
-
-		set count [expr $count+1]
-		readSchemaLine $f line
+	# Get attribute name.
+	if {![regexp {.*attr *([^ ]*) *\{.*} $line dummy attrname]} {
+	    puts "Can't find attribute name in <$line>"
+	    continue
 	}
 
-	set attr [list $attrtype $sorted $hival $loval $attrname $astrlen $dateformat $position $length]
+	# Get attribute type.
+	if {![regexp {.*type *= *([^; ]*).*} $line dummy attrtype]} {
+	    puts "Can't find attribute type in <$line>"
+	    continue
+	}
 
-	#puts "ATTR LIST Inserting .. $attr"
+	# Get whether attribute is sorted.
+	if {[regexp {.*\{.*sorted.*} $line]} {
+	    set sorted Yes
+	} else {
+	    set sorted No
+	}
 
+	# Get high value.
+	if {![regexp {.*max *= *([^; ]*).*} $line dummy hival]} {
+	    set hival "none"
+	}
+
+	# Get low value.
+	if {![regexp {.*min *= *([^; ]*).*} $line dummy loval]} {
+	    set loval "none"
+	}
+
+	# Get maximum string length.
+	if {![regexp {.*maxlen *= *([^; ]*).*} $line dummy astrlen]} {
+	    set astrlen 0
+	} else {
+	    if {$astrlen == "none"} {
+	        set astrlen 0
+	    }
+	}
+
+	# Get date format.
+	if {![regexp {.*date_format *= *([^; ]*).*} $line dummy dateformat]} {
+	    set dateformat ""
+	} else {
+	    if { $dateformat == "none" } {
+	        set dateformat ""
+	    }
+	}
+
+	# Get position.
+	if {![regexp {.*position *= *([^; ]*).*} $line dummy position]} {
+	    set position ""
+	} else {
+	    if { $position == "none" } {
+	        set position ""
+	    }
+	}
+
+	# Get length.
+	if {![regexp {.*length *= *([^; ]*).*} $line dummy length]} {
+	    set length ""
+	} else {
+	    if { $length == "none" } {
+	        set length ""
+	    }
+	}
+
+
+	# Now put all of the information for this attribute into the attribute
+	# list.
+	set attr [list $attrtype $sorted $hival $loval $attrname $astrlen \
+	    $dateformat $position $length]
+
+	#puts "  DIAG ATTR LIST Inserting .. $attr"
 	set attrlist [linsert $attrlist $num $attr]
-	set len [readSchemaLine $f line]
-	if {[string range $line 0 0] == "\}"} {
-		break
-	}
+
 	set num [expr $num+1]
     }
 
