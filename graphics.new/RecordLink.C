@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/11/26 16:51:38  ssl
+  Added support for piled viws
+
   Revision 1.7  1996/08/07 15:32:04  guangshu
   Comment out the debugging message.
 
@@ -216,24 +219,26 @@ void RecordLink::Done()
 
   _prevLastRec = _lastRec;
 
+  /* Refresh the views of this link. */
   int index = InitIterator();
   while(More(index)) {
     ViewGraph *view = Next(index);
+
     if (view->IsInPileMode()) {
-      /* if slave view is in pile mode, need to refresh ALL
-         views in that pile */
-      ViewWin *parent = view->GetParent();
-      DOASSERT(parent, "View has no parent");
-      int sindex = parent->InitIterator();
-      while(parent->More(sindex)) {
-        ViewWin *vw = parent->Next(sindex);
-        View *slave = View::FindViewByName(vw->GetName());
+      /* Refresh the whole pile of a piled view. */
+
+      /* This code sometimes causes "unnecessary" redraws of a view if a view
+       * below it in a pile has its record link updated (for example, if no
+       * symbols were actually drawn in the lower view, we don't really have
+       * to redraw the upper view).  However, it seems like an awful lot of
+       * work to keep track of whether we really have to redraw the upper
+       * view(s), so for now we refresh the top view in the pile, which
+       * refreshes the whole pile. RKW 1/9/97. */
+      View *slave = View::FindViewByName(view->GetFirstSibling()->GetName());
 #ifdef DEBUG
-        printf("Refreshing piled view %s\n", slave->GetName());
+      printf("Refreshing piled view %s\n", slave->GetName());
 #endif
-        slave->Refresh();
-      }
-      parent->DoneIterator(sindex);
+      slave->Refresh();
     } else {
 #ifdef DEBUG
       printf("Refreshing slave view %s\n", view->GetName());
