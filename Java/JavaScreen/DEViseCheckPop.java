@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/03/20 20:11:38  wenger
+// Added more debug output to the JS client and jspop.
+//
 // Revision 1.3  2001/03/09 20:24:36  wenger
 // Merged changes from no_collab_br_3 thru no_collab_br_4 from the branch
 // to the trunk; updated linux and solaris dependencies.
@@ -80,7 +83,7 @@ public class DEViseCheckPop
 	    if (check.doCheck()) {
 	        System.out.println("OK");
                 if (DEBUG_LOG >= 1) {
-		    _log.write("OK\n");
+		    _log.deleteFile();
 		}
 	    } else {
 	        System.out.println("FAIL");
@@ -244,26 +247,20 @@ public class DEViseCheckPop
 
     class Log
     {
+	private String _filename = null;
 	private FileWriter _fw = null;
 
 	public Log(String logFile) {
 	    try {
 	        _fw = new FileWriter(logFile);
+		_filename = logFile;
 	    } catch (IOException ex) {
 	        System.err.println("Can't open log file: " + ex.getMessage());
 	    }
 	}
 
-        protected void finalize()
-	{
-            if (_fw != null) {
-		try {
-	            _fw.close();
-	        } catch (IOException ex) {
-	            System.err.println("Error closing log file: " +
-		      ex.getMessage());
-		}
-	    }
+        protected void finalize() {
+	    close();
 	}
 
         public void write(String str)
@@ -276,6 +273,30 @@ public class DEViseCheckPop
 	            System.err.println("Error writing to log file: " +
 		      ex.getMessage());
 	        }
+	    }
+	}
+
+	public void deleteFile()
+	{
+	    close();
+	    File file = new File(_filename);
+	    try {
+	        file.delete();
+	    } catch (SecurityException ex) {
+	        System.err.println("Error deleting log file: " +
+		  ex.getMessage());
+	    }
+	}
+
+        private void close()
+	{
+            if (_fw != null) {
+		try {
+	            _fw.close();
+	        } catch (IOException ex) {
+	            System.err.println("Error closing log file: " +
+		      ex.getMessage());
+		}
 	    }
 	}
     }
