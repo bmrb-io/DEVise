@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/07/24 04:37:48  donjerko
+  *** empty log message ***
+
   Revision 1.27  1998/07/10 13:45:07  beyer
   changes and bug fixes to get rtrees working in the plan reader.
 
@@ -163,7 +166,9 @@ int create_rtree(const string& filename, Iterator* input,
   const char* load_filename = "/tmp/rtree_bulkload.in";
   const char* conv_filename = "/tmp/rtree_bulkload.conv";
 
-  ofstream ind(load_filename, ios::out|ios::binary|ios::trunc);
+  // Note: ios::bin is deprecated, replaced by ios::binary; however,
+  // ios::binary is not yet supported on SPARC/Solaris 2.5.  RKW Aug 4, 1998.
+  ofstream ind(load_filename, ios::out|ios::bin|ios::trunc);
   if( !ind ) {
     string msg = string("trouble opening ") + load_filename;
     THROW(new Exception(msg), -1);
