@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/07/10 18:59:22  jussi
+  Moved 3D transform variables to WindowRep.
+
   Revision 1.21  1996/07/10 16:21:15  jussi
   Improvements and simplifications to the code.
 
@@ -147,11 +150,11 @@ public:
                             unsigned width, unsigned height) {}
   
   /* Handle key press */
-  virtual void HandleKey(WindowRep * win, char key, int x, int y) {}
+  virtual void HandleKey(WindowRep *w, char key, int x, int y) {}
   
 #ifndef RAWMOUSEEVENTS
   /* handle pop-up */
-  virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
+  virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button,
 			      char **&msgs, int &numMsgs) {
       return 0;
   }
@@ -161,7 +164,10 @@ public:
      mapped : means window has been mapped.
      unmapped: means window has been unmapped. (This can also mean
      that window has been iconified) */
-  virtual void HandleWindowMappedInfo(WindowRep * win, Boolean mapped) {}
+  virtual void HandleWindowMappedInfo(WindowRep *w, Boolean mapped) {}
+
+  /* Handle window destroy events */
+  virtual Boolean HandleWindowDestroy(WindowRep *w) { return true; }
 };
 
 const int WindowRepTransformDepth = 10;	/* max # of transforms in the stack */
@@ -182,9 +188,7 @@ const int WINDOWREP_BATCH_SIZE = 1024;
 class WindowRep {
 public:
   /* destructor */
-  virtual ~WindowRep() {
-    delete _callbackList;
-  }
+  virtual ~WindowRep();
   
 #ifdef TK_WINDOW_old
   /* Decorate window */
@@ -528,6 +532,9 @@ protected:
      Report to all callbacks */
   virtual void HandleWindowMappedInfo(Boolean mapped);
   
+  /* called by derived class on window destroy event */
+  virtual void HandleWindowDestroy();
+
   /* called by derived class to get currennt local color from
      global color */
   Color GetLocalColor(Color globalColor);

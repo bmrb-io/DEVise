@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/14 02:19:39  jussi
+  Added HandleWindowDestroy() method. Removed some unnecessary,
+  old code.
+
   Revision 1.12  1996/07/10 18:59:20  jussi
   Moved 3D transform variables to WindowRep.
 
@@ -64,6 +68,8 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
 		     Pattern p)
 {
   _callbackList = new WindowRepCallbackList;
+  DOASSERT(_callbackList, "Out of memory");
+
   _current = 0;
   _current3 = 0;
   _clipCurrent = -1;
@@ -71,6 +77,11 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
   _bgndColor = bgndColor;
   _display = disp;
   _pattern = p;
+}
+
+WindowRep::~WindowRep()
+{
+  delete _callbackList;
 }
 
 /* called by derived class to when window is resized or moved */
@@ -185,12 +196,24 @@ void WindowRep::HandleWindowMappedInfo(Boolean mapped)
 
 void WindowRep::HandleWindowDestroy()
 {
+  Boolean canDestroy = true;
+
+  /* first tell everyone that the window is going away */
   int index;
   for(index = InitIterator(); More(index); ){
     WindowRepCallback *c = Next(index);
-    c->HandleWindowDestroy(this);
+    canDestroy &= c->HandleWindowDestroy(this);
+    
   }
   DoneIterator(index);
+
+  /* now destroy the window if everyone
+     returned a positive acknowledgement */
+  if (canDestroy) {
+    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(this);
+  } else {
+    printf("Window not destroyed\n");
+  }
 }
 
 /* called by derived class to get current local color from global color */
