@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 18:22:28  jussi
+  Removed warnings related to for loop variable scope.
+
   Revision 1.4  1995/11/15 21:12:21  ravim
   Fix bug in constructor - init pointers to NULL.
 
@@ -34,10 +37,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <ctype.h>
 
 #include "sec.h"
+#include "Exit.h"
 
 // ******************* PUBLIC FUNCTIONS ******************
 
@@ -256,7 +259,7 @@ void Security::get_names()
 
   // Allocate array
   names = new names_t[numitems];
-  assert(names);
+  DOASSERT(names, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -297,7 +300,7 @@ void Security::get_dists()
 
   // Allocate array
   dists = new dists_t[numitems];
-  assert(dists);
+  DOASSERT(dists, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -337,7 +340,7 @@ void Security::get_shares()
 
   // Allocate array
   shares = new shares_t[numitems];
-  assert(shares);
+  DOASSERT(shares, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -372,7 +375,7 @@ void Security::get_delist()
 
   // Allocate array
   delist = new delist_t[numitems];
-  assert(delist);
+  DOASSERT(delist, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -413,7 +416,7 @@ void Security::get_nasdin()
 
   // Allocate array
   nasdin = new nasdin_t[numitems];
-  assert(nasdin);
+  DOASSERT(nasdin, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -452,7 +455,7 @@ void Security::get_bidlo()
 
   // Allocate array
   bidlo = new float[numitems];
-  assert(bidlo);
+  DOASSERT(bidlo, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -487,7 +490,7 @@ void Security::get_askhi()
 
   // Allocate array
   askhi = new float[numitems];
-  assert(askhi);
+  DOASSERT(askhi, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -522,7 +525,7 @@ void Security::get_prc()
 
   // Allocate array
   prc = new float[numitems];
-  assert(prc);
+  DOASSERT(prc, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -557,7 +560,7 @@ void Security::get_vol()
 
   // Allocate array
   vol = new int[numitems];
-  assert(vol);
+  DOASSERT(vol, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -592,7 +595,7 @@ void Security::get_ret()
 
   // Allocate array
   ret = new float[numitems];
-  assert(ret);
+  DOASSERT(ret, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -627,7 +630,7 @@ void Security::get_sxret()
 
   // Allocate array
   sxret = new float[numitems];
-  assert(sxret);
+  DOASSERT(sxret, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -662,7 +665,7 @@ void Security::get_bxret()
 
   // Allocate array
   bxret = new float[numitems];
-  assert(bxret);
+  DOASSERT(bxret, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {
@@ -696,7 +699,7 @@ void Security::get_yrval()
 
   // Allocate array
   yrval = new yrval_t[numitems];
-  assert(yrval);
+  DOASSERT(yrval, "Out of memory");
 
   for (i=0; i < numrec; i++)
   {

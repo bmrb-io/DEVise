@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1995/12/28 18:30:34  jussi
+  Removed warnings related to for loop variable scope.
+
   Revision 1.11  1995/11/30  01:55:51  ravim
   Fixed a bug with computing tape offsets.
 
@@ -53,12 +56,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#include <assert.h>
 #include <tcl.h>
 #include <tk.h>
 
 #include "compustat.h"
 #include "tapedrive.h"
+#include "Exit.h"
 
 static Tcl_Interp *globalInterp = 0;
 
@@ -79,7 +82,7 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc >= 8);
+  DOASSERT(argc >= 8, "Invalid parameters");
 
   /* Get parameter values from TCL script */
 
@@ -112,7 +115,7 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
 {
   FILE *idxfile;
 
-  assert(argc % 2 == 0);
+  DOASSERT(argc % 2 == 0, "Invalid parameters");
   int num = argc / 2;
 
   /* Get the index file pointer */

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/02 16:52:45  jussi
+  Updated copyright message.
+
   Revision 1.2  1995/09/22 15:49:47  jussi
   Added copyright message.
 
@@ -26,9 +29,9 @@
 #ifndef RECTAPE_H
 #define RECTAPE_H
 
-#include <assert.h>
 #include "tapedrive.h"
 #include "binconv.h"
+#include "Exit.h"
 
 class RecTape : protected TapeDrive {
 public:
@@ -48,7 +51,7 @@ public:
   // get record of characters
   int getrecc(char *var) {
     int len = getrec(var);
-    assert(len >= 0);
+    DOASSERT(len >= 0, "Invalid data record");
     BinaryConversion::text(var, len);
     return len;
   }
@@ -56,7 +59,7 @@ public:
   // get record of short integers
   int getrec2(char *var) {
     int len = getrec(var);
-    assert(len >= 0 && len % 2 == 0);
+    DOASSERT(len >= 0 && len % 2 == 0, "Invalid data record");
     BinaryConversion::twobyte(var, len / 2);
     return len;
   }
@@ -64,7 +67,7 @@ public:
   // get record of integers
   int getrec4(char *var) {
     int len = getrec(var);
-    assert(len >= 0 && len % 4 == 0);
+    DOASSERT(len >= 0 && len % 4 == 0, "Invalid data record");
     BinaryConversion::fourbyte(var, len / 4);
     return len;
   }
@@ -72,7 +75,7 @@ public:
   // get record of floats
   int getrecr(char *var) {
     int len = getrec(var);
-    assert(len >= 0 && len % 4 == 0);
+    DOASSERT(len >= 0 && len % 4 == 0, "Invalid data record");
     BinaryConversion::real(var, len / 4);
     return len;
   }

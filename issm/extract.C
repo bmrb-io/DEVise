@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/11/14 23:00:30  jussi
+  Updated interface with Tcl scripts which now pass not only the
+  symbol and offset of a company to extract but also the file
+  where to cache the data.
+
   Revision 1.6  1995/09/22 22:36:26  jussi
   Added tape block size parameter.
 
@@ -39,7 +44,6 @@
 #include <strstream.h>
 #include <fstream.h>
 #include <stdio.h>
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -319,7 +323,7 @@ static void genExtractData(char *file)
       }
 
     } else {                          // else it's a quote
-      assert(trdqt[i] == 'Q');
+      DOASSERT(trdqt[i] == 'Q', "Invalid record type");
       quotes++;
 
 #if 0
@@ -367,7 +371,7 @@ static void genExtractData(char *file)
   cout << endl;
 #endif
 
-  assert(trades + ignored + quotes == header1.n);
+  DOASSERT(trades + ignored + quotes == header1.n, "Inconsistent data");
 
   trade.close();
 }
@@ -410,9 +414,9 @@ static int readStock(RecTape &tape)
   ibig = new int[header1.nbig];
   big = new int[header1.nbig];
 
-  assert(drate && shsout && shslst && idays && iprint);
-  assert(imktmk && icon && iseldy && ibnk && istop && idenom);
-  assert(icor && ibig && big);
+  DOASSERT(drate && shsout && shslst && idays && iprint, "Out of memory");
+  DOASSERT(imktmk && icon && iseldy && ibnk && istop, "Out of memory");
+  DOASSERT(idenom && icor && ibig && big, "Out of memory");
 
   volbid = new short [header1.n];
   priask = new short [header1.n];
@@ -429,9 +433,9 @@ static int readStock(RecTape &tape)
   shsday = new short [header1.nshs];
   seldy = new short [header1.nseldy];
 
-  assert(volbid && priask && cumsec && days && asksiz && bidsiz);
-  assert(cor && denom && exdate && dadate && dpdate);
-  assert(drdate && shsday && seldy);
+  DOASSERT(volbid && priask && cumsec && days && asksiz, "Out of memory");
+  DOASSERT(bidsiz && cor && denom && exdate && dadate, "Out of memory");
+  DOASSERT(dpdate && drdate && shsday && seldy, "Out of memory");
 
   trdqt = new char [header1.n];
   oexch = new char [header1.n];
@@ -439,12 +443,12 @@ static int readStock(RecTape &tape)
   bnk = new char [header1.nbnk];
   con = new char [header1.ncon];
 
-  assert(trdqt && oexch && print && bnk && con);
+  DOASSERT(trdqt && oexch && print && bnk && con, "Out of memory");
 
   memset(&header2, 0, sizeof header2);
   if (header1.hdr2) {
     status = tape.getrecm((char *)&header2, map2);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
 
   if (header1.hdr3) {
@@ -453,100 +457,100 @@ static int readStock(RecTape &tape)
 
   if (header1.ndays > 0) {
     status = tape.getrec4((char *)idays);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)days);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.ndenom > 0) {
     status = tape.getrec4((char *)idenom);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)denom);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nbig > 0) {
     status = tape.getrec4((char *)ibig);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec4((char *)big);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nprint > 0) {
     status = tape.getrec4((char *)iprint);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)print);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nseldy > 0) {
     status = tape.getrec4((char *)iseldy);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)seldy);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nstop > 0) {
     status = tape.getrec4((char *)istop);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.ncor > 0) {
     status = tape.getrec4((char *)icor);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)cor);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.ncon > 0) {
     status = tape.getrec4((char *)icon);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)con);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nbnk > 0) {
     status = tape.getrec4((char *)ibnk);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)bnk);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nmktmk > 0) {
     status = tape.getrec4((char *)imktmk);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)mktmkr);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.nshs > 0) {
     status = tape.getrec2((char *)shsday);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec4((char *)shsout);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.ndist > 0) {
     status = tape.getrecr((char *)drate);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)exdate);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)drdate);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)dadate);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)dpdate);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)dflag);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
 
   if (header1.nq > 0) {
     status = tape.getrec2((char *)asksiz);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)bidsiz);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
   if (header1.n > 0) {
     status = tape.getrecc((char *)oexch);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrecc((char *)trdqt);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)cumsec);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)priask);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
     status = tape.getrec2((char *)volbid);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Invalid data record");
   }
 
   return 1;
@@ -725,7 +729,7 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc >= 7);
+  DOASSERT(argc >= 7, "Invalid parameters");
 
   // Get parameter values from TCL script
 

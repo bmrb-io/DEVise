@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/04/04 05:16:19  kmurli
+  No apparent modification done to generic.c. Only added printf commands to test and later removed them.
+
   Revision 1.11  1996/03/27 15:27:27  jussi
   Added initialization of dateAttr.
 
@@ -128,15 +131,13 @@ public:
       char *primAttrs[] = { "YYMMDD", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
-      assert(attrOffset);
+      DOASSERT(attrOffset, "Out of memory");
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
-	  fprintf(stderr,
-		  "YyMmDd composite parser: can't find attribute %s\n",
-		  primAttrs[i]);
-	  Exit::DoExit(2);
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
 	if (!strcmp(primAttrs[i], "DATE"))
@@ -199,15 +200,13 @@ public:
       char *primAttrs[] = { "MONTH", "DAY", "YEAR", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
-      assert(attrOffset);
+      DOASSERT(attrOffset, "Out of memory");
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
-	  fprintf(stderr,
-		  "MmDdYy composite parser: can't find attribute %s\n",
-		  primAttrs[i]);
-	  Exit::DoExit(2);
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
 	if (!strcmp(primAttrs[i], "DATE"))
@@ -271,15 +270,13 @@ public:
 			    "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
-      assert(attrOffset);
+      DOASSERT(attrOffset, "Out of memory");
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
-	  fprintf(stderr,
-		  "ObsDate composite parser: can't find attribute %s\n",
-		  primAttrs[i]);
-	  Exit::DoExit(2);
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
 	if (!strcmp(primAttrs[i], "DATE"))
@@ -341,15 +338,13 @@ public:
       char *primAttrs[] = { "YEAR", "PERIOD", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
-      assert(attrOffset);
+      DOASSERT(attrOffset, "Out of memory");
 
       for(int i = 0; i < numPrimAttrs; i++) {
 	AttrInfo *info;
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
-	  fprintf(stderr,
-		  "DOLDate composite parser: can't find attribute %s\n",
-		  primAttrs[i]);
-	  Exit::DoExit(2);
+	  fprintf(stderr, "Cannot find attribute %s\n", primAttrs[i]);
+	  DOASSERT(0, "Cannot find attribute");
 	}
 	attrOffset[i] = info->offset;
 	if (!strcmp(primAttrs[i], "DATE"))

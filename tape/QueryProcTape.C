@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/04/10 01:45:37  jussi
+  Added call to Flush() when query processor becomes idle.
+
   Revision 1.5  1996/04/09 18:12:34  jussi
   Improved debugging statements.
 
@@ -28,8 +31,6 @@
   Revision 1.2  1995/09/05 20:31:43  jussi
   Added CVS header.
 */
-
-#include <assert.h>
 
 #include "QueryProcTape.h"
 #include "Init.h"
@@ -63,8 +64,7 @@ inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
   if (map->GetDynamicArgs() & VISUAL_X) {
     mgr->InitGetRecs(tdata,map->GetGData(),id,id,Randomize);
     if (!mgr->GetRecs(isTData,startRid,numRecs,buf,recs)) {
-      fprintf(stderr,"Getx:can't get record\n");
-      Exit::DoExit(2);
+      DOASSERT(0, "Cannot get record");
     }
     if (isTData) {
       // X are assigned dynamically
@@ -91,8 +91,7 @@ inline void GetY(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &y)
   if (map->GetDynamicArgs() & VISUAL_Y) {
     mgr->InitGetRecs(tdata,map->GetGData(),id,id,Randomize);
     if (!mgr->GetRecs(isTData,startRid,numRecs,buf,recs)) {
-      fprintf(stderr,"Getx:can't get record\n");
-      Exit::DoExit(2);
+      DOASSERT(0, "Cannot get record");
     }
 
     // y are assigned dynamically
@@ -192,10 +191,7 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
     printf("scatter plot\n");
 #endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
-    if (numTDimensions != 1) {
-      fprintf(stderr,"QueryProcTape::AppendQuery: tdimensions not 1\n");
-      Exit::DoExit(1);
-    }
+    DOASSERT(numTDimensions == 1, "TDimensions not 1");
 #ifdef DEBUG
     printf("sortedX\n");
 #endif
@@ -203,24 +199,17 @@ void QueryProcTape::BatchQuery(TDataMap *map, VisualFilter &filter,
   } else if (numDimensions == 2 &&
 	   dimensionInfo[0] == VISUAL_Y &&
 	   dimensionInfo[1] == VISUAL_X) {
-    if (numTDimensions != 2 || sizeTDimensions[0] <= 0 ||
-	sizeTDimensions[1] <= 0) {
-      fprintf(stderr,"QueryProcSimple::AppendQuery: tdimensions not 2\n");
-      Exit::DoExit(1);
-    }
+    DOASSERT(numTDimensions == 2 && sizeTDimensions[0] > 0 &&
+	     sizeTDimensions[1] > 0, "TDimensions not 2");
     qdata->qType = QPTape_YX;
 #ifdef DEBUG
     printf("YX query\n");
 #endif
   } else {
-    fprintf(stderr,"QueryProcSimple::AppendQuery:don't know this query\n");
-    Exit::DoExit(1);
+    DOASSERT(0, "Unknown query type");
   }
 
-  if (!(filter.flag & VISUAL_X)) {
-    fprintf(stderr,"QueryProcSimple::AppendQuery: filter must specify X\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(filter.flag & VISUAL_X, "Filter must specify X");
   qdata->filter = filter;
 
   qdata->callback = callback;
@@ -268,7 +257,7 @@ void QueryProcTape::AssociateMappingWithSortedTable(TDataMap *map)
   if (map->GetUserData() != 0)          // already associated?
     return;
 
-  assert(map->IsInterpreted());
+  DOASSERT(map->IsInterpreted(), "Invalid mapping flag");
   MappingInterp *imap = (MappingInterp *)map;
 
   // find if same association already exists
@@ -285,11 +274,11 @@ void QueryProcTape::AssociateMappingWithSortedTable(TDataMap *map)
 
   // need to allocate a new sorted table
   sortedTableEntry **newList = new sortedTableEntry * [_numSortedTables + 1];
-  assert(newList);
+  DOASSERT(newList, "Out of memory");
   for(i = 0; i < _numSortedTables; i++)
     newList[i] = _sortedTables[i];
   sortedTableEntry *entry = new sortedTableEntry;
-  assert(entry);
+  DOASSERT(entry, "Out of memory");
   entry->tdata = map->GetTData();
   entry->xCmd = imap->GetMappingCmd()->xCmd;
   newList[_numSortedTables] = entry;
@@ -411,8 +400,7 @@ void QueryProcTape::InitQPTapeX(QPTapeData *qData)
 
 void QueryProcTape::InitQPTapeYX(QPTapeData *qData)
 {
-  fprintf(stderr,"QPTape::InitQPTapeYX: 2D images not yet implemented\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "2D images not yet implemented");
 }
 
 void QueryProcTape::InitQPTapeScatter(QPTapeData *qData)
@@ -460,8 +448,7 @@ Boolean QueryProcTape::InitQueries()
 	break;
 
       default:
-	fprintf(stderr, "QPTape::InitQueries: unknown queries\n");
-	Exit::DoExit(1);
+	DOASSERT(0, "Unknown query type");
 	break;
       }
 
@@ -515,8 +502,7 @@ void QueryProcTape::ProcessQPTapeX(QPTapeData *qData)
 }
 void QueryProcTape::ProcessQPTapeYX(QPTapeData *qData)
 {
-  fprintf(stderr,"ProcessQPTapeYX: not implemented\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "2D image query not yet implemented");
 }
 
 void QueryProcTape::ProcessQPTapeScatter(QPTapeData *qData)
@@ -616,7 +602,7 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
 
   SortedTable<Coord, RecId> *table =
     (SortedTable<Coord, RecId> *)map->GetUserData();
-  assert(table);
+  DOASSERT(table, "Invalid mapping data");
 
   // See if value is in the sorted list
   if (table->lookup(xVal, id) >= 0) {
@@ -727,7 +713,7 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
 	break;
       if (skip > maxSkip)               // skip limit reached?
 	skip = maxSkip;
-      assert(skip > 0);
+      DOASSERT(skip > 0, "Inconsistent data");
       current += skip;                  // skip forward
       if (current > high)
 	current = high;
@@ -736,7 +722,7 @@ Boolean QueryProcTape::DoLinearSearch(BufMgr *mgr,
   }
 
   if (previous == high) {               // end of file or range?
-    assert(previous == current);
+    DOASSERT(previous == current, "Inconsistent data");
     id = previous;
 #ifdef DEBUG
     printf("linear search ended at high %ld\n", id);
@@ -1074,11 +1060,8 @@ void QueryProcTape::InsertMapping(TDataMap *map)
       return;
   }
 
-  // not duplicate
-  if (_numMappings == QPTAPE_MAX_MAPPINGS) {
-    fprintf(stderr, "QueryProcTape::InsertMapping: too many mappings\n");
-    Exit::DoExit(2);
-  }
+  DOASSERT(_numMappings < QPTAPE_MAX_MAPPINGS, "Too many mappings");
+
   _mappings[_numMappings++] = map;
 }
 
@@ -1251,7 +1234,7 @@ void QueryProcTape::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 {
   SortedTable<Coord, RecId> *table =
     (SortedTable<Coord, RecId> *)map->GetUserData();
-  assert(table);
+  DOASSERT(table, "Invalid mapping data");
   RecId lower, higher;
   int lowExists = table->lookupLower(coord, lower);
   int highExists = table->lookupHigher(coord, higher);
@@ -1293,10 +1276,7 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
     printf("Scatter query\n");
 #endif
   } else if (numDimensions == 1 && dimensionInfo[0] == VISUAL_X) {
-    if (numTDimensions != 1) {
-      fprintf(stderr,"QueryProcTape::AppendQuery: tdimensions not 1\n");
-      Exit::DoExit(1);
-    }
+    DOASSERT(numTDimensions == 1, "TDimensions not 1");
     _tqueryQdata->qType = QPTape_X;
 #ifdef DEBUG
     printf("X query\n");
@@ -1304,24 +1284,18 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   } else if (numDimensions == 2 &&
 	   dimensionInfo[0] == VISUAL_Y &&
 	   dimensionInfo[1] == VISUAL_X) {
-    if (numTDimensions != 2 || sizeTDimensions[0] <= 0 ||
-	sizeTDimensions[1] <= 0) {
-      fprintf(stderr,"QueryProcSimple::AppendQuery: tdimensions not 2\n");
-      Exit::DoExit(1);
-    }
+    DOASSERT(numTDimensions == 2 && sizeTDimensions[0] > 0 &&
+	     sizeTDimensions[1] > 0, "TDimensions not 2");
     _tqueryQdata->qType = QPTape_YX;
 #ifdef DEBUG
     printf("YX query\n");
 #endif
   } else {
-    fprintf(stderr,"QueryProcSimple::AppendQuery:don't know this query\n");
-    Exit::DoExit(1);
+    DOASSERT(0, "Unknown query type");
   }
 
-  if (!(filter.flag & VISUAL_X)) {
-    fprintf(stderr,"QueryProcSimple::InitTDataQuery: filter must specify X\n");
-    Exit::DoExit(1);
-  }
+  DOASSERT(filter.flag & VISUAL_X, "Filter must specify X");
+
   _tqueryQdata->filter = filter;
 
   // initialize scan
@@ -1330,8 +1304,7 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
   switch(_tqueryQdata->qType) {
   case QPTape_Scatter:
 #if 0
-    fprintf(stderr,"QueryProcTape:: can't process scatter query yet\n");
-    Exit::DoExit(2);
+    DOASSERT(0, "Cannot process scatter query yet");
 #endif
     if (tdata->HeadID(_tqueryQdata->current))
       (void)tdata->LastID(_tqueryQdata->high);
@@ -1367,8 +1340,7 @@ void QueryProcTape::InitTDataQuery(TDataMap *map, VisualFilter &filter,
     break;
 
   case QPTape_YX:
-    fprintf(stderr,"QueryProcTape:: can't process 2D query yet\n");
-    Exit::DoExit(2);
+    DOASSERT(0, "Cannot process 2D query yet");
     break;
   }
 
@@ -1415,10 +1387,7 @@ Boolean QueryProcTape::GetTData(RecId &retStartRid,
 #ifdef DEBUG
       printf("Got buffer 0x%p, %d recs\n", _tqueryBuf, _tqueryNumRecs);
 #endif
-      if (!isTData) {
-	fprintf(stderr, "QueryProcTape::TData query didn't qet Tdata\n");
-	Exit::DoExit(2);
-      }
+      DOASSERT(isTData, "Did not get TData");
       _tqueryBeginIndex = 0; // index of record to start searching
       _hasTqueryRecs = true;
     }

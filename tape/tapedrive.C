@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/13 03:22:51  jussi
+  Removed #include <tar.h> -- this is in tapedrive.h.
+
   Revision 1.6  1995/12/28 17:50:00  jussi
   Small fixes to remove new compiler warnings.
 
@@ -37,9 +40,9 @@
 #include <iostream.h>
 #include <unistd.h>
 #include <string.h>
-#include <assert.h>
 
 #include "tapedrive.h"
+#include "Exit.h"
 
 // Use fake fileno and blkno to make this file compile in Alpha
 // until a real fix is found. The problem is that in Alpha/OSF,
@@ -82,7 +85,7 @@ TapeDrive::TapeDrive(char *name, char *mode, int fno, int blockSz) :
   gotoBeginningOfFile();
 
   buffer = new char [blockSize];
-  assert(buffer);
+  DOASSERT(buffer, "Out of memory");
   bufferType = readBuffer;
   bufferBlock = 0;
   bufferOffset = 0;
@@ -119,10 +122,10 @@ void TapeDrive::printStats()
 
 void TapeDrive::readTarHeader()
 {
-  assert(!haveTarHeader);
+  DOASSERT(!haveTarHeader, "Invalid tar header flag");
 
   int bytes = read(&tarHeader, sizeof tarHeader);
-  assert(bytes == sizeof tarHeader);
+  DOASSERT(bytes == sizeof tarHeader, "Invalid tar header size");
   tarFileSize = oct2int(tarHeader.dbuf.size);
   tarFileOffset = 0;
 
@@ -182,9 +185,10 @@ int TapeDrive::read(void *buf, int recSize, int binary)
     exit(1);
   }
 
-  assert(bufferOffset >= 0 && bufferOffset <= blockSize);
-  assert(bufferBytes >= 0 && bufferBytes <= blockSize);
-  assert(bufferOffset <= bufferBytes);
+  DOASSERT(bufferOffset >= 0 && bufferOffset <= blockSize,
+	   "Inconsistent data");
+  DOASSERT(bufferBytes >= 0 && bufferBytes <= blockSize, "Inconsistent data");
+  DOASSERT(bufferOffset <= bufferBytes, "Inconsistent data");
 
 #ifdef TARFILESIZE
   if (haveTarHeader                     // is file in a tar archive?
@@ -218,8 +222,8 @@ int TapeDrive::read(void *buf, int recSize, int binary)
     TAPEDBG(cout << read_cnt << " " << flush);
 
 #ifdef TAPE_BLOCK_PADDING
-  char *start = buffer + bufferOffset;  // starting point for this record
-  assert(*start != 0);                  // must not be an empty record
+  char *start = buffer + bufferOffset;        // starting point for this record
+  DOASSERT(*start != 0, "Unexpected record"); // must not be an empty record
 
   if (recSize > bufferBytes - bufferOffset)
     recSize = bufferBytes - bufferOffset;
@@ -232,7 +236,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 
   if (!binary) {                        // reading an ASCII record?
     char *end = (char *)memchr(start, 0, recSize);
-    assert(end);
+    DOASSERT(end, "End of record not found");
     recSize = end - start;              // do not include record separator
   }
   TAPEDBG(cout << "Copying " << recSize << " bytes to "
@@ -290,7 +294,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 #ifdef TARFILESIZE
   if (haveTarHeader) {
      tarFileOffset += recSize;
-     assert(tarFileOffset <= tarFileSize);
+     DOASSERT(tarFileOffset <= tarFileSize, "Inconsistent data");
   }
 #endif
 
@@ -300,8 +304,7 @@ int TapeDrive::read(void *buf, int recSize, int binary)
 int TapeDrive::write(void *buf, int recSize)
 {
   write_cnt++;
-  cerr << "Random writes not supported on tapes." << endl;
-  assert(0);
+  DOASSERT(0, "Random writes not supported on tapes");
   return 0;
 }
 
@@ -328,7 +331,7 @@ int TapeDrive::append(void *buf, int recSize)
   if (bufferOffset + recSize + 1 > blockSize)
     flushBuffer();
 
-  assert(bufferOffset + recSize + 1 <= blockSize);
+  DOASSERT(bufferOffset + recSize + 1 <= blockSize, "Inconsistent data");
   memcpy(buffer + bufferOffset, buf, recSize);
   *(buffer + bufferOffset + recSize) = '\0';
   bufferOffset += recSize + 1;
@@ -338,7 +341,7 @@ int TapeDrive::append(void *buf, int recSize)
   while(bytes > 0) {
     int spaceLeft = blockSize - bufferOffset;
     int b = (bytes <= spaceLeft ? bytes : spaceLeft);
-    assert(bufferOffset + b <= blockSize);
+    DOASSERT(bufferOffset + b <= blockSize, "Inconsistent data");
     memcpy(buffer + bufferOffset, p, b);
     bufferOffset += b;
     bytes -= b;
@@ -359,7 +362,8 @@ int TapeDrive::command(short mt_op, daddr_t mt_count)
   TAPEDBG(cout << "Tape command " << mt_op << ", count " << mt_count
 	  << ", " << flush);
 
-  assert(mt_op >= 0 && mt_op < (int)(sizeof(mt_ios) / sizeof(mt_ios[0])));
+  DOASSERT(mt_op >= 0 && mt_op < (int)(sizeof(mt_ios) / sizeof(mt_ios[0])),
+	 "Invalid tape command");
   mt_ios[mt_op]++;
   mt_cnt[mt_op] += (mt_count >= 0 ? mt_count : -mt_count);
 
@@ -384,7 +388,7 @@ void TapeDrive::getStatus()
   int status = ioctl(FILE2FD(file), MTIOCGET, (char *)&tstat);
   if (status < 0)
     perror("ioctl");
-  assert(status >= 0);
+  DOASSERT(status >= 0, "Cannot get tape status");
 #endif
 }
 
@@ -429,7 +433,7 @@ void TapeDrive::fillBuffer()
 
 void TapeDrive::flushBuffer()
 {
-  assert(bufferType == writeBuffer);
+  DOASSERT(bufferType == writeBuffer, "Inconsistent data");
   if (!bufferOffset)
     return;
   write_ios++;
@@ -468,7 +472,7 @@ void TapeDrive::gotoBlock(long block)
     status = command(MTFSR, diff);      // go forward
   else
     status = command(MTBSR, -diff);     // go backward
-  assert(status >= 0);
+  DOASSERT(status >= 0, "Cannot operate tape drive");
 }
 
 void TapeDrive::resynchronize()
@@ -476,9 +480,12 @@ void TapeDrive::resynchronize()
   getStatus();
   if (tstat.mt_fileno > 0) {            // not first file on tape?
     int status = command(MTBSF, 1);     // move to end of previous file
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Cannot operate tape drive");
     status = command(MTBSR, 2);         // a couple of records backwards
-    // assert(status >= 0);             // what if file has < 2 records?
+#if 0
+    // what if file has < 2 records?
+    DOASSERT(status >= 0, "Cannot operate tape drive");
+#endif
   }  
   gotoBeginningOfFile();                // find beginning of file again
 }
@@ -487,7 +494,7 @@ void TapeDrive::gotoBeginningOfFile()
 {
   if (!fileNo) {                        // first file? just rewind
     int status = command(MTREW, 1);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Cannot operate tape drive");
     gotoBlock(0);
     return;
   }
@@ -498,28 +505,28 @@ void TapeDrive::gotoBeginningOfFile()
 #if 0
   // quickest but may not be portable
   int status = command(MTNBSF, diff);
-  assert(status >= 0);
+  DOASSERT(status >= 0, "Cannot operate tape drive");
   gotoBlock(0);
 #endif
 
   // portable and quick; may be unreliable on DLT
   if (diff > 0) {                       // go forward?
     int status = command(MTFSF, diff);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Cannot operate tape drive");
   } else {                              // else go backward
     int status = command(MTBSF, -diff + 1);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Cannot operate tape drive");
     status = command(MTFSF, 1);
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Cannot operate tape drive");
   }
 
   getStatus();
-  assert(tstat.mt_fileno == fileNo);
+  DOASSERT(tstat.mt_fileno == fileNo, "Inconsistent tape state");
 
   int status = lseek(FILE2FD(file), 0, SEEK_SET);
   if (status < 0)
     perror("lseek");
-  assert(status >= 0);
+  DOASSERT(status >= 0, "Cannot operate tape drive");
 }
 
 void TapeDrive::gotoEndOfFile()
@@ -547,6 +554,6 @@ void TapeDrive::gotoEndOfFile()
       }
     }
     perror("ioctl");
-    assert(status >= 0);
+    DOASSERT(status >= 0, "Cannot operate tape drive");
   }
 }

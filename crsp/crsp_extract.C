@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/28 18:25:32  jussi
+  Removed warnings related to for loop variable scope.
+
   Revision 1.6  1995/11/20 22:39:58  jussi
   Base tape offset received from calling program.
 
@@ -39,7 +42,6 @@
 
 #include <iostream.h>
 #include <fstream.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <tcl.h>
@@ -47,8 +49,9 @@
 
 #include "sec.h"
 #include "tapedrive.h"
+#include "Exit.h"
 
-#define DEBUG
+//#define DEBUG
 
 static Tcl_Interp *globalInterp = 0;
 
@@ -72,7 +75,7 @@ int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
 {
   FILE *idxfile;
 
-  assert(argc % 2 == 0);
+  DOASSERT(argc % 2 == 0, "Invalid parameters");
   int num = argc / 2;
 
   // Get the index file pointer
@@ -163,7 +166,7 @@ int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   globalInterp = interp;
 
-  assert(argc >= 8);
+  DOASSERT(argc >= 8, "Invalid parameters");
 
   // Get parameter values from TCL script
 

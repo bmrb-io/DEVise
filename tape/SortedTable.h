@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/09 18:12:07  jussi
+  Minor fixes.
+
   Revision 1.4  1995/12/28 20:12:46  jussi
   Small fix to remove compiler warning.
 
@@ -34,7 +37,6 @@
 #endif
 
 #include <iostream.h>
-#include <assert.h>
 
 //#define DEBUG
 
@@ -232,7 +234,7 @@ int SortedTable<Index,Value>::getNext(Index &index, void *current,
   int idx = 0;
   if (current)
     idx = ((TableEntry **)current) - st;
-  assert(idx >= 0 && idx < tableSize);
+  DOASSERT(idx >= 0 && idx < tableSize, "Invalid table size");
 
   for(; idx < tableSize; idx++) {
     next = st + idx;
@@ -311,7 +313,7 @@ int SortedTable<Index,Value>::findEmpty(Index &index)
 
   TableEntry **newTable = new TableEntry * [tableSize + 1];
 
-  assert(newTable);
+  DOASSERT(newTable, "Out of memory");
   for(idx = 0; idx < spot; idx++)
     newTable[idx] = st[idx];
   newTable[spot] = 0;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 18:31:51  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.3  1995/11/02 16:52:40  jussi
   Updated copyright message.
 
@@ -27,8 +30,9 @@
 */
 
 #include <math.h>
-#include <assert.h>
+
 #include "binconv.h"
+#include "Exit.h"
 
 /********************************************************************
 ** vaxtofloat() - convert IEEE floating point to the local machine's
@@ -151,6 +155,6 @@ void BinaryConversion::CRSPDate(int index, int &day, int &month, int &year)
   month = i + 1;
   day = days + 1;
 
-  assert(month >= 1 && month <= 12);
-  assert(day >= 1 && day <= mdays[month - 1]);
+  DOASSERT(month >= 1 && month <= 12, "Invalid month number");
+  DOASSERT(day >= 1 && day <= mdays[month - 1], "Invalid day number");
 }
