@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/01/11 21:52:39  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.3  1995/12/14 17:02:32  jussi
   Added copyright notice and made small fixes.
 
@@ -38,8 +41,8 @@ Boolean Geom::PointLineIntersect(Coord x, Coord y,
 				 Coord lineWidth )
 {
   Coord minx, maxx, miny, maxy;
-  minx = MinMax::min(x0,x1); maxx = MinMax::max(x0,x1);
-  miny = MinMax::min(y0,y1); maxy = MinMax::max(y0,y1);
+  minx = MIN(x0,x1); maxx = MAX(x0,x1);
+  miny = MIN(y0,y1); maxy = MAX(y0,y1);
   
   if (x < minx || x > maxx || y < miny || y > maxy)
     /* not within the line bounding rectangle */
@@ -178,10 +181,10 @@ Boolean Geom::RectRectClip(Coord &minX1, Coord &minY1, Coord &maxX1,
 #endif
 
   if (RectRectIntersect(minX1,minY1,maxX1,maxY1,minX2,minY2,maxX2,maxY2)){
-    minX1 = MinMax::max(minX1,minX2);
-    minY1 = MinMax::max(minY1,minY2);
-    maxX1 = MinMax::min(maxX1,maxX2);
-    maxY1 = MinMax::min(maxY1,maxY2);
+    minX1 = MAX(minX1,minX2);
+    minY1 = MAX(minY1,minY2);
+    maxX1 = MIN(maxX1,maxX2);
+    maxY1 = MIN(maxY1,maxY2);
     return true;
   }
   return false;

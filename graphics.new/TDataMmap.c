@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/03/05 21:25:32  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:15:58  jussi
   Added CVS header.
 */
@@ -112,7 +115,7 @@ virtual void TDataMmap::GetPage(int pageNum, int &numRecs, RecId &startRid,
 
   Page *page = &_start[pageNum];
   RecId firstRid = MakeRecId(pageNum, 0);
-  numRecs = MinMax::min(RecordsPerPage(), (int)(_header.numRecs - firstRid));
+  numRecs = MIN(RecordsPerPage(), (int)(_header.numRecs - firstRid));
   RecId lastRid = firstRid+numRecs-1;
 }
 		

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/03/25 23:01:37  jussi
+  Removed reference to _view.
+
   Revision 1.12  1996/03/07 16:56:06  jussi
   Added association of TDataMap and ViewGraph.
 
@@ -188,8 +191,8 @@ void TDataMap::MapToSymbol(TData *tdata, RecId recId, void *rec, Symbol *sym)
   ShapeRegistrar::SymbolBoundingBox(sym);
   
   /* update the maximum bounding box found so far */
-  _deltaX = MinMax::max(sym->width, _deltaX);
-  _deltaY = MinMax::max(sym->height, _deltaY);
+  _deltaX = MAX(sym->width, _deltaX);
+  _deltaY = MAX(sym->height, _deltaY);
 }
 #endif
 

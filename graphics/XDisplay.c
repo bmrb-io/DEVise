@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/05/20 18:45:02  jussi
+  Merged with ClientServer library code.
+
   Revision 1.21  1996/05/13 21:57:30  jussi
   XDisplay goes into batch mode (pixmaps used instead of screen)
   if control panel is in batch mode.
@@ -227,16 +230,16 @@ Boolean XDisplay::ClosestColor(Colormap &map, XColor &color, Color &c,
   const int maxDeviation = (int)(0.05 * 65535);   // +-5% max deviation
   const int incFraction = 4;                      // number of probes per color
     
-  const long int lwr = MinMax::max(color.red - maxDeviation, 0);
-  const long int hir = MinMax::min(color.red + maxDeviation, 65535);
-  const long int lwg = MinMax::max(color.green - maxDeviation, 0);
-  const long int hig = MinMax::min(color.green + maxDeviation, 65535);
-  const long int lwb = MinMax::max(color.blue - maxDeviation, 0);
-  const long int hib = MinMax::min(color.blue + maxDeviation, 65535);
+  const long int lwr = MAX(color.red - maxDeviation, 0);
+  const long int hir = MIN(color.red + maxDeviation, 65535);
+  const long int lwg = MAX(color.green - maxDeviation, 0);
+  const long int hig = MIN(color.green + maxDeviation, 65535);
+  const long int lwb = MAX(color.blue - maxDeviation, 0);
+  const long int hib = MIN(color.blue + maxDeviation, 65535);
 
-  const int rstep = MinMax::max((hir - lwr) / incFraction, 1);
-  const int gstep = MinMax::max((hig - lwg) / incFraction, 1);
-  const int bstep = MinMax::max((hib - lwb) / incFraction, 1);
+  const int rstep = MAX((hir - lwr) / incFraction, 1);
+  const int gstep = MAX((hig - lwg) / incFraction, 1);
+  const int bstep = MAX((hib - lwb) / incFraction, 1);
 
   for(int r = lwr; r <= hir; r += rstep) {
     for(int g = lwg; g <= hig; g += gstep) {

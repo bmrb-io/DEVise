@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/01/12 15:24:21  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.2  1995/09/05 22:15:47  jussi
   Added CVS header.
 */
@@ -133,7 +136,7 @@ void TDataAppend::GetPage(int pageNum, int &numRecs, RecId &startRid,
 	}
 	BufPage *bpage = _pfile->GetPage(pageNum, isPrefetch);
 	RecId firstRid = MakeRecId(pageNum, 0);
-	numRecs = MinMax::min(RecordsPerPage(), (int)(_header.numRecs-firstRid));
+	numRecs = MIN(RecordsPerPage(), (int)(_header.numRecs - firstRid));
 	RecId lastRid = firstRid+numRecs-1;
 
 	/* set return params */
