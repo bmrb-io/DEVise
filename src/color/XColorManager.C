@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/05 15:16:14  zhenhai
+  Corrected make files for sgi uses.
+
   Revision 1.5  1998/02/19 23:26:11  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -65,6 +68,28 @@ static bool		Compare_RGBDistance(const RGB& rgb1, const RGB& rgb2);
 bool	Compare_RGBDistance(const RGB& rgb1, const RGB& rgb2)
 {
 	return (gRefRGB.Distance(rgb1) < gRefRGB.Distance(rgb2));
+}
+
+static void
+SortRGBList(RGBList& list)
+{
+    // Use insertion sort because the list should be small (probably 256
+	// items).
+	int size = list.size();
+	for (int insertEl = 1; insertEl < size; insertEl++) {
+		int where = 0;
+		while (Compare_RGBDistance(list[where], list[insertEl]) &&
+		  where < insertEl) {
+			where++;
+		}
+		if (where != insertEl) {
+		    RGB tmp = list[insertEl];
+		    for (int index = insertEl-1; index >= where; index--) {
+			    list[index+1] = list[index];
+		    }
+		    list[where] = tmp;
+		}
+	}
 }
 
 //******************************************************************************
@@ -144,7 +169,7 @@ void	XColorManager::GetXRGBList(RGBList& list) const
 
 //	Colormap		map = DefaultColormap(display, DefaultScreen(display));
 	Colormap	map = cmap[0];
-	const ulong		mapSize = 256;
+	const ulong		mapSize = 256; // TEMP what if not 8 bit color?
 	XColor			xc[mapSize];
 
 	for (ulong i=0; i<mapSize; i++)
@@ -201,11 +226,14 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 	
 	gRefRGB = rgb;
 	GetXRGBList(list);
-	sort(list.begin(), list.end(), Compare_RGBDistance);
+	// For some reason, sort() now gets into an infinite loop here.  RKW
+	// June 25, 1998.
+	//sort(list.begin(), list.end(), Compare_RGBDistance);
+	SortRGBList(list);
 
 	RGBList::const_iterator		i = list.begin();
 
-	while (i != list.end())
+	while (i <= list.end())
 	{
 		error = (*i).Error(rgb);
 #if defined(DEBUG)
@@ -213,11 +241,19 @@ bool	XColorManager::XAllocColor(const RGB& rgb, XColorID& xcid) const
 		  " error\n";
 #endif
 
-		if (error > gMaxColorErr)
+		if (error > gMaxColorErr) {
+#if defined(DEBUG)
+		cout << "No colors close enough to allocate\n";
+#endif
 			break;
+        }
 
 		if (!(!isGray ^ (*i).IsGray()))
 		{
+#if defined(DEBUG)
+		cout << "Skipping RGB " << (*i).ToString().c_str() <<
+		  "because of gray vs. color conflict\n";
+#endif
 			i++;
 			continue;
 		}

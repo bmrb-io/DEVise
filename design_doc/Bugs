@@ -1399,7 +1399,7 @@ Num Date        Status  Description
 			should be shown after, rather than before, you select
 			the new session.  (rr/rkw)
 
-370 06/25/98	OPEN	Devise hangs during initialization if it fails to
+370 06/25/98	FIXED	Devise hangs during initialization if it fails to
 			allocate a color. (dd/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
