@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/24 19:33:58  jussi
+  Fixed small bugs, removed unused code, and added some
+  debugging statements.
+
   Revision 1.6  1996/06/23 20:46:29  jussi
   Cleaned up.
 
@@ -201,4 +205,5 @@ void Timer::StartTimer()
     oldtimerVal.it_value.tv_usec = TIMER_INTERVAL * 1000;
   }
   setitimer(ITIMER_REAL, &oldtimerVal, 0);
+  (void)signal(SIGALRM, TimerHandler);
 }
