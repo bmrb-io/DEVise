@@ -6,7 +6,8 @@ public class DEViseAtomInCrystal
 {
     public DEViseAtomType type = null;
 
-    public boolean status, isSelected;
+    public boolean status;
+    public int isSelected;
 
     double[] pos = new double[3], lcspos = new double[3];
 
@@ -30,7 +31,7 @@ public class DEViseAtomInCrystal
         bondNumber = 0;
 
         status = true;
-        isSelected = false;
+        isSelected = 0;
     }
 
     public void removeBond(int index)

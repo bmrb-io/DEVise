@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  1999/10/10 08:49:52  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.12  1999/08/19 07:21:06  hongyu
 // *** empty log message ***
 //
@@ -157,10 +165,21 @@ public class DEViseCursor
         if (p.x < loc.x || p.y < loc.y || p.x > loc.x + loc.width - 1 || p.y > loc.y + loc.height - 1) {
             return -1;
         } else {
-            int edge = 3;
+            int xedge = (int)(loc.width / 4 + 0.4), yedge = (int)(loc.height / 4 + 0.4);
+            if (xedge < 1) {
+                xedge = 1;
+            } else if (xedge > 10) {
+                xedge = 10;
+            }
 
-            if (p.x >= loc.x && p.x < loc.x + edge) {
-                if (p.y >= loc.y && p.y < loc.y + edge) { // left-top corner
+            if (yedge < 1) {
+                yedge = 1;
+            } else if (yedge > 10) {
+                yedge = 10;
+            }
+
+            if (p.x >= loc.x && p.x < loc.x + xedge) {
+                if (p.y >= loc.y && p.y < loc.y + yedge) { // left-top corner
                     if (isXResizable && isYResizable) {
                         return 5;
                     } else {
@@ -170,7 +189,7 @@ public class DEViseCursor
                             return 3;
                         }
                     }
-                } else if (p.y < loc.y + loc.height && p.y >= loc.y + loc.height - edge) { // left-bottom corner
+                } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // left-bottom corner
                     if (isXResizable && isYResizable) {
                         return 6;
                     } else {
@@ -185,8 +204,8 @@ public class DEViseCursor
                         return 1;
                     }
                 }
-            } else if (p.x < loc.x + loc.width && p.x >= loc.x + loc.width - edge) {
-                if (p.y >= loc.y && p.y < loc.y + edge) { // right-top corner
+            } else if (p.x <= loc.x + loc.width && p.x > loc.x + loc.width - xedge) {
+                if (p.y >= loc.y && p.y < loc.y + yedge) { // right-top corner
                     if (isXResizable && isYResizable) {
                         return 7;
                     } else {
@@ -196,7 +215,7 @@ public class DEViseCursor
                             return 3;
                         }
                     }
-                } else if (p.y < loc.y + loc.height && p.y >= loc.y + loc.height - edge) { // right-bottom corner
+                } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // right-bottom corner
                     if (isXResizable && isYResizable) {
                         return 8;
                     } else {
@@ -212,11 +231,11 @@ public class DEViseCursor
                     }
                 }
             } else {
-                if (p.y >= loc.y && p.y < loc.y + edge) { // top side
+                if (p.y >= loc.y && p.y < loc.y + yedge) { // top side
                     if (isYResizable) {
                         return 3;
                     }
-                } else if (p.y < loc.y + loc.height && p.y >= loc.y + loc.height - edge) { // bottom side
+                } else if (p.y <= loc.y + loc.height && p.y > loc.y + loc.height - yedge) { // bottom side
                     if (isYResizable) {
                         return 4;
                     }
@@ -608,7 +627,7 @@ public class DEViseCursor
         Rectangle loc = parentView.viewDataLoc;
 
         if (y < loc.y) {
-            y = loc.y;            
+            y = loc.y;
         } else if (y + h > loc.y + loc.height) {
             y = loc.y + loc.height - h;
         }

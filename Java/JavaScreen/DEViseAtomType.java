@@ -14,7 +14,7 @@ public class DEViseAtomType {
     // The radius, diameter in pixel
     public int R, D;
     // The color for the atom
-    public Color color = null, XORcolor = null;
+    public Color color = null, XORcolor = null, selectedColor = Color.cyan;
     public int red, green, blue;
 
     // The index color array for the atom
@@ -28,7 +28,7 @@ public class DEViseAtomType {
     public int minD = 10;
     public int rangeD;
     public int drawSize;
-    public boolean lastDrawStyle;
+    public int lastDrawStyle;
 
     public DEViseAtomType(String n)
     {
@@ -163,7 +163,7 @@ public class DEViseAtomType {
         return ((rgb & 0xff000000) | ((rgb & 0xff0000) ^ 0xff0000) | ((rgb & 0xff00) ^ 0xff00) | ((rgb & 0xff) ^ 0xff));
     }
 
-    public void paint(Component component, Graphics gc, int x, int y, double zfactor, boolean isSelected)
+    public void paint(Component component, Graphics gc, int x, int y, double zfactor, int isSelected)
     {
         if (zfactor < 0.0) {
             drawSize = minD;
@@ -174,7 +174,7 @@ public class DEViseAtomType {
         paint(component, gc, x, y, drawSize, isSelected);
     }
 
-    public void paint(Component component, Graphics gc, int x, int y, int size, boolean isSelected)
+    public void paint(Component component, Graphics gc, int x, int y, int size, int isSelected)
     {
         drawSize = size;
         lastDrawStyle = isSelected;
@@ -194,10 +194,14 @@ public class DEViseAtomType {
                 return;
             }
         }
-
-        if (lastDrawStyle) {
+        
+        if (lastDrawStyle == 1 || lastDrawStyle == 2) {
             Color oldcolor = gc.getColor();
-            gc.setColor(XORcolor);
+            if (lastDrawStyle == 1) {
+                gc.setColor(selectedColor);
+            } else {
+                gc.setColor(XORcolor);
+            }    
             gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
             gc.setColor(oldcolor);
         } else {

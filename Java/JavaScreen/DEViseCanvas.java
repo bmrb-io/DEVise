@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  1999/10/10 08:49:51  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.15  1999/09/24 17:11:46  hongyu
 // adding support for 3-d molecule view
 //
@@ -277,7 +285,7 @@ public class DEViseCanvas extends Container
                             gc.setColor(oldcolor);
                         }
                     } else {
-                        atom.type.paint(this, gc, atom.drawX, atom.drawY, atom.drawSize, true);
+                        atom.type.paint(this, gc, atom.drawX, atom.drawY, atom.drawSize, 2);
                     }
 
                     if (atom.lastSelectedBondIndex >= 0) {
@@ -694,6 +702,9 @@ public class DEViseCanvas extends Container
             ep.y = op.y = sp.y = p.y;
 
             if (view.viewDimension == 3) {
+                jsc.lastCursor = DEViseGlobals.rbCursor;
+                setCursor(jsc.lastCursor);
+                
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(sp.x), activeView.getY(sp.y));
                 if (jscreen.getCurrentView() != activeView) {
@@ -932,6 +943,9 @@ public class DEViseCanvas extends Container
 
                 action3d = 1;
 
+                jsc.lastCursor = DEViseGlobals.rbCursor;
+                setCursor(jsc.lastCursor);
+                
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
                 if (jscreen.getCurrentView() != activeView) {
@@ -1103,28 +1117,42 @@ public class DEViseCanvas extends Container
         if (view.viewGDatas.size() == 0) {
             return;
         }
+        
+        if (crystal == null) {
+            StringWriter writer = new StringWriter();
+            writer.write("\"Scale Factor\" 5.65 5.65 5.65\n");
+            writer.write("\"Base Vector\" 1 0 0 0 1 0 0 0 1\n");
+            writer.write("Atoms " + view.viewGDatas.size() + "\n");
 
-        StringWriter writer = new StringWriter();
-        writer.write("\"Scale Factor\" 5.65 5.65 5.65\n");
-        writer.write("\"Base Vector\" 1 0 0 0 1 0 0 0 1\n");
-        writer.write("Atoms " + view.viewGDatas.size() + "\n");
+            for (int i = 0; i < view.viewGDatas.size(); i++) {
+                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
+                writer.write(gdata.string + " " + gdata.x0 + " " + gdata.y0 + " " + gdata.z0 + "\n");
+            }
 
-        for (int i = 0; i < view.viewGDatas.size(); i++) {
-            DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-            writer.write(gdata.string + " " + gdata.x0 + " " + gdata.y0 + " " + gdata.z0 + "\n");
-        }
+            writer.write("\"Bond Limit\" 2.3 2.7\n");
+        
+            writer.close();
 
-        writer.write("\"Bond Limit\" 2.3 2.7\n");
-        writer.close();
+            String string = writer.toString();
 
-        String string = writer.toString();
-
-        try {
-            createCrystalFromData(new StringReader(string));
-        } catch (YException e) {
-            jsc.pn(e.getMessage());
-            crystal = null;
-        }
+            try {
+                createCrystalFromData(new StringReader(string));
+            } catch (YException e) {
+                jsc.pn(e.getMessage());
+                crystal = null;
+            }
+        } else {
+            if (view.viewGDatas.size() == crystal.getNumberOfAtoms()) {
+                crystal.setSelect();
+                return;
+            }
+            
+            crystal.setSelect();
+            for (int i = 0; i < view.viewGDatas.size(); i++) {
+                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
+                crystal.setSelect(gdata.x0, gdata.y0, gdata.z0);
+            }
+        }        
     }
 
     private void createCrystalFromData(Reader stream) throws YException

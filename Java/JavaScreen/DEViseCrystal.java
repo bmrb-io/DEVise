@@ -632,6 +632,47 @@ public class DEViseCrystal
 
         return index1;
     }
+    
+    public void setSelect()
+    {
+        DEViseAtomInCrystal atom = null;
+        
+        for (int i = 0; i < atomList.size(); i++) {
+            atom = (DEViseAtomInCrystal)atomList.elementAt(i);
+
+            if (!atom.status) { // ignore deleted atom
+                continue;
+            }
+            
+            atom.isSelected = 0;
+        }
+    }
+            
+    public void setSelect(double x, double y, double z)
+    {   
+        DEViseAtomInCrystal atom = null;
+        double xx, yy, zz;
+        
+        for (int i = 0; i < atomList.size(); i++) {
+            atom = (DEViseAtomInCrystal)atomList.elementAt(i);
+
+            if (!atom.status) { // ignore deleted atom
+                continue;
+            }
+            
+            xx = Math.abs(x - atom.pos[0]);
+            yy = Math.abs(y - atom.pos[1]);
+            zz = Math.abs(z - atom.pos[2]);
+            if (xx < 1.0e-5 && yy < 1.0e-5 && zz < 1.0e-5) {
+                atom.isSelected = 1;
+            }
+        }
+    }
+    
+    public int getNumberOfAtoms()
+    {
+        return atomList.size();
+    }        
 }
 
             

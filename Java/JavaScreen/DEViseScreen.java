@@ -13,6 +13,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  1999/10/10 08:49:52  hongyu
+// Major changes to JAVAScreen have been commited in this update, including:
+// 1. restructure of JavaScreen internal structure to adapt to vast changes
+//    in DEVise and also prepare to future upgrade
+// 2. Fix a number of bugs in visualization and user interaction
+// 3. Add a number of new features in visualization and user interaction
+// 4. Add support for complicated 3D molecular view
+//
 // Revision 1.36  1999/08/24 08:45:53  hongyu
 // *** empty log message ***
 //
@@ -419,7 +427,7 @@ public class DEViseScreen extends Panel
         }
 
         if (view.viewDimension == 3 && view.canvas != null) {
-            view.canvas.crystal = null;
+            view.canvas.createCrystal();
         }
 
         repaint();
