@@ -7,9 +7,7 @@ depend:
 Buffer.o: /usr/include/math.h /usr/include/features.h
 Buffer.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
 Buffer.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-Buffer.o: /usr/include/bits/mathcalls.h
-Buffer.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
-Buffer.o: Buffer.h DRSchema.h DateTime.h
+Buffer.o: /usr/include/bits/mathcalls.h Buffer.h DRSchema.h DateTime.h
 DataReader.o: DataReader.h DRSchema.h Buffer.h DataReaderParser.h
 DataReader.o: /usr/include/assert.h /usr/include/features.h
 DataReader.o: /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h
