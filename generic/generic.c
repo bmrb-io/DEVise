@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/08/29 21:58:16  guangshu
+  Added several DATE type schema.
+
   Revision 1.32  1996/08/13 20:04:38  jussi
   Added DayOfYearComposite parser function.
 
@@ -136,7 +139,8 @@
 #include <math.h>
 #include <sys/time.h>
 #include <sys/types.h>
-
+#include <String.h>
+#include <fstream.h>
 #ifdef __GNUG__
 #pragma implementation "HashTable.h"
 #endif
@@ -1098,39 +1102,52 @@ QueryProc *genQueryProcTape()
 int main(int argc, char **argv)
 {
   Init::DoInit(argc,argv);
+  String env,schemaStr,parserName;	
+  char dummy;
+  char * schemaChar;
 
-  /* Register composite parsers */
-  CompositeParser::Register("BEST_STOCK", new YyMmDdComposite);
-  CompositeParser::Register("MIT_STOCK", new YyMmDdComposite);
-  CompositeParser::Register("CRSP-Schema", new YyMmDdComposite);
-  CompositeParser::Register("ISSM-Trade", new ObsDateComposite);
-  CompositeParser::Register("ISSM-Quote", new ObsDateComposite);
-  CompositeParser::Register("DOL_DATA", new DOLDateComposite);
-  CompositeParser::Register("DOWJONES", new MmDdYyComposite);
-  CompositeParser::Register("VISITS_DATE", new MmDdYyComposite);
-  CompositeParser::Register("PRES_TEMP", new MmDdYyComposite);
-  CompositeParser::Register("LANDSEND", new StateLatLonComposite); 
-  CompositeParser::Register("LANDSENDDAILY", new YyMmDdComposite);
-  CompositeParser::Register("BIRCHLE0", new LandsendDateDiffComposite);
-  CompositeParser::Register("BIRCHLE1", new LandsendDateDiffComposite);
-  CompositeParser::Register("BIRCHLE2", new LandsendDateDiffComposite);
-  CompositeParser::Register("BIRCHLE3", new LandsendDateDiffComposite);
-  CompositeParser::Register("SALES", new StateLatLonComposite);
-  CompositeParser::Register("SALESDAILY", new YyMmDdComposite);
-  CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
-  CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
-  CompositeParser::Register("IBMTRACE", new IBMAddressTraceComposite);
-  CompositeParser::Register("IBMTRACE1", new IBMAddressTraceComposite);
-  CompositeParser::Register("IBMTRACE2", new IBMAddressTraceComposite);
-  CompositeParser::Register("IBMTRACE3", new IBMAddressTraceComposite);
-  CompositeParser::Register("IBMTRACE.2.all", new IBMAddressTraceComposite2);
-  CompositeParser::Register("IBMTRACE.2.ir", new IBMAddressTraceComposite2);
-  CompositeParser::Register("IBMTRACE.2.ld", new IBMAddressTraceComposite2);
-  CompositeParser::Register("IBMTRACE.2.st", new IBMAddressTraceComposite2);
-  CompositeParser::Register("IBMTRACE.2.miss", new IBMAddressTraceComposite2);
-  CompositeParser::Register("SOILDOY", new DayOfYearComposite);
+  env = getenv("DEVISE_LIB");
+  if (env.chars() == 0 )
+	env = ".";
+  env += "/composite.ini";
+ 	
+  ifstream fin(env);
 
+  while(fin){
+	
+	fin >> dummy;
+	fin.putback(dummy);
+	if (dummy == '#'){
+		readline(fin,schemaStr); // Read line and ignore
+	 	continue;
+	}	
+	fin >> schemaStr >> parserName;
+
+	schemaChar = strdup(schemaStr.chars());
+	
+	if (parserName.matches("YyMmDdComposite"))
+  		CompositeParser::Register(schemaChar ,new YyMmDdComposite);
+  	else if (parserName.matches("ObsDateComposite"))
+  		CompositeParser::Register(schemaChar,new ObsDateComposite);
+  	else if (parserName.matches("DOLDateComposite"))
+  		CompositeParser::Register(schemaChar,new DOLDateComposite);
+  	else if (parserName.matches("MmDdYyComposite"))
+  		CompositeParser::Register(schemaChar,new MmDdYyComposite);
+  	else if (parserName.matches("LatLonComposite"))
+  		CompositeParser::Register(schemaChar,new LatLonComposite);
+  	else if (parserName.matches("DayOfYearComposite"))
+  		CompositeParser::Register(schemaChar,new DayOfYearComposite);
+  	else if (parserName.matches("StateLatLonComposite"))
+  		CompositeParser::Register(schemaChar,new StateLatLonComposite);
+  	else if (parserName.matches("IBMAddressTraceComposite2"))
+  		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite2);
+  	else if (parserName.matches("IBMAddressTraceComposite"))
+  		CompositeParser::Register(schemaChar,new IBMAddressTraceComposite);
+  	else if (parserName.matches("LandsendDateDiffComposite"))
+  		CompositeParser::Register(schemaChar,new LandsendDateDiffComposite);
+   }
   /* Register known query processors */
+  
   QueryProc::Register("Tape", genQueryProcTape);
 
   /* Register known classes  with control panel */
