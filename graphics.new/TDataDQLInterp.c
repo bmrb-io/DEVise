@@ -267,3 +267,14 @@ Boolean TDataDQLInterp::Decode(void *recordBuf, int recPos, char *line)
   /* set buffer for interpreted record */
   return true;
 }
+
+
+
+
+
+
+
+
+
+
+

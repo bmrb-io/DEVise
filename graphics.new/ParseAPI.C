@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1996/11/20 20:35:20  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.43  1996/11/20 16:50:33  jussi
   Added abortQuery command.
 
@@ -213,11 +218,11 @@
 #include "Display.h"
 #include "TDataAscii.h"
 #include "DevError.h"
+#include "ViewLens.h"
 #include "WinClassInfo.h"
-
 #define PURIFY 0
 
-#if PURIFY
+#ifdef PURIFY
 extern "C" int purify_is_running();
 extern "C" int purify_new_leaks();
 extern "C" int purify_new_inuse();
@@ -881,6 +886,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(API_ACK, result);
       return 1;
     }
+    if (!strcmp(argv[0], "getBgColor")) {
+      View *view = (View *)classDir->FindInstance(argv[1]);
+      if (!view) {
+	control->ReturnVal(API_NAK,"Cannot find view");
+	return -1;
+      }
+      GlobalColor color = view->GetBgColor();
+      control->ReturnVal(API_ACK, result);
+      return 1;
+    }
     if (!strcmp(argv[0], "getCurVisualFilter")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
       if (!view) {
@@ -1417,6 +1432,23 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       control->ReturnVal(numArgs, args);
       return 1;
     }
+// MODIFIED BY SSL NOV 3 -BEGIN
+    if (!strcmp(argv[0], "insertViewInLens")) { 
+      ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
+      if (!lens) {
+	control->ReturnVal(API_NAK, "Cannot find lens");
+	return -1;
+      }
+      View *view = (View *)classDir->FindInstance(argv[2]);
+      if (!view){
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+      }
+      lens->InsertView(view);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+// MODIFIED BY SSL NOV 3 - END
     if (!strcmp(argv[0], "insertMapping")) {
       ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
       if (!view) {

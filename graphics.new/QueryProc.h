@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/23 21:12:06  jussi
+  Removed support for multiple query processors.
+
   Revision 1.6  1996/06/27 15:52:44  jussi
   Added functionality which allows TDataAscii and TDataBinary to request
   that views using a given TData be refreshed (existing queries are
@@ -46,31 +49,33 @@
 class BufMgr;
 class TData;
 class TDataMap;
+class Selection;
 class GData;
 class RecordLink;
 class RecordLinkList;
 
 /* Used to return query results */
 class QueryCallback {
-  public:
-    /* Query data ready to be returned. Do initialization here. */
-    virtual void QueryInit(void *userData) = 0;
-    
-    /* Return a batch of records */
-    virtual void ReturnGData(TDataMap *mapping, RecId id,
-                             void *gdata, int numGData) = 0;
-    
-    /* Done with query. bytes == # of TData bytes used in
-       processing this query. */
-    virtual void QueryDone(int bytes, void *userData) = 0;
-    
-    /* Return list of record links whose slave the view is */
-    virtual RecordLinkList *GetRecordLinkList() { return 0; }
+ public:
+  /* Query data ready to be returned. Do initialization here. */
+  virtual void QueryInit(void *userData) = 0;
+  
+  /* Return a batch of records */
+  virtual void ReturnGData(TDataMap *mapping, RecId id,
+			   void *gdata, int numGData) = 0;
+  
+  /* Done with query. bytes == # of TData bytes used in
+     processing this query. */
+  virtual void QueryDone(int bytes, void *userData) = 0;
+
+  /* Return list of record links whose slave the view is */
+  virtual RecordLinkList *GetRecordLinkList() { return 0; }
+
+  virtual void PrintLinkInfo() {}
 };
 
-class QueryProc;
-
 class QueryProc {
+
   public:
     /* get one and only instance of query processor */
     static QueryProc *Instance();

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/11/23 21:13:38  jussi
+  Merged DispQueryProcFull functionality into QueryProcFull.
+  Merged QueryProcTape functionality into QueryProcFull.
+  Removed failing support for variable-sized records.
+  Improved debugging by using configurable debugging levels.
+
   Revision 1.12  1996/11/21 01:23:24  jussi
   Removed _memFetched and InitScan().
 
@@ -171,14 +177,19 @@ public:
   /* Get minimum X value for mapping. Return true if found */
   virtual Boolean GetMinX(TDataMap *map, Coord &minX);
 
+  void ReOrderQueries();
+  void PrintQueryData(QPFullData *qdata);
+  
+
 protected:
+
   BufPolicy::policy _policy;
 
   Boolean _prefetch, _useExisting;
   BufMgr *_mgr;
 
   QPFullDataList *_queries;
-
+  
   /* Initialize all queries. Return false if no query
      is in initial state */
   Boolean InitQueries();
@@ -317,7 +328,7 @@ protected:
   /* from DispatcherCallback */
   char *DispatchedName() { return "QueryProcFull"; }
   void Run() { ProcessQuery(); }
-
+  
   DispatcherID _dispatcherID;      /* dispatcher ID */
 };
 

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/08/04 21:59:58  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.2  1996/07/13 17:27:29  jussi
   Removed unnecessary virtual function prototypes.
 
@@ -73,6 +80,8 @@ public:
   Boolean More(int index);
   ViewGraph *Next(int index);
   void DoneIterator(int index);
+
+  void Print();
 
 protected:
   void ProcessFilterChanged(View *view, VisualFilter &filter);

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/11/13 16:57:12  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.8  1996/06/15 13:52:55  jussi
   Rewrote in order to reduce code size and redundancy. Added
   ChangeParams() method which allows Devise to change the
@@ -262,4 +272,48 @@ ClassInfo *ViewScatterInfo::CreateWithParams(int argc, char **argv)
   ViewScatter *view = new ViewScatter(name, filter, GetQueryProc(), 
 				      fgColor, bgColor, NULL, NULL, NULL);
   return new ViewScatterInfo(name, fgName, bgName, view);
+}
+
+
+
+ViewLensInfo::ViewLensInfo(char *name, char *fgName, char *bgName,
+			   ViewLens *view) :
+     ViewClassInfo(name, fgName, bgName, view)
+{
+}
+
+
+ClassInfo *ViewLensInfo::CreateWithParams(int argc, char **argv)
+{
+  if (argc != 6 && argc != 7) {
+    fprintf(stderr, "ViewLensInfo::CreateWithParams: wrong args\n");
+    return NULL;
+  }
+
+  char *name = CopyString(argv[0]);
+
+  VisualFilter filter;
+  (void)ParseFloatDate(argv[1], filter.xLow);
+  (void)ParseFloatDate(argv[2], filter.xHigh);
+  (void)ParseFloatDate(argv[3], filter.yLow);
+  (void)ParseFloatDate(argv[4], filter.yHigh);
+  filter.flag = VISUAL_LOC;
+  
+  // old style lists bgcolor but no fgcolor; new style
+  // lists fgcolor first, followed by bgcolor
+
+  char *fgName, *bgName;
+  if (argc == 6) {
+    fgName = CopyString("Black");
+    bgName = CopyString(argv[5]);
+  } else {
+    fgName = CopyString(argv[5]);
+    bgName = CopyString(argv[6]);
+  }
+  GlobalColor fgColor = ColorMgr::AllocColor(fgName);
+  GlobalColor bgColor = ColorMgr::AllocColor(bgName);
+
+  ViewLens *view = new ViewLens(name, filter, 
+				fgColor, bgColor, NULL, NULL, NULL);
+  return new ViewLensInfo(name, fgName, bgName, view);
 }

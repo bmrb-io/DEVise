@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/09/27 21:09:39  wenger
+  GDataBin class doesn't allocate space for connectors (no longer used
+  anyhow); fixed some more memory leaks and made notes in the code about
+  some others that I haven't fixed yet; fixed a few other minor problems
+  in the code.
+
   Revision 1.3  1996/08/05 02:13:22  beyer
   HP's stdio.h has _flag #define'd so I #undef'd it in here.
 
@@ -104,11 +110,11 @@ bool VisualLink::DeleteView(ViewGraph *view)
       /* view not in list */
       return false;
   }
-
+#define DEBUG
 #ifdef DEBUG
   printf("Removing view %s from link %s\n", view->GetName(), GetName());
 #endif
-
+#undef DEBUG
   _viewList->Delete(view);
   return true;
 }
@@ -159,7 +165,7 @@ void VisualLink::ProcessFilterChanged(View *view, VisualFilter &filter)
   int index;
   for(index = _viewList->InitIterator(); _viewList->More(index);) {
     View *viewInList = _viewList->Next(index);
-    if (viewInList != view) {
+    if (viewInList!= view) {
       /* Change this view */
       SetVisualFilter(viewInList, filter);
     }
@@ -171,6 +177,7 @@ void VisualLink::ProcessFilterChanged(View *view, VisualFilter &filter)
 
 void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
 {
+  printf("VisualLink ->%s setVF view: %s\n", GetName(), view->GetName());
   _updating = true;
 
   VisualFilter tempFilter;
@@ -243,7 +250,7 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
   
   if (change)
     view->SetVisualFilter(tempFilter);
-  
+    
   _updating = false;
 }
 
@@ -294,3 +301,27 @@ Boolean VisualLink::HasXMin(Coord &xMin)
 
   return hasXMin;
 }
+
+void VisualLink::Print() {
+  printf("Name = %s, Flag = %d\n", GetName(),GetFlag() );
+  printf("Views in Link ->\n");
+  int index = _viewList->InitIterator();
+  while(_viewList->More(index)) {
+     printf("   %s ", _viewList->Next(index)->GetName());
+  }
+  printf("\n");
+  _viewList->DoneIterator(index);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/15 13:52:56  jussi
+  Rewrote in order to reduce code size and redundancy. Added
+  ChangeParams() method which allows Devise to change the
+  view foreground and background colors at runtime.
+
   Revision 1.3  1996/01/29 23:58:16  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -29,6 +34,8 @@
 #include "ViewGraph.h"
 #include "TDataViewX.h"
 #include "ViewScatter.h"
+#include "ViewLens.h"
+
 
 class ViewClassInfo: public ClassInfo {
 public:
@@ -68,4 +75,11 @@ public:
   virtual ClassInfo *CreateWithParams(int argc, char **argv);
 };
 
+class ViewLensInfo : public ViewClassInfo {
+public:
+   ViewLensInfo() : ViewClassInfo() {}
+   ViewLensInfo(char *name, char *fgname, char *bgname, ViewLens *view);
+   virtual char *ClassName() { return "ViewLens";}
+   virtual ClassInfo *CreateWithParams(int argc, char **argv);
+};  
 #endif

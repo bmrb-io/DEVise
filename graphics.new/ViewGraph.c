@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1996/11/20 16:51:09  jussi
+  Replaced AbortAndReexecute() with AbortQuery() and Refresh().
+
   Revision 1.41  1996/11/13 16:57:13  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -263,7 +266,6 @@ void ViewGraph::AddAsMasterView(RecordLink *link)
 #endif
         _masterLink.Append(link);
       }
-
     Refresh();
 }
 
@@ -291,7 +293,6 @@ void ViewGraph::AddAsSlaveView(RecordLink *link)
 #endif
         _slaveLink.Append(link);
     }
-
     Refresh();
 }
 
@@ -792,7 +793,46 @@ void ViewGraph::SetHistogramWidthToFilter()
     printf("Histogram for view %s set to (%g, %g) from %s range\n",
 	   GetName(), lo, hi, is_filter ? "filter" : "file");
     _allStats.SetHistWidth(lo, hi);
-
     AbortQuery();
     Refresh();
 }
+
+void ViewGraph::PrintLinkInfo() 
+{
+  printf("View : %s \n", GetName());
+  printf("Master of ");
+  int index = _masterLink.InitIterator();
+  while(_masterLink.More(index)) {
+    RecordLink *reclink = (RecordLink *)_masterLink.Next(index);
+    if (reclink)
+      reclink->Print();
+  }
+  _masterLink.DoneIterator(index);
+  printf("\nSlave of ");
+  index = _slaveLink.InitIterator();
+  while(_slaveLink.More(index)) {
+    RecordLink *reclink = (RecordLink *)_slaveLink.Next(index);
+    if (reclink) 
+      reclink->Print();
+  }
+  _slaveLink.DoneIterator(index);
+  printf("\nUpdate Link");
+  _updateLink.Print();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

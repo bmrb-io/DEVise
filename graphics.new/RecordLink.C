@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/08/07 15:32:04  guangshu
+  Comment out the debugging message.
+
   Revision 1.6  1996/08/04 21:59:51  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -291,4 +294,10 @@ void RecordLink::FlushToDisk()
   _file->WriteRec(_lastRec, _num, _array);
   _lastRec += _num;
   _num = 0;
+}
+
+void RecordLink::Print()
+{
+  VisualLink::Print();
+    printf("Master = %s\n", _masterView->GetName());
 }

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.41  1996/11/26 09:35:53  beyer
+  During a sequential scan, the query processor now only asks for at most
+  QPFULL_RECS_PER_BATCH records.  This makes the system much more responsive
+  to user input, but doesn't allow devise to make full use of its cache.
+  The buffer manager should be changed so that it only returns a limited
+  number of tuples.
+
   Revision 1.40  1996/11/23 22:05:12  jussi
   Forgot to turn off debugging.
 
@@ -357,11 +364,6 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 #endif
 
   TData *tdata = map->GetTData();
-
-#if DEBUGLVL >= 3
-  printf("batch query for %s %s %d\n", tdata->GetName(), map->GetName(),
-	 priority);
-#endif
 
   QPFullData *qdata = new QPFullData;
   qdata->map = map;
@@ -956,7 +958,7 @@ void QueryProcFull::ProcessQuery()
   }
 
   ControlPanel::Instance()->SetSyncAllowed();
-
+//  ReOrderQueries();
   if (InitQueries()) {
     /* Have initialized queries. Return now. */
     return;

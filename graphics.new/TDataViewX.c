@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/11/20 20:35:21  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.44  1996/11/19 20:21:08  jussi
   Overlapping record elimination now done on for BAR shapes.
 
@@ -434,7 +439,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       Boolean complexShape = mapping->IsComplexShape(shape);
       complexShape |= (GetNumDimensions() == 3);
 
-      // Compute statistics only for records that match the filter's
+      // Compute statistics only for records that match the filter''s
       // X range, regardless of the Y boundary
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh) {
 	  if (color < MAXCOLOR)
@@ -458,7 +463,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	  } 
       }
 
-      // Contiguous ranges which match the filter's X *and* Y range
+      // Contiguous ranges which match the filter''s X *and* Y range
       // are stored in the record link
       if (!complexShape &&
           (x < _queryFilter.xLow || x > _queryFilter.xHigh
@@ -466,7 +471,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	if (i > firstRec)
 	  WriteMasterLink(recId + firstRec, i - firstRec);
 
-	// Next contiguous batch of record id's starts at i+1
+	// Next contiguous batch of record id''s starts at i+1
 	firstRec = i + 1;
       }
       

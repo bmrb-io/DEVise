@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/11/13 16:57:14  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.28  1996/09/27 21:09:39  wenger
   GDataBin class doesn't allocate space for connectors (no longer used
   anyhow); fixed some more memory leaks and made notes in the code about
@@ -216,7 +226,7 @@ public:
   DataSourceBuf* GetViewHistogram()  { return _histBuffer; }
   DataSourceBuf* GetGdataStatistics() { return _gdataStatBuffer; }
 
-  // uses filter's y range to set the histogram upper & lower bounds
+  // uses filter''s y range to set the histogram upper & lower bounds
   void SetHistogramWidthToFilter();
 
   /* Set/get action */
@@ -233,6 +243,7 @@ public:
   // it depends upon master
   void MasterRecomputed(ViewGraph* master);
 
+  void PrintLinkInfo();
  protected:
   /* Write color statistics to memory buffer */
   void PrepareStatsBuffer();

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/11/13 16:57:14  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.25  1996/09/06 07:00:13  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -223,6 +233,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
   WindowRep *win = GetWindowRep();
+//  WindowRep *alt = GetAltRep();
 
   if (IsInPileMode()) {
     ViewWin *parent = GetParent();
@@ -237,7 +248,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
            GetName(), vw->GetName(), win);
 #endif
   }
-      
+  
   GDataAttrOffset *offset = mapping->GetGDataOffset();
   int gRecSize = mapping->GDataRecordSize();
   char *ptr = (char *)gdata;
@@ -265,7 +276,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     complexShape |= (GetNumDimensions() == 3);
 
     // Collect statistics from last mapping and only those records
-    // that match the filter's X and Y range
+    // that match the filter''s X and Y range
     if (!MoreMapping(_index) &&
 	x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
 	y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
@@ -274,7 +285,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       _allStats.Sample(x, y);
     }
 
-    // Contiguous ranges which match the filter's X and Y range
+    // Contiguous ranges which match the filter''s X and Y range
     // are stored in the record link
     if (!complexShape &&
 	(x + maxWidth / 2 < _queryFilter.xLow || 
@@ -284,7 +295,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       if (!MoreMapping(_index)) {
 	if (i > firstRec)
 	  WriteMasterLink(recId + firstRec, i - firstRec);
-	// Next contiguous batch of record id's starts at i+1
+	// Next contiguous batch of record ids starts at i+1
 	firstRec = i + 1;
       }
       
@@ -307,6 +318,10 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       _recs[recIndex++] = ptr;
       if (recIndex == WINDOWREP_BATCH_SIZE) {
         mapping->DrawGDataArray(this, win, _recs, recIndex);
+//
+//	if (alt != NULL) {
+//	  mapping->DrawGDataArray(this, alt, _recs, recIndex);
+//	}
         recIndex = 0;
       }
     }
@@ -319,8 +334,12 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       WriteMasterLink(recId + firstRec, numGData - firstRec);
   }
 
-  if (!Iconified() && recIndex > 0)
+  if (!Iconified() && recIndex > 0) {
     mapping->DrawGDataArray(this, win, _recs, recIndex);
+//    if (alt != NULL) {
+//      mapping->DrawGDataArray(this, alt, _recs, recIndex);
+//    }
+  }
 }
 
 /* Done with query */

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.48  1996/11/23 21:20:33  jussi
+#  Updated to reflect files removed. Also added -I../../DTE/Core.
+#
 #  Revision 1.47  1996/11/18 18:10:47  donjerko
 #  New files and changes to make DTE work with Devise
 #
@@ -68,6 +71,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \
+	ViewLens.C \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
 	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \

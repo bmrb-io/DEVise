@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/08/04 21:59:56  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
 */
 
 #include <unistd.h>
@@ -102,4 +109,9 @@ bool UpdateLink::DeleteView(ViewGraph *view)
     }
     return VisualLink::DeleteView(view);
 }    
+
+void UpdateLink::Print() {
+  VisualLink::Print();
+  printf("master = %s\n", _master->GetName());
+}
 
