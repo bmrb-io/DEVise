@@ -47,6 +47,19 @@
 #include "debug.h"
 #define LINESIZE 1024
 
+#define IMPLEMENT_COMMAND_BEGIN(command) \
+int DeviseCommand_##command::Run(int argc, char** argv)\
+{\
+	int ret_value;\
+	ret_value=DeviseCommand::Run(argc, argv);\
+	if (ret_value)\
+	{
+#define IMPLEMENT_COMMAND_END \
+	}\
+	return ret_value;\
+}
+
+
 static ViewKGraph *vkg = 0;
 void ResetVkg()
 {
@@ -108,21 +121,18 @@ DeviseCommand::Run(int argc, char** argv)
 //		(see this file)
 // 		.In your definition, always call base class's Run() first
 //      .If the return value is false, sub-class Run() should return
+//		.I provided two Macros IMPLEMENT_COMMAND_BEGIN and 
+//		IMPLEMENT_COMMAND_END to facilitate use
 // 3. Register this command object with CmdContainer Object: 
 //		(see CmdContainer.C)
 //		.REGISTER_COMMANND : use default command option
 //		.REGISTER_COMMAND_WITH_OPTION: specify your own option
 //**********************************************************************
-// get-->2,3
-// insertMapping->3,4
-// importFileType->2,4
-// setWindowLayout->4,5
-// for getAllViews, we have two duplicate versions that needs to
-// be resovled
-
-//**********************************************************************
 // DTE Command objects
 //**********************************************************************
+
+/*
+	// alternatively, we can write this, instead of the Macro
 int
 DeviseCommand_dteImportFileType::Run(int argc, char** argv)
 {
@@ -130,6 +140,9 @@ DeviseCommand_dteImportFileType::Run(int argc, char** argv)
     ret_value=DeviseCommand::Run(argc, argv);
     if (ret_value)
     {
+*/
+
+IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
 		if (argc ==2) 
         {
     		 char * name = dteImportFileType(argv[1]);
@@ -141,9 +154,14 @@ DeviseCommand_dteImportFileType::Run(int argc, char** argv)
     		 return 1;
     	}
 		return ParseAPIDTE(argc, argv, control);
+IMPLEMENT_COMMAND_END
+
+/*
+	// alternatively, we can write this, instead of the Macro
     }
     return ret_value;
 }
+*/
 
 int
 DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
