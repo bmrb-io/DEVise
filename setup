@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/04/09 18:24:06  wenger
+#  Fixed various makefiles (removed extra -gstabs flags, etc.);
+#  setup script now links client.tcl into all cslib directories;
+#  added 24 point font to available sizes in font selection GUI.
+#
 #  Revision 1.7  1996/08/01 18:17:44  jussi
 #  Added sunx86_55 platform.
 #
@@ -100,21 +105,39 @@ cd ..
 
 cd aix/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../alpha_osf20/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../hp/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../linux/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../pmax_ul43a/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../sgi/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../solaris/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../solsparc/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 cd ../../sun/cslib
 ln -s ../../cslib/client.tcl . >& /dev/null
+ln -s ../../cslib/ETkSample.tcl . >& /dev/null
+ln -s ../../cslib/earth.gif . >& /dev/null
 
 cd ../..
