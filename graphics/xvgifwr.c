@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/22 21:03:11  jussi
+  Minor fix in debugging statements.
+
   Revision 1.1  1996/04/17 20:32:37  jussi
   Initial revision.
 */
@@ -232,7 +235,10 @@ int WriteGIF(fp, pic, ptype, w, h, rmap, gmap, bmap, numcols, colorstyle,
 
   if (ptype == PIC24) free(pic8);
 
-  if (ferror(fp)) return -1;
+  if (ferror(fp)) { 
+     perror("Write error.");
+     return -1;
+  }
   return (0);
 }
 
