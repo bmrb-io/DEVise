@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.59  1996/07/11 19:38:35  jussi
+  The Tcl variable 'file' is set to the name of the session file
+  before the session file is executed. Exported session files
+  with data use the 'file' variable.'
+
   Revision 1.58  1996/07/09 16:00:22  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -275,6 +280,13 @@ TkControlPanel::TkControlPanel()
   _argv0 = CopyString(Init::ProgName());
 
   _interp = Tcl_CreateInterp();
+  if (Tcl_Init(_interp) == TCL_ERROR) {
+    fprintf(stderr, "Cannot initialize Tcl. Is TCL_LIBRARY pointing to\n");
+    fprintf(stderr, "the directory with the Tcl initialization files?\n");
+    Exit::DoExit(1);
+  }
+
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
   _mainWindow = Tk_CreateMainWindow(_interp, 0, "DEVise", "DEVise");
   if (!_mainWindow) {
     fprintf(stderr, "%s\n", _interp->result);
@@ -282,22 +294,22 @@ TkControlPanel::TkControlPanel()
   }
   Tk_MoveWindow(_mainWindow, 0, 0);
   Tk_GeometryRequest(_mainWindow, 100, 200);
-
-#ifdef TK_WINDOW
-  ControlPanelTclInterp = _interp;
-  ControlPanelMainWindow = _mainWindow;
 #endif
 
-  if (Tcl_Init(_interp) == TCL_ERROR) {
-    fprintf(stderr, "Cannot initialize Tcl. Is TCL_LIBRARY pointing to\n");
-    fprintf(stderr, "the directory with the Tcl initialization files?\n");
-    Exit::DoExit(1);
-  }
   if (Tk_Init(_interp) == TCL_ERROR) {
     fprintf(stderr, "Cannot initialize Tk. Is TK_LIBRARY pointing to\n");
     fprintf(stderr, "the directory with the Tk initialization files?\n");
     Exit::DoExit(1);
   }
+
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 1
+  _mainWindow = Tk_MainWindow(_interp);
+#endif
+
+#ifdef TK_WINDOW
+  ControlPanelTclInterp = _interp;
+  ControlPanelMainWindow = _mainWindow;
+#endif
 
   int fd = ConnectionNumber(Tk_Display(_mainWindow));
   Dispatcher::Current()->Register(this, 10, GoState, true, fd);
@@ -414,8 +426,13 @@ int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 
 void TkControlPanel::Run()
 {
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
   while(Tk_DoOneEvent(TK_X_EVENTS | TK_FILE_EVENTS
 		      | TK_IDLE_EVENTS | TK_DONT_WAIT) != 0);
+#else
+  while(Tcl_DoOneEvent(TCL_WINDOW_EVENTS | TCL_FILE_EVENTS
+                       | TCL_IDLE_EVENTS | TCL_DONT_WAIT) != 0);
+#endif
 }
 
 void TkControlPanel::SetBusy()
