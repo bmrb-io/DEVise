@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/11/30 22:28:03  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.10  1999/04/20 14:13:31  wenger
   Improved debug output.
 
@@ -196,6 +203,13 @@ void Layout::Append(ViewWin *child)
       MapChildren(0, true, child->GetWeight(), &x, &y, &w, &h);
       child->Map(x, y, w, h);
     }
+  } else {
+    // Note: this is just a "dummy" size and location so that the view is
+    // mapped *somewhere*.  For things to work reasonably well, the geometry
+    // of the view should be set before anything else is done.  (This code
+    // was probably reached from an insertWindow command; that should be
+    // followed by a setViewGeometry command.)  RKW 1999-11-30.
+    child->Map(0, 0, 10, 10);
   }
   ViewWin::Append(child);
 }

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.88  1999/11/30 22:28:20  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.87  1999/11/29 21:08:47  wenger
   Fixed bug 535 and partially fixed bug 532 (problems with view order in
   piles); removed (unused) replaceView command and related ViewWin methods
@@ -3842,6 +3849,10 @@ DeviseCommand_insertWindow::Run(int argc, char** argv)
           }
           view->DeleteFromParent();
           view->AppendToParent(win);
+	  if (!view->Mapped()) {
+    	    ReturnVal(API_NAK, "View was not successfully inserted");
+    	    return -1;
+	  }
           ReturnVal(API_ACK, "done");
           return 1;
         }
