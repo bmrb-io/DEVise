@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1996/07/10 19:29:03  jussi
+  Fixed problem with 3D focus points.
+
   Revision 1.50  1996/07/08 20:31:51  jussi
   Pixmaps are restored now only if view is not a master of a record
   link nor a slave of one.
@@ -241,13 +244,48 @@ int View::_nextPos = 0;
 ViewCallbackList *View::_viewCallbackList = 0;
 
 View::View(char *name, VisualFilter &initFilter, 
-	   Color fg, Color bg, AxisLabel *xAxis, AxisLabel *yAxis,
+	   Color fg, Color bg, AxisLabel *xAxisLabel, AxisLabel *yAxisLabel,
 	   int weight, Boolean boundary) :
 	ViewWin(name, fg, bg, weight, boundary)
 {
+  _jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
+
   _modeRefresh = false;
-  _hasTimestamp = false;
-  Init(name, initFilter, xAxis, yAxis);
+
+  /* init default filter */
+  _filter = initFilter;
+  _filterChanged = true;
+  _hasTimestamp = true;
+  _timeStamp = TimeStamp::NextTimeStamp();
+  
+  _hasExposure = false; /* no exposure rectangle yet */
+  _querySent = false;	/* TRUE if query has been sent */
+  
+  _xAxisLabel = xAxisLabel;
+  _yAxisLabel = yAxisLabel;
+  
+  xAxis.inUse = false;
+  xAxis.width = 15;
+  xAxis.numTicks = 8;
+  xAxis.significantDigits = 6;
+  xAxis.labelWidth = 60;
+  
+  yAxis.inUse = false;
+  yAxis.width = 50;
+  yAxis.numTicks = 8;
+  yAxis.significantDigits = 6;
+  yAxis.labelWidth = 40;
+  
+  _label.occupyTop = false;
+  _label.extent = 12;
+  _label.name = 0;
+  
+  _xAxisAttrType = FloatAttr;
+  _yAxisAttrType = FloatAttr;
+
+  _cursors = new DeviseCursorList;
+  DOASSERT(_cursors, "Out of memory");
+
   _filterQueue = new FilterQueue();
   ReportViewCreated();
   
@@ -255,8 +293,11 @@ View::View(char *name, VisualFilter &initFilter,
   ReportFilterChanged(initFilter, flushed);
   _highlight = false; 
 
-  _xAxisAttrType = FloatAttr;
-  _yAxisAttrType = FloatAttr;
+  _hasXMin = false;
+
+  _hasLastFilter = false;
+  _updateTransform = true;
+  _refresh = true;
 
   _pixmap = NULL;
   _pixmapIO = new PixmapIO();
@@ -267,6 +308,8 @@ View::View(char *name, VisualFilter &initFilter,
 
   _hasOverrideColor = false;
   _overrideColor = fg;
+
+  _displaySymbol = true;
 
   _camera.x_ = 4.6;
   _camera.y_ = 4.0;
@@ -285,61 +328,14 @@ View::View(char *name, VisualFilter &initFilter,
   _camera.spherical_coord = 1;
   _camera.H = 0;
   _camera.V = 0;
-}
 
-void View::Init(char *name, VisualFilter &filter,
-		AxisLabel *xAxisLabel, AxisLabel *yAxisLabel)
-{
-  _jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
-	
-  ControlPanel::Instance()->InsertCallback(this);
-
-  _hasXMin = false;
-
-  _hasLastFilter = false;
-  _updateTransform = true;
-  _refresh = true;
-
-  _xAxisLabel = xAxisLabel;
-  _yAxisLabel = yAxisLabel;
-  
   _id = ++_nextId;
   
   if (!_viewList)
     _viewList = new ViewList;
   _viewList->Insert(this);
   
-  _displaySymbol = true;
-
-  /* init default filter */
-  _filter = filter;
-  _filterChanged = true;
-  if (!_hasTimestamp) {
-    _hasTimestamp =true;
-    _timeStamp = TimeStamp::NextTimeStamp();
-  }
-  
-  _hasExposure = false; /* no exposure rectangle yet */
-  _querySent = false;	/* TRUE if query has been sent */
-  
-  xAxis.inUse = false;
-  xAxis.width = 15;
-  xAxis.numTicks = 8;
-  xAxis.significantDigits = 6;
-  xAxis.labelWidth = 60;
-  
-  yAxis.inUse = false;
-  yAxis.width = 50;
-  yAxis.numTicks = 8;
-  yAxis.significantDigits = 6;
-  yAxis.labelWidth = 40;
-  
-  _label.occupyTop = false;
-  _label.extent = 12;
-  _label.name = 0;
-  
-  _cursors = new DeviseCursorList;
-  DOASSERT(_cursors, "Out of memory");
+  ControlPanel::Instance()->InsertCallback(this);
 
   Dispatcher::CreateMarker(readFd, writeFd);
   Dispatcher::Current()->Register(this, 10, GoState, false, readFd);
@@ -348,8 +344,11 @@ void View::Init(char *name, VisualFilter &filter,
 
 View::~View()
 {
+  _viewList->Delete(this);
+
   Dispatcher::FlushMarkers(readFd);
   Dispatcher::CloseMarker(readFd, writeFd);
+  Dispatcher::Current()->Unregister(this);
 
   DOASSERT(!_querySent, "Query still active");
 
@@ -359,8 +358,8 @@ View::~View()
   Unmap();
   DeleteFromParent();
   ControlPanel::Instance()->DeleteCallback(this);
+
   ReportViewDestroyed();
-  Dispatcher::Current()->Unregister(this);
 }
 
 /***************************************************************
