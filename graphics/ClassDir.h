@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:26  jussi
+  Added/update CVS header.
+*/
 
 /*
    ClassDir.h : directory about classes and instances.
@@ -78,8 +81,8 @@ private:
 };
 
 
-const int MaxCategories = 10; /* max # of categories */
-const int MaxClasses = 50;		/* # of classes for each category */
+const int MaxCategories = 10;	/* max # of categories */
+const int MaxClasses = 100;	/* # of classes for each category */
 const int MaxInstances = 100;	/* # of instances for each class */
 struct ClassRec {
 	ClassInfo *classInfo;
