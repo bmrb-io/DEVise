@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/07/25 14:32:36  guangshu
+  Added linked list to keep track of the gstat records so it doesnot need to scann the range from xmin to xmax and fixed bugs for histograms
+
   Revision 1.34  1996/07/23 18:00:53  jussi
   Ifdef'd out the statistics code because large datasets cause
   unlimited memory to be consumed.
@@ -342,8 +345,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
     int firstRec = 0;
 
-    for(int i = 0; i < numGData; i++) {
 
+    for(int i = 0; i < numGData; i++) {
       // Extract X, Y, shape, and color information from gdata record
       Coord x = GetX(tp, mapping, offset);
       Coord y = GetY(tp, mapping, offset);
@@ -356,8 +359,6 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (shape == 13 || shape == 14)
         canElimRecords = false;
 
-      _allStats.SetHistWidth(yMax, yMin); 
-/*    printf("GetHistWidth=%.2f\n",_allStats.GetHistWidth());  */
       // Compute statistics only for records that match the filter's
       // X range and that exceed the Y low boundary
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
@@ -365,11 +366,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 	if (color < MAXCOLOR)
 	  _stats[color].Sample(x, y);
 	_allStats.Sample(x, y);
-	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y);
+	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y, yMin);
       }
-      yMax = _allStats.GetStatVal(STAT_MAX);
-      yMin = _allStats.GetStatVal(STAT_MIN);
-
       BasicStats *bs;
 
       if(_glist.Size() <= MAX_GSTAT) {
