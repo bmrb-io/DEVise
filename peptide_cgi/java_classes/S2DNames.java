@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2002/01/10 22:14:07  wenger
+// Added structure type selection to atomic coordinate sessions.
+//
 // Revision 1.12  2001/10/10 22:37:33  wenger
 // First version of atomic coordinate extraction and visualization (atoms,
 // not bonds, only tested on 4096 -- coordinates must be in same NMR-STAR
@@ -108,6 +111,8 @@ public class S2DNames
     public static final String COUPLING_CONSTANT_VALUE_ERR =
       "_Coupling_constant_value_error";
     public static final String COUPLING_CONSTANTS = "coupling_constants";
+    public static final String DB_ACC_CODE = "_Database_accession_code";
+    public static final String DB_NAME = "_Database_name";
     public static final String DETAILS = "_Details";
     public static final String ENTRY_TITLE = "_Entry_title";
     public static final String H_EXCHANGE_PROT_FACT =

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2001/12/12 19:56:43  wenger
+// Got 4038/4096 star file combination working; fixed maximum bond length.
+//
 // Revision 1.10  2001/05/14 18:08:27  wenger
 // Parameterized all star file tag names, etc.
 //
@@ -240,6 +243,36 @@ public class S2DStarIfc {
         return getResidueCount(frame);
     }
 
+    //-------------------------------------------------------------------
+    // Returns a Vector of Strings, each String containing the PDB ID
+    // of a PDB file related to this entry.  (Note that the list may
+    // be empty.
+    public Vector getPdbIds()
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("  S2DStarIfc.getPdbIds()");
+	}
+
+        Vector ids = new Vector();
+
+	try {
+	    Enumeration frameList = getDataFramesByCat(S2DNames.MOL_SYSTEM,
+	      false);
+	    while (frameList.hasMoreElements()) {
+	        SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+                String[] values = getFrameValues(frame, S2DNames.DB_NAME,
+		  S2DNames.DB_ACC_CODE);
+                for (int index = 0; index < values.length; index++) {
+		    ids.addElement(values[index]);
+		}
+	    }
+	} catch(S2DException ex) {
+	    System.err.println("Error getting PDB IDs: " + ex.getMessage());
+	}
+
+	return ids;
+    }
+
     // ----------------------------------------------------------------------
     // Returns the number of HA chem shifts in the given save frame.
     public int getHAChemShiftCount(SaveFrameNode frame)
@@ -286,6 +319,14 @@ public class S2DStarIfc {
     // Returns a list of the save frames of the given category.
     public Enumeration getDataFramesByCat(String category) throws S2DException
     {
+        return getDataFramesByCat(category, true);
+    }
+
+    //-------------------------------------------------------------------
+    // Returns a list of the save frames of the given category.
+    public Enumeration getDataFramesByCat(String category,
+      boolean checkFrameCount) throws S2DException
+    {
         if (DEBUG >= 1) {
 	    System.out.println("S2DStarIfc.getDataFramesByCat(" +
 	      category + ")");
@@ -300,7 +341,7 @@ public class S2DStarIfc {
 	frameList = _starTree.searchForTypeByTagValue(S2DStarUtil._frameClass,
 	  tagName, dataValue);
 
-	if (frameList.size() != frameCount) {
+	if (checkFrameCount && frameList.size() != frameCount) {
 	    throw new S2DError("Got " + frameList.size() +
 	      " save frames for category " + category +
 	      "; should have gotten " + frameCount);

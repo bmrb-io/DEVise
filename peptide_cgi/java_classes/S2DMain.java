@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2002/01/15 22:16:13  wenger
+// Added residue selection to atomic coordiate sessions.
+//
 // Revision 1.30  2002/01/10 22:16:57  wenger
 // Forgot to update version with addition of structure type selection.
 //
@@ -172,6 +175,9 @@ public class S2DMain {
 
     // A list of all accession numbers we need to access for this entry.
     private Vector _accNums = new Vector();
+
+    // A list of related PDB files we want to process for this entry.
+    private Vector _pdbIds = new Vector(); // Vector contains Strings
 
     private String _dataDir;
     private String _sessionDir;
@@ -423,6 +429,24 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Add PDB IDs to the list of PDB files to be processed.
+    private void addPDB(Vector ids)
+    {
+        if (DEBUG >= 2) {
+            System.out.println("addPDB()");
+        }
+
+	for (int index = 0; index < ids.size(); index++) {
+	    String id = (String)ids.elementAt(index);
+
+	    // Avoid duplicates.
+	    if (!_pdbIds.contains(id)) {
+	        _pdbIds.addElement(id);
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
     // Do the processing.
     private void process() throws S2DException
     {
@@ -451,6 +475,9 @@ public class S2DMain {
                 star = new S2DStarIfc(accNum);
 	    }
 
+	    Vector ids = star.getPdbIds();
+	    addPDB(ids);
+
 	    //TEMP -- do I really want to skip stuff if I get an error?
 	    saveChemShifts(star);
 	    saveT1Relaxation(star);
@@ -462,6 +489,11 @@ public class S2DMain {
 	    saveS2Params(star);
 	    saveAtomicCoords(star);
         }
+
+	for (int index = 0; index < _pdbIds.size(); index++) {
+	    String id = (String)_pdbIds.elementAt(index);
+	    processPDB(id);
+	}
 
 	_summary.close();
 	_summary = null;
@@ -1095,6 +1127,15 @@ public class S2DMain {
 	    atomicCoords.writeBonds(frameIndex);
 	} finally {
 	    _summary.endFrame();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Process a PDB entry (get the atomic coordinates).
+    void processPDB(String pdbId)
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("processPDB(" + pdbId + ")");
 	}
     }
 }
