@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.80  1998/03/12 18:23:07  donjerko
+# *** empty log message ***
+#
 # Revision 1.79  1998/03/04 18:39:19  wenger
 # Added <arch>/Makefile.config files that now hold stuff like the
 # PERL_CORE definitions so those don't have to be repeated in all
@@ -1814,33 +1817,6 @@ SBMInit.o: InitShut.h
 SBMInit.dummy.o: InitShut.h
 main.o: InitShut.h Common.h ../../unidata/sysdep.h /usr/include/varargs.h
 main.o: /usr/include/sys/va_list.h
-memoryTest.o: ../Core/types.h /s/gcc/lib/g++-include/string
-memoryTest.o: /s/gcc/lib/g++-include/std/string.h
-memoryTest.o: /s/gcc/lib/g++-include/std/bastring.h
-memoryTest.o: /s/gcc/lib/g++-include/std/stddef.h
-memoryTest.o: /s/gcc/lib/g++-include/std/cstddef.h /usr/include/stddef.h
-memoryTest.o: /s/gcc/lib/g++-include/std/straits.h
-memoryTest.o: /s/gcc/lib/g++-include/std/cctype.h /usr/include/ctype.h
-memoryTest.o: /usr/include/sys/feature_tests.h
-memoryTest.o: /s/gcc/lib/g++-include/std/cstring.h /usr/include/string.h
-memoryTest.o: /s/gcc/lib/g++-include/cassert
-memoryTest.o: /s/gcc/lib/g++-include/std/cassert.h /usr/include/assert.h
-memoryTest.o: /s/gcc/lib/g++-include/std/sinst.h /s/gcc/lib/g++-include/new.h
-memoryTest.o: /s/gcc/lib/g++-include/std/new.h ../Core/exception.h
-memoryTest.o: ../../unidata/sysdep.h /usr/include/varargs.h
-memoryTest.o: /usr/include/sys/va_list.h ../Core/Utility.h ../Core/queue.h
-memoryTest.o: ../Core/Array.h ../Core/SeqSimVec.h /usr/include/math.h
-memoryTest.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
-memoryTest.o: ../Core/MemoryMgr.h /s/gcc/lib/g++-include/deque
-memoryTest.o: /s/gcc/lib/g++-include/deque.h
-memoryTest.o: /s/gcc/lib/g++-include/function.h /s/gcc/lib/g++-include/bool.h
-memoryTest.o: /s/gcc/lib/g++-include/algobase.h /s/gcc/lib/g++-include/pair.h
-memoryTest.o: /s/gcc/lib/g++-include/iterator.h
-memoryTest.o: /s/gcc/lib/g++-include/iostream.h
-memoryTest.o: /s/gcc/lib/g++-include/streambuf.h
-memoryTest.o: /s/gcc/lib/g++-include/libio.h
-memoryTest.o: /s/gcc/lib/g++-include/defalloc.h /usr/include/stdlib.h
-memoryTest.o: /usr/include/limits.h /usr/include/sys/isa_defs.h
 Common.o: /usr/include/assert.h /usr/include/math.h
 Common.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 Common.o: ../Core/types.h /s/gcc/lib/g++-include/string
