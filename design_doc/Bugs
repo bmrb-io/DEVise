@@ -1501,6 +1501,11 @@ Num Date        Status  Description
 394 09/15/98	OPEN	Tasvir images don't work when running Xvfb with 24
 			bit depth as the X server. (rkw)
 
+395 09/17/98	FIXED	Can't dump GIFs with Condorview DEVise setup
+			(devisec/devised) (Dispatcher::WaitForQueries()
+			fails). (ay/rkw)
+			(Fixed by rkw, 09/17/98.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

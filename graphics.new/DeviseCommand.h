@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/09/08 20:26:17  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.12  1998/08/10 19:08:06  wenger
   Moved command result buffer from DeviseCommand class to ControlPanel
   class -- saves 7 MB of memory!
@@ -100,6 +104,7 @@ class DeviseCommand
 			 _controlStack->pop();
 			 control =(ControlPanel*) _controlStack->top();
 		}
+		Boolean _valueReturned;
 	protected:
 		// only friend class can construct this class
 		ControlPanel* control;
@@ -114,6 +119,8 @@ class DeviseCommand
 			delete _controlStack;
 		}
 		virtual int Run(int argc, char** argv) = 0;
+		virtual int ReturnVal(u_short flag, char *result);
+		virtual int ReturnVal(int argc, char **argv);
 	protected:
         char		*result;
 		ClassDir	*classDir;

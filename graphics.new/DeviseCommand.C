@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/09/08 20:26:15  wenger
+  Added option to save which view is selected when saving a session -- for
+  JavaScreen client switching support.
+
   Revision 1.22  1998/08/28 22:01:16  wenger
   Made Dispatcher::WaitForQueries() function -- improved over earlier
   versions because it also checks the callback list (this fixes bug 367);
@@ -222,13 +226,42 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	result = control->resultBuf;
 	result[0] = '\0';
 
+	_valueReturned = false;
 	retval = Run(argc, argv);
+	if (!_valueReturned) {
+		reportErrNosys("No command value returned");
+    	ReturnVal(API_NAK, "No command value returned");
+	}
 
 	result = NULL;
 
 	// restore the orignal value to control
 	popControl();
 	return retval;
+}
+
+int
+DeviseCommand::ReturnVal(u_short flag, char *result)
+{
+#if defined(DEBUG)
+    printf("DeviseCommand::ReturnVal(%d, %s)\n", flag, result);
+#endif
+
+	_valueReturned = true;
+    return control->ReturnVal(flag, result);
+}
+
+int
+DeviseCommand::ReturnVal(int argc, char **argv)
+{
+#if defined(DEBUG)
+    printf("DeviseCommand::ReturnVal(");
+	PrintArgs(stdout, argc, argv, false);
+	printf(")\n");
+#endif
+
+	_valueReturned = true;
+    return control->ReturnVal(argc, argv);
 }
 
 //**********************************************************************
@@ -340,10 +373,10 @@ IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
         {
     		 char * name = dteImportFileType(argv[1]);
     		 if (!name){
-    		control->ReturnVal(API_NAK, strdup(""));
+    		ReturnVal(API_NAK, "");
     		return -1;
     		 }
-    		 control->ReturnVal(API_ACK, name);
+    		 ReturnVal(API_ACK, name);
     		 return 1;
     	}
 		return ParseAPIDTE(argc, argv, control);
@@ -362,7 +395,7 @@ DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
 /*TAG
         {
     			char* retVal = dteListAllIndexes(argv[1]);
-    			control->ReturnVal(API_ACK, retVal);
+    			ReturnVal(API_ACK, retVal);
     			return 1;
     		}
 TAG*/
@@ -377,7 +410,7 @@ DeviseCommand_dteDeleteCatalogEntry::Run(int argc, char** argv)
 /*TAG
         {
           dteDeleteCatalogEntry(argv[1]);
-          control->ReturnVal(API_ACK, "");
+          ReturnVal(API_ACK, "");
           return 1;
         }
 TAG*/
@@ -392,7 +425,7 @@ DeviseCommand_dteMaterializeCatalogEntry::Run(int argc, char** argv)
 /*TAG
         {
           dteMaterializeCatalogEntry(argv[1]);
-          control->ReturnVal(API_ACK, "");
+          ReturnVal(API_ACK, "");
           return 1;
         }
 TAG*/
@@ -407,7 +440,7 @@ DeviseCommand_dteReadSQLFilter::Run(int argc, char** argv)
 /*TAG
         {
           char* retVal = dteReadSQLFilter(argv[1]);
-          control->ReturnVal(API_ACK, retVal);
+          ReturnVal(API_ACK, retVal);
           return 1;
         }
 TAG*/
@@ -427,10 +460,10 @@ DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
     		char* catEntry = dteShowCatalogEntry(argv[1]);
     		CATCH(
     			string err = currExcept->toString();
-    			control->ReturnVal(API_NAK, (char*) err.c_str());
+    			ReturnVal(API_NAK, (char*) err.c_str());
     			return -1;
     		)
-    		control->ReturnVal(API_ACK, catEntry);
+    		ReturnVal(API_ACK, catEntry);
     		delete [] catEntry;
     		return 1;
     	}
@@ -448,12 +481,12 @@ DeviseCommand_dteListCatalog::Run(int argc, char** argv)
     		int errorCode;	// 0 means OK
     		char* catListing = dteListCatalog(argv[1], errorCode);
     		if(errorCode){
-    			control->ReturnVal(API_NAK, catListing);
+    			ReturnVal(API_NAK, catListing);
     			delete [] catListing;
     			return -1;
     		}
     		else{
-    			control->ReturnVal(API_ACK, catListing);
+    			ReturnVal(API_ACK, catListing);
     			delete [] catListing;
     			return 1;
     		}
@@ -473,10 +506,10 @@ DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
     		CATCH(
     			string err = "Failed to find available attributes.\n";
     			err += currExcept->toString();
-    			control->ReturnVal(API_NAK, (char*) err.c_str());
+    			ReturnVal(API_NAK, (char*) err.c_str());
     			return -1;
     		)
-    		control->ReturnVal(API_ACK, attrListing);
+    		ReturnVal(API_ACK, attrListing);
     		delete [] attrListing;
     		return 1;
     	}
@@ -492,7 +525,7 @@ DeviseCommand_dteListAttributes::Run(int argc, char** argv)
 /*TAG
         {
           char* attrListing = dteListAttributes(argv[1]);
-          control->ReturnVal(API_ACK, attrListing);
+          ReturnVal(API_ACK, attrListing);
           return 1;
         }
 TAG*/
@@ -507,7 +540,7 @@ DeviseCommand_dteDeleteIndex::Run(int argc, char** argv)
 /*TAG
         {
           dteDeleteIndex(argv[1], argv[2]);
-          control->ReturnVal(API_ACK, "");
+          ReturnVal(API_ACK, "");
           return 1;
         }
 TAG*/
@@ -522,7 +555,7 @@ DeviseCommand_dteShowIndexDesc::Run(int argc, char** argv)
 /*TAG
         {
           char* indexDesc = dteShowIndexDesc(argv[1], argv[2]);
-          control->ReturnVal(API_ACK, indexDesc);
+          ReturnVal(API_ACK, indexDesc);
           return 1;
         }
 TAG*/
@@ -537,7 +570,7 @@ DeviseCommand_dteShowAttrNames::Run(int argc, char** argv)
 /*TAG
         {
           char* attrListing = dteShowAttrNames(argv[1], argv[2]);
-          control->ReturnVal(API_ACK, attrListing);
+          ReturnVal(API_ACK, attrListing);
           return 1;
         }
 TAG*/
@@ -552,7 +585,7 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 /*TAG
         {
           dteInsertCatalogEntry(argv[1], argv[2]);
-          control->ReturnVal(API_ACK, "");
+          ReturnVal(API_ACK, "");
     	 return 1;
         }
 TAG*/
@@ -568,11 +601,11 @@ DeviseCommand_dteCheckSQLViewEntry::Run(int argc, char** argv)
         {
     			string errmsg = dteCheckSQLViewEntry(argv[1], argv[2]);
     			if(errmsg.empty()){
-    				control->ReturnVal(API_ACK, "");
+    				ReturnVal(API_ACK, "");
     			}
     			else{
     				// this cast is OK
-    				control->ReturnVal(API_ACK, (char*) errmsg.c_str());
+    				ReturnVal(API_ACK, (char*) errmsg.c_str());
     			}
     			return 1;
     		}
@@ -588,7 +621,7 @@ DeviseCommand_dteCreateIndex::Run(int argc, char** argv)
 /*TAG
         {
               dteCreateIndex(argv[1], argv[2], argv[3], argv[4], argv[5]);
-              control->ReturnVal(API_ACK, "");
+              ReturnVal(API_ACK, "");
               return 1;
          }
 TAG*/
@@ -623,7 +656,7 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     
     		View::DoneViewIterator(index);
     
-    		control->ReturnVal(API_ACK, result);
+    		ReturnVal(API_ACK, result);
     		return 1;
     	}
     }
@@ -651,7 +684,7 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     
     				if (!view)
     				{
-    					control->ReturnVal(API_NAK, "Cannot find view");
+    					ReturnVal(API_NAK, "Cannot find view");
     					return -1;
     				}
     
@@ -661,7 +694,7 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     			}
     		}
     
-    		control->ReturnVal(API_ACK, result);
+    		ReturnVal(API_ACK, result);
     		return 1;
     	}
     }
@@ -675,7 +708,7 @@ DeviseCommand_changeParam::Run(int argc, char** argv)
     {
         {
         classDir->ChangeParams(argv[1], argc - 2, &argv[2]);
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
         return 1;
       }
     }
@@ -690,11 +723,11 @@ DeviseCommand_createInterp::Run(int argc, char** argv)
         MapInterpClassInfo *interp = control->GetInterpProto();
         ClassInfo *classInfo = interp->CreateWithParams(argc - 1, &argv[1]);
         if (!classInfo) {
-          control->ReturnVal(API_NAK, "Cannot create mapping");
+          ReturnVal(API_NAK, "Cannot create mapping");
           return -1;
         }
         ControlPanel::RegisterClass(classInfo, true);
-        control->ReturnVal(API_ACK, classInfo->ClassName());
+        ReturnVal(API_ACK, classInfo->ClassName());
         return 1;
       }
     }
@@ -723,9 +756,9 @@ DeviseCommand_create::Run(int argc, char** argv)
     #endif
         control->SetIdle();
         if (!name)
-          control->ReturnVal(API_ACK, "");
+          ReturnVal(API_ACK, "");
         else
-          control->ReturnVal(API_ACK, name);
+          ReturnVal(API_ACK, name);
         return 1;
       }
     }
@@ -738,11 +771,11 @@ DeviseCommand_getTDataName::Run(int argc, char** argv)
         {
         TData *tdata = (TData *)classDir->FindInstance(argv[1]);
         if (!tdata) {
-            control->ReturnVal(API_NAK, "Cannot find TData");
+            ReturnVal(API_NAK, "Cannot find TData");
             return -1;
         }
         char *tname = tdata->GetName();
-        control->ReturnVal(API_ACK, tname); 
+        ReturnVal(API_ACK, tname); 
         return 1;
       }
     }
@@ -769,7 +802,7 @@ DeviseCommand_showkgraph::Run(int argc, char** argv)
         for(int i = 0; i < nview; i++) {
           vlist[i] = (ViewGraph *)classDir->FindInstance(argv[4 + i]);
           if (!vlist[i]) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	delete vlist;
     	return -1;
           }
@@ -777,16 +810,16 @@ DeviseCommand_showkgraph::Run(int argc, char** argv)
         vkg->Init();
         /* Add these to the ViewKGraph class and display */
         if (vkg->AddViews(vlist, nview, argv[3]) == false) {
-          control->ReturnVal(API_NAK, "Could not add views to Kiviat graph");
+          ReturnVal(API_NAK, "Could not add views to Kiviat graph");
           delete vlist;
           return -1;
         }
         delete vlist;
         if (!vkg->Display(atoi(argv[2]))) {
-          control->ReturnVal(API_NAK, "Could not display Kiviat graph");
+          ReturnVal(API_NAK, "Could not display Kiviat graph");
           return -1;
         }
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
         return 1;
       }
     }
@@ -800,11 +833,11 @@ DeviseCommand_createMappingClass::Run(int argc, char** argv)
         MapInterpClassInfo *interp = control->GetInterpProto();
         ClassInfo *classInfo = interp->CreateWithParams(argc - 1, &argv[1]);
         if (!classInfo) {
-          control->ReturnVal(API_NAK, "Cannot create mapping class");
+          ReturnVal(API_NAK, "Cannot create mapping class");
           return -1;
         }
         ControlPanel::RegisterClass(classInfo, true);
-        control->ReturnVal(API_ACK, classInfo->ClassName());
+        ReturnVal(API_ACK, classInfo->ClassName());
         return 1;
       }
     }
@@ -816,7 +849,7 @@ DeviseCommand_setDefault::Run(int argc, char** argv)
     {
         {
         classDir->SetDefault(argv[1], argv[2], argc - 3, &argv[3]);
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
         return 1;
       }
     }
@@ -830,27 +863,27 @@ DeviseCommand_setHistogram::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-          control->ReturnVal(API_NAK, "Cannot find view");
+          ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
         double min = atof(argv[2]);
         double max = atof(argv[3]);
         int buckets = atoi(argv[4]);
         if( min >= max ) {
-          control->ReturnVal(API_NAK, "min >= max");
+          ReturnVal(API_NAK, "min >= max");
           return -1;
         }
         if( buckets > MAX_HISTOGRAM_BUCKETS ) {
           sprintf(result, "buckets > %d", MAX_HISTOGRAM_BUCKETS);
-          control->ReturnVal(API_NAK, result);
+          ReturnVal(API_NAK, result);
           return -1;
         }
         if( buckets < 1 ) {
-          control->ReturnVal(API_NAK, "buckets < 1");
+          ReturnVal(API_NAK, "buckets < 1");
           return -1;
         }
         view->SetHistogram(atof(argv[2]), atof(argv[3]), atoi(argv[4]));
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
         return 1;
       }
     }
@@ -863,12 +896,12 @@ DeviseCommand_getHistogram::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-          control->ReturnVal(API_NAK, "Cannot find view");
+          ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
         sprintf(result, "%g %g %d", view->GetHistogramMin(),
                 view->GetHistogramMax(), view->GetHistogramBuckets());
-        control->ReturnVal(API_ACK, result);
+        ReturnVal(API_ACK, result);
         return 1;
       }
     }
@@ -883,7 +916,7 @@ DeviseCommand_setBuckRefresh::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
         }
     #if defined(DEBUG) || 0
@@ -895,7 +928,7 @@ DeviseCommand_setBuckRefresh::Run(int argc, char** argv)
         view->Refresh();
     //    view->PrepareStatsBuffer(view->GetFirstMap());
         
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
         return 1;
       }
     }
@@ -910,14 +943,14 @@ DeviseCommand_setHistViewname::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-                control->ReturnVal(API_NAK, "Cannot find view");
+                ReturnVal(API_NAK, "Cannot find view");
                 return -1;
         }
         char *viewName = new char[strlen(argv[2]) + 1];
         strcpy(viewName, argv[2]);
         view->setHistViewname(viewName);
     
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
         return 1;
       }
     }
@@ -930,13 +963,13 @@ DeviseCommand_getHistViewname::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-        	control->ReturnVal(API_NAK, "Cannot find view");
+        	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
         }
         char *name = NULL;
         name = view->getHistViewname();
     
-        control->ReturnVal(API_ACK, name);
+        ReturnVal(API_ACK, name);
         return 1;
       }
     }
@@ -949,7 +982,7 @@ DeviseCommand_checkGstat::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
         }
         if(view->IsGStatInMem()) {
@@ -959,7 +992,7 @@ DeviseCommand_checkGstat::Run(int argc, char** argv)
     	printf("GDataStat is NOT in memory\n");
             strcpy(result, "0");
         }
-        control->ReturnVal(API_ACK, result);
+        ReturnVal(API_ACK, result);
     
         return 1;
       }
@@ -973,13 +1006,13 @@ DeviseCommand_getSourceName::Run(int argc, char** argv)
         {
        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
         }
         TDataMap *map = view->GetFirstMap();
         TData *tdata = map->GetLogTData();
         char *sourceName = tdata->GetTableName();
-        control->ReturnVal(API_ACK, sourceName); 
+        ReturnVal(API_ACK, sourceName); 
     
         return 1;
       }
@@ -993,7 +1026,7 @@ DeviseCommand_isXDateType::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
         }
         if(view->IsXDateType()) {
@@ -1003,7 +1036,7 @@ DeviseCommand_isXDateType::Run(int argc, char** argv)
     	printf("X type is NOT date\n");
             strcpy(result, "0");
         }
-        control->ReturnVal(API_ACK, result);
+        ReturnVal(API_ACK, result);
     
         return 1;
       }
@@ -1017,7 +1050,7 @@ DeviseCommand_isYDateType::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
         }
         if(view->IsYDateType()) {
@@ -1027,7 +1060,7 @@ DeviseCommand_isYDateType::Run(int argc, char** argv)
     //	printf("Y type is NOT date\n");
             strcpy(result, "0");
         }
-        control->ReturnVal(API_ACK, result);
+        ReturnVal(API_ACK, result);
     
         return 1;
       }
@@ -1041,12 +1074,12 @@ DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
         {
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
     	return -1;
         }
         TDataMap *map = view->GetFirstMap();
         if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find Mapping");
+    	ReturnVal(API_NAK, "Cannot find Mapping");
             return -1;
         }
         AttrInfo *attr = NULL;
@@ -1060,7 +1093,7 @@ DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
             attr = map->MapGAttr2TAttr(MappingCmd_Color);
         } else {
           	fprintf(stderr, "Not implemented yet\n");
-          	control->ReturnVal(API_NAK, "GAttr type not implemented");
+          	ReturnVal(API_NAK, "GAttr type not implemented");
     	return -1;
         }
         if (attr) {
@@ -1068,7 +1101,7 @@ DeviseCommand_mapG2TAttr::Run(int argc, char** argv)
         } else {
           strcpy(result, "0");
         }
-        control->ReturnVal(API_ACK, result);
+        ReturnVal(API_ACK, result);
         return 1;
       }
     }
@@ -1082,12 +1115,12 @@ DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
         char *gname = NULL;
         ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
         if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
         }
         TDataMap *map = view->GetFirstMap();
         if (!map) {
-            control->ReturnVal(API_NAK, "Cannot find Mapping");
+            ReturnVal(API_NAK, "Cannot find Mapping");
             return -1;
         }
         printf("argv[2] is %s\n", argv[2]);
@@ -1097,7 +1130,7 @@ DeviseCommand_mapT2GAttr::Run(int argc, char** argv)
         } else {
     	strcpy(result, gname);
         }
-        control->ReturnVal(API_ACK, result);
+        ReturnVal(API_ACK, result);
         delete gname; 
         return 1;
       }
@@ -1112,13 +1145,13 @@ DeviseCommand_setViewLensParams::Run(int argc, char** argv)
          // name mode views 
          ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
          if (!lens) {
-           control->ReturnVal(API_NAK, "Cannot find lens");
+           ReturnVal(API_NAK, "Cannot find lens");
            return -1;
          }
          lens->SetMode(argv[2]);
          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[3]);
          if (!link) {
-            control->ReturnVal(API_NAK,"Cannot find link");
+            ReturnVal(API_NAK,"Cannot find link");
             return -1;
          }
          lens->SetLink(link);
@@ -1130,7 +1163,7 @@ DeviseCommand_setViewLensParams::Run(int argc, char** argv)
          for (int j = 4;  j < argc ; j++) {
              ViewGraph *v = (ViewGraph *)classDir->FindInstance(argv[j]);
              if (!v) {
-                control->ReturnVal(API_NAK, "Cannot find view");
+                ReturnVal(API_NAK, "Cannot find view");
                 return -1;
              }
              printf("Inserting view %s\n", v->GetName());
@@ -1144,7 +1177,7 @@ DeviseCommand_setViewLensParams::Run(int argc, char** argv)
          // delete extra views 
          index = lens->DeleteViewListTail(index);
          lens->DoneViewLensIterator(index);
-         control->ReturnVal(API_ACK, "done");
+         ReturnVal(API_ACK, "done");
          return 1;
       }
     }
@@ -1177,7 +1210,7 @@ DeviseCommand_date::Run(int argc, char** argv)
     {
         {
           time_t tm = time((time_t *)0);
-          control->ReturnVal(API_ACK, DateString(tm));
+          ReturnVal(API_ACK, DateString(tm));
           return 1;
         }
     }
@@ -1188,7 +1221,7 @@ DeviseCommand_printDispatcher::Run(int argc, char** argv)
 {
     {
         {
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1200,7 +1233,7 @@ DeviseCommand_catFiles::Run(int argc, char** argv)
     {
         {
           CatFiles(numArgs, args);
-          control->ReturnVal(numArgs, args);
+          ReturnVal(numArgs, args);
           return 1;
         }
     }
@@ -1211,7 +1244,7 @@ DeviseCommand_exit::Run(int argc, char** argv)
 {
     {
         {
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           control->RestartSession();
           return 1;
         }
@@ -1224,7 +1257,7 @@ DeviseCommand_clearAll::Run(int argc, char** argv)
     {
         {
           control->DestroySessionData();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1236,7 +1269,7 @@ DeviseCommand_sync::Run(int argc, char** argv)
     {
         {
           control->SetSyncNotify();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1247,7 +1280,7 @@ DeviseCommand_version::Run(int argc, char** argv)
 {
     {
         {
-          control->ReturnVal(API_ACK, (char *) Version::Get());
+          ReturnVal(API_ACK, (char *) Version::Get());
           return 1;
         }
     }
@@ -1258,7 +1291,7 @@ DeviseCommand_copyright::Run(int argc, char** argv)
 {
     {
         {
-          control->ReturnVal(API_ACK, (char *) Version::GetCopyright());
+          ReturnVal(API_ACK, (char *) Version::GetCopyright());
           return 1;
         }
     }
@@ -1269,7 +1302,7 @@ DeviseCommand_compDate::Run(int argc, char** argv)
 {
     {
         {
-          control->ReturnVal(API_ACK, (char *) CompDate::Get());
+          ReturnVal(API_ACK, (char *) CompDate::Get());
           return 1;
         }
     }
@@ -1284,7 +1317,7 @@ DeviseCommand_new_leaks::Run(int argc, char** argv)
           if (purify_is_running()) {
     	purify_new_leaks();
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1300,7 +1333,7 @@ DeviseCommand_new_inuse::Run(int argc, char** argv)
           if (purify_is_running()) {
     	purify_new_inuse();
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1314,7 +1347,7 @@ DeviseCommand_getWinCount::Run(int argc, char** argv)
         {
           char buf[100];
           sprintf(buf, "%d", DevWindow::GetCount());
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -1328,7 +1361,7 @@ DeviseCommand_getStringCount::Run(int argc, char** argv)
           // Returns: <stringCount>
           char buf[100];
           sprintf(buf, "%d", StringStorage::GetCount());
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -1340,6 +1373,7 @@ DeviseCommand_waitForQueries::Run(int argc, char** argv)
     // Arguments: none
     // Returns: "done"
     Dispatcher::Current()->WaitForQueries();
+    ReturnVal(API_ACK, "done");
     return true;
 }
 int
@@ -1355,14 +1389,14 @@ DeviseCommand_serverExit::Run(int argc, char** argv)
     	  // Only allow this if the client that requested the server to exit
     	  // is the only client.
     	  if (control->NumClients() == 1) {
-            control->ReturnVal(API_ACK, "done");
+            ReturnVal(API_ACK, "done");
             printf("Server exiting on command from client\n");
             ControlPanel::Instance()->DoQuit();
     		return 1; // We never get to here.
           } else {
     		char *result = "Server won't exit with more than one client connected.";
     		printf("%s\n", result);
-            control->ReturnVal(API_NAK, result);
+            ReturnVal(API_NAK, result);
     		return -1;
     	  }
         }
@@ -1376,11 +1410,11 @@ DeviseCommand_abortQuery::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           view->AbortQuery();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1404,10 +1438,10 @@ DeviseCommand_importFileType::Run_2(int argc, char** argv)
         {
           char *name = ParseCat(argv[1]);
           if (!name) {
-    	control->ReturnVal(API_NAK, "error parsing UNIXFILE schema");
+    	ReturnVal(API_NAK, "error parsing UNIXFILE schema");
     	return -1;
           }
-          control->ReturnVal(API_ACK, name);
+          ReturnVal(API_ACK, name);
           return 1;
         }
     }
@@ -1421,10 +1455,10 @@ DeviseCommand_importFileType::Run_4(int argc, char** argv)
           char *name = ParseCat(argv[1],argv[2],argv[3]);
           if (!name) {
     	strcpy(result , "");
-    	control->ReturnVal(API_NAK, result);
+    	ReturnVal(API_NAK, result);
     	return -1;
           }
-          control->ReturnVal(API_ACK, name);
+          ReturnVal(API_ACK, name);
           return 1;
         }
     }
@@ -1437,11 +1471,11 @@ DeviseCommand_resetLinkMaster::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           link->SetMasterView(0);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1454,7 +1488,7 @@ DeviseCommand_get3DLocation::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Camera c = view->GetCamera();
@@ -1463,7 +1497,7 @@ DeviseCommand_get3DLocation::Run(int argc, char** argv)
             c.min_x, c.max_x, c.min_y, c.max_y, c.near, c.far,
             c.pan_right, c.pan_up);
 
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1476,11 +1510,11 @@ DeviseCommand_getLinkMaster::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           ViewGraph *view = link->GetMasterView();
-          control->ReturnVal(API_ACK, (view ? view->GetName() : ""));
+          ReturnVal(API_ACK, (view ? view->GetName() : ""));
           return 1;
         }
     }
@@ -1493,10 +1527,10 @@ DeviseCommand_getLinkType::Run(int argc, char** argv)
         {
           RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
-          control->ReturnVal(API_ACK, (link->GetLinkType() == Positive)? "1" : "0");
+          ReturnVal(API_ACK, (link->GetLinkType() == Positive)? "1" : "0");
           return 1;
         }
     }
@@ -1509,7 +1543,7 @@ DeviseCommand_setBatchMode::Run(int argc, char** argv)
         {
           Boolean batch = (atoi(argv[1]) ? true : false);
           control->SetBatchMode(batch);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1522,11 +1556,11 @@ DeviseCommand_invalidateTData::Run(int argc, char** argv)
         {
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	control->ReturnVal(API_NAK, "Cannot find TData");
+    	ReturnVal(API_NAK, "Cannot find TData");
     	return -1;
           }
           tdata->InvalidateTData();
-          control->ReturnVal(API_ACK, "Done");
+          ReturnVal(API_ACK, "Done");
           return 1;
         }
     }
@@ -1539,11 +1573,11 @@ DeviseCommand_invalidatePixmap::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           vg->InvalidatePixmaps();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1559,7 +1593,7 @@ DeviseCommand_readLine::Run(int argc, char** argv)
           int len = strlen(result);
           if (len > 0 && result[len - 1] == '\n')
     	result[len - 1] = '\0';
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1572,7 +1606,7 @@ DeviseCommand_close::Run(int argc, char** argv)
         {
           FILE *file = (FILE *)atol(argv[1]);
           fclose(file);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1585,11 +1619,11 @@ DeviseCommand_isMapped::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           sprintf(result, "%d", (vg->Mapped() ? 1 : 0 ));
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1602,7 +1636,7 @@ DeviseCommand_getLabel::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Boolean occupyTop;
@@ -1611,7 +1645,7 @@ DeviseCommand_getLabel::Run(int argc, char** argv)
           vg->GetLabelParam(occupyTop, extent, name);
           sprintf(result, "%d %d {%s}", (occupyTop ? 1 : 0), extent,
     	      (name ? name : ""));
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1624,10 +1658,10 @@ DeviseCommand_tdataFileName::Run(int argc, char** argv)
         {
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	control->ReturnVal(API_NAK, "Cannot find tdata");
+    	ReturnVal(API_NAK, "Cannot find tdata");
     	return -1;
           }
-          control->ReturnVal(API_ACK, tdata->GetName());
+          ReturnVal(API_ACK, tdata->GetName());
           return 1;
         }
     }
@@ -1640,14 +1674,14 @@ DeviseCommand_getViewWin::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewWin *viewWin = view->GetParent();
           if (!viewWin)
-    	control->ReturnVal(API_ACK, "");
+    	ReturnVal(API_ACK, "");
           else
-    	control->ReturnVal(API_ACK, viewWin->GetName());
+    	ReturnVal(API_ACK, viewWin->GetName());
           return 1;
         }
     }
@@ -1660,12 +1694,12 @@ DeviseCommand_clearViewHistory::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find cursor");
     	return -1;
           }
           FilterQueue *queue = view->GetHistory();
           queue->Clear();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1678,7 +1712,7 @@ DeviseCommand_getCursorViews::Run(int argc, char** argv)
         {
           DeviseCursor *cursor = (DeviseCursor *)classDir->FindInstance(argv[1]);
           if (!cursor) {
-    	control->ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find cursor");
     	return -1;
           }
           View *src = cursor->GetSource();
@@ -1692,7 +1726,7 @@ DeviseCommand_getCursorViews::Run(int argc, char** argv)
     	name[1] = dst->GetName();
           else
     	name[1] = "";
-          control->ReturnVal(2, name);
+          ReturnVal(2, name);
           return 1;
         } 
     }
@@ -1705,11 +1739,11 @@ DeviseCommand_getMappingTData::Run(int argc, char** argv)
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           TData *tdata = map->GetLogTData();
-          control->ReturnVal(API_ACK, classDir->FindInstanceName(tdata));
+          ReturnVal(API_ACK, classDir->FindInstanceName(tdata));
           return 1;
         }
     }
@@ -1721,7 +1755,7 @@ DeviseCommand_destroy::Run(int argc, char** argv)
     {
         {
           classDir->DestroyInstance(argv[1]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -1735,7 +1769,7 @@ DeviseCommand_parseDateFloat::Run(int argc, char** argv)
           double val;
           (void)ParseFloatDate(argv[1], val);
           sprintf(result, "%f", val);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1748,14 +1782,14 @@ DeviseCommand_isInterpretedGData::Run(int argc, char** argv)
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           if (map->IsInterpreted())
     	strcpy(result, "1");
           else
     	strcpy(result, "0");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1770,7 +1804,7 @@ DeviseCommand_isInterpreted::Run(int argc, char** argv)
           strcpy(result, "0");
           if (isInterp && *isInterp)
     	strcpy(result, "1");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1783,11 +1817,11 @@ DeviseCommand_getPixelWidth::Run(int argc, char** argv)
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           sprintf(result, "%d", map->GetPixelWidth());
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1799,7 +1833,7 @@ DeviseCommand_getTopGroups::Run(int argc, char** argv)
     {
         {
           control->GetGroupDir()->top_level_groups(result, argv[1]);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1812,14 +1846,14 @@ DeviseCommand_getWindowLayout::Run(int argc, char** argv)
         {
           ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
           if (!layout) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           int v, h;
           Boolean stacked;
           layout->GetPreferredLayout(v, h, stacked);
           sprintf(result, "%d %d %d", v, h, (stacked ? 1 : 0));
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1833,12 +1867,12 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
         	
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	control->ReturnVal(API_NAK, "Cannot find Tdata");
+    	ReturnVal(API_NAK, "Cannot find Tdata");
     	return -1;
           }
           AttrList *attrList = tdata->GetAttrList();
           if (!attrList) {
-    	control->ReturnVal(API_NAK, "Null attribute list");
+    	ReturnVal(API_NAK, "Null attribute list");
     	return -1;
           }
           
@@ -1908,8 +1942,8 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
     //	strcpy(args[i + 1], attrBuf);
     	strcpy(args[i], attrBuf);
           }
-    //    control->ReturnVal(numAttrs + 1, args) ;
-          control->ReturnVal(numAttrs, args) ;
+    //    ReturnVal(numAttrs + 1, args) ;
+          ReturnVal(numAttrs, args) ;
     	 delete [] args;
           return 1;
         }
@@ -1923,7 +1957,7 @@ DeviseCommand_getAction::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Action *action = view->GetAction();
@@ -1932,7 +1966,7 @@ DeviseCommand_getAction::Run(int argc, char** argv)
     	strcpy(result , "");
           else
     	strcpy(result,action->GetName());
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1945,11 +1979,11 @@ DeviseCommand_getLinkFlag::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           sprintf(result, "%d", link->GetFlag());
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1965,7 +1999,7 @@ DeviseCommand_changeableParam::Run(int argc, char** argv)
     	strcpy(result, "1");
           else
     	strcpy(result, "0");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -1977,7 +2011,7 @@ DeviseCommand_getInstParam::Run(int argc, char** argv)
     {
         {
           classDir->GetParams(argv[1], numArgs, args);
-          control->ReturnVal(numArgs, args);
+          ReturnVal(numArgs, args);
           return 1;
         }
     }
@@ -1994,7 +2028,7 @@ DeviseCommand_tcheckpoint::Run(int argc, char** argv)
           if (tdata)
     	tdata->Checkpoint();
           control->SetIdle();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2019,7 +2053,7 @@ DeviseCommand_get::Run_2(int argc, char** argv)
     {
         {
           classDir->ClassNames(argv[1], numArgs, args);
-          control->ReturnVal(numArgs, args);
+          ReturnVal(numArgs, args);
           return 1;
         }
     }
@@ -2031,7 +2065,7 @@ DeviseCommand_get::Run_3(int argc, char** argv)
     {
         {
           classDir->InstanceNames(argv[1], argv[2], numArgs, args);
-          control->ReturnVal(numArgs, args);
+          ReturnVal(numArgs, args);
           return 1;
         }
     }
@@ -2055,7 +2089,7 @@ DeviseCommand_changeMode::Run(int argc, char** argv)
 			control->SetMode(ControlPanel::LayoutMode);
 			ControlPanel::Instance()->ReportModeChange(control->GetMode());
 	  }
-	  control->ReturnVal(API_ACK, "done");
+	  ReturnVal(API_ACK, "done");
   	  return 1;
     }
     return true;
@@ -2070,7 +2104,7 @@ DeviseCommand_exists::Run(int argc, char** argv)
     	strcpy(result, "0");
           else
     	strcpy(result, "1");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2083,15 +2117,15 @@ DeviseCommand_removeView::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           if (!view->Mapped()) {
-    	control->ReturnVal(API_NAK, "View not in any window");
+    	ReturnVal(API_NAK, "View not in any window");
     	return -1;
           }
           view->DeleteFromParent();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2104,7 +2138,7 @@ DeviseCommand_getViewMappings::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           int index = view->InitMappingIterator();
@@ -2115,7 +2149,7 @@ DeviseCommand_getViewMappings::Run(int argc, char** argv)
     	strcat(result, "} ");
           }
           view->DoneMappingIterator(index);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2128,11 +2162,11 @@ DeviseCommand_refreshView::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           view->Refresh();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2145,7 +2179,7 @@ DeviseCommand_getWinGeometry::Run(int argc, char** argv)
         {
           ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
           if (!win) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           int x, y;
@@ -2154,7 +2188,7 @@ DeviseCommand_getWinGeometry::Run(int argc, char** argv)
           win->Geometry(x, y, w, h);
           win->AbsoluteOrigin(x0,y0);
           sprintf (result, "{ %d %d %d %d %u %u }" , x0, y0, x, y, w, h);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;	      
         }
     }
@@ -2167,7 +2201,7 @@ DeviseCommand_getWinViews::Run(int argc, char** argv)
         {
           ViewWin *win = (ViewWin*)classDir->FindInstance(argv[1]);
           if (!win) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           int index;
@@ -2178,7 +2212,7 @@ DeviseCommand_getWinViews::Run(int argc, char** argv)
     	strcat(result, "} ");
           }
           win->DoneIterator(index);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
     
           return 1;
         }
@@ -2192,7 +2226,7 @@ DeviseCommand_getLinkViews::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           int index;
@@ -2203,7 +2237,7 @@ DeviseCommand_getLinkViews::Run(int argc, char** argv)
     	strcat(result, "} ");
           }
           link->DoneIterator(index);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2216,13 +2250,13 @@ DeviseCommand_getCurVisualFilter::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           VisualFilter *filter = view->GetVisualFilter();
           sprintf(result, "%.2f %.2f %.2f %.2f", filter->xLow, filter->yLow,
     	      filter->xHigh, filter->yHigh);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2235,7 +2269,7 @@ DeviseCommand_getVisualFilters::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           FilterQueue *queue ;
@@ -2265,7 +2299,7 @@ DeviseCommand_getVisualFilters::Run(int argc, char** argv)
     		xHighBuf, yHighBuf, filter.marked);
     	strcat(result, buf);
           }
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2278,11 +2312,11 @@ DeviseCommand_getViewStatistics::Run(int argc, char** argv)
         {
           ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Return status of statistics display */
-          control->ReturnVal(API_ACK, vg->GetDisplayStats());
+          ReturnVal(API_ACK, vg->GetDisplayStats());
           return 1;
         }
     }
@@ -2295,7 +2329,7 @@ DeviseCommand_getAllStats::Run(int argc, char** argv)
         {
           ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!vg) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
           }
           /* Return allStats */
@@ -2315,7 +2349,7 @@ DeviseCommand_getAllStats::Run(int argc, char** argv)
     #if defined(DEBUG) || 0
           printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
     #endif
-          control->ReturnVal(4, buff);
+          ReturnVal(4, buff);
           for (i = 0; i < 4; i++) {
     	  delete buff[i];
           }
@@ -2350,7 +2384,7 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
     	  type = GSTATY_TYPE;
     	  viewName = &argv[1][8];
             } else {
-    	  control->ReturnVal(API_NAK, "Invalid stat type");
+    	  ReturnVal(API_NAK, "Invalid stat type");
     	  return -1;
             }
             while( *viewName == ' ' ) {
@@ -2358,7 +2392,7 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
     	}
             ViewGraph *vg = (ViewGraph *)classDir->FindInstance(viewName);
             if(!vg) {
-    	  control->ReturnVal(API_NAK, "Cannot find view");
+    	  ReturnVal(API_NAK, "Cannot find view");
     	  return -1;
             }
     
@@ -2383,7 +2417,7 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
              if (!(buffObj ->Open("r") == StatusOk))
              {
     	     reportError("Cannot open statBuffer object for read", devNoSyserr);
-    	     control->ReturnVal(API_NAK, "statBuffer object");
+    	     ReturnVal(API_NAK, "statBuffer object");
     	     return -1;
               }
               int k;
@@ -2400,7 +2434,7 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
     	      strcpy(args[k], statBuff);
     	      k++;
                }
-               control->ReturnVal(k, args);
+               ReturnVal(k, args);
                for(int j = 0; j < k; j++)
     	       delete args[j];
                delete [] args;
@@ -2416,12 +2450,12 @@ DeviseCommand_getViewDimensions::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Return number of dimensions in view */
           sprintf(result, "%d", vg->GetNumDimensions());
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2434,12 +2468,12 @@ DeviseCommand_getViewSolid3D::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Return setting of solid/wireframe 3D objects */
           sprintf(result, "%d", vg->GetSolid3D());
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2452,12 +2486,12 @@ DeviseCommand_getViewXYZoom::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Return setting of XY or X/Y zoom */
           sprintf(result, "%d", (vg->IsXYZoom() ? 1 : 0));
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2470,12 +2504,12 @@ DeviseCommand_getViewDisplayDataValues::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Return setting of data value display */
           sprintf(result, "%d", (vg->GetDisplayDataValues() ? 1 : 0));
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2488,12 +2522,12 @@ DeviseCommand_getViewPileMode::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Return pile mode flag */
           sprintf(result, "%d", (vg->IsInPileMode() ? 1 : 0));
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2506,11 +2540,11 @@ DeviseCommand_raiseView::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           view->Raise();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2523,11 +2557,11 @@ DeviseCommand_lowerView::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           view->Lower();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2538,7 +2572,7 @@ DeviseCommand_getFileHeader::Run(int argc, char** argv)
 {
     {
         {
-          control->ReturnVal(API_ACK, DevFileHeader::Get(argv[1]));
+          ReturnVal(API_ACK, DevFileHeader::Get(argv[1]));
           return 1;
         }
     }
@@ -2551,7 +2585,7 @@ DeviseCommand_getViewLensParams::Run(int argc, char** argv)
         {
           ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
           if (!lens) {
-           control->ReturnVal(API_NAK, "Cannot find lens");
+           ReturnVal(API_NAK, "Cannot find lens");
            return -1;
           }
           /* Get mode */
@@ -2566,7 +2600,7 @@ DeviseCommand_getViewLensParams::Run(int argc, char** argv)
           }
           lens->DoneViewLensIterator(index);
           strcat(result, " } ");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2579,7 +2613,7 @@ DeviseCommand_winGetPrint::Run(int argc, char** argv)
         {
           ViewWin *win = (ViewWin *)classDir->FindInstance(argv[1]);
           if (!win) {
-            control->ReturnVal(API_NAK, "Cannot find window");
+            ReturnVal(API_NAK, "Cannot find window");
             return -1;
           }
           Boolean exclude, pixmap;
@@ -2587,7 +2621,7 @@ DeviseCommand_winGetPrint::Run(int argc, char** argv)
           pixmap = win->GetPrintPixmap();
           char buf[100];
           sprintf(buf, "%d %d", exclude, pixmap);
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -2606,7 +2640,7 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewHomeInfo info;
@@ -2614,7 +2648,7 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
           char buf[100];
           sprintf(buf, "%d %f %f %f %f %f %f", (int) info.mode, info.autoXMargin,
     	info.autoYMargin, info.manXLo, info.manYLo, info.manXHi, info.manYHi);
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -2632,14 +2666,14 @@ DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewPanInfo info;
           view->GetHorPanInfo(info);
           char buf[100];
           sprintf(buf, "%d %f %f", (int) info.mode, info.relPan, info.absPan);
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -2657,7 +2691,7 @@ DeviseCommand_getCursorGrid::Run(int argc, char** argv)
     #endif
           DeviseCursor *cursor = (DeviseCursor *) classDir->FindInstance(argv[1]);
           if (!cursor) {
-    	control->ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find cursor");
     	return -1;
           }
           Boolean useGrid;
@@ -2665,7 +2699,7 @@ DeviseCommand_getCursorGrid::Run(int argc, char** argv)
           cursor->GetGrid(useGrid, gridX, gridY);
           char buf[100];
           sprintf(buf, "%d %f %f", useGrid, gridX, gridY);
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -2689,14 +2723,14 @@ IMPLEMENT_COMMAND_BEGIN(writeDesc)
 		}
 
 		if (SessionDesc::Write(argv[1], physical).IsComplete()) {
-			control->ReturnVal(API_ACK, "done");
+			ReturnVal(API_ACK, "done");
 			return 1;
 		} else {
-			control->ReturnVal(API_NAK, "Error saving session description");
+			ReturnVal(API_NAK, "Error saving session description");
 			return -1;
 		}
 	} else {
-		control->ReturnVal(API_NAK,
+		ReturnVal(API_NAK,
 		  "Wrong number of arguments for DEVise writeDesc");
 		return -1;
 	}
@@ -2712,10 +2746,10 @@ DeviseCommand_saveStringSpace::Run(int argc, char** argv)
           printf("saveStringSpace <%s>\n", argv[1]);
     #endif
           if (StringStorage::Save(argv[1]) != 0) {
-            control->ReturnVal(API_NAK, "can't save string space");
+            ReturnVal(API_NAK, "can't save string space");
             return -1;
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2731,15 +2765,15 @@ DeviseCommand_loadStringSpace::Run(int argc, char** argv)
           printf("loadStringSpace <%s>\n", argv[1]);
     #endif
           if (StringStorage::Clear() != 0) {
-            control->ReturnVal(API_NAK, "can't clear string space");
+            ReturnVal(API_NAK, "can't clear string space");
             return -1;
           }
           if (StringStorage::Load(argv[1]) != 0) {
-            control->ReturnVal(API_NAK, "can't load string space");
+            ReturnVal(API_NAK, "can't load string space");
             return -1;
           }
           View::RefreshAll();
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2756,7 +2790,7 @@ DeviseCommand_dumpLinkCursor::Run(int argc, char** argv)
     #endif
           FILE *fp = fopen(argv[1], "w");
           if (fp == NULL) {
-            control->ReturnVal(API_NAK, "can't dump link/cursor info");
+            ReturnVal(API_NAK, "can't dump link/cursor info");
             return -1;
           }
           char *header = DevFileHeader::Get(FILE_TYPE_LINKDESC);
@@ -2764,7 +2798,7 @@ DeviseCommand_dumpLinkCursor::Run(int argc, char** argv)
           DevLink::Dump(fp);
           DevCursor::Dump(fp);
           (void) fclose(fp);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2780,10 +2814,10 @@ DeviseCommand_openSession::Run(int argc, char** argv)
           printf("openSession <%s>\n", argv[1]);
     #endif
           if (!Session::Open(argv[1]).IsComplete()) {
-    	control->ReturnVal(API_NAK, "Unable to open session file");
+    	ReturnVal(API_NAK, "Unable to open session file");
     	return -1;
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2801,12 +2835,12 @@ DeviseCommand_createTData::Run(int argc, char** argv)
 		  TData *tdata = (TData *)classDir->FindInstance(argv[1]);
 		  if (!tdata) {
           	if (!Session::CreateTData(argv[1]).IsComplete()) {
-           	 	control->ReturnVal(API_NAK, "Unable to create tdata");
+           	 	ReturnVal(API_NAK, "Unable to create tdata");
             	return -1;
           	}
 		  }
           //TEMP -- may need to return something different here
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2825,7 +2859,7 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Boolean drawToScreen = view->GetDrawToScreen();
@@ -2837,7 +2871,7 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
           char buf[1024];
           sprintf(buf, "%d %d %d \"%s\" %d \"%c\"", drawToScreen, sendToSocket,
     	params.portNum, params.file, params.sendText, params.separator);
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -2858,7 +2892,7 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
           int fd = control->getFd();
           if (fd < 0) {
             reportErrSys("Cannot open data channel");
-            control->ReturnVal(API_NAK, "Invalid socket to write");
+            ReturnVal(API_NAK, "Invalid socket to write");
             return -1;
           }
     
@@ -2866,13 +2900,13 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
           int numBytes = strlen(testStr) + 1;
           if (write(fd, testStr, numBytes) != numBytes) {
             reportErrSys("write error");
-            control->ReturnVal(API_NAK, "write error");
+            ReturnVal(API_NAK, "write error");
             (void) close(fd);
             return -1;
           }
     
           close(fd);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2890,12 +2924,12 @@ DeviseCommand_viewGetAlign::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
           }
           char buf[1024];
           sprintf(buf, "%d", view->GetAlign());
-          control->ReturnVal(API_ACK, buf);
+          ReturnVal(API_ACK, buf);
           return 1;
         }
     }
@@ -2908,16 +2942,16 @@ DeviseCommand_setLinkMaster::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           link->SetMasterView(view);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2930,7 +2964,7 @@ DeviseCommand_setLinkType::Run(int argc, char** argv)
         {
           RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           if(atoi(argv[2]) == 0) {
@@ -2950,7 +2984,7 @@ DeviseCommand_setScreenSize::Run(int argc, char** argv)
         {
           DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = atoi(argv[1]);
           DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() = atoi(argv[2]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2964,7 +2998,7 @@ DeviseCommand_writeLine::Run(int argc, char** argv)
           FILE *file = (FILE *)atol(argv[2]);
           fputs(argv[1],file);
           fputs("\n",file);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -2977,11 +3011,11 @@ DeviseCommand_open::Run(int argc, char** argv)
         {
           FILE *file = fopen(argv[1],argv[2]);
           if (!file) {
-    	control->ReturnVal(API_NAK, "Cannot open file");
+    	ReturnVal(API_NAK, "Cannot open file");
     	return -1;
           }
           sprintf(result, "%ld", (long)file);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -2994,12 +3028,12 @@ DeviseCommand_setViewStatistics::Run(int argc, char** argv)
         {
           ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Turn on/off display of statistics */
           vg->SetDisplayStats(argv[2]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3012,12 +3046,12 @@ DeviseCommand_setViewDimensions::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Turn on/off display of statistics */
           vg->SetNumDimensions(atoi(argv[2]));
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3030,12 +3064,12 @@ DeviseCommand_setViewSolid3D::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Set solid or wireframe 3D objects */
           vg->SetSolid3D(atoi(argv[2]));
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3048,12 +3082,12 @@ DeviseCommand_setViewXYZoom::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Set XY or X/Y zoom */
           vg->SetXYZoom(atoi(argv[2]) ? true : false);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3066,12 +3100,12 @@ DeviseCommand_setViewDisplayDataValues::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Set data value display on/off */
           vg->SetDisplayDataValues(atoi(argv[2]) ? true : false);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3084,12 +3118,12 @@ DeviseCommand_setViewPileMode::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           /* Set pile mode flag */
           vg->SetPileMode(atoi(argv[2]) ? true : false);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3102,12 +3136,12 @@ DeviseCommand_savePixmap::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           FILE *file = (FILE *)atol(argv[2]);
           vg->SavePixmaps(file);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3120,12 +3154,12 @@ DeviseCommand_loadPixmap::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           FILE *file = (FILE *)atol(argv[2]);
           vg->LoadPixmaps(file);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3138,7 +3172,7 @@ DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Boolean stat, xAxis, yAxis;
@@ -3151,7 +3185,7 @@ DeviseCommand_getAxisDisplay::Run(int argc, char** argv)
     	strcpy(result , "1");
           else
     	strcpy(result , "0");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -3165,16 +3199,16 @@ DeviseCommand_replaceView::Run(int argc, char** argv)
           View *view1 = (View *)classDir->FindInstance(argv[1]);
           View *view2 = (View *)classDir->FindInstance(argv[2]);
           if (!view1 || !view2) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewWin *win = view1->GetParent();
           if (!win) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           win->Replace(view1, view2);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3188,16 +3222,16 @@ DeviseCommand_setCursorSrc::Run(int argc, char** argv)
           DeviseCursor *cursor = (DeviseCursor *)
     	classDir->FindInstance(argv[1]);
           if (!cursor) {
-    	control->ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find cursor");
     	return -1;
           }
           View *view = (View *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           cursor->SetSource(view);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3211,16 +3245,16 @@ DeviseCommand_setCursorDst::Run(int argc, char** argv)
           DeviseCursor *cursor = (DeviseCursor *)
     	classDir->FindInstance(argv[1]);
           if (!cursor) {
-    	control->ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find cursor");
     	return -1;
           }
           View *view = (View *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           cursor->SetDst(view);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         } 
     }
@@ -3233,13 +3267,13 @@ DeviseCommand_setPixelWidth::Run(int argc, char** argv)
         {
           TDataMap *map= (TDataMap *)classDir->FindInstance(argv[1]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           int width = atoi(argv[2]);
           if (width > 0 )
     	map->SetPixelWidth(width);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3252,7 +3286,7 @@ DeviseCommand_getAxis::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           AxisLabel *label;
@@ -3262,9 +3296,9 @@ DeviseCommand_getAxis::Run(int argc, char** argv)
     	label = view->GetYAxisLabel();
           
           if (!label)
-    	control->ReturnVal(API_ACK, "");
+    	ReturnVal(API_ACK, "");
           else
-    	control->ReturnVal(API_ACK, label->GetName());
+    	ReturnVal(API_ACK, label->GetName());
           return 1;
         }
     }
@@ -3277,16 +3311,16 @@ DeviseCommand_setAction::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Action *action = (Action*)classDir->FindInstance(argv[2]);
           if (!action) {
-    	control->ReturnVal(API_NAK, "Cannot find action");
+    	ReturnVal(API_NAK, "Cannot find action");
     	return -1;
           }
           view->SetAction(action);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3299,12 +3333,12 @@ DeviseCommand_setLinkFlag::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           VisualFlag flag = atoi(argv[2]);
           link->SetFlag(flag);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3317,11 +3351,11 @@ DeviseCommand_highlightView::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           view->Highlight(atoi(argv[2]));
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3333,7 +3367,7 @@ DeviseCommand_getparam::Run(int argc, char** argv)
     {
         {
           classDir->GetParams(argv[1], argv[2], numArgs, args);
-          control->ReturnVal(numArgs, args);
+          ReturnVal(numArgs, args);
           return 1;
         }
     }
@@ -3346,16 +3380,16 @@ DeviseCommand_insertViewInLens::Run(int argc, char** argv)
         {
           ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
           if (!lens) {
-    	control->ReturnVal(API_NAK, "Cannot find lens");
+    	ReturnVal(API_NAK, "Cannot find lens");
     	return -1;
           }
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view){
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           lens->InsertView(view);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3379,16 +3413,16 @@ DeviseCommand_insertMapping::Run_3(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           TDataMap *map = (TDataMap *)classDir->FindInstance(argv[2]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           view->InsertMapping(map);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3401,16 +3435,16 @@ DeviseCommand_insertMapping::Run_4(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           TDataMap *map = (TDataMap *)classDir->FindInstance(argv[2]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           view->InsertMapping(map, argv[3]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3424,15 +3458,15 @@ DeviseCommand_getMappingLegend::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           TDataMap *map = (TDataMap *)classDir->FindInstance(argv[2]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
-          control->ReturnVal(API_ACK, view->GetMappingLegend(map));
+          ReturnVal(API_ACK, view->GetMappingLegend(map));
           return 1;
         }
     }
@@ -3445,17 +3479,17 @@ DeviseCommand_insertLink::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
     //      printf("insertLink %s %s\n", argv[1], argv[2]);
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           link->InsertView(view);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3468,19 +3502,19 @@ DeviseCommand_viewInLink::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           if (link->ViewInLink(view))
     	strcpy(result, "1");
           else
     	strcpy(result , "0");
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -3493,17 +3527,17 @@ DeviseCommand_unlinkView::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
+    	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
           printf("unLink %s %s\n", argv[1], argv[2]);
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           link->DeleteView(view);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3516,17 +3550,17 @@ DeviseCommand_insertWindow::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewWin *win = (ViewWin *)classDir->FindInstance(argv[2]);
           if (!win) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           view->DeleteFromParent();
           view->AppendToParent(win);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3539,16 +3573,16 @@ DeviseCommand_removeMapping::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           TDataMap *map = (TDataMap *)classDir->FindInstance(argv[2]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           view->RemoveMapping(map);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3565,7 +3599,7 @@ DeviseCommand_saveDisplayImage::Run(int argc, char** argv)
           else if (!strcmp(argv[1], "gif"))
     	format = GIF;
           DeviseDisplay::DefaultDisplay()->ExportImage(format, argv[2]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3582,7 +3616,7 @@ DeviseCommand_saveDisplayView::Run(int argc, char** argv)
           else if (!strcmp(argv[1], "gif"))
     	 format = GIF;
           DeviseDisplay::DefaultDisplay()->ExportView(format, argv[2]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3595,14 +3629,14 @@ DeviseCommand_saveTdata::Run(int argc, char** argv)
         {
           TData *tdata = (TData *)classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	control->ReturnVal(API_NAK, "Cannot find tdata");
+    	ReturnVal(API_NAK, "Cannot find tdata");
     	return -1;
           }
           if (!(tdata->Save(argv[2]) == StatusFailed)) {
-            control->ReturnVal(API_ACK, "done");
+            ReturnVal(API_ACK, "done");
             return 1;
           } else {
-    	control->ReturnVal(API_NAK, "Cannot save tdata");
+    	ReturnVal(API_NAK, "Cannot save tdata");
     	return -1;
           }
         }
@@ -3618,14 +3652,14 @@ DeviseCommand_getDisplayImage::Run(int argc, char** argv)
           // Returns: "done"
           int port = atoi(argv[1]);
           if (strcmp(argv[2], "gif")) {
-             control->ReturnVal(API_NAK, "Can only support GIF now.");
+             ReturnVal(API_NAK, "Can only support GIF now.");
              return -1;
           }
           control->OpenDataChannel(port);
           int fd = control->getFd();
           if (fd < 0) {
     	reportErrSys("Cannot open data channel");
-            control->ReturnVal(API_NAK, "Invalid socket to write");
+            ReturnVal(API_NAK, "Invalid socket to write");
             return -1;
           }
           FILE *fp = fdopen(control->getFd(), "wb");
@@ -3633,7 +3667,7 @@ DeviseCommand_getDisplayImage::Run(int argc, char** argv)
           DeviseDisplay::DefaultDisplay()->ExportGIF(fp, 0);
           Timer::StartTimer();
           close(control->getFd());
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3658,7 +3692,7 @@ DeviseCommand_getFont::Run(int argc, char** argv)
         {
           View *view = View::FindViewByName(argv[1]);
           if (view == NULL) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
           }
     
@@ -3669,7 +3703,7 @@ DeviseCommand_getFont::Run(int argc, char** argv)
           view->GetFont(argv[2], family, pointSize, bold, italic);
           sprintf(result, "%d %d %d %d", family, (int) pointSize, bold, italic);
     
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -3687,7 +3721,7 @@ DeviseCommand_viewSetAlign::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
           }
           int newAlign = atoi(argv[2]);
@@ -3695,7 +3729,7 @@ DeviseCommand_viewSetAlign::Run(int argc, char** argv)
             view->SetAlign(newAlign);
     	view->Refresh();
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3708,12 +3742,12 @@ DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
         {
           DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	    control->ReturnVal(API_NAK, "Cannot find link");
+    	    ReturnVal(API_NAK, "Cannot find link");
     	    return -1;
           } 
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
           }
 
@@ -3721,10 +3755,10 @@ DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
 	    RecordLink *recLink = (RecordLink *)link;
             sprintf(result, "%d",
 	      (recLink->CheckTData(view, atoi(argv[3]))) ?  1 : 0);
-            control->ReturnVal(API_ACK, result);
+            ReturnVal(API_ACK, result);
             return 1;
 	  } else {
-            control->ReturnVal(API_ACK, "1");
+            ReturnVal(API_ACK, "1");
             return 1;
 	  }
         }      
@@ -3738,16 +3772,16 @@ DeviseCommand_setMappingLegend::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           TDataMap *map = (TDataMap *)classDir->FindInstance(argv[2]);
           if (!map) {
-    	control->ReturnVal(API_NAK, "Cannot find mapping");
+    	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
           view->SetMappingLegend(map, argv[3]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3760,13 +3794,13 @@ DeviseCommand_markViewFilter::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           int index = atoi(argv[2]);
           Boolean mark = atoi(argv[3]);
           view->Mark(index, mark);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3779,19 +3813,19 @@ DeviseCommand_setAxis::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           AxisLabel *label = (AxisLabel *)classDir->FindInstance(argv[2]);
           if (!label) {
-    	control->ReturnVal(API_NAK, "Cannot find label");
+    	ReturnVal(API_NAK, "Cannot find label");
     	return -1;
           }
           if (!strcmp(argv[3], "x"))
     	view->SetXAxisLabel(label);
           else
     	view->SetYAxisLabel(label);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3806,12 +3840,12 @@ DeviseCommand_getWindowImage::Run(int argc, char** argv)
           // Returns: "done"
           int port = atoi(argv[1]);
           if (strcmp(argv[2], "gif")) {
-             control->ReturnVal(API_NAK, "Can only support GIF now.");
+             ReturnVal(API_NAK, "Can only support GIF now.");
              return -1;
           }
           ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[3]);
           if (!viewWin) {
-            control->ReturnVal(API_NAK, "Cannot find window");
+            ReturnVal(API_NAK, "Cannot find window");
             return -1;
           }
     
@@ -3819,7 +3853,7 @@ DeviseCommand_getWindowImage::Run(int argc, char** argv)
           int fd = control->getFd();
           if (fd < 0) {
     	reportErrSys("Cannot open data channel");
-            control->ReturnVal(API_NAK, "Invalid socket to write");
+            ReturnVal(API_NAK, "Invalid socket to write");
             return -1;
           }
           FILE *fp = fdopen(control->getFd(), "wb");
@@ -3827,7 +3861,7 @@ DeviseCommand_getWindowImage::Run(int argc, char** argv)
           viewWin->GetWindowRep()->ExportGIF(fp);
           Timer::StartTimer();
           close(control->getFd());
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3854,15 +3888,15 @@ DeviseCommand_swapView::Run(int argc, char** argv)
           View *view1 = (View *)classDir->FindInstance(argv[2]);
           View *view2 = (View *)classDir->FindInstance(argv[3]);
           if (!viewWin || !view1 || !view2) {
-    	control->ReturnVal(API_NAK, "Cannot find view or window");
+    	ReturnVal(API_NAK, "Cannot find view or window");
     	return -1;
           }
           if (view1->GetParent() != viewWin || view2->GetParent() != viewWin) {
-    	control->ReturnVal(API_NAK, "Views not in same window");
+    	ReturnVal(API_NAK, "Views not in same window");
     	return -1;
           }
           viewWin->SwapChildren(view1, view2);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3875,7 +3909,7 @@ DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
         {
           View *vg = (View *)classDir->FindInstance(argv[1]);
           if (!vg) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           Boolean stat = atoi(argv[3]);
@@ -3883,7 +3917,7 @@ DeviseCommand_setAxisDisplay::Run(int argc, char** argv)
     	vg->XAxisDisplayOnOff(stat);
           else
     	vg->YAxisDisplayOnOff(stat);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3895,7 +3929,7 @@ DeviseCommand_getCreateParam::Run(int argc, char** argv)
     {
         {
           classDir->CreateParams(argv[1], argv[2], argv[3], numArgs, args);
-          control->ReturnVal(numArgs, args);
+          ReturnVal(numArgs, args);
           return 1;
         }
     }
@@ -3907,7 +3941,7 @@ DeviseCommand_getItems::Run(int argc, char** argv)
     {
         {
           control->GetGroupDir()->get_items(result, argv[1], argv[2], argv[3]);
-          control->ReturnVal(API_ACK, result);
+          ReturnVal(API_ACK, result);
           return 1;
         }
     }
@@ -3932,11 +3966,11 @@ DeviseCommand_setWindowLayout::Run_4(int argc, char** argv)
         {
           ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
           if (!layout) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           layout->SetPreferredLayout(atoi(argv[2]), atoi(argv[3]));
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3949,12 +3983,12 @@ DeviseCommand_setWindowLayout::Run_5(int argc, char** argv)
         {
           ViewLayout *layout = (ViewLayout *)classDir->FindInstance(argv[1]);
           if (!layout) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           layout->SetPreferredLayout(atoi(argv[2]), atoi(argv[3]),
     				 (atoi(argv[4]) ? true : false));
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3972,12 +4006,12 @@ DeviseCommand_saveWindowImage::Run(int argc, char** argv)
     	format = GIF;
           ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[2]);
           if (!viewWin) {
-    	control->ReturnVal(API_NAK, "Cannot find window");
+    	ReturnVal(API_NAK, "Cannot find window");
     	return -1;
           }
           viewWin->ExportImage(format, argv[3]);
     
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -3988,7 +4022,7 @@ DeviseCommand_setViewOverrideColor::Run(int argc, char** argv)
 {
     {
         {
-    		control->ReturnVal(API_ACK, "done");
+    		ReturnVal(API_ACK, "done");
     		return 1;
         }
     }
@@ -4001,10 +4035,10 @@ DeviseCommand_parseSchema::Run(int argc, char** argv)
         {
           char *name = ParseSchema(argv[1], argv[2], argv[3]);
           if (!name) {
-    	control->ReturnVal(API_NAK, "Cannot parse schema(s)");
+    	ReturnVal(API_NAK, "Cannot parse schema(s)");
     	return -1;
           }
-          control->ReturnVal(API_ACK, name);
+          ReturnVal(API_ACK, name);
           return 1;
         }
     }
@@ -4020,14 +4054,14 @@ DeviseCommand_winSetPrint::Run(int argc, char** argv)
     #endif
           ViewWin *win = (ViewWin *)classDir->FindInstance(argv[1]);
           if (!win) {
-            control->ReturnVal(API_NAK, "Cannot find window");
+            ReturnVal(API_NAK, "Cannot find window");
             return -1;
           }
           Boolean exclude = atoi(argv[2]);
           Boolean pixmap = atoi(argv[3]);
           win->SetPrintExclude(exclude);
           win->SetPrintPixmap(pixmap);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4040,11 +4074,11 @@ DeviseCommand_setLabel::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           view->SetLabelParam(atoi(argv[2]), atoi(argv[3]), argv[4]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4056,7 +4090,7 @@ DeviseCommand_dataSegment::Run(int argc, char** argv)
     {
         {
           DataSeg::Set(argv[1], argv[2], atoi(argv[3]), atoi(argv[4]));
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4074,7 +4108,7 @@ DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewPanInfo info;
@@ -4082,7 +4116,7 @@ DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
           info.relPan = atof(argv[3]);
           info.absPan = atof(argv[4]);
           view->SetHorPanInfo(info);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4099,14 +4133,14 @@ DeviseCommand_setCursorGrid::Run(int argc, char** argv)
     #endif
           DeviseCursor *cursor = (DeviseCursor *) classDir->FindInstance(argv[1]);
           if (!cursor) {
-    	control->ReturnVal(API_NAK, "Cannot find cursor");
+    	ReturnVal(API_NAK, "Cannot find cursor");
     	return -1;
           }
           Boolean useGrid = atoi(argv[2]);
           Coord gridX = atof(argv[3]);
           Coord gridY = atof(argv[4]);
           cursor->SetGrid(useGrid, gridX, gridY);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4124,10 +4158,10 @@ DeviseCommand_saveSession::Run(int argc, char** argv)
     #endif
           if (!Session::Save(argv[1], atoi(argv[2]), atoi(argv[3]),
     	  atoi(argv[4])).IsComplete()) {
-    	control->ReturnVal(API_NAK, "Unable to save session file");
+    	ReturnVal(API_NAK, "Unable to save session file");
     	return -1;
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4140,7 +4174,7 @@ DeviseCommand_setWinGeometry::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           int x, y;
@@ -4151,7 +4185,7 @@ DeviseCommand_setWinGeometry::Run(int argc, char** argv)
           h = atoi(argv[5]);
           printf("%d %d %u %u\n", x, y, w, h);
           view->SetGeometry(x, y, w, h);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }  
     }
@@ -4164,7 +4198,7 @@ DeviseCommand_setFilter::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           VisualFilter filter;
@@ -4173,11 +4207,11 @@ DeviseCommand_setFilter::Run(int argc, char** argv)
     	  !ParseFloatDate(argv[3], filter.yLow) ||
     	  !ParseFloatDate(argv[4], filter.xHigh) ||
     	  !ParseFloatDate(argv[5], filter.yHigh)) {
-    	control->ReturnVal(API_NAK, "invalid date or float");
+    	ReturnVal(API_NAK, "invalid date or float");
     	return -1;
           }
           view->SetVisualFilter(filter);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4195,7 +4229,7 @@ DeviseCommand_saveDisplayImageAndMap::Run(int argc, char** argv)
             format = GIF;
           DeviseDisplay::DefaultDisplay()->ExportImageAndMap(format, argv[2], 
     					argv[3], argv[4], argv[5]);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4208,7 +4242,7 @@ DeviseCommand_insertViewHistory::Run(int argc, char** argv)
         {
           View *view = (View *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           VisualFilter filter;
@@ -4218,7 +4252,7 @@ DeviseCommand_insertViewHistory::Run(int argc, char** argv)
           (void)ParseFloatDate(argv[5],filter.yHigh);
           filter.marked = atoi(argv[6]);
           view->InsertHistory(filter);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4231,14 +4265,14 @@ DeviseCommand_setFont::Run(int argc, char** argv)
         {
           View *view = View::FindViewByName(argv[1]);
           if (view == NULL) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
           }
     
           view->SetFont(argv[2], atoi(argv[3]), atof(argv[4]), atoi(argv[5]),
     	atoi(argv[6]));
     
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4251,7 +4285,7 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
         {
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-            control->ReturnVal(API_NAK, "Cannot find view");
+            ReturnVal(API_NAK, "Cannot find view");
             return -1;
           }
           if (argc ==11)  {
@@ -4273,7 +4307,7 @@ DeviseCommand_set3DLocation::Run(int argc, char** argv)
 
             view->SetCamera(c);
           }
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4292,7 +4326,7 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
     
@@ -4306,7 +4340,7 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
           params.separator = argv[7][0];
           view->SetSendParams(params);
     
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4325,7 +4359,7 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
     #endif
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
+    	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
           ViewHomeInfo info;
@@ -4337,7 +4371,7 @@ DeviseCommand_viewSetHome::Run(int argc, char** argv)
           info.manXHi = atof(argv[7]);
           info.manYHi = atof(argv[8]);
           view->SetHomeInfo(info);
-          control->ReturnVal(API_ACK, "done");
+          ReturnVal(API_ACK, "done");
           return 1;
         }
     }
@@ -4352,7 +4386,7 @@ IMPLEMENT_COMMAND_BEGIN(playLog)
 	if (argc != 6)
 	{
 		fprintf(stderr,"Wrong # of arguments:%d in playLog\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 	if (!strcmp(argv[1], "default"))
@@ -4367,7 +4401,7 @@ IMPLEMENT_COMMAND_BEGIN(playLog)
 	if (fp == NULL)
 	{
 		errmsg = "Open log file failure";
-		control->ReturnVal(API_NAK, errmsg);
+		ReturnVal(API_NAK, errmsg);
 		fprintf(stderr,"%s\n", errmsg);
 		return -1;
 	}
@@ -4383,13 +4417,13 @@ IMPLEMENT_COMMAND_BEGIN(playLog)
 	bool success = cmdLog->playLog( by, pause, start, end, errmsg);
 	if (success)
 	{
-    	control->ReturnVal(API_ACK, "done");
+    	ReturnVal(API_ACK, "done");
 		return 1;
 	}
 	else
 	{
 		fprintf(stderr, "Play log failure:%s\n",errmsg);
-    	control->ReturnVal(API_NAK, errmsg);
+    	ReturnVal(API_NAK, errmsg);
 		return -1;
 	}
 IMPLEMENT_COMMAND_END
@@ -4407,11 +4441,11 @@ IMPLEMENT_COMMAND_BEGIN(test)
 			}
 		}
 		DevWindow::DoneIterator(index);
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in test\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
@@ -4424,14 +4458,14 @@ IMPLEMENT_COMMAND_BEGIN(getLinkMasterAttr)
     if (argc == 2) {
         TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
         if (!link) {
-            control->ReturnVal(API_NAK, "Cannot find link");
+            ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
 		const char *attrName = link->GetMasterAttrName();
-    	control->ReturnVal(API_ACK, (char *)attrName);
+    	ReturnVal(API_ACK, (char *)attrName);
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in getLinkMasterAttr\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
@@ -4444,14 +4478,14 @@ IMPLEMENT_COMMAND_BEGIN(getLinkSlaveAttr)
     if (argc == 2) {
         TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
         if (!link) {
-            control->ReturnVal(API_NAK, "Cannot find link");
+            ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
 		const char *attrName = link->GetSlaveAttrName();
-    	control->ReturnVal(API_ACK, (char *)attrName);
+    	ReturnVal(API_ACK, (char *)attrName);
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in getLinkSlaveAttr\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
@@ -4464,15 +4498,15 @@ IMPLEMENT_COMMAND_BEGIN(setLinkMasterAttr)
     if (argc == 3) {
         TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
         if (!link) {
-            control->ReturnVal(API_NAK, "Cannot find link");
+            ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
 		link->SetMasterAttr(argv[2]);
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setLinkMasterAttr\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
@@ -4485,15 +4519,15 @@ IMPLEMENT_COMMAND_BEGIN(setLinkSlaveAttr)
     if (argc == 3) {
         TAttrLink *link = (TAttrLink *)classDir->FindInstance(argv[1]);
         if (!link) {
-            control->ReturnVal(API_NAK, "Cannot find link");
+            ReturnVal(API_NAK, "Cannot find link");
             return -1;
         }
 		link->SetSlaveAttr(argv[2]);
-        control->ReturnVal(API_ACK, "done");
+        ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in setLinkSlaveAttr\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 IMPLEMENT_COMMAND_END
@@ -4507,15 +4541,15 @@ IMPLEMENT_COMMAND_BEGIN(selectView)
         View *view = (View *)classDir->FindInstance(argv[1]);
 		if (view != NULL) {
 		    view->SelectView();
-            control->ReturnVal(API_ACK, "done");
+            ReturnVal(API_ACK, "done");
 		    return 1;
 		} else {
-    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    ReturnVal(API_NAK, "Cannot find view");
     	    return -1;
 		}
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in selectView\n", argc);
-    	control->ReturnVal(API_NAK, "Wrong # of arguments");
+    	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
 IMPLEMENT_COMMAND_END

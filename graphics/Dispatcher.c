@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/09/10 23:22:58  wenger
+  Third interrupt now forces DEVise to quit without going back through
+  the Dispatcher loop, in case you're stuck somewhere.
+
   Revision 1.46  1998/08/28 22:01:08  wenger
   Made Dispatcher::WaitForQueries() function -- improved over earlier
   versions because it also checks the callback list (this fixes bug 367);
@@ -837,19 +841,30 @@ void
   printf("Dispatcher::WaitForQueries()\n");
 #endif
 
-  int callbackLimit;
-  if (Init::ConvertGData()) {
-    callbackLimit = 1; // QP always requests callback
-  } else {
-    callbackLimit = 0;
-  }
-
   QueryProc *qp = QueryProc::Instance();
 
   int count = 0;
   do {
+    // Go through the Dispatcher loop once.
     Run1();
-    if (qp->Idle() && (CallbacksPending() <= callbackLimit)) {
+
+    // Figure out whether all queries are done and there are no pending
+    // callbacks that might start a new query.
+    Boolean callbacksDone = true;
+    int index = _callbacks.InitIterator();
+    while (_callbacks.More(index) && callbacksDone) {
+      DispatcherInfo *info = _callbacks.Next(index);
+      if (info->callback_requested) {
+	// QueryProcFull *always* requests a callback if Init::ConvertGData()
+	// is true.
+	if (strcmp(info->callBack->DispatchedName(), "QueryProcFull")) {
+	  callbacksDone = false;
+	}
+      }
+    }
+    _callbacks.DoneIterator(index);
+
+    if (qp->Idle() && callbacksDone) {
       count++;
     } else {
       count = 0;
