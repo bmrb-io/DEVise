@@ -2,3 +2,17 @@ depend:
 	makedepend -fMakefile.linux -I../parser *.c
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+codegen.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+codegen.o: /usr/include/string.h /usr/include/features.h
+codegen.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+codegen.o: /usr/include/errno.h /usr/include/linux/errno.h
+codegen.o: /usr/include/asm/errno.h /usr/include/alloca.h parse.h codegen.h
+main.o: parse.h /usr/include/stdio.h /usr/include/libio.h
+main.o: /usr/include/_G_config.h
+parse.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+parse.o: /usr/include/stdlib.h /usr/include/features.h
+parse.o: /usr/include/sys/cdefs.h /usr/include/errno.h
+parse.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+parse.o: /usr/include/alloca.h parse.h tokens.h /usr/include/malloc.h
+parse.o: codegen.h

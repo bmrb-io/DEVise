@@ -6,81 +6,42 @@ depend:
 
 generic.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 generic.o: /usr/include/time.h /usr/include/features.h
-generic.o: /usr/include/sys/cdefs.h /usr/include/sys/time.h
+generic.o: /usr/include/sys/cdefs.h /usr/include/string.h /usr/include/math.h
+generic.o: /usr/include/huge_val.h /usr/include/endian.h
+generic.o: /usr/include/bytesex.h /usr/include/linux/version.h
+generic.o: /usr/include/asm/byteorder.h /usr/include/nan.h
+generic.o: /usr/include/values.h /usr/include/sys/time.h
 generic.o: /usr/include/linux/types.h /usr/include/asm/types.h
 generic.o: /usr/include/linux/time.h /usr/include/sys/types.h
 generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 generic.o: /usr/include/stdlib.h /usr/include/errno.h
-generic.o: /usr/include/linux/errno.h /usr/include/alloca.h
-generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-generic.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h /usr/include/math.h /usr/include/huge_val.h
-generic.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/nan.h
-generic.o: /usr/include/values.h ../graphics/ColorMgr.h ../graphics/Control.h
-generic.o: ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
-generic.o: ../graphics.new/MapInterpClassInfo.h
-generic.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
+generic.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+generic.o: /usr/include/alloca.h /usr/include/unistd.h
+generic.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+generic.o: /usr/include/confname.h ../graphics/DList.h ../graphics/Exit.h
+generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: ../graphics/ColorMgr.h ../graphics/Control.h
+generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h
+generic.o: ../graphics/WinClassInfo.h ../graphics.new/MapInterpClassInfo.h
+generic.o: ../graphics.new/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
-generic.o: ../graphics/Transform.h ../graphics/Pattern.h
-generic.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-generic.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-generic.o: ../graphics/Config.h ../graphics/Cursor.h
+generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+generic.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+generic.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 generic.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-generic.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-generic.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
 generic.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-generic.o: ../graphics.new/ViewStats.h ../graphics.new/TDataMap.h
-generic.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
-generic.o: ../graphics.new/GDataRec.h ../graphics.new/TData.h
-generic.o: ../graphics.new/RecOrder.h ../graphics/CursorClassInfo.h
+generic.o: ../graphics.new/ViewStats.h ../graphics.new/Action.h
+generic.o: ../graphics.new/RecId.h ../graphics.new/TDataViewX.h
+generic.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
+generic.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
+generic.o: ../graphics.new/Connector.h ../graphics.new/ShapeID.h
+generic.o: ../graphics.new/ViewScatter.h ../graphics.new/CompositeParser.h
+generic.o: ../graphics.new/RecInterp.h ../tape/QueryProcTape.h
+generic.o: ../graphics.new/QPRange.h ../tape/SortedTable.h
+generic.o: ../graphics.new/GData.h ../graphics.new/TData.h
+generic.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+generic.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+generic.o: ../graphics.new/TDataMap.h ../graphics.new/Bitmap.h
+generic.o: ../graphics.new/GDataRec.h ../graphics/CursorClassInfo.h
 generic.o: ../graphics.new/ParseCat.h
-issm.o: /usr/include/sys/types.h /usr/include/linux/types.h
-issm.o: /usr/include/asm/types.h /usr/include/sys/time.h
-issm.o: /usr/include/features.h /usr/include/sys/cdefs.h
-issm.o: /usr/include/linux/time.h /usr/include/time.h /usr/include/stdio.h
-issm.o: /usr/include/libio.h /usr/include/_G_config.h
-issm.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-issm.o: /usr/include/stdlib.h /usr/include/errno.h /usr/include/linux/errno.h
-issm.o: /usr/include/alloca.h ../graphics/DList.h ../graphics/Exit.h
-issm.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-issm.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
-issm.o: /usr/include/huge_val.h /usr/include/endian.h /usr/include/bytesex.h
-issm.o: /usr/include/nan.h /usr/include/values.h ../graphics/ColorMgr.h
-issm.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
-issm.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
-issm.o: ../graphics.new/MapInterpClassInfo.h
-issm.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
-issm.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
-issm.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-issm.o: ../graphics/Compress.h ../graphics/ViewCallback.h
-issm.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
-issm.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
-issm.o: ../graphics.new/CompositeParser.h ../graphics.new/RecInterp.h
-issm.o: ../graphics.new/QueryProc.h ../graphics.new/RecId.h
-issm.o: ../tape/QueryProcTape.h ../graphics.new/QPRange.h
-issm.o: ../tape/SortedTable.h /usr/include/assert.h ../graphics.new/GData.h
-issm.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
-issm.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
-issm.o: ../graphics.new/BufferPolicy.h ../graphics.new/ViewGraph.h
-issm.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-issm.o: ../graphics.new/TDataMap.h ../graphics.new/ShapeID.h
-issm.o: ../graphics.new/Bitmap.h ../graphics.new/GDataRec.h
-issm.o: ../graphics/CursorClassInfo.h ../tape/TDataTapeInterp.h
-issm.o: ../tape/TDataTape.h ../tape/tapedrive.h /usr/include/tar.h
-issm.o: ../graphics.new/machdep.h /usr/include/limits.h
-issm.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
-issm.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
-issm.o: /usr/include/linux/param.h /usr/include/asm/param.h
-issm.o: /usr/include/sys/wait.h /usr/include/gnu/types.h
-issm.o: /usr/include/waitflags.h /usr/include/waitstatus.h
-issm.o: /usr/include/sys/ipc.h /usr/include/linux/ipc.h
-issm.o: /usr/include/sys/shm.h /usr/include/linux/shm.h
-issm.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
-issm.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
-issm.o: /usr/include/linux/ioctl.h /usr/include/sys/termios.h
-issm.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
-issm.o: /usr/include/linux/socket.h /usr/include/linux/sockios.h
-issm.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-issm.o: /usr/include/asm/byteorder.h /usr/include/arpa/inet.h
-issm.o: /usr/include/sys/bitypes.h ../graphics.new/ParseCat.h

@@ -75,7 +75,7 @@ CursorClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 CursorClassInfo.o: /usr/include/math.h /usr/include/floatingpoint.h
 CursorClassInfo.o: /usr/include/sys/ieeefp.h
 DList.o: /usr/include/stdio.h DList.h Exit.h
-DevError.o: DevError.h /usr/include/stdio.h Init.h DeviseTypes.h BufPolicy.h
+DevError.o: DevError.h /usr/include/stdio.h DeviseTypes.h Init.h BufPolicy.h
 DevisePixmap.o: /usr/include/stdio.h /usr/include/stdlib.h
 DevisePixmap.o: /usr/include/sys/stdtypes.h Exit.h DevisePixmap.h VisualArg.h
 DevisePixmap.o: DeviseTypes.h Color.h Pattern.h Compress.h

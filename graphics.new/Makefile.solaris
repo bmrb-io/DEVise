@@ -221,16 +221,16 @@ DataSourceBuf.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 DataSourceBuf.o: ../graphics/Exit.h ../graphics/DevError.h
 DataSourceFileStream.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DataSourceFileStream.o: /usr/include/string.h /usr/include/errno.h
-DataSourceFileStream.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+DataSourceFileStream.o: /usr/include/sys/errno.h /usr/include/unistd.h
 DataSourceFileStream.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 DataSourceFileStream.o: /usr/include/sys/machtypes.h
 DataSourceFileStream.o: /usr/include/sys/select.h /usr/include/sys/time.h
 DataSourceFileStream.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
-DataSourceFileStream.o: /usr/include/unistd.h DataSourceFileStream.h
-DataSourceFileStream.o: DataSource.h ../graphics/DeviseTypes.h
-DataSourceFileStream.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceFileStream.o: /usr/include/ctype.h /usr/include/math.h
-DataSourceFileStream.o: /usr/include/floatingpoint.h
+DataSourceFileStream.o: /usr/include/sys/param.h /usr/include/sys/stat.h
+DataSourceFileStream.o: DataSourceFileStream.h DataSource.h
+DataSourceFileStream.o: ../graphics/DeviseTypes.h ../graphics/Util.h
+DataSourceFileStream.o: /usr/include/stdlib.h /usr/include/ctype.h
+DataSourceFileStream.o: /usr/include/math.h /usr/include/floatingpoint.h
 DataSourceFileStream.o: /usr/include/sys/ieeefp.h ../graphics/Exit.h
 DataSourceFileStream.o: ../graphics/DevError.h
 DataSourceSegment.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -433,7 +433,15 @@ QueryProc.o: /usr/include/sys/time.h /usr/include/sys/unistd.h
 QueryProc.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
 QueryProc.o: QueryProcSimple.h ../graphics/Config.h ../graphics/BufPolicy.h
 QueryProc.o: BufHint.h QueryProcFull.h QPRange.h ../graphics/Timer.h
-QueryProc.o: ../graphics/Init.h
+QueryProc.o: ../graphics/Control.h ../graphics/ClassDir.h ViewGraph.h
+QueryProc.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
+QueryProc.o: ../graphics/Geom.h /usr/include/math.h
+QueryProc.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+QueryProc.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+QueryProc.o: ../graphics/AttrList.h ../graphics/Cursor.h BasicStats.h
+QueryProc.o: ViewStats.h Action.h TDataMap.h ShapeID.h Bitmap.h GDataRec.h
+QueryProc.o: TData.h RecOrder.h ../graphics/Init.h
 QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull.o: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull.o: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h
@@ -596,7 +604,7 @@ TDataAscii.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataAscii.o: /usr/include/sys/ieeefp.h ../graphics/Init.h
 TDataAscii.o: ../graphics/BufPolicy.h DataSourceFileStream.h DataSource.h
 TDataAscii.o: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
-TDataAscii.o: DataSeg.h
+TDataAscii.o: DataSeg.h QueryProc.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataAsciiInterp.o: /usr/include/ctype.h /usr/include/unistd.h
 TDataAsciiInterp.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
@@ -632,7 +640,7 @@ TDataBinary.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataBinary.o: /usr/include/sys/ieeefp.h ../graphics/Init.h
 TDataBinary.o: ../graphics/BufPolicy.h DataSourceFileStream.h DataSource.h
 TDataBinary.o: DataSourceSegment.h DataSourceTape.h ../graphics/DevError.h
-TDataBinary.o: DataSeg.h
+TDataBinary.o: DataSeg.h QueryProc.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataBinaryInterp.o: /usr/include/unistd.h /usr/include/sys/types.h
 TDataBinaryInterp.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h

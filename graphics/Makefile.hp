@@ -69,8 +69,8 @@ CursorClassInfo.o: Util.h /usr/include/stdlib.h /usr/include/time.h
 CursorClassInfo.o: /usr/include/sys/time.h /usr/include/string.h
 CursorClassInfo.o: /usr/include/ctype.h /usr/include/math.h
 DList.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h DList.h Exit.h
-DevError.o: DevError.h /usr/include/stdio.h /usr/include/sys/stdsyms.h Init.h
-DevError.o: DeviseTypes.h BufPolicy.h
+DevError.o: DevError.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
+DevError.o: DeviseTypes.h Init.h BufPolicy.h
 DevisePixmap.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DevisePixmap.o: /usr/include/stdlib.h Exit.h DevisePixmap.h VisualArg.h
 DevisePixmap.o: DeviseTypes.h Color.h Pattern.h Compress.h

@@ -182,16 +182,16 @@ DataSourceBuf.o: /usr/include/ctype.h /usr/include/math.h ../graphics/Exit.h
 DataSourceBuf.o: ../graphics/DevError.h
 DataSourceFileStream.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DataSourceFileStream.o: /usr/include/string.h /usr/include/errno.h
-DataSourceFileStream.o: /usr/include/sys/errno.h /usr/include/sys/param.h
+DataSourceFileStream.o: /usr/include/sys/errno.h /usr/include/unistd.h
+DataSourceFileStream.o: /usr/include/sys/unistd.h /usr/include/sys/param.h
 DataSourceFileStream.o: /usr/include/sys/types.h /usr/include/machine/param.h
 DataSourceFileStream.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-DataSourceFileStream.o: /usr/include/machine/spl.h /usr/include/unistd.h
-DataSourceFileStream.o: /usr/include/sys/unistd.h DataSourceFileStream.h
-DataSourceFileStream.o: DataSource.h ../graphics/DeviseTypes.h
-DataSourceFileStream.o: ../graphics/Util.h /usr/include/stdlib.h
-DataSourceFileStream.o: /usr/include/time.h /usr/include/ctype.h
-DataSourceFileStream.o: /usr/include/math.h ../graphics/Exit.h
-DataSourceFileStream.o: ../graphics/DevError.h
+DataSourceFileStream.o: /usr/include/machine/spl.h /usr/include/sys/stat.h
+DataSourceFileStream.o: DataSourceFileStream.h DataSource.h
+DataSourceFileStream.o: ../graphics/DeviseTypes.h ../graphics/Util.h
+DataSourceFileStream.o: /usr/include/stdlib.h /usr/include/time.h
+DataSourceFileStream.o: /usr/include/ctype.h /usr/include/math.h
+DataSourceFileStream.o: ../graphics/Exit.h ../graphics/DevError.h
 DataSourceSegment.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DataSourceSegment.o: /usr/include/string.h /usr/include/errno.h
 DataSourceSegment.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -368,7 +368,15 @@ QueryProc.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 QueryProc.o: /usr/include/sys/types.h ../graphics/DList.h ../graphics/Exit.h
 QueryProc.o: ../graphics/Journal.h QueryProcSimple.h ../graphics/Config.h
 QueryProc.o: ../graphics/BufPolicy.h BufHint.h QueryProcFull.h QPRange.h
-QueryProc.o: ../graphics/Timer.h ../graphics/Init.h
+QueryProc.o: ../graphics/Timer.h ../graphics/Control.h ../graphics/ClassDir.h
+QueryProc.o: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
+QueryProc.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+QueryProc.o: ../graphics/Compress.h ../graphics/ViewCallback.h
+QueryProc.o: ../graphics/AttrList.h /usr/include/sys/time.h
+QueryProc.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+QueryProc.o: TDataMap.h ShapeID.h Bitmap.h GDataRec.h TData.h RecOrder.h
+QueryProc.o: ../graphics/Init.h
 QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull.o: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull.o: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h
@@ -503,7 +511,7 @@ TDataAscii.o: ../graphics/Pattern.h TData.h RecId.h RecOrder.h
 TDataAscii.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataAscii.o: /usr/include/math.h ../graphics/Init.h ../graphics/BufPolicy.h
 TDataAscii.o: DataSourceFileStream.h DataSource.h DataSourceSegment.h
-TDataAscii.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h
+TDataAscii.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/ctype.h
 TDataAsciiInterp.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
@@ -535,7 +543,7 @@ TDataBinary.o: ../graphics/Pattern.h TData.h RecId.h RecOrder.h
 TDataBinary.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataBinary.o: /usr/include/math.h ../graphics/Init.h ../graphics/BufPolicy.h
 TDataBinary.o: DataSourceFileStream.h DataSource.h DataSourceSegment.h
-TDataBinary.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h
+TDataBinary.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/unistd.h
 TDataBinaryInterp.o: /usr/include/sys/unistd.h TDataBinaryInterp.h
 TDataBinaryInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
