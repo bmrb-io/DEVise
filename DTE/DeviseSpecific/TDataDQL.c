@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1999/01/21 16:43:06  beyer
+  removed debugging statements
+
   Revision 1.34  1999/01/20 22:46:38  beyer
   Major changes to the DTE.
   * Added a new type system.
@@ -161,7 +164,7 @@ TDataDQL::TDataDQL(
 
 TDataDQL::TDataDQL(const string& tableName)
   : TData(strdup(tableName.c_str()), strdup("DQL"), strdup("query"), 0),
-    _tableName(tableName), _attrs(tableName.c_str()),
+    _tableName(tableName), _attrs((char*)tableName.c_str()),
     engine(NULL), tuple(NULL)
 {
   EXIT(char* attNames = dteListAttributes(_tableName.c_str()));
