@@ -2201,6 +2201,10 @@ Num Date        Status  Description
 			Test/pop_clip.ds). (rkw)  (Probably needs major
 			changes to how queries are started.)
 
+564 02/21/00	OPEN	If you run a jss with two deviseds, all of the
+			commands get sent to one of the deviseds, and
+			the other one doesn't do any work. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
