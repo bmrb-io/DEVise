@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.135  2001/12/17 23:18:08  wenger
+// Fixed problem preventing JSB from starting.
+//
 // Revision 1.134  2001/11/29 17:54:36  xuk
 // Added "Option", "Filter", "Playback" and "Collaboration" buttons for JSB version
 //
@@ -773,11 +776,7 @@ public class jsdevisec extends Panel
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        if (!isSessionOpened) {
-                            showMsg("You do not have any opened session!");
-                            return;
-                        }
-                        dispatcher.start(DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" + currentSession + "}");
+			restartSession();
                     }
                 });
 
@@ -898,6 +897,16 @@ public class jsdevisec extends Panel
 	String cmd = DEViseCommands.REFRESH_DATA;
 	cmd += doHome ? " 1" : " 0";
         dispatcher.start(cmd);
+    }
+
+    public void restartSession()
+    {
+        if (!isSessionOpened) {
+	    showMsg("You do not have any opened session!");
+	    return;
+	}
+	dispatcher.start(DEViseCommands.OPEN_SESSION + " {" +
+	  currentDir + "/" + currentSession + "}");
     }
 
     public void hideDebug() {
