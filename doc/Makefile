@@ -10,8 +10,10 @@
 	dvips $*
 
 OUTPUT_FILES = api.ps sysman.ps userman.ps 3d-doc.ps
+TEMP_FILES = 3d-doc.dvi api.dvi sysman.dvi userman.dvi
 
 all: $(OUTPUT_FILES)
 
 clean:
 	-rm $(OUTPUT_FILES)
+	-rm $(TEMP_FILES)
