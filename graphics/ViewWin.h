@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/02 21:25:50  jussi
+  Added support for TK_WINDOW i.e. Tk controls surrounding each
+  view and window.
+
   Revision 1.3  1995/11/29 15:06:19  jussi
   Added copyright notice.
 
@@ -142,7 +146,7 @@ public:
 	Boolean Iconified();
 
 	Color GetBgColor() { return _background; }
-	Color getFgColor() { return _foreground; }
+	Color GetFgColor() { return _foreground; }
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
