@@ -1,4 +1,4 @@
-ARCH_FLAGS = -DSUN -I/usr/sup/tcl/include -g
+ARCH_FLAGS = -DSUN -I/s/tcl/include -g
 
 VPATH = ../../graphics.new
 include $(VPATH)/Makefile.base

@@ -1,5 +1,5 @@
-ARCH_FLAGS   = -DSUN -I/usr/sup/tcl/include -g
-ARCH_LDFLAGS = -L/usr/sup/tcl/lib -L/usr/unsup/lib
+ARCH_FLAGS   = -DSUN -I/s/tcl/include -g
+ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
 ARCH_LDPOST  =
 
 VPATH = ../../multi
