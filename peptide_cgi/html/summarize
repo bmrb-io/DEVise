@@ -1,6 +1,13 @@
 #!/bin/csh -f
 
+set path = ($path /s/std/bin)
+# For yola.bmrb.wisc.edu
+set path = ($path /usr/java/bin)
+
+unsetenv LD_LIBRARY_PATH
+
 /bin/rm -f summarize.out
 /bin/rm -f error.log
 
-java -classpath ./java_classes:./java_classes/starlibj.jar Summarize $* >>& summarize.out
+setenv CLASSPATH ./java_classes:./java_classes/starlibj.jar
+java Summarize $* >>& summarize.out
