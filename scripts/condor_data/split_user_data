@@ -20,6 +20,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1999/04/28 18:30:33  wenger
+#  Split up data-splitting and session-creating parts of Condor session
+#  scripts; made a new script to make a session with thumbnails for each
+#  user; moved the scripts into scripts/condor.
+#
 
 ############################################################
 
@@ -35,6 +40,7 @@ open(DATA_IN, "$data_file") || die "Couldn't open data file $data_file: $!\n";
 # Find all of the users listed in the data file.
 %userlist = ();
 GetUsers();
+@userarray = reverse sort keys %userlist;
 
 
 # Dump each user into the top-level data file.
@@ -84,7 +90,7 @@ sub UserTopLevel {
   $userNum = 0;
   $outfile = $data_dir . "/" . $top_level_file;
   open(TOP_OUT, ">$outfile") || die "Can't create file $outfile: $!";
-  foreach $user (sort keys %userlist) {
+  foreach $user (@userarray) {
     print "User: $user\n" if ($debug);
     print TOP_OUT "$user\t.Condor_${user}\t${user}_view\t$userNum\t0\n";
     $userNum++;
@@ -95,7 +101,7 @@ sub UserTopLevel {
 #-----------------------------------------------------------
 
 sub SplitUserData {
-  foreach $user (sort keys %userlist) {
+  foreach $user (@userarray) {
     seek DATA_IN, 0, 0;
 
     $userfile = "$data_dir/" . $user . ".dat";

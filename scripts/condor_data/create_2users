@@ -23,6 +23,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1999/04/29 15:50:12  wenger
+#  Changed HighLow symbols so that Y is the top rather than the middle (so
+#  visual filter and home work better); changed Condor session scripts
+#  accordingly.
+#
 #  Revision 1.1  1999/04/28 18:30:18  wenger
 #  Split up data-splitting and session-creating parts of Condor session
 #  scripts; made a new script to make a session with thumbnails for each
@@ -76,6 +81,8 @@ $data_schema = shift(@ARGV);
 # Find all of the users in the data file.
 %userlist = ();
 GetUsers();
+@userarray = sort keys %userlist;
+$usercount = $#userarray + 1;
 
 # Create the session file.
 CreateSession($session_file);
@@ -179,7 +186,7 @@ sub DefineData {
 
   # Create a data source for each user's data.
   my $user;
-  foreach $user (sort keys %userlist) {
+  foreach $user (@userarray) {
     $dataName = $data_prefix . $user;
     $dataFile = $user . ".dat";
 
@@ -216,25 +223,31 @@ sub CreateViews {
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} User1_view 0 1 -1 -2 36 2\n";
-  print SES_OUT "DEVise viewSetImplicitHome {User1_view} 1 1 2 1 0.5 0.5 -0.5 0.5 ",
-      "0.5 1.5\n";
+  $top = $usercount - 0.5;
+  $bottom = $usercount - 1.5;
+  print SES_OUT "DEVise viewSetImplicitHome {User1_view} 1 1 2 1 0.5 0.5 -0.5 ",
+      "$bottom 0.5 $top\n";
   print SES_OUT "DEVise setViewAutoFilter User1_view 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} User2_view 0 1 -1 -2 36 9\n";
-  print SES_OUT "DEVise viewSetImplicitHome {User2_view} 1 1 2 1 0.5 0.5 -0.5 1.5 ",
-      "0.5 2.5\n";
+  $top = $usercount - 1.5;
+  $bottom = $usercount - 2.5;
+  print SES_OUT "DEVise viewSetImplicitHome {User2_view} 1 1 2 1 0.5 0.5 -0.5 ",
+      "$bottom 0.5 $top\n";
   print SES_OUT "DEVise setViewAutoFilter User2_view 1\n";
   print SES_OUT "\n";
 
   my @users;
   $users[0] = "User1";
   $users[1] = "User2";
-  $users[2] = "Total";
+  $users[2] = "TotalLinked";
+  $users[3] = "Total";
   my %bgColor;
   $bgColor{$users[0]} = 2;
   $bgColor{$users[1]} = 9;
   $bgColor{$users[2]} = 9;
+  $bgColor{$users[3]} = 9;
   my $user;
   foreach $user (@users) {
     # Create the view.
@@ -248,7 +261,9 @@ sub CreateViews {
     print SES_OUT "DEVise setViewAutoFilter ${user}_viewsym 1\n";
 
     # Turn on the X and Y axes.
-    print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {X} 1\n";
+    if ($user ne "User1" && $user ne "User2") {
+      print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {X} 1\n";
+    }
     print SES_OUT "DEVise setAxisDisplay ${user}_viewsym {Y} 1\n";
 
     print SES_OUT "DEVise setXAxisDateFormat ${user}_viewsym {%b %d %H:%M}";
@@ -294,8 +309,8 @@ sub CreateMappings {
       "User2#$mappingClass {} {0} {\$X} {} 8 0.98 0 0 17 {\"User2_viewsym\"} 1 ",
       "1 {\$TDataName} {} {} {} {} {} {}\n";
 
-  # Note: this is really a "dummy" TData -- it will get switched when the
-  # view symbol is drawn.
+  # Note: this is really a "dummy" TData for the User1 and User2 views --
+  # it will get switched when the view symbol is drawn.
   $dataName = ".Condor_Total";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "User1sym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
@@ -303,10 +318,11 @@ sub CreateMappings {
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "User2sym#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
       "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
-
-  $dataName = "Condor_Total";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "Total#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
+      "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
+  print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
+      "TotalLinked#$mappingClass {} {\$time} {\$total_jobs} {} 31 1 0 0 8 1 ",
       "{\$jobs_running} {0} {5} {3} {} {} {} {} {}\n";
 
   return $mappingClass;
@@ -339,6 +355,8 @@ sub InsertMappings {
 
   print SES_OUT "DEVise insertMapping {Total_viewsym} ",
       "{Total#$mappingClass}\n";
+  print SES_OUT "DEVise insertMapping {TotalLinked_viewsym} ",
+      "{TotalLinked#$mappingClass}\n";
 }
 
 #-----------------------------------------------------------
@@ -348,18 +366,21 @@ sub CreateLinksCursors {
   # Cursor to select first user to view.
   print SES_OUT "DEVise create {cursor} {Cursor} UserCursor1 2 1 1.000000 ",
       "1.000000\n";
+  print SES_OUT "DEVise setCursorFixedSize UserCursor1 1\n";
   print SES_OUT "DEVise setCursorSrc {UserCursor1} {User1_view}\n";
   print SES_OUT "DEVise setCursorDst {UserCursor1} {Select1_view}\n";
 
   # Cursor to select second user to view.
   print SES_OUT "DEVise create {cursor} {Cursor} UserCursor2 2 1 1.000000 ",
       "1.000000\n";
+  print SES_OUT "DEVise setCursorFixedSize UserCursor2 1\n";
   print SES_OUT "DEVise setCursorSrc {UserCursor2} {User2_view}\n";
   print SES_OUT "DEVise setCursorDst {UserCursor2} {Select2_view}\n";
 
   print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
   print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsym}\n";
   print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsym}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {TotalLinked_viewsym}\n";
 
   # Cursor to select time range for user data.
   print SES_OUT "DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 ",
@@ -374,12 +395,12 @@ sub CreateWindows {
 
   print SES_OUT "\n# Create windows and insert views\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.06 0.20 ",
+  print SES_OUT "DEVise create {window} {TileLayout} UserList 0.10 0.20 ",
       "0.25 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {UserList_view} {UserList}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} Total 0.35 0.80 0.63 ",
-      "0.14 0 0\n";
+  print SES_OUT "DEVise create {window} {TileLayout} Total 0.35 0.87 0.63 ",
+      "0.07 0 0\n";
   #TEMP -- maybe we should use a view symbol here
   print SES_OUT "DEVise insertWindow {Total_viewsym} {Total}\n";
 
@@ -387,17 +408,21 @@ sub CreateWindows {
       "0.04 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {Select1_view} {Select1}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} Select2 0.31 0.20 ",
+  print SES_OUT "DEVise create {window} {TileLayout} Select2 0.06 0.20 ",
       "0.04 0.74 0 0\n";
   print SES_OUT "DEVise insertWindow {Select2_view} {Select2}\n";
 
   print SES_OUT "DEVise create {window} {TileLayout} User1 0.35 0.20 0.63 ",
-      "0.30 0 0\n";
+      "0.22 0 0\n";
   print SES_OUT "DEVise insertWindow {User1_view} {User1}\n";
 
-  print SES_OUT "DEVise create {window} {TileLayout} User2 0.35 0.50 0.63 ",
-      "0.30 0 0\n";
+  print SES_OUT "DEVise create {window} {TileLayout} User2 0.35 0.42 0.63 ",
+      "0.22 0 0\n";
   print SES_OUT "DEVise insertWindow {User2_view} {User2}\n";
+
+  print SES_OUT "DEVise create {window} {TileLayout} TotalLinked ",
+      "0.35 0.64 0.63 0.23 0 0\n";
+  print SES_OUT "DEVise insertWindow {TotalLinked_viewsym} {TotalLinked}\n";
 }
 
 #-----------------------------------------------------------
