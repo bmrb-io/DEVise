@@ -2232,7 +2232,7 @@ Num Date        Status  Description
 569 03/08/00	FIXED	Group/ungroup of views causes crash. (rkw)
 			(Fixed by rkw, 3/13/00.)
 
-570 03/09/00	OPEN	F1-help to show/hide view help in JavaScreen is
+570 03/09/00	FIXED?	F1-help to show/hide view help in JavaScreen is
 			unreliable; doesn't work at all in 3D views. (rkw)
 
 571 03/09/00	OPEN	Command in session files to set cursor color fails if
@@ -2384,6 +2384,18 @@ Num Date        Status  Description
 			the sessions are not updated to the correct data
 			source. (rkw)
 			(Fixed by rkw, 7/26/00.)
+
+605 8/2/00	OPEN	JavaScreen: can't go down into bmrb/dynamic_sessions
+			directory (can't follow link?). (rkw)
+
+606 8/3/00	OPEN	JavaScreen: JS can't draw text with orientation
+			other than 0 deg. (rkw)
+
+607 8/7/00	OPEN	JavaScreen: if you do control-drag, and release
+			the control key *after* the mouse button the JS
+			never gets the key release event (unless you wait
+			until it has finished receiving all commands from
+			the devised).
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
