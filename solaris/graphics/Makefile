@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/04/05 20:15:41  wenger
+#  Fixed error causing pure virtual function to be called
+#  if a session was closed during a query; fixed an error
+#  in one of the Linux Makefiles; updated other Makefiles
+#  to allow testWindowRep to be built on all architectures.
+#
 #  Revision 1.7  1996/02/13 16:44:18  jussi
 #  Replaced /usr/X11R6/include with /s/X11/include.
 #
@@ -27,7 +33,7 @@
 
 ############################################################
 
-ARCH_FLAGS = -DPENTIUM -I/s/X11/include -I/s/tcl/include
+ARCH_FLAGS = -DPENTIUM   -I/s/X11/include -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
 ARCH_LDPOST  = -lsocket -lnsl
 
