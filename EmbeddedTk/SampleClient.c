@@ -20,6 +20,8 @@ Help()
     cout << "  map handle" << endl;
     cout << "  unmap handle" << endl;
     cout << "  status" << endl;
+    cout << "  quit (kills server)" << endl;
+    cout << "  exit" << endl;
 }
 
 /********************************************************

@@ -990,7 +990,7 @@ main(int argc, char *argv[])
 #else
     Tcl_CreateFileHandler(Tcl_GetFile((void *) listenFd, TCL_UNIX_FD),
 			  TCL_READABLE,
-			  ServiceConnectionRequest, listenFd);
+			  ServiceConnectionRequest, (ClientData) listenFd);
 #endif
     
     fprintf(stderr, "-----------------------------------------------------\n");

@@ -280,9 +280,32 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
 	return ETk_TclError;
     }
     
+    Tk_Window tkwin;
+    
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION == 0
     // Create a toplevel Tk Window, but don't map it.
-    Tk_Window tkwin = Tk_CreateMainWindow(interp, ETk_TheDisplayName, 
-					  "ETkApp", "ETkWindow");
+    tkwin = Tk_CreateMainWindow(interp, ETk_TheDisplayName,
+				"ETkApp", "ETkWindow");
+#endif
+    
+    if (Tk_Init(interp) == TCL_ERROR)
+    {
+#ifdef DEBUG
+	fprintf(ETk_LogFile, "Error initializing Tk: %s\n", interp->result);
+#endif
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, interp->result);
+	Tcl_DeleteInterp(interp);
+	return ETk_TclError;
+    }
+    
+#if TK_MAJOR_VERSION == 4 && TK_MINOR_VERSION > 0
+    // Create a toplevel Tk Window, but don't map it.
+    tkwin = Tk_MainWindow(interp);
+    Tk_SetAppName(tkwin, "ETkApp");
+    Tk_SetClass(tkwin, "ETkWindow");
+#endif
+    
     if (tkwin == NULL)
     {
 #ifdef DEBUG
@@ -294,18 +317,8 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
 	Tcl_DeleteInterp(interp);
 	return ETk_TclError;
     }
+    
     Tk_UnmapWindow(tkwin);
-
-    if (Tk_Init(interp) == TCL_ERROR)
-    {
-#ifdef DEBUG
-	fprintf(ETk_LogFile, "Error initializing Tk: %s\n", interp->result);
-#endif
-	sprintf(ETk_TclResult, "%.*s",
-		ETK_MAX_STRLEN - 1, interp->result);
-	Tcl_DeleteInterp(interp);
-	return ETk_TclError;
-    }
     
 #if defined(LIBCS)
     //
