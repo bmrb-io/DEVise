@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.104  2001/10/22 18:38:23  wenger
+// A few more cleanups to the previous fix.
+//
 // Revision 1.103  2001/10/17 15:54:24  wenger
 // Fixed bug 712 (JS collaboration doesn't work); various other code
 // cleanup.
@@ -629,8 +632,9 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
 
 	    // Start the heartbeat thread.
-	    if (jsc.specialID == -1)
+	    if (jsc.specialID == -1) {
 		_heartbeat = new DEViseHeartbeat(this);
+	    }
         }
 
 	commands = DEViseGlobals.parseStr(cmd);

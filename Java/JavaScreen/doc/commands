@@ -51,7 +51,9 @@ see comments in DEViseCommSocket.java.
 
     2.4 JAVAC_HeartBeat
     Purpose: tells JSPoP that the JavaScreen is "alive".
-    Arguments: 0
+    Arguments: 1
+	<heartbeat count>: the number of heartbeats previously sent by
+                           this client.
 
     2.5 JAVAC_GetCollabList
     Purpose: get current collaboration status.

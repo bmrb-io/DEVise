@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2001/05/11 20:36:10  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.12  2001/01/08 20:31:54  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -178,8 +181,8 @@ public class JssHandler implements Runnable
             try {
                 socket = jssServerSocket.accept();
                 hostname = socket.getInetAddress().getHostName();
-                System.out.println("Connection request from " + hostname +
-		  " is accepted ...");
+                System.out.println("\nJSS connection request from " +
+		  hostname + " is accepted ...");
             } catch (IOException e) {
                 System.out.println("jss handler can not listen on jss socket so it is aborting!");
                 break;

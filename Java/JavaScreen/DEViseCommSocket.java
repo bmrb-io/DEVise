@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2001/10/24 17:46:07  wenger
+// Fixed bug 720 (one client can block others in the JSPoP).  The fix is that
+// the JSPoP now has a separate thread to read from each client.
+//
 // Revision 1.28  2001/10/22 18:38:24  wenger
 // A few more cleanups to the previous fix.
 //
@@ -245,6 +249,10 @@ public class DEViseCommSocket
     public DEViseCommSocket(Socket s, int to)
       throws YException
     {
+        if (DEBUG >= 1) {
+            System.out.println("DEViseCommSocket constructor(" + to + ")");
+	}
+
         if (s == null) {
             throw new YException("Invalid socket in arguments",
 	      "DEViseCommSocket:constructor");
@@ -309,6 +317,10 @@ public class DEViseCommSocket
     //-------------------------------------------------------------------
     public synchronized void closeSocket()
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseCommSocket.closeSocket()");
+	}
+
         try {
             if (os != null) {
                 os.close();
@@ -686,6 +698,10 @@ public class DEViseCommSocket
     private String doReceiveCmd()
       throws YException, InterruptedIOException
     {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseCommSocket.receiveCmd()");
+	}
+
         if (is == null) {
             closeSocket();
             throw new YException("Invalid input stream",
@@ -695,7 +711,7 @@ public class DEViseCommSocket
         try {
             if (isControl) {
                 if (dataRead == null) {
-		    //TEMP -- 10 is 'magic constant' here!
+		    //TEMP -- 16 is 'magic constant' here!
                     dataRead = new byte[16];
                     numberRead = 0;
                 }
@@ -703,6 +719,7 @@ public class DEViseCommSocket
 		// TEMP -- try read(buf, offset, len) here
 		
                 int b;
+		//TEMP -- 16 is 'magic constant' here!
                 for (int i = numberRead; i < 16; i++) {
                     b = is.read();
                     if (b < 0) {
@@ -714,6 +731,7 @@ public class DEViseCommSocket
                     numberRead++;
                 }
 
+		//TEMP -- "magic constants" here...
                 msgType = DEViseGlobals.toUshort(dataRead);
                 cmdId = DEViseGlobals.toUlong(dataRead, 2);
                 flag = DEViseGlobals.toUshort(dataRead, 10);

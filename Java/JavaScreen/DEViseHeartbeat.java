@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2001/05/11 20:36:07  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.2  2001/01/08 20:31:52  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -48,6 +51,8 @@ public class DEViseHeartbeat implements Runnable
 
     private Thread _hbThread = null;
 
+    private int _hbCount = 0;
+
     public DEViseHeartbeat(DEViseCmdDispatcher dispatcher) {
         _dispatcher = dispatcher;
 
@@ -70,7 +75,9 @@ public class DEViseHeartbeat implements Runnable
 	    if (DEBUG >= 1) {
 	        System.out.println("Sending heartbeat");
 	    }
-	    _dispatcher.start(DEViseCommands.HEART_BEAT);
+	    _dispatcher.start(DEViseCommands.HEART_BEAT + " " +
+	      " " + _hbCount);
+	    _hbCount++;
 	}
     }
 
