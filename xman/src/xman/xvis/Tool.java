@@ -69,32 +69,32 @@ public class Tool extends JFrame implements ActionListener
 	try {
 	    if (command.equals ("Session 1"))
 		x.openSession ("/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			       "/projy/new/data/hist_18:" + 
+			       "/data/hist_10:" + 
 			       "/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			       "/projy/new/data/hist_15:" +
+			       "/data/hist_11:" +
 			       "/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" +
-			       "/projy/new/data/hist_24:" +
+			       "//data/hist_12:" +
 			       "/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" +
-			       "/projy/new/data/hist_12@23;" +
+			       "/data/hist_13@23;" +
 			       "/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			       "/projy/new/data/hist_15@24;" +
+			       "/data/hist_14@24;" +
 			       "/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			       "/projy/new/data/hist_15@100;"+
+			       "/data/hist_15@100;"+
 			       "/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" +
-			       "/projy/new/data/hist_12;"
+			       "/data/hist_16;"
 			       );
 	    
 	    else if (command.equals ("Session 2"))
 		x.openSession("/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			      "/projy/new/data/hist_15@232");
+			      "/data/hist_22@232");
 	    
 	    else if (command.equals ("Session 3")) 
 		x.openSession ("/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			       "/projy/new/data/hist_24");
+			       "/data/hist_20");
 	    
 	    else if (command.equals ("Session 4"))
 		y.showFiles ("/afs/cs.wisc.edu/p/devise/ext9/ozaki/misc" + 
-			     "/projy/new/data/hist_12");
+			     "/data/hist_10");
 	    
 	    else if (command.equals ("Session 5")) {
 		System.out.println ("Now I will test the caching policies\n");
