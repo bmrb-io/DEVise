@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/05/22 21:00:37  jussi
+#  Merged Makefile.base.aix with Makefile.base.
+#
 #  Revision 1.1  1996/05/16 19:34:46  jussi
 #  Initial revision.
 #
@@ -23,8 +26,8 @@
 
 ARCH_FLAGS   = -DAIX -I/u2/ratnakar/tcl/include -I/u2/ratnakar/tk/include
 ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
-ARCH_LDPOST  = -static
+ARCH_LDPOST  =
 
 VPATH = ../../generic
-include $(VPATH)/Makefile.base
+include $(VPATH)/Makefile.base.aix
 include $(VPATH)/Makefile.aix

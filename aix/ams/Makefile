@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/05/22 21:00:36  jussi
+#  Merged Makefile.base.aix with Makefile.base.
+#
 #  Revision 1.1  1996/05/16 19:34:44  jussi
 #  Initial revision.
 #
@@ -26,5 +29,5 @@ ARCH_LDFLAGS = -L/u2/ratnakar/tcl/lib -L/u2/ratnakar/tk/lib
 ARCH_LDPOST  =
 
 VPATH = ../../ams
-include $(VPATH)/Makefile.base
+include $(VPATH)/Makefile.base.aix
 include $(VPATH)/Makefile.aix

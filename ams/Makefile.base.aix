@@ -1,0 +1,78 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1995
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.C.o:
+	$(CC) $(CFLAGS) -c $<
+
+CC = g++
+
+SRC = ams.c MapClassInfo.c
+
+OBJ = $(SRC:.c=.o)
+
+OTHERSRC = extend.C exttape.C extendAms.c amsStat.c
+
+OTHERSRC1 = $(filter %.c,$(OTHERSRC))
+OTHERSRC2 = $(filter %.C,$(OTHERSRC))
+OTHEROBJ = $(OTHERSRC1:.c=.o)
+OTHEROBJ += $(OTHERSRC2:.C=.o)
+
+CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+	-fexternal-templates -Wall -Wno-unused -O -DUNIX
+
+LDFLAGS = $(ARCH_LDFLAGS) \
+	-L../graphics.new -L../graphics -L../tape -L../issm \
+	-L../crsp -L../compustat -lmonolith -lgraphics.new -lgraphics \
+	-lissm -lcrsp -lcstat -ltape -ltk4.0 -ltcl7.4 -lXaw -lXmu \
+	-lXt -lXext -lX11 -lm $(ARCH_LDPOST)
+
+ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
+	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
+	../crsp/libcrsp.a ../graphics.new/libmonolith.a
+
+all: ams extendAms extend
+
+ams: ams.o MapClassInfo.o $(ALLLIBS)
+	$(CC) -o $@ ams.o MapClassInfo.o $(LDFLAGS)
+
+extend: extend.o
+	$(CC) -o $@ $@.o
+		
+exttape: exttape.o
+	$(CC) -o $@ $@.o ../tape/tapedrive.o
+		
+extendAms: extendAms.o
+	$(CC) -o $@ $@.o -lm
+		
+amsStat: amsStat.o ../graphics/libbufmgr.a
+	$(CC) -o $@ $@.o ../graphics.new/DList.o ../graphics.new/Exit.o \
+		-L../graphics -lbufmgr -lm
+
+.PHONY: clean mostlyclean
+
+clean: mostlyclean
+	-rm ams extend exttape extendAms amsStat
+
+mostlyclean:
+	-rm $(OBJ) $(OTHEROBJ)
+
