@@ -1,7 +1,9 @@
+package Types;
+
 import java.io.*;
 
 /** This is a base class for every possible type in DTE */
-class DTE_Type {
+abstract class DTE_Type {
 
 	/** This method returns an instance of a type given its descriptor */
 
@@ -12,11 +14,8 @@ class DTE_Type {
 		System.out.println("Unknown type: " + typeName.getString());
 		return null;
 	}
-	public boolean read(StreamTokenizer st) throws IOException {
-		return false;
-	}
-	public void print(PrintStream ps){
-	}
+	abstract public boolean read(StreamTokenizer st) throws IOException;
+	abstract public void print(PrintStream ps);
 }
 
 class DTE_Int extends DTE_Type {

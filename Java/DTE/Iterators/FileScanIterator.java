@@ -1,10 +1,13 @@
+package Iterators;
+
+import Types.*;
 import java.io.*;
 
 /** FileScanIterator returns the stream of tuples from a ASCII file
     whose name is given in "fileName" and whose content is described
     by the array of type descriptors "types". */
 
-class FileScanIterator {
+public class FileScanIterator implements Iterator {
 	Tuple tuple;
 	StreamTokenizer st;
 	public FileScanIterator(String fileName, TypeDesc[] types) 
@@ -15,10 +18,16 @@ class FileScanIterator {
 		tuple = new Tuple(types);
 	}
 
-	/** getNext return valid tuple object or null to signal the end of
+	/** getFirst should be called before getNext */
+
+	public Tuple getFirst() throws IOException {
+		return getNext();
+	}
+
+	/** getNext returns a valid tuple object or null to signal the end of
 	iterator */
 
-	Tuple getNext() throws IOException {
+	public Tuple getNext() throws IOException {
 		if(tuple.read(st)){
 			return tuple;
 		}

@@ -1,6 +1,6 @@
 import java.io.*;
-import FileScanIterator;
-import DTE_Type;
+import Iterators.*;
+import Types.*;
 
 /** This is a class whose only purpose is to test the FileScanIterator
     It takes a file name and a list of type names, for example:

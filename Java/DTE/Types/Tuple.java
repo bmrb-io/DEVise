@@ -1,10 +1,12 @@
+package Types;
+
 import java.io.*;
 
 /** Class Tuple is used throughout the system to store the content of a 
     record. Tuple is implemented as an array of types.
     It is constructed from an array of type descriptors. */
     
-class Tuple {
+public class Tuple {
 	DTE_Type[] types;
 	public Tuple(TypeDesc[] typeStrings){
 		types = new DTE_Type[typeStrings.length];
@@ -15,7 +17,7 @@ class Tuple {
 
 	/** read returns false if the EOF is encountered */
 
-	boolean read(StreamTokenizer st) throws IOException {
+	public boolean read(StreamTokenizer st) throws IOException {
 		for(int i = 0; i < types.length; i++){
 			if(! types[i].read(st)){
 				return false;
@@ -23,7 +25,7 @@ class Tuple {
 		}
 		return true;
 	}
-	void print(PrintStream os){
+	public void print(PrintStream os){
 		for(int i = 0; i < types.length; i++){
 			types[i].print(os);
 		}
