@@ -12,16 +12,20 @@
 
 // ------------------------------------------------------------------------
 
+// This class contains methods for dealing with fonts efficiently.
+
+// ------------------------------------------------------------------------
+
 // $Id$
 
 // $Log$
+// Revision 1.2  2000/06/06 17:06:43  wenger
+// Fixed bug 595 (array out of bounds in font code).
+//
 // Revision 1.1  2000/05/22 17:52:49  wenger
 // JavaScreen handles fonts much more efficiently to avoid the problems with
 // GData text being drawn very slowly on Intel platforms.
 //
-
-// This class contains methods for dealing with fonts efficiently.
-
 // ------------------------------------------------------------------------
 
 import java.util.*;

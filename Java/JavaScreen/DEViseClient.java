@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2000/06/12 22:10:49  wenger
+// Added output of the number of bytes of data being sent to the client.
+//
 // Revision 1.15  2000/06/05 16:35:07  wenger
 // Added comments and cleaned up the code a little.
 //
@@ -212,15 +215,16 @@ public class DEViseClient
                 while (!isSocketEmpty()) {
                     String command = receiveCmd();
                     if (command != null) {
-			//
-			// Commands specifically checked for in this 'if'
-			// require special processing.  All other commands
-			// are "normal".
                         if (!command.startsWith(DEViseCommands.CONNECT) && user == null) {
                             sendCmd(DEViseCommands.ERROR + " {No user infomation given}");
                             throw new YException("Can not get user information for this client");
                         }
 
+			//
+			// Commands specifically checked for in this 'if'
+			// require special processing.  All other commands
+			// are "normal".
+			//
                         if (command.startsWith(DEViseCommands.ABORT)) {
                             cmdBuffer.removeAllElements();
                         } else if (command.startsWith(DEViseCommands.CONNECT)) {
