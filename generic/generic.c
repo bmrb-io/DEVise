@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/01/30 19:48:28  jussi
+  Moved state map hash table to StateMap.C. Added init of string table.
+
   Revision 1.41  1996/12/04 17:53:02  wenger
   Date composite parsers call mktime() for every record to fix nasty
   and subtle DST bugs; also check to make sure they're stuffing the
@@ -1321,6 +1324,7 @@ int main(int argc, char **argv)
   ControlPanel::RegisterClass(new TileLayoutInfo);
   ControlPanel::RegisterClass(new ViewXInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
+  ControlPanel::RegisterClass(new ViewLensInfo);
   ControlPanel::RegisterClass(new VisualLinkClassInfo());
   ControlPanel::RegisterClass(new CursorClassInfo());
 
