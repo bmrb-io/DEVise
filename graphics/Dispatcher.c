@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/01/11 20:55:02  jussi
+  Replaced setpgrp() with more portable setsid().
+
   Revision 1.32  1997/01/11 18:19:07  jussi
   Added handling of severe errors (SIGSEGV etc.).
 
@@ -175,7 +178,9 @@ Dispatcher::Dispatcher(StateFlag state)
   (void)signal(SIGFPE, ImmediateTerminate);
   (void)signal(SIGSEGV, ImmediateTerminate);
   (void)signal(SIGBUS, ImmediateTerminate);
+#if !defined(LINUX)
   (void)signal(SIGSYS, ImmediateTerminate);
+#endif
 
   /* Set this process to be the session leader */
   (void)setsid();

@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/12/30 17:51:23  wenger
+#  Got latest sources to compile on Linux; updated Linux dependencies;
+#  changes devise.dali to devise.tasvir in release script.
+#
 #  Revision 1.1  1996/12/06 19:00:36  wenger
 #  Fixed up linux dirs so latest version compiles for Linux; updated
 #  Linux dependencies.
@@ -32,7 +36,7 @@ include $(DTE_DIR)/Makefile.linux
 
 dte: $(STAND_ALONE_OBJ)
 	$(CC) -gstabs -o dte $(STAND_ALONE_OBJ) -L../devread -ldevread  \
-		-lm -lsocket -lnsl
+		-lm
 
 FormatVolume: FormatVolume.c
 	$(CC) $< -o $@

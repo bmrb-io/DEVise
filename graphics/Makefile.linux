@@ -311,6 +311,7 @@ Dispatcher.o: /usr/include/sys/bitypes.h /usr/include/signal.h
 Dispatcher.o: /usr/include/linux/signal.h /usr/include/asm/signal.h
 Dispatcher.o: /usr/include/fcntl.h /usr/include/gnu/types.h
 Dispatcher.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
+Dispatcher.o: /usr/include/sys/dir.h /usr/include/sys/dirent.h
 Dispatcher.o: ../graphics.new/machdep.h /usr/include/limits.h
 Dispatcher.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
 Dispatcher.o: /usr/include/posix2_lim.h /usr/include/sys/param.h
@@ -391,6 +392,44 @@ DualWindowRep.o: /usr/include/sys/time.h /usr/include/ctype.h PSWindowRep.h
 DualWindowRep.o: Display.h Dispatcher.h /usr/include/unistd.h
 DualWindowRep.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
 DualWindowRep.o: /usr/include/confname.h Journal.h ColorMgr.h
+ETkClient.o: Dali.h ETk.h
+ETkIfc.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+ETkIfc.o: /usr/include/sys/cdefs.h /usr/include/unistd.h
+ETkIfc.o: /usr/include/features.h /usr/include/posix_opt.h
+ETkIfc.o: /usr/include/gnu/types.h
+ETkIfc.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+ETkIfc.o: /usr/include/confname.h /usr/include/sys/types.h
+ETkIfc.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+ETkIfc.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ETkIfc.o: /usr/include/sys/bitypes.h /usr/include/errno.h
+ETkIfc.o: /usr/include/linux/errno.h /usr/include/asm/errno.h
+ETkIfc.o: /usr/include/sys/time.h /usr/include/linux/time.h
+ETkIfc.o: /usr/include/sys/time.h ../graphics.new/machdep.h
+ETkIfc.o: /usr/include/limits.h /usr/include/posix1_lim.h
+ETkIfc.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
+ETkIfc.o: /usr/include/sys/param.h /usr/include/linux/param.h
+ETkIfc.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+ETkIfc.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+ETkIfc.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/sys/ipc.h
+ETkIfc.o: /usr/include/linux/ipc.h /usr/include/sys/shm.h
+ETkIfc.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+ETkIfc.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+ETkIfc.o: /usr/include/asm/bitops.h /usr/include/sys/ioctl.h
+ETkIfc.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
+ETkIfc.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
+ETkIfc.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
+ETkIfc.o: /usr/include/netdb.h /usr/include/paths.h /usr/include/sys/socket.h
+ETkIfc.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+ETkIfc.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+ETkIfc.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h ETkIfc.h
+ETkIfc.o: Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+ETkIfc.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+ETkIfc.o: /usr/include/X11/Xutil.h DeviseTypes.h /usr/include/values.h
+ETkIfc.o: DevStatus.h /usr/include/string.h ETk.h Util.h
+ETkIfc.o: /usr/include/stdlib.h /usr/include/alloca.h /usr/include/ctype.h
+ETkIfc.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
+ETkIfc.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+ETkIfc.o: /usr/include/ieee754.h /usr/include/ieee854.h Exit.h DevError.h
 Exit.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 Exit.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
 Exit.o: /usr/include/features.h
@@ -406,7 +445,7 @@ Exit.o: /usr/include/values.h DevStatus.h BufPolicy.h Control.h VisualArg.h
 Exit.o: Color.h Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
 Exit.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
 Exit.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
-Exit.o: /usr/include/X11/Xutil.h
+Exit.o: /usr/include/X11/Xutil.h ETkIfc.h /usr/include/string.h
 ExitClean.o: /usr/include/stdio.h /usr/include/libio.h
 ExitClean.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
 ExitClean.o: /usr/include/stdlib.h /usr/include/features.h
@@ -454,7 +493,9 @@ Init.o: /usr/include/endian.h /usr/include/bytesex.h /usr/include/math.h
 Init.o: /usr/include/huge_val.h /usr/include/nan.h
 Init.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 Init.o: /usr/include/ieee754.h /usr/include/ieee854.h
-Init.o: ../graphics.new/Version.h
+Init.o: ../graphics.new/Version.h ETkIfc.h Xdef.h /usr/include/X11/Xlib.h
+Init.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+Init.o: /usr/include/X11/Xosdefs.h /usr/include/X11/Xutil.h
 Journal.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
 Journal.o: /usr/include/sys/cdefs.h /usr/include/sys/types.h
 Journal.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
@@ -757,11 +798,16 @@ ViewWin.o: /usr/include/bytesex.h /usr/include/nan.h
 ViewWin.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 ViewWin.o: /usr/include/ieee754.h /usr/include/ieee854.h Color.h Transform.h
 ViewWin.o: VisualArg.h Pattern.h DevisePixmap.h Compress.h DevError.h
-ViewWin.o: DualWindowRep.h Display.h Dispatcher.h /usr/include/unistd.h
+ViewWin.o: DualWindowRep.h View.h Dispatcher.h /usr/include/unistd.h
 ViewWin.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
-ViewWin.o: /usr/include/confname.h Journal.h ColorMgr.h ClassDir.h Control.h
-ViewWin.o: Init.h BufPolicy.h ../graphics.new/Version.h Util.h
-ViewWin.o: /usr/include/sys/time.h /usr/include/ctype.h PSDisplay.h
+ViewWin.o: /usr/include/confname.h Journal.h Control.h ClassDir.h
+ViewWin.o: ViewCallback.h AttrList.h /usr/include/sys/time.h
+ViewWin.o: /usr/include/linux/time.h /usr/include/sys/time.h Init.h
+ViewWin.o: BufPolicy.h Cursor.h DevFont.h Display.h ColorMgr.h
+ViewWin.o: ../graphics.new/Version.h Util.h /usr/include/ctype.h PSDisplay.h
+ViewWin.o: ETkIfc.h Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
+ViewWin.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+ViewWin.o: /usr/include/X11/Xutil.h
 WinClassInfo.o: Display.h DeviseTypes.h /usr/include/values.h DevStatus.h
 WinClassInfo.o: /usr/include/sys/types.h /usr/include/linux/types.h
 WinClassInfo.o: /usr/include/linux/posix_types.h
@@ -864,7 +910,7 @@ XWindowRep.o: Xdef.h /usr/include/X11/Xlib.h /usr/include/X11/X.h
 XWindowRep.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 XWindowRep.o: /usr/include/X11/Xutil.h Util.h /usr/include/sys/time.h
 XWindowRep.o: XDisplay.h Display.h Dispatcher.h Journal.h ColorMgr.h
-XWindowRep.o: XBitmap.h DaliIfc.h Init.h BufPolicy.h xv.h
+XWindowRep.o: XBitmap.h ETkIfc.h DaliIfc.h Init.h BufPolicy.h xv.h
 XWindowRep.o: /usr/include/X11/Xos.h /usr/include/fcntl.h
 XWindowRep.o: /usr/include/linux/fcntl.h /usr/include/asm/fcntl.h
 XWindowRep.o: /usr/include/sys/time.h /usr/include/linux/time.h

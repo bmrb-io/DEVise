@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.10  1997/01/13 18:08:05  wenger
+   Fixed bugs 043, 083, 084, 091, 114.
+
  */
 
 #ifndef ClientAPI_h
@@ -27,9 +30,7 @@
 #include "missing.h"
 #endif
 
-//TEMPTEMP -- Is this really needed?  It causes compile errors in some
-//versions of Linux.  RKW 1/13/97.
-#ifndef FD_SET
+#if !defined(FD_SET) && !defined(LINUX)
 #define fd_set int
 #define FD_ZERO(fdset) memset(fdset, 0, sizeof fdset)
 #define FD_SET(fd,fdset) (*fdset |= 1 << fd);

@@ -1205,7 +1205,7 @@ MappingInterp.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
 MappingInterp.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 MappingInterp.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
 MappingInterp.o: MapInterpShape.h RectShape.h Shape.h StringStorage.h
-MappingInterp.o: ../graphics/Util.h /usr/include/ctype.h
+MappingInterp.o: ETkWindowShape.h ../graphics/Util.h /usr/include/ctype.h
 MultiArray.o: MultiArray.h /usr/include/stdio.h /usr/include/libio.h
 MultiArray.o: /usr/include/_G_config.h ../graphics/DeviseTypes.h
 MultiArray.o: /usr/include/values.h ../graphics/DevStatus.h
@@ -1327,11 +1327,12 @@ QueryProc.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
 QueryProc.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
 QueryProc.o: /usr/include/sys/bitypes.h ../graphics/VisualArg.h
 QueryProc.o: ../graphics/Color.h ../graphics/Pattern.h RecId.h
-QueryProc.o: QueryProcFull.h QPRange.h ../graphics/DList.h ../graphics/Exit.h
-QueryProc.o: ../graphics/Dispatcher.h /usr/include/stdio.h
+QueryProc.o: QueryProcFull.h /usr/include/sys/time.h /usr/include/sys/time.h
+QueryProc.o: /usr/include/features.h /usr/include/sys/cdefs.h
+QueryProc.o: /usr/include/linux/time.h QPRange.h ../graphics/DList.h
+QueryProc.o: ../graphics/Exit.h ../graphics/Dispatcher.h /usr/include/stdio.h
 QueryProc.o: /usr/include/libio.h /usr/include/_G_config.h
-QueryProc.o: /usr/include/stdlib.h /usr/include/features.h
-QueryProc.o: /usr/include/sys/cdefs.h
+QueryProc.o: /usr/include/stdlib.h
 QueryProc.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
 QueryProc.o: /usr/include/errno.h /usr/include/linux/errno.h
 QueryProc.o: /usr/include/asm/errno.h /usr/include/alloca.h
@@ -1349,23 +1350,21 @@ QueryProc.o: /usr/include/limits.h /usr/include/posix1_lim.h
 QueryProc.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 QueryProc.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 QueryProc.o: /usr/include/sys/param.h /usr/include/linux/param.h
-QueryProc.o: /usr/include/asm/param.h /usr/include/sys/time.h
-QueryProc.o: /usr/include/linux/time.h /usr/include/sys/time.h
-QueryProc.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-QueryProc.o: /usr/include/waitstatus.h /usr/include/endian.h
-QueryProc.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
-QueryProc.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-QueryProc.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-QueryProc.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-QueryProc.o: /usr/include/netdb.h /usr/include/paths.h
-QueryProc.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-QueryProc.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-QueryProc.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-QueryProc.o: /usr/include/asm/byteorder.h GData.h RangeList.h RangeInfo.h
-QueryProc.o: ../graphics/Control.h ../graphics/ClassDir.h ViewGraph.h
-QueryProc.o: ../graphics/View.h ../graphics/ViewWin.h ../graphics/WindowRep.h
-QueryProc.o: ../graphics/Geom.h /usr/include/math.h /usr/include/huge_val.h
-QueryProc.o: /usr/include/nan.h
+QueryProc.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+QueryProc.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+QueryProc.o: /usr/include/endian.h /usr/include/bytesex.h
+QueryProc.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+QueryProc.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+QueryProc.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+QueryProc.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+QueryProc.o: /usr/include/paths.h /usr/include/sys/socket.h
+QueryProc.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+QueryProc.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+QueryProc.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h GData.h
+QueryProc.o: RangeList.h RangeInfo.h ../graphics/Control.h
+QueryProc.o: ../graphics/ClassDir.h ViewGraph.h ../graphics/View.h
+QueryProc.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Geom.h
+QueryProc.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/nan.h
 QueryProc.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 QueryProc.o: /usr/include/ieee754.h /usr/include/ieee854.h
 QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
@@ -1376,18 +1375,20 @@ QueryProc.o: ../graphics/DevFont.h BasicStats.h ViewStats.h GdataStat.h
 QueryProc.o: ../tape/HashTable.h DataSourceFixedBuf.h DataSourceBuf.h
 QueryProc.o: UpdateLink.h VisualLink.h Action.h PointStorage.h TDataMap.h
 QueryProc.o: ShapeID.h GDataRec.h
-QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
-QueryProcFull.o: /usr/include/values.h ../graphics/DevStatus.h
-QueryProcFull.o: /usr/include/sys/types.h /usr/include/linux/types.h
+QueryProcFull.o: QueryProcFull.h /usr/include/sys/time.h
+QueryProcFull.o: /usr/include/sys/time.h /usr/include/features.h
+QueryProcFull.o: /usr/include/sys/cdefs.h /usr/include/linux/types.h
 QueryProcFull.o: /usr/include/linux/posix_types.h
 QueryProcFull.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
-QueryProcFull.o: /usr/include/sys/bitypes.h ../graphics/VisualArg.h
+QueryProcFull.o: /usr/include/linux/time.h /usr/include/sys/types.h
+QueryProcFull.o: /usr/include/sys/bitypes.h QueryProc.h
+QueryProcFull.o: ../graphics/DeviseTypes.h /usr/include/values.h
+QueryProcFull.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
 QueryProcFull.o: ../graphics/Color.h ../graphics/Pattern.h RecId.h QPRange.h
 QueryProcFull.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcFull.o: ../graphics/Dispatcher.h /usr/include/stdio.h
 QueryProcFull.o: /usr/include/libio.h /usr/include/_G_config.h
-QueryProcFull.o: /usr/include/stdlib.h /usr/include/features.h
-QueryProcFull.o: /usr/include/sys/cdefs.h
+QueryProcFull.o: /usr/include/stdlib.h
 QueryProcFull.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
 QueryProcFull.o: /usr/include/errno.h /usr/include/linux/errno.h
 QueryProcFull.o: /usr/include/asm/errno.h /usr/include/alloca.h
@@ -1405,20 +1406,19 @@ QueryProcFull.o: /usr/include/limits.h /usr/include/posix1_lim.h
 QueryProcFull.o: /usr/include/linux/limits.h /usr/include/posix2_lim.h
 QueryProcFull.o: /usr/include/sys/stat.h /usr/include/linux/stat.h machdep.h
 QueryProcFull.o: /usr/include/sys/param.h /usr/include/linux/param.h
-QueryProcFull.o: /usr/include/asm/param.h /usr/include/sys/time.h
-QueryProcFull.o: /usr/include/linux/time.h /usr/include/sys/time.h
-QueryProcFull.o: /usr/include/sys/wait.h /usr/include/waitflags.h
-QueryProcFull.o: /usr/include/waitstatus.h /usr/include/endian.h
-QueryProcFull.o: /usr/include/bytesex.h /usr/include/sys/ioctl.h
-QueryProcFull.o: /usr/include/linux/ioctl.h /usr/include/asm/ioctl.h
-QueryProcFull.o: /usr/include/sys/termios.h /usr/include/sys/socketio.h
-QueryProcFull.o: /usr/include/linux/sockios.h /usr/include/asm/sockios.h
-QueryProcFull.o: /usr/include/netdb.h /usr/include/paths.h
-QueryProcFull.o: /usr/include/sys/socket.h /usr/include/linux/socket.h
-QueryProcFull.o: /usr/include/asm/socket.h /usr/include/linux/uio.h
-QueryProcFull.o: /usr/include/netinet/in.h /usr/include/linux/in.h
-QueryProcFull.o: /usr/include/asm/byteorder.h GData.h RangeList.h RangeInfo.h
-QueryProcFull.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+QueryProcFull.o: /usr/include/asm/param.h /usr/include/sys/wait.h
+QueryProcFull.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+QueryProcFull.o: /usr/include/endian.h /usr/include/bytesex.h
+QueryProcFull.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+QueryProcFull.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+QueryProcFull.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+QueryProcFull.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+QueryProcFull.o: /usr/include/paths.h /usr/include/sys/socket.h
+QueryProcFull.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+QueryProcFull.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+QueryProcFull.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h GData.h
+QueryProcFull.o: RangeList.h RangeInfo.h ../graphics/Display.h
+QueryProcFull.o: ../graphics/Geom.h /usr/include/math.h
 QueryProcFull.o: /usr/include/huge_val.h /usr/include/nan.h
 QueryProcFull.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
 QueryProcFull.o: /usr/include/ieee754.h /usr/include/ieee854.h
@@ -1473,7 +1473,7 @@ RangeList.o: /usr/include/values.h ../graphics/DevStatus.h
 RangeList.o: /usr/include/sys/types.h /usr/include/linux/types.h
 RangeList.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
 RangeList.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h RecId.h
-RangeList.o: RangeInfo.h
+RangeList.o: RangeInfo.h ../graphics/DevError.h
 RecFile.o: UnixRecFile.h /usr/include/errno.h /usr/include/features.h
 RecFile.o: /usr/include/sys/cdefs.h /usr/include/linux/errno.h
 RecFile.o: /usr/include/asm/errno.h RecFile.h ../graphics/DeviseTypes.h
@@ -2365,7 +2365,8 @@ ViewGraph.o: /usr/include/netinet/in.h /usr/include/linux/in.h
 ViewGraph.o: /usr/include/asm/byteorder.h UpdateLink.h VisualLink.h Action.h
 ViewGraph.o: RecId.h PointStorage.h TDataMap.h ShapeID.h GDataRec.h
 ViewGraph.o: ActionDefault.h ../graphics/Util.h /usr/include/ctype.h
-ViewGraph.o: RecordLink.h RecFile.h TData.h
+ViewGraph.o: RecordLink.h RecFile.h TData.h MappingInterp.h
+ViewGraph.o: /usr/include/tcl/tcl.h Bitmap.h
 ViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewRanges.o: /usr/include/values.h ../graphics/DevStatus.h
 ViewRanges.o: /usr/include/sys/types.h /usr/include/linux/types.h
@@ -3164,6 +3165,62 @@ DCE.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
 DCE.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
 DCE.o: ../graphics/Exit.h
 DeviseKeyBinding.o: DeviseKeyBinding.h
+ETkWindowShape.o: /usr/include/sys/param.h /usr/include/limits.h
+ETkWindowShape.o: /usr/include/features.h /usr/include/sys/cdefs.h
+ETkWindowShape.o: /usr/include/posix1_lim.h /usr/include/linux/limits.h
+ETkWindowShape.o: /usr/include/posix2_lim.h /usr/include/linux/param.h
+ETkWindowShape.o: /usr/include/asm/param.h /usr/include/sys/types.h
+ETkWindowShape.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+ETkWindowShape.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ETkWindowShape.o: /usr/include/sys/bitypes.h ETkWindowShape.h RectShape.h
+ETkWindowShape.o: Shape.h /usr/include/stdio.h /usr/include/libio.h
+ETkWindowShape.o: /usr/include/_G_config.h TDataMap.h
+ETkWindowShape.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ETkWindowShape.o: ../graphics/DevStatus.h ../graphics/Exit.h
+ETkWindowShape.o: ../graphics/DList.h ../graphics/Color.h
+ETkWindowShape.o: ../graphics/Pattern.h ShapeID.h ../graphics/VisualArg.h
+ETkWindowShape.o: RecId.h GDataRec.h ViewGraph.h ../graphics/View.h
+ETkWindowShape.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+ETkWindowShape.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+ETkWindowShape.o: /usr/include/errno.h /usr/include/linux/errno.h
+ETkWindowShape.o: /usr/include/asm/errno.h /usr/include/alloca.h
+ETkWindowShape.o: /usr/include/unistd.h /usr/include/posix_opt.h
+ETkWindowShape.o: /usr/include/gnu/types.h /usr/include/confname.h
+ETkWindowShape.o: /usr/include/string.h ../graphics/Journal.h
+ETkWindowShape.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+ETkWindowShape.o: ../graphics/Geom.h /usr/include/math.h
+ETkWindowShape.o: /usr/include/huge_val.h /usr/include/endian.h
+ETkWindowShape.o: /usr/include/bytesex.h /usr/include/nan.h
+ETkWindowShape.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+ETkWindowShape.o: /usr/include/ieee754.h /usr/include/ieee854.h
+ETkWindowShape.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ETkWindowShape.o: ../graphics/Compress.h ../graphics/DevError.h
+ETkWindowShape.o: ../graphics/DualWindowRep.h ../graphics/Control.h
+ETkWindowShape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+ETkWindowShape.o: ../graphics/AttrList.h /usr/include/sys/time.h
+ETkWindowShape.o: /usr/include/linux/time.h /usr/include/sys/time.h
+ETkWindowShape.o: ../graphics/Init.h ../graphics/BufPolicy.h
+ETkWindowShape.o: ../graphics/Cursor.h ../graphics/DevFont.h BasicStats.h
+ETkWindowShape.o: ViewStats.h GdataStat.h ../tape/HashTable.h
+ETkWindowShape.o: DataSourceFixedBuf.h DataSourceBuf.h DataSource.h MemMgr.h
+ETkWindowShape.o: DCE.h /usr/include/sys/ipc.h /usr/include/linux/ipc.h
+ETkWindowShape.o: /usr/include/sys/sem.h /usr/include/linux/sem.h
+ETkWindowShape.o: /usr/include/asm/bitops.h /usr/include/sys/shm.h
+ETkWindowShape.o: /usr/include/linux/shm.h /usr/include/asm/shmparam.h
+ETkWindowShape.o: /usr/include/assert.h /usr/include/sys/stat.h
+ETkWindowShape.o: /usr/include/linux/stat.h machdep.h /usr/include/sys/wait.h
+ETkWindowShape.o: /usr/include/waitflags.h /usr/include/waitstatus.h
+ETkWindowShape.o: /usr/include/sys/ioctl.h /usr/include/linux/ioctl.h
+ETkWindowShape.o: /usr/include/asm/ioctl.h /usr/include/sys/termios.h
+ETkWindowShape.o: /usr/include/sys/socketio.h /usr/include/linux/sockios.h
+ETkWindowShape.o: /usr/include/asm/sockios.h /usr/include/netdb.h
+ETkWindowShape.o: /usr/include/paths.h /usr/include/sys/socket.h
+ETkWindowShape.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+ETkWindowShape.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+ETkWindowShape.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+ETkWindowShape.o: UpdateLink.h VisualLink.h Action.h PointStorage.h
+ETkWindowShape.o: ../graphics/Temp.h ../graphics/Map3D.h StringStorage.h
+ETkWindowShape.o: ../graphics/ETk.h ../graphics/Util.h /usr/include/ctype.h
 GdataStat.o: GdataStat.h /usr/include/stdio.h /usr/include/libio.h
 GdataStat.o: /usr/include/_G_config.h /usr/include/stdlib.h
 GdataStat.o: /usr/include/features.h /usr/include/sys/cdefs.h

@@ -3,3 +3,90 @@ depend:
 		-I/usr/include/tcl -I/usr/X11/include *.c *.C
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ClientServer.o: /usr/include/stdio.h /usr/include/libio.h
+ClientServer.o: /usr/include/_G_config.h /usr/include/sys/cdefs.h
+ClientServer.o: /usr/include/stdlib.h /usr/include/features.h
+ClientServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+ClientServer.o: /usr/include/errno.h /usr/include/linux/errno.h
+ClientServer.o: /usr/include/asm/errno.h /usr/include/alloca.h
+ClientServer.o: /usr/include/string.h /usr/include/unistd.h
+ClientServer.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+ClientServer.o: /usr/include/confname.h /usr/include/sys/types.h
+ClientServer.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+ClientServer.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+ClientServer.o: /usr/include/sys/bitypes.h /usr/include/sys/socket.h
+ClientServer.o: /usr/include/linux/socket.h /usr/include/asm/socket.h
+ClientServer.o: /usr/include/asm/sockios.h /usr/include/linux/sockios.h
+ClientServer.o: /usr/include/linux/uio.h /usr/include/netinet/in.h
+ClientServer.o: /usr/include/linux/in.h /usr/include/asm/byteorder.h
+ClientServer.o: /usr/include/tcl/tcl.h /usr/include/tcl/tk.h
+ClientServer.o: /usr/include/X11/Xlib.h /usr/include/X11/X.h
+ClientServer.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+ClientServer.o: ClientServer.h ../graphics/Display.h
+ClientServer.o: ../graphics/DeviseTypes.h /usr/include/values.h
+ClientServer.o: ../graphics/DevStatus.h ../graphics/Geom.h
+ClientServer.o: /usr/include/math.h /usr/include/huge_val.h
+ClientServer.o: /usr/include/endian.h /usr/include/bytesex.h
+ClientServer.o: /usr/include/nan.h
+ClientServer.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+ClientServer.o: /usr/include/ieee754.h /usr/include/ieee854.h
+ClientServer.o: ../graphics/Color.h ../graphics/Dispatcher.h
+ClientServer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
+ClientServer.o: ../graphics/VisualArg.h ../graphics/Pattern.h
+ClientServer.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+ClientServer.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+ClientServer.o: ../graphics/Compress.h ../graphics/DevError.h
+client.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+client.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+client.o: /usr/include/features.h
+client.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+client.o: /usr/include/errno.h /usr/include/linux/errno.h
+client.o: /usr/include/asm/errno.h /usr/include/alloca.h
+client.o: /usr/include/string.h ClientServer.h /usr/include/tcl/tcl.h
+client.o: /usr/include/tcl/tk.h /usr/include/X11/Xlib.h
+client.o: /usr/include/sys/types.h /usr/include/linux/types.h
+client.o: /usr/include/linux/posix_types.h /usr/include/asm/posix_types.h
+client.o: /usr/include/asm/types.h /usr/include/sys/bitypes.h
+client.o: /usr/include/X11/X.h /usr/include/X11/Xfuncproto.h
+client.o: /usr/include/X11/Xosdefs.h ../graphics/Display.h
+client.o: ../graphics/DeviseTypes.h /usr/include/values.h
+client.o: ../graphics/DevStatus.h ../graphics/Geom.h /usr/include/math.h
+client.o: /usr/include/huge_val.h /usr/include/endian.h
+client.o: /usr/include/bytesex.h /usr/include/nan.h
+client.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+client.o: /usr/include/ieee754.h /usr/include/ieee854.h ../graphics/Color.h
+client.o: ../graphics/Dispatcher.h /usr/include/unistd.h
+client.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+client.o: /usr/include/confname.h ../graphics/DList.h ../graphics/Exit.h
+client.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+client.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+client.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+client.o: ../graphics/Compress.h ../graphics/DevError.h
+server.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+server.o: /usr/include/sys/cdefs.h /usr/include/stdlib.h
+server.o: /usr/include/features.h
+server.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/stddef.h
+server.o: /usr/include/errno.h /usr/include/linux/errno.h
+server.o: /usr/include/asm/errno.h /usr/include/alloca.h
+server.o: /usr/include/string.h /usr/include/assert.h ClientServer.h
+server.o: /usr/include/tcl/tcl.h /usr/include/tcl/tk.h
+server.o: /usr/include/X11/Xlib.h /usr/include/sys/types.h
+server.o: /usr/include/linux/types.h /usr/include/linux/posix_types.h
+server.o: /usr/include/asm/posix_types.h /usr/include/asm/types.h
+server.o: /usr/include/sys/bitypes.h /usr/include/X11/X.h
+server.o: /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
+server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+server.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
+server.o: /usr/include/math.h /usr/include/huge_val.h /usr/include/endian.h
+server.o: /usr/include/bytesex.h /usr/include/nan.h
+server.o: /usr/lib/gcc-lib/i486-linux/2.7.2/include/float.h
+server.o: /usr/include/ieee754.h /usr/include/ieee854.h ../graphics/Color.h
+server.o: ../graphics/Dispatcher.h /usr/include/unistd.h
+server.o: /usr/include/posix_opt.h /usr/include/gnu/types.h
+server.o: /usr/include/confname.h ../graphics/DList.h ../graphics/Exit.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Pattern.h
+server.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
+server.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+server.o: ../graphics/Compress.h ../graphics/DevError.h
+server.o: ../graphics/DualWindowRep.h ../graphics/PSDisplay.h
