@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1996/11/23 21:14:23  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.48  1996/11/22 20:41:08  flisakow
   Made variants of the TDataAscii classes for sequential access,
   which build no indexes.
@@ -198,8 +201,6 @@
   Added CVS header.
 */
 
-//#define DEBUG
-
 #include <iostream.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -231,8 +232,9 @@
 
 # define  _STREAM_COMPAT
 
-static const int INDEX_ALLOC_INC = 10000; // allocation increment for index
-static const int LINESIZE = 4096;         // maximum size of each line
+#define DEBUGLVL 0
+
+static const int LINESIZE = 4096;         /* maximum size of a record */
 
 /* We cache the first FILE_CONTENT_COMPARE_BYTES from the file.
    The next time we start up, this cache is compared with what's in
@@ -248,14 +250,15 @@ static char *   srcFile = __FILE__;
 TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 : TData(name, type, param, recSize)
 {
-    DO_DEBUG(printf("TDataAscii::TDataAscii(0x%p)(%s, %s, %s, %d)\n",
-		    this, name, type, param, recSize));
-    DO_DEBUG(printf("_data = 0x%p\n", _data));
+#if DEBUGLVL >= 1
+    printf("TDataAscii::TDataAscii(0x%p)(%s, %s, %s, %d)\n",
+           this, name, type, param, recSize);
+    printf("_data = 0x%p\n", _data);
+#endif
 
     _fileOpen = true;
-    if (_data->Open("r") != StatusOk) {
-	_fileOpen = false;
-    }
+    if (_data->Open("r") != StatusOk)
+      _fileOpen = false;
     
     DataSeg::Set(NULL, NULL, 0, 0);
     
@@ -267,39 +270,51 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
     _totalRecs = 0;
 
-    // Read first 10 records from data source and estimate record
-    // size.
+    float estNumRecs = 0;
 
-    float recSizeSum = 0;
-    int i;
-    for(i = 0; i < 10; i++) {
-        char buf[LINESIZE];
-        if (_data->Fgets(buf, LINESIZE) == NULL)
-            break;
-        recSizeSum += strlen(buf);
-    }
+    if (_fileOpen) {
+#ifdef CONCURRENT_IO
+      if (_data->InitializeProc() < 0)
+        fprintf(stderr, "Cannot use concurrent I/O to access data stream\n");
+#endif
+
+      /* Read first 10 records from data source and estimate record size. */
+
+      float recSizeSum = 0;
+      int i;
+      for(i = 0; i < 10; i++) {
+          char buf[LINESIZE];
+          if (_data->Fgets(buf, LINESIZE) == NULL)
+              break;
+          recSizeSum += strlen(buf);
+      }
+
+      _data->Seek(0, SEEK_SET);
     
-    float estNumRecs = (i > 0 ? 1.2 * _data->DataSize() / (recSizeSum / i) : 0);
+      if (i > 0)
+        estNumRecs = 1.2 * _data->DataSize() / (recSizeSum / i);
+    }
+
     _indexP = new FileIndex((unsigned long)estNumRecs);
 
-    _data->Seek(0, SEEK_SET);
-
-#ifdef DEBUG
+#if DEBUGLVL >= 3
     printf("Allocated %lu index entries\n", (unsigned long)estNumRecs);
 #endif
 
-    Dispatcher::Current()->Register(this, 10, AllState, 
-				    false, _data->AsyncFd());
+    Dispatcher::Current()->Register(this, 10, AllState, false, -1);
 }
 
 TDataAscii::~TDataAscii()
 {
-#ifdef DEBUG
+#if DEBUGLVL >= 1
   printf("TDataAscii destructor\n");
 #endif
 
-  if (_fileOpen)
+  if (_fileOpen) {
+      if (_data->SupportsAsyncIO() &&_data->TerminateProc() < 0)
+          fprintf(stderr, "Could not terminate data source process\n");
     _data->Close();
+  }
 
   Dispatcher::Current()->Unregister(this);
 
@@ -310,10 +325,13 @@ TDataAscii::~TDataAscii()
 Boolean TDataAscii::CheckFileStatus()
 {
   CheckDataSource();
-  // see if file is (still) okay
+
+  /* See if file is no longer okay */
   if (!_data->IsOk()) {
-    // if file used to be okay, close it
+    /* If file used to be okay, close it */
     if (_fileOpen) {
+      if (_data->SupportsAsyncIO() &&_data->TerminateProc() < 0)
+          fprintf(stderr, "Could not terminate data source process\n");
       Dispatcher::Current()->Unregister(this);
       printf("Data stream %s is no longer available\n", _name);
       _data->Close();
@@ -322,7 +340,7 @@ Boolean TDataAscii::CheckFileStatus()
     }
     Boolean old = DevError::SetEnabled(false);
     if (_data->Open("r") != StatusOk) {
-      // file access failure, get rid of index
+      /* File access failure, get rid of index */
       _indexP->Clear();
       _initTotalRecs = _totalRecs = 0;
       _initLastPos = _lastPos = 0;
@@ -333,8 +351,11 @@ Boolean TDataAscii::CheckFileStatus()
     (void)DevError::SetEnabled(old);
     printf("Data stream %s has become available\n", _name);
     _fileOpen = true;
-    Dispatcher::Current()->Register(this, 10, AllState,
-                                    false, _data->AsyncFd());
+#ifdef CONCURRENT_IO
+    if (_data->InitializeProc() < 0)
+      fprintf(stderr, "Cannot use concurrent I/O to access data stream\n");
+#endif
+    Dispatcher::Current()->Register(this, 10, AllState, false, -1);
   }
 
   return true;
@@ -360,21 +381,18 @@ Boolean TDataAscii::LastID(RecId &recId)
   }
 
   if (!_data->isTape()) {
-    // see if file has shrunk or grown
+    /* See if file has shrunk or grown */
     _currPos = _data->gotoEnd();
-#ifdef DEBUG
+#if DEBUGLVL >= 5
     printf("TDataAscii::LastID: currpos: %ld, lastpos: %ld\n", 
 	   _currPos, _lastPos);
 #endif
     if (_currPos < _lastPos) {
-      // file has shrunk, rebuild index from scratch
-#ifdef DEBUG
-      printf("Rebuilding index...\n");
-#endif
-	InvalidateTData();
+      /* File has shrunk, rebuild index from scratch */
+      InvalidateTData();
     } else if (_currPos > _lastPos) {
-      // file has grown, build index for new records
-#ifdef DEBUG
+      /* File has grown, build index for new records */
+#if DEBUGLVL >= 3
       printf("Extending index...\n");
 #endif
       BuildIndex();
@@ -388,48 +406,128 @@ Boolean TDataAscii::LastID(RecId &recId)
   return (_totalRecs > 0);
 }
 
-void TDataAscii::InitGetRecs(RecId lowId, RecId highId,RecordOrder order)
+TData::TDHandle TDataAscii::InitGetRecs(RecId lowId, RecId highId,
+                                        Boolean asyncAllowed,
+                                        ReleaseMemoryCallback *callback)
 {
-#if defined(DEBUG)
-  cout << " RecID lowID  = " << lowId << " highId " << highId << " order = "
-    << order << endl;
+#if DEBUGLVL >= 3
+  cout << " RecID lowID  = " << lowId << " highId " << highId << endl;
 #endif
 
   DOASSERT((long)lowId < _totalRecs && (long)highId < _totalRecs
 	   && highId >= lowId, "Invalid record parameters");
 
-  _lowId = lowId;
-  _highId = highId;
-  _nextId = lowId;
-  _endId = highId;
+  TDataRequest *req = new TDataRequest;
+  DOASSERT(req, "Out of memory");
+
+  req->nextId = lowId;
+  req->endId = highId;
+  req->relcb = callback;
+
+  /* Compute location and number of bytes to retrieve */
+  streampos_t offset = _indexP->Get(req->nextId);
+  iosize_t bytes = _indexP->Get(req->endId) + 1024 - offset;
+  if ((long)req->endId < _totalRecs - 1) {
+      /* Read up to the beginning of next record */
+      bytes = _indexP->Get(req->endId + 1) - offset;
+  }
+
+  if (!asyncAllowed || !_data->SupportsAsyncIO()) {
+#if DEBUGLVL >= 3
+      printf("Retrieving %llu:%lu bytes from TData 0x%p with direct I/O\n",
+             offset, bytes, this);
+#endif
+      /* Zero handle indicates direct I/O */
+      req->iohandle = 0;
+  } else {
+      /* Submit I/O request to the data source process */
+      req->iohandle = _data->ReadProc(offset, bytes);
+      DOASSERT(req->iohandle >= 0, "Cannot submit I/O request");
+#if DEBUGLVL >= 3
+      printf("Retrieving %llu:%lu bytes from TData 0x%p with I/O handle %d\n",
+             offset, bytes, this, req->iohandle);
+#endif
+      _currPos = offset;
+  }
+
+  req->lastChunk = req->lastOrigChunk = NULL;
+  req->lastChunkBytes = 0;
+
+  return req;
 }
 
-Boolean TDataAscii::GetRecs(void *buf, int bufSize, 
-			    RecId &startRid,int &numRecs, int &dataSize)
+Boolean TDataAscii::GetRecs(TDHandle req, void *buf, int bufSize,
+                            RecId &startRid, int &numRecs, int &dataSize)
 {
-#ifdef DEBUG
-  printf("TDataAscii::GetRecs buf = 0x%p\n", buf);
+  DOASSERT(req, "Invalid request handle");
+
+#if DEBUGLVL >= 3
+  printf("TDataAscii::GetRecs: handle %d, buf = 0x%p\n", req->iohandle, buf);
 #endif
 
-  numRecs = bufSize / _recSize;
-  DOASSERT(numRecs, "Not enough record buffer space");
+  DOASSERT(req->iohandle >= 0, "I/O request not initialized properly");
 
-  if (_nextId > _endId)
+  numRecs = bufSize / _recSize;
+  DOASSERT(numRecs > 0, "Not enough record buffer space");
+
+  if (req->nextId > req->endId)
     return false;
   
-  int num = _endId - _nextId + 1;
+  int num = req->endId - req->nextId + 1;
   if (num < numRecs)
     numRecs = num;
   
-  ReadRec(_nextId, numRecs, buf);
+  if (req->iohandle == 0)
+    ReadRec(req->nextId, numRecs, buf);
+  else
+    ReadRecAsync(req, req->nextId, numRecs, buf);
   
-  startRid = _nextId;
+  startRid = req->nextId;
   dataSize = numRecs * _recSize;
-  _nextId += numRecs;
+  req->nextId += numRecs;
   
   _bytesFetched += dataSize;
   
+  if (req->nextId > req->endId)
+    req->iohandle = -1;
+
   return true;
+}
+
+void TDataAscii::DoneGetRecs(TDHandle req)
+{
+  DOASSERT(req, "Invalid request handle");
+
+  /*
+     Release chunk of memory cached from pipe.
+  */
+  if (req->relcb && req->lastOrigChunk)
+      req->relcb->ReleaseMemory(MemMgr::Buffer, req->lastOrigChunk, 1);
+
+  if (req->iohandle > 0) {
+    /*
+       Flush data from pipe. We would also like to tell the DataSource
+       (which is at the other end of the pipe) to stop, but we can't
+       do that yet.
+    */
+    while (1) {
+      char *chunk;
+      streampos_t offset;
+      iosize_t bytes;
+      int status = _data->Consume(chunk, offset, bytes);
+      DOASSERT(status >= 0, "Cannot consume data");
+      if (bytes <= 0)
+        break;
+      /*
+         Release chunk so buffer manager (or whoever gets the following
+         call) can make use of it.
+      */
+      if (req->relcb)
+        req->relcb->ReleaseMemory(MemMgr::Buffer, chunk, 1);
+    }
+  }
+
+  delete req;
 }
 
 void TDataAscii::GetIndex(RecId id, int *&indices)
@@ -480,9 +578,6 @@ void TDataAscii::Initialize()
 
  error:
   /* recover from error by building index from scratch  */
-#ifdef DEBUG
-  printf("Rebuilding index...\n");
-#endif
   RebuildIndex();
 }
 
@@ -517,8 +612,10 @@ void TDataAscii::Checkpoint()
 
 void TDataAscii::InvalidateTData()
 {
+  if (_data->IsOk()) {
     RebuildIndex();
     TData::InvalidateTData();
+  }
 }
 
 
@@ -534,7 +631,7 @@ void TDataAscii::BuildIndex()
   
   _currPos = _lastPos - _lastIncompleteLen;
 
-  // First go to last valid position of file
+  /* First go to last valid position of file */
   if (_data->Seek(_currPos, SEEK_SET) < 0) {
     reportErrSys("fseek");
     return;
@@ -549,10 +646,6 @@ void TDataAscii::BuildIndex()
     if (_data->Fgets(buf, LINESIZE) == NULL)
       break;
 
-#ifdef DEBUG
-	printf("read record: \"%s\"\n", buf);
-#endif
-
     len = strlen(buf);
 
     if (len > 0 && buf[len - 1] == '\n') {
@@ -560,13 +653,13 @@ void TDataAscii::BuildIndex()
       if (Decode(recBuf, _currPos, buf)) {
 	_indexP->Set(_totalRecs++, _currPos);
       } else {
-#ifdef DEBUG
+#if DEBUGLVL >= 7
 	printf("Ignoring invalid record: \"%s\"\n", buf);
 #endif
       }
       _lastIncompleteLen = 0;
     } else {
-#ifdef DEBUG
+#if DEBUGLVL >= 7
       printf("Ignoring incomplete record: \"%s\"\n", buf);
 #endif
       _lastIncompleteLen = len;
@@ -575,29 +668,31 @@ void TDataAscii::BuildIndex()
     _currPos += len;
   }
 
-  // last position is > current position because TapeDrive advances
-  // bufferOffset to the next block, past the EOF, when tape file
-  // ends
+  /*
+     Last position is > current position because TapeDrive advances
+     bufferOffset to the next block, past the EOF, when tape file ends.
+  */
   _lastPos = _data->Tell();
   DOASSERT(_lastPos >= _currPos, "Incorrect file position");
 
-#ifdef    DEBUG
+#if DEBUGLVL >= 3
   printf("Index for %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - oldTotal);
 #endif
 
-  if (_totalRecs <= 0) {
-    char errBuf[1024];
-    sprintf(errBuf, "No valid records for data stream %s\n"
-      "    (check schema/data correspondence)\n", _name);
-    //Exit::DoAbort(errBuf, __FILE__, __LINE__);
-  }
+  if (_totalRecs <= 0)
+      fprintf(stderr, "No valid records for data stream %s\n"
+              "    (check schema/data correspondence)\n", _name);
 }
 
 /* Rebuild index */
 
 void TDataAscii::RebuildIndex()
 {
+#if DEBUGLVL >= 3
+  printf("Rebuilding index...\n");
+#endif
+
   InvalidateIndex();
 
   _indexP->Clear();
@@ -610,7 +705,7 @@ void TDataAscii::RebuildIndex()
 
 TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 {
-#ifdef DEBUG
+#if DEBUGLVL >= 3
   printf("TDataAscii::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif
 
@@ -649,6 +744,125 @@ TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   return TD_OK;
 }
 
+TD_Status TDataAscii::ReadRecAsync(TDataRequest *req, RecId id,
+                                   int numRecs, void *buf)
+{
+#if DEBUGLVL >= 3
+  printf("TDataAscii::ReadRecAsync %ld,%d,0x%p\n", id, numRecs, buf);
+#endif
+
+  int recs = 0;
+  char *ptr = (char *)buf;
+  char line[LINESIZE];
+  int partialRecSize = 0;
+
+  while (recs < numRecs) {
+    /* Take chunk from cached values if present */
+    char *chunk = req->lastChunk;
+    char *origChunk = req->lastOrigChunk;
+    iosize_t bytes = req->lastChunkBytes;
+
+    /* No chunk in cache, get next chunk from data source */
+    if (!chunk) {
+        streampos_t offset;
+        int status = _data->Consume(chunk, offset, bytes);
+        DOASSERT(status >= 0, "Cannot consume data");
+        DOASSERT((off_t)offset == _currPos, "Invalid data chunk consumed");
+        _currPos += bytes;
+        origChunk = chunk;
+    } else {
+        req->lastChunk = req->lastOrigChunk = NULL;
+        req->lastChunkBytes = 0;
+    }
+
+    DOASSERT(chunk && origChunk, "Inconsistent state");
+
+    if (bytes <= 0)
+        break;
+
+    while (recs < numRecs && bytes > 0) {
+      char *eol = (char *)memchr(chunk, '\n', bytes);
+      if (!eol) {
+        DOASSERT(partialRecSize == 0, "Two consecutive partial records");
+        /* Store fraction of record for next loop */
+        memcpy(line, chunk, bytes);
+        line[bytes] = 0;
+        partialRecSize = bytes;
+#if DEBUGLVL >= 3
+        printf("Caching remainder of chunk (%d bytes): \"%s\"\n",
+               partialRecSize, line);
+#endif
+        break;
+      }
+
+      /*
+         Append record to existing record from previous iteration of
+         outer loop if there is a fragment of it left. Terminating
+         newline is first replaced with a null, then appended, and
+         then the newline is put back.
+      */
+
+      char *record = chunk;
+      int recSize = eol - record;
+      int fullRecSize = recSize;
+
+      char oldch = *eol;
+      *eol = 0;
+
+      if (partialRecSize > 0) {
+          fullRecSize += partialRecSize;
+          memcpy(&line[partialRecSize], record, recSize + 1);
+#if DEBUGLVL >= 5
+          printf("Got %d-byte record (%d partial): \"%s\"\n", fullRecSize,
+                 partialRecSize, line);
+#endif
+          partialRecSize = 0;
+          record = line;
+      } else {
+#if DEBUGLVL >= 5
+          printf("Got %d-byte full record: \"%s\"\n", fullRecSize, record);
+#endif
+      }
+
+      Boolean valid = Decode(ptr, _currPos, record);
+      if (valid) {
+        ptr += _recSize;
+        recs++;
+      }
+
+      *eol = oldch;
+      chunk = eol + 1;
+      bytes -= recSize + 1;
+    }
+
+    if (recs == numRecs && bytes > 0) {
+      /* Save unused piece of chunk for next call to this function */
+      req->lastChunk = chunk;
+      req->lastOrigChunk = origChunk;
+      req->lastChunkBytes = bytes;
+#if DEBUGLVL >= 3
+      printf("Saving %ld bytes of chunk 0x%p for next function call\n",
+             bytes, origChunk);
+#endif
+    } else {
+      /*
+         Release chunk so buffer manager (or whoever gets the following
+         call) can make use of it.
+      */
+      if (req->relcb)
+          req->relcb->ReleaseMemory(MemMgr::Buffer, origChunk, 1);
+    }
+  }
+
+  if (recs != numRecs)
+    fprintf(stderr, "Data source produced %d records, not %d\n",
+            recs, numRecs);
+  DOASSERT(recs == numRecs, "Incomplete data transfer");
+
+  
+  return TD_OK;
+}
+
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
   DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
@@ -680,17 +894,6 @@ void TDataAscii::WriteLine(void *line)
 
   _lastPos = _data->Tell();
   _currPos = _lastPos;
-}
-
-void TDataAscii::Run()
-{
-    int fd = _data->AsyncFd();
-    _data->AsyncIO();
-    if (_data->AsyncFd() != fd) {
-        Dispatcher::Current()->Unregister(this);
-        Dispatcher::Current()->Register(this, 10, AllState,
-                                        false, _data->AsyncFd());
-    }
 }
 
 void TDataAscii::Cleanup()
