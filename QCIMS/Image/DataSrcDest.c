@@ -25,7 +25,7 @@
 #define HTTP_C_LENGTH "content-length"
 #define HTTP_C_LENGTH_LEN strlen(HTTP_C_LENGTH)
 
-#define HTTP_VERSION "HTTP/1.0"
+#define HTTP_VERSION "HTTP"
 #define HTTP_VERSION_LEN strlen(HTTP_VERSION)
 
 #define HTTP_BUF_LENGTH 1024
@@ -234,14 +234,15 @@ extern void DS_Init(DataSrc *ds, long total_in_src)
 
 #define DS_ShouldCloseSrc(ds) \
  ( ( (ds)->state != DS_NO_SRC) &&  \
-    ( DS_web_src(ds) || DS_filter_src(ds) || \
+    ( DS_web_src(ds) || DS_filter_src(ds) || DS_process_src(ds) || \
         ( DS_file_src(ds) && ( (ds)->srcname[0] != '<') ) ) ) 
 
 #ifndef NO_UNIX
 #define DS_CloseSrc(ds) \
   { if ( DS_file_src(ds) && (ds)->fp ) { fclose((ds)->fp); \
        (ds)->fp = (FILE *) 0; } \
-    else if ( (DS_web_src(ds) || DS_filter_src(ds)) && ((ds)->fd >2)) {\
+    else if ( (DS_web_src(ds) || DS_filter_src(ds) \
+	      || DS_process_src(ds)) && ((ds)->fd >2)) {\
        close((ds)->fd); (ds)->fd = -1; } }
 #else
 #define DS_CloseSrc(ds) \
@@ -340,6 +341,23 @@ extern int DS_OpenFile(DataSrc *ds, char *fname, long bytes_to_read)
   } else if (!strncmp(fname,"http://",7)) {
     fd = open_http(fname, &bytes_in_file); 
     kind = DS_KIND_WEB; 
+  } else if (!strncmp(fname,"|",1)) {
+    /* open a process */
+    {
+      char *argv[10], argvstore[10][DS_STRLENMAX];
+      char *fptr = fname+1; 
+      int i;
+      i = 0;
+      while (((*fptr)==' ') || ((*fptr)=='\t')) fptr++; 
+      while ((i<9) && (sscanf(fptr,"%s",argvstore[i])==1) ) {
+	fptr += strlen(argvstore[i]);
+        while (((*fptr)==' ') || ((*fptr)=='\t')) fptr++; 
+	argv[i] = argvstore[i];
+	i++;
+      }
+      argv[i] = 0;
+      return DS_OpenProcess(ds, argv, bytes_to_read);
+    }
   #endif
   } else { 
     fp = fopen(fname, "rb"); 
@@ -822,6 +840,85 @@ extern int DS_UseFilter(DataSrc *ds, char *filter,
 
 }
 
+extern int DS_OpenProcess(DataSrc *ds, char *argv[], 
+                             long bytes_to_read) 
+{ 
+  #ifdef NO_UNIX
+  return 0
+  #else
+
+  int pipefromfilter[2]; 
+  int pid; 
+  static int ForkFiltDidSigAct = 0;
+
+  #ifdef _DEC
+  struct sigaction act = {0,0,SA_NOCLDWAIT | SA_NOCLDSTOP};
+  #else
+  #ifdef _LINUX
+  struct sigaction act = {0,0,SA_NOCLDWAIT | SA_NOCLDSTOP,0};
+  #else
+  struct sigaction act = {0,0,0,SA_NOCLDWAIT | SA_NOCLDSTOP};
+  #endif
+  #endif
+  
+  if (ds->state == DS_DEAD) return(0); 
+
+  if (!ForkFiltDidSigAct) {
+    /* do not want to create zombies */
+    sigaction(SIGCHLD, &act, 0);
+    ForkFiltDidSigAct = 1;
+  }
+
+  if (pipe(pipefromfilter) == -1) return(0);
+
+  if ((pid=fork()) == -1) {
+      close(pipefromfilter[0]);
+      close(pipefromfilter[1]);
+      return(0);
+  } 
+
+  if (pid==0) {
+      /* child */
+      close(pipefromfilter[0]);
+      if (dup2(pipefromfilter[1],1) == -1) {
+        _exit(1);
+      } 
+      execvp(argv[0], argv);
+      _exit(1); 
+  } else {
+      /* parent */
+      close(pipefromfilter[1]);
+
+      if (DS_ShouldCloseSrc(ds)) {
+        DS_CloseSrc(ds); 
+      } 
+
+      ds->fd = pipefromfilter[0]; 
+      ds->src_kind = DS_KIND_PROCESS; 
+      ds->file_eof = 0; 
+      strcpy(ds->srcname,DSD_NAME_PROCESS);
+      if (bytes_to_read >= 0)
+        ds->bytes_to_read = bytes_to_read;
+      else if (ds->state == DS_NO_SRC)
+        ds->bytes_to_read = 0;
+      if ((ds->state == DS_NO_SRC) || (bytes_to_read >= 0))
+        ds->bytes_read = 0; 
+      if ((ds->total_in_src > 0) && (ds->bytes_to_read > 0) &&
+          ((ds->bytes_to_read -ds->bytes_read + ds->total_count)
+	      > ds->total_in_src))
+	    ds->bytes_to_read = ds->total_in_src - ds->total_count
+	      + ds->bytes_read; 
+      if (ds->bytes_to_read < 0) ds->bytes_to_read = 0; 
+      if ((ds->bytes_to_read != 0) &&
+          (ds->bytes_to_read == ds->bytes_read))
+	    ds->bytes_to_read = 0; 
+      ds->state = DS_SRC_ACTIVE; 
+      ds->read_func = DS_ReadFromFd; 
+  
+      return 1; 
+  }
+  #endif
+}
 
 
 extern long DS_SrcBytes(DataSrc *ds)

@@ -51,6 +51,13 @@ extern int ReadMoreJpegImg(Image *Im);
 extern void FreeImgJpeg(Image *Im);
 #endif
 
+#ifdef HAVE_SPIHT
+extern int ReadSpihtHeader(Image *Im, int *pelbytes);
+extern int ReadSpihtImg(Image *Im);
+extern int ReadMoreSpihtImg(Image *Im);
+extern void FreeImgSpiht(Image *Im);
+#endif
+
 
 extern int ImSetErrFile(Image *Im, char *f)
 {
@@ -204,7 +211,10 @@ extern void ImInitImg(Image *Im)
   strcpy(Im->ImName,"Unnamed");
   Im->RetainOrigOnChange = TRUE;
   strcpy(Im->ImFilterUsed,"none");
-
+  
+  #ifdef HAVE_SPIHT
+  Im->spiht_data_bytes = 0; 
+  #endif 
 
   #ifdef HAVE_JPEGLIB
   Im->rough_idct = JDCT_IFAST; 
@@ -356,6 +366,15 @@ extern int ImPeekImg(Image *Im)
     SetSbitsInner(Im, 8, 0);
     SetSbitsInner(Im, 8, 1);
     SetSbitsInner(Im, 8, 2);
+  #endif
+
+  #ifdef HAVE_SPIHT
+  } else if (ImKindSubSetOf(Im->ImKind, IM_SPIHT_GRAY)) {
+    int pelbytes; 
+    if (!ReadSpihtHeader(Im, &pelbytes)) {
+      ImFatalError("ImPeekImg: mangled SPIHT header");
+    }  
+    SetSbitsInner(Im, pelbytes*8, 0);
   #endif
 
   } else {
@@ -653,6 +672,12 @@ extern int ImReadImg(Image *Im)
       ret = ReadJpegImg(Im);
       break;
     #endif
+    
+    #ifdef HAVE_SPIHT
+    case IM_SPIHT_GRAY:
+      ret = ReadSpihtImg(Im);
+      break;
+    #endif 
 
     case IM_RAW:
       ret = ReadRawImg(Im);
@@ -806,6 +831,12 @@ extern int ImReadMoreImg(Image *Im)
     break;
   #endif
 
+  #ifdef HAVE_SPIHT
+  case IM_SPIHT_GRAY:
+    ret = ReadMoreSpihtImg(Im);
+    break;
+  #endif 
+
   case IM_RAW:
     ret = ReadMoreRawImg(Im);
     break;
@@ -909,6 +940,12 @@ extern void ImFreeImg(Image *Im)
   } 
 
   QclicInfoFree(&Im->qclic);
+
+  #ifdef HAVE_SPIHT
+  if (ImKindSubSetOf(Im->ImKind, IM_SPIHT_GRAY)) {
+    FreeImgSpiht(Im);
+  }
+  #endif
 
   #ifdef HAVE_JPEGLIB
   if (ImKindSubSetOf(Im->ImKind, IM_JPEG)) {
@@ -1071,6 +1108,15 @@ static int GetImKind(Image *Im)
       ((Im->FirstFiveChars[3] == 0xE0) ||
        (Im->FirstFiveChars[3] == 0xEE))) { 
       return(IM_JPEG);
+  }
+  #endif 
+  #ifdef HAVE_SPIHT
+  if ((Im->FirstFiveChars[0] == 'S') &&
+      (Im->FirstFiveChars[1] == 'P') &&
+      (Im->FirstFiveChars[2] == 'H') &&
+      ((Im->FirstFiveChars[3] == 'T') ||
+       (Im->FirstFiveChars[3] == 'G'))) { 
+      return(IM_SPIHT_GRAY);
   }
   #endif 
   #ifdef HAVE_DJPEG
@@ -2567,4 +2613,114 @@ extern int ImWriteQclicInfo(Image *Im, DataDest *dd)
   return QclicInfoWrite(&Im->qclic, dd); 
 
 }
+
+
+#ifdef HAVE_SPIHT
+
+extern void FreeImgSpiht(Image *Im)
+{
+  if (Im->spiht_data_bytes > 0) {
+    remove(Im->spiht_infile);
+    Im->spiht_data_bytes = 0;
+  }
+}
+
+
+extern int ReadSpihtHeader(Image *Im, int *pelbytes)
+{
+  unsigned char head_bytes[8];
+  unsigned long w, h;
+
+  if (DS_Read(&(Im->ImgSrc), head_bytes, 8) != 8) {
+    if (!Im->Silent)
+      (void) DD_WriteLine(&Im->ImgErr, 
+	"SPIHT data doesn't even have full header!");
+    return 0;
+  }
+
+  w = ((unsigned long) head_bytes[0]); 
+  w += (((unsigned long) head_bytes[1]) << 8); 
+  w += (((unsigned long) head_bytes[2]) << 16); 
+  h = ((unsigned long) head_bytes[3]); 
+  h += (((unsigned long) head_bytes[4]) << 8); 
+  h += (((unsigned long) head_bytes[5]) << 16); 
+  /* extract pelbytes */
+  *pelbytes = head_bytes[7]; 
+
+
+  tmpnam(Im->spiht_infile);
+  DD_Init(&Im->spiht_src); 
+  if ( !DD_OpenFile(&Im->spiht_src,Im->spiht_infile)) {
+    if (!Im->Silent)
+      (void) DD_WriteLine(&Im->ImgErr, 
+	"Could not create temporary file for SPIHT data");
+    return 0;
+  }
+  if ((DD_Write(&Im->spiht_src, "SPHTG", 5) != 5) || 
+      (DD_Write(&Im->spiht_src, head_bytes, 8) != 8)) {
+    DD_Close(&Im->spiht_src);
+    remove(Im->spiht_infile);
+    if (!Im->Silent)
+      (void) DD_WriteLine(&Im->ImgErr,
+	"Could not write temporary file for SPIHT data");
+  }
+  Im->spiht_data_bytes = 13;
+
+  Im->NumRows = h;
+  Im->NumCols = w;
+  Im->NumPlanes = 1;
+
+  return(1);
+}
+
+
+extern int ReadSpihtImg(Image *Im)
+{
+  #define SPIHT_BUFF_SIZE 4096
+  long bytes_read, totalbytes; 
+  char spiht_buff[SPIHT_BUFF_SIZE]; 
+  DataSrc ds;
+  char spiht_decoder[DS_STRLENMAX]; 
+
+  while ((bytes_read = DS_Read(&(Im->ImgSrc), spiht_buff,
+	   SPIHT_BUFF_SIZE)) > 0) {
+	Im->spiht_data_bytes += bytes_read;
+	DD_Write(&Im->spiht_src, spiht_buff, bytes_read);
+  }
+  DD_Flush(&Im->spiht_src); 
+
+  sprintf(spiht_decoder,"|decdtree -s %s - %ld", Im->spiht_infile, 
+    Im->spiht_data_bytes);
+  DS_Init(&ds, 0);
+  if (!DS_OpenFile(&ds, spiht_decoder, 0)) {
+    DD_Close(&Im->spiht_src);
+    remove(Im->spiht_infile);
+    Im->spiht_data_bytes = 0;
+    if (!Im->Silent)
+      (void) DD_WriteLine(&Im->ImgErr, "Could not decode SPIHT data");
+    return 0;
+  }
+
+
+  totalbytes = ((long) Im->NumRows) * Im->NumCols * Im->SampleBytes[0];
+
+  /* assumes all the prelude has been read */
+
+  bytes_read = DS_Read(&ds,Im->Im[0],totalbytes);
+
+  DS_Close(&ds);
+
+  Im->ImState = ImStateReadSome; 
+  Im->LastChangedRow[0] = Im->NumRows - 1; 
+
+  ImFlipBytesIfNeeded(Im,0,Im->SrcEndian[0]);
+  return(1);
+}
+
+extern int ReadMoreSpihtImg(Image *Im)
+{
+  return ReadSpihtImg(Im);
+}
+
+#endif /* HAVE_SPIHT */ 
 

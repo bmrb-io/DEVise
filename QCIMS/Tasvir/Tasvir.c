@@ -233,7 +233,6 @@ static int HandleResizing(VR_WinId wid, XEvent *evt)
   XWindowChanges wchan;
   
  
-  int more_change = 0;
 
   if (!VR_WidValid(wid)) return(0);
 
@@ -278,14 +277,18 @@ static int HandleResizing(VR_WinId wid, XEvent *evt)
 
   if ((new_wd != evt->xconfigure.width) ||
       (new_ht != evt->xconfigure.height)) { 
-    more_change = 1;
-    wchan.width = new_wd;
-    wchan.height = new_ht;
-    XConfigureWindow(VR_TheDisplay, VR_Windows[Images[handle].wid].win,
-      CWWidth | CWHeight, &wchan);
-    /* this will again invoke HandleResizing via an XEvent,
-       but that call won't invoke ImSetImgDim */
-    XFlush(VR_TheDisplay);
+    /* avoid resizing top-level windows below the min size possible
+       for the WM */ 
+    if ((VR_Windows[wid].parwin !=
+	   RootWindow(VR_TheDisplay, VR_TheScreen)) || (new_wd >= 96)) {
+      wchan.width = new_wd;
+      wchan.height = new_ht;
+      XConfigureWindow(VR_TheDisplay, VR_Windows[Images[handle].wid].win,
+        CWWidth | CWHeight, &wchan);
+      /* this will again invoke HandleResizing via an XEvent,
+         but that call won't invoke ImSetImgDim */
+      XFlush(VR_TheDisplay);
+    }
   }
 
   VR_ShowNormalCursor(wid); 
@@ -920,6 +923,56 @@ static void ProcessDefQual(int argc, char *argv[], int fd)
   WriteReply(1,"", fd, -1);
 }
 
+static char SmallImageIcon[512] = \
+  "P2\n8 8\n255\n\
+0 255 0 255 0 255 0 255 255 0 255 0 255 0 255 0\n\
+0 255 0 255 0 255 0 255 255 0 255 0 255 0 255 0\n\
+0 255 0 255 0 255 0 255 255 0 255 0 255 0 255 0\n\
+0 255 0 255 0 255 0 255 255 0 255 0 255 0 255 0\0"; 
+
+static int IgnoreSmallImage = 0; 
+static int SmallImageWidth = 16, SmallImageHeight = 16; 
+static int SmallDimensionEither = 0; 
+
+static void ProcessSmallIcon(int argc, char *argv[], int fd)
+{
+  int w, h, nextarg, either; 
+  if (argc < 3) { 
+    WriteReply(0,"Small width/height missing: smlicon failed", fd, -1);
+    return;
+  } 
+  sscanf(argv[1],"%d",&w); 
+  sscanf(argv[2],"%d",&h); 
+  either = 0; 
+  nextarg = 2; 
+  while (++nextarg < argc) {
+    if (!strncmp(argv[nextarg],"-either",4)) {
+      either = 1; 
+    } else if (!strncmp(argv[nextarg],"-both",4)) {
+      either = 0;
+    } else {
+      WriteReply(0,"Invalid argument: smlicon failed", fd, -1);
+      return;
+    } 
+  } 
+  if ((w < 0) || (h < 0)) {
+    WriteReply(0,"Bad width/height: smlicon failed", fd, -1);
+    return;
+  } 
+  IgnoreSmallImage = 1; 
+  SmallImageWidth = w; 
+  SmallImageHeight = h; 
+  SmallDimensionEither = either; 
+  WriteReply(1,"", fd, -1);
+}
+
+static void ProcessNoSmallIcon(int argc, char *argv[], int fd)
+{
+  IgnoreSmallImage = 0; 
+  WriteReply(1,"", fd, -1);
+}
+
+
 static void ProcessShow(int argc, char *argv[], int fd, int in_fd)
 { 
   char * imfname = 0; 
@@ -956,6 +1009,11 @@ static void ProcessShow(int argc, char *argv[], int fd, int in_fd)
   int url_waiter = 1;
   int file_waiter = 0; 
   Window waiterWin = 0; 
+  int ignore_small_image = IgnoreSmallImage; 
+  int small_w = SmallImageWidth;
+  int small_h = SmallImageHeight;
+  int small_dim_either = SmallDimensionEither; 
+
   
 
 
@@ -1170,6 +1228,30 @@ static void ProcessShow(int argc, char *argv[], int fd, int in_fd)
       url_waiter = 1; 
     } else if (!strncmp(argv[nextarg],"-nourlwaiter",6)) {
       url_waiter = 0; 
+    } else if (!strncmp(argv[nextarg],"-smlicon",4)) {
+      nextarg++; 
+      if (nextarg >= argc) { 
+	WriteReply(0, "Missing width for -smlicon: show failed",fd, -1); 
+	return;
+      }
+      small_w = atoi(argv[nextarg]);
+      nextarg++; 
+      if (nextarg >= argc) { 
+	WriteReply(0, "Missing height for -smlicon: show failed",fd, -1); 
+	return;
+      }
+      small_h = atoi(argv[nextarg]);
+      if ((small_w < 0) || (small_h < 0)) { 
+	WriteReply(0, "Bad width/height for -smlicon: show failed",fd, -1); 
+	return;
+      }
+      ignore_small_image = 1;
+    } else if (!strncmp(argv[nextarg],"-nosmlicon",6)) {
+      ignore_small_image = 0;
+    } else if (!strncmp(argv[nextarg],"-either",4)) {
+      small_dim_either = 1; 
+    } else if (!strncmp(argv[nextarg],"-both",4)) {
+      small_dim_either = 4; 
     } else if (!strncmp(argv[nextarg],"-refresh",4)) {
       do_refresh = 1; 
     } else if (!strncmp(argv[nextarg],"-dorig",4)) {
@@ -1235,8 +1317,10 @@ static void ProcessShow(int argc, char *argv[], int fd, int in_fd)
     private_cmap = 0; 
   }
 
+
   if (image_follows) {
     qual_given = 0; 
+    ignore_small_image = 0;
   } 
 
   if (url_waiter && is_url)  { 
@@ -1247,6 +1331,24 @@ static void ProcessShow(int argc, char *argv[], int fd, int in_fd)
     handle_resize = 0;
   }
 
+  if (ignore_small_image && (high_x > 0) && (high_y > 0) &&
+      ( (small_dim_either &&
+	  ((wwidth <= small_w) || (wheight <= small_h))) ||  
+        (!small_dim_either &&
+	  ((wwidth <= small_w) && (wheight <= small_h))) ) ) {  
+    file_waiter = 0;
+    handle_resize = 0;
+    no_ops = 1;
+    maxc = 2;
+    dump_orig = 1;
+    nbytes = 0;
+    nbytes_tot = 0;
+    nbytes_qual = 0;
+    qual_given = 0;
+    do_smooth = 0;
+  } else {
+    ignore_small_image = 0;
+  }
 
   Im = Images[handle].Im
      = (Image *) malloc(sizeof(Image));
@@ -1294,7 +1396,9 @@ static void ProcessShow(int argc, char *argv[], int fd, int in_fd)
   } 
   
 
-  if (image_follows) {
+  if (ignore_small_image) {
+    IM_return =  ImSetImgMemory(Im, SmallImageIcon, 512);
+  } else if (image_follows) {
     IM_return =  ImSetImgFd(Im, in_fd, nbytes);
   } else {
     if (!(IM_return = ImSetImgFile(Im, imfname, nbytes))) {
@@ -2426,7 +2530,6 @@ static void ProcessAdd(int argc, char *argv[], int fd, int in_fd)
   long nbytes = 0, nbytes_qual = 0;
   long sync = 0, remaining = 0;
   int nloops, read_step, show_row_start, show_row_end; 
-  int do_crop, sc, sr, ec, er; 
   int qual_given = 0; 
   float quality, curr_qual; 
   int old_imagefile = 0;
@@ -2714,29 +2817,25 @@ static void ProcessAdd(int argc, char *argv[], int fd, int in_fd)
 
   iheight = Images[handle].oheight;
 
-  show_row_start = ImFirstChanged(Im, 0); 
-  show_row_end = ImLastChanged(Im, 0);
-  ImGetCropInfo(Im, do_crop, sr, sc, er, ec);
-  if (do_crop) { 
-    if (show_row_start < sr) show_row_start = sr;
-    if (show_row_end < sr) show_row_end = sr; 
-    if (show_row_start > er) show_row_start = er;
-    if (show_row_end > er) show_row_end = er; 
-    iheight = er - sr + 1; 
+  if (Im->WasCropped) { 
+    show_row_start = 0;
+    show_row_end = Images[handle].height - 1;
+  } else {
+    show_row_start = ImFirstChanged(Im, 0); 
+    show_row_end = ImLastChanged(Im, 0);
+  
+    if (Images[handle].height < iheight) {
+      show_row_start = show_row_start * Images[handle].height/ iheight; 
+      show_row_end = show_row_end * Images[handle].height/ iheight; 
+    } else if (Images[handle].height > iheight) {
+      show_row_start = (show_row_start * Images[handle].height/ iheight) - 1 -
+         (Images[handle].height/iheight); 
+      if (show_row_start < 0) show_row_start = 0; 
+      show_row_end = (show_row_end * Images[handle].height/ iheight) + 1 + 
+         (Images[handle].height/iheight); 
+      if (show_row_end >= Images[handle].height) show_row_end = Images[handle].height - 1; 
+    }
   }
-
-  if (Images[handle].height < iheight) {
-    show_row_start = show_row_start * Images[handle].height/ iheight; 
-    show_row_end = show_row_end * Images[handle].height/ iheight; 
-  } else if (Images[handle].height > iheight) {
-    show_row_start = (show_row_start * Images[handle].height/ iheight) - 1 -
-       (Images[handle].height/iheight); 
-    if (show_row_start < 0) show_row_start = 0; 
-    show_row_end = (show_row_end * Images[handle].height/ iheight) + 1 + 
-       (Images[handle].height/iheight); 
-    if (show_row_end >= Images[handle].height) show_row_end = Images[handle].height - 1; 
-  }
-
 
   VR_ShowImageRect(iid, Images[handle].wid,
     0, show_row_start, Images[handle].width,
@@ -2774,26 +2873,23 @@ static void ProcessAdd(int argc, char *argv[], int fd, int in_fd)
       if (!ImReadMoreImg(Im)) break; 
       CopyImgToIid(Im, iid);
 
-      show_row_start = ImFirstChanged(Im, 0);
-      show_row_end = ImLastChanged(Im, 0);
-      if (do_crop) { 
-        if (show_row_start < sr) show_row_start = sr;
-        if (show_row_end < sr) show_row_end = sr; 
-        if (show_row_start > er) show_row_start = er;
-        if (show_row_end > er) show_row_end = er; 
-        iheight = er - sr + 1; 
-      }
-
-      if (Images[handle].height < iheight) {
-        show_row_start = show_row_start * Images[handle].height/ iheight; 
-        show_row_end = show_row_end * Images[handle].height/ iheight; 
-      } else if (Images[handle].height > iheight) {
-        show_row_start = (show_row_start * Images[handle].height/ iheight) - 1 -
-           (Images[handle].height/iheight); 
-        if (show_row_start < 0) show_row_start = 0; 
-        show_row_end = (show_row_end * Images[handle].height/ iheight) + 1 + 
-           (Images[handle].height/iheight); 
-        if (show_row_end >= Images[handle].height) show_row_end = Images[handle].height - 1; 
+      if (Im->WasCropped) { 
+	show_row_start = 0; 
+	show_row_end = Images[handle].height - 1;
+      } else {
+        show_row_start = ImFirstChanged(Im, 0);
+        show_row_end = ImLastChanged(Im, 0);
+	if (Images[handle].height < iheight) {
+          show_row_start = show_row_start * Images[handle].height/ iheight; 
+          show_row_end = show_row_end * Images[handle].height/ iheight; 
+        } else if (Images[handle].height > iheight) {
+          show_row_start = (show_row_start * Images[handle].height/ iheight) - 1 -
+             (Images[handle].height/iheight); 
+          if (show_row_start < 0) show_row_start = 0; 
+          show_row_end = (show_row_end * Images[handle].height/ iheight) + 1 + 
+             (Images[handle].height/iheight); 
+          if (show_row_end >= Images[handle].height) show_row_end = Images[handle].height - 1; 
+        }
       }
 
       VR_ShowImageRect(iid, Images[handle].wid,
@@ -3298,26 +3394,23 @@ static void ProcessReplace(int argc, char *argv[], int fd, int in_fd)
       if (!ImReadMoreImg(Im)) break; 
       CopyImgToIid(Im, iid);
 
-      show_row_start = ImFirstChanged(Im, 0);
-      show_row_end = ImLastChanged(Im, 0);
-      if (do_crop) { 
-        if (show_row_start < sr) show_row_start = sr;
-        if (show_row_end < sr) show_row_end = sr; 
-        if (show_row_start > er) show_row_start = er;
-        if (show_row_end > er) show_row_end = er; 
-        iheight = er - sr + 1; 
-      }
-
-      if (Images[handle].height < iheight) {
-        show_row_start = show_row_start * Images[handle].height/ iheight; 
-        show_row_end = show_row_end * Images[handle].height/ iheight; 
-      } else if (Images[handle].height > iheight) {
-        show_row_start = (show_row_start * Images[handle].height/ iheight) - 1 -
-           (Images[handle].height/iheight); 
-        if (show_row_start < 0) show_row_start = 0; 
-        show_row_end = (show_row_end * Images[handle].height/ iheight) + 1 + 
-           (Images[handle].height/iheight); 
-        if (show_row_end >= Images[handle].height) show_row_end = Images[handle].height - 1; 
+      if (Im->WasCropped) { 
+	show_row_start = 0; 
+	show_row_end = Images[handle].height - 1; 
+      } else {
+        show_row_start = ImFirstChanged(Im, 0);
+        show_row_end = ImLastChanged(Im, 0);
+	if (Images[handle].height < iheight) {
+          show_row_start = show_row_start * Images[handle].height/ iheight; 
+          show_row_end = show_row_end * Images[handle].height/ iheight; 
+        } else if (Images[handle].height > iheight) {
+          show_row_start = (show_row_start * Images[handle].height/ iheight) - 1 -
+             (Images[handle].height/iheight); 
+          if (show_row_start < 0) show_row_start = 0; 
+          show_row_end = (show_row_end * Images[handle].height/ iheight) + 1 + 
+             (Images[handle].height/iheight); 
+          if (show_row_end >= Images[handle].height) show_row_end = Images[handle].height - 1; 
+        }
       }
 
       VR_ShowImageRect(iid, Images[handle].wid,
@@ -5082,13 +5175,37 @@ static int ParseCommand(void)
      Absorbs "-noreply" option and returns 0 if
      -noreply is present. Returns 1 otherwise */ 
 
-  int ret = 1;
-  char *lastarg;
+  int ret = 1, saw_quote = 0;
+  char *lastarg, *c;
 
-  #define SEPS " \t\0"
+
+  #define SEPS  " \t\"\0"  
+
   CmdArgc = 0;
+  /* first, make sure that quoted arguments are not
+     broken up, by replacing whitespace within quotes
+     by \n */
+  lastarg = command;
+  while (*lastarg != '\0') {
+    if (saw_quote) {
+      if (*lastarg == '"') saw_quote = 0;
+      else if ((*lastarg == ' ') || (*lastarg == '\t')) 
+	*lastarg = '\n';
+    } else { 
+      if (*lastarg == '"') saw_quote = 1;
+    }
+    lastarg++;
+  } 
+
   lastarg = CmdArgv[CmdArgc] = strtok(command, SEPS);
+
   while (lastarg) {
+    /* replace \n with space */ 
+    c = lastarg;
+    while (*c != '\0') {
+      if (*c == '\n') *c = ' '; 
+      c++; 
+    } 
     if (!strncmp(lastarg,"-noreply",6)) ret = 0;
     else {
       CmdArgc++;
@@ -5344,6 +5461,10 @@ static int ProcessRequest(int fd, int in_fd)
     ProcessXBackup(CmdArgc, CmdArgv, reply_fd);
   } else if (!strncmp(CmdArgv[0],"defqual",4)) {
     ProcessDefQual(CmdArgc, CmdArgv, reply_fd);
+  } else if (!strncmp(CmdArgv[0],"smlicon",4)) {
+    ProcessSmallIcon(CmdArgc, CmdArgv, reply_fd);
+  } else if (!strncmp(CmdArgv[0],"nosmlicon",5)) {
+    ProcessNoSmallIcon(CmdArgc, CmdArgv, reply_fd);
   } else {
     WriteReply(0,"Unknown command",reply_fd, -1); 
   }

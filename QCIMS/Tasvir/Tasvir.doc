@@ -12,15 +12,15 @@ Image formats supported:
   PNM (PGM and PPM, both ascii and raw)
   RAW (headerless)
   JPEG
+  SPIHT (grayscale) 
   GIF
   TIFF
   Sun Raster
   FITS
-Tasvir has code to understand the first three, currently, and
+Tasvir has code to understand the first four, currently, and
 supports incremental loading for these. The others are read
 after a filter (like "giftopnm") to convert them to the PNM format,
 and no incremental loading is supported for them.
-Soon to come: SPIHT wavelet-compression of Said & Pearlman,
 
 
 Server options
@@ -67,6 +67,7 @@ A. Image-specific commands
   14. pixnormalize <handle> [options] 
   15. xv <handle> [options]
   16. free <handle> [options]
+  17. dorig <handle> [options]
 
   Each of the above image-specific commands returns a '\n'-terminated
   string. In case of an error, the reply format is:
@@ -95,9 +96,56 @@ B. General commands:
   3. xbacking?  [options]
   4. status [options]
   5. quit [options]
+  6. defqual <qual>
+  7. smlicon <w> <h> [options] 
+  8. nosmlicon
    
-  Thse commands return "OK [info]\n" or "ERROR <error-message>\n" except
-  "quit", which terminates the server.
+  These commands return "OK [info]\n" or "ERROR <error-message>\n"
+  except "quit", which terminates the server.
+
+C. Miscellaneous commands:
+  1. psshow <image_or_handle> <outfile> [options]
+
+     Returns "ERROR <error-message>\n" on failure. On success, if
+     <image_or_handle> is a handle, then the reply will be of the
+     same format as in Image-specific commands above, followed by
+     a trailing number that is the # of bytes saved. That is,
+     "OK <handle> <clrs> <totclrs> <haveim?> .... <priv?> <sbytes>\n",
+     with, <sbytes> being the # of bytes saved. If <image_or_handle>
+     is an image file then the successful reply will simply be
+     "OK <sbytes>\n".
+  
+  2. apply <num_handles> [<h1> <h2> ... <hn>] <command>
+     
+     Apply image-specific command <command> to all handles h1 h2 .. hn.
+     If <num_handles> is -1, apply to existing handles (the h1 h2 ... hn
+     list should not be given in this case). There will be one reply line
+     indicating "OK <num-handles>" or "ERROR" indicating whether Tasvir is
+     going ahead with the command or not. If it is (reply is "OK"), then all
+     the replies to individual commands (for each handle) will also be
+     returned on the connection, in the given order. Possible <command>s
+     are (note that the <handle> arg is to be given as "."): 
+       add . . [options]
+       reshow . [options]
+       bright . <add_brite> [options]
+       contrast . <contr_factor> [options]
+       query . [options]
+       ctrl . [options]
+       noctrl . [options]
+       normalize . [options]
+       pixnormalize . [options] 
+       xv . [options]
+       free . [options]
+       dorig . [options]
+
+  3. wapply <win> <command>
+
+     Similar to "apply", except that the command is applied to all images
+     shown with parent as <win>. There will be one reply line indicating
+     "OK <num-handles>" or "ERROR" as above, followed by individual
+     replies for matching handles. Possible commands are the same set as
+     above, and once again, you have to give the <handle> argument to the
+     command as "."
 
 ------------------------------------------------------------------------
 
@@ -193,6 +241,9 @@ A. Image-specific commands
         World Wide Web.
       <imf> can be "-" in which case the image is read off the client
         connection itself.
+      <imf> of the form "|foo bar1 bar2.." (with the quotes)
+	specifies that the image data is to be produced by running
+	the process foo with the arguments bar1, bar2...
     * <xwin> is the X window identifier (in hexadecimal, beginning
         with '0x') for the X window in which the image is to be shown.
       <xwin> can be 0, in which case the root window of the display
@@ -221,7 +272,7 @@ A. Image-specific commands
 
       All the standard options in [stdopt]
 
-      -subwin
+      -nosubwin
 	By default, Tasvir creates a subwindow of the given
 	<xwin> and puts the image there. With this option
 	set, Tasvir will use <xwin> directly. In this case,
@@ -246,7 +297,7 @@ A. Image-specific commands
 	be using up some extra memory to store the ximage,
         which will be freed with the "free" command.  Most X servers
 	can themselves manage this refreshing: see the next option. 
-	Also see -subwin above.
+	Also see -nosubwin above.
       -xbacking
 	If the Xserver supports backing stores, then Tasvir will ask
 	X to do the refreshing if this option is specified. If both
@@ -264,7 +315,7 @@ A. Image-specific commands
         (b) Simply use both -xbacking and -refresh options.  X backing
 	    will be tried first, if that fails, then Tasvir would back
 	    up images. 
-	Also see -subwin above.
+	Also see -nosubwin above.
       -aspect
       -noaspect
         -aspect tells Tasvir to maintain the original aspect ratio
@@ -285,7 +336,7 @@ A. Image-specific commands
 	If the key 'q' is pressed on the image, the image will be
 	free'd. This too is off by default. If -quitonq is given,
 	Tasvir will grab KeyPress events for the window displaying the
-        image. Also see -subwin above.
+        image. Also see -nosubwin above.
       -raw <W> <H> <n>
 	Indicates to Tasvir that the image data has no headers. 
         <W> is the width, <H> is the height, and <n> is the number of
@@ -304,6 +355,22 @@ A. Image-specific commands
 	QCLIC header, or the filename. Image names will be used
 	to uniquely identify images for caching (a soon-to-come
 	feature).
+      -waiter
+      -nowaiter
+      -urlwaiter
+      -nourlwaiter
+	A "waiter" is an information panel that pops up before the
+	image shows up, telling the user what Tasvir is up to. That is,
+	it will display messages like "Making http connection" and
+	"Allocating colors", etc. If -waiter is specified, a "waiter"
+	will pop up. It won't if -nowaiter is specified. -urlwaiter
+	and -nourlwaiter are similar, except that they apply only when
+	the image file is a URL. Defaults are -nowaiter and -urlwaiter. 
+      -osave
+      -odump
+	Determines whether the original image data is retained by Tasvir
+	after operation such as resizing/brightness/contrast. If -odump
+	is specified, you cannot undo changes. Default is -osave. 
       -popctrl
 	Pop up the control-window. The control-window will show
 	up after the first image chunk has been displayed (see
@@ -322,7 +389,7 @@ A. Image-specific commands
 	By default, Tasvir will grab configure events for the
 	window and resize the image whenever the window is resized
 	(by some X client). -noresize turns this behavior off. Also,
-	auto-resizing is always off when -subwin is used. You can
+	auto-resizing is always off when -nosubwin is used. You can
         always use the "relocate" command to resize the image.
       -noops
 	Absolutely no further operations are allowed on images shown
@@ -361,18 +428,35 @@ A. Image-specific commands
 	Display the image as soon as <S> bytes have been read. Then,
 	display more after every <s> bytes. These options make sure
 	that one doesn't have to wait till the whole image has been
-	read for something to appear on the screen. By default,
-	Tasvir calculates some reasonable values for <S> and <s>. If
+	read for something to appear on the screen. If
 	you set either to -1, Tasvir will do this reasonable calculation
 	for it. If you set <S> to 0, Tasvir will wait till all the
 	image bytes to be read have been read (dictated by -quality 
 	and/or -rbytes) before displaying the image. If <S> is not
 	0 but <s> is 0, then no "chunking" will be done for the bytes
-	remaining after <S>.
+	remaining after <S>. Default values are <S>=<s>=-1 for URL
+	images, and <S>=<s>=0 for others. 
 	Note that the colors allocated for the image come from the
 	first <S> bytes of info about the image only. It might be
 	a good idea to call "reshow ... -remap ..." after the
 	"show" command, to get better colors.
+      -nosmlicon
+	Even if the image is very small, show it. This *is* the
+	default, but is useful to temporarily override
+	a previous "smlicon" command has been sent to Tasvir.
+      -smlicon <W> <H>
+	Do not read the image if its display area is no larger
+	than WxH: just show an icon. This can be set as a global
+	default using the "smlicon" command.
+      -either
+      -both
+	These are meaningful only with -smlicon: if -either is
+	used then an image is considered very small if either is
+	width is <= <W> or its height is <= <H>. Both dimensions
+	have to be small when -both is used. Default is -both,
+	but if a "smlicon" command has been used at some point,
+	default is whichever of the two (-both and -either) that
+	the smlicon command used. 
 
     * An example of a typical "good" set of options for the show 
       command would be:
@@ -420,17 +504,17 @@ A. Image-specific commands
 	lesser number of bytes will be used to determine how much of
 	the image is to be read.
       -sync <s>
-	Display the "added" image after every <s> bytes.  By default,
-	Tasvir calculates some reasonable value for <s>. If
+	Display the "added" image after every <s> bytes. If 
 	you set it to -1, Tasvir will do this reasonable calculation
 	for it. If <s> is 0, then no "chunking" will be done and the
 	image will be displayed only after "adding" has finished. 
+	Default is <s>=0. 
 
 3. reshow <handle> [options] 
 
     Show the image again. Typically done to get better colors, or to
     refresh the displayed image when Tasvir is not doing it
-    automatically (for instance when "show" used -subwin or when "show"
+    automatically (for instance when "show" used -nosubwin or when "show"
     didn't specify -refresh/-xbacking).
 
     * Options:
@@ -504,14 +588,14 @@ A. Image-specific commands
 	Display the image as soon as <S> bytes have been read. Then,
 	display more after every <s> bytes. These options make sure
 	that one doesn't have to wait till the whole image has been
-	read for something to appear on the screen. By default,
-	Tasvir calculates some reasonable values for <S> and <s>. If
+	read for something to appear on the screen. If 
 	you set either to -1, Tasvir will do this reasonable calculation
 	for it. If you set <S> to 0, Tasvir will wait till all the
 	image bytes to be read have been read (dictated by -quality 
 	and/or -rbytes) before displaying the image. If <S> is not
 	0 but <s> is 0, then no "chunking" will be done for the bytes
 	remaining after <S>.
+	Default is <S>=<s>=0. 
 	Note that the colors allocated for the image come from the
 	first <S> bytes of info about the image only. It might be
 	a good idea to call "reshow ... -remap ..." after the
@@ -751,6 +835,16 @@ A. Image-specific commands
       -quickreturn
 	Return immediately.
 
+17. dorig <handle> [options]
+
+    If/when the image is modified, don't hold on to the original
+    image data.
+
+    * Options:
+      
+      -quickreturn
+	Return immediately.
+
 B. General commands:
 
 1. reset [options]
@@ -796,6 +890,140 @@ B. General commands:
    * Options:
 
      none except the no-good option -noreply
+
+6. defqual <qual>
+
+   For subsequently shown images, if no quality is specified, load at
+   quality <qual>. Negative <qual> will turn off this default level.
+
+7. smlicon <W> <H>
+
+   For subsequently shown images, if their display area is no larger
+   than WxH, do not read, just show an icon. Images thus approximated
+   cannot be further operated on. By default this behavior is off.
+
+   * Options:
+
+      -either
+      -both
+	If -either is used then an image is considered very small if
+	either is width is <= <W> or its height is <= <H>. Both
+	dimensions have to be small when -both is used.
+	Default is -both. 
+
+8. nosmlicon
+
+   Revert to the default of not approximating even small images
+   by icons.
+
+C. Miscellaneous commands:
+
+  1. psshow <image_or_handle> <outfile> [options]
+
+     Saves the image as postscript. <image_or_handle> is treated
+     (by default) as an image file, but you can "psshow" an image
+     that has already been "show"n using its handle as <image_or_handle>
+     and specifying "-handle" in options. <outfile> is the name of
+     the output postscript file. If <outfile> is "-", then the postscript
+     data is returned on the connection, after the "OK <bytes>\n" reply.
+
+     The postscript data is actually in EPSF format. You can include
+     it in other postscript documents, scaling/translating as needed,
+     but make sure that you put postscript code to ignore the "showpage"
+     command embedded in the EPSF data. 
+     
+     Returns "ERROR <error-message>\n" on failure. On success, if
+     <image_or_handle> is a handle, then the reply will be of the
+     same format as in Image-specific commands above, followed by
+     a trailing number that is the # of bytes saved. That is,
+     "OK <handle> <clrs> <totclrs> <haveim?> .... <priv?> <sbytes>\n",
+     with, <sbytes> being the # of bytes saved. If <image_or_handle>
+     is an image file then the successful reply will simply be
+     "OK <sbytes>\n".
+
+   * Options:
+     
+     -handle:
+       Treat <image_or_handle> as the handle of an already extant image.
+       If this is specified, then all options except "-nocenter", "-title",
+       "-quickret" "-pwidth", and "-pheight" are ignored: you cannot resize
+       an already "show"n image using "psshow". 
+
+     -nocenter
+       Positions the image at the lower left corner of the page, rather
+       than the center (which is the default).
+    
+     -title <name>
+       Sets the image title to <name>.
+
+     -pwidth <PW>
+     -pheight <PH>
+       Sets the page width/height to <PW>/<PH>, which can be numbers with a
+       trailing "i" or "c" (for inches and centimeters) like "5i" or
+       "10c", or just numbers, in which case the unit is assumed
+       to be postscript point (1/72 inches). Default is 612 for width and
+       762 for height. This is not really needed/used by anything except
+       centering. 
+
+     -quickreturn:
+       Return quickly. The value of <bytes> in the return message may
+       be incorrect if this is used. Ignored if <outfile> is given as
+       "-" (ie, you want to read postscript data off the connection). 
+
+     The following options in "psshow" are used only when "-handle" is
+     absent.
+
+     -width <W>:
+     -height <H>:
+       Specifies image size in pixels (= postscript points) or inches or
+       centimeters. You can also specify a scaling factor by starting
+       with "0x". Examples: "-width 300" "-height 0x0.5" "-width 10c"
+       "-height 4i". Unless "-noaspect" is also specified, image may
+       be shrunk more to attain the original aspect ratio. Defaults, of
+       course, are the original image dimensions.
+        
+     -bytes <B>:
+     -rbytes <B>:
+     -quality <Q>:
+     -raw <W> <H> <nplanes>:
+     -aspect:
+     -noaspect:
+     -smooth:
+     -nosmooth:
+       All these options have the same meanings as in the "show" command.
+
+  2. apply <num_handles> [<h1> <h2> ... <hn>] <command>
+     
+     Apply image-specific command <command> to all handles h1 h2 .. hn.
+     If <num_handles> is -1, apply to existing handles (the h1 h2 ... hn
+     list should not be given in this case). There will be one reply line
+     indicating "OK <num-handles>" or "ERROR" indicating whether Tasvir is
+     going ahead with the command or not. If it is (reply is "OK"), then all
+     the replies to individual commands (for each handle) will also be
+     returned on the connection, in the given order. Possible <command>s
+     are (note that the <handle> arg is to be given as "."): 
+       add . . [options]
+       reshow . [options]
+       bright . <add_brite> [options]
+       contrast . <contr_factor> [options]
+       query . [options]
+       ctrl . [options]
+       noctrl . [options]
+       normalize . [options]
+       pixnormalize . [options] 
+       xv . [options]
+       free . [options]
+       dorig . [options]
+
+  3. wapply <win> <command>
+
+     Similar to "apply", except that the command is applied to all images
+     shown with parent as <win>. There will be one reply line indicating
+     "OK <num-handles>" or "ERROR" as above, followed by individual
+     replies for matching handles. Possible commands are the same set as
+     above, and once again, you have to give the <handle> argument to the
+     command as "."
+
 
 
 

@@ -57,8 +57,9 @@ typedef struct my_jpg_error_mgr * my_jpg_error_ptr;
 #define IM_JPEG 10
 #define IM_JPEG_GRAY 11
 #define IM_JPEG_RGB 12
+#define IM_SPIHT_GRAY 13
 
-#define IM_KIND_NUM 13
+#define IM_KIND_NUM 14
 
 static const char *ImKindNames[IM_KIND_NUM] =
 {
@@ -74,7 +75,8 @@ static const char *ImKindNames[IM_KIND_NUM] =
   "Not-RAW", 
   "JPEG", 
   "JPEG (Gray)", 
-  "JPEG (Color)"
+  "JPEG (Color)",
+  "SPIHT (Gray)" 
 };
  
 #define ImKindString(k) \
@@ -179,6 +181,12 @@ struct ImageStruct {
 		      by ReadMoreImg. Its meaning depends upon
   		      ImKind */
   long ImRestartAux[15];
+  
+  #ifdef HAVE_SPIHT
+  char spiht_infile[L_tmpnam+10];
+  DataDest spiht_src;
+  long spiht_data_bytes; 
+  #endif
 
   #ifdef HAVE_JPEGLIB
   /** info for decompressing JPEG image **/
@@ -533,7 +541,9 @@ extern float ImQclicIcurveQofS(Image *Im, long nbytes, boolean in_percent);
 #define ImCopyQclicInfo(Imtgt, Imsrc) \
   QclicInfoCopy(&((Imtgt)->qclic), &((Imsrc)->qclic))
 
-#define ImIsCompressed(Im) ImKindSubSetOf((Im)->ImKind, IM_JPEG)
+#define ImIsCompressed(Im) \
+  (ImKindSubSetOf((Im)->ImKind, IM_JPEG) || \
+   ImKindSubSetOf((Im)->ImKind, IM_SPIHT_GRAY))
 
 #define ImHasQclicCurve(Im) \
   ((Im)->qclic.have_info && ((Im)->qclic.curve_points > 0))

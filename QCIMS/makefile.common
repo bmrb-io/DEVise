@@ -1,5 +1,5 @@
 
-all: Jpg Img Rdp Vr Tsv
+all: Jpg Img Rdp Vr Tsv Spt
 
 Jpg:
 	@echo "****** Making jpeg lib"
@@ -20,6 +20,10 @@ Vr:
 Tsv:
 	@echo "****** Making Tasvir"
 	( cd Tasvir; make -f makefile.$(MC) )
+
+Spt:
+	@echo "****** Making Spiht"
+	( cd Spiht; compile.bat ../bin )
 
 clean:
 	@echo "****** Cleaning jpeg lib"

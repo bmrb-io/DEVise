@@ -31,20 +31,22 @@
 #include "VR.h"
 
 Display * VR_TheDisplay;
-int VR_ScreenDoesBacking; 
-int VR_ScreenBacking; 
+int VR_ScreenDoesBacking; /* Is BackingStores supported? */
+int VR_ScreenBacking;     /* Am I using backing stores? */ 
 GC VR_TheGC;
 int VR_TheScreen;
 unsigned long VR_ForeGround, VR_BackGround;
 
-char VR_WindowTitle[VR_STRLENMAX];
+char VR_WindowTitle[VR_STRLENMAX]; /* default title of a window */ 
 
-char VR_errmsg[VR_STRLENMAX];
+char VR_errmsg[VR_STRLENMAX];  /* Contains an error message after
+				  any VR call returning -1 on
+				  failure fails */ 
 int VR_Depth, VR_BitsPerPixel;
 int VR_BppBytes, VR_BppAuxBytes, VR_BppBits;
-int VR_ColorSupported;
+int VR_ColorSupported; /* visual != GrayScale or StaticGray */
 int VR_MaxPixel;
-int VR_FixedColors;
+int VR_FixedColors; /* visual = TrueColor or StaticGray or StaticColor */
 
 Visual * VR_TheVisual;
 int VR_VisualClass;

@@ -6,7 +6,7 @@ LIBPATHS = $(XLIBPATH)
 
 INCLUDES = $(XLIBINCLUDE)
 
-CFLAGS = -D_$(MC) -O -O2 -O3 $(INCLUDES)
+CFLAGS = -D_$(MC) -D_TRUST_XIDS -O -O2 -O3 $(INCLUDES)
 
 SRC = VR_Main.c VR_Translator.c VR_Xglue.c VR_Icon.c VR_Globals.c
 

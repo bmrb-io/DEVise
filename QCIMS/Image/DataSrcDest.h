@@ -21,6 +21,7 @@
 #define DSD_NAME_MEMORY      "<memory>"
 #define DSD_NAME_NULL        "<null>"
 #define DSD_NAME_AUTO_MEMORY "<auto-memory>"
+#define DSD_NAME_PROCESS     "<process>"
 
 
 
@@ -37,6 +38,7 @@
 #define DS_KIND_MEMORY 3
 #define DS_KIND_FILTER 4
 #define DS_KIND_STREAM 5 
+#define DS_KIND_PROCESS 6 
 
 
 struct DataSrcStruct { 
@@ -87,6 +89,7 @@ typedef struct DataSrcStruct DataSrc;
 #define DS_web_src(ds) ((ds)->src_kind == DS_KIND_WEB) 
 #define DS_memory_src(ds) ((ds)->src_kind == DS_KIND_MEMORY) 
 #define DS_filter_src(ds) ((ds)->src_kind == DS_KIND_FILTER) 
+#define DS_process_src(ds) ((ds)->src_kind == DS_KIND_PROCESS) 
 
 #define DS_src_has_file(ds) (DS_file_src(ds) || \
 			   DS_fd_src(ds)   || \
@@ -107,6 +110,8 @@ extern int DS_OpenFd(DataSrc *ds, int fd, long bytes_to_read);
 extern int DS_OpenStream(DataSrc *ds, FILE *fp, long bytes_to_read);
 
 extern int DS_OpenMemory(DataSrc *ds, char *mem, long bytes_to_read); 
+
+extern int DS_OpenProcess(DataSrc *ds, char *argv[], long bytes_to_read); 
 
 extern int DS_ExtendSrc(DataSrc *ds, long nbytes_more);
 
@@ -233,6 +238,9 @@ extern int DD_OpenNull(DataDest *dd);
 #define DD_WriteLine(dd, line) \
   ((dd)->write_func((dd),(line),strlen(line)) + \
    (dd)->write_func((dd),"\n",1) )
+
+#define DD_Flush(dd) \
+  if (DD_file_dest(dd) && (dd)->fp ) { fflush((dd)->fp);}
 
 extern void DD_Close(DataDest *dd); 
 

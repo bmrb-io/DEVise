@@ -65,6 +65,10 @@ static char * CodeStrings[] =
 
 extern int XWinIsValid(Window win, Window *root, Window *parent)
 {
+  #ifdef _TRUST_XIDS
+  return 1;
+  #else
+
   /* if this call is for the same win as last call, return 1 
      without checking, upto WIN_VALIDITY_EXPIRY times */
   static Window last_win = 0;
@@ -87,7 +91,7 @@ extern int XWinIsValid(Window win, Window *root, Window *parent)
     last_win = win;
   }
   return(ans);
-
+  #endif
 }
 
 extern char * VR_ReturnCodeToString(VR_ReturnCode rc)
