@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/10 23:20:31  taodb
+  Intial Revision
+
  */
 
 #include <stdlib.h>
@@ -46,10 +49,11 @@ string
 Serializable::raw_serialize(int arg)
 {
 	string	tempStr;
-	char buf[Serializable::INT_SIZE];
+	char buf[Serializable::INT_SIZE+1];
 	char format[20];
 	sprintf(format, "%%-%dd", Serializable::INT_SIZE);
 	sprintf(buf, format, arg);
+	//cout << "raw_:"<<buf<<endl;
 	tempStr = string(buf);
 	return tempStr;
 }
@@ -58,8 +62,19 @@ string
 Serializable::serialize(int arg)
 {
 	string typeStr= raw_serialize(Serializable::TYP_INT);
-	char	buf[32];
+	char	buf[128];
 	sprintf(buf,"%d", arg);
+	string valStr = string(buf);
+	string lenStr = raw_serialize(valStr.length());
+	return typeStr + lenStr + valStr;
+}
+
+string
+Serializable::serialize(long arg)
+{
+	string typeStr= raw_serialize(Serializable::TYP_LONG);
+	char	buf[128];
+	sprintf(buf,"%ld", arg);
 	string valStr = string(buf);
 	string lenStr = raw_serialize(valStr.length());
 	return typeStr + lenStr + valStr;
@@ -123,12 +138,16 @@ Serializable::composite_serialize(int args, ...)
 		body += *((string*)va_arg(pvar, void*));
 	}
 	va_end(pvar);
-	composite_serialize(args, body);
+	return	composite_serialize(args, body);
 }
 
 string 
 Serializable::composite_serialize(int argc, string body)
 {
+	string emptyStr;
+	if (argc == 0)
+		return emptyStr;
+
 	string typeStr= raw_serialize(Serializable::TYP_COMPOSITE);
 	string	argsStr = raw_serialize(argc);
 	string lenStr = raw_serialize(argsStr.length()+body.length()); 
@@ -153,14 +172,15 @@ Serializable::composite_deserialize(string body, vector<string>& vec)
 		pos += Serializable::INT_SIZE;
 		int	length = atoi(body.substr(pos, Serializable::INT_SIZE).c_str());
 
-		// skip to the body filed
-		pos += Serializable::INT_SIZE;
+		// retreat to the begining
+		pos -= Serializable::INT_SIZE;
 
-		// store the current body
-		vec.push_back(body.substr(pos, length));
+		// store the current whole item including its header
+		int	itemLen = length + 2* Serializable::INT_SIZE;
+		vec.push_back(body.substr(pos, itemLen));
 
 		// skip to the next item
-		pos += length;
+		pos += itemLen;
 	}
 	return args;
 }
@@ -182,12 +202,14 @@ void
 Serializable::deserialize(string& str, int& typeId, string& value)
 {
 	string	emptyStr;
+	const char* pt;
 
 	int	pos = 0;
 	typeId = atoi(str.substr(pos, Serializable::INT_SIZE).c_str());
 
 	pos += Serializable::INT_SIZE;
-	int	length = atoi(str.substr(pos, Serializable::INT_SIZE).c_str());
+	pt = str.substr(pos, Serializable::INT_SIZE).c_str();
+	int	length = atoi(pt);
 	pos += Serializable::INT_SIZE;
 
 	if (length != (str.length() - 2* Serializable::INT_SIZE))
@@ -207,11 +229,12 @@ Serializable::deserialize(string& str, int& typeId, string& value)
 			break;
 
 		case Serializable::TYP_INT:
+		case Serializable::TYP_LONG:
 		case Serializable::TYP_CHAR:
 		case Serializable::TYP_BOOL:
 		case Serializable::TYP_FLOAT:
 		case Serializable::TYP_STRING:
-			value = atoi(str.substr(pos, Serializable::INT_SIZE).c_str());
+			value = str.substr(pos, Serializable::INT_SIZE);
 			break;
 		default:
 			cerr << "Illegal type specified"<<endl;

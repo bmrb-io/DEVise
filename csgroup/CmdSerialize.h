@@ -35,6 +35,7 @@ class Serializable
 			UNDEFINED = 0,
 			TYP_COMPOSITE,
 			TYP_INT, 
+			TYP_LONG, 
 			TYP_BOOL, 
 			TYP_CHAR, 
 			TYP_FLOAT,
@@ -53,6 +54,7 @@ class Serializable
 		virtual int composite_deserialize(string body, vector<string>& vec);
 
 		virtual string serialize(int);
+		virtual string serialize(long);
 		virtual string serialize(bool);
 		virtual string serialize(char);
 		virtual string serialize(float);
