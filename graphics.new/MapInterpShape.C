@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  1997/04/29 17:35:10  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.38  1997/04/25 16:54:09  wenger
   Text labels are now sized in the same way as Rects; fixed font bug in
   middle button query popup; removed the dialog that warns you about your
@@ -1428,7 +1433,20 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	if (color == XorColor)
 	    win->SetCopyMode();
 	
-	// Get the name of the image file or the image itself.
+	// Get the name of the image file or the image itself.  (Print a warning
+	// if this isn't a string attribute.)
+    AttrList *attrList = map->GDataAttrList();
+    AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
+    if (attrInfo == NULL) {
+#if defined(DEBUG)
+      reportErrNosys("Can't find AttrInfo for shapeAttr_0");
+#endif
+    } else {
+	  if (attrInfo->type != StringAttr) {
+		printf("Warning: image or image filename attribute is not a string attribute\n");
+	  }
+    }
+
 	char *shapeAttr0 = NULL;
 	if (offset->shapeAttrOffset[0] >= 0) {
 	    int key = (int)GetShapeAttr0(gdata, map, offset);
