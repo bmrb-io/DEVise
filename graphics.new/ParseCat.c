@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/15 17:21:23  jussi
+  String attributes are no longer eliminated from the
+  logical schema tree (group directory).
+
   Revision 1.26  1996/07/12 18:24:47  wenger
   Fixed bugs with handling file headers in schemas; added DataSourceBuf
   to TDataAscii.
@@ -225,6 +229,14 @@ CatFiles(int &numFiles, char **&fileNames)
 {
   numFiles = _numCatFiles;
   fileNames = _catFiles;
+//TEMPTEMP>>>
+  printf("Catalog (schema) files:\n");
+  int count;
+  for (count = 0; count < _numCatFiles; count++)
+  {
+    printf("  %s\n", _catFiles[count]);
+  }
+//<<<
 }
 
 /*------------------------------------------------------------------------------

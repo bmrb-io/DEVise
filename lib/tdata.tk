@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1996/07/11 17:26:19  wenger
+#	Devise now writes headers to some of the files it writes;
+#	DataSourceSegment class allows non-fixed data length with non-zero
+#	offset; GUI for editing schema files can deal with comment lines;
+#	added targets to top-level makefiles to allow more flexibility.
+#
 #	Revision 1.1  1996/06/12 14:57:59  wenger
 #	Added GUI and some code for saving data to templates; added preliminary
 #	graphical display of TDatas; you now have the option of closing a session
@@ -26,55 +32,41 @@
 
 ############################################################
 
-# Show the TDatas currently used in this session.
+# Save one of the TDatas that's currently open to a TData file (a file
+# containing the schema(s) and the actual data).
 # As of right now, this shows all TDatas that are open, even if they
 # aren't used in any view.
-proc ShowTDatas {} {
+proc SaveTData {} {
+    global dialogListVar
+    global fsBox
+    global datadir
 
-    # Return without doing anything if the window is already showing.
-    if {[WindowVisible .tdlist]} {
+    # Get a list of all of the TDatas.
+    set tDataList [TdataSet]
+
+    # Have the user select the tdata to save.
+    set answer [dialogList .tdlist "Save Data Stream" "Select a data stream" \
+	"" 0 { Cancel OK } $tDataList]
+
+    if {$answer == 0 || $dialogListVar(selected) == ""} {
 	return
+    } else {
+	set tdata $dialogListVar(selected)
     }
 
-    # Make a list of all of the TDatas.
-    set tDataList ""
+    # Have the user select the file to save it as.
+    set fsBox(path) $datadir
+    set fsBox(pattern) *
+    set filename [ FSBox ]
 
-    set classes [ DEVise get tdata ]
-    foreach class $classes {
-	set instances [ DEVise get tdata $class ]
-	foreach inst $instances {
-	    lappend tDataList $inst
-	}
-    }
+    if {$filename == ""} { return }
 
-    # Build the window to show them in.
-    toplevel .tdlist
+    # Confirm the file selection.
+    set button [ dialog .saveSession "Save Data Stream" \
+	    "Save data stream to file\n$filename?"  "" 1  {Cancel} OK ]
+    if {$button != 1} { return }
 
-    wm title .tdlist "Current TDatas"
-
-    wm geometry .tdlist +100+100
-
-    frame .tdlist.ftop
-    frame .tdlist.fbot
-    pack .tdlist.ftop .tdlist.fbot -side top -fill x
-
-    listbox .tdlist.tdatas -relief raised -borderwidth 2 \
-	-yscrollcommand ".tdlist.scroll set"
-    foreach tdata $tDataList {
-	.tdlist.tdatas insert end $tdata
-    }
-
-    scrollbar .tdlist.scroll -command ".tdlist.tdatas yview"
-
-    pack .tdlist.scroll -in .tdlist.ftop -side right -fill y
-    pack .tdlist.tdatas -in .tdlist.ftop -side top -fill x
-
-    button .tdlist.ok -text "OK" -width 10 -command { destroy .tdlist }
-    button .tdlist.cancel -text "Cancel" -width 10 \
-	-command { destroy .tdlist }
-
-    pack .tdlist.ok .tdlist.cancel -in .tdlist.fbot -side left -padx 3m \
-	-pady 2m
+    DEVise saveTdata $tdata $filename
 
     return
 }

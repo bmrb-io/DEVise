@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/06/12 14:56:31  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.3  1996/01/13 21:08:47  jussi
   Added copyright notice.
 
@@ -119,6 +127,15 @@ public:
 
 	/* Do a checkpoint */
 	virtual void Checkpoint()=0;
+
+	/* Save the TData to a TData file. */
+	DevStatus Save(char *filename);
+
+private:
+	DevStatus WriteHeader(int fd);
+	DevStatus WriteLogSchema(int fd);
+	DevStatus WritePhysSchema(int fd);
+	DevStatus WriteData(int fd);
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/23 15:40:40  jussi
+  Added set/getViewDisplayDataValues and set/getViewPileMode commands.
+
   Revision 1.22  1996/07/21 02:20:12  jussi
   Added getViewXYZoom and setViewXYZoom commands.
 
@@ -1292,6 +1295,20 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       DeviseDisplay::DefaultDisplay()->ExportImage(format, argv[2]);
       control->ReturnVal(API_ACK, "done");
       return 1;
+    }
+    if (!strcmp(argv[0], "saveTdata")) {
+      TData *tdata = (TData *)classDir->FindInstance(argv[1]);
+      if (!tdata) {
+	control->ReturnVal(API_NAK, "Cannot find tdata");
+	return -1;
+      }
+      if (tdata->Save(argv[2]) != StatusFailed) {
+        control->ReturnVal(API_ACK, "done");
+        return 1;
+      } else {
+	control->ReturnVal(API_NAK, "Cannot save tdata");
+	return -1;
+      }
     }
   }
 

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.87  1996/07/19 03:34:01  jussi
+#	Added Line and LineShape shapes.
+#
 #	Revision 1.86  1996/07/16 23:48:07  jussi
 #	Added Session/Save as Batch Script command.
 #
@@ -574,7 +577,7 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 	-menu .mbar.tdata.menu.mappingMenu
 
 .mbar.tdata.menu add command -label "Define" -command { MacroImport 1 0 }
-.mbar.tdata.menu add command -label "Show TDatas" -command { ShowTDatas }
+.mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
 .mbar.tdata.menu add separator
 .mbar.tdata.menu add command -label "Derived Data" -command { MacroImport 0 1 }
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/26 23:55:44  jussi
+  Added method to turn on/off error reporting.
+
   Revision 1.1  1996/05/07 16:03:08  wenger
   Added final version of code for reading schemas from session files;
   added an error-reporting class to improve error info.
@@ -37,7 +40,7 @@
 const int	devNoSyserr = -9999;
 
 #define		reportError(message, errno) DevError::ReportError((message), \
-	srcFile, __LINE__, (errno))
+	__FILE__, __LINE__, (errno))
 
 
 class DevError

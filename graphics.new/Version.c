@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/09 16:00:24  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
  */
 
 #define _Version_c_
@@ -35,7 +40,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.1";
+static const char *	version = "1.1.2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";

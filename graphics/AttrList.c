@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/07 16:14:19  jussi
+  Added copy constructor and GetVal() method.
+
   Revision 1.7  1996/01/10 00:38:16  jussi
   Minor changes.
 
@@ -37,9 +40,13 @@
 */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include "AttrList.h"
 #include "Util.h"
+
+static char *GetTypeString(AttrType type);
+static void WriteVal(int fd, AttrVal *aval, AttrType atype);
 
 AttrList::AttrList(char *name)
 {
@@ -198,23 +205,7 @@ void AttrList::Print()
     printf("  name %s, num %d, offset %d, length %d, composite %d, ",
 	   info->name, info->attrNum, info->offset, info->length,
 	   (info->isComposite? 1 : 0));
-    switch(info->type){
-    case IntAttr:
-      printf("int");
-      break;
-    case FloatAttr:
-      printf("float");
-      break;
-    case DoubleAttr:
-      printf("double");
-      break;
-    case StringAttr:
-      printf("string");
-      break;
-    case DateAttr:
-      printf("date");
-      break;
-    }
+    printf("%s", GetTypeString(info->type));
     if (info->hasHiVal) {
       printf(", hi ");
       PrintVal(&(info->hiVal), info->type);
@@ -225,6 +216,84 @@ void AttrList::Print()
     }
     printf("\n");
   }
+
+  DoneIterator();
+}
+
+void AttrList::Write(int fd)
+{
+  for (InitIterator(); More(); )
+  {
+    AttrInfo *infoP = Next();
+
+    char *string;
+
+    // Sorted?
+    if (infoP->isSorted)
+    {
+      string = "sorted ";
+      write (fd, string, strlen(string));
+    }
+
+    // Composite or normal attribute?
+    if (infoP->isComposite)
+    {
+      string = "compattr ";
+    }
+    else
+    {
+      string = "attr ";
+    }
+    write (fd, string, strlen(string));
+
+    // Name.
+    write (fd, infoP->name, strlen(infoP->name));
+    write (fd, " ", 1);
+
+    // Type.
+    string = GetTypeString(infoP->type);
+    write (fd, string, strlen(string));
+    write (fd, " ", 1);
+
+    // Length.
+    if (infoP->type == StringAttr)
+    {
+      char buf[100];
+      sprintf(buf, "%d ", infoP->length);
+      write (fd, buf, strlen(buf));
+    }
+
+    // Match value.  TEMPTEMP -- before or after length??
+    if (infoP->hasMatchVal)
+    {
+      string = "= ";
+      write (fd, string, strlen(string));
+
+      WriteVal(fd, &infoP->matchVal, infoP->type);
+    }
+
+    // Hi.
+    if (infoP->hasHiVal)
+    {
+      string = "hi ";
+      write (fd, string, strlen(string));
+
+      WriteVal(fd, &infoP->hiVal, infoP->type);
+    }
+
+    // Lo.
+    if (infoP->hasLoVal)
+    {
+      string = "lo ";
+      write (fd, string, strlen(string));
+
+      WriteVal(fd, &infoP->loVal, infoP->type);
+    }
+
+    write (fd, "\n", 1);
+  }
+
+  DoneIterator();
 }
 
 void AttrList::PrintVal(AttrVal *aval, AttrType atype)
@@ -248,4 +317,73 @@ void AttrList::PrintVal(AttrVal *aval, AttrType atype)
     default:
       break;
   }
+}
+
+static char *
+GetTypeString(AttrType type)
+{
+  switch(type)
+  {
+  case IntAttr:
+    return "int";
+    break;
+
+  case FloatAttr:
+    return "float";
+    break;
+
+  case DoubleAttr:
+    return "double";
+    break;
+
+  case StringAttr:
+    return "string";
+    break;
+
+  case DateAttr:
+    return "date";
+    break;
+
+  default:
+    DOASSERT(0, "Unknown attribute type");
+    return ""; // So compiler is happy.
+    break;
+  }
+}
+
+static void
+WriteVal(int fd, AttrVal *aval, AttrType atype)
+{
+  char buf[100];
+
+  switch(atype)
+  {
+  case IntAttr:
+    sprintf(buf, "%d ", aval->intVal);
+    break;
+
+  case FloatAttr:
+    sprintf(buf, "%f ", aval->floatVal);
+    break;
+
+  case DoubleAttr:
+    sprintf(buf, "%f ", aval->doubleVal);
+    break;
+
+  case StringAttr:
+    sprintf(buf, "%s ", aval->strVal);
+    break;
+
+  case DateAttr:
+    sprintf(buf, "%ld ", (long)aval->dateVal);//TEMPTEMP?
+    break;
+
+  default:
+    DOASSERT(0, "Unknown attribute type");
+    break;
+  }
+
+  write (fd, buf, strlen(buf));
+
+  return;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/07 16:14:19  jussi
+  Added copy constructor and GetVal() method.
+
   Revision 1.5  1996/04/19 19:06:35  wenger
   Added DEVise copyright notice, etc.
 
@@ -105,6 +108,7 @@ public:
   void DoneIterator();
 
   void Print();
+  void Write(int fd);
 
   static double GetVal(AttrVal *aval, AttrType atype);
 

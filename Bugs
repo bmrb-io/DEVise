@@ -9,7 +9,7 @@ Num Date        Status  Description
 			you are not doing anything. (rkw/kb) (jpm)
 
 003 05/14/96	OPEN	Numeric keypad keys don't always work correctly
-						on Suns running SunOS 4.x. (rkw)
+			on Suns running SunOS 4.x. (rkw)
 
 004 05/16/96	OPEN	Physical schema editor does not support the length
 			parameter of string attribute types. (jpm)
@@ -45,8 +45,8 @@ Num Date        Status  Description
 			lines in the schema files -- tries to interpret them
 			as attributes. (rkw)
 
-014 07/11/96	OPEN	Schema editor doesn't allow entry of string lengths
-			(always forces them to 10). (rkw)
+014 07/11/96	DUP	Schema editor doesn't allow entry of string lengths
+			(always forces them to 10). (rkw) (duplicate of 004)
 
 015 07/11/96	OPEN	HP version of Devise can't open the condorview1.tk
 			session. (rkw)
@@ -54,3 +54,4 @@ Num Date        Status  Description
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
+DUP = duplicate
