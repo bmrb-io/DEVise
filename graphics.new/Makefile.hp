@@ -1004,28 +1004,21 @@ testpfileGap.o: /usr/include/stdlib.h ../graphics/DeviseTypes.h PageFile.h
 testpfileGap.o: BufHint.h BufMgr.h ../graphics/BufPolicy.h RecId.h
 testpfileGap.o: BufferPolicy.h RecOrder.h ../graphics/DList.h
 testpfileGap.o: ../graphics/Exit.h PageRange.h
-BasicStats.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-BasicStats.o: ../graphics/XDisplay.h ../graphics/Display.h
-BasicStats.o: ../graphics/DeviseTypes.h ../graphics/Geom.h
-BasicStats.o: /usr/include/math.h ../graphics/Color.h
-BasicStats.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
-BasicStats.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-BasicStats.o: /usr/include/sys/types.h ../graphics/DList.h ../graphics/Exit.h
+BasicStats.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h BasicStats.h
+BasicStats.o: ../graphics/DList.h ../graphics/Exit.h
+BasicStats.o: ../graphics/DeviseTypes.h ViewStats.h ViewGraph.h
+BasicStats.o: ../graphics/View.h ../graphics/Dispatcher.h
+BasicStats.o: /usr/include/stdlib.h /usr/include/unistd.h
+BasicStats.o: /usr/include/sys/unistd.h /usr/include/sys/types.h
 BasicStats.o: ../graphics/Journal.h ../graphics/VisualArg.h
-BasicStats.o: ../graphics/Pattern.h ../graphics/ColorMgr.h ../graphics/Xdef.h
-BasicStats.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-BasicStats.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-BasicStats.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-BasicStats.o: ../graphics/XWindowRep.h /usr/include/string.h
-BasicStats.o: ../graphics/WindowRep.h ../graphics/Transform.h
-BasicStats.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
-BasicStats.o: ../graphics/XBitmap.h BasicStats.h ViewStats.h ViewKGraph.h
-BasicStats.o: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
-BasicStats.o: ../graphics/Control.h ../graphics/ClassDir.h
-BasicStats.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
-BasicStats.o: /usr/include/sys/time.h ../graphics/Config.h
-BasicStats.o: ../graphics/Cursor.h DerivedDataSource.h Action.h RecId.h
-BasicStats.o: KGraph.h
+BasicStats.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/ViewWin.h
+BasicStats.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
+BasicStats.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
+BasicStats.o: ../graphics/Compress.h ../graphics/Control.h
+BasicStats.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
+BasicStats.o: ../graphics/AttrList.h /usr/include/sys/time.h
+BasicStats.o: ../graphics/Config.h ../graphics/Cursor.h DerivedDataSource.h
+BasicStats.o: /usr/include/string.h Action.h RecId.h
 DCE.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/assert.h
 DCE.o: /usr/include/sys/stat.h DCE.h /usr/include/sys/types.h
 DCE.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h /usr/include/sys/shm.h
@@ -1068,16 +1061,16 @@ ItemList.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h ItemList.h
 ItemList.o: Group.h /usr/include/stdlib.h MapInterpClassInfo.h
 ItemList.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 ItemList.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Pattern.h
-KGraph.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
-KGraph.o: ../graphics/Transform.h /usr/include/math.h
-KGraph.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
-KGraph.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Geom.h
-KGraph.o: ../graphics/WindowRep.h /usr/include/stdlib.h ../graphics/DList.h
-KGraph.o: ../graphics/Exit.h ../graphics/DevisePixmap.h
-KGraph.o: ../graphics/Compress.h KGraph.h ../graphics/Display.h
-KGraph.o: ../graphics/Dispatcher.h /usr/include/unistd.h
-KGraph.o: /usr/include/sys/unistd.h /usr/include/sys/types.h
-KGraph.o: ../graphics/Journal.h ../graphics/ColorMgr.h
+KGraph.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h KGraph.h
+KGraph.o: ../graphics/Geom.h /usr/include/math.h ../graphics/DeviseTypes.h
+KGraph.o: ../graphics/Color.h ../graphics/WindowRep.h /usr/include/stdlib.h
+KGraph.o: ../graphics/Transform.h ../graphics/VisualArg.h
+KGraph.o: ../graphics/Pattern.h ../graphics/DList.h ../graphics/Exit.h
+KGraph.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+KGraph.o: ../graphics/Display.h ../graphics/Dispatcher.h
+KGraph.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+KGraph.o: /usr/include/sys/types.h ../graphics/Journal.h
+KGraph.o: ../graphics/ColorMgr.h
 MapInterpShape.o: MapInterpShape.h ../graphics/Transform.h
 MapInterpShape.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 MapInterpShape.o: /usr/include/math.h ../graphics/DeviseTypes.h
@@ -1111,12 +1104,11 @@ ParseAPI.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 ParseAPI.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ParseAPI.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 ParseAPI.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
-ParseAPI.o: RecId.h KGraph.h ../graphics/Display.h ../graphics/ColorMgr.h
-ParseAPI.o: ../graphics/Util.h /usr/include/time.h ParseCat.h TData.h
-ParseAPI.o: RecOrder.h TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h
-ParseAPI.o: GroupDir.h ItemList.h Group.h MapInterpClassInfo.h
-ParseAPI.o: ../graphics/ViewLayout.h VisualLink.h ../graphics/FilterQueue.h
-ParseAPI.o: DataSeg.h Version.h DevFileHeader.h
+ParseAPI.o: RecId.h KGraph.h ../graphics/Util.h /usr/include/time.h
+ParseAPI.o: ParseCat.h TData.h RecOrder.h TDataMap.h ShapeID.h GDataRec.h
+ParseAPI.o: ../graphics/Parse.h GroupDir.h ItemList.h Group.h
+ParseAPI.o: MapInterpClassInfo.h ../graphics/ViewLayout.h VisualLink.h
+ParseAPI.o: ../graphics/FilterQueue.h DataSeg.h Version.h DevFileHeader.h
 RecordLink.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 RecordLink.o: /usr/include/stdlib.h RecordLink.h RecId.h RecFile.h
 RecordLink.o: ../graphics/DeviseTypes.h VisualLink.h ViewGraph.h
@@ -1165,8 +1157,8 @@ ViewKGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewKGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewKGraph.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
 ViewKGraph.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
-ViewKGraph.o: RecId.h KGraph.h ../graphics/Display.h ../graphics/ColorMgr.h
-ViewKGraph.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
+ViewKGraph.o: RecId.h KGraph.h ../graphics/Util.h /usr/include/time.h
+ViewKGraph.o: /usr/include/ctype.h
 Web.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 Web.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h
 Web.o: /usr/include/errno.h /usr/include/sys/errno.h ../graphics/Exit.h Web.h

@@ -323,9 +323,10 @@ WindowRep.o: /usr/include/sys/time.h /usr/include/sys/time.h
 WindowRep.o: /usr/include/sys/unistd.h Journal.h ColorMgr.h
 XBitmap.o: XBitmap.h
 XDisplay.o: /usr/include/math.h /usr/include/floatingpoint.h
-XDisplay.o: /usr/include/sys/ieeefp.h XDisplay.h Display.h DeviseTypes.h
-XDisplay.o: Geom.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
-XDisplay.o: Color.h Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h
+XDisplay.o: /usr/include/sys/ieeefp.h /s/X11/include/X11/Xatom.h XDisplay.h
+XDisplay.o: Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
+XDisplay.o: /usr/include/sys/feature_tests.h Color.h Dispatcher.h
+XDisplay.o: /usr/include/stdlib.h /usr/include/unistd.h
 XDisplay.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 XDisplay.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 XDisplay.o: /usr/include/sys/time.h /usr/include/sys/time.h

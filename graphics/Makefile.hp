@@ -229,9 +229,10 @@ WindowRep.o: DevisePixmap.h Compress.h Display.h Dispatcher.h
 WindowRep.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 WindowRep.o: /usr/include/sys/types.h Journal.h ColorMgr.h
 XBitmap.o: XBitmap.h
-XDisplay.o: /usr/include/math.h XDisplay.h Display.h DeviseTypes.h Geom.h
-XDisplay.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h Color.h
-XDisplay.o: Dispatcher.h /usr/include/stdlib.h /usr/include/unistd.h
+XDisplay.o: /usr/include/math.h /s/X11/include/X11/Xatom.h XDisplay.h
+XDisplay.o: Display.h DeviseTypes.h Geom.h /usr/include/stdio.h
+XDisplay.o: /usr/include/sys/stdsyms.h Color.h Dispatcher.h
+XDisplay.o: /usr/include/stdlib.h /usr/include/unistd.h
 XDisplay.o: /usr/include/sys/unistd.h /usr/include/sys/types.h DList.h Exit.h
 XDisplay.o: Journal.h VisualArg.h Pattern.h ColorMgr.h Xdef.h
 XDisplay.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
