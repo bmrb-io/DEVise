@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1998/03/12 18:23:34  donjerko
+  *** empty log message ***
+
   Revision 1.33  1997/11/24 06:01:26  donjerko
   Added more odbc files.
 
@@ -250,7 +253,7 @@ List<BaseSelection*>* createSelectList(const string& nm, PlanOp* iterat){
 	const string* types = iterat->getTypeIDs();
 	Stats* stats = iterat->getStats();
 	assert(stats);
-	int* sizes = stats->fldSizes;
+	const vector<int>& sizes = stats->getFldSizes();
 	List<BaseSelection*>* retVal = new List<BaseSelection*>;
 	for(int i = 0; i < numFlds; i++){
 		retVal->append(new PrimeSelection(
@@ -565,10 +568,14 @@ void LocalTable::setStats(){
 	assert(directSite);
 	Stats* baseStats = directSite->getStats();
 	assert(baseStats);
-	int cardinality = int(selectivity * baseStats->cardinality);
+	int cardinality = int(selectivity * baseStats->getCardinality());
 	int* sizes = sizesFromList(mySelect);
 	int numFlds = getNumFlds();
-	stats = new Stats(numFlds, sizes, cardinality);
+
+	// broken
+	// stats = new Stats(numFlds, sizes, cardinality);
+
+	stats = new Stats(numFlds);
 }
 
 List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
@@ -668,11 +675,14 @@ void SiteGroup::typify(string option){	// Throws exception
 	int numFlds = mySelect->cardinality();
 //	TRY(typifyList(myWhere, tmpL), NVOID );
 	double selectivity = listSelectivity(myWhere);
-	int card1 = site1->getStats()->cardinality;
-	int card2 = site2->getStats()->cardinality;
+	int card1 = (int) site1->getStats()->getCardinality();
+	int card2 = (int) site2->getStats()->getCardinality();
 	int cardinality = int(selectivity * card1 * card2);
 	int* sizes = sizesFromList(mySelect);
-	stats = new Stats(numFlds, sizes, cardinality);
+
+	// stats = new Stats(numFlds, sizes, cardinality);
+
+	stats = new Stats(numFlds);
 	TRY(boolCheckList(myWhere), NVOID );
 }
 

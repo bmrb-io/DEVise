@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1998/04/09 20:26:24  donjerko
+  *** empty log message ***
+
   Revision 1.46  1998/03/17 17:19:09  donjerko
   Added new namespace management through relation ids.
 
@@ -171,12 +174,11 @@
 #include "RelationId.h"
 #include "listop.h"
 #include "sysdep.h"
+#include "Stats.h"
 
 #ifndef __GNUG__
 using namespace std;
 #endif
-
-typedef float Cardinality;
 
 class ExecExpr;
 
@@ -1113,7 +1115,7 @@ protected:
 	int shiftVal;
 	const SiteDesc* sd;
 	TableName relTabName;
-	Cardinality card;
+	Stats stats;
 public:
 	TableAlias(TableName *t, string* a = NULL,string *func = NULL,
 			int optShiftVal = 0) : table(t), alias(a),function(func),
@@ -1146,11 +1148,8 @@ public:
 	virtual void display(ostream& out, int detail = 0);
 	virtual Site* createSite();
 	virtual ISchema getISchema() const;
-	void setCardinality(Cardinality c){
-		card = c;
-	}
-	Cardinality getCardinality() const {
-		return card;
+	const Stats& getStats() const {
+		return stats;
 	}
 };
 

@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.29  1998/03/12 18:26:29  donjerko
+# *** empty log message ***
+#
 # Revision 1.28  1998/03/04 18:42:12  wenger
 # Added <arch>/Makefile.config files that now hold stuff like the
 # PERL_CORE definitions so those don't have to be repeated in all
@@ -38,35 +41,37 @@ atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/time.h
 atof.o: /usr/include/math.h /usr/include/floatingpoint.h
 atof.o: /usr/include/sys/ieeefp.h /usr/include/sys/time.h
 atof.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-atof.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-atof.o: ../graphics/Util.h /usr/include/stdio.h /usr/include/sys/va_list.h
-atof.o: /usr/include/string.h ../graphics/DeviseTypes.h /usr/include/values.h
+atof.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+atof.o: /usr/include/sys/select.h ../graphics/Util.h /usr/include/stdio.h
+atof.o: /usr/include/sys/va_list.h /usr/include/string.h
+atof.o: ../graphics/DeviseTypes.h /usr/include/values.h
 atof.o: ../graphics/DevStatus.h ../graphics/Exit.h
 http_url.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 http_url.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 http_url.o: /usr/include/unistd.h /usr/include/sys/types.h
 http_url.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-http_url.o: /usr/include/sys/select.h /usr/include/sys/time.h
-http_url.o: /usr/include/time.h /usr/include/sys/unistd.h
-http_url.o: /usr/include/string.h /usr/include/errno.h
-http_url.o: /usr/include/sys/errno.h ../graphics.new/machdep.h
-http_url.o: /usr/include/limits.h /usr/include/sys/param.h
-http_url.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-http_url.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-http_url.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-http_url.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-http_url.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+http_url.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+http_url.o: /usr/include/sys/time.h /usr/include/time.h
+http_url.o: /usr/include/sys/unistd.h /usr/include/string.h
+http_url.o: /usr/include/errno.h /usr/include/sys/errno.h
+http_url.o: ../graphics.new/machdep.h /usr/include/limits.h
+http_url.o: /usr/include/sys/int_limits.h /usr/include/sys/param.h
+http_url.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+http_url.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+http_url.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+http_url.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+http_url.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+http_url.o: /usr/include/netdb.h /usr/include/netinet/in.h
+http_url.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+http_url.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+http_url.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+http_url.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+http_url.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+http_url.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+http_url.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+http_url.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+http_url.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 http_url.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-http_url.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-http_url.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-http_url.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-http_url.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-http_url.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-http_url.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-http_url.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-http_url.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-http_url.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-http_url.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 mk3dstruct.o: /usr/include/math.h /usr/include/floatingpoint.h
 mk3dstruct.o: /usr/include/sys/ieeefp.h /usr/include/time.h
 mk3dstruct.o: /usr/include/sys/feature_tests.h /usr/include/stdlib.h

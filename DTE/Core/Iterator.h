@@ -53,6 +53,8 @@ public:
 	virtual ~Iterator(){}
 };
 
+class Stats;
+
 class PlanOp {
 public:
 	virtual ~PlanOp() {}
@@ -63,12 +65,7 @@ public:
 		assert(0);
 		return NULL;
 	}
-	virtual Stats* getStats(){
-
-		// default stats
-
-		return new Stats(getNumFlds());
-	}
+	virtual Stats* getStats();
 	virtual void open(istream* in){
 		assert(!"open not implemented on some reader");
 	}

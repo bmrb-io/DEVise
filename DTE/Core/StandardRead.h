@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/03/17 17:19:03  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.23  1997/11/12 23:17:35  donjerko
   Improved error checking.
 
@@ -90,6 +93,7 @@
 #include "types.h"
 #include "Iterator.h"
 #include "sysdep.h"
+#include "Stats.h"
 
 #ifndef __GNUG__
 using namespace std;

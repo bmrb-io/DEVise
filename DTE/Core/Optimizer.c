@@ -589,7 +589,7 @@ void LogPropTable::initialize(const Query& query)
 		// this will not be necessary later when the cardinalities are
 		// read from the catalog
 
-		tableList[i]->setCardinality(cardinalities[i]);
+		// tableList[i]->setCardinality(cardinalities[i]);
 	}
 
 	for(pi = preds.begin(); pi != preds.end(); ++pi){

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1998/06/04 23:07:48  donjerko
+#  *** empty log message ***
+#
 #  Revision 1.9  1998/03/31 16:38:43  wenger
 #  Added an 'export' directory to csgroup and re-made solaris dependencies
 #  accordingly.
@@ -58,8 +61,9 @@ LMAPI.o: /usr/include/sys/va_list.h /usr/include/string.h
 LMAPI.o: /usr/include/stdlib.h LMAPI.h LMControl.h /s/tcl/include/tcl.h
 LMAPI.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 LMAPI.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-LMAPI.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-LMAPI.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
+LMAPI.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+LMAPI.o: /usr/include/sys/select.h /usr/include/sys/time.h
+LMAPI.o: /usr/include/time.h /s/X11/include/X11/X.h
 LMAPI.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 LMAPI.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
 LMAPI.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
@@ -70,16 +74,16 @@ LMControl.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 LMControl.o: /usr/include/string.h LMControl.h /s/tcl/include/tcl.h
 LMControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 LMControl.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-LMControl.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-LMControl.o: /usr/include/sys/time.h /usr/include/time.h
-LMControl.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-LMControl.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h LMWindow.h
-LMControl.o: LMHashTable.h LMLayout.h ../graphics/DList.h ../graphics/Exit.h
-LMControl.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
-LMControl.o: /usr/include/values.h ../graphics/DevStatus.h
-LMControl.o: ../graphics/Journal.h ../graphics/VisualArg.h
-LMControl.o: /usr/include/stdio.h /usr/include/sys/va_list.h
-LMControl.o: ../graphics/ViewDir.h LMAPI.h
+LMControl.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+LMControl.o: /usr/include/sys/select.h /usr/include/sys/time.h
+LMControl.o: /usr/include/time.h /s/X11/include/X11/X.h
+LMControl.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+LMControl.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
+LMControl.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
+LMControl.o: ../graphics/DeviseTypes.h /usr/include/values.h
+LMControl.o: ../graphics/DevStatus.h ../graphics/Journal.h
+LMControl.o: ../graphics/VisualArg.h /usr/include/stdio.h
+LMControl.o: /usr/include/sys/va_list.h ../graphics/ViewDir.h LMAPI.h
 LMHashTable.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 LMHashTable.o: LMHashTable.h
 LMLayout.o: LMLayout.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
@@ -89,8 +93,9 @@ LMLayout.o: LMHashTable.h ../graphics/DList.h ../graphics/Exit.h
 LMMain.o: LMControl.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
 LMMain.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 LMMain.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-LMMain.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-LMMain.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
+LMMain.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+LMMain.o: /usr/include/sys/select.h /usr/include/sys/time.h
+LMMain.o: /usr/include/time.h /s/X11/include/X11/X.h
 LMMain.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 LMMain.o: /usr/include/stddef.h LMWindow.h LMHashTable.h LMLayout.h
 LMMain.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Dispatcher.h
@@ -104,14 +109,14 @@ LMWindow.o: ../graphics/Exit.h LMControl.h /s/tcl/include/tcl.h
 LMWindow.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
 LMWindow.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 LMWindow.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-LMWindow.o: /usr/include/sys/select.h /usr/include/sys/time.h
-LMWindow.o: /usr/include/time.h /s/X11/include/X11/X.h
-LMWindow.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-LMWindow.o: /usr/include/stddef.h ../graphics/Dispatcher.h
-LMWindow.o: ../graphics/DeviseTypes.h /usr/include/values.h
-LMWindow.o: ../graphics/DevStatus.h ../graphics/Journal.h
-LMWindow.o: ../graphics/VisualArg.h /usr/include/stdio.h
-LMWindow.o: /usr/include/sys/va_list.h ../graphics/ViewDir.h
-LMWindow.o: /usr/include/string.h
+LMWindow.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+LMWindow.o: /usr/include/sys/time.h /usr/include/time.h
+LMWindow.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+LMWindow.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
+LMWindow.o: ../graphics/Dispatcher.h ../graphics/DeviseTypes.h
+LMWindow.o: /usr/include/values.h ../graphics/DevStatus.h
+LMWindow.o: ../graphics/Journal.h ../graphics/VisualArg.h
+LMWindow.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+LMWindow.o: ../graphics/ViewDir.h /usr/include/string.h
 main.o: ../tape/HashTable.h
 main1.o: ../tape/HashTable.h

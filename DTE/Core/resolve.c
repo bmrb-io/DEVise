@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/06/17 20:53:14  donjerko
+  *** empty log message ***
+
   Revision 1.36  1998/06/04 23:26:28  donjerko
   *** empty log message ***
 
@@ -349,7 +352,7 @@ double Operator::getSelectivity(){
 			PrimeSelection* rightc = (PrimeSelection*) right;
 			const TableAlias* rightTable = rightc->getTable();
 			assert(rightTable);
-			Cardinality c = rightTable->getCardinality();
+			Cardinality c = rightTable->getStats().getCardinality();
 			if(!c){
 				return 1;
 			}

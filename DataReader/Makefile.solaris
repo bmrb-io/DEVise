@@ -14,8 +14,5 @@ DateTime.o: sysdep.h /usr/include/varargs.h /usr/include/sys/va_list.h
 DateTime.o: DateTime.h
 Schema.o: DRSchema.h sysdep.h /usr/include/varargs.h
 Schema.o: /usr/include/sys/va_list.h DateTime.h
-datareader.tab.o: DataReaderParser.h sysdep.h /usr/include/varargs.h
-datareader.tab.o: /usr/include/sys/va_list.h /usr/include/assert.h DRSchema.h
-datareader.tab.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testParser.o: DataReader.h Buffer.h sysdep.h /usr/include/varargs.h
 testParser.o: /usr/include/sys/va_list.h DRSchema.h

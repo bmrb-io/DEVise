@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.24  1998/03/12 18:24:48  donjerko
+# *** empty log message ***
+#
 # Revision 1.23  1998/03/04 18:39:45  wenger
 # Added <arch>/Makefile.config files that now hold stuff like the
 # PERL_CORE definitions so those don't have to be repeated in all
@@ -40,76 +43,79 @@ compustat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 compustat.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 compustat.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 compustat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-compustat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-compustat.o: /usr/include/sys/time.h /usr/include/time.h
-compustat.o: /usr/include/sys/unistd.h /s/tcl/include/tcl.h
-compustat.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
-compustat.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
-compustat.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h compustat.h
-compustat.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
-compustat.o: /usr/include/limits.h /usr/include/sys/param.h
-compustat.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-compustat.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-compustat.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-compustat.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-compustat.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+compustat.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+compustat.o: /usr/include/sys/select.h /usr/include/sys/time.h
+compustat.o: /usr/include/time.h /usr/include/sys/unistd.h
+compustat.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
+compustat.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+compustat.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
+compustat.o: /usr/include/stddef.h compustat.h index.h ../tape/tapedrive.h
+compustat.o: ../graphics.new/machdep.h /usr/include/limits.h
+compustat.o: /usr/include/sys/int_limits.h /usr/include/sys/param.h
+compustat.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+compustat.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+compustat.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+compustat.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+compustat.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+compustat.o: /usr/include/netdb.h /usr/include/netinet/in.h
+compustat.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+compustat.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+compustat.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+compustat.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+compustat.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+compustat.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+compustat.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+compustat.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+compustat.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 compustat.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-compustat.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-compustat.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-compustat.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-compustat.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-compustat.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-compustat.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-compustat.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-compustat.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-compustat.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-compustat.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
 index.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 index.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 index.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 index.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-index.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-index.o: /usr/include/sys/time.h /usr/include/time.h
-index.o: /usr/include/sys/unistd.h index.h ../tape/tapedrive.h
-index.o: ../graphics.new/machdep.h /usr/include/limits.h
-index.o: /usr/include/sys/param.h /usr/include/sys/wait.h
+index.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+index.o: /usr/include/sys/select.h /usr/include/sys/time.h
+index.o: /usr/include/time.h /usr/include/sys/unistd.h index.h
+index.o: ../tape/tapedrive.h ../graphics.new/machdep.h /usr/include/limits.h
+index.o: /usr/include/sys/int_limits.h /usr/include/sys/param.h
+index.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
 index.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
 index.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
 index.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h /usr/include/sys/sem.h
 index.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-index.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
 index.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 index.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-index.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-index.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+index.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
 index.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
 index.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 index.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
 index.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
 index.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-index.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+index.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+index.o: /usr/include/sys/byteorder.h /usr/include/sys/socket.h
+index.o: /usr/include/sys/netconfig.h
 project.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 project.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 project.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
 project.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-project.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-project.o: /usr/include/sys/time.h /usr/include/time.h
-project.o: /usr/include/sys/unistd.h /usr/include/assert.h compustat.h
-project.o: index.h ../tape/tapedrive.h ../graphics.new/machdep.h
-project.o: /usr/include/limits.h /usr/include/sys/param.h
-project.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
-project.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
-project.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
-project.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-project.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+project.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+project.o: /usr/include/sys/select.h /usr/include/sys/time.h
+project.o: /usr/include/time.h /usr/include/sys/unistd.h
+project.o: /usr/include/assert.h compustat.h index.h ../tape/tapedrive.h
+project.o: ../graphics.new/machdep.h /usr/include/limits.h
+project.o: /usr/include/sys/int_limits.h /usr/include/sys/param.h
+project.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+project.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+project.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+project.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+project.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h
+project.o: /usr/include/netdb.h /usr/include/netinet/in.h
+project.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
+project.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
+project.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
+project.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
+project.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+project.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+project.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+project.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+project.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
 project.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
-project.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
-project.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-project.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-project.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
-project.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
-project.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-project.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-project.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-project.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-project.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h

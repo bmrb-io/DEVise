@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1998/06/17 20:53:15  donjerko
+  *** empty log message ***
+
   Revision 1.55  1998/06/04 23:06:52  donjerko
   Added DataReader.
 
@@ -177,8 +180,6 @@
 #  include <values.h>
 #  define DBL_MAX MAXDOUBLE
 #endif
-
-const string Stats::KEYWD = "stats";
 
 string DteEnvVars::getDirectory(const string& envVar) const {
 	const char* dmd = NULL;

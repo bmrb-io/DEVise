@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.20  1998/06/04 23:08:11  donjerko
+# *** empty log message ***
+#
 # Revision 1.19  1998/03/31 16:40:17  wenger
 # Added an 'export' directory to csgroup and re-made solaris dependencies
 # accordingly.
@@ -92,94 +95,97 @@ Client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Client.o: /usr/include/string.h /usr/include/unistd.h
 Client.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-Client.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-Client.o: /usr/include/sys/time.h /usr/include/time.h
-Client.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+Client.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+Client.o: /usr/include/sys/select.h /usr/include/sys/time.h
+Client.o: /usr/include/time.h /usr/include/sys/unistd.h
+Client.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
 Client.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
 Client.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 Client.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-Client.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
 Client.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
 Client.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
 Client.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 Client.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-Client.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+Client.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
 Client.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-Client.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h Client.h
+Client.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+Client.o: /usr/include/sys/byteorder.h Client.h
 Server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 Server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 Server.o: /usr/include/string.h /usr/include/errno.h /usr/include/sys/errno.h
 Server.o: /usr/include/unistd.h /usr/include/sys/types.h
 Server.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-Server.o: /usr/include/sys/select.h /usr/include/sys/time.h
-Server.o: /usr/include/time.h /usr/include/sys/unistd.h
-Server.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+Server.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+Server.o: /usr/include/sys/time.h /usr/include/time.h
+Server.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+Server.o: /usr/include/sys/uio.h /usr/include/sys/netconfig.h
 Server.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
 Server.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
-Server.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
-Server.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+Server.o: /usr/include/sys/machlock.h /usr/include/sys/sleepq.h
 Server.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
 Server.o: /usr/include/sys/pirec.h /usr/include/sys/mutex.h
 Server.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
 Server.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
-Server.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+Server.o: /usr/include/sys/resource.h /usr/include/vm/seg_enum.h
 Server.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
-Server.o: /usr/include/sys/byteorder.h Server.h ../graphics/Exit.h
+Server.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h Server.h
+Server.o: ../graphics/Exit.h
 TclClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TclClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TclClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-TclClient.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-TclClient.o: /usr/include/sys/time.h /usr/include/time.h TclClient.h
-TclClient.o: /s/tcl/include/tcl.h Client.h
+TclClient.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+TclClient.o: /usr/include/sys/select.h /usr/include/sys/time.h
+TclClient.o: /usr/include/time.h TclClient.h /s/tcl/include/tcl.h Client.h
 TestClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TestClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TestClient.o: /usr/include/string.h /usr/include/errno.h
 TestClient.o: /usr/include/sys/errno.h /usr/include/unistd.h
 TestClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-TestClient.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-TestClient.o: /usr/include/sys/time.h /usr/include/time.h
-TestClient.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+TestClient.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+TestClient.o: /usr/include/sys/select.h /usr/include/sys/time.h
+TestClient.o: /usr/include/time.h /usr/include/sys/unistd.h
+TestClient.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
 TestClient.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
 TestClient.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 TestClient.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TestClient.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
 TestClient.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
 TestClient.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
 TestClient.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 TestClient.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TestClient.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+TestClient.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
 TestClient.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TestClient.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-TestClient.o: Client.h
+TestClient.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+TestClient.o: /usr/include/sys/byteorder.h Client.h
 TkClient.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 TkClient.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 TkClient.o: /usr/include/string.h /usr/include/errno.h
 TkClient.o: /usr/include/sys/errno.h /usr/include/unistd.h
 TkClient.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-TkClient.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-TkClient.o: /usr/include/sys/time.h /usr/include/time.h
-TkClient.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
+TkClient.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+TkClient.o: /usr/include/sys/select.h /usr/include/sys/time.h
+TkClient.o: /usr/include/time.h /usr/include/sys/unistd.h
+TkClient.o: /usr/include/sys/socket.h /usr/include/sys/uio.h
 TkClient.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
 TkClient.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
 TkClient.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-TkClient.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
 TkClient.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
 TkClient.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
 TkClient.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
 TkClient.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-TkClient.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+TkClient.o: /usr/include/sys/cred.h /usr/include/sys/resource.h
 TkClient.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-TkClient.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-TkClient.o: /s/tcl/include/tcl.h /s/tcl/include/tk.h
-TkClient.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-TkClient.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
-TkClient.o: /usr/include/stddef.h TkClient.h TclClient.h Client.h
+TkClient.o: /usr/include/sys/strmdep.h /usr/include/sys/model.h
+TkClient.o: /usr/include/sys/byteorder.h /s/tcl/include/tcl.h
+TkClient.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
+TkClient.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
+TkClient.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h TkClient.h
+TkClient.o: TclClient.h Client.h
 WinServer.o: /usr/include/sys/param.h /usr/include/sys/types.h
 WinServer.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
-WinServer.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-WinServer.o: /usr/include/sys/time.h /usr/include/time.h
-WinServer.o: /usr/include/sys/unistd.h WinServer.h Server.h
-WinServer.o: ../graphics/Display.h ../graphics/DeviseTypes.h
+WinServer.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+WinServer.o: /usr/include/sys/select.h /usr/include/sys/time.h
+WinServer.o: /usr/include/time.h /usr/include/sys/unistd.h WinServer.h
+WinServer.o: Server.h ../graphics/Display.h ../graphics/DeviseTypes.h
 WinServer.o: /usr/include/values.h ../graphics/DevStatus.h ../graphics/Geom.h
 WinServer.o: /usr/include/stdio.h /usr/include/sys/va_list.h
 WinServer.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -195,34 +201,34 @@ WinServer.o: ../graphics/ETkIfc.h ../graphics/ETk.h ../graphics/Xdef.h
 WinServer.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 WinServer.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 WinServer.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-WinServer.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
+WinServer.o: ../graphics/GraphicsDebug.h
 client.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 client.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 client.o: /usr/include/string.h TkClient.h /s/tcl/include/tk.h
 client.o: /s/X11/include/X11/Xlib.h /usr/include/sys/types.h
 client.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
-client.o: /usr/include/sys/select.h /usr/include/sys/time.h
-client.o: /usr/include/time.h /s/X11/include/X11/X.h
+client.o: /usr/include/sys/int_types.h /usr/include/sys/select.h
+client.o: /usr/include/sys/time.h /usr/include/time.h /s/X11/include/X11/X.h
 client.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 client.o: /usr/include/stddef.h TclClient.h /s/tcl/include/tcl.h Client.h
 server.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 server.o: /usr/include/sys/va_list.h /usr/include/stdlib.h
 server.o: /usr/include/string.h /usr/include/assert.h WinServer.h Server.h
 server.o: ../graphics/Display.h ../graphics/DeviseTypes.h
-server.o: /usr/include/values.h ../graphics/DevStatus.h
-server.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-server.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-server.o: /usr/include/sys/time.h /usr/include/time.h ../graphics/Geom.h
-server.o: /usr/include/math.h /usr/include/floatingpoint.h
-server.o: /usr/include/sys/ieeefp.h ../graphics/Dispatcher.h
-server.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/Journal.h
-server.o: ../graphics/VisualArg.h ../graphics/ViewDir.h ../graphics/ViewWin.h
-server.o: ../graphics/WindowRep.h ../graphics/Transform.h
-server.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h
-server.o: ../graphics/Compress.h ../graphics/DevError.h /usr/include/errno.h
+server.o: /usr/include/values.h /usr/include/sys/isa_defs.h
+server.o: ../graphics/DevStatus.h /usr/include/sys/types.h
+server.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+server.o: /usr/include/sys/select.h /usr/include/sys/time.h
+server.o: /usr/include/time.h ../graphics/Geom.h /usr/include/math.h
+server.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+server.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
+server.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/ViewDir.h
+server.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
+server.o: ../graphics/Transform.h ../graphics/Pattern.h
+server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
+server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/ETkIfc.h ../graphics/ETk.h
 server.o: ../graphics/Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 server.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 server.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
-server.o: ../graphics/GraphicsDebug.h ../graphics/CursorStore.h
-server.o: ../graphics/DualWindowRep.h
+server.o: ../graphics/GraphicsDebug.h ../graphics/DualWindowRep.h

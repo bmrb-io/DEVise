@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/06/24 05:03:01  okan
+  Added ODBC List & DSN List commands
+  Added insert & delete commands to update ODBC entries in related catalogs
+
   Revision 1.52  1998/06/23 17:50:01  wenger
   Fixed some compile warnings.
 
@@ -267,41 +271,6 @@ public:
 };
 
 extern const NewStat DEFAULT_STAT;
-
-class Stats{
-public:
-	int* fldSizes;
-	int cardinality;
-	int numFlds;
-public:
-	static const string KEYWD;
-	Stats(int numFlds, int* fldSizes, int c) :
-		fldSizes(fldSizes), cardinality(c), numFlds(numFlds) {}
-	Stats(int numflds){
-
-          // default stats
-
-          numFlds = numflds;
-          fldSizes = new int[numFlds];
-          for(int i = 0; i < numFlds; i++){
-               fldSizes[i] = 10;
-          }
-          cardinality = 1000;
-	}
-	void read(istream* in){
-		(*in) >> cardinality;
-		for(int i = 0; i < numFlds; i++){
-			(*in) >> fldSizes[i];
-		}
-	}
-	void display(ostream& out){
-		out << "cardinal: " << cardinality << "; ";
-		out << "fldSizes: ";
-		for(int i = 0; i < numFlds; i++){
-			out << fldSizes[i] << " ";
-		}
-	}
-};
 
 class Offset{
 public:

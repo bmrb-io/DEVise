@@ -24,6 +24,8 @@ string DummyInterface::typeName = "UNIXFILE";
 string ODBCInterface::typeName = "ODBC";
 string DBServerInterface::typeName = "DBServer";
 
+const string Stats::KEYWD = "stats";
+
 inline int MAX_VAL(int i, int j){
 	return (i > j ? i : j);
 }
@@ -296,7 +298,7 @@ istream& ViewInterface::read(istream& in){ // throws
 	CHECK(stripQuotes(in, query), 
 		"Incorrect ViewInterface format", in);
 	schema = NULL;
-	return in;
+	return Interface::read(in);
 }
 
 void ViewInterface::write(ostream& out) const {
