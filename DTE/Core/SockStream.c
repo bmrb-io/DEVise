@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/12/10 00:00:36  okan
+  ODBC Interface Changes ...
+
   Revision 1.12  1997/12/02 23:26:20  donjerko
   Changes made by Kevin
 
@@ -213,7 +216,6 @@ int Cor_sockbuf::connect(const char* _host, unsigned short _port)
     if( ::connect(_socketfd, (sockaddr*)&serv_addr, sizeof(serv_addr)) < 0 ){
         // error!
 	   perror("SockStream connect failed");
-	   assert(0);
         ::close(_socketfd);
         _socketfd = -1;
         return -1;

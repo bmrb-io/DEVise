@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/12/10 02:31:14  okan
+  *** empty log message ***
+
   Revision 1.24  1997/12/04 04:05:13  donjerko
   *** empty log message ***
 
@@ -113,6 +116,7 @@ class QueryTree : public ParseTree {
      vector<BaseSelection*>& groupByVec;
      vector<BaseSelection*>& sequenceByVec;
      vector<BaseSelection*>& orderByVec;
+     vector<BaseSelection*>& binByVec;
 
 	bool isSelectStar;
 
@@ -133,6 +137,7 @@ public:
 		vector<TableAlias*>* tableList,
 		BaseSelection* predicates,
 		vector<BaseSelection *>*groupBy,
+		vector<BaseSelection *>* binBy,
 		BaseSelection* havingPredicate,
 		vector<BaseSelection*>* sequenceby,
 		BaseSelection* withPredicate,
@@ -140,6 +145,7 @@ public:
 		string* sortOrdering, bool isSelectStar) :
 		selectVec(*selectList), tableVec(*tableList), 
 		predicates(predicates), groupByVec(*groupBy), 
+		binByVec(*binBy),
 		havingPredicate(havingPredicate),
 		sequenceByVec(*sequenceby), withPredicate(withPredicate), 
 		orderByVec(*orderBy), sortOrdering(sortOrdering),

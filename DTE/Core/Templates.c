@@ -11,6 +11,7 @@
 #include "MemoryMgr.h"
 #include "listop.h"
 #include "myopt.h"
+#include "Optimizer.h"
 
 #include <stl.h>	// includes all of stl
 
@@ -24,12 +25,6 @@ class ConstantSelection;
 template class MemoryLoaderTemplate<EncodedDTF>;
 template class MemoryLoaderTemplate<IDouble>;
 template class MemoryLoaderTemplate<ISeqSimVec>;
-
-struct StringLess {
-	bool operator()(const string& s1, const string& s2) const {
-		return s1 < s2;
-	}
-};
 
 template class List<BaseSelection*>;
 template class List<Tuple*>;
@@ -55,9 +50,7 @@ template class rb_tree<basic_string<char, string_char_traits<char> >, pair<basic
 
 template class deque<void*>;
 
-static void		template_junk1(void);
-
-void template_junk1(void)
+static void template_junk1(void)
 {
 	set<string, ltstr>	tmp, tables, tables2;
 	bool				incl = includes(tables.begin(), tables.end(),
@@ -75,7 +68,9 @@ void template_junk1(void)
 	destroyArray(*mySelect);
 }
 
-void junk(){
+typedef pair<BaseSelection*, Ordering> td1;
+
+static void junk(){
 	vector<BaseSelection*> vec;
 	vector<TableAlias*> vta;
 	List<BaseSelection*>* list;
@@ -86,4 +81,19 @@ void junk(){
 	translate(list, vec);
 	translate(vec, list);
 	translate(vta, lta);
+
+	map<string, OptNode*, StringLess>::iterator it1;
+	map<string, LogicalProp*, StringLess>::iterator it2;
+	vector<td1> pair1;
+	vector<SortCriterion> orderBy;
+	const vector<SortCriterion>& orderBy2 = orderBy;
+	vector<SortCriterion> orderBy3(orderBy2);
+	vector<AccessMethod *> amj;
+	vector<AccessMethod *> amj2(amj);
 }
+
+class OptNode;
+class LogicalProp;
+
+template class map<string, OptNode*, StringLess>;
+template class map<string, LogicalProp*, StringLess>;

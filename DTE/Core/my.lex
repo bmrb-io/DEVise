@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/12/04 04:05:19  donjerko
+  *** empty log message ***
+
   Revision 1.24  1997/11/18 19:49:20  okan
   Made several changes for NT compilation
 
@@ -149,6 +152,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE] {return SEQUENCE;}
 [Gg][Rr][Oo][uU][Pp]  {return GROUP;}
+[Bb][Ii][Nn]		  {return BIN;}
 [Oo][Rr][Dd][Ee][Rr]  {return ORDER;}
 [Bb][Yy]			  {return BY;}
 [Aa][Ss][Cc] {return ASC;}

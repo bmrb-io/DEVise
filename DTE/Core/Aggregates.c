@@ -8,7 +8,6 @@ bool Aggregates::isApplicable(){
 void Aggregates::typeCheck(TypeCheck& typeCheck){
 	
 	// Are there any aggregates in the selectClause?
-	
 
 	assert(!filteredSelList);
 
@@ -16,6 +15,29 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 
 	vector<BaseSelection*>::iterator it;
 	filteredSelList = new List<BaseSelection*>();
+
+	if(!binBy.empty()){
+		assert(groupBy.empty());
+		assert(sequenceBy.empty());
+		grpByPos = new int[1];
+		int i = 0;
+		for(it = selList.begin(); it != selList.end(); ++it){
+		  	if((*it)->match(binBy.front())){
+				grpByPos[0] = i;
+				vector<BaseSelection*>::iterator binIt;
+				binIt = binBy.begin();
+				++binIt;
+				assert((*binIt)->selectID() == CONST_ID);
+				ConstantSelection* init = (ConstantSelection*) *binIt;
+				++binIt;
+				assert((*binIt)->selectID() == CONST_ID);
+				ConstantSelection* step = (ConstantSelection*) *binIt;
+				aggFuncs[i] = new BinAttribute(init, step);
+			}
+			i++;
+		}
+		numGrpByFlds = 1;	// to avoid an assertion fail
+	}
 
 	if(!groupBy.empty()){
 	  numGrpByFlds = groupBy.size();
@@ -160,6 +182,7 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 		      }
 		    }
 		  }
+
 		}
 		if(!resolved){
 			curr = typeCheck.resolve(curr);
@@ -170,7 +193,7 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 	}
 
 	if (isApplicableValue) {
-	  assert( numAggs + numSeqByFlds + numGrpByFlds == numFlds);
+//	  assert( numAggs + numSeqByFlds + numGrpByFlds == numFlds);
 	}
 }
 
@@ -191,6 +214,11 @@ Iterator* Aggregates::createExec(){
 	for(int i = 0; i < numFlds; i++){
 		assert(aggFuncs[i]);
 		aggExecs[i] = aggFuncs[i]->createExec();
+	}
+
+	if(!binBy.empty()){
+		return new StandGroupByExec(inputIter, aggExecs, numFlds,
+			grpByPos, 1, aggPos, numAggs);
 	}
 
 	if(numGrpByFlds > 0){

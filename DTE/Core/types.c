@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/02/04 00:43:44  okan
+  *** empty log message ***
+
   Revision 1.48  1998/02/03 23:04:36  okan
   Made some changes for NT
 
@@ -668,6 +671,7 @@ void intWrite(ostream& out, const Type* adt){
 void stringWrite(ostream& out, const Type* adt){
 	assert(adt);
 	out << addQuotes((char*) adt);
+	// out << addSQLQuotes((char*) adt, '\''); // should be this ??
 }
 
 void doubleWrite(ostream& out, const Type* adt){

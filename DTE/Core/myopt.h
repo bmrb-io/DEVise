@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1997/12/22 17:54:10  donjerko
+  Initial version of Saeed's sequence similarity search.
+
   Revision 1.42  1997/12/10 00:00:37  okan
   ODBC Interface Changes ...
 
@@ -204,8 +207,8 @@ public:
 		return false;
 	}
 	virtual BaseSelection* duplicate() = 0;
-	virtual bool insertConj(List<BaseSelection*>* predList){
-		predList->append(this);
+	virtual bool insertConj(vector<BaseSelection*>& predList){
+		predList.push_back(this);
 		return false;
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to) = 0;
@@ -300,6 +303,14 @@ public:
 	}
 	virtual void display(ostream& out, int detail = 0){
 		WritePtr wp = getWritePtr(typeID);
+		if(typeID.substr(0, 6) == "string"){
+
+			// hack, must display the string SQL style
+
+			out << addSQLQuotes((char*) value, '\'');
+			BaseSelection::display(out, detail);
+			return;
+		}
 		assert(wp);
 		wp(out, value);
 		BaseSelection::display(out, detail);
@@ -961,7 +972,7 @@ public:
 	virtual BaseSelection* duplicate(){
 		return new AndOperator(left->duplicate(), right->duplicate());
 	}
-	virtual bool insertConj(List<BaseSelection*>* predList){
+	virtual bool insertConj(vector<BaseSelection*>& predList){
 		if(left->insertConj(predList)){
 			delete left;	// shallow
 		}

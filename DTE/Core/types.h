@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1998/02/04 00:43:45  okan
+  *** empty log message ***
+
   Revision 1.42  1998/01/07 19:26:01  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -993,8 +996,8 @@ public:
 	ISchema& operator=(const ISchema& x);
 	ISchema operator+(const ISchema& x) const;
 	~ISchema(){
-		delete [] typeIDs;
-		delete [] attributeNames;
+	//	delete [] typeIDs;
+	//	delete [] attributeNames;	// causing core dumps?
 	}
 	istream& read(istream& in); // Throws Exception
 	void write(ostream& out);

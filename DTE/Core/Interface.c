@@ -537,6 +537,10 @@ const ISchema* DBServerInterface::getISchema(TableName* table){
 	}
 	schema = new ISchema;
 	Cor_sockbuf sockBuf(host.c_str(), port);
+	if(!sockBuf.valid()){
+		string err = "Connection to the DB Server failed. Make sure the server is running";
+		THROW(new Exception(err), NULL);
+	}
 	iostream str(&sockBuf);
 	str << "schema " << table->toString() << ";" << flush;
      str >> *schema;

@@ -16,8 +16,6 @@
   $Id$
 
   $Log$
-  Revision 1.47  1997/11/26 23:29:37  weaver
-  *** empty log message ***
 
   Revision 1.46  1997/11/24 23:13:15  weaver
   Changes for the new ColorManager.
@@ -39,9 +37,6 @@
 
   Revision 1.40  1997/10/14 05:16:34  arvind
   Implemented a first version of moving aggregates (without group bys).
-
-  Revision 1.39  1997/10/07 18:33:37  donjerko
-  *** empty log message ***
 
   Revision 1.38  1997/09/29 02:51:56  donjerko
   Eliminated class GlobalSelect.
@@ -79,9 +74,6 @@
   Revision 1.27  1997/07/30 21:39:18  donjerko
   Separated execution part from typchecking in expressions.
 
-  Revision 1.26  1997/07/22 15:00:52  donjerko
-  *** empty log message ***
-
   Revision 1.25  1997/06/21 22:48:00  donjerko
   Separated type-checking and execution into different classes.
 
@@ -91,9 +83,6 @@
   Revision 1.24  1997/05/07 18:55:49  donjerko
   Fixed the problem when constants are selected.
 
-  Revision 1.23  1997/04/28 06:56:05  donjerko
-  *** empty log message ***
-
   Revision 1.22  1997/04/18 20:46:17  donjerko
   Added function pointers to marshall types.
 
@@ -102,10 +91,6 @@
 
   Revision 1.20  1997/04/08 01:47:33  donjerko
   Set up the basis for ORDER BY clause implementation.
-
-  Revision 1.19  1997/03/28 16:07:25  wenger
-  Added headers to all source files that didn't have them; updated
-  solaris, solsparc, and hp dependencies.
 
  */
 
@@ -130,6 +115,7 @@
 #include "TypeCheck.h"
 #include "MinMax.h"
 #include "Interface.h"
+#include "Optimizer.h"
 
 //#include<iostream.h>   erased for sysdep.h
 //#include<memory.h>   erased for sysdep.h
@@ -197,7 +183,7 @@ const ISchema* QueryTree::getISchema(){
 	LOG(displayList(logFile, selectList, ", ");)
 	LOG(logFile << endl << "   from ";)
 	LOG(displayList(logFile, tableList);)
-	predicateList = new List<BaseSelection*>;
+	predicateList = 0;
 	if(predicates){
 		LOG(logFile << endl << "   where ";)
 		LOG(predicates->display(logFile);)
@@ -210,17 +196,15 @@ const ISchema* QueryTree::getISchema(){
 		}
 		LOG(logFile << "   ";)
 		LOG(predicates->display(logFile);)
-		if(predicates->insertConj(predicateList)){
+		if(predicates->insertConj(predicateVec)){
 			delete predicates;
 		}
 	}
 	LOG(logFile << endl << "Predicate list:\n   ";)
-	LOG(displayList(logFile, predicateList);)
+	LOG(displayList(logFile, predicateVec);)
 	LOG(logFile << endl;)
 
 	// typecheck the query
-
-	translate(predicateList, predicateVec);
 
 	TRY(typeChecker.initialize(tableVec), 0);
 
@@ -233,12 +217,14 @@ const ISchema* QueryTree::getISchema(){
 	else {
 
 		aggregates = new Aggregates(
-			selectVec, sequenceByVec, withPredicate, groupByVec);
+			selectVec, sequenceByVec, withPredicate, groupByVec,
+			binByVec);
 
 		TRY(aggregates->typeCheck(typeChecker), 0);
 	}
 	TRY(typeChecker.resolve(predicateVec), 0);
 	TRY(typeChecker.resolve(groupByVec), 0);
+	TRY(typeChecker.resolve(binByVec), 0);
 	TRY(typeChecker.resolve(orderByVec), 0);
 
 	setupSchema();
@@ -270,20 +256,6 @@ Iterator* QueryTree::createExec(){
 		TRY(getISchema(), 0);
 	}
 
-/*
-	if(typeCheckOnly){	// this is obsolete, use getISchema instead
-		int numFlds = selectVec.size();
-		TypeID* types = new TypeID[numFlds];
-		string* attrs = new string[numFlds];
-		vector<BaseSelection*>::const_iterator it;
-		int i = 0;
-		for(it = selectVec.begin(); it != selectVec.end(); ++it, i++){
-			types[i] = (*it)->getTypeID();
-			attrs[i] = (*it)->toString();
-		}
-		return new ISchemaSite(numFlds, types, attrs);
-	}
-*/
 	// check if this is the min-max query
 	// if so, lookup a min-max table to see if there exists an entry
 	// if entry for this table found, switch the table name
@@ -291,6 +263,7 @@ Iterator* QueryTree::createExec(){
 	bool minMaxCond = tableVec.size() == 1 &&
 				predicateVec.empty() &&
 				groupByVec.empty() &&
+				binByVec.empty() &&
 				orderByVec.empty();
 
 	if(minMaxCond && MinMax::isApplicable(selectVec)){
@@ -303,6 +276,15 @@ Iterator* QueryTree::createExec(){
 	}
 
 	// optimization starts here
+
+#ifdef USE_OPTIMIZER
+
+	Optimizer optmizer(query);
+	return optimizer.createExec();
+
+#endif
+
+	// once optimizer is in place, rest of this function will go away.
 
 	translate(tableVec, tableList);
 	translate(selectVec, selectList);
@@ -467,6 +449,15 @@ Iterator* QueryTree::createExec(){
 
 		siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
 		siteGroup->filterAll(selectList);
+		TRY(siteGroup->typify(option), NULL);
+	}
+
+	if(!binByVec.empty()){
+		assert(groupBy->isEmpty());
+		List<BaseSelection*>* binBy = new List<BaseSelection*>;
+		binBy->append(binByVec.front());
+		siteGroup = new 
+			Sort(siteGroup->getName(), binBy, siteGroup, sortOrdering);
 		TRY(siteGroup->typify(option), NULL);
 	}
 

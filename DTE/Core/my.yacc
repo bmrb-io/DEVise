@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/12/04 04:05:19  donjerko
+  *** empty log message ***
+
   Revision 1.36  1997/11/18 19:49:21  okan
   Made several changes for NT compilation
 
@@ -150,6 +153,7 @@ string* sortOrdering;
 %token WHERE
 %token SEQUENCE
 %token GROUP 
+%token BIN 
 %token ORDER 
 %token BY 
 %token HAVING 
@@ -190,6 +194,7 @@ string* sortOrdering;
 %type <sel> optWithClause
 %type <sel> optHavingClause
 %type <selList> optGroupByClause
+%type <selList> optBinByClause
 %type <selList> optOrderByClause
 %type <stringLit> optOrdering
 %type <tableList> listOfTables
@@ -283,14 +288,15 @@ table_name : table_name '.' STRING {
 	;
 query : SELECT listOfSelectionsOrStar 
 		FROM listOfTables optWhereClause 
-		optGroupByClause optSequenceByClause optOrderByClause {
+		optGroupByClause optBinByClause 
+		optSequenceByClause optOrderByClause {
 		bool isSelectStar = false;
 		if($2 == NULL){
 			$2 = new vector<BaseSelection*>;
 			isSelectStar = true;
 		}
-		$$ = new QueryTree($2,$4,$5,$6,havingPredicate, $7,
-			withPredicate,$8,sortOrdering, isSelectStar);
+		$$ = new QueryTree($2,$4,$5,$6,$7, havingPredicate, $8,
+			withPredicate, $9, sortOrdering, isSelectStar);
 	}
 	| query UNION query {
 		$$ = new UnionParse($1, $3);
@@ -380,6 +386,14 @@ optGroupByClause: GROUP BY listOfSelections optHavingClause{
 	|{
 		$$ = new vector<BaseSelection*>; 
 		havingPredicate = NULL;
+	}
+	;
+	
+optBinByClause: BIN BY listOfSelections {
+		$$ = $3;
+	}
+	|{
+		$$ = new vector<BaseSelection*>; 
 	}
 	;
 	

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1997/12/22 17:54:06  donjerko
+  Initial version of Saeed's sequence similarity search.
+
   Revision 1.45  1997/12/15 16:15:18  wenger
   Backed out most recent changes to fix compile.
 
@@ -73,7 +76,11 @@ class ExecAggregate {
 public:
   virtual void initialize(const Type* input) = 0;
   virtual void update(const Type* input) = 0;
-  virtual Type* getValue() = 0;
+  virtual bool isDifferent(const Type* newVal){
+  	assert(!"Used only in grouping aggregates");
+	return false;
+  }
+  virtual const Type* getValue() = 0;
   virtual void dequeue(int n){assert(!"Used only by moving aggregates");}
 };
 
@@ -104,7 +111,7 @@ public:
       copyPtr(input, minMax, valueSize); // change value of current minMax
   }
 	
-  Type* getValue() {
+  const Type* getValue() {
     return minMax;
   }
 
@@ -134,7 +141,7 @@ public:
     count++;
   }
 	
-  Type* getValue() {
+  const Type* getValue() {
     result = (Type*) count;  // assumes int is inlined
     return result;
   }
@@ -168,7 +175,7 @@ public:
     addPtr(input, sum, sum);
   }
 	
-  Type* getValue() {
+  const Type* getValue() {
     return sum;
   }
 
@@ -211,7 +218,7 @@ public:
     count++;
   }
 	
-  Type* getValue() {
+  const Type* getValue() {
     if (count == 0)
       return (Type *) NULL; // What should be returned here?
 
@@ -254,7 +261,7 @@ public:
 	  }
 	  tupLoad->insert(&input);
 	}
-	Type* getValue(){
+	const Type* getValue(){
 		assert(!tupLoad->empty());
 		return minMax;
 	}
@@ -295,7 +302,7 @@ public:
 	  }
 	  tupLoad->insert(&input);
 	}
-	Type* getValue(){
+	const Type* getValue(){
 		assert(!tupLoad->empty());
 		return sum;
 	}
@@ -326,7 +333,7 @@ public:
 	  }
 	  tupLoad->insert(&input);
 	}
-	Type* getValue(){
+	const Type* getValue(){
 		assert(!tupLoad->empty());
 		return ExecAverage::getValue();
 	}
@@ -346,7 +353,7 @@ public:
 		copyPtr(copyPtr), eqPtr(eqPtr), prevGroup(value), 
 		valueSize(valueSize) {}
 
-	bool isDifferent(const Type* newVal){
+	virtual bool isDifferent(const Type* newVal){
 		Type* cmp;
 		eqPtr(prevGroup, newVal, cmp);
 		return !(cmp ? true : false);
@@ -360,8 +367,74 @@ public:
 		assert(0);
 	}
 
-	virtual Type* getValue(){
+	virtual const Type* getValue(){
 		return prevGroup;
+	}
+};
+
+class ExecBinAttr : public ExecAggregate {
+protected:
+	Type* step;
+	ADTCopyPtr copyPtr;
+	OperatorPtr ltPtr;
+	OperatorPtr addPtr;
+	DestroyPtr destroyPtr;
+	Type* low;
+	Type* high;
+	size_t valueSize;
+
+public:
+	ExecBinAttr(ConstantSelection* init, ConstantSelection* cs_step,
+		TypeID inputT)
+	{
+		assert(inputT == init->getTypeID());
+		assert(inputT == cs_step->getTypeID());
+		GeneralPtr* genPtr = NULL;
+		TypeID boolT;
+		genPtr = getOperatorPtr("<", inputT, inputT, boolT);
+		assert(genPtr);
+		ltPtr = genPtr->opPtr;
+		genPtr = getOperatorPtr("+", inputT, inputT, boolT);
+		assert(genPtr);
+		addPtr = genPtr->opPtr;
+
+		copyPtr = getADTCopyPtr(inputT);
+		assert(copyPtr);
+		step = allocateSpace(inputT, valueSize);
+		low = allocateSpace(inputT, valueSize);
+		high = allocateSpace(inputT, valueSize);
+
+		destroyPtr = getDestroyPtr(inputT);
+		assert(destroyPtr);
+
+		copyPtr(init->getValue(), high);
+		copyPtr(cs_step->getValue(), step);
+	}
+
+	~ExecBinAttr(){
+		destroyPtr(step);
+		destroyPtr(low);
+		destroyPtr(high);
+	}
+
+	virtual bool isDifferent(const Type* newVal){
+		Type* cmp;
+		ltPtr(newVal, high, cmp);
+		return !(cmp ? true : false);
+	}
+
+	virtual void initialize(const Type* input){
+		copyPtr(high, low, valueSize);
+		addPtr(low, step, high);
+		return;
+	}
+
+	virtual void update(const Type* input){
+		assert(0);
+	}
+
+	virtual const Type* getValue(){
+		return low;
 	}
 };
 
@@ -383,7 +456,7 @@ public:
     ExecGroupAttr::initialize(input);
   }
 
-  virtual Type* getValue(){
+  virtual const Type* getValue(){
     assert(!tupLoad->empty());
     const Tuple* front = tupLoad->front();
     return front[0];
@@ -728,6 +801,27 @@ public:
 
 };
 
+class BinAttribute : public Aggregate {
+protected:
+	TypeID typeID;
+	ConstantSelection* init;
+	ConstantSelection* step;
+  
+public:
+  BinAttribute(ConstantSelection* init, ConstantSelection* step) 
+  	: init(init), step(step) {}
+
+  virtual TypeID typify(TypeID inputT){	// throws
+  	typeID = inputT;
+  	return inputT;
+  }
+
+  virtual ExecAggregate* createExec(){
+  	return new ExecBinAttr(init, step, typeID);
+  }
+
+};
+
 class SequenceAttribute : public GroupAttribute{
 
   virtual ExecAggregate* createExec(){
@@ -832,7 +926,7 @@ public:
 protected:
 	bool isNewGroup(const Tuple* tup){
 		for (int i = 0; i < grpByPosLen; i++){
-			ExecGroupAttr* curr = (ExecGroupAttr*) aggExecs[grpByPos[i]];
+			ExecAggregate* curr = aggExecs[grpByPos[i]];
 			if(curr->isDifferent(tup[grpByPos[i]])){
 			 	return true;
 			}
@@ -889,7 +983,7 @@ protected:
 
   bool isNewSeqVal(const Tuple* tup){
     for (int i = 0; i < seqByPosLen; i++){
-      ExecSeqAttr* curr = (ExecSeqAttr*) aggExecs[seqByPos[i]];
+      ExecAggregate* curr = aggExecs[seqByPos[i]];
       if(curr->isDifferent(tup[seqByPos[i]])){
 	return true;
       }
@@ -975,6 +1069,7 @@ class Aggregates : public Site {
 	int withPredicatePos;	
 	int havingPredicatePos;	
 	vector<BaseSelection*>& groupBy;
+	vector<BaseSelection*>& binBy;
 	int* grpByPos; // positions of groupBy fields
 	int* aggPos;		// positions of aggregate fields
 	TypeID* typeIDs;
@@ -992,9 +1087,10 @@ public:
 		vector<BaseSelection*>& sequenceBy,   
 		BaseSelection* withPredicate,
 		vector<BaseSelection*>& groupBy ,	
+		vector<BaseSelection*>& binBy,	
 		BaseSelection* havingPredicate=NULL)
 	  : Site(), selList(selectClause),sequenceBy(sequenceBy),
-	    withPredicate(withPredicate),groupBy(groupBy), 
+	    withPredicate(withPredicate),groupBy(groupBy), binBy(binBy),
 	    havingPredicate(havingPredicate) {
 		
 		numFlds = selList.size();
