@@ -33,6 +33,9 @@ graphics/PostScript.doc.)  (ml/rkw 11/12/96)
 
 HIGH PRIORITY
 -------------
+Handling of derived data sources must be moved out of the Tcl code and
+into the C++ code (see derivedSourceList Tcl variable). (rkw 9/19/97)
+
 GUI for printing needs improvement. (ml/rkw 2/19/97)
 
 Fix speed problem for some sessions in Linux (try the LL.tk sesssion).
