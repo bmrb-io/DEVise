@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/04/04 23:10:25  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.4  1997/03/28 16:07:27  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -39,6 +45,8 @@ void Sort::initialize(){
 	// MemorySize is a constant (compile time)
 
 	// use function pointers for sorting (types.h: getOperatorPtr).
+
+	input->initialize();
 }
 
 bool Sort::getNext(Tuple* next){
@@ -46,5 +54,6 @@ bool Sort::getNext(Tuple* next){
 	// To read temp file use StandardRead ...
 	// use heap to get max/min
 	// copy the next tuple over "next"
-	return false;
+
+	return input->getNext(next);
 }

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/04/04 23:10:29  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.6  1997/03/23 23:45:23  donjerko
   Made boolean vars to be in the tuple.
 
@@ -44,6 +50,32 @@
 #include "site.h"
 #include "exception.h"
 #include "catalog.h"
+
+int* findPositions(List<BaseSelection*>* list, 
+			List<BaseSelection*>* elements){ 		// throws
+	int* retVal = new int[elements->cardinality()];
+	int i, j;
+	for(i = 0, elements->rewind(); !elements->atEnd(); elements->step(), i++){
+		for(j = 0, list->rewind(); true; list->step(), j++){
+			if(list->atEnd()){
+				String msg = "Cannot match a selection from ORDER BY to any of the SELECT clause";
+				THROW(new Exception(msg), NULL);
+			}
+			Path* upTo;
+			if(list->get()->matchFlat(elements->get(), upTo)){
+				if(!(upTo == NULL)){
+					cout << "Not a complete match? ";
+					upTo->display(cout);
+					cout << endl;
+				}
+				assert(upTo == NULL);
+				retVal[i] = j;
+				break;
+			}
+		}
+	}
+	return retVal;
+}
 
 bool exclusiveF(List<BaseSelection*>* list, Site* site){
 	list->rewind();

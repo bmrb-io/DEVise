@@ -15,6 +15,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/03/28 16:07:30  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.14  1997/03/14 18:36:11  donjerko
   Making space for the SQL UNION operator.
 
@@ -96,6 +100,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE] {return SEQUENCE;}
 [Gg][Rr][Oo][uU][Pp]  {return GROUP;}
+[Oo][Rr][Dd][Ee][Rr]  {return ORDER;}
 [Bb][Yy]			  {return BY;}
 [Jj][Oo][Ii][Nn][Pp][Rr][Ee][Vv]  {return JOINPREV;}
 [Jj][Oo][Ii][Nn][Nn][Ee][Xx][Tt]  {return JOINNEXT;}

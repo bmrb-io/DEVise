@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/04/04 23:10:31  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.16  1997/03/23 23:45:24  donjerko
   Made boolean vars to be in the tuple.
 
@@ -146,7 +152,8 @@ public:
 		return (tables.contains(*tabName) > 0);
 	}
 	virtual bool have(Site* siteGroup){
-		return this == siteGroup;
+		// return this == siteGroup;
+		return name == siteGroup->getName();
 	}
 	void filter(List<BaseSelection*>* select, 
 		List<BaseSelection*>* where = NULL);
@@ -295,15 +302,14 @@ public:
 		writePtrs = NULL;
 		input = NULL;
 	}
-	LocalTable(String nm, List<BaseSelection*>* select, 
-		List<BaseSelection*>* where, Site* base) : Site(nm) {
+	LocalTable(String nm, Site* base) : Site(nm) {
 
 		// This site is used as a root, on top of all other sites.
 		// It does includes leftover constants, if any.
 
 		mySelect = new List<BaseSelection*>;
-		mySelect->addList(select);
-		myWhere->addList(where);
+		// mySelect->addList(select);
+		// myWhere->addList(where);
 		this->iterator = NULL;
 		numFlds = mySelect->cardinality();
 		directSite = base;
@@ -438,7 +444,7 @@ class CGISite : public LocalTable {
 	String urlString;
 public:
 	CGISite(String url, Entry* entry, int entryLen) : 
-		LocalTable("", NULL), entry(entry), 
+		LocalTable("", (Iterator*) NULL), entry(entry), 
 		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){
 		// do not delete entries, they are deleted in catalog

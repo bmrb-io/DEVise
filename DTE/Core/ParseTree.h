@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/03/28 16:07:25  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef PARSE_TREE_H
@@ -41,6 +45,7 @@ class QueryTree : public ParseTree {
 	String* sequencebyTable;
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* groupBy;
+	List<BaseSelection*>* orderBy;
 	List<String*>* namesToResolve;
 	void resolveNames();	// throws exception
 public:	
@@ -51,10 +56,11 @@ public:
 		String *sequencebyTable,
 		BaseSelection* withPredicate,
 		List<BaseSelection *>*groupBy,
+		List<BaseSelection*>* orderBy,
 		List<String*>* namesToResolve) :
 		selectList(selectList), tableList(tableList), 
 		predicates(predicates), sequencebyTable(sequencebyTable),
-		withPredicate(withPredicate),groupBy(groupBy),
+		withPredicate(withPredicate),groupBy(groupBy), orderBy(orderBy),
 		namesToResolve(namesToResolve) {}
 	
 	virtual Site* createSite();	// throws exception

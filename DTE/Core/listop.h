@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/04/04 23:10:30  donjerko
+  Changed the getNext interface:
+  	from: Tuple* getNext()
+  	to:   bool getNext(Tuple*)
+  This will make the code more efficient in memory allocation.
+
   Revision 1.5  1996/12/21 22:21:48  donjerko
   Added hierarchical namespace.
 
@@ -63,6 +69,8 @@ class BaseSelection;
 class Site;
 class TableAlias;
 
+int* findPositions(List<BaseSelection*>* list, 
+	List<BaseSelection*>* elements);	// throws
 bool exclusiveF(List<BaseSelection*>* list, Site* site);
 bool exclusiveList(List<BaseSelection*>* list, String* attNms, int n);
 List<BaseSelection*>* duplicateF(List<BaseSelection*>* list);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/03/20 20:42:22  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.18  1997/03/14 18:36:12  donjerko
   Making space for the SQL UNION operator.
 
@@ -103,6 +107,7 @@ static int my_yyaccept();
 %token WHERE
 %token SEQUENCE
 %token GROUP 
+%token ORDER 
 %token BY 
 %token JOINNEXT 
 %token JOINPREV 
@@ -133,10 +138,12 @@ static int my_yyaccept();
 %type <integer> optShiftVal 
 %type <path> expression
 %type <selList> listOfSelections
+%type <selList> listOfSelectionsOrStar
 %type <constList> listOfConstants
 %type <selList> optOverClause
 %type <sel> optWithClause
 %type <selList> optGroupByClause
+%type <selList> optOrderByClause
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
 %type <tableList> JoinList 
@@ -221,19 +228,22 @@ table_name : table_name '.' STRING {
 		$$ = new List<String*>;
 	}
 	;
-query : SELECT listOfSelections 
+query : SELECT listOfSelectionsOrStar 
 		FROM listOfTables optWhereClause 
-		optSequenceByClause optGroupByClause {
-		$$ = new QueryTree($2,$4,$5,$6,withPredicate,$7,namesToResolve);
-	}
-	| SELECT '*' FROM listOfTables optWhereClause 
-			optSequenceByClause optGroupByClause  {
-		$$ = new QueryTree(NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
+		optSequenceByClause optGroupByClause optOrderByClause {
+		$$ = new QueryTree($2,$4,$5,$6,withPredicate,$7,$8,namesToResolve);
 	}
 	| query UNION query {
 		$$ = new UnionParse($1, $3);
 	}
      ;
+listOfSelectionsOrStar : listOfSelections {
+		$$ = $1;
+	}
+	| '*' {
+		$$ = NULL;
+	}
+	;
 listOfSelections : listOfSelections ',' predicate {
 		$1->append($3);
 		$$ = $1;
@@ -311,6 +321,14 @@ optSequenceByClause :SEQUENCE BY STRING optWithClause{
 	;
 
 optGroupByClause: GROUP BY listOfSelections{
+		$$ = $3;
+	}
+	|{
+		$$ = new List<BaseSelection*>;
+	}
+	;
+	
+optOrderByClause: ORDER BY listOfSelections{
 		$$ = $3;
 	}
 	|{

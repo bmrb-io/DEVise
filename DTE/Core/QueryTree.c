@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/03/28 16:07:25  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #include<iostream.h>
@@ -41,6 +45,7 @@
 #include "Aggregates.h"
 #include "ParseTree.h"
 #include "joins.h"
+#include "Sort.h"
 
 List<ConstantSelection*>* dummy;	// Just needed for pragma implementation
 List<char*>* dummy2;	// Just needed for pragma implementation
@@ -296,13 +301,21 @@ Site* QueryTree::createSite(){
 	// Every site has taken what belongs to it.
 	// Create top site that takes everything left over (constants or nothing)
 
-	siteGroup = new LocalTable(
-		siteGroup->getName(), selectList, predicateList, siteGroup);
+	assert(predicateList->isEmpty());
+	siteGroup = new LocalTable(siteGroup->getName(), siteGroup);
+	siteGroup->filter(selectList);
 	TRY(siteGroup->typify(option), NULL);
 
 	for(int k = count; k >= 0;k--){
 		TRY(aggregates[k]->typify(siteGroup), NULL);
 		siteGroup = aggregates[k];
+	}
+
+	assert(orderBy);
+	if(!orderBy->isEmpty()){
+		siteGroup = new Sort(siteGroup->getName(), orderBy, siteGroup);
+		siteGroup->filter(selectList);
+		TRY(siteGroup->typify(option), NULL);
 	}
 
 	LOG(logFile << "Global Plan: \n";)
