@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/14 04:05:34  jussi
+  Added (kludgy) ResetVkg() function which allows ViewKGraph
+  to inform ParseAPI that the current KGraph has been
+  destroyed.
+
   Revision 1.18  1996/07/11 17:25:47  wenger
   Devise now writes headers to some of the files it writes;
   DataSourceSegment class allows non-fixed data length with non-zero
@@ -110,6 +115,7 @@
 #include "Version.h"
 #include "CompDate.h"
 #include "DevFileHeader.h"
+#include "Display.h"
 
 //#define DEBUG
 
@@ -1177,6 +1183,16 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       view->RemoveMapping(map);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "saveDisplayImage")) {
+      DisplayExportFormat format = POSTSCRIPT;
+      if (!strcmp(argv[1], "eps"))
+	format = EPS;
+      else if (!strcmp(argv[1], "gif"))
+	format = GIF;
+      DeviseDisplay::DefaultDisplay()->ExportImage(format, argv[2]);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
